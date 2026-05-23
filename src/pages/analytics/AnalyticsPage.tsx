@@ -1,0 +1,140 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useAnalyticsStore } from '@/store/analyticsStore';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useGLStore } from '@/store/glStore';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { BarChart3, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { AdvancedOLAPEngine } from '@/engines/AdvancedOLAPEngine';
+import { AggregationDesigner } from '@/engines/AggregationDesigner';
+import { DimensionalModelingEngine } from '@/engines/DimensionalModelingEngine';
+import { AggregateTableEngine } from '@/engines/AggregateTableEngine';
+import { AnomalyExplainer } from '@/engines/AnomalyExplainer';
+
+function formatCurrency(n: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(n);
+}
+
+export default function AnalyticsPage() {
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  useEffect(() => {
+    document.title = 'FinPlan Pro — Analytics';
+  }, []);
+
+  const { entries, accounts } = useGLStore();
+  const navigate = useNavigate();
+
+  const stats = useMemo(() => {
+    if (entries.length === 0) return null;
+    const byType = new Map<string, { count: number; total: number }>();
+    const byMonth = new Map<string, number>();
+    entries.forEach((e) => {
+      const acct = accounts.find((a) => a.id === e.accountId || a.code === e.accountCode);
+      const type = acct?.type || 'Unknown';
+      const g = byType.get(type) || { count: 0, total: 0 };
+      g.count++;
+      g.total += e.debit - e.credit;
+      byType.set(type, g);
+      const month = e.period || e.date.slice(0, 7);
+      byMonth.set(month, (byMonth.get(month) || 0) + 1);
+    });
+    const avgPerMonth = byMonth.size > 0 ? entries.length / byMonth.size : 0;
+    const busiestMonth = Array.from(byMonth.entries()).sort((a, b) => b[1] - a[1])[0];
+    return {
+      byType: Array.from(byType.entries()),
+      totalEntries: entries.length,
+      avgPerMonth: Math.round(avgPerMonth),
+      busiestMonth: busiestMonth?.[0] || 'N/A',
+      busiestCount: busiestMonth?.[1] || 0,
+      totalAccounts: accounts.length,
+    };
+  }, [entries, accounts]);
+
+  if (entries.length === 0) {
+    return (
+      <div className="p-12 text-center max-w-md mx-auto">
+        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <h2 className="text-xl font-semibold mb-2">No Data</h2>
+        <p className="text-slate-400 mb-6">Import data to see analytics.</p>
+        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Analytics</h1>
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+          aria-label="Help"
+        ></button>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-xs text-slate-400">Total Entries</div>
+            <div className="text-xl font-bold">{stats?.totalEntries.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-xs text-slate-400">Accounts</div>
+            <div className="text-xl font-bold">{stats?.totalAccounts}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-xs text-slate-400">Avg/Month</div>
+            <div className="text-xl font-bold">{stats?.avgPerMonth.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-xs text-slate-400">Busiest Month</div>
+            <div className="text-xl font-bold text-sm">
+              {stats?.busiestMonth} ({stats?.busiestCount})
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      {stats && (
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="font-semibold mb-3">By Account Type</h3>
+            <div className="space-y-2">
+              {stats.byType.map(([type, data]) => {
+                const maxTotal = Math.max(...stats.byType.map(([, d]) => Math.abs(d.total)), 1);
+                const barWidth = (Math.abs(data.total) / maxTotal) * 100;
+                return (
+                  <div key={type} className="flex items-center gap-3 text-sm">
+                    <span className="w-20 text-xs text-slate-400">{type}</span>
+                    <div className="flex-1 bg-slate-800 rounded-full h-5">
+                      <div
+                        className="bg-blue-500/60 h-full rounded-full"
+                        style={{ width: barWidth + '%' }}
+                      />
+                    </div>
+                    <span className="w-24 text-right tabular-nums text-xs">
+                      {formatCurrency(data.total)}
+                    </span>
+                    <span className="w-12 text-right text-xs text-slate-500">({data.count})</span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}

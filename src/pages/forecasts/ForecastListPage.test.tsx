@@ -1,0 +1,69 @@
+/**
+ * @vitest-environment jsdom
+ */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
+
+vi.mock('@/store/forecastStore', () => ({
+  useForecastStore: vi.fn(() => ({
+    forecasts: [],
+    drivers: [],
+    selectedForecastId: null,
+    isLoading: false,
+    setForecasts: vi.fn(),
+    createForecast: vi.fn(),
+    updateForecast: vi.fn(),
+    deleteForecast: vi.fn(),
+    addDriver: vi.fn(),
+    updateDriver: vi.fn(),
+    removeDriver: vi.fn(),
+    undo: vi.fn(),
+    redo: vi.fn(),
+  })),
+}));
+
+vi.mock('lucide-react', () => {
+  const makeIcon = () => {
+    const Icon = ({ className }: { className?: string }) => (
+      <span data-testid="mock-icon" className={className} />
+    );
+    Icon.displayName = 'MockIcon';
+    return Icon;
+  };
+  return {
+    Plus: makeIcon(),
+    Eye: makeIcon(),
+    TrendingUp: makeIcon(),
+  };
+});
+
+import ForecastListPage from '@/pages/forecasts/ForecastListPage';
+
+function renderPage(PageComponent: React.ComponentType, initialPath = '/', routePath = '/') {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Routes>
+        <Route path={routePath} element={<PageComponent />} />
+        <Route path="*" element={<div>Redirected</div>} />
+      </Routes>
+    </MemoryRouter>
+  );
+}
+
+describe('ForecastListPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders without crashing', () => {
+    const { container } = renderPage(ForecastListPage, '/forecasts', '/forecasts');
+    expect(container).toBeTruthy();
+  });
+
+  it('displays the empty state when no forecasts exist', () => {
+    renderPage(ForecastListPage, '/forecasts', '/forecasts');
+    expect(screen.getByText(/No Forecasts Yet/i)).toBeInTheDocument();
+  });
+});

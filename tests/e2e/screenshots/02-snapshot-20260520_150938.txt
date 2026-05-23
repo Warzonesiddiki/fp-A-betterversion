@@ -1,0 +1,15 @@
+- progressbar "Progress": 1
+  - generic
+    - generic
+  - generic
+    - StaticText "2"
+  - generic
+    - StaticText "3"
+  - generic
+    - StaticText "4"
+  - generic
+    - StaticText "5"
+- heading "Welcome to FinPlan Pro" [level=1, ref=e1]
+- paragraph
+  - StaticText "This app helps you manage budgets, forecasts, and financial reports — all in one place, completely offline. No cloud, no subscriptions, no data leaving your computer."
+- button "Let's Start" [ref=e2]

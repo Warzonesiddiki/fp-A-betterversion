@@ -1,0 +1,154 @@
+/**
+ * @vitest-environment jsdom
+ */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import React from 'react';
+
+// ---------------------------------------------------------------------------
+// Mock stores
+// ---------------------------------------------------------------------------
+
+vi.mock('@/store/glStore', () => ({
+  useGLStore: vi.fn(() => ({
+    entries: [],
+    accounts: [],
+    trialBalance: [],
+    accountAnalysis: null,
+    columnMappings: [],
+    isLoading: false,
+    importResult: null,
+    setEntries: vi.fn(),
+    setAccounts: vi.fn(),
+    addEntries: vi.fn(),
+    clearEntries: vi.fn(),
+    setColumnMappings: vi.fn(),
+    importData: vi.fn(),
+    undo: vi.fn(),
+    redo: vi.fn(),
+  })),
+}));
+
+// ---------------------------------------------------------------------------
+// Mock engines
+// ---------------------------------------------------------------------------
+
+vi.mock('@/engines/ExportEngine', () => ({
+  ExportEngine: { exportToPDF: vi.fn(), exportToExcel: vi.fn() },
+}));
+
+// ---------------------------------------------------------------------------
+// Mock recharts
+// ---------------------------------------------------------------------------
+
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="responsive-container">{children}</div>
+  ),
+  BarChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="bar-chart">{children}</div>
+  ),
+  Bar: () => null,
+  PieChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="pie-chart">{children}</div>
+  ),
+  Pie: () => null,
+  Cell: () => null,
+  XAxis: () => null,
+  YAxis: () => null,
+  CartesianGrid: () => null,
+  Tooltip: () => null,
+  Legend: () => null,
+}));
+
+// ---------------------------------------------------------------------------
+// Mock lucide-react icons
+// ---------------------------------------------------------------------------
+
+vi.mock('lucide-react', () => {
+  const makeIcon = () => {
+    const Icon = ({ className }: { className?: string }) => (
+      <span data-testid="mock-icon" className={className} />
+    );
+    Icon.displayName = 'MockIcon';
+    return Icon;
+  };
+  return {
+    Download: makeIcon(),
+    Building2: makeIcon(),
+    DollarSign: makeIcon(),
+    TrendingUp: makeIcon(),
+    CheckCircle: makeIcon(),
+    Clock: makeIcon(),
+    AlertCircle: makeIcon(),
+    Plus: makeIcon(),
+  };
+});
+
+// ---------------------------------------------------------------------------
+// Mock UI components
+// ---------------------------------------------------------------------------
+
+vi.mock('@/components/ui/Button', () => ({
+  Button: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <button {...props}>{children}</button>
+  ),
+}));
+
+vi.mock('@/components/ui/Card', () => ({
+  Card: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div {...props}>{children}</div>
+  ),
+  CardContent: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div {...props}>{children}</div>
+  ),
+  CardHeader: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div {...props}>{children}</div>
+  ),
+  CardTitle: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div {...props}>{children}</div>
+  ),
+}));
+
+vi.mock('@/components/ui/KPIValue', () => ({
+  KPIValue: ({ label }: { label: string }) => <div data-testid="kpi-value">{label}</div>,
+}));
+
+vi.mock('@/components/ui/DataTable', () => ({
+  DataTable: () => <div data-testid="data-table" />,
+}));
+
+// ---------------------------------------------------------------------------
+// Import page AFTER mocks
+// ---------------------------------------------------------------------------
+
+import CapExDashboard from '@/pages/capex/CapExDashboard';
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+describe('CapExDashboard smoke test', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders without crashing', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <CapExDashboard />
+      </MemoryRouter>
+    );
+    expect(container).toBeTruthy();
+  });
+
+  it('displays the Capital Expenditures heading (has inline mock data)', () => {
+    const { getByText } = render(
+      <MemoryRouter>
+        <CapExDashboard />
+      </MemoryRouter>
+    );
+    expect(getByText(/Capital Expenditures/i)).toBeInTheDocument();
+  });
+});

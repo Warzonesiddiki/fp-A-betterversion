@@ -1,0 +1,52 @@
+import type { SectorConfig } from './index';
+
+export const constructionConfig: SectorConfig = {
+  id: 'construction',
+  name: 'Construction / Infrastructure',
+  description: 'Project metrics: Completion, Backlog, WIP, Change Orders',
+  defaultKPIs: [
+    { id: 'backlog', label: 'Work Backlog', format: 'currency', target: 250000000 },
+    { id: 'completion_percent', label: 'Avg Project Completion', format: 'percent', target: 65 },
+    {
+      id: 'gross_margin_per_project',
+      label: 'Project Gross Margin',
+      format: 'percent',
+      target: 12,
+    },
+    {
+      id: 'days_unbilled',
+      label: 'Days WIP Unbilled',
+      format: 'number',
+      target: 20,
+      lowerIsBetter: true,
+    },
+    { id: 'change_order_ratio', label: 'Change Order Ratio', format: 'percent', target: 8 },
+    {
+      id: 'safety_incidents',
+      label: 'Safety Incidents',
+      format: 'number',
+      target: 0,
+      lowerIsBetter: true,
+    },
+    { id: 'utilization', label: 'Equipment Utilization', format: 'percent', target: 75 },
+    { id: 'wip', label: 'Work in Progress', format: 'currency', target: 50000000 },
+    { id: 'overbilling', label: 'Overbilling/Underbilling', format: 'currency', target: 0 },
+    { id: 'job_cost', label: 'Job Cost % Complete', format: 'percent', target: 65 },
+  ],
+  enabledModules: ['construction', 'workforce', 'capex', 'revenue'],
+  sidebarOrder: [
+    'dashboard',
+    'budgets',
+    'forecasts',
+    'reports',
+    'variance',
+    'scenarios',
+    'analytics',
+    'construction',
+    'workforce',
+    'data',
+    'collaboration',
+    'settings',
+  ],
+  defaultCurrency: 'USD',
+};

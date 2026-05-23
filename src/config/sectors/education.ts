@@ -1,0 +1,55 @@
+import type { SectorConfig } from './index';
+
+export const educationConfig: SectorConfig = {
+  id: 'education',
+  name: 'Education / Higher Ed',
+  description: 'Enrollment, retention, and research funding metrics',
+  defaultKPIs: [
+    {
+      id: 'student_retention_rate',
+      label: 'Student Retention Rate',
+      format: 'percent',
+      target: 88,
+    },
+    { id: 'revenue_per_student', label: 'Revenue Per Student', format: 'currency', target: 22000 },
+    {
+      id: 'faculty_to_student_ratio',
+      label: 'Faculty to Student Ratio',
+      format: 'number',
+      target: 15,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'research_grant_win_rate',
+      label: 'Research Grant Win Rate',
+      format: 'percent',
+      target: 25,
+    },
+    { id: 'endowment_growth_rate', label: 'Endowment Growth Rate', format: 'percent', target: 7 },
+    {
+      id: 'operating_cost_per_sq_ft',
+      label: 'Op Cost Per Sq Ft',
+      format: 'currency',
+      target: 12,
+      lowerIsBetter: true,
+    },
+    { id: 'alumni_giving_rate', label: 'Alumni Giving Rate', format: 'percent', target: 12 },
+  ],
+  enabledModules: ['education', 'enrollment', 'research', 'endowment', 'revenue'],
+  sidebarOrder: [
+    'dashboard',
+    'budgets',
+    'forecasts',
+    'reports',
+    'variance',
+    'scenarios',
+    'analytics',
+    'education',
+    'enrollment',
+    'research',
+    'data',
+    'collaboration',
+    'settings',
+  ],
+  defaultCurrency: 'USD',
+};

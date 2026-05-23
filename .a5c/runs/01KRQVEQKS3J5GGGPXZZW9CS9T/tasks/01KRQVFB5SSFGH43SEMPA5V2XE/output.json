@@ -1,0 +1,9 @@
+{
+  "status": "ok",
+  "summary": "Performance audit completed. Main bundle size is ~380KB. Huge WASM assets (23MB) are correctly lazy-loaded via the AI Center page. Recommended manual chunking for transformers library.",
+  "findings": [
+    { "type": "info", "message": "Index.js size: 381KB" },
+    { "type": "warning", "message": "ort-wasm-simd-threaded.wasm is 23.5MB", "impact": "High (if loaded eagerly)" },
+    { "type": "recommendation", "message": "Add @huggingface/transformers to manualChunks in vite.config.ts" }
+  ]
+}

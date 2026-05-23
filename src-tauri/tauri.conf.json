@@ -1,0 +1,76 @@
+{
+  "productName": "FinPlan Pro",
+  "version": "0.1.0",
+  "identifier": "com.finplanpro.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "FinPlan Pro",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 600,
+        "resizable": true,
+        "center": true,
+        "decorations": true,
+        "fullscreen": false,
+        "fileDropEnabled": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+      "dangerousRemoteUrlAccess": []
+    },
+    "trayIcon": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true,
+      "tooltip": "FinPlan Pro"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "wix"],
+    "icon": [
+      "icons/icon.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "both",
+        "displayLanguageSelector": true,
+        "installerIcon": "icons/icon.ico",
+        "headerImage": null,
+        "sidebarImage": null
+      }
+    },
+    "category": "Finance",
+    "shortDescription": "Financial Planning & Analysis Platform",
+    "longDescription": "FinPlan Pro is an enterprise-grade FP&A platform for budgeting, forecasting, consolidation, and financial reporting.",
+    "fileAssociations": [
+      {
+        "ext": ["finplan"],
+        "mimeType": "application/x-finplan",
+        "role": "Editor",
+        "description": "FinPlan Financial Model"
+      },
+      {
+        "ext": ["xlsx", "xls"],
+        "mimeType": "application/vnd.ms-excel",
+        "role": "Viewer",
+        "description": "Microsoft Excel Spreadsheet"
+      },
+      {
+        "ext": ["csv"],
+        "mimeType": "text/csv",
+        "role": "Viewer",
+        "description": "Comma-Separated Values"
+      }
+    ]
+  }
+}

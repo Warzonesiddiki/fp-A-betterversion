@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KRQW7MA5CX9R3JJDFCPCAYPX",
+  "taskId": "qa-integration",
+  "invocationKey": "phase-4-v2:S000002:qa-integration",
+  "status": "ok",
+  "result": {
+    "findings": [
+      {
+        "file": "src/pages/DashboardPage.tsx",
+        "message": "Dashboard icon buttons (Help, Start Guide) lack 'aria-label', making them unidentifiable for screen readers.",
+        "type": "warning"
+      },
+      {
+        "file": "src/pages/auth/LoginPage.tsx",
+        "message": "LoginPage help button is empty and lacks an accessible name.",
+        "type": "warning"
+      },
+      {
+        "message": "ErrorBoundary coverage is good across all major route groups in App.tsx.",
+        "type": "info"
+      },
+      {
+        "message": "Ensure all Input components use 'id' linked to 'label[for]' for proper form accessibility.",
+        "type": "recommendation"
+      }
+    ],
+    "status": "ok",
+    "summary": "QA & Accessibility Audit completed. Identified several high-priority accessibility gaps and form validation inconsistencies."
+  },
+  "startedAt": "2026-05-16T07:54:24.129Z",
+  "finishedAt": "2026-05-16T07:54:24.129Z",
+  "value": {
+    "findings": [
+      {
+        "file": "src/pages/DashboardPage.tsx",
+        "message": "Dashboard icon buttons (Help, Start Guide) lack 'aria-label', making them unidentifiable for screen readers.",
+        "type": "warning"
+      },
+      {
+        "file": "src/pages/auth/LoginPage.tsx",
+        "message": "LoginPage help button is empty and lacks an accessible name.",
+        "type": "warning"
+      },
+      {
+        "message": "ErrorBoundary coverage is good across all major route groups in App.tsx.",
+        "type": "info"
+      },
+      {
+        "message": "Ensure all Input components use 'id' linked to 'label[for]' for proper form accessibility.",
+        "type": "recommendation"
+      }
+    ],
+    "status": "ok",
+    "summary": "QA & Accessibility Audit completed. Identified several high-priority accessibility gaps and form validation inconsistencies."
+  }
+}

@@ -1,0 +1,40 @@
+import { memo } from 'react';
+import { HelpCircle, FileText, Table as TableIcon } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+
+interface BudgetVsActualHeaderProps {
+  onHelpClick: () => void;
+  onExportPDF: () => void;
+  onExportExcel: () => void;
+}
+
+export const BudgetVsActualHeader = memo(function BudgetVsActualHeader({
+  onHelpClick,
+  onExportPDF,
+  onExportExcel,
+}: BudgetVsActualHeaderProps) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-4">
+        <h1 className="text-2xl font-black text-[var(--text-primary)]">Budget vs Actual</h1>
+        <button
+          onClick={onHelpClick}
+          className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+          aria-label="Help"
+        >
+          <HelpCircle className="h-5 w-5" />
+        </button>
+      </div>
+      <div className="flex gap-2">
+        <Button size="sm" variant="ghost" onClick={onExportPDF} aria-label="Export PDF">
+          <FileText className="h-3.5 w-3.5 mr-1.5" />
+          PDF
+        </Button>
+        <Button size="sm" variant="ghost" onClick={onExportExcel} aria-label="Export Excel">
+          <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+          Excel
+        </Button>
+      </div>
+    </div>
+  );
+});

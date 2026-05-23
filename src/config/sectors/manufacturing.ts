@@ -1,0 +1,52 @@
+import type { SectorConfig } from './index';
+
+export const manufacturingConfig: SectorConfig = {
+  id: 'manufacturing',
+  name: 'Manufacturing / Industry',
+  description: 'Production metrics: OEE, Scrap, Yield, Cycle Time',
+  defaultKPIs: [
+    { id: 'oee', label: 'Overall Equipment Effectiveness', format: 'percent', target: 85 },
+    { id: 'scrap_rate', label: 'Scrap Rate', format: 'percent', target: 2, lowerIsBetter: true },
+    { id: 'inventory_turnover', label: 'Inventory Turnover', format: 'number', target: 8 },
+    {
+      id: 'cycle_time',
+      label: 'Cycle Time (Days)',
+      format: 'number',
+      target: 1.5,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'downtime',
+      label: 'Unplanned Downtime',
+      format: 'percent',
+      target: 5,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'unit_cost',
+      label: 'Cost per Unit',
+      format: 'currency',
+      target: 450,
+      lowerIsBetter: true,
+    },
+    { id: 'throughput', label: 'Throughput (Units/Hr)', format: 'number', target: 120 },
+    { id: 'yield_rate', label: 'Yield Rate', format: 'percent', target: 95 },
+    { id: 'capacity_utilization', label: 'Capacity Utilization', format: 'percent', target: 80 },
+  ],
+  enabledModules: ['manufacturing', 'inventory', 'cogs', 'workforce'],
+  sidebarOrder: [
+    'dashboard',
+    'budgets',
+    'forecasts',
+    'reports',
+    'variance',
+    'scenarios',
+    'analytics',
+    'manufacturing',
+    'inventory',
+    'data',
+    'collaboration',
+    'settings',
+  ],
+  defaultCurrency: 'USD',
+};

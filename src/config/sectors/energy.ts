@@ -1,0 +1,73 @@
+import type { SectorConfig } from './index';
+
+export const energyConfig: SectorConfig = {
+  id: 'energy',
+  name: 'Energy / Utilities',
+  description: 'Energy metrics: Reserve Replacement, Lifting Cost, Emissions',
+  defaultKPIs: [
+    {
+      id: 'reserve_replacement',
+      label: 'Reserve Replacement Ratio',
+      format: 'percent',
+      target: 105,
+    },
+    {
+      id: 'lifting_cost',
+      label: 'Lifting Cost per BOE',
+      format: 'currency',
+      target: 12,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'carbon_intensity',
+      label: 'Carbon Intensity',
+      format: 'number',
+      target: 18,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'availability_factor',
+      label: 'Plant Availability Factor',
+      format: 'percent',
+      target: 94,
+    },
+    {
+      id: 'capex_per_mw',
+      label: 'CapEx per MW',
+      format: 'currency',
+      target: 1200000,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'safety_incident_rate',
+      label: 'TRIR Safety Rate',
+      format: 'number',
+      target: 0.5,
+      lowerIsBetter: true,
+    },
+    { id: 'renewable_mix', label: 'Renewable energy Mix', format: 'percent', target: 35 },
+    {
+      id: 'production_volume',
+      label: 'Production Volume (BOE/D)',
+      format: 'number',
+      target: 50000,
+    },
+    { id: 'boe_per_day', label: 'Barrels of Oil Equivalent/Day', format: 'number', target: 50000 },
+  ],
+  enabledModules: ['energy', 'esg', 'capex', 'compliance'],
+  sidebarOrder: [
+    'dashboard',
+    'budgets',
+    'forecasts',
+    'reports',
+    'variance',
+    'scenarios',
+    'analytics',
+    'energy',
+    'esg',
+    'data',
+    'collaboration',
+    'settings',
+  ],
+  defaultCurrency: 'USD',
+};

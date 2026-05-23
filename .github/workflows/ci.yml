@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test -- --run
+
+      - name: Build
+        run: npm run build
+
+      - name: Bundle size check
+        run: |
+          MAIN_GZIP=$(find dist/assets -name "index-*.js" -exec gzip -c {} \; | wc -c)
+          TOTAL_GZIP=$(find dist/assets -name "*.js" -exec gzip -c {} \; | wc -c)
+          MAIN_KB=$((MAIN_GZIP / 1024))
+          TOTAL_KB=$((TOTAL_GZIP / 1024))
+          echo "Main chunk: ${MAIN_KB}KB gzip"
+          echo "Total JS: ${TOTAL_KB}KB gzip"
+          if [ "$MAIN_KB" -gt 150 ]; then
+            echo "::error::Main chunk exceeds 150KB gzip (got ${MAIN_KB}KB)"
+            exit 1
+          fi
+          if [ "$TOTAL_KB" -gt 2048 ]; then
+            echo "::error::Total JS exceeds 2MB gzip (got ${TOTAL_KB}KB)"
+            exit 1
+          fi
+
+  e2e:
+    name: E2E Tests
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Run E2E tests
+        run: npx playwright test

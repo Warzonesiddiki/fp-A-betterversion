@@ -1,0 +1,236 @@
+/* ==========================================================================
+   PRINT STYLES — Optimized for financial report printing
+   ========================================================================== */
+
+@media print {
+  /* Hide non-printable elements */
+  .no-print,
+  nav,
+  .sidebar,
+  [data-sidebar],
+  .toolbar,
+  [data-toolbar],
+  .command-palette,
+  .keyboard-shortcuts,
+  .toast,
+  .modal-overlay,
+  .dropdown,
+  .tooltip,
+  button:not(.print-visible),
+  .loading-spinner,
+  .skeleton {
+    display: none !important;
+  }
+
+  /* Reset layout */
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 10pt;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Page setup */
+  @page {
+    margin: 1cm;
+    size: A4 landscape;
+  }
+
+  /* Force background colors to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Table styles */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    text-align: left;
+    font-size: 9pt;
+  }
+
+  th {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+  }
+
+  /* Financial formatting */
+  .currency {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .negative {
+    color: #c00 !important;
+  }
+
+  .positive {
+    color: #060 !important;
+  }
+
+  .total-row {
+    font-weight: bold;
+    border-top: 2px solid #000;
+  }
+
+  .subtotal-row {
+    font-weight: bold;
+    border-top: 1px solid #666;
+  }
+
+  /* Variance colors */
+  .variance-favorable {
+    color: #060 !important;
+  }
+
+  .variance-unfavorable {
+    color: #c00 !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .no-page-break {
+    page-break-inside: avoid;
+  }
+
+  /* Header/Footer */
+  .print-header {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+  }
+
+  .print-header h1 {
+    font-size: 16pt;
+    margin: 0;
+  }
+
+  .print-header .subtitle {
+    font-size: 10pt;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  .print-footer {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    font-size: 8pt;
+    color: #666;
+  }
+
+  /* Chart alternatives */
+  .chart-container {
+    page-break-inside: avoid;
+  }
+
+  .chart-container::after {
+    content: "See attached chart";
+    font-style: italic;
+    color: #666;
+  }
+
+  /* Watermark */
+  .watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 72pt;
+    color: rgba(0, 0, 0, 0.05);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Grid styles */
+  .ag-root-wrapper {
+    border: 1px solid #ccc;
+  }
+
+  .ag-header {
+    background: #f0f0f0 !important;
+  }
+
+  .ag-cell {
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    font-size: 9pt;
+    padding: 2px 6px;
+  }
+
+  .ag-row-even {
+    background: #fafafa !important;
+  }
+
+  /* KPI cards */
+  .kpi-card {
+    border: 1px solid #ccc;
+    padding: 8px;
+    margin-bottom: 8px;
+    page-break-inside: avoid;
+  }
+
+  .kpi-value {
+    font-size: 14pt;
+    font-weight: bold;
+  }
+
+  .kpi-label {
+    font-size: 8pt;
+    color: #666;
+  }
+
+  /* Flexbox/Grid fallbacks */
+  .flex {
+    display: block !important;
+  }
+
+  .grid {
+    display: block !important;
+  }
+
+  .grid > * {
+    margin-bottom: 8px;
+  }
+
+  /* Overflow handling */
+  .overflow-auto,
+  .overflow-hidden,
+  .overflow-scroll {
+    overflow: visible !important;
+  }
+
+  /* Fixed positioning */
+  .fixed {
+    position: static !important;
+  }
+}

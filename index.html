@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(), payment=()" />
+    <title>FinPlan Pro - FP&A Platform</title>
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('finplan-theme') || 'dark';
+          const isDark = theme === 'dark';
+          document.documentElement.classList.toggle('dark', isDark);
+          document.documentElement.classList.toggle('light', !isDark);
+          document.documentElement.style.backgroundColor = isDark ? '#080c14' : '#f1f5f9';
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

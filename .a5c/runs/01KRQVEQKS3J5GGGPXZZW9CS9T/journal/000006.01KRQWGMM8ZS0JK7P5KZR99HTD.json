@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-05-16T07:55:18.024Z",
+  "data": {
+    "effectId": "01KRQWGMJZ00H89AWWMEGWGVX9",
+    "invocationKey": "phase-4-v2:S000003:product-optimization",
+    "invocationHash": "4ccb02ae4306f0660900dd861cec3a2ef7781fdbc62561be9a5445eb5d01709e",
+    "stepId": "S000003",
+    "taskId": "product-optimization",
+    "kind": "skill",
+    "label": "Product Flow Optimization",
+    "taskDefRef": "tasks/01KRQWGMJZ00H89AWWMEGWGVX9/task.json"
+  },
+  "checksum": "841564e59da34026cb6515cb6b9cfb57199e7943c443773eafc470ddd985af0a"
+}

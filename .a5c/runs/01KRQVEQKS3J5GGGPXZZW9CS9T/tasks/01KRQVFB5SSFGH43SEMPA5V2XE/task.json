@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KRQVFB5SSFGH43SEMPA5V2XE",
+  "taskId": "performance-audit",
+  "invocationKey": "phase-4-v2:S000001:performance-audit",
+  "stepId": "S000001",
+  "kind": "skill",
+  "title": "Performance & Bundle Audit",
+  "inputs": {}
+}

@@ -1,0 +1,61 @@
+import type { SectorConfig } from './index';
+
+export const governmentConfig: SectorConfig = {
+  id: 'government',
+  name: 'Public Sector / Government',
+  description: 'Budget execution, public services, and compliance metrics',
+  defaultKPIs: [
+    { id: 'budget_utilization', label: 'Budget Utilization', format: 'percent', target: 95 },
+    { id: 'service_efficiency', label: 'Service Efficiency Score', format: 'number', target: 8.5 },
+    {
+      id: 'grant_disbursement_rate',
+      label: 'Grant Disbursement Rate',
+      format: 'percent',
+      target: 90,
+    },
+    {
+      id: 'compliance_audit_score',
+      label: 'Compliance Audit Score',
+      format: 'percent',
+      target: 100,
+    },
+    {
+      id: 'cost_per_citizen',
+      label: 'Cost Per Citizen Served',
+      format: 'currency',
+      target: 450,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'procurement_cycle_time',
+      label: 'Procurement Cycle (Days)',
+      format: 'number',
+      target: 45,
+      lowerIsBetter: true,
+    },
+    {
+      id: 'revenue_collection_gap',
+      label: 'Revenue Collection Gap',
+      format: 'percent',
+      target: 2,
+      lowerIsBetter: true,
+    },
+  ],
+  enabledModules: ['government', 'budgeting', 'grants', 'procurement', 'compliance'],
+  sidebarOrder: [
+    'dashboard',
+    'budgets',
+    'forecasts',
+    'reports',
+    'variance',
+    'scenarios',
+    'analytics',
+    'government',
+    'grants',
+    'procurement',
+    'data',
+    'collaboration',
+    'settings',
+  ],
+  defaultCurrency: 'USD',
+};

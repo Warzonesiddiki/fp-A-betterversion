@@ -1,0 +1,10 @@
+C:\Users\Tahir\Desktop\frontend that i want\src-tauri\target\debug\deps\tauri_plugin_sql-d1eee20ac9a2b9f9.d: C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\lib.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\commands.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\decode\mod.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\decode\sqlite.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\error.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\wrapper.rs
+
+C:\Users\Tahir\Desktop\frontend that i want\src-tauri\target\debug\deps\libtauri_plugin_sql-d1eee20ac9a2b9f9.rmeta: C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\lib.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\commands.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\decode\mod.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\decode\sqlite.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\error.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\wrapper.rs
+
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\lib.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\commands.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\decode\mod.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\decode\sqlite.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\error.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tauri-plugin-sql-2.4.0\src\wrapper.rs:

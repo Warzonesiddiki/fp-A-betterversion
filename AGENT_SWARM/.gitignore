@@ -1,0 +1,4 @@
+# Agent swarm coordination files should be tracked
+# Only ignore per-agent scratch files
+agent_*/scratch/
+agent_*/*.log

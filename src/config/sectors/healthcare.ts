@@ -1,0 +1,52 @@
+import type { SectorConfig } from './index';
+
+export const healthcareConfig: SectorConfig = {
+  id: 'healthcare',
+  name: 'Healthcare / Life Sciences',
+  description: 'Clinical metrics: LOS, Occupancy, Yield',
+  defaultKPIs: [
+    {
+      id: 'los',
+      label: 'Average Length of Stay',
+      format: 'number',
+      target: 4.2,
+      lowerIsBetter: true,
+    },
+    { id: 'occupancy', label: 'Bed Occupancy Rate', format: 'percent', target: 88 },
+    {
+      id: 'denial_rate',
+      label: 'Claim Denial Rate',
+      format: 'percent',
+      target: 3,
+      lowerIsBetter: true,
+    },
+    { id: 'ar_days', label: 'Days in A/R', format: 'number', target: 35, lowerIsBetter: true },
+    { id: 'ebitdar', label: 'EBITDAR Margin', format: 'percent', target: 18 },
+    { id: 'patient_sat', label: 'Patient Satisfaction', format: 'number', target: 92 },
+    { id: 'staff_ratio', label: 'Nurse-to-Patient Ratio', format: 'number', target: 0.2 },
+    {
+      id: 'readmission_rate',
+      label: '30-Day Readmission Rate',
+      format: 'percent',
+      target: 10,
+      lowerIsBetter: true,
+    },
+    { id: 'case_mix_index', label: 'Case Mix Index', format: 'number', target: 1.4 },
+  ],
+  enabledModules: ['healthcare', 'workforce', 'revenue', 'compliance'],
+  sidebarOrder: [
+    'dashboard',
+    'budgets',
+    'forecasts',
+    'reports',
+    'variance',
+    'scenarios',
+    'analytics',
+    'healthcare',
+    'workforce',
+    'data',
+    'collaboration',
+    'settings',
+  ],
+  defaultCurrency: 'USD',
+};

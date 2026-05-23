@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-05-16T07:50:22.858Z",
+  "data": {
+    "effectId": "01KRQW7MA5CX9R3JJDFCPCAYPX",
+    "invocationKey": "phase-4-v2:S000002:qa-integration",
+    "invocationHash": "9e15c1fad1166e322107a39a78e6d5dc4ff5dd57f23320ffd57919c2c9226c28",
+    "stepId": "S000002",
+    "taskId": "qa-integration",
+    "kind": "skill",
+    "label": "QA & Accessibility Audit",
+    "taskDefRef": "tasks/01KRQW7MA5CX9R3JJDFCPCAYPX/task.json"
+  },
+  "checksum": "1457227ceb2a62c13baa716ff29c0d86dcd264fbaf4a007ea009de8b3f010715"
+}

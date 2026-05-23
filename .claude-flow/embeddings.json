@@ -1,0 +1,18 @@
+{
+  "model": "Xenova/all-MiniLM-L6-v2",
+  "modelPath": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\.claude-flow\\models",
+  "dimension": 384,
+  "cacheSize": 256,
+  "hyperbolic": {
+    "enabled": true,
+    "curvature": -1,
+    "epsilon": 1e-15,
+    "maxNorm": 0.99999
+  },
+  "neural": {
+    "enabled": true,
+    "driftThreshold": 0.3,
+    "decayRate": 0.01
+  },
+  "initialized": "2026-05-16T14:01:45.365Z"
+}

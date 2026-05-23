@@ -1,0 +1,315 @@
+/**
+ * @vitest-environment jsdom
+ */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
+
+// ---------------------------------------------------------------------------
+// Mock stores
+// ---------------------------------------------------------------------------
+
+vi.mock('@/store/glStore', () => ({
+  useGLStore: vi.fn(() => ({
+    entries: [],
+    accounts: [],
+    trialBalance: [],
+    accountAnalysis: null,
+    columnMappings: [],
+    isLoading: false,
+    importResult: null,
+    setEntries: vi.fn(),
+    setAccounts: vi.fn(),
+    addEntries: vi.fn(),
+    clearEntries: vi.fn(),
+    setColumnMappings: vi.fn(),
+    importData: vi.fn(),
+    undo: vi.fn(),
+    redo: vi.fn(),
+    analyzeAccount: vi.fn(),
+  })),
+}));
+
+vi.mock('@/store/dataStore', () => ({
+  useDataStore: vi.fn(() => ({
+    accounts: [],
+    setAccounts: vi.fn(),
+    addAccount: vi.fn(),
+    updateAccount: vi.fn(),
+    deleteAccount: vi.fn(),
+  })),
+}));
+
+// ---------------------------------------------------------------------------
+// Mock recharts
+// ---------------------------------------------------------------------------
+
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="responsive-container">{children}</div>
+  ),
+  BarChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="bar-chart">{children}</div>
+  ),
+  Bar: () => null,
+  XAxis: () => null,
+  YAxis: () => null,
+  CartesianGrid: () => null,
+  Tooltip: () => null,
+  Legend: () => null,
+  Cell: () => null,
+  PieChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="pie-chart">{children}</div>
+  ),
+  Pie: () => null,
+}));
+
+// ---------------------------------------------------------------------------
+// Mock UI components
+// ---------------------------------------------------------------------------
+
+vi.mock('@/components/ui/DataTable', () => ({
+  DataTable: ({ data }: { data: unknown[] }) => (
+    <div data-testid="data-table" data-rows={data.length} />
+  ),
+}));
+
+vi.mock('@/components/ui/KPIValue', () => ({
+  KPIValue: ({ label, value }: { label: string; value: string }) => (
+    <div data-testid="kpi-value">
+      <span>{label}</span>: <span>{value}</span>
+    </div>
+  ),
+}));
+
+vi.mock('@/components/ui/PeriodPicker', () => ({
+  PeriodPicker: () => <div data-testid="period-picker" />,
+}));
+
+vi.mock('@/components/ui/Skeleton', () => ({
+  Skeleton: ({ className }: { className?: string }) => (
+    <div data-testid="skeleton" className={className} />
+  ),
+}));
+
+vi.mock('@/components/ui/Input', () => ({
+  Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => (
+    <input data-testid="mock-input" {...props} />
+  ),
+}));
+
+vi.mock('@/components/ui/Select', () => ({
+  Select: ({ id }: { id?: string }) => <select data-testid="mock-select" id={id} />,
+}));
+
+vi.mock('@/components/ui/Modal', () => ({
+  Modal: ({ children, open }: { children: React.ReactNode; open?: boolean }) =>
+    open ? <div data-testid="modal">{children}</div> : null,
+}));
+
+vi.mock('@/components/ui/Alert', () => ({
+  Alert: ({ children }: { children: React.ReactNode }) => <div data-testid="alert">{children}</div>,
+}));
+
+vi.mock('@/components/ui/Badge', () => ({
+  Badge: ({ children }: { children: React.ReactNode }) => (
+    <span data-testid="badge">{children}</span>
+  ),
+}));
+
+// ---------------------------------------------------------------------------
+// Mock lucide-react icons
+// ---------------------------------------------------------------------------
+
+vi.mock('lucide-react', () => {
+  const makeIcon = () => {
+    const Icon = ({ className }: { className?: string }) => (
+      <span data-testid="mock-icon" className={className} />
+    );
+    Icon.displayName = 'MockIcon';
+    return Icon;
+  };
+  return {
+    Calculator: makeIcon(),
+    DollarSign: makeIcon(),
+    TrendingDown: makeIcon(),
+    AlertTriangle: makeIcon(),
+    FileText: makeIcon(),
+    ArrowRightLeft: makeIcon(),
+    Download: makeIcon(),
+    Filter: makeIcon(),
+    BarChart3: makeIcon(),
+    Scale: makeIcon(),
+    PieChart: makeIcon(),
+    Shield: makeIcon(),
+    Plus: makeIcon(),
+    Pencil: makeIcon(),
+    Trash2: makeIcon(),
+    AlertCircle: makeIcon(),
+    Repeat: makeIcon(),
+    ArrowRight: makeIcon(),
+    TrendingUp: makeIcon(),
+    Search: makeIcon(),
+    ToggleLeft: makeIcon(),
+    ToggleRight: makeIcon(),
+    FolderTree: makeIcon(),
+    List: makeIcon(),
+    Minus: makeIcon(),
+  };
+});
+
+// ---------------------------------------------------------------------------
+// Import page components AFTER mocks
+// ---------------------------------------------------------------------------
+
+import ProjectCostingPage from '@/pages/construction/ProjectCostingPage';
+import HedgeManagementPage from '@/pages/currency/HedgeManagementPage';
+import TranslationResultPage from '@/pages/currency/TranslationResultPage';
+import ChartOfAccountsPage from '@/pages/data/ChartOfAccountsPage';
+import GLAccountAnalysisPage from '@/pages/data/GLAccountAnalysisPage';
+
+// ---------------------------------------------------------------------------
+// Helper
+// ---------------------------------------------------------------------------
+
+function renderPage(PageComponent: React.ComponentType, initialPath = '/', routePath = '/') {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Routes>
+        <Route path={routePath} element={<PageComponent />} />
+        <Route path="*" element={<div>Redirected</div>} />
+      </Routes>
+    </MemoryRouter>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Smoke Tests
+// ---------------------------------------------------------------------------
+
+describe('Page Smoke Tests — 5 Untested Pages', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // -----------------------------------------------------------------------
+  // ProjectCostingPage
+  // -----------------------------------------------------------------------
+
+  describe('ProjectCostingPage', () => {
+    it('renders without crashing', () => {
+      const { container } = renderPage(
+        ProjectCostingPage,
+        '/construction/project-costing',
+        '/construction/project-costing'
+      );
+      expect(container).toBeTruthy();
+    });
+
+    it('displays the page heading', () => {
+      const { getByText } = renderPage(
+        ProjectCostingPage,
+        '/construction/project-costing',
+        '/construction/project-costing'
+      );
+      expect(getByText(/Project Costing/i)).toBeInTheDocument();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // HedgeManagementPage
+  // -----------------------------------------------------------------------
+
+  describe('HedgeManagementPage', () => {
+    it('renders without crashing', () => {
+      const { container } = renderPage(
+        HedgeManagementPage,
+        '/currency/hedge-management',
+        '/currency/hedge-management'
+      );
+      expect(container).toBeTruthy();
+    });
+
+    it('displays the empty state heading', () => {
+      const { getByText } = renderPage(
+        HedgeManagementPage,
+        '/currency/hedge-management',
+        '/currency/hedge-management'
+      );
+      expect(getByText(/No Data/i)).toBeInTheDocument();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // TranslationResultPage
+  // -----------------------------------------------------------------------
+
+  describe('TranslationResultPage', () => {
+    it('renders without crashing', () => {
+      const { container } = renderPage(
+        TranslationResultPage,
+        '/currency/translation-result',
+        '/currency/translation-result'
+      );
+      expect(container).toBeTruthy();
+    });
+
+    it('displays the empty state heading', () => {
+      const { getByText } = renderPage(
+        TranslationResultPage,
+        '/currency/translation-result',
+        '/currency/translation-result'
+      );
+      expect(getByText(/No Data to Translate/i)).toBeInTheDocument();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // ChartOfAccountsPage
+  // -----------------------------------------------------------------------
+
+  describe('ChartOfAccountsPage', () => {
+    it('renders without crashing', () => {
+      const { container } = renderPage(
+        ChartOfAccountsPage,
+        '/data/chart-of-accounts',
+        '/data/chart-of-accounts'
+      );
+      expect(container).toBeTruthy();
+    });
+
+    it('displays the page heading', () => {
+      const { getByText } = renderPage(
+        ChartOfAccountsPage,
+        '/data/chart-of-accounts',
+        '/data/chart-of-accounts'
+      );
+      expect(getByText(/Chart of Accounts/i)).toBeInTheDocument();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // GLAccountAnalysisPage
+  // -----------------------------------------------------------------------
+
+  describe('GLAccountAnalysisPage', () => {
+    it('renders without crashing', () => {
+      const { container } = renderPage(
+        GLAccountAnalysisPage,
+        '/data/gl-account-analysis',
+        '/data/gl-account-analysis'
+      );
+      expect(container).toBeTruthy();
+    });
+
+    it('displays the empty state heading', () => {
+      const { getByText } = renderPage(
+        GLAccountAnalysisPage,
+        '/data/gl-account-analysis',
+        '/data/gl-account-analysis'
+      );
+      expect(getByText(/No GL Data/i)).toBeInTheDocument();
+    });
+  });
+});

@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "name": "finplan",
+      "port": 5173,
+      "hostname": "finplan.localhost"
+    }
+  ],
+  "tls": true,
+  "http2": true
+}

@@ -1,0 +1,19 @@
+{
+  "values": {
+    "swarm.topology": "mesh",
+    "swarm.maxAgents": 10,
+    "swarm.autoScale": true,
+    "memory.persistInterval": 60000,
+    "memory.maxEntries": 10000,
+    "session.autoSave": true,
+    "session.saveInterval": 300000,
+    "logging.level": "info",
+    "logging.format": "json",
+    "security.sandboxEnabled": true,
+    "security.pathValidation": true,
+    "agents.defaultModel": "mimo-v2.5-pro"
+  },
+  "scopes": {},
+  "version": "3.0.0",
+  "updatedAt": "2026-05-16T14:06:14.651Z"
+}
