@@ -27,6 +27,8 @@ export class DriverLibrary {
   private static changes: DriverChange[] = [];
 
   static initialize(): void {
+    this.drivers.clear();
+    this.changes = [];
     const defaults: Driver[] = [
       {
         id: 'headcount',

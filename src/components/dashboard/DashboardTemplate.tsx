@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState } from 'react';
 import { KPICardEnhanced, type KPICardEnhancedProps } from './KPICardEnhanced';
 import { TrafficLightBatch } from './TrafficLightIndicator';
 import { TornadoChart, type TornadoVariable } from './TornadoChart';
@@ -289,7 +289,7 @@ export function DashboardTemplate({
               height={280}
             />
           </div>
-          <ActivityFeed activities={dashboardActivities} />
+          <ActivityFeed maxItems={dashboardActivities.length} />
         </>
       )}
     </div>

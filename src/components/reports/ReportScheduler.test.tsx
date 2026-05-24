@@ -8,12 +8,22 @@ import type { ScheduledReport } from './ReportScheduler';
 
 vi.mock('@/components/ui/Card', () => ({
   Card: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div data-testid="card" className={className}>{children}</div>
+    <div data-testid="card" className={className}>
+      {children}
+    </div>
   ),
 }));
 
 vi.mock('@/components/ui/Modal', () => ({
-  Modal: ({ children, isOpen, title }: { children: React.ReactNode; isOpen: boolean; title: string }) =>
+  Modal: ({
+    children,
+    isOpen,
+    title,
+  }: {
+    children: React.ReactNode;
+    isOpen: boolean;
+    title: string;
+  }) =>
     isOpen ? (
       <div data-testid="modal">
         <h2>{title}</h2>
@@ -28,7 +38,9 @@ vi.mock('@/components/ui/Select', () => ({
       <label>{label}</label>
       <select data-testid={`select-${label}`}>
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
         ))}
       </select>
     </div>
@@ -36,8 +48,20 @@ vi.mock('@/components/ui/Select', () => ({
 }));
 
 vi.mock('@/components/ui/Button', () => ({
-  Button: ({ children, className, size: _size, variant: _variant, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string; size?: string; variant?: string }) => (
-    <button className={className} {...props}>{children}</button>
+  Button: ({
+    children,
+    className,
+    size: _size,
+    variant: _variant,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    className?: string;
+    size?: string;
+    variant?: string;
+  }) => (
+    <button className={className} {...props}>
+      {children}
+    </button>
   ),
 }));
 
@@ -78,7 +102,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     expect(screen.getByText('No schedules yet')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /add schedule/i })).toBeInTheDocument();
@@ -92,7 +116,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     expect(screen.getByText('Monthly P&L')).toBeInTheDocument();
     expect(screen.getByText('Weekly Cash Flow')).toBeInTheDocument();
@@ -106,7 +130,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     expect(screen.getByText('Scheduled Reports')).toBeInTheDocument();
   });
@@ -119,7 +143,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     expect(screen.getByText(/monthly.*pdf/i)).toBeInTheDocument();
     expect(screen.getByText(/weekly.*excel/i)).toBeInTheDocument();
@@ -133,7 +157,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     expect(screen.getByText('Next run: 2026-06-01')).toBeInTheDocument();
     expect(screen.getByText('Next run: 2026-05-24')).toBeInTheDocument();
@@ -147,11 +171,11 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
-    const toggleButtons = screen.getAllByRole('button', { name: '' }).filter(
-      (btn) => btn.className.includes('rounded-full'),
-    );
+    const toggleButtons = screen
+      .getAllByRole('button', { name: '' })
+      .filter((btn) => btn.className.includes('rounded-full'));
     expect(toggleButtons).toHaveLength(2);
   });
 
@@ -164,11 +188,11 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={onToggle}
         availableReports={mockReports}
-      />,
+      />
     );
-    const toggleButtons = screen.getAllByRole('button', { name: '' }).filter(
-      (btn) => btn.className.includes('rounded-full'),
-    );
+    const toggleButtons = screen
+      .getAllByRole('button', { name: '' })
+      .filter((btn) => btn.className.includes('rounded-full'));
     fireEvent.click(toggleButtons[0]);
     expect(onToggle).toHaveBeenCalledWith('sched-1');
   });
@@ -181,7 +205,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     const removeButtons = screen.getAllByText('Remove');
     expect(removeButtons).toHaveLength(2);
@@ -195,7 +219,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: /add schedule/i }));
     expect(screen.getByText('New Schedule')).toBeInTheDocument();
@@ -209,7 +233,7 @@ describe('ReportScheduler', () => {
         onRemove={vi.fn()}
         onToggle={vi.fn()}
         availableReports={mockReports}
-      />,
+      />
     );
     fireEvent.click(screen.getByRole('button', { name: /add schedule/i }));
     expect(screen.getByText('New Schedule')).toBeInTheDocument();

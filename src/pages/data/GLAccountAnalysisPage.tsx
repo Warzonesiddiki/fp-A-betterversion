@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { BarChart3, TrendingUp, TrendingDown, Minus, Search } from 'lucide-react';
+
+import { BarChart3, Search } from 'lucide-react';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -19,7 +19,7 @@ function formatCurrency(n: number): string {
 }
 
 export default function GLAccountAnalysisPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — G L Account Analysis';
@@ -152,8 +152,8 @@ export default function GLAccountAnalysisPage() {
 
       {isLoading && selectedAccountId && (
         <div className="space-y-4">
-          <Skeleton variant="rectangular" height={100} />
-          <Skeleton variant="rectangular" height={200} />
+          <Skeleton variant="rectangular" height="100px" />
+          <Skeleton variant="rectangular" height="200px" />
         </div>
       )}
 

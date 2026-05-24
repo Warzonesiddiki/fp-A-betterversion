@@ -65,7 +65,7 @@ export class WebSocketManager {
   private isIntentionalClose = false;
 
   constructor(config: WebSocketConfig) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.config = { ...DEFAULT_CONFIG, ...config } as Required<WebSocketConfig>;
   }
 
   // --- Public API ---

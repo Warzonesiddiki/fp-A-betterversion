@@ -27,7 +27,6 @@ import {
   LineChart,
   Line,
 } from 'recharts';
-import type { GLEntry as SectorGLEntry } from '@/types/sector-types';
 import type { GLEntry } from '@/types';
 
 function formatCurrency(n: number): string {
@@ -43,17 +42,12 @@ function formatPercent(n: number): string {
   return `${n.toFixed(2)}%`;
 }
 
-/** Bridge glStore entries to the sector-types GLEntry shape the engines expect. */
-function toSectorEntries(entries: readonly GLEntry[]): SectorGLEntry[] {
+/** Bridge glStore entries to the GLEntry shape the engines expect. */
+function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
   return entries.map((e) => ({
-    id: e.id,
-    accountCode: e.accountCode,
-    accountName: e.accountName,
-    amount: e.amount ?? e.debit - e.credit,
-    currency: 'USD',
-    date: e.date,
+    ...e,
+    currency: e.currency ?? 'USD',
     entityId: e.entityId ?? 'default',
-    description: e.description,
   }));
 }
 
@@ -238,9 +232,7 @@ export default function BankingDashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Interest Income</div>
-              <div className="font-semibold">
-                {formatCurrency(nimStats.interestIncome ?? 0)}
-              </div>
+              <div className="font-semibold">{formatCurrency(nimStats.interestIncome ?? 0)}</div>
             </div>
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Interest Expense</div>

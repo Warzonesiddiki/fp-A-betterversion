@@ -30,7 +30,7 @@ import {
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
 import { BondPricingEngine } from '@/engines';
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 /** Derive synthetic bond instruments from GL entries. */
 function deriveBondsFromGL(entries: GLEntry[]) {

@@ -177,12 +177,15 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
               onClick={onClick ? (entry) => onClick(entry.payload) : undefined}
             >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={getBarColor(entry)} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={getBarColor(entry as { color?: string; isTotal?: boolean; raw: number })}
+                />
               ))}
               <LabelList
                 dataKey="raw"
                 position="top"
-                formatter={(val: number) => formatValue(val)}
+                formatter={(val: unknown) => formatValue(Number(val))}
                 style={{ fontSize: '10px', fontWeight: 700, fill: 'var(--text-primary)' }}
               />
             </Bar>

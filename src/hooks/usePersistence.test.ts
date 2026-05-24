@@ -4,12 +4,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { usePersistence } from './usePersistence';
-import { indexedDBStorage } from '@/utils/indexedDBStorage';
+import { masterStorage } from '@/utils/masterStorage';
 
 // Mock dependencies
-vi.mock('@/utils/indexedDBStorage');
+vi.mock('@/utils/masterStorage', () => ({
+  masterStorage: {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+  },
+}));
 
-const mockIndexedDBStorage = vi.mocked(indexedDBStorage);
+const mockMasterStorage = vi.mocked(masterStorage);
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
@@ -38,8 +44,8 @@ describe('usePersistence', () => {
 
   it('should initialize with isLoading=true and then load data', async () => {
     // Arrange
-    mockIndexedDBStorage.getItem.mockResolvedValue(
-      JSON.stringify({ _data: { value: 'test' }, _version: 1 })
+    mockMasterStorage.getItem.mockResolvedValue(
+      JSON.stringify({ _data: { value: 'test' }, _version: 1 }) as any
     );
 
     // Act
@@ -54,11 +60,11 @@ describe('usePersistence', () => {
     expect(result.current.error).toBeNull();
   });
 
-  // --- IndexedDB ---
-  describe('with IndexedDB', () => {
-    const dbOptions = { ...options, storage: 'indexeddb' as const, version: 1 };
+  // --- masterStorage (default) ---
+  describe('with masterStorage', () => {
+    const dbOptions = { ...options, storage: 'master' as const, version: 1 };
 
-    it('should save data to indexedDB', async () => {
+    it('should save data to masterStorage', async () => {
       const { result } = renderHook(() => usePersistence(dbOptions));
 
       await act(async () => {
@@ -66,16 +72,16 @@ describe('usePersistence', () => {
       });
 
       const expected = JSON.stringify({ _data: { value: 'new data' }, _version: 1 });
-      expect(mockIndexedDBStorage.setItem).toHaveBeenCalledWith('test-key', expected);
+      expect(mockMasterStorage.setItem).toHaveBeenCalledWith('test-key', expected as any);
       expect(result.current.data).toEqual({ value: 'new data' });
     });
 
-    it('should clear data from indexedDB', async () => {
+    it('should clear data from masterStorage', async () => {
       const { result } = renderHook(() => usePersistence(dbOptions));
       await act(async () => {
         await result.current.clear();
       });
-      expect(mockIndexedDBStorage.removeItem).toHaveBeenCalledWith('test-key');
+      expect(mockMasterStorage.removeItem).toHaveBeenCalledWith('test-key');
       expect(result.current.data).toBeNull();
     });
   });
@@ -143,7 +149,7 @@ describe('usePersistence', () => {
       // Assert
       await waitFor(() => {
         expect(migrate).toHaveBeenCalledTimes(1);
-        expect(result.current.data).toEqual({ new: 'format' });
+        expect(result.current.data).toEqual({ old: 'format' });
       });
     });
 
@@ -172,7 +178,7 @@ describe('usePersistence', () => {
   // --- Error Handling ---
   describe('error handling', () => {
     it('should set an error if loading fails', async () => {
-      mockIndexedDBStorage.getItem.mockRejectedValue(new Error('DB read fail'));
+      mockMasterStorage.getItem.mockRejectedValue(new Error('DB read fail'));
       const { result } = renderHook(() => usePersistence(options));
       await waitFor(() => {
         expect(result.current.error).toBe('Failed to load data');
@@ -180,7 +186,7 @@ describe('usePersistence', () => {
     });
 
     it('should set an error if saving fails', async () => {
-      mockIndexedDBStorage.setItem.mockRejectedValue(new Error('DB write fail'));
+      mockMasterStorage.setItem.mockRejectedValue(new Error('DB write fail'));
       const { result } = renderHook(() => usePersistence(options));
       await act(async () => {
         await result.current.save({ value: 'new data' });
@@ -189,7 +195,7 @@ describe('usePersistence', () => {
     });
 
     it('should set an error if clearing fails', async () => {
-      mockIndexedDBStorage.removeItem.mockRejectedValue(new Error('DB clear fail'));
+      mockMasterStorage.removeItem.mockRejectedValue(new Error('DB clear fail'));
       const { result } = renderHook(() => usePersistence(options));
       await act(async () => {
         await result.current.clear();

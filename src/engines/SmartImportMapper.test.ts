@@ -29,9 +29,9 @@ describe('SmartImportMapper', () => {
   describe('validateMappings', () => {
     it('validates complete mappings', () => {
       const mappings = [
-        { source: 'Account', target: 'accountId', confidence: 0.95 },
-        { source: 'Date', target: 'date', confidence: 0.9 },
-        { source: 'Amount', target: 'amount', confidence: 0.85 },
+        { sourceColumn: 'Account', targetField: 'accountId', confidence: 0.95 },
+        { sourceColumn: 'Date', targetField: 'date', confidence: 0.9 },
+        { sourceColumn: 'Amount', targetField: 'amount', confidence: 0.85 },
       ];
       const requiredFields = ['accountId', 'date', 'amount'];
       const result = SmartImportMapper.validateMappings(mappings, requiredFields);
@@ -39,7 +39,7 @@ describe('SmartImportMapper', () => {
     });
 
     it('identifies missing required fields', () => {
-      const mappings = [{ source: 'Account', target: 'accountId', confidence: 0.95 }];
+      const mappings = [{ sourceColumn: 'Account', targetField: 'accountId', confidence: 0.95 }];
       const requiredFields = ['accountId', 'date', 'amount'];
       const result = SmartImportMapper.validateMappings(mappings, requiredFields);
       expect(result).toBeDefined();
@@ -53,9 +53,9 @@ describe('SmartImportMapper', () => {
         ['ACC002', '2026-01-02', '2000'],
       ];
       const mappings = [
-        { source: '0', target: 'accountId', confidence: 0.95 },
-        { source: '1', target: 'date', confidence: 0.9 },
-        { source: '2', target: 'amount', confidence: 0.85 },
+        { sourceColumn: '0', targetField: 'accountId', confidence: 0.95 },
+        { sourceColumn: '1', targetField: 'date', confidence: 0.9 },
+        { sourceColumn: '2', targetField: 'amount', confidence: 0.85 },
       ];
       const result = SmartImportMapper.transform(data, mappings);
       expect(result).toBeDefined();

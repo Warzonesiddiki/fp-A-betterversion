@@ -1,4 +1,4 @@
-﻿import { useLocation, useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Skeleton } from '@/components/ui/Skeleton';
+
 import {
   ArrowLeft,
   Undo2,
@@ -30,7 +30,7 @@ function formatCurrency(n: number): string {
 }
 
 export default function BudgetDetailPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -45,7 +45,8 @@ export default function BudgetDetailPage() {
     lineItems,
     activeBudgetId,
     setActiveBudget,
-    updateCell,
+    updateLineItem,
+    updateBudget,
     undo,
     redo,
     historyIndex,
@@ -53,7 +54,6 @@ export default function BudgetDetailPage() {
     submitBudget,
     approveBudget,
     rejectBudget,
-    updateBudget,
   } = useBudgetStore();
   const { accounts } = useGLStore();
 
@@ -105,10 +105,10 @@ export default function BudgetDetailPage() {
   const handleCellSave = useCallback(() => {
     if (editCell) {
       const val = parseFloat(editValue) || 0;
-      updateCell(editCell.lineItemId, val);
+      updateLineItem(editCell.lineItemId, { amount: val });
       setEditCell(null);
     }
-  }, [editCell, editValue, updateCell]);
+  }, [editCell, editValue, updateLineItem]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

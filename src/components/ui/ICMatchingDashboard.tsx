@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { Badge } from './Badge';
 import { Select } from './Select';
 import { Input } from './Input';
-import { DataTable } from './DataTable';
+
 import { cn } from '@/utils/cn';
 import {
   ICMatchingEngine,
@@ -127,7 +127,7 @@ export function ICMatchingDashboard({
     for (const t of allTransactions) {
       accountNames[t.accountCode] = t.accountName;
     }
-    const eliminations = engine.generateEliminations(matches, accountNames);
+    const _eliminations = engine.generateEliminations(matches, accountNames);
     onGenerateEliminations?.(matches);
   }, [engine, matches, allTransactions, onGenerateEliminations]);
 

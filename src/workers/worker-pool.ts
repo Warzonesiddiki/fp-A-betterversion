@@ -316,3 +316,13 @@ export function createBatchCalcPool(options?: WorkerPoolOptions): WorkerPool {
     { maxWorkers: 2, timeoutMs: 30000, ...options }
   );
 }
+
+/**
+ * Create a worker pool for heavy storage operations (JSON stringify/parse).
+ */
+export function createStoragePool(options?: WorkerPoolOptions): WorkerPool {
+  return new WorkerPool(
+    () => new Worker(new URL('./storage.worker.ts', import.meta.url), { type: 'module' }),
+    { maxWorkers: 1, timeoutMs: 30000, ...options } // maxWorkers: 1 to preserve order if needed, though tasks are named
+  );
+}

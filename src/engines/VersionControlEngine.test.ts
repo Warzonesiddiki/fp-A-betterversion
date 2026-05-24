@@ -744,7 +744,7 @@ describe('VersionControlEngine', () => {
 
     it('should preserve branch relationships after deserialization', () => {
       const main = engine.createBranch('main', 'Main', 'admin');
-      const feature = engine.createBranch('feature', 'Feature', 'analyst', main.id);
+      const _feature = engine.createBranch('feature', 'Feature', 'analyst', main.id);
 
       const serialized = engine.serialize();
       const restored = VersionControlEngine.deserialize(serialized);

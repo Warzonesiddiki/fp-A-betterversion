@@ -1,0 +1,35 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('@/store/glStore', () => ({
+  useGLStore: vi.fn(() => ({ entries: [] })),
+}));
+vi.mock('@/store/collaborationStore', () => ({
+  useCollaborationStore: vi.fn(() => ({ comments: [], tasks: [], activityLog: [] })),
+}));
+vi.mock('lucide-react', () => ({
+  Users: () => <span data-testid="mock-icon" />,
+  MessageSquare: () => <span data-testid="mock-icon" />,
+  CheckSquare: () => <span data-testid="mock-icon" />,
+  Activity: () => <span data-testid="mock-icon" />,
+}));
+
+import { render, screen } from '@/test/testUtils';
+import { TeamWorkspace } from '@/pages/collaboration/TeamWorkspace';
+
+describe('TeamWorkspace', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders without crashing', () => {
+    render(<TeamWorkspace />);
+    expect(screen.getByRole('main')).toBeInTheDocument();
+  });
+
+  it('shows empty state when no entries', () => {
+    render(<TeamWorkspace />);
+    expect(screen.getByText(/No Team Workspace Data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Import GL data to view team workspace/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Import GL data/i })).toBeInTheDocument();
+  });
+});

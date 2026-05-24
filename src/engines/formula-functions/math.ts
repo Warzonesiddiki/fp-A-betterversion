@@ -103,13 +103,13 @@ export function COUNTIF(range: number | number[], criteria: number): number {
   }
   return c;
 }
-export function SUMIFS(vals: number, ...args: number[]): number {
+export function SUMIFS(vals: number | number[], ...args: (number | number[])[]): number {
   const v = Array.isArray(vals) ? vals : [vals];
   let s = 0;
   for (let i = 0; i < v.length; i++) {
     let match = true;
     for (let j = 0; j < args.length; j += 2) {
-      const crit = Array.isArray(args[j]) ? args[j] : [args[j]];
+      const crit = Array.isArray(args[j]) ? (args[j] as number[]) : [args[j] as number];
       if (crit[i] !== args[j + 1]) {
         match = false;
         break;
@@ -119,13 +119,13 @@ export function SUMIFS(vals: number, ...args: number[]): number {
   }
   return s;
 }
-export function COUNTIFS(...args: number[]): number {
-  const first = Array.isArray(args[0]) ? args[0] : [args[0]];
+export function COUNTIFS(...args: (number | number[])[]): number {
+  const first = Array.isArray(args[0]) ? (args[0] as number[]) : [args[0] as number];
   let c = 0;
   for (let i = 0; i < first.length; i++) {
     let match = true;
     for (let j = 0; j < args.length; j += 2) {
-      const crit = Array.isArray(args[j]) ? args[j] : [args[j]];
+      const crit = Array.isArray(args[j]) ? (args[j] as number[]) : [args[j] as number];
       if (crit[i] !== args[j + 1]) {
         match = false;
         break;
@@ -135,14 +135,14 @@ export function COUNTIFS(...args: number[]): number {
   }
   return c;
 }
-export function AVERAGEIFS(vals: number, ...args: number[]): number {
+export function AVERAGEIFS(vals: number | number[], ...args: (number | number[])[]): number {
   const v = Array.isArray(vals) ? vals : [vals];
   let s = 0,
     c = 0;
   for (let i = 0; i < v.length; i++) {
     let match = true;
     for (let j = 0; j < args.length; j += 2) {
-      const crit = Array.isArray(args[j]) ? args[j] : [args[j]];
+      const crit = Array.isArray(args[j]) ? (args[j] as number[]) : [args[j] as number];
       if (crit[i] !== args[j + 1]) {
         match = false;
         break;

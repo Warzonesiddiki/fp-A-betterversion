@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { usePeriods } from '@/hooks/usePeriods';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useForecastStore } from '@/store/forecastStore';
 import { Button } from '@/components/ui/Button';
@@ -8,8 +7,6 @@ import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { HeatmapChart, HeatmapDataPoint } from '@/components/charts/HeatmapChart';
 import { Plus, Eye, TrendingUp } from 'lucide-react';
-import { IncrementalCalcEngine } from '@/engines/IncrementalCalcEngine';
-import { ForecastReconciliationEngine } from '@/engines/ForecastReconciliationEngine';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -33,7 +30,7 @@ function formatRelativeTime(timestamp: string): string {
 }
 
 export default function ForecastListPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Forecast List';
@@ -41,7 +38,7 @@ export default function ForecastListPage() {
 
   const { forecasts } = useForecastStore();
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
+  const [search, _setSearch] = useState('');
 
   const filtered = useMemo(() => {
     let list = forecasts;

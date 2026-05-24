@@ -18,7 +18,7 @@ export function openDB(): Promise<IDBDatabase> {
   });
 }
 
-export const indexedDBStorage: PersistStorage<any> = {
+export const indexedDBStorage: PersistStorage<any> & { isFirstRun: () => Promise<boolean> } = {
   isFirstRun: async (): Promise<boolean> => {
     try {
       const db = await openDB();
@@ -48,7 +48,7 @@ export const indexedDBStorage: PersistStorage<any> = {
   setItem: async (name, value) => {
     try {
       const db = await openDB();
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         const tx = db.transaction('stores', 'readwrite');
         tx.objectStore('stores').put({ id: name, value });
         tx.oncomplete = () => resolve();
@@ -61,7 +61,7 @@ export const indexedDBStorage: PersistStorage<any> = {
   removeItem: async (name) => {
     try {
       const db = await openDB();
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         const tx = db.transaction('stores', 'readwrite');
         tx.objectStore('stores').delete(name);
         tx.oncomplete = () => resolve();

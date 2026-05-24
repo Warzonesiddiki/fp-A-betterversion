@@ -1,16 +1,25 @@
 import { describe, it, expect } from 'vitest';
-import { HealthcareEngine, type GLEntry } from './HealthcareEngine';
+import { HealthcareEngine } from './HealthcareEngine';
+import type { GLEntry } from '@/types';
 
-// Helper to create GLEntry with sector-types shape
 function gl(accountCode: string, amount: number, overrides: Partial<GLEntry> = {}): GLEntry {
+  const id = `gl-${accountCode}-${Math.random().toString(36).slice(2, 6)}`;
   return {
-    id: `gl-${accountCode}-${Math.random().toString(36).slice(2, 6)}`,
+    id,
+    accountId: id,
     accountCode,
     accountName: `Account ${accountCode}`,
-    amount,
-    currency: 'USD',
+    period: '2026-01',
+    periodName: '2026-01',
+    debit: amount,
+    credit: 0,
+    netChange: amount,
     date: '2026-01-15',
+    amount,
+    description: '',
+    reference: id,
     entityId: 'entity-1',
+    currency: 'USD',
     ...overrides,
   };
 }

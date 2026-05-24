@@ -33,6 +33,9 @@ import { ICReconciliationReport } from '@/components/ui/ICReconciliationReport';
 const mockReport = {
   period: 'Q1 2026',
   generatedAt: '2026-03-31T00:00:00Z',
+  totalDifferences: 50500,
+  withinToleranceCount: 1,
+  outsideToleranceCount: 1,
   entityPairs: [
     {
       entityA: 'Entity A',
@@ -44,7 +47,7 @@ const mockReport = {
       difference: 500,
       percentageDifference: 0.5,
       withinTolerance: true,
-      matchStatus: 'matched',
+      matchStatus: 'matched' as const,
     },
     {
       entityA: 'Entity A',
@@ -56,11 +59,9 @@ const mockReport = {
       difference: 50000,
       percentageDifference: 10,
       withinTolerance: false,
-      matchStatus: 'unmatched',
+      matchStatus: 'unmatched' as const,
     },
   ],
-  withinToleranceCount: 1,
-  outsideToleranceCount: 1,
 };
 
 describe('ICReconciliationReport', () => {

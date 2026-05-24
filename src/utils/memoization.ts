@@ -68,10 +68,10 @@ export function useDebounce<T>(value: T, delay: number): T {
  */
 export function useThrottle<T extends (...args: unknown[]) => unknown>(fn: T, delay: number): T {
   const lastCall = useRef(0);
-  const lastCallTimer = useRef<ReturnType<typeof setTimeout>>();
+  const lastCallTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   return useCallback(
-    ((...args: unknown[]) => {
+    (...args: unknown[]) => {
       const now = Date.now();
       if (now - lastCall.current >= delay) {
         lastCall.current = now;
@@ -86,9 +86,9 @@ export function useThrottle<T extends (...args: unknown[]) => unknown>(fn: T, de
           delay - (now - lastCall.current)
         );
       }
-    }) as T,
-    [fn, delay]
-  );
+    },
+    [fn, delay, lastCall, lastCallTimer]
+  ) as unknown as T;
 }
 
 /**
@@ -102,14 +102,18 @@ export function useMemoizedComputation<T>(
 ): T {
   const ref = useRef<{ deps: unknown[]; value: T } | null>(null);
 
+  // eslint-disable-next-line react-hooks/refs
   if (!ref.current || !deps.every((dep, i) => dep === ref.current!.deps[i])) {
     const newValue = compute();
+    // eslint-disable-next-line react-hooks/refs
     if (!ref.current || !isEqual(ref.current.value, newValue)) {
       ref.current = { deps, value: newValue };
     } else {
+      // eslint-disable-next-line react-hooks/refs
       ref.current.deps = deps;
     }
   }
 
+  // eslint-disable-next-line react-hooks/refs
   return ref.current.value;
 }

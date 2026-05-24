@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useKeyboardShortcuts, type ShortcutDef } from '@/hooks/useKeyboardShortcuts';
 import { CommandPalette } from './CommandPalette';

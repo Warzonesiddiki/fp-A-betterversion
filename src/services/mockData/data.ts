@@ -1,4 +1,4 @@
-﻿import type { GLAccount, ImportJob } from '@/types';
+import type { GLAccount, ImportJob } from '@/types';
 
 export const mockGLAccounts: GLAccount[] = [
   {

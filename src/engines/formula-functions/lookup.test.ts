@@ -41,7 +41,7 @@ describe('Lookup & Array Functions', () => {
 
   describe('SORTBY', () => {
     it('sorts values by another array', () => {
-      expect(SORTBY([10, 20, 30], [3, 1, 2])).toEqual([20, 30, 10]);
+      expect(SORTBY([10, 20, 30] as any, [3, 1, 2] as any)).toEqual([20, 30, 10]);
     });
   });
 

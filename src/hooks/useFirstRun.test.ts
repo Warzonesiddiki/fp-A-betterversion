@@ -17,14 +17,32 @@ vi.mock('@/utils/masterStorage', () => ({
   },
 }));
 
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString();
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
 describe('useFirstRun', () => {
   beforeEach(() => {
-    localStorage.clear();
+    localStorageMock.clear();
     vi.clearAllMocks();
   });
 
   it('should return false if localStorage has setup-complete', async () => {
-    localStorage.setItem('finplan-setup-complete', 'true');
+    localStorageMock.setItem('finplan-setup-complete', 'true');
     const { result } = renderHook(() => useFirstRun());
 
     await act(async () => {
@@ -60,12 +78,12 @@ describe('useFirstRun', () => {
     });
 
     expect(result.current.isFirstRun).toBe(false);
-    expect(localStorage.getItem('finplan-setup-complete')).toBe('true');
+    expect(localStorageMock.getItem('finplan-setup-complete')).toBe('true');
     expect(mockSetItem).toHaveBeenCalledWith('finplan-setup-complete', '"true"');
   });
 
   it('should reset setup and update state', async () => {
-    localStorage.setItem('finplan-setup-complete', 'true');
+    localStorageMock.setItem('finplan-setup-complete', 'true');
     const { result } = renderHook(() => useFirstRun());
 
     await act(async () => {
@@ -77,7 +95,7 @@ describe('useFirstRun', () => {
     });
 
     expect(result.current.isFirstRun).toBe(true);
-    expect(localStorage.getItem('finplan-setup-complete')).toBeNull();
+    expect(localStorageMock.getItem('finplan-setup-complete')).toBeNull();
     expect(mockRemoveItem).toHaveBeenCalledWith('finplan-setup-complete');
   });
 });

@@ -4,9 +4,11 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+import { Readable } from 'stream';
+import { sanitizeForDisplay } from '@/utils/security';
 
-export type FileFormat = 'xlsx' | 'xls' | 'csv';
+export type FileFormat = 'xlsx' | 'csv';
 
 export interface ParsedSheet {
   name: string;
@@ -158,11 +160,11 @@ function matchKeyword(header: string, keywords: string[]): number {
 }
 
 function isDateString(v: unknown): boolean {
+  if (v instanceof Date) return true;
   if (typeof v !== 'string' && typeof v !== 'number') return false;
   const s = String(v);
   if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(s)) return true;
   if (/^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/.test(s)) return true;
-  if (v instanceof Date) return true;
   // Excel serial date numbers
   if (typeof v === 'number' && v > 25569 && v < 60000) return true;
   return false;
@@ -182,22 +184,9 @@ function parseNumeric(v: unknown): number {
   return isNaN(n) ? 0 : n;
 }
 
-function excelDateToJSDate(serial: number): Date {
-  const utc_days = Math.floor(serial - 25569);
-  const utc_value = utc_days * 86400;
-  const fractional = serial - Math.floor(serial);
-  return new Date((utc_value + Math.round(fractional * 86400)) * 1000);
-}
-
-function formatExcelDate(v: unknown): string {
+function formatValue(v: unknown): string {
   if (v instanceof Date) return v.toISOString().slice(0, 10);
-  if (typeof v === 'number' && v > 25569 && v < 60000) {
-    return excelDateToJSDate(v).toISOString().slice(0, 10);
-  }
-  if (typeof v === 'string') {
-    const d = new Date(v);
-    if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  }
+  if (v === null || v === undefined) return '';
   return String(v);
 }
 
@@ -209,31 +198,49 @@ export class ExcelImportEngine {
   async parseFile(file: File): Promise<ParsedWorkbook> {
     const buffer = await file.arrayBuffer();
     const format = this.detectFormat(file.name);
-    const workbook = XLSX.read(buffer, {
-      type: 'array',
-      cellDates: true,
-      cellNF: false,
-      cellText: false,
-    });
+    const workbook = new ExcelJS.Workbook();
 
-    const sheets: ParsedSheet[] = workbook.SheetNames.map((name) => {
-      const worksheet = workbook.Sheets[name];
-      const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, {
-        defval: '',
-        blankrows: false,
+    if (format === 'csv') {
+      // For CSV, we need to handle it differently as exceljs readBuffer is for xlsx
+      // Actually exceljs supports csv, but often better via stream or special method
+      await workbook.csv.read(Readable.from(Buffer.from(buffer)));
+    } else {
+      await workbook.xlsx.load(buffer);
+    }
+
+    const sheets: ParsedSheet[] = [];
+
+    workbook.eachSheet((worksheet) => {
+      const rows: Record<string, unknown>[] = [];
+      let headers: string[] = [];
+
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) {
+          headers = (row.values as any[]).slice(1).map(String);
+          return;
+        }
+
+        const rowData: Record<string, unknown> = {};
+        const values = row.values as any[];
+        headers.forEach((header, index) => {
+          // values[0] is empty, values[1] is first col
+          const val = values[index + 1];
+          // exceljs sometimes returns objects for formulas or shared strings
+          if (val && typeof val === 'object' && 'result' in val) {
+            rowData[header] = val.result;
+          } else {
+            rowData[header] = val;
+          }
+        });
+        rows.push(rowData);
       });
 
-      if (jsonData.length === 0) {
-        return { name, headers: [], rows: [], rowCount: 0 };
-      }
-
-      const headers = Object.keys(jsonData[0]);
-      return {
-        name,
+      sheets.push({
+        name: worksheet.name,
         headers,
-        rows: jsonData,
-        rowCount: jsonData.length,
-      };
+        rows,
+        rowCount: rows.length,
+      });
     });
 
     const totalRows = sheets.reduce((sum, s) => sum + s.rowCount, 0);
@@ -405,17 +412,17 @@ export class ExcelImportEngine {
       }
 
       mapped.push({
-        date: formatExcelDate(dateVal),
-        accountCode: String(accountCodeVal).trim(),
-        accountName: String(getVal('accountName') ?? '').trim(),
+        date: formatValue(dateVal),
+        accountCode: sanitizeForDisplay(String(accountCodeVal).trim()),
+        accountName: sanitizeForDisplay(String(getVal('accountName') ?? '')),
         debit: Math.abs(debit),
         credit: Math.abs(credit),
-        amount: amount || debit - credit,
-        description: String(getVal('description') ?? '').trim(),
-        reference: String(getVal('reference') ?? '').trim(),
-        department: String(getVal('department') ?? '').trim(),
-        entity: String(getVal('entity') ?? '').trim(),
-        period: String(getVal('period') ?? '').trim(),
+        amount: columnMap.has('amount') ? amount : debit - credit,
+        description: sanitizeForDisplay(String(getVal('description') ?? '')),
+        reference: sanitizeForDisplay(String(getVal('reference') ?? '')),
+        department: sanitizeForDisplay(String(getVal('department') ?? '')),
+        entity: sanitizeForDisplay(String(getVal('entity') ?? '')),
+        period: sanitizeForDisplay(String(getVal('period') ?? '')),
       });
     }
 
@@ -449,14 +456,6 @@ export class ExcelImportEngine {
       });
     }
 
-    // Check for duplicate account codes
-    const accountCodes = new Map<string, number[]>();
-    rows.forEach((r, i) => {
-      const existing = accountCodes.get(r.accountCode) || [];
-      existing.push(i + 2);
-      accountCodes.set(r.accountCode, existing);
-    });
-
     return {
       valid: errors.length === 0,
       errors,
@@ -472,8 +471,8 @@ export class ExcelImportEngine {
   private detectFormat(fileName: string): FileFormat {
     const ext = fileName.split('.').pop()?.toLowerCase();
     if (ext === 'xlsx') return 'xlsx';
-    if (ext === 'xls') return 'xls';
-    return 'csv';
+    if (ext === 'csv') return 'csv';
+    throw new Error(`Unsupported file format: .${ext}. Please use .xlsx or .csv.`);
   }
 
   getPreview(rows: Record<string, unknown>[], count: number = 10): Record<string, unknown>[] {

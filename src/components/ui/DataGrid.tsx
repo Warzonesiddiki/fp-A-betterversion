@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useCallback, useState } from 'react';
+import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import {
   AllCommunityModule,
@@ -57,6 +57,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
   enableRowGrouping = false,
 }) => {
   const gridRef = useRef<AgGridReact>(null);
+  const findInputRef = useRef<HTMLInputElement>(null);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showFindReplace, setShowFindReplace] = useState(false);
@@ -65,6 +66,12 @@ export const DataGrid: React.FC<DataGridProps> = ({
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
   const [groupColumn, setGroupColumn] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (showFindReplace) {
+      findInputRef.current?.focus();
+    }
+  }, [showFindReplace]);
 
   const defaultColDef = useMemo<ColDef>(
     () => ({
@@ -133,17 +140,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
     });
   }, [columns]);
 
-  const handleSelectionChanged = useCallback(
-    (event: SelectionChangedEvent) => {
-      if (onSelectionChanged) {
-        onSelectionChanged(event.api.getSelectedRows());
-      }
-      updateSelectionStats();
-    },
-    [onSelectionChanged, updateSelectionStats]
-  );
-
-  // Selection aggregation (Sum/Avg/Count/Min/Max)
   const [selectionStats, setSelectionStats] = useState<{
     sum: number;
     avg: number;
@@ -182,6 +178,16 @@ export const DataGrid: React.FC<DataGridProps> = ({
       max: Math.max(...numericValues),
     });
   }, [columns]);
+
+  const handleSelectionChanged = useCallback(
+    (event: SelectionChangedEvent) => {
+      if (onSelectionChanged) {
+        onSelectionChanged(event.api.getSelectedRows());
+      }
+      updateSelectionStats();
+    },
+    [onSelectionChanged, updateSelectionStats]
+  );
 
   // Find & Replace
   const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -434,7 +440,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
                   role="menu"
                 >
                   {columns.map((col) => (
-                    <label
+                    <div
                       key={col.field}
                       className="flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--bg-muted)] cursor-pointer"
                       role="menuitemcheckbox"
@@ -447,7 +453,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
                         className="rounded"
                       />
                       <span>{col.headerName}</span>
-                    </label>
+                    </div>
                   ))}
                 </div>
               )}
@@ -506,13 +512,13 @@ export const DataGrid: React.FC<DataGridProps> = ({
           aria-label="Find and Replace"
         >
           <input
+            ref={findInputRef}
             type="text"
             value={findText}
             onChange={(e) => setFindText(e.target.value)}
             placeholder="Find..."
             className="px-2 py-1 text-sm border border-[var(--border-subtle)] rounded w-40"
             aria-label="Find text"
-            autoFocus
           />
           <button
             onClick={handleFind}

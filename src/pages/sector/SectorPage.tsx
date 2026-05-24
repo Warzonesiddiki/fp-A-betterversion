@@ -97,13 +97,17 @@ export default function SectorPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = `FinPlan Pro — ${sectorConfig.name} Analysis`;
-  }, [sectorConfig.name]);
+    if (sectorConfig) {
+      document.title = `FinPlan Pro — ${sectorConfig.name} Analysis`;
+    }
+  }, [sectorConfig?.name]);
 
   const stats = useMemo(() => computeSectorStats(entries), [entries]);
 
   // Compute KPI actuals from GL entries
   const kpiActuals = useMemo(() => {
+    if (!sectorConfig) return {};
+
     const totalRevenue = entries
       .filter((e) => e.credit > e.debit)
       .reduce((s, e) => s + e.credit, 0);
@@ -125,7 +129,7 @@ export default function SectorPage() {
       },
       {} as Record<string, number>
     );
-  }, [entries, sectorConfig.defaultKPIs]);
+  }, [entries, sectorConfig?.defaultKPIs]);
 
   const tableData = useMemo(
     () =>
@@ -146,6 +150,15 @@ export default function SectorPage() {
       navigate('/data/gl-upload');
     }
   };
+
+  if (!sectorConfig) {
+    return (
+      <main className="p-12 text-center" role="main" aria-label="Loading Sector">
+        <Layers className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <h2 className="text-xl font-semibold mb-2">Loading Sector...</h2>
+      </main>
+    );
+  }
 
   if (entries.length === 0) {
     return (

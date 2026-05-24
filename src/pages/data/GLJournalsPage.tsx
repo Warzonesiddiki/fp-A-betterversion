@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
-import { Skeleton } from '@/components/ui/Skeleton';
+
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
 import { BookOpen, ChevronLeft, ChevronRight, Download, Search } from 'lucide-react';
@@ -35,7 +35,7 @@ function getLastDayOfMonth(): string {
 }
 
 export default function GLJournalsPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — G L Journals';

@@ -16,11 +16,11 @@ export interface DragFillProps {
   className?: string;
 }
 
-interface FillSuggestion {
-  mode: FillMode;
-  label: string;
-  values: (number | string)[];
-}
+// interface FillSuggestion {
+//   mode: FillMode;
+//   label: string;
+//   values: (number | string)[];
+// }
 
 function detectFillPattern(values: (number | string)[]): FillMode {
   if (values.length < 2) return 'copy';
@@ -29,7 +29,7 @@ function detectFillPattern(values: (number | string)[]): FillMode {
   if (nums.length < 2) return 'copy';
 
   // Check for arithmetic series (constant difference)
-  const diffs = [];
+  const diffs: number[] = [];
   for (let i = 1; i < nums.length; i++) {
     diffs.push(nums[i] - nums[i - 1]);
   }
@@ -37,7 +37,7 @@ function detectFillPattern(values: (number | string)[]): FillMode {
   if (allSameDiff && diffs[0] !== 0) return 'linear';
 
   // Check for geometric series (constant ratio)
-  const ratios = [];
+  const ratios: number[] = [];
   for (let i = 1; i < nums.length; i++) {
     if (nums[i - 1] !== 0) {
       ratios.push(nums[i] / nums[i - 1]);
@@ -172,15 +172,24 @@ export function DragFill({
         )}
         onMouseDown={handleMouseDown}
         role="button"
+        tabIndex={0}
         aria-label="Drag to fill cells"
         aria-haspopup="menu"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') handleMouseDown(e as unknown as React.MouseEvent);
+        }}
       />
 
       {/* Fill mode menu */}
       {showMenu && (
         <div
           className="absolute z-50 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] rounded-lg shadow-xl py-1.5 min-w-[160px] top-full right-0 mt-1"
+          role="menu"
+          tabIndex={-1}
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setShowMenu(false);
+          }}
         >
           <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
             Fill Options

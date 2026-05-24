@@ -3,11 +3,17 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 vi.mock('./ProgressStepper', () => ({
-  ProgressStepper: ({ steps, currentStep }: { steps: string[]; currentStep: number }) => (
+  ProgressStepper: ({
+    steps,
+    currentStep,
+  }: {
+    steps: { label: string; status: string }[];
+    currentStep: number;
+  }) => (
     <div data-testid="progress-stepper">
       {steps.map((s, i) => (
-        <span key={s} className={i === currentStep ? 'active' : ''}>
-          {s}
+        <span key={s.label} className={i === currentStep ? 'active' : ''}>
+          {s.label}
         </span>
       ))}
     </div>

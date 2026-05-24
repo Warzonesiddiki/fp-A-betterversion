@@ -51,8 +51,9 @@ export function ComboChart({
   onClick,
 }: ComboChartProps) {
   const effectiveXKey = xAxisKey ?? xKey ?? '';
-  const bars = barsProp ?? (yKeys ? yKeys.map(y => ({ dataKey: y.key, fill: y.color, name: y.name })) : []);
-  const lines = linesProp ?? [];
+  const bars: ComboBar[] =
+    barsProp ?? (yKeys ? yKeys.map((y) => ({ key: y.key, color: y.color, name: y.name })) : []);
+  const lines: ComboLine[] = linesProp ?? [];
   if (loading) {
     return (
       <div className={className}>
@@ -88,7 +89,8 @@ export function ComboChart({
             onClick
               ? (e) => {
                   const p = e as unknown as { activePayload?: Array<{ payload?: unknown }> };
-                  p?.activePayload?.[0]?.payload && onClick(p.activePayload[0].payload);
+                  if (p?.activePayload?.[0]?.payload)
+                    onClick(p.activePayload[0].payload as Record<string, unknown>);
                 }
               : undefined
           }

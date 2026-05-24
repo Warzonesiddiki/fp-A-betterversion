@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { FileDropZone } from '@/components/ui/FileDropZone';
@@ -21,6 +21,7 @@ import {
   Undo2,
   Database,
   FileSpreadsheet,
+  LayoutDashboard,
 } from 'lucide-react';
 
 const excelEngine = new ExcelImportEngine();
@@ -62,7 +63,7 @@ function formatFileSize(bytes: number): string {
 }
 
 export default function GLUploadPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — G L Upload';
@@ -313,7 +314,7 @@ export default function GLUploadPage() {
       setImportStatus('idle');
       return;
     }
-    const { duplicates, newEntries: filteredNewEntries } = checkDuplicates(
+    const { duplicates, newEntries: _filteredNewEntries } = checkDuplicates(
       validRows.map((r, i) => ({
         id: `tmp-${i}`,
         accountId: r.accountCode,
@@ -324,6 +325,7 @@ export default function GLUploadPage() {
         debit: r.debit,
         credit: r.credit,
         netChange: r.debit - r.credit,
+        amount: r.debit - r.credit,
         date: r.date,
         description: r.description,
         reference: r.reference,
@@ -346,6 +348,7 @@ export default function GLUploadPage() {
           debit: r.debit,
           credit: r.credit,
           netChange: r.debit - r.credit,
+          amount: r.debit - r.credit,
           date: r.date,
           description: r.description,
           reference: r.reference,
@@ -389,33 +392,19 @@ export default function GLUploadPage() {
     setImportError,
   ]);
 
+  const getStepStatus = (index: number): 'done' | 'current' | 'pending' => {
+    if (step > index) return 'done';
+    if (step === index) return 'current';
+    return 'pending';
+  };
+
   const steps = useMemo(
     () => [
-      {
-        label: 'Upload',
-        status: step > 0 ? 'done' : step === 0 ? 'current' : ('pending' as const),
-        description: 'Select your file',
-      },
-      {
-        label: 'Map',
-        status: step > 1 ? 'done' : step === 1 ? 'current' : ('pending' as const),
-        description: 'Match columns',
-      },
-      {
-        label: 'Preview',
-        status: step > 2 ? 'done' : step === 2 ? 'current' : ('pending' as const),
-        description: 'Validate data',
-      },
-      {
-        label: 'Import',
-        status: step > 3 ? 'done' : step === 3 ? 'current' : ('pending' as const),
-        description: 'Processing',
-      },
-      {
-        label: 'Done',
-        status: step > 4 ? 'done' : step === 4 ? 'current' : ('pending' as const),
-        description: 'Complete',
-      },
+      { label: 'Upload', status: getStepStatus(0), description: 'Select your file' },
+      { label: 'Map', status: getStepStatus(1), description: 'Match columns' },
+      { label: 'Preview', status: getStepStatus(2), description: 'Validate data' },
+      { label: 'Import', status: getStepStatus(3), description: 'Processing' },
+      { label: 'Done', status: getStepStatus(4), description: 'Complete' },
     ],
     [step]
   );
@@ -625,13 +614,17 @@ export default function GLUploadPage() {
                 {importedErrorCount > 0 && ` with ${importedErrorCount} warnings`}.
               </p>
               <div className="flex gap-3 justify-center mb-8">
-                <Button onClick={resetWizard}>
+                <Button variant="outline" onClick={resetWizard}>
                   <Upload className="h-4 w-4 mr-2" />
-                  Import Another File
+                  Import Another
                 </Button>
-                <Button variant="secondary" onClick={() => navigate('/data')}>
+                <Button variant="outline" onClick={() => navigate('/data')}>
                   <Database className="h-4 w-4 mr-2" />
                   View Data
+                </Button>
+                <Button onClick={() => navigate('/dashboard')}>
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Go to Dashboard
                 </Button>
               </div>
             </div>

@@ -106,8 +106,13 @@ describe('Report Builder Formulas', () => {
 
   describe('buildBindingKey', () => {
     it('builds key from binding', () => {
-      const key = buildBindingKey({ entity: 'ent1', period: '2026-01', account: 'acc1' });
-      expect(key).toBe('ent1|2026-01|acc1');
+      const key = buildBindingKey({
+        coords: 'A1',
+        measure: 'revenue',
+        entityId: 'ent1',
+        periodId: '2026-01',
+      });
+      expect(key).toBe('A1.revenue.ent1.2026-01');
     });
   });
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -15,7 +15,9 @@ import {
   Flame,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { CashFlowWaterfallEngine } from '@/engines/CashFlowWaterfallEngine';
+
+const getRandom = () => Math.random();
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -86,8 +88,8 @@ export default function CashForecastPage() {
     const weeks = Array.from({ length: 13 }, (_, i) => `W${i + 1}`);
     const balance = inflows - outflows;
     const forecast = weeks.map((w, i) => {
-      const weekInflow = (inflows / 13) * (0.8 + Math.random() * 0.4);
-      const weekOutflow = (outflows / 13) * (0.8 + Math.random() * 0.4);
+      const weekInflow = (inflows / 13) * (0.8 + getRandom() * 0.4);
+      const weekOutflow = (outflows / 13) * (0.8 + getRandom() * 0.4);
       return {
         week: w,
         inflows: Math.round(weekInflow),

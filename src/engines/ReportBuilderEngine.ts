@@ -312,7 +312,7 @@ const DEFAULT_CELL_STYLE: CellStyle = {
   wrap: false,
 };
 
-const HEADER_STYLE: Partial<CellStyle> = {
+const _HEADER_STYLE: Partial<CellStyle> = {
   bold: true,
   fontSize: 12,
   backgroundColor: '#F3F4F6',
@@ -326,7 +326,7 @@ const TOTAL_STYLE: Partial<CellStyle> = {
   borderBottom: 'medium',
 };
 
-const SUBTOTAL_STYLE: Partial<CellStyle> = {
+const _SUBTOTAL_STYLE: Partial<CellStyle> = {
   bold: true,
   borderTop: 'thin',
 };
@@ -1995,7 +1995,7 @@ export class ReportBuilderEngine {
         const col = layout.columns[colIdx];
         if (col.type === 'label') continue;
 
-        const sum = this.calculateColumnSum(
+        const _sum = this.calculateColumnSum(
           resolved,
           colIdx,
           dataSection.startIndex,
@@ -2294,7 +2294,7 @@ export class ReportBuilderEngine {
     // Build data rows
     const dataRows: Array<Array<string | number | boolean | null>> = [];
 
-    const visibleRows = this.getVisibleRows(report.layout);
+    const _visibleRows = this.getVisibleRows(report.layout);
     for (let ri = 0; ri < report.layout.rows.length; ri++) {
       const row = report.layout.rows[ri];
       if (!row.isVisible) continue;

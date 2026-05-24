@@ -67,7 +67,7 @@ export function FileUploader({
     if (result && result.valid && onImport) {
       onImport(result.preview, result.columns);
       if (snapshot) {
-        snapshot.applied = true;
+        setSnapshot({ ...snapshot, applied: true });
         setHistory(engineRef.current.getSnapshots());
       }
     }

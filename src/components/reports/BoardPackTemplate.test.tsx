@@ -14,12 +14,37 @@ vi.mock('@/engines/ExportTemplateEngine', () => {
       description: 'Board pack template',
       sections: [
         { id: 'cover', type: 'cover', title: 'Cover', order: 0, config: { confidential: true } },
-        { id: 'kpi', type: 'kpi_summary', title: 'Key Metrics', order: 1, config: { kpis: [{ label: 'Revenue', value: '$4.2M', change: '+12%' }] } },
-        { id: 'table', type: 'table', title: 'P&L Summary', order: 2, config: { headers: ['Line Item', 'Actual'], rows: [['Revenue', '4200000']] } },
-        { id: 'text', type: 'text', title: 'Commentary', order: 3, config: { content: 'Strong performance for {entity} in {period}' } },
+        {
+          id: 'kpi',
+          type: 'kpi_summary',
+          title: 'Key Metrics',
+          order: 1,
+          config: { kpis: [{ label: 'Revenue', value: '$4.2M', change: '+12%' }] },
+        },
+        {
+          id: 'table',
+          type: 'table',
+          title: 'P&L Summary',
+          order: 2,
+          config: { headers: ['Line Item', 'Actual'], rows: [['Revenue', '4200000']] },
+        },
+        {
+          id: 'text',
+          type: 'text',
+          title: 'Commentary',
+          order: 3,
+          config: { content: 'Strong performance for {entity} in {period}' },
+        },
         { id: 'break', type: 'page_break', title: '', order: 4, config: {} },
       ],
-      style: { primaryColor: '#1E3A5F', secondaryColor: '#4A90D9', fontFamily: 'helvetica', headerFontSize: 10, bodyFontSize: 8, companyName: 'FinPlan Pro' },
+      style: {
+        primaryColor: '#1E3A5F',
+        secondaryColor: '#4A90D9',
+        fontFamily: 'helvetica',
+        headerFontSize: 10,
+        bodyFontSize: 8,
+        companyName: 'FinPlan Pro',
+      },
       variables: [],
       createdAt: '2026-01-01',
       updatedAt: '2026-01-01',
@@ -51,7 +76,7 @@ describe('BoardPackTemplate', () => {
         period="Q1 2026"
         currency="EUR"
         preparedBy="Finance Team"
-      />,
+      />
     );
     // "Custom Corp" appears in cover, table, and text sections
     expect(screen.getAllByText(/Custom Corp/).length).toBeGreaterThanOrEqual(1);

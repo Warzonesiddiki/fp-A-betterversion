@@ -257,7 +257,10 @@ export class CubeMigration {
             }
           : null,
       };
-      await masterStorage.setItem(`backup-${backupId}`, serialized);
+      await (masterStorage.setItem as (key: string, value: unknown) => Promise<void>)(
+        `backup-${backupId}`,
+        serialized
+      );
     } catch {
       // Backup persistence is best-effort
     }

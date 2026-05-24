@@ -198,7 +198,14 @@ function renderPage(Page: React.ComponentType, path = '/') {
 // ---------------------------------------------------------------------------
 
 describe('Retail pages smoke tests', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('InventoryDashboard', () => {
     it('renders without crashing', () => {
@@ -261,7 +268,14 @@ describe('Retail pages smoke tests', () => {
 // ---------------------------------------------------------------------------
 
 describe('SaaS pages smoke tests', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('ARRDashboard', () => {
     it('renders without crashing', () => {

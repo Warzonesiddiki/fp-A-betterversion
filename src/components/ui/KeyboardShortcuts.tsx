@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, Keyboard } from 'lucide-react';
 
 interface Shortcut {
@@ -84,11 +84,13 @@ const shortcuts: Shortcut[] = [
 
 export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
   const [filter, setFilter] = useState('');
+  const prevIsOpen = useRef(false);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !prevIsOpen.current) {
       setFilter('');
     }
+    prevIsOpen.current = isOpen;
   }, [isOpen]);
 
   useEffect(() => {
@@ -100,6 +102,11 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
+
+  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
 
   if (!isOpen) return null;
 
@@ -118,11 +125,17 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={onClose}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onClose();
+      }}
     >
       <div
         className="w-full max-w-2xl max-h-[80vh] rounded-lg shadow-2xl border overflow-hidden flex flex-col"
         style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)' }}
         onClick={(e) => e.stopPropagation()}
+        role="presentation"
       >
         {/* Header */}
         <div
@@ -147,13 +160,13 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
         {/* Search */}
         <div className="p-4 border-b" style={{ borderColor: 'var(--border)' }}>
           <input
+            ref={searchRef}
             type="text"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Search shortcuts..."
             className="w-full px-3 py-2 rounded border text-sm bg-transparent outline-none"
             style={{ borderColor: 'var(--border)', color: 'var(--text-primary)' }}
-            autoFocus
           />
         </div>
 

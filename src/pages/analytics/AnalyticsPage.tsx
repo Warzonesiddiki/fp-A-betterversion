@@ -1,17 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useAnalyticsStore } from '@/store/analyticsStore';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { BarChart3, TrendingUp, Users, DollarSign } from 'lucide-react';
-import { AdvancedOLAPEngine } from '@/engines/AdvancedOLAPEngine';
-import { AggregationDesigner } from '@/engines/AggregationDesigner';
-import { DimensionalModelingEngine } from '@/engines/DimensionalModelingEngine';
-import { AggregateTableEngine } from '@/engines/AggregateTableEngine';
-import { AnomalyExplainer } from '@/engines/AnomalyExplainer';
+
+import { BarChart3 } from 'lucide-react';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -23,7 +17,7 @@ function formatCurrency(n: number): string {
 }
 
 export default function AnalyticsPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Analytics';

@@ -25,7 +25,6 @@ export const KPIValue: React.FC<KPIValueProps> = ({
   trend,
   sparklineData,
   className,
-  format,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
 

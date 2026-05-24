@@ -11,52 +11,40 @@ describe('ReportSchedulerEngine', () => {
     engine = new ReportSchedulerEngine();
   });
 
-  describe('addSchedule', () => {
-    it('adds a report schedule', () => {
-      const schedule = {
-        reportId: 'rpt-1',
-        frequency: 'daily' as const,
-        time: '09:00',
-        recipients: ['user@test.com'],
-        format: 'pdf' as const,
-      };
-      const result = engine.addSchedule(schedule);
-      expect(result.success).toBe(true);
-      expect(result.scheduleId).toBeDefined();
+  describe('createSchedule', () => {
+    it('creates a report schedule', () => {
+      const entry = engine.createSchedule(
+        'rpt-1',
+        'Report 1',
+        { frequency: 'daily', hour: 9, minute: 0 },
+        ['user@test.com']
+      );
+      expect(entry.id).toBeDefined();
+      expect(entry.reportId).toBe('rpt-1');
     });
   });
 
-  describe('removeSchedule', () => {
+  describe('deleteSchedule', () => {
     it('removes a schedule', () => {
-      const schedule = {
-        reportId: 'rpt-1',
-        frequency: 'daily' as const,
-        time: '09:00',
-        recipients: ['user@test.com'],
-        format: 'pdf' as const,
-      };
-      const { scheduleId } = engine.addSchedule(schedule);
-      const result = engine.deleteSchedule(scheduleId);
-      expect(result.success).toBe(true);
+      const entry = engine.createSchedule(
+        'rpt-1',
+        'Report 1',
+        { frequency: 'daily', hour: 9, minute: 0 },
+        ['user@test.com']
+      );
+      const result = engine.deleteSchedule(entry.id);
+      expect(result).toBe(true);
     });
   });
 
   describe('listSchedules', () => {
     it('lists all schedules', () => {
-      engine.addSchedule({
-        reportId: 'rpt-1',
-        frequency: 'daily',
-        time: '09:00',
-        recipients: ['a@b.com'],
-        format: 'pdf',
-      });
-      engine.addSchedule({
-        reportId: 'rpt-2',
-        frequency: 'weekly',
-        time: '10:00',
-        recipients: ['c@d.com'],
-        format: 'excel',
-      });
+      engine.createSchedule('rpt-1', 'Report 1', { frequency: 'daily', hour: 9, minute: 0 }, [
+        'a@b.com',
+      ]);
+      engine.createSchedule('rpt-2', 'Report 2', { frequency: 'weekly', hour: 10, minute: 0 }, [
+        'c@d.com',
+      ]);
       const list = engine.listSchedules();
       expect(list.length).toBe(2);
     });

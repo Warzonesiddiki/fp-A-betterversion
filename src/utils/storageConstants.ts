@@ -19,3 +19,4 @@ export const PERSIST_KEYS = {
 
 export const BACKUP_PREFIX = 'finplan-pro-backup';
 export const AUTO_BACKUP_MAX = 5;
+export const CHUNK_SIZE = 1024 * 1024; // 1MB chunks

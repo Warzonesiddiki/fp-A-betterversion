@@ -86,12 +86,17 @@ export function TreemapChart({
     <div role="img" aria-label={ariaLabel} data-testid="treemap-chart">
       <ResponsiveContainer width="100%" height={height}>
         <Treemap
-          data={data}
+          data={data as unknown as import('recharts/types/chart/Treemap').TreemapDataType[]}
           dataKey="size"
           nameKey="name"
           content={<CustomContent x={0} y={0} width={0} height={0} index={0} name="" size={0} />}
         >
-          <Tooltip formatter={(value: any, name: any) => [value.toLocaleString(), name]} />
+          <Tooltip
+            formatter={(value, name) => [
+              typeof value === 'number' ? value.toLocaleString() : String(value),
+              name,
+            ]}
+          />
         </Treemap>
       </ResponsiveContainer>
     </div>

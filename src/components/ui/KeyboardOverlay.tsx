@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Keyboard, Search, Plus, Trash2 } from 'lucide-react';
 import {
   ExcelKeyboardShortcuts,
@@ -78,11 +78,17 @@ function AddShortcutDialog({ onAdd, onClose }: AddDialogProps) {
       className="fixed inset-0 z-[60] flex items-center justify-center"
       style={{ background: 'rgba(0,0,0,0.4)' }}
       onClick={onClose}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onClose?.();
+      }}
     >
       <div
         className="w-full max-w-md rounded-xl shadow-2xl border p-6"
         style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)' }}
         onClick={(e) => e.stopPropagation()}
+        role="presentation"
       >
         <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
           Add Custom Shortcut
@@ -98,6 +104,7 @@ function AddShortcutDialog({ onAdd, onClose }: AddDialogProps) {
               Key Combination
             </label>
             <div
+              role="textbox"
               tabIndex={0}
               onKeyDownCapture={handleKeyDownCapture}
               className="flex items-center gap-2 px-3 py-2 rounded-lg border cursor-text min-h-[2.5rem]"
@@ -222,14 +229,19 @@ interface KeyboardOverlayProps {
 }
 
 export function KeyboardOverlay({ isOpen, onClose }: KeyboardOverlayProps) {
+  const searchRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState('');
   const [showCustom, setShowCustom] = useState(false);
   const [groups, setGroups] = useState<ShortcutGroup[]>([]);
 
   // Load shortcuts on mount and subscribe to changes
+  const hasLoaded = useRef(false);
   useEffect(() => {
     ExcelKeyboardShortcuts.loadCustom();
-    setGroups(ExcelKeyboardShortcuts.getGrouped());
+    if (!hasLoaded.current) {
+      setGroups(ExcelKeyboardShortcuts.getGrouped());
+      hasLoaded.current = true;
+    }
     const unsub = ExcelKeyboardShortcuts.subscribe(() =>
       setGroups(ExcelKeyboardShortcuts.getGrouped())
     );
@@ -237,7 +249,15 @@ export function KeyboardOverlay({ isOpen, onClose }: KeyboardOverlayProps) {
   }, []);
 
   useEffect(() => {
-    if (isOpen) setSearch('');
+    searchRef.current?.focus();
+  }, []);
+
+  const prevIsOpen = useRef(false);
+  useEffect(() => {
+    if (isOpen && !prevIsOpen.current) {
+      setSearch('');
+    }
+    prevIsOpen.current = isOpen;
   }, [isOpen]);
 
   useEffect(() => {
@@ -277,11 +297,17 @@ export function KeyboardOverlay({ isOpen, onClose }: KeyboardOverlayProps) {
         className="fixed inset-0 z-50 flex items-center justify-center"
         style={{ background: 'rgba(0,0,0,0.5)' }}
         onClick={onClose}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') onClose?.();
+        }}
       >
         <div
           className="w-full max-w-3xl max-h-[85vh] rounded-xl shadow-2xl border overflow-hidden flex flex-col"
           style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)' }}
           onClick={(e) => e.stopPropagation()}
+          role="presentation"
         >
           {/* Header */}
           <div
@@ -328,6 +354,7 @@ export function KeyboardOverlay({ isOpen, onClose }: KeyboardOverlayProps) {
                 style={{ color: 'var(--text-secondary)' }}
               />
               <input
+                ref={searchRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -338,7 +365,6 @@ export function KeyboardOverlay({ isOpen, onClose }: KeyboardOverlayProps) {
                   borderColor: 'var(--border)',
                   color: 'var(--text-primary)',
                 }}
-                autoFocus
               />
             </div>
           </div>

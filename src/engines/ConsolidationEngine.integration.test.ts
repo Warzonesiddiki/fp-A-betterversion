@@ -8,7 +8,7 @@ import {
   type VIENotification,
 } from './ConsolidationEngine';
 import { CubeEngine } from './CubeEngine';
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 // =============================================================================
 // INTEGRATION TEST HELPERS
@@ -22,7 +22,23 @@ function createEntry(
   entityId: string,
   currency = 'USD'
 ): GLEntry {
-  return { id, accountCode, accountName, amount, currency, date: '2024-01-01', entityId };
+  return {
+    id,
+    accountId: id,
+    accountCode,
+    accountName,
+    period: '2024-01',
+    periodName: '2024-01',
+    debit: amount,
+    credit: 0,
+    netChange: amount,
+    date: '2024-01-01',
+    amount,
+    description: '',
+    reference: id,
+    entityId,
+    currency,
+  };
 }
 
 function setupCubeEngine(): CubeEngine {
@@ -573,9 +589,9 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
         'sum'
       );
 
-      expect(actualTotal).toBe(140000);
-      expect(budgetTotal).toBe(125000);
-      expect(actualTotal - budgetTotal).toBe(15000); // Variance
+      expect(actualTotal!).toBe(140000);
+      expect(budgetTotal!).toBe(125000);
+      expect(actualTotal! - budgetTotal!).toBe(15000); // Variance
     });
   });
 
@@ -1122,7 +1138,7 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
       const result = ConsolidationEngine.consolidate(entities, ownerships, icPairs);
 
       // Step 5: Validate
-      const validation = ConsolidationEngine.validate(result);
+      const _validation = ConsolidationEngine.validate(result);
 
       // Assertions: parent cash (200000) + sub cash (50000) = 250000, investment eliminated
       expect(result.totalAssets).toBe(250000);

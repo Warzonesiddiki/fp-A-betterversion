@@ -39,7 +39,7 @@ const routeImports: Record<string, () => Promise<unknown>> = {
   '/data/migration': () => import('../pages/data/MigrationPage'),
   '/data/version-diff': () => import('../pages/data/VersionDiffPage'),
   '/sector': () => import('../pages/sector/SectorPage'),
-  '/sector/banking': () => import('../pages/banking/BankingDashboardPage'),
+  '/sector/banking': () => import('../pages/banking/BankingDashboard'),
   '/sector/construction': () => import('../pages/construction/ConstructionDashboardPage'),
   '/sector/energy': () => import('../pages/energy/EnergyDashboardPage'),
   '/sector/healthcare': () => import('../pages/healthcare/HealthcareDashboardPage'),

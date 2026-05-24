@@ -208,9 +208,24 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
   const graph = buildDependencyGraph(dependencies);
   const reverseGraph = buildReverseGraph(graph);
 
-  // Determine all affected cells
+  // Determine all affected cells plus transitive dependencies
   const allCellKeys = new Set(cells.map(cellKey));
   const expandedKeys = new Set(allCellKeys);
+
+  // Add all transitive dependencies so chained formulas evaluate correctly
+  const depQueue = Array.from(allCellKeys);
+  while (depQueue.length > 0) {
+    const key = depQueue.pop()!;
+    const deps = graph.get(key);
+    if (deps) {
+      for (const dep of deps) {
+        if (!expandedKeys.has(dep)) {
+          expandedKeys.add(dep);
+          depQueue.push(dep);
+        }
+      }
+    }
+  }
 
   for (const key of allCellKeys) {
     const affected = getAffectedCells(key, reverseGraph);

@@ -47,18 +47,16 @@ export default function SetupWizardPage() {
     document.title = 'FinPlan Pro — Setup Wizard';
   }, []);
 
+  type StepStatus = 'done' | 'current' | 'pending';
+  const getStepStatus = (idx: number): StepStatus =>
+    step > idx ? 'done' : step === idx ? 'current' : 'pending';
+
   const steps = [
-    { label: 'Welcome', status: (step > 0 ? 'done' : step === 0 ? 'current' : 'pending') as const },
-    {
-      label: 'Organization',
-      status: (step > 1 ? 'done' : step === 1 ? 'current' : 'pending') as const,
-    },
-    {
-      label: 'Preferences',
-      status: (step > 2 ? 'done' : step === 2 ? 'current' : 'pending') as const,
-    },
-    { label: 'Data', status: (step > 3 ? 'done' : step === 3 ? 'current' : 'pending') as const },
-    { label: 'Done', status: (step > 4 ? 'done' : step === 4 ? 'current' : 'pending') as const },
+    { label: 'Welcome', status: getStepStatus(0) },
+    { label: 'Organization', status: getStepStatus(1) },
+    { label: 'Preferences', status: getStepStatus(2) },
+    { label: 'Data', status: getStepStatus(3) },
+    { label: 'Done', status: getStepStatus(4) },
   ];
 
   const handleOrgSave = () => {

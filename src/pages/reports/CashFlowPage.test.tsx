@@ -23,6 +23,11 @@ vi.mock('@/components/ui/Skeleton', () => ({
   Skeleton: ({ count }: { count?: number }) => <div data-testid="skeleton">{count} skeletons</div>,
 }));
 
+vi.mock('@/components/ui/HelpPanel', () => ({
+  HelpPanel: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="help-panel" /> : null,
+}));
+
 vi.mock('lucide-react', () => {
   const makeIcon = () => {
     const Icon = ({ className }: { className?: string }) => (
@@ -32,10 +37,18 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
-    Download: makeIcon(), DollarSign: makeIcon(), FileText: makeIcon(),
-    Table: makeIcon(), TrendingUp: makeIcon(), TrendingDown: makeIcon(),
-    ArrowRight: makeIcon(), ArrowUpRight: makeIcon(), ArrowDownRight: makeIcon(),
+    Download: makeIcon(),
+    DollarSign: makeIcon(),
+    FileText: makeIcon(),
+    Table: makeIcon(),
+    TrendingUp: makeIcon(),
+    TrendingDown: makeIcon(),
+    ArrowRight: makeIcon(),
+    ArrowUpRight: makeIcon(),
+    ArrowDownRight: makeIcon(),
     Minus: makeIcon(),
+    HelpCircle: makeIcon(),
+    AlertTriangle: makeIcon(),
   };
 });
 
@@ -50,7 +63,9 @@ function renderPage() {
 }
 
 describe('CashFlowPage smoke test', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('renders without crashing', () => {
     const { container } = renderPage();
     expect(container).toBeTruthy();

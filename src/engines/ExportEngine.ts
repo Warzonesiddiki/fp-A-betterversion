@@ -23,10 +23,17 @@ interface JsPDFInstance {
   text: (text: string, x: number, y: number) => void;
   setFillColor: (r: number, g: number, b: number) => void;
   rect: (x: number, y: number, w: number, h: number, style?: string) => void;
-  setTextColor: (r: number, g: number, b: number) => void;
-  setDrawColor: (r: number, g: number, b: number) => void;
+  setTextColor: (r: number, g?: number, b?: number) => void;
+  setDrawColor: (r: number, g?: number, b?: number) => void;
   line: (x1: number, y1: number, x2: number, y2: number) => void;
-  internal: { pageSize: { width: number; height: number }; getCurrentPageInfo?: () => { pageNumber: number } };
+  addPage: () => JsPDFInstance;
+  outline: {
+    add: { bold: () => { add: (title: string, options?: Record<string, unknown>) => void } };
+  };
+  internal: {
+    pageSize: { width: number; height: number };
+    getCurrentPageInfo: () => { pageNumber: number };
+  };
 }
 
 interface JsPDFConstructor {
@@ -40,6 +47,7 @@ interface WindowWithJsPDF extends Window {
       book_new: () => unknown;
       aoa_to_sheet: (data: unknown[][]) => Record<string, unknown>;
       encode_cell: (cell: { r: number; c: number }) => string;
+      book_append_sheet: (wb: unknown, ws: Record<string, unknown>, name: string) => void;
     };
     writeFile: (wb: unknown, filename: string) => void;
   };
@@ -142,8 +150,9 @@ export class ExportEngine {
     for (let r = 1; r <= data.rows.length; r++) {
       for (let c = 1; c < data.headers.length; c++) {
         const cellRef = XLSX.utils.encode_cell({ r, c });
-        if (ws[cellRef] && typeof ws[cellRef].v === 'number') {
-          ws[cellRef].z = '$#,##0.00';
+        const cell = ws[cellRef] as { v?: number; z?: string } | undefined;
+        if (cell && typeof cell.v === 'number') {
+          cell.z = '$#,##0.00';
         }
       }
     }

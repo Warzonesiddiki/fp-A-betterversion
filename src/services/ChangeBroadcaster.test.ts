@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ChangeBroadcaster } from './ChangeBroadcaster';
+import type { WebSocketManager } from './WebSocketManager';
 
-function createMockWs() {
+interface MockWebSocket {
+  on: ReturnType<typeof vi.fn>;
+  send: ReturnType<typeof vi.fn>;
+  emit: (type: string, data: unknown) => void;
+}
+
+function createMockWs(): MockWebSocket {
   const handlers = new Map<string, Set<(data: unknown) => void>>();
   return {
     on: vi.fn((type: string, handler: (data: unknown) => void) => {
@@ -13,16 +20,16 @@ function createMockWs() {
     emit: (type: string, data: unknown) => {
       handlers.get(type)?.forEach((fn) => fn(data));
     },
-  } as unknown as ReturnType<typeof createMockWs>;
+  } as MockWebSocket;
 }
 
 describe('ChangeBroadcaster', () => {
-  let ws: ReturnType<typeof createMockWs>;
+  let ws: MockWebSocket;
   let broadcaster: ChangeBroadcaster;
 
   beforeEach(() => {
     ws = createMockWs();
-    broadcaster = new ChangeBroadcaster(ws);
+    broadcaster = new ChangeBroadcaster(ws as unknown as WebSocketManager);
     broadcaster.setUser('user-1');
   });
 
@@ -92,7 +99,7 @@ describe('ChangeBroadcaster', () => {
     broadcaster.onChange(handler);
 
     // Simulate incoming change from another user
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('change:broadcast', {
+    ws.emit('change:broadcast', {
       id: 'chg-other-1',
       type: 'update',
       resourceType: 'budget',
@@ -114,7 +121,7 @@ describe('ChangeBroadcaster', () => {
     const handler = vi.fn();
     broadcaster.onChange(handler);
 
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('change:broadcast', {
+    ws.emit('change:broadcast', {
       id: 'chg-self-1',
       type: 'update',
       resourceType: 'budget',
@@ -129,7 +136,7 @@ describe('ChangeBroadcaster', () => {
 
   it('should detect recent changes for a resource', () => {
     // Simulate incoming change
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('change:broadcast', {
+    ws.emit('change:broadcast', {
       id: 'chg-1',
       type: 'update',
       resourceType: 'budget',
@@ -144,7 +151,7 @@ describe('ChangeBroadcaster', () => {
   });
 
   it('should return recent changes for a resource', () => {
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('change:broadcast', {
+    ws.emit('change:broadcast', {
       id: 'chg-1',
       type: 'update',
       resourceType: 'budget',
@@ -154,7 +161,7 @@ describe('ChangeBroadcaster', () => {
       timestamp: '2024-01-01T10:00:00Z',
     });
 
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('change:broadcast', {
+    ws.emit('change:broadcast', {
       id: 'chg-2',
       type: 'update',
       resourceType: 'budget',
@@ -174,7 +181,7 @@ describe('ChangeBroadcaster', () => {
     const conflictHandler = vi.fn();
     broadcaster.onConflict(conflictHandler);
 
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('change:conflict', {
+    ws.emit('change:conflict', {
       incomingChange: { id: 'chg-1' },
       localValue: 100,
       resolution: 'accept-remote',

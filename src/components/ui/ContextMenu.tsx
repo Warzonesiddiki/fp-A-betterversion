@@ -3,8 +3,6 @@ import {
   Scissors,
   Copy,
   ClipboardPaste,
-  Trash2,
-  ArrowUpDown,
   ArrowUp,
   ArrowDown,
   Plus,
@@ -138,7 +136,7 @@ export function ContextMenu({ x, y, onAction, onClose, className }: ContextMenuP
   // Focus the active menu item
   useEffect(() => {
     const items = menuRef.current?.querySelectorAll('[role="menuitem"]');
-    items?.[focusIndex]?.(HTMLElement)?.focus?.();
+    (items?.[focusIndex] as HTMLElement)?.focus?.();
   }, [focusIndex]);
 
   // Adjust position to stay within viewport

@@ -48,7 +48,7 @@ interface QBTokenResponse {
 
 interface QBQueryResponse<T> {
   QueryResponse: {
-    [key: string]: T[];
+    [key: string]: T[] | number | undefined;
     startPosition: number;
     maxResults: number;
     totalCount?: number;
@@ -223,7 +223,8 @@ export class QuickBooksConnector extends BaseConnector {
       query,
     });
 
-    const accounts = response.data.QueryResponse.Account ?? [];
+    const rawAccounts = response.data.QueryResponse.Account;
+    const accounts: QBAccount[] = Array.isArray(rawAccounts) ? rawAccounts : [];
     const totalCount = response.data.QueryResponse.totalCount ?? accounts.length;
 
     return {
@@ -284,7 +285,8 @@ export class QuickBooksConnector extends BaseConnector {
       query,
     });
 
-    const txns = response.data.QueryResponse.JournalEntry ?? [];
+    const rawTxns = response.data.QueryResponse.JournalEntry;
+    const txns: QBTransaction[] = Array.isArray(rawTxns) ? rawTxns : [];
     const totalCount = response.data.QueryResponse.totalCount ?? txns.length;
 
     const items: ExternalTransaction[] = [];
@@ -325,7 +327,8 @@ export class QuickBooksConnector extends BaseConnector {
       query,
     });
 
-    const invoices = response.data.QueryResponse.Invoice ?? [];
+    const rawInvoices = response.data.QueryResponse.Invoice;
+    const invoices: QBInvoice[] = Array.isArray(rawInvoices) ? rawInvoices : [];
     const totalCount = response.data.QueryResponse.totalCount ?? invoices.length;
 
     return {

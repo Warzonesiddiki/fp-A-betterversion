@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { DataGrid } from '@/components/ui/DataGrid';
-import { Activity, TrendingUp, ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
+import { Activity, ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import { ExportEngine, BankingEngine } from '@/engines';
 
 export default function NIMDashboardPage() {
@@ -94,7 +94,7 @@ export default function NIMDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Net Interest Margin"
-          value={stats.nim}
+          value={stats.netInterestMargin}
           format="percent"
           trend="up"
           change={0.06}

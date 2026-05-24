@@ -202,19 +202,6 @@ export interface AttritionForecast {
   attritionRate: number;
 }
 
-// GENERAL FINANCIAL TYPES (Expansion)
-export interface GLEntry {
-  readonly id: string;
-  readonly accountCode: string;
-  readonly accountName: string;
-  readonly amount: number;
-  readonly currency?: string;
-  readonly date: string;
-  readonly entityId?: string;
-  readonly departmentId?: string;
-  readonly description?: string;
-}
-
 export interface DataSource {
   id: string;
   name: string;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +15,9 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+
+const getRandom = () => Math.random();
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -104,8 +107,8 @@ export default function TaxProvisionPage() {
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
     const trend = quarters.map((q, i) => ({
       quarter: q,
-      rate: 18 + Math.random() * 5,
-      provision: Math.round(totalProvision / 4 + Math.random() * 10000),
+      rate: 18 + getRandom() * 5,
+      provision: Math.round(totalProvision / 4 + getRandom() * 10000),
     }));
     return {
       revenue,
@@ -114,6 +117,7 @@ export default function TaxProvisionPage() {
       jurisdictions,
       totalProvision,
       totalDeferred,
+      totalCurrent: jurisdictions.reduce((s, j) => s + j.current, 0),
       effectiveRate,
       trend,
       chartData: jurisdictions.map((j) => ({

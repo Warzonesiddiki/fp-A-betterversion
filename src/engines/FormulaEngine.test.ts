@@ -194,7 +194,7 @@ describe('FormulaEngine', () => {
       });
 
       it('should reject unbalanced close parenthesis', () => {
-        const result = FormulaEngine.parseFormula('1+2)');
+        const _result = FormulaEngine.parseFormula('1+2)');
         // Actually, this might parse 1+2 and leave ) unconsumed
         // Let me check — parseExpression returns 1+2, then tokenizeAndParse returns [1+2]
         // The ) is left over but not checked

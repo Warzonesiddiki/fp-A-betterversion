@@ -109,7 +109,14 @@ const FinancialTableRowComponent = React.memo(function FinancialTableRowComponen
             {col.render ? (
               col.render(value, row)
             ) : col.type === 'badge' ? (
-              <Badge variant={row.badgeVariant || 'default'}>{String(value ?? '')}</Badge>
+              <Badge
+                variant={
+                  (row.badgeVariant as 'default' | 'secondary' | 'destructive' | 'outline') ||
+                  'default'
+                }
+              >
+                {String(value ?? '')}
+              </Badge>
             ) : (
               getCellValue(value, col.type)
             )}

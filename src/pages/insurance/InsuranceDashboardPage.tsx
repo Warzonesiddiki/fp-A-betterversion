@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useInsuranceStore } from '@/store/insuranceStore';
+
 import {
   Shield,
   TrendingUp,
@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { InsuranceEngine } from '@/engines/InsuranceEngine';
+
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';

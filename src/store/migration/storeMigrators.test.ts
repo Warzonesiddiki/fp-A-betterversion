@@ -37,7 +37,7 @@ function assertSuccess(result: MigrationResult): void {
   expect(result.error).toBeUndefined();
 }
 
-function assertFailure(result: MigrationResult): void {
+function _assertFailure(result: MigrationResult): void {
   expect(result.success).toBe(false);
   expect(result.error).toBeTruthy();
 }

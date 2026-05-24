@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCubeStore, getEngine, resetEngine } from './cubeStore';
-import type { CubeCell } from '@/types/cube-types';
 
 describe('cubeStore', () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { BarChart3 } from 'lucide-react';
 
-function formatCurrency(n: number): string {
+function _formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -137,7 +137,7 @@ export default function BenchmarkingPage() {
   if (!ratios)
     return (
       <div className="p-6">
-        <Skeleton count={8} height={48} />
+        <Skeleton count={8} height="48px" />
       </div>
     );
 

@@ -1,6 +1,5 @@
 import React from 'react';
-import { FlaskConical, AlertCircle, ChevronRight } from 'lucide-react';
-import { cn } from '@/utils/cn';
+import { FlaskConical, ChevronRight } from 'lucide-react';
 
 export interface SandboxModeProps {
   isActive: boolean;

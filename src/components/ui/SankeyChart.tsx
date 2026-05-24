@@ -29,6 +29,29 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({
   error,
   onClick,
 }) => {
+  const { sources, targets, totalValue } = useMemo(() => {
+    if (!links || links.length === 0) return { sources: [], targets: [], totalValue: 0 };
+    const sMap: Record<string, number> = {};
+    const tMap: Record<string, number> = {};
+    let total = 0;
+
+    links.forEach((link) => {
+      const val = Math.max(0, link.value); // Guard against negative values
+      sMap[link.source] = (sMap[link.source] || 0) + val;
+      tMap[link.target] = (tMap[link.target] || 0) + val;
+      total += val;
+    });
+
+    const sNodes = Object.entries(sMap).sort((a, b) => b[1] - a[1]);
+    const tNodes = Object.entries(tMap).sort((a, b) => b[1] - a[1]);
+
+    return {
+      sources: sNodes,
+      targets: tNodes,
+      totalValue: total,
+    };
+  }, [links]);
+
   if (loading) {
     return (
       <div
@@ -56,31 +79,6 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({
       </div>
     );
   }
-  const { sources, targets, totalValue, sourceNodes, targetNodes } = useMemo(() => {
-    if (!links || links.length === 0)
-      return { sources: [], targets: [], totalValue: 0, sourceNodes: {}, targetNodes: {} };
-    const sMap: Record<string, number> = {};
-    const tMap: Record<string, number> = {};
-    let total = 0;
-
-    links.forEach((link) => {
-      const val = Math.max(0, link.value); // Guard against negative values
-      sMap[link.source] = (sMap[link.source] || 0) + val;
-      tMap[link.target] = (tMap[link.target] || 0) + val;
-      total += val;
-    });
-
-    const sNodes = Object.entries(sMap).sort((a, b) => b[1] - a[1]);
-    const tNodes = Object.entries(tMap).sort((a, b) => b[1] - a[1]);
-
-    return {
-      sources: sNodes,
-      targets: tNodes,
-      totalValue: total,
-      sourceNodes: sMap,
-      targetNodes: tMap,
-    };
-  }, [links]);
 
   if (totalValue === 0)
     return <div className="flex items-center justify-center h-48 text-slate-400">No data</div>;

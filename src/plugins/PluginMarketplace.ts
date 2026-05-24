@@ -9,6 +9,10 @@ import { PluginRegistry } from './PluginRegistry';
 import { PluginLoader } from './PluginLoader';
 import type { PluginManifest, PluginPermission } from './types';
 
+// Module-level singleton instances
+const registry = new PluginRegistry();
+const loader = new PluginLoader(registry, () => ({}) as never);
+
 export interface MarketplacePlugin extends PluginManifest {
   description: string;
   author: string;
@@ -19,6 +23,7 @@ export interface MarketplacePlugin extends PluginManifest {
   rating: number;
   verified: boolean;
   screenshots?: string[];
+  minAppVersion?: string;
 }
 
 export interface InstalledPlugin extends MarketplacePlugin {
@@ -68,14 +73,16 @@ export class PluginMarketplace {
   }
 
   static async install(manifest: MarketplacePlugin): Promise<void> {
-    if (!this.isCompatible(manifest.minAppVersion)) {
+    if (!this.isCompatible(manifest.minAppVersion ?? '')) {
       throw new Error(`Plugin requires FinPlan Pro ${manifest.minAppVersion} or later`);
     }
 
-    for (const dep of manifest.dependencies) {
-      const installed = await PluginRegistry.get(dep);
-      if (!installed) {
-        throw new Error(`Plugin depends on "${dep}" which is not installed`);
+    if (manifest.dependencies) {
+      for (const dep of manifest.dependencies) {
+        const installed = registry.get(dep);
+        if (!installed) {
+          throw new Error(`Plugin depends on "${dep}" which is not installed`);
+        }
       }
     }
 
@@ -84,8 +91,8 @@ export class PluginMarketplace {
       throw new Error('Plugin permissions not approved');
     }
 
-    await PluginLoader.load(manifest);
-    await PluginRegistry.register(manifest);
+    await loader.loadFromManifest(manifest, () => ({}) as never);
+    registry.register(manifest);
 
     const installed: InstalledPlugin = {
       ...manifest,
@@ -100,7 +107,7 @@ export class PluginMarketplace {
     const plugin = this.installed.get(pluginId);
     if (!plugin) throw new Error(`Plugin ${pluginId} not installed`);
 
-    await PluginRegistry.unregister(pluginId);
+    registry.unregister(pluginId);
     this.installed.delete(pluginId);
   }
 

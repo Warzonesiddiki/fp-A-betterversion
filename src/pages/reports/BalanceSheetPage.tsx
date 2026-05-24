@@ -1,20 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
-﻿import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { Download, Scale, FileText, Table as TableIcon } from 'lucide-react';
+import { Scale, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 
 function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
 export default function BalanceSheetPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
-    
+  const [_helpOpen, setHelpOpen] = useState(false);
+
   useEffect(() => {
     document.title = 'FinPlan Pro — Balance Sheet';
   }, []);
@@ -25,16 +30,26 @@ export default function BalanceSheetPage() {
 
   const report = useMemo(() => {
     if (entries.length === 0) return null;
-    const filtered = entries.filter(e => e.date <= asOfDate);
-    const totalAssets = filtered.filter(e => (e.accountCode || '').startsWith('1'))
+    const filtered = entries.filter((e) => e.date <= asOfDate);
+    const totalAssets = filtered
+      .filter((e) => (e.accountCode || '').startsWith('1'))
       .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const totalLiabilities = filtered.filter(e => (e.accountCode || '').startsWith('2'))
+    const totalLiabilities = filtered
+      .filter((e) => (e.accountCode || '').startsWith('2'))
       .reduce((s, e) => s + (e.credit - e.debit), 0);
-    const totalEquity = filtered.filter(e => (e.accountCode || '').startsWith('3'))
+    const totalEquity = filtered
+      .filter((e) => (e.accountCode || '').startsWith('3'))
       .reduce((s, e) => s + (e.credit - e.debit), 0);
     const isBalanced = Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01;
     const diff = totalAssets - (totalLiabilities + totalEquity);
-    return { totalAssets, totalLiabilities, totalEquity, isBalanced, diff, entryCount: filtered.length };
+    return {
+      totalAssets,
+      totalLiabilities,
+      totalEquity,
+      isBalanced,
+      diff,
+      entryCount: filtered.length,
+    };
   }, [entries, asOfDate]);
 
   const handleExportPDF = () => {
@@ -45,8 +60,11 @@ export default function BalanceSheetPage() {
         ['Total Assets', formatCurrency(report.totalAssets)],
         ['Total Liabilities', formatCurrency(report.totalLiabilities)],
         ['Total Equity', formatCurrency(report.totalEquity)],
-        ['Total Liabilities + Equity', formatCurrency(report.totalLiabilities + report.totalEquity)]
-      ]
+        [
+          'Total Liabilities + Equity',
+          formatCurrency(report.totalLiabilities + report.totalEquity),
+        ],
+      ],
     };
     ExportEngine.exportToPDF(data, { title: 'Balance Sheet', subtitle: `As of ${asOfDate}` });
   };
@@ -59,8 +77,8 @@ export default function BalanceSheetPage() {
         ['Total Assets', report.totalAssets],
         ['Total Liabilities', report.totalLiabilities],
         ['Total Equity', report.totalEquity],
-        ['Total Liabilities + Equity', report.totalLiabilities + report.totalEquity]
-      ]
+        ['Total Liabilities + Equity', report.totalLiabilities + report.totalEquity],
+      ],
     };
     ExportEngine.exportToExcel(data, { title: 'Balance_Sheet' });
   };
@@ -79,7 +97,11 @@ export default function BalanceSheetPage() {
   }
 
   if (!report) {
-    return <div className="p-6"><Skeleton count={6} height={32} /></div>;
+    return (
+      <div className="p-6">
+        <Skeleton count={6} height="32px" />
+      </div>
+    );
   }
 
   return (
@@ -88,18 +110,24 @@ export default function BalanceSheetPage() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold">Balance Sheet</h1>
-            <button 
-              onClick={() => setHelpOpen(true)} 
+            <button
+              onClick={() => setHelpOpen(true)}
               className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
               aria-label="Help"
-            >
-            </button>
+            ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">As of {asOfDate} · {report.entryCount.toLocaleString()} entries</p>
+          <p className="text-sm text-slate-400 mt-1">
+            As of {asOfDate} · {report.entryCount.toLocaleString()} entries
+          </p>
         </div>
         <div className="flex gap-2">
-          <input type="date" className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm w-40"
-            value={asOfDate} onChange={e => setAsOfDate(e.target.value)} aria-label="Select report date" />
+          <input
+            type="date"
+            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm w-40"
+            value={asOfDate}
+            onChange={(e) => setAsOfDate(e.target.value)}
+            aria-label="Select report date"
+          />
           <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
             <FileText className="h-3.5 w-3.5 mr-1.5" />
             PDF
@@ -112,9 +140,17 @@ export default function BalanceSheetPage() {
       </div>
 
       {report.isBalanced !== undefined && (
-        <div className={'px-4 py-2 rounded-lg text-sm flex items-center gap-2 ' + (report.isBalanced ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400')} role="status">
+        <div
+          className={
+            'px-4 py-2 rounded-lg text-sm flex items-center gap-2 ' +
+            (report.isBalanced ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400')
+          }
+          role="status"
+        >
           <Scale className="h-4 w-4" />
-          {report.isBalanced ? 'Balance Sheet is Balanced' : 'Off by ' + formatCurrency(Math.abs(report.diff))}
+          {report.isBalanced
+            ? 'Balance Sheet is Balanced'
+            : 'Off by ' + formatCurrency(Math.abs(report.diff))}
         </div>
       )}
 
@@ -122,27 +158,62 @@ export default function BalanceSheetPage() {
         <CardContent className="p-0">
           <table className="w-full text-sm" role="grid" aria-label="Balance Sheet Report data">
             <thead>
-              <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800" role="row">
-                <th className="px-6 py-3 w-1/2" role="columnheader">Account</th>
-                <th className="px-6 py-3 text-right w-1/2" role="columnheader">Amount</th>
+              <tr
+                className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                role="row"
+              >
+                <th className="px-6 py-3 w-1/2" role="columnheader">
+                  Account
+                </th>
+                <th className="px-6 py-3 text-right w-1/2" role="columnheader">
+                  Amount
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
               <tr className="bg-slate-900/50 font-medium" role="row">
-                <td className="px-6 py-3 text-slate-200" role="gridcell">Assets</td>
-                <td className="px-6 py-3 text-right tabular-nums font-semibold text-green-400" role="gridcell">{formatCurrency(report.totalAssets)}</td>
+                <td className="px-6 py-3 text-slate-200" role="gridcell">
+                  Assets
+                </td>
+                <td
+                  className="px-6 py-3 text-right tabular-nums font-semibold text-green-400"
+                  role="gridcell"
+                >
+                  {formatCurrency(report.totalAssets)}
+                </td>
               </tr>
               <tr className="bg-slate-900/50 font-medium" role="row">
-                <td className="px-6 py-3 text-slate-200" role="gridcell">Liabilities</td>
-                <td className="px-6 py-3 text-right tabular-nums font-semibold text-red-400" role="gridcell">{formatCurrency(report.totalLiabilities)}</td>
+                <td className="px-6 py-3 text-slate-200" role="gridcell">
+                  Liabilities
+                </td>
+                <td
+                  className="px-6 py-3 text-right tabular-nums font-semibold text-red-400"
+                  role="gridcell"
+                >
+                  {formatCurrency(report.totalLiabilities)}
+                </td>
               </tr>
               <tr className="bg-slate-900/50 font-medium" role="row">
-                <td className="px-6 py-3 text-slate-200" role="gridcell">Equity</td>
-                <td className="px-6 py-3 text-right tabular-nums font-semibold text-blue-400" role="gridcell">{formatCurrency(report.totalEquity)}</td>
+                <td className="px-6 py-3 text-slate-200" role="gridcell">
+                  Equity
+                </td>
+                <td
+                  className="px-6 py-3 text-right tabular-nums font-semibold text-blue-400"
+                  role="gridcell"
+                >
+                  {formatCurrency(report.totalEquity)}
+                </td>
               </tr>
-              <tr className="bg-slate-800/50 font-semibold text-base border-t-2 border-slate-700" role="row">
-                <td className="px-6 py-4 text-white" role="gridcell">Liabilities + Equity</td>
-                <td className="px-6 py-4 text-right tabular-nums text-lg" role="gridcell">{formatCurrency(report.totalLiabilities + report.totalEquity)}</td>
+              <tr
+                className="bg-slate-800/50 font-semibold text-base border-t-2 border-slate-700"
+                role="row"
+              >
+                <td className="px-6 py-4 text-white" role="gridcell">
+                  Liabilities + Equity
+                </td>
+                <td className="px-6 py-4 text-right tabular-nums text-lg" role="gridcell">
+                  {formatCurrency(report.totalLiabilities + report.totalEquity)}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -151,4 +222,3 @@ export default function BalanceSheetPage() {
     </div>
   );
 }
-

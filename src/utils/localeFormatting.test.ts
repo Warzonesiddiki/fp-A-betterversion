@@ -188,7 +188,7 @@ describe('formatDate', () => {
 
   it('should format with different locales', () => {
     const date = new Date('2024-06-15T12:00:00Z');
-    const enResult = formatDate(date, 'en');
+    const _enResult = formatDate(date, 'en');
     const jaResult = formatDate(date, 'ja');
     // Japanese date format is different from English
     expect(jaResult).toBeTruthy();

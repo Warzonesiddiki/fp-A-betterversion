@@ -103,12 +103,12 @@ describe('ApprovalDashboard', () => {
         title: 'Budget Approval Q1',
         description: 'desc',
         requester: 'Alice',
-        status: 'pending' as const,
+        state: 'submitted' as const,
         currentStepIndex: 0,
         createdAt: '2026-01-01T00:00:00Z',
         updatedAt: '2026-01-01T00:00:00Z',
         history: [],
-        data: {},
+        changeRequests: [],
       },
     ];
     render(<ApprovalDashboard stats={makeStats({ slaBreaches: breaches })} />);
@@ -125,12 +125,12 @@ describe('ApprovalDashboard', () => {
         title: 'Overdue Task',
         description: 'desc',
         requester: 'Bob',
-        status: 'pending' as const,
+        state: 'submitted' as const,
         currentStepIndex: 0,
         createdAt: '2026-01-01T00:00:00Z',
         updatedAt: '2026-01-01T00:00:00Z',
         history: [],
-        data: {},
+        changeRequests: [],
       },
     ];
     render(<ApprovalDashboard stats={makeStats({ slaBreaches: breaches })} />);

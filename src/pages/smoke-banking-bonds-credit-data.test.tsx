@@ -224,6 +224,11 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
 describe('Page Smoke Tests — Banking, Bonds, Credit, Data', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
   });
 
   // -----------------------------------------------------------------------

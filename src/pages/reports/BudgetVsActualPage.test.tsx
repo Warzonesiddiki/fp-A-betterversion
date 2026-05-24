@@ -34,8 +34,11 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
-    AlertCircle: makeIcon(), Database: makeIcon(),
-    ArrowUpRight: makeIcon(), ArrowDownRight: makeIcon(), Minus: makeIcon(),
+    AlertCircle: makeIcon(),
+    Database: makeIcon(),
+    ArrowUpRight: makeIcon(),
+    ArrowDownRight: makeIcon(),
+    Minus: makeIcon(),
   };
 });
 
@@ -50,7 +53,9 @@ function renderPage() {
 }
 
 describe('BudgetVsActualPage smoke test', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('renders without crashing', () => {
     const { container } = renderPage();
     expect(container).toBeTruthy();

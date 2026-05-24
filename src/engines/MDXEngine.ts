@@ -185,7 +185,7 @@ export class MDXEngine {
       }
 
       if (inSlicer) {
-        cells.push({ coordinates: coords, value: value as number | string | null });
+        cells.push({ coordinates: coords, value: value as unknown as number | string | null });
       }
     }
     return cells;

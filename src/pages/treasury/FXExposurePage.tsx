@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { TrendingUp, Download, FileText, Table as TableIcon, Shield } from 'lucide-react';
+import { FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   ResponsiveContainer,
@@ -100,7 +100,7 @@ const hedgeBreakdown = mockExposures.map((e) => ({ name: e.currency, value: e.he
 
 export default function FXExposurePage() {
   const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — FX Exposure';

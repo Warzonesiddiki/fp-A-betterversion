@@ -32,7 +32,9 @@ export default function TemplatePreviewPage() {
     return (
       <div className="p-6 text-center">
         <h1 className="text-xl font-bold mb-2">Template Not Found</h1>
-        <p className="text-muted-foreground mb-4">The template you're looking for doesn't exist.</p>
+        <p className="text-muted-foreground mb-4">
+          The template you&apos;re looking for doesn&apos;t exist.
+        </p>
         <Button onClick={() => navigate('/templates')}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Gallery
         </Button>
@@ -92,49 +94,33 @@ export default function TemplatePreviewPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-sm text-muted-foreground">Sections</div>
-            <div className="font-medium mt-1">{template.sections?.length ?? 0}</div>
+            <div className="text-sm text-muted-foreground">Columns</div>
+            <div className="font-medium mt-1">{template.columns.length}</div>
           </CardContent>
         </Card>
       </div>
 
-      {template.sections && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Template Structure</h2>
-          {template.sections.map((section, i) => (
-            <Card key={i}>
-              <CardHeader>
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">
-                    {i + 1}
-                  </span>
-                  {section.name}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                  {section.lineItems?.map((item: string, j: number) => (
-                    <div key={j} className="px-2 py-1 bg-slate-800 rounded text-slate-300">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">Template Columns</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+          {template.columns.map((col, i) => (
+            <div key={i} className="px-2 py-1 bg-slate-800 rounded text-slate-300">
+              {col.label}
+            </div>
           ))}
         </div>
-      )}
+      </div>
 
-      {template.kpis && (
+      {template.kpis.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">KPIs Included</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {template.kpis.map((kpi: string, i: number) => (
+              {template.kpis.map((kpi, i) => (
                 <div key={i} className="p-3 bg-slate-800 rounded-lg text-center">
-                  <div className="text-sm font-medium">{kpi}</div>
+                  <div className="text-sm font-medium">{kpi.label}</div>
                 </div>
               ))}
             </div>

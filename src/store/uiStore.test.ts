@@ -30,8 +30,16 @@ describe('uiStore', () => {
   });
 
   it('should set theme', () => {
-    useUIStore.getState().setTheme('light');
-    expect(useUIStore.getState().theme).toBe('light');
+    const mockSetItem = vi.fn();
+    const mockToggle = vi.fn();
+    vi.stubGlobal('localStorage', { setItem: mockSetItem, getItem: vi.fn() });
+    vi.spyOn(document.documentElement.classList, 'toggle').mockImplementation(mockToggle);
+    try {
+      useUIStore.getState().setTheme('light');
+      expect(useUIStore.getState().theme).toBe('light');
+    } finally {
+      vi.restoreAllMocks();
+    }
   });
 
   it('should toggle command palette', () => {

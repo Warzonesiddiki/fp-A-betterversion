@@ -57,12 +57,7 @@ vi.mock('./ui/Button', () => ({
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const {
-        initial: _initial,
-        animate: _animate,
-        exit: _exit,
-        ...domProps
-      } = props as Record<string, unknown>;
+      const { ...domProps } = props as Record<string, unknown>;
       return <div {...domProps}>{children}</div>;
     },
   },

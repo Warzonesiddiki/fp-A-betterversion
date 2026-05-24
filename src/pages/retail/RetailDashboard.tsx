@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
-import { RetailEngine } from '@/engines/RetailEngine';
+import { RetailEngine, type StoreStats } from '@/engines/RetailEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -26,7 +26,6 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import type { GLEntry as SectorGLEntry } from '@/types/sector-types';
 import type { GLEntry } from '@/types';
 
 function formatCurrency(n: number): string {
@@ -42,17 +41,12 @@ function formatPercent(n: number): string {
   return `${n.toFixed(1)}%`;
 }
 
-/** Bridge glStore entries to the sector-types GLEntry shape the engines expect. */
-function toSectorEntries(entries: readonly GLEntry[]): SectorGLEntry[] {
+/** Bridge glStore entries to the GLEntry shape the engines expect. */
+function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
   return entries.map((e) => ({
-    id: e.id,
-    accountCode: e.accountCode,
-    accountName: e.accountName,
-    amount: e.amount ?? e.debit - e.credit,
-    currency: 'USD',
-    date: e.date,
+    ...e,
+    currency: e.currency ?? 'USD',
     entityId: e.entityId ?? 'default',
-    description: e.description,
   }));
 }
 
@@ -95,7 +89,7 @@ export default function RetailDashboard() {
     );
   };
 
-  const columns: Column[] = [
+  const columns: Column<StoreStats>[] = [
     { key: 'rank', header: '#', align: 'center' },
     { key: 'name', header: 'Store', sortable: true },
     {

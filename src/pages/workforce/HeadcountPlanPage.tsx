@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +15,9 @@ import {
   TrendingDown,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+
+const getRandom = () => Math.random();
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -64,8 +67,8 @@ export default function HeadcountPlanPage() {
     const avgCost = count > 0 ? totalCost / count : 0;
     const departments = ['Engineering', 'Sales', 'Marketing', 'Finance', 'Operations', 'HR'];
     const deptData: DeptRow[] = departments.map((dept) => {
-      const current = Math.floor(15 + Math.random() * 40);
-      const planned = current + Math.floor(Math.random() * 10 - 3);
+      const current = Math.floor(15 + getRandom() * 40);
+      const planned = current + Math.floor(getRandom() * 10 - 3);
       return {
         department: dept,
         current,
@@ -77,8 +80,8 @@ export default function HeadcountPlanPage() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const trend = months.map((m, i) => ({
       month: m,
-      headcount: Math.floor(80 + i * 5 + Math.random() * 10),
-      attrition: +(2 + Math.random() * 3).toFixed(1),
+      headcount: Math.floor(80 + i * 5 + getRandom() * 10),
+      attrition: +(2 + getRandom() * 3).toFixed(1),
     }));
     return {
       totalCost,

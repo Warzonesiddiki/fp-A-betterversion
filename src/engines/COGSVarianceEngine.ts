@@ -1,3 +1,5 @@
+import type { GLEntry } from '@/types';
+
 export class COGSVarianceEngine {
   static computePurchasePriceVariance(
     standardPrice: number,
@@ -79,10 +81,15 @@ export class COGSVarianceEngine {
     const efficiencyVar = actualCOGS * 0.005;
     const volumeVar = standardCOGS - actualCOGS - (priceVar + usageVar + efficiencyVar);
 
+    const variance = standardCOGS - actualCOGS;
+    const variancePercent = standardCOGS > 0 ? (variance / standardCOGS) * 100 : 0;
+
     return {
       actualCOGS,
       standardCOGS,
-      totalVariance: standardCOGS - actualCOGS,
+      variance,
+      variancePercent,
+      totalVariance: variance,
       breakdown: [
         { name: 'Price', value: priceVar },
         { name: 'Usage', value: usageVar },

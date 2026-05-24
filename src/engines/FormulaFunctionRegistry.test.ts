@@ -93,13 +93,11 @@ describe('FormulaFunctionRegistry', () => {
     });
 
     it('WACC: weighted average cost of capital', () => {
-      // 60% equity at 10%, 40% debt at 6%, 25% tax
       const wacc = FormulaFunctionRegistry.WACC(0.6, 0.1, 0.4, 0.06, 0.25);
-      expect(wacc).toBeCloseTo(0.078); // 0.06 + 0.018
+      expect(wacc).toBeCloseTo(0.078);
     });
 
     it('NPV: net present value', () => {
-      // Standard NPV: cashflow[0] at time 0, cashflow[1] at time 1, etc.
       const npv = FormulaFunctionRegistry.NPV(0.1, [-1000, 300, 420, 680] as any);
       expect(npv).toBeCloseTo(130.73);
     });
@@ -155,12 +153,12 @@ describe('FormulaFunctionRegistry', () => {
     });
 
     it('PAYBACK: payback period', () => {
-      expect(FormulaFunctionRegistry.PAYBACK([-100, 30, 40, 50, 20])).toBe(3);
-      expect(FormulaFunctionRegistry.PAYBACK([-100, 10, 20, 30, 40, 50])).toBe(4);
+      expect(FormulaFunctionRegistry.PAYBACK([-100, 30, 40, 50, 20] as any)).toBe(3);
+      expect(FormulaFunctionRegistry.PAYBACK([-100, 10, 20, 30, 40, 50] as any)).toBe(4);
     });
 
     it('PAYBACK: never pays back', () => {
-      expect(FormulaFunctionRegistry.PAYBACK([-100, 10, 10])).toBe(-1);
+      expect(FormulaFunctionRegistry.PAYBACK([-100, 10, 10] as any)).toBe(-1);
     });
 
     it('DPO: days payable outstanding', () => {
@@ -200,14 +198,14 @@ describe('FormulaFunctionRegistry', () => {
 
     it('YTD: year-to-date sum', () => {
       const months = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
-      expect(FormulaFunctionRegistry.YTD(months, 2)).toBe(60); // Jan+Feb+Mar
-      expect(FormulaFunctionRegistry.YTD(months, 5)).toBe(210); // Jan-Jun
+      expect(FormulaFunctionRegistry.YTD(months, 2)).toBe(60);
+      expect(FormulaFunctionRegistry.YTD(months, 5)).toBe(210);
     });
 
     it('QTD: quarter-to-date sum', () => {
       const months = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
-      expect(FormulaFunctionRegistry.QTD(months, 0)).toBe(60); // Q1: Jan+Feb+Mar
-      expect(FormulaFunctionRegistry.QTD(months, 1)).toBe(150); // Q2: Apr+May+Jun
+      expect(FormulaFunctionRegistry.QTD(months, 0)).toBe(60);
+      expect(FormulaFunctionRegistry.QTD(months, 1)).toBe(150);
     });
 
     it('ROLLING: rolling average', () => {
@@ -225,7 +223,7 @@ describe('FormulaFunctionRegistry', () => {
     });
 
     it('MOVING_AVERAGE: same as ROLLING', () => {
-      const result = FormulaFunctionRegistry.MOVING_AVERAGE([10, 20, 30, 40], 2);
+      const result = FormulaFunctionRegistry.MOVING_AVERAGE([10, 20, 30, 40] as any, 2);
       expect(result).toEqual([15, 25, 35]);
     });
 
@@ -254,7 +252,7 @@ describe('FormulaFunctionRegistry', () => {
 
   describe('allocation functions', () => {
     it('ALLOCATE: distribute by weights', () => {
-      expect(FormulaFunctionRegistry.ALLOCATE(1000, [1, 2, 3])).toEqual([
+      expect(FormulaFunctionRegistry.ALLOCATE(1000, [1, 2, 3] as any)).toEqual([
         1000 / 6,
         2000 / 6,
         3000 / 6,
@@ -262,7 +260,7 @@ describe('FormulaFunctionRegistry', () => {
     });
 
     it('ALLOCATE: zero weights', () => {
-      expect(FormulaFunctionRegistry.ALLOCATE(1000, [0, 0])).toEqual([0, 0]);
+      expect(FormulaFunctionRegistry.ALLOCATE(1000, [0, 0] as any)).toEqual([0, 0]);
     });
 
     it('SPREAD: even distribution', () => {
@@ -274,13 +272,13 @@ describe('FormulaFunctionRegistry', () => {
     });
 
     it('DISTRIBUTE: by distribution array', () => {
-      const result = FormulaFunctionRegistry.DISTRIBUTE(1000, [10, 20, 30, 40]);
+      const result = FormulaFunctionRegistry.DISTRIBUTE(1000, [10, 20, 30, 40] as any);
       expect(result[0]).toBeCloseTo(100);
       expect(result[3]).toBeCloseTo(400);
     });
 
     it('SPLIT: by ratios', () => {
-      const result = FormulaFunctionRegistry.SPLIT(1000, [2, 3, 5]);
+      const result = FormulaFunctionRegistry.SPLIT(1000, [2, 3, 5] as any);
       expect(result).toEqual([200, 300, 500]);
     });
 
@@ -357,7 +355,6 @@ describe('FormulaFunctionRegistry', () => {
     });
 
     it('STDEV: sample standard deviation', () => {
-      // Sample stdev (n-1 denominator) of [2,4,4,4,5,5,7,9] = 2.138
       expect(FormulaFunctionRegistry.STDEV([2, 4, 4, 4, 5, 5, 7, 9])).toBeCloseTo(2.138, 2);
     });
 
@@ -366,7 +363,6 @@ describe('FormulaFunctionRegistry', () => {
     });
 
     it('VARIANCE: sample variance', () => {
-      // Sample variance (n-1 denominator) of [2,4,4,4,5,5,7,9] = 4.571
       const variance = FormulaFunctionRegistry.VARIANCE([2, 4, 4, 4, 5, 5, 7, 9]);
       expect(variance).toBeCloseTo(4.571, 2);
     });

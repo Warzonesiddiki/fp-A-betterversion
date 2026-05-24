@@ -5,11 +5,10 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { TrendingUp, Plus, Download, FileText, Table as TableIcon, Play, Save } from 'lucide-react';
+import { DataTable } from '@/components/ui/DataTable';
+import { FileText, Table as TableIcon, Save } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { AssumptionEngine } from '@/engines/AssumptionEngine';
-import { SensitivityTableEngine } from '@/engines/SensitivityTableEngine';
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -60,7 +59,7 @@ const sensitivityData = [
 export default function ScenarioBuilderPage() {
   const { scenarios, createScenario } = useScenarioStore();
   const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
 
   const [growthRate, setGrowthRate] = useState(10);
   const [headcountChange, setHeadcountChange] = useState(20);
@@ -93,14 +92,72 @@ export default function ScenarioBuilderPage() {
     createScenario({
       name: `Scenario ${scenarios.length + 1}`,
       description: `Growth ${growthRate}%, HC +${headcountChange}, Pricing +${pricingChange}%, COGS ${cogsChange}%`,
-      assumptions: { growthRate, headcountChange, pricingChange, cogsChange },
-      results: {
+      baseBudgetId: '',
+      baseBudgetName: '',
+      type: 'Custom' as const,
+      probability: 1,
+      isActive: true,
+      assumptions: [
+        {
+          id: 'growth',
+          name: 'Growth Rate',
+          driverType: 'percentage',
+          baseValue: 10,
+          currentValue: growthRate,
+          minValue: -50,
+          maxValue: 100,
+          stepSize: 1,
+          unit: '%',
+          affectedAccountIds: [],
+        },
+        {
+          id: 'hc',
+          name: 'Headcount Change',
+          driverType: 'absolute',
+          baseValue: 0,
+          currentValue: headcountChange,
+          minValue: -100,
+          maxValue: 100,
+          stepSize: 1,
+          unit: 'FTE',
+          affectedAccountIds: [],
+        },
+        {
+          id: 'pricing',
+          name: 'Pricing Change',
+          driverType: 'percentage',
+          baseValue: 0,
+          currentValue: pricingChange,
+          minValue: -50,
+          maxValue: 50,
+          stepSize: 1,
+          unit: '%',
+          affectedAccountIds: [],
+        },
+        {
+          id: 'cogs',
+          name: 'COGS Change',
+          driverType: 'percentage',
+          baseValue: 0,
+          currentValue: cogsChange,
+          minValue: -50,
+          maxValue: 50,
+          stepSize: 1,
+          unit: '%',
+          affectedAccountIds: [],
+        },
+      ],
+      calculatedMetrics: {
         revenue: scenarioImpact.newRevenue,
         opex: scenarioImpact.newOpex,
         cogs: scenarioImpact.newCogs,
+        grossProfit: scenarioImpact.newRevenue - scenarioImpact.newCogs,
+        netIncome: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
+        ebitda: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
       },
-      status: 'draft',
-    });
+      createdBy: 'user',
+      createdByName: 'User',
+    } as unknown as Parameters<typeof createScenario>[0]);
   };
 
   const handleExportPDF = () => {

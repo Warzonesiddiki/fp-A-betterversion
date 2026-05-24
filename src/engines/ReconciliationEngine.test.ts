@@ -42,10 +42,12 @@ describe('ReconciliationEngine', () => {
       expect(discrepancies.length).toBeGreaterThan(0);
     });
 
-    it('ignores discrepancies within tolerance', () => {
+    it('marks discrepancies within tolerance as withinTolerance', () => {
       const { matched } = ReconciliationEngine.matchRecords(sourceA, sourceB, 'id');
       const discrepancies = ReconciliationEngine.findDiscrepancies(matched, 1000);
-      expect(discrepancies.length).toBe(0);
+      // All discrepancies are still returned, but marked as withinTolerance
+      expect(discrepancies.length).toBeGreaterThan(0);
+      expect(discrepancies.every((d) => d.withinTolerance)).toBe(true);
     });
   });
 
@@ -64,6 +66,18 @@ describe('ReconciliationEngine', () => {
       const result = ReconciliationEngine.reconcile(sourceA, sourceB, 'id');
       const report = ReconciliationEngine.generateReport(result);
       expect(report).toBeDefined();
+      expect(report.summary).toBeDefined();
+      expect(report.summary.matchRate).toBeDefined();
+    });
+  });
+
+  describe('autoResolve', () => {
+    it('resolves discrepancies within tolerance', () => {
+      const { matched } = ReconciliationEngine.matchRecords(sourceA, sourceB, 'id');
+      const discrepancies = ReconciliationEngine.findDiscrepancies(matched, 1000);
+      const resolutions = ReconciliationEngine.autoResolve(discrepancies, 1000);
+      expect(resolutions.length).toBe(discrepancies.length);
+      expect(resolutions[0].method).toBe('tolerance');
     });
   });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ETLPipelineEngine, type FieldMapping } from './ETLPipelineEngine';
+import { ETLPipelineEngine } from './ETLPipelineEngine';
 
 describe('ETLPipelineEngine', () => {
   let engine: ETLPipelineEngine;

@@ -104,9 +104,7 @@ describe('TemplateDesigner', () => {
       name: 'Custom Board Pack',
       type: 'pl_statement',
       description: 'My custom template',
-      sections: [
-        { id: 'sec-1', type: 'cover', title: 'Cover Page', order: 0, config: {} },
-      ],
+      sections: [{ id: 'sec-1', type: 'cover', title: 'Cover Page', order: 0, config: {} }],
       style: {
         primaryColor: '#FF0000',
         secondaryColor: '#00FF00',

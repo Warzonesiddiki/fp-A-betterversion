@@ -180,7 +180,7 @@ export class ScenarioEngine {
           `Assumption "${assumption.name}" must have min and max for uniform distribution`
         );
       }
-      if (assumption.type === 'uniform' && assumption.min >= assumption.max) {
+      if (assumption.type === 'uniform' && assumption.min! >= assumption.max!) {
         throw new Error(`Assumption "${assumption.name}" min must be less than max`);
       }
     }
@@ -198,7 +198,7 @@ export class ScenarioEngine {
           const u1 = randomFn();
           const u2 = randomFn();
           const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-          return dist.mean + z0 * (dist.stdDev ?? 1);
+          return (dist.mean ?? 0) + z0 * (dist.stdDev ?? 1);
         }
         case 'triangular': {
           const a = dist.min ?? 0;
@@ -209,7 +209,7 @@ export class ScenarioEngine {
           return b - Math.sqrt((1 - r) * (b - a) * (b - c));
         }
         default:
-          return dist.mean;
+          return dist.mean ?? 0;
       }
     };
 

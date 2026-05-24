@@ -99,16 +99,13 @@ export default function DriverPlanningPage() {
     isRecalculating,
     lastCascadeResult,
     getRulesForDriver,
-    getAllRules,
-    detectCircularDependencies,
-    loadDriverTemplate,
     calculateCascade,
     analyzeImpact,
     reset,
   } = useDriverStore();
 
   const drivers = useMemo(() => engine.listDrivers(), [engine]);
-  const allRules = useMemo(() => getAllRules(), [getAllRules]);
+  const allRules = useMemo(() => engine.getAllRules(), [engine]);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [form, setForm] = useState<NewDriverForm>(INITIAL_FORM);
@@ -117,8 +114,8 @@ export default function DriverPlanningPage() {
   const [impactPreviews, setImpactPreviews] = useState<Record<string, ImpactAnalysis>>({});
   const [showTemplates, setShowTemplates] = useState(false);
   const circularDeps = useMemo(
-    () => detectCircularDependencies(),
-    [detectCircularDependencies, drivers.length, allRules.length]
+    () => engine.detectCircularDependencies(),
+    [engine, drivers.length, allRules.length]
   );
 
   // Group drivers by category
@@ -154,7 +151,6 @@ export default function DriverPlanningPage() {
       step: form.step,
       category: form.category,
       tags: [],
-      linkedAccountIds: [],
     });
     setForm(INITIAL_FORM);
     setShowAddForm(false);
@@ -216,7 +212,20 @@ export default function DriverPlanningPage() {
   };
 
   const handleLoadTemplate = (template: DriverTemplate) => {
-    loadDriverTemplate(template);
+    template.drivers.forEach((driver) => {
+      addDriver({
+        name: driver.name,
+        description: driver.description,
+        unit: driver.unit,
+        baseValue: driver.baseValue,
+        currentValue: driver.currentValue,
+        minValue: driver.minValue,
+        maxValue: driver.maxValue,
+        step: driver.step,
+        category: driver.category,
+        tags: driver.tags,
+      });
+    });
     setShowTemplates(false);
   };
 

@@ -12,18 +12,21 @@ function makeManifest(overrides: Partial<PluginManifest> = {}): PluginManifest {
     version: '1.0.0',
     description: 'A test plugin',
     author: 'Test',
-    type: 'engine',
+    license: 'MIT',
+    type: 'formula',
     entry: './test-plugin',
     permissions: ['read-data'],
     dependencies: [],
     conflicts: [],
-    minFinPlanVersion: undefined,
-    maxFinPlanVersion: undefined,
+    tags: [],
     ...overrides,
   };
 }
 
 class TestPlugin implements Plugin {
+  id = 'test-plugin';
+  name = 'Test Plugin';
+  version = '1.0.0';
   api!: PluginAPI;
   initCalls = 0;
   destroyCalls = 0;
@@ -65,7 +68,7 @@ describe('PluginEngine', () => {
     it('calls plugin.init on install', async () => {
       const manifest = makeManifest();
       const instance = await engine.install(manifest, pluginModule);
-      expect((instance.plugin as TestPlugin).initCalls).toBe(1);
+      expect((instance.plugin as unknown as TestPlugin).initCalls).toBe(1);
     });
 
     it('rejects plugin with missing id', async () => {
@@ -82,16 +85,12 @@ describe('PluginEngine', () => {
 
     it('rejects plugin with missing type', async () => {
       const manifest = makeManifest({ type: '' as any });
-      await expect(engine.install(manifest, pluginModule)).rejects.toThrow(
-        'Missing plugin type'
-      );
+      await expect(engine.install(manifest, pluginModule)).rejects.toThrow('Missing plugin type');
     });
 
     it('rejects plugin with missing entry', async () => {
       const manifest = makeManifest({ entry: '' });
-      await expect(engine.install(manifest, pluginModule)).rejects.toThrow(
-        'Missing entry point'
-      );
+      await expect(engine.install(manifest, pluginModule)).rejects.toThrow('Missing entry point');
     });
 
     it('rejects plugin with conflicting dependency', async () => {
@@ -105,16 +104,12 @@ describe('PluginEngine', () => {
 
     it('rejects plugin with missing dependency', async () => {
       const manifest = makeManifest({ dependencies: ['missing-dep'] });
-      await expect(engine.install(manifest, pluginModule)).rejects.toThrow(
-        'Missing dependency'
-      );
+      await expect(engine.install(manifest, pluginModule)).rejects.toThrow('Missing dependency');
     });
 
     it('rejects plugin requiring higher FinPlan version', async () => {
       const manifest = makeManifest({ minFinPlanVersion: '99.0.0' });
-      await expect(engine.install(manifest, pluginModule)).rejects.toThrow(
-        'Requires FinPlan Pro'
-      );
+      await expect(engine.install(manifest, pluginModule)).rejects.toThrow('Requires FinPlan Pro');
     });
   });
 
@@ -130,7 +125,7 @@ describe('PluginEngine', () => {
       const manifest = makeManifest();
       const instance = await engine.install(manifest, pluginModule);
       await engine.uninstall('test-plugin');
-      expect((instance.plugin as TestPlugin).destroyCalls).toBe(1);
+      expect((instance.plugin as unknown as TestPlugin).destroyCalls).toBe(1);
     });
 
     it('throws for non-existent plugin', async () => {
@@ -171,38 +166,36 @@ describe('PluginEngine', () => {
     });
 
     it('getPluginsByType filters correctly', async () => {
-      await engine.install(makeManifest({ id: 'eng', type: 'engine' }), pluginModule);
-      await engine.install(makeManifest({ id: 'chart', type: 'chart' }), pluginModule);
-      expect(engine.getPluginsByType('engine').length).toBe(1);
+      await engine.install(makeManifest({ id: 'eng', type: 'formula' }), pluginModule);
+      await engine.install(makeManifest({ id: 'chart', type: 'dashboard' }), pluginModule);
+      expect(engine.getPluginsByType('formula').length).toBe(1);
     });
   });
 
   describe('plugin API — formula registration', () => {
     it('registers formula function via plugin API', async () => {
-      const manifest = makeManifest();
-      const instance = await engine.install(manifest, pluginModule);
-      const plugin = instance.plugin as TestPlugin;
+      const instance = await engine.install(makeManifest(), pluginModule);
+      const plugin = instance.plugin as unknown as TestPlugin;
       plugin.api.formula.registerFunction('CUSTOM_FUNC', {
-        name: 'CUSTOM_FUNC',
         description: 'Test function',
-        syntax: 'CUSTOM_FUNC(x)',
         category: 'custom',
-        args: [],
+        parameters: [],
+        returnType: 'number',
+        execute: () => 42,
       });
       const funcs = engine.getRegisteredFormulaFunctions();
       expect(funcs.has('CUSTOM_FUNC')).toBe(true);
     });
 
     it('unregisters formula function', async () => {
-      const manifest = makeManifest();
-      const instance = await engine.install(manifest, pluginModule);
-      const plugin = instance.plugin as TestPlugin;
+      const instance = await engine.install(makeManifest(), pluginModule);
+      const plugin = instance.plugin as unknown as TestPlugin;
       plugin.api.formula.registerFunction('TEMP_FUNC', {
-        name: 'TEMP_FUNC',
         description: '',
-        syntax: '',
         category: 'custom',
-        args: [],
+        parameters: [],
+        returnType: 'number',
+        execute: () => 0,
       });
       plugin.api.formula.unregisterFunction('TEMP_FUNC');
       expect(engine.getRegisteredFormulaFunctions().has('TEMP_FUNC')).toBe(false);
@@ -211,18 +204,16 @@ describe('PluginEngine', () => {
 
   describe('plugin API — storage', () => {
     it('stores and retrieves data', async () => {
-      const manifest = makeManifest();
-      const instance = await engine.install(manifest, pluginModule);
-      const plugin = instance.plugin as TestPlugin;
+      const instance = await engine.install(makeManifest(), pluginModule);
+      const plugin = instance.plugin as unknown as TestPlugin;
       await plugin.api.storage.set('key1', { value: 42 });
       const result = await plugin.api.storage.get('key1');
       expect(result).toEqual({ value: 42 });
     });
 
     it('returns null for missing key', async () => {
-      const manifest = makeManifest();
-      const instance = await engine.install(manifest, pluginModule);
-      const plugin = instance.plugin as TestPlugin;
+      const instance = await engine.install(makeManifest(), pluginModule);
+      const plugin = instance.plugin as unknown as TestPlugin;
       const result = await plugin.api.storage.get('nonexistent');
       expect(result).toBeNull();
     });
@@ -230,9 +221,8 @@ describe('PluginEngine', () => {
 
   describe('plugin API — events', () => {
     it('registers and fires event handler', async () => {
-      const manifest = makeManifest();
-      const instance = await engine.install(manifest, pluginModule);
-      const plugin = instance.plugin as TestPlugin;
+      const instance = await engine.install(makeManifest(), pluginModule);
+      const plugin = instance.plugin as unknown as TestPlugin;
       let received: unknown = null;
       plugin.api.events.on('test-event', (data) => {
         received = data;
@@ -242,9 +232,8 @@ describe('PluginEngine', () => {
     });
 
     it('unregisters event handler', async () => {
-      const manifest = makeManifest();
-      const instance = await engine.install(manifest, pluginModule);
-      const plugin = instance.plugin as TestPlugin;
+      const instance = await engine.install(makeManifest(), pluginModule);
+      const plugin = instance.plugin as unknown as TestPlugin;
       let count = 0;
       const handler = () => {
         count++;

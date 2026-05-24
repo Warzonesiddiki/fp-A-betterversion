@@ -13,30 +13,46 @@ describe('ReportDistributionEngine', () => {
 
   describe('distribute', () => {
     it('distributes a report to recipients', () => {
-      const result = engine.distribute({
-        reportId: 'rpt-1',
-        recipients: ['user1@test.com', 'user2@test.com'],
-        format: 'pdf',
+      const r1 = engine.addRecipient('Alice', 'alice@test.com');
+      const r2 = engine.addRecipient('Bob', 'bob@test.com');
+      const list = engine.createDistributionList('Monthly', 'Monthly report', [r1.id, r2.id]);
+      const result = engine.recordDelivery('rpt-1', list.id, {
+        method: 'email',
         subject: 'Monthly Report',
+        attachFormats: ['pdf'],
+        priority: 'normal',
+        retryOnFailure: false,
+        maxRetries: 0,
       });
-      expect(result.success).toBe(true);
-      expect(result.sent).toBe(2);
+      expect(result.status).toBe('sent');
+      expect(result.recipientCount).toBe(2);
     });
 
     it('handles empty recipients', () => {
-      const result = engine.distribute({
-        reportId: 'rpt-1',
-        recipients: [],
-        format: 'pdf',
+      const list = engine.createDistributionList('Empty', 'No recipients', []);
+      const result = engine.recordDelivery('rpt-1', list.id, {
+        method: 'email',
+        attachFormats: ['pdf'],
+        priority: 'normal',
+        retryOnFailure: false,
+        maxRetries: 0,
       });
-      expect(result.success).toBe(true);
-      expect(result.sent).toBe(0);
+      expect(result.status).toBe('sent');
+      expect(result.recipientCount).toBe(0);
     });
   });
 
   describe('getDeliveryHistory', () => {
     it('returns distribution history', () => {
-      engine.distribute({ reportId: 'rpt-1', recipients: ['a@b.com'], format: 'pdf' });
+      const r1 = engine.addRecipient('Alice', 'a@b.com');
+      const list = engine.createDistributionList('Test', '', [r1.id]);
+      engine.recordDelivery('rpt-1', list.id, {
+        method: 'email',
+        attachFormats: ['pdf'],
+        priority: 'normal',
+        retryOnFailure: false,
+        maxRetries: 0,
+      });
       const history = engine.getDeliveryHistory();
       expect(history.length).toBe(1);
     });

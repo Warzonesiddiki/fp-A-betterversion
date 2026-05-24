@@ -10,17 +10,20 @@ export interface CommandItem {
   onSelect: () => void;
 }
 interface CommandPaletteProps {
-  items: CommandItem[];
-  isOpen: boolean;
+  items?: CommandItem[];
+  isOpen?: boolean;
+  open?: boolean;
   onClose: () => void;
   placeholder?: string;
 }
 export function CommandPalette({
-  items,
+  items = [],
   isOpen,
+  open,
   onClose,
-  placeholder = 'Search commands...',
+  placeholder,
 }: CommandPaletteProps) {
+  const visible = isOpen ?? open ?? false;
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,16 +59,22 @@ export function CommandPalette({
     }
     return groups;
   }, [filteredItems]);
+  const prevVisible = useRef(false);
   useEffect(() => {
-    if (isOpen) {
+    if (visible && !prevVisible.current) {
       setQuery('');
       setSelectedIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [isOpen]);
+    prevVisible.current = visible;
+  }, [visible]);
+  const prevQuery = useRef(query);
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [query]);
+    if (query !== prevQuery.current && filteredItems.length > 0) {
+      setSelectedIndex(0);
+    }
+    prevQuery.current = query;
+  }, [query, filteredItems]);
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'ArrowDown':
@@ -93,19 +102,27 @@ export function CommandPalette({
     const selectedEl = listRef.current?.querySelector(`[data-index="${selectedIndex}"]`);
     selectedEl?.scrollIntoView({ block: 'nearest' });
   }, [selectedIndex]);
-  if (!isOpen) return null;
+  if (!visible) return null;
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] bg-black/50 backdrop-blur-sm"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Command palette"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label="Close command palette"
     >
       <div
         className="w-full max-w-lg rounded-lg shadow-2xl border overflow-hidden animate-scale-in"
         style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+        tabIndex={-1}
       >
         {/* Search Input */}
         <div
@@ -159,7 +176,7 @@ export function CommandPalette({
                   {category}
                 </div>
                 {categoryItems.map((item) => {
-                  const globalIndex = filteredItems.indexOf(item);
+                  const globalIndex = filteredItems.findIndex((f) => f.id === item.id);
                   return (
                     <button
                       key={item.id}

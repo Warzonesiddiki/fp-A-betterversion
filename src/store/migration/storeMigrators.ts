@@ -10,7 +10,6 @@ import type {
   DimensionDefinition,
   MeasureDefinition,
 } from '@/types/cube-types';
-import type { PersistStorage } from 'zustand/middleware';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -38,7 +37,7 @@ export type StoreData = Record<string, unknown>;
 // Helpers
 // ---------------------------------------------------------------------------
 
-function cellKey(cube: string, coords: Record<string, string>, measure: string): string {
+function _cellKey(cube: string, coords: Record<string, string>, measure: string): string {
   const sortedCoords = Object.keys(coords)
     .sort()
     .map((k) => `${k}=${coords[k]}`)

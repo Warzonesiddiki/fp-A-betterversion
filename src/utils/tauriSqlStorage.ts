@@ -27,7 +27,9 @@ export const tauriSqlStorage: PersistStorage<any> = {
   setItem: async (name, value) => {
     try {
       const db = await getDb();
-      const stringValue = JSON.stringify(value);
+      // If value is already a string, don't stringify it again
+      const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+
       // Use UPSERT pattern for SQLite
       await db.execute(
         'INSERT INTO stores (id, value) VALUES ($1, $2) ON CONFLICT(id) DO UPDATE SET value = $2',

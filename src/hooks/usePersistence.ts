@@ -25,16 +25,17 @@ export function usePersistence<T>(options: PersistenceOptions) {
         stored = val ? JSON.parse(String(val)) : null;
       }
 
-      if (stored && options.version && stored._version !== options.version) {
+      const storedRecord = stored as Record<string, unknown> | null;
+      if (storedRecord && options.version && storedRecord._version !== options.version) {
         if (options.migrate) {
-          stored = options.migrate(stored, stored._version || 0);
+          stored = options.migrate(storedRecord, (storedRecord._version as number) || 0);
         }
       }
 
-      const result = stored ? (stored._data as T) : null;
+      const result = storedRecord ? (storedRecord._data as T) : null;
       setData(result);
       return result;
-    } catch (e) {
+    } catch (_e) {
       setError('Failed to load data');
       return null;
     } finally {
@@ -52,7 +53,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
         await masterStorage.setItem(options.key, serialized as any);
       }
       setData(newData);
-    } catch (e) {
+    } catch (_e) {
       setError('Failed to save data');
     }
   };
@@ -65,7 +66,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
         await masterStorage.removeItem(options.key);
       }
       setData(null);
-    } catch (e) {
+    } catch (_e) {
       setError('Failed to clear data');
     }
   };

@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import type { ExportContext } from '@/engines/ExportTemplateEngine';
 // =============================================================================
 // Financial Statement Templates — P&L, Balance Sheet, Cash Flow, BvA
 // =============================================================================
@@ -94,12 +93,12 @@ const BS_ROWS: StatementRow[] = [
   { label: '', indent: 0, isBlank: true },
   { label: 'TOTAL LIABILITIES', indent: 0, isTotal: true },
   { label: '', indent: 0, isBlank: true },
-  { label: 'Stockholders\' Equity', indent: 0, isHeader: true },
+  { label: "Stockholders' Equity", indent: 0, isHeader: true },
   { label: '  Common Stock', indent: 1 },
   { label: '  Additional Paid-In Capital', indent: 1 },
   { label: '  Retained Earnings', indent: 1 },
   { label: '  Accumulated Other Comprehensive Income', indent: 1 },
-  { label: 'Total Stockholders\' Equity', indent: 0, isTotal: true },
+  { label: "Total Stockholders' Equity", indent: 0, isTotal: true },
   { label: '', indent: 0, isBlank: true },
   { label: 'TOTAL LIABILITIES & EQUITY', indent: 0, isTotal: true },
 ];
@@ -178,14 +177,19 @@ function StatementTable({
     <div className="mb-8">
       <div className="mb-4">
         <h2 className="text-xl font-bold text-[var(--text-primary)] dark:text-gray-100">{title}</h2>
-        <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">{subtitle}</p>
+        <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+          {subtitle}
+        </p>
       </div>
       <div className="overflow-x-auto border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-800 text-white">
               {columns.map((col) => (
-                <th key={col.key} className={`px-3 py-2.5 font-medium ${col.align === 'right' ? 'text-right' : 'text-left'}`}>
+                <th
+                  key={col.key}
+                  className={`px-3 py-2.5 font-medium ${col.align === 'right' ? 'text-right' : 'text-left'}`}
+                >
                   {col.label}
                 </th>
               ))}
@@ -194,19 +198,30 @@ function StatementTable({
           <tbody>
             {rows.map((row, i) => {
               if (row.isBlank) {
-                return <tr key={i}><td colSpan={columns.length} className="h-2" /></tr>;
+                return (
+                  <tr key={i}>
+                    <td colSpan={columns.length} className="h-2" />
+                  </tr>
+                );
               }
               const rowClass = row.isHeader
                 ? 'bg-gray-50 dark:bg-gray-900 dark:bg-gray-800/50 font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300'
                 : row.isTotal
-                ? 'bg-blue-50 dark:bg-blue-900/20 font-bold text-[var(--text-primary)] dark:text-gray-100 border-t-2 border-blue-200 dark:border-blue-800'
-                : 'text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500';
+                  ? 'bg-blue-50 dark:bg-blue-900/20 font-bold text-[var(--text-primary)] dark:text-gray-100 border-t-2 border-blue-200 dark:border-blue-800'
+                  : 'text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500';
               return (
-                <tr key={i} className={`border-b border-gray-100 dark:border-gray-800 dark:border-gray-800 ${rowClass}`}>
+                <tr
+                  key={i}
+                  className={`border-b border-gray-100 dark:border-gray-800 dark:border-gray-800 ${rowClass}`}
+                >
                   {columns.map((col) => {
                     if (col.key === 'item') {
                       return (
-                        <td key={col.key} className="px-3 py-1.5" style={{ paddingLeft: `${row.indent * 16 + 12}px` }}>
+                        <td
+                          key={col.key}
+                          className="px-3 py-1.5"
+                          style={{ paddingLeft: `${row.indent * 16 + 12}px` }}
+                        >
                           {row.label}
                         </td>
                       );
@@ -214,23 +229,39 @@ function StatementTable({
                     const dataKey = `${row.label.toLowerCase().replace(/[^a-z]/g, '')}_${col.key}`;
                     const val = data?.[dataKey];
                     if (col.key === 'variancePct') {
-                      return <td key={col.key} className="px-3 py-1.5 text-right">{fmtPct(val)}</td>;
+                      return (
+                        <td key={col.key} className="px-3 py-1.5 text-right">
+                          {fmtPct(val)}
+                        </td>
+                      );
                     }
                     if (col.key === 'status') {
-                      if (val === undefined) return <td key={col.key} className="px-3 py-1.5 text-right">—</td>;
+                      if (val === undefined)
+                        return (
+                          <td key={col.key} className="px-3 py-1.5 text-right">
+                            —
+                          </td>
+                        );
                       const isGood = val >= 0;
                       return (
                         <td key={col.key} className="px-3 py-1.5 text-right">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            isGood ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                          }`}>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                              isGood
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                            }`}
+                          >
                             {isGood ? 'Favorable' : 'Unfavorable'}
                           </span>
                         </td>
                       );
                     }
-                    return <td key={col.key} className="px-3 py-1.5 text-right">{fmt(val)}</td>;
+                    return (
+                      <td key={col.key} className="px-3 py-1.5 text-right">
+                        {fmt(val)}
+                      </td>
+                    );
                   })}
                 </tr>
               );
@@ -242,8 +273,17 @@ function StatementTable({
   );
 }
 // --- Exported Templates ---
-export function ProfitLossStatement({ entity, period, currency, data, onExport }: FinancialStatementProps) {
-  const subtitle = useMemo(() => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`, [entity, period, currency]);
+export function ProfitLossStatement({
+  entity,
+  period,
+  currency,
+  data,
+  onExport,
+}: FinancialStatementProps) {
+  const subtitle = useMemo(
+    () => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`,
+    [entity, period, currency]
+  );
   const columns: StatementColumn[] = [
     { key: 'item', label: 'Line Item', align: 'left' },
     { key: 'actual', label: 'Actual', align: 'right' },
@@ -255,12 +295,29 @@ export function ProfitLossStatement({ entity, period, currency, data, onExport }
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">Income Statement</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+          Income Statement
+        </h1>
         {onExport && (
           <div className="flex gap-2">
-            <button onClick={() => onExport('pdf')} className="px-3 py-1.5 bg-red-600 text-white rounded text-sm">PDF</button>
-            <button onClick={() => onExport('excel')} className="px-3 py-1.5 bg-green-600 text-white rounded text-sm">Excel</button>
-            <button onClick={() => onExport('csv')} className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm">CSV</button>
+            <button
+              onClick={() => onExport('pdf')}
+              className="px-3 py-1.5 bg-red-600 text-white rounded text-sm"
+            >
+              PDF
+            </button>
+            <button
+              onClick={() => onExport('excel')}
+              className="px-3 py-1.5 bg-green-600 text-white rounded text-sm"
+            >
+              Excel
+            </button>
+            <button
+              onClick={() => onExport('csv')}
+              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+            >
+              CSV
+            </button>
           </div>
         )}
       </div>
@@ -268,8 +325,17 @@ export function ProfitLossStatement({ entity, period, currency, data, onExport }
     </div>
   );
 }
-export function BalanceSheet({ entity, period, currency, data, onExport }: FinancialStatementProps) {
-  const subtitle = useMemo(() => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`, [entity, period, currency]);
+export function BalanceSheet({
+  entity,
+  period,
+  currency,
+  data,
+  onExport,
+}: FinancialStatementProps) {
+  const subtitle = useMemo(
+    () => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`,
+    [entity, period, currency]
+  );
   const columns: StatementColumn[] = [
     { key: 'item', label: 'Account', align: 'left' },
     { key: 'current', label: 'Current Period', align: 'right' },
@@ -280,12 +346,29 @@ export function BalanceSheet({ entity, period, currency, data, onExport }: Finan
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">Balance Sheet</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+          Balance Sheet
+        </h1>
         {onExport && (
           <div className="flex gap-2">
-            <button onClick={() => onExport('pdf')} className="px-3 py-1.5 bg-red-600 text-white rounded text-sm">PDF</button>
-            <button onClick={() => onExport('excel')} className="px-3 py-1.5 bg-green-600 text-white rounded text-sm">Excel</button>
-            <button onClick={() => onExport('csv')} className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm">CSV</button>
+            <button
+              onClick={() => onExport('pdf')}
+              className="px-3 py-1.5 bg-red-600 text-white rounded text-sm"
+            >
+              PDF
+            </button>
+            <button
+              onClick={() => onExport('excel')}
+              className="px-3 py-1.5 bg-green-600 text-white rounded text-sm"
+            >
+              Excel
+            </button>
+            <button
+              onClick={() => onExport('csv')}
+              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+            >
+              CSV
+            </button>
           </div>
         )}
       </div>
@@ -293,8 +376,17 @@ export function BalanceSheet({ entity, period, currency, data, onExport }: Finan
     </div>
   );
 }
-export function CashFlowStatement({ entity, period, currency, data, onExport }: FinancialStatementProps) {
-  const subtitle = useMemo(() => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`, [entity, period, currency]);
+export function CashFlowStatement({
+  entity,
+  period,
+  currency,
+  data,
+  onExport,
+}: FinancialStatementProps) {
+  const subtitle = useMemo(
+    () => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`,
+    [entity, period, currency]
+  );
   const columns: StatementColumn[] = [
     { key: 'item', label: 'Category', align: 'left' },
     { key: 'q1', label: 'Q1', align: 'right' },
@@ -306,12 +398,29 @@ export function CashFlowStatement({ entity, period, currency, data, onExport }: 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">Cash Flow Statement</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+          Cash Flow Statement
+        </h1>
         {onExport && (
           <div className="flex gap-2">
-            <button onClick={() => onExport('pdf')} className="px-3 py-1.5 bg-red-600 text-white rounded text-sm">PDF</button>
-            <button onClick={() => onExport('excel')} className="px-3 py-1.5 bg-green-600 text-white rounded text-sm">Excel</button>
-            <button onClick={() => onExport('csv')} className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm">CSV</button>
+            <button
+              onClick={() => onExport('pdf')}
+              className="px-3 py-1.5 bg-red-600 text-white rounded text-sm"
+            >
+              PDF
+            </button>
+            <button
+              onClick={() => onExport('excel')}
+              className="px-3 py-1.5 bg-green-600 text-white rounded text-sm"
+            >
+              Excel
+            </button>
+            <button
+              onClick={() => onExport('csv')}
+              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+            >
+              CSV
+            </button>
           </div>
         )}
       </div>
@@ -319,8 +428,17 @@ export function CashFlowStatement({ entity, period, currency, data, onExport }: 
     </div>
   );
 }
-export function BudgetVsActual({ entity, period, currency, data, onExport }: FinancialStatementProps) {
-  const subtitle = useMemo(() => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`, [entity, period, currency]);
+export function BudgetVsActual({
+  entity,
+  period,
+  currency,
+  data,
+  onExport,
+}: FinancialStatementProps) {
+  const subtitle = useMemo(
+    () => `${entity ?? 'Company'} — ${period ?? 'FY 2026'} — ${currency ?? 'USD'}`,
+    [entity, period, currency]
+  );
   const bvaRows: StatementRow[] = [
     { label: 'Revenue', indent: 0, isHeader: true },
     { label: '  Product Revenue', indent: 1 },
@@ -344,16 +462,39 @@ export function BudgetVsActual({ entity, period, currency, data, onExport }: Fin
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">Budget vs Actual</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+          Budget vs Actual
+        </h1>
         {onExport && (
           <div className="flex gap-2">
-            <button onClick={() => onExport('pdf')} className="px-3 py-1.5 bg-red-600 text-white rounded text-sm">PDF</button>
-            <button onClick={() => onExport('excel')} className="px-3 py-1.5 bg-green-600 text-white rounded text-sm">Excel</button>
-            <button onClick={() => onExport('csv')} className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm">CSV</button>
+            <button
+              onClick={() => onExport('pdf')}
+              className="px-3 py-1.5 bg-red-600 text-white rounded text-sm"
+            >
+              PDF
+            </button>
+            <button
+              onClick={() => onExport('excel')}
+              className="px-3 py-1.5 bg-green-600 text-white rounded text-sm"
+            >
+              Excel
+            </button>
+            <button
+              onClick={() => onExport('csv')}
+              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+            >
+              CSV
+            </button>
           </div>
         )}
       </div>
-      <StatementTable title="" subtitle={subtitle} columns={BVA_COLUMNS} rows={bvaRows} data={data} />
+      <StatementTable
+        title=""
+        subtitle={subtitle}
+        columns={BVA_COLUMNS}
+        rows={bvaRows}
+        data={data}
+      />
     </div>
   );
 }

@@ -18,7 +18,7 @@ import {
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
 import { YieldCurveEngine, type CurvePoint } from '@/engines';
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 /** Build a yield curve from GL entries by mapping entity account codes to maturities. */
 function buildCurveFromGL(entries: GLEntry[]): CurvePoint[] {

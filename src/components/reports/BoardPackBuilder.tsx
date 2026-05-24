@@ -7,7 +7,13 @@ export function BoardPackBuilder() {
       <div className="md:col-span-1 space-y-4">
         <h3 className="font-bold text-white">Sections</h3>
         <div className="space-y-2">
-          {['Executive Summary', 'P&L Statement', 'Balance Sheet', 'Cash Flow', 'Variance Analysis'].map(s => (
+          {[
+            'Executive Summary',
+            'P&L Statement',
+            'Balance Sheet',
+            'Cash Flow',
+            'Variance Analysis',
+          ].map((s) => (
             <Card key={s} className="p-3 text-sm cursor-move hover:border-blue-500">
               {s}
             </Card>

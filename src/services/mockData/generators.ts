@@ -1,4 +1,5 @@
 import type {
+  GLEntry,
   Budget,
   Scenario,
   User,
@@ -25,7 +26,6 @@ import type {
   TaskStatus,
   TaskPriority,
 } from '@/types';
-import type { GLEntry } from './glData';
 
 // Utility for ID generation
 const genId = (prefix: string) => `${prefix}-${Math.random().toString(36).substring(2, 11)}`;
@@ -144,17 +144,39 @@ export function generateGLAccounts(count: number = 20): GLAccount[] {
 }
 
 export function generateGLEntries(count: number = 50): GLEntry[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: genId('je'),
-    accountId: genId('acct'),
-    accountName: `Test Account ${i}`,
-    accountCode: `${1000 + i}`,
-    amount: Math.random() * 10000,
-    date: randomDate(new Date(2023, 0, 1), new Date()),
-    description: `Journal Entry ${i}`,
-    reference: `REF-${i}`,
-    type: 'Actual',
-  }));
+  return Array.from({ length: count }, (_, i) => {
+    const postDate = randomDate(new Date(2023, 0, 1), new Date());
+    const fiscalPeriod = `2024-${String((i % 12) + 1).padStart(2, '0')}`;
+    const debit = Math.random() * 10000;
+    const credit = Math.random() * 5000;
+    const id = genId('je');
+    const accountCode = `${1000 + i}`;
+    return {
+      id,
+      accountId: id,
+      accountCode,
+      accountName: `Test Account ${i}`,
+      period: fiscalPeriod,
+      periodName: fiscalPeriod,
+      debit,
+      credit,
+      netChange: credit - debit,
+      date: postDate,
+      postDate,
+      amount: debit + credit,
+      description: `Journal Entry ${i}`,
+      reference: id,
+      entityId: 'Default',
+      departmentId: 'General',
+      currency: 'USD',
+      fiscalPeriod,
+      department: 'General',
+      entity: 'Default',
+      journalId: id,
+      journalLine: i + 1,
+      source: 'Manual',
+    };
+  });
 }
 
 export function generateForecasts(count: number = 5): Forecast[] {

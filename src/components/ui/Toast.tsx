@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
-import { useAnnounce } from '@/hooks/useAnnounce';
 import { cn } from '@/utils/cn';
+
 import type { ToastMessage } from '@/types';
 
 export interface ToastProps {

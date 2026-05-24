@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
-import { Skeleton } from '@/components/ui/Skeleton';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { FileText, Download, Calendar, Filter, BarChart3, PieChart } from 'lucide-react';
+import { FileText, Download, Calendar } from 'lucide-react';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -18,7 +18,7 @@ function formatCurrency(n: number): string {
 }
 
 export default function GLReportingPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — G L Reporting';
@@ -26,7 +26,7 @@ export default function GLReportingPage() {
 
   const { entries, accounts, trialBalance } = useGLStore();
   const navigate = useNavigate();
-  const [dateRange, setDateRange] = useState(() => {
+  const [_dateRange, _setDateRange] = useState(() => {
     const now = new Date();
     const first = new Date(now.getFullYear(), now.getMonth(), 1);
     return {
@@ -34,7 +34,7 @@ export default function GLReportingPage() {
       end: now.toISOString().slice(0, 10),
     };
   });
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [_typeFilter, _setTypeFilter] = useState('all');
 
   const summary = useMemo(() => {
     if (entries.length === 0) return null;

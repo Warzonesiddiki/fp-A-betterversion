@@ -122,7 +122,7 @@ export const budgetStateMachine = new StateMachine('budget', [
     to: 'submitted',
     requiresRole: ['analyst', 'admin', 'cfo'],
     guard: (ctx) => {
-      const budget = ctx.entity;
+      const budget = ctx.entity as { lineItems?: unknown[]; totalAmount?: number };
       if (!budget.lineItems?.length) return 'Cannot submit empty budget';
       if (budget.totalAmount === 0) return 'Budget total cannot be zero';
       return true;
@@ -133,7 +133,7 @@ export const budgetStateMachine = new StateMachine('budget', [
     to: 'approved',
     requiresRole: ['cfo', 'controller', 'admin'],
     guard: (ctx) => {
-      if (ctx.entity.createdBy === ctx.userId) {
+      if ((ctx.entity as { createdBy?: string }).createdBy === ctx.userId) {
         return 'Cannot approve your own budget';
       }
       return true;
@@ -173,7 +173,8 @@ export const periodStateMachine = new StateMachine('period', [
     to: 'soft_close',
     requiresRole: ['controller', 'admin'],
     guard: (ctx) => {
-      const unposted = ctx.entity.unpostedJournals ?? 0;
+      const entity = ctx.entity as { unpostedJournals?: number };
+      const unposted = entity.unpostedJournals ?? 0;
       if (unposted > 0) return `${unposted} unposted journals remain`;
       return true;
     },
@@ -183,7 +184,8 @@ export const periodStateMachine = new StateMachine('period', [
     to: 'hard_close',
     requiresRole: ['controller', 'cfo', 'admin'],
     guard: (ctx) => {
-      const unreconciled = ctx.entity.unreconciledAccounts ?? 0;
+      const entity = ctx.entity as { unreconciledAccounts?: number };
+      const unreconciled = entity.unreconciledAccounts ?? 0;
       if (unreconciled > 0) return `${unreconciled} accounts not reconciled`;
       return true;
     },
@@ -212,7 +214,8 @@ export const forecastStateMachine = new StateMachine('forecast', [
     to: 'published',
     requiresRole: ['analyst', 'manager', 'admin'],
     guard: (ctx) => {
-      if (!ctx.entity.assumptions?.length) return 'Must define assumptions before publishing';
+      const entity = ctx.entity as { assumptions?: unknown[] };
+      if (!entity.assumptions?.length) return 'Must define assumptions before publishing';
       return true;
     },
   },

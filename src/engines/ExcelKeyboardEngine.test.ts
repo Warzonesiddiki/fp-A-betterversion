@@ -1,5 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { ExcelKeyboardEngine, type GridContext } from './ExcelKeyboardEngine';
+
+type MovePayload = { row: number; col: number };
 
 describe('ExcelKeyboardEngine', () => {
   const context: GridContext = {
@@ -20,7 +22,7 @@ describe('ExcelKeyboardEngine', () => {
         context
       );
       expect(action.type).toBe('move');
-      expect(action.payload?.row).toBe(2);
+      expect((action.payload as MovePayload).row).toBe(2);
     });
 
     it('should move down with ArrowDown', () => {
@@ -30,7 +32,7 @@ describe('ExcelKeyboardEngine', () => {
         context
       );
       expect(action.type).toBe('move');
-      expect(action.payload?.row).toBe(4);
+      expect((action.payload as MovePayload).row).toBe(4);
     });
 
     it('should not move beyond grid bounds', () => {
@@ -40,7 +42,7 @@ describe('ExcelKeyboardEngine', () => {
         { ctrl: false, shift: false, alt: false },
         topContext
       );
-      expect(action.payload?.row).toBe(0);
+      expect((action.payload as MovePayload).row).toBe(0);
     });
 
     it('should handle Tab to move right', () => {
@@ -50,7 +52,7 @@ describe('ExcelKeyboardEngine', () => {
         context
       );
       expect(action.type).toBe('move');
-      expect(action.payload?.col).toBe(3);
+      expect((action.payload as MovePayload).col).toBe(3);
     });
 
     it('should handle Shift+Tab to move left', () => {
@@ -59,7 +61,7 @@ describe('ExcelKeyboardEngine', () => {
         { ctrl: false, shift: true, alt: false },
         context
       );
-      expect(action.payload?.col).toBe(1);
+      expect((action.payload as MovePayload).col).toBe(1);
     });
 
     it('should handle Ctrl+C for copy', () => {
@@ -122,7 +124,7 @@ describe('ExcelKeyboardEngine', () => {
         { ctrl: false, shift: false, alt: false },
         context
       );
-      expect(action.payload?.col).toBe(0);
+      expect((action.payload as MovePayload).col).toBe(0);
     });
 
     it('should handle End to go to last column', () => {
@@ -131,7 +133,7 @@ describe('ExcelKeyboardEngine', () => {
         { ctrl: false, shift: false, alt: false },
         context
       );
-      expect(action.payload?.col).toBe(7);
+      expect((action.payload as MovePayload).col).toBe(7);
     });
 
     it('should return none for unknown keys', () => {

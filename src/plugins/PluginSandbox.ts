@@ -184,11 +184,11 @@ export function executeSandboxed<T = unknown>(
 
   // Inject finplan API as safe global
   const finplanApi = Object.freeze({
-    registerFormulaFunction: api.registerFormulaFunction?.bind(api),
-    registerChartType: api.registerChartType?.bind(api),
-    registerExportFormat: api.registerExportFormat?.bind(api),
-    registerDataSource: api.registerDataSource?.bind(api),
-    registerDashboardWidget: api.registerDashboardWidget?.bind(api),
+    registerFormulaFunction: api.formula?.registerFunction?.bind(api.formula),
+    registerChartType: api.dashboards?.registerWidget?.bind(api.dashboards),
+    registerExportFormat: api.export?.registerFormat?.bind(api.export),
+    registerDataSource: api.import?.registerConnector?.bind(api.import),
+    registerDashboardWidget: api.dashboards?.registerWidget?.bind(api.dashboards),
     log: (msg: string) => console.log(`[Plugin] ${msg}`),
   });
 

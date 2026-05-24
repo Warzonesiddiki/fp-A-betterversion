@@ -1106,9 +1106,10 @@ export class ProfessionalExportEngine {
     });
 
     if (config.orientation === 'l' || config.orientation === 'landscape') {
-      (engine as { pageW: number }).pageW = 297;
-      (engine as { pageH: number }).pageH = 210;
-      (engine as { contentW: number }).contentW = 297 - engine.margin.left - engine.margin.right;
+      (engine as unknown as { pageW: number }).pageW = 297;
+      (engine as unknown as { pageH: number }).pageH = 210;
+      (engine as unknown as { contentW: number }).contentW =
+        297 - engine.margin.left - engine.margin.right;
     }
 
     sections.forEach((section, idx) => {

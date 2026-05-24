@@ -27,6 +27,7 @@ vi.mock('@/components/ui/Badge', () => ({
   ),
 }));
 
+import type { VarianceAnalysis } from '@/types';
 import { VarianceTable } from '@/components/variance/VarianceTable';
 
 const mockAnalyses = [
@@ -37,7 +38,7 @@ const mockAnalyses = [
     actual: 110000,
     variance: 10000,
     variancePercent: 10,
-    status: 'Within',
+    status: 'Within' as const,
     commentary: 'On track',
   },
   {
@@ -47,10 +48,10 @@ const mockAnalyses = [
     actual: 60000,
     variance: -10000,
     variancePercent: -20,
-    status: 'Over',
+    status: 'Over' as const,
     commentary: 'Over budget',
   },
-];
+] as unknown as VarianceAnalysis[];
 
 describe('VarianceTable', () => {
   beforeEach(() => {

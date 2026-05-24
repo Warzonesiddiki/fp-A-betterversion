@@ -25,7 +25,7 @@ export class EncryptionEngine {
       ['deriveKey']
     );
     return crypto.subtle.deriveKey(
-      { name: 'PBKDF2', salt, iterations: this.ITERATIONS, hash: 'SHA-256' },
+      { name: 'PBKDF2', salt: salt as BufferSource, iterations: this.ITERATIONS, hash: 'SHA-256' },
       keyMaterial,
       { name: this.ALGORITHM, length: this.KEY_LENGTH },
       false,

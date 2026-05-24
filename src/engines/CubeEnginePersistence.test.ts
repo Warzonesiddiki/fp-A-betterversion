@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { CubeEnginePersistence } from './CubeEnginePersistence';
 import type {
   CubeCell,
@@ -112,7 +112,7 @@ function createIDBRequest<T>(result: T): IDBRequest<T> {
 // MOCK WINDOW FOR TAURI DETECTION
 // =============================================================================
 
-const originalWindow = global.window;
+const _originalWindow = global.window;
 
 function mockTauriEnvironment() {
   (global as Record<string, unknown>).window = {
@@ -125,7 +125,7 @@ function mockBrowserEnvironment() {
 }
 
 function restoreWindow() {
-  (global as Record<string, unknown>).window = originalWindow;
+  (global as Record<string, unknown>).window = _originalWindow;
 }
 
 // =============================================================================
@@ -901,7 +901,7 @@ describe('CubeEnginePersistence', () => {
 
     it('should preserve snapshot cell values through save/load cycle', async () => {
       const snapshot = createTestSnapshot();
-      const cellValues = new Map([
+      const cellValues = new Map<string, number | string | boolean>([
         ['cell1', 12345.67],
         ['cell2', 'text'],
         ['cell3', true],

@@ -3,7 +3,7 @@ import { Image, FileImage } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 interface ChartExportButtonProps {
-  chartRef: React.RefObject<HTMLDivElement>;
+  chartRef: React.RefObject<HTMLDivElement | null>;
   filename?: string;
   className?: string;
 }

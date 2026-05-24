@@ -166,9 +166,12 @@ export default function LeaseDetailPage() {
     document.title = 'FinPlan Pro - Lease Detail';
     if (id) {
       const found = mockLeases.find((l) => l.id === id);
-      if (found) setSelectedLease(found);
+      if (found && found.id !== selectedLease.id) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSelectedLease(found);
+      }
     }
-  }, [id]);
+  }, [id, selectedLease.id]);
 
   const glLeaseTotal = useMemo(
     () =>
@@ -392,6 +395,11 @@ export default function LeaseDetailPage() {
                     : 'bg-slate-800 hover:bg-slate-700'
                 }`}
                 onClick={() => setSelectedLease(lease)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') setSelectedLease(lease);
+                }}
               >
                 <div className="flex items-center justify-between">
                   <div>

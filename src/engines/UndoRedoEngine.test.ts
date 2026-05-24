@@ -3,7 +3,7 @@ import { UndoRedoEngine } from './UndoRedoEngine';
 
 describe('UndoRedoEngine', () => {
   beforeEach(() => {
-    UndoRedoEngine.reset();
+    UndoRedoEngine.clearHistory();
   });
 
   it('should push and undo actions', () => {
@@ -29,7 +29,7 @@ describe('UndoRedoEngine', () => {
 
   it('should reset state', () => {
     UndoRedoEngine.pushAction('budget', 'add', { value: 1 });
-    UndoRedoEngine.reset();
+    UndoRedoEngine.clearHistory();
     const history = UndoRedoEngine.getHistory();
     expect(history.length).toBe(0);
   });

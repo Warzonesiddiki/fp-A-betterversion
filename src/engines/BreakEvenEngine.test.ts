@@ -33,8 +33,8 @@ describe('BreakEvenEngine', () => {
   describe('targetProfit', () => {
     it('calculates units for target profit', () => {
       const result = BreakEvenEngine.targetProfit(100, costStructure, 50000);
-      expect(result.unitsNeeded).toBeGreaterThan(0);
-      expect(result.revenueNeeded).toBeGreaterThan(0);
+      expect(result.requiredUnits).toBeGreaterThan(0);
+      expect(result.requiredRevenue).toBeGreaterThan(0);
     });
   });
 });

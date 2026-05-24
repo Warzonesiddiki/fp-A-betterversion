@@ -11,8 +11,6 @@ export function useFreezePanes(gridApi: GridApi | null) {
 
   const freezeTopRow = useCallback(() => {
     if (!gridApi) return;
-    // AG Grid uses pinnedTopRowData for freezing rows
-    // For header freeze, we rely on default header pinning
     setFreezeState((prev) => ({ ...prev, frozenRows: 1 }));
   }, [gridApi]);
 
@@ -21,12 +19,11 @@ export function useFreezePanes(gridApi: GridApi | null) {
       if (!gridApi) return;
       const allCols = gridApi.getColumns();
       if (!allCols) return;
-      // Pin first N columns
       allCols.forEach((col, i) => {
         if (i < count) {
-          gridApi.setColumnsPinned(col.getColId(), 'left');
+          gridApi.setColumnsPinned([col.getColId()], 'left');
         } else {
-          gridApi.setColumnsPinned(col.getColId(), null);
+          gridApi.setColumnsPinned([col.getColId()], null);
         }
       });
       setFreezeState((prev) => ({ ...prev, frozenCols: count }));
@@ -47,7 +44,7 @@ export function useFreezePanes(gridApi: GridApi | null) {
     const allCols = gridApi.getColumns();
     if (allCols) {
       allCols.forEach((col) => {
-        gridApi.setColumnsPinned(col.getColId(), null);
+        gridApi.setColumnsPinned([col.getColId()], null);
       });
     }
     setFreezeState({ frozenRows: 0, frozenCols: 0 });

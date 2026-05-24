@@ -27,7 +27,7 @@ describe('Text Functions', () => {
 
   describe('TEXT', () => {
     it('formats number', () => {
-      expect(TEXT(1234.56, '#,##0.00')).toBeCloseTo(1234.56, 2);
+      expect(TEXT(1234.56, '#,##0.00' as any)).toBeCloseTo(1234.56, 2);
     });
   });
 

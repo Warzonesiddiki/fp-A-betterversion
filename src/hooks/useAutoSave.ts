@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseAutoSaveOptions {
   delay?: number;
@@ -6,22 +6,34 @@ interface UseAutoSaveOptions {
   enabled?: boolean;
 }
 
+export type SaveStatus = 'idle' | 'pending' | 'saving' | 'saved' | 'error';
+
 export function useAutoSave<T>(data: T, options: UseAutoSaveOptions) {
   const { delay = 3000, onSave, enabled = true } = options;
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const previousDataRef = useRef<T>(data);
+  const [status, setStatus] = useState<SaveStatus>('idle');
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   const save = useCallback(() => {
     if (!enabled) return;
     if (JSON.stringify(data) !== JSON.stringify(previousDataRef.current)) {
-      onSave(data);
-      previousDataRef.current = data;
+      setStatus('saving');
+      try {
+        onSave(data);
+        previousDataRef.current = data;
+        setStatus('saved');
+        setLastSavedAt(new Date());
+      } catch {
+        setStatus('error');
+      }
     }
   }, [data, onSave, enabled]);
 
   useEffect(() => {
     if (!enabled) return;
 
+    setStatus('pending');
     timeoutRef.current = setTimeout(save, delay);
 
     return () => {
@@ -38,5 +50,5 @@ export function useAutoSave<T>(data: T, options: UseAutoSaveOptions) {
     save();
   }, [save]);
 
-  return { forceSave };
+  return { forceSave, status, lastSavedAt };
 }

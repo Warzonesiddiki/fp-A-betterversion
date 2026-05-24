@@ -275,7 +275,7 @@ export class RollingForecastEngine {
     });
   }
 
-  private calculateTrend(actuals: Map<string, string>, _currentPeriod: string): number {
+  private calculateTrend(actuals: Map<string, number>, _currentPeriod: string): number {
     const sortedActuals = Array.from(actuals.entries()).sort(([a], [b]) => a.localeCompare(b));
 
     if (sortedActuals.length < 2) return 0;

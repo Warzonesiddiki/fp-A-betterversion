@@ -64,6 +64,7 @@ const FairValuePage = lazy(() => import('./pages/audit/FairValuePage'));
 const ImpairmentPage = lazy(() => import('./pages/audit/ImpairmentPage'));
 const SegmentReportingPage = lazy(() => import('./pages/reports/SegmentReportingPage'));
 const DashboardBuilderPage = lazy(() => import('./pages/analytics/DashboardBuilderPage'));
+const DebugPage = lazy(() => import('./pages/admin/DebugPage'));
 
 // Cash & Treasury
 const CashForecastPage = lazy(() => import('./pages/cash/CashForecastPage'));
@@ -86,6 +87,7 @@ const BalanceSheetPage = lazy(() => import('./pages/reports/BalanceSheetPage'));
 const CashFlowPage = lazy(() => import('./pages/reports/CashFlowPage'));
 const BudgetVsActualPage = lazy(() => import('./pages/reports/BudgetVsActualPage'));
 const BoardPackPage = lazy(() => import('./pages/reports/BoardPackPage'));
+const ReportDesignerPage = lazy(() => import('./pages/reports/ReportDesignerPage'));
 const TemplateGalleryPage = lazy(() => import('./pages/templates/TemplateGalleryPage'));
 
 // Industry: SaaS
@@ -129,6 +131,7 @@ const UserManagementPage = lazy(() => import('./pages/settings/UserManagementPag
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const HelpPage = lazy(() => import('./pages/HelpPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const DrillDownWindowPage = lazy(() => import('./pages/DrillDownWindowPage'));
 
 /**
  * RouteGroupWrapper provides a shared ErrorBoundary and Suspense context
@@ -144,8 +147,17 @@ function RouteGroupWrapper() {
   );
 }
 
+const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+
 export default function App() {
   const { isFirstRun, completeSetup } = useFirstRun();
+
+  if (!isTauri) {
+    alert(
+      'This application is designed to run exclusively as a desktop app via Tauri. It is not supported in a standard web browser.'
+    );
+    return null;
+  }
 
   if (isFirstRun) {
     return <OnboardingWizard onComplete={completeSetup} />;
@@ -185,6 +197,14 @@ export default function App() {
               element={
                 <ErrorBoundary>
                   <OnboardingWizardWrapper />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/drill-down"
+              element={
+                <ErrorBoundary>
+                  <DrillDownWindowPage />
                 </ErrorBoundary>
               }
             />
@@ -314,6 +334,7 @@ export default function App() {
 
               {/* Utility & Collaboration Group */}
               <Route element={<RouteGroupWrapper />}>
+                <Route path="/admin/debug" element={<DebugPage />} />
                 <Route path="/accounting/depreciation" element={<DepreciationPage />} />
                 <Route path="/accounting/multi-book" element={<MultiBookPage />} />
                 <Route path="/audit/fair-value" element={<FairValuePage />} />

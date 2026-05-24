@@ -138,7 +138,7 @@ const columns: Column[] = [
         {value === 'Wind' && <Wind className="h-3 w-3 text-emerald-500" />}
         {value === 'Hydro' && <Droplets className="h-3 w-3 text-blue-500" />}
         {value === 'Storage' && <Battery className="h-3 w-3 text-purple-500" />}
-        <span>{String(value ?? "")}</span>
+        <span>{String(value ?? '')}</span>
       </div>
     ),
   },

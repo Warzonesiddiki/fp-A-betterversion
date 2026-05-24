@@ -46,9 +46,7 @@ function CoverPagePreview({ config }: CoverPagePreviewProps) {
   return (
     <div className="bg-[var(--bg-surface)] rounded-lg shadow-2xl p-10 text-slate-900 min-h-[400px] flex flex-col justify-between">
       <div>
-        {config.logoUrl && (
-          <img src={config.logoUrl} alt="Company logo" className="h-12 mb-8" />
-        )}
+        {config.logoUrl && <img src={config.logoUrl} alt="Company logo" className="h-12 mb-8" />}
         <h1 className="text-3xl font-bold mb-2">{config.title}</h1>
         {config.subtitle && <p className="text-lg text-slate-500 mb-6">{config.subtitle}</p>}
       </div>
@@ -82,9 +80,7 @@ function SectionPreview({ section, sectionIndex }: SectionPreviewProps) {
             <span>
               {report.entityName} — {report.reportName}
             </span>
-            <span className="text-slate-500">
-              {report.data.rows.length} rows
-            </span>
+            <span className="text-slate-500">{report.data.rows.length} rows</span>
           </div>
         ))}
       </div>
@@ -174,7 +170,7 @@ export function BoardPackGenerator() {
     (field: keyof BoardPackConfig, value: string | boolean) => {
       setConfig((prev) => ({ ...prev, [field]: value }));
     },
-    [],
+    []
   );
 
   const handleGenerate = useCallback(async () => {
@@ -195,7 +191,7 @@ export function BoardPackGenerator() {
         book.id,
         MOCK_ENTITIES,
         config,
-        setProgress,
+        setProgress
       );
       setSections(result.sections);
       setIsGenerated(true);
@@ -217,11 +213,8 @@ export function BoardPackGenerator() {
   // --- Computed ---
 
   const totalReports = useMemo(
-    () =>
-      book?.entries
-        .filter((e) => e.enabled)
-        .reduce((s, e) => s + e.entityIds.length, 0) ?? 0,
-    [book],
+    () => book?.entries.filter((e) => e.enabled).reduce((s, e) => s + e.entityIds.length, 0) ?? 0,
+    [book]
   );
 
   // --- Render ---
@@ -235,8 +228,11 @@ export function BoardPackGenerator() {
 
           {/* Template selector */}
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Template</label>
+            <label htmlFor="bp-template" className="block text-xs text-slate-400 mb-1">
+              Template
+            </label>
             <select
+              id="bp-template"
               value={config.template}
               onChange={(e) => handleConfigChange('template', e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
@@ -251,8 +247,11 @@ export function BoardPackGenerator() {
 
           {/* Title */}
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Title</label>
+            <label htmlFor="bp-title" className="block text-xs text-slate-400 mb-1">
+              Title
+            </label>
             <input
+              id="bp-title"
               type="text"
               value={config.title}
               onChange={(e) => handleConfigChange('title', e.target.value)}
@@ -262,8 +261,11 @@ export function BoardPackGenerator() {
 
           {/* Subtitle */}
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Subtitle</label>
+            <label htmlFor="bp-subtitle" className="block text-xs text-slate-400 mb-1">
+              Subtitle
+            </label>
             <input
+              id="bp-subtitle"
               type="text"
               value={config.subtitle ?? ''}
               onChange={(e) => handleConfigChange('subtitle', e.target.value)}
@@ -273,8 +275,11 @@ export function BoardPackGenerator() {
 
           {/* Company */}
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Company Name</label>
+            <label htmlFor="bp-company" className="block text-xs text-slate-400 mb-1">
+              Company Name
+            </label>
             <input
+              id="bp-company"
               type="text"
               value={config.companyName}
               onChange={(e) => handleConfigChange('companyName', e.target.value)}
@@ -284,8 +289,11 @@ export function BoardPackGenerator() {
 
           {/* Entity */}
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Entity</label>
+            <label htmlFor="bp-entity" className="block text-xs text-slate-400 mb-1">
+              Entity
+            </label>
             <select
+              id="bp-entity"
               value={config.entityName}
               onChange={(e) => handleConfigChange('entityName', e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
@@ -301,8 +309,11 @@ export function BoardPackGenerator() {
 
           {/* Date */}
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Cover Date</label>
+            <label htmlFor="bp-cover-date" className="block text-xs text-slate-400 mb-1">
+              Cover Date
+            </label>
             <input
+              id="bp-cover-date"
               type="text"
               value={config.coverDate}
               onChange={(e) => handleConfigChange('coverDate', e.target.value)}
@@ -360,8 +371,8 @@ export function BoardPackGenerator() {
               </Button>
             </div>
             <p className="text-xs text-slate-500">
-              PDF includes cover page, table of contents, executive summary, and all report
-              sections with page breaks.
+              PDF includes cover page, table of contents, executive summary, and all report sections
+              with page breaks.
             </p>
           </Card>
         )}
@@ -409,8 +420,8 @@ export function BoardPackGenerator() {
         {/* Empty state */}
         {!isGenerated && (
           <div className="text-center py-16 text-slate-500 text-sm">
-            Configure the board pack on the left and click &quot;Generate Board Pack&quot; to preview
-            the output.
+            Configure the board pack on the left and click &quot;Generate Board Pack&quot; to
+            preview the output.
           </div>
         )}
       </div>

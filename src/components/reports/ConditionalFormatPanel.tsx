@@ -6,7 +6,6 @@ import {
   ReportBuilderEngine,
   type ConditionalFormat,
   type ConditionOperator,
-  type CellStyle,
   type ReportCell,
 } from '@/engines/ReportBuilderEngine';
 

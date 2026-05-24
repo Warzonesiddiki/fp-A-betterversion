@@ -7,13 +7,22 @@ import { ReportBookBuilder } from './ReportBookBuilder';
 
 vi.mock('@/components/ui/Card', () => ({
   Card: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div data-testid="card" className={className}>{children}</div>
+    <div data-testid="card" className={className}>
+      {children}
+    </div>
   ),
 }));
 
 vi.mock('@/components/ui/Button', () => ({
-  Button: ({ children, className, disabled, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string }) => (
-    <button className={className} disabled={disabled} {...props}>{children}</button>
+  Button: ({
+    children,
+    className,
+    disabled,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string }) => (
+    <button className={className} disabled={disabled} {...props}>
+      {children}
+    </button>
   ),
 }));
 
@@ -49,9 +58,24 @@ vi.mock('@/engines/ReportBookEngine', () => {
   return {
     ReportBookEngine: MockReportBookEngine,
     REPORT_TEMPLATE_PRESETS: {
-      'preset-pl': { id: 'preset-pl', name: 'Profit & Loss', description: 'Income statement template', defaultVariables: { period: 'FY 2026' } },
-      'preset-bs': { id: 'preset-bs', name: 'Balance Sheet', description: 'Balance sheet template', defaultVariables: {} },
-      'preset-cf': { id: 'preset-cf', name: 'Cash Flow', description: 'Cash flow template', defaultVariables: {} },
+      'preset-pl': {
+        id: 'preset-pl',
+        name: 'Profit & Loss',
+        description: 'Income statement template',
+        defaultVariables: { period: 'FY 2026' },
+      },
+      'preset-bs': {
+        id: 'preset-bs',
+        name: 'Balance Sheet',
+        description: 'Balance sheet template',
+        defaultVariables: {},
+      },
+      'preset-cf': {
+        id: 'preset-cf',
+        name: 'Cash Flow',
+        description: 'Cash flow template',
+        defaultVariables: {},
+      },
     },
   };
 });

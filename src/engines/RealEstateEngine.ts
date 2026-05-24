@@ -1,4 +1,4 @@
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 export interface PropertyStats {
   costBasis: number;
@@ -147,7 +147,9 @@ export class RealEstateEngine {
 
   static getPropertyBreakdown(entries: GLEntry[]): PropertyItem[] {
     // Group by entityId
-    const entityIds = Array.from(new Set(entries.map((e) => e.entityId)));
+    const entityIds = Array.from(new Set(entries.map((e) => e.entityId))).filter(
+      (id): id is string => id !== undefined
+    );
 
     return entityIds
       .map((id) => {

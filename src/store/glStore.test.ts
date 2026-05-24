@@ -59,6 +59,7 @@ describe('glStore', () => {
       date: string;
       description: string;
       reference: string;
+      amount: number;
     }> = {}
   ) => ({
     id: 'e1',
@@ -73,6 +74,7 @@ describe('glStore', () => {
     date: '2024-01-15',
     description: 'Test entry',
     reference: 'REF-001',
+    amount: 1000,
     ...overrides,
   });
 
@@ -164,7 +166,7 @@ describe('glStore', () => {
   it('should add an entry with generated id', async () => {
     const id = `gl-${Date.now()}`;
     const entry = {
-      id,
+      id: 'e-new-1',
       accountId: 'acct-1',
       accountCode: '1010',
       accountName: 'Cash',
@@ -173,6 +175,7 @@ describe('glStore', () => {
       debit: 500,
       credit: 0,
       netChange: 500,
+      amount: 500,
       date: '2024-01-15',
       description: 'Sale',
       reference: 'INV-001',
@@ -196,6 +199,7 @@ describe('glStore', () => {
       debit: 500,
       credit: 0,
       netChange: 500,
+      amount: 500,
       date: '2024-01-15',
       description: 'Sale',
       reference: 'INV-001',
@@ -210,6 +214,7 @@ describe('glStore', () => {
       debit: 0,
       credit: 300,
       netChange: -300,
+      amount: 300,
       date: '2024-01-16',
       description: 'Purchase',
       reference: 'PO-001',
@@ -482,10 +487,12 @@ describe('glStore', () => {
       ],
       lastImportEntryIds: ['e2'],
       lastImportResult: {
+        filename: 'test.csv',
         rowCount: 1,
         errorCount: 0,
         warningCount: 0,
-        filename: 'test.csv',
+        successCount: 1,
+        status: 'success',
         timestamp: '2024-01-01T00:00:00.000Z',
       },
     });
@@ -502,10 +509,12 @@ describe('glStore', () => {
       entries: [createEntry({ id: 'e1' })],
       lastImportEntryIds: [],
       lastImportResult: {
+        filename: 'test.csv',
         rowCount: 1,
         errorCount: 0,
         warningCount: 0,
-        filename: 'test.csv',
+        successCount: 1,
+        status: 'success',
         timestamp: '2024-01-01T00:00:00.000Z',
       },
     });
@@ -526,8 +535,10 @@ describe('glStore', () => {
   });
 
   it('should treat entries with different amounts as non-duplicates', () => {
-    useGLStore.setState({ entries: [createEntry({ id: 'e1', debit: 1000, credit: 0 })] });
-    const incoming = [createEntry({ id: 'e2', debit: 2000, credit: 0 })];
+    useGLStore.setState({
+      entries: [createEntry({ id: 'e1', debit: 1000, credit: 0, amount: 1000 })],
+    });
+    const incoming = [createEntry({ id: 'e2', debit: 2000, credit: 0, amount: 2000 })];
     const result = useGLStore.getState().checkDuplicates(incoming);
     expect(result.duplicates).toBe(0);
     expect(result.newEntries).toHaveLength(1);

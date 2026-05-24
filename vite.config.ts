@@ -1,9 +1,16 @@
+/// <reference types="vitest" />
 import path from "path";
 import { fileURLToPath } from "url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, type UserConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+
+declare module 'vite' {
+  interface UserConfig {
+    test?: Record<string, unknown>;
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -108,6 +115,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
+      "@tauri-apps/plugin-global-shortcut": path.resolve(__dirname, "src/test/__mocks__/tauri-shortcut.ts"),
     },
   },
   clearScreen: false,
@@ -126,14 +134,27 @@ export default defineConfig({
     chunkSizeWarningLimit: 300,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'chart-vendor': ['recharts'],
-          'grid-vendor': ['ag-grid-community', 'ag-grid-react'],
-          'form-vendor': ['react-hook-form', 'zod'],
-          'state-vendor': ['zustand'],
-          'ai-vendor': ['@huggingface/transformers'],
-        }
+        manualChunks(id: string) {
+          if (id.includes('node_modules')) {
+            if (id.includes('/react/') || id.includes('react-dom') || id.includes('react-router')) return 'react-vendor';
+            if (id.includes('react-hook-form') || id.includes('zod')) return 'form-vendor';
+            if (id.includes('zustand')) return 'state-vendor';
+            if (id.includes('ag-grid')) return 'grid-vendor';
+            if (id.includes('recharts')) return 'chart-vendor';
+            if (id.includes('@huggingface/transformers')) return 'ai-vendor';
+            if (id.includes('xlsx')) return 'xlsx';
+            if (id.includes('lucide-react')) return 'icons-vendor';
+            if (id.includes('date-fns') || id.includes('axios') || id.includes('uuid')) return 'utils-vendor';
+            if (id.includes('class-variance-authority') || id.includes('tailwind-merge') || id.includes('clsx')) return 'cva-vendor';
+            if (id.includes('i18next')) return 'i18n-vendor';
+            if (id.includes('@radix-ui')) return 'radix-vendor';
+            if (id.includes('@tanstack/react-virtual')) return 'tanstack-vendor';
+            if (id.includes('framer-motion')) return 'animation-vendor';
+            if (id.includes('lodash-es')) return 'lodash-vendor';
+            if (id.includes('exceljs') || id.includes('file-saver')) return 'excel-vendor';
+            if (id.includes('jspdf')) return 'pdf-vendor';
+          }
+        },
       }
     }
   },
@@ -149,8 +170,6 @@ export default defineConfig({
     minWorkers: 2,
     testTimeout: 30000,
     hookTimeout: 30000,
-    alias: {
-      '@tauri-apps/plugin-global-shortcut': new URL('./src/test/__mocks__/tauri-shortcut.ts', import.meta.url).pathname,
-    },
+
   },
 });

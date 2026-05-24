@@ -1,4 +1,4 @@
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 export interface BankingStats {
   reserveBalance: number;
@@ -171,6 +171,9 @@ export class BankingEngine {
     interestIncome: number;
     interestExpense: number;
     earningAssets: number;
+    yieldOnAssets: number;
+    costOfFunds: number;
+    trend: number[];
   } {
     const interestInc = entries
       .filter((e) => e.accountCode.startsWith('41'))
@@ -195,10 +198,10 @@ export class BankingEngine {
       avgInterestLiabilities > 0 ? ((interestExp * 12) / avgInterestLiabilities) * 100 : 0;
 
     return {
-      interestInc,
-      interestExp,
-      netInterestInc: interestInc - interestExp,
-      nim,
+      interestIncome: interestInc,
+      interestExpense: interestExp,
+      netInterestMargin: nim,
+      earningAssets: avgEarningAssets,
       yieldOnAssets,
       costOfFunds,
       trend: [3.12, 3.18, 3.25, 3.31],

@@ -160,6 +160,40 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  '/reports/budget-vs-actual': {
+    title: 'Budget vs Actual',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Compare your budgeted amounts to actual performance across all accounts. Variances are calculated per account and highlighted when material (>10%).',
+        example: 'See exactly which departments or accounts are over or under budget this period.',
+      },
+      {
+        title: 'Reading Variances',
+        content:
+          'Variance = Actual - Budget. Variance % = Variance / |Budget| × 100. Green rows are favorable (revenue higher than budget or expenses lower). Red rows are unfavorable.',
+        example:
+          'If you budgeted $100K revenue and got $110K, that is a $10K (10%) favorable variance.',
+      },
+      {
+        title: 'Material Variances',
+        content:
+          'Variances exceeding 10% are flagged as "Material" with an orange badge. Use the filter to show only variances above a certain threshold.',
+        example: 'A 15% overspend in Marketing would show as Material — worth investigating.',
+      },
+      {
+        title: 'Filters & Export',
+        content:
+          'Use the Filter panel to narrow by account type, department, or minimum variance %. Export to PDF, Excel, or CSV for reporting.',
+      },
+      {
+        title: 'Waterfall & Decomposition',
+        content:
+          'The waterfall chart traces Budget → each account variance → Actual. Revenue accounts show Price vs Volume decomposition when data is available.',
+      },
+    ],
+  },
   '/currency/fx-rates': {
     title: 'Exchange Rates',
     sections: [
@@ -170,6 +204,71 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       {
         title: 'Historical Rates',
         content: 'Keep a record of rates over time for accurate periodic translation.',
+      },
+    ],
+  },
+  '/forecasts/rolling': {
+    title: 'Rolling Forecast Help',
+    sections: [
+      {
+        title: 'What is a Rolling Forecast?',
+        content:
+          'A rolling forecast continuously extends the forecast horizon by adding a new period as each current period closes. It always looks 12 months ahead, ideal for dynamic planning.',
+      },
+      {
+        title: 'Actual vs Forecast',
+        content:
+          'Compare actual GL data against forecasted values. Green variance means actuals exceeded forecast (favorable for revenue).',
+      },
+      {
+        title: 'Forecast Assumptions',
+        content:
+          'Revenue growth and expense inflation are computed from the trailing 12-month trend of your GL entries.',
+      },
+    ],
+  },
+  '/reports/scheduler': {
+    title: 'Report Scheduler Help',
+    sections: [
+      {
+        title: 'What is Report Scheduling?',
+        content:
+          'Automate the generation and distribution of financial reports on a recurring basis.',
+      },
+      {
+        title: 'Setting Up a Schedule',
+        content:
+          'Select a report, choose frequency, and configure recipients. Reports generate automatically at the specified interval.',
+      },
+    ],
+  },
+  '/capex': {
+    title: 'CapEx Tracker Help',
+    sections: [
+      {
+        title: 'Capital Expenditure Tracking',
+        content:
+          'Monitor long-term asset investments, including project budgets, asset values, and depreciation schedules.',
+      },
+      {
+        title: 'Projects vs Assets',
+        content:
+          'Projects are planned capital initiatives with budgets. Assets are capitalized items with depreciation over their useful life.',
+      },
+    ],
+  },
+  '/lease': {
+    title: 'Lease Accounting Help',
+    sections: [
+      {
+        title: 'ASC 842 / IFRS 16',
+        content:
+          'Track Right-of-Use assets and lease liabilities recognized on the balance sheet for operating and finance leases.',
+      },
+      {
+        title: 'Lease Classification',
+        content:
+          'Account prefixes 17xx represent ROU assets, 23xx represent lease liabilities. Descriptions containing "lease", "rent", or "tenant" are auto-classified.',
       },
     ],
   },

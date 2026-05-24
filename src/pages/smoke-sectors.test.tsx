@@ -268,6 +268,11 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
 describe('Sector Page Smoke Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
   });
 
   describe('CapitalAdequacyPage', () => {

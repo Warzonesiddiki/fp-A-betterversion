@@ -90,8 +90,8 @@ type StorageBackend = 'indexeddb' | 'tauri';
 async function detectBackend(): Promise<StorageBackend> {
   try {
     const tauriGlobals =
-      (window as Record<string, unknown>).__TAURI_INTERNALS__ !== undefined ||
-      (window as Record<string, unknown>).__TAURI__ !== undefined;
+      (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__ !== undefined ||
+      (window as unknown as Record<string, unknown>).__TAURI__ !== undefined;
     if (tauriGlobals) return 'tauri';
   } catch {
     // window not available in test environment
@@ -516,7 +516,7 @@ export class CubeEnginePersistence {
           formula: m.formula,
           effectiveStart: m.effectiveStart,
           effectiveEnd: m.effectiveEnd,
-          sortOrder: m.sortOrder,
+          sortOrder: m.sortOrder ?? 0,
         })),
       };
 

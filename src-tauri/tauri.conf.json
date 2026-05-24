@@ -19,13 +19,11 @@
         "resizable": true,
         "center": true,
         "decorations": true,
-        "fullscreen": false,
-        "fileDropEnabled": true
+        "fullscreen": false
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
-      "dangerousRemoteUrlAccess": []
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
     },
     "trayIcon": {
       "iconPath": "icons/icon.png",
@@ -35,7 +33,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "wix"],
+    "targets": "all",
     "icon": [
       "icons/icon.png",
       "icons/icon.ico"

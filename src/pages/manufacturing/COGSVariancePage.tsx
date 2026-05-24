@@ -8,7 +8,7 @@ import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { COGSVarianceEngine } from '@/engines/COGSVarianceEngine';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { PAGE_HELP } from '../_docs';
-import { Activity, Factory, Package, BarChart3, AlertCircle } from 'lucide-react';
+import { Activity, Factory, Package, AlertCircle } from 'lucide-react';
 import {
   BarChart,
   Bar,

@@ -1,9 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PresenceService } from './PresenceService';
-import { WebSocketManager } from './WebSocketManager';
+import type { WebSocketManager } from './WebSocketManager';
 
-// Mock WebSocketManager
-function createMockWs() {
+interface MockWs {
+  on: ReturnType<typeof vi.fn>;
+  send: ReturnType<typeof vi.fn>;
+  emit: (type: string, data: unknown) => void;
+  handlers: Map<string, Set<(data: unknown) => void>>;
+}
+
+function createMockWs(): MockWs {
   const handlers = new Map<string, Set<(data: unknown) => void>>();
   return {
     on: vi.fn((type: string, handler: (data: unknown) => void) => {
@@ -16,17 +22,17 @@ function createMockWs() {
       handlers.get(type)?.forEach((fn) => fn(data));
     },
     handlers,
-  } as unknown as WebSocketManager & { emit: (type: string, data: unknown) => void };
+  } as MockWs;
 }
 
 describe('PresenceService', () => {
-  let ws: ReturnType<typeof createMockWs>;
+  let ws: MockWs;
   let presence: PresenceService;
 
   beforeEach(() => {
     vi.useFakeTimers();
     ws = createMockWs();
-    presence = new PresenceService(ws);
+    presence = new PresenceService(ws as unknown as WebSocketManager);
   });
 
   afterEach(() => {
@@ -63,7 +69,7 @@ describe('PresenceService', () => {
     presence.onChange(handler);
 
     // Simulate another user joining
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:join', {
+    ws.emit('presence:join', {
       userId: 'user-2',
       userName: 'Mike Torres',
       userInitials: 'MT',
@@ -83,7 +89,7 @@ describe('PresenceService', () => {
 
   it('should remove user on leave event', () => {
     // Add user first
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:join', {
+    ws.emit('presence:join', {
       userId: 'user-2',
       userName: 'Mike Torres',
       userInitials: 'MT',
@@ -99,7 +105,7 @@ describe('PresenceService', () => {
     expect(presence.getUsers()).toHaveLength(1);
 
     // Remove user
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:leave', {
+    ws.emit('presence:leave', {
       userId: 'user-2',
     });
 
@@ -108,7 +114,7 @@ describe('PresenceService', () => {
 
   it('should update user presence', () => {
     // Add user
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:join', {
+    ws.emit('presence:join', {
       userId: 'user-2',
       userName: 'Mike Torres',
       userInitials: 'MT',
@@ -122,7 +128,7 @@ describe('PresenceService', () => {
     });
 
     // Update
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:update', {
+    ws.emit('presence:update', {
       userId: 'user-2',
       activeResourceType: 'budget',
       activeResourceId: 'bgt-001',
@@ -135,7 +141,7 @@ describe('PresenceService', () => {
 
   it('should filter users by resource', () => {
     // Add two users on different resources
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:join', {
+    ws.emit('presence:join', {
       userId: 'user-1',
       userName: 'Sarah Chen',
       userInitials: 'SC',
@@ -148,7 +154,7 @@ describe('PresenceService', () => {
       cursorColor: '#E06C75',
     });
 
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:join', {
+    ws.emit('presence:join', {
       userId: 'user-2',
       userName: 'Mike Torres',
       userInitials: 'MT',
@@ -167,7 +173,7 @@ describe('PresenceService', () => {
   });
 
   it('should detect locked cells', () => {
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit('presence:join', {
+    ws.emit('presence:join', {
       userId: 'user-2',
       userName: 'Mike Torres',
       userInitials: 'MT',
@@ -223,10 +229,7 @@ describe('PresenceService', () => {
     const stateHandler = vi.fn();
     presence.onStateChange(stateHandler);
 
-    (ws as unknown as { emit: (type: string, data: unknown) => void }).emit(
-      'presence:state',
-      users
-    );
+    ws.emit('presence:state', users);
 
     expect(presence.getUsers()).toHaveLength(2);
     expect(stateHandler).toHaveBeenCalled();

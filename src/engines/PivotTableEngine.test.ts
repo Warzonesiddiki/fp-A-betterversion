@@ -22,6 +22,7 @@ describe('PivotTableEngine', () => {
         values: [{ field: 'revenue', aggregation: 'sum' }],
         filters: {},
         showTotals: true,
+        showSubtotals: true,
       });
       expect(result).toBeDefined();
       expect(result.rows.length).toBeGreaterThan(0);
@@ -35,6 +36,7 @@ describe('PivotTableEngine', () => {
         values: [{ field: 'revenue', aggregation: 'sum' }],
         filters: {},
         showTotals: true,
+        showSubtotals: true,
       });
       expect(result.grandTotals).toBeDefined();
       expect(result.grandTotals.length).toBeGreaterThan(0);
@@ -47,6 +49,7 @@ describe('PivotTableEngine', () => {
         values: [{ field: 'revenue', aggregation: 'sum' }],
         filters: {},
         showTotals: false,
+        showSubtotals: false,
       });
       expect(result).toBeDefined();
       expect(result.rows.length).toBe(0);
@@ -59,6 +62,7 @@ describe('PivotTableEngine', () => {
         values: [{ field: 'revenue', aggregation: 'sum' }],
         filters: { region: ['North'] },
         showTotals: false,
+        showSubtotals: false,
       });
       expect(result).toBeDefined();
       expect(result.rows.length).toBe(1);

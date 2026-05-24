@@ -71,13 +71,6 @@ const BUILT_IN_TEMPLATES: CommentaryTemplateDef[] = [
     variables: ['variance', 'account', 'period'],
   },
 ];
-const CUSTOM_TEMPLATE = {
-  id: 'custom',
-  name: 'Custom Template',
-  category: 'custom',
-  template: '',
-  variables: [],
-};
 
 export function CommentaryTemplate({
   onSelect,

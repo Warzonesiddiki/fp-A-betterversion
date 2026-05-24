@@ -1,42 +1,68 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { StreamImportEngine } from './StreamImportEngine';
 
 describe('StreamImportEngine', () => {
-  let engine: StreamImportEngine;
+  describe('streamParse', () => {
+    it('should parse CSV data as an async generator', async () => {
+      const file = new File(['name,amount\nRevenue,1000\nExpense,500'], 'test.csv', {
+        type: 'text/csv',
+      });
+      const rows: unknown[] = [];
+      for await (const row of StreamImportEngine.streamParse(file)) {
+        rows.push(row);
+      }
+      expect(rows).toHaveLength(2);
+    });
 
-  beforeEach(() => {
-    engine = new StreamImportEngine();
+    it('should handle empty CSV', async () => {
+      const file = new File([''], 'empty.csv', { type: 'text/csv' });
+      const rows: unknown[] = [];
+      for await (const row of StreamImportEngine.streamParse(file)) {
+        rows.push(row);
+      }
+      expect(rows).toHaveLength(0);
+    });
+
+    it('should yield ImportRow objects with rowIndex, data, raw', async () => {
+      const file = new File(['x,y\n1,2'], 'test.csv', { type: 'text/csv' });
+      for await (const row of StreamImportEngine.streamParse(file)) {
+        expect(row.rowIndex).toBe(0);
+        expect(row.data).toEqual({ x: '1', y: '2' });
+        expect(typeof row.raw).toBe('string');
+      }
+    });
   });
 
-  describe('parseCSV', () => {
-    it('parses CSV data', async () => {
-      const csv = 'name,amount\nRevenue,1000\nExpense,500';
-      const result = await engine.parseCSV(csv);
-      expect(result.length).toBe(2);
-      expect(result[0].name).toBe('Revenue');
+  describe('validateStream', () => {
+    it('should validate rows using async generator', async () => {
+      const file = new File(['name,amount\nRevenue,1000'], 'test.csv', { type: 'text/csv' });
+      const parsed = StreamImportEngine.streamParse(file);
+      const validRows: unknown[] = [];
+      for await (const row of StreamImportEngine.validateStream(parsed, ['name'])) {
+        validRows.push(row);
+      }
+      expect(validRows).toHaveLength(1);
     });
 
-    it('handles empty CSV', async () => {
-      const result = await engine.parseCSV('');
-      expect(result.length).toBe(0);
-    });
-  });
-
-  describe('validate', () => {
-    it('validates data rows', () => {
-      const rows = [{ name: 'Revenue', amount: 1000 }];
-      const result = engine.validate(rows);
-      expect(result.valid.length).toBe(1);
-      expect(result.errors.length).toBe(0);
+    it('should flag missing required fields', async () => {
+      const file = new File(['name,amount\n,1000'], 'test.csv', { type: 'text/csv' });
+      const parsed = StreamImportEngine.streamParse(file);
+      for await (const row of StreamImportEngine.validateStream(parsed, ['name'])) {
+        expect(row.valid).toBe(false);
+        expect(row.errors.length).toBeGreaterThan(0);
+      }
     });
 
-    it('identifies invalid rows', () => {
-      const rows = [{ name: '', amount: -1 }];
-      const result = engine.validate(rows);
-      expect(result.errors.length).toBeGreaterThan(0);
+    it('should accept valid rows', async () => {
+      const file = new File(['x,y\n1,2'], 'test.csv', { type: 'text/csv' });
+      const parsed = StreamImportEngine.streamParse(file);
+      for await (const row of StreamImportEngine.validateStream(parsed, ['x'])) {
+        expect(row.valid).toBe(true);
+        expect(row.errors).toHaveLength(0);
+      }
     });
   });
 });

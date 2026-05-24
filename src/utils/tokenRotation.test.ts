@@ -10,8 +10,8 @@ import {
   uninstallFetchInterceptor,
 } from './tokenRotation';
 import { useAuthStore } from '@/store/authStore';
+import type { User } from '@/types';
 
-// Helper to create a mock JWT with given expiry
 function makeMockToken(expMs: number): string {
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const payload = btoa(
@@ -23,6 +23,25 @@ function makeMockToken(expMs: number): string {
     })
   );
   return `${header}.${payload}.mock-sig`;
+}
+
+function makeMockUser(overrides: Partial<User> = {}): User {
+  return {
+    id: 'user-001',
+    email: 'test@test.com',
+    firstName: 'Test',
+    lastName: 'User',
+    avatarUrl: null,
+    role: 'Admin',
+    departmentId: 'dept-001',
+    departmentName: 'Finance',
+    entityId: 'entity-001',
+    status: 'Active',
+    lastLoginAt: new Date().toISOString(),
+    mfaEnabled: false,
+    permissions: [],
+    ...overrides,
+  };
 }
 
 describe('tokenRotation', () => {
@@ -64,13 +83,10 @@ describe('tokenRotation', () => {
     });
 
     it('calls refreshAccessToken and schedules next refresh', async () => {
-      const mockUser = {
-        id: 'user-001',
-        email: 'test@test.com',
-        name: 'Test User',
-        role: 'Admin' as const,
+      const mockUser = makeMockUser({
+        role: 'Admin',
         permissions: ['budget:read'],
-      };
+      });
       const oldToken = makeMockToken(Date.now() + 10 * 60 * 1000);
 
       useAuthStore.setState({
@@ -84,7 +100,6 @@ describe('tokenRotation', () => {
       const result = await refreshToken();
       expect(result).toBe(true);
 
-      // Token should have been updated
       const newToken = useAuthStore.getState().accessToken;
       expect(newToken).toBeTruthy();
       expect(newToken).not.toBe(oldToken);
@@ -93,43 +108,24 @@ describe('tokenRotation', () => {
 
   describe('handleTokenExpiry', () => {
     it('logs out the user', () => {
-      const mockUser = {
-        id: 'user-001',
-        email: 'test@test.com',
-        name: 'Test User',
-        role: 'Admin' as const,
-        permissions: [],
-      };
+      const mockUser = makeMockUser();
       useAuthStore.setState({
         user: mockUser,
         isAuthenticated: true,
         accessToken: 'expired-token',
       });
 
-      // Mock window.location
-      const originalLocation = window.location;
-      // @ts-expect-error — partial mock
-      window.location = { href: '/dashboard' };
-
       handleTokenExpiry();
 
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
       expect(useAuthStore.getState().user).toBeNull();
       expect(useAuthStore.getState().accessToken).toBeNull();
-
-      window.location = originalLocation;
     });
   });
 
   describe('startRotation / stopRotation', () => {
     it('starts and stops without error', () => {
-      const mockUser = {
-        id: 'user-001',
-        email: 'test@test.com',
-        name: 'Test User',
-        role: 'Admin' as const,
-        permissions: [],
-      };
+      const mockUser = makeMockUser();
       const token = makeMockToken(Date.now() + 30 * 60 * 1000);
       useAuthStore.setState({
         user: mockUser,
@@ -162,7 +158,7 @@ describe('tokenRotation', () => {
 
     it('is idempotent', () => {
       installFetchInterceptor();
-      installFetchInterceptor(); // Second call should be no-op
+      installFetchInterceptor();
       uninstallFetchInterceptor();
     });
   });

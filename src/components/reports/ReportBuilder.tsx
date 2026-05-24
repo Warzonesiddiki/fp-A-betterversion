@@ -1,7 +1,16 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import {
-  GripVertical, Plus, Trash2, Settings, Eye, Save, Undo2, Redo2,
-  Layers, Columns, Rows,
+  GripVertical,
+  Plus,
+  Trash2,
+  Settings,
+  Eye,
+  Save,
+  Undo2,
+  Redo2,
+  Layers,
+  Columns,
+  Rows,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
@@ -65,8 +74,8 @@ export function ReportBuilder({
   onExportCSV,
   className,
 }: ReportBuilderProps) {
-  const [report, setReport] = useState<ReportDefinition>(() =>
-    initialReport ?? ReportBuilderEngine.createReport('New Report', 'custom', 'user')
+  const [report, setReport] = useState<ReportDefinition>(
+    () => initialReport ?? ReportBuilderEngine.createReport('New Report', 'custom', 'user')
   );
   const [history, setHistory] = useState<ReportDefinition[]>([report]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -137,7 +146,12 @@ export function ReportBuilder({
       updateLayout((layout) =>
         ReportBuilderEngine.addColumn(layout, {
           type: colType,
-          header: colType === 'label' ? 'Label' : period ? period.charAt(0).toUpperCase() + period.slice(1) : 'Custom',
+          header:
+            colType === 'label'
+              ? 'Label'
+              : period
+                ? period.charAt(0).toUpperCase() + period.slice(1)
+                : 'Custom',
           width: colType === 'label' ? 220 : 130,
           period,
         })
@@ -174,9 +188,7 @@ export function ReportBuilder({
   const updateColumnHeader = useCallback(
     (colIndex: number, header: string) => {
       updateLayout((layout) => {
-        const columns = layout.columns.map((c, i) =>
-          i === colIndex ? { ...c, header } : c
-        );
+        const columns = layout.columns.map((c, i) => (i === colIndex ? { ...c, header } : c));
         return { ...layout, columns };
       });
     },
@@ -197,13 +209,10 @@ export function ReportBuilder({
   }, [report, onSave]);
 
   /* ── drag and drop ── */
-  const handleDragStart = useCallback(
-    (e: React.DragEvent, item: DragItem) => {
-      e.dataTransfer.setData('application/json', JSON.stringify(item));
-      e.dataTransfer.effectAllowed = 'copy';
-    },
-    []
-  );
+  const handleDragStart = useCallback((e: React.DragEvent, item: DragItem) => {
+    e.dataTransfer.setData('application/json', JSON.stringify(item));
+    e.dataTransfer.effectAllowed = 'copy';
+  }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent, target: 'rows' | 'columns') => {
@@ -228,7 +237,11 @@ export function ReportBuilder({
   const errors = validation.errors;
 
   return (
-    <div className={cn('flex flex-col h-full', className)} role="region" aria-label="Report Builder">
+    <div
+      className={cn('flex flex-col h-full', className)}
+      role="region"
+      aria-label="Report Builder"
+    >
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/50">
         <div className="flex items-center gap-3">
@@ -246,14 +259,31 @@ export function ReportBuilder({
           )}
         </div>
         <div className="flex items-center gap-1">
-          <Button size="sm" variant="ghost" onClick={undo} disabled={historyIndex === 0} aria-label="Undo">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={undo}
+            disabled={historyIndex === 0}
+            aria-label="Undo"
+          >
             <Undo2 className="h-4 w-4" />
           </Button>
-          <Button size="sm" variant="ghost" onClick={redo} disabled={historyIndex === history.length - 1} aria-label="Redo">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={redo}
+            disabled={historyIndex === history.length - 1}
+            aria-label="Redo"
+          >
             <Redo2 className="h-4 w-4" />
           </Button>
           <div className="w-px h-5 bg-slate-700 mx-1" />
-          <Button size="sm" variant="ghost" onClick={() => setPreviewMode(!previewMode)} aria-label={previewMode ? 'Switch to edit mode' : 'Switch to preview mode'}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setPreviewMode(!previewMode)}
+            aria-label={previewMode ? 'Switch to edit mode' : 'Switch to preview mode'}
+          >
             <Eye className="h-4 w-4 mr-1.5" />
             {previewMode ? 'Edit' : 'Preview'}
           </Button>
@@ -283,7 +313,9 @@ export function ReportBuilder({
               <button
                 className={cn(
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
-                  activePanel === 'rows' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-400 hover:text-white'
+                  activePanel === 'rows'
+                    ? 'text-blue-400 border-b-2 border-blue-400'
+                    : 'text-slate-400 hover:text-white'
                 )}
                 onClick={() => setActivePanel('rows')}
               >
@@ -293,7 +325,9 @@ export function ReportBuilder({
               <button
                 className={cn(
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
-                  activePanel === 'columns' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-400 hover:text-white'
+                  activePanel === 'columns'
+                    ? 'text-blue-400 border-b-2 border-blue-400'
+                    : 'text-slate-400 hover:text-white'
                 )}
                 onClick={() => setActivePanel('columns')}
               >
@@ -303,7 +337,9 @@ export function ReportBuilder({
               <button
                 className={cn(
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
-                  activePanel === 'properties' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-400 hover:text-white'
+                  activePanel === 'properties'
+                    ? 'text-blue-400 border-b-2 border-blue-400'
+                    : 'text-slate-400 hover:text-white'
                 )}
                 onClick={() => setActivePanel('properties')}
               >
@@ -324,7 +360,9 @@ export function ReportBuilder({
                       className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors text-sm"
                     >
                       <GripVertical className="h-3.5 w-3.5 text-slate-500" />
-                      <span className="text-xs font-mono bg-slate-700 px-1.5 py-0.5 rounded">{rt.icon}</span>
+                      <span className="text-xs font-mono bg-slate-700 px-1.5 py-0.5 rounded">
+                        {rt.icon}
+                      </span>
                       <span className="text-slate-300">{rt.label}</span>
                     </div>
                   ))}
@@ -338,7 +376,9 @@ export function ReportBuilder({
                     <div
                       key={ct.label}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, { type: 'column-type', value: ct.label })}
+                      onDragStart={(e) =>
+                        handleDragStart(e, { type: 'column-type', value: ct.label })
+                      }
                       className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors text-sm"
                     >
                       <GripVertical className="h-3.5 w-3.5 text-slate-500" />
@@ -351,8 +391,11 @@ export function ReportBuilder({
               {activePanel === 'properties' && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Report Name</label>
+                    <label htmlFor="report-name" className="text-xs text-slate-400 block mb-1">
+                      Report Name
+                    </label>
                     <input
+                      id="report-name"
                       type="text"
                       value={report.name}
                       onChange={(e) => updateName(e.target.value)}
@@ -360,11 +403,19 @@ export function ReportBuilder({
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Description</label>
+                    <label
+                      htmlFor="report-description"
+                      className="text-xs text-slate-400 block mb-1"
+                    >
+                      Description
+                    </label>
                     <textarea
+                      id="report-description"
                       value={report.description}
                       onChange={(e) =>
-                        pushHistory(ReportBuilderEngine.updateReport(report, { description: e.target.value }))
+                        pushHistory(
+                          ReportBuilderEngine.updateReport(report, { description: e.target.value })
+                        )
                       }
                       className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm text-white resize-none"
                       rows={3}
@@ -375,7 +426,9 @@ export function ReportBuilder({
                     <div className="mt-4 space-y-1">
                       <p className="text-xs font-medium text-amber-400">Validation Issues</p>
                       {errors.map((err: string, i: number) => (
-                        <p key={i} className="text-xs text-amber-400/80">• {err}</p>
+                        <p key={i} className="text-xs text-amber-400/80">
+                          • {err}
+                        </p>
                       ))}
                     </div>
                   )}
@@ -417,27 +470,37 @@ export function ReportBuilder({
                           ? 'border-blue-500 bg-blue-500/10'
                           : 'border-slate-700 bg-slate-800/30 hover:border-slate-600'
                       )}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setSelectedRowIndex(ri)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') setSelectedRowIndex(ri);
+                      }}
                     >
                       <GripVertical className="h-3.5 w-3.5 text-slate-500 flex-shrink-0" />
                       <span
                         className={cn(
                           'text-xs font-mono px-1.5 py-0.5 rounded flex-shrink-0',
-                          row.type === 'total' ? 'bg-green-500/20 text-green-400' :
-                          row.type === 'subtotal' ? 'bg-blue-500/20 text-blue-400' :
-                          row.type === 'header' ? 'bg-purple-500/20 text-purple-400' :
-                          row.type === 'blank' ? 'bg-slate-600 text-slate-400' :
-                          'bg-slate-700 text-slate-300'
+                          row.type === 'total'
+                            ? 'bg-green-500/20 text-green-400'
+                            : row.type === 'subtotal'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : row.type === 'header'
+                                ? 'bg-purple-500/20 text-purple-400'
+                                : row.type === 'blank'
+                                  ? 'bg-slate-600 text-slate-400'
+                                  : 'bg-slate-700 text-slate-300'
                         )}
                       >
                         {row.type.charAt(0).toUpperCase()}
                       </span>
                       <span className="text-slate-300 truncate flex-1">
-                        {(row.cells.find((_, ci) => report.layout.columns[ci]?.type === 'label')?.content as { content?: { text?: string } })?.content?.text ?? row.type}
+                        {(
+                          row.cells.find((_, ci) => report.layout.columns[ci]?.type === 'label')
+                            ?.content as { content?: { text?: string } }
+                        )?.content?.text ?? row.type}
                       </span>
-                      {row.grouping && (
-                        <Layers className="h-3 w-3 text-slate-500 flex-shrink-0" />
-                      )}
+                      {row.grouping && <Layers className="h-3 w-3 text-slate-500 flex-shrink-0" />}
                       <button
                         className="text-slate-500 hover:text-red-400 flex-shrink-0"
                         onClick={(e) => {
@@ -485,19 +548,30 @@ export function ReportBuilder({
                             ? 'border-blue-500 bg-blue-500/10'
                             : 'border-slate-700 bg-slate-800/30 hover:border-slate-600'
                         )}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => setSelectedColIndex(ci)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') setSelectedColIndex(ci);
+                        }}
                       >
                         <span
                           className={cn(
                             'font-mono px-1 py-0.5 rounded',
-                            col.type === 'label' ? 'bg-purple-500/20 text-purple-400' :
-                            col.period === 'actual' ? 'bg-green-500/20 text-green-400' :
-                            col.period === 'budget' ? 'bg-blue-500/20 text-blue-400' :
-                            col.period === 'variance' ? 'bg-amber-500/20 text-amber-400' :
-                            'bg-slate-600 text-slate-400'
+                            col.type === 'label'
+                              ? 'bg-purple-500/20 text-purple-400'
+                              : col.period === 'actual'
+                                ? 'bg-green-500/20 text-green-400'
+                                : col.period === 'budget'
+                                  ? 'bg-blue-500/20 text-blue-400'
+                                  : col.period === 'variance'
+                                    ? 'bg-amber-500/20 text-amber-400'
+                                    : 'bg-slate-600 text-slate-400'
                           )}
                         >
-                          {col.type === 'label' ? 'L' : col.period?.charAt(0).toUpperCase() ?? 'C'}
+                          {col.type === 'label'
+                            ? 'L'
+                            : (col.period?.charAt(0).toUpperCase() ?? 'C')}
                         </span>
                         <span className="text-slate-300">{col.header}</span>
                         <button
@@ -529,9 +603,11 @@ export function ReportBuilder({
                       <input
                         type="text"
                         value={
-                          (report.layout.rows[selectedRowIndex].cells.find(
-                            (_, ci) => report.layout.columns[ci]?.type === 'label'
-                          )?.content as { content?: { text?: string } })?.content?.text ?? ''
+                          (
+                            report.layout.rows[selectedRowIndex].cells.find(
+                              (_, ci) => report.layout.columns[ci]?.type === 'label'
+                            )?.content as { content?: { text?: string } }
+                          )?.content?.text ?? ''
                         }
                         onChange={(e) => updateRowLabel(selectedRowIndex, e.target.value)}
                         placeholder="Row label..."
@@ -551,7 +627,9 @@ export function ReportBuilder({
                         className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
                       >
                         {ROW_TYPES.map((rt) => (
-                          <option key={rt.type} value={rt.type}>{rt.label}</option>
+                          <option key={rt.type} value={rt.type}>
+                            {rt.label}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -576,7 +654,11 @@ export function ReportBuilder({
                         onChange={(e) => {
                           const width = parseInt(e.target.value, 10) || 100;
                           updateLayout((layout) =>
-                            ReportBuilderEngine.setColumnWidth(layout, report.layout.columns[selectedColIndex].id, width)
+                            ReportBuilderEngine.setColumnWidth(
+                              layout,
+                              report.layout.columns[selectedColIndex].id,
+                              width
+                            )
                           );
                         }}
                         className="w-20 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
@@ -597,10 +679,7 @@ export function ReportBuilder({
               Live Preview
             </h3>
             <div className="origin-top-left scale-[0.65] w-[154%]">
-              <ReportGrid
-                layout={report.layout}
-                cubeData={cubeData}
-              />
+              <ReportGrid layout={report.layout} cubeData={cubeData} />
             </div>
           </div>
         </div>

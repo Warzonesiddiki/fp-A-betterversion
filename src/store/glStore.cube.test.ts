@@ -14,6 +14,7 @@ function makeEntry(overrides: Partial<GLEntry> = {}): GLEntry {
     debit: 500,
     credit: 0,
     netChange: 500,
+    amount: 500,
     date: '2026-01-15',
     postDate: '2026-01-15',
     description: 'Test entry',

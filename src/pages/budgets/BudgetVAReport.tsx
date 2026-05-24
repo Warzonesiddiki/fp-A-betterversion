@@ -4,7 +4,7 @@ import { useGLStore } from '@/store/glStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
-import { DataTable } from '@/components/ui/DataTable';
+import { DataTable, Column } from '@/components/ui/DataTable';
 import { WaterfallChart, WaterfallItem } from '@/components/ui/WaterfallChart';
 import { VarianceChart, VarianceDataPoint } from '@/components/charts/VarianceChart';
 import {
@@ -17,6 +17,8 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
+  PieChart as RechartsPieChart,
+  Pie,
 } from 'recharts';
 import {
   ArrowDownRight,
@@ -37,7 +39,7 @@ function formatPercent(n: number): string {
 }
 
 export default function BudgetVAReport() {
-  const { budgets } = useBudgetStore();
+  const { budgets, lineItems } = useBudgetStore();
   const { entries } = useGLStore();
   const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
 
@@ -63,22 +65,24 @@ export default function BudgetVAReport() {
       actualsMap.set(e.accountCode || '', current + amt);
     });
 
-    return (selectedBudget.lineItems || []).map((item) => {
-      const actual = actualsMap.get(item.accountCode) || 0;
-      const budget = item.amount;
-      const variance = actual - budget;
-      const variancePct = budget !== 0 ? (variance / budget) * 100 : 0;
+    return lineItems
+      .filter((li) => li.budgetId === selectedBudgetId)
+      .map((item) => {
+        const actual = actualsMap.get(item.accountCode) || 0;
+        const budget = item.amount;
+        const variance = actual - budget;
+        const variancePct = budget !== 0 ? (variance / budget) * 100 : 0;
 
-      return {
-        id: item.id,
-        accountCode: item.accountCode,
-        accountName: item.accountName,
-        budget,
-        actual,
-        variance,
-        variancePct,
-      };
-    });
+        return {
+          id: item.id,
+          accountCode: item.accountCode,
+          accountName: item.accountName,
+          budget,
+          actual,
+          variance,
+          variancePct,
+        };
+      });
   }, [selectedBudget, entries]);
 
   const totals = useMemo(() => {
@@ -137,43 +141,64 @@ export default function BudgetVAReport() {
     }));
   }, [reportData]);
 
-  const columns = [
-    { header: 'Account', accessorKey: 'accountCode' },
-    { header: 'Name', accessorKey: 'accountName' },
+  const pieChartData = useMemo(() => {
+    let favorable = 0;
+    let unfavorable = 0;
+    reportData.forEach((d) => {
+      const variance = d.budget - d.actual;
+      if (variance >= 0) {
+        favorable += variance;
+      } else {
+        unfavorable += Math.abs(variance);
+      }
+    });
+    return [
+      { name: 'Favorable', value: favorable, color: '#16A34A' },
+      { name: 'Unfavorable', value: unfavorable, color: '#DC2626' },
+    ];
+  }, [reportData]);
+
+  const columns: Column[] = [
+    { key: 'accountCode', header: 'Account' },
+    { key: 'accountName', header: 'Name' },
     {
+      key: 'budget',
       header: 'Budget',
-      accessorKey: 'budget',
-      cell: (i: { getValue: () => unknown }) => formatCurrency(i.getValue() as number),
+      render: (value: unknown) => formatCurrency(Number(value ?? 0)),
     },
     {
+      key: 'actual',
       header: 'Actual',
-      accessorKey: 'actual',
-      cell: (i: { getValue: () => unknown }) => formatCurrency(i.getValue() as number),
+      render: (value: unknown) => formatCurrency(Number(value ?? 0)),
     },
     {
+      key: 'variance',
       header: 'Variance',
-      accessorKey: 'variance',
-      cell: (i: { getValue: () => unknown }) => (
-        <span className={(i.getValue() as number) > 0 ? 'text-red-400' : 'text-green-400'}>
-          {formatCurrency(i.getValue() as number)}
-        </span>
-      ),
+      render: (value: unknown) => {
+        const val = Number(value ?? 0);
+        return (
+          <span className={val > 0 ? 'text-red-400' : 'text-green-400'}>{formatCurrency(val)}</span>
+        );
+      },
     },
     {
+      key: 'variancePct',
       header: 'Var %',
-      accessorKey: 'variancePct',
-      cell: (i: { getValue: () => unknown }) => (
-        <div className="flex items-center gap-1">
-          {i.getValue() > 0 ? (
-            <ArrowUpRight className="h-3 w-3 text-red-400" />
-          ) : (
-            <ArrowDownRight className="h-3 w-3 text-green-400" />
-          )}
-          <span className={i.getValue() > 0 ? 'text-red-400' : 'text-green-400'}>
-            {formatPercent(Math.abs(i.getValue()))}
-          </span>
-        </div>
-      ),
+      render: (value: unknown) => {
+        const val = Number(value ?? 0);
+        return (
+          <div className="flex items-center gap-1">
+            {val > 0 ? (
+              <ArrowUpRight className="h-3 w-3 text-red-400" />
+            ) : (
+              <ArrowDownRight className="h-3 w-3 text-green-400" />
+            )}
+            <span className={val > 0 ? 'text-red-400' : 'text-green-400'}>
+              {formatPercent(Math.abs(val))}
+            </span>
+          </div>
+        );
+      },
     },
   ];
 
@@ -273,12 +298,8 @@ export default function BudgetVAReport() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <WaterfallChart
-              data={waterfallData}
-              title="Variance Decomposition (Budget to Actual)"
-              height={300}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <WaterfallChart data={waterfallData} title="Variance Decomposition" height={300} />
 
             <VarianceChart
               data={varianceData}
@@ -323,6 +344,45 @@ export default function BudgetVAReport() {
                     <Bar dataKey="Budget" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Actual" fill="#6366f1" radius={[4, 4, 0, 0]} />
                   </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 opacity-60">
+                  Variance Distribution
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPieChart>
+                    <Pie
+                      data={pieChartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#0f172a',
+                        border: '1px solid #1e293b',
+                        borderRadius: '8px',
+                      }}
+                      itemStyle={{ fontSize: '12px' }}
+                    />
+                    <Legend
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }}
+                    />
+                  </RechartsPieChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>

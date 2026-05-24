@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, ElementType } from 'react';
 
 interface VisuallyHiddenProps {
   children: ReactNode;
-  as?: keyof JSX.IntrinsicElements;
+  as?: ElementType;
 }
 
 export function VisuallyHidden({ children, as: Tag = 'span' }: VisuallyHiddenProps) {

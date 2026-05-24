@@ -1,6 +1,5 @@
-import { DollarSign } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { useVarianceStore } from '@/store/varianceStore';
+import { useEffect, useMemo } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useBudgetStore } from '@/store/budgetStore';
@@ -12,6 +11,7 @@ import {
   BarChart3,
   TrendingUp,
   TrendingDown,
+  DollarSign,
   Download,
   FileText,
   Table as TableIcon,

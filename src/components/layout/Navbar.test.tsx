@@ -139,7 +139,7 @@ describe('Navbar', () => {
 
   it('shows zero badge when no unread notifications', async () => {
     const { useNotificationStore } = await import('@/store/notificationStore');
-    (useNotificationStore as ReturnType<typeof vi.fn>).mockReturnValue({
+    (useNotificationStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       notifications: [],
       unreadCount: 0,
     });

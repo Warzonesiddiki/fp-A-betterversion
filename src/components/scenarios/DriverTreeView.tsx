@@ -40,6 +40,7 @@ export function DriverTreeView({ assumptions, onUpdate, readOnly }: DriverTreeVi
                 value={a.currentValue}
                 min={a.minValue}
                 max={a.maxValue}
+                step={1}
                 unit={a.unit}
                 onChange={(v) => onUpdate(a.id, v)}
                 disabled={readOnly}

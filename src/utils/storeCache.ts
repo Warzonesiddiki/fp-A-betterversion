@@ -15,7 +15,7 @@ const cache = new QueryCache({
  * Get a cached value or compute and cache it.
  */
 export function withCache<T>(key: string, fetcher: () => T, ttl?: number): T {
-  return cache.getOrSet(key, fetcher, ttl);
+  return cache.getOrSet(key, fetcher as () => unknown, ttl) as T;
 }
 
 /**

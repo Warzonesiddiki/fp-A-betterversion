@@ -237,7 +237,7 @@ export const useAuthStore = create<AuthState>()(
             const tokenExpiry = expMatch ? parseInt(expMatch[1]) * 1000 : null;
 
             set((s) => {
-              s.user = mockUser;
+              s.user = mockUser as typeof s.user;
               s.accessToken = accessToken;
               s.refreshToken = refreshToken;
               s.isAuthenticated = true;
@@ -318,24 +318,29 @@ export const useAuthStore = create<AuthState>()(
             const newUser: User = {
               id: `usr-${Date.now()}`,
               email: email.toLowerCase(),
+              firstName: name.split(' ')[0] ?? name,
+              lastName: name.split(' ').slice(1).join(' ') || '',
               name,
               role: 'Analyst',
-              avatar: name
+              avatarUrl: name
                 .split(' ')
                 .map((n) => n[0])
                 .join('')
                 .toUpperCase(),
-              department: 'Finance',
+              departmentId: 'dept-finance',
+              departmentName: 'Finance',
+              entityId: 'entity-001',
+              status: 'Active',
               permissions: [],
               mfaEnabled: false,
-              lastLogin: new Date().toISOString(),
+              lastLoginAt: new Date().toISOString(),
             };
 
             const accessToken = generateMockToken(newUser.id, newUser.role);
             const refreshToken = `rt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
             set((s) => {
-              s.user = newUser;
+              s.user = newUser as typeof s.user;
               s.accessToken = accessToken;
               s.refreshToken = refreshToken;
               s.isAuthenticated = true;
@@ -372,7 +377,7 @@ export const useAuthStore = create<AuthState>()(
 
         setUser: (user: User) => {
           set((s) => {
-            s.user = user;
+            s.user = user as typeof s.user;
           });
         },
 

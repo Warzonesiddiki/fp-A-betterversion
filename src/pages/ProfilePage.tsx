@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettingsStore } from '@/store/settingsStore';
-import { useAuthStore } from '@/store/authStore';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { User, Settings, LogOut, Save, Clock, Globe, DollarSign, Palette } from 'lucide-react';
+import { Settings, LogOut, Save, Clock, Globe, DollarSign, Palette } from 'lucide-react';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { organization, preferences, updateOrganization, updatePreferences } = useSettingsStore();
+  const { organization, updateOrganization } = useSettingsStore();
   const [saved, setSaved] = useState(false);
 
   const [form, setForm] = useState({

@@ -4,7 +4,7 @@ import { ExportMenu } from './ExportMenu';
 
 vi.mock('@radix-ui/react-dropdown-menu', () => ({
   Root: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  Trigger: ({ children, asChild }: { children: React.ReactNode; asChild?: boolean }) => (
+  Trigger: ({ children, asChild: _asChild }: { children: React.ReactNode; asChild?: boolean }) => (
     <>{children}</>
   ),
   Portal: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -22,7 +22,16 @@ vi.mock('@radix-ui/react-dropdown-menu', () => ({
     onClick?: () => void;
     [key: string]: unknown;
   }) => (
-    <div data-testid="dropdown-item" onClick={onClick} {...props}>
+    <div
+      data-testid="dropdown-item"
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onClick?.();
+      }}
+      {...props}
+    >
       {children}
     </div>
   ),

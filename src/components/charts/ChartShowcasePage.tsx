@@ -29,11 +29,11 @@ const varianceData = [
 const sparklineData = [100, 120, 115, 130, 125, 140, 135, 150, 145, 160, 155, 170];
 
 const treemapData = [
-  { name: 'Technology', value: 35 },
-  { name: 'Healthcare', value: 25 },
-  { name: 'Finance', value: 20 },
-  { name: 'Energy', value: 12 },
-  { name: 'Consumer', value: 8 },
+  { name: 'Technology', size: 35 },
+  { name: 'Healthcare', size: 25 },
+  { name: 'Finance', size: 20 },
+  { name: 'Energy', size: 12 },
+  { name: 'Consumer', size: 8 },
 ];
 
 const heatmapData = [
@@ -77,7 +77,7 @@ export function ChartShowcasePage() {
     {
       title: 'Heatmap Chart',
       ref: heatmapRef,
-      component: <HeatmapChart data={heatmapData} height={300} />,
+      component: <HeatmapChart data={heatmapData} />,
     },
     {
       title: 'Gauge Chart',

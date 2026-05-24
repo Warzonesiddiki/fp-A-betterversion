@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -15,7 +15,9 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { ManufacturingEngine } from '@/engines/ManufacturingEngine';
+
+const getRandom = () => Math.random();
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -61,14 +63,14 @@ export default function StoreDashboardPage() {
     const grossMargin = totalRevenue > 0 ? ((totalRevenue - totalCOGS) / totalRevenue) * 100 : 0;
     const storeNames = ['Downtown', 'Mall', 'Airport', 'Online', 'Suburban'];
     const storeData: StoreRow[] = storeNames.map((name, i) => {
-      const rev = totalRevenue * (0.15 + Math.random() * 0.2);
-      const txn = Math.floor(rev / (40 + Math.random() * 30));
+      const rev = totalRevenue * (0.15 + getRandom() * 0.2);
+      const txn = Math.floor(rev / (40 + getRandom() * 30));
       return {
         store: name,
         revenue: rev,
         transactions: txn,
         avgBasket: txn > 0 ? rev / txn : 0,
-        yoyGrowth: 5 + Math.random() * 20,
+        yoyGrowth: 5 + getRandom() * 20,
       };
     });
     return {
@@ -118,36 +120,40 @@ export default function StoreDashboardPage() {
     );
   };
 
-  const columns: Column<StoreRow>[] = [
+  const columns: Column[] = [
     { key: 'store', header: 'Store', sortable: true },
     {
       key: 'revenue',
       header: 'Revenue',
       align: 'right',
-      render: (r) => formatCurrency(r.revenue),
+      render: (_value, row) => formatCurrency((row as unknown as StoreRow).revenue),
       sortable: true,
     },
     {
       key: 'transactions',
       header: 'Transactions',
       align: 'right',
-      render: (r) => r.transactions.toLocaleString(),
+      render: (_value, row) => (row as unknown as StoreRow).transactions.toLocaleString(),
       sortable: true,
     },
     {
       key: 'avgBasket',
       header: 'Avg Basket',
       align: 'right',
-      render: (r) => formatCurrency(r.avgBasket),
+      render: (_value, row) => formatCurrency((row as unknown as StoreRow).avgBasket),
       sortable: true,
     },
     {
       key: 'yoyGrowth',
       header: 'YoY Growth',
       align: 'right',
-      render: (r) => (
-        <span className={r.yoyGrowth >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {r.yoyGrowth.toFixed(1)}%
+      render: (_value, row) => (
+        <span
+          className={
+            (row as unknown as StoreRow).yoyGrowth >= 0 ? 'text-green-400' : 'text-red-400'
+          }
+        >
+          {(row as unknown as StoreRow).yoyGrowth.toFixed(1)}%
         </span>
       ),
       sortable: true,

@@ -5,8 +5,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { DriverPanel } from './DriverPanel';
 
+import type { Driver } from '@/engines/DriverCascadeEngine';
+
 // Mock the driver store
-const mockListDrivers = vi.fn(() => []);
+const mockListDrivers = vi.fn<() => Driver[]>(() => []);
 const mockAnalyzeImpact = vi.fn(() => ({
   affectedCellCount: 5,
   totalImpact: 10000,

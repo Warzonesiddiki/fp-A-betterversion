@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
-import { Check, X, FlaskConical, ChevronDown } from 'lucide-react';
+import { Check, X, FlaskConical } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface FormulaFunction {
@@ -616,7 +616,7 @@ export function FormulaBar({
   const insertFunction = useCallback(
     (fn: FormulaFunction) => {
       const beforeToken = value.slice(0, value.length - currentToken.length);
-      onChange(`${beforeToken}${fn.name}(`);
+      onChange?.(`${beforeToken}${fn.name}(`);
       setShowAutocomplete(false);
       inputRef.current?.focus();
     },
@@ -644,9 +644,9 @@ export function FormulaBar({
       }
 
       if (e.key === 'Enter') {
-        onEvaluate(0);
+        onEvaluate?.(0);
       } else if (e.key === 'Escape') {
-        onChange('');
+        onChange?.('');
       }
     },
     [showAutocomplete, filteredFunctions, autocompleteIndex, insertFunction, onEvaluate, onChange]
@@ -698,7 +698,7 @@ export function FormulaBar({
                 : undefined
             }
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange?.(e.target.value)}
             onKeyDown={handleKeyDown}
             onFocus={() => {
               if (currentToken.length >= 2 && filteredFunctions.length > 0) {
@@ -718,14 +718,14 @@ export function FormulaBar({
         {/* Action Buttons */}
         <div className="flex items-center px-1 border-l border-[var(--border-subtle)] bg-gray-50 dark:bg-gray-900/50">
           <button
-            onClick={() => onChange('')}
+            onClick={() => onChange?.('')}
             className="p-1.5 rounded-md hover:bg-red-50 text-red-400 hover:fin-negative transition-colors"
             title="Cancel (Esc)"
           >
             <X className="h-4 w-4" />
           </button>
           <button
-            onClick={() => onEvaluate(0)}
+            onClick={() => onEvaluate?.(0)}
             className="p-1.5 rounded-md hover:bg-green-50 text-green-400 hover:fin-positive transition-colors"
             title="Evaluate (Enter)"
           >

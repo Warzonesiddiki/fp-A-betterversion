@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useAuthStore } from '@/store/authStore';
-import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { LogIn, Eye, EyeOff, AlertCircle, Loader2, Mail, Lock } from 'lucide-react';
 import { z } from 'zod';
 
 const loginSchema = z.object({
@@ -70,10 +70,9 @@ export default function LoginPage() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !isLoading) {
-      handleLogin();
-    }
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isLoading) handleLogin();
   };
 
   const handleForgotPassword = () => {
@@ -86,6 +85,7 @@ export default function LoginPage() {
   useEffect(() => {
     const remembered = localStorage.getItem('finplan_remembered_email');
     if (remembered) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEmail(remembered);
       setRememberMe(true);
     }
@@ -169,7 +169,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div className="space-y-4" onKeyDown={handleKeyDown}>
+          <form className="space-y-4" onSubmit={handleLoginSubmit}>
             {/* Email */}
             <div>
               <label htmlFor="login-email" className="block text-xs text-slate-400 mb-1">
@@ -273,7 +273,7 @@ export default function LoginPage() {
                 'Sign In'
               )}
             </Button>
-          </div>
+          </form>
 
           {/* Demo hint */}
           <div className="p-3 bg-slate-800/50 rounded-lg text-xs text-slate-400 space-y-1">

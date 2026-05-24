@@ -6,14 +6,38 @@
   "nav": {
     "dashboard": "Dashboard",
     "budgets": "Budgets",
+    "bva": "Budget vs. Actuals",
     "forecasts": "Forecasts",
-    "scenarios": "Scenarios",
     "reports": "Reports",
-    "data": "Data",
-    "consolidation": "Consolidation",
     "analytics": "Analytics",
+    "variance": "Variance",
+    "scenarios": "Scenarios",
+    "aiAnalyst": "AI Analyst",
+    "saas": "SaaS",
+    "manufacturing": "Manufacturing",
+    "retail": "Retail",
+    "banking": "Banking",
+    "healthcare": "Healthcare",
+    "energy": "Energy",
+    "esg": "ESG",
+    "data": "Data",
+    "dataManagement": "Data Management",
+    "collaboration": "Collaboration",
+    "approvals": "Approvals",
     "settings": "Settings",
     "help": "Help"
+  },
+  "sidebar": {
+    "sections": {
+      "main": "Main",
+      "analysis": "Analysis",
+      "industries": "Industries",
+      "management": "Management"
+    },
+    "quickSearch": "Quick search...",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "collapse": "Collapse"
   },
   "buttons": {
     "save": "Save",
@@ -33,12 +57,56 @@
     "close": "Close",
     "back": "Back",
     "next": "Next",
+    "continue": "Continue",
     "finish": "Finish",
     "undo": "Undo",
     "redo": "Redo",
     "copy": "Copy",
     "paste": "Paste",
     "cut": "Cut"
+  },
+  "onboarding": {
+    "steps": {
+      "welcome": "Welcome",
+      "company": "Company",
+      "data": "Data",
+      "review": "Review",
+      "done": "Done"
+    },
+    "welcome": {
+      "title": "Welcome to FinPlan Pro",
+      "description": "This app helps you manage budgets, forecasts, and financial reports — all in one place, completely offline. No cloud, no subscriptions, no data leaving your computer.",
+      "start": "Let's Start"
+    },
+    "setup": {
+      "title": "Company Setup",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter company name",
+      "industry": "Industry/Sector",
+      "fiscalYear": "Fiscal Year",
+      "fiscalYearStart": "Fiscal Year Start",
+      "baseCurrency": "Base Currency"
+    },
+    "import": {
+      "title": "Import Your Data",
+      "description": "Upload your General Ledger (GL) data in CSV or Excel format to populate your dashboard.",
+      "skip": "Skip for now"
+    },
+    "review": {
+      "title": "Review Data",
+      "empty": "You can import your data later from the Data Management section."
+    },
+    "finish": {
+      "title": "All Set!",
+      "description": "Your workspace is ready. Here's what you can do next:",
+      "nextSteps": {
+        "viewDashboard": "View your Dashboard",
+        "createBudget": "Create your first Budget",
+        "generateReports": "Generate Financial Reports"
+      },
+      "confirm": "Confirm & Finish",
+      "goDashboard": "Go to Dashboard"
+    }
   },
   "forms": {
     "required": "This field is required",
@@ -49,12 +117,28 @@
     "passwordMismatch": "Passwords do not match",
     "entityName": "Entity Name",
     "accountName": "Account Name",
+    "account": "Account",
     "period": "Period",
     "amount": "Amount",
     "currency": "Currency",
     "description": "Description",
     "category": "Category",
-    "status": "Status"
+    "status": "Status",
+    "date": "Date"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
   },
   "status": {
     "loading": "Loading...",

@@ -9,15 +9,21 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
-    HelpCircle: makeIcon(), FileText: makeIcon(), Table: makeIcon(),
-    ArrowUpRight: makeIcon(), ArrowDownRight: makeIcon(), Minus: makeIcon(),
+    HelpCircle: makeIcon(),
+    FileText: makeIcon(),
+    Table: makeIcon(),
+    ArrowUpRight: makeIcon(),
+    ArrowDownRight: makeIcon(),
+    Minus: makeIcon(),
   };
 });
 
 import { BudgetVsActualHeader } from '@/pages/reports/components/BudgetVsActualHeader';
 
 describe('BudgetVsActualHeader smoke test', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('renders without crashing', () => {
     const { container } = render(
       <BudgetVsActualHeader

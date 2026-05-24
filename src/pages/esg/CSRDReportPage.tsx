@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { Leaf, Users, Shield, Download, FileText, Table as TableIcon } from 'lucide-react';
+import { Leaf, Users, Shield, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   ResponsiveContainer,
@@ -65,7 +65,7 @@ const pieData = [
 
 export default function CSRDReportPage() {
   const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'env' | 'social' | 'gov'>('env');
 
   useEffect(() => {

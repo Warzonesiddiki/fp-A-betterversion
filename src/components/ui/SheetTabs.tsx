@@ -95,6 +95,7 @@ export function SheetTabs({
             dragIndex === index && 'opacity-50'
           )}
           role="tab"
+          tabIndex={0}
           aria-selected={sheet.id === activeSheetId}
           onClick={() => onSheetChange(sheet.id)}
           onKeyDown={(e) => {
@@ -124,7 +125,7 @@ export function SheetTabs({
                 if (e.key === 'Escape') setEditingId(null);
               }}
               className="w-20 px-1 py-0 text-xs bg-white dark:bg-gray-800 border border-blue-400 rounded outline-none"
-              autoFocus
+              aria-label={`Rename sheet ${sheet.name}`}
             />
           ) : (
             <span>{sheet.name}</span>
@@ -157,7 +158,15 @@ export function SheetTabs({
       {/* Context Menu */}
       {contextMenu && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setContextMenu(null)} />
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setContextMenu(null)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') setContextMenu(null);
+            }}
+            role="button"
+            tabIndex={0}
+          />
           <div
             className="fixed z-50 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] rounded-md shadow-lg py-1 min-w-[140px]"
             style={{ left: contextMenu.x, top: 'auto', bottom: 40 }}

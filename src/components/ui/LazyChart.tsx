@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState, useEffect, useMemo } from 'react';
+import React from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 export interface LazyChartProps {

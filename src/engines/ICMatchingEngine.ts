@@ -1,4 +1,4 @@
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 import type { ICPair, EliminationEntry } from './ConsolidationEngine';
 
 // =============================================================================
@@ -143,7 +143,7 @@ export class ICMatchingEngine {
             accountName: entry.accountName,
             counterpartyEntityId: other.entityId,
             amount,
-            currency: entry.currency,
+            currency: entry.currency ?? 'USD',
             date: entry.date,
             description: entry.description,
             reference: entry.reference,

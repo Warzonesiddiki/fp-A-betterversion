@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useConstructionStore } from '@/store/constructionStore';
+
 import {
   Construction,
   HardHat,
@@ -14,7 +14,7 @@ import {
   Calendar,
   Layers,
 } from 'lucide-react';
-import { ConstructionEngine } from '@/engines/ConstructionEngine';
+
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';

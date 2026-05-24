@@ -20,6 +20,7 @@ export interface SectorKPI {
   format: 'currency' | 'percent' | 'number';
   target: number;
   lowerIsBetter?: boolean;
+  accountCodes?: string[];
 }
 
 export interface SectorConfig {

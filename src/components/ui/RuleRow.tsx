@@ -1,0 +1,94 @@
+import type { ConditionalFormatRule } from '@/engines/ConditionalFormattingEngine';
+import { evaluateRule } from '@/engines/ConditionalFormattingEngine';
+import { ConditionalCellRenderer } from './ConditionalFormattingRenderers';
+import { cn } from '@/utils/cn';
+
+export interface RuleRowProps {
+  rule: ConditionalFormatRule;
+  index: number;
+  onEdit: () => void;
+  onToggle: () => void;
+  onDelete: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isLast: boolean;
+}
+
+export function RuleRow({
+  rule,
+  index,
+  onEdit,
+  onToggle,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+  isLast,
+}: RuleRowProps) {
+  const previewEval = evaluateRule(rule, 5, [1, 5, 10]);
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-3 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2',
+        !rule.enabled && 'opacity-50'
+      )}
+    >
+      <div className="flex flex-col items-center gap-0.5">
+        <button
+          onClick={onMoveUp}
+          disabled={index === 0}
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30"
+          aria-label="Move up"
+        >
+          ▲
+        </button>
+        <span className="text-xs font-mono text-[var(--text-secondary)]">{rule.priority}</span>
+        <button
+          onClick={onMoveDown}
+          disabled={isLast}
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30"
+          aria-label="Move down"
+        >
+          ▼
+        </button>
+      </div>
+
+      <div className="w-10">
+        <ConditionalCellRenderer value={5} evaluated={previewEval} />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium truncate">{rule.name}</div>
+        <div className="text-xs text-[var(--text-secondary)]">
+          {rule.visualType} &middot; {rule.condition.operator}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-1">
+        <button
+          onClick={onToggle}
+          className={cn(
+            'rounded px-2 py-1 text-xs',
+            rule.enabled
+              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+              : 'bg-gray-100 text-[var(--text-muted)] hover:bg-gray-200'
+          )}
+        >
+          {rule.enabled ? 'On' : 'Off'}
+        </button>
+        <button
+          onClick={onEdit}
+          className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50"
+        >
+          Edit
+        </button>
+        <button
+          onClick={onDelete}
+          className="rounded px-2 py-1 text-xs fin-negative hover:bg-red-50"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}

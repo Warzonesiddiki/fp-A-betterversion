@@ -22,8 +22,13 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
-    Scale: makeIcon(), FileText: makeIcon(), Table: makeIcon(), Download: makeIcon(),
-    ArrowUpRight: makeIcon(), ArrowDownRight: makeIcon(), Minus: makeIcon(),
+    Scale: makeIcon(),
+    FileText: makeIcon(),
+    Table: makeIcon(),
+    Download: makeIcon(),
+    ArrowUpRight: makeIcon(),
+    ArrowDownRight: makeIcon(),
+    Minus: makeIcon(),
   };
 });
 
@@ -38,7 +43,9 @@ function renderPage() {
 }
 
 describe('BalanceSheetPage smoke test', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('renders without crashing', () => {
     const { container } = renderPage();
     expect(container).toBeTruthy();

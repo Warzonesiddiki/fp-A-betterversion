@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Skeleton } from '@/components/ui/Skeleton';
+
 import { Card, CardContent } from '@/components/ui/Card';
 import { Plus, Search, Copy, Trash2, Eye, Send, CheckCircle, XCircle } from 'lucide-react';
-import { BudgetCollectionEngine } from '@/engines/BudgetCollectionEngine';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -31,7 +30,7 @@ function formatRelativeTime(timestamp: string): string {
 }
 
 export default function BudgetListPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Budget List';

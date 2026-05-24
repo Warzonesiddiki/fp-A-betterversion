@@ -595,7 +595,7 @@ describe('AllocationEngine', () => {
 
       if (itToHR && itToFinance) {
         // IT to HR should be approximately 30% of IT total
-        const itTotal = itResult.totalAllocated;
+        const _itTotal = itResult.totalAllocated;
         expect(itToHR.percentage).toBeCloseTo(30, 0);
         expect(itToFinance.percentage).toBeCloseTo(70, 0);
       }

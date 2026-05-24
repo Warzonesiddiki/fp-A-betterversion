@@ -24,9 +24,13 @@ vi.mock('@/store/glStore', () => ({
 vi.mock('@/store/scenarioStore', () => ({
   useScenarioStore: vi.fn(() => ({
     scenarios: [],
+    selectedScenarioId: null,
+    isLoading: false,
     createScenario: vi.fn(),
     deleteScenario: vi.fn(),
     updateScenario: vi.fn(),
+    setScenarios: vi.fn(),
+    setSelectedScenario: vi.fn(),
   })),
 }));
 
@@ -34,9 +38,11 @@ vi.mock('@/store/settingsStore', () => ({
   useSettingsStore: vi.fn(() => ({
     organization: { name: 'Test Org' },
     users: [],
+    preferences: { activeSector: 'technology' },
     addUser: vi.fn(),
     updateUser: vi.fn(),
     deleteUser: vi.fn(),
+    updatePreferences: vi.fn(),
   })),
 }));
 
@@ -44,6 +50,32 @@ vi.mock('@/store/authStore', () => ({
   useAuthStore: vi.fn(() => ({
     user: { id: '1', email: 'test@test.com', name: 'Test User', role: 'Admin' },
     isAuthenticated: true,
+  })),
+}));
+
+vi.mock('@/store/budgetStore', () => ({
+  useBudgetStore: vi.fn(() => ({
+    budgets: [],
+    activeBudgetId: null,
+    isLoading: false,
+    setBudgets: vi.fn(),
+    setActiveBudget: vi.fn(),
+  })),
+}));
+
+vi.mock('@/store/forecastStore', () => ({
+  useForecastStore: vi.fn(() => ({
+    forecasts: [],
+    drivers: [],
+    selectedForecastId: null,
+    isLoading: false,
+    setForecasts: vi.fn(),
+    createForecast: vi.fn(),
+    updateForecast: vi.fn(),
+    deleteForecast: vi.fn(),
+    addDriver: vi.fn(),
+    updateDriver: vi.fn(),
+    removeDriver: vi.fn(),
   })),
 }));
 
@@ -144,7 +176,14 @@ function renderPage(Page: React.ComponentType, path = '/') {
 // ---------------------------------------------------------------------------
 
 describe('Sector, Scenarios, Settings smoke tests', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('SectorPage', () => {
     it('renders without crashing', () => {

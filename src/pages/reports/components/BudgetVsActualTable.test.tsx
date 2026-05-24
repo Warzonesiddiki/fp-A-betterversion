@@ -8,9 +8,30 @@ import { BudgetVsActualTable, type VarianceDataRow } from './BudgetVsActualTable
 
 describe('BudgetVsActualTable', () => {
   const sampleData: VarianceDataRow[] = [
-    { account: 'Revenue', budget: '$500,000', actual: '$520,000', variance: '$20,000', percentVar: '4.0%', isFavorable: true },
-    { account: 'COGS', budget: '$200,000', actual: '$195,000', variance: '($5,000)', percentVar: '(2.5%)', isFavorable: true },
-    { account: 'Marketing', budget: '$80,000', actual: '$92,000', variance: '$12,000', percentVar: '15.0%', isFavorable: false },
+    {
+      account: 'Revenue',
+      budget: '$500,000',
+      actual: '$520,000',
+      variance: '$20,000',
+      percentVar: '4.0%',
+      isFavorable: true,
+    },
+    {
+      account: 'COGS',
+      budget: '$200,000',
+      actual: '$195,000',
+      variance: '($5,000)',
+      percentVar: '(2.5%)',
+      isFavorable: true,
+    },
+    {
+      account: 'Marketing',
+      budget: '$80,000',
+      actual: '$92,000',
+      variance: '$12,000',
+      percentVar: '15.0%',
+      isFavorable: false,
+    },
   ];
 
   it('renders table with correct headers', () => {

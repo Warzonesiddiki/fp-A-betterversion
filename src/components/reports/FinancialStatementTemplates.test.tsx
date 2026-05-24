@@ -26,9 +26,7 @@ describe('ProfitLossStatement', () => {
   });
 
   it('renders with custom props', () => {
-    render(
-      <ProfitLossStatement entity="Acme Corp" period="Q1 2026" currency="EUR" />,
-    );
+    render(<ProfitLossStatement entity="Acme Corp" period="Q1 2026" currency="EUR" />);
     expect(screen.getByText(/Acme Corp.*Q1 2026.*EUR/)).toBeInTheDocument();
   });
 

@@ -10,7 +10,7 @@ export type AccountType = 'Revenue' | 'COGS' | 'OpEx' | 'CapEx' | 'Asset' | 'Lia
 export type Role = 'Admin' | 'FP&A_Manager' | 'Analyst' | 'Department_Head' | 'Viewer';
 export type VarianceStatus = 'Favorable' | 'Unfavorable' | 'Neutral';
 export type ThresholdStatus = 'Within' | 'Watch' | 'Significant';
-export type TaskStatus = 'Todo' | 'InProgress' | 'Done';
+export type TaskStatus = 'Todo' | 'Pending' | 'InProgress' | 'Completed' | 'Done' | 'Cancelled';
 export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Critical';
 export type PeriodType = 'Monthly' | 'Quarterly' | 'Annual' | 'Adjusting';
 export type CalendarType = 'Standard' | '4-4-5' | '4-5-4' | '13-Period';
@@ -274,6 +274,7 @@ export interface Comment {
   readonly id: string;
   readonly resourceType: string;
   readonly resourceId: string;
+  readonly resourceName?: string;
   readonly cellId: string | null;
   readonly parentId: string | null;
   readonly authorId: string;
@@ -515,6 +516,7 @@ export interface BudgetState {
   readonly submitBudget: (id: string) => Promise<void>;
   readonly approveBudget: (id: string) => void;
   readonly rejectBudget: (id: string) => void;
+  readonly updateBudget: (id: string, updates: Partial<Budget>) => void;
   readonly undo: () => void;
   readonly redo: () => void;
   readonly setSelectedCell: (id: string | null) => void;
@@ -608,6 +610,7 @@ export interface ReportState {
   readonly setScheduledReports: (scheduled: ScheduledReport[]) => void;
   readonly addScheduledReport: (scheduled: Omit<ScheduledReport, 'id'>) => string;
   readonly deleteScheduledReport: (id: string) => void;
+  readonly toggleScheduledReport: (id: string) => void;
   readonly setError: (error: string | null) => void;
   readonly clearError: () => void;
   readonly setLoading: (loading: boolean) => void;
@@ -633,6 +636,8 @@ export interface ScenarioState {
 export interface UserPreferences {
   readonly activeSector: string;
   readonly density?: 'comfortable' | 'compact';
+  readonly currency?: string;
+  readonly locale?: string;
 }
 
 export interface SettingsState {
@@ -681,11 +686,19 @@ export interface GLEntry {
   readonly netChange: number;
   readonly date: string;
   readonly postDate?: string;
-  readonly amount?: number;
+  readonly amount: number;
   readonly description: string;
   readonly reference: string;
   readonly entityId?: string;
   readonly departmentId?: string;
+  readonly currency?: string;
+  // Source system metadata (from glData/RawGLEntry)
+  readonly fiscalPeriod?: string;
+  readonly department?: string;
+  readonly entity?: string;
+  readonly journalId?: string;
+  readonly journalLine?: number;
+  readonly source?: string;
 }
 
 export interface TrialBalanceRow {
@@ -742,7 +755,14 @@ export interface GLState {
   accountFilter: string[];
   isLoading: boolean;
   importProgress: number;
-  importStatus: 'idle' | 'processing' | 'complete' | 'error';
+  importStatus:
+    | 'idle'
+    | 'processing'
+    | 'complete'
+    | 'error'
+    | 'parsing'
+    | 'validating'
+    | 'importing';
   importError: string | null;
   lastImportResult: ImportResult | null;
   importHistory: ImportHistoryEntry[];

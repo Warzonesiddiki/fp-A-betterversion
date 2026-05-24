@@ -9,7 +9,7 @@ import {
   type FXRate,
   type VIENotification,
 } from './ConsolidationEngine';
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 // =============================================================================
 // TEST HELPERS
@@ -23,7 +23,23 @@ function createEntry(
   entityId: string,
   currency = 'USD'
 ): GLEntry {
-  return { id, accountCode, accountName, amount, currency, date: '2024-01-01', entityId };
+  return {
+    id,
+    accountId: id,
+    accountCode,
+    accountName,
+    period: '2024-01',
+    periodName: '2024-01',
+    debit: amount,
+    credit: 0,
+    netChange: amount,
+    date: '2024-01-01',
+    amount,
+    description: '',
+    reference: id,
+    entityId,
+    currency,
+  };
 }
 
 function createParent(entries: GLEntry[] = []): EntityData {

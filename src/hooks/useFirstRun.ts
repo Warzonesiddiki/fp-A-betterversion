@@ -15,7 +15,7 @@ export function useFirstRun() {
         } else {
           // If setup not done in localStorage, check if we have data in DB
           const val = await masterStorage.getItem('finplan-setup-complete');
-          const hasNoData = !val || val !== '"true"';
+          const hasNoData = !val || (val as { state: unknown }).state !== '"true"';
           setIsFirstRun(hasNoData);
         }
       } catch {

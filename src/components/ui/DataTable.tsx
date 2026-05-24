@@ -5,19 +5,19 @@ import { cn } from '@/utils/cn';
 
 import { Skeleton } from './Skeleton';
 
-export interface Column {
+export interface Column<T extends Record<string, any> = Record<string, unknown>> {
   key: string;
   header: string;
   sortable?: boolean;
   filterable?: boolean;
-  render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
+  render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   align?: 'left' | 'right' | 'center';
   frozen?: boolean;
 }
 
 export interface DataTableProps {
-  columns: Column[];
+  columns: Column<any>[];
   data: unknown[];
   sortable?: boolean;
   filterable?: boolean;
@@ -140,7 +140,7 @@ export const DataTable: React.FC<DataTableProps> = ({
   // Render a single row (shared between virtual and paginated modes)
   const renderRow = (row: Record<string, unknown>, rowIdx: number) => (
     <tr
-      key={row.id || rowIdx}
+      key={(row.id as React.Key) ?? rowIdx}
       className={cn(
         'transition-colors hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700/50 group',
         onRowClick && 'cursor-pointer'
@@ -156,7 +156,9 @@ export const DataTable: React.FC<DataTableProps> = ({
             column.align === 'center' && 'text-center'
           )}
         >
-          {column.render ? column.render(row[column.key], row) : row[column.key]}
+          {column.render
+            ? String(column.render(row[column.key], row) ?? '')
+            : String(row[column.key] ?? '')}
         </td>
       ))}
     </tr>
@@ -182,7 +184,7 @@ export const DataTable: React.FC<DataTableProps> = ({
           const row = filteredData[virtualRow.index];
           return (
             <tr
-              key={row.id || virtualRow.index}
+              key={(row.id as React.Key) ?? virtualRow.index}
               className={cn(
                 'transition-colors hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700/50 group',
                 onRowClick && 'cursor-pointer'
@@ -199,7 +201,9 @@ export const DataTable: React.FC<DataTableProps> = ({
                     column.align === 'center' && 'text-center'
                   )}
                 >
-          {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '')}
+                  {column.render
+                    ? column.render(row[column.key], row)
+                    : String(row[column.key] ?? '')}
                 </td>
               ))}
             </tr>

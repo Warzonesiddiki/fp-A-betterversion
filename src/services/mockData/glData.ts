@@ -1,4 +1,6 @@
-export interface GLEntry {
+import type { GLEntry } from '@/types';
+
+interface RawGLEntry {
   readonly id: string;
   readonly accountCode: string;
   readonly accountName: string;
@@ -14,6 +16,23 @@ export interface GLEntry {
   readonly source: string;
 }
 
+function toGLEntry(raw: RawGLEntry): GLEntry {
+  const netChange = raw.credit - raw.debit;
+  return {
+    ...raw,
+    accountId: raw.id,
+    period: raw.fiscalPeriod,
+    periodName: raw.fiscalPeriod,
+    netChange,
+    amount: raw.debit + raw.credit,
+    date: raw.postDate,
+    reference: raw.journalId,
+    entityId: raw.entity,
+    departmentId: raw.department,
+    currency: 'USD',
+  };
+}
+
 export interface TrialBalanceItem {
   readonly accountCode: string;
   readonly accountName: string;
@@ -23,7 +42,7 @@ export interface TrialBalanceItem {
   readonly entryCount: number;
 }
 
-export const mockGLEntries: GLEntry[] = [
+const rawGLEntries: RawGLEntry[] = [
   // === Revenue Entries (4100 - Subscription) ===
   {
     id: 'gl-0001',
@@ -911,7 +930,7 @@ export const mockGLEntries: GLEntry[] = [
 export function computeTrialBalance(): TrialBalanceItem[] {
   const grouped = new Map<string, { debit: number; credit: number; count: number }>();
 
-  for (const entry of mockGLEntries) {
+  for (const entry of rawGLEntries) {
     const key = `${entry.accountCode}::${entry.accountName}`;
     const existing = grouped.get(key) ?? { debit: 0, credit: 0, count: 0 };
     existing.debit += entry.debit;
@@ -933,6 +952,7 @@ export function computeTrialBalance(): TrialBalanceItem[] {
   });
 }
 
+export const mockGLEntries: GLEntry[] = rawGLEntries.map(toGLEntry);
 export const mockTrialBalance: TrialBalanceItem[] = computeTrialBalance();
 
 export function getGLEntriesByAccount(accountCode: string): GLEntry[] {
@@ -940,5 +960,5 @@ export function getGLEntriesByAccount(accountCode: string): GLEntry[] {
 }
 
 export function getGLEntriesByPeriod(period: string): GLEntry[] {
-  return mockGLEntries.filter((e) => e.fiscalPeriod === period);
+  return mockGLEntries.filter((e) => e.period === period);
 }

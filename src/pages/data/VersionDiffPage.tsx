@@ -3,8 +3,8 @@
 // Uses VersionControlEngine for diff computation, VersionDiffViewer for display
 // =============================================================================
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { VersionControlEngine, type DiffEntry } from '@/engines/VersionControlEngine';
+import { useEffect, useMemo, useState } from 'react';
+import { VersionControlEngine } from '@/engines/VersionControlEngine';
 import { VersionDiffViewer } from '@/components/ui/VersionDiffViewer';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -60,13 +60,13 @@ function createEngineFromStores(
     const changes = lineItems.slice(0, 50).map((item) => ({
       cube: 'budget' as const,
       coords: {
-        entity: item.entityId ?? 'default',
+        entity: 'default',
         account: item.accountCode ?? item.accountName ?? 'unknown',
         period: item.periodId ?? 'unknown',
       },
       measure: 'amount' as const,
       oldValue: null,
-      newValue: item.amount ?? item.value ?? 0,
+      newValue: item.amount ?? 0,
     }));
     engine.commit(
       currentBranch.id,
@@ -92,7 +92,7 @@ export default function VersionDiffPage() {
 
   const [selectedSourceId, setSelectedSourceId] = useState<string>('');
   const [selectedTargetId, setSelectedTargetId] = useState<string>('');
-  const [diffMode, setDiffMode] = useState<'branch' | 'commit'>('branch');
+  const [_diffMode, _setDiffMode] = useState<'branch' | 'commit'>('branch');
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Version Diff';

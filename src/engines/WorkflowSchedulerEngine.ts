@@ -305,7 +305,7 @@ export class WorkflowSchedulerEngine {
   }
 
   private calculateNextRun(frequency: ScheduleFrequency, config: ScheduleConfig, from: Date): Date {
-    const next = new Date(from);
+    let next = new Date(from);
     const hour = config.hour ?? 0;
     const minute = config.minute ?? 0;
 

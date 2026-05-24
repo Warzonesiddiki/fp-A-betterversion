@@ -158,14 +158,14 @@ export class PerformanceBudget {
    * Get performance report
    */
   static getReport(): {
-    startup: ReturnType<typeof this.checkStartupTime>;
-    memory: ReturnType<typeof this.checkMemory>;
+    startup: ReturnType<typeof PerformanceBudget.checkStartupTime>;
+    memory: ReturnType<typeof PerformanceBudget.checkMemory>;
     recentMarks: PerformanceMark[];
     categoryBreakdown: Record<string, { count: number; avgMs: number; p95Ms: number }>;
     violations: string[];
   } {
-    const startup = this.checkStartupTime();
-    const memory = this.checkMemory();
+    const startup = PerformanceBudget.checkStartupTime();
+    const memory = PerformanceBudget.checkMemory();
     const recentMarks = history.slice(-100);
 
     // Category breakdown

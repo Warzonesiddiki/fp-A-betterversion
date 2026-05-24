@@ -146,7 +146,14 @@ function renderPage(Page: React.ComponentType, path = '/') {
 // ---------------------------------------------------------------------------
 
 describe('Tax pages smoke tests', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('TaxProvisionPage', () => {
     it('renders without crashing', () => {
@@ -176,7 +183,14 @@ describe('Tax pages smoke tests', () => {
 // ---------------------------------------------------------------------------
 
 describe('Telecom page smoke test', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('TelecomPage', () => {
     it('renders without crashing', () => {
@@ -195,7 +209,14 @@ describe('Telecom page smoke test', () => {
 // ---------------------------------------------------------------------------
 
 describe('Treasury page smoke test', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('FXExposurePage', () => {
     it('renders without crashing', () => {
@@ -214,7 +235,14 @@ describe('Treasury page smoke test', () => {
 // ---------------------------------------------------------------------------
 
 describe('Variance page smoke test', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('VarianceDashboardPage', () => {
     it('renders without crashing', () => {
@@ -233,7 +261,14 @@ describe('Variance page smoke test', () => {
 // ---------------------------------------------------------------------------
 
 describe('Workforce pages smoke tests', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('CompModelingPage', () => {
     it('renders without crashing', () => {

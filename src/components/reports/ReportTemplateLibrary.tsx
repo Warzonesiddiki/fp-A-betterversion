@@ -1,5 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { FileText, Search, Star, Copy, Trash2, Plus, BarChart3, DollarSign, TrendingUp, PieChart } from 'lucide-react';
+import {
+  FileText,
+  Search,
+  Star,
+  Copy,
+  Trash2,
+  Plus,
+  BarChart3,
+  DollarSign,
+  TrendingUp,
+  PieChart,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { cn } from '@/utils/cn';
 import {
@@ -71,10 +82,13 @@ function TemplateThumbnail({ template }: { template: TemplateType }) {
             key={col.id}
             className={cn(
               'h-3 rounded-sm flex-1',
-              col.type === 'label' ? 'bg-slate-600' :
-              col.period === 'actual' ? 'bg-emerald-500/30' :
-              col.period === 'budget' ? 'bg-blue-500/30' :
-              'bg-amber-500/30'
+              col.type === 'label'
+                ? 'bg-slate-600'
+                : col.period === 'actual'
+                  ? 'bg-emerald-500/30'
+                  : col.period === 'budget'
+                    ? 'bg-blue-500/30'
+                    : 'bg-amber-500/30'
             )}
           />
         ))}
@@ -87,9 +101,13 @@ function TemplateThumbnail({ template }: { template: TemplateType }) {
               key={col.id}
               className={cn(
                 'h-2 rounded-sm flex-1',
-                row.type === 'total' ? 'bg-slate-500' :
-                row.type === 'subtotal' ? 'bg-slate-600/50' :
-                ci === 0 ? 'bg-slate-700' : 'bg-slate-800'
+                row.type === 'total'
+                  ? 'bg-slate-500'
+                  : row.type === 'subtotal'
+                    ? 'bg-slate-600/50'
+                    : ci === 0
+                      ? 'bg-slate-700'
+                      : 'bg-slate-800'
               )}
             />
           ))}
@@ -141,7 +159,9 @@ export function ReportTemplateLibrary({
           <button
             className={cn(
               'flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
-              activeTab === 'templates' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+              activeTab === 'templates'
+                ? 'bg-slate-700 text-white'
+                : 'text-slate-400 hover:text-white'
             )}
             onClick={() => setActiveTab('templates')}
           >
@@ -186,7 +206,12 @@ export function ReportTemplateLibrary({
               >
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-start justify-between">
-                    <div className={cn('p-2 rounded-lg bg-slate-900/50', TEMPLATE_ICON_COLORS[template.type])}>
+                    <div
+                      className={cn(
+                        'p-2 rounded-lg bg-slate-900/50',
+                        TEMPLATE_ICON_COLORS[template.type]
+                      )}
+                    >
                       {TEMPLATE_ICONS[template.type]}
                     </div>
                     <span className="text-xs text-slate-500 bg-slate-800/50 px-2 py-0.5 rounded">
@@ -195,7 +220,9 @@ export function ReportTemplateLibrary({
                   </div>
                   <div>
                     <h3 className="font-medium text-white text-sm">{template.name}</h3>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{template.description}</p>
+                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                      {template.description}
+                    </p>
                   </div>
                   <TemplateThumbnail template={template.type} />
                 </CardContent>
@@ -208,7 +235,9 @@ export function ReportTemplateLibrary({
               <div className="text-center py-12 text-slate-500">
                 <FileText className="h-10 w-10 mx-auto mb-3 text-slate-600" />
                 <p className="text-sm">No saved reports yet</p>
-                <p className="text-xs text-slate-600 mt-1">Create a report from a template to get started</p>
+                <p className="text-xs text-slate-600 mt-1">
+                  Create a report from a template to get started
+                </p>
               </div>
             ) : (
               filteredReports.map((report) => (

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useDataStore } from '@/store/dataStore';
 import { Button } from '@/components/ui/Button';
@@ -8,9 +8,9 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Alert } from '@/components/ui/Alert';
+
 import type { AccountType } from '@/types';
-import { DataCatalogEngine } from '@/engines/DataCatalogEngine';
+
 import {
   Plus,
   Search,
@@ -22,7 +22,6 @@ import {
   FolderTree,
   List,
 } from 'lucide-react';
-import { MasterDataEngine } from '@/engines/MasterDataEngine';
 
 const accountTypes = [
   { value: 'Revenue', label: 'Revenue' },
@@ -55,7 +54,7 @@ function getNormalBalance(type: AccountType): string {
 }
 
 export default function ChartOfAccountsPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Chart Of Accounts';
@@ -148,7 +147,13 @@ export default function ChartOfAccountsPage() {
         category: form.category || '-',
         subCategory: form.subCategory,
         parentId: form.parentId,
+        level: 0,
+        sortOrder: 0,
         isActive: form.isActive,
+        entityId: 'default',
+        departmentId: null,
+        isCalculated: false,
+        formula: null,
       });
     }
     setShowModal(false);

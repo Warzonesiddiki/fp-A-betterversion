@@ -159,12 +159,14 @@ export function CascadeRuleBuilder({
             {/* Target Cube */}
             <div>
               <label
+                htmlFor="cascade-target-cube"
                 className="text-xs font-medium block mb-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 Target Cube
               </label>
               <select
+                id="cascade-target-cube"
                 value={targetCube}
                 onChange={(e) => setTargetCube(e.target.value)}
                 className="w-full p-1.5 rounded text-sm border"
@@ -185,12 +187,14 @@ export function CascadeRuleBuilder({
             {/* Target Account */}
             <div>
               <label
+                htmlFor="cascade-target-account"
                 className="text-xs font-medium block mb-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 Target Account
               </label>
               <input
+                id="cascade-target-account"
                 type="text"
                 value={targetAccount}
                 onChange={(e) => setTargetAccount(e.target.value)}
@@ -207,12 +211,14 @@ export function CascadeRuleBuilder({
             {/* Target Measure */}
             <div>
               <label
+                htmlFor="cascade-target-measure"
                 className="text-xs font-medium block mb-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 Target Measure
               </label>
               <select
+                id="cascade-target-measure"
                 value={targetMeasure}
                 onChange={(e) => setTargetMeasure(e.target.value)}
                 className="w-full p-1.5 rounded text-sm border"
@@ -233,12 +239,14 @@ export function CascadeRuleBuilder({
             {/* Cascade Type */}
             <div>
               <label
+                htmlFor="cascade-type"
                 className="text-xs font-medium block mb-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 Cascade Type
               </label>
               <select
+                id="cascade-type"
                 value={cascadeType}
                 onChange={(e) => setCascadeType(e.target.value as CascadeType)}
                 className="w-full p-1.5 rounded text-sm border"
@@ -259,12 +267,14 @@ export function CascadeRuleBuilder({
             {/* Impact Type */}
             <div>
               <label
+                htmlFor="cascade-impact-type"
                 className="text-xs font-medium block mb-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 Impact Type
               </label>
               <select
+                id="cascade-impact-type"
                 value={impactType}
                 onChange={(e) => setImpactType(e.target.value as ImpactType)}
                 className="w-full p-1.5 rounded text-sm border"
@@ -285,12 +295,14 @@ export function CascadeRuleBuilder({
             {/* Weight */}
             <div>
               <label
+                htmlFor="cascade-weight"
                 className="text-xs font-medium block mb-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 Weight: {formatWeight(weight)}
               </label>
               <input
+                id="cascade-weight"
                 type="range"
                 min={0}
                 max={5}
@@ -312,12 +324,14 @@ export function CascadeRuleBuilder({
             {cascadeType === 'formula' && (
               <div>
                 <label
+                  htmlFor="cascade-formula"
                   className="text-xs font-medium block mb-1"
                   style={{ color: 'var(--text-secondary)' }}
                 >
                   Formula
                 </label>
                 <input
+                  id="cascade-formula"
                   type="text"
                   value={formula}
                   onChange={(e) => setFormula(e.target.value)}
@@ -342,12 +356,14 @@ export function CascadeRuleBuilder({
             {/* Description */}
             <div>
               <label
+                htmlFor="cascade-description"
                 className="text-xs font-medium block mb-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 Description (optional)
               </label>
               <input
+                id="cascade-description"
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

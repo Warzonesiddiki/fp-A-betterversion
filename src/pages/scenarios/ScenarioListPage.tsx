@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore } from '@/store/scenarioStore';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { TreemapChart, TreemapDataPoint } from '@/components/charts/TreemapChart';
-import { Plus, Eye, FlaskConical } from 'lucide-react';
+import { Plus, FlaskConical } from 'lucide-react';
 
 export default function ScenarioListPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Scenario List';

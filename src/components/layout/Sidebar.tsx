@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   FileBarChart,
@@ -17,44 +18,64 @@ import {
   ChevronRight,
   Search,
   X,
+  Cpu,
+  Factory,
+  ShoppingCart,
+  Landmark,
+  Activity,
+  Zap,
+  Leaf,
 } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
 
-const navItems = [
-  {
-    section: 'Main',
-    items: [
-      { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { path: '/budgets', label: 'Budgets', icon: FileBarChart },
-      { path: '/budgets/bva', label: 'Budget vs. Actuals', icon: GitCompareArrows },
-      { path: '/forecasts', label: 'Forecasts', icon: TrendingUp },
-      { path: '/reports', label: 'Reports', icon: BarChart3 },
-      { path: '/analytics', label: 'Analytics', icon: PieChart },
-    ],
-  },
-  {
-    section: 'Analysis',
-    items: [
-      { path: '/variance', label: 'Variance', icon: GitCompareArrows },
-      { path: '/scenarios', label: 'Scenarios', icon: FlaskConical },
-      { path: '/ai', label: 'AI Analyst', icon: Brain },
-    ],
-  },
-  {
-    section: 'Management',
-    items: [
-      { path: '/data', label: 'Data Management', icon: Database },
-      { path: '/collaboration', label: 'Collaboration', icon: MessageSquare },
-      { path: '/collaboration/approvals', label: 'Approvals', icon: CheckSquare },
-    ],
-  },
-];
-
 export default function Sidebar() {
-  const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, closeMobileSidebar } = useUIStore();
+  const { t } = useTranslation();
+  const { sidebarCollapsed, toggleSidebar, closeMobileSidebar } = useUIStore();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+
+  const navItems = [
+    {
+      section: t('sidebar.sections.main'),
+      items: [
+        { path: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+        { path: '/budgets', label: t('nav.budgets'), icon: FileBarChart },
+        { path: '/budgets/bva', label: t('nav.bva'), icon: GitCompareArrows },
+        { path: '/forecasts', label: t('nav.forecasts'), icon: TrendingUp },
+        { path: '/reports', label: t('nav.reports'), icon: BarChart3 },
+        { path: '/analytics', label: t('nav.analytics'), icon: PieChart },
+      ],
+    },
+    {
+      section: t('sidebar.sections.analysis'),
+      items: [
+        { path: '/variance', label: t('nav.variance'), icon: GitCompareArrows },
+        { path: '/scenarios', label: t('nav.scenarios'), icon: FlaskConical },
+        { path: '/ai', label: t('nav.aiAnalyst'), icon: Brain },
+      ],
+    },
+    {
+      section: t('sidebar.sections.industries'),
+      items: [
+        { path: '/saas/arr', label: t('nav.saas'), icon: Cpu },
+        { path: '/manufacturing/production', label: t('nav.manufacturing'), icon: Factory },
+        { path: '/retail/stores', label: t('nav.retail'), icon: ShoppingCart },
+        { path: '/banking/nim', label: t('nav.banking'), icon: Landmark },
+        { path: '/healthcare/dashboard', label: t('nav.healthcare'), icon: Activity },
+        { path: '/energy/dashboard', label: t('nav.energy'), icon: Zap },
+        { path: '/esg/carbon', label: t('nav.esg'), icon: Leaf },
+      ],
+    },
+    {
+      section: t('sidebar.sections.management'),
+      items: [
+        { path: '/data', label: t('nav.dataManagement'), icon: Database },
+        { path: '/collaboration', label: t('nav.collaboration'), icon: MessageSquare },
+        { path: '/collaboration/approvals', label: t('nav.approvals'), icon: CheckSquare },
+      ],
+    },
+  ];
 
   const handleNavClick = () => {
     // Close mobile sidebar when navigating
@@ -85,7 +106,7 @@ export default function Sidebar() {
               <span className="text-white text-xs font-bold">FP</span>
             </div>
             <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-              FinPlan Pro
+              {t('app.name')}
             </span>
           </div>
         )}
@@ -102,7 +123,7 @@ export default function Sidebar() {
           className="md:hidden p-1 rounded-md"
           style={{ color: 'var(--text-muted)' }}
           onClick={closeMobileSidebar}
-          aria-label="Close sidebar"
+          aria-label={t('accessibility.menuClose')}
         >
           <X className="w-4 h-4" />
         </button>
@@ -117,10 +138,10 @@ export default function Sidebar() {
             border: '1px solid var(--border-subtle)',
           }}
           onClick={() => {}}
-          aria-label="Quick search (Ctrl+K)"
+          aria-label={t('sidebar.quickSearch')}
         >
           <Search className="w-3.5 h-3.5" aria-hidden="true" />
-          {!sidebarCollapsed && <span>Quick search...</span>}
+          {!sidebarCollapsed && <span>{t('sidebar.quickSearch')}</span>}
         </button>
       </div>
 
@@ -172,7 +193,7 @@ export default function Sidebar() {
           style={{ color: 'var(--text-secondary)' }}
         >
           <Settings className="w-4 h-4" />
-          {!sidebarCollapsed && <span>Settings</span>}
+          {!sidebarCollapsed && <span>{t('nav.settings')}</span>}
         </NavLink>
         <NavLink
           to="/help"
@@ -181,31 +202,33 @@ export default function Sidebar() {
           style={{ color: 'var(--text-secondary)' }}
         >
           <HelpCircle className="w-4 h-4" />
-          {!sidebarCollapsed && <span>Help</span>}
+          {!sidebarCollapsed && <span>{t('nav.help')}</span>}
         </NavLink>
         <button
           className="flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors"
           style={{ color: 'var(--text-secondary)' }}
           onClick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}
         >
           <span className="text-base" aria-hidden="true">
             {theme === 'dark' ? '☀️' : '🌙'}
           </span>
-          {!sidebarCollapsed && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+          {!sidebarCollapsed && (
+            <span>{theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}</span>
+          )}
         </button>
         <button
           className="hidden md:flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors"
           style={{ color: 'var(--text-secondary)' }}
           onClick={toggleSidebar}
-          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={sidebarCollapsed ? t('accessibility.expand') : t('sidebar.collapse')}
         >
           {sidebarCollapsed ? (
             <ChevronRight className="w-4 h-4" aria-hidden="true" />
           ) : (
             <ChevronLeft className="w-4 h-4" aria-hidden="true" />
           )}
-          {!sidebarCollapsed && <span>Collapse</span>}
+          {!sidebarCollapsed && <span>{t('sidebar.collapse')}</span>}
         </button>
       </div>
     </aside>

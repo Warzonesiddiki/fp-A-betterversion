@@ -48,7 +48,7 @@ const catalog = defineCatalog({
 
 // Define rendering implementations
 const registry = defineRegistry({
-  Card: ({ title, children }) => (
+  Card: ({ title, children }: { title?: string; children?: React.ReactNode }) => (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
@@ -56,29 +56,59 @@ const registry = defineRegistry({
       <CardContent>{children}</CardContent>
     </Card>
   ),
-  Metric: ({ label, value, format = 'number', change }) => {
+  Metric: ({
+    label,
+    value,
+    format = 'number',
+    change,
+  }: {
+    label?: string;
+    value?: number;
+    format?: string;
+    change?: number;
+  }) => {
+    const numValue = value ?? 0;
     const formattedValue =
       format === 'currency'
-        ? `$${value.toLocaleString()}`
+        ? `$${numValue.toLocaleString()}`
         : format === 'percent'
-          ? `${value.toFixed(1)}%`
-          : value.toLocaleString();
-    return <KPIValue label={label} value={formattedValue} change={change} />;
+          ? `${numValue.toFixed(1)}%`
+          : numValue.toLocaleString();
+    return <KPIValue label={label ?? ''} value={formattedValue} change={change} />;
   },
-  Chart: ({ type, data, title }) => {
-    const chartData = data.map((d: { label: string; value: number }) => ({
-      label: d.label,
-      value: d.value,
-    }));
+  Chart: ({
+    type,
+    data,
+    title,
+  }: {
+    type?: string;
+    data?: Array<Record<string, unknown>>;
+    title?: string;
+  }) => {
     switch (type) {
       case 'waterfall':
-        return <WaterfallChart data={chartData} title={title} />;
+        return (
+          <WaterfallChart
+            data={(data ?? []).map((d) => ({
+              name: String(d.name ?? d.label ?? ''),
+              value: Number(d.value ?? 0),
+            }))}
+          />
+        );
       case 'variance':
-        return <VarianceChart data={chartData} title={title} />;
+        return (
+          <VarianceChart
+            data={(data ?? []).map((d) => ({
+              name: String(d.name ?? d.label ?? ''),
+              budget: Number(d.budget ?? 0),
+              actual: Number(d.actual ?? 0),
+            }))}
+          />
+        );
       case 'sparkline':
-        return <SparklineChart data={data.map((d: { value: number }) => d.value)} />;
+        return <SparklineChart data={(data ?? []).map((d) => Number(d.value ?? 0))} />;
       case 'gauge':
-        return <GaugeChart value={data[0]?.value ?? 0} max={100} label={title} />;
+        return <GaugeChart value={Number(data?.[0]?.value ?? 0)} max={100} label={title} />;
       default:
         return (
           <div className="h-48 flex items-center justify-center text-muted-foreground">
@@ -87,7 +117,7 @@ const registry = defineRegistry({
         );
     }
   },
-  Grid: ({ columns = 2, children }) => (
+  Grid: ({ columns = 2, children }: { columns?: number; children?: React.ReactNode }) => (
     <div
       className="grid gap-4"
       style={{ gridTemplateColumns: `repeat(${Math.min(columns, 4)}, 1fr)` }}
@@ -103,9 +133,13 @@ interface GenerativeDashboardProps {
 }
 
 export function GenerativeDashboard({ spec, className = '' }: GenerativeDashboardProps) {
+  const RendererComponent = Renderer as unknown as React.ComponentType<{
+    spec: Record<string, unknown>;
+    registry: unknown;
+  }>;
   return (
     <div className={className}>
-      <Renderer spec={spec} registry={registry} />
+      <RendererComponent spec={spec} registry={registry} />
     </div>
   );
 }

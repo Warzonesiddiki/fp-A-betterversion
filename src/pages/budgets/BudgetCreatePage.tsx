@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useUndoRedo } from '@/hooks/useUndoRedo';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
@@ -13,14 +12,14 @@ import { Alert } from '@/components/ui/Alert';
 import { ArrowLeft, ArrowRight, Check, DollarSign } from 'lucide-react';
 
 export default function BudgetCreatePage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Budget Create';
   }, []);
 
   const navigate = useNavigate();
-  const { createBudget, budgets } = useBudgetStore();
+  const { createBudget } = useBudgetStore();
   const { accounts } = useGLStore();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({
@@ -42,7 +41,7 @@ export default function BudgetCreatePage() {
     return total;
   }, [amounts]);
 
-  const accountOptions = useMemo(
+  const _accountOptions = useMemo(
     () => [...accounts.map((a) => ({ value: a.id, label: a.code + ' — ' + a.name }))],
     [accounts]
   );
@@ -51,22 +50,34 @@ export default function BudgetCreatePage() {
     () => [
       {
         label: 'Details',
-        status: (step > 0 ? 'done' : step === 0 ? 'current' : 'pending') as const,
+        status: (step > 0 ? 'done' : step === 0 ? 'current' : 'pending') as
+          | 'done'
+          | 'current'
+          | 'pending',
         description: 'Budget info',
       },
       {
         label: 'Accounts',
-        status: (step > 1 ? 'done' : step === 1 ? 'current' : 'pending') as const,
+        status: (step > 1 ? 'done' : step === 1 ? 'current' : 'pending') as
+          | 'done'
+          | 'current'
+          | 'pending',
         description: 'Select accounts',
       },
       {
         label: 'Amounts',
-        status: (step > 2 ? 'done' : step === 2 ? 'current' : 'pending') as const,
+        status: (step > 2 ? 'done' : step === 2 ? 'current' : 'pending') as
+          | 'done'
+          | 'current'
+          | 'pending',
         description: 'Set amounts',
       },
       {
         label: 'Review',
-        status: (step > 3 ? 'done' : step === 3 ? 'current' : 'pending') as const,
+        status: (step > 3 ? 'done' : step === 3 ? 'current' : 'pending') as
+          | 'done'
+          | 'current'
+          | 'pending',
         description: 'Confirm & create',
       },
     ],
@@ -96,13 +107,17 @@ export default function BudgetCreatePage() {
       fiscalYear: form.fiscalYear,
       baseCurrency: form.baseCurrency,
       description: form.description,
-      selectedAccounts: selectedAccountIds.map((id) => ({
-        accountId: id,
-        months: Array.from({ length: 12 }, (_, m) => amounts[id + '-' + m] ?? 0),
-      })),
       departments: [],
       entities: ['default'],
       status,
+      template: 'Standard',
+      totalAmount,
+      createdByName: 'Current User',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+      version: 1,
+      progress: 0,
     });
     navigate('/budgets/' + budgetId);
   };

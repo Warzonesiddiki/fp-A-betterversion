@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -189,7 +189,7 @@ export default function GoalSeekPage() {
             <Button onClick={runMonteCarlo} disabled={loading}>
               {loading ? 'Running...' : 'Run Simulation'}
             </Button>
-            {loading && <Skeleton variant="rectangular" height={100} />}
+            {loading && <Skeleton variant="rectangular" height="100px" />}
             {results && !loading && (
               <div className="space-y-2 text-sm pt-4 border-t border-slate-800">
                 <div className="flex justify-between">

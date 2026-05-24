@@ -79,7 +79,7 @@ vi.mock('@/engines/ConsolidationEngine', () => ({
 // ---------------------------------------------------------------------------
 vi.mock('@/components/ui', () => {
   const stub = (props: Record<string, unknown>) => <div data-testid="ui-stub" {...props} />;
-  const forwardRefStub = React.forwardRef((props, ref) => (
+  const forwardRefStub = React.forwardRef<HTMLDivElement, Record<string, unknown>>((props, ref) => (
     <div ref={ref} data-testid="ui-stub" {...props} />
   ));
   return {
@@ -235,11 +235,11 @@ vi.mock('recharts', () => {
 // ---------------------------------------------------------------------------
 
 vi.mock('lucide-react', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('lucide-react')>();
+  const actual = await importOriginal<Record<string, unknown>>();
   const icon = ({ className }: { className?: string }) => (
     <span data-testid="mock-icon" className={className} />
   );
-  const mocked: Record<string, typeof icon> = {};
+  const mocked: Record<string, unknown> = {};
   for (const key of Object.keys(actual)) {
     mocked[key] = icon;
   }
@@ -283,6 +283,11 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
 describe('Page Smoke Tests (Batch 2)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
   });
 
   describe('CashForecastPage', () => {

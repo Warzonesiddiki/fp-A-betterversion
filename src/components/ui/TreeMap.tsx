@@ -21,20 +21,7 @@ export interface TreeMapProps {
 }
 
 const CustomizedContent = (props: Record<string, unknown>) => {
-  const {
-    root,
-    depth: d,
-    x: px,
-    y: py,
-    width: w,
-    height: h,
-    index,
-    payload: pl,
-    colors,
-    rank,
-    name: n,
-    value: v,
-  } = props;
+  const { depth: d, x: px, y: py, width: w, height: h, payload: pl, name: n, value: v } = props;
   const depth = d as number;
   const x = px as number;
   const y = py as number;
@@ -92,13 +79,11 @@ const CustomizedContent = (props: Record<string, unknown>) => {
 
 export const TreeMap: React.FC<TreeMapProps> = ({
   data,
-  width = '100%',
   height = 400,
   title,
   className,
   loading = false,
   error,
-  onClick,
 }) => {
   if (loading) {
     return (
@@ -165,7 +150,7 @@ export const TreeMap: React.FC<TreeMapProps> = ({
       <div style={{ height }} className="w-full">
         <ResponsiveContainer width="100%" height="100%">
           <Treemap
-            data={data}
+            data={data as unknown as import('recharts/types/chart/Treemap').TreemapDataType[]}
             dataKey="value"
             aspectRatio={4 / 3}
             stroke="#fff"

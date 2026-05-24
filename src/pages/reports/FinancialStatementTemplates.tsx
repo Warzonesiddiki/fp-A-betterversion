@@ -13,11 +13,7 @@ import {
   BudgetVsActual,
 } from '@/components/reports/FinancialStatementTemplates';
 import { ExportEngine } from '@/engines/ExportEngine';
-import {
-  FileText,
-  Download,
-  ChevronDown,
-} from 'lucide-react';
+import { FileText, Download, ChevronDown } from 'lucide-react';
 
 type StatementType = 'pl' | 'bs' | 'cf' | 'bva';
 
@@ -81,7 +77,7 @@ export default function FinancialStatementTemplatesPage() {
       'research & development_actual': opex * 0.35,
       'general & administrative_actual': opex * 0.25,
       'total operating expenses_actual': opex,
-      'ebitda_actual': ebitda,
+      ebitda_actual: ebitda,
       'ebitda margin %_actual': ebitdaMargin,
       'depreciation & amortization_actual': 0,
       'operating income_actual': ebitda,
@@ -94,14 +90,14 @@ export default function FinancialStatementTemplatesPage() {
       // Balance Sheet
       'cash & equivalents_current': assets * 0.15,
       'accounts receivable_current': assets * 0.1,
-      'inventory_current': assets * 0.08,
+      inventory_current: assets * 0.08,
       'prepaid expenses_current': assets * 0.02,
       'other current assets_current': assets * 0.05,
       'total current assets_current': assets * 0.4,
       'property, plant & equipment_current': assets * 0.35,
       'less: accumulated depreciation_current': -(assets * 0.1),
       'net pp&e_current': assets * 0.25,
-      'goodwill_current': assets * 0.1,
+      goodwill_current: assets * 0.1,
       'intangible assets_current': assets * 0.15,
       'other non-current assets_current': assets * 0.1,
       'total non-current assets_current': assets * 0.6,
@@ -142,11 +138,11 @@ export default function FinancialStatementTemplatesPage() {
       'net change in cash_fy': netIncome,
       'ending cash balance_fy': assets * 0.15,
       // BvA
-      'revenue_actual': revenue,
-      'revenue_budget': revenue * 0.95,
-      'revenue_variance': revenue * 0.05,
-      'revenue_variancepct': revenue > 0 ? 5.3 : 0,
-      'revenue_status': 1,
+      revenue_actual: revenue,
+      revenue_budget: revenue * 0.95,
+      revenue_variance: revenue * 0.05,
+      revenue_variancepct: revenue > 0 ? 5.3 : 0,
+      revenue_status: 1,
       'total revenue_actual_bva': revenue,
       'total revenue_budget': revenue * 0.95,
       'total revenue_variance': revenue * 0.05,
@@ -169,11 +165,11 @@ export default function FinancialStatementTemplatesPage() {
       'operating expenses_variance': -(opex * 0.03),
       'operating expenses_variancepct': -3.0,
       'operating expenses_status': -1,
-      'ebitda_actual_bva': ebitda,
-      'ebitda_budget': ebitda * 0.95,
-      'ebitda_variance': ebitda * 0.05,
-      'ebitda_variancepct': 5.3,
-      'ebitda_status': 1,
+      ebitda_actual_bva: ebitda,
+      ebitda_budget: ebitda * 0.95,
+      ebitda_variance: ebitda * 0.05,
+      ebitda_variancepct: 5.3,
+      ebitda_status: 1,
       'ebitda margin %_actual_bva': ebitdaMargin,
       'ebitda margin %_budget': ebitdaMargin * 0.95,
       'net income_actual_bva': netIncome,
@@ -189,14 +185,16 @@ export default function FinancialStatementTemplatesPage() {
     if (!statement) return;
 
     const headers = ['Line Item', 'Amount'];
-    const rows = entries.length > 0
-      ? [['GL Data', String(entries.length) + ' entries']]
-      : [['No data', '']];
+    const rows =
+      entries.length > 0 ? [['GL Data', String(entries.length) + ' entries']] : [['No data', '']];
 
     if (format === 'pdf') {
       ExportEngine.exportToPDF({ headers, rows }, { title: statement.label });
     } else if (format === 'excel') {
-      ExportEngine.exportToExcel({ headers, rows }, { title: statement.label.replace(/\s+/g, '_') });
+      ExportEngine.exportToExcel(
+        { headers, rows },
+        { title: statement.label.replace(/\s+/g, '_') }
+      );
     }
 
     createReport({
@@ -254,7 +252,9 @@ export default function FinancialStatementTemplatesPage() {
                       setShowDropdown(false);
                     }}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-700 transition-colors ${
-                      activeStatement === opt.key ? 'text-blue-400 bg-slate-700/50' : 'text-slate-300'
+                      activeStatement === opt.key
+                        ? 'text-blue-400 bg-slate-700/50'
+                        : 'text-slate-300'
                     }`}
                   >
                     {opt.label}
@@ -263,7 +263,12 @@ export default function FinancialStatementTemplatesPage() {
               </div>
             )}
           </div>
-          <Button variant="ghost" size="sm" onClick={() => handleExport('pdf')} aria-label="Export as PDF">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleExport('pdf')}
+            aria-label="Export as PDF"
+          >
             <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             Export PDF
           </Button>

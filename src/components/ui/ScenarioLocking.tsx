@@ -211,7 +211,7 @@ export function ScenarioLocking({
                 Lock Scenario
               </h3>
               <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
-                This will prevent any modifications to "{scenarioName}"
+                This will prevent any modifications to &quot;{scenarioName}&quot;
               </p>
             </div>
           </div>
@@ -259,7 +259,7 @@ export function ScenarioLocking({
                 Unlock Scenario
               </h3>
               <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
-                This will allow modifications to "{scenarioName}"
+                This will allow modifications to &quot;{scenarioName}&quot;
               </p>
             </div>
           </div>

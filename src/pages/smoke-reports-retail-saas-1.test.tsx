@@ -165,7 +165,6 @@ vi.mock('lucide-react', () => {
     ArrowLeftRight: makeIcon(),
     CheckCircle2: makeIcon(),
     AlertCircle: makeIcon(),
-    TrendingUp: makeIcon(),
     RefreshCcw: makeIcon(),
   };
 });
@@ -198,7 +197,14 @@ function renderPage(Page: React.ComponentType, path = '/') {
 // ---------------------------------------------------------------------------
 
 describe('Reports pages smoke tests', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
 
   describe('BudgetVsActualSummary', () => {
     it('renders without crashing', () => {

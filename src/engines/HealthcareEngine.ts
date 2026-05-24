@@ -1,4 +1,4 @@
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 export interface PatientRevenueStats {
   grossCharges: number;

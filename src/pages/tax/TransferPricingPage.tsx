@@ -113,7 +113,7 @@ const methodDistribution = [
 
 export default function TransferPricingPage() {
   const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [methodFilter, setMethodFilter] = useState<string>('all');
 
   useEffect(() => {

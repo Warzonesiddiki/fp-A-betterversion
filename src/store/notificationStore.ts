@@ -10,6 +10,11 @@ export const useNotificationStore = create<NotificationState>()(
       (set) => ({
         notifications: [],
         unreadCount: 0,
+        error: null,
+
+        setError: (error) => set({ error }),
+
+        clearError: () => set({ error: null }),
 
         setNotifications: (notifications) =>
           set({

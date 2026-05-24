@@ -7,13 +7,22 @@ import { BoardPackGenerator } from './BoardPackGenerator';
 
 vi.mock('@/components/ui/Card', () => ({
   Card: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div data-testid="card" className={className}>{children}</div>
+    <div data-testid="card" className={className}>
+      {children}
+    </div>
   ),
 }));
 
 vi.mock('@/components/ui/Button', () => ({
-  Button: ({ children, className, disabled, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string }) => (
-    <button className={className} disabled={disabled} {...props}>{children}</button>
+  Button: ({
+    children,
+    className,
+    disabled,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string }) => (
+    <button className={className} disabled={disabled} {...props}>
+      {children}
+    </button>
   ),
 }));
 
@@ -22,8 +31,24 @@ const mockBook = {
   name: 'Board Pack',
   description: 'Monthly board pack',
   entries: [
-    { id: 'e1', reportName: 'Profit & Loss', templateId: 'preset-pl', entityIds: ['ent-1'], variables: { period: 'May 2026' }, enabled: true, order: 0 },
-    { id: 'e2', reportName: 'Balance Sheet', templateId: 'preset-bs', entityIds: ['ent-1'], variables: { period: 'May 2026' }, enabled: true, order: 1 },
+    {
+      id: 'e1',
+      reportName: 'Profit & Loss',
+      templateId: 'preset-pl',
+      entityIds: ['ent-1'],
+      variables: { period: 'May 2026' },
+      enabled: true,
+      order: 0,
+    },
+    {
+      id: 'e2',
+      reportName: 'Balance Sheet',
+      templateId: 'preset-bs',
+      entityIds: ['ent-1'],
+      variables: { period: 'May 2026' },
+      enabled: true,
+      order: 1,
+    },
   ],
   createdAt: '2026-01-01',
   updatedAt: '2026-01-01',
@@ -47,7 +72,12 @@ vi.mock('@/engines/ReportBookEngine', () => {
             {
               entityName: 'Acme Corp',
               reportName: 'P&L',
-              data: { rows: [['Revenue', '1000'], ['Expenses', '500']] },
+              data: {
+                rows: [
+                  ['Revenue', '1000'],
+                  ['Expenses', '500'],
+                ],
+              },
             },
           ],
         },

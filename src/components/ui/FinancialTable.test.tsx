@@ -41,7 +41,7 @@ describe('FinancialTable', () => {
   });
 
   it('renders empty placeholder for null values', () => {
-    const cols = [{ key: 'val', header: 'Value', type: 'currency' }];
+    const cols: FinancialTableColumn[] = [{ key: 'val', header: 'Value', type: 'currency' }];
     const rowsWithNull = [{ id: '1', val: null }];
     render(<FinancialTable columns={cols} rows={rowsWithNull} />);
     expect(screen.getByText('---')).toBeInTheDocument();

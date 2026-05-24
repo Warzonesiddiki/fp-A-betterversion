@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { useBudgetStore } from './budgetStore';
-import type { Budget, BudgetLineItem, BudgetState } from '@/types';
+import type { Budget, BudgetLineItem } from '@/types';
 import type { AccountType } from '@/types';
 
 describe('budgetStore', () => {

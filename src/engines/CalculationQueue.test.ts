@@ -14,7 +14,6 @@ describe('CalculationQueue', () => {
   describe('enqueue', () => {
     it('adds a task to the queue or starts it immediately', () => {
       const task = {
-        id: 'test-1',
         engineId: 'test-engine',
         inputs: {},
         priority: 'normal' as const,
@@ -22,7 +21,6 @@ describe('CalculationQueue', () => {
       };
       queue.enqueue(task);
       const stats = queue.getStats();
-      // Task may be queued or already running depending on concurrency
       expect(stats.queued + stats.running).toBeGreaterThanOrEqual(1);
     });
   });
@@ -30,14 +28,13 @@ describe('CalculationQueue', () => {
   describe('cancel', () => {
     it('cancels a task', () => {
       const task = {
-        id: 'test-1',
         engineId: 'test-engine',
         inputs: {},
         priority: 'normal' as const,
         computeFn: async () => 42,
       };
       queue.enqueue(task);
-      queue.cancel('test-1');
+      queue.cancel('calc-1');
       const stats = queue.getStats();
       expect(stats.queued).toBe(0);
     });
@@ -46,14 +43,12 @@ describe('CalculationQueue', () => {
   describe('cancelAll', () => {
     it('cancels all tasks', () => {
       queue.enqueue({
-        id: '1',
         engineId: 'e1',
         inputs: {},
         priority: 'normal',
         computeFn: async () => 1,
       });
       queue.enqueue({
-        id: '2',
         engineId: 'e2',
         inputs: {},
         priority: 'high',

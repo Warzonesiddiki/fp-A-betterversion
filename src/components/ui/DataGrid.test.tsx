@@ -43,10 +43,6 @@ vi.mock('./DataGrid', async () => {
     const {
       rows,
       columns,
-      onCellValueChanged: _onCellValueChanged,
-      onSelectionChanged: _onSelectionChanged,
-      onUndo: _onUndo,
-      onRedo: _onRedo,
       loading = false,
       className,
       enableFindReplace = false,

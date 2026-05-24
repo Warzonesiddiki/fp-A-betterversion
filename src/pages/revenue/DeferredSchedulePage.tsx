@@ -4,7 +4,7 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
+import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
   Download,
   Calendar,
@@ -156,7 +156,7 @@ export default function DeferredSchedulePage() {
     document.title = 'FinPlan Pro - Deferred Revenue Schedule';
   }, []);
 
-  const glDeferred = useMemo(
+  const _glDeferred = useMemo(
     () =>
       entries
         .filter((e) => (e.accountCode || '').startsWith('23'))
@@ -170,7 +170,7 @@ export default function DeferredSchedulePage() {
   const recognitionRate =
     totalContractValue > 0 ? (totalRecognizedYTD / totalContractValue) * 100 : 0;
 
-  const contractColumns: Column<ContractRecord>[] = [
+  const _contractColumns: Column<ContractRecord>[] = [
     {
       key: 'id',
       header: '',
@@ -356,6 +356,12 @@ export default function DeferredSchedulePage() {
                 <div
                   className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-700/50 transition-colors"
                   onClick={() => setExpandedId(expandedId === contract.id ? null : contract.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ')
+                      setExpandedId(expandedId === contract.id ? null : contract.id);
+                  }}
                 >
                   <div className="flex items-center gap-3">
                     {expandedId === contract.id ? (

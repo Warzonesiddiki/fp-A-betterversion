@@ -1,15 +1,25 @@
 import { describe, it, expect } from 'vitest';
-import { RetailEngine, type GLEntry } from './RetailEngine';
+import { RetailEngine } from './RetailEngine';
+import type { GLEntry } from '@/types';
 
 function gl(accountCode: string, amount: number, overrides: Partial<GLEntry> = {}): GLEntry {
+  const id = `gl-${accountCode}-${Math.random().toString(36).slice(2, 6)}`;
   return {
-    id: `gl-${accountCode}-${Math.random().toString(36).slice(2, 6)}`,
+    id,
+    accountId: id,
     accountCode,
     accountName: `Account ${accountCode}`,
-    amount,
-    currency: 'USD',
+    period: '2026-01',
+    periodName: '2026-01',
+    debit: amount,
+    credit: 0,
+    netChange: amount,
     date: '2026-01-15',
+    amount,
+    description: '',
+    reference: id,
     entityId: 'entity-1',
+    currency: 'USD',
     ...overrides,
   };
 }
@@ -195,7 +205,7 @@ describe('RetailEngine', () => {
       ];
       const result = RetailEngine.getPnLTrend(entries);
       expect(result).toHaveLength(3);
-      expect(result[0].period).toBe('2026-01');
+      expect(result[0].month).toBe('2026-01');
       expect(result[0].revenue).toBe(100000);
     });
 
@@ -223,7 +233,7 @@ describe('RetailEngine', () => {
       );
       const result = RetailEngine.getPnLTrend(entries);
       expect(result).toHaveLength(6);
-      expect(result[0].period).toBe('2026-03');
+      expect(result[0].month).toBe('2026-03');
     });
 
     it('should handle empty entries', () => {
@@ -238,9 +248,9 @@ describe('RetailEngine', () => {
         gl('4001', 150000, { date: '2026-02-15' }),
       ];
       const result = RetailEngine.getPnLTrend(entries);
-      expect(result[0].period).toBe('2026-01');
-      expect(result[1].period).toBe('2026-02');
-      expect(result[2].period).toBe('2026-03');
+      expect(result[0].month).toBe('2026-01');
+      expect(result[1].month).toBe('2026-02');
+      expect(result[2].month).toBe('2026-03');
     });
   });
 });

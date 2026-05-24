@@ -25,24 +25,20 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
   const [currentMatchIdx, setCurrentMatchIdx] = useState(-1);
   const [replaceAllFeedback, setReplaceAllFeedback] = useState<string | null>(null);
   const findInputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Focus input on open
   useEffect(() => {
-    if (isOpen && findInputRef.current) {
-      findInputRef.current.focus();
-      findInputRef.current.select();
-    }
-  }, [isOpen]);
+    dialogRef.current?.focus();
+  }, []);
 
-  // Escape to close
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [isOpen, onClose]);
+  const navigateToMatch = useCallback(
+    (match: MatchResult) => {
+      if (!gridApi) return;
+      gridApi.setFocusedCell(match.rowIndex, match.colId);
+      gridApi.ensureIndexVisible(match.rowIndex, 'middle');
+    },
+    [gridApi]
+  );
 
   // Search for matches
   const handleFind = useCallback(() => {
@@ -78,11 +74,10 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
             const regex = new RegExp(findText, flags);
             isMatch = regex.test(cellStr);
           } catch {
-            // Invalid regex — fall back to literal
-            isMatch = compareStr.includes(searchStr);
+            isMatch = compareStr.includes(matchCase ? findText : findText.toLowerCase());
           }
         } else {
-          isMatch = compareStr.includes(searchStr);
+          isMatch = compareStr.includes(matchCase ? findText : findText.toLowerCase());
         }
 
         if (isMatch) {
@@ -98,20 +93,10 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
     setMatches(results);
     setCurrentMatchIdx(results.length > 0 ? 0 : -1);
 
-    // Navigate to first match
     if (results.length > 0) {
       navigateToMatch(results[0]);
     }
-  }, [gridApi, findText, matchCase, useRegex, searchInFormulas]);
-
-  const navigateToMatch = useCallback(
-    (match: MatchResult) => {
-      if (!gridApi) return;
-      gridApi.setFocusedCell(match.rowIndex, match.colId);
-      gridApi.ensureIndexVisible(match.rowIndex, 'middle');
-    },
-    [gridApi]
-  );
+  }, [gridApi, findText, matchCase, useRegex, searchInFormulas, navigateToMatch]);
 
   const goToNext = useCallback(() => {
     if (matches.length === 0) return;
@@ -125,7 +110,7 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
     const prev = (currentMatchIdx - 1 + matches.length) % matches.length;
     setCurrentMatchIdx(prev);
     navigateToMatch(matches[prev]);
-  }, [matches, currentMatchIdx, navigateToMatch]);
+  }, [matches, currentMatchIdx, navigateToMatch, setCurrentMatchIdx]);
 
   // Replace current match
   const handleReplace = useCallback(() => {
@@ -195,10 +180,10 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
             const regex = new RegExp(findText, flags);
             isMatch = regex.test(cellStr);
           } catch {
-            isMatch = compareStr.includes(searchStr);
+            isMatch = compareStr.includes(matchCase ? findText : findText.toLowerCase());
           }
         } else {
-          isMatch = compareStr.includes(searchStr);
+          isMatch = compareStr.includes(matchCase ? findText : findText.toLowerCase());
         }
 
         if (isMatch) {
@@ -230,10 +215,21 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
     handleFind();
   }, [gridApi, findText, replaceText, matchCase, useRegex, handleFind]);
 
-  // Enter to find next
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
+  // Focus input on open
+  useEffect(() => {
+    if (isOpen && findInputRef.current) {
+      findInputRef.current.focus();
+      findInputRef.current.select();
+    }
+  }, [isOpen]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'Enter') {
         e.preventDefault();
         if (e.shiftKey) {
           goToPrev();
@@ -243,18 +239,19 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
           handleFind();
         }
       }
-    },
-    [goToNext, goToPrev, handleFind, currentMatchIdx, matches.length]
-  );
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isOpen, onClose, handleFind, goToNext, goToPrev, currentMatchIdx, matches.length]);
 
   if (!isOpen) return null;
 
   return (
     <div
+      ref={dialogRef}
       className="fixed top-4 right-4 z-50 w-[420px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg shadow-xl"
       role="dialog"
       aria-label="Find and Replace"
-      onKeyDown={handleKeyDown}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--border-subtle)]">

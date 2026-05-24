@@ -97,8 +97,17 @@ export const GanttChart: React.FC<GanttChartProps> = ({
           return (
             <div
               key={task.id}
+              role="button"
+              tabIndex={0}
               className="flex items-center h-8 mb-1 cursor-pointer"
               onClick={onClick ? () => onClick(task) : undefined}
+              onKeyDown={
+                onClick
+                  ? (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') onClick(task);
+                    }
+                  : undefined
+              }
             >
               <div className="w-48 shrink-0 text-sm truncate pr-2">{task.name}</div>
               <div className="flex-1 relative h-full bg-gray-100 rounded">

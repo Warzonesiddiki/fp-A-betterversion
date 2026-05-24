@@ -48,6 +48,36 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ dataKey: string; value: number; color: string }>;
+  label?: string;
+}) {
+  if (!active || !payload) return null;
+  return (
+    <div className="rounded-lg border border-[var(--border-subtle)] bg-white dark:bg-gray-800 p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+      <p className="text-xs font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-2">
+        {label}
+      </p>
+      {payload.map((entry: { dataKey: string; value: number; color: string }) => (
+        <div key={entry.dataKey} className="flex items-center justify-between gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="text-[var(--text-secondary)] dark:text-gray-300">{entry.dataKey}</span>
+          </div>
+          <span className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
+            {formatCurrency(entry.value)}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ScenarioTimeline({
   periods,
   baseValues,
@@ -89,38 +119,6 @@ export function ScenarioTimeline({
     });
     return points;
   }, [periods, baseValues, scenarios, showInflectionPoints]);
-
-  const CustomTooltip = ({
-    active,
-    payload,
-    label,
-  }: {
-    active?: boolean;
-    payload?: Array<{ dataKey: string; value: number; color: string }>;
-    label?: string;
-  }) => {
-    if (!active || !payload) return null;
-    return (
-      <div className="rounded-lg border border-[var(--border-subtle)] bg-white dark:bg-gray-800 p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
-        <p className="text-xs font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-2">
-          {label}
-        </p>
-        {payload.map((entry: { dataKey: string; value: number; color: string }) => (
-          <div key={entry.dataKey} className="flex items-center justify-between gap-4 text-xs">
-            <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-              <span className="text-[var(--text-secondary)] dark:text-gray-300">
-                {entry.dataKey}
-              </span>
-            </div>
-            <span className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
-              {formatCurrency(entry.value)}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <Card className={className}>

@@ -4,7 +4,7 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { Download, TrendingDown, DollarSign, BarChart3, Calendar } from 'lucide-react';
+import { Download, TrendingDown, DollarSign, Calendar } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   ResponsiveContainer,
@@ -136,7 +136,7 @@ export default function DepreciationForecastPage() {
     [filteredAssets]
   );
 
-  const glTotal = entries
+  const _glTotal = entries
     .filter((e) => (e.accountCode || '').startsWith('14') || (e.accountCode || '').startsWith('15'))
     .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
 

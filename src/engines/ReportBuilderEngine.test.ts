@@ -1675,7 +1675,7 @@ describe('ReportBuilderEngine', () => {
           content: {
             coords: 'Status.Q1',
             measure: 'value',
-            format: 'text',
+            format: 'decimal',
             decimals: 0,
             showSign: false,
           },

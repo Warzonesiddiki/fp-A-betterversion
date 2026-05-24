@@ -1,4 +1,4 @@
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 export interface StoreStats {
   id: string;
@@ -31,7 +31,9 @@ export class RetailEngine {
    * - 52xx: Occupancy Cost
    */
   static getStoreBreakdown(entries: GLEntry[]): StoreStats[] {
-    const entityIds = Array.from(new Set(entries.map((e) => e.entityId)));
+    const entityIds = Array.from(new Set(entries.map((e) => e.entityId))).filter(
+      (id): id is string => id != null
+    );
 
     const stats = entityIds
       .map((id) => {
@@ -93,12 +95,10 @@ export class RetailEngine {
   }
 
   static getPnLTrend(entries: GLEntry[]): Array<{
-    period: string;
+    month: string;
     revenue: number;
-    cogs: number;
-    grossMargin: number;
-    opex: number;
-    ebitda: number;
+    grossProfit: number;
+    labor: number;
   }> {
     const periods = Array.from(new Set(entries.map((e) => e.date.substring(0, 7)))).sort();
     return periods.slice(-6).map((period) => {

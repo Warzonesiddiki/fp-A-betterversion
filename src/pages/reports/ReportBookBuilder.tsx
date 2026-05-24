@@ -37,7 +37,8 @@ export default function ReportBookBuilderPage() {
           <h1 className="text-2xl font-bold">Report Book Builder</h1>
           <p className="text-sm text-slate-400 mt-1">
             {entries.length.toLocaleString()} GL entries available
-            {reports.length > 0 && ` \u00B7 ${reports.length} saved report${reports.length !== 1 ? 's' : ''}`}
+            {reports.length > 0 &&
+              ` \u00B7 ${reports.length} saved report${reports.length !== 1 ? 's' : ''}`}
           </p>
         </div>
       </div>

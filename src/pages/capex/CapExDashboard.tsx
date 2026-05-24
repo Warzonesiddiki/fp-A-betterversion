@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -138,7 +138,7 @@ const categoryData = [
   { name: 'Vehicles', budget: 280000, actual: 0 },
 ];
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+const _COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
 export default function CapExDashboard() {
   const { entries } = useGLStore();
@@ -148,10 +148,10 @@ export default function CapExDashboard() {
     document.title = 'FinPlan Pro - Capital Expenditures';
   }, []);
 
-  const glCapex = useMemo(() => {
+  const _glCapex = useMemo(() => {
     if (entries.length === 0) return 0;
     return entries
-      .filter((e) => (e.accountCode || '').startsWith('1') || e.accountType === 'CapEx')
+      .filter((e) => (e.accountCode || '').startsWith('1'))
       .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
   }, [entries]);
 
@@ -192,7 +192,11 @@ export default function CapExDashboard() {
           Completed: 'bg-green-900/50 text-green-400',
         };
         return (
-          <span className={`text-xs px-2 py-0.5 rounded-full ${colors[r.status]}`}>{r.status}</span>
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full ${colors[r.status as keyof typeof colors] ?? 'bg-slate-700 text-slate-400'}`}
+          >
+            {r.status}
+          </span>
         );
       },
     },

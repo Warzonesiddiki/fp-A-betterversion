@@ -413,7 +413,7 @@ export class SOXComplianceEngine {
     }
 
     if (options?.amountThreshold !== undefined) {
-      steps[0].condition = {
+      (steps[0] as Record<string, unknown>).condition = {
         field: 'amount',
         operator: 'gte' as const,
         value: options.amountThreshold,

@@ -2,19 +2,21 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useExport } from './useExport';
 import { ExportEngine } from '@/engines/ExportEngine';
 import type { ExportData } from '@/engines/ExportEngine';
 
-// Mock the engine
 vi.mock('@/engines/ExportEngine');
 
 const mockExportEngine = vi.mocked(ExportEngine);
 
 const mockExportData: ExportData = {
-  columns: [{ key: 'col1', name: 'Column 1' }],
-  rows: [{ col1: 'value1' }],
+  headers: ['col1', 'col2'],
+  rows: [
+    ['value1', 100],
+    ['value2', 200],
+  ],
 };
 
 describe('useExport', () => {
@@ -32,7 +34,7 @@ describe('useExport', () => {
 
   it('should call ExportEngine.exportToPDF and manage final state', async () => {
     const { result } = renderHook(() => useExport());
-    mockExportEngine.exportToPDF.mockResolvedValue(undefined);
+    mockExportEngine.exportToPDF.mockReturnValue(undefined);
 
     await act(async () => {
       await result.current.exportToPDF(mockExportData, 'Test PDF');
@@ -47,7 +49,9 @@ describe('useExport', () => {
 
   it('should set an error if PDF export fails', async () => {
     const { result } = renderHook(() => useExport());
-    mockExportEngine.exportToPDF.mockRejectedValue(new Error('PDF Fail'));
+    mockExportEngine.exportToPDF.mockImplementation(() => {
+      throw new Error('PDF Fail');
+    });
 
     await act(async () => {
       await result.current.exportToPDF(mockExportData, 'Test PDF');
@@ -61,7 +65,7 @@ describe('useExport', () => {
     const { result } = renderHook(() => useExport());
 
     await act(async () => {
-      await result.current.exportToPDF({ columns: [], rows: [] }, 'Test PDF');
+      await result.current.exportToPDF({ headers: [], rows: [] }, 'Test PDF');
     });
 
     expect(mockExportEngine.exportToPDF).not.toHaveBeenCalled();
@@ -72,7 +76,7 @@ describe('useExport', () => {
 
   it('should call ExportEngine.exportToExcel and manage final state', async () => {
     const { result } = renderHook(() => useExport());
-    mockExportEngine.exportToExcel.mockResolvedValue(undefined);
+    mockExportEngine.exportToExcel.mockReturnValue(undefined);
 
     await act(async () => {
       await result.current.exportToExcel(mockExportData, 'Test Excel');
@@ -86,7 +90,9 @@ describe('useExport', () => {
 
   it('should set an error if Excel export fails', async () => {
     const { result } = renderHook(() => useExport());
-    mockExportEngine.exportToExcel.mockRejectedValue(new Error('Excel Fail'));
+    mockExportEngine.exportToExcel.mockImplementation(() => {
+      throw new Error('Excel Fail');
+    });
 
     await act(async () => {
       await result.current.exportToExcel(mockExportData, 'Test Excel');
@@ -100,7 +106,7 @@ describe('useExport', () => {
 
   it('should call ExportEngine.exportToCSV and manage final state', async () => {
     const { result } = renderHook(() => useExport());
-    mockExportEngine.exportToCSV.mockResolvedValue(undefined);
+    mockExportEngine.exportToCSV.mockReturnValue(undefined);
 
     await act(async () => {
       await result.current.exportToCSV(mockExportData, 'Test CSV');
@@ -114,7 +120,9 @@ describe('useExport', () => {
 
   it('should set an error if CSV export fails', async () => {
     const { result } = renderHook(() => useExport());
-    mockExportEngine.exportToCSV.mockRejectedValue(new Error('CSV Fail'));
+    mockExportEngine.exportToCSV.mockImplementation(() => {
+      throw new Error('CSV Fail');
+    });
 
     await act(async () => {
       await result.current.exportToCSV(mockExportData, 'Test CSV');

@@ -1,4 +1,4 @@
-import { HTMLAttributes, forwardRef, useCallback, useEffect } from 'react';
+import { forwardRef, HTMLAttributes, useCallback, useEffect } from 'react';
 import { cn } from '../../utils/cn';
 import { useFocusRestore } from '@/hooks/useFocusRestore';
 import { X } from 'lucide-react';
@@ -6,6 +6,8 @@ import { X } from 'lucide-react';
 interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const Modal = forwardRef<HTMLDivElement, ModalProps>(
@@ -32,6 +34,11 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
             aria-hidden="true"
             onClick={onClose}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') onClose();
+            }}
+            role="button"
+            tabIndex={0}
           />
 
           <span className="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">

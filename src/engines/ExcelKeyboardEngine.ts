@@ -1,4 +1,4 @@
-﻿export interface GridPosition {
+export interface GridPosition {
   row: number;
   col: number;
 }

@@ -57,8 +57,8 @@ export class AIEngine {
 
   static async classifyTransaction(description: string) {
     if (!this.classifier) await this.init();
-    const result = await this.classifier(description);
-    return result[0];
+    const result = await this.classifier!(description);
+    return result[0] as { label: string; score: number };
   }
 
   static async getEmbeddings(text: string) {
@@ -76,11 +76,17 @@ export class AIEngine {
     return output;
   }
 
-  static async detectAnomalies(descriptions: string[]) {
+  static async detectAnomalies(descriptions: string[], batchSize: number = 10) {
     const results = [];
-    for (const desc of descriptions) {
-      const sentiment = await this.classifyTransaction(desc);
-      results.push({ description: desc, sentiment: sentiment.label, confidence: sentiment.score });
+    for (let i = 0; i < descriptions.length; i += batchSize) {
+      const batch = descriptions.slice(i, i + batchSize);
+      const batchResults = await Promise.all(
+        batch.map(async (desc) => {
+          const sentiment = await this.classifyTransaction(desc);
+          return { description: desc, sentiment: sentiment.label, confidence: sentiment.score };
+        })
+      );
+      results.push(...batchResults);
     }
     return results;
   }

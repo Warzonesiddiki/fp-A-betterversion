@@ -14,7 +14,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import type { NLQResult } from '@/engines/NLQEngine';
 
@@ -73,7 +72,9 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
               outerRadius={height * 0.35}
               dataKey="value"
               nameKey="name"
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent }: { name?: string; percent?: number }) =>
+                `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`
+              }
               labelLine={false}
             >
               {chartData.map((_, i) => (
@@ -134,13 +135,15 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
 
       {query.intent === 'comparison' && data.length >= 2 && (
         <div className="mt-2 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <Legend
-            payload={chartData.slice(0, 6).map((d, i) => ({
-              value: d.name,
-              type: 'square' as const,
-              color: COLORS[i % COLORS.length],
-            }))}
-          />
+          {chartData.slice(0, 6).map((d, i) => (
+            <span key={i} className="flex items-center gap-1">
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-sm"
+                style={{ backgroundColor: COLORS[i % COLORS.length] }}
+              />
+              {d.name}
+            </span>
+          ))}
         </div>
       )}
     </div>

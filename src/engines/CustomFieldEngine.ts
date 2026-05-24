@@ -1,4 +1,4 @@
-﻿export type FieldType =
+export type FieldType =
   | 'text'
   | 'number'
   | 'currency'

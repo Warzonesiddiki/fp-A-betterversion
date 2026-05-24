@@ -3,7 +3,7 @@ import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { FileDropZone } from '@/components/ui/FileDropZone';
-import { DataTable, type Column } from '@/components/ui/DataTable';
+import { DataTable } from '@/components/ui/DataTable';
 import { KPIValue } from '@/components/ui/KPIValue';
 import {
   MigrationEngine,
@@ -62,9 +62,7 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
     const unsub = engine.onProgress(setProgress);
     return unsub;
   }, []);
-  const handleFileSelect = useCallback(async (files: File[]) => {
-    if (files.length === 0) return;
-    const f = files[0];
+  const handleFileSelect = useCallback(async (f: File) => {
     setFile(f);
     setError(null);
     setAnalyzing(true);
@@ -147,9 +145,9 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
   return (
     <div className="space-y-6">
       <ProgressStepper
-        steps={steps.map((s) => ({
+        steps={steps.map((s, i) => ({
           label: s.label,
-          completed: currentStepIndex > steps.indexOf(s),
+          status: i < currentStepIndex ? 'done' : i === currentStepIndex ? 'current' : 'pending',
         }))}
         currentStep={currentStepIndex}
       />
@@ -202,15 +200,7 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
             <p className="text-muted-foreground">
               Upload your {source.toUpperCase()} file for migration analysis.
             </p>
-            <FileDropZone
-              onFilesSelected={handleFileSelect}
-              accept={{
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-                'application/vnd.ms-excel': ['.xls'],
-                'text/csv': ['.csv'],
-              }}
-              maxFiles={1}
-            />
+            <FileDropZone onFile={handleFileSelect} accept=".xlsx,.xls,.csv" />
             {analyzing && (
               <div className="flex items-center gap-2 text-primary">
                 <Loader2 className="h-4 w-4 animate-spin" />

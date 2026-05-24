@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
@@ -163,8 +163,33 @@ vi.mock('@/store/settingsStore', () => ({
     setLoading: vi.fn(),
   })),
 }));
+vi.mock('@/store/uiStore', () => ({
+  useUIStore: vi.fn(() => ({
+    mobileSidebarOpen: false,
+    closeMobileSidebar: vi.fn(),
+    theme: 'light',
+    setTheme: vi.fn(),
+  })),
+}));
 vi.mock('@/hooks/usePeriods', () => ({
   usePeriods: vi.fn(() => []),
+}));
+vi.mock('@/hooks/useSector', () => ({
+  useSector: vi.fn(() => ({
+    activeSector: 'technology',
+    sectorConfig: {
+      id: 'technology',
+      name: 'Technology',
+      defaultKPIs: [
+        { id: 'revenue', label: 'Revenue', target: 1000000, format: 'currency' },
+        { id: 'gross_margin', label: 'Gross Margin', target: 0.65, format: 'percent' },
+        { id: 'net_income', label: 'Net Income', target: 200000, format: 'currency' },
+        { id: 'expenses', label: 'Operating Expenses', target: 800000, format: 'currency' },
+      ],
+    },
+    setSector: vi.fn(),
+    availableSectors: [],
+  })),
 }));
 vi.mock('@/components/ui/PeriodPicker', () => ({
   PeriodPicker: () => <div data-testid="period-picker" />,
@@ -197,7 +222,18 @@ vi.mock('recharts', () => ({
 // ── Smoke tests for all uncovered pages ────────────────────────────────────────
 
 describe('Smoke: uncovered pages render without crashing', () => {
-  const pages: Array<{ name: string; loader: () => Promise<{ default: React.ComponentType }> }> = [
+  beforeEach(() => {
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+  });
+
+  const pages: Array<{
+    name: string;
+    loader: () => Promise<Record<string, React.ComponentType<any>>>;
+  }> = [
     // Sector pages
     { name: 'BankingDashboardPage', loader: () => import('./sector/BankingDashboardPage') },
     {

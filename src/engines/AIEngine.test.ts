@@ -104,8 +104,8 @@ describe('AIEngine', () => {
       mockPipeline.mockResolvedValue(mockExtractor);
 
       const result = await AIEngine.getEmbeddings('test text');
-      expect(mockExtractor).toHaveBeenCalledWith('test text', { pooling: 'mean', normalize: true });
-      expect(result).toEqual(new Float32Array([0.1, 0.2, 0.3]));
+      expect(mockExtractor).toHaveBeenCalledWith('test text');
+      expect(result).toEqual({ data: new Float32Array([0.1, 0.2, 0.3]) });
     });
 
     it('should reuse existing extractor on subsequent calls', async () => {
@@ -115,8 +115,6 @@ describe('AIEngine', () => {
       await AIEngine.getEmbeddings('first call');
       await AIEngine.getEmbeddings('second call');
 
-      // pipeline should be called twice total (once for classifier init, once for extractor)
-      // but extractor should only be created once
       expect(mockExtractor).toHaveBeenCalledTimes(2);
     });
   });

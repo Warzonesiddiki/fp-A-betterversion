@@ -3,11 +3,11 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import { FinancialTable } from '@/components/ui/FinancialTable';
+
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ConsolidationEngine, EntityData, OwnershipStructure } from '@/engines/ConsolidationEngine';
-import { AllocationRuleEngine } from '@/engines/AllocationRuleEngine';
-import { Plus, Trash2, Edit2, LayoutGrid, List } from 'lucide-react';
+
+import { Plus, Trash2, Edit2 } from 'lucide-react';
 
 interface Entity {
   id: string;
@@ -25,7 +25,7 @@ export default function ConsolidationDashboard() {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form State
@@ -127,7 +127,7 @@ export default function ConsolidationDashboard() {
     setIsModalOpen(false);
   };
 
-  const consolidatedData = useMemo(() => {
+  const _consolidatedData = useMemo(() => {
     if (entities.length === 0) return null;
 
     // Mock data for consolidation logic verification
@@ -139,20 +139,34 @@ export default function ConsolidationDashboard() {
         {
           id: `re-${e.id}`,
           entityId: e.id,
+          accountId: `acc-re-${e.id}`,
           accountCode: '4000',
           accountName: 'Revenue',
           amount: 100000,
+          debit: 0,
+          credit: 100000,
+          netChange: 100000,
           date: '2024-01-01',
           period: '2024-01',
+          periodName: 'Jan 2024',
+          description: 'Revenue',
+          reference: 'auto',
         },
         {
           id: `ex-${e.id}`,
           entityId: e.id,
+          accountId: `acc-ex-${e.id}`,
           accountCode: '5000',
           accountName: 'Operating Expenses',
           amount: -60000,
+          debit: 60000,
+          credit: 0,
+          netChange: -60000,
           date: '2024-01-01',
           period: '2024-01',
+          periodName: 'Jan 2024',
+          description: 'Operating Expenses',
+          reference: 'auto',
         },
       ],
     }));
@@ -163,6 +177,7 @@ export default function ConsolidationDashboard() {
         parentId: e.parentId!,
         childId: e.id,
         ownershipPct: e.ownershipPct,
+        method: 'full' as const,
       }));
 
     return ConsolidationEngine.consolidate(entityData, ownerships);

@@ -69,6 +69,14 @@ export const useReportStore = create<ReportState>()(
           set((state) => {
             state.scheduledReports = state.scheduledReports.filter((s) => s.id !== id);
           }),
+
+        toggleScheduledReport: (id) =>
+          set((state) => {
+            const idx = state.scheduledReports.findIndex((s) => s.id === id);
+            if (idx !== -1) {
+              state.scheduledReports[idx].isActive = !state.scheduledReports[idx].isActive;
+            }
+          }),
       })),
       {
         name: 'report-store',

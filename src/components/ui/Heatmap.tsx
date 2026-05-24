@@ -175,6 +175,15 @@ export const Heatmap: React.FC<HeatmapProps> = ({
                         : undefined
                     }
                     role={onClick ? 'button' : undefined}
+                    tabIndex={onClick && val !== undefined ? 0 : undefined}
+                    onKeyDown={
+                      onClick && val !== undefined
+                        ? (e) => {
+                            if (e.key === 'Enter' || e.key === ' ')
+                              onClick({ row, col, value: Number(val) });
+                          }
+                        : undefined
+                    }
                     aria-label={val !== undefined ? `${row} ${col}: ${String(val)}` : undefined}
                   >
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

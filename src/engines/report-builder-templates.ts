@@ -59,6 +59,7 @@ export function createEmptyLayout(): ReportLayout {
     defaultRowHeight: 28,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }
 
@@ -239,6 +240,7 @@ function createIncomeStatementLayout(): ReportLayout {
     defaultRowHeight: 28,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }
 
@@ -347,6 +349,7 @@ function createBalanceSheetLayout(): ReportLayout {
     defaultRowHeight: 28,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }
 
@@ -446,6 +449,7 @@ function createCashFlowLayout(): ReportLayout {
     defaultRowHeight: 28,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }
 
@@ -546,6 +550,7 @@ function createBudgetVsActualLayout(): ReportLayout {
     defaultRowHeight: 28,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }
 
@@ -650,6 +655,7 @@ function createVarianceAnalysisLayout(): ReportLayout {
     defaultRowHeight: 28,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }
 
@@ -723,6 +729,7 @@ function createBoardPackLayout(): ReportLayout {
     defaultRowHeight: 28,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }
 
@@ -792,5 +799,6 @@ function createExecutiveSummaryLayout(): ReportLayout {
     defaultRowHeight: 36,
     frozenColumns: 1,
     frozenRows: 1,
+    filters: [],
   };
 }

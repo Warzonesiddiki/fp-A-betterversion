@@ -1,7 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FunctionSquare, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { ReportBuilderEngine, type FormulaCellContent, type NumberFormat } from '@/engines/ReportBuilderEngine';
+import {
+  ReportBuilderEngine,
+  type FormulaCellContent,
+  type NumberFormat,
+} from '@/engines/ReportBuilderEngine';
 
 /* ────────────────── props ────────────────── */
 
@@ -31,9 +35,24 @@ const FORMULA_FUNCTIONS: FormulaFunction[] = [
   { name: 'MIN', description: 'Minimum value', syntax: 'MIN(A1:A10)', example: 'MIN(C1:C3)' },
   { name: 'MAX', description: 'Maximum value', syntax: 'MAX(A1:A10)', example: 'MAX(D1:D5)' },
   { name: 'ABS', description: 'Absolute value', syntax: 'ABS(A1)', example: 'ABS(A1-B1)' },
-  { name: 'ROUND', description: 'Round to decimals', syntax: 'ROUND(A1, 2)', example: 'ROUND(A1/B1, 1)' },
-  { name: 'IF', description: 'Conditional', syntax: 'IF(A1>0, A1, 0)', example: 'IF(A1>B1, A1-B1, 0)' },
-  { name: 'PCT', description: 'Percentage change', syntax: 'PCT(A1, B1)', example: 'PCT(actual, budget)' },
+  {
+    name: 'ROUND',
+    description: 'Round to decimals',
+    syntax: 'ROUND(A1, 2)',
+    example: 'ROUND(A1/B1, 1)',
+  },
+  {
+    name: 'IF',
+    description: 'Conditional',
+    syntax: 'IF(A1>0, A1, 0)',
+    example: 'IF(A1>B1, A1-B1, 0)',
+  },
+  {
+    name: 'PCT',
+    description: 'Percentage change',
+    syntax: 'PCT(A1, B1)',
+    example: 'PCT(actual, budget)',
+  },
 ];
 
 /* ────────────────── main component ────────────────── */
@@ -53,24 +72,13 @@ export function FormulaBar({
   const [decimals, setDecimals] = useState(currentDecimals);
   const [label, setLabel] = useState(currentLabel);
   const [showHelp, setShowHelp] = useState(false);
-  const [validationResult, setValidationResult] = useState<{
-    valid: boolean;
-    error?: string;
-  } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Validate expression on change
-  useEffect(() => {
-    if (!expression.trim()) {
-      // eslint-disable-next-line react-compiler/react-compiler
-      setValidationResult(null);
-      return;
-    }
+  const validationResult = useMemo(() => {
+    if (!expression.trim()) return null;
 
     try {
-      // Parse references to check syntax
       const refs = ReportBuilderEngine.parseFormulaReferences(expression);
-      // Try to evaluate with dummy values to check syntax
       const dummyValues: Record<string, number> = {};
       for (const ref of refs) {
         dummyValues[ref] = 1;
@@ -80,12 +88,10 @@ export function FormulaBar({
       } else {
         ReportBuilderEngine.safeEvaluate(expression);
       }
-      // eslint-disable-next-line react-compiler/react-compiler
-      setValidationResult({ valid: true });
+      return { valid: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Invalid formula';
-      // eslint-disable-next-line react-compiler/react-compiler
-      setValidationResult({ valid: false, error: message });
+      return { valid: false, error: message };
     }
   }, [expression]);
 
@@ -294,7 +300,9 @@ export function FormulaBar({
           <input
             type="number"
             value={decimals}
-            onChange={(e) => setDecimals(Math.max(0, Math.min(10, parseInt(e.target.value, 10) || 0)))}
+            onChange={(e) =>
+              setDecimals(Math.max(0, Math.min(10, parseInt(e.target.value, 10) || 0)))
+            }
             className="w-14 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
             min={0}
             max={10}

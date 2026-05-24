@@ -108,7 +108,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
               entity={child}
               entities={entities}
               level={level + 1}
-              onSelect={onSelect}
+              onSelect={onSelect!}
               selectedId={selectedId}
               defaultExpanded={defaultExpanded}
             />
@@ -120,7 +120,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 };
 
 export const EntityTree: React.FC<EntityTreeProps> = ({
-  entities,
+  entities = [],
   onSelect,
   selectedId,
   defaultExpanded = true,
@@ -148,7 +148,7 @@ export const EntityTree: React.FC<EntityTreeProps> = ({
             entity={entity}
             entities={entities}
             level={0}
-            onSelect={onSelect}
+            onSelect={onSelect!}
             selectedId={selectedId}
             defaultExpanded={defaultExpanded}
           />

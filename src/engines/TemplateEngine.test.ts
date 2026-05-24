@@ -2,22 +2,33 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect } from 'vitest';
-import { TemplateEngine } from './TemplateEngine';
+import { TemplateEngine, type Template } from './TemplateEngine';
 
 describe('TemplateEngine', () => {
-  const mockTemplate = {
+  const mockTemplate: Template = {
     id: 'tmpl-1',
     name: 'Income Statement',
     description: 'Standard P&L template',
-    category: 'report' as const,
-    industry: 'generic' as const,
+    category: 'report',
+    industry: 'generic',
     rows: [
-      { id: 'row-1', label: 'Revenue', indent: 0 },
-      { id: 'row-2', label: 'COGS', indent: 1 },
-      { id: 'row-3', label: 'Gross Profit', indent: 0 },
+      { id: 'row-1', label: 'Revenue', level: 0 },
+      { id: 'row-2', label: 'COGS', level: 1 },
+      { id: 'row-3', label: 'Gross Profit', level: 0 },
     ],
-    columns: [{ id: 'col-1', label: 'Amount', type: 'period' as const }],
-    kpis: [{ id: 'kpi-1', label: 'Gross Margin', formula: '(Revenue - COGS) / Revenue' }],
+    columns: [{ key: 'col-1', label: 'Amount', type: 'number' }],
+    kpis: [
+      {
+        id: 'kpi-1',
+        label: 'Gross Margin',
+        formula: '(Revenue - COGS) / Revenue',
+        format: 'percentage',
+      },
+    ],
+    charts: [],
+    version: 1,
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-01',
   };
 
   describe('loadTemplate', () => {

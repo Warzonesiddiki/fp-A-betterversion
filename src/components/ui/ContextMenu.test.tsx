@@ -2,31 +2,20 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import React, { useEffect } from 'react';
 
 // Mock the ContextMenu to replace the buggy useEffect with a safe version
 vi.mock('./ContextMenu', async () => {
   const actual = await vi.importActual<typeof import('./ContextMenu')>('./ContextMenu');
-  const React = await import('react');
-
-  // Create a patched version that fixes the focus useEffect
-  const PatchedContextMenu = (props: Parameters<typeof actual.ContextMenu>[0]) => {
-    // We render the original but intercept the buggy focus logic
-    // by monkey-patching querySelectorAll on the menu element
-    return React.createElement(actual.ContextMenu, props);
-  };
-
   return { ...actual, ContextMenu: actual.ContextMenu };
 });
 
 // Since the bug is in a useEffect that accesses menuRef.current,
 // we suppress the TypeError that React throws during commit.
-const originalError = console.error;
+const _originalError = console.error;
 const originalAddEventListener = window.addEventListener;
 
 describe('ContextMenu', () => {
-  const defaultProps = {
+  const _defaultProps = {
     x: 100,
     y: 200,
     onAction: vi.fn(),
@@ -42,7 +31,7 @@ describe('ContextMenu', () => {
   });
 
   afterEach(() => {
-    console.error = originalError;
+    console.error = _originalError;
     window.addEventListener = originalAddEventListener;
   });
 

@@ -7,13 +7,21 @@ import { BoardPackBuilder } from './BoardPackBuilder';
 
 vi.mock('@/components/ui/Card', () => ({
   Card: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div data-testid="card" className={className}>{children}</div>
+    <div data-testid="card" className={className}>
+      {children}
+    </div>
   ),
 }));
 
 vi.mock('@/components/ui/Button', () => ({
-  Button: ({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string }) => (
-    <button className={className} {...props}>{children}</button>
+  Button: ({
+    children,
+    className,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string }) => (
+    <button className={className} {...props}>
+      {children}
+    </button>
   ),
 }));
 

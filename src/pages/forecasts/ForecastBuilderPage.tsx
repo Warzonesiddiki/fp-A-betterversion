@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForecastStore } from '@/store/forecastStore';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { TrendingUp, Download, FileText, Table as TableIcon, Brain, BarChart3 } from 'lucide-react';
+import { TrendingUp, FileText, Table as TableIcon, Brain, BarChart3 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   ResponsiveContainer,
@@ -54,7 +54,7 @@ const accuracyMetrics = [
 export default function ForecastBuilderPage() {
   const { forecasts } = useForecastStore();
   const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [method, setMethod] = useState<'linear' | 'seasonal' | 'ai'>('linear');
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function ForecastBuilderPage() {
     .filter((d) => d.actual === null)
     .reduce((s, d) => s + d.forecast, 0);
   const avgConfidence = 87;
-  const trendDirection = 'up';
+  const _trendDirection = 'up';
 
   const handleExportPDF = () => {
     ExportEngine.exportToPDF(
@@ -87,7 +87,10 @@ export default function ForecastBuilderPage() {
     ExportEngine.exportToExcel(
       {
         headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
-        rows: historicalData.map((d) => [d.month, d.actual, d.forecast, d.low, d.high]),
+        rows: historicalData.map(
+          (d) =>
+            [d.month, d.actual, d.forecast, d.low, d.high] as (string | number | boolean | null)[]
+        ),
       },
       { title: 'Forecast_Report' }
     );

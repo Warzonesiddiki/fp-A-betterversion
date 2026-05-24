@@ -51,13 +51,21 @@ describe('ConditionalFormattingRenderers', () => {
   describe('IconSetRenderer', () => {
     it('renders without crashing', () => {
       const { container } = render(
-        <IconSetRenderer iconIndex={0} config={{ type: '3-arrows', showIconOnly: true }} />
+        <IconSetRenderer
+          iconIndex={0}
+          config={{ type: '3-arrows', reverse: false, showIconOnly: true }}
+        />
       );
       expect(container).toBeTruthy();
     });
 
     it('renders icon with aria-label', () => {
-      render(<IconSetRenderer iconIndex={1} config={{ type: '3-arrows', showIconOnly: true }} />);
+      render(
+        <IconSetRenderer
+          iconIndex={1}
+          config={{ type: '3-arrows', reverse: false, showIconOnly: true }}
+        />
+      );
       expect(screen.getByLabelText('Rating: 2 of 3')).toBeInTheDocument();
     });
   });
@@ -67,7 +75,7 @@ describe('ConditionalFormattingRenderers', () => {
       const { container } = render(
         <ColorScaleRenderer
           interpolatedColor="#ff0000"
-          config={{ minColor: '#00ff00', maxColor: '#ff0000' }}
+          config={{ type: '2-color', minColor: '#00ff00', maxColor: '#ff0000' }}
         />
       );
       expect(container).toBeTruthy();
@@ -77,7 +85,7 @@ describe('ConditionalFormattingRenderers', () => {
       render(
         <ColorScaleRenderer
           interpolatedColor="#808080"
-          config={{ minColor: '#00ff00', maxColor: '#ff0000' }}
+          config={{ type: '2-color', minColor: '#00ff00', maxColor: '#ff0000' }}
           value={42}
         />
       );
@@ -114,7 +122,9 @@ describe('ConditionalFormattingRenderers', () => {
     });
 
     it('renders plain value when evaluation did not match', () => {
-      render(<ConditionalCellRenderer value="test" evaluated={{ matched: false }} />);
+      render(
+        <ConditionalCellRenderer value="test" evaluated={{ matched: false, ruleId: 'test-rule' }} />
+      );
       expect(screen.getByText('test')).toBeInTheDocument();
     });
   });

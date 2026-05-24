@@ -360,7 +360,7 @@ export class CellAuditTrailEngine {
     return this.recordUpdate(
       cellId,
       latest as string | number | boolean | Date,
-      value,
+      value as string | number | boolean | Date,
       'system',
       'System Revert',
       {

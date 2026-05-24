@@ -36,32 +36,28 @@ export function DrillDownModal({
     });
   }, [entries, accountPrefix, startDate, endDate]);
 
-  const columns = [
+  const columns: Array<{
+    header: string;
+    key: string;
+    render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
+  }> = [
     {
       header: 'Date',
-      accessorKey: 'date',
-      cell: (info: { getValue: () => string | number | Date }) =>
-        format(new Date(info.getValue()), 'MMM d, yyyy'),
+      key: 'date',
+      render: (_: unknown, row: Record<string, unknown>) =>
+        format(new Date(row.date as string), 'MMM d, yyyy'),
     },
-    { header: 'Account', accessorKey: 'accountCode' },
-    { header: 'Description', accessorKey: 'description' },
+    { header: 'Account', key: 'accountCode' },
+    { header: 'Description', key: 'description' },
     {
       header: 'Debit',
-      accessorKey: 'debit',
-      cell: (info: { getValue: () => number }) => formatCurrency(info.getValue()),
+      key: 'debit',
+      render: (v: unknown) => formatCurrency(v as number),
     },
     {
       header: 'Credit',
-      accessorKey: 'credit',
-      cell: (info: { getValue: () => number }) => formatCurrency(info.getValue()),
-    },
-    {
-      header: 'Net',
-      id: 'net',
-      cell: (info: { row: { original: Record<string, number> } }) => {
-        const row = info.row.original;
-        return formatCurrency(row.debit - row.credit);
-      },
+      key: 'credit',
+      render: (v: unknown) => formatCurrency(v as number),
     },
   ];
 

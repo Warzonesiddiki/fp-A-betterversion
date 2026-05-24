@@ -15,6 +15,7 @@ export interface ChartWrapperProps {
   exportable?: boolean;
   onExport?: () => void;
   onRetry?: () => void;
+  className?: string;
 }
 
 export function ChartWrapper({
@@ -28,9 +29,10 @@ export function ChartWrapper({
   exportable,
   onExport,
   onRetry,
+  className,
 }: ChartWrapperProps) {
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader className="flex items-center justify-between px-4 py-3">
         <div>
           <h3 className="font-semibold text-sm">{title}</h3>

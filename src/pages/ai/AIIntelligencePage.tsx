@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGLStore } from '@/store/glStore';
 import { AIEngine } from '@/engines/AIEngine';
-import { AICopilotEngine } from '@/engines/AICopilotEngine';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Progress } from '@/components/ui';
-import { Cpu, Brain, AlertTriangle, CheckCircle, Zap } from 'lucide-react';
+import { Progress } from '@/components/ui/Progress';
+
+import { Cpu, Brain, CheckCircle, Zap } from 'lucide-react';
 
 export default function AIIntelligencePage() {
   const { entries } = useGLStore();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [initialized, setInitialized] = useState(false);
-  const [results, setResults] = useState<Array<{ label: string; score: number; category: string }>>(
-    []
-  );
+  const [results, setResults] = useState<
+    Array<{ description: string; sentiment: string; confidence: number }>
+  >([]);
   const [isGPU, setIsGPU] = useState(false);
 
   useEffect(() => {

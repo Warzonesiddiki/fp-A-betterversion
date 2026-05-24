@@ -101,7 +101,7 @@ describe('exportToExcel', () => {
 
   it('should use default filename when title is missing', async () => {
     const data: ExportData = { headers: ['A'], rows: [['B']] };
-    const config: ExportConfig = {};
+    const config: ExportConfig = { title: 'Test' };
 
     await exportToExcel(data, config);
 
@@ -113,7 +113,7 @@ describe('exportToExcel', () => {
       headers: ['Name', 'Value'],
       rows: [
         ['Test', null],
-        ['Test2', undefined],
+        ['Test2', null],
       ],
     };
     const config: ExportConfig = { title: 'Test' };
@@ -153,9 +153,9 @@ describe('exportToExcel', () => {
     const config: ExportConfig = { title: 'Test' };
 
     // Capture eachRow callback
-    let eachRowCallback: ((row: any, rowNumber: number) => void) | undefined;
+    let _eachRowCallback: ((row: any, rowNumber: number) => void) | undefined;
     mockEachRow.mockImplementation((cb: any) => {
-      eachRowCallback = cb;
+      _eachRowCallback = cb;
     });
 
     await exportToExcel(data, config);

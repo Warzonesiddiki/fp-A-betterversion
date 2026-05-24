@@ -32,7 +32,7 @@ export function TemplateMarketplace({ templates, onSelect }: TemplateMarketplace
         >
           <div className="flex justify-between items-start mb-4">
             <h4 className="font-bold text-slate-200">{t.name}</h4>
-            <Badge variant="info">{t.category}</Badge>
+            <Badge variant="default">{t.category}</Badge>
           </div>
           <p className="text-sm text-slate-400 mb-6 flex-1">{t.description}</p>
           <button className="text-sm text-blue-400 font-semibold hover:text-blue-300 self-start">

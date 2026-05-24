@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCollaborationStore } from '@/store/collaborationStore';
 import { useAuthStore } from '@/store/authStore';
+import type { TaskStatus } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -10,7 +11,7 @@ import { MessageSquare, Users, Clock, Activity, Plus, Send } from 'lucide-react'
 
 type Tab = 'comments' | 'tasks' | 'activity';
 
-interface CommentRow {
+interface CommentRow extends Record<string, any> {
   id: string;
   author: string;
   content: string;
@@ -20,16 +21,16 @@ interface CommentRow {
   replyCount: number;
 }
 
-interface TaskRow {
+interface TaskRow extends Record<string, any> {
   id: string;
   title: string;
   assignee: string;
   priority: 'Low' | 'Medium' | 'High' | 'Critical';
-  status: 'Pending' | 'InProgress' | 'Completed' | 'Cancelled';
+  status: string;
   dueDate: string;
 }
 
-interface ActivityRow {
+interface ActivityRow extends Record<string, any> {
   id: string;
   user: string;
   action: string;
@@ -70,7 +71,7 @@ export default function CollaborationPage() {
         author: c.authorName,
         content: c.content,
         resourceType: c.resourceType,
-        resourceName: c.resourceName,
+        resourceName: c.resourceName ?? '',
         createdAt: c.createdAt,
         replyCount: c.replies?.length ?? 0,
       })),
@@ -104,14 +105,15 @@ export default function CollaborationPage() {
 
   const handleAddComment = () => {
     if (!newComment.trim() || !user) return;
+    const displayName = user.name ?? `${user.firstName} ${user.lastName}`;
     addComment({
       resourceType: 'general',
       resourceId: 'collaboration',
       cellId: null,
       parentId: null,
       authorId: user.id,
-      authorName: user.name,
-      authorInitials: user.name
+      authorName: displayName,
+      authorInitials: displayName
         .split(' ')
         .map((n) => n[0])
         .join('')
@@ -123,7 +125,7 @@ export default function CollaborationPage() {
     });
     addActivity({
       userId: user.id,
-      userName: user.name,
+      userName: displayName,
       userEmail: user.email ?? '',
       action: 'commented',
       resourceType: 'general',
@@ -136,11 +138,12 @@ export default function CollaborationPage() {
 
   const handleAddTask = () => {
     if (!newTaskTitle.trim() || !user) return;
+    const displayName = user.name ?? `${user.firstName} ${user.lastName}`;
     addTask({
       title: newTaskTitle,
       description: '',
       assigneeId: user.id,
-      assigneeName: user.name,
+      assigneeName: displayName,
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       priority: 'Medium',
       status: 'Pending',
@@ -150,7 +153,7 @@ export default function CollaborationPage() {
     });
     addActivity({
       userId: user.id,
-      userName: user.name,
+      userName: displayName,
       userEmail: user.email ?? '',
       action: 'created task',
       resourceType: 'task',
@@ -163,11 +166,12 @@ export default function CollaborationPage() {
   };
 
   const handleStatusChange = (taskId: string, status: TaskRow['status']) => {
-    updateTaskStatus(taskId, status);
+    updateTaskStatus(taskId, status as TaskStatus);
     if (user) {
+      const displayName = user.name ?? `${user.firstName} ${user.lastName}`;
       addActivity({
         userId: user.id,
-        userName: user.name,
+        userName: displayName,
         userEmail: user.email ?? '',
         action: `changed task status to ${status}`,
         resourceType: 'task',

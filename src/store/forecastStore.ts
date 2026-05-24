@@ -89,7 +89,7 @@ export const useForecastStore = create<ForecastState>()(
             ...forecast,
             id: `fcst-${Date.now()}`,
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            lastUpdated: new Date().toISOString(),
           };
           set((state) => {
             state.forecasts.push(newForecast);
@@ -103,7 +103,7 @@ export const useForecastStore = create<ForecastState>()(
             const forecast = state.forecasts.find((f) => f.id === id);
             if (forecast) {
               Object.assign(forecast, updates);
-              forecast.updatedAt = new Date().toISOString();
+              forecast.lastUpdated = new Date().toISOString();
             }
           });
         },

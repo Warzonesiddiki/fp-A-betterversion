@@ -3,12 +3,7 @@
 // =============================================================================
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  DriverCascadeEngine,
-  type Driver,
-  type CascadeRule,
-  type CascadeResult,
-} from './DriverCascadeEngine';
+import { DriverCascadeEngine } from './DriverCascadeEngine';
 
 describe('DriverCascadeEngine', () => {
   let engine: DriverCascadeEngine;

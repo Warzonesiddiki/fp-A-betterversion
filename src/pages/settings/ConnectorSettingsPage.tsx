@@ -115,9 +115,7 @@ export default function ConnectorSettingsPage() {
               <Select
                 label="Type"
                 value={form.type}
-                onChange={(e) =>
-                  setForm({ ...form, type: e.target.value as ConnectorConfig['type'] })
-                }
+                onChange={(value) => setForm({ ...form, type: value as ConnectorConfig['type'] })}
                 options={Object.entries(typeLabels).map(([value, label]) => ({ value, label }))}
               />
               <Input

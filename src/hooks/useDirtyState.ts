@@ -18,32 +18,36 @@ export function useDirtyState(options: DirtyStateOptions = {}) {
 
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [dirtyCount, setDirtyCount] = useState(0);
   const dirtyFields = useRef<Set<string>>(new Set());
 
   const markDirty = useCallback(
     (field?: string) => {
       if (field) dirtyFields.current.add(field);
       setIsDirty(true);
+      setDirtyCount(dirtyFields.current.size);
       onDirtyChange?.(true);
     },
-    [onDirtyChange]
+    [onDirtyChange, dirtyFields]
   );
 
   const markClean = useCallback(() => {
     dirtyFields.current.clear();
     setIsDirty(false);
     setLastSaved(new Date());
+    setDirtyCount(0);
     onDirtyChange?.(false);
-  }, [onDirtyChange]);
+  }, [onDirtyChange, dirtyFields]);
 
   const resetDirty = useCallback(() => {
     dirtyFields.current.clear();
     setIsDirty(false);
-  }, []);
+    setDirtyCount(0);
+  }, [dirtyFields]);
 
   const getDirtyFields = useCallback(() => {
     return Array.from(dirtyFields.current);
-  }, []);
+  }, [dirtyFields]);
 
   // Warn before leaving with unsaved changes
   useEffect(() => {
@@ -66,6 +70,6 @@ export function useDirtyState(options: DirtyStateOptions = {}) {
     markClean,
     resetDirty,
     getDirtyFields,
-    dirtyCount: dirtyFields.current.size,
+    dirtyCount,
   };
 }

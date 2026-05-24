@@ -41,6 +41,7 @@ describe('driverStore', () => {
       maxValue: 100,
       step: 1,
       category: 'Revenue',
+      unit: 'percentage',
       tags: ['growth'],
     });
     expect(driver.id).toBeDefined();
@@ -57,6 +58,7 @@ describe('driverStore', () => {
       maxValue: 100,
       step: 1,
       category: 'Test',
+      unit: 'percentage',
       tags: [],
     });
     const result = useDriverStore.getState().removeDriver(driver.id);

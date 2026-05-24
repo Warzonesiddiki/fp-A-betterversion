@@ -6,7 +6,7 @@ export function UnderwritingDashboard() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card className="p-6 flex flex-col items-center gap-4">
         <span className="text-sm font-bold text-slate-400 uppercase">Combined Ratio</span>
-        <GaugeChart value={92} />
+        <GaugeChart value={92} min={0} max={150} label="Combined Ratio" />
       </Card>
       <div className="md:col-span-2">
         <Card className="p-6 h-full">

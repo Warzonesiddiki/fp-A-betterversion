@@ -83,7 +83,7 @@ export class MasterDataEngine {
 
     for (const [key, newValue] of Object.entries(updates)) {
       if (key === 'id' || key === 'createdAt' || key === 'version') continue;
-      const oldValue = (record as Record<string, unknown>)[key];
+      const oldValue = (record as unknown as Record<string, unknown>)[key];
       if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
         this.changes.push({
           id: `chg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -95,7 +95,7 @@ export class MasterDataEngine {
           changedBy,
           reason,
         });
-        (record as Record<string, unknown>)[key] = newValue;
+        (record as unknown as Record<string, unknown>)[key] = newValue;
       }
     }
 

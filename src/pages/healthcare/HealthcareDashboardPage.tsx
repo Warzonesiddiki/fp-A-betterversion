@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useHealthcareStore } from '@/store/healthcareStore';
+
 import {
   Users,
   Activity,
@@ -18,6 +18,8 @@ import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
+
+const getRandom = () => Math.random();
 import {
   ResponsiveContainer,
   AreaChart,
@@ -115,8 +117,8 @@ export default function HealthcareDashboardPage() {
           dept: d.name,
           revenue: deptRevenue,
           patients: Math.floor(deptRevenue / 2500) || 0, // Mocked patient count based on revenue
-          margin: 15 + Math.random() * 15,
-          efficiency: 85 + Math.floor(Math.random() * 12),
+          margin: 15 + getRandom() * 15,
+          efficiency: 85 + Math.floor(getRandom() * 12),
         };
       })
       .filter((d) => d.revenue > 0);

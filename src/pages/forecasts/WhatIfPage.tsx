@@ -288,6 +288,22 @@ export default function WhatIfPage() {
                     setAssumptions(newAssumptions);
                     setComparison(null);
                   }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setActiveSandboxId(s.id);
+                      const mods = engine.getModifications(s.id);
+                      const newAssumptions = {
+                        ...Object.fromEntries(DEFAULT_ASSUMPTIONS.map((a) => [a.key, a.default])),
+                      };
+                      for (const m of mods) {
+                        if (m.coords.key) newAssumptions[m.coords.key] = m.modifiedValue;
+                      }
+                      setAssumptions(newAssumptions);
+                      setComparison(null);
+                    }
+                  }}
                 >
                   <div>
                     <p className="font-medium text-sm">{s.name}</p>

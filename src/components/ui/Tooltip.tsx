@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect, HTMLAttributes, forwardRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { cn } from '../../utils/cn';
 
 type TooltipSide = 'top' | 'right' | 'bottom' | 'left';

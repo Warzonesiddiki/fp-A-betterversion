@@ -1,9 +1,11 @@
-﻿import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CellAuditTrailEngine } from '@/engines/CellAuditTrailEngine';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ScrollText, Download, RefreshCw } from 'lucide-react';
+
+const auditEngine = new CellAuditTrailEngine();
 
 function formatRelativeTime(timestamp: string): string {
   const diff = Date.now() - new Date(timestamp).getTime();
@@ -21,16 +23,16 @@ export default function AuditTrailPage() {
   }, []);
 
   const navigate = useNavigate();
-  const [entries, setEntries] = useState(() => CellAuditTrailEngine.getAllEntries());
+  const [entries, setEntries] = useState(() => auditEngine.getAllEntries());
   const [filters, setFilters] = useState({ startDate: '', endDate: '', user: '', action: '' });
-  const [sortField] = useState<'timestamp' | 'user'>('timestamp');
+  const [sortField] = useState<'timestamp' | 'userName'>('timestamp');
   const [sortDir] = useState<'asc' | 'desc'>('desc');
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   // Auto-refresh every 5 seconds
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      setEntries(CellAuditTrailEngine.getAllEntries());
+      setEntries(auditEngine.getAllEntries());
     }, 5000);
     return () => clearInterval(intervalRef.current);
   }, []);
@@ -46,7 +48,9 @@ export default function AuditTrailPage() {
         (e.reason || '').toLowerCase().includes(filters.action.toLowerCase())
       );
     list.sort((a, b) => {
-      const cmp = a[sortField] < b[sortField] ? -1 : 1;
+      const aVal = String(a[sortField] ?? '');
+      const bVal = String(b[sortField] ?? '');
+      const cmp = aVal < bVal ? -1 : 1;
       return sortDir === 'asc' ? cmp : -cmp;
     });
     return list;
@@ -98,11 +102,7 @@ export default function AuditTrailPage() {
           <p className="text-sm text-slate-400 mt-1">{entries.length} total entries</p>
         </div>
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setEntries(CellAuditTrailEngine.getAllEntries())}
-          >
+          <Button size="sm" variant="ghost" onClick={() => setEntries(auditEngine.getAllEntries())}>
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
             Refresh
           </Button>
@@ -198,21 +198,24 @@ export default function AuditTrailPage() {
                         {e.accountName || e.accountId}
                       </td>
                       <td className="px-4 py-2 text-right tabular-nums text-slate-400">
-                        {e.oldValue !== undefined
+                        {e.oldValue !== undefined && e.oldValue !== null
                           ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(
-                              e.oldValue
+                              Number(e.oldValue)
                             )
                           : '-'}
                       </td>
                       <td
                         className="px-4 py-2 text-right tabular-nums font-medium"
                         style={{
-                          color: (e.newValue || 0) >= (e.oldValue || 0) ? '#4ade80' : '#f87171',
+                          color:
+                            Number(e.newValue || 0) >= Number(e.oldValue || 0)
+                              ? '#4ade80'
+                              : '#f87171',
                         }}
                       >
-                        {e.newValue !== undefined
+                        {e.newValue !== undefined && e.newValue !== null
                           ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(
-                              e.newValue
+                              Number(e.newValue)
                             )
                           : '-'}
                       </td>

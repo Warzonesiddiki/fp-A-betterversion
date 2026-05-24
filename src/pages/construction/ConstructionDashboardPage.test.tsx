@@ -45,7 +45,7 @@ vi.mock('recharts', () => ({
 }));
 
 vi.mock('lucide-react', async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual: Record<string, unknown> = await importOriginal();
   const makeIcon = () => {
     const Icon = ({ className }: { className?: string }) => (
       <span data-testid="mock-icon" className={className} />
@@ -58,7 +58,8 @@ vi.mock('lucide-react', async (importOriginal) => {
       if (typeof prop === 'string' && !(prop in target)) {
         return makeIcon();
       }
-      return (target as any)[prop];
+      if (typeof prop === 'symbol') return makeIcon();
+      return (target as Record<string, unknown>)[prop as string];
     },
   });
 });

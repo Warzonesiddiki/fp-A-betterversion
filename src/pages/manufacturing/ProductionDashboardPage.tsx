@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +15,9 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+
+const getRandom = () => Math.random();
+
 import {
   ResponsiveContainer,
   AreaChart,
@@ -90,8 +93,8 @@ export default function ProductionDashboardPage() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const outputTrend = months.map((m, i) => ({
       month: m,
-      output: Math.round(25000 + Math.random() * 10000),
-      defects: Math.round(100 + Math.random() * 80),
+      output: Math.round(25000 + getRandom() * 10000),
+      defects: Math.round(100 + getRandom() * 80),
     }));
     const oee =
       lines.filter((l) => l.status === 'Running').reduce((s, l) => s + l.efficiency, 0) /

@@ -137,14 +137,12 @@ export function PresenceCount({
  * Cell-level lock indicator. Shows when another user is editing a specific cell.
  */
 export function CellLockIndicator({
-  cellId,
-  className = '',
+  cellId: _cellId,
+  className: _className,
 }: {
   cellId: string;
   className?: string;
 }) {
-  const { getUsersOnCell } = { getUsersOnCell: () => [] as UserPresence[] };
-
   // We need the raw hook here for cell-level granularity
   return null; // Placeholder — implemented in usePresence hook integration
 }

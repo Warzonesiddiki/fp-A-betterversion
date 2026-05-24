@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -193,7 +193,7 @@ export default function InventoryPage() {
     return Object.entries(cats).map(([name, value]) => ({ name, value }));
   }, []);
 
-  const inventoryByCategory = useMemo(() => {
+  const _inventoryByCategory = useMemo(() => {
     const cats: Record<string, number> = {};
     mockInventory.forEach((i) => {
       cats[i.category] = (cats[i.category] || 0) + i.quantity;

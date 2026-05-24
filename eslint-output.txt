@@ -1,0 +1,1039 @@
+﻿
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ai\CopilotSidebar.tsx
+   38:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ai\CopilotSidebar.tsx:38:7
+  36 |   useEffect(() => {
+  37 |     if (messages.length === 0) {
+> 38 |       setMessages([
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |         {
+  40 |           id: 'welcome',
+  41 |           role: 'assistant',  react-hooks/set-state-in-effect
+   47:10  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  180:7   warning  The element aside has an implicit role of complementary. Defining this explicitly is redundant and should be avoided                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          jsx-a11y/no-redundant-roles
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\charts\GaugeChart.tsx
+  59:5  warning  Non-interactive elements should not be assigned mouse or keyboard event listeners  jsx-a11y/no-noninteractive-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\charts\SparklineChart.tsx
+  23:5  warning  Non-interactive elements should not be assigned mouse or keyboard event listeners  jsx-a11y/no-noninteractive-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\charts\WaterfallChart.tsx
+  45:7  error  Error: Cannot reassign variable after render completes
+
+Reassigning `running` after render has completed can cause inconsistent behavior on subsequent renders. Consider using state instead.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\charts\WaterfallChart.tsx:45:7
+  43 |     return data.map((d) => {
+  44 |       const start = running
+> 45 |       running += d.value
+     |       ^^^^^^^ Cannot reassign `running` after render completes
+  46 |       return {
+  47 |         ...d,
+  48 |         invisible: d.value >= 0 ? start : running,  react-hooks/immutability
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\data\FindReplaceDialog.tsx
+   98:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  100:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  105:7  error    Error: Cannot access variable before it is declared
+
+`navigateToMatch` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\data\FindReplaceDialog.tsx:105:7
+  103 |     // Navigate to first match
+  104 |     if (results.length > 0) {
+> 105 |       navigateToMatch(results[0])
+      |       ^^^^^^^^^^^^^^^ `navigateToMatch` accessed before it is declared
+  106 |     }
+  107 |   }, [gridApi, findText, matchCase, useRegex, searchInFormulas])
+  108 |
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\data\FindReplaceDialog.tsx:109:3
+  107 |   }, [gridApi, findText, matchCase, useRegex, searchInFormulas])
+  108 |
+> 109 |   const navigateToMatch = useCallback(
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 110 |     (match: MatchResult) => {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 111 |       if (!gridApi) return
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 112 |       gridApi.setFocusedCell(match.rowIndex, match.colId)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 113 |       gridApi.ensureIndexVisible(match.rowIndex, 'middle')
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 114 |     },
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 115 |     [gridApi]
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |   )
+      | ^^^^ `navigateToMatch` is declared here
+  117 |
+  118 |   const goToNext = useCallback(() => {
+  119 |     if (matches.length === 0) return  react-hooks/immutability
+  110:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\data\FindReplaceDialog.tsx:110:5
+  108 |
+  109 |   const navigateToMatch = useCallback(
+> 110 |     (match: MatchResult) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 111 |       if (!gridApi) return
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 112 |       gridApi.setFocusedCell(match.rowIndex, match.colId)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 113 |       gridApi.ensureIndexVisible(match.rowIndex, 'middle')
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 114 |     },
+      | ^^^^^^ Could not preserve existing memoization
+  115 |     [gridApi]
+  116 |   )
+  117 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/preserve-manual-memoization
+  255:5  warning  Non-interactive elements should not be assigned mouse or keyboard event listeners                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            jsx-a11y/no-noninteractive-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\data\GLColumnMapper.tsx
+  70:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\layout\Navbar.tsx
+  65:13  error  Elements with the 'listbox' interactive role must be focusable  jsx-a11y/interactive-supports-focus
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\layout\Sidebar.tsx
+  86:5  warning  The element aside has an implicit role of complementary. Defining this explicitly is redundant and should be avoided  jsx-a11y/no-redundant-roles
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\ConditionalFormatPanel.tsx
+  218:21  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  230:21  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\ExportDialog.tsx
+  214:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  231:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  275:13  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\FormulaBar.tsx
+   65:7   error    Definition for rule 'react-compiler/react-compiler' was not found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-compiler/react-compiler
+   66:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\FormulaBar.tsx:66:7
+  64 |     if (!expression.trim()) {
+  65 |       // eslint-disable-next-line react-compiler/react-compiler
+> 66 |       setValidationResult(null);
+     |       ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  67 |       return;
+  68 |     }
+  69 |  react-hooks/set-state-in-effect
+   83:7   error    Definition for rule 'react-compiler/react-compiler' was not found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-compiler/react-compiler
+   87:7   error    Definition for rule 'react-compiler/react-compiler' was not found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-compiler/react-compiler
+  278:11  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   jsx-a11y/label-has-associated-control
+  293:11  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   jsx-a11y/label-has-associated-control
+  305:11  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\ReportBookBuilder.tsx
+  347:17  error    Error: This value cannot be modified
+
+Modifying a value returned from 'useState()', which should not be modified directly. Use the setter function to update instead.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\ReportBookBuilder.tsx:347:17
+  345 |               value={book.name}
+  346 |               onChange={(e) => {
+> 347 |                 book.name = e.target.value;
+      |                 ^^^^ `book` cannot be modified
+  348 |                 setBook({ ...book });
+  349 |               }}
+  350 |               className="text-lg font-bold text-white bg-transparent border-none outline-none"  react-hooks/immutability
+  374:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                                                                                                                                                                                                                                                                                                                                                                                                                      jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\ReportLayoutEditor.tsx
+   92:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  148:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\ReportLeftPanel.tsx
+  101:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  110:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\reports\TemplateDesigner.tsx
+  112:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\AllocationRuleBuilder.tsx
+  283:41  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  283:52  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\ComboChart.tsx
+  92:19  error  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\CommandPalette.tsx
+   61:7  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\CommandPalette.tsx:61:7
+  59 |   useEffect(() => {
+  60 |     if (isOpen) {
+> 61 |       setQuery('')
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  62 |       setSelectedIndex(0)
+  63 |       setTimeout(() => inputRef.current?.focus(), 50)
+  64 |     }  react-hooks/set-state-in-effect
+  101:5  warning  Non-interactive elements should not be assigned mouse or keyboard event listeners                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                jsx-a11y/no-noninteractive-element-interactions
+  109:7  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\DataTable.tsx
+  91:7  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\DataTable.tsx:91:7
+  89 |
+  90 |   const virtualizer = useVirtual
+> 91 |     ? useVirtualizer({
+     |       ^^^^^^^^^^^^^^ TanStack Virtual's `useVirtualizer()` API returns functions that cannot be memoized safely
+  92 |         count: filteredData.length,
+  93 |         getScrollElement: () => scrollRef.current,
+  94 |         estimateSize: () => ROW_HEIGHT,  react-hooks/incompatible-library
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\DragFill.tsx
+  186:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\FinancialTable.tsx
+  214:13  warning  aria-hidden="true" must not be set on focusable elements  jsx-a11y/no-aria-hidden-on-focusable
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\FormulaBar.tsx
+  47:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\FormulaBar.tsx:47:5
+  45 |
+  46 |   useEffect(() => {
+> 47 |     setShowAutocomplete(currentToken.length >= 2 && filteredFunctions.length > 0)
+     |     ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  48 |     setAutocompleteIndex(0)
+  49 |   }, [currentToken, filteredFunctions.length])
+  50 |  react-hooks/set-state-in-effect
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\ICMatchingDashboard.tsx
+  174:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  185:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  196:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\Input.tsx
+  22:10  error  Parsing error: ')' expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\KeyboardOverlay.tsx
+  100:13  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               jsx-a11y/label-has-associated-control
+  133:13  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               jsx-a11y/label-has-associated-control
+  154:13  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               jsx-a11y/label-has-associated-control
+  175:13  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               jsx-a11y/label-has-associated-control
+  239:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\KeyboardOverlay.tsx:239:5
+  237 |   useEffect(() => {
+  238 |     ExcelKeyboardShortcuts.loadCustom()
+> 239 |     setGroups(ExcelKeyboardShortcuts.getGrouped())
+      |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  240 |     const unsub = ExcelKeyboardShortcuts.subscribe(() =>
+  241 |       setGroups(ExcelKeyboardShortcuts.getGrouped())
+  242 |     )  react-hooks/set-state-in-effect
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\KeyboardShortcutOverlay.tsx
+  294:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\KeyboardShortcutOverlay.tsx:294:7
+  292 |   useEffect(() => {
+  293 |     if (isOpen) {
+> 294 |       setSearch('')
+      |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  295 |       setContextFilter('all')
+  296 |       requestAnimationFrame(() => searchRef.current?.focus())
+  297 |     }  react-hooks/set-state-in-effect
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\KeyboardShortcuts.tsx
+  90:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\KeyboardShortcuts.tsx:90:7
+  88 |   useEffect(() => {
+  89 |     if (isOpen) {
+> 90 |       setFilter('')
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  91 |     }
+  92 |   }, [isOpen])
+  93 |  react-hooks/set-state-in-effect
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\NLQInput.tsx
+  151:14  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  151:40  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  151:45  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  151:70  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\RuleEditor\ColorScaleOptions.tsx
+  12:9   warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  36:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  51:13  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  68:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\RuleEditor\ColorStyleOptions.tsx
+  19:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  48:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\RuleEditor\DataBarOptions.tsx
+  12:9  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  35:9  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\RuleEditor\IconSetOptions.tsx
+  13:9  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\ScenarioLocking.tsx
+  214:56  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  214:71  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  262:50  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  262:65  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\WaterfallBridge.tsx
+  36:5  error  Error: Cannot reassign variable after render completes
+
+Reassigning `runningTotal` after render has completed can cause inconsistent behavior on subsequent renders. Consider using state instead.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\ui\WaterfallBridge.tsx:36:5
+  34 |     const start = item.type === 'total' ? 0 : runningTotal
+  35 |     const end = item.type === 'total' ? item.value : start + item.value
+> 36 |     runningTotal = end
+     |     ^^^^^^^^^^^^ Cannot reassign `runningTotal` after render completes
+  37 |     return { ...item, start, end }
+  38 |   })
+  39 |  react-hooks/immutability
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\variance\VarianceDrillModal.tsx
+  74:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\components\variance\VarianceDrillModal.tsx:74:7
+  72 |     if (!isOpen) {
+  73 |       engine.reset()
+> 74 |       setBreadcrumbs([])
+     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  75 |       setCurrentView('category')
+  76 |       setSelectedDepartment(null)
+  77 |     }  react-hooks/set-state-in-effect
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\engines\AIEngine.ts
+  8:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\engines\SafeMathParser.ts
+   927:44  error  Unexpected control character(s) in regular expression: \x00, \x1f  no-control-regex
+  1548:49  error  Unexpected control character(s) in regular expression: \x00, \x1f  no-control-regex
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\engines\exportExcel.ts
+  2:1  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\engines\formula-functions\financial.ts
+  394:3  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\engines\formula-functions\helpers.ts
+  28:3  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\hooks\useIntersectionObserver.ts
+  30:7  error  Definition for rule 'react-compiler' was not found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-compiler
+  31:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\hooks\useIntersectionObserver.ts:31:7
+  29 |     if (typeof IntersectionObserver === 'undefined') {
+  30 |       // eslint-disable-next-line react-compiler
+> 31 |       setIsVisible(true)
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  32 |       return
+  33 |     }
+  34 |  react-hooks/set-state-in-effect
+  74:5  error  Definition for rule 'react-compiler' was not found                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-compiler
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\hooks\useRenderCount.ts
+  15:10  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\hooks\useRenderCount.ts:15:10
+  13 |   })
+  14 |
+> 15 |   return count.current
+     |          ^^^^^^^^^^^^^ Cannot access ref value during render
+  16 | }
+  17 |  react-hooks/refs
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\hooks\useTauriMenu.ts
+  123:9  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\accounting\DepreciationPage.tsx
+  84:24  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\accounting\DepreciationPage.tsx:84:24
+  82 |   const totalValue = filtered.reduce((s, a) => s + a.currentValue, 0)
+  83 |
+> 84 |   const scheduleData = useMemo(() => {
+     |                        ^^^^^^^^^^^^^^^
+> 85 |     return Array.from({ length: 10 }, (_, i) => ({
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 86 |       year: `Y${i + 1}`,
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 87 |       book: Math.max(0, totalCost - (totalCost * (i + 1)) / 10),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 88 |       tax: Math.max(0, totalCost - (totalCost * (i + 1)) / 5),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |     }))
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |   }, [totalCost])
+     | ^^^^^^^^^^^^^^^^^^ Could not preserve existing memoization
+  91 |
+  92 |   return (
+  93 |     <div className="p-6 space-y-6">  react-hooks/preserve-manual-memoization
+  90:7   error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This dependency may be mutated later, which could cause the value to change unexpectedly.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\accounting\DepreciationPage.tsx:90:7
+  88 |       tax: Math.max(0, totalCost - (totalCost * (i + 1)) / 5),
+  89 |     }))
+> 90 |   }, [totalCost])
+     |       ^^^^^^^^^ This dependency may be modified later
+  91 |
+  92 |   return (
+  93 |     <div className="p-6 space-y-6">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/preserve-manual-memoization
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\ai\AIIntelligencePage.tsx
+  23:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\ai\AIIntelligencePage.tsx:23:7
+  21 |     // Check if WebGPU is supported in the browser
+  22 |     if ('gpu' in navigator) {
+> 23 |       setIsGPU(true)
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  24 |     }
+  25 |   }, [])
+  26 |  react-hooks/set-state-in-effect
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\analytics\DashboardBuilderPage.tsx
+  152:58  error    Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\analytics\DashboardBuilderPage.tsx:152:58
+  150 |             key={i}
+  151 |             className="rounded-sm"
+> 152 |             style={{ backgroundColor: `rgba(59,130,246,${Math.random().toFixed(2)})` }}
+      |                                                          ^^^^^^^^^^^^^ Cannot call impure function
+  153 |           />
+  154 |         ))}
+  155 |       </div>                                                                                                                                                                                                                                                                             react-hooks/purity
+  205:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\analytics\DashboardBuilderPage.tsx:205:7
+  203 |     const s = dashboardStore.load()
+  204 |     if (s) {
+> 205 |       setName(s.name)
+      |       ^^^^^^^ Avoid calling setState() directly within an effect
+  206 |       setWidgets(s.widgets)
+  207 |     }
+  208 |   }, [])  react-hooks/set-state-in-effect
+  375:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  jsx-a11y/no-static-element-interactions
+  407:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\audit\AuditTrailPage.tsx
+  118:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  127:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  136:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  145:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\audit\SOXCompliancePage.tsx
+  358:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\audit\SOXCompliancePage.tsx:358:5
+  356 |
+  357 |   useEffect(() => {
+> 358 |     generateReport()
+      |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  359 |   }, [generateReport])
+  360 |
+  361 |   const filteredChecks = useMemo(() => {  react-hooks/set-state-in-effect
+  541:17  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          jsx-a11y/label-has-associated-control
+  556:17  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\auth\ForgotPasswordPage.tsx
+  143:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\auth\LoginPage.tsx
+   89:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\auth\LoginPage.tsx:89:7
+  87 |     const remembered = localStorage.getItem('finplan_remembered_email')
+  88 |     if (remembered) {
+> 89 |       setEmail(remembered)
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  90 |       setRememberMe(true)
+  91 |     }
+  92 |   }, [])  react-hooks/set-state-in-effect
+  128:19  warning  A form label must be associated with a control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              jsx-a11y/label-has-associated-control
+  172:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\auth\OnboardingWizard.tsx
+  165:19  warning  A form label must be associated with a control                                                 jsx-a11y/label-has-associated-control
+  172:21  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users  jsx-a11y/no-autofocus
+  176:19  warning  A form label must be associated with a control                                                 jsx-a11y/label-has-associated-control
+  191:21  warning  A form label must be associated with a control                                                 jsx-a11y/label-has-associated-control
+  208:21  warning  A form label must be associated with a control                                                 jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\auth\RegisterPage.tsx
+   72:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+   81:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+   91:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  101:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\budgets\BudgetCreatePage.tsx
+  279:19  warning  A form label must have accessible text  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\CashForecastPage.tsx
+  90:50  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\CashForecastPage.tsx:90:50
+  88 |     const balance = inflows - outflows
+  89 |     const forecast = weeks.map((w, i) => {
+> 90 |       const weekInflow = (inflows / 13) * (0.8 + Math.random() * 0.4)
+     |                                                  ^^^^^^^^^^^^^ Cannot call impure function
+  91 |       const weekOutflow = (outflows / 13) * (0.8 + Math.random() * 0.4)
+  92 |       return {
+  93 |         week: w,      react-hooks/purity
+  91:52  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\CashForecastPage.tsx:91:52
+  89 |     const forecast = weeks.map((w, i) => {
+  90 |       const weekInflow = (inflows / 13) * (0.8 + Math.random() * 0.4)
+> 91 |       const weekOutflow = (outflows / 13) * (0.8 + Math.random() * 0.4)
+     |                                                    ^^^^^^^^^^^^^ Cannot call impure function
+  92 |       return {
+  93 |         week: w,
+  94 |         inflows: Math.round(weekInflow),  react-hooks/purity
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\WorkingCapitalPage.tsx
+  56:8   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\WorkingCapitalPage.tsx:56:8
+  54 |
+  55 |   const randomRef = useRef<null | { r1: number[]; r2: number[]; r3: number[] }>(null)
+> 56 |   if (!randomRef.current) {
+     |        ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  57 |     const r1 = Array.from({ length: 6 }, () => Math.random())
+  58 |     const r2 = Array.from({ length: 6 }, () => Math.random())
+  59 |     const r3 = Array.from({ length: 6 }, () => Math.random())
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`                                                                                                                                                                                                                                                                                         react-hooks/refs
+  57:48  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\WorkingCapitalPage.tsx:57:48
+  55 |   const randomRef = useRef<null | { r1: number[]; r2: number[]; r3: number[] }>(null)
+  56 |   if (!randomRef.current) {
+> 57 |     const r1 = Array.from({ length: 6 }, () => Math.random())
+     |                                                ^^^^^^^^^^^^^ Cannot call impure function
+  58 |     const r2 = Array.from({ length: 6 }, () => Math.random())
+  59 |     const r3 = Array.from({ length: 6 }, () => Math.random())
+  60 |     randomRef.current = { r1, r2, r3 }                                                                                                                                                                                                                                                                                                                                                                       react-hooks/purity
+  58:48  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\WorkingCapitalPage.tsx:58:48
+  56 |   if (!randomRef.current) {
+  57 |     const r1 = Array.from({ length: 6 }, () => Math.random())
+> 58 |     const r2 = Array.from({ length: 6 }, () => Math.random())
+     |                                                ^^^^^^^^^^^^^ Cannot call impure function
+  59 |     const r3 = Array.from({ length: 6 }, () => Math.random())
+  60 |     randomRef.current = { r1, r2, r3 }
+  61 |   }                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/purity
+  59:48  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\WorkingCapitalPage.tsx:59:48
+  57 |     const r1 = Array.from({ length: 6 }, () => Math.random())
+  58 |     const r2 = Array.from({ length: 6 }, () => Math.random())
+> 59 |     const r3 = Array.from({ length: 6 }, () => Math.random())
+     |                                                ^^^^^^^^^^^^^ Cannot call impure function
+  60 |     randomRef.current = { r1, r2, r3 }
+  61 |   }
+  62 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/purity
+  78:30  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\cash\WorkingCapitalPage.tsx:78:30
+  76 |     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+  77 |     const { r1, r2, r3 } = randomRef.current!
+> 78 |     const trend = months.map((m, i) => ({
+     |                              ^^^^^^^^^^^^
+> 79 |       month: m,
+     | ^^^^^^^^^^^^^^^
+> 80 |       assets: Math.round(assets * (0.9 + i * 0.02 + r1[i] * 0.05)),
+     | ^^^^^^^^^^^^^^^
+> 81 |       liabilities: Math.round(liabilities * (0.9 + i * 0.02 + r2[i] * 0.05)),
+     | ^^^^^^^^^^^^^^^
+> 82 |       wc: Math.round(wc * (0.85 + i * 0.03 + r3[i] * 0.1)),
+     | ^^^^^^^^^^^^^^^
+> 83 |     }))
+     | ^^^^^^^ Passing a ref to a function may read its value during render
+  84 |     const revenue = entries
+  85 |       .filter((e) => (e.accountCode || '').startsWith('4'))
+  86 |       .reduce((s, e) => s + (e.debit - e.credit), 0)  react-hooks/refs
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\currency\FXRatesPage.tsx
+   50:10  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  170:15  warning  A form label must be associated with a control                                                  jsx-a11y/label-has-associated-control
+  184:15  warning  A form label must be associated with a control                                                  jsx-a11y/label-has-associated-control
+  201:15  warning  A form label must be associated with a control                                                  jsx-a11y/label-has-associated-control
+  214:15  warning  A form label must be associated with a control                                                  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\currency\TranslationResultPage.tsx
+  133:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  148:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\data\ChartOfAccountsPage.tsx
+  402:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  412:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  422:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  430:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  438:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\data\GLAccountAnalysisPage.tsx
+  119:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\data\GLJournalsPage.tsx
+  131:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  143:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  155:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  167:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\data\GLReportingPage.tsx
+  83:12  error  'FileText' is not defined  react/jsx-no-undef
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\forecasts\RollingForecastPage.tsx
+  26:46  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\forecasts\RollingForecastPage.tsx:26:46
+  24 |   const trendData = Array.from({ length: 12 }, (_, i) => ({
+  25 |     month: new Date(2026, i).toLocaleString('default', { month: 'short' }),
+> 26 |     actual: Math.round(totalRevenue * (0.8 + Math.random() * 0.4)),
+     |                                              ^^^^^^^^^^^^^ Cannot call impure function
+  27 |     forecast: Math.round(totalRevenue * (0.85 + Math.random() * 0.3)),
+  28 |   }))
+  29 |  react-hooks/purity
+  27:49  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\forecasts\RollingForecastPage.tsx:27:49
+  25 |     month: new Date(2026, i).toLocaleString('default', { month: 'short' }),
+  26 |     actual: Math.round(totalRevenue * (0.8 + Math.random() * 0.4)),
+> 27 |     forecast: Math.round(totalRevenue * (0.85 + Math.random() * 0.3)),
+     |                                                 ^^^^^^^^^^^^^ Cannot call impure function
+  28 |   }))
+  29 |
+  30 |   const variance = trendData.map((d) => ({                react-hooks/purity
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\forecasts\WhatIfPage.tsx
+  270:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\healthcare\HealthcareDashboardPage.tsx
+  121:24  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\healthcare\HealthcareDashboardPage.tsx:121:24
+  119 |           revenue: deptRevenue,
+  120 |           patients: Math.floor(deptRevenue / 2500) || 0, // Mocked patient count based on revenue
+> 121 |           margin: 15 + Math.random() * 15,
+      |                        ^^^^^^^^^^^^^ Cannot call impure function
+  122 |           efficiency: 85 + Math.floor(Math.random() * 12),
+  123 |         }
+  124 |       })                     react-hooks/purity
+  122:39  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\healthcare\HealthcareDashboardPage.tsx:122:39
+  120 |           patients: Math.floor(deptRevenue / 2500) || 0, // Mocked patient count based on revenue
+  121 |           margin: 15 + Math.random() * 15,
+> 122 |           efficiency: 85 + Math.floor(Math.random() * 12),
+      |                                       ^^^^^^^^^^^^^ Cannot call impure function
+  123 |         }
+  124 |       })
+  125 |       .filter((d) => d.revenue > 0)  react-hooks/purity
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\lease\LeaseDashboard.tsx
+  328:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\lease\LeaseDetailPage.tsx
+  170:18  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\lease\LeaseDetailPage.tsx:170:18
+  168 |     if (id) {
+  169 |       const found = mockLeases.find((l) => l.id === id)
+> 170 |       if (found) setSelectedLease(found)
+      |                  ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  171 |     }
+  172 |   }, [id])
+  173 |  react-hooks/set-state-in-effect
+  392:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\manufacturing\ProductionDashboardPage.tsx
+  94:34  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\manufacturing\ProductionDashboardPage.tsx:94:34
+  92 |     const outputTrend = months.map((m, i) => ({
+  93 |       month: m,
+> 94 |       output: Math.round(25000 + Math.random() * 10000),
+     |                                  ^^^^^^^^^^^^^ Cannot call impure function
+  95 |       defects: Math.round(100 + Math.random() * 80),
+  96 |     }))
+  97 |     const oee =                                           react-hooks/purity
+  95:33  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\manufacturing\ProductionDashboardPage.tsx:95:33
+  93 |       month: m,
+  94 |       output: Math.round(25000 + Math.random() * 10000),
+> 95 |       defects: Math.round(100 + Math.random() * 80),
+     |                                 ^^^^^^^^^^^^^ Cannot call impure function
+  96 |     }))
+  97 |     const oee =
+  98 |       lines.filter((l) => l.status === 'Running').reduce((s, l) => s + l.efficiency, 0) /  react-hooks/purity
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\onboarding\SetupWizardPage.tsx
+  105:17  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  115:17  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  130:19  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  149:19  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\reports\ReportsListPage.tsx
+  109:31  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  109:40  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\PromoAnalysisPage.tsx
+  151:29  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\PromoAnalysisPage.tsx:151:29
+  149 |     totalBaseline > 0 ? ((totalPromoRevenue - totalBaseline) / totalBaseline) * 100 : 0
+  150 |
+> 151 |   const columns: Column[] = useMemo(
+      |                             ^^^^^^^^
+> 152 |     () => [
+      | ^^^^^^^^^^^
+> 153 |       { key: 'id', header: 'ID', width: '100px' },
+      …
+      | ^^^^^^^^^^^
+> 213 |     []
+      | ^^^^^^^^^^^
+> 214 |   )
+      | ^^^^ Could not preserve existing memoization
+  215 |
+  216 |   const handleExportPDF = () => {
+  217 |     ExportEngine.exportToPDF(  react-hooks/preserve-manual-memoization
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\StoreDashboardPage.tsx
+  56:8   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\StoreDashboardPage.tsx:56:8
+  54 |
+  55 |   const randomRef = useRef<null | { rev: number[]; txn: number[]; growth: number[] }>(null)
+> 56 |   if (!randomRef.current) {
+     |        ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  57 |     const rev = Array.from({ length: 5 }, () => Math.random())
+  58 |     const txn = Array.from({ length: 5 }, () => Math.random())
+  59 |     const growth = Array.from({ length: 5 }, () => Math.random())
+
+To initialize a ref only once, check that the ref is null with the pattern `if (ref.current == null) { ref.current = ... }`                                                                                                                                                                                                                                                                     react-hooks/refs
+  57:49  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\StoreDashboardPage.tsx:57:49
+  55 |   const randomRef = useRef<null | { rev: number[]; txn: number[]; growth: number[] }>(null)
+  56 |   if (!randomRef.current) {
+> 57 |     const rev = Array.from({ length: 5 }, () => Math.random())
+     |                                                 ^^^^^^^^^^^^^ Cannot call impure function
+  58 |     const txn = Array.from({ length: 5 }, () => Math.random())
+  59 |     const growth = Array.from({ length: 5 }, () => Math.random())
+  60 |     randomRef.current = { rev, txn, growth }                                                                                                                                                                                                                                                                                                                                            react-hooks/purity
+  58:49  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\StoreDashboardPage.tsx:58:49
+  56 |   if (!randomRef.current) {
+  57 |     const rev = Array.from({ length: 5 }, () => Math.random())
+> 58 |     const txn = Array.from({ length: 5 }, () => Math.random())
+     |                                                 ^^^^^^^^^^^^^ Cannot call impure function
+  59 |     const growth = Array.from({ length: 5 }, () => Math.random())
+  60 |     randomRef.current = { rev, txn, growth }
+  61 |   }                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/purity
+  59:52  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\StoreDashboardPage.tsx:59:52
+  57 |     const rev = Array.from({ length: 5 }, () => Math.random())
+  58 |     const txn = Array.from({ length: 5 }, () => Math.random())
+> 59 |     const growth = Array.from({ length: 5 }, () => Math.random())
+     |                                                    ^^^^^^^^^^^^^ Cannot call impure function
+  60 |     randomRef.current = { rev, txn, growth }
+  61 |   }
+  62 |                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/purity
+  72:50  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\retail\StoreDashboardPage.tsx:72:50
+  70 |     const storeNames = ['Downtown', 'Mall', 'Airport', 'Online', 'Suburban']
+  71 |     const { rev, txn, growth } = randomRef.current!
+> 72 |     const storeData: StoreRow[] = storeNames.map((name, i) => {
+     |                                                  ^^^^^^^^^^^^^^
+> 73 |       const storeRev = totalRevenue * (0.15 + rev[i] * 0.2)
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |       const storeTxn = Math.floor(storeRev / (40 + txn[i] * 30))
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 81 |       }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 82 |     })
+     | ^^^^^^ Passing a ref to a function may read its value during render
+  83 |     return {
+  84 |       totalRevenue,
+  85 |       totalCOGS,  react-hooks/refs
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\revenue\DeferredSchedulePage.tsx
+  366:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\revenue\RevRecDashboard.tsx
+  117:59  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\revenue\RevRecDashboard.tsx:117:59
+  115 |     const timeline = months.map((m, i) => ({
+  116 |       month: m,
+> 117 |       recognized: Math.round((recognized / 6) * (i + 1) + Math.random() * 10000),
+      |                                                           ^^^^^^^^^^^^^ Cannot call impure function
+  118 |       deferred: Math.round((deferred / 6) * (6 - i)),
+  119 |     }))
+  120 |     const methods = [  react-hooks/purity
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\saas\ARRDashboard.tsx
+  75:20  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\settings\ConnectorSettingsPage.tsx
+  27:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\settings\ConnectorSettingsPage.tsx:27:5
+  25 |   useEffect(() => {
+  26 |     document.title = 'FinPlan Pro — Connector Settings'
+> 27 |     setConnectors(ConnectorEngine.listConnectors())
+     |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |   }, [])
+  29 |
+  30 |   const handleAdd = () => {  react-hooks/set-state-in-effect
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\settings\UserManagementPage.tsx
+  200:17  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  208:17  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  217:17  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\tax\TaxProvisionPage.tsx
+  109:18  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\tax\TaxProvisionPage.tsx:109:18
+  107 |     const trend = quarters.map((q, i) => ({
+  108 |       quarter: q,
+> 109 |       rate: 18 + Math.random() * 5,
+      |                  ^^^^^^^^^^^^^ Cannot call impure function
+  110 |       provision: Math.round(totalProvision / 4 + Math.random() * 10000),
+  111 |     }))
+  112 |     return {     react-hooks/purity
+  110:50  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\tax\TaxProvisionPage.tsx:110:50
+  108 |       quarter: q,
+  109 |       rate: 18 + Math.random() * 5,
+> 110 |       provision: Math.round(totalProvision / 4 + Math.random() * 10000),
+      |                                                  ^^^^^^^^^^^^^ Cannot call impure function
+  111 |     }))
+  112 |     return {
+  113 |       revenue,  react-hooks/purity
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\templates\TemplatePreviewPage.tsx
+  35:67  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  35:88  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\treasury\FXExposurePage.tsx
+  114:29  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\pages\treasury\FXExposurePage.tsx:114:29
+  112 |   const overallHedgeRatio = totalExposure > 0 ? (totalHedged / totalExposure) * 100 : 0
+  113 |
+> 114 |   const columns: Column[] = useMemo(
+      |                             ^^^^^^^^
+> 115 |     () => [
+      | ^^^^^^^^^^^
+> 116 |       { key: 'currency', header: 'Currency', sortable: true },
+      …
+      | ^^^^^^^^^^^
+> 162 |     []
+      | ^^^^^^^^^^^
+> 163 |   )
+      | ^^^^ Could not preserve existing memoization
+  164 |
+  165 |   const handleExportPDF = () => {
+  166 |     ExportEngine.exportToPDF(  react-hooks/preserve-manual-memoization
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\utils\memoization.ts
+   74:5  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\utils\memoization.ts:74:5
+  72 |
+  73 |   return useCallback(
+> 74 |     ((...args: unknown[]) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |       const now = Date.now()
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 76 |       if (now - lastCall.current >= delay) {
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 88 |       }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |     }) as T,
+     | ^^^^^^^^^^^^ Expected the first argument to be an inline function expression
+  90 |     [fn, delay]
+  91 |   )
+  92 | }  react-hooks/use-memo
+  112:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  113:6  error    Error: Expected the dependency list for useMemo to be an array literal
+
+Expected the dependency list for useMemo to be an array literal.
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src\utils\memoization.ts:113:6
+  111 |     return newValue
+  112 |     // eslint-disable-next-line react-hooks/exhaustive-deps
+> 113 |   }, deps)
+      |      ^^^^ Expected the dependency list for useMemo to be an array literal
+  114 | }
+  115 |                                                                                                                                                                                                                                                                       react-hooks/use-memo
+
+✖ 174 problems (77 errors, 97 warnings)
+  0 errors and 9 warnings potentially fixable with the `--fix` option.
+

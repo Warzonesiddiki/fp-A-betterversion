@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DataLineageEngine, type DataSource } from './DataLineageEngine';
+import { DataLineageEngine } from './DataLineageEngine';
+import type { DataSource } from '@/types/sector-types';
 import type { LineageGraph } from './DataLineageEngine';
 
 describe('DataLineageEngine', () => {

@@ -1,3 +1,4 @@
+<!-- LEGACY: Superseded by FINPLAN_PROJECT_BLUEPRINT.md + MASTER_PLAN_V2.md (2026-05-24) -->
 # FinPlan Pro — Gemini CLI Project Context
 
 ## Overview

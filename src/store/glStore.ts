@@ -13,7 +13,7 @@ import type {
 import { masterStorage } from '../utils/masterStorage';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { useCubeStore } from './cubeStore';
-import { invalidateStoreCache } from '@/utils/storeCache';
+import { useUIStore } from './uiStore';
 
 function extractTimeCode(dateStr: string): string {
   const d = new Date(dateStr);
@@ -108,6 +108,11 @@ export const useGLStore = create<GLState>()(
             accountAnalysis: null,
             lastImportEntryIds: ids,
           });
+          useUIStore.getState().addToast({
+            type: 'success',
+            title: 'GL Entries Set',
+            message: `Successfully loaded ${entries.length} general ledger entries`,
+          });
         },
 
         addEntry: (entry) => {
@@ -116,6 +121,11 @@ export const useGLStore = create<GLState>()(
           set((state) => {
             state.entries.push(...entries);
             state.lastImportEntryIds = entries.map((e) => e.id);
+          });
+          useUIStore.getState().addToast({
+            type: 'success',
+            title: 'Entries Added',
+            message: `Successfully added ${entries.length} new entries to general ledger`,
           });
         },
 
@@ -225,6 +235,11 @@ export const useGLStore = create<GLState>()(
             dateFilter: null,
             accountFilter: [],
           });
+          useUIStore.getState().addToast({
+            type: 'info',
+            title: 'GL Data Cleared',
+            message: 'General ledger data has been reset',
+          });
         },
 
         setImportProgress: (progress) =>
@@ -248,14 +263,27 @@ export const useGLStore = create<GLState>()(
             state.lastImportResult = { ...result, timestamp: new Date().toISOString() };
             state.importStatus = 'complete';
             state.importProgress = 100;
+
+            useUIStore.getState().addToast({
+              type: result.status === 'success' ? 'success' : 'warning',
+              title: 'Import Completed',
+              message: `Processed ${result.rowCount} rows. Success: ${result.successCount}, Errors: ${result.errorCount}`,
+            });
           }),
 
         undoLastImport: () =>
           set((state) => {
+            const count = state.lastImportEntryIds.length;
             const ids = new Set(state.lastImportEntryIds);
             state.entries = state.entries.filter((e) => !ids.has(e.id));
             state.lastImportEntryIds = [];
             state.lastImportResult = null;
+
+            useUIStore.getState().addToast({
+              type: 'info',
+              title: 'Import Undone',
+              message: `Successfully removed ${count} entries from the last import`,
+            });
           }),
 
         checkDuplicates: (entries) => {
@@ -282,7 +310,14 @@ export const useGLStore = create<GLState>()(
         syncToCube: () => {
           const { entries, accounts } = get();
           const cubeStore = useCubeStore.getState();
-          if (!cubeStore.isInitialized) return;
+          if (!cubeStore.isInitialized) {
+            useUIStore.getState().addToast({
+              type: 'error',
+              title: 'Sync Failed',
+              message: 'Cube store is not initialized',
+            });
+            return;
+          }
 
           for (const account of accounts) {
             try {
@@ -337,11 +372,24 @@ export const useGLStore = create<GLState>()(
             });
           }
           cubeStore.bulkWriteCells(cubeCells);
+
+          useUIStore.getState().addToast({
+            type: 'success',
+            title: 'Cube Sync Complete',
+            message: `Successfully synced ${entries.length} entries to OLAP cube`,
+          });
         },
 
         syncFromCube: () => {
           const cubeStore = useCubeStore.getState();
-          if (!cubeStore.isInitialized) return;
+          if (!cubeStore.isInitialized) {
+            useUIStore.getState().addToast({
+              type: 'error',
+              title: 'Sync Failed',
+              message: 'Cube store is not initialized',
+            });
+            return;
+          }
 
           const result = cubeStore.query({
             cube: 'GL_Actuals',
@@ -372,6 +420,12 @@ export const useGLStore = create<GLState>()(
           });
 
           set({ trialBalance: balance });
+
+          useUIStore.getState().addToast({
+            type: 'success',
+            title: 'Cube Data Retrieved',
+            message: `Successfully retrieved ${balance.length} rows from OLAP cube`,
+          });
         },
 
         getCubeState: () => {

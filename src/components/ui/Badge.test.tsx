@@ -23,7 +23,7 @@ describe('Badge', () => {
   it('applies outline variant class', () => {
     render(<Badge variant="outline">Outline</Badge>);
     const badge = screen.getByText('Outline');
-    expect(badge.className).toContain('border-gray-300');
+    expect(badge.className).toContain('border-[var(--border-default)]');
   });
 
   it('applies destructive variant class', () => {

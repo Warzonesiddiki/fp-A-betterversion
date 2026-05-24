@@ -411,7 +411,7 @@ export class BoardPackGenerator {
   }
 
   buildCoverPage(config: BoardPackConfig): ExportData {
-    const rows: unknown[][] = [
+    const rows: (string | number | boolean | null)[][] = [
       ['', '', ''],
       ['', config.companyName, ''],
       ['', '', ''],
@@ -432,7 +432,7 @@ export class BoardPackGenerator {
   }
 
   buildTableOfContents(sections: BoardPackSection[]): ExportData {
-    const rows: unknown[][] = sections.map((section, i) => [
+    const rows: (string | number | boolean | null)[][] = sections.map((section, i) => [
       `${i + 1}`,
       section.title,
       `${section.reports.length} report(s)`,

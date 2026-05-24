@@ -1,9 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  ExcelKeyboardShortcuts,
-  SHORTCUT_CATEGORIES,
-  type ShortcutDef,
-} from './ExcelKeyboardShortcuts';
+import { ExcelKeyboardShortcuts, type ShortcutDef } from './ExcelKeyboardShortcuts';
 
 describe('ExcelKeyboardShortcuts', () => {
   beforeEach(() => {

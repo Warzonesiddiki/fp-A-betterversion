@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -15,7 +15,9 @@ import {
   Clock,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { WorkingCapitalEngine } from '@/engines/WorkingCapitalEngine';
+
+const getRandom = () => Math.random();
+
 import {
   ResponsiveContainer,
   AreaChart,
@@ -67,9 +69,9 @@ export default function WorkingCapitalPage() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const trend = months.map((m, i) => ({
       month: m,
-      assets: Math.round(assets * (0.9 + i * 0.02 + Math.random() * 0.05)),
-      liabilities: Math.round(liabilities * (0.9 + i * 0.02 + Math.random() * 0.05)),
-      wc: Math.round(wc * (0.85 + i * 0.03 + Math.random() * 0.1)),
+      assets: Math.round(assets * (0.9 + i * 0.02 + getRandom() * 0.05)),
+      liabilities: Math.round(liabilities * (0.9 + i * 0.02 + getRandom() * 0.05)),
+      wc: Math.round(wc * (0.85 + i * 0.03 + getRandom() * 0.1)),
     }));
     const revenue = entries
       .filter((e) => (e.accountCode || '').startsWith('4'))

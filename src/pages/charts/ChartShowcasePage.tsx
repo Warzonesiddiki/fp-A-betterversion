@@ -8,6 +8,7 @@ import {
   HeatmapChart,
   GaugeChart,
   ChartExportButton,
+  type VarianceDataPoint,
 } from '@/components/charts';
 
 const waterfallData = [
@@ -20,12 +21,12 @@ const waterfallData = [
   { name: 'Net Income', value: 120000 },
 ];
 
-const varianceData = [
-  { category: 'Revenue', budget: 500000, actual: 520000 },
-  { category: 'COGS', budget: 200000, actual: 195000 },
-  { category: 'Marketing', budget: 80000, actual: 92000 },
-  { category: 'R&D', budget: 120000, actual: 115000 },
-  { category: 'Admin', budget: 60000, actual: 58000 },
+const varianceData: VarianceDataPoint[] = [
+  { name: 'Revenue', budget: 500000, actual: 520000 },
+  { name: 'COGS', budget: 200000, actual: 195000 },
+  { name: 'Marketing', budget: 80000, actual: 92000 },
+  { name: 'R&D', budget: 120000, actual: 115000 },
+  { name: 'Admin', budget: 60000, actual: 58000 },
 ];
 
 const treemapData = [
@@ -44,7 +45,7 @@ const heatmapData = Array.from({ length: 6 }, (_, y) =>
   }))
 ).flat();
 
-export default function ChartShowcasePage() {
+export function ChartShowcasePage() {
   const waterfallRef = useRef<HTMLDivElement>(null!);
   const varianceRef = useRef<HTMLDivElement>(null!);
   const gaugeRef = useRef<HTMLDivElement>(null!);

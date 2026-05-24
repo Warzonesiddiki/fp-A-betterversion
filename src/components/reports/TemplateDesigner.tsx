@@ -1,5 +1,10 @@
 import { useCallback, useState } from 'react';
-import type { ExportTemplate, TemplateSection, TemplateStyle, TemplateType } from '@/engines/ExportTemplateEngine';
+import type {
+  ExportTemplate,
+  TemplateSection,
+  TemplateStyle,
+  TemplateType,
+} from '@/engines/ExportTemplateEngine';
 
 interface TemplateDesignerProps {
   template?: ExportTemplate;
@@ -31,37 +36,55 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
   const [description, setDescription] = useState(template?.description ?? '');
   const [type, setType] = useState<TemplateType>(template?.type ?? 'board_pack');
   const [sections, setSections] = useState<TemplateSection[]>(template?.sections ?? []);
-  const [style, setStyle] = useState<TemplateStyle>(template?.style ?? {
-    primaryColor: '#1E3A5F',
-    secondaryColor: '#4A90D9',
-    fontFamily: 'helvetica',
-    headerFontSize: 10,
-    bodyFontSize: 8,
-    companyName: 'FinPlan Pro',
-  });
+  const [style, setStyle] = useState<TemplateStyle>(
+    template?.style ?? {
+      primaryColor: '#1E3A5F',
+      secondaryColor: '#4A90D9',
+      fontFamily: 'helvetica',
+      headerFontSize: 10,
+      bodyFontSize: 8,
+      companyName: 'FinPlan Pro',
+    }
+  );
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
-  const addSection = useCallback((sectionType: TemplateSection['type']) => {
-    const id = `section-${Date.now()}-${nextId++}`;
-    const newSection: TemplateSection = {
-      id,
-      type: sectionType,
-      title: sectionType === 'cover' ? 'Cover Page' : sectionType === 'page_break' ? '' : `New ${sectionType.replace(/_/g, ' ')}`,
-      order: sections.length,
-      config: sectionType === 'cover' ? { title: name, subtitle: '', confidential: true }
-        : sectionType === 'kpi_summary' ? { kpis: [] }
-        : sectionType === 'table' ? { headers: [], rows: [] }
-        : sectionType === 'text' ? { content: '' }
-        : {},
-    };
-    setSections((prev) => [...prev, newSection]);
-    setSelectedSection(id);
-  }, [sections.length, name]);
+  const addSection = useCallback(
+    (sectionType: TemplateSection['type']) => {
+      const id = `section-${Date.now()}-${nextId++}`;
+      const newSection: TemplateSection = {
+        id,
+        type: sectionType,
+        title:
+          sectionType === 'cover'
+            ? 'Cover Page'
+            : sectionType === 'page_break'
+              ? ''
+              : `New ${sectionType.replace(/_/g, ' ')}`,
+        order: sections.length,
+        config:
+          sectionType === 'cover'
+            ? { title: name, subtitle: '', confidential: true }
+            : sectionType === 'kpi_summary'
+              ? { kpis: [] }
+              : sectionType === 'table'
+                ? { headers: [], rows: [] }
+                : sectionType === 'text'
+                  ? { content: '' }
+                  : {},
+      };
+      setSections((prev) => [...prev, newSection]);
+      setSelectedSection(id);
+    },
+    [sections.length, name]
+  );
 
-  const removeSection = useCallback((id: string) => {
-    setSections((prev) => prev.filter((s) => s.id !== id));
-    if (selectedSection === id) setSelectedSection(null);
-  }, [selectedSection]);
+  const removeSection = useCallback(
+    (id: string) => {
+      setSections((prev) => prev.filter((s) => s.id !== id));
+      if (selectedSection === id) setSelectedSection(null);
+    },
+    [selectedSection]
+  );
 
   const moveSection = useCallback((id: string, direction: 'up' | 'down') => {
     setSections((prev) => {
@@ -106,11 +129,18 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
     <div className="flex h-full">
       {/* Left: Section list */}
       <div className="w-64 border-r border-[var(--border-subtle)] dark:border-gray-700 p-4 overflow-y-auto">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-3">Sections</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-3">
+          Sections
+        </h3>
         <div className="space-y-1 mb-4">
           {sections.map((section) => (
             <div
               key={section.id}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') setSelectedSection(section.id);
+              }}
               className={`flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm ${
                 selectedSection === section.id
                   ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
@@ -121,19 +151,28 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               <span className="flex-1 truncate">{section.title || section.type}</span>
               <button
                 className="text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
-                onClick={(e) => { e.stopPropagation(); moveSection(section.id, 'up'); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  moveSection(section.id, 'up');
+                }}
               >
                 ↑
               </button>
               <button
                 className="text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
-                onClick={(e) => { e.stopPropagation(); moveSection(section.id, 'down'); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  moveSection(section.id, 'down');
+                }}
               >
                 ↓
               </button>
               <button
                 className="text-red-400 hover:fin-negative"
-                onClick={(e) => { e.stopPropagation(); removeSection(section.id); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeSection(section.id);
+                }}
               >
                 ×
               </button>
@@ -141,7 +180,9 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
           ))}
         </div>
 
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">Add Section</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+          Add Section
+        </h3>
         <div className="space-y-1">
           {SECTION_TYPES.map((st) => (
             <button
@@ -159,7 +200,9 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-2xl space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Template Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+              Template Name
+            </label>
             <input
               type="text"
               value={name}
@@ -170,19 +213,25 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Type</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                Type
+              </label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as TemplateType)}
                 className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
               >
                 {TEMPLATE_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Company Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                Company Name
+              </label>
               <input
                 type="text"
                 value={style.companyName}
@@ -193,7 +242,9 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+              Description
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -204,7 +255,9 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Primary Color</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                Primary Color
+              </label>
               <input
                 type="color"
                 value={style.primaryColor}
@@ -213,7 +266,9 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Secondary Color</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                Secondary Color
+              </label>
               <input
                 type="color"
                 value={style.secondaryColor}
@@ -230,7 +285,9 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                 Edit: {active.type.replace(/_/g, ' ')}
               </h4>
               <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-1">Section Title</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-1">
+                  Section Title
+                </label>
                 <input
                   type="text"
                   value={active.title}
@@ -240,12 +297,14 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               </div>
               {active.type === 'table' && (
                 <p className="mt-2 text-xs text-[var(--text-muted)]">
-                  Configure table headers and rows in the template JSON or use the report builder for dynamic data binding.
+                  Configure table headers and rows in the template JSON or use the report builder
+                  for dynamic data binding.
                 </p>
               )}
               {active.type === 'kpi_summary' && (
                 <p className="mt-2 text-xs text-[var(--text-muted)]">
-                  KPI cards are auto-populated from the data context. Customize labels in the template JSON.
+                  KPI cards are auto-populated from the data context. Customize labels in the
+                  template JSON.
                 </p>
               )}
             </div>

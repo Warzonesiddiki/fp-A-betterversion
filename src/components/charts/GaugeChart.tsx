@@ -57,11 +57,19 @@ export function GaugeChart({
 
   return (
     <div
-      role="img"
+      role={onClick ? 'button' : 'img'}
       aria-label={`${ariaLabel}: ${formatValue(value)}`}
       data-testid="gauge-chart"
       className="flex flex-col items-center"
       onClick={onClick}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') onClick();
+            }
+          : undefined
+      }
+      tabIndex={onClick ? 0 : undefined}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
       <svg width={size} height={size * 0.7} viewBox={`0 0 ${size} ${size * 0.7}`}>

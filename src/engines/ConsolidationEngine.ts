@@ -1,4 +1,4 @@
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 // =============================================================================
 // CONSOLIDATION ENGINE — ASC 810 Compliant
@@ -144,6 +144,20 @@ export interface VIENotification {
   economics: string;
 }
 
+export interface EffectiveOwnership {
+  entityId: string;
+  effectivePct: number;
+}
+
+export interface EntityHierarchyNode {
+  entityId: string;
+  entityName: string;
+  ownershipPct: number;
+  effectivePct: number;
+  method: ConsolidationMethod;
+  children: EntityHierarchyNode[];
+}
+
 // --- Account Category Mapping ---
 
 const ACCOUNT_CATEGORY_MAP: Record<string, AccountCategory> = {
@@ -230,6 +244,10 @@ export class ConsolidationEngine {
     }
 
     try {
+      // Step 0: Calculate effective ownership percentages for the hierarchy
+      const parentId = entities[0].entityId;
+      const effectiveOwnershipMap = this.calculateEffectiveOwnership(parentId, ownerships);
+
       // Step 1: Translate foreign subsidiaries to reporting currency
       const translatedEntities = this.translateForeignSubsidiaries(entities, fxRates);
 
@@ -256,7 +274,8 @@ export class ConsolidationEngine {
       const minorityInterestDetails = this.calculateMinorityInterestDetails(
         subsidiaryEntities,
         ownerships,
-        entityMap
+        entityMap,
+        effectiveOwnershipMap
       );
 
       // Step 7: Calculate goodwill for acquisitions
@@ -349,6 +368,77 @@ export class ConsolidationEngine {
   }
 
   /**
+   * Calculate effective ownership across a recursive hierarchy
+   * A -> B (80%), B -> C (50%) => A -> C (40%)
+   */
+  static calculateEffectiveOwnership(
+    rootParentId: string,
+    ownerships: OwnershipStructure[]
+  ): Map<string, number> {
+    const effectiveOwnerships = new Map<string, number>();
+    effectiveOwnerships.set(rootParentId, 100);
+
+    const queue: { entityId: string; currentPct: number }[] = [
+      { entityId: rootParentId, currentPct: 100 },
+    ];
+
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const { entityId, currentPct } = queue.shift()!;
+
+      // Find direct children
+      const directOwnerships = ownerships.filter((o) => o.parentId === entityId);
+
+      for (const ownership of directOwnerships) {
+        const childId = ownership.childId;
+        const effectivePct = (currentPct * ownership.ownershipPct) / 100;
+
+        const currentEffective = effectiveOwnerships.get(childId) ?? 0;
+        effectiveOwnerships.set(childId, currentEffective + effectivePct);
+
+        // Continue traversal
+        queue.push({ entityId: childId, currentPct: effectivePct });
+      }
+    }
+
+    return effectiveOwnerships;
+  }
+
+  /**
+   * Build a recursive hierarchy tree
+   */
+  static getHierarchyTree(
+    rootParentId: string,
+    ownerships: OwnershipStructure[],
+    entities: EntityData[],
+    effectiveMap?: Map<string, number>
+  ): EntityHierarchyNode {
+    const effectiveOwnerships =
+      effectiveMap ?? this.calculateEffectiveOwnership(rootParentId, ownerships);
+    const entityLookup = new Map(entities.map((e) => [e.entityId, e]));
+    const rootEntity = entityLookup.get(rootParentId);
+
+    const buildNode = (entityId: string, ownershipPct: number): EntityHierarchyNode => {
+      const entity = entityLookup.get(entityId);
+      const children = ownerships
+        .filter((o) => o.parentId === entityId)
+        .map((o) => buildNode(o.childId, o.ownershipPct));
+
+      return {
+        entityId,
+        entityName: entity?.entityName ?? entityId,
+        ownershipPct,
+        effectivePct: effectiveOwnerships.get(entityId) ?? 0,
+        method: ownerships.find((o) => o.childId === entityId)?.method ?? 'full',
+        children,
+      };
+    };
+
+    return buildNode(rootParentId, 100);
+  }
+
+  /**
    * Eliminate intercompany transactions — ASC 810 requires full elimination
    */
   static eliminateIntercompany(
@@ -382,10 +472,8 @@ export class ConsolidationEngine {
       const entityBalances = new Map<string, number>();
 
       for (const entry of accountEntries) {
-        entityBalances.set(
-          entry.entityId,
-          (entityBalances.get(entry.entityId) ?? 0) + entry.amount
-        );
+        const entityId = entry.entityId ?? 'unknown';
+        entityBalances.set(entityId, (entityBalances.get(entityId) ?? 0) + entry.amount);
       }
 
       // Eliminate across entities
@@ -429,21 +517,36 @@ export class ConsolidationEngine {
 
   /**
    * Calculate minority interest details for each subsidiary — ASC 810 net income method
+   * Updated to support recursive hierarchies using effective ownership
    */
   static calculateMinorityInterestDetails(
     subsidiaries: EntityData[],
     ownerships: OwnershipStructure[],
-    entityMap: Map<string, EntityData>
+    entityMap: Map<string, EntityData>,
+    effectiveOwnershipMap?: Map<string, number>
   ): MinorityInterestDetail[] {
     const details: MinorityInterestDetail[] = [];
+    const rootParentId =
+      subsidiaries.length > 0
+        ? effectiveOwnershipMap
+          ? Array.from(effectiveOwnershipMap.keys())[0]
+          : undefined
+        : undefined;
 
-    for (const ownership of ownerships) {
-      if (ownership.method !== 'full') continue; // Only full consolidation has minority interest
+    // Use effective ownership map if provided, otherwise default to direct ownership for simple cases
+    const effMap = effectiveOwnershipMap ?? new Map();
 
-      const subsidiary = entityMap.get(ownership.childId);
-      if (!subsidiary) continue;
+    for (const subsidiary of subsidiaries) {
+      const entityId = subsidiary.entityId;
 
-      const minorityPct = 100 - ownership.ownershipPct;
+      // Find the method for this subsidiary
+      const directOwnership = ownerships.find((o) => o.childId === entityId);
+      if (!directOwnership || directOwnership.method !== 'full') continue;
+
+      // Effective ownership by the root parent
+      const effectivePct = effMap.get(entityId) ?? directOwnership.ownershipPct;
+      const minorityPct = 100 - effectivePct;
+
       if (minorityPct <= 0) continue;
 
       // Calculate net income from subsidiary entries
@@ -457,7 +560,7 @@ export class ConsolidationEngine {
 
       const netIncome = revenue + expenses; // expenses are negative
 
-      // Calculate dividends (account codes starting with 3xxx that are negative)
+      // Calculate dividends
       const dividends = subsidiary.entries
         .filter(
           (e) =>
@@ -471,11 +574,11 @@ export class ConsolidationEngine {
       const minorityShare = (minorityPct / 100) * (netIncome - dividends);
 
       details.push({
-        entityId: ownership.childId,
+        entityId: entityId,
         entityName: subsidiary.entityName,
-        ownershipPct: ownership.ownershipPct,
+        ownershipPct: effectivePct,
         minorityPct,
-        beginningBalance: 0, // Would need prior period data
+        beginningBalance: 0,
         netIncome: (minorityPct / 100) * netIncome,
         dividends: (minorityPct / 100) * dividends,
         otherAdjustments: 0,
@@ -956,12 +1059,20 @@ export class ConsolidationEngine {
       if (!processedKeys.has(key) && (adjustment.debitAmount > 0 || adjustment.creditAmount > 0)) {
         result.push({
           id: `adj-${adjustment.accountCode}-${adjustment.entityId}`,
+          accountId: adjustment.accountCode,
           accountCode: adjustment.accountCode,
           accountName: adjustment.accountName,
-          amount: adjustment.debitAmount - adjustment.creditAmount,
-          currency: 'USD',
+          period: '',
+          periodName: '',
+          debit: adjustment.debitAmount,
+          credit: adjustment.creditAmount,
+          netChange: adjustment.debitAmount - adjustment.creditAmount,
           date: new Date().toISOString().split('T')[0],
+          amount: adjustment.debitAmount - adjustment.creditAmount,
+          description: '',
+          reference: '',
           entityId: adjustment.entityId,
+          currency: 'USD',
         });
       }
     }

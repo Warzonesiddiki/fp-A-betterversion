@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CellCommentEngine, type CellComment } from './CellCommentEngine';
+import { CellCommentEngine } from './CellCommentEngine';
 
 describe('CellCommentEngine', () => {
   let engine: CellCommentEngine;

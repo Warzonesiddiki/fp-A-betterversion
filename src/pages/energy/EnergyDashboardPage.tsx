@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useEnergyStore } from '@/store/energyStore';
+
 import {
   Zap,
   DollarSign,
@@ -14,7 +14,7 @@ import {
   MoreVertical,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
-import { EnergyEngine } from '@/engines/EnergyEngine';
+
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';

@@ -6,8 +6,21 @@ import { render, screen } from '@testing-library/react';
 import { ReportBuilder } from './ReportBuilder';
 
 vi.mock('@/components/ui/Button', () => ({
-  Button: ({ children, className, disabled, size: _size, variant: _variant, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { className?: string; size?: string; variant?: string }) => (
-    <button className={className} disabled={disabled} {...props}>{children}</button>
+  Button: ({
+    children,
+    className,
+    disabled,
+    size: _size,
+    variant: _variant,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    className?: string;
+    size?: string;
+    variant?: string;
+  }) => (
+    <button className={className} disabled={disabled} {...props}>
+      {children}
+    </button>
   ),
 }));
 
@@ -22,7 +35,9 @@ vi.mock('./FormulaBar', () => ({
 }));
 
 vi.mock('./ConditionalFormatPanel', () => ({
-  ConditionalFormatPanel: () => <div data-testid="conditional-format-panel">Conditional Format Mock</div>,
+  ConditionalFormatPanel: () => (
+    <div data-testid="conditional-format-panel">Conditional Format Mock</div>
+  ),
 }));
 
 vi.mock('./ExportDialog', () => ({
@@ -74,7 +89,14 @@ vi.mock('@/engines/ReportBuilderEngine', () => {
     description: '',
     template: 'custom',
     category: 'user',
-    layout: { rows: [], columns: [], columnWidths: {}, defaultRowHeight: 28, frozenColumns: 0, frozenRows: 0 },
+    layout: {
+      rows: [],
+      columns: [],
+      columnWidths: {},
+      defaultRowHeight: 28,
+      frozenColumns: 0,
+      frozenRows: 0,
+    },
     filters: [],
     shares: [],
     permissions: [],
@@ -93,7 +115,17 @@ vi.mock('@/engines/ReportBuilderEngine', () => {
       updateReport: vi.fn().mockImplementation((report, updates) => ({ ...report, ...updates })),
       addRow: vi.fn().mockImplementation((layout, type) => ({
         ...layout,
-        rows: [...layout.rows, { id: `row-${Date.now()}`, type, cells: [], isVisible: true, pageBreakBefore: false, height: 28 }],
+        rows: [
+          ...layout.rows,
+          {
+            id: `row-${Date.now()}`,
+            type,
+            cells: [],
+            isVisible: true,
+            pageBreakBefore: false,
+            height: 28,
+          },
+        ],
       })),
       removeRow: vi.fn().mockImplementation((layout) => layout),
       addColumn: vi.fn().mockImplementation((layout) => layout),
@@ -166,7 +198,14 @@ describe('ReportBuilder', () => {
       description: 'A test report',
       template: 'custom' as const,
       category: 'user' as const,
-      layout: { rows: [], columns: [], columnWidths: {}, defaultRowHeight: 28, frozenColumns: 0, frozenRows: 0 },
+      layout: {
+        rows: [],
+        columns: [],
+        columnWidths: {},
+        defaultRowHeight: 28,
+        frozenColumns: 0,
+        frozenRows: 0,
+      },
       filters: [],
       shares: [],
       permissions: [],

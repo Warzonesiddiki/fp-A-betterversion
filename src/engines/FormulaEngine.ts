@@ -1,4 +1,4 @@
-﻿import {
+import {
   analyzeFormulas,
   solveIteratively,
   type IterativeConfig,

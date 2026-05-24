@@ -8,10 +8,7 @@ import {
   type MigrationReadiness,
   type ColumnMapping,
 } from '@/engines/MigrationEngine';
-import { ETLPipelineEngine } from '@/engines/ETLPipelineEngine';
-import { CubePartitioner } from '@/engines/CubePartitioner';
-import { DataQualityEngine } from '@/engines/DataQualityEngine';
-import { StreamImportEngine } from '@/engines/StreamImportEngine';
+
 import { FileDropZone } from '@/components/ui/FileDropZone';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -51,7 +48,7 @@ function parseCSVLine(line: string): string[] {
 }
 
 export default function DataImportPage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Data Import';
@@ -82,7 +79,7 @@ export default function DataImportPage() {
     details: { key: string; expected: number; actual: number; diff: number }[];
   } | null>(null);
   const [recError, setRecError] = useState<string | null>(null);
-  const [recLoading, setRecLoading] = useState(false);
+  const [_recLoading, setRecLoading] = useState(false);
 
   const currentSummary = useMemo(() => {
     if (entries.length === 0) return null;
@@ -139,6 +136,7 @@ export default function DataImportPage() {
       rowCount: 0,
       successCount: 0,
       errorCount: 0,
+      completedAt: null,
       startedBy: 'current-user',
       startedByName: 'Current User',
     });

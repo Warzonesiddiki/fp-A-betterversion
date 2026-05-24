@@ -7,8 +7,31 @@ import { ReportTemplateLibrary } from './ReportTemplateLibrary';
 import type { ReportDefinition } from '@/engines/ReportBuilderEngine';
 
 vi.mock('@/components/ui/Card', () => ({
-  Card: ({ children, className, onClick }: { children: React.ReactNode; className?: string; onClick?: () => void }) => (
-    <div data-testid="card" className={className} onClick={onClick} onKeyDown={onClick ? (e) => { if (e.key === 'Enter') onClick(); } : undefined} role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined}>{children}</div>
+  Card: ({
+    children,
+    className,
+    onClick,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+    onClick?: () => void;
+  }) => (
+    <div
+      data-testid="card"
+      className={className}
+      onClick={onClick}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter') onClick();
+            }
+          : undefined
+      }
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+    >
+      {children}
+    </div>
   ),
   CardContent: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div className={className}>{children}</div>
@@ -19,7 +42,11 @@ vi.mock('@/engines/ReportBuilderEngine', () => ({
   ReportBuilderEngine: {
     getAvailableTemplates: vi.fn().mockReturnValue([
       { type: 'income_statement', name: 'Income Statement', description: 'Standard P&L template' },
-      { type: 'balance_sheet', name: 'Balance Sheet', description: 'Standard balance sheet template' },
+      {
+        type: 'balance_sheet',
+        name: 'Balance Sheet',
+        description: 'Standard balance sheet template',
+      },
       { type: 'cash_flow', name: 'Cash Flow', description: 'Cash flow statement template' },
       { type: 'budget_vs_actual', name: 'Budget vs Actual', description: 'BvA analysis template' },
       { type: 'custom', name: 'Blank Report', description: 'Start from scratch' },
@@ -43,9 +70,18 @@ const mockSavedReports: ReportDefinition[] = [
     name: 'Q1 P&L Report',
     description: 'First quarter P&L',
     template: 'income_statement',
-    category: 'user',
-    layout: { rows: [], columns: [], filters: [] },
-    permissions: [],
+    layout: {
+      rows: [],
+      columns: [],
+      columnWidths: {},
+      defaultRowHeight: 30,
+      frozenColumns: 0,
+      frozenRows: 0,
+    },
+    filters: [],
+    shares: [],
+    tags: [],
+    isArchived: false,
     version: 2,
     createdAt: '2026-01-15',
     updatedAt: '2026-04-01',
@@ -56,9 +92,18 @@ const mockSavedReports: ReportDefinition[] = [
     name: 'Annual Balance Sheet',
     description: 'Year-end balance sheet',
     template: 'balance_sheet',
-    category: 'user',
-    layout: { rows: [], columns: [], filters: [] },
-    permissions: [],
+    layout: {
+      rows: [],
+      columns: [],
+      columnWidths: {},
+      defaultRowHeight: 30,
+      frozenColumns: 0,
+      frozenRows: 0,
+    },
+    filters: [],
+    shares: [],
+    tags: [],
+    isArchived: false,
     version: 1,
     createdAt: '2026-03-01',
     updatedAt: '2026-03-15',
@@ -138,10 +183,7 @@ describe('ReportTemplateLibrary', () => {
   it('calls onSelectReport when a saved report is clicked', () => {
     const onSelectReport = vi.fn();
     render(
-      <ReportTemplateLibrary
-        savedReports={mockSavedReports}
-        onSelectReport={onSelectReport}
-      />,
+      <ReportTemplateLibrary savedReports={mockSavedReports} onSelectReport={onSelectReport} />
     );
     fireEvent.click(screen.getByText(/My Reports/));
     fireEvent.click(screen.getByText('Q1 P&L Report'));
@@ -156,24 +198,14 @@ describe('ReportTemplateLibrary', () => {
   });
 
   it('renders clone button when onCloneReport is provided', () => {
-    render(
-      <ReportTemplateLibrary
-        savedReports={mockSavedReports}
-        onCloneReport={vi.fn()}
-      />,
-    );
+    render(<ReportTemplateLibrary savedReports={mockSavedReports} onCloneReport={vi.fn()} />);
     fireEvent.click(screen.getByText(/My Reports/));
     const cloneButtons = screen.getAllByRole('button', { name: /clone report/i });
     expect(cloneButtons).toHaveLength(2);
   });
 
   it('renders delete button when onDeleteReport is provided', () => {
-    render(
-      <ReportTemplateLibrary
-        savedReports={mockSavedReports}
-        onDeleteReport={vi.fn()}
-      />,
-    );
+    render(<ReportTemplateLibrary savedReports={mockSavedReports} onDeleteReport={vi.fn()} />);
     fireEvent.click(screen.getByText(/My Reports/));
     const deleteButtons = screen.getAllByRole('button', { name: /delete report/i });
     expect(deleteButtons).toHaveLength(2);

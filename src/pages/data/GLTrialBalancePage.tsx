@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useFreezePanes } from '@/hooks/useFreezePanes';
-import { useLocation } from 'react-router-dom';
+
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -19,7 +18,7 @@ function formatCurrency(n: number): string {
 }
 
 export default function GLTrialBalancePage() {
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — G L Trial Balance';
@@ -48,9 +47,9 @@ export default function GLTrialBalancePage() {
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
-        <Skeleton variant="rectangular" height={32} className="w-60" />
-        <Skeleton variant="rectangular" height={48} />
-        <Skeleton variant="rectangular" height={400} />
+        <Skeleton variant="rectangular" height="32px" className="w-60" />
+        <Skeleton variant="rectangular" height="48px" />
+        <Skeleton variant="rectangular" height="400px" />
       </div>
     );
   }

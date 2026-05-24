@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useTour } from '@/hooks/useTour';
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { DataGrid } from '@/components/ui/DataGrid';
-import { Percent, Activity, AlertCircle, TrendingDown, Download, BarChart3 } from 'lucide-react';
+import { Percent, AlertCircle, Download } from 'lucide-react';
 import { ExportEngine, BankingEngine } from '@/engines';
 import {
   BarChart,
@@ -162,7 +162,7 @@ export default function LoanLossPage() {
           format="percent"
           trend="down"
           change={-0.03}
-          sparklineData={stats.trend}
+          sparklineData={[]}
         />
         <KPICard title="Reserve Coverage" value={stats.coverageRatio} format="percent" />
         <KPICard

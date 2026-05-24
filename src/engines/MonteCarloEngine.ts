@@ -475,15 +475,17 @@ export class MonteCarloEngine {
         const base = config.baseMetrics[driver.targetMetric];
 
         if (driver.impactType === 'percentage') {
-          (metrics as Record<string, number>)[driver.targetMetric] = base * (1 + sample / 100);
+          (metrics as unknown as Record<string, number>)[driver.targetMetric] =
+            base * (1 + sample / 100);
         } else {
-          (metrics as Record<string, number>)[driver.targetMetric] = base + sample;
+          (metrics as unknown as Record<string, number>)[driver.targetMetric] = base + sample;
         }
       }
 
       // Recalculate derived metrics
-      metrics.netIncome = metrics.ebitda;
-      metrics.ebitdaMargin = metrics.revenue !== 0 ? (metrics.ebitda / metrics.revenue) * 100 : 0;
+      (metrics as unknown as Record<string, number>).netIncome = metrics.ebitda;
+      (metrics as unknown as Record<string, number>).ebitdaMargin =
+        metrics.revenue !== 0 ? (metrics.ebitda / metrics.revenue) * 100 : 0;
 
       // Store values
       for (const key of validMetrics) {

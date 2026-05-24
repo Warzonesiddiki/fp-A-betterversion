@@ -164,6 +164,8 @@ vi.mock('@/store/uiStore', () => ({
   useUIStore: vi.fn(() => ({
     mobileSidebarOpen: false,
     closeMobileSidebar: vi.fn(),
+    theme: 'light',
+    setTheme: vi.fn(),
   })),
 }));
 
@@ -301,7 +303,6 @@ vi.mock('lucide-react', () => {
     CheckCircle2: makeIcon(),
     AlertTriangle: makeIcon(),
     Mail: makeIcon(),
-    Lock: makeIcon(),
     AlertCircle: makeIcon(),
     Loader2: makeIcon(),
     ChevronDown: makeIcon(),
@@ -324,6 +325,7 @@ vi.mock('lucide-react', () => {
     Hash: makeIcon(),
     Activity: makeIcon(),
     Sparkles: makeIcon(),
+    Scale: makeIcon(),
   };
 });
 
@@ -416,6 +418,11 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
 describe('Page Smoke Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
   });
 
   describe('BudgetListPage', () => {

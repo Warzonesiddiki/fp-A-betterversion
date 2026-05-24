@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { Download, Users, DollarSign, TrendingUp, BarChart3, Percent } from 'lucide-react';
+import { Download, Users, DollarSign, TrendingUp, Percent } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -154,7 +154,7 @@ export default function PayrollForecastPage() {
     document.title = 'FinPlan Pro - Payroll Forecast';
   }, []);
 
-  const glPayroll = useMemo(() => {
+  const _glPayroll = useMemo(() => {
     const payrollEntries = entries.filter(
       (e) =>
         (e.accountCode || '').startsWith('71') ||

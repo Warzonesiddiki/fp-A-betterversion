@@ -73,8 +73,16 @@ export function GaugeChart({
       className={className}
       style={{ width, height }}
       onClick={onClick}
-      role="img"
+      role={onClick ? 'button' : 'img'}
+      tabIndex={onClick ? 0 : undefined}
       aria-label={`${label}: ${value}`}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') onClick();
+            }
+          : undefined
+      }
     >
       <svg width={width} height={height}>
         <path

@@ -148,7 +148,7 @@ export function NLQInput({
       )}
 
       <p id="nlq-hint" className="mt-1 text-xs text-muted-foreground">
-        Try: "show Q3 revenue by region" or "compare budget vs actual"
+        Try: &quot;show Q3 revenue by region&quot; or &quot;compare budget vs actual&quot;
       </p>
     </div>
   );

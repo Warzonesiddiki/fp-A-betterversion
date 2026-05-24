@@ -1,3 +1,4 @@
+<!-- LEGACY: Superseded by FINPLAN_PERFECTION_PLAN.md (2026-05-24) -->
 # FinPlan Pro — Master Plan: Phases 16-35
 
 > **20 phases × 20 subphases = 400 tasks**

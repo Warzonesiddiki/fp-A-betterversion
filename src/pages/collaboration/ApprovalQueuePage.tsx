@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCollaborationStore } from '@/store/collaborationStore';
 import { useBudgetStore } from '@/store/budgetStore';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
@@ -37,7 +37,7 @@ interface ApprovalRow {
 }
 
 export default function ApprovalQueuePage() {
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const { approvals, addComment } = useCollaborationStore();
   const { budgets } = useBudgetStore();
   const [filter, setFilter] = useState<'All' | 'Pending' | 'Approved' | 'Rejected'>('All');
@@ -79,7 +79,7 @@ export default function ApprovalQueuePage() {
   const approvedCount = rows.filter((r) => r.status === 'Approved').length;
   const rejectedCount = rows.filter((r) => r.status === 'Rejected').length;
 
-  const handleApprove = (id: string) => {
+  const _handleApprove = (id: string) => {
     addComment({
       resourceType: 'Budget',
       resourceId: id,
@@ -90,6 +90,8 @@ export default function ApprovalQueuePage() {
       authorInitials: 'CU',
       content: 'Approved',
       mentions: [],
+      isResolved: false,
+      resolvedAt: null,
     });
   };
 

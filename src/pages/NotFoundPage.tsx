@@ -1,7 +1,5 @@
-﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui/Card';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();

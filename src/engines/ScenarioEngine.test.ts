@@ -54,9 +54,9 @@ describe('ScenarioEngine', () => {
     });
 
     it('should support normal distribution with seeded random', () => {
-      let callCount = 0;
+      let _callCount = 0;
       const seeded = () => {
-        callCount++;
+        _callCount++;
         return 0.5;
       };
       const result = ScenarioEngine.monteCarlo(

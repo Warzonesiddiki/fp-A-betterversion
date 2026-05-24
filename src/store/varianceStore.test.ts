@@ -1,5 +1,29 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useVarianceStore } from './varianceStore';
+import type { VarianceAnalysis } from '../types';
+
+function createMockAnalysis(overrides?: Partial<VarianceAnalysis>): VarianceAnalysis {
+  return {
+    id: `var-${Date.now()}`,
+    accountId: 'acc-001',
+    accountName: 'Test Account',
+    accountCode: 'A-001',
+    accountType: 'Revenue',
+    budgetAmount: 1000,
+    actualAmount: 1200,
+    forecastAmount: 1100,
+    dollarVariance: 200,
+    percentVariance: 0.2,
+    varianceStatus: 'Favorable',
+    thresholdStatus: 'Within',
+    commentary: null,
+    commentaryStatus: 'NotStarted',
+    monthlyBreakdown: [],
+    rateVariance: 0,
+    volumeVariance: 0,
+    ...overrides,
+  };
+}
 
 describe('varianceStore', () => {
   beforeEach(() => {
@@ -18,35 +42,34 @@ describe('varianceStore', () => {
   });
 
   it('should set analyses', () => {
-    const analyses = [{ id: 'var-1', name: 'Q1 Variance' }] as any;
+    const analyses = [createMockAnalysis({ id: 'var-1', accountName: 'Q1 Variance' })];
     useVarianceStore.getState().setAnalyses(analyses);
     expect(useVarianceStore.getState().analyses).toEqual(analyses);
   });
 
   it('should add an analysis', () => {
-    useVarianceStore.getState().addAnalysis({
-      name: 'Revenue Variance',
-      type: 'budget_vs_actual',
-    } as any);
+    useVarianceStore
+      .getState()
+      .addAnalysis(createMockAnalysis({ accountName: 'Revenue Variance' }));
     expect(useVarianceStore.getState().analyses).toHaveLength(1);
-    expect(useVarianceStore.getState().analyses[0].name).toBe('Revenue Variance');
+    expect(useVarianceStore.getState().analyses[0].accountName).toBe('Revenue Variance');
   });
 
   it('should assign id to new analysis', () => {
-    useVarianceStore.getState().addAnalysis({ name: 'Test', type: 'custom' } as any);
+    useVarianceStore.getState().addAnalysis(createMockAnalysis());
     expect(useVarianceStore.getState().analyses[0].id).toBeDefined();
     expect(useVarianceStore.getState().analyses[0].id).toContain('var-');
   });
 
   it('should delete an analysis', () => {
-    useVarianceStore.getState().addAnalysis({ name: 'Test', type: 'custom' } as any);
+    useVarianceStore.getState().addAnalysis(createMockAnalysis());
     const id = useVarianceStore.getState().analyses[0].id;
     useVarianceStore.getState().deleteAnalysis(id);
     expect(useVarianceStore.getState().analyses).toHaveLength(0);
   });
 
   it('should not delete non-existent analysis', () => {
-    useVarianceStore.getState().addAnalysis({ name: 'Test', type: 'custom' } as any);
+    useVarianceStore.getState().addAnalysis(createMockAnalysis());
     useVarianceStore.getState().deleteAnalysis('non-existent');
     expect(useVarianceStore.getState().analyses).toHaveLength(1);
   });
@@ -66,22 +89,23 @@ describe('varianceStore', () => {
   });
 
   it('should handle multiple analyses', () => {
-    useVarianceStore.getState().addAnalysis({ name: 'A', type: 'custom' } as any);
-    useVarianceStore.getState().addAnalysis({ name: 'B', type: 'budget_vs_actual' } as any);
-    useVarianceStore.getState().addAnalysis({ name: 'C', type: 'custom' } as any);
+    useVarianceStore.getState().addAnalysis(createMockAnalysis({ accountName: 'A' }));
+    useVarianceStore.getState().addAnalysis(createMockAnalysis({ accountName: 'B' }));
+    useVarianceStore.getState().addAnalysis(createMockAnalysis({ accountName: 'C' }));
     expect(useVarianceStore.getState().analyses).toHaveLength(3);
   });
 
   it('should delete from middle of list', () => {
-    // Use setAnalyses to avoid Date.now() id collision
-    useVarianceStore.getState().setAnalyses([
-      { id: 'var-a', name: 'A', type: 'custom' },
-      { id: 'var-b', name: 'B', type: 'custom' },
-      { id: 'var-c', name: 'C', type: 'custom' },
-    ] as any);
+    useVarianceStore
+      .getState()
+      .setAnalyses([
+        createMockAnalysis({ id: 'var-a', accountName: 'A' }),
+        createMockAnalysis({ id: 'var-b', accountName: 'B' }),
+        createMockAnalysis({ id: 'var-c', accountName: 'C' }),
+      ]);
     useVarianceStore.getState().deleteAnalysis('var-b');
     expect(useVarianceStore.getState().analyses).toHaveLength(2);
-    expect(useVarianceStore.getState().analyses[0].name).toBe('A');
-    expect(useVarianceStore.getState().analyses[1].name).toBe('C');
+    expect(useVarianceStore.getState().analyses[0].accountName).toBe('A');
+    expect(useVarianceStore.getState().analyses[1].accountName).toBe('C');
   });
 });

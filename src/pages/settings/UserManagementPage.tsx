@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { Users, UserPlus, Shield, Mail, Clock, Trash2, Edit2, X } from 'lucide-react';
-import type { UserProfile, UserRole } from '@/types';
-import { SessionEngine } from '@/engines/SessionEngine';
+import type { UserProfile, Role } from '@/types';
 
 const defaultRoles: { id: string; name: string; permissions: string[] }[] = [
   { id: 'role-admin', name: 'Admin', permissions: ['all'] },
@@ -18,7 +17,7 @@ const defaultRoles: { id: string; name: string; permissions: string[] }[] = [
 export default function UserManagementPage() {
   const { users, addUser, updateUser, deleteUser } = useSettingsStore();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [_editingId, setEditingId] = useState<string | null>(null);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'Analyst' });
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -29,12 +28,13 @@ export default function UserManagementPage() {
   const handleAddUser = () => {
     if (!newUser.name || !newUser.email) return;
     addUser({
-      id: `usr-${Date.now()}`,
       name: newUser.name,
       email: newUser.email,
-      role: newUser.role as UserRole,
-      avatar: '',
-      preferences: { theme: 'dark', language: 'en' },
+      firstName: newUser.name.split(' ')[0] || newUser.name,
+      lastName: newUser.name.split(' ').slice(1).join(' ') || '',
+      role: newUser.role as Role,
+      department: '',
+      status: 'Active' as const,
     });
     setNewUser({ name: '', email: '', role: 'Analyst' });
     setShowAddForm(false);
@@ -48,7 +48,7 @@ export default function UserManagementPage() {
 
   const filteredUsers = users.filter(
     (u) =>
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (u.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

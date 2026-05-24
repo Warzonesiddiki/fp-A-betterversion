@@ -200,7 +200,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
 export function ReportBookBuilder() {
   const [engine] = useState(() => new ReportBookEngine());
   const [book, setBook] = useState<ReportBook>(() =>
-    engine.createBook('Board Pack', 'Monthly board pack with all entities'),
+    engine.createBook('Board Pack', 'Monthly board pack with all entities')
   );
   const [progress, setProgress] = useState<GenerationProgress | null>(null);
   const [previewEntry, setPreviewEntry] = useState<ReportBookEntry | null>(null);
@@ -228,7 +228,7 @@ export function ReportBookBuilder() {
       });
       setBook({ ...engine.getBook(book.id)! });
     },
-    [book.id, engine],
+    [book.id, engine]
   );
 
   const handleUpdateEntry = useCallback(
@@ -236,7 +236,7 @@ export function ReportBookBuilder() {
       engine.updateEntry(book.id, entryId, updates);
       setBook({ ...engine.getBook(book.id)! });
     },
-    [book.id, engine],
+    [book.id, engine]
   );
 
   const handleRemoveEntry = useCallback(
@@ -245,7 +245,7 @@ export function ReportBookBuilder() {
       engine.removeEntry(book.id, entryId);
       setBook({ ...engine.getBook(book.id)! });
     },
-    [book.id, engine],
+    [book.id, engine]
   );
 
   const handleMoveUp = useCallback(
@@ -257,7 +257,7 @@ export function ReportBookBuilder() {
       engine.reorderEntries(book.id, ids);
       setBook({ ...engine.getBook(book.id)! });
     },
-    [book.id, book.entries, engine],
+    [book.id, book.entries, engine]
   );
 
   const handleMoveDown = useCallback(
@@ -269,7 +269,7 @@ export function ReportBookBuilder() {
       engine.reorderEntries(book.id, ids);
       setBook({ ...engine.getBook(book.id)! });
     },
-    [book.id, book.entries, engine],
+    [book.id, book.entries, engine]
   );
 
   // --- Generation ---
@@ -285,7 +285,7 @@ export function ReportBookBuilder() {
     });
 
     try {
-      const results = await engine.generateReports(book.id, MOCK_ENTITIES, setProgress);
+      const _results = await engine.generateReports(book.id, MOCK_ENTITIES, setProgress);
       // Results available for export
     } catch {
       // errors are captured in progress
@@ -344,8 +344,7 @@ export function ReportBookBuilder() {
               type="text"
               value={book.name}
               onChange={(e) => {
-                book.name = e.target.value;
-                setBook({ ...book });
+                setBook((prev) => ({ ...prev, name: e.target.value }));
               }}
               className="text-lg font-bold text-white bg-transparent border-none outline-none"
             />
@@ -373,7 +372,12 @@ export function ReportBookBuilder() {
             book.entries.map((entry) => (
               <div
                 key={entry.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => setPreviewEntry(entry)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') setPreviewEntry(entry);
+                }}
                 className={`cursor-pointer rounded-lg transition-all ${
                   previewEntry?.id === entry.id ? 'ring-1 ring-blue-500' : ''
                 }`}

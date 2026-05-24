@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -240,7 +240,7 @@ export default function LeaseDashboard() {
                   innerRadius={60}
                   outerRadius={100}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                 >
                   {typeBreakdown.map((_, idx) => (
                     <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
@@ -337,6 +337,11 @@ export default function LeaseDashboard() {
                 key={lease.id}
                 className="flex items-center justify-between p-3 bg-slate-800 rounded-lg hover:bg-slate-700/50 cursor-pointer transition-colors"
                 onClick={() => navigate(`/lease/detail?id=${lease.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') navigate(`/lease/detail?id=${lease.id}`);
+                }}
               >
                 <div className="flex items-center gap-3">
                   <div

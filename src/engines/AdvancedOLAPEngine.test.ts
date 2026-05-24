@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { AdvancedOLAPEngine, type OLAPMember, type OLAPHierarchy } from './AdvancedOLAPEngine';
+import { AdvancedOLAPEngine } from './AdvancedOLAPEngine';
 
 describe('AdvancedOLAPEngine', () => {
   let engine: AdvancedOLAPEngine;

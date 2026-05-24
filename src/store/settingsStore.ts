@@ -74,6 +74,13 @@ export const useSettingsStore = create<SettingsState>()(
       {
         name: 'settings-store',
         storage: masterStorage,
+        partialize: (state) => ({
+          organization: state.organization,
+          preferences: state.preferences,
+          // users and roles are system-level, might be better to load fresh or handle via master data
+          users: state.users,
+          roles: state.roles,
+        }),
       }
     )
   )

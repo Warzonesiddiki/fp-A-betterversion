@@ -11,7 +11,15 @@ export function ShortcutHelpModal({ open, onClose }: ShortcutHelpModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/50"
+        onClick={onClose}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') onClose();
+        }}
+        role="button"
+        tabIndex={0}
+      />
       <div
         className="relative w-full max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:bg-gray-900 rounded-xl shadow-2xl border overflow-hidden"
         role="dialog"

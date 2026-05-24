@@ -155,7 +155,7 @@ export function CellFormatter({
           <Select
             options={formatOptions}
             value={format.format}
-            onValueChange={(v) => updateFormat('format', v as NumberFormat)}
+            onChange={(v: string) => updateFormat('format', v as NumberFormat)}
           />
         </div>
 
@@ -201,7 +201,7 @@ export function CellFormatter({
             <Select
               options={currencyOptions}
               value={format.currencySymbol}
-              onValueChange={(v) => updateFormat('currencySymbol', v)}
+              onChange={(v: string) => updateFormat('currencySymbol', v)}
             />
           </div>
         )}
@@ -215,7 +215,7 @@ export function CellFormatter({
             <Select
               options={dateFormatOptions}
               value={format.dateFormat}
-              onValueChange={(v) => updateFormat('dateFormat', v)}
+              onChange={(v: string) => updateFormat('dateFormat', v)}
             />
           </div>
         )}
@@ -229,7 +229,9 @@ export function CellFormatter({
             <Select
               options={negativeStyleOptions}
               value={format.negativeStyle}
-              onValueChange={(v) => updateFormat('negativeStyle', v as CellFormat['negativeStyle'])}
+              onChange={(v: string) =>
+                updateFormat('negativeStyle', v as CellFormat['negativeStyle'])
+              }
             />
           </div>
         )}

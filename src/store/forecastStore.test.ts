@@ -37,7 +37,7 @@ describe('forecastStore', () => {
     } as any);
     useForecastStore.getState().updateForecast(id, { name: 'Updated' });
     expect(useForecastStore.getState().forecasts[0].name).toBe('Updated');
-    expect(useForecastStore.getState().forecasts[0].updatedAt).toBeDefined();
+    expect(useForecastStore.getState().forecasts[0].lastUpdated).toBeDefined();
   });
 
   it('should delete a forecast', () => {
@@ -86,8 +86,10 @@ describe('forecastStore', () => {
   });
 
   it('should update a driver', () => {
-    useForecastStore.getState().setDrivers([{ id: 'drv-1', name: 'Growth', value: 10 }] as any);
-    useForecastStore.getState().updateDriver('drv-1', { value: 15 });
-    expect(useForecastStore.getState().drivers[0].value).toBe(15);
+    useForecastStore
+      .getState()
+      .setDrivers([{ id: 'drv-1', name: 'Growth', currentValue: 10 }] as any);
+    useForecastStore.getState().updateDriver('drv-1', { currentValue: 15 });
+    expect(useForecastStore.getState().drivers[0].currentValue).toBe(15);
   });
 });

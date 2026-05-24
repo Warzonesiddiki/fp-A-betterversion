@@ -284,7 +284,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
 
         {targets.length === 0 && (
           <p className="text-xs text-slate-500 italic">
-            No targets added yet. Click "Add Target" to begin.
+            No targets added yet. Click &quot;Add Target&quot; to begin.
           </p>
         )}
 

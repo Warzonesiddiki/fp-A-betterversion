@@ -1,3 +1,4 @@
+<!-- LEGACY: Superseded by FINPLAN_PERFECTION_PLAN.md (2026-05-24) -->
 # FinPlan Pro — Agent Swarm Protocol
 
 ## Mission

@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
-import type { AccountType, AnalyticsFilter, ChartConfig, AnalyticsState } from '@/types';
+import type { AnalyticsFilter, AnalyticsState } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
+import { useUIStore } from './uiStore';
 
 const defaultFilter: AnalyticsFilter = {
   accountTypes: ['Revenue', 'COGS', 'OpEx'],
@@ -32,6 +33,11 @@ export const useAnalyticsStore = create<AnalyticsState>()(
         addChart: (chart) => {
           const id = `chart-${Date.now()}`;
           set((state) => ({ charts: [...state.charts, { ...chart, id }] }));
+          useUIStore.getState().addToast({
+            type: 'success',
+            title: 'Chart Added',
+            message: `Successfully created chart: ${chart.name}`,
+          });
         },
 
         updateChart: (id, updates) => {
@@ -41,10 +47,20 @@ export const useAnalyticsStore = create<AnalyticsState>()(
         },
 
         removeChart: (id) => {
-          set((state) => ({
-            charts: state.charts.filter((c) => c.id !== id),
-            selectedChartId: state.selectedChartId === id ? null : state.selectedChartId,
-          }));
+          set((state) => {
+            const chart = state.charts.find((c) => c.id === id);
+            if (chart) {
+              useUIStore.getState().addToast({
+                type: 'info',
+                title: 'Chart Removed',
+                message: `Successfully removed chart: ${chart.name}`,
+              });
+            }
+            return {
+              charts: state.charts.filter((c) => c.id !== id),
+              selectedChartId: state.selectedChartId === id ? null : state.selectedChartId,
+            };
+          });
         },
 
         setSelectedChart: (id) => set({ selectedChartId: id }),
@@ -59,6 +75,11 @@ export const useAnalyticsStore = create<AnalyticsState>()(
 
         clearFilters: () => {
           set({ filter: { ...defaultFilter } });
+          useUIStore.getState().addToast({
+            type: 'info',
+            title: 'Filters Cleared',
+            message: 'Analytics filters have been reset to default values',
+          });
         },
 
         enterDrillDown: (dimension) => {

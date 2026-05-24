@@ -143,7 +143,9 @@ const columns: Column[] = [
     render: (v) => {
       const val = String(v ?? '');
       return (
-        <span className={val.startsWith('+') ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+        <span
+          className={val.startsWith('+') ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}
+        >
           {val}
         </span>
       );

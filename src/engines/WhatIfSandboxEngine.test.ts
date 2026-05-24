@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { WhatIfSandboxEngine, type Sandbox, type SandboxComparison } from './WhatIfSandboxEngine';
+import { WhatIfSandboxEngine } from './WhatIfSandboxEngine';
 
 describe('WhatIfSandboxEngine', () => {
   let engine: WhatIfSandboxEngine;

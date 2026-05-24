@@ -5,7 +5,7 @@ export function GLDropZone() {
     <div className="space-y-4">
       <FileDropZone
         accept=".csv,.xlsx"
-        onFilesDropped={() => {
+        onFile={() => {
           /* handled by parent */
         }}
       />

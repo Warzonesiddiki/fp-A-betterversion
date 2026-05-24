@@ -21,10 +21,18 @@ export function SparklineChart({
 
   return (
     <div
-      role="img"
+      role={onClick ? 'button' : 'img'}
       aria-label={ariaLabel}
       data-testid="sparkline-chart"
       onClick={onClick}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') onClick();
+            }
+          : undefined
+      }
+      tabIndex={onClick ? 0 : undefined}
       className="dark:opacity-90"
       style={{ width, height, display: 'inline-block', cursor: onClick ? 'pointer' : 'default' }}
     >

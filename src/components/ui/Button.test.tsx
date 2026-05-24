@@ -43,13 +43,13 @@ describe('Button', () => {
   it('applies outline variant class', () => {
     render(<Button variant="outline">Outline</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('border-gray-300');
+    expect(button.className).toContain('border-[var(--border-default)]');
   });
 
   it('applies ghost variant class', () => {
     render(<Button variant="ghost">Ghost</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('hover:bg-gray-100');
+    expect(button.className).toContain('hover:bg-[var(--bg-hover)]');
   });
 
   it('applies destructive variant class', () => {

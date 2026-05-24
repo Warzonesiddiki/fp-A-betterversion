@@ -15,6 +15,10 @@ describe('AdvancedExcelEngine', () => {
             ['Revenue', 100000],
             ['Expenses', 50000],
           ],
+          columns: [
+            { header: 'Name', width: 150 },
+            { header: 'Value', width: 150 },
+          ],
         },
       ];
       const blob = AdvancedExcelEngine.createWorkbook(sheets);
@@ -40,29 +44,33 @@ describe('AdvancedExcelEngine', () => {
 
   describe('applyConditionalFormatting', () => {
     it('applies conditional formatting rules', () => {
-      const sheet = {
+      const sheet: Parameters<typeof AdvancedExcelEngine.applyConditionalFormatting>[0] = {
         name: 'Sheet1',
         data: [['Value'], [100], [200], [50]],
+        columns: [{ header: 'Value', width: 150 }],
       };
-      const rules = [
+      const rules: Parameters<typeof AdvancedExcelEngine.applyConditionalFormatting>[1] = [
         {
-          condition: 'greaterThan',
+          range: 'A1:A4',
+          type: 'greaterThan',
           value: 100,
           style: { backgroundColor: '#10B981' },
         },
       ];
       const result = AdvancedExcelEngine.applyConditionalFormatting(sheet, rules);
       expect(result).toBeDefined();
+      expect(result.conditionalFormatting).toHaveLength(1);
     });
   });
 
   describe('addComments', () => {
     it('adds comments to cells', () => {
-      const sheet = {
+      const sheet: Parameters<typeof AdvancedExcelEngine.addComments>[0] = {
         name: 'Sheet1',
         data: [['Value'], [100]],
+        columns: [{ header: 'Value', width: 150 }],
       };
-      const comments = [
+      const comments: Parameters<typeof AdvancedExcelEngine.addComments>[1] = [
         {
           cell: 'B2',
           author: 'Test User',
@@ -72,13 +80,18 @@ describe('AdvancedExcelEngine', () => {
       ];
       const result = AdvancedExcelEngine.addComments(sheet, comments);
       expect(result).toBeDefined();
+      expect(result.comments).toHaveLength(1);
     });
   });
 
   describe('createNamedRange', () => {
     it('creates named range', () => {
-      const result = AdvancedExcelEngine.createNamedRange('Revenue', 'Sheet1', 'B2:B10');
-      expect(result).toBeDefined();
+      const result = AdvancedExcelEngine.createNamedRange('Revenue', 'B2:B10', 'Sheet1');
+      expect(result).toEqual({
+        name: 'Revenue',
+        range: 'B2:B10',
+        sheet: 'Sheet1',
+      });
     });
   });
 });

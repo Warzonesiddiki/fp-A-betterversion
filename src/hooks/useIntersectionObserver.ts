@@ -18,19 +18,12 @@ export function useIntersectionObserver({
   threshold = 0,
   triggerOnce = true,
 }: UseIntersectionObserverOptions = {}) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(typeof IntersectionObserver === 'undefined');
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const element = elementRef.current;
     if (!element) return;
-
-    // If IntersectionObserver is not supported, show immediately
-    if (typeof IntersectionObserver === 'undefined') {
-      // eslint-disable-next-line react-compiler
-      setIsVisible(true);
-      return;
-    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -71,7 +64,6 @@ export function useElementSize() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-compiler
     updateSize();
 
     const element = ref.current;

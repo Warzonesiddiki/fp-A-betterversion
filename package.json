@@ -32,11 +32,17 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-query": "^5.100.10",
     "@tanstack/react-virtual": "^3.13.24",
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/plugin-global-shortcut": "^2.3.1",
+    "@tauri-apps/plugin-notification": "^2.3.3",
+    "@tauri-apps/plugin-sql": "^2.4.0",
+    "@types/d3": "^7.4.3",
     "ag-grid-community": "^35.3.0",
     "ag-grid-react": "^35.3.0",
     "axios": "^1.16.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "2.1.1",
+    "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "exceljs": "^3.4.0",
     "file-saver": "^2.0.5",
@@ -47,6 +53,7 @@
     "jspdf-autotable": "^5.0.7",
     "lodash-es": "^4.18.1",
     "lucide-react": "^1.14.0",
+    "prettier-plugin-packagejson": "^3.0.2",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-error-boundary": "^6.1.1",
@@ -60,12 +67,21 @@
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },
+  "overrides": {
+    "@opentelemetry/auto-instrumentations-node": "^0.76.0",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "exceljs": {
+      "uuid": "^11.1.1"
+    }
+  },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "4.1.17",
+    "@tauri-apps/cli": "^2.11.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "22.19.17",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",

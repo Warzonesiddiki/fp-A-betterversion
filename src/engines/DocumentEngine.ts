@@ -1,4 +1,4 @@
-﻿export interface FinanceDocument {
+export interface FinanceDocument {
   id: string;
   name: string;
   type: 'budget' | 'forecast' | 'report' | 'scenario';

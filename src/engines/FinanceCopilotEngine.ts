@@ -24,10 +24,7 @@ export class FinanceCopilotEngine {
   /**
    * Answer a natural language financial question
    */
-  static answer(
-    question: string,
-    stores: { gl?: GLState; budget?: BudgetState }
-  ): CopilotAnswer {
+  static answer(question: string, stores: { gl?: GLState; budget?: BudgetState }): CopilotAnswer {
     const q = question.toLowerCase();
 
     // Revenue questions
@@ -59,7 +56,7 @@ export class FinanceCopilotEngine {
   }
 
   private static answerRevenue(q: string, stores: { gl?: GLState }): CopilotAnswer {
-    const entries = stores.gl?.entries?.filter((e) => e.type === 'credit') ?? [];
+    const entries = stores.gl?.entries?.filter((e) => e.credit > 0) ?? [];
     const total = entries.reduce((sum, e) => sum + e.amount, 0);
 
     return {
@@ -72,7 +69,7 @@ export class FinanceCopilotEngine {
   }
 
   private static answerExpense(q: string, stores: { gl?: GLState }): CopilotAnswer {
-    const entries = stores.gl?.entries?.filter((e) => e.type === 'debit') ?? [];
+    const entries = stores.gl?.entries?.filter((e) => e.debit > 0) ?? [];
     const total = entries.reduce((sum, e) => sum + e.amount, 0);
 
     return {

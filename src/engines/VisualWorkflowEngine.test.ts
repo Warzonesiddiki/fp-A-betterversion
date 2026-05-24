@@ -79,14 +79,34 @@ describe('VisualWorkflowEngine', () => {
     });
   });
 
-  describe('execute', () => {
-    it('executes simple workflow', () => {
+  describe('getExecutionOrder', () => {
+    it('returns topological order for valid workflow', () => {
+      const wf = engine.createWorkflow('Test', 'test');
+      const n1 = engine.addNode(wf.id, 'trigger', 'Start', 0, 0)!;
+      const n2 = engine.addNode(wf.id, 'action', 'Process', 100, 0)!;
+      const n3 = engine.addNode(wf.id, 'end', 'End', 200, 0)!;
+      engine.addEdge(wf.id, n1.id, n2.id, 'always');
+      engine.addEdge(wf.id, n2.id, n3.id, 'always');
+      const order = engine.getExecutionOrder(wf.id);
+      expect(order).toBeDefined();
+      expect(order).toHaveLength(3);
+      expect(order![0]).toBe(n1.id);
+      expect(order![2]).toBe(n3.id);
+    });
+
+    it('returns null for nonexistent workflow', () => {
+      expect(engine.getExecutionOrder('nonexistent')).toBeNull();
+    });
+  });
+
+  describe('getDownstreamNodes', () => {
+    it('returns downstream nodes', () => {
       const wf = engine.createWorkflow('Test', 'test');
       const n1 = engine.addNode(wf.id, 'trigger', 'Start', 0, 0)!;
       const n2 = engine.addNode(wf.id, 'end', 'End', 100, 0)!;
       engine.addEdge(wf.id, n1.id, n2.id, 'always');
-      const result = engine.execute(wf.id, {});
-      expect(result).toBeDefined();
+      const downstream = engine.getDownstreamNodes(wf.id, n1.id);
+      expect(downstream).toContain(n2.id);
     });
   });
 });

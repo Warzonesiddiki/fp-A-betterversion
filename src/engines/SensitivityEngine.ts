@@ -45,7 +45,7 @@ export class SensitivityEngine {
     model: (vars: Record<string, number>) => number,
     baseVariables: Record<string, number>
   ): TornadoItem[] {
-    const baseOutput = model(baseVariables);
+    const _baseOutput = model(baseVariables);
 
     const items = variables.map((v) => {
       const lowVars = { ...baseVariables, [v.name]: v.lowValue };

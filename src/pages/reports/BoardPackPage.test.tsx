@@ -26,9 +26,14 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
-    Download: makeIcon(), DollarSign: makeIcon(), FileText: makeIcon(),
-    Table: makeIcon(), TrendingUp: makeIcon(),
-    ArrowUpRight: makeIcon(), ArrowDownRight: makeIcon(), Minus: makeIcon(),
+    Download: makeIcon(),
+    DollarSign: makeIcon(),
+    FileText: makeIcon(),
+    Table: makeIcon(),
+    TrendingUp: makeIcon(),
+    ArrowUpRight: makeIcon(),
+    ArrowDownRight: makeIcon(),
+    Minus: makeIcon(),
   };
 });
 
@@ -43,7 +48,9 @@ function renderPage() {
 }
 
 describe('BoardPackPage smoke test', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('renders without crashing', () => {
     const { container } = renderPage();
     expect(container).toBeTruthy();

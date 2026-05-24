@@ -44,19 +44,19 @@ describe('Financial Functions', () => {
 
   describe('NPV (Net Present Value)', () => {
     it('calculates NPV for cash flows', () => {
-      const result = NPV(0.1, [-10000, 3000, 4000, 5000, 6000]);
+      const result = NPV(0.1, [-10000, 3000, 4000, 5000, 6000] as any);
       expect(result).toBeGreaterThan(0);
     });
 
     it('returns negative NPV for bad investment', () => {
-      const result = NPV(0.1, [-10000, 1000, 1000, 1000]);
+      const result = NPV(0.1, [-10000, 1000, 1000, 1000] as any);
       expect(result).toBeLessThan(0);
     });
   });
 
   describe('IRR (Internal Rate of Return)', () => {
     it('calculates IRR for standard cash flows', () => {
-      const result = IRR([-10000, 3000, 4000, 5000, 6000]);
+      const result = IRR([-10000, 3000, 4000, 5000, 6000] as any);
       expect(result).toBeGreaterThan(0);
       expect(result).toBeLessThan(1);
     });

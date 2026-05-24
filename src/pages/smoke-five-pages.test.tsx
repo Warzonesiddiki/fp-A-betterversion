@@ -202,6 +202,11 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
 describe('Page Smoke Tests — 5 New Pages', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
   });
 
   // -----------------------------------------------------------------------

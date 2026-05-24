@@ -28,7 +28,7 @@ import {
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
 import { CreditRiskEngine, type Financials } from '@/engines';
-import type { GLEntry } from '@/types/sector-types';
+import type { GLEntry } from '@/types';
 
 /** Derive financial ratios from GL entries grouped by entity. */
 function deriveFinancialsFromGL(entries: GLEntry[]): Array<{
@@ -36,7 +36,9 @@ function deriveFinancialsFromGL(entries: GLEntry[]): Array<{
   name: string;
   financials: Financials;
 }> {
-  const entityIds = Array.from(new Set(entries.map((e) => e.entityId)));
+  const entityIds = Array.from(
+    new Set(entries.map((e) => e.entityId).filter((id): id is string => id !== undefined))
+  );
 
   return entityIds
     .map((id) => {
@@ -83,7 +85,7 @@ function deriveFinancialsFromGL(entries: GLEntry[]): Array<{
           interestCoverage: Math.max(0, Math.min(20, interestCoverage)),
           returnOnAssets: Math.max(-0.5, Math.min(0.5, returnOnAssets)),
           cashFlowToDebt: Math.max(0, Math.min(2, cashFlowToDebt)),
-          yearsInBusiness: 5 + (parseInt(id.replace(/\D/g, ''), 10) % 15),
+          yearsInBusiness: 5 + ((parseInt(id.replace(/\D/g, ''), 10) || 0) % 15),
         },
       };
     })

@@ -1,15 +1,25 @@
 import { describe, it, expect } from 'vitest';
-import { BankingEngine, type GLEntry } from './BankingEngine';
+import { BankingEngine } from './BankingEngine';
+import type { GLEntry } from '@/types';
 
 function gl(accountCode: string, amount: number, overrides: Partial<GLEntry> = {}): GLEntry {
+  const id = `gl-${accountCode}-${Math.random().toString(36).slice(2, 6)}`;
   return {
-    id: `gl-${accountCode}-${Math.random().toString(36).slice(2, 6)}`,
+    id,
+    accountId: id,
     accountCode,
     accountName: `Account ${accountCode}`,
-    amount,
-    currency: 'USD',
+    period: '2026-01',
+    periodName: '2026-01',
+    debit: amount,
+    credit: 0,
+    netChange: amount,
     date: '2026-01-15',
+    amount,
+    description: '',
+    reference: id,
     entityId: 'entity-1',
+    currency: 'USD',
     ...overrides,
   };
 }

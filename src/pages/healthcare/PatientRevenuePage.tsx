@@ -1,8 +1,22 @@
+import type { FiscalPeriod } from '@/types';
+
 const columns = [
   { key: 'metric', header: 'Metric' },
   { key: 'value', header: 'Value' },
 ];
-const mockPeriods = ['Q1', 'Q2', 'Q3', 'Q4'];
+const mockPeriods: FiscalPeriod[] = ['Q1', 'Q2', 'Q3', 'Q4'].map((q, i) => ({
+  id: `P0${i + 1}`,
+  year: 2024,
+  periodNumber: i + 1,
+  name: q,
+  startDate: `2024-${String(i * 3 + 1).padStart(2, '0')}-01`,
+  endDate: `2024-${String((i + 1) * 3).padStart(2, '0')}-30`,
+  periodType: 'Quarterly' as const,
+  isAdjustingPeriod: false,
+  isClosed: false,
+  closedAt: null,
+  closedBy: null,
+}));
 import { useMemo, useState } from 'react';
 import {
   DollarSign,
@@ -20,7 +34,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
-import { DataTable, Column } from '@/components/ui/DataTable';
+import { DataTable } from '@/components/ui/DataTable';
 import {
   ResponsiveContainer,
   PieChart,

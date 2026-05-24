@@ -140,7 +140,7 @@ export class FXEngine {
         r.fromCurrency ?? 'USD',
         r.toCurrency ?? 'EUR',
         r.rate,
-        r.date ?? new Date().toISOString(),
+        r.effectiveDate ?? new Date().toISOString(),
         'api'
       );
     }

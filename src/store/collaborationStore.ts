@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
-import { persist } from 'zustand/middleware';
-import type { Comment, Task, ApprovalRequest, ActivityLog, CollaborationState } from '../types';
+import { subscribeWithSelector, persist } from 'zustand/middleware';
+
+import type { Comment, Task, ActivityLog, CollaborationState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { SyncEngine } from '../engines/SyncEngine';
 

@@ -3,7 +3,7 @@
 // React hook for presence awareness — who is online, where they are
 // =============================================================================
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   RealtimeCollaborationManager,
   type UserPresence,
@@ -31,13 +31,9 @@ export interface UsePresenceReturn {
  */
 export function usePresence(): UsePresenceReturn {
   const manager = RealtimeCollaborationManager.getInstance();
-  const [users, setUsers] = useState<UserPresence[]>([]);
+  const [users, setUsers] = useState<UserPresence[]>(() => manager.presence.getUsers());
 
   useEffect(() => {
-    // Load initial state
-    // eslint-disable-next-line react-compiler/react-compiler
-    setUsers(manager.presence.getUsers());
-
     const unsub = manager.presence.onStateChange(setUsers);
     return unsub;
   }, [manager]);
@@ -99,14 +95,18 @@ export function useResourcePresence(
 ): UserPresence[] {
   const manager = RealtimeCollaborationManager.getInstance();
   const [viewers, setViewers] = useState<UserPresence[]>([]);
+  const prevResourceId = useRef<string | null>(null);
 
   useEffect(() => {
     if (!resourceId) {
-      // eslint-disable-next-line react-compiler/react-compiler
-      setViewers([]);
+      if (prevResourceId.current !== null) {
+        setViewers([]);
+        prevResourceId.current = null;
+      }
       return;
     }
 
+    prevResourceId.current = resourceId;
     const update = () => {
       setViewers(manager.presence.getUsersOnResource(resourceType, resourceId));
     };

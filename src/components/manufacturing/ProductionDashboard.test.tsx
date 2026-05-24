@@ -9,6 +9,11 @@ const mockMetrics: ProductionMetrics = {
   performance: 88,
   quality: 95,
   capacity: 1000,
+  utilization: 80,
+  throughput: 500,
+  yield: 93,
+  scrapRate: 3,
+  cycleTime: 45,
 };
 
 describe('ProductionDashboard', () => {
@@ -49,6 +54,11 @@ describe('ProductionDashboard', () => {
       performance: 0,
       quality: 0,
       capacity: 0,
+      utilization: 0,
+      throughput: 0,
+      yield: 0,
+      scrapRate: 0,
+      cycleTime: 0,
     };
     const { container } = render(<ProductionDashboard metrics={zeroMetrics} />);
     expect(container.firstChild).toBeTruthy();
@@ -61,6 +71,11 @@ describe('ProductionDashboard', () => {
       performance: 100,
       quality: 100,
       capacity: 500,
+      utilization: 100,
+      throughput: 100,
+      yield: 100,
+      scrapRate: 0,
+      cycleTime: 1,
     };
     render(<ProductionDashboard metrics={perfectMetrics} />);
     const hundreds = screen.getAllByText('100%');

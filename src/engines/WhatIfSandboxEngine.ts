@@ -413,7 +413,7 @@ export class WhatIfSandboxEngine {
   } {
     return {
       sandboxes: this.listSandboxes(),
-      snapshots: Array.from(this.snapshots.entries()).map(([id, snap]) => ({
+      snapshots: Array.from(this.snapshots.entries()).map(([_id, snap]) => ({
         sandboxId: snap.sandboxId,
         cellValues: Array.from(snap.cellValues.entries()),
         timestamp: snap.timestamp,

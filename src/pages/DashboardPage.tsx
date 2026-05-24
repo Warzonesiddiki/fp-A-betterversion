@@ -19,6 +19,7 @@ import { LayoutDashboard, TrendingUp, BarChart3, Upload, Target, HelpCircle } fr
 import { GaugeChart } from '@/components/charts/GaugeChart';
 import { SparklineChart } from '@/components/charts/SparklineChart';
 import { FinanceCopilotEngine } from '@/engines/FinanceCopilotEngine';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import {
   AreaChart,
   Area,
@@ -50,10 +51,35 @@ export default function DashboardPage() {
   const [drillAccount, setDrillAccount] = useState('');
   const { runTour } = useTour();
 
-  const openDrill = (title: string, accountPrefix: string) => {
-    setDrillTitle(title);
-    setDrillAccount(accountPrefix);
-    setDrillOpen(true);
+  const openDrill = async (title: string, accountPrefix: string) => {
+    try {
+      if ((window as any).__TAURI_INTERNALS__ || (window as any).__TAURI__) {
+        const url = `/drill-down?title=${encodeURIComponent(title)}&accountPrefix=${encodeURIComponent(accountPrefix)}`;
+        const label = `drill-down-${Date.now()}`;
+        const webview = new WebviewWindow(label, {
+          url,
+          title,
+          width: 1000,
+          height: 700,
+          center: true,
+        });
+
+        webview.once('tauri://error', function (e) {
+          console.error('Error creating window:', e);
+          // Fallback to modal if window creation fails
+          setDrillTitle(title);
+          setDrillAccount(accountPrefix);
+          setDrillOpen(true);
+        });
+      } else {
+        throw new Error('Not running in Tauri');
+      }
+    } catch (err) {
+      console.warn('Tauri WebviewWindow not available, falling back to modal:', err);
+      setDrillTitle(title);
+      setDrillAccount(accountPrefix);
+      setDrillOpen(true);
+    }
   };
 
   useEffect(() => {
@@ -150,12 +176,12 @@ export default function DashboardPage() {
 
   const sectorKPIs = useMemo(() => {
     if (!sectorConfig || entries.length === 0) return null;
-    return sectorConfig.kpis.map((kpi) => {
+    return sectorConfig.defaultKPIs.map((kpi) => {
       const matchingEntries = entries.filter((e) =>
         kpi.accountCodes?.includes(e.accountCode || '')
       );
       const value = matchingEntries.reduce((s, e) => s + (e.debit - e.credit), 0);
-      return { label: kpi.name, value: Math.abs(value), format: 'currency' as const, key: kpi.id };
+      return { label: kpi.label, value: Math.abs(value), format: 'currency' as const, key: kpi.id };
     });
   }, [sectorConfig, entries]);
 
@@ -219,7 +245,7 @@ export default function DashboardPage() {
   if (!kpis) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <Skeleton variant="rectangular" height={200} />
+        <Skeleton variant="rectangular" height="200px" />
       </div>
     );
   }
@@ -266,7 +292,15 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 kpi-grid">
-        <div className="cursor-pointer" onClick={() => openDrill('Revenue Transactions', '4')}>
+        <div
+          className="cursor-pointer"
+          role="button"
+          tabIndex={0}
+          onClick={() => openDrill('Revenue Transactions', '4')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') openDrill('Revenue Transactions', '4');
+          }}
+        >
           <KPICard
             title="Total Revenue"
             value={kpis.totalRevenue}
@@ -277,7 +311,12 @@ export default function DashboardPage() {
         </div>
         <div
           className="cursor-pointer"
+          role="button"
+          tabIndex={0}
           onClick={() => openDrill('Profit & COGS Transactions', '5')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') openDrill('Profit & COGS Transactions', '5');
+          }}
         >
           <KPICard
             title="Gross Profit"
@@ -289,7 +328,13 @@ export default function DashboardPage() {
         </div>
         <div
           className="cursor-pointer"
+          role="button"
+          tabIndex={0}
           onClick={() => openDrill('All Income Statement Transactions', '')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ')
+              openDrill('All Income Statement Transactions', '');
+          }}
         >
           <KPICard
             title="Net Income"
@@ -299,7 +344,15 @@ export default function DashboardPage() {
             sparklineData={monthlyTrend.map((m) => m.netIncome)}
           />
         </div>
-        <div className="cursor-pointer" onClick={() => openDrill('Expense Transactions', '6')}>
+        <div
+          className="cursor-pointer"
+          role="button"
+          tabIndex={0}
+          onClick={() => openDrill('Expense Transactions', '6')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') openDrill('Expense Transactions', '6');
+          }}
+        >
           <KPICard
             title="Total Expenses"
             value={kpis.totalExpenses + kpis.totalCOGS}

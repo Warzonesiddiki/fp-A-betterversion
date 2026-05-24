@@ -51,7 +51,8 @@ export type {
   BenchmarkItem,
   AnalyticsChartData,
 } from './analytics';
-export type { GLEntry, TrialBalanceItem } from './glData';
+export type { GLEntry } from '@/types';
+export type { TrialBalanceItem } from './glData';
 
 // ---------------------------------------------------------------------------
 // Aggregated exports

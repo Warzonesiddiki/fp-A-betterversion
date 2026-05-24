@@ -1,6 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertCircle, RefreshCw, Copy, ChevronDown, ChevronRight, Home } from 'lucide-react';
-import { cn } from '@/utils/cn';
 
 export interface ErrorBoundaryProps {
   children: ReactNode;

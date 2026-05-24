@@ -4,11 +4,8 @@ import {
   AllCommunityModule,
   ModuleRegistry,
   type ColDef,
-  type GridOptions,
   type CellValueChangedEvent,
   type CellClickedEvent,
-  type CellKeyDownEvent,
-  type SelectionChangedEvent,
 } from 'ag-grid-community';
 import { cn } from '@/utils/cn';
 import { FormulaBar } from './FormulaBar';
@@ -67,10 +64,8 @@ export function SpreadsheetGrid({
   onSheetDelete,
   onSheetReorder,
   onCellValueChanged,
-  onSelectionChanged,
   onUndo,
   onRedo,
-  freezeRows = 0,
   freezeCols = 0,
   loading = false,
   className,

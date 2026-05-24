@@ -17,7 +17,16 @@ vi.mock('@/engines/ReportBuilderEngine', () => ({
       showTimestamp: true,
     })),
     generateExcelExport: vi.fn(() => ({
-      sheets: [{ name: 'Test', data: [['A', 'B'], [1, 2]], columnWidths: [100, 100] }],
+      sheets: [
+        {
+          name: 'Test',
+          data: [
+            ['A', 'B'],
+            [1, 2],
+          ],
+          columnWidths: [100, 100],
+        },
+      ],
       metadata: { title: 'Test', createdAt: '', author: '', orientation: 'landscape' },
     })),
     generateCSVExport: vi.fn(() => ({

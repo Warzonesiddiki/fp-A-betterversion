@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DataGovernanceEngine, type DataAsset } from './DataGovernanceEngine';
+import { DataGovernanceEngine } from './DataGovernanceEngine';
 
 describe('DataGovernanceEngine', () => {
   let engine: DataGovernanceEngine;

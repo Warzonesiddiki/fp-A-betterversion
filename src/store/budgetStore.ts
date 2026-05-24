@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { Budget, BudgetLineItem, BudgetState } from '../types';
+import type { Budget, BudgetState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
+import { useUIStore } from './uiStore';
 
 export const useBudgetStore = create<BudgetState>()(
   subscribeWithSelector(
@@ -20,7 +21,7 @@ export const useBudgetStore = create<BudgetState>()(
 
         setBudgets: (budgets) => {
           set((state) => {
-            state.budgets = budgets;
+            state.budgets = budgets as typeof state.budgets;
           });
         },
 
@@ -68,35 +69,61 @@ export const useBudgetStore = create<BudgetState>()(
         },
 
         createBudget: (budget) => {
-          // Input validation
-          if (!budget || typeof budget !== 'object') {
-            throw new Error('budget must be an object');
+          try {
+            // Input validation
+            if (!budget || typeof budget !== 'object') {
+              throw new Error('budget must be an object');
+            }
+            if (
+              !budget.name ||
+              typeof budget.name !== 'string' ||
+              budget.name.trim().length === 0
+            ) {
+              throw new Error('budget name must be a non-empty string');
+            }
+            if (budget.name.length > 200) {
+              throw new Error('budget name must be 200 characters or less');
+            }
+            const newBudget: Budget = {
+              ...budget,
+              id: `bgt-${Date.now()}`,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              createdBy: 'usr-001',
+            };
+            set((state) => {
+              state.budgets.push(newBudget as any);
+            });
+            useUIStore.getState().addToast({
+              type: 'success',
+              title: 'Budget Created',
+              message: `Successfully created budget: ${newBudget.name}`,
+            });
+            return newBudget.id;
+          } catch (error) {
+            useUIStore.getState().addToast({
+              type: 'error',
+              title: 'Creation Failed',
+              message: error instanceof Error ? error.message : 'Failed to create budget',
+            });
+            throw error;
           }
-          if (!budget.name || typeof budget.name !== 'string' || budget.name.trim().length === 0) {
-            throw new Error('budget name must be a non-empty string');
-          }
-          if (budget.name.length > 200) {
-            throw new Error('budget name must be 200 characters or less');
-          }
-          const newBudget: Budget = {
-            ...budget,
-            id: `bgt-${Date.now()}`,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            createdBy: 'usr-001',
-          };
-          set((state) => {
-            state.budgets.push(newBudget as any);
-          });
-          return newBudget.id;
         },
 
         deleteBudget: (id) => {
+          const budget = get().budgets.find((b) => b.id === id);
           set((state) => {
             const idx = state.budgets.findIndex((b) => b.id === id);
             if (idx !== -1) state.budgets.splice(idx, 1);
             if (state.activeBudgetId === id) state.activeBudgetId = null;
           });
+          if (budget) {
+            useUIStore.getState().addToast({
+              type: 'success',
+              title: 'Budget Deleted',
+              message: `Successfully deleted budget: ${budget.name}`,
+            });
+          }
         },
 
         duplicateBudget: (id) => {
@@ -113,34 +140,86 @@ export const useBudgetStore = create<BudgetState>()(
             set((state) => {
               state.budgets.push(newBudget as any);
             });
+            useUIStore.getState().addToast({
+              type: 'success',
+              title: 'Budget Duplicated',
+              message: `Successfully duplicated budget: ${budget.name}`,
+            });
             return newId;
           }
+          useUIStore.getState().addToast({
+            type: 'error',
+            title: 'Duplication Failed',
+            message: 'Original budget not found',
+          });
           return '';
         },
 
         submitBudget: async (id) => {
-          set((state) => {
-            state.isSubmitting = true;
-          });
-          await new Promise((r) => setTimeout(r, 1000));
-          set((state) => {
-            const budget = state.budgets.find((b) => b.id === id);
-            if (budget) budget.status = 'InReview';
-            state.isSubmitting = false;
-          });
+          try {
+            set((state) => {
+              state.isSubmitting = true;
+            });
+            await new Promise((r) => setTimeout(r, 1000));
+            set((state) => {
+              const budget = state.budgets.find((b) => b.id === id);
+              if (budget) {
+                budget.status = 'InReview';
+                useUIStore.getState().addToast({
+                  type: 'success',
+                  title: 'Budget Submitted',
+                  message: `Successfully submitted ${budget.name} for review`,
+                });
+              }
+              state.isSubmitting = false;
+            });
+          } catch (error) {
+            set((state) => {
+              state.isSubmitting = false;
+            });
+            useUIStore.getState().addToast({
+              type: 'error',
+              title: 'Submission Failed',
+              message: 'Failed to submit budget for review',
+            });
+          }
         },
 
         approveBudget: (id) => {
           set((state) => {
             const budget = state.budgets.find((b) => b.id === id);
-            if (budget) budget.status = 'Approved';
+            if (budget) {
+              budget.status = 'Approved';
+              useUIStore.getState().addToast({
+                type: 'success',
+                title: 'Budget Approved',
+                message: `Successfully approved budget: ${budget.name}`,
+              });
+            }
           });
         },
 
         rejectBudget: (id) => {
           set((state) => {
             const budget = state.budgets.find((b) => b.id === id);
-            if (budget) budget.status = 'Draft';
+            if (budget) {
+              budget.status = 'Draft';
+              useUIStore.getState().addToast({
+                type: 'info',
+                title: 'Budget Rejected',
+                message: `Budget ${budget.name} has been rejected and returned to draft`,
+              });
+            }
+          });
+        },
+
+        updateBudget: (id: string, updates: Partial<Budget>) => {
+          set((state) => {
+            const budget = state.budgets.find((b) => b.id === id);
+            if (budget) {
+              Object.assign(budget, updates);
+              budget.updatedAt = new Date().toISOString();
+            }
           });
         },
 

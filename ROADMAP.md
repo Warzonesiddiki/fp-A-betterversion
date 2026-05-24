@@ -1,3 +1,4 @@
+<!-- LEGACY: Superseded by FINPLAN_PROJECT_BLUEPRINT.md + MASTER_PLAN_V2.md (2026-05-24) -->
 ﻿# FinPlan Pro — 18 Phase Product Roadmap
 
 > **Mission:** Replace 1,000+ FP&A analysts with 50 across ALL global sectors
