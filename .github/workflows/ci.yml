@@ -6,9 +6,21 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  MAIN_CHUNK_LIMIT: 150    # KB gzip
+  TOTAL_JS_LIMIT: 2048     # KB gzip
+
 jobs:
-  quality:
-    name: Quality Checks
+  typecheck:
+    name: Type Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,44 +28,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check
+      - name: TypeScript check
         run: npx tsc --noEmit
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Unit tests
-        run: npm test -- --run
-
-      - name: Build
-        run: npm run build
-
-      - name: Bundle size check
-        run: |
-          MAIN_GZIP=$(find dist/assets -name "index-*.js" -exec gzip -c {} \; | wc -c)
-          TOTAL_GZIP=$(find dist/assets -name "*.js" -exec gzip -c {} \; | wc -c)
-          MAIN_KB=$((MAIN_GZIP / 1024))
-          TOTAL_KB=$((TOTAL_GZIP / 1024))
-          echo "Main chunk: ${MAIN_KB}KB gzip"
-          echo "Total JS: ${TOTAL_KB}KB gzip"
-          if [ "$MAIN_KB" -gt 150 ]; then
-            echo "::error::Main chunk exceeds 150KB gzip (got ${MAIN_KB}KB)"
-            exit 1
-          fi
-          if [ "$TOTAL_KB" -gt 2048 ]; then
-            echo "::error::Total JS exceeds 2MB gzip (got ${TOTAL_KB}KB)"
-            exit 1
-          fi
-
-  e2e:
-    name: E2E Tests
-    needs: quality
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +46,146 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npx eslint src
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --coverage --reporter=default
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+  build:
+    name: Build & Bundle Check
+    runs-on: ubuntu-latest
+    needs: [typecheck, lint]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Production build
+        run: npm run build
+
+      - name: Bundle size check
+        id: bundle-check
+        run: |
+          echo "## Bundle Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Main chunk (index-*.js)
+          MAIN_RAW=$(find dist/assets -name "index-*.js" -type f | head -1)
+          if [ -z "$MAIN_RAW" ]; then
+            echo "::error::No main chunk (index-*.js) found in dist/assets/"
+            exit 1
+          fi
+          MAIN_GZIP=$(gzip -c "$MAIN_RAW" | wc -c)
+          MAIN_KB=$((MAIN_GZIP / 1024))
+          MAIN_RAW_SIZE=$(wc -c < "$MAIN_RAW")
+          MAIN_RAW_KB=$((MAIN_RAW_SIZE / 1024))
+
+          # Total JS
+          TOTAL_RAW=0
+          TOTAL_GZIP=0
+          for f in $(find dist/assets -name "*.js" -type f); do
+            RAW_SIZE=$(wc -c < "$f")
+            GZIP_SIZE=$(gzip -c "$f" | wc -c)
+            TOTAL_RAW=$((TOTAL_RAW + RAW_SIZE))
+            TOTAL_GZIP=$((TOTAL_GZIP + GZIP_SIZE))
+          done
+          TOTAL_KB=$((TOTAL_GZIP / 1024))
+          TOTAL_RAW_KB=$((TOTAL_RAW / 1024))
+
+          # Individual chunk breakdown
+          echo "| Chunk | Raw (KB) | Gzip (KB) |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|----------|-----------|" >> $GITHUB_STEP_SUMMARY
+          for f in $(find dist/assets -name "*.js" -type f | sort); do
+            NAME=$(basename "$f")
+            RAW=$(($(wc -c < "$f") / 1024))
+            GZ=$(($(gzip -c "$f" | wc -c) / 1024))
+            echo "| $NAME | $RAW | $GZ |" >> $GITHUB_STEP_SUMMARY
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Main chunk:** ${MAIN_RAW_KB}KB raw -> ${MAIN_KB}KB gzip (limit: ${MAIN_CHUNK_LIMIT}KB)" >> $GITHUB_STEP_SUMMARY
+          echo "**Total JS:** ${TOTAL_RAW_KB}KB raw -> ${TOTAL_KB}KB gzip (limit: ${TOTAL_JS_LIMIT}KB)" >> $GITHUB_STEP_SUMMARY
+
+          # Enforce limits
+          FAIL=0
+          if [ "$MAIN_KB" -gt "$MAIN_CHUNK_LIMIT" ]; then
+            echo "::error::Main chunk ${MAIN_KB}KB gzip exceeds ${MAIN_CHUNK_LIMIT}KB limit"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo ":x: **FAIL:** Main chunk exceeds ${MAIN_CHUNK_LIMIT}KB gzip limit" >> $GITHUB_STEP_SUMMARY
+            FAIL=1
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo ":white_check_mark: **PASS:** Main chunk within limit" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "$TOTAL_KB" -gt "$TOTAL_JS_LIMIT" ]; then
+            echo "::error::Total JS ${TOTAL_KB}KB gzip exceeds ${TOTAL_JS_LIMIT}KB limit"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo ":x: **FAIL:** Total JS exceeds ${TOTAL_JS_LIMIT}KB gzip limit" >> $GITHUB_STEP_SUMMARY
+            FAIL=1
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo ":white_check_mark: **PASS:** Total JS within limit" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $FAIL
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  e2e:
+    name: E2E Tests
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
@@ -70,8 +194,49 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
 
-      - name: Build
-        run: npm run build
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
 
       - name: Run E2E tests
         run: npx playwright test
+
+      - name: Upload E2E report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  summary:
+    name: CI Summary
+    if: always()
+    needs: [typecheck, lint, test, build, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
+        run: |
+          echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Type Check | ${{ needs.typecheck.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ needs.lint.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.typecheck.result }}" != "success" ] || \
+             [ "${{ needs.lint.result }}" != "success" ] || \
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.build.result }}" != "success" ]; then
+            echo ""
+            echo ":x: **CI FAILED** - One or more required checks did not pass."
+            exit 1
+          fi
+
+          echo ""
+          echo ":white_check_mark: **CI PASSED** - All checks green."

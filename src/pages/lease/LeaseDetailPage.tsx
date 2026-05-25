@@ -167,7 +167,6 @@ export default function LeaseDetailPage() {
     if (id) {
       const found = mockLeases.find((l) => l.id === id);
       if (found && found.id !== selectedLease.id) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedLease(found);
       }
     }

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { AlertTriangle } from 'lucide-react';
+import { useEffect, useRef, useCallback } from 'react';
 
 interface ConfirmOptions {
   title: string;
@@ -48,6 +49,18 @@ export const useConfirmStore = create<ConfirmState>()(
 
 export function ConfirmDialog() {
   const { isOpen, options, close } = useConfirmStore();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    cancelRef.current?.focus();
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, close]);
 
   if (!isOpen || !options) return null;
 
@@ -64,14 +77,15 @@ export function ConfirmDialog() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" role="dialog" aria-modal="true" aria-label={options.title}>
       <div
+        ref={dialogRef}
         className={`w-full max-w-md rounded-lg border-2 p-6 shadow-xl ${variantColors[options.variant ?? 'warning']}`}
       >
         <div className="flex items-start gap-3 mb-4">
           <AlertTriangle className="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="text-lg font-semibold">{options.title}</h3>
+            <h3 className="text-lg font-semibold dark:text-gray-100">{options.title}</h3>
             <p className="text-sm text-muted-foreground mt-1">{options.message}</p>
           </div>
         </div>
@@ -89,14 +103,15 @@ export function ConfirmDialog() {
 
         <div className="flex justify-end gap-2">
           <button
+            ref={cancelRef}
             onClick={() => close(false)}
-            className="px-4 py-2 text-sm rounded-md border hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 dark:border-gray-600"
+            className="px-4 py-2 text-sm rounded-md border hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 dark:border-gray-600 focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             {options.cancelLabel ?? 'Cancel'}
           </button>
           <button
             onClick={() => close(true)}
-            className={`px-4 py-2 text-sm rounded-md ${variantButtonColors[options.variant ?? 'warning']}`}
+            className={`px-4 py-2 text-sm rounded-md ${variantButtonColors[options.variant ?? 'warning']} focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
           >
             {options.confirmLabel ?? 'Confirm'}
           </button>

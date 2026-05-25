@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
 import { Card, CardContent } from '@/components/ui/Card';
 import { Plus, Search, Copy, Trash2, Eye, Send, CheckCircle, XCircle } from 'lucide-react';
+import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -39,6 +40,7 @@ export default function BudgetListPage() {
   const { budgets, submitBudget, approveBudget, rejectBudget, deleteBudget, duplicateBudget } =
     useBudgetStore();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -139,6 +141,8 @@ export default function BudgetListPage() {
           />
         </div>
       </div>
+
+      <AICopilotPanel pathname={pathname} defaultCollapsed />
 
       <Card>
         <CardContent className="p-0">

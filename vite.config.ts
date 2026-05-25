@@ -136,23 +136,36 @@ export default defineConfig({
       output: {
         manualChunks(id: string) {
           if (id.includes('node_modules')) {
+            // React core ecosystem
             if (id.includes('/react/') || id.includes('react-dom') || id.includes('react-router')) return 'react-vendor';
+            // State management (zustand, redux toolkit from recharts, immer)
+            if (id.includes('zustand') || id.includes('@reduxjs/toolkit') || id.includes('react-redux') || id.includes('/immer/') || id.includes('reselect')) return 'state-vendor';
+            // Forms
             if (id.includes('react-hook-form') || id.includes('zod')) return 'form-vendor';
-            if (id.includes('zustand')) return 'state-vendor';
+            // AG Grid
             if (id.includes('ag-grid')) return 'grid-vendor';
-            if (id.includes('recharts')) return 'chart-vendor';
+            // Recharts + victory-vendor (d3 wrapper)
+            if (id.includes('recharts') || id.includes('victory-vendor')) return 'chart-vendor';
+            // AI/ML
             if (id.includes('@huggingface/transformers')) return 'ai-vendor';
-            if (id.includes('xlsx')) return 'xlsx';
-            if (id.includes('lucide-react')) return 'icons-vendor';
-            if (id.includes('date-fns') || id.includes('axios') || id.includes('uuid')) return 'utils-vendor';
-            if (id.includes('class-variance-authority') || id.includes('tailwind-merge') || id.includes('clsx')) return 'cva-vendor';
+            // PDF generation + html2canvas (jspdf dep)
+            if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-vendor';
+            // Excel + file-saver + DOMPurify (used in data import)
+            if (id.includes('exceljs') || id.includes('file-saver') || id.includes('dompurify') || id.includes('purify')) return 'excel-vendor';
+            // SQL/SQLite
+            if (id.includes('sql.js')) return 'db-vendor';
+            // UI primitives (radix, tanstack-virtual)
+            if (id.includes('@radix-ui') || id.includes('@tanstack/react-virtual')) return 'ui-vendor';
+            // Styling utilities
+            if (id.includes('class-variance-authority') || id.includes('tailwind-merge') || id.includes('clsx')) return 'style-vendor';
+            // i18n
             if (id.includes('i18next')) return 'i18n-vendor';
-            if (id.includes('@radix-ui')) return 'radix-vendor';
-            if (id.includes('@tanstack/react-virtual')) return 'tanstack-vendor';
+            // Animation (only when actually imported)
             if (id.includes('framer-motion')) return 'animation-vendor';
-            if (id.includes('lodash-es')) return 'lodash-vendor';
-            if (id.includes('exceljs') || id.includes('file-saver')) return 'excel-vendor';
-            if (id.includes('jspdf')) return 'pdf-vendor';
+            // Icons
+            if (id.includes('lucide-react')) return 'icons-vendor';
+            // Small utilities
+            if (id.includes('date-fns') || id.includes('axios') || id.includes('uuid')) return 'utils-vendor';
           }
         },
       }
@@ -170,6 +183,24 @@ export default defineConfig({
     minWorkers: 2,
     testTimeout: 30000,
     hookTimeout: 30000,
-
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'lcov', 'json-summary'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/test/**',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.d.ts',
+        'src/main.tsx',
+        'src/vite-env.d.ts',
+      ],
+      thresholds: {
+        statements: 50,
+        branches: 50,
+        functions: 50,
+        lines: 50,
+      },
+    },
   },
 });

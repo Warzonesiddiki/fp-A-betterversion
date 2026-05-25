@@ -5,7 +5,6 @@
 // =============================================================================
 
 import ExcelJS from 'exceljs';
-import { Readable } from 'stream';
 import { sanitizeForDisplay } from '@/utils/security';
 
 export type FileFormat = 'xlsx' | 'csv';
@@ -201,9 +200,14 @@ export class ExcelImportEngine {
     const workbook = new ExcelJS.Workbook();
 
     if (format === 'csv') {
-      // For CSV, we need to handle it differently as exceljs readBuffer is for xlsx
-      // Actually exceljs supports csv, but often better via stream or special method
-      await workbook.csv.read(Readable.from(Buffer.from(buffer)));
+      // Browser-compatible CSV parsing — no Node streams needed
+      const text = new TextDecoder().decode(buffer);
+      const rows = text.split(/\r?\n/).filter((r) => r.trim());
+      const sheet = workbook.addWorksheet('Sheet1');
+      for (const row of rows) {
+        // Simple CSV split (handles basic cases; no quoted-comma support)
+        sheet.addRow(row.split(',').map((c) => c.trim()));
+      }
     } else {
       await workbook.xlsx.load(buffer);
     }

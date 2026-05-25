@@ -46,20 +46,22 @@ export function BudgetGrid({
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 border border-slate-800 rounded-lg overflow-hidden">
-      <div className="p-2 border-b border-slate-800 flex items-center gap-4 bg-slate-900">
+    <div className="flex flex-col h-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg overflow-hidden">
+      <div className="p-2 border-b border-[var(--border-subtle)] flex items-center gap-4 bg-[var(--bg-elevated)]">
         <div className="flex items-center gap-1">
           <button
             onClick={onUndo}
             disabled={!canUndo}
-            className="p-1.5 hover:bg-slate-800 rounded disabled:opacity-30 text-slate-300"
+            aria-label="Undo"
+            className="p-1.5 hover:bg-[var(--bg-hover)] rounded disabled:opacity-30 text-[var(--text-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             Undo
           </button>
           <button
             onClick={onRedo}
             disabled={!canRedo}
-            className="p-1.5 hover:bg-slate-800 rounded disabled:opacity-30 text-slate-300"
+            aria-label="Redo"
+            className="p-1.5 hover:bg-[var(--bg-hover)] rounded disabled:opacity-30 text-[var(--text-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             Redo
           </button>

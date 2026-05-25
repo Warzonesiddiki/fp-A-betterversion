@@ -1,7 +1,7 @@
 {
   "name": "finplan-pro",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -61,9 +61,9 @@
     "react-i18next": "^17.0.8",
     "react-router-dom": "^7.15.0",
     "recharts": "^3.8.1",
+    "sql.js": "^1.14.1",
     "tailwind-merge": "3.4.0",
     "uuid": "^14.0.0",
-    "xlsx": "^0.18.5",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },
@@ -86,6 +86,7 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.1",
+    "@vitest/coverage-v8": "^4.1.7",
     "@vitest/ui": "^4.1.6",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.4",

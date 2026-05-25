@@ -34,7 +34,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
   );
 
   useEffect(() => {
-    setDisplayValue(formatValue(value)); // eslint-disable-line react-hooks/set-state-in-effect -- sync display value with prop
+    setDisplayValue(formatValue(value));
   }, [value, formatValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

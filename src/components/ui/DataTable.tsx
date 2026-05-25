@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, memo } from 'react';
 import { ChevronUp, ChevronDown, AlertCircle, Search } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/utils/cn';
@@ -33,7 +33,7 @@ export interface DataTableProps {
 const VIRTUAL_THRESHOLD = 100;
 const ROW_HEIGHT = 40;
 
-export const DataTable: React.FC<DataTableProps> = ({
+export const DataTable = memo<DataTableProps>(({
   columns,
   data: rawData,
   sortable: globalSortable = true,
@@ -129,7 +129,8 @@ export const DataTable: React.FC<DataTableProps> = ({
         <p className="text-sm opacity-90">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm font-medium"
+          aria-label="Retry loading data"
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
         >
           Retry
         </button>
@@ -249,6 +250,11 @@ export const DataTable: React.FC<DataTableProps> = ({
     </tbody>
   );
 
+  const getAriaSort = (columnKey: string): 'ascending' | 'descending' | undefined => {
+    if (sortConfig?.key !== columnKey) return undefined;
+    return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+  };
+
   return (
     <div className={cn('w-full flex flex-col', className)}>
       <div
@@ -258,8 +264,13 @@ export const DataTable: React.FC<DataTableProps> = ({
           useVirtual && 'max-h-[600px] overflow-y-auto'
         )}
       >
-        <table className="w-full text-sm text-left border-collapse bg-[var(--bg-surface)]">
-          <thead className="bg-gray-50 dark:bg-gray-900/80 dark:bg-gray-800/80 border-b border-[var(--border-subtle)] sticky top-0 z-10">
+        <table
+          className="w-full text-sm text-left border-collapse bg-[var(--bg-surface)]"
+          role="grid"
+          aria-rowcount={filteredData.length}
+          aria-colcount={columns.length}
+        >
+          <thead className="bg-gray-50 dark:bg-gray-800/80 border-b border-[var(--border-subtle)] sticky top-0 z-10">
             <tr>
               {columns.map((column) => {
                 const isSortable = globalSortable && column.sortable !== false;
@@ -269,12 +280,21 @@ export const DataTable: React.FC<DataTableProps> = ({
                   <th
                     key={column.key}
                     style={{ width: column.width }}
+                    scope="col"
+                    aria-sort={isSortable ? getAriaSort(column.key) : undefined}
                     className={cn(
                       'px-4 py-3 font-semibold text-[var(--text-secondary)] transition-colors',
                       isSortable &&
-                        'cursor-pointer hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none'
+                        'cursor-pointer hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset'
                     )}
                     onClick={() => isSortable && requestSort(column.key)}
+                    onKeyDown={(e) => {
+                      if (isSortable && (e.key === 'Enter' || e.key === ' ')) {
+                        e.preventDefault();
+                        requestSort(column.key);
+                      }
+                    }}
+                    tabIndex={isSortable ? 0 : undefined}
                   >
                     <div
                       className={cn(
@@ -316,8 +336,9 @@ export const DataTable: React.FC<DataTableProps> = ({
                           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400 dark:text-gray-500" />
                           <input
                             type="text"
-                            className="w-full pl-7 pr-2 py-1 bg-white dark:bg-gray-800 dark:bg-gray-800 border border-[var(--border-subtle)] rounded text-xs outline-none focus:ring-1 focus:ring-blue-500 font-normal dark:text-white"
+                            className="w-full pl-7 pr-2 py-1 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] rounded text-xs outline-none focus:ring-1 focus:ring-blue-500 font-normal dark:text-white"
                             placeholder="Filter..."
+                            aria-label={`Filter ${column.header}`}
                             value={filters[column.key] || ''}
                             onChange={(e) => handleFilterChange(column.key, e.target.value)}
                           />
@@ -349,7 +370,8 @@ export const DataTable: React.FC<DataTableProps> = ({
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              className="px-2 py-1 rounded border border-[var(--border-subtle)] hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
+              aria-label="Previous page"
+              className="px-2 py-1 rounded border border-[var(--border-subtle)] hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               Previous
             </button>
@@ -359,7 +381,8 @@ export const DataTable: React.FC<DataTableProps> = ({
             <button
               disabled={currentPage >= Math.ceil(filteredData.length / pageSize)}
               onClick={() => setCurrentPage((p) => p + 1)}
-              className="px-2 py-1 rounded border border-[var(--border-subtle)] hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
+              aria-label="Next page"
+              className="px-2 py-1 rounded border border-[var(--border-subtle)] hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               Next
             </button>
@@ -368,4 +391,4 @@ export const DataTable: React.FC<DataTableProps> = ({
       )}
     </div>
   );
-};
+});

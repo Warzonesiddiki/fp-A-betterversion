@@ -78,14 +78,22 @@ export function escapeHTML(input: string): string {
   if (typeof input !== 'string') return '';
   return input.replace(/[&<>"'`/]/g, (char) => {
     switch (char) {
-      case '&': return '&amp;';
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '"': return '&quot;';
-      case "'": return '&#x27;';
-      case '/': return '&#x2F;';
-      case '`': return '&#96;';
-      default: return char;
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      case "'":
+        return '&#x27;';
+      case '/':
+        return '&#x2F;';
+      case '`':
+        return '&#96;';
+      default:
+        return char;
     }
   });
 }
@@ -170,11 +178,12 @@ export function stripDangerousURIs(input: string): string {
   const s = toStringOrEmpty(input);
   if (!s) return '';
   // Remove data: URIs entirely (strip the whole attribute value)
-  let result = s.replace(/(href|src|action)\s*=\s*"data:[^"]*"/gi,
-    (_match, attr) => `${attr}=""`);
+  let result = s.replace(/(href|src|action)\s*=\s*"data:[^"]*"/gi, (_match, attr) => `${attr}=""`);
   // Remove javascript:/vbscript: URIs (strip only the scheme prefix)
-  result = result.replace(/(href|src|action)\s*=\s*"(?:javascript|vbscript):([^"]*)"/gi,
-    (_match, attr, rest) => `${attr}="${rest}"`);
+  result = result.replace(
+    /(href|src|action)\s*=\s*"(?:javascript|vbscript):([^"]*)"/gi,
+    (_match, attr, rest) => `${attr}="${rest}"`
+  );
   return result;
 }
 
@@ -251,10 +260,10 @@ export function sanitizeFilename(input: string): string {
   const s = toStringOrEmpty(input);
   if (!s) return '';
   return s
-    .replace(/[/\\]/g, '')       // remove path separators
-    .replace(/\x00/g, '')        // remove null bytes
-    .replace(/^\.+/, '')         // remove leading dots
-    .replace(/\.{2,}/g, '.');    // collapse consecutive dots
+    .replace(/[/\\]/g, '') // remove path separators
+    .replace(/\x00/g, '') // remove null bytes
+    .replace(/^\.+/, '') // remove leading dots
+    .replace(/\.{2,}/g, '.'); // collapse consecutive dots
 }
 
 // ---------------------------------------------------------------------------
@@ -281,7 +290,13 @@ export function sanitizeURL(input: string): string {
   const lower = s.toLowerCase().trim();
 
   // Relative URLs are always safe
-  if (lower.startsWith('/') || lower.startsWith('#') || lower.startsWith('?') || lower.startsWith('./') || lower.startsWith('../')) {
+  if (
+    lower.startsWith('/') ||
+    lower.startsWith('#') ||
+    lower.startsWith('?') ||
+    lower.startsWith('./') ||
+    lower.startsWith('../')
+  ) {
     return s;
   }
 
@@ -404,7 +419,10 @@ export function generateCSRFToken(): string {
   const length = SECURITY_CONSTANTS.CSRF_TOKEN_LENGTH;
 
   // Use crypto.getRandomValues when available (browser / modern Node)
-  if (typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.getRandomValues === 'function') {
+  if (
+    typeof globalThis.crypto !== 'undefined' &&
+    typeof globalThis.crypto.getRandomValues === 'function'
+  ) {
     const bytes = new Uint8Array(length);
     globalThis.crypto.getRandomValues(bytes);
     let token = '';
@@ -521,7 +539,7 @@ interface SanitizeUserInputResult {
  */
 export function sanitizeUserInput(
   input: unknown,
-  options?: SanitizeUserInputOptions,
+  options?: SanitizeUserInputOptions
 ): SanitizeUserInputResult {
   const threats: string[] = [];
   const errors: string[] = [];

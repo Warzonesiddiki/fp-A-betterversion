@@ -1,5 +1,5 @@
 import type { PersistStorage } from 'zustand/middleware';
-import { indexedDBStorage } from './indexedDBStorage';
+import { sqlJsStorage } from './sqlJsStorage';
 import { tauriSqlStorage, isTauri } from './tauriSqlStorage';
 import { wrapChunkedStorage } from './chunkedStorage';
 
@@ -13,7 +13,7 @@ async function checkTauri() {
 }
 
 const chunkedTauriStorage = wrapChunkedStorage(tauriSqlStorage);
-const chunkedIndexedDBStorage = wrapChunkedStorage(indexedDBStorage);
+const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
 
 export const masterStorage: PersistStorage<any> & { __resetCache: () => void } = {
   getItem: async (name) => {
@@ -21,21 +21,21 @@ export const masterStorage: PersistStorage<any> & { __resetCache: () => void } =
     if (isDesktop) {
       return chunkedTauriStorage.getItem(name);
     }
-    return chunkedIndexedDBStorage.getItem(name);
+    return chunkedSqlJsStorage.getItem(name);
   },
   setItem: async (name, value) => {
     const isDesktop = await checkTauri();
     if (isDesktop) {
       return chunkedTauriStorage.setItem(name, value);
     }
-    return chunkedIndexedDBStorage.setItem(name, value);
+    return chunkedSqlJsStorage.setItem(name, value);
   },
   removeItem: async (name) => {
     const isDesktop = await checkTauri();
     if (isDesktop) {
       return chunkedTauriStorage.removeItem(name);
     }
-    return chunkedIndexedDBStorage.removeItem(name);
+    return chunkedSqlJsStorage.removeItem(name);
   },
   /** @internal For testing only */
   __resetCache: () => {

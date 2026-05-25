@@ -124,6 +124,72 @@ describe('KPICard', () => {
     });
   });
 
+  describe('Variance Badge', () => {
+    it('renders favorable variance badge', () => {
+      const { container } = render(
+        <KPICard
+          {...defaultProps}
+          varianceBadge={{ amount: 3200000, percent: 8.2, type: 'favorable' }}
+        />
+      );
+      const badge = container.querySelector('.rounded-full');
+      expect(badge).toBeInTheDocument();
+      expect(badge?.textContent).toContain('8.2');
+    });
+
+    it('renders unfavorable variance badge', () => {
+      const { container } = render(
+        <KPICard
+          {...defaultProps}
+          varianceBadge={{ amount: -275000, percent: 2.1, type: 'unfavorable' }}
+        />
+      );
+      const badge = container.querySelector('.rounded-full');
+      expect(badge).toBeInTheDocument();
+      expect(badge?.textContent).toContain('2.1');
+    });
+
+    it('renders custom variance label', () => {
+      render(
+        <KPICard
+          title="Revenue"
+          value={100000}
+          format="currency"
+          varianceBadge={{ amount: 5000, percent: 5, type: 'favorable', label: 'vs forecast' }}
+        />
+      );
+      expect(screen.getByText(/vs forecast/)).toBeInTheDocument();
+    });
+
+    it('hides change row when varianceBadge is present', () => {
+      render(
+        <KPICard
+          {...defaultProps}
+          change={8.2}
+          trend="up"
+          varianceBadge={{ amount: 3200000, percent: 8.2, type: 'favorable' }}
+        />
+      );
+      expect(screen.queryByText(/vs prior/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Prior Year and Budget', () => {
+    it('renders PY and Budget values', () => {
+      render(
+        <KPICard
+          title="Revenue"
+          value={1000000}
+          format="currency"
+          priorYearValue={950000}
+          budgetValue={980000}
+        />
+      );
+      expect(screen.getByText(/PY:/)).toBeInTheDocument();
+      expect(screen.getByText(/Budget:/)).toBeInTheDocument();
+    });
+  });
+
   describe('Click Behavior', () => {
     it('calls onClick when card is clicked', () => {
       const onClick = vi.fn();

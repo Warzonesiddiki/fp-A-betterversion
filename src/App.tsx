@@ -5,7 +5,9 @@ import AppLayout from './components/layout/AppLayout';
 import LoadingScreen from './components/ui/LoadingScreen';
 import { ErrorBoundary } from './components/ui';
 import { useFirstRun } from './hooks/useFirstRun';
-import OnboardingWizard from './components/ui/OnboardingWizard';
+
+// Core (not route-dependent)
+const OnboardingWizard = lazy(() => import('./components/ui/OnboardingWizard'));
 
 // Auth
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
@@ -65,6 +67,7 @@ const ImpairmentPage = lazy(() => import('./pages/audit/ImpairmentPage'));
 const SegmentReportingPage = lazy(() => import('./pages/reports/SegmentReportingPage'));
 const DashboardBuilderPage = lazy(() => import('./pages/analytics/DashboardBuilderPage'));
 const DebugPage = lazy(() => import('./pages/admin/DebugPage'));
+const PluginMarketplacePage = lazy(() => import('./pages/plugins/PluginMarketplacePage'));
 
 // Cash & Treasury
 const CashForecastPage = lazy(() => import('./pages/cash/CashForecastPage'));
@@ -160,7 +163,11 @@ export default function App() {
   }
 
   if (isFirstRun) {
-    return <OnboardingWizard onComplete={completeSetup} />;
+    return (
+      <Suspense fallback={<LoadingScreen />}>
+        <OnboardingWizard onComplete={completeSetup} />
+      </Suspense>
+    );
   }
 
   return (
@@ -342,6 +349,7 @@ export default function App() {
                 <Route path="/reports/segment" element={<SegmentReportingPage />} />
                 <Route path="/collaboration" element={<CollaborationPage />} />
                 <Route path="/collaboration/approvals" element={<ApprovalQueuePage />} />
+                <Route path="/plugins" element={<PluginMarketplacePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/settings/users" element={<UserManagementPage />} />
                 <Route path="/profile" element={<ProfilePage />} />

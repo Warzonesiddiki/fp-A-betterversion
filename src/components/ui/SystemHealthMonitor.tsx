@@ -24,7 +24,7 @@ export const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({
   };
 
   return (
-    <div className="flex items-center space-x-4 p-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm">
+    <div className="flex items-center space-x-4 p-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm dark:bg-gray-900 dark:border-gray-800">
       {/* Online Status */}
       <div className="flex items-center space-x-2 px-2 py-1 bg-gray-50 dark:bg-gray-900 rounded-md border border-[var(--border-subtle)]">
         {isOnline ? (
@@ -72,7 +72,7 @@ export const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({
         </div>
       )}
 
-      <button className="p-1 rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">
+      <button aria-label="View system health details" className="p-1 rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)] focus-visible:ring-2 focus-visible:ring-blue-500">
         <ChevronRight className="h-3.5 w-3.5" />
       </button>
     </div>

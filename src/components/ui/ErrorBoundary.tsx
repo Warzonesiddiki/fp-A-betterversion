@@ -62,37 +62,38 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
-          <div className="bg-red-50 p-4 rounded-full mb-6">
+        <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center dark:bg-gray-950" role="alert">
+          <div className="bg-red-50 dark:bg-red-950 p-4 rounded-full mb-6">
             <AlertCircle className="h-10 w-10 text-red-500" />
           </div>
-          <h2 className="text-xl font-bold mb-2">We&apos;ve encountered an unexpected error</h2>
-          <p className="text-sm text-slate-400 mb-2 max-w-md leading-relaxed">
+          <h2 className="text-xl font-bold mb-2 dark:text-gray-100">We&apos;ve encountered an unexpected error</h2>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mb-2 max-w-md leading-relaxed">
             Don&apos;t worry, your data is safe. Try refreshing, or go back to the dashboard.
           </p>
-          <p className="text-xs text-slate-500 mb-6">
+          <p className="text-xs text-slate-500 dark:text-slate-600 mb-6">
             Error ID:{' '}
-            <code className="font-mono bg-slate-800 px-1.5 py-0.5 rounded">
+            <code className="font-mono bg-slate-800 dark:bg-slate-900 px-1.5 py-0.5 rounded">
               {this.state.errorId}
             </code>
           </p>
           <div className="flex items-center gap-3 mb-6">
             <button
               onClick={this.handleRetry}
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all active:scale-95"
+              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
             >
               <RefreshCw className="h-4 w-4" />
               <span>Retry Component</span>
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-5 py-2.5 bg-white dark:bg-gray-800 dark:bg-gray-800 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-all"
+              className="px-5 py-2.5 bg-white dark:bg-gray-800 border border-slate-300 dark:border-gray-700 text-slate-700 dark:text-gray-200 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-gray-700 transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
             >
               Reload Page
             </button>
             <button
               onClick={() => (window.location.href = '/')}
-              className="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-all"
+              aria-label="Go to home page"
+              className="px-5 py-2.5 border border-slate-300 dark:border-gray-700 text-slate-700 dark:text-gray-200 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-gray-700 transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
             >
               <Home className="h-4 w-4" />
             </button>
@@ -101,7 +102,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <div className="w-full max-w-xl">
               <button
                 onClick={this.toggleDetails}
-                className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 mx-auto mb-2"
+                className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-300 dark:hover:text-slate-200 mx-auto mb-2 focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
               >
                 {this.state.showDetails ? (
                   <ChevronDown className="h-3 w-3" />
@@ -116,7 +117,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                     <span className="text-xs font-semibold text-slate-400">Error Details</span>
                     <button
                       onClick={this.copyDetails}
-                      className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
+                      aria-label="Copy error details"
+                      className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
                     >
                       <Copy className="h-3 w-3" /> Copy
                     </button>

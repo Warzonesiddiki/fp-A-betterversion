@@ -26,7 +26,7 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ steps, isOpen, onClose, 
     if (isOpen && step?.target) {
       const element = document.querySelector(step.target);
       if (element) {
-        setTargetRect(element.getBoundingClientRect()); // eslint-disable-line react-hooks/set-state-in-effect -- sync to DOM measurement
+        setTargetRect(element.getBoundingClientRect());
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         setTargetRect(null);

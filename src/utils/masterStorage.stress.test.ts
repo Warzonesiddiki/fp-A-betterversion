@@ -51,7 +51,9 @@ describe('masterStorage Stress Tests', () => {
 
     // In current implementation, it doesn't automatically fall back in setItem,
     // but the stress test should verify it doesn't crash the app.
-    await expect(masterStorage.setItem('fail-key', { value: 'value' } as any)).rejects.toThrow('DB Locked');
+    await expect(masterStorage.setItem('fail-key', { value: 'value' } as any)).rejects.toThrow(
+      'DB Locked'
+    );
   });
 
   it('verifies data consistency with large payloads (5MB)', async () => {

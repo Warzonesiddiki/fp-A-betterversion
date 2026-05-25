@@ -3,7 +3,7 @@
  * Extends ImportEngine with column auto-detection, migration readiness scoring, and rollback
  */
 
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 export type MigrationSource = 'excel' | 'planful' | 'adaptive' | 'anaplan' | 'csv' | 'unknown';
 
@@ -153,6 +153,41 @@ const ANAPLAN_MARKERS = [
 ];
 
 /**
+ * Extract row values from an ExcelJS row as a string array.
+ * ExcelJS rows are 1-indexed, so we skip index 0.
+ */
+function rowToValues(row: ExcelJS.Row): string[] {
+  const values: string[] = [];
+  const cellCount = row.cellCount;
+  for (let i = 1; i <= cellCount; i++) {
+    const cell = row.getCell(i);
+    const val = cell.value;
+    if (val === null || val === undefined) {
+      values.push('');
+    } else if (typeof val === 'object' && 'result' in val) {
+      // Formula cell — use the cached result
+      values.push(String(val.result ?? ''));
+    } else if (val instanceof Date) {
+      values.push(val.toISOString());
+    } else {
+      values.push(String(val));
+    }
+  }
+  return values;
+}
+
+/**
+ * Read all rows from a worksheet as a 2D string array (first row = headers).
+ */
+function worksheetToRows(worksheet: ExcelJS.Worksheet): string[][] {
+  const rows: string[][] = [];
+  worksheet.eachRow({ includeEmpty: false }, (row) => {
+    rows.push(rowToValues(row));
+  });
+  return rows;
+}
+
+/**
  * Auto-detect column mappings based on header names
  */
 function autoMapColumns(headers: string[]): ColumnMapping[] {
@@ -231,7 +266,7 @@ function assessReadiness(
   headers: string[],
   data: Record<string, unknown>[],
   mappings: ColumnMapping[],
-  workbook?: XLSX.WorkBook
+  workbook?: ExcelJS.Workbook
 ): MigrationReadiness {
   const issues: MigrationReadiness['issues'] = [];
   let score = 100;
@@ -278,31 +313,47 @@ function assessReadiness(
   }
 
   // Check formula complexity (from workbook)
-  let formulaComplexity: 'simple' | 'moderate' | 'complex' = 'simple';
+  let formulaComplexity: string = 'simple';
   let hasExternalLinks = false;
   let hasMergedCells = false;
   let hasHiddenRows = false;
 
   if (workbook) {
-    for (const sheetName of workbook.SheetNames) {
-      const sheet = workbook.Sheets[sheetName];
-      if (!sheet) continue;
-
+    workbook.eachSheet((worksheet) => {
       // Check for formulas
-      const formulaCells = Object.keys(sheet).filter((k) => k[0] !== '!' && sheet[k]?.f);
-      if (formulaCells.length > 50) formulaComplexity = 'complex';
-      else if (formulaCells.length > 10) formulaComplexity = 'moderate';
+      let formulaCellCount = 0;
+      worksheet.eachRow({ includeEmpty: false }, (row) => {
+        row.eachCell({ includeEmpty: false }, (cell) => {
+          if (cell.value && typeof cell.value === 'object' && 'formula' in cell.value) {
+            formulaCellCount++;
+          }
+        });
+      });
+      if (formulaCellCount > 50) formulaComplexity = 'complex';
+      else if (formulaCellCount > 10) formulaComplexity = 'moderate';
 
-      // Check for external links
-      const fullText = JSON.stringify(sheet);
-      if (fullText.includes('[') && fullText.includes(']')) hasExternalLinks = true;
+      // Check for external links — formula strings containing [ ] (external workbook refs)
+      worksheet.eachRow({ includeEmpty: false }, (row) => {
+        row.eachCell({ includeEmpty: false }, (cell) => {
+          if (cell.value && typeof cell.value === 'object' && 'formula' in cell.value) {
+            const formula = String(cell.value.formula);
+            if (formula.includes('[') && formula.includes(']')) {
+              hasExternalLinks = true;
+            }
+          }
+        });
+      });
 
       // Check for merged cells
-      if (sheet['!merges'] && sheet['!merges'].length > 0) hasMergedCells = true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const merges = (worksheet as any)._merges as Record<string, unknown> | undefined;
+      if (merges && Object.keys(merges).length > 0) hasMergedCells = true;
 
       // Check for hidden rows
-      if (sheet['!rows']?.some((r) => r?.hidden)) hasHiddenRows = true;
-    }
+      worksheet.eachRow({ includeEmpty: false }, (row) => {
+        if (row.hidden) hasHiddenRows = true;
+      });
+    });
   }
 
   if (formulaComplexity === 'complex') {
@@ -346,11 +397,11 @@ function assessReadiness(
     score: Math.max(0, score),
     status,
     issues,
-    sheetCount: workbook?.SheetNames.length ?? 1,
+    sheetCount: workbook?.worksheets.length ?? 1,
     totalRows: data.length,
     detectedColumns: mappings,
     unmappedColumns,
-    formulaComplexity,
+    formulaComplexity: formulaComplexity as unknown as 'simple' | 'moderate' | 'complex',
     hasExternalLinks,
     hasMergedCells,
     hasHiddenRows,
@@ -401,6 +452,40 @@ export class MigrationEngine {
   }
 
   /**
+   * Load a workbook from a File using ExcelJS.
+   */
+  private async loadWorkbook(file: File): Promise<ExcelJS.Workbook> {
+    const buffer = await file.arrayBuffer();
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+    return workbook;
+  }
+
+  /**
+   * Read headers and data rows from a worksheet.
+   */
+  private readSheetData(worksheet: ExcelJS.Worksheet): {
+    headers: string[];
+    dataRows: Record<string, unknown>[];
+  } {
+    const allRows = worksheetToRows(worksheet);
+    if (allRows.length === 0) return { headers: [], dataRows: [] };
+
+    const headers = allRows[0].map(String);
+    const dataRows = allRows.slice(1).map((row) =>
+      headers.reduce(
+        (obj, h, i) => ({
+          ...obj,
+          [h]: i < row.length ? String(row[i] ?? '') : '',
+        }),
+        {} as Record<string, unknown>
+      )
+    );
+
+    return { headers, dataRows };
+  }
+
+  /**
    * Detect migration source from file
    */
   async detectMigrationSource(file: File): Promise<MigrationSource> {
@@ -408,30 +493,12 @@ export class MigrationEngine {
     if (format === 'unknown') return 'unknown';
 
     try {
-      const buffer = await file.arrayBuffer();
-      const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
-      const sheetName = workbook.SheetNames[0];
-      if (!sheetName) return 'unknown';
+      const workbook = await this.loadWorkbook(file);
+      const firstSheet = workbook.worksheets[0];
+      if (!firstSheet) return 'unknown';
 
-      const worksheet = workbook.Sheets[sheetName];
-      const rawRows: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
-        header: 1,
-        defval: '',
-        raw: false,
-      });
-
-      if (rawRows.length < 2) return 'unknown';
-
-      const headers = (rawRows[0] as unknown[]).map(String);
-      const dataRows = rawRows.slice(1).map((row) =>
-        headers.reduce(
-          (obj, h, i) => ({
-            ...obj,
-            [h]: i < (row as unknown[]).length ? String((row as unknown[])[i] ?? '') : '',
-          }),
-          {} as Record<string, unknown>
-        )
-      );
+      const { headers, dataRows } = this.readSheetData(firstSheet);
+      if (headers.length === 0 || dataRows.length < 2) return 'unknown';
 
       return detectSource(headers, dataRows);
     } catch {
@@ -446,46 +513,24 @@ export class MigrationEngine {
     source: MigrationSource;
     readiness: MigrationReadiness;
     plan: MigrationPlan;
-    workbook: XLSX.WorkBook;
+    workbook: ExcelJS.Workbook;
   }> {
-    const buffer = await file.arrayBuffer();
-    const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
-    const sheetName = workbook.SheetNames[0]!;
+    const workbook = await this.loadWorkbook(file);
+    const firstSheet = workbook.worksheets[0]!;
 
-    const worksheet = workbook.Sheets[sheetName];
-    const rawRows: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
-      header: 1,
-      defval: '',
-      raw: false,
-    });
-
-    const headers = (rawRows[0] as unknown[]).map(String);
-    const dataRows = rawRows.slice(1).map((row) =>
-      headers.reduce(
-        (obj, h, i) => ({
-          ...obj,
-          [h]: i < (row as unknown[]).length ? String((row as unknown[])[i] ?? '') : '',
-        }),
-        {} as Record<string, unknown>
-      )
-    );
+    const { headers, dataRows } = this.readSheetData(firstSheet);
 
     const source = detectSource(headers, dataRows);
     const mappings = autoMapColumns(headers);
     const readiness = assessReadiness(headers, dataRows, mappings, workbook);
 
     // Build sheet info
-    const sheets = workbook.SheetNames.map((name) => {
-      const sheet = workbook.Sheets[name];
-      const sheetData: unknown[][] = XLSX.utils.sheet_to_json(sheet!, {
-        header: 1,
-        defval: '',
-        raw: false,
-      });
+    const sheets = workbook.worksheets.map((worksheet) => {
+      const allRows = worksheetToRows(worksheet);
       return {
-        name,
-        rows: Math.max(0, sheetData.length - 1),
-        columns: sheetData.length > 0 ? (sheetData[0] as unknown[]).map(String) : [],
+        name: worksheet.name,
+        rows: Math.max(0, allRows.length - 1),
+        columns: allRows.length > 0 ? allRows[0].map(String) : [],
       };
     });
 
@@ -522,16 +567,16 @@ export class MigrationEngine {
     this.setProgress('reading', 10, 'Reading Excel file...');
 
     try {
-      const buffer = await file.arrayBuffer();
       this.setProgress('parsing', 30, 'Parsing Excel workbook...');
 
-      const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
-      const sheetName =
-        options.sheetName && workbook.SheetNames.includes(options.sheetName)
-          ? options.sheetName
-          : workbook.SheetNames[0];
+      const workbook = await this.loadWorkbook(file);
 
-      if (!sheetName) {
+      const targetSheet = options.sheetName
+        ? workbook.getWorksheet(options.sheetName)
+        : workbook.worksheets[0];
+      const sheetName = targetSheet?.name ?? workbook.worksheets[0]?.name;
+
+      if (!targetSheet || !sheetName) {
         return {
           result: {
             valid: false,
@@ -548,14 +593,9 @@ export class MigrationEngine {
         };
       }
 
-      const worksheet = workbook.Sheets[sheetName];
-      const rawRows: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
-        header: 1,
-        defval: '',
-        raw: false,
-      });
+      const allRows = worksheetToRows(targetSheet);
 
-      if (rawRows.length < 2) {
+      if (allRows.length < 2) {
         return {
           result: {
             valid: false,
@@ -579,15 +619,11 @@ export class MigrationEngine {
 
       this.setProgress('validating', 60, 'Validating data...');
 
-      const headers: string[] = (rawRows[0] as unknown[]).map(String);
+      const headers: string[] = allRows[0].map(String);
       const maxRows = options.maxRows ?? 100000;
-      const dataRows = rawRows
+      const dataRows = allRows
         .slice(1, maxRows + 1)
-        .map((row) =>
-          headers.map((_, i) =>
-            i < (row as unknown[]).length ? String((row as unknown[])[i] ?? '') : ''
-          )
-        );
+        .map((row) => headers.map((_, i) => (i < row.length ? String(row[i] ?? '') : '')));
 
       // Basic validation
       const errors: {

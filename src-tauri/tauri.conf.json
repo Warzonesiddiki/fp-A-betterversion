@@ -1,6 +1,6 @@
 {
   "productName": "FinPlan Pro",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "identifier": "com.finplanpro.app",
   "build": {
     "frontendDist": "../dist",
@@ -50,12 +50,20 @@
     "category": "Finance",
     "shortDescription": "Financial Planning & Analysis Platform",
     "longDescription": "FinPlan Pro is an enterprise-grade FP&A platform for budgeting, forecasting, consolidation, and financial reporting.",
+    "copyright": "Copyright 2026 FinPlan Pro. All rights reserved.",
+    "licenseFile": "",
     "fileAssociations": [
       {
-        "ext": ["finplan"],
+        "ext": ["fp"],
         "mimeType": "application/x-finplan",
         "role": "Editor",
-        "description": "FinPlan Financial Model"
+        "description": "FinPlan Project File"
+      },
+      {
+        "ext": ["fpa"],
+        "mimeType": "application/x-finplan-archive",
+        "role": "Editor",
+        "description": "FinPlan Archive"
       },
       {
         "ext": ["xlsx", "xls"],

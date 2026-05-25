@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -13,6 +13,7 @@ import {
   Download,
   Scale,
 } from 'lucide-react';
+import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 
 const reports = [
   {
@@ -62,6 +63,7 @@ const reports = [
 export default function ReportsListPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -124,6 +126,8 @@ export default function ReportsListPage() {
           </div>
         </div>
       </div>
+
+      <AICopilotPanel pathname={pathname} defaultCollapsed />
 
       {[...categories.entries()].map(([category, items]) => (
         <div key={category}>

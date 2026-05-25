@@ -103,7 +103,10 @@ const BenchmarksPage: React.FC = () => {
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-800" role="alert">
+        <div
+          className="rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-800"
+          role="alert"
+        >
           {error}
         </div>
       )}

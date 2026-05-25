@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 import { CommandPalette } from '@/components/ui/CommandPalette';
+import { SkipToContent } from '@/components/ui/SkipToContent';
 import { useFocusManagement } from '@/hooks/useFocusManagement';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTranslation } from 'react-i18next';
@@ -129,27 +130,9 @@ export default function AppLayout() {
       dir={dir}
       style={{ background: 'var(--bg-root)' }}
     >
-      {/* Skip Navigation Links - visible on focus for keyboard users */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg"
-        style={{
-          background: 'var(--accent-primary)',
-          color: 'var(--text-on-accent)',
-        }}
-      >
-        Skip to main content
-      </a>
-      <a
-        href="#main-nav"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-48 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg"
-        style={{
-          background: 'var(--accent-primary)',
-          color: 'var(--text-on-accent)',
-        }}
-      >
-        Skip to navigation
-      </a>
+      {/* Skip Navigation Links — WCAG 2.1 AA bypass blocks */}
+      <SkipToContent targetId="main-content" />
+      <SkipToContent targetId="main-nav" />
       {/* Mobile sidebar overlay */}
       {mobileSidebarOpen && (
         <div

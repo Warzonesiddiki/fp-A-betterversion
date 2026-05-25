@@ -6,3 +6,6 @@ export * from './TornadoChart';
 export * from './HeatmapGrid';
 export * from './SankeyDiagram';
 export * from './DashboardTemplate';
+export * from './GaugeChart';
+export * from './ComboChart';
+export * from './WidgetLibrary';

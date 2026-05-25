@@ -162,7 +162,7 @@ export default function Sidebar() {
                   key={item.path}
                   to={item.path}
                   onClick={handleNavClick}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${
                     location.pathname === item.path || location.pathname.startsWith(item.path + '/')
                       ? 'text-white'
                       : ''
@@ -173,7 +173,7 @@ export default function Sidebar() {
                       : { color: 'var(--text-secondary)' }
                   }
                 >
-                  <item.icon className="w-4 h-4 flex-shrink-0" />
+                  <item.icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                   {!sidebarCollapsed && <span>{item.label}</span>}
                 </NavLink>
               ))}
@@ -189,23 +189,23 @@ export default function Sidebar() {
         <NavLink
           to="/settings"
           onClick={handleNavClick}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-secondary)' }}
         >
-          <Settings className="w-4 h-4" />
+          <Settings className="w-4 h-4" aria-hidden="true" />
           {!sidebarCollapsed && <span>{t('nav.settings')}</span>}
         </NavLink>
         <NavLink
           to="/help"
           onClick={handleNavClick}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-secondary)' }}
         >
-          <HelpCircle className="w-4 h-4" />
+          <HelpCircle className="w-4 h-4" aria-hidden="true" />
           {!sidebarCollapsed && <span>{t('nav.help')}</span>}
         </NavLink>
         <button
-          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors"
+          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-secondary)' }}
           onClick={toggleTheme}
           aria-label={theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}
@@ -218,7 +218,7 @@ export default function Sidebar() {
           )}
         </button>
         <button
-          className="hidden md:flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors"
+          className="hidden md:flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-secondary)' }}
           onClick={toggleSidebar}
           aria-label={sidebarCollapsed ? t('accessibility.expand') : t('sidebar.collapse')}

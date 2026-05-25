@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -18,7 +18,7 @@ export interface ChartWrapperProps {
   className?: string;
 }
 
-export function ChartWrapper({
+export const ChartWrapper = memo(function ChartWrapper({
   title,
   subtitle,
   children,
@@ -35,11 +35,11 @@ export function ChartWrapper({
     <Card className={className}>
       <CardHeader className="flex items-center justify-between px-4 py-3">
         <div>
-          <h3 className="font-semibold text-sm">{title}</h3>
-          {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+          <h3 className="font-semibold text-sm dark:text-gray-100">{title}</h3>
+          {subtitle && <p className="text-xs text-[var(--text-muted)] mt-0.5">{subtitle}</p>}
         </div>
         {exportable && (
-          <Button size="sm" variant="ghost" onClick={onExport} title="Export as image">
+          <Button size="sm" variant="ghost" onClick={onExport} aria-label="Export chart as image">
             Export
           </Button>
         )}
@@ -52,8 +52,8 @@ export function ChartWrapper({
         )}
         {error && !loading && (
           <div className="flex flex-col items-center justify-center text-center" style={{ height }}>
-            <AlertCircle className="h-6 w-6 text-red-400 mb-2" />
-            <p className="text-red-400 text-sm mb-3">{error}</p>
+            <AlertCircle className="h-6 w-6 text-red-400 dark:text-red-500 mb-2" />
+            <p className="text-red-400 dark:text-red-500 text-sm mb-3">{error}</p>
             {onRetry && (
               <Button size="sm" variant="secondary" onClick={onRetry}>
                 Retry
@@ -63,7 +63,7 @@ export function ChartWrapper({
         )}
         {empty && !loading && !error && (
           <div
-            className="flex items-center justify-center text-slate-400 text-sm"
+            className="flex items-center justify-center text-[var(--text-muted)] text-sm"
             style={{ height }}
           >
             No data available for this period
@@ -73,4 +73,4 @@ export function ChartWrapper({
       </CardContent>
     </Card>
   );
-}
+});

@@ -5,6 +5,8 @@ import { TornadoChart, type TornadoVariable } from './TornadoChart';
 import { HeatmapGrid } from './HeatmapGrid';
 import { SankeyDiagram, type SankeyNode, type SankeyLink } from './SankeyDiagram';
 import { ActivityFeed } from './ActivityFeed';
+import { ComboChart, type ComboChartDataPoint } from './ComboChart';
+import { DashboardGauge } from './GaugeChart';
 import { cn } from '@/utils/cn';
 
 export type DashboardType = 'cfo' | 'controller' | 'analyst';
@@ -151,6 +153,15 @@ const mockActivities = [
   { id: '4', user: 'A. Kim', action: 'Created new scenario', timestamp: '1 day ago' },
 ];
 
+const mockComboData: ComboChartDataPoint[] = [
+  { name: 'Jan', bar: 9800000, bar2: 9500000, line: 18.2, line2: 17.5 },
+  { name: 'Feb', bar: 10200000, bar2: 9800000, line: 19.1, line2: 17.8 },
+  { name: 'Mar', bar: 11100000, bar2: 10100000, line: 20.3, line2: 18.0 },
+  { name: 'Apr', bar: 10800000, bar2: 10300000, line: 19.5, line2: 18.2 },
+  { name: 'May', bar: 11500000, bar2: 10600000, line: 21.0, line2: 18.5 },
+  { name: 'Jun', bar: 12200000, bar2: 10900000, line: 22.1, line2: 18.8 },
+];
+
 export function DashboardTemplate({
   type,
   kpis,
@@ -198,6 +209,35 @@ export function DashboardTemplate({
               <KPICardEnhanced key={idx} {...kpi} onDrillDown={() => onKPIClick?.(idx)} />
             ))}
           </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <ComboChart
+              data={mockComboData}
+              title="Revenue & Margin Trend"
+              formatValue={(v) => `$${(v / 1e6).toFixed(1)}M`}
+              series={{
+                barLabel: 'Actual',
+                bar2Label: 'Budget',
+                lineLabel: 'Gross Margin %',
+              }}
+              height={280}
+            />
+            <div className="grid grid-cols-2 gap-4">
+              <DashboardGauge
+                value={92}
+                target={100}
+                title="Revenue Target"
+                subtitle="FY 2026"
+                size={120}
+              />
+              <DashboardGauge
+                value={78}
+                target={100}
+                title="EBITDA Target"
+                subtitle="FY 2026"
+                size={120}
+              />
+            </div>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <SankeyDiagram
               nodes={dashboardSankey.nodes}
@@ -234,6 +274,17 @@ export function DashboardTemplate({
             ))}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ComboChart
+              data={mockComboData}
+              title="Actual vs Budget — Revenue & Margin"
+              formatValue={(v) => `$${(v / 1e6).toFixed(1)}M`}
+              series={{
+                barLabel: 'Actual',
+                bar2Label: 'Budget',
+                lineLabel: 'Gross Margin %',
+              }}
+              height={280}
+            />
             <HeatmapGrid
               rows={dashboardHeatmap.rows}
               columns={dashboardHeatmap.columns}
@@ -243,17 +294,40 @@ export function DashboardTemplate({
               format="number"
               onCellClick={onCellClick}
             />
-            <div className="space-y-4">
-              <TrafficLightBatch
-                items={dashboardTraffic.slice(0, 4).map((i) => ({
-                  label: i.label,
-                  value: i.value,
-                  format: i.format as 'currency' | 'percent' | 'number' | 'compact' | undefined,
-                }))}
-                thresholds={{ green: { min: 5 }, yellow: { min: 0 } }}
-                direction="higher-is-better"
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
+              <DashboardGauge
+                value={92}
+                target={100}
+                title="Revenue"
+                subtitle="vs plan"
+                size={110}
+              />
+              <DashboardGauge
+                value={85}
+                target={100}
+                title="OpEx"
+                subtitle="vs budget"
+                size={110}
+              />
+              <DashboardGauge
+                value={68}
+                target={100}
+                title="Cash Flow"
+                subtitle="vs forecast"
+                size={110}
               />
             </div>
+            <TrafficLightBatch
+              items={dashboardTraffic.slice(0, 4).map((i) => ({
+                label: i.label,
+                value: i.value,
+                format: i.format as 'currency' | 'percent' | 'number' | 'compact' | undefined,
+              }))}
+              thresholds={{ green: { min: 5 }, yellow: { min: 0 } }}
+              direction="higher-is-better"
+            />
           </div>
         </>
       )}
@@ -265,11 +339,23 @@ export function DashboardTemplate({
               <KPICardEnhanced key={idx} {...kpi} onDrillDown={() => onKPIClick?.(idx)} />
             ))}
           </div>
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ComboChart
+              data={mockComboData}
+              title="Revenue & Margin Deep Dive"
+              formatValue={(v) => `$${(v / 1e6).toFixed(1)}M`}
+              series={{
+                barLabel: 'Actual',
+                bar2Label: 'Budget',
+                lineLabel: 'Gross Margin %',
+                line2Label: 'Target Margin %',
+              }}
+              height={300}
+            />
             <TornadoChart
               variables={dashboardTornado}
               title="Sensitivity Analysis — Revenue Impact"
-              height={280}
+              height={300}
             />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

@@ -59,7 +59,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(({ className, ...prop
     ref={ref}
     role="tablist"
     className={cn(
-      'inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground',
+      'inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground dark:bg-gray-800 dark:text-gray-400',
       className
     )}
     {...props}
@@ -85,7 +85,7 @@ const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
         data-state={isActive ? 'active' : 'inactive'}
         className={cn(
           'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-          isActive && 'bg-background text-foreground shadow-sm',
+          isActive && 'bg-background text-foreground shadow-sm dark:bg-gray-700 dark:text-gray-100',
           className
         )}
         onClick={() => setActiveTab(value)}

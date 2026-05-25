@@ -29,7 +29,7 @@ export const KPIValue: React.FC<KPIValueProps> = ({
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // eslint-disable-line react-hooks/set-state-in-effect -- intentional: mount animation trigger
+    setIsMounted(true);
   }, []);
 
   const effectiveTrend =

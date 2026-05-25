@@ -2,13 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { CalculationGraph, CellNode } from '../../engines/CalculationGraph';
+import type { GraphStats, CycleResult } from '../../engines/CalculationGraph';
 import { useUIStore } from '../../store/uiStore';
 
 // Optional: if Tauri is available for a true native window popout
-let WebviewWindow: any = null;
+let WebviewWindow: { new(label: string, options: Record<string, unknown>): unknown } | null = null;
 try {
   import('@tauri-apps/api/webviewWindow').then((module) => {
-    WebviewWindow = module.WebviewWindow;
+    WebviewWindow = module.WebviewWindow as unknown as typeof WebviewWindow;
   });
 } catch (e) {
   // Ignore
@@ -30,7 +31,7 @@ const DEFAULT_CELLS = JSON.stringify(
 
 export const DependencyGraph: React.FC = () => {
   const [cellInput, setCellInput] = useState(DEFAULT_CELLS);
-  const [graphData, setGraphData] = useState<{ nodes: CellNode[]; stats: any; cycles: any } | null>(
+  const [graphData, setGraphData] = useState<{ nodes: CellNode[]; stats: GraphStats; cycles: CycleResult } | null>(
     null
   );
   const addToast = useUIStore((s) => s.addToast);
@@ -45,8 +46,10 @@ export const DependencyGraph: React.FC = () => {
       engine.clear();
       const buildResult = engine.buildFromCells(parsedCells);
       const cycles = engine.detectCycles();
-      
-      const nodes = Array.from((engine as any).nodes.values() as Iterable<CellNode>);
+
+      // Access private nodes map via cast for debugging UI
+      const nodesMap = (engine as unknown as { nodes: Map<string, CellNode> }).nodes;
+      const nodes = Array.from(nodesMap.values());
 
       setGraphData({
         nodes,
@@ -181,9 +184,7 @@ export const DependencyGraph: React.FC = () => {
                       <td className="px-4 py-2">
                         {Array.from(node.dependencies).join(', ') || '-'}
                       </td>
-                      <td className="px-4 py-2">
-                        {Array.from(node.dependents).join(', ') || '-'}
-                      </td>
+                      <td className="px-4 py-2">{Array.from(node.dependents).join(', ') || '-'}</td>
                       <td className="px-4 py-2">
                         {node.error ? (
                           <span className="text-red-500 font-semibold">{node.error}</span>

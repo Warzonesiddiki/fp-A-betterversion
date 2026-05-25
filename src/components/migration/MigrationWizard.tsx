@@ -74,24 +74,37 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
       setMappings(result.readiness.detectedColumns);
       setSource(result.source);
       // Generate preview data from first sheet
-      const XLSX = await import('xlsx');
+      const ExcelJS = await import('exceljs');
       const buffer = await f.arrayBuffer();
-      const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
-      const sheetName = workbook.SheetNames[0];
-      if (sheetName) {
-        const ws = workbook.Sheets[sheetName];
-        const raw = XLSX.utils.sheet_to_json(ws, {
-          header: 1,
-          defval: '',
-          raw: false,
-        }) as unknown[][];
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(buffer);
+      const ws = workbook.worksheets[0];
+      if (ws) {
+        const raw: string[][] = [];
+        ws.eachRow({ includeEmpty: false }, (row) => {
+          const values: string[] = [];
+          for (let i = 1; i <= row.cellCount; i++) {
+            const cell = row.getCell(i);
+            const val = cell.value;
+            if (val === null || val === undefined) {
+              values.push('');
+            } else if (typeof val === 'object' && 'result' in val) {
+              values.push(String(val.result ?? ''));
+            } else if (val instanceof Date) {
+              values.push(val.toISOString());
+            } else {
+              values.push(String(val));
+            }
+          }
+          raw.push(values);
+        });
         if (raw.length > 1) {
           const headers = raw[0].map(String);
           const rows = raw.slice(1, 11).map((row) =>
             headers.reduce(
               (obj, h, i) => ({
                 ...obj,
-                [h]: i < (row as unknown[]).length ? ((row as unknown[])[i] ?? '') : '',
+                [h]: i < row.length ? (row[i] ?? '') : '',
               }),
               {} as Record<string, unknown>
             )

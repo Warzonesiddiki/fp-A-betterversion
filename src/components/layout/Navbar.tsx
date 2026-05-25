@@ -44,17 +44,17 @@ export default function Navbar() {
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Hamburger menu for mobile */}
         <button
-          className="md:hidden p-2 rounded-md transition-colors"
+          className="md:hidden p-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-muted)' }}
           onClick={openMobileSidebar}
           aria-label="Open navigation menu"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-5 h-5" aria-hidden="true" />
         </button>
 
         <div className="relative">
           <button
-            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{
               background: 'var(--bg-elevated)',
               color: 'var(--text-primary)',
@@ -73,6 +73,7 @@ export default function Navbar() {
           {showEntityMenu && (
             <div
               role="listbox"
+              tabIndex={0}
               aria-label="Select entity"
               className="absolute top-full left-0 mt-1 w-48 rounded-md shadow-lg z-50 py-1"
               style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}
@@ -108,22 +109,24 @@ export default function Navbar() {
 
       <div className="flex items-center gap-1 sm:gap-2">
         <button
-          className="p-2 rounded-md transition-colors"
+          className="p-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-muted)' }}
           onClick={() => navigate('/help')}
           aria-label="Search"
         >
-          <Search className="w-4 h-4" />
+          <Search className="w-4 h-4" aria-hidden="true" />
         </button>
 
         <div className="relative">
           <button
-            className="p-2 rounded-md transition-colors relative"
+            className="p-2 rounded-md transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-muted)' }}
             onClick={() => setShowCreateMenu(!showCreateMenu)}
             aria-label="Create new"
+            aria-haspopup="menu"
+            aria-expanded={showCreateMenu}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" aria-hidden="true" />
           </button>
           {showCreateMenu && (
             <div
@@ -166,12 +169,14 @@ export default function Navbar() {
 
         <div className="relative">
           <button
-            className="p-2 rounded-md transition-colors relative"
+            className="p-2 rounded-md transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-muted)' }}
             onClick={() => setShowNotifMenu(!showNotifMenu)}
             aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+            aria-haspopup="menu"
+            aria-expanded={showNotifMenu}
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4" aria-hidden="true" />
             {unreadCount > 0 && (
               <span
                 className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
@@ -217,10 +222,12 @@ export default function Navbar() {
 
         <div className="relative">
           <button
-            className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors"
+            className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-primary)' }}
             onClick={() => setShowUserMenu(!showUserMenu)}
             aria-label="User menu"
+            aria-haspopup="menu"
+            aria-expanded={showUserMenu}
           >
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-white"
@@ -231,6 +238,7 @@ export default function Navbar() {
             <ChevronDown
               className="w-3 h-3 hidden sm:block"
               style={{ color: 'var(--text-muted)' }}
+              aria-hidden="true"
             />
           </button>
           {showUserMenu && (

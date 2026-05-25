@@ -19,6 +19,9 @@ import { LayoutDashboard, TrendingUp, BarChart3, Upload, Target, HelpCircle } fr
 import { GaugeChart } from '@/components/charts/GaugeChart';
 import { SparklineChart } from '@/components/charts/SparklineChart';
 import { FinanceCopilotEngine } from '@/engines/FinanceCopilotEngine';
+import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
+import { NLQChat } from '@/components/ai/NLQChat';
+import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import {
   AreaChart,
@@ -557,6 +560,23 @@ export default function DashboardPage() {
           </AreaChart>
         </ResponsiveContainer>
       </ChartWrapper>
+
+      {/* AI Copilot Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-1">
+          <AICopilotPanel pathname={pathname} gl={glStore} budget={budgetStore} />
+        </div>
+        <div className="lg:col-span-1">
+          <NLQChat maxHeight="350px" />
+        </div>
+        <div className="lg:col-span-1">
+          <AnomalyHighlight
+            values={monthlyTrend.map((m) => m.revenue)}
+            labels={monthlyTrend.map((m) => m.month)}
+            maxDisplay={3}
+          />
+        </div>
+      </div>
 
       {sectorKPIs && sectorKPIs.length > 0 && (
         <Card>

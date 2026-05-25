@@ -5,7 +5,7 @@ export function useDebounce<T>(value: T, delay: number): T {
 
   useEffect(() => {
     if (delay === 0) {
-      setDebouncedValue(value); // eslint-disable-line react-hooks/set-state-in-effect -- immediate sync when no delay
+      setDebouncedValue(value);
       return;
     }
 

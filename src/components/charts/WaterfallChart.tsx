@@ -42,6 +42,7 @@ export function WaterfallChart({
     let running = 0;
     return data.map((d) => {
       const start = running;
+
       running += d.value;
       return {
         ...d,

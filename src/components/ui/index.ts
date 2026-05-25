@@ -42,6 +42,7 @@ export { SandboxMode } from './SandboxMode';
 export { SankeyChart } from './SankeyChart';
 export { ScatterPlot } from './ScatterPlot';
 export { Select } from './Select';
+export { SkipToContent } from './SkipToContent';
 export { Skeleton } from './Skeleton';
 export { Sparkline } from './Sparkline';
 export { SplitPane } from './SplitPane';

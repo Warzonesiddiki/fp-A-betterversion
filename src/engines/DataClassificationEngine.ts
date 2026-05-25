@@ -70,7 +70,7 @@ const DEFAULT_PII_TYPES: PIIType[] = [
   },
   {
     name: 'date_of_birth',
-    pattern: /\b(?:0[1-9]|1[0-2])[\/\-](?:0[1-9]|[12]\d|3[01])[\/\-](?:19|20)\d{2}\b/g,
+    pattern: /\b(?:0[1-9]|1[0-2])[/-](?:0[1-9]|[12]\d|3[01])[/-](?:19|20)\d{2}\b/g,
     sensitivity: 'confidential',
     description: 'Date of birth',
   },

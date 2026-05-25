@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useBudgetStore } from '@/store/budgetStore';
 import { Button } from '@/components/ui/Button';
@@ -28,6 +28,8 @@ import {
   Legend,
 } from 'recharts';
 import { VarianceChart } from '@/components/charts/VarianceChart';
+import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
+import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -51,6 +53,7 @@ export default function VarianceDashboardPage() {
   const { entries } = useGLStore();
   const { budgets } = useBudgetStore();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Variance Dashboard';
@@ -312,6 +315,22 @@ export default function VarianceDashboardPage() {
           />
         </CardContent>
       </Card>
+
+      {/* AI Copilot Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <AICopilotPanel
+          pathname={pathname}
+          gl={{ entries } as never}
+          budget={{ budgets } as never}
+        />
+        <AnomalyHighlight
+          values={data.rows.map((r) => r.variancePct)}
+          labels={data.rows.map((r) => r.account)}
+          threshold={2.5}
+          maxDisplay={5}
+        />
+      </div>
+
       <DataTable columns={columns} data={data.rows} />
     </div>
   );

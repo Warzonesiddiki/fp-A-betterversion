@@ -1,7 +1,9 @@
-import { forwardRef, HTMLAttributes, useCallback, useEffect } from 'react';
+import { forwardRef, HTMLAttributes, useCallback, useEffect, useRef } from 'react';
 import { cn } from '../../utils/cn';
-import { useFocusRestore } from '@/hooks/useFocusRestore';
 import { X } from 'lucide-react';
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
@@ -11,7 +13,10 @@ interface ModalProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Modal = forwardRef<HTMLDivElement, ModalProps>(
-  ({ className, isOpen, onClose, children, ...props }, ref) => {
+  ({ className, isOpen, onClose, children, title, ...props }, ref) => {
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const previousFocusRef = useRef<HTMLElement | null>(null);
+
     const handleKeyDown = useCallback(
       (e: KeyboardEvent) => {
         if (e.key === 'Escape') onClose();
@@ -21,9 +26,40 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
 
     useEffect(() => {
       if (!isOpen) return;
+
+      previousFocusRef.current = document.activeElement as HTMLElement;
       document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+
+      requestAnimationFrame(() => {
+        dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+      });
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        previousFocusRef.current?.focus();
+      };
     }, [isOpen, handleKeyDown]);
+
+    useEffect(() => {
+      if (!isOpen || !dialogRef.current) return;
+      const container = dialogRef.current;
+      const handleTabTrap = (e: KeyboardEvent) => {
+        if (e.key !== 'Tab') return;
+        const focusables = container.querySelectorAll<HTMLElement>(FOCUSABLE);
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      };
+      container.addEventListener('keydown', handleTabTrap);
+      return () => container.removeEventListener('keydown', handleTabTrap);
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -46,11 +82,16 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
           </span>
 
           <div
-            ref={ref}
+            ref={(node) => {
+              dialogRef.current = node;
+              if (typeof ref === 'function') ref(node);
+              else if (ref) ref.current = node;
+            }}
             role="dialog"
             aria-modal="true"
+            aria-label={title}
             className={cn(
-              'inline-block transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle dark:bg-gray-800',
+              'inline-block transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle',
               className
             )}
             {...props}
@@ -58,8 +99,9 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
               <button
                 type="button"
-                className="rounded-md bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 hover:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-gray-800 dark:text-gray-400 dark:text-gray-500 dark:hover:text-gray-300"
+                className="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-[var(--text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:hover:text-gray-300"
                 onClick={onClose}
+                aria-label="Close dialog"
               >
                 <span className="sr-only">Close</span>
                 <X className="h-6 w-6" aria-hidden="true" />

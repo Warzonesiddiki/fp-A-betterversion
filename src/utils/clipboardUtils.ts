@@ -160,7 +160,7 @@ export class ClipboardUtils {
    */
   static detectFinancialData(data: string[][]): boolean {
     const flat = data.flat();
-    const financialPattern = /^[\$€£¥]?\s*[\d,]+\.?\d*%?$/;
+    const financialPattern = /^[$€£¥]?\s*[\d,]+\.?\d*%?$/;
     let matches = 0;
 
     for (const cell of flat.slice(0, 50)) {
@@ -177,7 +177,7 @@ export class ClipboardUtils {
   static parseFinancialValues(data: string[][]): number[][] {
     return data.map((row) =>
       row.map((cell) => {
-        const cleaned = cell.replace(/[\$€£¥,\s]/g, '');
+        const cleaned = cell.replace(/[$€£¥,\s]/g, '');
         const isNegative = cleaned.startsWith('(') && cleaned.endsWith(')');
         const num = parseFloat(isNegative ? cleaned.slice(1, -1) : cleaned);
         return isNaN(num) ? 0 : isNegative ? -num : num;

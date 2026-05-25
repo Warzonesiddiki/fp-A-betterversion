@@ -72,7 +72,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
   };
 
   useEffect(() => {
-    load(); // eslint-disable-line react-hooks/set-state-in-effect -- intentional: load persisted data on mount
+    load();
   }, [load]);
 
   return { data, save, load, clear, isLoading, error };

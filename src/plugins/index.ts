@@ -10,8 +10,14 @@ export type { LoadResult, ValidationResult } from './PluginLoader';
 
 export { createPluginAPI } from './PluginAPI';
 
+export { executeSandboxed } from './PluginSandbox';
+export type { SandboxOptions } from './PluginSandbox';
+
 export { PluginManager } from './PluginManager';
 export type { PluginManagerConfig } from './PluginManager';
+
+export { PluginMarketplace } from './PluginMarketplace';
+export type { MarketplacePlugin, InstalledPlugin } from './PluginMarketplace';
 
 export type {
   PluginType,

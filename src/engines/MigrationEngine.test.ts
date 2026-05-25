@@ -1,7 +1,26 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { ImportEngine } from './ImportEngine';
 import { MigrationEngine } from './MigrationEngine';
+
+/**
+ * Helper: create an xlsx File from rows using ExcelJS.
+ */
+async function createXlsxFile(
+  rows: (string | number)[][],
+  fileName: string,
+  sheetName = 'Data'
+): Promise<File> {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(sheetName);
+  for (const row of rows) {
+    worksheet.addRow(row);
+  }
+  const buffer = await workbook.xlsx.writeBuffer();
+  return new File([buffer], fileName, {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+}
 
 describe('ImportEngine (base)', () => {
   let engine: ImportEngine;
@@ -177,51 +196,39 @@ describe('MigrationEngine', () => {
 
   describe('source detection', () => {
     it('should auto-detect Planful format', async () => {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['Plan_ID', 'Model_ID', 'Entity', 'Account', 'Amount'],
-        ['1', '100', 'Corp', 'Revenue', '1000'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Data');
-
-      const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const file = new File([buffer], 'planful_export.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
+      const file = await createXlsxFile(
+        [
+          ['Plan_ID', 'Model_ID', 'Entity', 'Account', 'Amount'],
+          ['1', '100', 'Corp', 'Revenue', '1000'],
+        ],
+        'planful_export.xlsx'
+      );
 
       const source = await engine.detectMigrationSource(file);
       expect(source).toBe('planful');
     });
 
     it('should auto-detect Adaptive format', async () => {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['Level_Code', 'Level_Name', 'Account', 'Amount'],
-        ['CORP', 'Corporate', 'Revenue', '1000'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Data');
-
-      const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const file = new File([buffer], 'adaptive_export.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
+      const file = await createXlsxFile(
+        [
+          ['Level_Code', 'Level_Name', 'Account', 'Amount'],
+          ['CORP', 'Corporate', 'Revenue', '1000'],
+        ],
+        'adaptive_export.xlsx'
+      );
 
       const source = await engine.detectMigrationSource(file);
       expect(source).toBe('adaptive');
     });
 
     it('should auto-detect Anaplan format', async () => {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['Module_Name', 'Line_Item', 'List_Name', 'Amount'],
-        ['P&L', 'Revenue', 'Accounts', '1000'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Data');
-
-      const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const file = new File([buffer], 'anaplan_export.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
+      const file = await createXlsxFile(
+        [
+          ['Module_Name', 'Line_Item', 'List_Name', 'Amount'],
+          ['P&L', 'Revenue', 'Accounts', '1000'],
+        ],
+        'anaplan_export.xlsx'
+      );
 
       const source = await engine.detectMigrationSource(file);
       expect(source).toBe('anaplan');
@@ -230,18 +237,15 @@ describe('MigrationEngine', () => {
 
   describe('migration analysis', () => {
     it('should perform full migration analysis', async () => {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['Account', 'Account_Name', 'Department', 'Amount', 'Date'],
-        ['4000', 'Revenue', 'Sales', '50000', '2024-01-15'],
-        ['5000', 'COGS', 'Operations', '20000', '2024-01-15'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Budget');
-
-      const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const file = new File([buffer], 'budget.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
+      const file = await createXlsxFile(
+        [
+          ['Account', 'Account_Name', 'Department', 'Amount', 'Date'],
+          ['4000', 'Revenue', 'Sales', '50000', '2024-01-15'],
+          ['5000', 'COGS', 'Operations', '20000', '2024-01-15'],
+        ],
+        'budget.xlsx',
+        'Budget'
+      );
 
       const { source, readiness, plan } = await engine.analyzeMigration(file);
 
@@ -255,18 +259,14 @@ describe('MigrationEngine', () => {
 
   describe('migration execution', () => {
     it('should execute migration and create snapshot', async () => {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['Account', 'Amount'],
-        ['Revenue', '1000'],
-        ['COGS', '500'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Data');
-
-      const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const file = new File([buffer], 'test.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
+      const file = await createXlsxFile(
+        [
+          ['Account', 'Amount'],
+          ['Revenue', '1000'],
+          ['COGS', '500'],
+        ],
+        'test.xlsx'
+      );
 
       const mappings = [
         {
@@ -296,17 +296,13 @@ describe('MigrationEngine', () => {
     });
 
     it('should rollback migration', async () => {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['Account', 'Amount'],
-        ['Revenue', '1000'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Data');
-
-      const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const file = new File([buffer], 'test.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
+      const file = await createXlsxFile(
+        [
+          ['Account', 'Amount'],
+          ['Revenue', '1000'],
+        ],
+        'test.xlsx'
+      );
 
       const mappings = [
         {
@@ -331,17 +327,13 @@ describe('MigrationEngine', () => {
       const progressEvents: { status: string; percent: number }[] = [];
       engine.onProgress((p) => progressEvents.push({ status: p.status, percent: p.percent }));
 
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['Account', 'Amount'],
-        ['Revenue', '1000'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Data');
-
-      const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const file = new File([buffer], 'test.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
+      const file = await createXlsxFile(
+        [
+          ['Account', 'Amount'],
+          ['Revenue', '1000'],
+        ],
+        'test.xlsx'
+      );
 
       const mappings = [
         {

@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForecastStore } from '@/store/forecastStore';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { HeatmapChart, HeatmapDataPoint } from '@/components/charts/HeatmapChart';
 import { Plus, Eye, TrendingUp } from 'lucide-react';
+import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -38,6 +39,7 @@ export default function ForecastListPage() {
 
   const { forecasts } = useForecastStore();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [search, _setSearch] = useState('');
 
   const filtered = useMemo(() => {
@@ -94,6 +96,8 @@ export default function ForecastListPage() {
           Create Forecast
         </Button>
       </div>
+
+      <AICopilotPanel pathname={pathname} defaultCollapsed />
 
       {heatmapData.length > 0 && (
         <Card>

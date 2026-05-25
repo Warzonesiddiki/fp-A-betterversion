@@ -102,18 +102,15 @@ export function useMemoizedComputation<T>(
 ): T {
   const ref = useRef<{ deps: unknown[]; value: T } | null>(null);
 
-  // eslint-disable-next-line react-hooks/refs
   if (!ref.current || !deps.every((dep, i) => dep === ref.current!.deps[i])) {
     const newValue = compute();
-    // eslint-disable-next-line react-hooks/refs
+
     if (!ref.current || !isEqual(ref.current.value, newValue)) {
       ref.current = { deps, value: newValue };
     } else {
-      // eslint-disable-next-line react-hooks/refs
       ref.current.deps = deps;
     }
   }
 
-  // eslint-disable-next-line react-hooks/refs
   return ref.current.value;
 }

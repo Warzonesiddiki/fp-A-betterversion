@@ -84,7 +84,7 @@ function getConditionalStyle(
   value: string
 ): Partial<CellStyle> | null {
   if (!formats || formats.length === 0) return null;
-  const num = Number(value.replace(/[^0-9.\-]/g, ''));
+  const num = Number(value.replace(/[^0-9.-]/g, ''));
   if (!Number.isFinite(num)) return null;
   return ReportBuilderEngine.evaluateConditionalFormats(formats, num);
 }

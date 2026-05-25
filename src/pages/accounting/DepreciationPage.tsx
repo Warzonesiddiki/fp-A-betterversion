@@ -81,14 +81,12 @@ export default function DepreciationPage() {
   const totalAccumulated = filtered.reduce((s, a) => s + a.accumulated, 0);
   const totalValue = filtered.reduce((s, a) => s + a.currentValue, 0);
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const scheduleData = useMemo(() => {
     return Array.from({ length: 10 }, (_, i) => ({
       year: `Y${i + 1}`,
       book: Math.max(0, totalCost - (totalCost * (i + 1)) / 10),
       tax: Math.max(0, totalCost - (totalCost * (i + 1)) / 5),
     }));
-    // eslint-disable-next-line react-hooks/preserve-manual-memoization
   }, [totalCost]);
 
   return (
