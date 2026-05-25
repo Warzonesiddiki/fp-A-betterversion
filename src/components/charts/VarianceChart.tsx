@@ -64,7 +64,7 @@ export function VarianceChart({
             dataKey="actual"
             name="Actual"
             radius={[2, 2, 0, 0]}
-            onClick={onClick ? (_entry, index) => onClick(data[index], index) : undefined}
+            onClick={onClick ? (_entry, index) => onClick(data[index]!, index) : undefined}
             style={{ cursor: onClick ? 'pointer' : 'default' }}
           >
             {chartData.map((entry, index) => (

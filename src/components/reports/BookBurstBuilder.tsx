@@ -246,7 +246,7 @@ export function BookBurstBuilder() {
   const handleToggleCell = useCallback((reportIdx: number, entityIdx: number) => {
     setMatrix((prev) => {
       const next = prev.map((row) => row.map((cell) => ({ ...cell })));
-      next[reportIdx][entityIdx].selected = !next[reportIdx][entityIdx].selected;
+      next[reportIdx]![entityIdx]!.selected = !next[reportIdx]![entityIdx]!.selected;
       return next;
     });
   }, []);
@@ -258,7 +258,7 @@ export function BookBurstBuilder() {
         const allSelected = row.every((c) => c.selected);
         const next = prev.map((r) => r.map((cell) => ({ ...cell })));
         for (let j = 0; j < entities.length; j++) {
-          next[reportIdx][j].selected = !allSelected;
+          next[reportIdx]![j]!.selected = !allSelected;
         }
         return next;
       });

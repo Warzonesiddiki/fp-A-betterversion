@@ -165,8 +165,8 @@ export function CellPresenceOverlay({
 
   if (cellEditors.length === 0) return null;
 
-  const editor = cellEditors[0];
-  const color = editor.cursorColor;
+  const editor = cellEditors[0]!;
+  const color = editor!.cursorColor;
 
   return (
     <div

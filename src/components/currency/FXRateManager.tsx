@@ -40,13 +40,13 @@ export function FXRateManager() {
     }
     return Array.from(map.entries()).map(([key, entries]) => ({
       key,
-      from: entries[0].from,
-      to: entries[0].to,
-      latest: entries[entries.length - 1],
+      from: entries[0]!.from,
+      to: entries[0]!.to,
+      latest: entries[entries.length - 1]!,
       count: entries.length,
       change:
         entries.length > 1
-          ? ((entries[entries.length - 1].rate - entries[0].rate) / entries[0].rate) * 100
+          ? ((entries[entries.length - 1]!.rate - entries[0]!.rate) / entries[0]!.rate) * 100
           : 0,
     }));
   }, [rates]);
@@ -138,7 +138,7 @@ export function FXRateManager() {
                         {p.from}/{p.to}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums">
-                        {p.latest.rate.toFixed(4)}
+                        {p.latest?.rate.toFixed(4)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span

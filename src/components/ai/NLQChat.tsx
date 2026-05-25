@@ -38,7 +38,7 @@ const ROUTE_SUGGESTIONS: Record<string, string[]> = {
 function getSuggestions(pathname: string): string[] {
   const match = Object.keys(ROUTE_SUGGESTIONS).find((r) => pathname.startsWith(r));
   return match
-    ? ROUTE_SUGGESTIONS[match]
+    ? ROUTE_SUGGESTIONS[match]!
     : ['Show revenue by department', 'Total expenses', 'Profit trend'];
 }
 

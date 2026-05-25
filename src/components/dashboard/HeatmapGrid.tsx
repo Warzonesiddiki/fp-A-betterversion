@@ -52,14 +52,14 @@ function interpolateColor(
   let r: number, g: number, b: number;
   if (t < 0.5) {
     const localT = t * 2;
-    r = scale.negative[0] + (scale.neutral[0] - scale.negative[0]) * localT;
-    g = scale.negative[1] + (scale.neutral[1] - scale.negative[1]) * localT;
-    b = scale.negative[2] + (scale.neutral[2] - scale.negative[2]) * localT;
+    r = scale.negative[0]! + (scale.neutral[0]! - scale.negative[0]!) * localT;
+    g = scale.negative[1]! + (scale.neutral[1]! - scale.negative[1]!) * localT;
+    b = scale.negative[2]! + (scale.neutral[2]! - scale.negative[2]!) * localT;
   } else {
     const localT = (t - 0.5) * 2;
-    r = scale.neutral[0] + (scale.positive[0] - scale.neutral[0]) * localT;
-    g = scale.neutral[1] + (scale.positive[1] - scale.neutral[1]) * localT;
-    b = scale.neutral[2] + (scale.positive[2] - scale.neutral[2]) * localT;
+    r = scale.neutral[0]! + (scale.positive[0]! - scale.neutral[0]!) * localT;
+    g = scale.neutral[1]! + (scale.positive[1]! - scale.neutral[1]!) * localT;
+    b = scale.neutral[2]! + (scale.positive[2]! - scale.neutral[2]!) * localT;
   }
 
   return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;

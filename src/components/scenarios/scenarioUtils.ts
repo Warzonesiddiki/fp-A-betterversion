@@ -168,7 +168,7 @@ export function pickBest(
   key: keyof ScenarioMetrics,
   higherIsBetter: boolean
 ): { value: number; sourceId: string } {
-  let best = scenarios[0];
+  let best = scenarios[0]!;
   for (const s of scenarios) {
     const current = s.calculatedMetrics[key];
     const bestVal = best.calculatedMetrics[key];
@@ -184,7 +184,7 @@ export function pickWorst(
   key: keyof ScenarioMetrics,
   higherIsBetter: boolean
 ): { value: number; sourceId: string } {
-  let worst = scenarios[0];
+  let worst = scenarios[0]!;
   for (const s of scenarios) {
     const current = s.calculatedMetrics[key];
     const worstVal = worst.calculatedMetrics[key];

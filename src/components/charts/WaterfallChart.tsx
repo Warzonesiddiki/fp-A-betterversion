@@ -76,7 +76,7 @@ export function WaterfallChart({
           <Bar
             dataKey="visible"
             stackId="waterfall"
-            onClick={onClick ? (_entry, index) => onClick(data[index], index) : undefined}
+            onClick={onClick ? (_entry, index) => onClick(data[index]!, index) : undefined}
             style={{ cursor: onClick ? 'pointer' : 'default' }}
           >
             {processed.map((entry, index) => (

@@ -105,7 +105,7 @@ export function ComboChart({
             fill={cfg.barColor}
             radius={[3, 3, 0, 0]}
             barSize={24}
-            onClick={onClick ? (_entry, index) => onClick(data[index], index) : undefined}
+            onClick={onClick ? (_entry, index) => onClick(data[index]!, index) : undefined}
             style={{ cursor: onClick ? 'pointer' : 'default' }}
           />
           {hasBar2 && (

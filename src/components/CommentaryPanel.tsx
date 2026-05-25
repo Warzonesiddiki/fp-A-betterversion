@@ -58,7 +58,7 @@ export function CommentaryPanel({ section, period, lineItems, className }: Comme
   const handleEdit = useCallback(
     (idx: number) => {
       setEditingIdx(idx);
-      setDraftText(displayTexts[idx]);
+      setDraftText(displayTexts[idx] ?? '');
     },
     [displayTexts]
   );

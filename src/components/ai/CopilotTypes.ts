@@ -134,7 +134,7 @@ export function getContextForPath(pathname: string): PageContext {
   const exact = PAGE_CONTEXTS[pathname];
   if (exact) return exact;
   const prefix = Object.keys(PAGE_CONTEXTS).find((k) => k !== '/' && pathname.startsWith(k));
-  return prefix ? PAGE_CONTEXTS[prefix] : DEFAULT_CONTEXT;
+  return prefix ? PAGE_CONTEXTS[prefix]! : DEFAULT_CONTEXT;
 }
 
 export function generateAlerts(

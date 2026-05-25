@@ -78,7 +78,7 @@ export function HeatmapChart({
           {yLabels.map((y, yi) => (
             <tr key={y}>
               <td className="p-1 text-xs font-medium pr-2">{y}</td>
-              {grid[yi].map((value, xi) => (
+              {grid[yi]!.map((value, xi) => (
                 <td
                   key={xi}
                   className="text-center text-xs font-mono"
