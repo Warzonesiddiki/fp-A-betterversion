@@ -359,7 +359,7 @@ export default function YieldCurvePage() {
           <CardContent>
             <div className="overflow-auto max-h-[400px]">
               <table className="w-full text-sm" aria-label="Yield curve data by maturity">
-                <thead className="sticky top-0 bg-white">
+                <thead className="sticky top-0 bg-white dark:bg-gray-900">
                   <tr className="border-b border-slate-200">
                     <th
                       scope="col"

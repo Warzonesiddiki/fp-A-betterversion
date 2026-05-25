@@ -49,9 +49,9 @@ describe('ManufacturingEngine', () => {
     it('should calculate manufacturing statistics', () => {
       const stats = ManufacturingEngine.calculateStats(mockEntries);
       expect(stats.revenue).toBe(1700000); // 800k + 900k
-      expect(stats.cogs).toBe(1050000); // 200+150+100+220+160+110
-      expect(stats.revenue - stats.cogs).toBe(650000);
-      expect(stats.grossMargin).toBeCloseTo((650000 / 1700000) * 100);
+      expect(stats.cogs).toBe(940000); // 200+150+100+220+160+110
+      expect(stats.revenue - stats.cogs).toBe(760000);
+      expect(stats.grossMargin).toBeCloseTo((760000 / 1700000) * 100);
     });
 
     it('should handle empty entries', () => {

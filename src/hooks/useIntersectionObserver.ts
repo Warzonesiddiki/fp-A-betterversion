@@ -25,6 +25,11 @@ export function useIntersectionObserver({
     const element = elementRef.current;
     if (!element) return;
 
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry!.isIntersecting) {

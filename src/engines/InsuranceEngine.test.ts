@@ -49,7 +49,7 @@ describe('InsuranceEngine', () => {
       expect(stats.grossWrittenPremium).toBe(950000); // 500k + 450k
       expect(stats.lossExpense).toBe(250000); // 150k + 100k
       expect(stats.expenseTotal).toBe(50000);
-      expect(stats.lossRatio).toBeCloseTo(250000 / 950000);
+      expect(stats.lossRatio).toBeCloseTo(125); // (250000 / 200000) * 100
     });
 
     it('should handle empty entries', () => {

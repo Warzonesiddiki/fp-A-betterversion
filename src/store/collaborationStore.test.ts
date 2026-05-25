@@ -69,7 +69,7 @@ describe('collaborationStore', () => {
     useCollaborationStore.getState().updateApprovalStatus('apr-1', 'Approved', 'Looks good');
     const approval = useCollaborationStore.getState().approvals[0];
     expect(approval.status).toBe('Approved');
-    expect(approval.comments).toBe('Looks good');
+    expect((approval as any).comments).toBe('Looks good');
     expect(approval.reviewedAt).toBeDefined();
   });
 

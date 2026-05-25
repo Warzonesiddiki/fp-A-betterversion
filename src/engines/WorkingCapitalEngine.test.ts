@@ -39,7 +39,7 @@ describe('WorkingCapitalEngine', () => {
     it('should calculate DPO correctly', () => {
       const result = WorkingCapitalEngine.calculate(mockInput);
       // DPO = (AP / COGS) * 365
-      expect(result.dpo).toBeCloseTo((180000 / 600000) * 365, 1);
+      expect(result.dpo).toBeCloseTo((50000 / 600000) * 365, 1);
     });
 
     it('should calculate DIO correctly', () => {

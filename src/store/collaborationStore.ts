@@ -81,8 +81,8 @@ export const useCollaborationStore = create<CollaborationState>()(
                 return {
                   ...a,
                   status,
-                  decisionDate: new Date().toISOString(),
-                  ...(comment ? { comment } : {}),
+                  reviewedAt: new Date().toISOString(),
+                  ...(comment ? { comments: comment } : {}),
                 };
               }
               return a;

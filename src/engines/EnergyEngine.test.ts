@@ -35,13 +35,13 @@ function gl(
 
 describe('EnergyEngine', () => {
   const mockEntries = [
-    gl('4900', 0, 500000, 500000, 'Electricity sales', '2024-01'),
-    gl('4910', 0, 200000, 200000, 'Gas sales', '2024-01'),
-    gl('4920', 0, 100000, 100000, 'Renewable energy credits', '2024-01'),
-    gl('5900', 150000, 0, 150000, 'Fuel costs', '2024-01'),
-    gl('5910', 100000, 0, 100000, 'Maintenance', '2024-01'),
-    gl('4900', 0, 550000, 550000, 'Electricity sales', '2024-02'),
-    gl('4910', 0, 180000, 180000, 'Gas sales', '2024-02'),
+    gl('4300', 0, 500000, 500000, 'Electricity sales', '2024-01'),
+    gl('4310', 0, 200000, 200000, 'Gas sales', '2024-01'),
+    gl('4320', 0, 100000, 100000, 'Renewable energy credits', '2024-01'),
+    gl('5400', 150000, 0, 150000, 'Fuel costs', '2024-01'),
+    gl('5510', 100000, 0, 100000, 'Maintenance', '2024-01'),
+    gl('4300', 0, 550000, 550000, 'Electricity sales', '2024-02'),
+    gl('4310', 0, 180000, 180000, 'Gas sales', '2024-02'),
   ];
 
   describe('calculateStats', () => {
