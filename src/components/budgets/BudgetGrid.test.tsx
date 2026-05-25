@@ -7,15 +7,15 @@ import { BudgetGrid, type BudgetGridProps } from './BudgetGrid';
 
 vi.mock('@/components/ui/DataGrid', () => ({
   DataGrid: ({
-    data,
-    onCellChange,
+    rows,
+    onCellValueChanged,
   }: {
-    data: unknown[];
-    onCellChange: (id: string, value: unknown) => void;
+    rows: unknown[];
+    onCellValueChanged?: (event: { data: Record<string, unknown>; colDef: { field?: string }; newValue: unknown }) => void;
   }) => (
     <div data-testid="data-grid">
-      <span data-testid="grid-row-count">{data.length}</span>
-      <button data-testid="trigger-cell-change" onClick={() => onCellChange('item-1', '500')}>
+      <span data-testid="grid-row-count">{rows.length}</span>
+      <button data-testid="trigger-cell-change" onClick={() => onCellValueChanged?.({ data: { id: 'item-1' }, colDef: { field: 'amount' }, newValue: '500' })}>
         Edit Cell
       </button>
     </div>
