@@ -166,7 +166,7 @@ export default function DataLineagePage() {
     const groups: Record<string, LineageNode[]> = {};
     for (const node of defaultNodes) {
       if (!groups[node.type]) groups[node.type] = [];
-      groups[node.type].push(node);
+      groups[node.type]!.push(node);
     }
     return groups;
   }, []);

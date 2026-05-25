@@ -221,6 +221,6 @@ describe('DriverPlanningPage', () => {
     const templateCard = await screen.findByText('Revenue Planning');
     fireEvent.click(templateCard);
     expect(mockAddDriver).toHaveBeenCalled();
-    expect(mockAddDriver.mock.calls[0][0].name).toBe('Volume');
+    expect((mockAddDriver.mock.calls[0]! as unknown[])[0]!).toHaveProperty('name', 'Volume');
   });
 });

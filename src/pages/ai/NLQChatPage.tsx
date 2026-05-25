@@ -64,7 +64,7 @@ const ROUTE_SUGGESTIONS: Record<string, string[]> = {
 
 function getRouteSuggestions(pathname: string): string[] {
   const match = Object.keys(ROUTE_SUGGESTIONS).find((route) => pathname.startsWith(route));
-  return match ? ROUTE_SUGGESTIONS[match] : [];
+  return match ? ROUTE_SUGGESTIONS[match]! : [];
 }
 
 // ─── Query History (localStorage) ──────────────────────────────────────────

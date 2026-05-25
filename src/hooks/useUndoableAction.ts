@@ -59,7 +59,7 @@ export function useUndoableAction() {
   const undo = useCallback(() => {
     setUndoStack((prev) => {
       if (prev.length === 0) return prev;
-      const entry = prev[prev.length - 1];
+      const entry = prev[prev.length - 1]!;
       clearTimeout(entry.timer);
       entry.undo();
       setRedoStack((r) => [...r, entry]);
@@ -76,7 +76,7 @@ export function useUndoableAction() {
   const redo = useCallback(() => {
     setRedoStack((prev) => {
       if (prev.length === 0) return prev;
-      const entry = prev[prev.length - 1];
+      const entry = prev[prev.length - 1]!;
       entry.redo();
       setUndoStack((u) => [...u, entry]);
       addToast({

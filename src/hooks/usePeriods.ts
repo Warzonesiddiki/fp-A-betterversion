@@ -57,7 +57,7 @@ export function usePeriods(): FiscalPeriod[] {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, { year, month, startDate, endDate }], index) => ({
         id: `P${String(index + 1).padStart(2, '0')}`,
-        name: MONTH_NAMES[month - 1],
+        name: MONTH_NAMES[month - 1]!,
         year,
         periodNumber: month,
         startDate,

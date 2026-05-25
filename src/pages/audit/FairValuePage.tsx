@@ -217,7 +217,7 @@ export default function FairValuePage() {
                     <div key={item} className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">{item}</span>
                       <span className={`font-mono ${i === 4 ? 'font-bold' : ''}`}>
-                        ${(values[i] / 1000).toFixed(0)}K
+                        ${(values[i]! / 1000).toFixed(0)}K
                       </span>
                     </div>
                   );

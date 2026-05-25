@@ -117,8 +117,8 @@ export default function YieldCurvePage() {
 
   const curveShape = useMemo(() => {
     if (curve.length < 2) return 'Flat';
-    const shortRate = curve[0].rate;
-    const longRate = curve[curve.length - 1].rate;
+    const shortRate = curve[0]!.rate;
+    const longRate = curve[curve.length - 1]!.rate;
     const diff = longRate - shortRate;
     if (diff > 0.005) return 'Normal (Upward)';
     if (diff < -0.005) return 'Inverted';
@@ -127,8 +127,8 @@ export default function YieldCurvePage() {
 
   const slope = useMemo(() => {
     if (curve.length < 2) return 0;
-    const shortRate = curve[0].rate;
-    const longRate = curve[curve.length - 1].rate;
+    const shortRate = curve[0]!.rate;
+    const longRate = curve[curve.length - 1]!.rate;
     return (longRate - shortRate) * 100;
   }, [curve]);
 

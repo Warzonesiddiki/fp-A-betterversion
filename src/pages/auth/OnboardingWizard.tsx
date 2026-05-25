@@ -131,7 +131,7 @@ export default function OnboardingWizard() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <LiveRegion message={`Step ${step + 1}: ${steps[step].label}`} />
+      <LiveRegion message={`Step ${step + 1}: ${steps[step]!.label}`} />
       <Card className="w-full max-w-xl">
         <CardContent className="p-6 space-y-6">
           <Rocket className="h-12 w-12 text-blue-400 mx-auto" aria-hidden="true" />
