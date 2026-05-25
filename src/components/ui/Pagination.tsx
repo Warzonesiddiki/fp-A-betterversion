@@ -95,7 +95,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === 1}
           onClick={() => onPageChange(1)}
           aria-label="First page"
-          className="p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           title="First Page"
         >
           <ChevronsLeft className="h-4 w-4" />
@@ -104,7 +104,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
           aria-label="Previous page"
-          className="p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors mr-2"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors mr-2"
           title="Previous Page"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -121,7 +121,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                   aria-current={currentPage === page ? 'page' : undefined}
                   aria-label={`Page ${page}`}
                   className={cn(
-                    'min-w-[32px] h-8 flex items-center justify-center rounded-md text-xs font-medium transition-all',
+                    'min-w-[32px] h-8 flex items-center justify-center rounded-md text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1',
                     currentPage === page
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -138,7 +138,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
           aria-label="Next page"
-          className="p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors ml-2"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors ml-2"
           title="Next Page"
         >
           <ChevronRight className="h-4 w-4" />
@@ -147,7 +147,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(totalPages)}
           aria-label="Last page"
-          className="p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 p-1.5 rounded-md hover:bg-[var(--bg-hover)] disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           title="Last Page"
         >
           <ChevronsRight className="h-4 w-4" />

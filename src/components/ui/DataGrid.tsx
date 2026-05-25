@@ -406,7 +406,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           {enableFindReplace && (
             <button
               onClick={() => setShowFindReplace(!showFindReplace)}
-              className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
               aria-label="Find and Replace"
               title="Find & Replace (Ctrl+F)"
             >
@@ -416,7 +416,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           {enableExport && (
             <button
               onClick={handleExport}
-              className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
               aria-label="Export to CSV"
               title="Export CSV"
             >
@@ -427,7 +427,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowColumnMenu(!showColumnMenu)}
-                className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
+                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
                 aria-label="Show or hide columns"
                 aria-expanded={showColumnMenu}
                 title="Column Visibility"
@@ -463,7 +463,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowColumnMenu(!showColumnMenu)}
-                className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
+                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
                 aria-label="Group rows by column"
                 title="Row Grouping"
               >
@@ -479,7 +479,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
                       handleGroupBy(null);
                       setShowColumnMenu(false);
                     }}
-                    className="block w-full text-left px-3 py-1.5 hover:bg-[var(--bg-muted)]"
+                    className="block w-full text-left px-3 py-1.5 hover:bg-[var(--bg-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                     role="menuitem"
                   >
                     No Grouping
@@ -491,7 +491,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
                         handleGroupBy(col.field);
                         setShowColumnMenu(false);
                       }}
-                      className="block w-full text-left px-3 py-1.5 hover:bg-[var(--bg-muted)]"
+                      className="block w-full text-left px-3 py-1.5 hover:bg-[var(--bg-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                       role="menuitem"
                     >
                       Group by {col.headerName}
@@ -522,7 +522,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           />
           <button
             onClick={handleFind}
-            className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-2 py-1 text-sm bg-blue-600 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded hover:bg-blue-700"
             aria-label="Search"
           >
             Search
@@ -537,7 +537,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           />
           <button
             onClick={handleReplace}
-            className="px-2 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+            className="px-2 py-1 text-sm bg-gray-600 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded hover:bg-gray-700"
             aria-label="Replace all"
           >
             Replace All
@@ -547,7 +547,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
               setShowFindReplace(false);
               gridRef.current?.api.setGridOption('quickFilterText', '');
             }}
-            className="px-2 py-1 text-sm hover:bg-[var(--bg-surface)] rounded"
+            className="px-2 py-1 text-sm hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
             aria-label="Close find and replace"
           >
             ✕

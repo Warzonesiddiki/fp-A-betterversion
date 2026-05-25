@@ -1,16 +1,10 @@
 import { useState } from 'react';
 import {
   Calculator,
-  DollarSign,
-  TrendingDown,
-  AlertTriangle,
-  FileText,
   ArrowRightLeft,
   Download,
-  Filter,
   BarChart3,
   Scale,
-  PieChart as PieChartIcon,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -27,8 +21,6 @@ import {
   Tooltip,
   Legend,
   Cell,
-  PieChart,
-  Pie,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 

@@ -11,7 +11,7 @@ export const SandboxMode: React.FC<SandboxModeProps> = ({ isActive, onToggle }) 
     return (
       <button
         onClick={onToggle}
-        className="fixed bottom-4 right-4 z-40 flex items-center space-x-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full shadow-sm hover:bg-amber-100 transition-all group"
+        className="fixed bottom-4 right-4 z-40 flex items-center space-x-2 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded-full shadow-sm hover:bg-amber-100 transition-all group"
       >
         <FlaskConical className="h-4 w-4" />
         <span className="text-xs font-semibold">Sandbox Mode</span>
@@ -40,7 +40,7 @@ export const SandboxMode: React.FC<SandboxModeProps> = ({ isActive, onToggle }) 
       <div className="flex items-center space-x-4">
         <button
           onClick={onToggle}
-          className="bg-[var(--bg-surface)] text-amber-600 px-3 py-1 rounded text-xs font-bold hover:bg-amber-50 transition-colors shadow-sm"
+          className="bg-[var(--bg-surface)] text-amber-600 px-3 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded text-xs font-bold hover:bg-amber-50 transition-colors shadow-sm"
         >
           Exit Sandbox
         </button>

@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import {
-  FileSearch,
-  TrendingUp,
-  DollarSign,
-  Users,
-  AlertTriangle,
   BarChart3,
   Download,
   Filter,
-  Clock,
   PieChart as PieChartIcon,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -25,8 +19,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  BarChart,
-  Bar,
   Cell,
   PieChart,
   Pie,

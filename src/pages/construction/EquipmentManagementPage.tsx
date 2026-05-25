@@ -1,15 +1,8 @@
 import { useState } from 'react';
 import {
-  Truck,
-  Settings,
-  TrendingUp,
-  DollarSign,
   Wrench,
   AlertTriangle,
-  Calendar,
   Download,
-  Filter,
-  BarChart3,
   Gauge,
   MapPin,
 } from 'lucide-react';
@@ -27,9 +20,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  BarChart,
-  Bar,
-  Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 

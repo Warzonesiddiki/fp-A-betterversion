@@ -1,17 +1,9 @@
 import { useState } from 'react';
 
 import {
-  Zap,
-  DollarSign,
-  TrendingUp,
-  Activity,
   BarChart3,
-  CloudRain,
-  Sun,
-  Wind,
   Download,
   RefreshCw,
-  MoreVertical,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 

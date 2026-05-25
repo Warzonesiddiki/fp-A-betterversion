@@ -1,11 +1,5 @@
 import { useState } from 'react';
 import {
-  Leaf,
-  Globe,
-  BarChart3,
-  TrendingUp,
-  Scale,
-  AlertCircle,
   Download,
   Filter,
   ArrowUpRight,
@@ -18,13 +12,11 @@ import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import {
   ResponsiveContainer,
-  BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   AreaChart,
   Area,
 } from 'recharts';

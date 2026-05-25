@@ -66,7 +66,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
         <button
           onClick={() => onDismiss(toast.id)}
           aria-label="Dismiss notification"
-          className="shrink-0 rounded-md p-1 hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 text-[var(--text-secondary)] transition-colors"
+          className="shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded-md p-1 hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 text-[var(--text-secondary)] transition-colors"
         >
           <X className="h-4 w-4" />
         </button>

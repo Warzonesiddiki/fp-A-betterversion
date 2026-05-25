@@ -1,16 +1,10 @@
 import { useState } from 'react';
 
 import {
-  Shield,
-  TrendingUp,
-  DollarSign,
-  Users,
   Activity,
   BarChart3,
   Download,
-  RefreshCw,
   FileText,
-  Percent,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -29,7 +23,6 @@ import {
   Legend,
   BarChart,
   Bar,
-  Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 
