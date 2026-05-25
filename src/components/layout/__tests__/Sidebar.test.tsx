@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
-import Sidebar from '../Sidebar';
+import { Sidebar } from '../Sidebar';
 
 vi.mock('lucide-react', () => {
   const makeIcon = (name: string) => {

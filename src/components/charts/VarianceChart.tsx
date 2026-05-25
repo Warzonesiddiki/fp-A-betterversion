@@ -49,7 +49,7 @@ export function VarianceChart({
             tick={{ fontSize: 12, fill: 'var(--text-secondary, #94a3b8)' }}
           />
           <Tooltip
-            formatter={(value: number | string, name: string) => [formatValue(Number(value)), name]}
+            formatter={((value: string | number, name: string) => [formatValue(Number(value)), name]) as React.ComponentProps<typeof Tooltip>['formatter']}
             labelFormatter={(label) => label}
           />
           <Legend />

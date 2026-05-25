@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -29,7 +30,7 @@ import {
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
 
-export default function Sidebar() {
+export const Sidebar = memo(function Sidebar() {
   const { t } = useTranslation();
   const { sidebarCollapsed, toggleSidebar, closeMobileSidebar } = useUIStore();
   const { theme, toggleTheme } = useTheme();
@@ -233,4 +234,5 @@ export default function Sidebar() {
       </div>
     </aside>
   );
-}
+});
+Sidebar.displayName = 'Sidebar';
