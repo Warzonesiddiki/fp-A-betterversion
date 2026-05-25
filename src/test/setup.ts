@@ -71,9 +71,15 @@ vi.mock('../workers/worker-pool', () => {
       return {} as T;
     },
     terminate: () => {},
-    get busyCount() { return 0; },
-    get queuedCount() { return 0; },
-    get workerCount() { return 0; },
+    get busyCount() {
+      return 0;
+    },
+    get queuedCount() {
+      return 0;
+    },
+    get workerCount() {
+      return 0;
+    },
   };
   return {
     createStoragePool: () => mockPool,
@@ -102,7 +108,11 @@ if (typeof localStorage === 'undefined' || localStorage === null) {
     },
     key: (index: number) => [...store.keys()][index] ?? null,
   };
-  Object.defineProperty(globalThis, 'localStorage', { value: ls, writable: false, configurable: true });
+  Object.defineProperty(globalThis, 'localStorage', {
+    value: ls,
+    writable: false,
+    configurable: true,
+  });
 }
 
 // Automatically cleanup after each test

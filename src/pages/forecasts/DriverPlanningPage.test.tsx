@@ -63,8 +63,34 @@ vi.mock('@/store/driverStore', () => ({
       description: 'Standard revenue growth driver',
       category: 'revenue',
       drivers: [
-        { id: 'volume', name: 'Volume', unit: 'absolute', baseValue: 1000, currentValue: 1000, minValue: 0, maxValue: 10000, step: 100, tags: [], category: 'revenue', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
-        { id: 'price', name: 'Price', unit: 'absolute', baseValue: 50, currentValue: 50, minValue: 0, maxValue: 1000, step: 1, tags: [], category: 'revenue', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+        {
+          id: 'volume',
+          name: 'Volume',
+          unit: 'absolute',
+          baseValue: 1000,
+          currentValue: 1000,
+          minValue: 0,
+          maxValue: 10000,
+          step: 100,
+          tags: [],
+          category: 'revenue',
+          createdAt: '2024-01-01',
+          updatedAt: '2024-01-01',
+        },
+        {
+          id: 'price',
+          name: 'Price',
+          unit: 'absolute',
+          baseValue: 50,
+          currentValue: 50,
+          minValue: 0,
+          maxValue: 1000,
+          step: 1,
+          tags: [],
+          category: 'revenue',
+          createdAt: '2024-01-01',
+          updatedAt: '2024-01-01',
+        },
       ],
     },
     {
@@ -73,7 +99,20 @@ vi.mock('@/store/driverStore', () => ({
       description: 'Cost drivers for COGS and OpEx',
       category: 'cost',
       drivers: [
-        { id: 'cogs', name: 'COGS', unit: 'absolute', baseValue: 500, currentValue: 500, minValue: 0, maxValue: 5000, step: 50, tags: [], category: 'cost', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+        {
+          id: 'cogs',
+          name: 'COGS',
+          unit: 'absolute',
+          baseValue: 500,
+          currentValue: 500,
+          minValue: 0,
+          maxValue: 5000,
+          step: 50,
+          tags: [],
+          category: 'cost',
+          createdAt: '2024-01-01',
+          updatedAt: '2024-01-01',
+        },
       ],
     },
     {
@@ -82,14 +121,26 @@ vi.mock('@/store/driverStore', () => ({
       description: 'Margin and profitability drivers',
       category: 'revenue',
       drivers: [
-        { id: 'margin', name: 'Margin', unit: 'percentage', baseValue: 25, currentValue: 25, minValue: 0, maxValue: 100, step: 1, tags: [], category: 'revenue', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+        {
+          id: 'margin',
+          name: 'Margin',
+          unit: 'percentage',
+          baseValue: 25,
+          currentValue: 25,
+          minValue: 0,
+          maxValue: 100,
+          step: 1,
+          tags: [],
+          category: 'revenue',
+          createdAt: '2024-01-01',
+          updatedAt: '2024-01-01',
+        },
       ],
     },
   ],
 }));
 
-const renderComponent = () =>
-  render(<DriverPlanningPage />);
+const renderComponent = () => render(<DriverPlanningPage />);
 
 describe('DriverPlanningPage', () => {
   beforeEach(() => {
