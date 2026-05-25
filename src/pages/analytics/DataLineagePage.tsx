@@ -241,7 +241,7 @@ export default function DataLineagePage() {
                       <div className="text-sm font-semibold text-white">{node.label}</div>
                       <div className="text-[10px] text-white/50">{typeLabels[node.type]}</div>
                     </div>
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white/20 animate-pulse" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white dark:bg-gray-900 dark:bg-gray-900/20 animate-pulse" />
                   </button>
                   {typeIdx < types.length - 1 && node.connections.length > 0 && (
                     <ArrowRight className="w-4 h-4 text-slate-600 flex-shrink-0" />

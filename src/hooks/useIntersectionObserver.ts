@@ -18,7 +18,7 @@ export function useIntersectionObserver({
   threshold = 0,
   triggerOnce = true,
 }: UseIntersectionObserverOptions = {}) {
-  const [isVisible, setIsVisible] = useState(typeof IntersectionObserver === 'undefined');
+  const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
