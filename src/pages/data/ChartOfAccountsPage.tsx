@@ -356,6 +356,7 @@ export default function ChartOfAccountsPage() {
                           onClick={() => handleEdit(acct)}
                           className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
                           title="Edit account"
+                          aria-label="Edit account"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
@@ -363,6 +364,7 @@ export default function ChartOfAccountsPage() {
                           onClick={() => handleToggle(acct.id, acct.isActive)}
                           className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
                           title={acct.isActive ? 'Deactivate' : 'Activate'}
+                          aria-label={acct.isActive ? 'Deactivate account' : 'Activate account'}
                         >
                           {acct.isActive ? (
                             <ToggleRight className="h-3.5 w-3.5" />
@@ -374,6 +376,7 @@ export default function ChartOfAccountsPage() {
                           onClick={() => setDeleteConfirmId(acct.id)}
                           className="p-1.5 rounded hover:bg-red-700/30 text-slate-400 hover:text-red-400 transition-colors"
                           title="Delete account"
+                          aria-label="Delete account"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>

@@ -56,6 +56,7 @@ export default function ForecastBuilderPage() {
   const { entries } = useGLStore();
   const _navigate = useNavigate();
   const [method, setMethod] = useState<'linear' | 'seasonal' | 'ai'>('linear');
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Forecast Builder';
@@ -68,36 +69,51 @@ export default function ForecastBuilderPage() {
   const _trendDirection = 'up';
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
-      {
-        headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
-        rows: historicalData.map((d) => [
-          d.month,
-          d.actual ? formatCurrency(d.actual) : '—',
-          formatCurrency(d.forecast),
-          d.low ? formatCurrency(d.low) : '—',
-          d.high ? formatCurrency(d.high) : '—',
-        ]),
-      },
-      { title: 'Forecast Report', subtitle: `Method: ${method}` }
-    );
+    setExportError(null);
+    try {
+      ExportEngine.exportToPDF(
+        {
+          headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
+          rows: historicalData.map((d) => [
+            d.month,
+            d.actual ? formatCurrency(d.actual) : '—',
+            formatCurrency(d.forecast),
+            d.low ? formatCurrency(d.low) : '—',
+            d.high ? formatCurrency(d.high) : '—',
+          ]),
+        },
+        { title: 'Forecast Report', subtitle: `Method: ${method}` }
+      );
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : 'Failed to export PDF');
+    }
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
-      {
-        headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
-        rows: historicalData.map(
-          (d) =>
-            [d.month, d.actual, d.forecast, d.low, d.high] as (string | number | boolean | null)[]
-        ),
-      },
-      { title: 'Forecast_Report' }
-    );
+    setExportError(null);
+    try {
+      ExportEngine.exportToExcel(
+        {
+          headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
+          rows: historicalData.map(
+            (d) =>
+              [d.month, d.actual, d.forecast, d.low, d.high] as (string | number | boolean | null)[]
+          ),
+        },
+        { title: 'Forecast_Report' }
+      );
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : 'Failed to export Excel');
+    }
   };
 
   return (
-    <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6">
+      {exportError && (
+        <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
+          {exportError}
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Forecast Builder</h1>

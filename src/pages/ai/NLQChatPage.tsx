@@ -457,6 +457,7 @@ export function NLQChatPage() {
                           onClick={() => handleCopy(msg.id, msg.content)}
                           className="p-1 rounded hover:bg-slate-700/50 transition-colors"
                           title="Copy to clipboard"
+                          aria-label="Copy to clipboard"
                         >
                           {copiedId === msg.id ? (
                             <Check className="h-3 w-3 text-green-400" />
@@ -468,6 +469,7 @@ export function NLQChatPage() {
                           onClick={() => exportAsCSV(msg.result!)}
                           className="p-1 rounded hover:bg-slate-700/50 transition-colors"
                           title="Export as CSV"
+                          aria-label="Export as CSV"
                         >
                           <FileSpreadsheet className="h-3 w-3" />
                         </button>
@@ -475,6 +477,7 @@ export function NLQChatPage() {
                           onClick={() => exportAsJSON(msg.result!, msg.content)}
                           className="p-1 rounded hover:bg-slate-700/50 transition-colors"
                           title="Export as JSON"
+                          aria-label="Export as JSON"
                         >
                           <FileJson className="h-3 w-3" />
                         </button>

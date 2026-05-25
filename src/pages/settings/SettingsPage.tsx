@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const { organization, updateOrganization } = useSettingsStore();
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('org');
+  const [settingsError, setSettingsError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — System Settings';
@@ -42,23 +43,38 @@ export default function SettingsPage() {
   }
 
   const handleExport = async () => {
-    await BackupRestore.exportBackup();
+    setSettingsError(null);
+    try {
+      await BackupRestore.exportBackup();
+    } catch (err) {
+      setSettingsError(err instanceof Error ? err.message : 'Failed to export backup');
+    }
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSettingsError(null);
     const file = e.target.files?.[0];
     if (file) {
-      const result = await BackupRestore.importBackup(file);
-      if (result.success) {
-        window.location.reload(); // Reload to pick up imported data
-      } else {
-        alert('Import failed: ' + result.errors.join('\n'));
+      try {
+        const result = await BackupRestore.importBackup(file);
+        if (result.success) {
+          window.location.reload();
+        } else {
+          setSettingsError('Import failed: ' + result.errors.join('\n'));
+        }
+      } catch (err) {
+        setSettingsError(err instanceof Error ? err.message : 'Failed to import backup');
       }
     }
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+      <div className="p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+      {settingsError && (
+        <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
+          {settingsError}
+        </div>
+      )}
       <div className="mb-2">
         <h1 className="text-2xl font-bold text-white">Settings</h1>
         <p className="text-slate-400 text-sm">

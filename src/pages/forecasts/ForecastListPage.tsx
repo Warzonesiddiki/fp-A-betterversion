@@ -167,6 +167,7 @@ export default function ForecastListPage() {
                             navigate('/forecasts/' + f.id);
                           }}
                           className="p-1.5 rounded hover:bg-slate-700 text-slate-400 transition-colors"
+                          aria-label="View forecast"
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </button>

@@ -144,6 +144,7 @@ export default function DashboardBuilderPage() {
                   <button
                     className="p-1 rounded hover:bg-[var(--bg-hover)]"
                     title="Drag to reorder"
+                    aria-label="Drag to reorder"
                   >
                     <GripVertical className="h-4 w-4 text-[var(--text-muted)]" />
                   </button>
@@ -151,6 +152,7 @@ export default function DashboardBuilderPage() {
                     className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900"
                     onClick={() => handleRemoveWidget(widget.id)}
                     title="Remove widget"
+                    aria-label="Remove widget"
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </button>

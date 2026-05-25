@@ -164,6 +164,7 @@ export default function BudgetDetailPage() {
           <button
             onClick={() => navigate('/budgets')}
             className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 transition-colors"
+            aria-label="Back to budgets"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -204,6 +205,7 @@ export default function BudgetDetailPage() {
               (canUndo ? 'hover:bg-slate-800 text-slate-400' : 'text-slate-700 cursor-not-allowed')
             }
             title="Undo"
+            aria-label="Undo"
           >
             <Undo2 className="h-4 w-4" />
           </button>
@@ -215,6 +217,7 @@ export default function BudgetDetailPage() {
               (canRedo ? 'hover:bg-slate-800 text-slate-400' : 'text-slate-700 cursor-not-allowed')
             }
             title="Redo"
+            aria-label="Redo"
           >
             <Redo2 className="h-4 w-4" />
           </button>

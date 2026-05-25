@@ -32,6 +32,7 @@ export default function BudgetCreatePage() {
   const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([]);
   const [amounts, setAmounts] = useState<Record<string, number>>({});
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const totalAmount = useMemo(() => {
     let total = 0;
@@ -101,25 +102,30 @@ export default function BudgetCreatePage() {
   };
 
   const handleCreate = (status: 'Draft' | 'InReview') => {
+    setSubmitError(null);
     if (totalAmount === 0 && !window.confirm('Total amount is $0. Create budget anyway?')) return;
-    const budgetId = createBudget({
-      name: form.name,
-      fiscalYear: form.fiscalYear,
-      baseCurrency: form.baseCurrency,
-      description: form.description,
-      departments: [],
-      entities: ['default'],
-      status,
-      template: 'Standard',
-      totalAmount,
-      createdByName: 'Current User',
-      submittedAt: null,
-      approvedAt: null,
-      approvedBy: null,
-      version: 1,
-      progress: 0,
-    });
-    navigate('/budgets/' + budgetId);
+    try {
+      const budgetId = createBudget({
+        name: form.name,
+        fiscalYear: form.fiscalYear,
+        baseCurrency: form.baseCurrency,
+        description: form.description,
+        departments: [],
+        entities: ['default'],
+        status,
+        template: 'Standard',
+        totalAmount,
+        createdByName: 'Current User',
+        submittedAt: null,
+        approvedAt: null,
+        approvedBy: null,
+        version: 1,
+        progress: 0,
+      });
+      navigate('/budgets/' + budgetId);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Failed to create budget');
+    }
   };
 
   if (accounts.length === 0) {
@@ -417,6 +423,9 @@ export default function BudgetCreatePage() {
                 {form.description}
               </div>
             )}
+            {submitError && (
+              <Alert type="error" title="Error" message={submitError} />
+            )}
             <div className="flex gap-3 pt-4">
               <Button variant="ghost" onClick={() => setStep(2)}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -437,3 +446,4 @@ export default function BudgetCreatePage() {
     </div>
   );
 }
+

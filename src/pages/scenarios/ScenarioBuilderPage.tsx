@@ -65,6 +65,7 @@ export default function ScenarioBuilderPage() {
   const [headcountChange, setHeadcountChange] = useState(20);
   const [pricingChange, setPricingChange] = useState(5);
   const [cogsChange, setCogsChange] = useState(-2);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Scenario Builder';
@@ -89,75 +90,80 @@ export default function ScenarioBuilderPage() {
   }, [growthRate, headcountChange, pricingChange, cogsChange]);
 
   const handleSave = () => {
-    createScenario({
-      name: `Scenario ${scenarios.length + 1}`,
-      description: `Growth ${growthRate}%, HC +${headcountChange}, Pricing +${pricingChange}%, COGS ${cogsChange}%`,
-      baseBudgetId: '',
-      baseBudgetName: '',
-      type: 'Custom' as const,
-      probability: 1,
-      isActive: true,
-      assumptions: [
-        {
-          id: 'growth',
-          name: 'Growth Rate',
-          driverType: 'percentage',
-          baseValue: 10,
-          currentValue: growthRate,
-          minValue: -50,
-          maxValue: 100,
-          stepSize: 1,
-          unit: '%',
-          affectedAccountIds: [],
+    setSaveError(null);
+    try {
+      createScenario({
+        name: `Scenario ${scenarios.length + 1}`,
+        description: `Growth ${growthRate}%, HC +${headcountChange}, Pricing +${pricingChange}%, COGS ${cogsChange}%`,
+        baseBudgetId: '',
+        baseBudgetName: '',
+        type: 'Custom' as const,
+        probability: 1,
+        isActive: true,
+        assumptions: [
+          {
+            id: 'growth',
+            name: 'Growth Rate',
+            driverType: 'percentage',
+            baseValue: 10,
+            currentValue: growthRate,
+            minValue: -50,
+            maxValue: 100,
+            stepSize: 1,
+            unit: '%',
+            affectedAccountIds: [],
+          },
+          {
+            id: 'hc',
+            name: 'Headcount Change',
+            driverType: 'absolute',
+            baseValue: 0,
+            currentValue: headcountChange,
+            minValue: -100,
+            maxValue: 100,
+            stepSize: 1,
+            unit: 'FTE',
+            affectedAccountIds: [],
+          },
+          {
+            id: 'pricing',
+            name: 'Pricing Change',
+            driverType: 'percentage',
+            baseValue: 0,
+            currentValue: pricingChange,
+            minValue: -50,
+            maxValue: 50,
+            stepSize: 1,
+            unit: '%',
+            affectedAccountIds: [],
+          },
+          {
+            id: 'cogs',
+            name: 'COGS Change',
+            driverType: 'percentage',
+            baseValue: 0,
+            currentValue: cogsChange,
+            minValue: -50,
+            maxValue: 50,
+            stepSize: 1,
+            unit: '%',
+            affectedAccountIds: [],
+          },
+        ],
+        calculatedMetrics: {
+          revenue: scenarioImpact.newRevenue,
+          opex: scenarioImpact.newOpex,
+          cogs: scenarioImpact.newCogs,
+          grossProfit: scenarioImpact.newRevenue - scenarioImpact.newCogs,
+          netIncome: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
+          ebitda: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
         },
-        {
-          id: 'hc',
-          name: 'Headcount Change',
-          driverType: 'absolute',
-          baseValue: 0,
-          currentValue: headcountChange,
-          minValue: -100,
-          maxValue: 100,
-          stepSize: 1,
-          unit: 'FTE',
-          affectedAccountIds: [],
-        },
-        {
-          id: 'pricing',
-          name: 'Pricing Change',
-          driverType: 'percentage',
-          baseValue: 0,
-          currentValue: pricingChange,
-          minValue: -50,
-          maxValue: 50,
-          stepSize: 1,
-          unit: '%',
-          affectedAccountIds: [],
-        },
-        {
-          id: 'cogs',
-          name: 'COGS Change',
-          driverType: 'percentage',
-          baseValue: 0,
-          currentValue: cogsChange,
-          minValue: -50,
-          maxValue: 50,
-          stepSize: 1,
-          unit: '%',
-          affectedAccountIds: [],
-        },
-      ],
-      calculatedMetrics: {
-        revenue: scenarioImpact.newRevenue,
-        opex: scenarioImpact.newOpex,
-        cogs: scenarioImpact.newCogs,
-        grossProfit: scenarioImpact.newRevenue - scenarioImpact.newCogs,
-        netIncome: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
-        ebitda: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
-      },
-      createdBy: 'user',
-      createdByName: 'User',
-    } as unknown as Parameters<typeof createScenario>[0]);
+        createdBy: 'user',
+        createdByName: 'User',
+      } as unknown as Parameters<typeof createScenario>[0]);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to save scenario');
+    }
   };
 
   const handleExportPDF = () => {
@@ -215,7 +221,12 @@ export default function ScenarioBuilderPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6">
+      {saveError && (
+        <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
+          {saveError}
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Scenario Builder</h1>

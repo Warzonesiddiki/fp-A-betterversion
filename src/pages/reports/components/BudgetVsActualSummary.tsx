@@ -22,16 +22,16 @@ export const BudgetVsActualSummary = memo(function BudgetVsActualSummary({
           <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2">
             Total Budget
           </p>
-          <p className="text-3xl font-black text-slate-800">{totalBudget}</p>
+          <p className="text-3xl font-black text-slate-800 dark:text-slate-200">{totalBudget}</p>
         </div>
-        <div className="w-px h-12 bg-slate-100" />
+        <div className="w-px h-12 bg-slate-100 dark:bg-slate-700" />
         <div className="text-center">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2">
             Total Actual
           </p>
-          <p className="text-3xl font-black text-slate-800">{totalActual}</p>
+          <p className="text-3xl font-black text-slate-800 dark:text-slate-200">{totalActual}</p>
         </div>
-        <div className="w-px h-12 bg-slate-100" />
+        <div className="w-px h-12 bg-slate-100 dark:bg-slate-700" />
         <div className="text-center">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2">
             Net Variance
@@ -44,7 +44,7 @@ export const BudgetVsActualSummary = memo(function BudgetVsActualSummary({
         </div>
       </div>
 
-      <div className="h-4 bg-slate-50 rounded-full overflow-hidden border border-slate-100 flex">
+      <div className="h-4 bg-slate-50 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-100 dark:border-slate-700 flex">
         <div
           className="h-full bg-blue-500 transition-all duration-1000"
           style={{ width: `${Math.min(utilizationPercentage, 100)}%` }}

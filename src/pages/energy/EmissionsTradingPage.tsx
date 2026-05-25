@@ -183,7 +183,7 @@ export default function EmissionsTradingPage() {
                 <span>Actual</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-slate-200" />
+                <div className="h-2 w-2 rounded-full bg-slate-200 dark:bg-slate-700" />
                 <span>Regulatory Cap</span>
               </div>
             </div>

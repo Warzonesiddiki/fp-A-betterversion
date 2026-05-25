@@ -117,7 +117,7 @@ const columns: Column[] = [
           v === 'Active'
             ? 'bg-green-100 text-green-700'
             : v === 'Pending'
-              ? 'bg-slate-100 text-slate-700'
+              ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
               : 'bg-blue-100 text-blue-700'
         }`}
       >

@@ -60,7 +60,7 @@ const columns: Column[] = [
           v === 1
             ? 'bg-yellow-100 text-yellow-700'
             : v === 2
-              ? 'bg-slate-100 text-slate-700'
+              ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
               : v === 3
                 ? 'bg-amber-100 text-amber-700'
                 : 'bg-transparent text-slate-500'

@@ -136,7 +136,7 @@ const columns: Column[] = [
             ? 'bg-green-100 text-green-700'
             : v === 'Worsening'
               ? 'bg-red-100 text-red-700'
-              : 'bg-slate-100 text-slate-700'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
         }`}
       >
         {v}
