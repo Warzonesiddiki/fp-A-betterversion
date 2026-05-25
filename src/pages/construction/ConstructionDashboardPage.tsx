@@ -1,17 +1,10 @@
 import { useState } from 'react';
 
 import {
-  Construction,
-  HardHat,
   TrendingUp,
-  DollarSign,
   Briefcase,
   Clock,
   Download,
-  Filter,
-  ArrowUpRight,
-  BarChart3,
-  Calendar,
   Layers,
 } from 'lucide-react';
 
@@ -22,17 +15,14 @@ import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import {
   ResponsiveContainer,
-  BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
-  Cell,
   ComposedChart,
   Line,
-  Area,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 

@@ -8,11 +8,11 @@ vi.mock('@/test/testUtils', async () => {
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: any) => children,
-  BarChart: (props: any) => <div data-testid="bar-chart" />,
-  LineChart: (props: any) => <div data-testid="line-chart" />,
-  PieChart: (props: any) => <div data-testid="pie-chart" />,
-  AreaChart: (props: any) => <div data-testid="area-chart" />,
-  Sankey: (props: any) => <div data-testid="sankey" />,
+  BarChart: (_props: any) => <div data-testid="bar-chart" />,
+  LineChart: (_props: any) => <div data-testid="line-chart" />,
+  PieChart: (_props: any) => <div data-testid="pie-chart" />,
+  AreaChart: (_props: any) => <div data-testid="area-chart" />,
+  Sankey: (_props: any) => <div data-testid="sankey" />,
   Bar: () => null,
   Line: () => null,
   Pie: () => null,

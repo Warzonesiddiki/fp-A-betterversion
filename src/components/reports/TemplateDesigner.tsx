@@ -155,6 +155,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                   e.stopPropagation();
                   moveSection(section.id, 'up');
                 }}
+                aria-label={`Move ${section.title || section.type} up`}
               >
                 ↑
               </button>
@@ -164,6 +165,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                   e.stopPropagation();
                   moveSection(section.id, 'down');
                 }}
+                aria-label={`Move ${section.title || section.type} down`}
               >
                 ↓
               </button>
@@ -173,6 +175,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                   e.stopPropagation();
                   removeSection(section.id);
                 }}
+                aria-label={`Remove ${section.title || section.type} section`}
               >
                 ×
               </button>

@@ -64,6 +64,7 @@ export function ReportScheduler({
               <button
                 onClick={() => onToggle(s.id)}
                 className={`w-10 h-6 rounded-full transition-colors ${s.isActive ? 'bg-blue-600' : 'bg-slate-700'}`}
+                aria-label={`${s.isActive ? 'Disable' : 'Enable'} ${s.reportName} schedule`}
               />
               <button
                 onClick={() => {

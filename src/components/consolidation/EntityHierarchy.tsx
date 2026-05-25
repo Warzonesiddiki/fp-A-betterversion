@@ -26,11 +26,11 @@ export interface EntityHierarchyProps {
   entities: EntityData[];
   ownerships: OwnershipStructure[];
   rootEntityId: string;
-  onAddEntity?: (parentId: string) => void;
-  onEditEntity?: (entityId: string) => void;
-  onDeleteEntity?: (entityId: string) => void;
-  onUpdateOwnership?: (parentId: string, childId: string, pct: number) => void;
-  onUpdateMethod?: (parentId: string, childId: string, method: ConsolidationMethod) => void;
+  onAddEntity?: (_parentId: string) => void;
+  onEditEntity?: (_entityId: string) => void;
+  onDeleteEntity?: (_entityId: string) => void;
+  onUpdateOwnership?: (_parentId: string, _childId: string, _pct: number) => void;
+  onUpdateMethod?: (_parentId: string, _childId: string, _method: ConsolidationMethod) => void;
   readOnly?: boolean;
   className?: string;
 }
@@ -56,11 +56,11 @@ function NodeRow({
   depth: number;
   ownerships: OwnershipStructure[];
   readOnly: boolean;
-  onAdd?: (id: string) => void;
-  onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
-  onPctUpdate?: (p: string, c: string, v: number) => void;
-  onMethodUpdate?: (p: string, c: string, m: ConsolidationMethod) => void;
+  onAdd?: (_id: string) => void;
+  onEdit?: (_id: string) => void;
+  onDelete?: (_id: string) => void;
+  onPctUpdate?: (_p: string, _c: string, _v: number) => void;
+  onMethodUpdate?: (_p: string, _c: string, _m: ConsolidationMethod) => void;
 }) {
   const [open, setOpen] = useState(depth < 3);
   const [editing, setEditing] = useState(false);

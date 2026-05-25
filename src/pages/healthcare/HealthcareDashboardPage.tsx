@@ -1,14 +1,9 @@
 import { useMemo, useState } from 'react';
 
 import {
-  Users,
   Activity,
-  DollarSign,
-  HeartPulse,
-  TrendingUp,
   Stethoscope,
   Building2,
-  Calendar,
   Download,
   Share2,
   MoreHorizontal,
@@ -29,9 +24,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  BarChart,
-  Bar,
-  Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';

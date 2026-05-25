@@ -21,13 +21,13 @@ import { cn } from '@/utils/cn';
 
 export interface ConditionalFormattingPanelProps {
   rules: ConditionalFormatRule[];
-  onRulesChange: (rules: ConditionalFormatRule[]) => void;
+  onRulesChange: (_rules: ConditionalFormatRule[]) => void;
   className?: string;
 }
 
 interface RuleEditorProps {
   rule: ConditionalFormatRule;
-  onChange: (rule: ConditionalFormatRule) => void;
+  onChange: (_rule: ConditionalFormatRule) => void;
   onCancel: () => void;
   onSave: () => void;
 }

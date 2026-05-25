@@ -10,19 +10,14 @@ import {
   Trash2,
   RotateCcw,
   Zap,
-  TrendingUp,
-  TrendingDown,
   ChevronDown,
   ChevronUp,
   AlertTriangle,
   Copy,
-  Download,
-  Layers,
-  GitBranch,
   BookTemplate,
   ArrowRight,
 } from 'lucide-react';
-import { DriverLibrary } from '@/engines/DriverLibrary';
+import { DriverLibrary as _DriverLibrary } from '@/engines/DriverLibrary';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -99,7 +94,7 @@ export default function DriverPlanningPage() {
     isRecalculating,
     lastCascadeResult,
     getRulesForDriver,
-    calculateCascade,
+    calculateCascade: _calculateCascade,
     analyzeImpact,
     reset,
   } = useDriverStore();
@@ -230,7 +225,7 @@ export default function DriverPlanningPage() {
   };
 
   // AssumptionEngine: track driver assumptions
-  const driverAssumptions = useMemo(() => {
+  const _driverAssumptions = useMemo(() => {
     return AssumptionEngine.getByCategory('operational');
   }, []);
 
@@ -913,7 +908,7 @@ export default function DriverPlanningPage() {
                 variant="outline"
                 className="w-full justify-start"
                 onClick={() => {
-                  const snapshot = engine.createSnapshot();
+                  const _snapshot = engine.createSnapshot();
                   // Snapshot created — can be restored later
                 }}
               >
