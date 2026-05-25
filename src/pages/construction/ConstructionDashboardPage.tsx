@@ -138,7 +138,7 @@ const columns: Column[] = [
     render: (v) => (
       <div className="flex flex-col items-end gap-1">
         <span className="text-[10px] font-bold">{v}</span>
-        <div className="w-16 h-1 bg-slate-100 rounded-full overflow-hidden">
+        <div className="w-16 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
           <div className="bg-blue-500 h-full" style={{ width: v }} />
         </div>
       </div>
@@ -266,7 +266,7 @@ export default function ConstructionDashboardPage() {
                 <span>Direct Labor</span>
                 <span>42%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '42%' }} />
               </div>
             </div>
@@ -275,12 +275,12 @@ export default function ConstructionDashboardPage() {
                 <span>Subcontractors</span>
                 <span>58%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-indigo-500 h-2 rounded-full" style={{ width: '58%' }} />
               </div>
             </div>
 
-            <div className="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
               <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
                 <Clock className="h-3 w-3" />
                 Utilization Metrics

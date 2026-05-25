@@ -270,7 +270,7 @@ export default function ProjectCostingPage() {
             {changeOrders.map((order) => (
               <div
                 key={order.id}
-                className="p-3 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-white transition-colors cursor-pointer group"
+                className="p-3 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 transition-colors cursor-pointer group"
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter">

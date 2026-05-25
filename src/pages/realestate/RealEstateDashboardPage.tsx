@@ -303,7 +303,7 @@ export default function RealEstateDashboardPage() {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
               <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
                 <MapPin className="h-3 w-3" />
                 Geographic Split

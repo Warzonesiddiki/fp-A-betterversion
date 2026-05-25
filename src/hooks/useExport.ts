@@ -14,7 +14,7 @@ export function useExport() {
     setIsExporting(true);
     try {
       await ExportEngine.exportToPDF(data, { title });
-    } catch (_e) {
+    } catch {
       setError('Export failed');
     } finally {
       setIsExporting(false);
@@ -29,7 +29,7 @@ export function useExport() {
     setIsExporting(true);
     try {
       await ExportEngine.exportToExcel(data, { title: fileName });
-    } catch (_e) {
+    } catch {
       setError('Export failed');
     } finally {
       setIsExporting(false);
@@ -44,7 +44,7 @@ export function useExport() {
     setIsExporting(true);
     try {
       await ExportEngine.exportToCSV(data, { title: fileName });
-    } catch (_e) {
+    } catch {
       setError('Export failed');
     } finally {
       setIsExporting(false);

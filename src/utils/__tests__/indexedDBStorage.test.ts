@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { openDB, indexedDBStorage, isStorageAvailable } from '../indexedDBStorage';
+import { describe, it, expect } from 'vitest';
+import { indexedDBStorage, isStorageAvailable } from '../indexedDBStorage';
 
 describe('indexedDBStorage', () => {
   it('indexedDBStorage has required methods', () => {

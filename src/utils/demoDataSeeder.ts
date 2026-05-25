@@ -8,9 +8,6 @@ import {
   budgets,
   forecasts,
   scenarios,
-  glAccounts,
-  users,
-  departments,
   entities,
   mockGLEntries,
 } from '@/services/mockData';
@@ -19,7 +16,6 @@ import { useForecastStore } from '@/store/forecastStore';
 import { useScenarioStore } from '@/store/scenarioStore';
 import { useGLStore } from '@/store/glStore';
 import { useEntityStore } from '@/store/entityStore';
-import { useAuthStore } from '@/store/authStore';
 import { createLogger } from './logger';
 
 const logger = createLogger('DemoDataSeeder');
@@ -30,8 +26,8 @@ export function seedDemoData(): { success: boolean; message: string } {
 
     // Check if stores already have data
     const budgetState = useBudgetStore.getState();
-    const glState = useGLStore.getState();
-    const entityState = useEntityStore.getState();
+    const _glState = useGLStore.getState();
+    const _entityState = useEntityStore.getState();
 
     if (budgetState.budgets.length > 0) {
       logger.info('Budgets already exist, skipping seed');

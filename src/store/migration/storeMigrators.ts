@@ -4,12 +4,6 @@
 // =============================================================================
 
 import { CubeEngine } from '@/engines/CubeEngine';
-import type {
-  CubeCell,
-  CubeDefinition,
-  DimensionDefinition,
-  MeasureDefinition,
-} from '@/types/cube-types';
 
 // ---------------------------------------------------------------------------
 // Types

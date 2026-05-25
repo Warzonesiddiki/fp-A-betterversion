@@ -2,10 +2,7 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import type {
-  OrganizationSettings,
   UserProfile,
-  UserRole,
-  UserPreferences,
   SettingsState,
 } from '../types';
 import { masterStorage } from '../utils/masterStorage';

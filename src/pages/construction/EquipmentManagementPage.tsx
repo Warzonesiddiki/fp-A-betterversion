@@ -119,7 +119,7 @@ const columns: Column[] = [
             ? 'bg-green-100 text-green-700'
             : v === 'Maintenance'
               ? 'bg-red-100 text-red-700'
-              : 'bg-slate-100 text-slate-700'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
         }`}
       >
         {v}
@@ -271,7 +271,7 @@ export default function EquipmentManagementPage() {
                 <span>Operational</span>
                 <span>88%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-green-500 h-2 rounded-full" style={{ width: '88%' }} />
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function EquipmentManagementPage() {
                 <span>In Maintenance</span>
                 <span>8%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-amber-500 h-2 rounded-full" style={{ width: '8%' }} />
               </div>
             </div>
@@ -289,7 +289,7 @@ export default function EquipmentManagementPage() {
                 <span>Out of Service</span>
                 <span>4%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-red-500 h-2 rounded-full" style={{ width: '4%' }} />
               </div>
             </div>

@@ -35,7 +35,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
       const result = storedRecord ? (storedRecord._data as T) : null;
       setData(result);
       return result;
-    } catch (_e) {
+    } catch {
       setError('Failed to load data');
       return null;
     } finally {
@@ -53,7 +53,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
         await masterStorage.setItem(options.key, serialized as any);
       }
       setData(newData);
-    } catch (_e) {
+    } catch {
       setError('Failed to save data');
     }
   };
@@ -66,7 +66,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
         await masterStorage.removeItem(options.key);
       }
       setData(null);
-    } catch (_e) {
+    } catch {
       setError('Failed to clear data');
     }
   };

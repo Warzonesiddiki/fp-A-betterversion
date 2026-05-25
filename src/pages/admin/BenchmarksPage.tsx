@@ -72,7 +72,7 @@ const BenchmarksPage: React.FC = () => {
   }, [history]);
 
   return (
-    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
+    <div className="p-6 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -234,7 +234,7 @@ const BenchmarksPage: React.FC = () => {
         <h2 className="text-lg font-semibold mb-4">Raw Performance Data</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-100 text-slate-600">
+            <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="p-2">Timestamp</th>
                 <th className="p-2">Operation</th>
@@ -246,7 +246,7 @@ const BenchmarksPage: React.FC = () => {
                 .slice(-10)
                 .reverse()
                 .map((res, i) => (
-                  <tr key={i} className="border-b border-slate-100">
+                  <tr key={i} className="border-b border-slate-100 dark:border-slate-700">
                     <td className="p-2 text-slate-500">
                       {new Date(res.timestamp).toLocaleString()}
                     </td>

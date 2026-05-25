@@ -38,7 +38,7 @@ function getTimeUntilExpiry(token: string): number | null {
 
 // ─── Cookie Management (for refresh token in production) ──────────────────────
 
-function setRefreshCookie(token: string, maxAgeSeconds: number): void {
+function _setRefreshCookie(token: string, maxAgeSeconds: number): void {
   document.cookie = [
     `finplan_rt=${encodeURIComponent(token)}`,
     `max-age=${maxAgeSeconds}`,
@@ -48,12 +48,12 @@ function setRefreshCookie(token: string, maxAgeSeconds: number): void {
   ].join('; ');
 }
 
-function getRefreshCookie(): string | null {
+function _getRefreshCookie(): string | null {
   const match = document.cookie.match(/finplan_rt=([^;]+)/);
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-function clearRefreshCookie(): void {
+function _clearRefreshCookie(): void {
   document.cookie = 'finplan_rt=; max-age=0; path=/; SameSite=Strict';
 }
 

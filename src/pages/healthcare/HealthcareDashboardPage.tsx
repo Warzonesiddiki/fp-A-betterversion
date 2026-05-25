@@ -276,7 +276,7 @@ export default function HealthcareDashboardPage() {
                 <span>ICU Occupancy</span>
                 <span className="text-red-600 font-bold">92%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-red-500 h-2 rounded-full" style={{ width: '92%' }} />
               </div>
             </div>
@@ -285,7 +285,7 @@ export default function HealthcareDashboardPage() {
                 <span>General Ward</span>
                 <span className="text-green-600 font-bold">74%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-green-500 h-2 rounded-full" style={{ width: '74%' }} />
               </div>
             </div>
@@ -294,12 +294,12 @@ export default function HealthcareDashboardPage() {
                 <span>Surgery Suites</span>
                 <span className="text-blue-600 font-bold">85%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '85%' }} />
               </div>
             </div>
 
-            <div className="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
               <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
                 <Activity className="h-3 w-3" />
                 Staffing Status

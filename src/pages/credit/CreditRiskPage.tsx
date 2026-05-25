@@ -398,7 +398,7 @@ export default function CreditRiskPage() {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
               <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                 Risk Summary
               </div>

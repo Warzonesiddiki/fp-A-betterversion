@@ -255,7 +255,7 @@ export default function PropertyPortfolioPage() {
                 <span>Core (Low Risk)</span>
                 <span>65%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '65%' }} />
               </div>
             </div>
@@ -264,7 +264,7 @@ export default function PropertyPortfolioPage() {
                 <span>Value-Add (Med Risk)</span>
                 <span>25%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '25%' }} />
               </div>
             </div>
@@ -273,7 +273,7 @@ export default function PropertyPortfolioPage() {
                 <span>Opportunistic (High Risk)</span>
                 <span>10%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-purple-500 h-2 rounded-full" style={{ width: '10%' }} />
               </div>
             </div>

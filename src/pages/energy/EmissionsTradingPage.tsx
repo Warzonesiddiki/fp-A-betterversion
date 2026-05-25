@@ -243,7 +243,7 @@ export default function EmissionsTradingPage() {
                 <span>EU ETS (Phase IV)</span>
                 <span className="text-green-600">Compliant</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }} />
               </div>
             </div>
@@ -252,7 +252,7 @@ export default function EmissionsTradingPage() {
                 <span>California Cap-and-Trade</span>
                 <span className="text-blue-600">82% Verified</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '82%' }} />
               </div>
             </div>
@@ -261,7 +261,7 @@ export default function EmissionsTradingPage() {
                 <span>UK Emissions Trading</span>
                 <span className="text-amber-600">Renewal Pending</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                 <div className="bg-amber-500 h-2 rounded-full" style={{ width: '45%' }} />
               </div>
             </div>
