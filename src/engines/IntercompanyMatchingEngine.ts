@@ -68,7 +68,8 @@ export class IntercompanyMatchingEngine {
           c.fromEntity === debit.toEntity &&
           c.toEntity === debit.fromEntity &&
           c.accountCode === debit.accountCode &&
-          Math.abs(Math.abs(c.amount) - Math.abs(debit.amount)) <= tolerance * Math.max(Math.abs(c.amount), Math.abs(debit.amount)) &&
+          Math.abs(Math.abs(c.amount) - Math.abs(debit.amount)) <=
+            tolerance * Math.max(Math.abs(c.amount), Math.abs(debit.amount)) &&
           c.status === 'pending'
       );
 

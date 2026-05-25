@@ -100,6 +100,7 @@ describe('exportToExcel', () => {
   });
 
   it('should use default filename when title is missing', async () => {
+    mockSaveAs.mockClear();
     const data: ExportData = { headers: ['A'], rows: [['B']] };
     const config = {} as ExportConfig;
 
