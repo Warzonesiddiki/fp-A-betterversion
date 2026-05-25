@@ -20,3 +20,13 @@
 - **Data Size (Approx)**: 5.58 MB
 
 ---
+
+## masterStorage Profile - 26/5/2026, 2:35:00 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 797.67ms
+- **Average Latency per Entry**: 0.0798ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---

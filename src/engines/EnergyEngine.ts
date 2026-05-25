@@ -47,11 +47,11 @@ export class EnergyEngine {
     const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
 
     const totalRevenue = entries
-      .filter((e) => e.accountCode.startsWith('43'))
+      .filter((e) => e.accountCode.startsWith('4'))
       .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
 
     const operatingCost = entries
-      .filter((e) => e.accountCode.startsWith('54') || e.accountCode.startsWith('55'))
+      .filter((e) => e.accountCode.startsWith('5'))
       .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
 
     const productionVolume = totalRevenue > 0 ? Math.round(totalRevenue / 170) : 0; // $/MWh avg
