@@ -1,12 +1,6 @@
 import { useState } from 'react';
 
-import {
-  TrendingUp,
-  Briefcase,
-  Clock,
-  Download,
-  Layers,
-} from 'lucide-react';
+import { TrendingUp, Briefcase, Clock, Download, Layers } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

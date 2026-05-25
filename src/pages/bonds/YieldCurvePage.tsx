@@ -383,7 +383,10 @@ export default function YieldCurvePage() {
                 </thead>
                 <tbody>
                   {curve.map((point) => (
-                    <tr key={point.maturity} className="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
+                    <tr
+                      key={point.maturity}
+                      className="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900"
+                    >
                       <td className="py-2 px-3 font-medium">{point.maturity}Y</td>
                       <td className="py-2 px-3 text-right font-mono">
                         {(point.rate * 100).toFixed(3)}%

@@ -6,7 +6,7 @@ import type { GraphStats, CycleResult } from '../../engines/CalculationGraph';
 import { useUIStore } from '../../store/uiStore';
 
 // Optional: if Tauri is available for a true native window popout
-let WebviewWindow: { new(label: string, options: Record<string, unknown>): unknown } | null = null;
+let WebviewWindow: { new (label: string, options: Record<string, unknown>): unknown } | null = null;
 try {
   import('@tauri-apps/api/webviewWindow').then((module) => {
     WebviewWindow = module.WebviewWindow as unknown as typeof WebviewWindow;
@@ -31,9 +31,11 @@ const DEFAULT_CELLS = JSON.stringify(
 
 export const DependencyGraph: React.FC = () => {
   const [cellInput, setCellInput] = useState(DEFAULT_CELLS);
-  const [graphData, setGraphData] = useState<{ nodes: CellNode[]; stats: GraphStats; cycles: CycleResult } | null>(
-    null
-  );
+  const [graphData, setGraphData] = useState<{
+    nodes: CellNode[];
+    stats: GraphStats;
+    cycles: CycleResult;
+  } | null>(null);
   const addToast = useUIStore((s) => s.addToast);
 
   const engine = useMemo(() => new CalculationGraph(), []);

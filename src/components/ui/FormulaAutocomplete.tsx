@@ -40,9 +40,9 @@ export function FormulaAutocomplete({
               'px-2 py-0.5 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors',
               (cat === 'All' && !selectedCategory) || selectedCategory === cat
                 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                : 'text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
-            ,
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1')}
+                : 'text-[var(--text-muted)] hover:bg-[var(--bg-hover)]',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1'
+            )}
             onClick={(e) => {
               e.stopPropagation();
               onSelectCategory(cat === 'All' ? null : cat);
@@ -62,9 +62,11 @@ export function FormulaAutocomplete({
             aria-selected={idx === autocompleteIndex}
             className={cn(
               'w-full flex items-start gap-3 px-3 py-2 text-left transition-colors',
-              idx === autocompleteIndex ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-900'
-            ,
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1')}
+              idx === autocompleteIndex
+                ? 'bg-blue-50 dark:bg-blue-900/20'
+                : 'hover:bg-gray-50 dark:hover:bg-gray-900',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1'
+            )}
             onMouseDown={(e) => {
               e.preventDefault();
               onSelectFunction(fn);
@@ -105,7 +107,9 @@ export function FormulaAutocomplete({
                 key={param}
                 className={cn(
                   'px-1.5 py-0.5 text-[10px] font-mono rounded',
-                  i === 0 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)]'
+                  i === 0
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                    : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)]'
                 )}
               >
                 {param}

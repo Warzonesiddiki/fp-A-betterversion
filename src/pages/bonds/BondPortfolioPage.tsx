@@ -1,11 +1,5 @@
 import { useMemo } from 'react';
-import {
-  Landmark,
-  BarChart3,
-  Download,
-  Shield,
-  AlertTriangle,
-} from 'lucide-react';
+import { Landmark, BarChart3, Download, Shield, AlertTriangle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';

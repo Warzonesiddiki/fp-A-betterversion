@@ -108,7 +108,7 @@ export default function ForecastBuilderPage() {
   };
 
   return (
-      <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
       {exportError && (
         <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
           {exportError}

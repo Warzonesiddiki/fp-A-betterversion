@@ -69,7 +69,7 @@ export default function SettingsPage() {
   };
 
   return (
-      <div className="p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
       {settingsError && (
         <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
           {settingsError}

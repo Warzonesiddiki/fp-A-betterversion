@@ -1,10 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
-import type {
-  UserProfile,
-  SettingsState,
-} from '../types';
+import type { UserProfile, SettingsState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 
 export const useSettingsStore = create<SettingsState>()(

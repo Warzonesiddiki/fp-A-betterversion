@@ -10,7 +10,9 @@ export function ESGDashboard() {
       </Card>
       <div className="md:col-span-2 grid grid-cols-2 gap-4">
         <Card className="p-6">
-          <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">Emissions Breakdown</h4>
+          <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">
+            Emissions Breakdown
+          </h4>
           <div className="space-y-3">
             {['Scope 1', 'Scope 2', 'Scope 3'].map((s) => (
               <div key={s} className="flex items-center gap-3">

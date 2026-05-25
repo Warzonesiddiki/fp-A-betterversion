@@ -41,8 +41,16 @@ function formatValue(value: number, format: string): string {
 }
 
 const varianceColors: Record<VarianceType, { bg: string; text: string; border: string }> = {
-  favorable: { bg: 'bg-green-50 dark:bg-green-950', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
-  unfavorable: { bg: 'bg-red-50 dark:bg-red-950', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' },
+  favorable: {
+    bg: 'bg-green-50 dark:bg-green-950',
+    text: 'text-green-700 dark:text-green-300',
+    border: 'border-green-200 dark:border-green-800',
+  },
+  unfavorable: {
+    bg: 'bg-red-50 dark:bg-red-950',
+    text: 'text-red-700 dark:text-red-300',
+    border: 'border-red-200 dark:border-red-800',
+  },
   neutral: {
     bg: 'bg-gray-50 dark:bg-gray-900',
     text: 'text-[var(--text-secondary)]',

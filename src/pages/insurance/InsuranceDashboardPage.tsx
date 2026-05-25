@@ -1,11 +1,6 @@
 import { useState } from 'react';
 
-import {
-  Activity,
-  BarChart3,
-  Download,
-  FileText,
-} from 'lucide-react';
+import { Activity, BarChart3, Download, FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 

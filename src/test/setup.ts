@@ -11,7 +11,9 @@ vi.mock('sql.js', () => {
     run(sql: string, _params?: unknown[]) {
       const match = sql.match(/CREATE TABLE IF NOT EXISTS (\w+)/i);
       if (match && !this.tables.has(match[1])) this.tables.set(match[1], new Map());
-      const insertMatch = sql.match(/INSERT OR REPLACE INTO (\w+) \(id, value\) VALUES \(\?, \?\)/i);
+      const insertMatch = sql.match(
+        /INSERT OR REPLACE INTO (\w+) \(id, value\) VALUES \(\?, \?\)/i
+      );
       if (insertMatch) {
         const tbl = this.tables.get(insertMatch[1]);
         if (tbl && _params && _params.length >= 2) tbl.set(String(_params[0]), String(_params[1]));
@@ -33,7 +35,9 @@ vi.mock('sql.js', () => {
       }
       return [];
     }
-    export(): Uint8Array { return new Uint8Array(0); }
+    export(): Uint8Array {
+      return new Uint8Array(0);
+    }
     close() {}
   }
   return {

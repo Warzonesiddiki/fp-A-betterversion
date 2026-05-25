@@ -77,7 +77,12 @@ export function ConfirmDialog() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" role="dialog" aria-modal="true" aria-label={options.title}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      aria-label={options.title}
+    >
       <div
         ref={dialogRef}
         className={`w-full max-w-md rounded-lg border-2 p-6 shadow-xl ${variantColors[options.variant ?? 'warning']}`}

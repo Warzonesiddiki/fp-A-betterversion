@@ -1,13 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import {
-  Activity,
-  Stethoscope,
-  Building2,
-  Download,
-  Share2,
-  MoreHorizontal,
-} from 'lucide-react';
+import { Activity, Stethoscope, Building2, Download, Share2, MoreHorizontal } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';

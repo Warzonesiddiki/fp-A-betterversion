@@ -121,11 +121,9 @@ export function logPerformanceReport(): void {
     'P99 (ms)': entry.p99.toFixed(2),
   }));
 
-  /* eslint-disable no-console */
   console.group('%c[PerfMonitor] Performance Report', 'color: #3B82F6; font-weight: bold');
   console.table(tableData);
   console.groupEnd();
-  /* eslint-enable no-console */
 }
 
 /** Measure an async function's execution time */
@@ -156,11 +154,10 @@ export function checkThresholds(thresholds: Record<string, number>): boolean {
   for (const [name, threshold] of Object.entries(thresholds)) {
     const metric = allMetrics[name];
     if (metric && metric.p95 > threshold) {
-      /* eslint-disable no-console */
       console.warn(
         `[PerfMonitor] ${name} P95 (${metric.p95.toFixed(2)}ms) exceeds threshold (${threshold}ms)`
       );
-      /* eslint-enable no-console */
+
       allPassed = false;
     }
   }

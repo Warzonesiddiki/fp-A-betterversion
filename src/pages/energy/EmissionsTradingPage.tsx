@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  Download,
-  Filter,
-  ArrowUpRight,
-  ShieldCheck,
-} from 'lucide-react';
+import { Download, Filter, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';

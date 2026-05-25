@@ -423,9 +423,7 @@ export default function BudgetCreatePage() {
                 {form.description}
               </div>
             )}
-            {submitError && (
-              <Alert type="error" title="Error" message={submitError} />
-            )}
+            {submitError && <Alert type="error" title="Error" message={submitError} />}
             <div className="flex gap-3 pt-4">
               <Button variant="ghost" onClick={() => setStep(2)}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -446,4 +444,3 @@ export default function BudgetCreatePage() {
     </div>
   );
 }
-

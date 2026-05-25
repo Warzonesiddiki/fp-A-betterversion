@@ -83,7 +83,9 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
         <Card>
           <CardContent className="p-12 text-center">
             <Leaf className="h-10 w-10 text-slate-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No ESG Metrics</h3>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+              No ESG Metrics
+            </h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
               Add ESG metrics to the store to view the dashboard.
             </p>
@@ -191,19 +193,27 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
           <CardContent>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{initiativeStats.total}</div>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {initiativeStats.total}
+                </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">Total Initiatives</div>
               </div>
               <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{initiativeStats.onTrack}</div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {initiativeStats.onTrack}
+                </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">On Track</div>
               </div>
               <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{initiativeStats.atRisk}</div>
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                  {initiativeStats.atRisk}
+                </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">At Risk</div>
               </div>
               <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">{initiativeStats.behind}</div>
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                  {initiativeStats.behind}
+                </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">Behind</div>
               </div>
             </div>

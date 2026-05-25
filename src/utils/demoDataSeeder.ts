@@ -4,13 +4,7 @@
  * Only seeds if stores are empty (won't overwrite real data)
  */
 
-import {
-  budgets,
-  forecasts,
-  scenarios,
-  entities,
-  mockGLEntries,
-} from '@/services/mockData';
+import { budgets, forecasts, scenarios, entities, mockGLEntries } from '@/services/mockData';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useForecastStore } from '@/store/forecastStore';
 import { useScenarioStore } from '@/store/scenarioStore';

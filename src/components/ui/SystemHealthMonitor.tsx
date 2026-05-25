@@ -72,7 +72,10 @@ export const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({
         </div>
       )}
 
-      <button aria-label="View system health details" className="p-1 rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)] focus-visible:ring-2 focus-visible:ring-blue-500">
+      <button
+        aria-label="View system health details"
+        className="p-1 rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)] focus-visible:ring-2 focus-visible:ring-blue-500"
+      >
         <ChevronRight className="h-3.5 w-3.5" />
       </button>
     </div>

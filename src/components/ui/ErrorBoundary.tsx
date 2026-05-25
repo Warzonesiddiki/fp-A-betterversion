@@ -62,11 +62,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center dark:bg-gray-950" role="alert">
+        <div
+          className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center dark:bg-gray-950"
+          role="alert"
+        >
           <div className="bg-red-50 dark:bg-red-950 p-4 rounded-full mb-6">
             <AlertCircle className="h-10 w-10 text-red-500" />
           </div>
-          <h2 className="text-xl font-bold mb-2 dark:text-gray-100">We&apos;ve encountered an unexpected error</h2>
+          <h2 className="text-xl font-bold mb-2 dark:text-gray-100">
+            We&apos;ve encountered an unexpected error
+          </h2>
           <p className="text-sm text-slate-400 dark:text-slate-500 mb-2 max-w-md leading-relaxed">
             Don&apos;t worry, your data is safe. Try refreshing, or go back to the dashboard.
           </p>
