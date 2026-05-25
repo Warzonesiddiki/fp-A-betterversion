@@ -107,6 +107,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
         {onClose && (
           <button
             onClick={onClose}
+            aria-label="Close"
             className="p-1 rounded hover:opacity-80"
             style={{ color: 'var(--text-secondary)' }}
           >

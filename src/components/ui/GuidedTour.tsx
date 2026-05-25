@@ -102,6 +102,7 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ steps, isOpen, onClose, 
             </span>
             <button
               onClick={onClose}
+              aria-label="Close"
               className="p-1 rounded-md hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-colors"
             >
               <X className="h-4 w-4" />

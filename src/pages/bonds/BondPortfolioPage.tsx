@@ -1,29 +1,21 @@
 import { useMemo } from 'react';
 import {
   Landmark,
-  DollarSign,
-  TrendingUp,
   BarChart3,
-  Clock,
   Download,
   Shield,
   AlertTriangle,
 } from 'lucide-react';
-import { FinancialInstrumentsEngine } from '@/engines/FinancialInstrumentsEngine';
-import { OptionPricingEngine } from '@/engines/OptionPricingEngine';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ScatterChart,
   Scatter,
   ZAxis,
@@ -335,10 +327,10 @@ export default function BondPortfolioPage() {
                   <ZAxis dataKey="size" range={[100, 1000]} name="Face Value" />
                   <Tooltip
                     cursor={{ strokeDasharray: '3 3' }}
-                    formatter={(value: any, name: any) => {
-                      if (name === 'Duration') return `${value.toFixed(2)} yrs`;
-                      if (name === 'Yield') return `${value.toFixed(2)}%`;
-                      return value;
+                    formatter={(value: unknown, name: unknown) => {
+                      if (name === 'Duration') return `${(value as number).toFixed(2)} yrs`;
+                      if (name === 'Yield') return `${(value as number).toFixed(2)}%`;
+                      return value as string | number;
                     }}
                   />
                   <Scatter data={scatterData} fill="#3b82f6" fillOpacity={0.7} />

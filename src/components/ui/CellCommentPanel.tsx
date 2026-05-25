@@ -55,6 +55,7 @@ function CommentItem({ comment, replies, engine, currentUser, onReply }: Comment
           <button
             type="button"
             onClick={handleResolve}
+            aria-label={comment.resolved ? 'Unresolve' : 'Resolve'}
             className={`text-xs px-1.5 py-0.5 rounded ${
               comment.resolved
                 ? 'text-yellow-400 hover:text-yellow-300 hover:bg-slate-700'

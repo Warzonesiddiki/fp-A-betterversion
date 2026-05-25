@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { TrendingUp, Download, FileText, Table as TableIcon, Tag, Percent } from 'lucide-react';
+import { FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   ResponsiveContainer,
@@ -21,8 +21,6 @@ import {
   Cell,
   ScatterChart,
   Scatter,
-  LineChart,
-  Line,
 } from 'recharts';
 
 function formatCurrency(n: number): string {
@@ -132,8 +130,8 @@ const scatterData = mockPromos.map((p) => ({
 }));
 
 export default function PromoAnalysisPage() {
-  const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const { entries: _entries } = useGLStore();
+  const _navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Promo Analysis';
@@ -296,7 +294,7 @@ export default function PromoAnalysisPage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v}K`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => `$${v}K`}
+                  formatter={(v: unknown) => `$${v}K`}
                 />
                 <Legend />
                 <Bar dataKey="before" fill="#64748b" name="Baseline" />
@@ -327,7 +325,7 @@ export default function PromoAnalysisPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v: unknown) => formatCurrency(Number(v))}
                 />
                 <Legend />
               </PieChart>
@@ -353,7 +351,7 @@ export default function PromoAnalysisPage() {
               />
               <Tooltip
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                formatter={(v: any) => `$${v}K`}
+                formatter={(v: unknown) => `$${v}K`}
               />
               <Scatter data={scatterData} fill="#3b82f6" />
             </ScatterChart>

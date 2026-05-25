@@ -76,6 +76,7 @@ export function TourOverlay() {
             <h3 className="font-bold text-white">{step.title}</h3>
             <button
               onClick={stopTour}
+              aria-label="Close tour"
               className="text-slate-500 hover:text-white transition-colors"
             >
               <X className="h-4 w-4" />

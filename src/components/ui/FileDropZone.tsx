@@ -146,6 +146,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
               </div>
               <button
                 onClick={removeFile}
+                aria-label="Remove file"
                 className="p-1 hover:bg-red-50 rounded-md transition-colors text-red-400"
               >
                 <X className="h-4 w-4" />
