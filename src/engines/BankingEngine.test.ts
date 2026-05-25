@@ -215,9 +215,9 @@ describe('BankingEngine', () => {
     });
 
     it('should calculate net interest income', () => {
-      const entries = [gl('4101', 7000000), gl('6101', -3000000)];
+      const entries = [gl('4101', 7000000), gl('6101', -3000000), gl('1101', 10000000)];
       const result = BankingEngine.calculateNIMStats(entries);
-      expect(result.netInterestMargin).toBe(4000000);
+      expect(result.interestIncome - result.interestExpense).toBe(4000000);
     });
 
     it('should calculate NIM as (interestInc - interestExp) * 12 / avgEarningAssets * 100', () => {
