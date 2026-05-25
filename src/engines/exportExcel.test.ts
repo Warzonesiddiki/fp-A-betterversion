@@ -101,7 +101,7 @@ describe('exportToExcel', () => {
 
   it('should use default filename when title is missing', async () => {
     const data: ExportData = { headers: ['A'], rows: [['B']] };
-    const config: ExportConfig = {};
+    const config = {} as ExportConfig;
 
     await exportToExcel(data, config);
 
