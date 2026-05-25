@@ -144,7 +144,7 @@ export default function HealthcareDashboardPage() {
             <Download className="h-4 w-4 mr-2" />
             PDF Report
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" aria-label="More options">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>

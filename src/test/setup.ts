@@ -41,18 +41,52 @@ vi.mock('sql.js', () => {
     close() {}
   }
   return {
-    default: {
-      Database: MockDatabase,
-      initSqlJs: async () => ({ Database: MockDatabase }),
+    default: async () => ({ Database: MockDatabase }),
+    Database: MockDatabase,
+  };
+});
+
+// Mock worker pool to avoid Web Worker creation in jsdom test environment.
+// Web Workers don't work in jsdom, causing indefinite hangs.
+vi.mock('../workers/worker-pool', () => {
+  const CHUNK_SIZE = 1024 * 1024;
+  const mockPool = {
+    run: async <T>(request: { type: string; payload: any; chunkSize?: number }): Promise<T> => {
+      if (request.type === 'stringify') {
+        const json = JSON.stringify(request.payload);
+        const chunkSize = request.chunkSize ?? CHUNK_SIZE;
+        if (json.length <= chunkSize) {
+          return { payload: json } as T;
+        }
+        const chunks: string[] = [];
+        for (let i = 0; i < json.length; i += chunkSize) {
+          chunks.push(json.slice(i, i + chunkSize));
+        }
+        return { chunks, totalSize: json.length } as T;
+      }
+      if (request.type === 'parse') {
+        const json = Array.isArray(request.payload) ? request.payload.join('') : request.payload;
+        return { payload: JSON.parse(json) } as T;
+      }
+      return {} as T;
     },
+    terminate: () => {},
+    get busyCount() { return 0; },
+    get queuedCount() { return 0; },
+    get workerCount() { return 0; },
+  };
+  return {
+    createStoragePool: () => mockPool,
+    createBatchCalcPool: () => mockPool,
+    WorkerPool: class {},
   };
 });
 
 // Polyfill localStorage for Node.js v22+ where the experimental global
 // may be undefined and shadows jsdom's implementation.
-if (typeof globalThis.localStorage === 'undefined' || globalThis.localStorage === null) {
+if (typeof localStorage === 'undefined' || localStorage === null) {
   const store = new Map<string, string>();
-  globalThis.localStorage = {
+  const ls: Storage = {
     getItem: (key: string) => store.get(key) ?? null,
     setItem: (key: string, value: string) => {
       store.set(key, String(value));
@@ -68,6 +102,7 @@ if (typeof globalThis.localStorage === 'undefined' || globalThis.localStorage ==
     },
     key: (index: number) => [...store.keys()][index] ?? null,
   };
+  Object.defineProperty(globalThis, 'localStorage', { value: ls, writable: false, configurable: true });
 }
 
 // Automatically cleanup after each test

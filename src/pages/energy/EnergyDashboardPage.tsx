@@ -174,7 +174,7 @@ export default function EnergyDashboardPage() {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button variant="ghost" size="icon" className="h-10 w-10">
+          <Button variant="ghost" size="icon" className="h-10 w-10" aria-label="Refresh data">
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>

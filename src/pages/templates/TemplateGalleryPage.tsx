@@ -210,6 +210,7 @@ export default function TemplateGalleryPage() {
                     size="sm"
                     onClick={(e) => handleExport(template, e)}
                     title="Export template"
+                    aria-label="Export template"
                   >
                     <Download className="h-3 w-3" />
                   </Button>

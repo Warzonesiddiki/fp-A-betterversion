@@ -53,7 +53,12 @@ export default function TemplatePreviewPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/templates')}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/templates')}
+            aria-label="Back to templates"
+          >
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>

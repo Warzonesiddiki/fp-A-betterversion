@@ -173,7 +173,12 @@ export default function UserManagementPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Add New User</CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => setShowAddForm(false)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAddForm(false)}
+                aria-label="Close add user form"
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>

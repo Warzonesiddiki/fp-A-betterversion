@@ -38,6 +38,8 @@ vi.mock('@/store/driverStore', () => ({
       listDrivers: () => [],
       listSnapshots: () => [],
       createSnapshot: vi.fn(),
+      getAllRules: () => [],
+      detectCircularDependencies: () => [],
     },
     addDriver: mockAddDriver,
     removeDriver: mockRemoveDriver,
@@ -50,31 +52,44 @@ vi.mock('@/store/driverStore', () => ({
     getAllRules: mockGetAllRules,
     detectCircularDependencies: mockDetectCircularDependencies,
     loadDriverTemplate: mockLoadDriverTemplate,
-    calculateCascade: mockCalculateCascade,
-    analyzeImpact: mockAnalyzeImpact,
+    calculateCascade: vi.fn(),
+    analyzeImpact: vi.fn(),
     reset: mockReset,
   })),
   DRIVER_TEMPLATES: [
     {
+      id: 'revenue-growth',
       name: 'Revenue Planning',
-      description: 'Revenue growth driver cascading to Revenue, COGS, and OpEx',
-      drivers: [],
-      rules: [],
+      description: 'Standard revenue growth driver',
+      category: 'revenue',
+      drivers: [
+        { id: 'volume', name: 'Volume', unit: 'absolute', baseValue: 1000, currentValue: 1000, minValue: 0, maxValue: 10000, step: 100, tags: [], category: 'revenue', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+        { id: 'price', name: 'Price', unit: 'absolute', baseValue: 50, currentValue: 50, minValue: 0, maxValue: 1000, step: 1, tags: [], category: 'revenue', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+      ],
     },
     {
+      id: 'cost-structure',
       name: 'Cost Structure',
-      description: 'Cost drivers for COGS, OpEx, and headcount planning',
-      drivers: [],
-      rules: [],
+      description: 'Cost drivers for COGS and OpEx',
+      category: 'cost',
+      drivers: [
+        { id: 'cogs', name: 'COGS', unit: 'absolute', baseValue: 500, currentValue: 500, minValue: 0, maxValue: 5000, step: 50, tags: [], category: 'cost', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+      ],
     },
     {
+      id: 'margin-analysis',
       name: 'Margin Analysis',
-      description: 'Gross margin, EBITDA margin, and profitability drivers',
-      drivers: [],
-      rules: [],
+      description: 'Margin and profitability drivers',
+      category: 'revenue',
+      drivers: [
+        { id: 'margin', name: 'Margin', unit: 'percentage', baseValue: 25, currentValue: 25, minValue: 0, maxValue: 100, step: 1, tags: [], category: 'revenue', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+      ],
     },
   ],
 }));
+
+const renderComponent = () =>
+  render(<DriverPlanningPage />);
 
 describe('DriverPlanningPage', () => {
   beforeEach(() => {
@@ -200,10 +215,12 @@ describe('DriverPlanningPage', () => {
     );
   });
 
-  it('loads template when template card is clicked', () => {
+  it('loads template when template card is clicked', async () => {
     render(<DriverPlanningPage />);
     fireEvent.click(screen.getByText('Templates'));
-    fireEvent.click(screen.getByText('Revenue Planning'));
-    expect(mockLoadDriverTemplate).toHaveBeenCalled();
+    const templateCard = await screen.findByText('Revenue Planning');
+    fireEvent.click(templateCard);
+    expect(mockAddDriver).toHaveBeenCalled();
+    expect(mockAddDriver.mock.calls[0][0].name).toBe('Volume');
   });
 });

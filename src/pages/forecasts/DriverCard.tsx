@@ -189,7 +189,13 @@ export function DriverCard({
             >
               {isRecalculating ? 'Applying...' : 'Apply Changes'}
             </Button>
-            <Button size="sm" variant="outline" onClick={onReset} disabled={!hasChanges}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onReset}
+              disabled={!hasChanges}
+              aria-label="Reset driver"
+            >
               <RotateCcw className="w-3 h-3" />
             </Button>
           </div>

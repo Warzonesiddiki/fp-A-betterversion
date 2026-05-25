@@ -224,6 +224,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
                             variant="outline"
                             onClick={() => handleReset(driver)}
                             disabled={!hasChanges}
+                            aria-label="Reset driver"
                           >
                             <RotateCcw className="w-3 h-3" />
                           </Button>

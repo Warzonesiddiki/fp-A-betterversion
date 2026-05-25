@@ -180,17 +180,17 @@ export function ReportDesigner() {
             <div className="w-px h-5 bg-slate-700 mx-1" />
             <Button variant={subtotalsEnabled ? 'default' : 'ghost'} size="sm" onClick={() => setSubtotalsEnabled((p) => !p)} className={subtotalsEnabled ? 'bg-blue-600 hover:bg-blue-500 text-white' : ''}><Sigma className="h-3.5 w-3.5 mr-1" />Totals</Button>
             <div className="w-px h-5 bg-slate-700 mx-1" />
-            <Button variant="ghost" size="sm" onClick={undo} disabled={historyIndex === 0}><Undo2 className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="sm" onClick={redo} disabled={historyIndex === history.length - 1}><Redo2 className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="sm" onClick={undo} disabled={historyIndex === 0} aria-label="Undo"><Undo2 className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="sm" onClick={redo} disabled={historyIndex === history.length - 1} aria-label="Redo"><Redo2 className="h-4 w-4" /></Button>
             <div className="w-px h-5 bg-slate-700 mx-1" />
             <div className="flex bg-slate-800 rounded-lg p-0.5">
               <button onClick={() => setPreviewMode(false)} className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-all', !previewMode ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white')}><Layout className="h-3 w-3" />Design</button>
               <button onClick={() => setPreviewMode(true)} className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-all', previewMode ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white')}><Eye className="h-3 w-3" />Preview</button>
             </div>
             <div className="w-px h-5 bg-slate-700 mx-1" />
-            <Button variant="ghost" size="sm" onClick={() => handleExport('pdf')}><FileText className="h-3.5 w-3.5" /></Button>
-            <Button variant="ghost" size="sm" onClick={() => handleExport('excel')}><TableIcon className="h-3.5 w-3.5" /></Button>
-            <Button variant="ghost" size="sm" onClick={() => handleExport('csv')}><Download className="h-3.5 w-3.5" /></Button>
+            <Button variant="ghost" size="sm" onClick={() => handleExport('pdf')} aria-label="Export as PDF"><FileText className="h-3.5 w-3.5" /></Button>
+            <Button variant="ghost" size="sm" onClick={() => handleExport('excel')} aria-label="Export as Excel"><TableIcon className="h-3.5 w-3.5" /></Button>
+            <Button variant="ghost" size="sm" onClick={() => handleExport('csv')} aria-label="Export as CSV"><Download className="h-3.5 w-3.5" /></Button>
             <div className="w-px h-5 bg-slate-700 mx-1" />
             <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/20" onClick={handleSave}><Save className="h-3.5 w-3.5 mr-1.5" />Save</Button>
           </div>

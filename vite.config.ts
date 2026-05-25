@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type UserConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 declare module 'vite' {
   interface UserConfig {
@@ -19,6 +20,13 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    ...(process.env.ANALYZE === 'true' ? [visualizer({
+      filename: 'bundle-report/stats.html',
+      template: 'treemap',
+      gzipSize: true,
+      brotliSize: true,
+      open: false,
+    })] : []),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["icon-192.png", "icon-512.png"],
@@ -142,8 +150,10 @@ export default defineConfig({
             if (id.includes('zustand') || id.includes('@reduxjs/toolkit') || id.includes('react-redux') || id.includes('/immer/') || id.includes('reselect')) return 'state-vendor';
             // Forms
             if (id.includes('react-hook-form') || id.includes('zod')) return 'form-vendor';
-            // AG Grid
-            if (id.includes('ag-grid')) return 'grid-vendor';
+            // AG Grid — split community from React to allow better tree-shaking
+            if (id.includes('ag-grid-community')) return 'grid-community-vendor';
+            if (id.includes('ag-grid-react')) return 'grid-react-vendor';
+            if (id.includes('ag-grid')) return 'grid-common-vendor';
             // Recharts + victory-vendor (d3 wrapper)
             if (id.includes('recharts') || id.includes('victory-vendor')) return 'chart-vendor';
             // AI/ML
@@ -151,7 +161,10 @@ export default defineConfig({
             // PDF generation + html2canvas (jspdf dep)
             if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-vendor';
             // Excel + file-saver + DOMPurify (used in data import)
-            if (id.includes('exceljs') || id.includes('file-saver') || id.includes('dompurify') || id.includes('purify')) return 'excel-vendor';
+            // Split exceljs core from exceljs filetype plugins
+            if (id.includes('exceljs') && id.includes('/dist/exceljs/')) return 'excel-vendor';
+            if (id.includes('exceljs')) return 'excel-core-vendor';
+            if (id.includes('file-saver') || id.includes('dompurify') || id.includes('purify')) return 'excel-vendor';
             // SQL/SQLite
             if (id.includes('sql.js')) return 'db-vendor';
             // UI primitives (radix, tanstack-virtual)

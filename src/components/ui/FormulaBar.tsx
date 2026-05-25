@@ -721,6 +721,7 @@ export function FormulaBar({
             onClick={() => onChange?.('')}
             className="p-1.5 rounded-md hover:bg-red-50 text-red-400 hover:fin-negative transition-colors"
             title="Cancel (Esc)"
+            aria-label="Cancel formula"
           >
             <X className="h-4 w-4" />
           </button>
@@ -728,6 +729,7 @@ export function FormulaBar({
             onClick={() => onEvaluate?.(0)}
             className="p-1.5 rounded-md hover:bg-green-50 text-green-400 hover:fin-positive transition-colors"
             title="Evaluate (Enter)"
+            aria-label="Confirm formula"
           >
             <Check className="h-4 w-4" />
           </button>

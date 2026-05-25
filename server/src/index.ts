@@ -15,6 +15,7 @@ import { authLimiter, generalLimiter } from './middleware/rateLimit.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT ?? '3001', 10);
+const IS_PRODUCTION = (process.env.NODE_ENV ?? 'development') === 'production';
 
 // ---------------------------------------------------------------------------
 // Global Middleware
@@ -23,16 +24,18 @@ const PORT = parseInt(process.env.PORT ?? '3001', 10);
 // Security headers
 app.use(helmet());
 
-// CORS — allow the Vite dev server
+// CORS — allow the Vite dev server in dev, locked origin in production
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
+    origin: IS_PRODUCTION
+      ? (process.env.CORS_ORIGIN ?? 'https://finplan.app')
+      : (process.env.CORS_ORIGIN ?? 'http://localhost:5173'),
     credentials: true,
   })
 );
 
-// JSON body parsing
-app.use(express.json({ limit: '10mb' }));
+// JSON body parsing — strict limit for hostile internet
+app.use(express.json({ limit: '1mb' }));
 
 // ---------------------------------------------------------------------------
 // Health Check
@@ -55,10 +58,16 @@ app.use('/api/audit', generalLimiter, auditRouter);
 
 // Protected resource stubs — all require authentication
 // Each stub returns 501 Not Implemented until the full route is built out.
-// Rate-limited to 100 requests per 15 minutes per IP.
+// Rate-limited to 30 requests per 15 minutes per IP.
 function stubRouter(name: string) {
   const router = express.Router();
-  router.use(generalLimiter);
+  router.use(rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 30,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' },
+  }));
   router.use(authMiddleware);
   router.use(auditRequestMiddleware);
   router.all('*', (_req, res) => {

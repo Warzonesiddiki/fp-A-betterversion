@@ -1,0 +1,36 @@
+﻿node.exe : npm warn exec The following package was not found and will be installed: depcheck@1.4.7
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn exec T... depcheck@1.4.7:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Unused dependencies
+* @a5c-ai/babysitter-sdk
+* @radix-ui/react-avatar
+* @radix-ui/react-checkbox
+* @radix-ui/react-dialog
+* @radix-ui/react-progress
+* @radix-ui/react-switch
+* @radix-ui/react-tooltip
+* @tanstack/react-query
+* @types/d3
+* class-variance-authority
+* d3
+* jspdf-autotable
+* lodash-es
+* prettier-plugin-packagejson
+* react-error-boundary
+* react-hook-form
+* uuid
+Unused devDependencies
+* cross-env
+* knip
+* tailwindcss
+Missing dependencies
+* @eslint/js: .\eslint.config.backup.js
+* @json-render/core: .\src\components\generative\GenerativeDashboard.tsx
+* @json-render/react: .\src\components\generative\GenerativeDashboard.tsx
+* @storybook/react-vite: .\.storybook\main.ts
+* vite-tsconfig-paths: .\.storybook\main.ts
+* @storybook/react: .\.storybook\preview.ts

@@ -134,7 +134,12 @@ export default function FXRatesPage() {
                     </td>
                     <td className="px-4 py-3 text-slate-400">{r.effectiveDate}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="sm" onClick={() => setDeleteId(r.id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeleteId(r.id)}
+                        aria-label="Delete FX rate"
+                      >
                         <Trash2 className="h-3.5 w-3.5 text-red-400" />
                       </Button>
                     </td>

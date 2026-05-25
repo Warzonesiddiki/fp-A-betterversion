@@ -77,7 +77,7 @@ describe('masterStorage', () => {
       const value = { state: { data: 'test' }, version: 1 };
       await masterStorage.setItem('test-store', value);
 
-      expect(mockTauriSqlSetItem).toHaveBeenCalledWith('test-store', value);
+      expect(mockTauriSqlSetItem).toHaveBeenCalledWith('test-store', JSON.stringify(value));
     });
   });
 

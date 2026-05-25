@@ -710,6 +710,7 @@ export default function DriverPlanningPage() {
                               variant="outline"
                               onClick={() => handleResetDriver(driver)}
                               disabled={!hasChanges}
+                              aria-label="Reset driver"
                             >
                               <RotateCcw className="w-3 h-3" />
                             </Button>

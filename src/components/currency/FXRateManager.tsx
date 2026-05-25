@@ -163,6 +163,7 @@ export function FXRateManager() {
                             e.stopPropagation();
                             setSelectedPair(p.key);
                           }}
+                          aria-label="View rate history"
                         >
                           <History className="h-3.5 w-3.5" />
                         </Button>

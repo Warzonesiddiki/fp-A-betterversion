@@ -320,6 +320,7 @@ export default function WhatIfPage() {
                         e.stopPropagation();
                         handleClone(s.id);
                       }}
+                      aria-label="Clone scenario"
                     >
                       <Copy className="h-3 w-3" />
                     </Button>
@@ -330,6 +331,7 @@ export default function WhatIfPage() {
                         e.stopPropagation();
                         handleDelete(s.id);
                       }}
+                      aria-label="Delete scenario"
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>

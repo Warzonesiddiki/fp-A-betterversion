@@ -1,22 +1,4 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": "allow",
-  "rules": [
-    "No conversation. Write code only. Minimal explanations.",
-    "Use named exports only — no default exports.",
-    "Use @/ path alias for all internal imports.",
-    "Tailwind only — no inline styles.",
-    "No fetch in components — use services/ or store actions.",
-    "Financial numbers as raw number, formatted only at display layer.",
-    "Percentages stored as decimals (0.15 = 15%).",
-    "Variance colors: favorable = green (#16A34A), unfavorable = red (#DC2626).",
-    "No any — use unknown for untrusted input.",
-    "Component props: explicit {Component}Props interface.",
-    "File size limits: 300 lines (components), 500 lines (engines/stores).",
-    "Zustand stores use subscribeWithSelector > persist > immer middleware order.",
-    "All pages lazy-loaded with React.lazy.",
-    "Prefer editing existing files over creating new ones.",
-    "Run lint after changes: npm run lint",
-    "Run typecheck after changes: npx tsc --noEmit"
-  ]
+  "permission": "allow"
 }

@@ -555,7 +555,7 @@ export function NLQChatPage() {
               Ctrl+E export
             </span>
           </div>
-          <Button type="submit" disabled={!input.trim() || isProcessing}>
+          <Button type="submit" disabled={!input.trim() || isProcessing} aria-label="Send message">
             <Send className="h-4 w-4" />
           </Button>
         </form>
