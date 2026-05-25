@@ -92,7 +92,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
           <span
             className={cn(
               'text-[10px] font-bold px-1.5 py-0.5 rounded ml-2 uppercase tracking-tighter',
-              isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-[var(--text-secondary)]'
+              isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)]'
             )}
           >
             {entity.code}

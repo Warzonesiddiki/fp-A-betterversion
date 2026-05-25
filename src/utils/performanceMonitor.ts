@@ -1,319 +1,265 @@
 /**
- * Performance Monitor — Track engine/operation timing, render performance, and Web Vitals.
- *
- * Usage:
- *   const result = PerformanceMonitor.time('engine:three-statement', 'engine', () => {
- *     return ThreeStatementEngine.calculate(data);
- *   });
- *
- *   // In a component:
- *   function HeavyChart() {
- *     useRenderMetrics('HeavyChart');
- *     return <RechartsComponent />;
- *   }
+ * Performance monitoring utility for FinPlan Pro.
+ * Tracks render times, engine execution, and API latency.
+ * Named exports only — singleton pattern.
  */
 
-import { useEffect, useRef } from 'react';
-
-interface PerformanceMetric {
-  name: string;
-  duration: number;
-  timestamp: number;
-  category: 'engine' | 'render' | 'store' | 'import' | 'export';
-  metadata?: Record<string, unknown>;
-}
-
-interface MetricSummary {
-  name: string;
-  count: number;
+interface MetricEntry {
+  durations: number[];
   avg: number;
-  p50: number;
+  min: number;
+  max: number;
+  count: number;
   p95: number;
   p99: number;
-  max: number;
-}
-
-interface WebVital {
-  name: string;
-  value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  timestamp: number;
 }
 
 interface PerformanceReport {
-  summary: MetricSummary[];
-  webVitals: WebVital[];
+  summary: Array<{
+    name: string;
+    category: string;
+    count: number;
+    avg: number;
+    min: number;
+    max: number;
+    p95: number;
+    p99: number;
+  }>;
   generatedAt: number;
 }
 
-export class PerformanceMonitor {
-  private static metrics: PerformanceMetric[] = [];
-  private static webVitals: WebVital[] = [];
-  private static maxMetrics = 10_000;
-  private static slowThreshold = 50; // ms — operations above this are logged
-  private static thresholds: Record<string, number> = {
-    'engine:recalculate': 16,
-    'engine:monte-carlo': 5000,
-    'render:grid': 100,
-    'render:chart': 200,
-    'store:update': 8,
-    'import:parse': 3000,
-    'export:generate': 5000,
+const metrics = new Map<string, number[]>();
+const activeMarks = new Map<string, number>();
+
+/** Start a named measurement */
+export function startMeasure(name: string): void {
+  activeMarks.set(name, performance.now());
+}
+
+/** End a named measurement and return duration in ms */
+export function endMeasure(name: string): number {
+  const start = activeMarks.get(name);
+  if (start === undefined) {
+    return 0;
+  }
+  const duration = performance.now() - start;
+  activeMarks.delete(name);
+
+  const entries = metrics.get(name) ?? [];
+  entries.push(duration);
+  metrics.set(name, entries);
+
+  return duration;
+}
+
+/** Get aggregated metrics for all measurements */
+export function getMetrics(): Record<string, MetricEntry> {
+  const result: Record<string, MetricEntry> = {};
+
+  for (const [name, durations] of metrics.entries()) {
+    const sorted = [...durations].sort((a, b) => a - b);
+    const count = sorted.length;
+    const sum = sorted.reduce((acc, d) => acc + d, 0);
+
+    result[name] = {
+      durations: sorted,
+      avg: sum / count,
+      min: sorted[0],
+      max: sorted[count - 1],
+      count,
+      p95: sorted[Math.floor(count * 0.95)] ?? sorted[count - 1],
+      p99: sorted[Math.floor(count * 0.99)] ?? sorted[count - 1],
+    };
+  }
+
+  return result;
+}
+
+/** Get metrics for a single named measurement */
+export function getMetric(name: string): MetricEntry | null {
+  const durations = metrics.get(name);
+  if (!durations || durations.length === 0) {
+    return null;
+  }
+  const sorted = [...durations].sort((a, b) => a - b);
+  const count = sorted.length;
+  const sum = sorted.reduce((acc, d) => acc + d, 0);
+
+  return {
+    durations: sorted,
+    avg: sum / count,
+    min: sorted[0],
+    max: sorted[count - 1],
+    count,
+    p95: sorted[Math.floor(count * 0.95)] ?? sorted[count - 1],
+    p99: sorted[Math.floor(count * 0.99)] ?? sorted[count - 1],
   };
+}
 
-  /**
-   * Time a synchronous function.
-   */
-  static time<T>(
-    name: string,
-    category: PerformanceMetric['category'],
-    fn: () => T,
-    metadata?: Record<string, unknown>
-  ): T {
+/** Reset all metrics */
+export function resetMetrics(): void {
+  metrics.clear();
+  activeMarks.clear();
+}
+
+/** Log a formatted performance report to console */
+export function logPerformanceReport(): void {
+  const allMetrics = getMetrics();
+  const entries = Object.entries(allMetrics);
+
+  if (entries.length === 0) {
+    return;
+  }
+
+  const tableData = entries.map(([name, entry]) => ({
+    Name: name,
+    Count: entry.count,
+    'Avg (ms)': entry.avg.toFixed(2),
+    'Min (ms)': entry.min.toFixed(2),
+    'Max (ms)': entry.max.toFixed(2),
+    'P95 (ms)': entry.p95.toFixed(2),
+    'P99 (ms)': entry.p99.toFixed(2),
+  }));
+
+  /* eslint-disable no-console */
+  console.group('%c[PerfMonitor] Performance Report', 'color: #3B82F6; font-weight: bold');
+  console.table(tableData);
+  console.groupEnd();
+  /* eslint-enable no-console */
+}
+
+/** Measure an async function's execution time */
+export async function measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
+  startMeasure(name);
+  try {
+    return await fn();
+  } finally {
+    endMeasure(name);
+  }
+}
+
+/** Measure a synchronous function's execution time */
+export function measureSync<T>(name: string, fn: () => T): T {
+  startMeasure(name);
+  try {
+    return fn();
+  } finally {
+    endMeasure(name);
+  }
+}
+
+/** Check if any metric exceeds a threshold and log warnings */
+export function checkThresholds(thresholds: Record<string, number>): boolean {
+  let allPassed = true;
+  const allMetrics = getMetrics();
+
+  for (const [name, threshold] of Object.entries(thresholds)) {
+    const metric = allMetrics[name];
+    if (metric && metric.p95 > threshold) {
+      /* eslint-disable no-console */
+      console.warn(
+        `[PerfMonitor] ${name} P95 (${metric.p95.toFixed(2)}ms) exceeds threshold (${threshold}ms)`
+      );
+      /* eslint-enable no-console */
+      allPassed = false;
+    }
+  }
+
+  return allPassed;
+}
+
+// ── Class-based API (used by tests and consumers that prefer OOP) ──
+
+interface ClassMetric {
+  name: string;
+  category: string;
+  durations: number[];
+  threshold?: number;
+}
+
+export class PerformanceMonitor {
+  private static metrics = new Map<string, ClassMetric>();
+
+  /** Time a synchronous function and record the metric */
+  static time<T>(name: string, category: string, fn: () => T): T {
     const start = performance.now();
-    const result = fn();
-    const duration = performance.now() - start;
-
-    this.record({ name, duration, timestamp: Date.now(), category, metadata });
-
-    const threshold = this.thresholds[name];
-    if (threshold && duration > threshold) {
-      console.warn(
-        `Performance: ${name} took ${duration.toFixed(1)}ms (threshold: ${threshold}ms)`
-      );
+    try {
+      return fn();
+    } finally {
+      const duration = performance.now() - start;
+      PerformanceMonitor.record(name, category, duration);
     }
-
-    return result;
   }
 
-  /**
-   * Time an async function.
-   */
-  static async timeAsync<T>(
-    name: string,
-    category: PerformanceMetric['category'],
-    fn: () => Promise<T>,
-    metadata?: Record<string, unknown>
-  ): Promise<T> {
+  /** Time an async function and record the metric */
+  static async timeAsync<T>(name: string, category: string, fn: () => Promise<T>): Promise<T> {
     const start = performance.now();
-    const result = await fn();
-    const duration = performance.now() - start;
-    this.record({ name, duration, timestamp: Date.now(), category, metadata });
-
-    const threshold = this.thresholds[name];
-    if (threshold && duration > threshold) {
-      console.warn(
-        `Performance: ${name} took ${duration.toFixed(1)}ms (threshold: ${threshold}ms)`
-      );
-    }
-
-    return result;
-  }
-
-  private static record(metric: PerformanceMetric): void {
-    this.metrics.push(metric);
-    if (this.metrics.length > this.maxMetrics) {
-      this.metrics = this.metrics.slice(-this.maxMetrics / 2);
-    }
-  }
-
-  /**
-   * Record a Web Vitals measurement.
-   */
-  static recordWebVital(name: string, value: number): void {
-    let rating: WebVital['rating'] = 'good';
-    // Thresholds per https://web.dev/vitals/
-    if (name === 'LCP') {
-      rating = value <= 2500 ? 'good' : value <= 4000 ? 'needs-improvement' : 'poor';
-    } else if (name === 'FID') {
-      rating = value <= 100 ? 'good' : value <= 300 ? 'needs-improvement' : 'poor';
-    } else if (name === 'CLS') {
-      rating = value <= 0.1 ? 'good' : value <= 0.25 ? 'needs-improvement' : 'poor';
-    } else if (name === 'INP') {
-      rating = value <= 200 ? 'good' : value <= 500 ? 'needs-improvement' : 'poor';
-    } else if (name === 'TTFB') {
-      rating = value <= 800 ? 'good' : value <= 1800 ? 'needs-improvement' : 'poor';
-    }
-    this.webVitals.push({ name, value, rating, timestamp: Date.now() });
-  }
-
-  /**
-   * Get aggregate report with metric summaries + Web Vitals.
-   */
-  static getReport(): PerformanceReport {
-    const byName = new Map<string, number[]>();
-
-    for (const m of this.metrics) {
-      const existing = byName.get(m.name) ?? [];
-      existing.push(m.duration);
-      byName.set(m.name, existing);
-    }
-
-    const summary: MetricSummary[] = [];
-    for (const [name, durations] of byName) {
-      durations.sort((a, b) => a - b);
-      summary.push({
-        name,
-        count: durations.length,
-        avg: durations.reduce((a, b) => a + b, 0) / durations.length,
-        p50: durations[Math.floor(durations.length * 0.5)],
-        p95: durations[Math.floor(durations.length * 0.95)],
-        p99: durations[Math.floor(durations.length * 0.99)],
-        max: Math.max(...durations),
-      });
-    }
-
-    return { summary, webVitals: [...this.webVitals], generatedAt: Date.now() };
-  }
-
-  /**
-   * Get the slowest operations, optionally filtered by category.
-   */
-  static getSlowOps(category?: PerformanceMetric['category'], limit = 10): PerformanceMetric[] {
-    const filtered = category
-      ? this.metrics.filter((m) => m.category === category)
-      : this.metrics;
-    return [...filtered]
-      .sort((a, b) => b.duration - a.duration)
-      .slice(0, limit);
-  }
-
-  static clear(): void {
-    this.metrics = [];
-    this.webVitals = [];
-  }
-
-  static setThreshold(name: string, ms: number): void {
-    this.thresholds[name] = ms;
-  }
-
-  static setSlowThreshold(ms: number): void {
-    this.slowThreshold = ms;
-  }
-
-  /**
-   * Directly record a render metric (used by useRenderMetrics hook).
-   */
-  static recordRender(componentName: string, duration: number): void {
-    this.record({
-      name: `render:${componentName}`,
-      duration,
-      timestamp: Date.now(),
-      category: 'render',
-      metadata: { component: componentName },
-    });
-
-    const threshold = this.thresholds[`render:${componentName}`] ?? this.thresholds['render:chart'];
-    if (threshold && duration > threshold) {
-      console.warn(
-        `Performance: render:${componentName} took ${duration.toFixed(1)}ms (threshold: ${threshold}ms)`
-      );
-    }
-  }
-
-  /**
-   * Auto-instrument Web Vitals via PerformanceObserver.
-   * Call once at app startup.
-   */
-  static observeWebVitals(): void {
-    if (typeof PerformanceObserver === 'undefined') return;
-
-    // Largest Contentful Paint
     try {
-      const lcpObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
-        if (lastEntry) {
-          this.recordWebVital('LCP', lastEntry.startTime);
-        }
-      });
-      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
-    } catch {
-      // LCP observer not supported
+      return await fn();
+    } finally {
+      const duration = performance.now() - start;
+      PerformanceMonitor.record(name, category, duration);
     }
+  }
 
-    // First Input Delay / Interaction to Next Paint
-    try {
-      const fidObserver = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          const fidEntry = entry as PerformanceEntry & {
-            processingStart?: number;
-            startTime: number;
-          };
-          const delay = fidEntry.processingStart
-            ? fidEntry.processingStart - fidEntry.startTime
-            : fidEntry.startTime;
-          this.recordWebVital(entry.entryType === 'first-input' ? 'FID' : 'INP', delay);
-        }
-      });
-      fidObserver.observe({ type: 'first-input', buffered: true });
-    } catch {
-      // FID observer not supported
+  /** Record a metric entry */
+  private static record(name: string, category: string, duration: number): void {
+    const key = `${category}:${name}`;
+    const existing = PerformanceMonitor.metrics.get(key);
+    if (existing) {
+      existing.durations.push(duration);
+    } else {
+      PerformanceMonitor.metrics.set(key, { name, category, durations: [duration] });
     }
+  }
 
-    // Cumulative Layout Shift
-    try {
-      let clsValue = 0;
-      const clsObserver = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          const layoutShift = entry as PerformanceEntry & {
-            hadRecentInput?: boolean;
-            value?: number;
-          };
-          if (!layoutShift.hadRecentInput && layoutShift.value != null) {
-            clsValue += layoutShift.value;
-          }
-        }
-        this.recordWebVital('CLS', clsValue);
-      });
-      clsObserver.observe({ type: 'layout-shift', buffered: true });
-    } catch {
-      // CLS observer not supported
-    }
-
-    // Time to First Byte
-    try {
-      const navEntries = performance.getEntriesByType('navigation');
-      if (navEntries.length > 0) {
-        const nav = navEntries[0] as PerformanceNavigationTiming;
-        this.recordWebVital('TTFB', nav.responseStart - nav.requestStart);
+  /** Set a threshold for a named metric */
+  static setThreshold(name: string, thresholdMs: number): void {
+    for (const [, metric] of PerformanceMonitor.metrics.entries()) {
+      if (metric.name === name) {
+        metric.threshold = thresholdMs;
       }
-    } catch {
-      // Navigation timing not supported
     }
+    // Store for future entries
+    PerformanceMonitor.metrics.set(`__threshold__:${name}`, {
+      name,
+      category: '__threshold__',
+      durations: [],
+      threshold: thresholdMs,
+    });
   }
-}
 
-/**
- * React hook to track component render durations.
- * Logs to PerformanceMonitor under `render:{componentName}`.
- *
- * Usage:
- *   function HeavyChart() {
- *     useRenderMetrics('HeavyChart');
- *     return <RechartsComponent />;
- *   }
- */
-export function useRenderMetrics(componentName: string): void {
-  const renderStart = useRef(performance.now());
+  /** Get a full performance report */
+  static getReport(): PerformanceReport {
+    const summary: PerformanceReport['summary'] = [];
 
-  useEffect(() => {
-    const duration = performance.now() - renderStart.current;
-    // Only record renders that are measurable (> 0.5ms)
-    if (duration > 0.5) {
-      PerformanceMonitor.recordRender(componentName, duration);
+    for (const [, metric] of PerformanceMonitor.metrics.entries()) {
+      if (metric.category === '__threshold__') continue;
+
+      const sorted = [...metric.durations].sort((a, b) => a - b);
+      const count = sorted.length;
+      const sum = sorted.reduce((acc, d) => acc + d, 0);
+
+      summary.push({
+        name: metric.name,
+        category: metric.category,
+        count,
+        avg: count > 0 ? sum / count : 0,
+        min: count > 0 ? sorted[0] : 0,
+        max: count > 0 ? sorted[count - 1] : 0,
+        p95: count > 0 ? (sorted[Math.floor(count * 0.95)] ?? sorted[count - 1]) : 0,
+        p99: count > 0 ? (sorted[Math.floor(count * 0.99)] ?? sorted[count - 1]) : 0,
+      });
     }
-    // Reset for next render
-    renderStart.current = performance.now();
-  });
-}
 
-/**
- * Standalone init function — call from main.tsx to auto-instrument Web Vitals.
- */
-export function initPerformanceObservation(): void {
-  if (process.env.NODE_ENV !== 'production') {
-    return; // only instrument in production to avoid dev noise
+    return {
+      summary,
+      generatedAt: Date.now(),
+    };
   }
-  PerformanceMonitor.observeWebVitals();
+
+  /** Clear all metrics */
+  static clear(): void {
+    PerformanceMonitor.metrics.clear();
+  }
 }

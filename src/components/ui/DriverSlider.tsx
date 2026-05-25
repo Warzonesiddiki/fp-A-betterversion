@@ -62,7 +62,7 @@ export const DriverSlider: React.FC<DriverSliderProps> = ({
         onValueChange={(vals) => onChange(vals[0])}
         disabled={disabled}
       >
-        <Slider.Track className="bg-gray-100 relative grow rounded-full h-[6px] border border-[var(--border-subtle)]">
+        <Slider.Track className="bg-gray-100 dark:bg-gray-800 relative grow rounded-full h-[6px] border border-[var(--border-subtle)]">
           <Slider.Range
             className={cn(
               'absolute h-full rounded-full transition-colors duration-300',

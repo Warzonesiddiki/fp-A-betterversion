@@ -616,7 +616,7 @@ function RuleRow({
             'rounded px-2 py-1 text-xs',
             rule.enabled
               ? 'bg-green-100 text-green-700 hover:bg-green-200'
-              : 'bg-gray-100 text-[var(--text-muted)] hover:bg-gray-200'
+              : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-muted)] hover:bg-gray-200 dark:hover:bg-gray-700'
           )}
         >
           {rule.enabled ? 'On' : 'Off'}

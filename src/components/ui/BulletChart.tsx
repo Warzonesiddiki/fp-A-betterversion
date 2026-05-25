@@ -68,7 +68,7 @@ export const BulletChart: React.FC<BulletChartProps> = ({
       }
     >
       {label && <div className="text-sm font-medium mb-1">{label}</div>}
-      <div className="relative h-8 bg-gray-100 rounded">
+      <div className="relative h-8 bg-gray-100 dark:bg-gray-800 rounded">
         {/* Qualitative ranges */}
         {ranges.map((range, i) => (
           <div

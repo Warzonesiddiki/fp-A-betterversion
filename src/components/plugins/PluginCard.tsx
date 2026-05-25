@@ -42,7 +42,7 @@ function StarRating({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((i) => (
         <svg
           key={i}
-          className={cn('h-3.5 w-3.5', i <= stars ? 'text-yellow-400' : 'text-gray-300')}
+          className={cn('h-3.5 w-3.5', i <= stars ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600')}
           fill="currentColor"
           viewBox="0 0 20 20"
           aria-hidden="true"
@@ -122,7 +122,7 @@ export function PluginCard({
         <span
           className={cn(
             'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium',
-            CATEGORY_COLORS[plugin.category] ?? 'bg-gray-100 text-gray-800'
+            CATEGORY_COLORS[plugin.category] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
           )}
         >
           {CATEGORY_LABELS[plugin.category] ?? plugin.category}

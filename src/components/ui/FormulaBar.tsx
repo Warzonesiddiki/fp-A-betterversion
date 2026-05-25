@@ -791,7 +791,7 @@ export function FormulaBar({
                     <span className="text-xs font-bold text-[var(--text-primary)] font-mono">
                       {fn.name}
                     </span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-[var(--text-muted)]">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-[var(--text-muted)]">
                       {fn.category}
                     </span>
                   </div>
@@ -820,7 +820,7 @@ export function FormulaBar({
                       'px-1.5 py-0.5 text-[10px] font-mono rounded',
                       i === 0
                         ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-[var(--text-secondary)]'
+                        : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)]'
                     )}
                   >
                     {param}

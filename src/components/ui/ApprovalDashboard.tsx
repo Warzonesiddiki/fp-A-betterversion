@@ -82,7 +82,7 @@ export function ApprovalDashboard({ stats, className }: Props) {
                 <div key={approver} className="flex items-center justify-between">
                   <span className="text-sm">{approver}</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                    <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <div
                         className="bg-blue-500 h-2 rounded-full"
                         style={{

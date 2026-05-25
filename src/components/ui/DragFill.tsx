@@ -198,7 +198,7 @@ export function DragFill({
             className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2"
             onClick={() => handleModeSelect('copy')}
           >
-            <span className="w-4 h-4 rounded bg-gray-200 flex items-center justify-center text-[9px] font-mono">
+            <span className="w-4 h-4 rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[9px] font-mono">
               C
             </span>
             Copy Cells

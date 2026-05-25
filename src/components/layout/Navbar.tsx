@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -24,7 +24,7 @@ const entities = [
   { id: 'ent-3', name: 'DE Subsidiary', currency: 'EUR' },
 ];
 
-export default function Navbar() {
+export const Navbar = memo(function Navbar() {
   const navigate = useNavigate();
   const { user, activeEntityId, switchEntity } = useAuthStore();
   const { notifications, unreadCount } = useNotificationStore();
@@ -303,4 +303,5 @@ export default function Navbar() {
       </div>
     </header>
   );
-}
+});
+Navbar.displayName = 'Navbar';

@@ -110,7 +110,7 @@ export const GanttChart: React.FC<GanttChartProps> = ({
               }
             >
               <div className="w-48 shrink-0 text-sm truncate pr-2">{task.name}</div>
-              <div className="flex-1 relative h-full bg-gray-100 rounded">
+              <div className="flex-1 relative h-full bg-gray-100 dark:bg-gray-800 rounded">
                 <div
                   className="absolute h-full rounded opacity-80"
                   style={{ ...barStyle, backgroundColor: color }}

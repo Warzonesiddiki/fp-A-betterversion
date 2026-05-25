@@ -41,8 +41,8 @@ function formatValue(value: number, format: string): string {
 }
 
 const varianceColors: Record<VarianceType, { bg: string; text: string; border: string }> = {
-  favorable: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
-  unfavorable: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+  favorable: { bg: 'bg-green-50 dark:bg-green-950', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
+  unfavorable: { bg: 'bg-red-50 dark:bg-red-950', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' },
   neutral: {
     bg: 'bg-gray-50 dark:bg-gray-900',
     text: 'text-[var(--text-secondary)]',
@@ -79,9 +79,9 @@ export function KPICardEnhanced({
           className
         )}
       >
-        <div className="h-3 w-24 rounded bg-gray-200 animate-pulse mb-3" />
-        <div className="h-7 w-32 rounded bg-gray-200 animate-pulse mb-2" />
-        <div className="h-4 w-20 rounded bg-gray-200 animate-pulse" />
+        <div className="h-3 w-24 rounded bg-gray-200 dark:bg-gray-700 animate-pulse mb-3" />
+        <div className="h-7 w-32 rounded bg-gray-200 dark:bg-gray-700 animate-pulse mb-2" />
+        <div className="h-4 w-20 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
       </div>
     );
   }
@@ -157,7 +157,7 @@ export function KPICardEnhanced({
             <span>Target progress</span>
             <span className="font-medium">{targetProgress.toFixed(0)}%</span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-gray-200">
+          <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
             <div
               className={cn(
                 'h-full rounded-full transition-all',

@@ -26,9 +26,9 @@ export const Sparkline: React.FC<SparklineProps> = ({
     return (
       <div
         style={{ width, height }}
-        className={cn('bg-gray-100/50 rounded flex items-center justify-center', className)}
+        className={cn('bg-gray-100/50 dark:bg-gray-800/50 rounded flex items-center justify-center', className)}
       >
-        <div className="h-px w-3/4 bg-gray-300" />
+        <div className="h-px w-3/4 bg-gray-300 dark:bg-gray-600" />
       </div>
     );
   }

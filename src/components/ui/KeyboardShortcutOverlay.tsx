@@ -115,7 +115,7 @@ function KeyBadge({ children }: { children: string }) {
       className={cn(
         'inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5',
         'text-[11px] font-mono rounded border',
-        'bg-gray-100 border-gray-300 text-gray-700',
+        'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300',
         'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'
       )}
       style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.1)' }}

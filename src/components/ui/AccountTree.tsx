@@ -199,7 +199,7 @@ export const AccountTree: React.FC<AccountTreeProps> = ({
           <button
             onClick={() => setFilter('')}
             aria-label="Clear search"
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-md transition-colors"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors"
           >
             <X className="h-3 w-3 text-[var(--text-secondary)]" />
           </button>

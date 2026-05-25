@@ -75,7 +75,7 @@ export const Select: React.FC<SelectProps> = ({
                   value={option.value}
                   disabled={option.disabled}
                   className={cn(
-                    'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-gray-100 focus:text-[var(--text-primary)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors',
+                    'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-gray-100 dark:focus:bg-gray-800 focus:text-[var(--text-primary)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors',
                     value === option.value && 'bg-blue-50 text-blue-700 font-medium'
                   )}
                 >

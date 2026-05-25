@@ -57,7 +57,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 <div
                   className={cn(
                     'h-0.5 w-full absolute right-1/2 top-1/2 -translate-y-1/2 z-0',
-                    isDone || isCurrent ? 'bg-blue-600' : 'bg-gray-200'
+                    isDone || isCurrent ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
                   )}
                 />
               )}
@@ -67,7 +67,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 <div
                   className={cn(
                     'h-0.5 w-full absolute left-1/2 top-1/2 -translate-y-1/2 z-0',
-                    isDone ? 'bg-blue-600' : 'bg-gray-200'
+                    isDone ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
                   )}
                 />
               )}
@@ -77,7 +77,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 <div
                   className={cn(
                     'w-0.5 h-full absolute top-1/2 left-1/2 -translate-x-1/2 z-0',
-                    isDone ? 'bg-blue-600' : 'bg-gray-200'
+                    isDone ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
                   )}
                 />
               )}

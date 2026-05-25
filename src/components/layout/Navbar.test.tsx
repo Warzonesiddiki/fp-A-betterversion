@@ -4,7 +4,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Navbar from './Navbar';
+import { Navbar } from './Navbar';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {

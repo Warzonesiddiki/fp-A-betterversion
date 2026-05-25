@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/store/uiStore';
 import { Sidebar } from './Sidebar';
-import Navbar from './Navbar';
+import { Navbar } from './Navbar';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 import { SkipToContent } from '@/components/ui/SkipToContent';

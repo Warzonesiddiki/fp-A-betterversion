@@ -120,7 +120,8 @@ export function ConsolidationWorksheet({
               tab === k
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-            )}
+            ,
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1')}
             onClick={() => setTab(k)}
           >
             {l}
@@ -240,7 +241,7 @@ function EliminationsView({ entries }: { entries: EliminationEntry[] }) {
                 {entries.map((e, i) => (
                   <tr key={i} className="hover:bg-[var(--bg-muted)]">
                     <td className="p-2">
-                      <Badge variant="outline" className="bg-gray-100 text-gray-700">
+                      <Badge variant="outline" className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                         {typeBadge[e.type] ?? e.type}
                       </Badge>
                     </td>

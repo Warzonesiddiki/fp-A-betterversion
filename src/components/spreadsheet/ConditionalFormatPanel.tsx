@@ -122,7 +122,7 @@ function RuleRow({
           className={`text-xs px-2 py-1 rounded transition-colors ${
             rule.enabled
               ? 'bg-green-100 text-green-700 hover:bg-green-200'
-              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
           }`}
           onClick={() => onToggle(rule.id)}
           aria-label={rule.enabled ? 'Disable rule' : 'Enable rule'}
