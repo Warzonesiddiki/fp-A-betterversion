@@ -81,7 +81,11 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({
   }
 
   if (totalValue === 0)
-    return <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">No data</div>;
+    return (
+      <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
+        No data
+      </div>
+    );
 
   const NODE_WIDTH = 20;
   const GAP = 10;

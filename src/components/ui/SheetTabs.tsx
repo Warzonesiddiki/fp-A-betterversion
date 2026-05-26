@@ -88,7 +88,7 @@ export function SheetTabs({
           key={sheet.id}
           className={cn(
             'flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-t-md cursor-pointer transition-colors select-none',
-            'border border-b-0 border-transparent',
+            'border border-b-0 border-transparent focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none',
             sheet.id === activeSheetId
               ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] border-[var(--border-subtle)] shadow-sm'
               : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]/50',

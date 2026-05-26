@@ -61,7 +61,11 @@ export function ScatterPlot({
   }
 
   if (!data || data.length === 0)
-    return <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">No data</div>;
+    return (
+      <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
+        No data
+      </div>
+    );
 
   const hasSize = data.some((d) => d.size !== undefined);
   const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];

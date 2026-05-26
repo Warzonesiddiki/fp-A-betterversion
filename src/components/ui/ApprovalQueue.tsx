@@ -88,7 +88,9 @@ export function ApprovalQueue({
         {/* Filters */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label htmlFor="approval-status-filter" className="text-xs font-medium">Status</label>
+            <label htmlFor="approval-status-filter" className="text-xs font-medium">
+              Status
+            </label>
             <select
               id="approval-status-filter"
               value={filterState}

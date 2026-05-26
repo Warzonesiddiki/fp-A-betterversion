@@ -19,7 +19,11 @@ export const CalendarHeatmap: React.FC<CalendarHeatmapProps> = ({
   className,
 }) => {
   if (!data || data.length === 0)
-    return <div className="flex items-center justify-center h-16 text-slate-400 dark:text-slate-300">No data</div>;
+    return (
+      <div className="flex items-center justify-center h-16 text-slate-400 dark:text-slate-300">
+        No data
+      </div>
+    );
 
   const dataMap = new Map(data.map((d) => [d.date, d.value]));
   const values = data.map((d) => d.value);

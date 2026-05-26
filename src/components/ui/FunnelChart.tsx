@@ -42,11 +42,19 @@ export const FunnelChart: React.FC<FunnelChartProps> = ({
     );
   }
   if (!stages || stages.length === 0)
-    return <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">No data</div>;
+    return (
+      <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
+        No data
+      </div>
+    );
 
   const maxValue = Math.max(...stages.map((s) => s.value));
   if (maxValue <= 0)
-    return <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">No data</div>;
+    return (
+      <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
+        No data
+      </div>
+    );
 
   const defaultColors = ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'];
 

@@ -74,7 +74,9 @@ export const Pagination: React.FC<PaginationProps> = ({
         )}
         {onPageSizeChange && (
           <div className="flex items-center space-x-2">
-            <label htmlFor="pagination-page-size" className="text-[var(--text-secondary)]">Rows per page:</label>
+            <label htmlFor="pagination-page-size" className="text-[var(--text-secondary)]">
+              Rows per page:
+            </label>
             <select
               id="pagination-page-size"
               className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500 text-xs font-medium cursor-pointer"

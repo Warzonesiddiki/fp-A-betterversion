@@ -80,7 +80,11 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
   }, [data]);
 
   if (sortedData.length === 0)
-    return <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">No data</div>;
+    return (
+      <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
+        No data
+      </div>
+    );
 
   const baseValue = data.length > 0 ? data[0].baseValue : 0;
 
