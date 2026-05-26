@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {} from 'lucide-react';
+import React, { useState, useEffect, useCallback, useId } from 'react';
 import { cn } from '@/utils/cn';
 
 export interface CurrencyInputProps {
@@ -9,6 +8,7 @@ export interface CurrencyInputProps {
   locale?: string;
   disabled?: boolean;
   error?: string;
+  label?: string;
   className?: string;
 }
 
@@ -19,8 +19,10 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
   locale = 'en-US',
   disabled = false,
   error,
+  label,
   className,
 }) => {
+  const id = useId();
   const [displayValue, setDisplayValue] = useState('');
 
   const formatValue = useCallback(
@@ -64,6 +66,11 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
 
   return (
     <div className={cn('flex flex-col gap-1.5 w-full', className)}>
+      {label && (
+        <label htmlFor={id} className="text-sm font-medium text-[var(--text-primary)]">
+          {label}
+        </label>
+      )}
       <div className="relative group">
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
           <span className="text-xs font-bold text-[var(--text-secondary)] opacity-50">
@@ -73,6 +80,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
           </span>
         </div>
         <input
+          id={id}
           type="text"
           className={cn(
             'w-full h-10 pl-8 pr-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md text-sm font-medium text-[var(--text-primary)] text-right tabular-nums outline-none transition-all focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed',
@@ -84,6 +92,9 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
           onFocus={handleFocus}
           disabled={disabled}
           placeholder="0"
+          aria-label={label ? undefined : 'Currency amount'}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter">
@@ -91,7 +102,11 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
           </span>
         </div>
       </div>
-      {error && <span className="text-[10px] font-medium fin-negative">{error}</span>}
+      {error && (
+        <span id={`${id}-error`} className="text-[10px] font-medium fin-negative" role="alert">
+          {error}
+        </span>
+      )}
     </div>
   );
 };

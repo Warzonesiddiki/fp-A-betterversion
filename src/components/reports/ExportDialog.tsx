@@ -211,8 +211,9 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-slate-500 block mb-1">Orientation</label>
+              <label htmlFor="pdf-orientation" className="text-xs text-slate-500 block mb-1">Orientation</label>
               <select
+                id="pdf-orientation"
                 value={pdfOptions.orientation}
                 onChange={(e) =>
                   setPdfOptions((prev) => ({
@@ -228,8 +229,9 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
             </div>
 
             <div>
-              <label className="text-xs text-slate-500 block mb-1">Page Size</label>
+              <label htmlFor="pdf-page-size" className="text-xs text-slate-500 block mb-1">Page Size</label>
               <select
+                id="pdf-page-size"
                 value={pdfOptions.pageSize}
                 onChange={(e) =>
                   setPdfOptions((prev) => ({

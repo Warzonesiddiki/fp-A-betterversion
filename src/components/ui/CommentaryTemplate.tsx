@@ -169,6 +169,7 @@ export function CommentaryTemplate({
               value={customText}
               onChange={(e) => setCustomText(e.target.value)}
               placeholder="Write your own commentary..."
+              aria-label="Custom commentary template"
               className="mt-2 w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-slate-200 placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500"
               rows={3}
             />
