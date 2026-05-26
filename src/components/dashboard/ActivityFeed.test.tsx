@@ -286,7 +286,7 @@ describe('ActivityFeed', () => {
     localStorage.setItem('finplan-activity-log', JSON.stringify(activities));
 
     const { container } = render(<ActivityFeed />);
-    const timestampEl = container.querySelector('.text-xs.text-slate-500');
+    const timestampEl = container.querySelector('.text-xs');
     expect(timestampEl?.textContent).toBe('');
   });
 });

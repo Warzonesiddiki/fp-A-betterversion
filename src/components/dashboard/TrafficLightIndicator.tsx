@@ -49,7 +49,7 @@ const statusConfig: Record<
     glow: 'shadow-red-200/50',
   },
   gray: {
-    bg: 'bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 border-[var(--border-subtle)]',
+    bg: 'bg-gray-50 dark:bg-gray-800 border-[var(--border-subtle)]',
     dot: 'bg-gray-400',
     text: 'text-[var(--text-secondary)]',
     glow: '',
