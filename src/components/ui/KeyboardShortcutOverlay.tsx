@@ -328,13 +328,13 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
         <div
           className={cn(
             'relative w-full max-w-3xl max-h-[85vh] rounded-xl shadow-2xl',
-            'border border-gray-200 dark:border-gray-700',
+            'border border-[var(--border-default)]',
             'bg-white dark:bg-gray-800',
             'flex flex-col overflow-hidden'
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border-default)]">
             <div className="flex items-center gap-2.5">
               <Keyboard className="w-5 h-5 text-blue-500" />
               <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
@@ -349,7 +349,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
                 onClick={handlePrint}
                 className={cn(
                   'flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg',
-                  'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
+                  'text-[var(--text-secondary)] hover:bg-gray-100 dark:hover:bg-gray-700',
                   'transition-colors'
                 )}
                 title="Print cheat sheet"
@@ -368,7 +368,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
           </div>
 
           {/* Toolbar: search + context filter */}
-          <div className="flex items-center gap-3 px-5 py-2.5 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-3 px-5 py-2.5 border-b border-[var(--border-default)]">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -425,7 +425,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-5 py-2 border-t border-gray-200 dark:border-gray-700 text-[11px] text-[var(--text-muted)]">
+          <div className="flex items-center justify-between px-5 py-2 border-t border-[var(--border-default)] text-[11px] text-[var(--text-muted)]">
             <span>
               Showing shortcuts for{' '}
               <span className="font-medium text-gray-500 dark:text-gray-400">
