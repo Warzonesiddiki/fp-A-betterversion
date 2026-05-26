@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -46,6 +46,7 @@ export default function GLJournalsPage() {
   const [startDate, setStartDate] = useState(getFirstDayOfMonth());
   const [endDate, setEndDate] = useState(getLastDayOfMonth());
   const [accountFilter, setAccountFilter] = useState<string[]>([]);
+  const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 50;
@@ -171,10 +172,12 @@ export default function GLJournalsPage() {
                   className="w-48 pl-8 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Description or ref..."
                   value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(0);
-                  }}
+                  onChange={(e) =>
+                    startTransition(() => {
+                      setSearch(e.target.value);
+                      setPage(0);
+                    })
+                  }
                 />
               </div>
             </div>

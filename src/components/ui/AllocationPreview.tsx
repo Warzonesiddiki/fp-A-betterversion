@@ -216,7 +216,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
       {/* Journal Entry Preview */}
       {result.allocations.length > 0 && (
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-slate-400">Journal Entries</span>
+          <span className="text-xs font-medium text-slate-400 dark:text-slate-300">Journal Entries</span>
           <div className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 font-mono text-xs">
             {result.allocations.map((entry) => (
               <div key={entry.target} className="flex justify-between py-0.5">

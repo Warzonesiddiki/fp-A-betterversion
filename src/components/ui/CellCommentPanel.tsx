@@ -160,7 +160,7 @@ export function CellCommentPanel({
       {/* Input */}
       <form onSubmit={handleSubmit} className="border-t border-slate-700 p-3 space-y-2">
         {replyTo && (
-          <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-300">
             <span>Replying to comment</span>
             <button type="button" onClick={() => setReplyTo(null)} className="hover:text-slate-200">
               Cancel

@@ -34,7 +34,7 @@ export const Select: React.FC<SelectProps> = ({
     <div className={cn('flex flex-col gap-1.5 w-full', className)}>
       {label && (
         <label
-          className="text-xs font-medium text-slate-400"
+          className="text-xs font-medium text-slate-400 dark:text-slate-300"
           id={`${label.replace(/\s+/g, '-').toLowerCase()}-label`}
         >
           {label}

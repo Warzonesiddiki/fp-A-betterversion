@@ -193,7 +193,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
 
       {/* Rule Name */}
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-slate-400">Rule Name</span>
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-300">Rule Name</span>
         <input
           type="text"
           value={ruleName}
@@ -205,7 +205,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
 
       {/* Source Selection */}
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-slate-400">Source</span>
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-300">Source</span>
         <select
           value={selectedSource}
           onChange={(e) => setSelectedSource(e.target.value)}
@@ -222,7 +222,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
 
       {/* Method Selection */}
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-slate-400">Method</span>
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-300">Method</span>
         <div className="grid grid-cols-2 gap-2">
           {METHOD_OPTIONS.map((opt) => (
             <button
@@ -246,7 +246,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
       {/* Driver Selection (driver method only) */}
       {method === 'driver' && (
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-slate-400">Driver</span>
+          <span className="text-xs font-medium text-slate-400 dark:text-slate-300">Driver</span>
           <select
             value={selectedDriver}
             onChange={(e) => setSelectedDriver(e.target.value)}
@@ -270,7 +270,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
       {/* Targets */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-400">Targets</span>
+          <span className="text-xs font-medium text-slate-400 dark:text-slate-300">Targets</span>
           <button
             type="button"
             onClick={addTarget}
@@ -370,7 +370,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
       {/* Period & Recurring */}
       <div className="flex items-center gap-4">
         <label className="flex flex-col gap-1 flex-1">
-          <span className="text-xs font-medium text-slate-400">Period</span>
+          <span className="text-xs font-medium text-slate-400 dark:text-slate-300">Period</span>
           <input
             type="month"
             value={period}

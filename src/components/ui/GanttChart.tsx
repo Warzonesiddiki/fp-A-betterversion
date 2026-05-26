@@ -44,7 +44,7 @@ export const GanttChart: React.FC<GanttChartProps> = ({
     );
   }
   if (!tasks || tasks.length === 0)
-    return <div className="flex items-center justify-center h-48 text-slate-400">No data</div>;
+    return <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">No data</div>;
 
   const allDates = tasks.flatMap((t) => [new Date(t.startDate), new Date(t.endDate)]);
   const minDate = new Date(Math.min(...allDates.map((d) => d.getTime())));

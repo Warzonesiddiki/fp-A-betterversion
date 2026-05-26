@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useDataStore } from '@/store/dataStore';
@@ -67,6 +67,7 @@ export default function ChartOfAccountsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'flat' | 'tree'>('flat');
+  const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({
     code: '',
@@ -279,14 +280,14 @@ export default function ChartOfAccountsPage() {
             className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Search by code or name..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => startTransition(() => setSearch(e.target.value))}
           />
         </div>
         <div className="flex gap-1 flex-wrap">
           {['all', 'Revenue', 'COGS', 'OpEx', 'CapEx', 'Asset', 'Liability', 'Equity'].map((t) => (
             <button
               key={t}
-              onClick={() => setFilterType(t)}
+              onClick={() => startTransition(() => setFilterType(t))}
               className={`px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${filterType === t ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
             >
               {t === 'all' ? 'All' : t}

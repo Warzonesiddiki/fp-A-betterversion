@@ -46,7 +46,7 @@ export const BulletChart: React.FC<BulletChartProps> = ({
     );
   }
   if (isNaN(actual) || isNaN(target))
-    return <div className="flex items-center justify-center h-12 text-slate-400">Invalid data</div>;
+    return <div className="flex items-center justify-center h-12 text-slate-400 dark:text-slate-300">Invalid data</div>;
 
   const max = Math.max(actual, target, ...ranges.map((r) => r.max)) * 1.1 || 1;
 

@@ -218,7 +218,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 <h2 className="text-xl font-bold text-white mb-2" id="step-title-2">
                   {t('onboarding.import.title')}
                 </h2>
-                <p className="text-slate-400">{t('onboarding.import.description')}</p>
+                <p className="text-slate-400 dark:text-slate-300">{t('onboarding.import.description')}</p>
                 <div className="py-4">
                   <FileDropZone
                     accept=".csv,.xlsx"

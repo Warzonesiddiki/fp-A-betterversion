@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -16,6 +16,7 @@ function formatCurrency(n: number): string {
 export default function GLExplorerPage() {
   const { entries, accounts } = useGLStore();
   const navigate = useNavigate();
+  const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const filtered = useMemo(() => {
@@ -51,7 +52,7 @@ export default function GLExplorerPage() {
             className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm"
             placeholder="Explore entries..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => startTransition(() => setSearch(e.target.value))}
           />
         </div>
         <select
@@ -81,7 +82,7 @@ export default function GLExplorerPage() {
                   <th className="px-4 py-3 text-right">Credit</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
                 {filtered.map((e, i) => (
                   <tr key={e.id || i} className="hover:bg-slate-900/50">
                     <td className="px-4 py-2 text-xs text-slate-400">{e.date || e.period}</td>

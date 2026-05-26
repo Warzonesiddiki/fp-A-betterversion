@@ -18,7 +18,7 @@ export function VersionDiffViewer({
     <Card>
       <CardContent className="p-4">
         {title && <h3 className="font-semibold mb-3">{title}</h3>}
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-slate-400 dark:text-slate-300">
           {diffEntries.length} changes between {sourceLabel} and {targetLabel}
         </p>
         {diffEntries.length === 0 && (

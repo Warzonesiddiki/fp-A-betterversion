@@ -153,7 +153,7 @@ function DashboardTable({
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="text-left px-3 py-2 text-xs font-medium text-slate-400"
+                  className="text-left px-3 py-2 text-xs font-medium text-slate-400 dark:text-slate-300"
                 >
                   {col.label}
                 </th>
