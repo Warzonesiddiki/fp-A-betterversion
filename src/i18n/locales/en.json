@@ -149,7 +149,11 @@
     "empty": "No results found",
     "success": "Operation completed successfully",
     "confirm": "Are you sure?",
-    "unsavedChanges": "You have unsaved changes"
+    "unsavedChanges": "You have unsaved changes",
+    "overdue": "Overdue",
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "selectMin": "Select at least 2 items"
   },
   "financial": {
     "revenue": "Revenue",
@@ -178,6 +182,20 @@
     "depreciation": "Depreciation",
     "taxProvision": "Tax Provision",
     "deferredTax": "Deferred Tax"
+  },
+  "common": {
+    "search": "Search...",
+    "noResults": "No results",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "viewAll": "View All",
+    "total": "Total",
+    "average": "Average",
+    "count": "Count"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -290,7 +308,59 @@
     "comparison": "Scenario Comparison",
     "merge": "Merge Scenarios",
     "lock": "Lock Scenario",
-    "unlock": "Unlock Scenario"
+    "unlock": "Unlock Scenario",
+    "selectMin": "Select at least 2 scenarios to compare",
+    "noScenarios": "No scenarios found"
+  },
+  "export": {
+    "format": "Export Format",
+    "pdf": "PDF",
+    "excel": "Excel",
+    "csv": "CSV",
+    "exporting": "Exporting...",
+    "exportSuccess": "Export complete",
+    "exportFailed": "Export failed"
+  },
+  "accounts": {
+    "notFound": "No accounts found",
+    "tree": "Account Tree",
+    "code": "Account Code",
+    "name": "Account Name",
+    "type": "Account Type",
+    "parent": "Parent Account"
+  },
+  "drivers": {
+    "notConfigured": "No drivers configured",
+    "addDriver": "Add Driver",
+    "driverName": "Driver Name",
+    "driverType": "Driver Type"
+  },
+  "commands": {
+    "notFound": "No commands found",
+    "palette": "Command Palette",
+    "recent": "Recent Commands"
+  },
+  "formula": {
+    "insertReference": "Insert Reference",
+    "availableFunctions": "Available Functions",
+    "syntax": "Syntax",
+    "result": "Result",
+    "error": "Formula Error"
+  },
+  "ai": {
+    "analyzing": "Analyzing your query...",
+    "noResults": "No AI results",
+    "askQuestion": "Ask a question...",
+    "insights": "Insights",
+    "suggestions": "Suggestions"
+  },
+  "operators": {
+    "greaterThan": "Greater than",
+    "lessThan": "Less than",
+    "equals": "Equals",
+    "notEquals": "Not equals",
+    "contains": "Contains",
+    "between": "Between"
   },
   "consolidation": {
     "entity": "Entity",

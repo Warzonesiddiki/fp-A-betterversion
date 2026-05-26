@@ -98,9 +98,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 ) : isCurrent ? (
                   <div className="w-2.5 h-2.5 bg-blue-600 rounded-full animate-pulse" />
                 ) : (
-                  <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">
-                    {idx + 1}
-                  </span>
+                  <span className="text-[10px] font-bold text-[var(--text-muted)]">{idx + 1}</span>
                 )}
               </div>
             </div>
@@ -119,7 +117,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                     ? 'text-blue-700'
                     : isDone
                       ? 'text-[var(--text-primary)]'
-                      : 'text-gray-400 dark:text-gray-500'
+                      : 'text-[var(--text-muted)]'
                 )}
               >
                 {step.label}

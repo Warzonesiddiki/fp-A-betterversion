@@ -191,7 +191,7 @@ export function DragFill({
             if (e.key === 'Escape') setShowMenu(false);
           }}
         >
-          <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <div className="px-3 py-1 text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
             Fill Options
           </div>
           <button

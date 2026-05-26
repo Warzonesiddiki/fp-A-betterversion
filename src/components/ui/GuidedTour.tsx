@@ -127,7 +127,7 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ steps, isOpen, onClose, 
               {currentStep > 0 && (
                 <button
                   onClick={handleBack}
-                  className="flex items-center space-x-1 px-3 py-1.5 rounded-md border border-[var(--border-subtle)] text-xs font-semibold hover:bg-gray-50 dark:bg-gray-900 transition-colors"
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-md border border-[var(--border-subtle)] text-xs font-semibold hover:bg-[var(--bg-surface)] transition-colors"
                 >
                   <ChevronLeft className="h-3 w-3" />
                   <span>Back</span>

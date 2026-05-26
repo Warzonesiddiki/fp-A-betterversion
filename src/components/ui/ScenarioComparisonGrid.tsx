@@ -129,10 +129,10 @@ export function ScenarioComparisonGrid({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--border-subtle)] dark:border-gray-700">
-                <th className="py-2 pr-4 text-left font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+                <th className="py-2 pr-4 text-left font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                   Metric
                 </th>
-                <th className="py-2 px-3 text-right font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+                <th className="py-2 px-3 text-right font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                   Base
                 </th>
                 {rankedScenarios.map((s) => (
@@ -147,7 +147,7 @@ export function ScenarioComparisonGrid({
                 {rankedScenarios.map((s) => (
                   <th
                     key={`var-${s.id}`}
-                    className="py-2 px-3 text-right font-medium text-gray-400 dark:text-gray-500 text-xs"
+                    className="py-2 px-3 text-right font-medium text-[var(--text-muted)] text-xs"
                   >
                     Δ vs Base
                   </th>
@@ -158,7 +158,7 @@ export function ScenarioComparisonGrid({
               {metricRows.map((row) => (
                 <tr
                   key={row.key}
-                  className="border-b border-gray-100 dark:border-gray-800 dark:border-gray-800 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800/50"
+                  className="border-b border-gray-100 dark:border-gray-800 dark:border-gray-800 hover:bg-[var(--bg-surface)] dark:hover:bg-gray-800/50"
                 >
                   <td className="py-2 pr-4 text-gray-700 dark:text-gray-300 dark:text-gray-300 font-medium">
                     {row.label}

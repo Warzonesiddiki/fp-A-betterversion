@@ -60,7 +60,7 @@ function CustomTooltip({
   if (!active || !payload) return null;
   return (
     <div className="rounded-lg border border-[var(--border-subtle)] bg-white dark:bg-gray-800 p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
-      <p className="text-xs font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-2">
+      <p className="text-xs font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)] mb-2">
         {label}
       </p>
       {payload.map((entry: { dataKey: string; value: number; color: string }) => (
@@ -232,7 +232,7 @@ export function ScenarioTimeline({
         {/* Inflection points legend */}
         {inflectionPoints.length > 0 && (
           <div className="mt-3 border-t border-gray-100 dark:border-gray-800 dark:border-gray-800 pt-3">
-            <p className="text-[10px] font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-1.5">
+            <p className="text-[10px] font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)] mb-1.5">
               Inflection Points (&gt;10% divergence)
             </p>
             <div className="flex flex-wrap gap-2">
@@ -242,9 +242,9 @@ export function ScenarioTimeline({
                   className="inline-flex items-center gap-1 rounded bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 text-[10px]"
                 >
                   <span className="font-medium">{ip.period}</span>
-                  <span className="text-gray-400 dark:text-gray-500">·</span>
+                  <span className="text-[var(--text-muted)]">·</span>
                   <span className="text-amber-700 dark:text-amber-400">{ip.scenario}</span>
-                  <span className="text-gray-400 dark:text-gray-500">·</span>
+                  <span className="text-[var(--text-muted)]">·</span>
                   <span className={ip.divergence > 0 ? 'fin-positive' : 'fin-negative'}>
                     {ip.divergence > 0 ? '+' : ''}
                     {ip.divergence.toFixed(1)}%

@@ -114,7 +114,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
               ? 'text-white'
               : account.isCalculated
                 ? 'text-amber-500'
-                : 'text-gray-400 dark:text-gray-500'
+                : 'text-[var(--text-muted)]'
           )}
         >
           {account.isCalculated ? (
@@ -189,7 +189,7 @@ export const AccountTree: React.FC<AccountTreeProps> = ({
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-secondary)] opacity-50 transition-opacity group-focus-within:opacity-100" />
         <input
           type="text"
-          className="w-full h-9 pl-9 pr-8 bg-gray-50 dark:bg-gray-900 border border-[var(--border-subtle)] rounded-md text-xs font-medium outline-none transition-all focus:bg-white dark:bg-gray-800 focus:ring-1 focus:ring-blue-500"
+          className="w-full h-9 pl-9 pr-8 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md text-xs font-medium outline-none transition-all focus:bg-white dark:bg-gray-800 focus:ring-1 focus:ring-blue-500"
           placeholder="Search accounts by code or name..."
           aria-label="Search accounts"
           value={filter}

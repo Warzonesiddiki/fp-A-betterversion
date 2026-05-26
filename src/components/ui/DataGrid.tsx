@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useRef, useCallback, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import {
   AllCommunityModule,
@@ -10,6 +10,10 @@ import {
 } from 'ag-grid-community';
 import { ExcelKeyboardEngine } from '@/engines/ExcelKeyboardEngine';
 import { cn } from '@/utils/cn';
+import { useSelectionStats } from '@/hooks/useSelectionStats';
+import { useFindReplace } from '@/hooks/useFindReplace';
+import { useColumnVisibility } from '@/hooks/useColumnVisibility';
+import { useDataGridExport } from '@/hooks/useDataGridExport';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -57,21 +61,32 @@ export const DataGrid: React.FC<DataGridProps> = ({
   enableRowGrouping = false,
 }) => {
   const gridRef = useRef<AgGridReact>(null);
-  const findInputRef = useRef<HTMLInputElement>(null);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [showFindReplace, setShowFindReplace] = useState(false);
-  const [findText, setFindText] = useState('');
-  const [replaceText, setReplaceText] = useState('');
-  const [showColumnMenu, setShowColumnMenu] = useState(false);
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
-  const [groupColumn, setGroupColumn] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (showFindReplace) {
-      findInputRef.current?.focus();
-    }
-  }, [showFindReplace]);
+  const { selectionStats, updateSelectionStats } = useSelectionStats(gridRef, columns);
+  const {
+    findInputRef,
+    showFindReplace,
+    setShowFindReplace,
+    findText,
+    setFindText,
+    replaceText,
+    setReplaceText,
+    handleFind,
+    handleReplace,
+    closeFindReplace,
+  } = useFindReplace(gridRef, columns);
+  const {
+    hiddenColumns,
+    showColumnMenu,
+    setShowColumnMenu,
+    groupColumn,
+    toggleColumn,
+    handleGroupBy,
+    visibleColumnDefs,
+  } = useColumnVisibility(columnDefs);
+  const { handleExport } = useDataGridExport(columns, rows, hiddenColumns);
 
   const defaultColDef = useMemo<ColDef>(
     () => ({
@@ -140,45 +155,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
     });
   }, [columns]);
 
-  const [selectionStats, setSelectionStats] = useState<{
-    sum: number;
-    avg: number;
-    count: number;
-    min: number;
-    max: number;
-  } | null>(null);
-
-  const updateSelectionStats = useCallback(() => {
-    if (!gridRef.current) {
-      setSelectionStats(null);
-      return;
-    }
-    const selected = gridRef.current.api.getSelectedRows();
-    if (!selected.length) {
-      setSelectionStats(null);
-      return;
-    }
-    const numericValues = selected
-      .flatMap((row) =>
-        columns
-          .filter((c) => c.type === 'currency' || c.type === 'number' || c.type === 'percent')
-          .map((c) => row[c.field])
-      )
-      .filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
-    if (!numericValues.length) {
-      setSelectionStats(null);
-      return;
-    }
-    const sum = numericValues.reduce((a, b) => a + b, 0);
-    setSelectionStats({
-      sum,
-      avg: sum / numericValues.length,
-      count: numericValues.length,
-      min: Math.min(...numericValues),
-      max: Math.max(...numericValues),
-    });
-  }, [columns]);
-
   const handleSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
       if (onSelectionChanged) {
@@ -188,69 +164,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
     },
     [onSelectionChanged, updateSelectionStats]
   );
-
-  // Find & Replace
-  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-  const handleFind = useCallback(() => {
-    if (!gridRef.current || !findText) return;
-    gridRef.current.api.setGridOption('quickFilterText', findText);
-  }, [findText]);
-
-  const handleReplace = useCallback(() => {
-    if (!gridRef.current || !findText) return;
-    const api = gridRef.current.api;
-    const escaped = escapeRegex(findText);
-    api.forEachNode((node) => {
-      if (node.data) {
-        columns.forEach((col) => {
-          const val = String(node.data[col.field] ?? '');
-          if (val.toLowerCase().includes(findText.toLowerCase())) {
-            node.setDataValue(col.field, val.replace(new RegExp(escaped, 'gi'), replaceText));
-          }
-        });
-      }
-    });
-  }, [findText, replaceText, columns]);
-
-  // Export to CSV
-  const handleExport = useCallback(() => {
-    if (!gridRef.current) return;
-    const visibleCols = columns.filter((c) => !hiddenColumns.has(c.field));
-    const header = visibleCols.map((c) => c.headerName).join(',');
-    const dataRows = rows.map((row) =>
-      visibleCols
-        .map((c) => {
-          const val = row[c.field];
-          if (typeof val === 'string' && val.includes(',')) return `"${val}"`;
-          return String(val ?? '');
-        })
-        .join(',')
-    );
-    const csv = [header, ...dataRows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'export.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [columns, rows, hiddenColumns]);
-
-  // Column hiding
-  const toggleColumn = useCallback((field: string) => {
-    setHiddenColumns((prev) => {
-      const next = new Set(prev);
-      if (next.has(field)) next.delete(field);
-      else next.add(field);
-      return next;
-    });
-  }, []);
-
-  // Row grouping
-  const handleGroupBy = useCallback((field: string | null) => {
-    setGroupColumn(field);
-  }, []);
 
   const handleKeyDown = useCallback(
     async (e: React.KeyboardEvent) => {
@@ -266,8 +179,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
       // Escape to close find/replace
       if (e.key === 'Escape') {
         if (showFindReplace) {
-          setShowFindReplace(false);
-          gridRef.current.api.setGridOption('quickFilterText', '');
+          closeFindReplace();
           return;
         }
         if (showColumnMenu) {

@@ -88,7 +88,7 @@ export function FormulaAutocomplete({
                 </span>
               </div>
               <div className="text-[11px] text-[var(--text-muted)] mt-0.5">{fn.description}</div>
-              <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono truncate">
+              <div className="text-[10px] text-[var(--text-muted)] mt-0.5 font-mono truncate">
                 {fn.syntax}
               </div>
             </div>
@@ -97,8 +97,8 @@ export function FormulaAutocomplete({
       </div>
 
       {selectedFn && (
-        <div className="flex-shrink-0 px-3 py-2 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-          <div className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">
+        <div className="flex-shrink-0 px-3 py-2 bg-[var(--bg-surface)] border-t border-gray-100 dark:border-gray-800">
+          <div className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">
             Parameters
           </div>
           <div className="flex flex-wrap gap-1">

@@ -264,12 +264,12 @@ export function CellFormatter({
 
         {/* Preview */}
         <div
-          className="bg-gray-50 dark:bg-gray-900 rounded-md p-3 border border-[var(--border-subtle)]"
+          className="bg-[var(--bg-surface)] rounded-md p-3 border border-[var(--border-subtle)]"
           role="status"
           aria-live="polite"
           aria-label="Format preview"
         >
-          <div className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">
+          <div className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">
             Sample
           </div>
           <div className="text-lg font-mono text-[var(--text-primary)] tabular-nums">

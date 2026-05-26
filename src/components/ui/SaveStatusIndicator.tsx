@@ -30,7 +30,7 @@ export function SaveStatusIndicator({ data, onSave, delay = 3000 }: SaveStatusIn
       {icon}
       <span>{text}</span>
       {lastSavedAt && status === 'saved' && (
-        <span className="text-gray-400 dark:text-gray-500">
+        <span className="text-[var(--text-muted)]">
           {new Date(lastSavedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
       )}

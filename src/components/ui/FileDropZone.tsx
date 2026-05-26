@@ -206,7 +206,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         )}
       </div>
 
-      <div className="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-[var(--border-subtle)] border-dashed">
+      <div className="mt-4 p-4 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] border-dashed">
         <div className="flex items-start space-x-3">
           <UploadIcon className="h-4 w-4 text-[var(--text-secondary)] mt-0.5" />
           <div className="flex-1">

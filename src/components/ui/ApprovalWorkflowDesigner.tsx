@@ -114,14 +114,14 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
                   <button
                     onClick={() => moveStep(idx, -1)}
                     disabled={idx === 0}
-                    className="text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] disabled:opacity-30"
+                    className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-30"
                   >
                     &#8593;
                   </button>
                   <button
                     onClick={() => moveStep(idx, 1)}
                     disabled={idx === steps.length - 1}
-                    className="text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] disabled:opacity-30"
+                    className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-30"
                   >
                     &#8595;
                   </button>
@@ -213,7 +213,7 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
           ))}
 
           {steps.length === 0 && (
-            <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+            <div className="text-center py-8 text-[var(--text-muted)]">
               <p>No steps added yet.</p>
               <p className="text-sm">Click &quot;+ Add Step&quot; to begin.</p>
             </div>

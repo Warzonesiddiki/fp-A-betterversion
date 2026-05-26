@@ -144,7 +144,7 @@ export const DataTable = memo<DataTableProps>(
       <tr
         key={(row.id as React.Key) ?? rowIdx}
         className={cn(
-          'transition-colors hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700/50 group',
+          'transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group',
           onRowClick && 'cursor-pointer'
         )}
         onClick={() => onRowClick?.(row)}
@@ -188,7 +188,7 @@ export const DataTable = memo<DataTableProps>(
               <tr
                 key={(row.id as React.Key) ?? virtualRow.index}
                 className={cn(
-                  'transition-colors hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700/50 group',
+                  'transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group',
                   onRowClick && 'cursor-pointer'
                 )}
                 onClick={() => onRowClick?.(row)}
@@ -334,7 +334,7 @@ export const DataTable = memo<DataTableProps>(
                           role="presentation"
                         >
                           <div className="relative">
-                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400 dark:text-gray-500" />
+                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)]" />
                             <input
                               type="text"
                               className="w-full pl-7 pr-2 py-1 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] rounded text-xs outline-none focus:ring-1 focus:ring-blue-500 font-normal dark:text-white"

@@ -79,7 +79,7 @@ export function ApprovalDashboard({ stats, className }: Props) {
         <div className="border rounded-lg p-4">
           <h3 className="text-sm font-semibold mb-2">Bottlenecks</h3>
           {bottleneckEntries.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500">No pending requests</p>
+            <p className="text-sm text-[var(--text-muted)]">No pending requests</p>
           ) : (
             <div className="space-y-2">
               {bottleneckEntries.slice(0, 5).map(([approver, count]) => (
@@ -113,7 +113,7 @@ export function ApprovalDashboard({ stats, className }: Props) {
             )}
           </h3>
           {stats.slaBreaches.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500">No SLA breaches</p>
+            <p className="text-sm text-[var(--text-muted)]">No SLA breaches</p>
           ) : (
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {stats.slaBreaches.map((req) => (

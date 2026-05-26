@@ -24,7 +24,7 @@ export function PageErrorBoundary({ children }: PageErrorBoundaryProps) {
           <div className="flex gap-3">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-[var(--bg-surface)] dark:hover:bg-gray-800 focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <ArrowLeft className="h-4 w-4" /> Go Back
             </button>

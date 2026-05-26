@@ -39,7 +39,7 @@ export const KPIValue: React.FC<KPIValueProps> = ({
   const getTrendColor = () => {
     if (effectiveTrend === 'up') return 'fin-positive bg-green-50';
     if (effectiveTrend === 'down') return 'fin-negative bg-red-50';
-    return 'text-[var(--text-secondary)] bg-gray-50 dark:bg-gray-900';
+    return 'text-[var(--text-secondary)] bg-[var(--bg-surface)]';
   };
 
   const getTrendIcon = () => {

@@ -131,7 +131,7 @@ function KeyCombo({ keys }: { keys: string }) {
     <div className="flex items-center gap-0.5 shrink-0">
       {parts.map((p, i) => (
         <span key={i} className="flex items-center gap-0.5">
-          {i > 0 && <span className="text-[10px] text-gray-400 dark:text-gray-500">+</span>}
+          {i > 0 && <span className="text-[10px] text-[var(--text-muted)]">+</span>}
           <KeyBadge>{p}</KeyBadge>
         </span>
       ))}
@@ -169,9 +169,7 @@ function CategorySection({
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
           {name}
         </span>
-        <span className="text-[10px] text-gray-400 dark:text-gray-500 ml-auto">
-          {shortcuts.length}
-        </span>
+        <span className="text-[10px] text-[var(--text-muted)] ml-auto">{shortcuts.length}</span>
       </button>
       {open && (
         <div className="ml-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0.5 pb-2">
@@ -342,7 +340,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
               <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                 Keyboard Shortcuts
               </h2>
-              <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-[var(--text-muted)] bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
                 {filtered.length} of {allShortcuts.length}
               </span>
             </div>
@@ -382,7 +380,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
                 className={cn(
                   'w-full pl-8 pr-3 py-1.5 text-sm rounded-lg',
                   'border border-gray-200 dark:border-gray-600',
-                  'bg-gray-50 dark:bg-gray-900',
+                  'bg-[var(--bg-surface)]',
                   'text-gray-900 dark:text-gray-100',
                   'placeholder:text-gray-400 dark:placeholder:text-gray-500',
                   'outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500'
@@ -419,7 +417,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
                 />
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500">
+              <div className="flex flex-col items-center justify-center py-16 text-[var(--text-muted)]">
                 <Search className="w-8 h-8 mb-3 opacity-40" />
                 <p className="text-sm">No shortcuts match &ldquo;{search}&rdquo;</p>
               </div>
@@ -427,7 +425,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-5 py-2 border-t border-gray-200 dark:border-gray-700 text-[11px] text-gray-400 dark:text-gray-500">
+          <div className="flex items-center justify-between px-5 py-2 border-t border-gray-200 dark:border-gray-700 text-[11px] text-[var(--text-muted)]">
             <span>
               Showing shortcuts for{' '}
               <span className="font-medium text-gray-500 dark:text-gray-400">

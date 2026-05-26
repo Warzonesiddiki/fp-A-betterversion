@@ -26,7 +26,7 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = ({ value, onChange, per
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button className="flex items-center space-x-3 px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md hover:bg-gray-50 dark:bg-gray-900 transition-all outline-none focus:ring-2 focus:ring-blue-500 shadow-sm min-w-[180px]">
+        <button className="flex items-center space-x-3 px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md hover:bg-[var(--bg-surface)] transition-all outline-none focus:ring-2 focus:ring-blue-500 shadow-sm min-w-[180px]">
           <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
           <div className="flex-1 text-left overflow-hidden">
             <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] leading-none mb-1">
@@ -48,7 +48,7 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = ({ value, onChange, per
           align="start"
           sideOffset={4}
         >
-          <div className="p-2 border-b border-[var(--border-subtle)] bg-gray-50 dark:bg-gray-900/50">
+          <div className="p-2 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/50">
             <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] px-2">
               Select Period
             </span>

@@ -40,7 +40,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   const getIcon = () => {
     if (entity.isParent) return <Globe className="h-4 w-4 text-blue-600" />;
     if (level === 0) return <Building2 className="h-4 w-4 text-[var(--text-secondary)]" />;
-    return <Home className="h-4 w-4 text-gray-400 dark:text-gray-500" />;
+    return <Home className="h-4 w-4 text-[var(--text-muted)]" />;
   };
 
   return (

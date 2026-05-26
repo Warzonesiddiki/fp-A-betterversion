@@ -137,7 +137,7 @@ export function SheetTabs({
                 e.stopPropagation();
                 onSheetDelete(sheet.id);
               }}
-              className="ml-1 p-0.5 rounded hover:bg-red-100 text-gray-400 dark:text-gray-500 hover:fin-negative transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              className="ml-1 p-0.5 rounded hover:bg-red-100 text-[var(--text-muted)] hover:fin-negative transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
               aria-label={`Delete sheet ${sheet.name}`}
             >
               <X className="h-3 w-3" />

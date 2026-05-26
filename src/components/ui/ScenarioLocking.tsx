@@ -114,10 +114,7 @@ export function ScenarioLocking({
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm font-medium">
             <Shield
-              className={cn(
-                'h-4 w-4',
-                isLocked ? 'text-amber-500' : 'text-gray-400 dark:text-gray-500'
-              )}
+              className={cn('h-4 w-4', isLocked ? 'text-amber-500' : 'text-[var(--text-muted)]')}
             />
             {scenarioName}
           </CardTitle>
@@ -126,34 +123,30 @@ export function ScenarioLocking({
         <CardContent className="space-y-3">
           {/* Quick metrics summary */}
           <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded bg-gray-50 dark:bg-gray-900 dark:bg-gray-800 p-2">
-              <span className="text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+            <div className="rounded bg-[var(--bg-surface)] dark:bg-gray-800 p-2">
+              <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                 Revenue
               </span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
                 {formatCurrency(metrics.revenue)}
               </div>
             </div>
-            <div className="rounded bg-gray-50 dark:bg-gray-900 dark:bg-gray-800 p-2">
-              <span className="text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
-                EBITDA
-              </span>
+            <div className="rounded bg-[var(--bg-surface)] dark:bg-gray-800 p-2">
+              <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">EBITDA</span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
                 {formatCurrency(metrics.ebitda)}
               </div>
             </div>
-            <div className="rounded bg-gray-50 dark:bg-gray-900 dark:bg-gray-800 p-2">
-              <span className="text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+            <div className="rounded bg-[var(--bg-surface)] dark:bg-gray-800 p-2">
+              <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                 Gross Margin
               </span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
                 {metrics.grossMargin.toFixed(1)}%
               </div>
             </div>
-            <div className="rounded bg-gray-50 dark:bg-gray-900 dark:bg-gray-800 p-2">
-              <span className="text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
-                Runway
-              </span>
+            <div className="rounded bg-[var(--bg-surface)] dark:bg-gray-800 p-2">
+              <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">Runway</span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
                 {metrics.runway.toFixed(1)} mo
               </div>
@@ -192,7 +185,7 @@ export function ScenarioLocking({
           </div>
 
           {isLocked && (
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-[var(--text-muted)] text-center">
+            <p className="text-[10px] text-[var(--text-muted)] dark:text-[var(--text-muted)] text-center">
               This scenario is read-only. Unlock to make changes.
             </p>
           )}
@@ -210,13 +203,13 @@ export function ScenarioLocking({
               <h3 className="text-sm font-semibold text-[var(--text-primary)] dark:text-gray-100">
                 Lock Scenario
               </h3>
-              <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+              <p className="text-xs text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                 This will prevent any modifications to &quot;{scenarioName}&quot;
               </p>
             </div>
           </div>
 
-          <div className="rounded-lg bg-gray-50 dark:bg-gray-900 dark:bg-gray-800 p-3 space-y-1 text-xs">
+          <div className="rounded-lg bg-[var(--bg-surface)] dark:bg-gray-800 p-3 space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Revenue</span>
               <span className="font-mono">{formatCurrency(metrics.revenue)}</span>
@@ -231,7 +224,7 @@ export function ScenarioLocking({
             </div>
           </div>
 
-          <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+          <p className="text-xs text-[var(--text-muted)] dark:text-[var(--text-muted)]">
             You can still export the scenario as PDF after locking. Unlock to resume editing.
           </p>
 
@@ -258,7 +251,7 @@ export function ScenarioLocking({
               <h3 className="text-sm font-semibold text-[var(--text-primary)] dark:text-gray-100">
                 Unlock Scenario
               </h3>
-              <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+              <p className="text-xs text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                 This will allow modifications to &quot;{scenarioName}&quot;
               </p>
             </div>

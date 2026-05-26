@@ -212,11 +212,9 @@ export function ApprovalQueue({
                       <span className="mx-1">&middot;</span>
                       <span>{evt.action}</span>
                       {evt.comment && (
-                        <span className="ml-1 text-gray-400 dark:text-gray-500">
-                          - {evt.comment}
-                        </span>
+                        <span className="ml-1 text-[var(--text-muted)]">- {evt.comment}</span>
                       )}
-                      <span className="ml-1 text-gray-400 dark:text-gray-500">
+                      <span className="ml-1 text-[var(--text-muted)]">
                         {new Date(evt.timestamp).toLocaleString()}
                       </span>
                     </div>
@@ -227,7 +225,7 @@ export function ApprovalQueue({
           ))}
 
           {filtered.length === 0 && (
-            <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+            <div className="text-center py-8 text-[var(--text-muted)]">
               <p>No requests match your filters.</p>
             </div>
           )}

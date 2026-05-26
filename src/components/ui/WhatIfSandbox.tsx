@@ -264,14 +264,14 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
         {/* Base case */}
         <Card className="border-2 border-[var(--border-default)] dark:border-gray-600">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500">
+            <CardTitle className="text-sm font-medium text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
               Base Case
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {metricsKeys.map((key) => (
               <div key={key} className="flex items-center justify-between text-sm">
-                <span className="text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+                <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                   {metricLabels[key]}
                 </span>
                 <span className="font-medium text-[var(--text-primary)] dark:text-gray-100">
@@ -314,7 +314,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                     {scenario.isLocked ? (
                       <Lock className="h-3.5 w-3.5 text-amber-500" />
                     ) : (
-                      <Unlock className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+                      <Unlock className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                     )}
                   </button>
                   <button
@@ -322,7 +322,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                     className="p-1 rounded hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700"
                     disabled={scenario.isLocked}
                   >
-                    <X className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+                    <X className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                   </button>
                 </div>
               </div>
@@ -330,7 +330,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
             <CardContent className="space-y-2">
               {metricsKeys.map((key) => (
                 <div key={key} className="flex items-center justify-between text-sm">
-                  <span className="text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+                  <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">
                     {metricLabels[key]}
                   </span>
                   <div className="flex items-center gap-2">
@@ -409,7 +409,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
           </CardHeader>
           <CardContent>
             {scenario.drivers.length === 0 ? (
-              <p className="text-xs text-gray-400 dark:text-gray-500">No drivers configured</p>
+              <p className="text-xs text-[var(--text-muted)]">No drivers configured</p>
             ) : (
               <div className="space-y-3">
                 {scenario.drivers.map((driver) => (
@@ -459,7 +459,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
               <CardTitle>Merge Scenarios</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500">
+              <p className="text-sm text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
                 Create a probability-weighted merge of{' '}
                 {selectedComputed.map((s) => s.name).join(', ')}.
               </p>

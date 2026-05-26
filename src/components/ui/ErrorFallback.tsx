@@ -48,7 +48,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
         )}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:border-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
+          className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-[var(--bg-surface)] dark:hover:bg-gray-800 dark:border-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           <Home className="h-4 w-4" />
           Go to Dashboard
@@ -57,7 +57,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
           <button
             onClick={handleCopy}
             aria-label="Copy error details"
-            className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:border-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-[var(--bg-surface)] dark:hover:bg-gray-800 dark:border-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? 'Copied' : 'Copy Details'}
