@@ -9,12 +9,7 @@ interface FormulaAutocompleteProps {
   onClose: () => void;
 }
 
-export function FormulaAutocomplete({
-  value,
-  show,
-  onSelect,
-  onClose,
-}: FormulaAutocompleteProps) {
+export function FormulaAutocomplete({ value, show, onSelect, onClose }: FormulaAutocompleteProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -120,9 +115,7 @@ export function FormulaAutocomplete({
                   {fn.category}
                 </span>
               </div>
-              <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                {fn.description}
-              </div>
+              <div className="text-[11px] text-[var(--text-muted)] mt-0.5">{fn.description}</div>
               <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono truncate">
                 {fn.syntax}
               </div>
