@@ -173,10 +173,8 @@ describe('ReportScheduler', () => {
         availableReports={mockReports}
       />
     );
-    const toggleButtons = screen
-      .getAllByRole('button', { name: '' })
-      .filter((btn) => btn.className.includes('rounded-full'));
-    expect(toggleButtons).toHaveLength(2);
+    expect(screen.getByRole('button', { name: /disable monthly p&l schedule/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /enable weekly cash flow schedule/i })).toBeInTheDocument();
   });
 
   it('calls onToggle when toggle button is clicked', () => {
@@ -190,10 +188,7 @@ describe('ReportScheduler', () => {
         availableReports={mockReports}
       />
     );
-    const toggleButtons = screen
-      .getAllByRole('button', { name: '' })
-      .filter((btn) => btn.className.includes('rounded-full'));
-    fireEvent.click(toggleButtons[0]);
+    fireEvent.click(screen.getByRole('button', { name: /disable monthly p&l schedule/i }));
     expect(onToggle).toHaveBeenCalledWith('sched-1');
   });
 

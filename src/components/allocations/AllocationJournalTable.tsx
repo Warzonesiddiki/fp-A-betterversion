@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { cn } from '@/utils/cn';
 
 // ---------------------------------------------------------------------------
@@ -34,7 +35,10 @@ function formatCurrency(value: number): string {
 // Component
 // ---------------------------------------------------------------------------
 
-export function AllocationJournalTable({ entries, className }: AllocationJournalTableProps) {
+export const AllocationJournalTable = memo(function AllocationJournalTable({
+  entries,
+  className,
+}: AllocationJournalTableProps) {
   return (
     <div
       className={cn('overflow-x-auto rounded-md border border-[var(--border-subtle)]', className)}
@@ -86,4 +90,4 @@ export function AllocationJournalTable({ entries, className }: AllocationJournal
       </table>
     </div>
   );
-}
+});

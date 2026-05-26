@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 export interface DataLineageViewerProps {
   graph: {
     nodes: { id: string; name: string; type: 'source' | 'transform' | 'report' }[];
@@ -7,7 +9,11 @@ export interface DataLineageViewerProps {
   height?: number;
 }
 
-export function DataLineageViewer({ graph, onNodeClick, height = 400 }: DataLineageViewerProps) {
+export const DataLineageViewer = memo(function DataLineageViewer({
+  graph,
+  onNodeClick,
+  height = 400,
+}: DataLineageViewerProps) {
   if (!graph.nodes.length) {
     return (
       <div
@@ -85,4 +91,4 @@ export function DataLineageViewer({ graph, onNodeClick, height = 400 }: DataLine
       </svg>
     </div>
   );
-}
+});

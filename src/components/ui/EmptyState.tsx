@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '@/utils/cn';
 import { Inbox, Search, FileX, AlertCircle } from 'lucide-react';
 
@@ -18,7 +18,7 @@ const defaultIcons = {
   error: <AlertCircle className="h-12 w-12 text-red-300 dark:fin-negative" />,
 };
 
-export function EmptyState({
+export const EmptyState = memo(function EmptyState({
   variant = 'no-data',
   title,
   description,
@@ -40,4 +40,4 @@ export function EmptyState({
       {action && <div className="mt-6">{action}</div>}
     </div>
   );
-}
+});

@@ -24,10 +24,10 @@ Entry: `src/main.tsx` → `src/App.tsx` (all routes defined here, lazy-loaded).
 
 | Directory | What lives here |
 |-----------|----------------|
-| `src/store/` | 30+ Zustand stores, colocated `.test.ts` files |
-| `src/engines/` | 189 pure calculation engines (financial logic, no side effects) |
+| `src/store/` | 32 Zustand stores, colocated `.test.ts` files |
+| `src/engines/` | 172 pure calculation engines (financial logic, no side effects) |
 | `src/pages/` | Route pages, 40+ domain subdirs, all `React.lazy` |
-| `src/components/ui/` | 700+ atomic UI primitives, barrel-exported via `index.ts` |
+| `src/components/ui/` | 110 atomic UI primitives, barrel-exported via `index.ts` |
 | `src/components/` | Domain components (budget/, reports/, analytics/) |
 | `src/hooks/` | 67 custom hooks (`use` prefix) |
 | `src/workers/` | Web Workers (Monte Carlo, consolidation, formulas) |

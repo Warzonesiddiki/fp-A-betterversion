@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { Image, FileImage } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -8,7 +8,7 @@ interface ChartExportButtonProps {
   className?: string;
 }
 
-export function ChartExportButton({
+export const ChartExportButton = memo(function ChartExportButton({
   chartRef,
   filename = 'chart',
   className = '',
@@ -73,4 +73,4 @@ export function ChartExportButton({
       </Button>
     </div>
   );
-}
+});

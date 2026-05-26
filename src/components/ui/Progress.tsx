@@ -1,9 +1,11 @@
+import { memo } from 'react';
+
 interface ProgressProps {
   value: number;
   className?: string;
 }
 
-export function Progress({ value, className = '' }: ProgressProps) {
+export const Progress = memo(function Progress({ value, className = '' }: ProgressProps) {
   return (
     <div className={`w-full bg-slate-800 rounded-full overflow-hidden ${className}`}>
       <div
@@ -12,4 +14,4 @@ export function Progress({ value, className = '' }: ProgressProps) {
       />
     </div>
   );
-}
+});
