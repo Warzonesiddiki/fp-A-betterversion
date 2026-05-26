@@ -19,7 +19,7 @@ export interface GanttChartProps {
   onClick?: (task: GanttTask) => void;
 }
 
-export const GanttChart: React.FC<GanttChartProps> = ({
+export const GanttChart: React.FC<GanttChartProps> = React.memo(({
   tasks,
   className,
   loading = false,
@@ -136,4 +136,4 @@ export const GanttChart: React.FC<GanttChartProps> = ({
       </div>
     </div>
   );
-};
+});

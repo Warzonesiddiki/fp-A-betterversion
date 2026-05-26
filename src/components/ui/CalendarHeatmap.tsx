@@ -10,7 +10,7 @@ export interface CalendarHeatmapProps {
   className?: string;
 }
 
-export const CalendarHeatmap: React.FC<CalendarHeatmapProps> = ({
+export const CalendarHeatmap: React.FC<CalendarHeatmapProps> = React.memo(({
   data,
   startDate,
   endDate,
@@ -107,4 +107,4 @@ export const CalendarHeatmap: React.FC<CalendarHeatmapProps> = ({
       </div>
     </div>
   );
-};
+});

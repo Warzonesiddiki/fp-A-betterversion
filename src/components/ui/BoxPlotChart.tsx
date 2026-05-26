@@ -20,7 +20,7 @@ export interface BoxPlotChartProps {
   onClick?: (item: BoxPlotData) => void;
 }
 
-export const BoxPlotChart: React.FC<BoxPlotChartProps> = ({
+export const BoxPlotChart: React.FC<BoxPlotChartProps> = React.memo(({
   data,
   format = (v) => v.toLocaleString(),
   className,
@@ -138,4 +138,4 @@ export const BoxPlotChart: React.FC<BoxPlotChartProps> = ({
       </div>
     </div>
   );
-};
+});

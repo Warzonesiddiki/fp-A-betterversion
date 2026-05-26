@@ -19,7 +19,7 @@ export interface HeatmapProps {
   onClick?: (cell: HeatmapCell) => void;
 }
 
-export const Heatmap: React.FC<HeatmapProps> = ({
+export const Heatmap: React.FC<HeatmapProps> = React.memo(({
   data,
   width = '100%',
   height = 400,
@@ -222,4 +222,4 @@ export const Heatmap: React.FC<HeatmapProps> = ({
       </div>
     </div>
   );
-};
+});

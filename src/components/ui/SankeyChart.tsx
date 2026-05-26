@@ -19,7 +19,7 @@ export interface SankeyChartProps {
   onClick?: (link: SankeyLink) => void;
 }
 
-export const SankeyChart: React.FC<SankeyChartProps> = ({
+export const SankeyChart: React.FC<SankeyChartProps> = React.memo(({
   links,
   width = '100%',
   height = 400,
@@ -214,4 +214,4 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({
       </div>
     </div>
   );
-};
+});

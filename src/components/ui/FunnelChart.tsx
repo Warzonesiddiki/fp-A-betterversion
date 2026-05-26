@@ -16,7 +16,7 @@ export interface FunnelChartProps {
   onClick?: (stage: FunnelStage) => void;
 }
 
-export const FunnelChart: React.FC<FunnelChartProps> = ({
+export const FunnelChart: React.FC<FunnelChartProps> = React.memo(({
   stages,
   format = (v) => v.toLocaleString(),
   className,
@@ -104,4 +104,4 @@ export const FunnelChart: React.FC<FunnelChartProps> = ({
       })}
     </div>
   );
-};
+});

@@ -13,7 +13,7 @@ export interface BulletChartProps {
   onClick?: () => void;
 }
 
-export const BulletChart: React.FC<BulletChartProps> = ({
+export const BulletChart: React.FC<BulletChartProps> = React.memo(({
   actual,
   target,
   ranges = [
@@ -102,4 +102,4 @@ export const BulletChart: React.FC<BulletChartProps> = ({
       </div>
     </div>
   );
-};
+});
