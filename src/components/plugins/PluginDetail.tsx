@@ -49,9 +49,10 @@ const PERMISSION_RISK: Record<PluginPermission, 'low' | 'medium' | 'high'> = {
 };
 
 const RISK_COLORS: Record<string, string> = {
-  low: 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  medium: 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-  high: 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+  low: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+  medium:
+    'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
+  high: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:bg-red-900/30 dark:text-red-300',
 };
 
 function formatDownloads(n: number): string {
@@ -121,11 +122,11 @@ export function PluginDetail({
       />
 
       {/* Panel */}
-      <div className="relative z-10 max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white dark:bg-gray-800 shadow-xl dark:border dark:border-gray-700">
+      <div className="relative z-10 max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white dark:bg-gray-900 dark:bg-gray-800 shadow-xl dark:border dark:border-gray-700">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border-default)] bg-white dark:bg-gray-800 px-6 py-4 dark:border-gray-700">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border-default)] bg-white dark:bg-gray-900 dark:bg-gray-800 px-6 py-4 dark:border-gray-700">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 text-3xl">
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-3xl">
               {plugin.icon ?? '🧩'}
             </div>
             <div>
@@ -135,7 +136,7 @@ export function PluginDetail({
                 </h2>
                 {plugin.verified && <Badge variant="default">Verified</Badge>}
               </div>
-              <p className="text-sm text-[var(--text-muted)] dark:text-gray-400">
+              <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
                 by {plugin.author} &middot; v{plugin.version}
               </p>
             </div>
@@ -143,7 +144,7 @@ export function PluginDetail({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:hover:text-gray-200"
+            className="rounded-md p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:hover:text-gray-200"
             aria-label="Close"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -199,7 +200,7 @@ export function PluginDetail({
                 {plugin.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                    className="rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300 dark:bg-gray-700 dark:text-gray-300"
                   >
                     {tag}
                   </span>
@@ -234,7 +235,7 @@ export function PluginDetail({
 
           {/* Compatibility */}
           {plugin.minAppVersion && (
-            <div className="rounded-lg bg-gray-50 p-3 text-xs text-[var(--text-muted)] dark:bg-gray-700/50 dark:text-gray-400">
+            <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 text-xs text-[var(--text-muted)] dark:bg-gray-700/50 dark:text-gray-400 dark:text-gray-500">
               Requires FinPlan Pro {plugin.minAppVersion} or later
             </div>
           )}

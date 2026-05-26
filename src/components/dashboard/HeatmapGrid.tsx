@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo } from 'react';
 import { cn } from '@/utils/cn';
 
 export interface HeatmapCell {
@@ -86,7 +86,7 @@ function formatNum(value: number, format: string): string {
   }
 }
 
-export function HeatmapGrid({
+export const HeatmapGrid = memo(function HeatmapGrid({
   rows,
   columns,
   cells,
@@ -206,4 +206,4 @@ export function HeatmapGrid({
       </div>
     </div>
   );
-}
+});

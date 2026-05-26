@@ -72,7 +72,7 @@ function AvatarBubble({ user, size }: AvatarBubbleProps) {
 
   return (
     <div
-      className={`relative flex items-center justify-center rounded-full border-2 ${borderColor} bg-white dark:bg-gray-800 dark:bg-gray-800`}
+      className={`relative flex items-center justify-center rounded-full border-2 ${borderColor} bg-white dark:bg-gray-900 dark:bg-gray-800 dark:bg-gray-800`}
       style={{ width: size, height: size }}
       title={`${user.userName} — ${user.status}`}
     >
@@ -85,7 +85,7 @@ function AvatarBubble({ user, size }: AvatarBubbleProps) {
         />
       ) : (
         <span
-          className="font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-200"
+          className="font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-200"
           style={{ fontSize: size * 0.36 }}
         >
           {user.userInitials}
@@ -123,7 +123,7 @@ export function PresenceCount({
 
   return (
     <span
-      className={`inline-flex items-center gap-1 text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 ${className}`}
+      className={`inline-flex items-center gap-1 text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 ${className}`}
       role="status"
       aria-label={`${viewers.length} user${viewers.length > 1 ? 's' : ''} viewing`}
     >

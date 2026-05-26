@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 
 interface ActivityItem {
   id?: string;
@@ -13,7 +13,7 @@ export interface ActivityFeedProps {
   maxItems?: number;
 }
 
-export function ActivityFeed({ maxItems = 10 }: ActivityFeedProps) {
+export const ActivityFeed = memo(function ActivityFeed({ maxItems = 10 }: ActivityFeedProps) {
   const activities = useMemo(() => {
     try {
       const stored = localStorage.getItem('finplan-activity-log');
@@ -62,7 +62,7 @@ export function ActivityFeed({ maxItems = 10 }: ActivityFeedProps) {
       ))}
     </div>
   );
-}
+});
 
 function formatRelativeTime(timestamp: string): string {
   const diff = Date.now() - new Date(timestamp).getTime();

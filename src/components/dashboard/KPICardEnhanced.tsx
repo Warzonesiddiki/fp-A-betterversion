@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Sparkline } from '@/components/ui/Sparkline';
 import { cn } from '@/utils/cn';
 
@@ -42,17 +43,17 @@ function formatValue(value: number, format: string): string {
 
 const varianceColors: Record<VarianceType, { bg: string; text: string; border: string }> = {
   favorable: {
-    bg: 'bg-green-50 dark:bg-green-950',
+    bg: 'bg-green-50 dark:bg-green-900/20 dark:bg-green-950',
     text: 'text-green-700 dark:text-green-300',
     border: 'border-green-200 dark:border-green-800',
   },
   unfavorable: {
-    bg: 'bg-red-50 dark:bg-red-950',
+    bg: 'bg-red-50 dark:bg-red-900/20 dark:bg-red-950',
     text: 'text-red-700 dark:text-red-300',
     border: 'border-red-200 dark:border-red-800',
   },
   neutral: {
-    bg: 'bg-gray-50 dark:bg-gray-900',
+    bg: 'bg-gray-50 dark:bg-gray-800 dark:bg-gray-900',
     text: 'text-[var(--text-secondary)]',
     border: 'border-[var(--border-subtle)]',
   },
@@ -64,7 +65,7 @@ const trendArrow: Record<VarianceType, string> = {
   neutral: '\u2192',
 };
 
-export function KPICardEnhanced({
+export const KPICardEnhanced = memo(function KPICardEnhanced({
   title,
   value,
   format = 'number',
@@ -196,4 +197,4 @@ export function KPICardEnhanced({
       )}
     </div>
   );
-}
+});

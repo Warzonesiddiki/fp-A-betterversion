@@ -166,7 +166,7 @@ export function ScenarioComparison({
                   onClick={() => toggleSelect(s.id)}
                   className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300'
                       : isDisabled
                         ? 'cursor-not-allowed border-[var(--border-subtle)] opacity-50'
                         : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-gray-400'
@@ -177,7 +177,7 @@ export function ScenarioComparison({
                     checked={isSelected}
                     disabled={isDisabled}
                     onChange={() => toggleSelect(s.id)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                     aria-label={`Select ${s.name}`}
                   />
                   <span className="font-medium">{s.name}</span>
@@ -340,7 +340,7 @@ export function ScenarioComparison({
                             <span className="w-28 shrink-0 truncate text-xs text-[var(--text-secondary)]">
                               {s.name}
                             </span>
-                            <div className="relative h-5 flex-1 overflow-hidden rounded bg-gray-100 dark:bg-gray-700">
+                            <div className="relative h-5 flex-1 overflow-hidden rounded bg-gray-100 dark:bg-gray-800 dark:bg-gray-700">
                               <div
                                 className={`h-full rounded transition-all ${BAR_COLORS[idx % BAR_COLORS.length]}`}
                                 style={{ width: `${barWidth(value, maxVal)}%` }}

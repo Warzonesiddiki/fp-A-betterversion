@@ -129,7 +129,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
     <div className="flex h-full">
       {/* Left: Section list */}
       <div className="w-64 border-r border-[var(--border-subtle)] dark:border-gray-700 p-4 overflow-y-auto">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-3">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-3">
           Sections
         </h3>
         <div className="space-y-1 mb-4">
@@ -144,13 +144,13 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               className={`flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm ${
                 selectedSection === section.id
                   ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                  : 'hover:bg-[var(--bg-hover)] dark:hover:bg-gray-800 text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500'
+                  : 'hover:bg-[var(--bg-hover)] dark:hover:bg-gray-800 text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500'
               }`}
               onClick={() => setSelectedSection(section.id)}
             >
               <span className="flex-1 truncate">{section.title || section.type}</span>
               <button
-                className="text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
+                className="text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
                 onClick={(e) => {
                   e.stopPropagation();
                   moveSection(section.id, 'up');
@@ -160,7 +160,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                 ↑
               </button>
               <button
-                className="text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
+                className="text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
                 onClick={(e) => {
                   e.stopPropagation();
                   moveSection(section.id, 'down');
@@ -183,14 +183,14 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
           ))}
         </div>
 
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-2">
           Add Section
         </h3>
         <div className="space-y-1">
           {SECTION_TYPES.map((st) => (
             <button
               key={st.value}
-              className="w-full text-left px-2 py-1.5 text-sm rounded bg-gray-50 dark:bg-gray-900 dark:bg-gray-800 hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500"
+              className="w-full text-left px-2 py-1.5 text-sm rounded bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 dark:bg-gray-800 hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500"
               onClick={() => addSection(st.value)}
             >
               + {st.label}
@@ -203,26 +203,26 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-2xl space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-1">
               Template Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
+              className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-1">
                 Type
               </label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as TemplateType)}
-                className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
+                className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
               >
                 {TEMPLATE_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -232,33 +232,33 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-1">
                 Company Name
               </label>
               <input
                 type="text"
                 value={style.companyName}
                 onChange={(e) => setStyle((s) => ({ ...s, companyName: e.target.value }))}
-                className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
+                className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-1">
               Description
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
+              className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-1">
                 Primary Color
               </label>
               <input
@@ -269,7 +269,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-1">
                 Secondary Color
               </label>
               <input
@@ -284,18 +284,18 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
           {/* Active section editor */}
           {active && (
             <div className="border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg p-4 mt-4">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-3">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 mb-3">
                 Edit: {active.type.replace(/_/g, ' ')}
               </h4>
               <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-1">
+                <label className="block text-xs font-medium text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">
                   Section Title
                 </label>
                 <input
                   type="text"
                   value={active.title}
                   onChange={(e) => updateSectionTitle(active.id, e.target.value)}
-                  className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100 text-sm"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 dark:bg-gray-800 dark:bg-gray-800 text-[var(--text-primary)] dark:text-gray-100 text-sm"
                 />
               </div>
               {active.type === 'table' && (
@@ -325,11 +325,11 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
         </button>
         <button
           onClick={onCancel}
-          className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+          className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-800 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
         >
           Cancel
         </button>
-        <div className="mt-4 text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+        <div className="mt-4 text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">
           <p className="font-medium mb-1">Variables:</p>
           <p>{'{entity}'} — Company name</p>
           <p>{'{period}'} — Reporting period</p>

@@ -39,7 +39,7 @@ export class GridErrorBoundary extends Component<Props, State> {
       if (data && data.length > 0 && columns && columns.length > 0) {
         return (
           <div className="border rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-3 bg-yellow-50 border-b border-yellow-200">
+            <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200">
               <div className="flex items-center gap-2 text-sm text-yellow-700">
                 <Table className="w-4 h-4" />
                 <span>Grid crashed — showing simplified view</span>
@@ -54,7 +54,7 @@ export class GridErrorBoundary extends Component<Props, State> {
             <div className="overflow-auto max-h-96">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-gray-900">
+                  <tr className="bg-gray-50 dark:bg-gray-800 dark:bg-gray-900">
                     {columns.map((col) => (
                       <th
                         key={col}
@@ -67,9 +67,15 @@ export class GridErrorBoundary extends Component<Props, State> {
                 </thead>
                 <tbody>
                   {data.slice(0, 100).map((row, i) => (
-                    <tr key={i} className="border-b hover:bg-gray-50 dark:bg-gray-900">
+                    <tr
+                      key={i}
+                      className="border-b hover:bg-gray-50 dark:bg-gray-800 dark:bg-gray-900"
+                    >
                       {columns.map((col) => (
-                        <td key={col} className="px-3 py-1.5 text-gray-700 dark:text-gray-300">
+                        <td
+                          key={col}
+                          className="px-3 py-1.5 text-gray-700 dark:text-gray-300 dark:text-gray-300"
+                        >
                           {String((row as Record<string, unknown>)?.[col] ?? '')}
                         </td>
                       ))}
@@ -83,7 +89,7 @@ export class GridErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex flex-col items-center justify-center p-6 border border-yellow-200 rounded-lg bg-yellow-50">
+        <div className="flex flex-col items-center justify-center p-6 border border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
           <Table className="w-8 h-8 text-yellow-500 mb-3" />
           <h3 className="text-sm font-semibold text-yellow-700 mb-1">Data Grid Error</h3>
           <p className="text-xs text-yellow-600 mb-3 text-center max-w-sm">

@@ -69,8 +69,8 @@ describe('TrafficLightIndicator', () => {
     it('applies gray styles for gray status', () => {
       const { container } = render(<TrafficLightIndicator {...defaultProps} status="gray" />);
       const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper.className).toContain('bg-gray-50');
-      expect(wrapper.className).toContain('border-gray-200');
+      expect(wrapper.className).toContain('bg-gray-50 dark:bg-gray-800');
+      expect(wrapper.className).toContain('border-gray-200 dark:border-gray-700');
       const dot = container.querySelector('.bg-gray-400');
       expect(dot).toBeInTheDocument();
     });

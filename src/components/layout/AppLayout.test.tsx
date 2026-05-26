@@ -6,6 +6,13 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AppLayout from './AppLayout';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, fallback?: string) => fallback ?? key,
+    i18n: { language: 'en', changeLanguage: vi.fn() },
+  }),
+}));
+
 const mockCloseMobileSidebar = vi.fn();
 let mockMobileSidebarOpen = false;
 
@@ -22,22 +29,16 @@ vi.mock('@/hooks/useFocusManagement', () => ({
   })),
 }));
 
-vi.mock('react-i18next', () => ({
-  useTranslation: vi.fn(() => ({
-    i18n: { language: 'en' },
-  })),
-}));
-
 vi.mock('@/utils/localeFormatting', () => ({
   getLocaleDirection: vi.fn(() => 'ltr'),
 }));
 
 vi.mock('./Sidebar', () => ({
-  default: () => <div data-testid="sidebar">Sidebar</div>,
+  Sidebar: () => <div data-testid="sidebar">Sidebar</div>,
 }));
 
 vi.mock('./Navbar', () => ({
-  default: () => <div data-testid="navbar">Navbar</div>,
+  Navbar: () => <div data-testid="navbar">Navbar</div>,
 }));
 
 vi.mock('@/components/ui/ToastContainer', () => ({

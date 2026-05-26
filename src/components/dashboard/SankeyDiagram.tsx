@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { cn } from '@/utils/cn';
 
 export interface SankeyNode {
@@ -78,7 +78,7 @@ interface LayoutLink {
   th: number;
 }
 
-export function SankeyDiagram({
+export const SankeyDiagram = memo(function SankeyDiagram({
   nodes,
   links,
   title,
@@ -289,9 +289,13 @@ export function SankeyDiagram({
       </div>
     </div>
   );
-}
+});
 
-export function RevenueBridgeSankey({ className }: { className?: string }) {
+export const RevenueBridgeSankey = memo(function RevenueBridgeSankey({
+  className,
+}: {
+  className?: string;
+}) {
   const nodes: SankeyNode[] = [
     { id: 'revenue', label: 'Revenue', value: 10000000, color: '#3b82f6' },
     { id: 'cogs', label: 'COGS', value: -4000000, color: '#ef4444' },
@@ -308,4 +312,4 @@ export function RevenueBridgeSankey({ className }: { className?: string }) {
   ];
 
   return <SankeyDiagram nodes={nodes} links={links} title="Revenue Bridge" className={className} />;
-}
+});

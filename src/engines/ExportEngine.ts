@@ -1,5 +1,5 @@
 export interface ExportConfig {
-  title: string;
+  title?: string;
   subtitle?: string;
   date?: string;
   orientation?: 'p' | 'l' | 'portrait' | 'landscape';
@@ -266,7 +266,7 @@ export class ExportEngine {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `${config.title.replace(/\s+/g, '_')}.csv`);
+    link.setAttribute('download', `${(config.title ?? 'export').replace(/\s+/g, '_')}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

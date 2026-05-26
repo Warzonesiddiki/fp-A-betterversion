@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import {
   BarChart,
   Bar,
@@ -39,7 +39,7 @@ interface ChartDataItem {
   baseValue: number;
 }
 
-export function TornadoChart({
+export const TornadoChart = memo(function TornadoChart({
   variables,
   baseCase,
   title,
@@ -189,4 +189,4 @@ export function TornadoChart({
       </div>
     </div>
   );
-}
+});

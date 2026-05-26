@@ -24,7 +24,8 @@ interface ApprovalDashboardProps {
 }
 
 const STATE_BADGE: Record<ApprovalState, string> = {
-  draft: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  draft:
+    'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:bg-gray-800 dark:text-gray-300',
   submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
   in_review: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
   approved: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
@@ -111,19 +112,19 @@ export function ApprovalDashboard({
       label: 'Pending',
       value: stats.pending,
       color: 'text-blue-600',
-      bg: 'bg-blue-50 dark:bg-blue-950',
+      bg: 'bg-blue-50 dark:bg-blue-900/20 dark:bg-blue-950',
     },
     {
       label: 'Approved',
       value: stats.approved,
       color: 'text-green-600',
-      bg: 'bg-green-50 dark:bg-green-950',
+      bg: 'bg-green-50 dark:bg-green-900/20 dark:bg-green-950',
     },
     {
       label: 'Rejected',
       value: stats.rejected,
       color: 'text-red-600',
-      bg: 'bg-red-50 dark:bg-red-950',
+      bg: 'bg-red-50 dark:bg-red-900/20 dark:bg-red-950',
     },
     {
       label: 'Locked',

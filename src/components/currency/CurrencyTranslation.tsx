@@ -152,7 +152,7 @@ export function CurrencyTranslation() {
               <select
                 value={entityCurrency}
                 onChange={(e) => setEntityCurrency(e.target.value)}
-                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white"
+                className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white"
               >
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>
@@ -167,7 +167,7 @@ export function CurrencyTranslation() {
               <select
                 value={parentCurrency}
                 onChange={(e) => setParentCurrency(e.target.value)}
-                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white"
+                className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white"
               >
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>
@@ -182,7 +182,7 @@ export function CurrencyTranslation() {
                 type="text"
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}
-                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white w-24"
+                className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white w-24"
               />
             </div>
             <div className="ml-auto flex gap-6 text-sm">
@@ -248,7 +248,7 @@ export function CurrencyTranslation() {
         <CardContent className="p-0">
           <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
             <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-white dark:bg-slate-900 z-10">
+              <thead className="sticky top-0 bg-white dark:bg-gray-900 dark:bg-slate-900 z-10">
                 <tr className="text-left text-slate-500 dark:text-slate-400 text-xs uppercase border-b border-slate-200 dark:border-slate-800">
                   <th className="px-4 py-3">Account</th>
                   <th className="px-4 py-3">Cat.</th>

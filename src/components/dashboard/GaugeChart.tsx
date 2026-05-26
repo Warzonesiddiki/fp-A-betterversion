@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { GaugeChart as BaseGaugeChart } from '@/components/charts/GaugeChart';
 import { cn } from '@/utils/cn';
 
@@ -31,7 +32,7 @@ function defaultFormat(v: number): string {
   return `${v.toFixed(1)}%`;
 }
 
-export function DashboardGauge({
+export const DashboardGauge = memo(function DashboardGauge({
   value,
   min = 0,
   max = 100,
@@ -102,4 +103,4 @@ export function DashboardGauge({
       )}
     </div>
   );
-}
+});

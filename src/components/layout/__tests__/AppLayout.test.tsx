@@ -22,7 +22,12 @@ vi.mock('@/store/uiStore', () => ({
     toggleCommandPalette: vi.fn(),
   }),
 }));
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { language: 'en' } }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en', dir: () => 'ltr' } }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  I18nextProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
 vi.mock('@/utils/localeFormatting', () => ({ getLocaleDirection: () => 'ltr' }));
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');

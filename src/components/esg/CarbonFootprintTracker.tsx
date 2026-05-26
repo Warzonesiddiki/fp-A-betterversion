@@ -127,7 +127,7 @@ export function CarbonFootprintTracker({ className }: CarbonFootprintTrackerProp
                   <select
                     value={activity.type}
                     onChange={(e) => updateActivity(activity.id, 'type', e.target.value)}
-                    className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white"
+                    className="w-full bg-white dark:bg-gray-900 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white"
                     aria-label="Activity type"
                   >
                     {ACTIVITY_TYPES.map((t) => (
@@ -143,7 +143,7 @@ export function CarbonFootprintTracker({ className }: CarbonFootprintTrackerProp
                     value={activity.amount}
                     onChange={(e) => updateActivity(activity.id, 'amount', e.target.value)}
                     placeholder="Amount"
-                    className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white"
+                    className="w-full bg-white dark:bg-gray-900 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white"
                     aria-label="Amount"
                   />
                 </div>

@@ -11,11 +11,24 @@ vi.mock('@/components/ui/DataGrid', () => ({
     onCellValueChanged,
   }: {
     rows: unknown[];
-    onCellValueChanged?: (event: { data: Record<string, unknown>; colDef: { field?: string }; newValue: unknown }) => void;
+    onCellValueChanged?: (event: {
+      data: Record<string, unknown>;
+      colDef: { field?: string };
+      newValue: unknown;
+    }) => void;
   }) => (
     <div data-testid="data-grid">
       <span data-testid="grid-row-count">{rows.length}</span>
-      <button data-testid="trigger-cell-change" onClick={() => onCellValueChanged?.({ data: { id: 'item-1' }, colDef: { field: 'amount' }, newValue: '500' })}>
+      <button
+        data-testid="trigger-cell-change"
+        onClick={() =>
+          onCellValueChanged?.({
+            data: { id: 'item-1' },
+            colDef: { field: 'amount' },
+            newValue: '500',
+          })
+        }
+      >
         Edit Cell
       </button>
     </div>

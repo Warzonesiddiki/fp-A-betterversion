@@ -102,7 +102,7 @@ export const DependencyGraph: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <textarea
-              className="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-mono min-h-[300px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 dark:border-gray-600 dark:border-slate-600 bg-white dark:bg-gray-900 dark:bg-slate-900 px-3 py-2 text-sm font-mono min-h-[300px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={cellInput}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCellInput(e.target.value)}
               placeholder="[{ ref: 'A1', value: 10 }, { ref: 'B1', formula: 'A1 * 2' }]"
@@ -119,24 +119,34 @@ export const DependencyGraph: React.FC = () => {
           </CardHeader>
           <CardContent>
             {!graphData ? (
-              <p className="text-gray-500">Run analysis to see stats.</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Run analysis to see stats.
+              </p>
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded">
-                    <div className="font-semibold text-gray-500">Total Cells</div>
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 dark:bg-slate-800 rounded">
+                    <div className="font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      Total Cells
+                    </div>
                     <div className="text-xl">{graphData.stats.totalCells}</div>
                   </div>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded">
-                    <div className="font-semibold text-gray-500">Formulas</div>
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 dark:bg-slate-800 rounded">
+                    <div className="font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      Formulas
+                    </div>
                     <div className="text-xl">{graphData.stats.formulaCells}</div>
                   </div>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded">
-                    <div className="font-semibold text-gray-500">Dependencies</div>
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 dark:bg-slate-800 rounded">
+                    <div className="font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      Dependencies
+                    </div>
                     <div className="text-xl">{graphData.stats.totalDependencies}</div>
                   </div>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded">
-                    <div className="font-semibold text-gray-500">Cycles Detected</div>
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 dark:bg-slate-800 rounded">
+                    <div className="font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      Cycles Detected
+                    </div>
                     <div className="text-xl text-red-500 font-bold">
                       {graphData.cycles.cycles.length}
                     </div>
@@ -144,7 +154,7 @@ export const DependencyGraph: React.FC = () => {
                 </div>
 
                 {graphData.cycles.cycles.length > 0 && (
-                  <div className="mt-4 p-3 border border-red-200 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded">
+                  <div className="mt-4 p-3 border border-red-200 bg-red-50 dark:bg-red-900/20 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded">
                     <h4 className="font-semibold mb-2">Circular References</h4>
                     <ul className="list-disc pl-4 space-y-1">
                       {graphData.cycles.cycles.map((cycle: string[], i: number) => (
@@ -167,7 +177,7 @@ export const DependencyGraph: React.FC = () => {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-300">
+                <thead className="bg-gray-50 dark:bg-gray-800 dark:bg-slate-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
                   <tr>
                     <th className="px-4 py-2">Ref</th>
                     <th className="px-4 py-2">Formula / Value</th>

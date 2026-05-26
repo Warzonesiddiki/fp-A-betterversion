@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { cn } from '@/utils/cn';
 
 export type TrafficLightStatus = 'green' | 'yellow' | 'red' | 'gray';
@@ -30,25 +31,25 @@ const statusConfig: Record<
   { bg: string; dot: string; text: string; glow: string }
 > = {
   green: {
-    bg: 'bg-green-50 border-green-200',
+    bg: 'bg-green-50 dark:bg-green-900/20 border-green-200',
     dot: 'bg-green-500',
     text: 'text-green-700',
     glow: 'shadow-green-200/50',
   },
   yellow: {
-    bg: 'bg-yellow-50 border-yellow-200',
+    bg: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200',
     dot: 'bg-yellow-500',
     text: 'text-yellow-700',
     glow: 'shadow-yellow-200/50',
   },
   red: {
-    bg: 'bg-red-50 border-red-200',
+    bg: 'bg-red-50 dark:bg-red-900/20 border-red-200',
     dot: 'bg-red-500',
     text: 'text-red-700',
     glow: 'shadow-red-200/50',
   },
   gray: {
-    bg: 'bg-gray-50 dark:bg-gray-900 border-[var(--border-subtle)]',
+    bg: 'bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 border-[var(--border-subtle)]',
     dot: 'bg-gray-400',
     text: 'text-[var(--text-secondary)]',
     glow: '',
@@ -76,7 +77,7 @@ function formatNum(value: number, format: string): string {
   }
 }
 
-export function TrafficLightIndicator({
+export const TrafficLightIndicator = memo(function TrafficLightIndicator({
   label,
   value,
   status,
@@ -109,9 +110,9 @@ export function TrafficLightIndicator({
       </div>
     </div>
   );
-}
+});
 
-export function TrafficLightBatch({
+export const TrafficLightBatch = memo(function TrafficLightBatch({
   items,
   thresholds,
   direction = 'higher-is-better',
@@ -142,4 +143,4 @@ export function TrafficLightBatch({
       ))}
     </div>
   );
-}
+});

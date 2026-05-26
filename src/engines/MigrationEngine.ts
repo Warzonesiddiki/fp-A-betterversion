@@ -498,7 +498,7 @@ export class MigrationEngine {
       if (!firstSheet) return 'unknown';
 
       const { headers, dataRows } = this.readSheetData(firstSheet);
-      if (dataRows.length < 1 || headers.length === 0) return 'unknown';
+      if (headers.length === 0 || dataRows.length < 1) return 'unknown';
 
       return detectSource(headers, dataRows);
     } catch {

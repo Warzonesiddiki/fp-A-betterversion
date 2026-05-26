@@ -14,6 +14,13 @@ let mockSidebarCollapsed = false;
 let mockMobileSidebarOpen = false;
 let mockTheme = 'dark';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en', changeLanguage: vi.fn() },
+  }),
+}));
+
 vi.mock('@/store/uiStore', () => ({
   useUIStore: vi.fn(() => ({
     sidebarCollapsed: mockSidebarCollapsed,
@@ -50,9 +57,9 @@ describe('Sidebar', () => {
     renderSidebar();
   });
 
-  it('displays the FinPlan Pro brand name', () => {
+  it('displays the app brand name', () => {
     renderSidebar();
-    expect(screen.getByText('FinPlan Pro')).toBeInTheDocument();
+    expect(screen.getByText('app.name')).toBeInTheDocument();
   });
 
   it('displays FP logo', () => {
@@ -63,59 +70,58 @@ describe('Sidebar', () => {
 
   it('renders quick search button', () => {
     renderSidebar();
-    expect(screen.getByLabelText('Quick search (Ctrl+K)')).toBeInTheDocument();
+    expect(screen.getByLabelText('sidebar.quickSearch')).toBeInTheDocument();
   });
 
   it('renders quick search text when not collapsed', () => {
     renderSidebar();
-    expect(screen.getByText('Quick search...')).toBeInTheDocument();
+    expect(screen.getByText('sidebar.quickSearch')).toBeInTheDocument();
   });
 
   it('renders all navigation sections', () => {
     renderSidebar();
-    expect(screen.getByText('Main')).toBeInTheDocument();
-    expect(screen.getByText('Analysis')).toBeInTheDocument();
-    expect(screen.getByText('Management')).toBeInTheDocument();
+    expect(screen.getByText('sidebar.sections.main')).toBeInTheDocument();
+    expect(screen.getByText('sidebar.sections.analysis')).toBeInTheDocument();
+    expect(screen.getByText('sidebar.sections.management')).toBeInTheDocument();
   });
 
   it('renders all main nav items', () => {
     renderSidebar();
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Budgets')).toBeInTheDocument();
-    expect(screen.getByText('Forecasts')).toBeInTheDocument();
-    expect(screen.getByText('Reports')).toBeInTheDocument();
-    expect(screen.getByText('Analytics')).toBeInTheDocument();
+    expect(screen.getByText('nav.dashboard')).toBeInTheDocument();
+    expect(screen.getByText('nav.budgets')).toBeInTheDocument();
+    expect(screen.getByText('nav.forecasts')).toBeInTheDocument();
+    expect(screen.getByText('nav.reports')).toBeInTheDocument();
+    expect(screen.getByText('nav.analytics')).toBeInTheDocument();
   });
 
   it('renders analysis nav items', () => {
     renderSidebar();
-    expect(screen.getByText('Variance')).toBeInTheDocument();
-    expect(screen.getByText('Scenarios')).toBeInTheDocument();
-    expect(screen.getByText('AI Analyst')).toBeInTheDocument();
+    expect(screen.getByText('nav.variance')).toBeInTheDocument();
+    expect(screen.getByText('nav.scenarios')).toBeInTheDocument();
+    expect(screen.getByText('nav.aiAnalyst')).toBeInTheDocument();
   });
 
   it('renders management nav items', () => {
     renderSidebar();
-    expect(screen.getByText('Data Management')).toBeInTheDocument();
-    expect(screen.getByText('Collaboration')).toBeInTheDocument();
-    expect(screen.getByText('Approvals')).toBeInTheDocument();
+    expect(screen.getByText('nav.dataManagement')).toBeInTheDocument();
+    expect(screen.getByText('nav.collaboration')).toBeInTheDocument();
+    expect(screen.getByText('nav.approvals')).toBeInTheDocument();
   });
 
   it('renders Settings and Help links', () => {
     renderSidebar();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
-    expect(screen.getByText('Help')).toBeInTheDocument();
+    expect(screen.getByText('nav.settings')).toBeInTheDocument();
+    expect(screen.getByText('nav.help')).toBeInTheDocument();
   });
 
-  it('renders theme toggle button with light mode label', () => {
+  it('renders theme toggle button', () => {
     renderSidebar();
-    expect(screen.getByText('Light Mode')).toBeInTheDocument();
-    expect(screen.getByLabelText('Switch to light mode')).toBeInTheDocument();
+    expect(screen.getByLabelText(/theme/i)).toBeInTheDocument();
   });
 
   it('calls toggleTheme when theme button is clicked', () => {
     renderSidebar();
-    fireEvent.click(screen.getByLabelText('Switch to light mode'));
+    fireEvent.click(screen.getByLabelText(/theme/i));
     expect(mockToggleTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -133,39 +139,39 @@ describe('Sidebar', () => {
   it('hides labels when sidebar is collapsed', () => {
     mockSidebarCollapsed = true;
     renderSidebar();
-    expect(screen.queryByText('Dashboard')).not.toBeInTheDocument();
-    expect(screen.queryByText('FinPlan Pro')).not.toBeInTheDocument();
-    expect(screen.queryByText('Quick search...')).not.toBeInTheDocument();
+    expect(screen.queryByText('nav.dashboard')).not.toBeInTheDocument();
+    expect(screen.queryByText('app.name')).not.toBeInTheDocument();
+    expect(screen.queryByText('sidebar.quickSearch')).not.toBeInTheDocument();
   });
 
   it('shows expand button when collapsed', () => {
     mockSidebarCollapsed = true;
     renderSidebar();
-    expect(screen.getByLabelText('Expand sidebar')).toBeInTheDocument();
+    expect(screen.getByLabelText('sidebar.expand')).toBeInTheDocument();
   });
 
   it('renders close button for mobile', () => {
     renderSidebar();
-    expect(screen.getByLabelText('Close sidebar')).toBeInTheDocument();
+    expect(screen.getByLabelText('accessibility.menuClose')).toBeInTheDocument();
   });
 
   it('calls closeMobileSidebar when close button is clicked', () => {
     renderSidebar();
-    fireEvent.click(screen.getByLabelText('Close sidebar'));
+    fireEvent.click(screen.getByLabelText('accessibility.menuClose'));
     expect(mockCloseMobileSidebar).toHaveBeenCalledTimes(1);
   });
 
-  it('shows Dark Mode toggle when theme is light', () => {
+  it('shows dark mode toggle when theme is light', () => {
     mockTheme = 'light';
     renderSidebar();
-    expect(screen.getByText('Dark Mode')).toBeInTheDocument();
-    expect(screen.getByLabelText('Switch to dark mode')).toBeInTheDocument();
+    expect(screen.getByText('sidebar.darkMode')).toBeInTheDocument();
+    expect(screen.getByLabelText('sidebar.darkMode')).toBeInTheDocument();
   });
 
-  it('shows Light Mode toggle when theme is dark', () => {
+  it('shows light mode toggle when theme is dark', () => {
     mockTheme = 'dark';
     renderSidebar();
-    expect(screen.getByText('Light Mode')).toBeInTheDocument();
-    expect(screen.getByLabelText('Switch to light mode')).toBeInTheDocument();
+    expect(screen.getByText('sidebar.lightMode')).toBeInTheDocument();
+    expect(screen.getByLabelText('sidebar.lightMode')).toBeInTheDocument();
   });
 });

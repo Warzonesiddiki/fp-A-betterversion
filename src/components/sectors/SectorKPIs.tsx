@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { KPICard } from '@/components/dashboard/KPICard';
 import type { SectorKPI, SectorConfig } from '@/config/sectors';
 import { cn } from '@/utils/cn';
@@ -54,7 +54,7 @@ function mockChange(kpi: SectorKPI): { change: number; trend: 'up' | 'down' | 'n
  * Each card is backed by the sector's KPI config (label, format, target).
  * Pass `values` for real data; omit to use targets as placeholders.
  */
-export function SectorKPIs({
+export const SectorKPIs = memo(function SectorKPIs({
   config,
   values,
   sparklines,
@@ -90,4 +90,4 @@ export function SectorKPIs({
       })}
     </div>
   );
-}
+});

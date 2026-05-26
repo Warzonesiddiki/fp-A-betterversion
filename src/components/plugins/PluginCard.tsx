@@ -44,7 +44,9 @@ function StarRating({ rating }: { rating: number }) {
           key={i}
           className={cn(
             'h-3.5 w-3.5',
-            i <= stars ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'
+            i <= stars
+              ? 'text-yellow-400'
+              : 'text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500'
           )}
           fill="currentColor"
           viewBox="0 0 20 20"
@@ -92,12 +94,12 @@ export function PluginCard({
   return (
     <button
       type="button"
-      className="group flex flex-col rounded-lg border border-[var(--border-default)] bg-white dark:bg-gray-800 p-5 text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700"
+      className="group flex flex-col rounded-lg border border-[var(--border-default)] bg-white dark:bg-gray-900 dark:bg-gray-800 p-5 text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700"
       onClick={() => onViewDetail(plugin)}
       aria-label={`View details for ${plugin.name}`}
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-2xl">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-2xl">
           {plugin.icon ?? '🧩'}
         </div>
         <div className="min-w-0 flex-1">
@@ -111,7 +113,7 @@ export function PluginCard({
               </Badge>
             )}
           </div>
-          <p className="mt-0.5 text-xs text-[var(--text-muted)] dark:text-gray-400">
+          <p className="mt-0.5 text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
             {plugin.author}
           </p>
         </div>
@@ -126,7 +128,7 @@ export function PluginCard({
           className={cn(
             'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium',
             CATEGORY_COLORS[plugin.category] ??
-              'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+              'bg-gray-100 dark:bg-gray-800 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
           )}
         >
           {CATEGORY_LABELS[plugin.category] ?? plugin.category}
@@ -134,7 +136,7 @@ export function PluginCard({
         {plugin.tags?.slice(0, 2).map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+            className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:bg-gray-700 dark:text-gray-300"
           >
             {tag}
           </span>
@@ -142,7 +144,7 @@ export function PluginCard({
       </div>
 
       <div className="mt-4 flex items-center justify-between border-t border-[var(--border-default)] pt-3 dark:border-gray-700">
-        <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] dark:text-gray-400">
+        <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
           <StarRating rating={plugin.rating} />
           <span>{formatDownloads(plugin.downloads)} installs</span>
         </div>

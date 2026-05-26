@@ -50,3 +50,73 @@
 - **Data Size (Approx)**: 5.58 MB
 
 ---
+
+## masterStorage Profile - 26/5/2026, 3:47:39 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 484.09ms
+- **Average Latency per Entry**: 0.0484ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 26/5/2026, 3:53:44 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 198.52ms
+- **Average Latency per Entry**: 0.0199ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 26/5/2026, 3:54:31 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 304.35ms
+- **Average Latency per Entry**: 0.0304ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 26/5/2026, 4:00:11 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 151.63ms
+- **Average Latency per Entry**: 0.0152ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 26/5/2026, 6:40:40 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 130.28ms
+- **Average Latency per Entry**: 0.0130ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 26/5/2026, 6:58:04 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 115.98ms
+- **Average Latency per Entry**: 0.0116ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 26/5/2026, 7:44:51 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 103.08ms
+- **Average Latency per Entry**: 0.0103ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---

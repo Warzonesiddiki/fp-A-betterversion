@@ -62,9 +62,15 @@ export interface KPICardProps {
 }
 
 const varianceStyles: Record<KPICardVarianceType, { bg: string; text: string }> = {
-  favorable: { bg: 'bg-green-50 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400' },
-  unfavorable: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400' },
-  neutral: { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-[var(--text-muted)]' },
+  favorable: {
+    bg: 'bg-green-50 dark:bg-green-900/20 dark:bg-green-900/30',
+    text: 'text-green-700 dark:text-green-400',
+  },
+  unfavorable: {
+    bg: 'bg-red-50 dark:bg-red-900/20 dark:bg-red-900/30',
+    text: 'text-red-700 dark:text-red-400',
+  },
+  neutral: { bg: 'bg-gray-50 dark:bg-gray-800 dark:bg-gray-800', text: 'text-[var(--text-muted)]' },
 };
 
 const trendArrowSymbol: Record<string, string> = {

@@ -31,7 +31,7 @@ describe('Modal', () => {
         Content
       </Modal>
     );
-    const closeButton = screen.getByRole('button', { name: 'Close' });
+    const closeButton = screen.getByRole('button', { name: /close/i });
     fireEvent.click(closeButton);
     expect(onClose).toHaveBeenCalledTimes(1);
   });

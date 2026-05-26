@@ -281,7 +281,7 @@ export function ImpactAnalysis({
                                   {change.isFavorable ? (
                                     <ArrowUpRight className="h-3 w-3 text-green-500" />
                                   ) : change.delta === 0 ? (
-                                    <Minus className="h-3 w-3 text-gray-400" />
+                                    <Minus className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                                   ) : (
                                     <ArrowDownRight className="h-3 w-3 text-red-500" />
                                   )}
@@ -290,7 +290,7 @@ export function ImpactAnalysis({
                                       change.isFavorable
                                         ? 'text-green-600 dark:text-green-400'
                                         : change.delta === 0
-                                          ? 'text-gray-400'
+                                          ? 'text-gray-400 dark:text-gray-500'
                                           : 'text-red-600 dark:text-red-400'
                                     }`}
                                   >

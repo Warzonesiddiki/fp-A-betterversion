@@ -218,7 +218,7 @@ export function CellEditor({
         ref={inputRef}
         type={inputType}
         className={cn(
-          'w-full h-full px-2 py-1 text-sm font-mono bg-white dark:bg-gray-900',
+          'w-full h-full px-2 py-1 text-sm font-mono bg-white dark:bg-gray-900 dark:bg-gray-900',
           'border-2 border-[var(--accent-primary)] rounded-sm shadow-lg',
           'outline-none z-50',
           'text-[var(--text-primary)]'

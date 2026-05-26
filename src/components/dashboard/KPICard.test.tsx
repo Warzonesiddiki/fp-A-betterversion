@@ -91,13 +91,13 @@ describe('KPICard', () => {
 
     it('applies green color for up trend', () => {
       const { container } = render(<KPICard {...defaultProps} change={5} trend="up" />);
-      const trendEl = container.querySelector('.text-green-400');
+      const trendEl = container.querySelector('.text-green-600');
       expect(trendEl).toBeInTheDocument();
     });
 
     it('applies red color for down trend', () => {
       const { container } = render(<KPICard {...defaultProps} change={-5} trend="down" />);
-      const trendEl = container.querySelector('.text-red-400');
+      const trendEl = container.querySelector('.text-red-600');
       expect(trendEl).toBeInTheDocument();
     });
   });

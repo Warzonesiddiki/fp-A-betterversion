@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
   ComposedChart,
   Bar,
@@ -53,7 +54,7 @@ const defaultSeries: ComboChartSeriesConfig = {
   line2Color: '#F59E0B',
 };
 
-export function ComboChart({
+export const ComboChart = memo(function ComboChart({
   data,
   height = 350,
   formatValue = (v) => v.toLocaleString(),
@@ -143,4 +144,4 @@ export function ComboChart({
       </ResponsiveContainer>
     </div>
   );
-}
+});
