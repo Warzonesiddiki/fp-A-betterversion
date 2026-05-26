@@ -57,7 +57,10 @@ const BenchmarksPage: React.FC = () => {
   const chartData = useMemo(() => {
     // Group history by timestamp (roughly, since they are saved in a batch)
     // For visualization, we'll map each batch to a single data point
-    const groups: Record<number, { timestamp: number; timeLabel: string; [key: string]: number | string }> = {};
+    const groups: Record<
+      number,
+      { timestamp: number; timeLabel: string; [key: string]: number | string }
+    > = {};
 
     history.forEach((res) => {
       // Round to nearest second to group the batch
