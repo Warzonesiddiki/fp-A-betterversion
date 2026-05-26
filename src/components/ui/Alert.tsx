@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import { cn } from '@/utils/cn';
 
@@ -15,7 +15,7 @@ export interface AlertProps {
   className?: string;
 }
 
-export const Alert: React.FC<AlertProps> = ({
+export const Alert: React.FC<AlertProps> = memo(({
   open,
   onConfirm,
   onCancel,
@@ -67,4 +67,4 @@ export const Alert: React.FC<AlertProps> = ({
       </AlertDialog.Portal>
     </AlertDialog.Root>
   );
-};
+});
