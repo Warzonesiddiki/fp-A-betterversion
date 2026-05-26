@@ -312,7 +312,7 @@ export default function ChartOfAccountsPage() {
                   <th className="px-4 py-3 w-28 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
                 {filteredAccounts.map((acct) => (
                   <tr
                     key={acct.id}

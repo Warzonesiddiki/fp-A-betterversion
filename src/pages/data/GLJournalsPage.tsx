@@ -199,7 +199,7 @@ export default function GLJournalsPage() {
                   <th className="px-4 py-3 w-24">Reference</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
                 {pageItems.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-12 text-slate-500">
