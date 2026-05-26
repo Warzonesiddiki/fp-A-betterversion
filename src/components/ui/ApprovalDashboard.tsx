@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import { cn } from '@/utils/cn';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
-import type { ApprovalRequest, WorkflowStats } from '@/engines/WorkflowEngine';
+import type { WorkflowStats } from '@/engines/WorkflowEngine';
 
 interface Props {
   stats: WorkflowStats;
@@ -35,7 +36,10 @@ export function ApprovalDashboard({ stats, className }: Props) {
     },
   ];
 
-  const bottleneckEntries = Object.entries(stats.bottlenecks).sort((a, b) => b[1] - a[1]);
+  const bottleneckEntries = useMemo(
+    () => Object.entries(stats.bottlenecks).sort((a, b) => b[1] - a[1]),
+    [stats.bottlenecks]
+  );
   const topBottleneck = bottleneckEntries[0];
 
   return (
