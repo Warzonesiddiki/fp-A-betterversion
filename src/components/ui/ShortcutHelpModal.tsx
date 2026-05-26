@@ -1,5 +1,8 @@
+import { useEffect, useRef } from 'react';
 import { shortcutsByCategory, formatShortcut } from '@/config/keyboardShortcuts';
 import { X } from 'lucide-react';
+
+const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 interface ShortcutHelpModalProps {
   open: boolean;
@@ -7,6 +10,37 @@ interface ShortcutHelpModalProps {
 }
 
 export function ShortcutHelpModal({ open, onClose }: ShortcutHelpModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previousFocusRef.current?.focus();
+    };
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
@@ -21,6 +55,7 @@ export function ShortcutHelpModal({ open, onClose }: ShortcutHelpModalProps) {
         tabIndex={0}
       />
       <div
+        ref={dialogRef}
         className="relative w-full max-w-2xl max-h-[80vh] bg-white dark:bg-gray-800 dark:bg-gray-900 rounded-xl shadow-2xl border overflow-hidden"
         role="dialog"
         aria-label="Keyboard shortcuts"

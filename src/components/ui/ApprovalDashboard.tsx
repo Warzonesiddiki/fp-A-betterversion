@@ -116,7 +116,7 @@ export function ApprovalDashboard({ stats, className }: Props) {
             <p className="text-sm text-gray-400 dark:text-gray-500">No SLA breaches</p>
           ) : (
             <div className="space-y-2 max-h-40 overflow-y-auto">
-              {stats.slaBreaches.map((req: ApprovalRequest) => (
+              {stats.slaBreaches.map((req) => (
                 <div
                   key={req.id}
                   className="flex items-center justify-between text-sm border-l-2 border-red-500 pl-2"
