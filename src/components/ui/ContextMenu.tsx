@@ -183,14 +183,14 @@ export function ContextMenu({ x, y, onAction, onClose, className }: ContextMenuP
               className={cn(
                 item.danger
                   ? 'text-red-400'
-                  : 'text-gray-400 dark:text-gray-500 dark:text-[var(--text-muted)]'
+                  : 'text-gray-400 dark:text-[var(--text-muted)]'
               )}
             >
               {item.icon}
             </span>
             <span className="flex-1 text-left">{item.label}</span>
             {item.shortcut && (
-              <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-[var(--text-muted)] font-mono">
+              <span className="text-[10px] text-gray-400 dark:text-[var(--text-muted)] font-mono">
                 {item.shortcut}
               </span>
             )}

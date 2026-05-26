@@ -117,7 +117,6 @@ export function CommandPalette({
       aria-label="Close command palette"
     >
       <div
-        className="w-full max-w-lg rounded-lg shadow-2xl border overflow-hidden animate-scale-in"
         className="w-full max-w-lg rounded-lg shadow-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] overflow-hidden animate-scale-in"
         role="dialog"
         aria-modal="true"
@@ -126,10 +125,9 @@ export function CommandPalette({
       >
         {/* Search Input */}
         <div
-          className="flex items-center gap-3 p-4 border-b"
-          style={{ borderColor: 'var(--border-subtle)' }}
+          className="flex items-center gap-3 p-4 border-b border-[var(--border-subtle)]"
         >
-          <Search className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
+          <Search className="w-5 h-5 text-[var(--text-secondary)]" />
           <input
             ref={inputRef}
             type="text"
