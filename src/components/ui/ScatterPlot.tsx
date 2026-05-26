@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   ResponsiveContainer,
   ScatterChart,
@@ -31,7 +32,7 @@ interface ScatterPlotProps {
   onClick?: (point: ScatterPoint) => void;
 }
 
-export function ScatterPlot({
+export const ScatterPlot = React.memo(function ScatterPlot({
   data,
   height = 300,
   xLabel,

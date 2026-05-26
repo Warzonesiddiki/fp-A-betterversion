@@ -25,7 +25,7 @@ export const ChartCard = memo(function ChartCard({
           <div>
             <CardTitle>{title}</CardTitle>
             {subtitle && (
-              <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-sm mt-1 text-[var(--text-secondary)]">
                 {subtitle}
               </p>
             )}
@@ -34,7 +34,7 @@ export const ChartCard = memo(function ChartCard({
         </div>
       </CardHeader>
       <CardContent>
-        <div style={{ height }}>{children}</div>
+        <div style={{ height: `${height}px` }}>{children}</div>
       </CardContent>
     </Card>
   );
