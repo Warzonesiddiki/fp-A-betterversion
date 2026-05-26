@@ -24,11 +24,7 @@ export const ChartCard = memo(function ChartCard({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>{title}</CardTitle>
-            {subtitle && (
-              <p className="text-sm mt-1 text-[var(--text-secondary)]">
-                {subtitle}
-              </p>
-            )}
+            {subtitle && <p className="text-sm mt-1 text-[var(--text-secondary)]">{subtitle}</p>}
           </div>
           {actions && <div>{actions}</div>}
         </div>

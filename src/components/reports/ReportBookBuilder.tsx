@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
@@ -197,7 +197,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
 // Main Component
 // ---------------------------------------------------------------------------
 
-export function ReportBookBuilder() {
+export const ReportBookBuilder = memo(function ReportBookBuilder() {
   const [engine] = useState(() => new ReportBookEngine());
   const [book, setBook] = useState<ReportBook>(() =>
     engine.createBook('Board Pack', 'Monthly board pack with all entities')
@@ -438,4 +438,4 @@ export function ReportBookBuilder() {
       </div>
     </div>
   );
-}
+});

@@ -56,11 +56,11 @@ self.onmessage = (e: MessageEvent<WorkerMessage<StorageRequest>>) => {
       };
       self.postMessage(response);
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     const response: WorkerResponse = {
       id,
       type: 'error',
-      error: err.message,
+      error: err instanceof Error ? err.message : String(err),
     };
     self.postMessage(response);
   }

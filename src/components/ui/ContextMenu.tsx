@@ -181,9 +181,7 @@ export function ContextMenu({ x, y, onAction, onClose, className }: ContextMenuP
           >
             <span
               className={cn(
-                item.danger
-                  ? 'text-red-400'
-                  : 'text-gray-400 dark:text-[var(--text-muted)]'
+                item.danger ? 'text-red-400' : 'text-gray-400 dark:text-[var(--text-muted)]'
               )}
             >
               {item.icon}

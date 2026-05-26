@@ -123,4 +123,4 @@ export const ScatterPlot = React.memo(function ScatterPlot({
       </ResponsiveContainer>
     </div>
   );
-}
+});

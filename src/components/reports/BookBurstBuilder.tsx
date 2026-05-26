@@ -3,7 +3,7 @@
 // Matrix: reports x entities with parallel generation, ZIP download, board pack
 // =============================================================================
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import {
@@ -198,7 +198,7 @@ function MatrixRow({
 // Main Component
 // ---------------------------------------------------------------------------
 
-export function BookBurstBuilder() {
+export const BookBurstBuilder = memo(function BookBurstBuilder() {
   const [engine] = useState(() => new ReportBookEngine());
   const [book, setBook] = useState<ReportBook>(() =>
     engine.createBook('Burst Report Pack', 'Multi-entity batch generation')
@@ -596,4 +596,4 @@ export function BookBurstBuilder() {
       )}
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -100,7 +100,7 @@ const SAMPLE: HedgePosition[] = [
   },
 ];
 
-export function HedgeManager() {
+export const HedgeManager = memo(function HedgeManager() {
   const [hedges, setHedges] = useState<HedgePosition[]>(SAMPLE);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -508,4 +508,4 @@ export function HedgeManager() {
       </Modal>
     </div>
   );
-}
+});
