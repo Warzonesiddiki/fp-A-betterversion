@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/utils/cn';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import type { WorkflowStats } from '@/engines/WorkflowEngine';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function ApprovalDashboard({ stats, className }: Props) {
+  const { t } = useTranslation();
   const cards = [
     {
       label: 'Pending',
@@ -79,7 +81,7 @@ export function ApprovalDashboard({ stats, className }: Props) {
         <div className="border rounded-lg p-4">
           <h3 className="text-sm font-semibold mb-2">Bottlenecks</h3>
           {bottleneckEntries.length === 0 ? (
-            <p className="text-sm text-[var(--text-muted)]">No pending requests</p>
+            <p className="text-sm text-[var(--text-muted)]">{t('dashboard.noPendingRequests')}</p>
           ) : (
             <div className="space-y-2">
               {bottleneckEntries.slice(0, 5).map(([approver, count]) => (
@@ -113,7 +115,7 @@ export function ApprovalDashboard({ stats, className }: Props) {
             )}
           </h3>
           {stats.slaBreaches.length === 0 ? (
-            <p className="text-sm text-[var(--text-muted)]">No SLA breaches</p>
+            <p className="text-sm text-[var(--text-muted)]">{t('dashboard.noSlaBreaches')}</p>
           ) : (
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {stats.slaBreaches.map((req) => (

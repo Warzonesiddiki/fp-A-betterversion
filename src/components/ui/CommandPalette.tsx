@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, ArrowRight } from 'lucide-react';
 import { FormulaAutoCompleteEngine } from '@/engines/FormulaAutoCompleteEngine';
 export interface CommandItem {
@@ -23,6 +24,7 @@ export function CommandPalette({
   onClose,
   placeholder,
 }: CommandPaletteProps) {
+  const { t } = useTranslation();
   const visible = isOpen ?? open ?? false;
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -160,7 +162,7 @@ export function CommandPalette({
         >
           {filteredItems.length === 0 ? (
             <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
-              <p className="text-sm">No commands found</p>
+              <p className="text-sm">{t('commands.notFound')}</p>
             </div>
           ) : (
             Array.from(groupedItems.entries()).map(([category, categoryItems]) => (

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronDown, Calculator, Hash, FileText, Search, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { GLAccount } from '@/types';
@@ -171,13 +172,14 @@ export const AccountTree: React.FC<AccountTreeProps> = ({
   selectedId,
   defaultExpanded = false,
 }) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('');
 
   if (!accounts || accounts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed border-[var(--border-subtle)] rounded-lg">
         <FileText className="h-8 w-8 text-[var(--text-secondary)] opacity-20 mb-2" />
-        <p className="text-xs text-[var(--text-secondary)] font-medium">No accounts found</p>
+        <p className="text-xs text-[var(--text-secondary)] font-medium">{t('accounts.notFound')}</p>
       </div>
     );
   }

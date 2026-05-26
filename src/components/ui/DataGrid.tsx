@@ -77,16 +77,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
     handleReplace,
     closeFindReplace,
   } = useFindReplace(gridRef, columns);
-  const {
-    hiddenColumns,
-    showColumnMenu,
-    setShowColumnMenu,
-    groupColumn,
-    toggleColumn,
-    handleGroupBy,
-    visibleColumnDefs,
-  } = useColumnVisibility(columnDefs);
-  const { handleExport } = useDataGridExport(columns, rows, hiddenColumns);
 
   const defaultColDef = useMemo<ColDef>(
     () => ({
@@ -254,18 +244,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
       enableFindReplace,
     ]
   );
-
-  // Column definitions with hiding support
-  const visibleColumnDefs = useMemo<ColDef[]>(() => {
-    const defs = columnDefs.filter((col) => !hiddenColumns.has(col.field ?? ''));
-    if (groupColumn) {
-      return [
-        { field: groupColumn, rowGroup: true, hide: true },
-        ...defs.filter((c) => c.field !== groupColumn),
-      ];
-    }
-    return defs;
-  }, [columnDefs, hiddenColumns, groupColumn]);
 
   const mergedGridOptions = useMemo<GridOptions>(
     () => ({

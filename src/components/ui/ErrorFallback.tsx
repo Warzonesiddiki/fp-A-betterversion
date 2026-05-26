@@ -1,5 +1,5 @@
-import {} from '@/hooks/useErrorHandler';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, RefreshCw, Copy, Check, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ interface ErrorFallbackProps {
 }
 
 export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
@@ -27,7 +28,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
       aria-live="assertive"
     >
       <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
-      <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">Something went wrong</h2>
+      <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">{t('errors.generic')}</h2>
       <p className="text-muted-foreground mb-2 max-w-md">
         An unexpected error occurred. Your data has not been lost.
       </p>

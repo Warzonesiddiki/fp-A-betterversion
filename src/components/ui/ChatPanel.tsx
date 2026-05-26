@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, MessageSquare, X, Minimize2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { NLQEngine } from '@/engines/NLQEngine';
@@ -34,6 +35,7 @@ export function ChatPanel({
   onToggleMinimize,
   onClose,
 }: ChatPanelProps) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessageData[]>([WELCOME_MSG]);
   const [isProcessing, setIsProcessing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -195,7 +197,7 @@ export function ChatPanel({
         {isProcessing && (
           <div className="flex items-center gap-2 px-4 py-3 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-sm">Analyzing your query...</span>
+            <span className="text-sm">{t('ai.analyzing')}</span>
           </div>
         )}
       </div>
