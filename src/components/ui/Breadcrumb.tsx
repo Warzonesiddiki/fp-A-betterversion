@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -13,7 +13,7 @@ export interface BreadcrumbProps {
   className?: string;
 }
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
+export const Breadcrumb = memo(function Breadcrumb({ items, className }: BreadcrumbProps) {
   if (!items || items.length === 0) return null;
 
   return (
@@ -49,4 +49,4 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
       </ol>
     </nav>
   );
-};
+});

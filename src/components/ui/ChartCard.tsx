@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 
 interface ChartCardProps {
@@ -10,7 +10,7 @@ interface ChartCardProps {
   actions?: ReactNode;
 }
 
-export function ChartCard({
+export const ChartCard = memo(function ChartCard({
   title,
   subtitle,
   height = 300,
@@ -38,7 +38,7 @@ export function ChartCard({
       </CardContent>
     </Card>
   );
-}
+});
 
 export type { ChartCardProps };
 export default ChartCard;
