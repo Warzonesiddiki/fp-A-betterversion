@@ -137,7 +137,7 @@ export function SheetTabs({
                 e.stopPropagation();
                 onSheetDelete(sheet.id);
               }}
-              className="ml-1 p-0.5 rounded hover:bg-red-100 text-gray-400 dark:text-gray-500 hover:fin-negative transition-colors"
+              className="ml-1 p-0.5 rounded hover:bg-red-100 text-gray-400 dark:text-gray-500 hover:fin-negative transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
               aria-label={`Delete sheet ${sheet.name}`}
             >
               <X className="h-3 w-3" />
@@ -149,7 +149,7 @@ export function SheetTabs({
       {/* Add Sheet Button */}
       <button
         onClick={onSheetAdd}
-        className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]/50 rounded-t-md transition-colors"
+        className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]/50 rounded-t-md transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
         aria-label="Add new sheet"
       >
         <Plus className="h-3.5 w-3.5" />
@@ -174,7 +174,7 @@ export function SheetTabs({
             aria-label="Sheet actions"
           >
             <button
-              className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)]"
+              className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
               role="menuitem"
               onClick={() => {
                 const sheet = sheets.find((s) => s.id === contextMenu.sheetId);
@@ -186,7 +186,7 @@ export function SheetTabs({
             </button>
             {sheets.length > 1 && (
               <button
-                className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] fin-negative"
+                className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] fin-negative focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                 role="menuitem"
                 onClick={() => {
                   onSheetDelete(contextMenu.sheetId);
