@@ -118,7 +118,7 @@ export function CommandPalette({
     >
       <div
         className="w-full max-w-lg rounded-lg shadow-2xl border overflow-hidden animate-scale-in"
-        style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-default)' }}
+        className="w-full max-w-lg rounded-lg shadow-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] overflow-hidden animate-scale-in"
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
