@@ -116,23 +116,23 @@ describe('Sidebar', () => {
 
   it('renders theme toggle button', () => {
     renderSidebar();
-    expect(screen.getByLabelText(/theme/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('sidebar.lightMode')).toBeInTheDocument();
   });
 
   it('calls toggleTheme when theme button is clicked', () => {
     renderSidebar();
-    fireEvent.click(screen.getByLabelText(/theme/i));
+    fireEvent.click(screen.getByLabelText('sidebar.lightMode'));
     expect(mockToggleTheme).toHaveBeenCalledTimes(1);
   });
 
   it('renders collapse button on desktop', () => {
     renderSidebar();
-    expect(screen.getByLabelText('Collapse sidebar')).toBeInTheDocument();
+    expect(screen.getByLabelText('sidebar.collapse')).toBeInTheDocument();
   });
 
   it('calls toggleSidebar when collapse button is clicked', () => {
     renderSidebar();
-    fireEvent.click(screen.getByLabelText('Collapse sidebar'));
+    fireEvent.click(screen.getByLabelText('sidebar.collapse'));
     expect(mockToggleSidebar).toHaveBeenCalledTimes(1);
   });
 
@@ -147,7 +147,7 @@ describe('Sidebar', () => {
   it('shows expand button when collapsed', () => {
     mockSidebarCollapsed = true;
     renderSidebar();
-    expect(screen.getByLabelText('sidebar.expand')).toBeInTheDocument();
+    expect(screen.getByLabelText('accessibility.expand')).toBeInTheDocument();
   });
 
   it('renders close button for mobile', () => {

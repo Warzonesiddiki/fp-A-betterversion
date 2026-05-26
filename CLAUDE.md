@@ -1,4 +1,4 @@
-# CLAUDE.md — FinPlan Pro Project Guide
+# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -6,61 +6,98 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run dev              # Vite dev server on :5173 (strictPort)
-npm run build            # Production build (Tauri-ready)
-npm run test             # Run all 5990+ tests with 80GB heap
-npm run lint             # ESLint with auto-fix
-npm run format           # Prettier formatting
-npx tsc --noEmit        # Type checking
+npm run build            # Production build
+npm run lint             # ESLint with --fix
+npm run format           # Prettier --write
+npm run test             # Vitest single run (80GB heap — node --max-old-space-size=81920)
+npm run test:watch       # Vitest watch mode (same heap)
+npm run test:e2e         # Playwright (tests/ dir, chromium only, auto-starts dev server)
+npx vitest run src/path/to/file.test.ts   # Single test file
+npx tsc --noEmit         # Type check (CI runs this before lint)
 ```
 
-## Project Overview
-FinPlan Pro is an enterprise FP&A platform. It is ~90% complete and currently in **Phase 4: Operational Excellence**.
+CI order: `tsc --noEmit → lint → test → build → bundle size check`. Main chunk must stay under 150KB gzip, total JS under 2MB gzip.
 
-### Architecture
-- **Framework**: React 19 + TypeScript + Vite + Tailwind CSS (4.0).
-- **State**: Zustand (Immer + Persist + MasterStorage bridge).
-- **Persistence**: SQLite (via Tauri) + IndexedDB (Web fallback).
-- **Engines**: 156 specialized financial engines in `src/engines/`.
-- **A11y**: WCAG 2.1 AA compliant components.
+## Architecture
 
-### Core Modules
-- **Formula Engine**: Excel-compatible, 245+ functions, DAG-based evaluation.
-- **Data & GL**: Robust import system (Excel/CSV) with auto-mapping.
-- **Reporting**: Three-statement engine (P&L, BS, CF), BVA, and Sector KPIs.
-- **AI Analyst**: Local GPU-accelerated anomaly detection (Transformers.js).
-
-### Industries Supported
-- SaaS, Manufacturing, Retail, Banking, Healthcare, Energy, Real Estate, Construction, Insurance, Telecom, Logistics, Hospitality, Government, Education, Agriculture.
-
-## Directory Map
+Entry: `src/main.tsx` → `src/App.tsx` (all routes defined here, lazy-loaded).
 
 | Directory | What lives here |
 |-----------|----------------|
 | `src/store/` | 30+ Zustand stores, colocated `.test.ts` files |
-| `src/engines/` | 150+ pure calculation engines (financial logic, no side effects) |
-| `src/pages/` | Route pages, 30+ domain subdirs, all `React.lazy` |
-| `src/components/ui/` | 80+ atomic UI primitives, barrel-exported via `index.ts` |
+| `src/engines/` | 189 pure calculation engines (financial logic, no side effects) |
+| `src/pages/` | Route pages, 40+ domain subdirs, all `React.lazy` |
+| `src/components/ui/` | 700+ atomic UI primitives, barrel-exported via `index.ts` |
 | `src/components/` | Domain components (budget/, reports/, analytics/) |
-| `src/hooks/` | 40+ custom hooks (`use` prefix) |
+| `src/hooks/` | 67 custom hooks (`use` prefix) |
 | `src/workers/` | Web Workers (Monte Carlo, consolidation, formulas) |
 | `src/services/` | API layer, WebSocket, collaboration |
 | `src/plugins/` | Plugin system (registry, sandbox, marketplace) |
 | `src/utils/` | Formatters, calculations, storage, encryption |
 | `src/config/` | Design tokens, keyboard shortcuts, sector configs |
 | `src/types/` | Shared TS types |
+| `src/templates/` | Report/budget templates |
 | `src/test/` | Test setup, mocks, utilities |
 | `src-tauri/` | Tauri desktop shell (Rust) |
 
-## Development Standards
-- **Exports**: Named exports only — no default exports.
-- **Imports**: Use `@/` path alias for all internal modules.
-- **TDD**: Write failing tests in `*.test.ts(x)` before implementation.
-- **States**: Data-dependent components must handle Loading, Empty, Error, and Data states.
-- **Security**: All imported data must be sanitized via `src/utils/security.ts`.
-- **Performance**: High-weight assets (AI models, Large libraries) must be lazy-loaded.
+## Path Alias
 
-## Continuity & Context
-- **Planning**: See `PHASE_4_PLAN.md` for active tasks.
-- **History**: See `docs/master-continuity/EXECUTION_LOG.md`.
-- **Memory**: Obsidian vault index in `.obsidian/brain/MOC-FinPlan-Pro.md`.
-- **Instructions**: Read `docs/master-continuity/AI_INSTRUCTIONS.md` for handover protocols.
+`@/` → `src/`. Use for all internal imports:
+```typescript
+import { Button } from '@/components/ui/Button';
+import { useBudgetStore } from '@/store/budgetStore';
+```
+
+## Zustand Store Pattern (required middleware order)
+
+```typescript
+export const useSomeStore = create<State>()(
+  subscribeWithSelector(     // outermost — fine-grained subscriptions
+    persist(                 // middle — for auth/settings/UI prefs; skip for transient data
+      immer((set, get) => ({ // innermost — immutable updates via drafts
+        // state + actions
+      })),
+      { name: 'store-name', storage: masterStorage }
+    )
+  )
+);
+```
+
+Import `masterStorage` from `@/utils/masterStorage` for persistence. Store naming: `{domain}Store.ts`.
+
+## Code Conventions
+
+- **Named exports only** — no default exports
+- **Component props** — explicit `{Component}Props` interface
+- **No inline styles** — Tailwind only
+- **No fetch in components** — use services/ or store actions
+- **File size limits**: 300 lines (components), 500 lines (engines/stores)
+- **Financial numbers**: raw `number`, formatted only at display layer
+- **Percentages**: stored as decimals (0.15 = 15%)
+- **Variance colors**: favorable = green (#16A34A), unfavorable = red (#DC2626)
+- **No `any`** — use `unknown` for untrusted input (tsconfig strict + noUnusedLocals/Parameters)
+
+## Testing
+
+- **Unit**: Vitest + @testing-library/react (jsdom, threads pool, 4 max workers)
+- **E2E**: Playwright in `tests/` dir, chromium only, 60s timeout, auto-starts dev server
+- **Test files**: colocated with source (`Foo.tsx` → `Foo.test.tsx`)
+- **Setup**: `src/test/setup.ts` (auto-cleanup via `@testing-library/jest-dom/vitest`)
+- **Render helper**: `import { render } from '@/test/testUtils'` — wraps in BrowserRouter
+- **Store tests**: reset state in `beforeEach` via `useStore.setState({...})`
+- **Tauri mock**: `@tauri-apps/plugin-global-shortcut` aliased to `src/test/__mocks__/tauri-shortcut.ts`
+
+## Build & Deploy
+
+- Vite 7 with manual chunks: react-vendor, chart-vendor, grid-vendor, form-vendor, state-vendor, ai-vendor
+- Tailwind CSS 4 via `@tailwindcss/vite` plugin (not PostCSS)
+- PWA via vite-plugin-pwa (workbox, autoUpdate)
+- Tauri desktop: `npm run tauri:dev` / `npm run tauri:build`
+- CI: Node 22, `npm ci`
+
+## Other
+
+- i18next for internationalization (src/i18n/)
+- MCP servers configured in `.mcp.json`: github, git, filesystem, excel-analyser, playwright
+- Multi-agent task assignments in `agents/` dir (A1–A5 phased roadmap)
+- Obsidian vault in `.obsidian/brain/` for project memory

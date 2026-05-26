@@ -92,7 +92,7 @@ describe('DriverPanel', () => {
   it('renders close button when onClose is provided', () => {
     const onClose = vi.fn();
     render(<DriverPanel readCell={readCell} writeCell={writeCell} onClose={onClose} />);
-    const closeButton = screen.getByRole('button', { name: '' });
+    const closeButton = screen.getByRole('button', { name: 'Close' });
     expect(closeButton).toBeInTheDocument();
   });
 

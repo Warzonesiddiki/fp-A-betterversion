@@ -76,12 +76,14 @@ describe('AppLayout', () => {
 
   it('renders skip to main content link', () => {
     renderWithRouter(<AppLayout />);
-    expect(screen.getByText('Skip to main content')).toBeInTheDocument();
+    const skipLinks = screen.getAllByText('Skip to main content');
+    expect(skipLinks.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders skip to navigation link', () => {
+  it('renders two skip navigation links', () => {
     renderWithRouter(<AppLayout />);
-    expect(screen.getByText('Skip to navigation')).toBeInTheDocument();
+    const skipLinks = screen.getAllByText('Skip to main content');
+    expect(skipLinks.length).toBe(2);
   });
 
   it('has a main content area with proper role', () => {

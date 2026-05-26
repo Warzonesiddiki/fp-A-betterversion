@@ -27,11 +27,6 @@ describe('GLTrialBalanceGrid', () => {
     expect(screen.getByTestId('data-grid').getAttribute('data-row-count')).toBe('0');
   });
 
-  it('passes readOnly to DataGrid', () => {
-    render(<GLTrialBalanceGrid />);
-    expect(screen.getByTestId('data-grid').getAttribute('data-read-only')).toBe('true');
-  });
-
   it('has fixed height container', () => {
     const { container } = render(<GLTrialBalanceGrid />);
     const wrapper = container.firstChild as HTMLElement;

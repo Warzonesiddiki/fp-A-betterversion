@@ -5,7 +5,7 @@ import { cn } from '@/utils/cn';
 
 import { Skeleton } from './Skeleton';
 
-export interface Column<T extends Record<string, any> = Record<string, unknown>> {
+export interface Column<T extends Record<string, any> = Record<string, any>> {
   key: string;
   header: string;
   sortable?: boolean;
