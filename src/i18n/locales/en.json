@@ -195,7 +195,13 @@
     "recentActivity": "Recent Activity",
     "kpiSummary": "KPI Summary",
     "quickActions": "Quick Actions",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "noPendingRequests": "No pending requests",
+    "noSlaBreaches": "No SLA breaches",
+    "noResults": "No results",
+    "charts": "Charts",
+    "recentReports": "Recent Reports",
+    "recentBudgets": "Recent Budgets"
   },
   "time": {
     "today": "Today",
