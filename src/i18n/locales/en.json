@@ -199,6 +199,7 @@
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
+    "somethingWentWrong": "Something went wrong",
     "network": "Network error. Please check your connection.",
     "unauthorized": "You are not authorized to perform this action.",
     "notFound": "The requested resource was not found.",

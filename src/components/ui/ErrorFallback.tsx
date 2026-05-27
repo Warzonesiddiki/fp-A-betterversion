@@ -30,7 +30,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
       <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
       <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">{t('errors.generic')}</h2>
       <p className="text-muted-foreground mb-2 max-w-md">
-        An unexpected error occurred. Your data has not been lost.
+        {t('errors.somethingWentWrong')}. Your data has not been lost.
       </p>
       {error && (
         <p className="text-sm fin-negative dark:text-red-400 font-mono bg-red-50 dark:bg-red-900/20 px-3 py-1 rounded mb-4 max-w-md truncate">
@@ -44,7 +44,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
             <RefreshCw className="h-4 w-4" />
-            Try Again
+            {t('common.retry')}
           </button>
         )}
         <button
@@ -52,7 +52,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
           className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-[var(--bg-surface)] dark:hover:bg-gray-800 dark:border-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           <Home className="h-4 w-4" />
-          Go to Dashboard
+          {t('nav.dashboard')}
         </button>
         {error && (
           <button
@@ -61,7 +61,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
             className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-[var(--bg-surface)] dark:hover:bg-gray-800 dark:border-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-            {copied ? 'Copied' : 'Copy Details'}
+            {copied ? t('status.saved') : 'Copy Details'}
           </button>
         )}
       </div>
