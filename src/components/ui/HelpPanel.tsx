@@ -108,4 +108,4 @@ export const HelpPanel = memo(function HelpPanel({ title, sections, isOpen, onCl
       </div>
     </div>
   );
-}
+});

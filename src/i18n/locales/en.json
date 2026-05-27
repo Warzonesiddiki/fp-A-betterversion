@@ -311,6 +311,7 @@
     "lock": "Lock Scenario",
     "unlock": "Unlock Scenario",
     "selectMin": "Select at least 2 scenarios to compare",
+    "selectMinMerge": "Select at least 2 scenarios to merge",
     "noScenarios": "No scenarios found"
   },
   "export": {

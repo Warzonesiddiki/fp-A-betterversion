@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -16,7 +16,7 @@ export interface GuidedTourProps {
   onComplete?: () => void;
 }
 
-export const GuidedTour: React.FC<GuidedTourProps> = ({ steps, isOpen, onClose, onComplete }) => {
+export const GuidedTour = memo(function GuidedTour({ steps, isOpen, onClose, onComplete }: GuidedTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
@@ -170,4 +170,4 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ steps, isOpen, onClose, 
       </div>
     </div>
   );
-};
+});

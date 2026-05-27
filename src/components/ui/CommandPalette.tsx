@@ -62,11 +62,15 @@ export function CommandPalette({
     return groups;
   }, [filteredItems]);
   const prevVisible = useRef(false);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
     if (visible && !prevVisible.current) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
       setQuery('');
       setSelectedIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
+    } else if (!visible && prevVisible.current) {
+      previousFocusRef.current?.focus();
     }
     prevVisible.current = visible;
   }, [visible]);

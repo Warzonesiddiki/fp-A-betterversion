@@ -124,7 +124,7 @@ function RuleRow({
 
 // ── Main Panel ──────────────────────────────────────────────────────
 
-export function ConditionalFormattingPanel({
+export const ConditionalFormattingPanel = memo(function ConditionalFormattingPanel({
   rules,
   onRulesChange,
   className,
@@ -281,4 +281,4 @@ export function ConditionalFormattingPanel({
       )}
     </div>
   );
-}
+});
