@@ -145,6 +145,17 @@ export const DataGrid: React.FC<DataGridProps> = ({
     });
   }, [columns]);
 
+  const {
+    hiddenColumns,
+    showColumnMenu,
+    setShowColumnMenu,
+    groupColumn,
+    toggleColumn,
+    handleGroupBy,
+    visibleColumnDefs,
+  } = useColumnVisibility(columnDefs);
+  const { handleExport } = useDataGridExport(columns, rows, hiddenColumns);
+
   const handleSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
       if (onSelectionChanged) {

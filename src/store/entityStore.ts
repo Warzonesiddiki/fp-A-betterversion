@@ -177,7 +177,11 @@ export const useEntityStore = create<EntityState>()(
         },
 
         clearCache: async () => {
-          await cacheClearStore('entities');
+          try {
+            await cacheClearStore('entities');
+          } catch {
+            // Cache clear is best-effort
+          }
         },
 
         // --- State ---
