@@ -217,7 +217,10 @@ interface KeyboardShortcutOverlayProps {
   onClose: () => void;
 }
 
-export const KeyboardShortcutOverlay = memo(function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOverlayProps) {
+export const KeyboardShortcutOverlay = memo(function KeyboardShortcutOverlay({
+  isOpen,
+  onClose,
+}: KeyboardShortcutOverlayProps) {
   const { pathname } = useLocation();
   const pageContext = getPageContext(pathname);
   const [search, setSearch] = useState('');

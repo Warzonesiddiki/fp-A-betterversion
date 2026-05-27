@@ -16,7 +16,12 @@ export interface GuidedTourProps {
   onComplete?: () => void;
 }
 
-export const GuidedTour = memo(function GuidedTour({ steps, isOpen, onClose, onComplete }: GuidedTourProps) {
+export const GuidedTour = memo(function GuidedTour({
+  steps,
+  isOpen,
+  onClose,
+  onComplete,
+}: GuidedTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 

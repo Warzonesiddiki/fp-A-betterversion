@@ -16,7 +16,12 @@ interface HelpPanelProps {
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export const HelpPanel = memo(function HelpPanel({ title, sections, isOpen, onClose }: HelpPanelProps) {
+export const HelpPanel = memo(function HelpPanel({
+  title,
+  sections,
+  isOpen,
+  onClose,
+}: HelpPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
