@@ -162,9 +162,9 @@ function CategorySection({
         )}
       >
         {open ? (
-          <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+          <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
         ) : (
-          <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+          <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)]" />
         )}
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
           {name}
@@ -373,7 +373,7 @@ export const KeyboardShortcutOverlay = memo(function KeyboardShortcutOverlay({
           {/* Toolbar: search + context filter */}
           <div className="flex items-center gap-3 px-5 py-2.5 border-b border-[var(--border-default)]">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <input
                 ref={searchRef}
                 type="text"

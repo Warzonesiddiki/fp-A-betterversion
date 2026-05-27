@@ -48,20 +48,21 @@ export const ApprovalQueue = memo(function ApprovalQueue({
     });
   }, [requests, filterState, filterDate, filterRequester]);
 
-  const toggleSelect = (id: string) => {
-    const next = new Set(selected);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setSelected(next);
-  };
+  const toggleSelect = useCallback((id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
 
-  const toggleAll = () => {
-    if (selected.size === filtered.length) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(filtered.map((r) => r.id)));
-    }
-  };
+  const toggleAll = useCallback(() => {
+    setSelected((prev) => {
+      if (prev.size === filtered.length) return new Set();
+      return new Set(filtered.map((r) => r.id));
+    });
+  }, [filtered]);
 
   const pending = filtered.filter((r) => ['submitted', 'in_review'].includes(r.state));
   const showBulk = pending.length > 0 && selected.size > 0;
