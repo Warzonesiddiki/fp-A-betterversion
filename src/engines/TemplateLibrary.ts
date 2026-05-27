@@ -276,6 +276,40 @@ export class TemplateLibrary {
     return this.customTemplates.delete(id);
   }
 
+  removeCustomTemplate(id: string): boolean {
+    return this.deleteCustomTemplate(id);
+  }
+
+  getCustomTemplates(): FPTemplate[] {
+    return Array.from(this.customTemplates.values());
+  }
+
+  validateParameters(
+    templateId: string,
+    parameters: Record<string, number>
+  ): { valid: boolean; errors: string[] } {
+    const template = this.getTemplate(templateId);
+    if (!template) return { valid: false, errors: [`Template "${templateId}" not found`] };
+    const errors: string[] = [];
+    for (const driver of template.drivers) {
+      if (driver.id in parameters) {
+        const value = parameters[driver.id];
+        if (typeof value !== 'number' || !Number.isFinite(value)) {
+          errors.push(`Driver "${driver.name}" must be a finite number`);
+        } else if (value < driver.minValue || value > driver.maxValue) {
+          errors.push(
+            `Driver "${driver.name}" must be between ${driver.minValue} and ${driver.maxValue}`
+          );
+        }
+      }
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  validateTemplate(template: FPTemplate): { valid: boolean; errors: string[] } {
+    return this.validate(template);
+  }
+
   // --- Validation ---
 
   validate(template: FPTemplate): { valid: boolean; errors: string[] } {
