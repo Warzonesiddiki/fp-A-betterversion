@@ -21,7 +21,7 @@ export function BoardPackBuilder() {
         </div>
         <Button className="w-full">Generate PDF</Button>
       </div>
-      <div className="md:col-span-2 bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg p-12 min-h-[600px] shadow-2xl text-slate-900 overflow-hidden">
+      <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg p-12 min-h-[600px] shadow-2xl text-slate-900 overflow-hidden">
         <h1 className="text-3xl font-bold mb-8">Executive Summary</h1>
         <div className="h-4 bg-slate-100 w-3/4 mb-4" />
         <div className="h-4 bg-slate-100 w-full mb-4" />

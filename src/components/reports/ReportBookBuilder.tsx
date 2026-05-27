@@ -400,7 +400,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
       <div className="lg:col-span-4 space-y-4">
         <h3 className="text-sm font-semibold text-white">Preview</h3>
         {previewData ? (
-          <Card className="p-4 bg-white dark:bg-gray-800 dark:bg-gray-800 text-slate-900 overflow-auto max-h-[600px]">
+          <Card className="p-4 bg-white dark:bg-gray-800 text-slate-900 overflow-auto max-h-[600px]">
             <h4 className="font-bold text-sm mb-3">{previewEntry?.reportName}</h4>
             <table className="w-full text-xs">
               <thead>

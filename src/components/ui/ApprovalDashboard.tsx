@@ -127,7 +127,7 @@ export function ApprovalDashboard({ stats, className }: Props) {
                     <p className="font-medium">{req.title}</p>
                     <p className="text-xs text-[var(--text-muted)]">by {req.requester}</p>
                   </div>
-                  <span className="text-xs fin-negative">Overdue</span>
+                  <span className="text-xs fin-negative">{t('status.overdue')}</span>
                 </div>
               ))}
             </div>
