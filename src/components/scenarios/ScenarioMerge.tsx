@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GitMerge, Check, ChevronDown, ChevronUp, Trophy, AlertTriangle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -34,6 +35,7 @@ export interface MergedScenario {
 // ---------------------------------------------------------------------------
 
 export function ScenarioMerge({ scenarios, onMerge }: ScenarioMergeProps) {
+  const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [strategy, setStrategy] = useState<MergeStrategy>('best');
   const [mergedName, setMergedName] = useState('Merged Scenario');
@@ -308,7 +310,7 @@ export function ScenarioMerge({ scenarios, onMerge }: ScenarioMergeProps) {
       {selected.length < 2 && (
         <div className="flex flex-col items-center gap-2 py-12 text-[var(--text-secondary)]">
           <GitMerge className="h-8 w-8" />
-          <p className="text-sm font-medium">Select at least 2 scenarios to merge</p>
+          <p className="text-sm font-medium">{t('scenarios.selectMinMerge')}</p>
           <p className="text-xs">Pick a strategy and combine the best values.</p>
         </div>
       )}

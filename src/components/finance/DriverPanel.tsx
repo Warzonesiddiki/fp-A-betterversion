@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   Sliders,
@@ -19,6 +20,7 @@ interface DriverPanelProps {
   onClose?: () => void;
 }
 export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) {
+  const { t } = useTranslation();
   const { engine, isRecalculating, lastCascadeResult } = useDriverStore();
   const drivers = useMemo(() => engine.listDrivers(), [engine]);
   const [expandedDriver, setExpandedDriver] = useState<string | null>(null);
@@ -240,7 +242,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
         {drivers.length === 0 && (
           <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
             <Sliders className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No drivers configured</p>
+            <p className="text-sm">{t('drivers.notConfigured')}</p>
             <p className="text-xs mt-1">Add drivers in the forecast builder</p>
           </div>
         )}

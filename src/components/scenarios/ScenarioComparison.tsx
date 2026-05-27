@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   GitCompare,
   ChevronDown,
@@ -50,6 +51,7 @@ export function ScenarioComparison({
   onExport,
   onImport,
 }: ScenarioComparisonProps) {
+  const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [expandedMetrics, setExpandedMetrics] = useState(true);
   const [sortField, setSortField] = useState<SortField>('name');
@@ -372,7 +374,7 @@ export function ScenarioComparison({
       {selected.length < 2 && (
         <div className="flex flex-col items-center gap-2 py-12 text-[var(--text-secondary)]">
           <GitCompare className="h-8 w-8" />
-          <p className="text-sm font-medium">Select at least 2 scenarios to compare</p>
+          <p className="text-sm font-medium">{t('scenarios.selectMin')}</p>
           <p className="text-xs">Check the boxes above to begin comparing metrics.</p>
         </div>
       )}
