@@ -1,5 +1,13 @@
 import { memo, useCallback, useState } from 'react';
-import type { ConditionalFormatRule } from '@/engines/ConditionalFormattingEngine';
+import type {
+  ConditionalFormatRule,
+  RuleType,
+  Operator,
+  VisualType,
+  IconSetType,
+  ColorScaleType,
+  DataBarStyle,
+} from '@/engines/ConditionalFormattingEngine';
 import {
   generateRuleId,
   DEFAULT_RULES,

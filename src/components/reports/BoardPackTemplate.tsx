@@ -124,7 +124,7 @@ function TableSection({ section }: { section: TemplateSection }) {
                     isBoldRow(row)
                       ? 'bg-gray-50 dark:bg-gray-800/50 font-semibold'
                       : ri % 2 === 0
-                        ? 'bg-white dark:bg-gray-800 dark:bg-gray-900'
+                        ? 'bg-white dark:bg-gray-900'
                         : 'bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900/50'
                   }`}
                 >
