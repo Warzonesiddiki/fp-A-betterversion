@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { X, Keyboard, Search, Printer, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -217,7 +217,7 @@ interface KeyboardShortcutOverlayProps {
   onClose: () => void;
 }
 
-export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOverlayProps) {
+export const KeyboardShortcutOverlay = memo(function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOverlayProps) {
   const { pathname } = useLocation();
   const pageContext = getPageContext(pathname);
   const [search, setSearch] = useState('');
@@ -464,7 +464,7 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
       </div>
     </>
   );
-}
+});
 
 // ─── Global hook for "?" key listener ────────────────────────────────
 

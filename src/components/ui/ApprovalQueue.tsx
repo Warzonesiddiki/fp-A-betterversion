@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from './Button';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
@@ -23,7 +23,7 @@ const STATE_BADGES: Record<ApprovalState, string> = {
   locked: 'bg-purple-100 text-purple-700',
 };
 
-export function ApprovalQueue({
+export const ApprovalQueue = memo(function ApprovalQueue({
   requests,
   onApprove,
   onReject,
@@ -233,4 +233,4 @@ export function ApprovalQueue({
       </CardContent>
     </Card>
   );
-}
+});

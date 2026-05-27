@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/utils/cn';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
@@ -9,7 +9,7 @@ interface Props {
   className?: string;
 }
 
-export function ApprovalDashboard({ stats, className }: Props) {
+export const ApprovalDashboard = memo(function ApprovalDashboard({ stats, className }: Props) {
   const { t } = useTranslation();
   const cards = [
     {
@@ -136,4 +136,4 @@ export function ApprovalDashboard({ stats, className }: Props) {
       </CardContent>
     </Card>
   );
-}
+});

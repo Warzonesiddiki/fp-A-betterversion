@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { Button } from './Button';
@@ -25,7 +25,7 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
-export function ScenarioLocking({
+export const ScenarioLocking = memo(function ScenarioLocking({
   scenarioId,
   scenarioName,
   isLocked,
@@ -289,4 +289,4 @@ export function ScenarioLocking({
       </Modal>
     </>
   );
-}
+});
