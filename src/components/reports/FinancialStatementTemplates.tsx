@@ -205,7 +205,7 @@ function StatementTable({
                 );
               }
               const rowClass = row.isHeader
-                ? 'bg-gray-50 dark:bg-gray-900 dark:bg-gray-800/50 font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300'
+                ? 'bg-gray-50 dark:bg-gray-800/50 font-semibold text-gray-700 dark:text-gray-300'
                 : row.isTotal
                   ? 'bg-blue-50 dark:bg-blue-900/20 font-bold text-[var(--text-primary)] dark:text-gray-100 border-t-2 border-blue-200 dark:border-blue-800'
                   : 'text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500';

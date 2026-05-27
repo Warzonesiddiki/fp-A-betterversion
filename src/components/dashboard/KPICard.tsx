@@ -70,7 +70,7 @@ const varianceStyles: Record<KPICardVarianceType, { bg: string; text: string }> 
     bg: 'bg-red-50 dark:bg-red-900/20 dark:bg-red-900/30',
     text: 'text-red-700 dark:text-red-400',
   },
-  neutral: { bg: 'bg-gray-50 dark:bg-gray-800 dark:bg-gray-800', text: 'text-[var(--text-muted)]' },
+  neutral: { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-[var(--text-muted)]' },
 };
 
 const trendArrowSymbol: Record<string, string> = {

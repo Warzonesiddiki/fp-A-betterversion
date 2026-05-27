@@ -72,7 +72,7 @@ function AvatarBubble({ user, size }: AvatarBubbleProps) {
 
   return (
     <div
-      className={`relative flex items-center justify-center rounded-full border-2 ${borderColor} bg-white dark:bg-gray-900 dark:bg-gray-800 dark:bg-gray-800`}
+      className={`relative flex items-center justify-center rounded-full border-2 ${borderColor} bg-white dark:bg-gray-900 dark:bg-gray-800`}
       style={{ width: size, height: size }}
       title={`${user.userName} — ${user.status}`}
     >

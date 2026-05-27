@@ -531,38 +531,33 @@ describe('TemplateLibrary', () => {
   // ---------------------------------------------------------------------------
 
   describe('Validation', () => {
-    it('should validate parameters for existing template', () => {
+    it('should validate existing template structure', () => {
       const tpl = lib.getTemplate('tpl-saas-metrics')!;
-      const params: Record<string, number> = {};
-      for (const driver of tpl.drivers) {
-        params[driver.id] = driver.defaultValue;
-      }
-      const result = lib.validateParameters('tpl-saas-metrics', params);
+      const result = lib.validate(tpl);
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it('should reject parameters for non-existent template', () => {
-      const result = lib.validateParameters('non-existent', {});
+    it('should reject template with missing ID', () => {
+      const tpl = lib.getTemplate('tpl-saas-metrics')!;
+      const invalidTpl = { ...tpl, id: '' };
+      const result = lib.validate(invalidTpl);
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
 
-    it('should reject out-of-range parameters', () => {
+    it('should reject template with no drivers', () => {
       const tpl = lib.getTemplate('tpl-saas-metrics')!;
-      if (tpl.drivers.length > 0) {
-        const driver = tpl.drivers[0];
-        const result = lib.validateParameters('tpl-saas-metrics', {
-          [driver.id]: driver.maxValue + 100,
-        });
-        expect(result.valid).toBe(false);
-      }
+      const invalidTpl = { ...tpl, drivers: [] };
+      const result = lib.validate(invalidTpl);
+      expect(result.valid).toBe(false);
     });
 
-    it('should validate template structure', () => {
+    it('should reject template with no accounts', () => {
       const tpl = lib.getTemplate('tpl-saas-metrics')!;
-      const result = lib.validateTemplate(tpl);
-      expect(result.valid).toBe(true);
+      const invalidTpl = { ...tpl, accounts: [] };
+      const result = lib.validate(invalidTpl);
+      expect(result.valid).toBe(false);
     });
   });
 

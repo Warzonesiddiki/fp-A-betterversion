@@ -98,20 +98,20 @@ export function CircularReferenceWarning({
           {onRecalc && (
             <button
               onClick={onRecalc}
-              className="px-3 py-1 text-xs font-medium rounded bg-white dark:bg-gray-800 dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800 dark:bg-gray-800/80 border transition-colors"
+              className="px-3 py-1 text-xs font-medium rounded bg-white dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800/80 border transition-colors"
             >
               Recalculate
             </button>
           )}
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="px-3 py-1 text-xs font-medium rounded bg-white dark:bg-gray-800 dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800 dark:bg-gray-800/80 border transition-colors"
+            className="px-3 py-1 text-xs font-medium rounded bg-white dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800/80 border transition-colors"
           >
             Settings
           </button>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="px-2 py-1 text-xs rounded bg-white dark:bg-gray-800 dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800 dark:bg-gray-800/80 border transition-colors"
+            className="px-2 py-1 text-xs rounded bg-white dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800/80 border transition-colors"
             aria-label={expanded ? 'Collapse details' : 'Expand details'}
           >
             {expanded ? '▲' : '▼'}
@@ -121,7 +121,7 @@ export function CircularReferenceWarning({
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="border-t px-4 py-3 bg-white dark:bg-gray-800 dark:bg-gray-800/30">
+        <div className="border-t px-4 py-3 bg-white dark:bg-gray-800/30">
           <div className="flex flex-wrap items-center gap-4">
             <label className="flex items-center gap-2 text-xs">
               <input
@@ -141,7 +141,7 @@ export function CircularReferenceWarning({
                 onChange={(e) => handleMaxIterationsChange(Number(e.target.value))}
                 min={1}
                 max={10000}
-                className="w-20 px-2 py-1 rounded border bg-white dark:bg-gray-800 dark:bg-gray-800 text-sm"
+                className="w-20 px-2 py-1 rounded border bg-white dark:bg-gray-800 text-sm"
               />
             </label>
 
@@ -154,7 +154,7 @@ export function CircularReferenceWarning({
                 min={0.0001}
                 max={100}
                 step={0.001}
-                className="w-24 px-2 py-1 rounded border bg-white dark:bg-gray-800 dark:bg-gray-800 text-sm"
+                className="w-24 px-2 py-1 rounded border bg-white dark:bg-gray-800 text-sm"
               />
             </label>
           </div>
@@ -167,7 +167,7 @@ export function CircularReferenceWarning({
 
       {/* Convergence Details */}
       {convergenceResult && expanded && (
-        <div className="border-t px-4 py-3 bg-white dark:bg-gray-800 dark:bg-gray-800/20">
+        <div className="border-t px-4 py-3 bg-white dark:bg-gray-800/20">
           <div className="grid grid-cols-3 gap-4 text-xs mb-3">
             <div>
               <span className="opacity-60">Iterations:</span>
@@ -221,13 +221,13 @@ export function CircularReferenceWarning({
 
       {/* Circular Groups */}
       {expanded && (
-        <div className="border-t px-4 py-3 bg-white dark:bg-gray-800 dark:bg-gray-800/20">
+        <div className="border-t px-4 py-3 bg-white dark:bg-gray-800/20">
           <p className="text-xs font-medium mb-2">Circular reference groups:</p>
           <div className="space-y-2">
             {cycles.map((cycle, i) => (
               <div
                 key={i}
-                className="text-xs bg-white dark:bg-gray-800 dark:bg-gray-800/40 rounded px-3 py-2 font-mono"
+                className="text-xs bg-white dark:bg-gray-800/40 rounded px-3 py-2 font-mono"
               >
                 {cycle.cells.join(' → ')} → {cycle.cells[0]}
               </div>

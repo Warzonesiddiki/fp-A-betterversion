@@ -156,7 +156,7 @@ export function ContextMenu({ x, y, onAction, onClose, className }: ContextMenuP
     <div
       ref={menuRef}
       className={cn(
-        'fixed z-50 bg-white dark:bg-gray-800 dark:bg-gray-800 border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg shadow-xl py-1.5 min-w-[200px] animate-in fade-in-0 zoom-in-95 duration-100',
+        'fixed z-50 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg shadow-xl py-1.5 min-w-[200px] animate-in fade-in-0 zoom-in-95 duration-100',
         className
       )}
       style={{ left: x, top: y }}

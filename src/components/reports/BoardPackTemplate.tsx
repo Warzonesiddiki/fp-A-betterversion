@@ -215,7 +215,7 @@ export function BoardPackTemplate({
           </button>
           <button
             onClick={() => setShowExport(!showExport)}
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
           >
             {showExport ? 'Hide' : 'Show'} Export Options
           </button>
@@ -225,7 +225,7 @@ export function BoardPackTemplate({
       {/* Export options */}
       {showExport && (
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900 dark:bg-gray-800/50 border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-3">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
             Export Options
           </h3>
           <div className="grid grid-cols-3 gap-3">
