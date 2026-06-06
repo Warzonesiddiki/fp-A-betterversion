@@ -2,25 +2,28 @@
  * Cell Validation Engine — Validate cell values against rules
  */
 
-export type ValidationRuleType =
-  | 'min'
-  | 'max'
-  | 'range'
-  | 'allowed'
-  | 'formula'
-  | 'crossRef'
-  | 'required'
-  | 'pattern';
+export type ValidationRuleParams = {
+  min: { value: number };
+  max: { value: number };
+  range: { min: number; max: number };
+  allowed: { values: unknown[] };
+  formula: { expression: string };
+  crossRef: { ref: string };
+  required: Record<string, never>;
+  pattern: { regex: string };
+};
 
-export interface ValidationRule {
+export type ValidationRuleType = keyof ValidationRuleParams;
+
+export type ValidationRule<T extends ValidationRuleType = ValidationRuleType> = {
   id: string;
   cellRef: string;
-  type: ValidationRuleType;
-  params: Record<string, unknown>;
+  type: T;
+  params: ValidationRuleParams[T];
   message: string;
   severity: 'error' | 'warning' | 'info';
   blockSave: boolean;
-}
+};
 
 export interface ValidationResult {
   cellRef: string;
@@ -111,20 +114,19 @@ export class CellValidationEngine {
     const numValue = Number(value);
     switch (rule.type) {
       case 'min':
-        return isNaN(numValue) || numValue >= (rule.params.value as number);
+        return isNaN(numValue) || numValue >= (rule.params as ValidationRuleParams['min']).value;
       case 'max':
-        return isNaN(numValue) || numValue <= (rule.params.value as number);
-      case 'range':
-        return (
-          isNaN(numValue) ||
-          (numValue >= (rule.params.min as number) && numValue <= (rule.params.max as number))
-        );
+        return isNaN(numValue) || numValue <= (rule.params as ValidationRuleParams['max']).value;
+      case 'range': {
+        const params = rule.params as ValidationRuleParams['range'];
+        return isNaN(numValue) || (numValue >= params.min && numValue <= params.max);
+      }
       case 'allowed':
-        return (rule.params.values as unknown[]).includes(value);
+        return (rule.params as ValidationRuleParams['allowed']).values.includes(value);
       case 'required':
         return value !== null && value !== undefined && value !== '';
       case 'pattern':
-        return new RegExp(rule.params.regex as string).test(String(value));
+        return new RegExp((rule.params as ValidationRuleParams['pattern']).regex).test(String(value));
       default:
         return true;
     }
