@@ -27,7 +27,7 @@ describe('scenarioStore', () => {
     } as any);
     expect(id).toMatch(/^scn-/);
     expect(useScenarioStore.getState().scenarios).toHaveLength(1);
-    expect(useScenarioStore.getState().scenarios[0].name).toBe('Base Case');
+    expect(useScenarioStore!.getState().scenarios[0]!.name).toBe('Base Case');
   });
 
   it('should update a scenario', () => {
@@ -36,7 +36,7 @@ describe('scenarioStore', () => {
       status: 'draft',
     } as any);
     useScenarioStore.getState().updateScenario(id, { name: 'Updated' });
-    expect(useScenarioStore.getState().scenarios[0].name).toBe('Updated');
+    expect(useScenarioStore!.getState().scenarios[0]!.name).toBe('Updated');
   });
 
   it('should delete a scenario', () => {

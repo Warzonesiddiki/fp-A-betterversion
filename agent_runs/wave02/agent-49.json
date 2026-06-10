@@ -1,0 +1,308 @@
+{
+  "agent": "agent-49",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T06084",
+      "cat": "a11y",
+      "title": "ScenarioEditorPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ScenarioEditorPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06087",
+      "cat": "a11y",
+      "title": "ScenarioComparisonPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ScenarioComparisonPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06090",
+      "cat": "a11y",
+      "title": "ReportsListPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ReportsListPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06093",
+      "cat": "a11y",
+      "title": "ReportBuilderPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ReportBuilderPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06096",
+      "cat": "a11y",
+      "title": "ReportViewerPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ReportViewerPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06099",
+      "cat": "a11y",
+      "title": "ScheduledReportsPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ScheduledReportsPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06102",
+      "cat": "a11y",
+      "title": "ConsolidationPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ConsolidationPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06105",
+      "cat": "a11y",
+      "title": "IntercompanyMatchingPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for IntercompanyMatchingPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06108",
+      "cat": "a11y",
+      "title": "EliminationPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for EliminationPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06111",
+      "cat": "a11y",
+      "title": "CubeBuilderPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CubeBuilderPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06114",
+      "cat": "a11y",
+      "title": "CubeViewerPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CubeViewerPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06117",
+      "cat": "a11y",
+      "title": "CubePivotPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CubePivotPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06120",
+      "cat": "a11y",
+      "title": "CashFlowForecastPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CashFlowForecastPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06123",
+      "cat": "a11y",
+      "title": "CashPositionPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CashPositionPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06126",
+      "cat": "a11y",
+      "title": "BankReconciliationPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for BankReconciliationPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06129",
+      "cat": "a11y",
+      "title": "CapexPlanPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CapexPlanPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06132",
+      "cat": "a11y",
+      "title": "FixedAssetRegisterPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for FixedAssetRegisterPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06135",
+      "cat": "a11y",
+      "title": "DepreciationPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DepreciationPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06138",
+      "cat": "a11y",
+      "title": "TaxProvisionPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for TaxProvisionPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06141",
+      "cat": "a11y",
+      "title": "TaxReturnPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for TaxReturnPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06144",
+      "cat": "a11y",
+      "title": "TransferPricingPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for TransferPricingPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06147",
+      "cat": "a11y",
+      "title": "AuditTrailPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for AuditTrailPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06150",
+      "cat": "a11y",
+      "title": "CompliancePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CompliancePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06153",
+      "cat": "a11y",
+      "title": "SOXControlsPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SOXControlsPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06156",
+      "cat": "a11y",
+      "title": "AuditWorkpaperPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for AuditWorkpaperPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06159",
+      "cat": "a11y",
+      "title": "AuditSamplingPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for AuditSamplingPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06162",
+      "cat": "a11y",
+      "title": "AuditFindingsPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for AuditFindingsPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06165",
+      "cat": "a11y",
+      "title": "RiskDashboardPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for RiskDashboardPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06168",
+      "cat": "a11y",
+      "title": "RiskRegisterPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for RiskRegisterPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06171",
+      "cat": "a11y",
+      "title": "RiskMatrixPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for RiskMatrixPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06174",
+      "cat": "a11y",
+      "title": "VarianceAnalysisPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for VarianceAnalysisPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06177",
+      "cat": "a11y",
+      "title": "DriverVariancePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DriverVariancePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06180",
+      "cat": "a11y",
+      "title": "KPIVariancePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for KPIVariancePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06183",
+      "cat": "a11y",
+      "title": "FinancialStatementsPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for FinancialStatementsPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06186",
+      "cat": "a11y",
+      "title": "BalanceSheetPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for BalanceSheetPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06189",
+      "cat": "a11y",
+      "title": "IncomeStatementPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for IncomeStatementPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06192",
+      "cat": "a11y",
+      "title": "CashFlowStatementPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for CashFlowStatementPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06195",
+      "cat": "a11y",
+      "title": "EquityStatementPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for EquityStatementPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06198",
+      "cat": "a11y",
+      "title": "NotesPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for NotesPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06201",
+      "cat": "a11y",
+      "title": "ThreeStatementModelPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ThreeStatementModelPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06204",
+      "cat": "a11y",
+      "title": "DriverTreePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DriverTreePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06207",
+      "cat": "a11y",
+      "title": "FormulaBuilderPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for FormulaBuilderPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06210",
+      "cat": "a11y",
+      "title": "LineItemDetailPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for LineItemDetailPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06213",
+      "cat": "a11y",
+      "title": "AccountDetailPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for AccountDetailPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06216",
+      "cat": "a11y",
+      "title": "EntityDetailPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for EntityDetailPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06219",
+      "cat": "a11y",
+      "title": "UserManagementPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for UserManagementPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06222",
+      "cat": "a11y",
+      "title": "RoleManagementPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for RoleManagementPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06225",
+      "cat": "a11y",
+      "title": "PermissionMatrixPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for PermissionMatrixPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06228",
+      "cat": "a11y",
+      "title": "SectorDashboardPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SectorDashboardPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06231",
+      "cat": "a11y",
+      "title": "SectorConfigPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SectorConfigPage. All WCAG 2.2 AA issues fixed."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

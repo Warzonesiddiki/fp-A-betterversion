@@ -93,8 +93,8 @@ export class ReportVersionEngine {
     const modified: VersionDiff['modified'] = [];
 
     for (const key of aKeys) {
-      if (bKeys.has(key) && JSON.stringify(aData[key]) !== JSON.stringify(bData[key])) {
-        modified.push({ field: key, oldValue: aData[key], newValue: bData[key] });
+      if (bKeys.has(key) && JSON.stringify(aData[key]!) !== JSON.stringify(bData[key]!)) {
+        modified.push({ field: key, oldValue: aData[key]!, newValue: bData[key] });
       }
     }
 
@@ -105,7 +105,7 @@ export class ReportVersionEngine {
     const versions = this.versions.get(reportId);
     if (!versions || versions.length === 0) return null;
 
-    const base = baseVersion ?? versions[versions.length - 1].version;
+    const base = baseVersion ?? versions![versions.length - 1]!.version;
     const branch: VersionBranch = {
       id: 'br-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
       name,
@@ -134,8 +134,8 @@ export class ReportVersionEngine {
     const merged = this.commitVersion(
       reportId,
       `Merge: ${branch.name}`,
-      `Merged branch ${branch.name} (v${latestBranchVersion.version})`,
-      latestBranchVersion.data,
+      `Merged branch ${branch.name} (v${latestBranchVersion!.version})`,
+      latestBranchVersion!.data,
       'system'
     );
 

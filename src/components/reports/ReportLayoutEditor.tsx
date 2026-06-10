@@ -129,7 +129,7 @@ export function ReportLayoutEditor({
                 </span>
                 {row.grouping && <Layers className="h-3 w-3 text-slate-500 flex-shrink-0" />}
                 <button
-                  className="text-slate-500 hover:text-red-400 flex-shrink-0"
+                  className="text-slate-500 hover:text-red-400 flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                   onClick={(e) => {
                     e.stopPropagation();
                     onRemoveRow(row.id);
@@ -186,7 +186,7 @@ export function ReportLayoutEditor({
                   </span>
                   <span className="text-slate-300">{col.header}</span>
                   <button
-                    className="text-slate-500 hover:text-red-400 ml-1"
+                    className="text-slate-500 hover:text-red-400 ml-1 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                     onClick={(e) => {
                       e.stopPropagation();
                       onRemoveColumn(col.id);

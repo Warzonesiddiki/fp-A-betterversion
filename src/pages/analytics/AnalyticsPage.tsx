@@ -41,7 +41,7 @@ export default function AnalyticsPage() {
       byMonth.set(month, (byMonth.get(month) || 0) + 1);
     });
     const avgPerMonth = byMonth.size > 0 ? entries.length / byMonth.size : 0;
-    const busiestMonth = Array.from(byMonth.entries()).sort((a, b) => b[1] - a[1])[0];
+    const busiestMonth = Array.from(byMonth.entries()).sort((a, b) => b[1] - a[1]!)[0];
     return {
       byType: Array.from(byType.entries()),
       totalEntries: entries.length,

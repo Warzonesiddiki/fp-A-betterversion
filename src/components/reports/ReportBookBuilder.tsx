@@ -55,7 +55,7 @@ interface EntryRowProps {
 
 function EntryRow({ entry, entities, onUpdate, onRemove, onMoveUp, onMoveDown }: EntryRowProps) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-800/30 p-3">
+    <div className="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-800/30 p-3" role="region" aria-label="ReportBookBuilder">
       {/* Drag handle / order controls */}
       <div className="flex flex-col gap-1 pt-1">
         <button
@@ -253,7 +253,10 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
       const idx = book.entries.findIndex((e) => e.id === entryId);
       if (idx <= 0) return;
       const ids = book.entries.map((e) => e.id);
-      [ids[idx - 1], ids[idx]] = [ids[idx], ids[idx - 1]];
+      const prev = ids[idx - 1];
+      const curr = ids[idx];
+      ids[idx - 1] = curr!;
+      ids[idx] = prev!;
       engine.reorderEntries(book.id, ids);
       setBook({ ...engine.getBook(book.id)! });
     },
@@ -265,7 +268,10 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
       const idx = book.entries.findIndex((e) => e.id === entryId);
       if (idx === -1 || idx >= book.entries.length - 1) return;
       const ids = book.entries.map((e) => e.id);
-      [ids[idx], ids[idx + 1]] = [ids[idx + 1], ids[idx]];
+      const a = ids[idx];
+      const b = ids[idx + 1];
+      ids[idx] = b!;
+      ids[idx + 1] = a!;
       engine.reorderEntries(book.id, ids);
       setBook({ ...engine.getBook(book.id)! });
     },

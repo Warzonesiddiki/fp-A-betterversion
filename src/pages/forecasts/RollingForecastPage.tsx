@@ -68,7 +68,7 @@ export default function RollingForecastPage() {
     const sorted = [...entries].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-    const latestDate = new Date(sorted[sorted.length - 1].date);
+    const latestDate = new Date(sorted![sorted.length - 1]!.date);
     const cutoff = new Date(latestDate);
     cutoff.setMonth(cutoff.getMonth() - periodMonths);
 
@@ -96,15 +96,15 @@ export default function RollingForecastPage() {
 
     const growthRates: number[] = [];
     for (let i = 1; i < monthlyData.length; i++) {
-      const prev = monthlyData[i - 1][1].actual;
+      const prev = monthlyData![i - 1]![1].actual;
       if (prev !== 0) {
-        growthRates.push((monthlyData[i][1].actual - prev) / Math.abs(prev));
+        growthRates.push((monthlyData[i]![1].actual - prev) / Math.abs(prev));
       }
     }
     const avgGrowth =
       growthRates.length > 0 ? growthRates.reduce((s, r) => s + r, 0) / growthRates.length : 0;
 
-    const lastActual = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][1].actual : 0;
+    const lastActual = monthlyData.length > 0 ? monthlyData![monthlyData.length - 1]![1].actual : 0;
     const trendData: Array<{ month: string; actual: number; forecast?: number }> = monthlyData.map(
       ([month, d]) => ({ month, actual: d.actual })
     );
@@ -123,7 +123,7 @@ export default function RollingForecastPage() {
     const variancePcts = monthlyData
       .map(([, d]) => d.actual)
       .map((v, i, arr) =>
-        i > 0 && arr[i - 1] !== 0 ? (v - arr[i - 1]) / Math.abs(arr[i - 1]) : 0
+        i > 0 && arr[i - 1] !== 0 ? (v - arr[i - 1]!) / Math.abs(arr[i - 1]!) : 0
       );
     const accuracy =
       variancePcts.length > 0

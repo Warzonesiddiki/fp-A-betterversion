@@ -177,10 +177,10 @@ describe('BankingEngine', () => {
       ];
       const result = BankingEngine.calculateCapitalStats(entries);
       expect(result.trendData).toHaveLength(2);
-      expect(result.trendData[0].name).toBe('2026-01');
-      expect(result.trendData[0].tier1).toBe(10);
-      expect(result.trendData[1].name).toBe('2026-02');
-      expect(result.trendData[1].tier1).toBe(12);
+      expect(result!.trendData[0]!.name).toBe('2026-01');
+      expect(result!.trendData[0]!.tier1).toBe(10);
+      expect(result!.trendData[1]!.name).toBe('2026-02');
+      expect(result!.trendData[1]!.tier1).toBe(12);
     });
 
     it('should limit trend data to last 4 periods', () => {

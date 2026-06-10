@@ -132,7 +132,7 @@ export function CellCommentPanel({
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700"
+          className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close comments"
         >
           ✕
@@ -178,7 +178,7 @@ export function CellCommentPanel({
           <button
             type="submit"
             disabled={!text.trim()}
-            className="self-end px-3 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="self-end px-3 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             {replyTo ? 'Reply' : 'Post'}
           </button>

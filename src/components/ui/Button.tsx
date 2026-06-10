@@ -31,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
-        className={cn(baseClasses, variantClasses[variant], sizeClasses[size], className)}
+        className={cn(baseClasses, variantClasses[variant]!, sizeClasses[size]!, className)}
         ref={ref}
         {...props}
       />

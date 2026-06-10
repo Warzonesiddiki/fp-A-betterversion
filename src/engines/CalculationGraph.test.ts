@@ -75,7 +75,7 @@ describe('CalculationGraph', () => {
     ]);
 
     expect(result.errors.length).toBeGreaterThan(0);
-    expect(result.errors[0].type).toBe('CIRCULAR_REFERENCE');
+    expect(result!.errors[0]!.type).toBe('CIRCULAR_REFERENCE');
   });
 
   it('should evaluate formulas', async () => {

@@ -180,6 +180,7 @@ export default function InventoryDashboard() {
         />
       </div>
 
+      <h2 className="sr-only">Inventory Analysis</h2>
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>

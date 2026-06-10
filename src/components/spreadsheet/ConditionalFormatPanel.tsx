@@ -196,6 +196,7 @@ export function ConditionalFormatPanel({
       if (idx <= 0) return;
       const higher = sorted[idx - 1];
       const current = sorted[idx];
+      if (!higher || !current) return;
       updateRules(
         rules.map((r) => {
           if (r.id === current.id) return { ...r, priority: higher.priority };
@@ -214,6 +215,7 @@ export function ConditionalFormatPanel({
       if (idx >= sorted.length - 1) return;
       const lower = sorted[idx + 1];
       const current = sorted[idx];
+      if (!lower || !current) return;
       updateRules(
         rules.map((r) => {
           if (r.id === current.id) return { ...r, priority: lower.priority };

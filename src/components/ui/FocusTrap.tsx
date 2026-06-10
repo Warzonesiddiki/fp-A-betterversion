@@ -6,7 +6,7 @@ interface FocusTrapProps {
 }
 
 const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  'a[href]!, button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function FocusTrap({ children, active = true }: FocusTrapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,7 +42,7 @@ export function FocusTrap({ children, active = true }: FocusTrapProps) {
   }, [active]);
 
   return (
-    <div ref={containerRef} data-testid="focus-trap">
+    <div ref={containerRef} data-testid="focus-trap" role="region" aria-label="FocusTrap">
       {children}
     </div>
   );

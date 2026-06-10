@@ -308,21 +308,21 @@ export function AllocationPreview({
             <button
               type="button"
               onClick={handleAccept}
-              className="flex items-center gap-1.5 rounded-md bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700"
+              className="flex items-center gap-1.5 rounded-md bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               <Check className="h-3.5 w-3.5" /> Accept & Post
             </button>
             <button
               type="button"
               onClick={onModify}
-              className="flex items-center gap-1.5 rounded-md border border-[var(--border-subtle)] px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:border-gray-400"
+              className="flex items-center gap-1.5 rounded-md border border-[var(--border-subtle)] px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:border-gray-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               <Pencil className="h-3.5 w-3.5" /> Modify
             </button>
             <button
               type="button"
               onClick={onReject}
-              className="flex items-center gap-1.5 rounded-md px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10"
+              className="flex items-center gap-1.5 rounded-md px-4 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               <X className="h-3.5 w-3.5" /> Reject
             </button>

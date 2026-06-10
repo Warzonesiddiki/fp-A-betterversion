@@ -174,7 +174,7 @@ describe('ChangeBroadcaster', () => {
     const changes = broadcaster.getRecentChanges('budget', 'bgt-001');
     expect(changes).toHaveLength(2);
     // Should be sorted newest first
-    expect(changes[0].userId).toBe('user-3');
+    expect(changes![0]!.userId).toBe('user-3');
   });
 
   it('should notify conflict handlers', () => {

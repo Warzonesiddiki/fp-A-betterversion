@@ -1,0 +1,308 @@
+{
+  "agent": "agent-10",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T00722",
+      "cat": "eng",
+      "title": "WorkflowActionEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkflowActionEngine."
+    },
+    {
+      "id": "T00723",
+      "cat": "eng",
+      "title": "WorkflowActionEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkflowActionEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00724",
+      "cat": "eng",
+      "title": "WorkflowActionEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkflowActionEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00725",
+      "cat": "eng",
+      "title": "WorkflowBuilderEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\WorkflowBuilderEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00726",
+      "cat": "eng",
+      "title": "WorkflowBuilderEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkflowBuilderEngine."
+    },
+    {
+      "id": "T00727",
+      "cat": "eng",
+      "title": "WorkflowBuilderEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkflowBuilderEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00728",
+      "cat": "eng",
+      "title": "WorkflowBuilderEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkflowBuilderEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00729",
+      "cat": "eng",
+      "title": "WorkflowEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\WorkflowEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00730",
+      "cat": "eng",
+      "title": "WorkflowEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkflowEngine."
+    },
+    {
+      "id": "T00731",
+      "cat": "eng",
+      "title": "WorkflowEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkflowEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00732",
+      "cat": "eng",
+      "title": "WorkflowEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkflowEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00733",
+      "cat": "eng",
+      "title": "WorkflowSchedulerEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\WorkflowSchedulerEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00734",
+      "cat": "eng",
+      "title": "WorkflowSchedulerEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkflowSchedulerEngine."
+    },
+    {
+      "id": "T00735",
+      "cat": "eng",
+      "title": "WorkflowSchedulerEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkflowSchedulerEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00736",
+      "cat": "eng",
+      "title": "WorkflowSchedulerEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkflowSchedulerEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00737",
+      "cat": "eng",
+      "title": "WorkflowTemplateEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\WorkflowTemplateEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00738",
+      "cat": "eng",
+      "title": "WorkflowTemplateEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkflowTemplateEngine."
+    },
+    {
+      "id": "T00739",
+      "cat": "eng",
+      "title": "WorkflowTemplateEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkflowTemplateEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00740",
+      "cat": "eng",
+      "title": "WorkflowTemplateEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkflowTemplateEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00741",
+      "cat": "eng",
+      "title": "WorkflowTriggerEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\WorkflowTriggerEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00742",
+      "cat": "eng",
+      "title": "WorkflowTriggerEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkflowTriggerEngine."
+    },
+    {
+      "id": "T00743",
+      "cat": "eng",
+      "title": "WorkflowTriggerEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkflowTriggerEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00744",
+      "cat": "eng",
+      "title": "WorkflowTriggerEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkflowTriggerEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00745",
+      "cat": "eng",
+      "title": "WorkforceEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\WorkforceEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00746",
+      "cat": "eng",
+      "title": "WorkforceEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkforceEngine."
+    },
+    {
+      "id": "T00747",
+      "cat": "eng",
+      "title": "WorkforceEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkforceEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00748",
+      "cat": "eng",
+      "title": "WorkforceEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkforceEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00749",
+      "cat": "eng",
+      "title": "WorkingCapitalEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\WorkingCapitalEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00750",
+      "cat": "eng",
+      "title": "WorkingCapitalEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for WorkingCapitalEngine."
+    },
+    {
+      "id": "T00751",
+      "cat": "eng",
+      "title": "WorkingCapitalEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\WorkingCapitalEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00752",
+      "cat": "eng",
+      "title": "WorkingCapitalEngine Perf Audit 1M loops",
+      "spec": "Benchmark WorkingCapitalEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00753",
+      "cat": "eng",
+      "title": "XBRLEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\XBRLEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00754",
+      "cat": "eng",
+      "title": "XBRLEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for XBRLEngine."
+    },
+    {
+      "id": "T00755",
+      "cat": "eng",
+      "title": "XBRLEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\XBRLEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00756",
+      "cat": "eng",
+      "title": "XBRLEngine Perf Audit 1M loops",
+      "spec": "Benchmark XBRLEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00757",
+      "cat": "eng",
+      "title": "YieldCurveEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\YieldCurveEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00758",
+      "cat": "eng",
+      "title": "YieldCurveEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for YieldCurveEngine."
+    },
+    {
+      "id": "T00759",
+      "cat": "eng",
+      "title": "YieldCurveEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\YieldCurveEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00760",
+      "cat": "eng",
+      "title": "YieldCurveEngine Perf Audit 1M loops",
+      "spec": "Benchmark YieldCurveEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T05097",
+      "cat": "eng",
+      "title": "BHD (Bahraini Dinar) precision handling",
+      "spec": "Bahraini Dinar requires 3 decimals. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05098",
+      "cat": "eng",
+      "title": "JPY (Japanese Yen) precision handling",
+      "spec": "Japanese Yen requires 0 decimals. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05099",
+      "cat": "eng",
+      "title": "KWD (Kuwaiti Dinar) precision handling",
+      "spec": "Kuwaiti Dinar requires 3 decimals. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05100",
+      "cat": "eng",
+      "title": "CLF (Chilean UF) precision handling",
+      "spec": "Chilean UF requires 4 decimals. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05101",
+      "cat": "eng",
+      "title": "TRY (Turkish Lira) precision handling",
+      "spec": "Turkish Lira requires 2 decimals, high inflation. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05102",
+      "cat": "eng",
+      "title": "VEF (Venezuelan Bolívar) precision handling",
+      "spec": "Venezuelan Bolívar requires hyperinflation. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05103",
+      "cat": "eng",
+      "title": "ZWL (Zimbabwe Dollar) precision handling",
+      "spec": "Zimbabwe Dollar requires hyperinflation. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05104",
+      "cat": "eng",
+      "title": "BTC (Bitcoin) precision handling",
+      "spec": "Bitcoin requires 8 decimals, sats. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05105",
+      "cat": "eng",
+      "title": "ETH (Ether) precision handling",
+      "spec": "Ether requires 18 decimals, wei. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05106",
+      "cat": "eng",
+      "title": "XAU (Gold troy oz) precision handling",
+      "spec": "Gold troy oz requires precious metal. Test rounding, display, calculations."
+    },
+    {
+      "id": "T05162",
+      "cat": "eng",
+      "title": "ABTestingEngine precision edge cases",
+      "spec": "NaN/Infinity guard, decimal handling, sign convention, rounding mode for ABTestingEngine."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

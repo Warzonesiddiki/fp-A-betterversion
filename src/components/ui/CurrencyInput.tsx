@@ -65,7 +65,11 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
   };
 
   return (
-    <div className={cn('flex flex-col gap-1.5 w-full', className)}>
+    <div
+      className={cn('flex flex-col gap-1.5 w-full', className)}
+      role="region"
+      aria-label="CurrencyInput"
+    >
       {label && (
         <label htmlFor={id} className="text-sm font-medium text-[var(--text-primary)]">
           {label}

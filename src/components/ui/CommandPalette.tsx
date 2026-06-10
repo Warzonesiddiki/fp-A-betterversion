@@ -93,8 +93,8 @@ export function CommandPalette({
         break;
       case 'Enter':
         e.preventDefault();
-        if (filteredItems[selectedIndex]) {
-          filteredItems[selectedIndex].onSelect();
+        if (filteredItems[selectedIndex]!) {
+          filteredItems[selectedIndex]!.onSelect();
           onClose();
         }
         break;
@@ -143,7 +143,7 @@ export function CommandPalette({
             aria-expanded="true"
             aria-controls="command-list"
             aria-activedescendant={
-              filteredItems[selectedIndex] ? `cmd-${filteredItems[selectedIndex].id}` : undefined
+              filteredItems[selectedIndex]! ? `cmd-${filteredItems[selectedIndex]!.id}` : undefined
             }
             aria-label="Search commands"
             className="flex-1 bg-transparent outline-none text-sm"
@@ -186,7 +186,7 @@ export function CommandPalette({
                       data-index={globalIndex}
                       role="option"
                       aria-selected={globalIndex === selectedIndex}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded text-sm transition-colors cursor-pointer"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded text-sm transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                       style={{
                         background:
                           globalIndex === selectedIndex ? 'var(--bg-hover)' : 'transparent',

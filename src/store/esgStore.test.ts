@@ -46,7 +46,7 @@ describe('esgStore', () => {
       trend: 'stable',
     });
     expect(useESGStore.getState().metrics).toHaveLength(1);
-    expect(useESGStore.getState().metrics[0].name).toBe('Water Usage');
+    expect(useESGStore!.getState().metrics[0]!.name).toBe('Water Usage');
   });
 
   it('should update a metric', () => {
@@ -61,7 +61,7 @@ describe('esgStore', () => {
     });
     useESGStore.getState().updateMetric('m3', { value: 72, trend: 'up' });
     const updated = useESGStore.getState().metrics[0];
-    expect(updated.value).toBe(72);
+    expect(updated!.value).toBe(72);
   });
 
   it('should not update non-existent metric', () => {
@@ -75,7 +75,7 @@ describe('esgStore', () => {
       trend: 'stable',
     });
     useESGStore.getState().updateMetric('nonexistent', { value: 99 });
-    expect(useESGStore.getState().metrics[0].value).toBe(50);
+    expect(useESGStore!.getState().metrics[0]!.value).toBe(50);
   });
 
   it('should remove a metric', () => {

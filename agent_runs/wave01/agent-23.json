@@ -1,0 +1,8 @@
+{
+  "agent": "agent-23",
+  "task": "Add JSDoc comments to public functions in src/store/forecastStore.ts",
+  "status": "success",
+  "jsdocLinesAdded": 31,
+  "tscErrorsAfter": 0,
+  "notes": "Added one-line /** ... */ JSDoc above useForecastStore, all 5 state fields (forecasts, drivers, selectedForecastId, isLoading, error), all 16 exported actions (undo, redo, canUndo, canRedo, getHistoryLength, setForecasts, setSelectedForecast, createForecast, updateForecast, deleteForecast, setDrivers, updateDriver, setError, clearError, setLoading), the forecastSelectors object, and all 9 selector functions (forecasts, drivers, selectedForecastId, isLoading, forecastCount, driverCount, selectedForecast, hasForecasts, hasDrivers). Verification: `node run-tsc.cjs 2>&1 | Select-String forecastStore | Measure-Object -Line` returned 0."
+}

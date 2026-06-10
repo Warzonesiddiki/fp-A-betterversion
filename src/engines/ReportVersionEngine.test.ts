@@ -54,8 +54,8 @@ describe('ReportVersionEngine', () => {
       engine.commitVersion('report-1', 'v2', '', sampleData, 'user@test.com');
       const history = engine.getVersionHistory('report-1');
       expect(history).toHaveLength(2);
-      expect(history[0].version).toBe(1);
-      expect(history[1].version).toBe(2);
+      expect(history![0]!.version).toBe(1);
+      expect(history![1]!.version).toBe(2);
     });
 
     it('should return empty for report with no versions', () => {

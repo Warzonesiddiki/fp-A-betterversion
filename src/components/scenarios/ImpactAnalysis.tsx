@@ -102,8 +102,8 @@ export function ImpactAnalysis({
     const groups: Record<string, ImpactRow[]> = {};
     for (const row of filteredRows) {
       const cat = row.metric.category;
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(row);
+      if (!groups[cat]!) groups[cat] = [];
+      groups[cat]!.push(row);
     }
     return groups;
   }, [filteredRows]);
@@ -115,7 +115,11 @@ export function ImpactAnalysis({
 
   if (compareScenarios.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-24">
+      <div
+        className="flex flex-col items-center justify-center gap-4 py-24"
+        role="region"
+        aria-label="ImpactAnalysis"
+      >
         <Activity className="h-12 w-12 text-[var(--text-tertiary)]" />
         <h2 className="text-xl font-semibold text-[var(--text-primary)]">No Comparisons</h2>
         <p className="text-sm text-[var(--text-secondary)]">

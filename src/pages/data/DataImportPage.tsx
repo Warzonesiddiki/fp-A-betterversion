@@ -169,7 +169,7 @@ export default function DataImportPage() {
     const snapshots = migrationEngine.getMigrationSnapshots();
     if (snapshots.length > 0) {
       const last = snapshots[snapshots.length - 1];
-      migrationEngine.rollbackMigration(last.id);
+      migrationEngine.rollbackMigration(last!.id);
       setWizardStep('upload');
       setMigrationFile(null);
       setReadiness(null);
@@ -190,7 +190,7 @@ export default function DataImportPage() {
         setRecLoading(false);
         return;
       }
-      const headers = lines[0].split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
+      const headers = lines[0]!.split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
       const data = lines.slice(1).map((line) => {
         const values = parseCSVLine(line);
         const row: Record<string, string> = {};
@@ -201,8 +201,8 @@ export default function DataImportPage() {
       });
       setRecData(data);
       if (headers.length >= 2) {
-        setRecKeyCol(headers[0]);
-        setRecValCol(headers[1]);
+        setRecKeyCol(headers[0]!);
+        setRecValCol(headers[1]!);
       }
       setRecLoading(false);
     } catch (e: unknown) {
@@ -223,8 +223,8 @@ export default function DataImportPage() {
       missing = 0;
     const details: { key: string; expected: number; actual: number; diff: number }[] = [];
     recData.forEach((row) => {
-      const key = row[recKeyCol];
-      const actual = parseFloat(row[recValCol]) || 0;
+      const key = row[recKeyCol]!;
+      const actual = parseFloat(row[recValCol]!) || 0;
       const expected = expectedMap.get(key) || 0;
       if (expected === 0) {
         missing++;
@@ -238,7 +238,7 @@ export default function DataImportPage() {
     setRecResult({ matching, mismatches, missing, details });
   }, [recKeyCol, recValCol, recData, entries]);
 
-  const csvHeaders = recData.length > 0 ? Object.keys(recData[0]) : [];
+  const csvHeaders = recData.length > 0 ? Object.keys(recData[0]!) : [];
 
   const sourceLabel = (s: MigrationSource) => {
     switch (s) {

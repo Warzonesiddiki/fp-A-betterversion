@@ -1,0 +1,308 @@
+{
+  "agent": "agent-17",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T04938",
+      "cat": "test",
+      "title": "GovernmentBudget template end-to-end smoke test",
+      "spec": "GovernmentBudget load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04942",
+      "cat": "test",
+      "title": "HeadcountPlan template end-to-end smoke test",
+      "spec": "HeadcountPlan load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04946",
+      "cat": "test",
+      "title": "HealthcareRevenueCycle template end-to-end smoke test",
+      "spec": "HealthcareRevenueCycle load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04950",
+      "cat": "test",
+      "title": "ManufacturingCOGS template end-to-end smoke test",
+      "spec": "ManufacturingCOGS load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04954",
+      "cat": "test",
+      "title": "RealEstatePortfolio template end-to-end smoke test",
+      "spec": "RealEstatePortfolio load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04958",
+      "cat": "test",
+      "title": "RetailStorePerformance template end-to-end smoke test",
+      "spec": "RetailStorePerformance load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04962",
+      "cat": "test",
+      "title": "TechSaaSCompany template end-to-end smoke test",
+      "spec": "TechSaaSCompany load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04966",
+      "cat": "test",
+      "title": "ThreeStatementModel template end-to-end smoke test",
+      "spec": "ThreeStatementModel load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T05107",
+      "cat": "test",
+      "title": "Browser: Safari iOS date parsing (YYYY-MM-DD only)",
+      "spec": "Verify Safari iOS date parsing works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05108",
+      "cat": "test",
+      "title": "Browser: Safari ITP storage eviction (7-day cap for cross-site)",
+      "spec": "Verify Safari ITP storage eviction works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05109",
+      "cat": "test",
+      "title": "Browser: Firefox strict backslash in path (File API)",
+      "spec": "Verify Firefox strict backslash in path works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05110",
+      "cat": "test",
+      "title": "Browser: Edge IE compat quirks (legacy)",
+      "spec": "Verify Edge IE compat quirks works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05111",
+      "cat": "test",
+      "title": "Browser: Chrome SameSite default Lax (cookie behavior)",
+      "spec": "Verify Chrome SameSite default Lax works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05112",
+      "cat": "test",
+      "title": "Browser: Safari number-to-string (precision loss)",
+      "spec": "Verify Safari number-to-string works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05113",
+      "cat": "test",
+      "title": "Browser: Safari IndexedDB version race (rare)",
+      "spec": "Verify Safari IndexedDB version race works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05114",
+      "cat": "test",
+      "title": "Browser: Firefox scrollbar gutter (17px reservation)",
+      "spec": "Verify Firefox scrollbar gutter works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05115",
+      "cat": "test",
+      "title": "Browser: Chrome download attribute (origin policy)",
+      "spec": "Verify Chrome download attribute works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05116",
+      "cat": "test",
+      "title": "Browser: iOS PWA standalone quirks (no status bar)",
+      "spec": "Verify iOS PWA standalone quirks works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05117",
+      "cat": "test",
+      "title": "Browser: Android back button (history.back)",
+      "spec": "Verify Android back button works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05118",
+      "cat": "test",
+      "title": "Browser: Mac Cmd vs Ctrl (shortcut prefix)",
+      "spec": "Verify Mac Cmd vs Ctrl works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05119",
+      "cat": "test",
+      "title": "Browser: Windows Alt key (menu accelerator)",
+      "spec": "Verify Windows Alt key works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05120",
+      "cat": "test",
+      "title": "Browser: High DPI rendering (image quality)",
+      "spec": "Verify High DPI rendering works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05121",
+      "cat": "test",
+      "title": "Browser: Touch event coalescing (passive listeners)",
+      "spec": "Verify Touch event coalescing works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05122",
+      "cat": "test",
+      "title": "Browser: Pointer events polyfill (IE 11 only)",
+      "spec": "Verify Pointer events polyfill works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05123",
+      "cat": "test",
+      "title": "Browser: WebKit CSS backdrop-filter (fallback)",
+      "spec": "Verify WebKit CSS backdrop-filter works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05124",
+      "cat": "test",
+      "title": "Browser: WebKit overscroll-behavior (bounce)",
+      "spec": "Verify WebKit overscroll-behavior works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05125",
+      "cat": "test",
+      "title": "Browser: Edge chromium detection (navigator.userAgentData)",
+      "spec": "Verify Edge chromium detection works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05126",
+      "cat": "test",
+      "title": "Browser: Safari Autofill credit card (disable)",
+      "spec": "Verify Safari Autofill credit card works on all target browsers. Add test if missing."
+    },
+    {
+      "id": "T05163",
+      "cat": "test",
+      "title": "ABTestingEngine property-based tests",
+      "spec": "fast-check property tests for ABTestingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05165",
+      "cat": "test",
+      "title": "AccountReconciliationEngine property-based tests",
+      "spec": "fast-check property tests for AccountReconciliationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05167",
+      "cat": "test",
+      "title": "AllocationRuleEngine property-based tests",
+      "spec": "fast-check property tests for AllocationRuleEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05169",
+      "cat": "test",
+      "title": "AmortizationEngine property-based tests",
+      "spec": "fast-check property tests for AmortizationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05171",
+      "cat": "test",
+      "title": "ApprovalRoutingEngine property-based tests",
+      "spec": "fast-check property tests for ApprovalRoutingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05173",
+      "cat": "test",
+      "title": "AssetImpairmentEngine property-based tests",
+      "spec": "fast-check property tests for AssetImpairmentEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05175",
+      "cat": "test",
+      "title": "AuditLoggingEngine property-based tests",
+      "spec": "fast-check property tests for AuditLoggingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05177",
+      "cat": "test",
+      "title": "BadDebtEngine property-based tests",
+      "spec": "fast-check property tests for BadDebtEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05179",
+      "cat": "test",
+      "title": "BankReconciliationEngine property-based tests",
+      "spec": "fast-check property tests for BankReconciliationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05181",
+      "cat": "test",
+      "title": "BenchmarkEngine property-based tests",
+      "spec": "fast-check property tests for BenchmarkEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05183",
+      "cat": "test",
+      "title": "BreakEvenEngine property-based tests",
+      "spec": "fast-check property tests for BreakEvenEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05185",
+      "cat": "test",
+      "title": "BudgetApprovalEngine property-based tests",
+      "spec": "fast-check property tests for BudgetApprovalEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05187",
+      "cat": "test",
+      "title": "BudgetRevisionEngine property-based tests",
+      "spec": "fast-check property tests for BudgetRevisionEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05189",
+      "cat": "test",
+      "title": "BurnRateEngine property-based tests",
+      "spec": "fast-check property tests for BurnRateEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05191",
+      "cat": "test",
+      "title": "CapitalAllocationEngine property-based tests",
+      "spec": "fast-check property tests for CapitalAllocationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05193",
+      "cat": "test",
+      "title": "CashConversionCycleEngine property-based tests",
+      "spec": "fast-check property tests for CashConversionCycleEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05195",
+      "cat": "test",
+      "title": "CashManagementEngine property-based tests",
+      "spec": "fast-check property tests for CashManagementEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05197",
+      "cat": "test",
+      "title": "ChartOfAccountsEngine property-based tests",
+      "spec": "fast-check property tests for ChartOfAccountsEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05199",
+      "cat": "test",
+      "title": "CompensationEngine property-based tests",
+      "spec": "fast-check property tests for CompensationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05201",
+      "cat": "test",
+      "title": "ComplianceReportingEngine property-based tests",
+      "spec": "fast-check property tests for ComplianceReportingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05203",
+      "cat": "test",
+      "title": "ConsolidationAdjustmentEngine property-based tests",
+      "spec": "fast-check property tests for ConsolidationAdjustmentEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05205",
+      "cat": "test",
+      "title": "ConversionEngine property-based tests",
+      "spec": "fast-check property tests for ConversionEngine: invariants, commutativity, idempotency."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

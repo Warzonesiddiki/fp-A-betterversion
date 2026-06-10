@@ -6,7 +6,7 @@ describe('SpreadEngine', () => {
     it('distributes evenly across periods', () => {
       const result = SpreadEngine.even(1200000, 12);
       expect(result).toHaveLength(12);
-      expect(result[0]).toBe(100000);
+      expect(result[0]!).toBe(100000);
       expect(result.reduce((s, v) => s + v, 0)).toBeCloseTo(1200000);
     });
 
@@ -23,7 +23,7 @@ describe('SpreadEngine', () => {
     it('front-loads amounts', () => {
       const result = SpreadEngine.frontLoaded(1200000, 4);
       expect(result).toHaveLength(4);
-      expect(result[0]).toBeGreaterThan(result[3]);
+      expect(result[0]!).toBeGreaterThan(result[3]!);
     });
 
     it('preserves total', () => {
@@ -36,7 +36,7 @@ describe('SpreadEngine', () => {
     it('back-loads amounts', () => {
       const result = SpreadEngine.backLoaded(1200000, 4);
       expect(result).toHaveLength(4);
-      expect(result[3]).toBeGreaterThan(result[0]);
+      expect(result[3]!).toBeGreaterThan(result[0]!);
     });
   });
 
@@ -44,7 +44,7 @@ describe('SpreadEngine', () => {
     it('distributes by weights', () => {
       const result = SpreadEngine.seasonal(1200000, [1, 1, 1, 1]);
       expect(result).toHaveLength(4);
-      expect(result[0]).toBe(300000);
+      expect(result[0]!).toBe(300000);
     });
 
     it('normalizes weights', () => {
@@ -62,8 +62,8 @@ describe('SpreadEngine', () => {
     it('distributes by driver values', () => {
       const result = SpreadEngine.driverBased(1000, [10, 20, 30, 40]);
       expect(result).toHaveLength(4);
-      expect(result[0]).toBe(100);
-      expect(result[3]).toBe(400);
+      expect(result[0]!).toBe(100);
+      expect(result[3]!).toBe(400);
     });
   });
 
@@ -71,7 +71,7 @@ describe('SpreadEngine', () => {
     it('distributes by custom percentages', () => {
       const result = SpreadEngine.custom(1000, [0.25, 0.25, 0.25, 0.25]);
       expect(result).toHaveLength(4);
-      expect(result[0]).toBeCloseTo(250);
+      expect(result[0]!).toBeCloseTo(250);
     });
   });
 
@@ -79,7 +79,7 @@ describe('SpreadEngine', () => {
     it('dispatches to correct method', () => {
       const result = SpreadEngine.spread(1200, { method: 'even', periods: 12 });
       expect(result).toHaveLength(12);
-      expect(result[0]).toBe(100);
+      expect(result[0]!).toBe(100);
     });
   });
 

@@ -69,9 +69,9 @@ export class CapExEngine {
     let cumulative = 0;
     for (let i = 0; i < cashFlows.length; i++) {
       const prevCumulative = cumulative;
-      cumulative += cashFlows[i];
+      cumulative += cashFlows![i]!;
       if (cumulative >= 0 && prevCumulative < 0) {
-        return i + Math.abs(prevCumulative) / cashFlows[i];
+        return i + Math.abs(prevCumulative) / cashFlows![i]!;
       }
     }
     return 0;

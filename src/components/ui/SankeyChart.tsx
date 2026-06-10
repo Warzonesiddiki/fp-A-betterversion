@@ -34,8 +34,8 @@ export const SankeyChart: React.FC<SankeyChartProps> = React.memo(
         total += val;
       });
 
-      const sNodes = Object.entries(sMap).sort((a, b) => b[1] - a[1]);
-      const tNodes = Object.entries(tMap).sort((a, b) => b[1] - a[1]);
+      const sNodes = Object.entries(sMap).sort((a, b) => b[1] - a[1]!);
+      const tNodes = Object.entries(tMap).sort((a, b) => b[1] - a[1]!);
 
       return {
         sources: sNodes,
@@ -51,6 +51,8 @@ export const SankeyChart: React.FC<SankeyChartProps> = React.memo(
             'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
             className
           )}
+          role="region"
+          aria-label="SankeyChart"
         >
           <div className="flex items-center justify-center h-48">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
@@ -67,7 +69,10 @@ export const SankeyChart: React.FC<SankeyChartProps> = React.memo(
             className
           )}
         >
-          <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
+          <div className="flex items-center justify-center h-48 text-red-500 text-sm">
+            {' '}
+            role="alert" role="alert" {error}
+          </div>
         </div>
       );
     }

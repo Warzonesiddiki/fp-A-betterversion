@@ -10,9 +10,9 @@ describe('CashEngine', () => {
         [{ week: 'W1', amount: 3000 }]
       );
       expect(result).toHaveLength(1);
-      expect(result[0].openingBalance).toBe(10000);
-      expect(result[0].netCashFlow).toBe(2000);
-      expect(result[0].closingBalance).toBe(12000);
+      expect(result![0]!.openingBalance).toBe(10000);
+      expect(result![0]!.netCashFlow).toBe(2000);
+      expect(result![0]!.closingBalance).toBe(12000);
     });
 
     it('should handle multiple weeks', () => {
@@ -25,12 +25,12 @@ describe('CashEngine', () => {
         [{ week: 'W1', amount: 1000 }]
       );
       expect(result).toHaveLength(2);
-      expect(result[1].openingBalance).toBe(6000);
+      expect(result![1]!.openingBalance).toBe(6000);
     });
 
     it('should flag balance below minimum target', () => {
       const result = CashEngine.forecast13Week(100, [], [{ week: 'W1', amount: 200 }], 50);
-      expect(result[0].isBelowTarget).toBe(true);
+      expect(result![0]!.isBelowTarget).toBe(true);
     });
 
     it('should handle empty inflows and outflows', () => {

@@ -49,8 +49,8 @@ describe('ScenarioEngine', () => {
         2,
         seeded
       );
-      expect(result[0].values.val).toBe(75);
-      expect(result[1].values.val).toBe(25);
+      expect(result![0]!.values.val).toBe(75);
+      expect(result![1]!.values.val).toBe(25);
     });
 
     it('should support normal distribution with seeded random', () => {
@@ -78,7 +78,7 @@ describe('ScenarioEngine', () => {
         1,
         seeded
       );
-      expect(typeof result[0].values.t).toBe('number');
+      expect(typeof result![0]!.values.t).toBe('number');
     });
 
     it('should aggregate multiple assumptions into output', () => {
@@ -91,9 +91,9 @@ describe('ScenarioEngine', () => {
         1,
         seeded
       );
-      expect(result[0].values.rev).toBe(150);
-      expect(result[0].values.cost).toBe(75);
-      expect(result[0].output).toBe(225);
+      expect(result![0]!.values.rev).toBe(150);
+      expect(result![0]!.values.cost).toBe(75);
+      expect(result![0]!.output).toBe(225);
     });
   });
 
@@ -115,51 +115,51 @@ describe('ScenarioEngine', () => {
         { name: 'Revenue Growth', baseValue: 100, lowValue: 80, highValue: 120 },
       ]);
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Revenue Growth');
-      expect(result[0].lowImpact.revenue).toBe(80000);
-      expect(result[0].highImpact.revenue).toBe(120000);
+      expect(result![0]!.name).toBe('Revenue Growth');
+      expect(result![0]!.lowImpact.revenue).toBe(80000);
+      expect(result![0]!.highImpact.revenue).toBe(120000);
     });
 
     it('should scale all financial metrics proportionally', () => {
       const result = ScenarioEngine.sensitivityAnalysis(baseCase, [
         { name: 'Scale', baseValue: 100, lowValue: 90, highValue: 110 },
       ]);
-      expect(result[0].lowImpact.ebitda).toBe(22500);
-      expect(result[0].lowImpact.netIncome).toBe(13500);
-      expect(result[0].lowImpact.cashFlow).toBe(16200);
+      expect(result![0]!.lowImpact.ebitda).toBe(22500);
+      expect(result![0]!.lowImpact.netIncome).toBe(13500);
+      expect(result![0]!.lowImpact.cashFlow).toBe(16200);
     });
 
     it('should handle headcount rounding', () => {
       const result = ScenarioEngine.sensitivityAnalysis(baseCase, [
         { name: 'HC', baseValue: 100, lowValue: 33, highValue: 66 },
       ]);
-      expect(Number.isInteger(result[0].lowImpact.headcount)).toBe(true);
-      expect(Number.isInteger(result[0].highImpact.headcount)).toBe(true);
+      expect(Number.isInteger(result![0]!.lowImpact.headcount)).toBe(true);
+      expect(Number.isInteger(result![0]!.highImpact.headcount)).toBe(true);
     });
 
     it('should handle zero base value with ratio fallback', () => {
       const result = ScenarioEngine.sensitivityAnalysis(baseCase, [
         { name: 'Zero', baseValue: 0, lowValue: 10, highValue: 20 },
       ]);
-      expect(result[0].lowImpact.revenue).toBe(baseCase.revenue);
-      expect(result[0].highImpact.revenue).toBe(baseCase.revenue);
-      expect(result[0].lowImpact.ebitda).toBe(baseCase.ebitda);
+      expect(result![0]!.lowImpact.revenue).toBe(baseCase.revenue);
+      expect(result![0]!.highImpact.revenue).toBe(baseCase.revenue);
+      expect(result![0]!.lowImpact.ebitda).toBe(baseCase.ebitda);
     });
 
     it('should preserve margin metrics', () => {
       const result = ScenarioEngine.sensitivityAnalysis(baseCase, [
         { name: 'GM', baseValue: 100, lowValue: 80, highValue: 120 },
       ]);
-      expect(result[0].lowImpact.grossMargin).toBe(baseCase.grossMargin);
-      expect(result[0].lowImpact.ebitdaMargin).toBe(baseCase.ebitdaMargin);
+      expect(result![0]!.lowImpact.grossMargin).toBe(baseCase.grossMargin);
+      expect(result![0]!.lowImpact.ebitdaMargin).toBe(baseCase.ebitdaMargin);
     });
 
     it('should invert runway ratio', () => {
       const result = ScenarioEngine.sensitivityAnalysis(baseCase, [
         { name: 'Cost', baseValue: 100, lowValue: 80, highValue: 120 },
       ]);
-      expect(result[0].lowImpact.runway).toBe(15);
-      expect(result[0].highImpact.runway).toBe(10);
+      expect(result![0]!.lowImpact.runway).toBe(15);
+      expect(result![0]!.highImpact.runway).toBe(10);
     });
 
     it('should handle multiple inputs', () => {
@@ -180,15 +180,15 @@ describe('ScenarioEngine', () => {
       ];
       const result = ScenarioEngine.tornadoChart(inputs);
       expect(result).toHaveLength(3);
-      expect(result[0].name).toBe('Revenue');
-      expect(result[1].name).toBe('Cost');
-      expect(result[2].name).toBe('Tax');
+      expect(result![0]!.name).toBe('Revenue');
+      expect(result![1]!.name).toBe('Cost');
+      expect(result![2]!.name).toBe('Tax');
     });
 
     it('should include range for each item', () => {
       const inputs = [{ name: 'Rev', baseValue: 100, lowValue: 50, highValue: 150 }];
       const result = ScenarioEngine.tornadoChart(inputs);
-      expect(result[0].range).toBe(100);
+      expect(result![0]!.range).toBe(100);
     });
 
     it('should handle single input', () => {
@@ -370,6 +370,75 @@ describe('ScenarioEngine', () => {
       ];
       const result = ScenarioEngine.probabilityWeighted(scenarios);
       expect(result.revenue).toBe(0);
+    });
+  });
+
+  describe('mergeScenarios', () => {
+    const s1: ScenarioMetrics = {
+      revenue: 1000,
+      ebitda: 200,
+      netIncome: 150,
+      cashFlow: 180,
+      headcount: 50,
+      burnRate: 300,
+      runway: 24,
+      grossMargin: 0.6,
+      ebitdaMargin: 0.2,
+    };
+    const s2: ScenarioMetrics = {
+      revenue: 2000,
+      ebitda: 400,
+      netIncome: 300,
+      cashFlow: 360,
+      headcount: 100,
+      burnRate: 600,
+      runway: 12,
+      grossMargin: 0.7,
+      ebitdaMargin: 0.3,
+    };
+
+    it('should merge scenarios with 50/50 weight', () => {
+      const result = ScenarioEngine.mergeScenarios(s1, s2, 0.5);
+      expect(result.revenue).toBe(1500);
+      expect(result.ebitda).toBe(300);
+      expect(result.headcount).toBe(75);
+      expect(result.runway).toBe(18);
+    });
+
+    it('should merge scenarios with 0 weight (fully base)', () => {
+      const result = ScenarioEngine.mergeScenarios(s1, s2, 0);
+      expect(result.revenue).toBe(1000);
+    });
+
+    it('should merge scenarios with 1 weight (fully other)', () => {
+      const result = ScenarioEngine.mergeScenarios(s1, s2, 1);
+      expect(result.revenue).toBe(2000);
+    });
+
+    it('should clamp weights below 0', () => {
+      const result = ScenarioEngine.mergeScenarios(s1, s2, -1);
+      expect(result.revenue).toBe(1000);
+    });
+
+    it('should clamp weights above 1', () => {
+      const result = ScenarioEngine.mergeScenarios(s1, s2, 2);
+      expect(result.revenue).toBe(2000);
+    });
+  });
+
+  describe('lock/unlockScenario', () => {
+    const scn = { isLocked: false, updatedAt: 'old' };
+
+    it('should lock scenario', () => {
+      const result = ScenarioEngine.lockScenario(scn);
+      expect(result.isLocked).toBe(true);
+      expect(result.updatedAt).not.toBe('old');
+    });
+
+    it('should unlock scenario', () => {
+      const result = ScenarioEngine.unlockScenario({ ...scn, isLocked: true });
+      expect(result.isLocked).toBe(false);
+      expect(result.updatedAt).not.toBe('old');
     });
   });
 });

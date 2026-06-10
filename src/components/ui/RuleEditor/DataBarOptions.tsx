@@ -7,7 +7,7 @@ interface DataBarOptionsProps {
 
 export function DataBarOptions({ rule, onChange }: DataBarOptionsProps) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="region" aria-label="DataBarOptions">
       <div>
         <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
           Bar Style

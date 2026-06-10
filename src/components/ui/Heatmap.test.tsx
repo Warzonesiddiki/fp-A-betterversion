@@ -171,7 +171,7 @@ describe('Heatmap', () => {
     // Buttons are inside aria-hidden container, query via DOM
     const buttons = container.querySelectorAll('[role="button"]');
     expect(buttons.length).toBeGreaterThan(0);
-    expect(buttons[0]).toHaveAttribute('aria-label');
+    expect(buttons[0]!).toHaveAttribute('aria-label');
   });
 
   it('should not have role="button" when onClick is not provided', () => {
@@ -201,7 +201,7 @@ describe('Heatmap', () => {
     // Buttons are inside aria-hidden container, query via DOM
     const buttons = container.querySelectorAll('[role="button"]');
     expect(buttons.length).toBeGreaterThan(0);
-    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[0]!);
     expect(onClick).toHaveBeenCalled();
     expect(onClick).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -215,6 +215,6 @@ describe('Heatmap', () => {
   it('should not throw when onClick is not provided', () => {
     render(<Heatmap data={sampleData} />);
     const cells = document.querySelectorAll('.aspect-square');
-    expect(() => fireEvent.click(cells[0])).not.toThrow();
+    expect(() => fireEvent.click(cells[0]!)).not.toThrow();
   });
 });

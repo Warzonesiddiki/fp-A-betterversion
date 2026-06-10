@@ -112,7 +112,7 @@ export function ContextMenu({ x, y, onAction, onClose, className }: ContextMenuP
       }
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        onAction(menuItems[focusIndex].action);
+        onAction(menuItems![focusIndex]!.action);
         onClose();
       }
       if (e.key === 'Home') {

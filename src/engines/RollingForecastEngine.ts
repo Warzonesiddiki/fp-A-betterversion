@@ -59,7 +59,7 @@ export interface BlendConfig {
 
 function parsePeriod(period: string): { year: number; month: number } {
   const [year, month] = period.split('-').map(Number);
-  return { year, month };
+  return { year: year!, month: month! };
 }
 
 function addMonths(period: string, months: number): string {
@@ -286,8 +286,8 @@ export class RollingForecastEngine {
     let count = 0;
 
     for (let i = 1; i < recent.length; i++) {
-      const prev = recent[i - 1][1];
-      const curr = recent[i][1];
+      const prev = recent![i - 1]![1];
+      const curr = recent[i]![1];
       if (prev !== 0) {
         totalGrowth += (curr - prev) / Math.abs(prev);
         count++;
@@ -329,12 +329,12 @@ export class RollingForecastEngine {
     const state = this.states.get(forecastId);
     if (!state) return { lastActual: null, firstForecast: null };
 
-    const lastActual =
+    const lastActual: string | null =
       state.actualizedPeriods.length > 0
-        ? state.actualizedPeriods[state.actualizedPeriods.length - 1]
+        ? state.actualizedPeriods[state.actualizedPeriods.length - 1] ?? null
         : null;
 
-    const firstForecast = state.pendingRollPeriods.length > 0 ? state.pendingRollPeriods[0] : null;
+    const firstForecast: string | null = state.pendingRollPeriods.length > 0 ? state.pendingRollPeriods[0] ?? null : null;
 
     return { lastActual, firstForecast };
   }

@@ -65,7 +65,7 @@ export function ShortcutHelpModal({ open, onClose }: ShortcutHelpModalProps) {
           <h2 className="text-lg font-semibold">Keyboard Shortcuts</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-[var(--bg-hover)] dark:hover:bg-gray-800"
+            className="p-1 rounded hover:bg-[var(--bg-hover)] dark:hover:bg-gray-800 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             aria-label="Close"
           >
             <X className="h-5 w-5" />

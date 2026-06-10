@@ -64,7 +64,7 @@ export default function CohortAnalysisPage() {
     const avgRetention =
       retentionMatrix.reduce((s, row) => {
         const vals = Object.values(row).filter((v): v is number => typeof v === 'number');
-        return s + (vals.length > 0 ? vals[vals.length - 1] : 0);
+        return s + (vals.length > 0 ? vals[vals.length - 1] : 0)!;
       }, 0) / retentionMatrix.length;
     const avgChurn = 100 - avgRetention;
     const avgRevPerCohort =
@@ -79,15 +79,15 @@ export default function CohortAnalysisPage() {
       {
         headers: ['Cohort', 'Size', 'M0 Retention', 'Final Retention'],
         rows: retentionMatrix.map((row) => [
-          row.cohort,
+          row.cohort!,
           cohortSizes.find((c) => c.month === String(row.cohort).split(' ')[0])?.size || 0,
           `${row.M0 || 100}%`,
           `${
             Object.values(row)
               .filter((v): v is number => typeof v === 'number')
-              .pop() || 0
+              .pop()! || 0
           }%`,
-        ]),
+        ]) as (string | number | boolean | null)[][],
       },
       { title: 'Cohort Retention Analysis' }
     );

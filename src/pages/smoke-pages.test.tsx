@@ -50,9 +50,9 @@ vi.mock('@/engines/ExportEngine', () => ({
 }));
 
 vi.mock('@/engines/CellAuditTrailEngine', () => ({
-  CellAuditTrailEngine: {
-    getAllEntries: vi.fn(() => []),
-  },
+  CellAuditTrailEngine: vi.fn(function () {
+    return { getAllEntries: vi.fn(() => []) };
+  }),
 }));
 
 // ---------------------------------------------------------------------------

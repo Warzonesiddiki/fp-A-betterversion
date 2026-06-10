@@ -255,7 +255,7 @@ export class XeroConnector extends BaseConnector {
       throw new Error('No Xero organizations found');
     }
 
-    this.tenantId = tenants[0].tenantId;
+    this.tenantId = tenants[0]!.tenantId;
   }
 
   /**
@@ -372,7 +372,7 @@ export class XeroConnector extends BaseConnector {
         items.push({
           externalId: `${txn.BankTransactionID}-${line.LineItemID ?? '0'}`,
           accountId,
-          date: txn.Date.split('T')[0],
+          date: txn.Date.split('T')[0]!,
           description: line.Description ?? txn.Reference ?? '',
           amount: line.LineAmount,
           currency: txn.CurrencyCode,
@@ -436,8 +436,8 @@ export class XeroConnector extends BaseConnector {
       externalId: xero.InvoiceID,
       number: xero.InvoiceNumber,
       customerId: xero.Contact.ContactID,
-      date: xero.Date.split('T')[0],
-      dueDate: xero.DueDate.split('T')[0],
+      date: xero.Date.split('T')[0]!,
+      dueDate: xero.DueDate.split('T')[0]!,
       status: statusMap[xero.Status] ?? 'draft',
       subtotal: xero.SubTotal,
       tax: xero.TotalTax,

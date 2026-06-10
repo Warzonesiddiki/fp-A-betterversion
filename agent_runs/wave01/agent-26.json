@@ -1,0 +1,8 @@
+{
+  "agent": "agent-26",
+  "task": "Add JSDoc comments to public functions in src/store/scenarioStore.ts",
+  "status": "success",
+  "jsdocLinesAdded": 59,
+  "tscErrorsAfter": 0,
+  "notes": "Added JSDoc blocks to useScenarioStore (store overview), all 9 store actions (setError, clearError, setLoading, setScenarios, setSelectedScenario, createScenario, updateScenario, deleteScenario, toggleScenarioComparison), and all 9 scenarioSelectors (scenarios, selectedScenarioId, comparedScenarioIds, isLoading, scenarioCount, selectedScenario, comparedScenarios, hasScenarios, isComparing). Each block includes a one-line summary plus @param/@returns as appropriate. Verification command (node run-tsc.cjs 2>&1 | Select-String \"scenarioStore\" | Measure-Object -Line) returned 0. Pre-existing tsc errors in App.tsx, DepreciationPage, and DashboardPage are unrelated to this file."
+}

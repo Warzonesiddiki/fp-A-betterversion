@@ -174,7 +174,7 @@ function StatementTable({
     return `${val.toFixed(1)}%`;
   };
   return (
-    <div className="mb-8">
+    <div className="mb-8" role="region" aria-label="FinancialStatementTemplates">
       <div className="mb-4">
         <h2 className="text-xl font-bold text-[var(--text-primary)] dark:text-gray-100">{title}</h2>
         <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">

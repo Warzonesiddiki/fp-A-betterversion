@@ -202,8 +202,8 @@ export class WhatIfSandboxEngine {
     // Restore original value in snapshot
     const snapshot = this.snapshots.get(sandboxId);
     if (snapshot) {
-      const key = cellKey(mod.cube, mod.coords, mod.measure);
-      snapshot.cellValues.set(key, mod.originalValue);
+      const key = cellKey(mod!.cube, mod!.coords, mod!.measure);
+      snapshot.cellValues.set(key, mod!.originalValue);
     }
 
     sandbox.modifications.splice(idx, 1);
@@ -324,7 +324,7 @@ export class WhatIfSandboxEngine {
     const parts = key.split('|');
     const measure = parts.pop()!;
     const coordsStr = parts.slice(1).join('|');
-    const cube = parts[0];
+    const cube = parts[0]!;
     return [cube, coordsStr, measure];
   }
 
@@ -355,10 +355,10 @@ export class WhatIfSandboxEngine {
 
     return {
       totalDifferences: differences.length,
-      largestDelta: differences[0], // Already sorted by abs(delta)
+      largestDelta: differences[0]!, // Already sorted by abs(delta)
       largestPercentChange: [...differences].sort(
         (a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange)
-      )[0],
+      )[0] ?? null,
       averageDelta: Math.round((totalDelta / differences.length) * 100) / 100,
       averagePercentChange: Math.round((totalPercent / differences.length) * 100) / 100,
     };

@@ -115,7 +115,7 @@ export function ICMatchingPanel({
   }, [icTransactions]);
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-6', className)} role="region" aria-label="ICMatchingPanel">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard label="Detected IC Pairs" value={icTransactions.length} />

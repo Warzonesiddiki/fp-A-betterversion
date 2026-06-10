@@ -25,8 +25,8 @@ describe('MONTHS', () => {
   });
 
   it('should start with Jan and end with Dec', () => {
-    expect(MONTHS[0]).toBe('Jan');
-    expect(MONTHS[11]).toBe('Dec');
+    expect(MONTHS[0]!).toBe('Jan');
+    expect(MONTHS[11]!).toBe('Dec');
   });
 
   it('should contain all expected abbreviations', () => {
@@ -54,8 +54,8 @@ describe('MONTHS_FULL', () => {
   });
 
   it('should start with January and end with December', () => {
-    expect(MONTHS_FULL[0]).toBe('January');
-    expect(MONTHS_FULL[11]).toBe('December');
+    expect(MONTHS_FULL[0]!).toBe('January');
+    expect(MONTHS_FULL[11]!).toBe('December');
   });
 
   it('should have full month names (May has 3 chars)', () => {
@@ -78,7 +78,7 @@ describe('QUARTERS', () => {
 describe('QUARTER_MONTHS', () => {
   it('should map each quarter to 3 months', () => {
     for (const quarter of QUARTERS) {
-      expect(QUARTER_MONTHS[quarter]).toHaveLength(3);
+      expect(QUARTER_MONTHS[quarter]!).toHaveLength(3);
     }
   });
 

@@ -482,7 +482,7 @@ export class ReportBuilderEngine {
     const sourceIndex = rows.findIndex((r) => r.id === rowId);
     if (sourceIndex === -1) return layout;
 
-    const [moved] = rows.splice(sourceIndex, 1);
+    const [moved] = rows.splice(sourceIndex, 1) as [ReportRow];
     const insertAt = Math.min(targetIndex, rows.length);
     rows.splice(insertAt, 0, moved);
 
@@ -925,8 +925,8 @@ export class ReportBuilderEngine {
     const expectedCellCount = report.layout.columns.length;
     for (let i = 0; i < report.layout.rows.length; i++) {
       const row = report.layout.rows[i];
-      if (row.cells.length !== expectedCellCount) {
-        errors.push(`Row ${i} has ${row.cells.length} cells but expected ${expectedCellCount}`);
+      if (row!.cells.length !== expectedCellCount) {
+        errors.push(`Row ${i} has ${row!.cells.length} cells but expected ${expectedCellCount}`);
       }
     }
 
@@ -1940,7 +1940,7 @@ export class ReportBuilderEngine {
     let startIndex = 0;
 
     for (let i = 0; i < layout.rows.length; i++) {
-      const rowType = layout.rows[i].type;
+      const rowType = layout.rows[i]!.type;
       const normalizedType: 'data' | 'subtotal' | 'total' =
         rowType === 'data' || rowType === 'header'
           ? 'data'
@@ -1993,19 +1993,19 @@ export class ReportBuilderEngine {
 
       for (let colIdx = 0; colIdx < layout.columns.length; colIdx++) {
         const col = layout.columns[colIdx];
-        if (col.type === 'label') continue;
+        if (col!.type === 'label') continue;
 
         const _sum = this.calculateColumnSum(
           resolved,
           colIdx,
-          dataSection.startIndex,
-          dataSection.endIndex
+          dataSection!.startIndex,
+          dataSection!.endIndex
         );
-        const existingCell = rows[section.startIndex].cells[colIdx];
+        const existingCell = rows![section.startIndex]!.cells[colIdx];
 
-        if (existingCell.type === 'metric') {
-          rows[section.startIndex].cells[colIdx] = {
-            ...existingCell,
+        if (existingCell?.type === 'metric') {
+          const updatedCell: ReportCell = {
+            ...(existingCell as ReportCell),
             content: {
               type: 'metric' as const,
               content: {
@@ -2017,6 +2017,7 @@ export class ReportBuilderEngine {
               },
             },
           };
+          rows![section.startIndex]!.cells[colIdx] = updatedCell;
         }
       }
     }
@@ -2079,21 +2080,21 @@ export class ReportBuilderEngine {
     const s = expr.replace(/\s+/g, '');
 
     while (i < s.length) {
-      const ch = s[i];
+      const ch = s[i]!;
 
       // Number (including negative at start or after operator/open-paren)
       if (
         (ch >= '0' && ch <= '9') ||
-        (ch === '.' && i + 1 < s.length && s[i + 1] >= '0' && s[i + 1] <= '9') ||
+        (ch === '.' && i + 1 < s.length && s[i + 1]! >= '0' && s[i + 1]! <= '9') ||
         (ch === '-' &&
           (tokens.length === 0 ||
             tokens[tokens.length - 1] === '(' ||
             '+-*/('.includes(tokens[tokens.length - 1] ?? '')))
       ) {
-        let num = ch;
+        let num: string = ch;
         i++;
-        while (i < s.length && ((s[i] >= '0' && s[i] <= '9') || s[i] === '.')) {
-          num += s[i];
+        while (i < s.length && ((s[i]! >= '0' && s[i]! <= '9') || s[i] === '.')) {
+          num += s[i]!;
           i++;
         }
         tokens.push(num);
@@ -2176,12 +2177,12 @@ export class ReportBuilderEngine {
     const dependencies = new Map<string, string[]>();
 
     for (let ri = 0; ri < layout.rows.length; ri++) {
-      for (let ci = 0; ci < layout.rows[ri].cells.length; ci++) {
-        const cell = layout.rows[ri].cells[ci];
-        cellIdMap.set(cell.id, { row: ri, col: ci });
+      for (let ci = 0; ci < layout.rows[ri]!.cells.length; ci++) {
+        const cell = layout.rows[ri]!.cells[ci];
+        cellIdMap.set(cell!.id, { row: ri, col: ci });
 
-        if (cell.type === 'formula') {
-          const formulaContent = cell.content as { content: FormulaCellContent };
+        if (cell!.type === 'formula') {
+          const formulaContent = cell!.content as { content: FormulaCellContent };
           const refs = this.parseFormulaReferences(formulaContent.content.expression);
           // Convert positional refs (A1, B2) to cell IDs by mapping column letter + row number
           const depIds: string[] = [];
@@ -2196,7 +2197,7 @@ export class ReportBuilderEngine {
               }
             }
           }
-          dependencies.set(cell.id, depIds);
+          dependencies.set(cell!.id, depIds);
         }
       }
     }
@@ -2297,12 +2298,12 @@ export class ReportBuilderEngine {
     const _visibleRows = this.getVisibleRows(report.layout);
     for (let ri = 0; ri < report.layout.rows.length; ri++) {
       const row = report.layout.rows[ri];
-      if (!row.isVisible) continue;
+      if (!row!.isVisible) continue;
 
       const excelRow: Array<string | number | boolean | null> = [];
       for (let ci = 0; ci < report.layout.columns.length; ci++) {
         const col = report.layout.columns[ci];
-        if (!col.isVisible) continue;
+        if (!col!.isVisible) continue;
 
         const cell = resolved[ri]?.[ci];
         if (cell) {
@@ -2362,12 +2363,12 @@ export class ReportBuilderEngine {
     // Data lines
     for (let ri = 0; ri < report.layout.rows.length; ri++) {
       const row = report.layout.rows[ri];
-      if (!row.isVisible) continue;
+      if (!row!.isVisible) continue;
 
       const csvCells: string[] = [];
       for (let ci = 0; ci < report.layout.columns.length; ci++) {
         const col = report.layout.columns[ci];
-        if (!col.isVisible) continue;
+        if (!col!.isVisible) continue;
 
         const cell = resolved[ri]?.[ci];
         if (cell) {
@@ -2469,7 +2470,7 @@ export class ReportBuilderEngine {
 
     for (let i = 0; i < layout.rows.length; i++) {
       const row = layout.rows[i];
-      const sectionType = this.rowTypeToSectionType(row.type);
+      const sectionType = this.rowTypeToSectionType(row!.type);
 
       if (!currentSection || currentSection.type !== sectionType) {
         if (currentSection) {
@@ -2519,7 +2520,7 @@ export class ReportBuilderEngine {
     sectionType: ReportSection['type']
   ): string {
     const row = layout.rows[rowIndex];
-    const labelCell = row.cells.find((_, ci) => layout.columns[ci]?.type === 'label');
+    const labelCell = row!.cells.find((_, ci) => layout.columns[ci]?.type === 'label');
     if (labelCell) {
       const textContent = labelCell.content as { content?: { text?: string } };
       if (textContent.content?.text) return textContent.content.text;

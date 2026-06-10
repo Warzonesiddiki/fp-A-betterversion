@@ -63,7 +63,7 @@ describe('DashboardBuilderEngine', () => {
       config: {},
     });
     expect(engine.moveWidget(d.id, 'w1', { x: 3, y: 0, w: 3, h: 2 })).toBe(true);
-    expect(engine.getDashboard(d.id)?.widgets[0].position.x).toBe(3);
+    expect(engine!.getDashboard(d.id)?.widgets[0]!.position.x).toBe(3);
   });
 
   it('should save as template', () => {
@@ -92,7 +92,7 @@ describe('DashboardBuilderEngine', () => {
     const template = engine.saveAsTemplate(d.id, 'My Template');
     const newDash = engine.createFromTemplate(template!.id, 'New Dashboard', 'user1');
     expect(newDash?.widgets).toHaveLength(1);
-    expect(newDash?.widgets[0].id).not.toBe('w1');
+    expect(newDash?.widgets[0]!.id).not.toBe('w1');
   });
 
   it('should manage filters', () => {

@@ -17,24 +17,24 @@ describe('CapExEngine', () => {
     it('should calculate straight-line depreciation', () => {
       const result = CapExEngine.calculateDepreciation(baseAsset);
       expect(result).toHaveLength(5);
-      expect(result[0].depreciationExpense).toBe(1800);
-      expect(result[4].bookValue).toBe(1000);
+      expect(result![0]!.depreciationExpense).toBe(1800);
+      expect(result![4]!.bookValue).toBe(1000);
     });
 
     it('should calculate double-declining depreciation', () => {
       const asset = { ...baseAsset, depreciationMethod: 'double_declining' as const };
       const result = CapExEngine.calculateDepreciation(asset);
       expect(result).toHaveLength(5);
-      expect(result[0].depreciationExpense).toBe(4000);
-      expect(result[4].bookValue).toBe(1000);
+      expect(result![0]!.depreciationExpense).toBe(4000);
+      expect(result![4]!.bookValue).toBe(1000);
     });
 
     it('should calculate sum-of-years depreciation', () => {
       const asset = { ...baseAsset, depreciationMethod: 'sum_of_years' as const };
       const result = CapExEngine.calculateDepreciation(asset);
       expect(result).toHaveLength(5);
-      expect(result[0].depreciationExpense).toBe(3000);
-      expect(result[4].bookValue).toBe(1000);
+      expect(result![0]!.depreciationExpense).toBe(3000);
+      expect(result![4]!.bookValue).toBe(1000);
     });
 
     it('should clamp book value to salvage value', () => {

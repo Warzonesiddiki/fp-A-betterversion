@@ -306,25 +306,25 @@ describe('validateFinancialNumber', () => {
   it('should fail when zero is not allowed', () => {
     const result = validateFinancialNumber(0, 'amount', { allowZero: false });
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('cannot be zero');
+    expect(result.errors[0]!).toContain('cannot be zero');
   });
 
   it('should fail when negative is not allowed', () => {
     const result = validateFinancialNumber(-5, 'amount', { allowNegative: false });
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('cannot be negative');
+    expect(result.errors[0]!).toContain('cannot be negative');
   });
 
   it('should fail when below min', () => {
     const result = validateFinancialNumber(5, 'amount', { min: 10 });
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('>= 10');
+    expect(result.errors[0]!).toContain('>= 10');
   });
 
   it('should fail when above max', () => {
     const result = validateFinancialNumber(100, 'amount', { max: 50 });
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('<= 50');
+    expect(result.errors[0]!).toContain('<= 50');
   });
 
   it('should pass for zero when allowed', () => {
@@ -358,7 +358,7 @@ describe('validatePercentage', () => {
 
   it('should use custom field name', () => {
     const result = validatePercentage(150, 'taxRate');
-    expect(result.errors[0]).toContain('taxRate');
+    expect(result.errors[0]!).toContain('taxRate');
   });
 });
 
@@ -388,19 +388,19 @@ describe('validateDateRange', () => {
   it('should fail for invalid start date', () => {
     const result = validateDateRange('invalid', '2024-12-31');
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('start date');
+    expect(result.errors[0]!).toContain('start date');
   });
 
   it('should fail for invalid end date', () => {
     const result = validateDateRange('2024-01-01', 'invalid');
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('end date');
+    expect(result.errors[0]!).toContain('end date');
   });
 
   it('should fail when start is after end', () => {
     const result = validateDateRange('2024-12-31', '2024-01-01');
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('start date must be before end date');
+    expect(result.errors[0]!).toContain('start date must be before end date');
   });
 
   it('should allow same start and end date', () => {
@@ -687,8 +687,8 @@ describe('validateRequired', () => {
   it('should fail for null', () => {
     const result = validateRequired(null, 'username');
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('username');
-    expect(result.errors[0]).toContain('required');
+    expect(result.errors[0]!).toContain('username');
+    expect(result.errors[0]!).toContain('required');
   });
 
   it('should fail for undefined', () => {
@@ -698,7 +698,7 @@ describe('validateRequired', () => {
   it('should fail for empty string', () => {
     const result = validateRequired('', 'email');
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('empty');
+    expect(result.errors[0]!).toContain('empty');
   });
 
   it('should fail for whitespace-only string', () => {
@@ -714,12 +714,12 @@ describe('validateNonEmptyArray', () => {
   it('should fail for empty array', () => {
     const result = validateNonEmptyArray([], 'items');
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('empty');
+    expect(result.errors[0]!).toContain('empty');
   });
 
   it('should fail for non-arrays', () => {
     const result = validateNonEmptyArray('not array', 'items');
     expect(result.valid).toBe(false);
-    expect(result.errors[0]).toContain('must be an array');
+    expect(result.errors[0]!).toContain('must be an array');
   });
 });

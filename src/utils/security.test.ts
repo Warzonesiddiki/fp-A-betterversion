@@ -574,7 +574,7 @@ describe('sanitizeUserInput', () => {
 
   it('should include fieldName in error messages', () => {
     const result = sanitizeUserInput(123, { fieldName: 'username' });
-    expect(result.errors[0]).toContain('username');
+    expect(result.errors[0]!).toContain('username');
   });
 
   it('should trim input', () => {

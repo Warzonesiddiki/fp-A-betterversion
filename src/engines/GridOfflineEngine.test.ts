@@ -174,7 +174,7 @@ describe('GridOfflineEngine', () => {
       ];
       const conflicts = GridOfflineEngine.getConflicts(serverChanges);
       expect(conflicts).toHaveLength(1);
-      expect(conflicts[0].resolution).toBe('local');
+      expect(conflicts![0]!.resolution).toBe('local');
     });
   });
 

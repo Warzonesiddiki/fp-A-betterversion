@@ -116,8 +116,8 @@ describe('WorkerPool', () => {
       expect(pool.busyCount).toBe(1);
 
       // Simulate worker response
-      const postedMessage = instances[0].postMessage.mock.calls[0][0];
-      instances[0].simulateResponse({
+      const postedMessage = instances![0]!.postMessage.mock.calls[0]![0];
+      instances![0]!.simulateResponse({
         id: postedMessage.id,
         type: 'result',
         payload: { result: 42 },
@@ -138,8 +138,8 @@ describe('WorkerPool', () => {
 
       await new Promise((r) => setTimeout(r, 0));
 
-      const postedMessage = instances[0].postMessage.mock.calls[0][0];
-      instances[0].simulateResponse({
+      const postedMessage = instances![0]!.postMessage.mock.calls[0]![0];
+      instances![0]!.simulateResponse({
         id: postedMessage.id,
         type: 'error',
         error: 'Computation failed',
@@ -158,8 +158,8 @@ describe('WorkerPool', () => {
 
       // First attempt fails
       await new Promise((r) => setTimeout(r, 0));
-      const firstMessage = instances[0].postMessage.mock.calls[0][0];
-      instances[0].simulateResponse({
+      const firstMessage = instances![0]!.postMessage.mock.calls[0]![0];
+      instances![0]!.simulateResponse({
         id: firstMessage.id,
         type: 'error',
         error: 'Temporary failure',
@@ -169,9 +169,9 @@ describe('WorkerPool', () => {
       await new Promise((r) => setTimeout(r, 10));
 
       // Second attempt succeeds
-      if (instances[0].postMessage.mock.calls.length > 1) {
-        const secondMessage = instances[0].postMessage.mock.calls[1][0];
-        instances[0].simulateResponse({
+      if (instances![0]!.postMessage.mock.calls.length > 1) {
+        const secondMessage = instances![0]!.postMessage.mock.calls[1]![0];
+        instances![0]!.simulateResponse({
           id: secondMessage.id,
           type: 'result',
           payload: { recovered: true },
@@ -193,23 +193,23 @@ describe('WorkerPool', () => {
 
       await new Promise((r) => setTimeout(r, 0));
 
-      const postedMessage = instances[0].postMessage.mock.calls[0][0];
+      const postedMessage = instances![0]!.postMessage.mock.calls[0]![0];
 
       // Simulate progress
-      instances[0].simulateResponse({
+      instances![0]!.simulateResponse({
         id: postedMessage.id,
         type: 'progress',
         progress: { processed: 50, total: 100, percent: 50 },
       });
 
-      instances[0].simulateResponse({
+      instances![0]!.simulateResponse({
         id: postedMessage.id,
         type: 'progress',
         progress: { processed: 100, total: 100, percent: 100 },
       });
 
       // Simulate final result
-      instances[0].simulateResponse({
+      instances![0]!.simulateResponse({
         id: postedMessage.id,
         type: 'result',
         payload: { done: true },
@@ -218,8 +218,8 @@ describe('WorkerPool', () => {
       const result = await promise;
       expect(result).toEqual({ done: true });
       expect(progressCalls.length).toBe(2);
-      expect(progressCalls[0].percent).toBe(50);
-      expect(progressCalls[1].percent).toBe(100);
+      expect(progressCalls![0]!.percent).toBe(50);
+      expect(progressCalls![1]!.percent).toBe(100);
 
       pool.terminate();
     });
@@ -237,8 +237,8 @@ describe('WorkerPool', () => {
 
       expect(instances.length).toBe(1);
 
-      const msg = instances[0].postMessage.mock.calls[0][0];
-      instances[0].simulateResponse({
+      const msg = instances![0]!.postMessage.mock.calls[0]![0];
+      instances![0]!.simulateResponse({
         id: msg.id,
         type: 'result',
         payload: 'ok',
@@ -256,8 +256,8 @@ describe('WorkerPool', () => {
       const promise1 = pool.run({ data: 'task1' });
       await new Promise((r) => setTimeout(r, 0));
 
-      const msg1 = instances[0].postMessage.mock.calls[0][0];
-      instances[0].simulateResponse({
+      const msg1 = instances![0]!.postMessage.mock.calls[0]![0];
+      instances![0]!.simulateResponse({
         id: msg1.id,
         type: 'result',
         payload: 'result1',
@@ -270,8 +270,8 @@ describe('WorkerPool', () => {
 
       expect(instances.length).toBe(1); // Same worker reused
 
-      const msg2 = instances[0].postMessage.mock.calls[1][0];
-      instances[0].simulateResponse({
+      const msg2 = instances![0]!.postMessage.mock.calls[1]![0];
+      instances![0]!.simulateResponse({
         id: msg2.id,
         type: 'result',
         payload: 'result2',
@@ -324,8 +324,8 @@ describe('WorkerPool', () => {
       expect(pool.queuedCount).toBe(1);
 
       // Complete first task
-      const msg1 = instances[0].postMessage.mock.calls[0][0];
-      instances[0].simulateResponse({
+      const msg1 = instances![0]!.postMessage.mock.calls[0]![0];
+      instances![0]!.simulateResponse({
         id: msg1.id,
         type: 'result',
         payload: 'result1',
@@ -335,8 +335,8 @@ describe('WorkerPool', () => {
       // Second task should now be dispatched
       await new Promise((r) => setTimeout(r, 0));
 
-      const msg2 = instances[0].postMessage.mock.calls[1][0];
-      instances[0].simulateResponse({
+      const msg2 = instances![0]!.postMessage.mock.calls[1]![0];
+      instances![0]!.simulateResponse({
         id: msg2.id,
         type: 'result',
         payload: 'result2',
@@ -379,7 +379,7 @@ describe('WorkerPool', () => {
       await expect(promise).rejects.toThrow(/timed out/);
 
       // Worker should have been terminated
-      expect(instances[0].terminate).toHaveBeenCalled();
+      expect(instances![0]!.terminate).toHaveBeenCalled();
 
       pool.terminate();
       vi.useRealTimers();

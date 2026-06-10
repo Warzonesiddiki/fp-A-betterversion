@@ -22,7 +22,7 @@ describe('DataRetentionEngine', () => {
       });
       const rules = engine.getRules();
       expect(rules.length).toBeGreaterThan(0);
-      expect(rules[0].name).toBe('GL Retention');
+      expect(rules![0]!.name).toBe('GL Retention');
     });
   });
 

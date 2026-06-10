@@ -1,100 +1,202 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { axe, toHaveNoViolations } from 'jest-axe';
 
+expect.extend(toHaveNoViolations);
+
+// Mock react-router-dom
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+  };
+});
+
+// Mock recharts
+vi.mock('recharts', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('recharts')>();
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
+    ComposedChart: ({ children }: any) => <div data-testid="composed-chart">{children}</div>,
+    PieChart: ({ children }: any) => <div data-testid="pie-chart">{children}</div>,
+  };
+});
+
+// Mock stores
+const useGLStoreMock = vi.fn();
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
-}));
-vi.mock('@/store/retailStore', () => ({
-  useRetailStore: vi.fn(() => ({
-    stores: [],
-    inventory: [],
-    products: [],
-    getLowStockProducts: vi.fn(() => []),
-  })),
-}));
-vi.mock('@/engines/InventoryEngine', () => ({
-  InventoryEngine: {
-    analyze: vi.fn(() => ({})),
-    calculateGLInventoryStats: vi.fn(() => ({
-      totalValue: 0,
-      turnover: 0,
-      daysOnHand: 0,
-      outOfStockCount: 0,
-    })),
-  },
-}));
-vi.mock('@/engines/RetailEngine', () => ({
-  RetailEngine: {
-    analyze: vi.fn(() => ({})),
-    getStoreBreakdown: vi.fn(() => []),
-  },
-}));
-vi.mock('lucide-react', () => ({
-  Package: () => <span data-testid="mock-icon" />,
-  TrendingUp: () => <span data-testid="mock-icon" />,
-  TrendingDown: () => <span data-testid="mock-icon" />,
-  DollarSign: () => <span data-testid="mock-icon" />,
-  Download: () => <span data-testid="mock-icon" />,
-  BarChart3: () => <span data-testid="mock-icon" />,
-  Truck: () => <span data-testid="mock-icon" />,
-  ArrowUpRight: () => <span data-testid="mock-icon" />,
-  ArrowDownRight: () => <span data-testid="mock-icon" />,
-  Minus: () => <span data-testid="mock-icon" />,
-  ChevronUp: () => <span data-testid="mock-icon" />,
-  ChevronDown: () => <span data-testid="mock-icon" />,
-}));
-vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: { children?: React.ReactNode }) => (
-    <div data-testid="chart">{children}</div>
-  ),
-  ComposedChart: () => <div data-testid="composed-chart" />,
-  Bar: () => null,
-  Line: () => null,
-  XAxis: () => null,
-  YAxis: () => null,
-  CartesianGrid: () => null,
-  Tooltip: () => null,
-  Legend: () => null,
-  PieChart: () => <div data-testid="pie-chart" />,
-  Pie: () => null,
-  Cell: () => null,
+  useGLStore: () => useGLStoreMock(),
 }));
 
-import { render, screen } from '@/test/testUtils';
+// Mock ExportEngine
+vi.mock('@/engines/ExportEngine', () => ({
+  ExportEngine: {
+    exportToExcel: vi.fn(),
+  },
+}));
+
+// Mock lucide-react icons
+vi.mock('lucide-react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('lucide-react')>();
+  const makeIcon = () => {
+    const Icon = ({ className }: { className?: string }) => (
+      <span data-testid="mock-icon" className={className} />
+    );
+    Icon.displayName = 'MockIcon';
+    return Icon;
+  };
+  const mocked: Record<string, unknown> = {};
+  for (const key of Object.keys(actual)) {
+    mocked[key] = makeIcon();
+  }
+  return mocked;
+});
+
 import InventoryDashboard from '@/pages/retail/InventoryDashboard';
 
-describe('InventoryDashboard', () => {
+function renderPage(PageComponent: React.ComponentType, initialPath = '/', routePath = '/') {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path={routePath} element={<PageComponent />} />
+          <Route path="*" element={<div>Redirected</div>} />
+        </Routes>
+      </Suspense>
+    </MemoryRouter>
+  );
+}
+
+const mockEntries = [
+  {
+    id: '1',
+    accountCode: '1210',
+    accountName: 'Inventory',
+    debit: 50000,
+    credit: 0,
+    netChange: 50000,
+    period: '2023-01',
+    description: 'desc',
+    currency: 'USD',
+    date: '2023-01-01',
+    department: 'store1',
+  },
+  {
+    id: '2',
+    accountCode: '5000',
+    accountName: 'COGS',
+    debit: 10000,
+    credit: 0,
+    netChange: 10000,
+    period: '2023-01',
+    description: 'desc2',
+    currency: 'USD',
+    date: '2023-01-02',
+    department: 'store1',
+  },
+  {
+    id: '3',
+    accountCode: '4000',
+    accountName: 'Revenue',
+    debit: 0,
+    credit: 20000,
+    netChange: -20000,
+    period: '2023-01',
+    description: 'desc3',
+    currency: 'USD',
+    date: '2023-01-03',
+    department: 'store1',
+  },
+];
+
+describe('Page: InventoryDashboard', () => {
+  const navigateMock = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
-  });
+    vi.mocked(useNavigate).mockReturnValue(navigateMock);
 
-  it('renders empty state when no entries', () => {
-    render(<InventoryDashboard />);
-    expect(screen.getByText(/No Inventory Data/i)).toBeInTheDocument();
-  });
-
-  it('renders dashboard with entries', async () => {
-    const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      entries: [
-        {
-          id: '1',
-          accountCode: '1300',
-          accountName: 'Inventory',
-          debit: 50000,
-          credit: 0,
-          date: '2024-01-01',
-        },
-        {
-          id: '2',
-          accountCode: '4100',
-          accountName: 'Revenue',
-          debit: 30000,
-          credit: 0,
-          date: '2024-01-01',
-        },
-      ],
+    useGLStoreMock.mockReturnValue({
+      entries: mockEntries,
     });
-    render(<InventoryDashboard />);
-    expect(screen.getByText(/Inventory Dashboard/i)).toBeInTheDocument();
+  });
+
+  describe('Smoke Test', () => {
+    it('renders without crashing using lazy-loaded route test pattern', async () => {
+      renderPage(InventoryDashboard, '/retail/inventory-dashboard', '/retail/inventory-dashboard');
+      expect(await screen.findByText('Inventory Dashboard')).toBeInTheDocument();
+    });
+
+    it('renders empty state when no entries', async () => {
+      useGLStoreMock.mockReturnValue({ entries: [] });
+      renderPage(InventoryDashboard, '/retail/inventory-dashboard', '/retail/inventory-dashboard');
+      expect(await screen.findByText('No Inventory Data')).toBeInTheDocument();
+    });
+  });
+
+  describe('Integration Test', () => {
+    it('navigates to GL upload when import button is clicked in empty state', async () => {
+      useGLStoreMock.mockReturnValue({ entries: [] });
+      renderPage(InventoryDashboard, '/retail/inventory-dashboard', '/retail/inventory-dashboard');
+
+      const importBtn = await screen.findByRole('button', { name: /Import GL Data/i });
+      fireEvent.click(importBtn);
+
+      expect(navigateMock).toHaveBeenCalledWith('/data/gl-upload');
+    });
+
+    it('exports data when export button is clicked', async () => {
+      renderPage(InventoryDashboard, '/retail/inventory-dashboard', '/retail/inventory-dashboard');
+
+      const { ExportEngine } = await import('@/engines/ExportEngine');
+
+      const exportBtn = await screen.findByRole('button', { name: /Export/i });
+      fireEvent.click(exportBtn);
+
+      expect(ExportEngine.exportToExcel).toHaveBeenCalled();
+    });
+
+    it('navigates to planning when planning button is clicked', async () => {
+      renderPage(InventoryDashboard, '/retail/inventory-dashboard', '/retail/inventory-dashboard');
+
+      const planBtn = await screen.findByRole('button', { name: /Planning/i });
+      fireEvent.click(planBtn);
+
+      expect(navigateMock).toHaveBeenCalledWith('/retail/inventory-planning');
+    });
+  });
+
+  describe('Accessibility Test', () => {
+    it('has no accessibility violations in loaded state', async () => {
+      const { container } = renderPage(
+        InventoryDashboard,
+        '/retail/inventory-dashboard',
+        '/retail/inventory-dashboard'
+      );
+      await screen.findByText('Inventory Dashboard');
+
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it('has no accessibility violations in empty state', async () => {
+      useGLStoreMock.mockReturnValue({ entries: [] });
+      const { container } = renderPage(
+        InventoryDashboard,
+        '/retail/inventory-dashboard',
+        '/retail/inventory-dashboard'
+      );
+      await screen.findByText('No Inventory Data');
+
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
   });
 });

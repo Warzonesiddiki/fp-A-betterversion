@@ -153,7 +153,7 @@ describe('ProfessionalExportEngine', () => {
 
       // Should have saved with a filename containing entity and BoardPack
       expect(mockSave).toHaveBeenCalledTimes(1);
-      const savedFilename = mockSave.mock.calls[0][0];
+      const savedFilename = mockSave!.mock.calls[0]![0];
       expect(savedFilename).toContain('Acme_Corporation');
       expect(savedFilename).toContain('BoardPack');
     });
@@ -206,7 +206,7 @@ describe('ProfessionalExportEngine', () => {
       // autoTable should be called for each section
       expect(mockAutoTable).toHaveBeenCalled();
       const calls = mockAutoTable.mock.calls;
-      const lastCall = calls[calls.length - 1][0];
+      const lastCall = calls![calls.length - 1]![0];
       expect(lastCall.head).toEqual([['Line Item', 'Actual', 'Budget', 'Variance', 'Var %']]);
     });
 
@@ -228,7 +228,7 @@ describe('ProfessionalExportEngine', () => {
 
       // Confidential text should appear
       const confidentialCalls = mockText.mock.calls.filter((call) =>
-        String(call[0]).includes('CONFIDENTIAL')
+        String(call[0]!).includes('CONFIDENTIAL')
       );
       expect(confidentialCalls.length).toBeGreaterThan(0);
     });
@@ -240,7 +240,7 @@ describe('ProfessionalExportEngine', () => {
       engine.generateBoardPack(data);
 
       // Notes should be rendered (italic text)
-      const noteCalls = mockText.mock.calls.filter((call) => String(call[0]).includes('Note:'));
+      const noteCalls = mockText.mock.calls.filter((call) => String(call[0]!).includes('Note:'));
       expect(noteCalls.length).toBeGreaterThan(0);
     });
   });
@@ -259,7 +259,7 @@ describe('ProfessionalExportEngine', () => {
       engine.generateFromExportData(data, { title: 'Test Report' });
 
       expect(mockSave).toHaveBeenCalledTimes(1);
-      expect(mockSave.mock.calls[0][0]).toContain('Test_Report');
+      expect(mockSave!.mock.calls[0]![0]).toContain('Test_Report');
     });
 
     it('should handle empty data gracefully', () => {
@@ -270,7 +270,9 @@ describe('ProfessionalExportEngine', () => {
 
       expect(mockSave).toHaveBeenCalled();
       // Should display "no data" message
-      const noDataCalls = mockText.mock.calls.filter((call) => String(call[0]).includes('No data'));
+      const noDataCalls = mockText.mock.calls.filter((call) =>
+        String(call[0]!).includes('No data')
+      );
       expect(noDataCalls.length).toBeGreaterThan(0);
     });
 
@@ -312,7 +314,7 @@ describe('ProfessionalExportEngine', () => {
       ProfessionalExportEngine.generateBatchReport(sections, { title: 'Batch Report' });
 
       expect(mockSave).toHaveBeenCalledTimes(1);
-      expect(mockSave.mock.calls[0][0]).toContain('Batch_Report');
+      expect(mockSave!.mock.calls[0]![0]).toContain('Batch_Report');
     });
 
     it('should handle empty sections', () => {
@@ -388,7 +390,7 @@ describe('ProfessionalExportEngine', () => {
       engine.generateBoardPack(data);
 
       // Check autoTable was called with didParseCell that right-aligns
-      const autoTableCall = mockAutoTable.mock.calls.find((call) => call[0].didParseCell);
+      const autoTableCall = mockAutoTable.mock.calls.find((call) => call[0]!.didParseCell);
       expect(autoTableCall).toBeDefined();
     });
   });
@@ -487,7 +489,7 @@ describe('ProfessionalExportEngine', () => {
       engine.generateBoardPack(data);
 
       const finplanCalls = mockText.mock.calls.filter((call) =>
-        String(call[0]).includes('FinPlan Pro')
+        String(call[0]!).includes('FinPlan Pro')
       );
       expect(finplanCalls.length).toBeGreaterThan(0);
     });
@@ -563,7 +565,9 @@ describe('ProfessionalExportEngine', () => {
 
       engine.generateBoardPack(data);
 
-      const targetCalls = mockText.mock.calls.filter((call) => String(call[0]).includes('Target:'));
+      const targetCalls = mockText.mock.calls.filter((call) =>
+        String(call[0]!).includes('Target:')
+      );
       expect(targetCalls.length).toBeGreaterThan(0);
     });
   });

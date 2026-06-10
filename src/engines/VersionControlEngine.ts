@@ -104,13 +104,13 @@ export class VersionControlEngine {
     measure: string;
   } {
     const parts = key.split('::');
-    const cube = parts[0];
-    const measure = parts[2];
+    const cube = parts[0]!;
+    const measure = parts[2]!;
     const coords: Record<string, string> = {};
-    if (parts[1]) {
-      for (const pair of parts[1].split(';')) {
+    if (parts[1]!) {
+      for (const pair of parts[1]!.split(';')) {
         const [k, v] = pair.split('=');
-        if (k && v !== undefined) coords[k] = v;
+        if (k && v !== undefined) coords[k] = v!;
       }
     }
     return { cube, coords, measure };
@@ -228,7 +228,7 @@ export class VersionControlEngine {
     }
 
     const order = this.branchCommitOrder.get(branchId) ?? [];
-    const parentCommitId = order.length > 0 ? order[order.length - 1] : null;
+    const parentCommitId = order.length > 0 ? order[order.length - 1]! : null;
 
     const commit: VersionCommit = {
       id: this.generateId('commit'),
@@ -286,7 +286,7 @@ export class VersionControlEngine {
       const base = this.snapshots.get(branch.baseSnapshotId);
       return base ? this.deepCloneSnapshot(base) : new Map();
     }
-    const lastCommitId = order[order.length - 1];
+    const lastCommitId = order[order.length - 1]!;
     const snap = this.snapshots.get(lastCommitId);
     return snap ? this.deepCloneSnapshot(snap) : new Map();
   }

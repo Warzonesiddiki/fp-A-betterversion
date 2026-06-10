@@ -59,7 +59,11 @@ export const GuidedTour = memo(function GuidedTour({
   if (!isOpen || !step) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-hidden pointer-events-none">
+    <div
+      className="fixed inset-0 z-[100] overflow-hidden pointer-events-none"
+      role="region"
+      aria-label="GuidedTour"
+    >
       {/* Overlay with hole for target */}
       <div className="absolute inset-0 bg-black/60 pointer-events-auto">
         {targetRect && (
@@ -108,7 +112,7 @@ export const GuidedTour = memo(function GuidedTour({
             <button
               onClick={onClose}
               aria-label="Close"
-              className="p-1 rounded-md hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-colors"
+              className="p-1 rounded-md hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               <X className="h-4 w-4" />
             </button>
@@ -124,7 +128,7 @@ export const GuidedTour = memo(function GuidedTour({
           <div className="flex items-center justify-between">
             <button
               onClick={onClose}
-              className="text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               Skip tour
             </button>
@@ -132,7 +136,7 @@ export const GuidedTour = memo(function GuidedTour({
               {currentStep > 0 && (
                 <button
                   onClick={handleBack}
-                  className="flex items-center space-x-1 px-3 py-1.5 rounded-md border border-[var(--border-subtle)] text-xs font-semibold hover:bg-[var(--bg-surface)] transition-colors"
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-md border border-[var(--border-subtle)] text-xs font-semibold hover:bg-[var(--bg-surface)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 >
                   <ChevronLeft className="h-3 w-3" />
                   <span>Back</span>
@@ -140,7 +144,7 @@ export const GuidedTour = memo(function GuidedTour({
               )}
               <button
                 onClick={handleNext}
-                className="flex items-center space-x-1 px-4 py-1.5 rounded-md bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-all shadow-md active:scale-95"
+                className="flex items-center space-x-1 px-4 py-1.5 rounded-md bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-all shadow-md active:scale-95 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               >
                 {currentStep === steps.length - 1 ? (
                   <>

@@ -41,7 +41,7 @@ describe('BackupRestore utility', () => {
     const file = new File(['{}'], 'backup.json', { type: 'application/json' });
     const result = await BackupRestore.importBackup(file);
     expect(result.success).toBe(false);
-    expect(result.errors[0]).toContain('Invalid backup format');
+    expect(result.errors[0]!).toContain('Invalid backup format');
   });
 
   it('importBackup handles valid format and writes to DB', async () => {
@@ -69,6 +69,6 @@ describe('BackupRestore utility', () => {
     const file = new File(['invalid json'], 'backup.json', { type: 'application/json' });
     const result = await BackupRestore.importBackup(file);
     expect(result.success).toBe(false);
-    expect(result.errors[0]).toContain('Failed to parse backup');
+    expect(result.errors[0]!).toContain('Failed to parse backup');
   });
 });

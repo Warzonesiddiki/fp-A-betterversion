@@ -23,7 +23,7 @@ function parseTokenExpiry(token: string): number | null {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1]));
+    const payload = JSON.parse(atob(parts[1]!));
     return payload.exp ? payload.exp * 1000 : null;
   } catch {
     return null;
@@ -50,7 +50,7 @@ function _setRefreshCookie(token: string, maxAgeSeconds: number): void {
 
 function _getRefreshCookie(): string | null {
   const match = document.cookie.match(/finplan_rt=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  return match ? decodeURIComponent(match[1]!) : null;
 }
 
 function _clearRefreshCookie(): void {

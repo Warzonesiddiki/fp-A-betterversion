@@ -36,9 +36,9 @@ describe('DataTable', () => {
     render(<DataTable columns={columns} data={data} />);
     const rows = screen.getAllByRole('row');
     expect(rows).toHaveLength(4); // header + 3 data rows
-    expect(rows[1].textContent).toContain('Alice');
-    expect(rows[1].textContent).toContain('30');
-    expect(rows[1].textContent).toContain('Engineer');
+    expect(rows![1]!.textContent).toContain('Alice');
+    expect(rows![1]!.textContent).toContain('30');
+    expect(rows![1]!.textContent).toContain('Engineer');
   });
 
   it('handles empty data', () => {
@@ -69,8 +69,8 @@ describe('DataTable', () => {
     const ageHeader = screen.getByText('Age');
     fireEvent.click(ageHeader);
     const rows = screen.getAllByRole('row');
-    expect(rows[1].textContent).toContain('Bob');
-    expect(rows[3].textContent).toContain('Charlie');
+    expect(rows![1]!.textContent).toContain('Bob');
+    expect(rows![3]!.textContent).toContain('Charlie');
   });
 
   it('toggles sort direction on second click', () => {
@@ -79,8 +79,8 @@ describe('DataTable', () => {
     fireEvent.click(ageHeader);
     fireEvent.click(ageHeader);
     const rows = screen.getAllByRole('row');
-    expect(rows[1].textContent).toContain('Charlie');
-    expect(rows[3].textContent).toContain('Bob');
+    expect(rows![1]!.textContent).toContain('Charlie');
+    expect(rows![3]!.textContent).toContain('Bob');
   });
 
   it('calls onRowClick when a row is clicked', () => {

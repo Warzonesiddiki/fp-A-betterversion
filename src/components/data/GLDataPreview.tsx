@@ -44,8 +44,8 @@ export function GLDataPreview({
       // Validate Amount (Debit/Credit)
       const drCol = mappings['debit'];
       const crCol = mappings['credit'];
-      const drValue = drCol ? parseFloat(String(row[drCol])) : 0;
-      const crValue = crCol ? parseFloat(String(row[crCol])) : 0;
+      const drValue = drCol ? parseFloat(String(row[drCol]!)) : 0;
+      const crValue = crCol ? parseFloat(String(row[crCol]!)) : 0;
 
       if (drCol && isNaN(drValue)) errors.push('Invalid debit amount');
       if (crCol && isNaN(crValue)) errors.push('Invalid credit amount');
@@ -61,7 +61,7 @@ export function GLDataPreview({
   const hasErrors = validationResults.errorCount > 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" role="region" aria-label="GLDataPreview">
       {/* Error Summary Bar */}
       <div
         className={cn(

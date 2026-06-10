@@ -185,8 +185,8 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.eliminateIntercompany(entries, icPairs);
 
       expect(result).toHaveLength(1);
-      expect(result[0].eliminatedAmount).toBe(-500);
-      expect(result[0].type).toBe('ic_receivable');
+      expect(result![0]!.eliminatedAmount).toBe(-500);
+      expect(result![0]!.type).toBe('ic_receivable');
     });
 
     it('should eliminate IC revenue/expense', () => {
@@ -211,7 +211,7 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.eliminateIntercompany(entries, icPairs);
 
       expect(result).toHaveLength(1);
-      expect(result[0].type).toBe('ic_loan');
+      expect(result![0]!.type).toBe('ic_loan');
     });
 
     it('should eliminate IC dividends', () => {
@@ -224,7 +224,7 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.eliminateIntercompany(entries, icPairs);
 
       expect(result).toHaveLength(1);
-      expect(result[0].type).toBe('ic_dividend');
+      expect(result![0]!.type).toBe('ic_dividend');
     });
 
     it('should eliminate IC investment', () => {
@@ -238,7 +238,7 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.eliminateIntercompany(entries, icPairs);
 
       expect(result).toHaveLength(1);
-      expect(result[0].type).toBe('ic_investment');
+      expect(result![0]!.type).toBe('ic_investment');
     });
 
     it('should auto-detect IC accounts with 9 prefix', () => {
@@ -250,8 +250,8 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.eliminateIntercompany(entries, []);
 
       expect(result).toHaveLength(1);
-      expect(result[0].type).toBe('auto');
-      expect(result[0].eliminatedAmount).toBe(-1000);
+      expect(result![0]!.type).toBe('auto');
+      expect(result![0]!.eliminatedAmount).toBe(-1000);
     });
 
     it('should handle multiple IC pairs', () => {
@@ -291,7 +291,7 @@ describe('ConsolidationEngine', () => {
 
       expect(result).toHaveLength(1);
       // Should eliminate the matched portion (300)
-      expect(Math.abs(result[0].eliminatedAmount)).toBe(300);
+      expect(Math.abs(result![0]!.eliminatedAmount)).toBe(300);
     });
 
     it('should not double-eliminate via auto-detection after manual pairs', () => {
@@ -328,9 +328,9 @@ describe('ConsolidationEngine', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].minorityPct).toBe(20);
-      expect(result[0].netIncome).toBeCloseTo(1200, 2); // 20% of 6000
-      expect(result[0].endingBalance).toBeCloseTo(1200, 2);
+      expect(result![0]!.minorityPct).toBe(20);
+      expect(result![0]!.netIncome).toBeCloseTo(1200, 2); // 20% of 6000
+      expect(result![0]!.endingBalance).toBeCloseTo(1200, 2);
     });
 
     it('should return 0 minority interest for 100% ownership', () => {
@@ -362,8 +362,8 @@ describe('ConsolidationEngine', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].minorityPct).toBe(40);
-      expect(result[0].endingBalance).toBeCloseTo(8000, 2); // 40% of 20000
+      expect(result![0]!.minorityPct).toBe(40);
+      expect(result![0]!.endingBalance).toBeCloseTo(8000, 2); // 40% of 20000
     });
 
     it('should handle negative net income (loss)', () => {
@@ -381,7 +381,7 @@ describe('ConsolidationEngine', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].endingBalance).toBeCloseTo(-1500, 2); // 30% of -5000
+      expect(result![0]!.endingBalance).toBeCloseTo(-1500, 2); // 30% of -5000
     });
 
     it('should handle multiple subsidiaries', () => {
@@ -406,8 +406,8 @@ describe('ConsolidationEngine', () => {
       );
 
       expect(result).toHaveLength(2);
-      expect(result[0].minorityPct).toBe(20);
-      expect(result[1].minorityPct).toBe(40);
+      expect(result![0]!.minorityPct).toBe(20);
+      expect(result![1]!.minorityPct).toBe(40);
     });
 
     it('should skip non-full consolidation methods', () => {
@@ -442,7 +442,7 @@ describe('ConsolidationEngine', () => {
       expect(result).toHaveLength(1);
       // Net income = 10000 - 4000 = 6000, dividends = 1000
       // Minority interest = 20% × (6000 - 1000) = 1000
-      expect(result[0].endingBalance).toBeCloseTo(1000, 2);
+      expect(result![0]!.endingBalance).toBeCloseTo(1000, 2);
     });
   });
 
@@ -497,9 +497,9 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.calculateGoodwill(ownerships, entityMap);
 
       expect(result).toHaveLength(1);
-      expect(result[0].goodwill).toBeGreaterThan(0);
-      expect(result[0].acquisitionCost).toBe(100000);
-      expect(result[0].bookValueAtAcquisition).toBe(80000);
+      expect(result![0]!.goodwill).toBeGreaterThan(0);
+      expect(result![0]!.acquisitionCost).toBe(100000);
+      expect(result![0]!.bookValueAtAcquisition).toBe(80000);
     });
 
     it('should return empty for no acquisition data', () => {
@@ -545,7 +545,7 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.calculateGoodwill(ownerships, entityMap);
 
       expect(result).toHaveLength(1);
-      expect(result[0].goodwill).toBeLessThan(0); // Negative goodwill (bargain purchase)
+      expect(result![0]!.goodwill).toBeLessThan(0); // Negative goodwill (bargain purchase)
     });
 
     it('should calculate amortization', () => {
@@ -564,8 +564,8 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.calculateGoodwill(ownerships, entityMap);
 
       expect(result).toHaveLength(1);
-      expect(result[0].amortizationPerYear).toBeGreaterThan(0);
-      expect(result[0].amortizationPerYear).toBeCloseTo(result[0].goodwill / 10, 2);
+      expect(result![0]!.amortizationPerYear).toBeGreaterThan(0);
+      expect(result![0]!.amortizationPerYear).toBeCloseTo(result![0]!.goodwill / 10, 2);
     });
   });
 
@@ -648,8 +648,8 @@ describe('ConsolidationEngine', () => {
 
       const result = ConsolidationEngine.translateForeignSubsidiaries(entities, fxRates);
 
-      expect(result[1].entries[0].amount).toBeCloseTo(11000, 2); // 10000 * 1.1
-      expect(result[1].entries[0].currency).toBe('USD');
+      expect(result![1]!.entries[0]!.amount).toBeCloseTo(11000, 2); // 10000 * 1.1
+      expect(result![1]!.entries[0]!.currency).toBe('USD');
     });
 
     it('should not translate USD entities', () => {
@@ -660,7 +660,7 @@ describe('ConsolidationEngine', () => {
 
       const result = ConsolidationEngine.translateForeignSubsidiaries(entities, fxRates);
 
-      expect(result[0].entries[0].amount).toBe(50000);
+      expect(result![0]!.entries[0]!.amount).toBe(50000);
     });
 
     it('should return entities unchanged when no FX rates', () => {
@@ -679,7 +679,7 @@ describe('ConsolidationEngine', () => {
 
       const result = ConsolidationEngine.translateForeignSubsidiaries(entities, []);
 
-      expect(result[0].entries[0].amount).toBe(10000);
+      expect(result![0]!.entries[0]!.amount).toBe(10000);
     });
 
     it('should use different rates for different account categories', () => {
@@ -715,11 +715,11 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.translateForeignSubsidiaries(entities, fxRates);
 
       // Asset: closing rate 1.1
-      expect(result[0].entries[0].amount).toBeCloseTo(11000, 2);
+      expect(result![0]!.entries[0]!.amount).toBeCloseTo(11000, 2);
       // Revenue: average rate 1.05
-      expect(result[0].entries[1].amount).toBeCloseTo(5250, 2);
+      expect(result![0]!.entries[1]!.amount).toBeCloseTo(5250, 2);
       // Equity: historical rate 1.0
-      expect(result[0].entries[2].amount).toBeCloseTo(20000, 2);
+      expect(result![0]!.entries[2]!.amount).toBeCloseTo(20000, 2);
     });
   });
 
@@ -754,7 +754,7 @@ describe('ConsolidationEngine', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].type).toBe('ic_investment');
+      expect(result![0]!.type).toBe('ic_investment');
     });
 
     it('should not consolidate VIE when not primary beneficiary', () => {
@@ -871,7 +871,7 @@ describe('ConsolidationEngine', () => {
       );
 
       expect(worksheet.eliminations).toHaveLength(1);
-      expect(worksheet.eliminations[0].type).toBe('ic_receivable');
+      expect(worksheet!.eliminations[0]!.type).toBe('ic_receivable');
     });
   });
 
@@ -947,7 +947,7 @@ describe('ConsolidationEngine', () => {
 
       expect(validation.valid).toBe(false);
       expect(validation.errors.length).toBeGreaterThan(0);
-      expect(validation.errors[0]).toContain('does not balance');
+      expect(validation.errors[0]!).toContain('does not balance');
     });
   });
 
@@ -997,7 +997,7 @@ describe('ConsolidationEngine', () => {
 
       // Should have minority interest (80% ownership = 20% minority)
       expect(result.minorityInterestDetails).toHaveLength(1);
-      expect(result.minorityInterestDetails[0].minorityPct).toBe(20);
+      expect(result!.minorityInterestDetails[0]!.minorityPct).toBe(20);
 
       // Should have goodwill (acquisition cost > book value)
       expect(result.goodwill).toBeGreaterThan(0);

@@ -38,8 +38,8 @@ describe('nim service', () => {
       await nimChat([{ role: 'user', content: 'test' }]);
       await nimChat([{ role: 'user', content: 'test' }]);
 
-      const firstAuth = mockFetch.mock.calls[0][1].headers.Authorization;
-      const secondAuth = mockFetch.mock.calls[1][1].headers.Authorization;
+      const firstAuth = mockFetch!.mock.calls[0]![1].headers.Authorization;
+      const secondAuth = mockFetch!.mock.calls[1]![1].headers.Authorization;
 
       expect(firstAuth).toBe('Bearer key-aaa');
       expect(secondAuth).toBe('Bearer key-bbb');
@@ -128,7 +128,7 @@ describe('nim service', () => {
 
       await nimChat([{ role: 'user', content: 'test' }]);
 
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
       expect(body.model).toBe(NIM_MODELS.DEFAULT);
       expect(body.temperature).toBe(0.7);
       expect(body.max_tokens).toBe(1024);
@@ -151,7 +151,7 @@ describe('nim service', () => {
         top_p: 0.5,
       });
 
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
       expect(body.model).toBe('meta/llama-3.1-8b-instruct');
       expect(body.temperature).toBe(0.1);
       expect(body.max_tokens).toBe(500);
@@ -197,8 +197,8 @@ describe('nim service', () => {
       }
 
       expect(results).toHaveLength(2);
-      expect(results[0].choices[0].delta.content).toBe('Hello');
-      expect(results[1].choices[0].delta.content).toBe(' world');
+      expect(results![0]!.choices[0]!.delta.content).toBe('Hello');
+      expect(results![1]!.choices[0]!.delta.content).toBe(' world');
       expect(reader.releaseLock).toHaveBeenCalled();
     });
 
@@ -263,11 +263,11 @@ describe('nim service', () => {
       });
 
       expect(result).toBe('Analysis result');
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(body.messages[1].content).toContain('Revenue');
-      expect(body.messages[1].content).toContain('120000');
-      expect(body.messages[1].content).toContain('100000');
-      expect(body.messages[1].content).toContain('20.0%');
+      const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
+      expect(body.messages[1]!.content).toContain('Revenue');
+      expect(body.messages[1]!.content).toContain('120000');
+      expect(body.messages[1]!.content).toContain('100000');
+      expect(body.messages[1]!.content).toContain('20.0%');
       expect(body.temperature).toBe(0.3);
     });
 
@@ -281,9 +281,9 @@ describe('nim service', () => {
         period: 'Q1',
       });
 
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
       // When budget is 0, variancePct is 0 (not Infinity) due to the guard: budget !== 0 ? ... : 0
-      expect(body.messages[1].content).toContain('0.0%');
+      expect(body.messages[1]!.content).toContain('0.0%');
     });
 
     it('generateForecastInsight should format historical data', async () => {
@@ -299,11 +299,11 @@ describe('nim service', () => {
       });
 
       expect(result).toBe('Analysis result');
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(body.messages[1].content).toContain('Expenses');
-      expect(body.messages[1].content).toContain('Jan: 10000');
-      expect(body.messages[1].content).toContain('Feb: 12000');
-      expect(body.messages[1].content).toContain('3');
+      const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
+      expect(body.messages[1]!.content).toContain('Expenses');
+      expect(body.messages[1]!.content).toContain('Jan: 10000');
+      expect(body.messages[1]!.content).toContain('Feb: 12000');
+      expect(body.messages[1]!.content).toContain('3');
     });
 
     it('explainFormula should pass formula to nimChat', async () => {
@@ -312,8 +312,8 @@ describe('nim service', () => {
       const result = await explainFormula('EBITDA = Revenue - OpEx + D&A');
 
       expect(result).toBe('Analysis result');
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(body.messages[1].content).toContain('EBITDA = Revenue - OpEx + D&A');
+      const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
+      expect(body.messages[1]!.content).toContain('EBITDA = Revenue - OpEx + D&A');
       expect(body.temperature).toBe(0.2);
     });
 
@@ -329,11 +329,11 @@ describe('nim service', () => {
       });
 
       expect(result).toBe('Analysis result');
-      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(body.messages[1].content).toContain('FY2024 Budget');
-      expect(body.messages[1].content).toContain('500000');
-      expect(body.messages[1].content).toContain('350000');
-      expect(body.messages[1].content).toContain('42');
+      const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
+      expect(body.messages[1]!.content).toContain('FY2024 Budget');
+      expect(body.messages[1]!.content).toContain('500000');
+      expect(body.messages[1]!.content).toContain('350000');
+      expect(body.messages[1]!.content).toContain('42');
     });
 
     it('should return fallback message when response has no content', async () => {

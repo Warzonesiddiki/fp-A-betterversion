@@ -1,0 +1,308 @@
+{
+  "agent": "agent-32",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T03827",
+      "cat": "perf",
+      "title": "SessionEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for SessionEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03831",
+      "cat": "perf",
+      "title": "AuthEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for AuthEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03835",
+      "cat": "perf",
+      "title": "DataClassificationEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for DataClassificationEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03839",
+      "cat": "perf",
+      "title": "CubeSecurityEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CubeSecurityEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03843",
+      "cat": "perf",
+      "title": "EncryptionEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for EncryptionEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03847",
+      "cat": "perf",
+      "title": "RecentFilesEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for RecentFilesEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03851",
+      "cat": "perf",
+      "title": "TaxEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for TaxEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03855",
+      "cat": "perf",
+      "title": "RevRecEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for RevRecEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03859",
+      "cat": "perf",
+      "title": "LeaseEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for LeaseEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03863",
+      "cat": "perf",
+      "title": "DepreciationEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for DepreciationEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03867",
+      "cat": "perf",
+      "title": "BondPricingEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for BondPricingEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03871",
+      "cat": "perf",
+      "title": "OptionPricingEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for OptionPricingEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03875",
+      "cat": "perf",
+      "title": "FairValueEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for FairValueEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03879",
+      "cat": "perf",
+      "title": "BankingEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for BankingEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03883",
+      "cat": "perf",
+      "title": "InsuranceEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for InsuranceEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03887",
+      "cat": "perf",
+      "title": "HealthcareEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for HealthcareEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03891",
+      "cat": "perf",
+      "title": "EnergyEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for EnergyEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03895",
+      "cat": "perf",
+      "title": "ConstructionEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ConstructionEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03899",
+      "cat": "perf",
+      "title": "ManufacturingEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ManufacturingEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03903",
+      "cat": "perf",
+      "title": "RealEstateEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for RealEstateEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03907",
+      "cat": "perf",
+      "title": "RetailEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for RetailEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03911",
+      "cat": "perf",
+      "title": "LogisticsEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for LogisticsEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03915",
+      "cat": "perf",
+      "title": "EducationEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for EducationEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03919",
+      "cat": "perf",
+      "title": "WorkforceEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for WorkforceEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03923",
+      "cat": "perf",
+      "title": "GovernmentEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for GovernmentEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03927",
+      "cat": "perf",
+      "title": "ESGEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ESGEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03931",
+      "cat": "perf",
+      "title": "CreditRiskEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CreditRiskEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03935",
+      "cat": "perf",
+      "title": "InventoryEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for InventoryEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03939",
+      "cat": "perf",
+      "title": "SpreadEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for SpreadEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03943",
+      "cat": "perf",
+      "title": "YieldCurveEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for YieldCurveEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03947",
+      "cat": "perf",
+      "title": "CashEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CashEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03951",
+      "cat": "perf",
+      "title": "CapExEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CapExEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03955",
+      "cat": "perf",
+      "title": "WorkingCapitalEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for WorkingCapitalEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03959",
+      "cat": "perf",
+      "title": "DebtScheduleEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for DebtScheduleEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03963",
+      "cat": "perf",
+      "title": "LoanAmortizationEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for LoanAmortizationEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03967",
+      "cat": "perf",
+      "title": "ImpairmentEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ImpairmentEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03971",
+      "cat": "perf",
+      "title": "FinancialInstrumentsEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for FinancialInstrumentsEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03975",
+      "cat": "perf",
+      "title": "CashFlowWaterfallEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CashFlowWaterfallEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03979",
+      "cat": "perf",
+      "title": "BudgetCollectionEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for BudgetCollectionEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03983",
+      "cat": "perf",
+      "title": "RollingForecastEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for RollingForecastEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03987",
+      "cat": "perf",
+      "title": "ScenarioEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ScenarioEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03991",
+      "cat": "perf",
+      "title": "WhatIfSandboxEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for WhatIfSandboxEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03995",
+      "cat": "perf",
+      "title": "SensitivityEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for SensitivityEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T03999",
+      "cat": "perf",
+      "title": "GoalSeekEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for GoalSeekEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04003",
+      "cat": "perf",
+      "title": "SolverEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for SolverEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04007",
+      "cat": "perf",
+      "title": "ICMatchingEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ICMatchingEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04011",
+      "cat": "perf",
+      "title": "IntercompanyMatchingEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for IntercompanyMatchingEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04015",
+      "cat": "perf",
+      "title": "ReconciliationEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ReconciliationEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04019",
+      "cat": "perf",
+      "title": "PeriodCloseEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for PeriodCloseEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04023",
+      "cat": "perf",
+      "title": "CellValidationEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CellValidationEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

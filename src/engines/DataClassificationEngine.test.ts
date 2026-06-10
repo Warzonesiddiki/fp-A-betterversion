@@ -35,7 +35,7 @@ describe('DataClassificationEngine', () => {
       };
       engine.addTag(tag);
       expect(engine.getTags()).toHaveLength(1);
-      expect(engine.getTags()[0].name).toBe('PII');
+      expect(engine!.getTags()[0]!.name).toBe('PII');
     });
 
     it('should remove a tag', () => {

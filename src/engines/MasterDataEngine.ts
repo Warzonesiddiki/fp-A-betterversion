@@ -255,8 +255,8 @@ export class MasterDataEngine {
     for (const record of this.records.values()) {
       if (!stats[record.type])
         stats[record.type] = { total: 0, active: 0, inactive: 0, archived: 0 };
-      stats[record.type].total++;
-      stats[record.type][record.status]++;
+      stats![record.type]!.total++;
+      stats![record.type]![record.status]++;
     }
     return stats as Record<
       MasterDataType,

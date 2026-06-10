@@ -152,8 +152,8 @@ function normalizeHeader(h: string): string {
 function matchKeyword(header: string, keywords: string[]): number {
   const normalized = normalizeHeader(header);
   for (let i = 0; i < keywords.length; i++) {
-    if (normalized === keywords[i]) return 1.0 - i * 0.05;
-    if (normalized.includes(keywords[i])) return 0.7 - i * 0.03;
+    if (normalized === keywords[i]!) return 1.0 - i * 0.05;
+    if (normalized.includes(keywords[i]!)) return 0.7 - i * 0.03;
   }
   return 0;
 }
@@ -298,7 +298,7 @@ export class ExcelImportEngine {
 
       // Boost confidence with sample data analysis
       if (sampleRows.length > 0 && bestConfidence < 0.9) {
-        const values = sampleRows.map((r) => r[header]).filter((v) => v !== '' && v != null);
+        const values = sampleRows.map((r) => r[header]!).filter((v) => v !== '' && v != null);
         if (values.length > 0) {
           const dateCount = values.filter(isDateString).length;
           const numericCount = values.filter(isNumericString).length;
@@ -343,9 +343,9 @@ export class ExcelImportEngine {
 
       // Keep only the highest confidence, demote others to skip
       for (let i = 1; i < candidates.length; i++) {
-        candidates[i].targetField = 'skip';
-        candidates[i].reason =
-          `Demoted: "${candidates[0].sourceColumn}" is a better match for ${field}`;
+        candidates[i]!.targetField = 'skip';
+        candidates[i]!.reason =
+          `Demoted: "${candidates[0]!.sourceColumn}" is a better match for ${field}`;
       }
     }
   }
@@ -375,7 +375,7 @@ export class ExcelImportEngine {
 
       const getVal = (field: TargetField): unknown => {
         const col = columnMap.get(field);
-        return col ? row[col] : undefined;
+        return col ? row![col] : undefined;
       };
 
       const dateVal = getVal('date');

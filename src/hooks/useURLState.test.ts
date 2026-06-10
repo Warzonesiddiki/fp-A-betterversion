@@ -23,25 +23,25 @@ describe('useURLState', () => {
 
   it('should return default value when no URL param', () => {
     const { result } = renderHook(() => useURLState('key', 'default'));
-    expect(result.current[0]).toBe('default');
+    expect(result.current[0]!).toBe('default');
   });
 
   it('should read initial value from URL param', () => {
     searchParams = new URLSearchParams({ key: '"hello"' });
     const { result } = renderHook(() => useURLState<string>('key', 'default'));
-    expect(result.current[0]).toBe('hello');
+    expect(result.current[0]!).toBe('hello');
   });
 
   it('should fallback to default on invalid JSON', () => {
     searchParams = new URLSearchParams({ key: 'not-json' });
     const { result } = renderHook(() => useURLState<string>('key', 'default'));
-    expect(result.current[0]).toBe('default');
+    expect(result.current[0]!).toBe('default');
   });
 
   it('should support prefix option', () => {
     searchParams = new URLSearchParams({ myPrefix_key: '"value"' });
     const { result } = renderHook(() => useURLState<string>('key', '', { prefix: 'myPrefix' }));
-    expect(result.current[0]).toBe('value');
+    expect(result.current[0]!).toBe('value');
   });
 
   it('should support custom serialize/deserialize', () => {
@@ -49,7 +49,7 @@ describe('useURLState', () => {
     const deserialize = (v: string) => Number(v);
     searchParams = new URLSearchParams({ num: '42' });
     const { result } = renderHook(() => useURLState<number>('num', 0, { serialize, deserialize }));
-    expect(result.current[0]).toBe(42);
+    expect(result.current[0]!).toBe(42);
   });
 });
 
@@ -60,12 +60,12 @@ describe('useURLString', () => {
 
   it('should default to empty string', () => {
     const { result } = renderHook(() => useURLString('name'));
-    expect(result.current[0]).toBe('');
+    expect(result.current[0]!).toBe('');
   });
 
   it('should use provided default', () => {
     const { result } = renderHook(() => useURLString('name', 'foo'));
-    expect(result.current[0]).toBe('foo');
+    expect(result.current[0]!).toBe('foo');
   });
 });
 
@@ -76,13 +76,13 @@ describe('useURLNumber', () => {
 
   it('should default to 0', () => {
     const { result } = renderHook(() => useURLNumber('page'));
-    expect(result.current[0]).toBe(0);
+    expect(result.current[0]!).toBe(0);
   });
 
   it('should read number from URL', () => {
     searchParams = new URLSearchParams({ page: '5' });
     const { result } = renderHook(() => useURLNumber('page'));
-    expect(result.current[0]).toBe(5);
+    expect(result.current[0]!).toBe(5);
   });
 });
 
@@ -93,19 +93,19 @@ describe('useURLBoolean', () => {
 
   it('should default to false', () => {
     const { result } = renderHook(() => useURLBoolean('active'));
-    expect(result.current[0]).toBe(false);
+    expect(result.current[0]!).toBe(false);
   });
 
   it('should read true from URL as "1"', () => {
     searchParams = new URLSearchParams({ active: '1' });
     const { result } = renderHook(() => useURLBoolean('active'));
-    expect(result.current[0]).toBe(true);
+    expect(result.current[0]!).toBe(true);
   });
 
   it('should read false from URL as "0"', () => {
     searchParams = new URLSearchParams({ active: '0' });
     const { result } = renderHook(() => useURLBoolean('active'));
-    expect(result.current[0]).toBe(false);
+    expect(result.current[0]!).toBe(false);
   });
 });
 
@@ -116,12 +116,12 @@ describe('useURLArray', () => {
 
   it('should default to empty array', () => {
     const { result } = renderHook(() => useURLArray<string>('tags'));
-    expect(result.current[0]).toEqual([]);
+    expect(result.current[0]!).toEqual([]);
   });
 
   it('should read comma-separated values from URL', () => {
     searchParams = new URLSearchParams({ tags: 'a,b,c' });
     const { result } = renderHook(() => useURLArray<string>('tags'));
-    expect(result.current[0]).toEqual(['a', 'b', 'c']);
+    expect(result.current[0]!).toEqual(['a', 'b', 'c']);
   });
 });

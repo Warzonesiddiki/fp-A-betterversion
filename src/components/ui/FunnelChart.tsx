@@ -27,7 +27,11 @@ export const FunnelChart: React.FC<FunnelChartProps> = React.memo(
   }) => {
     if (loading) {
       return (
-        <div className={cn('flex flex-col items-center gap-1', className)}>
+        <div
+          className={cn('flex flex-col items-center gap-1', className)}
+          role="region"
+          aria-label="FunnelChart"
+        >
           <div className="flex items-center justify-center h-48">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
           </div>
@@ -38,7 +42,10 @@ export const FunnelChart: React.FC<FunnelChartProps> = React.memo(
     if (error) {
       return (
         <div className={cn('flex flex-col items-center gap-1', className)}>
-          <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
+          <div className="flex items-center justify-center h-48 text-red-500 text-sm">
+            {' '}
+            role="alert" role="alert" {error}
+          </div>
         </div>
       );
     }
@@ -64,7 +71,7 @@ export const FunnelChart: React.FC<FunnelChartProps> = React.memo(
         {stages.map((stage, i) => {
           const width = (stage.value / maxValue) * 100;
           const conversionRate =
-            i > 0 ? ((stage.value / stages[i - 1].value) * 100).toFixed(1) : null;
+            i > 0 ? ((stage.value / stages![i - 1]!.value) * 100).toFixed(1) : null;
 
           return (
             <div

@@ -77,7 +77,7 @@ export function CarbonFootprintTracker({ className }: CarbonFootprintTrackerProp
   const formatTons = (n: number): string => `${n.toFixed(2)} tCO2e`;
 
   return (
-    <div className={className}>
+    <div className={className} role="region" aria-label="CarbonFootprintTracker">
       <div className="grid gap-4 md:grid-cols-4 mb-6">
         <KPIValue
           label="Total CO2"

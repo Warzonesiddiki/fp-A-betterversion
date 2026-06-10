@@ -313,4 +313,33 @@ export class ScenarioEngine {
 
     return result;
   }
+
+  static mergeScenarios(
+    base: ScenarioMetrics,
+    other: ScenarioMetrics,
+    weight: number
+  ): ScenarioMetrics {
+    const w = Math.max(0, Math.min(1, weight));
+    const invW = 1 - w;
+
+    return {
+      revenue: base.revenue * invW + other.revenue * w,
+      ebitda: base.ebitda * invW + other.ebitda * w,
+      netIncome: base.netIncome * invW + other.netIncome * w,
+      cashFlow: base.cashFlow * invW + other.cashFlow * w,
+      headcount: Math.round(base.headcount * invW + other.headcount * w),
+      burnRate: base.burnRate * invW + other.burnRate * w,
+      runway: base.runway * invW + other.runway * w,
+      grossMargin: base.grossMargin * invW + other.grossMargin * w,
+      ebitdaMargin: base.ebitdaMargin * invW + other.ebitdaMargin * w,
+    };
+  }
+
+  static lockScenario<T extends { isLocked: boolean; updatedAt: string }>(scenario: T): T {
+    return { ...scenario, isLocked: true, updatedAt: new Date().toISOString() };
+  }
+
+  static unlockScenario<T extends { isLocked: boolean; updatedAt: string }>(scenario: T): T {
+    return { ...scenario, isLocked: false, updatedAt: new Date().toISOString() };
+  }
 }

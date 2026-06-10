@@ -93,7 +93,7 @@ export function ICReconciliation({
   };
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-6', className)} role="region" aria-label="ICReconciliation">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -281,6 +281,8 @@ export function ICReconciliation({
                     key={`${line.entityA}:${line.entityB}:${line.accountCode}`}
                     className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20"
                   >
+                    {' '}
+                    role="alert"
                     <div>
                       <span className="font-medium">
                         {line.entityA} ↔ {line.entityB}
@@ -291,6 +293,8 @@ export function ICReconciliation({
                     </div>
                     <div className="text-right">
                       <div className="font-mono font-semibold text-red-600 dark:text-red-400">
+                        {' '}
+                        role="alert"
                         {formatCurrency(line.difference)} difference
                       </div>
                       <div className="text-xs text-muted-foreground">

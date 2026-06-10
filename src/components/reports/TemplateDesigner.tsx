@@ -93,7 +93,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
       const target = direction === 'up' ? idx - 1 : idx + 1;
       if (target < 0 || target >= prev.length) return prev;
       const next = [...prev];
-      [next[idx], next[target]] = [next[target], next[idx]];
+      [next[idx]!, next[target]!] = [next[target]!, next[idx]!];
       return next.map((s, i) => ({ ...s, order: i }));
     });
   }, []);
@@ -123,7 +123,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
     });
   }, [name, type, description, sections, style, template, onSave]);
 
-  const active = sections.find((s) => s.id === selectedSection);
+  const active: TemplateSection | undefined = sections.find((s) => s.id === selectedSection);
 
   return (
     <div className="flex h-full">
@@ -150,7 +150,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
             >
               <span className="flex-1 truncate">{section.title || section.type}</span>
               <button
-                className="text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
+                className="text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   moveSection(section.id, 'up');
@@ -160,7 +160,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                 ↑
               </button>
               <button
-                className="text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300"
+                className="text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[var(--text-secondary)] dark:hover:text-gray-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   moveSection(section.id, 'down');
@@ -170,7 +170,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                 ↓
               </button>
               <button
-                className="text-red-400 hover:fin-negative"
+                className="text-red-400 hover:fin-negative focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeSection(section.id);
@@ -190,7 +190,7 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
           {SECTION_TYPES.map((st) => (
             <button
               key={st.value}
-              className="w-full text-left px-2 py-1.5 text-sm rounded bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 dark:bg-gray-800 hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500"
+              className="w-full text-left px-2 py-1.5 text-sm rounded bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 dark:bg-gray-800 hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               onClick={() => addSection(st.value)}
             >
               + {st.label}
@@ -319,13 +319,13 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
       <div className="w-48 border-l border-[var(--border-subtle)] dark:border-gray-700 p-4 flex flex-col gap-2">
         <button
           onClick={handleSave}
-          className="w-full px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+          className="w-full px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Save Template
         </button>
         <button
           onClick={onCancel}
-          className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+          className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Cancel
         </button>

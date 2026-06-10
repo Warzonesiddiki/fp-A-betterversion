@@ -97,7 +97,7 @@ function NodeRow({
       >
         <button
           type="button"
-          className="flex items-center justify-center w-5 h-5"
+          className="flex items-center justify-center w-5 h-5 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           onClick={() => hasKids && setOpen(!open)}
           aria-label={open ? 'Collapse' : 'Expand'}
         >
@@ -185,7 +185,7 @@ function NodeRow({
               <button
                 type="button"
                 onClick={savePct}
-                className="p-0.5 text-emerald-500 hover:bg-emerald-500/10 rounded"
+                className="p-0.5 text-emerald-500 hover:bg-emerald-500/10 rounded focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 aria-label="Save"
               >
                 <Check className="h-3 w-3" />

@@ -183,7 +183,7 @@ describe('TourOverlay', () => {
 
   it('calls stopTour when X button is clicked', () => {
     render(<TourOverlay />);
-    const closeBtn = screen.getByRole('button', { name: '' }); // X button has no text
+    const closeBtn = screen.getByRole('button', { name: 'Close tour' });
     fireEvent.click(closeBtn);
     expect(mockStopTour).toHaveBeenCalled();
   });

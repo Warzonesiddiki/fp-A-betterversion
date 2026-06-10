@@ -1,0 +1,8 @@
+{
+  "agent": "agent-29",
+  "task": "Add JSDoc comments to public functions in src/engines/ForecastEngine.ts (fallback to ForecastMethodEngine.ts; neither ForecastEngine.ts nor ForecastModels.ts existed in the repo)",
+  "status": "completed",
+  "jsdocLinesAdded": 70,
+  "tscErrorsAfter": 0,
+  "notes": "Target file: src/engines/ForecastMethodEngine.ts. ForecastEngine.ts and ForecastModels.ts did not exist; ForecastMethodEngine.ts is the engine containing the public forecasting API and was used as the closest match. JSDoc blocks added to all 9 public static methods of the ForecastMethodEngine class: simpleMovingAverage, weightedMovingAverage, exponentialSmoothing, movingAverage, linearRegression, seasonalDecomposition, holtWinters, ensembleForecast, autoSelectBestMethod. Each block documents @param, @returns, and @throws. Verification: `node run-tsc.cjs 2>&1 | Select-String \"Forecast\" | Measure-Object -Line` = 0 (unchanged from baseline of 0)."
+}

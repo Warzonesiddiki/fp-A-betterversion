@@ -1,0 +1,308 @@
+{
+  "agent": "agent-38",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T03100",
+      "cat": "sec",
+      "title": "Forward secrecy on sync",
+      "spec": "X25519 + ephemeral keys per session. Past compromise cannot decrypt future."
+    },
+    {
+      "id": "T03101",
+      "cat": "sec",
+      "title": "Side-channel timing audit",
+      "spec": "Use SubtleCrypto.measure-timing where possible. Constant-time compare."
+    },
+    {
+      "id": "T03102",
+      "cat": "sec",
+      "title": "Hardware-bound key storage",
+      "spec": "On Tauri: use secure enclave/keystore. On web: WebAuthn credential-bound keys."
+    },
+    {
+      "id": "T03103",
+      "cat": "sec",
+      "title": "mTLS for sync endpoints",
+      "spec": "If sync server exists, require mutual TLS. Pin server cert by SPKI."
+    },
+    {
+      "id": "T03104",
+      "cat": "sec",
+      "title": "HMAC integrity tags",
+      "spec": "Sign persisted snapshots with HMAC-SHA256. Verify on load."
+    },
+    {
+      "id": "T03105",
+      "cat": "sec",
+      "title": "Pinned public keys",
+      "spec": "Ship TUF-style key list. Update on user approval."
+    },
+    {
+      "id": "T03106",
+      "cat": "sec",
+      "title": "RNG quality audit",
+      "spec": "Only crypto.getRandomValues. No Math.random for security."
+    },
+    {
+      "id": "T03107",
+      "cat": "sec",
+      "title": "Password hashing",
+      "spec": "Argon2id for any password. Parameters: m=64MB, t=3, p=1."
+    },
+    {
+      "id": "T03108",
+      "cat": "sec",
+      "title": "Tauri command capability list",
+      "spec": "Replace string-based allowlist with typed Capability struct."
+    },
+    {
+      "id": "T03109",
+      "cat": "sec",
+      "title": "CSV import: DDE/DLL injection",
+      "spec": "Block =WEBSERVICE, =DDE, =RTD formulas on import."
+    },
+    {
+      "id": "T03110",
+      "cat": "sec",
+      "title": "Backup integrity hash chain",
+      "spec": "Hash chain every backup. Detect corruption on read."
+    },
+    {
+      "id": "T03111",
+      "cat": "sec",
+      "title": "Log sanitization: secrets",
+      "spec": "Wrap logger.ts to redact: passwords, tokens, PII before write."
+    },
+    {
+      "id": "T03112",
+      "cat": "sec",
+      "title": "Audit log retention policy",
+      "spec": "Auto-prune logs > 7 years. Configurable per compliance regime."
+    },
+    {
+      "id": "T04828",
+      "cat": "sec",
+      "title": "api authn/authz enforcement",
+      "spec": "api verifies caller permissions on every method."
+    },
+    {
+      "id": "T04831",
+      "cat": "sec",
+      "title": "BenchmarkService authn/authz enforcement",
+      "spec": "BenchmarkService verifies caller permissions on every method."
+    },
+    {
+      "id": "T04834",
+      "cat": "sec",
+      "title": "ChangeBroadcaster authn/authz enforcement",
+      "spec": "ChangeBroadcaster verifies caller permissions on every method."
+    },
+    {
+      "id": "T04837",
+      "cat": "sec",
+      "title": "nim authn/authz enforcement",
+      "spec": "nim verifies caller permissions on every method."
+    },
+    {
+      "id": "T04840",
+      "cat": "sec",
+      "title": "PresenceService authn/authz enforcement",
+      "spec": "PresenceService verifies caller permissions on every method."
+    },
+    {
+      "id": "T04843",
+      "cat": "sec",
+      "title": "RealtimeCollaborationManager authn/authz enforcement",
+      "spec": "RealtimeCollaborationManager verifies caller permissions on every method."
+    },
+    {
+      "id": "T04846",
+      "cat": "sec",
+      "title": "WebSocketManager authn/authz enforcement",
+      "spec": "WebSocketManager verifies caller permissions on every method."
+    },
+    {
+      "id": "T04848",
+      "cat": "sec",
+      "title": "backupRestore input sanitization audit",
+      "spec": "backupRestore every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04851",
+      "cat": "sec",
+      "title": "chunkedStorage input sanitization audit",
+      "spec": "chunkedStorage every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04854",
+      "cat": "sec",
+      "title": "cn input sanitization audit",
+      "spec": "cn every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04857",
+      "cat": "sec",
+      "title": "constants input sanitization audit",
+      "spec": "constants every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04860",
+      "cat": "sec",
+      "title": "encryption input sanitization audit",
+      "spec": "encryption every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04863",
+      "cat": "sec",
+      "title": "financialFormatting input sanitization audit",
+      "spec": "financialFormatting every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04866",
+      "cat": "sec",
+      "title": "formatters input sanitization audit",
+      "spec": "formatters every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04869",
+      "cat": "sec",
+      "title": "indexedDBStorage input sanitization audit",
+      "spec": "indexedDBStorage every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04872",
+      "cat": "sec",
+      "title": "localeFormatting input sanitization audit",
+      "spec": "localeFormatting every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04875",
+      "cat": "sec",
+      "title": "logger input sanitization audit",
+      "spec": "logger every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04878",
+      "cat": "sec",
+      "title": "masterStorage input sanitization audit",
+      "spec": "masterStorage every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04881",
+      "cat": "sec",
+      "title": "offlineCache input sanitization audit",
+      "spec": "offlineCache every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04884",
+      "cat": "sec",
+      "title": "performance input sanitization audit",
+      "spec": "performance every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04887",
+      "cat": "sec",
+      "title": "retry input sanitization audit",
+      "spec": "retry every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04890",
+      "cat": "sec",
+      "title": "security input sanitization audit",
+      "spec": "security every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04893",
+      "cat": "sec",
+      "title": "sqlJsStorage input sanitization audit",
+      "spec": "sqlJsStorage every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04896",
+      "cat": "sec",
+      "title": "storageConstants input sanitization audit",
+      "spec": "storageConstants every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04899",
+      "cat": "sec",
+      "title": "storeCache input sanitization audit",
+      "spec": "storeCache every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04902",
+      "cat": "sec",
+      "title": "tauriSqlStorage input sanitization audit",
+      "spec": "tauriSqlStorage every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04905",
+      "cat": "sec",
+      "title": "tokenRotation input sanitization audit",
+      "spec": "tokenRotation every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04908",
+      "cat": "sec",
+      "title": "validation input sanitization audit",
+      "spec": "validation every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04911",
+      "cat": "sec",
+      "title": "zipBuilder input sanitization audit",
+      "spec": "zipBuilder every input sanitized. No implicit trust."
+    },
+    {
+      "id": "T04969",
+      "cat": "sec",
+      "title": "OWASP A01 Broken Access Control",
+      "spec": "Verify role/permission checks on every endpoint. IDOR test."
+    },
+    {
+      "id": "T04970",
+      "cat": "sec",
+      "title": "OWASP A02 Cryptographic Failures",
+      "spec": "TLS, at-rest, in-transit. No weak ciphers."
+    },
+    {
+      "id": "T04971",
+      "cat": "sec",
+      "title": "OWASP A03 Injection",
+      "spec": "XSS, SQL, NoSQL, LDAP, OS command."
+    },
+    {
+      "id": "T04972",
+      "cat": "sec",
+      "title": "OWASP A04 Insecure Design",
+      "spec": "Threat model per feature."
+    },
+    {
+      "id": "T04973",
+      "cat": "sec",
+      "title": "OWASP A05 Security Misconfiguration",
+      "spec": "Default creds, verbose errors, missing headers."
+    },
+    {
+      "id": "T04974",
+      "cat": "sec",
+      "title": "OWASP A06 Vulnerable Components",
+      "spec": "npm audit, OSV scanner."
+    },
+    {
+      "id": "T04975",
+      "cat": "sec",
+      "title": "OWASP A07 Identification & Auth Failures",
+      "spec": "Session, MFA, credential stuffing."
+    },
+    {
+      "id": "T04976",
+      "cat": "sec",
+      "title": "OWASP A08 Software & Data Integrity",
+      "spec": "Verify updates, CI/CD pipeline."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

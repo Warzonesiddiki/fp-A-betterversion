@@ -184,24 +184,24 @@ export class ReportCacheEngine {
     switch (this.config.evictionPolicy) {
       case 'lru':
         targetKey = entries.reduce(
-          (min, [key, entry]) => (entry.lastAccessed < min[1].lastAccessed ? [key, entry] : min),
-          entries[0]
+          (min, [key, entry]) => (entry.lastAccessed < min![1]!.lastAccessed ? [key, entry] : min),
+          entries[0]!
         )[0];
         break;
       case 'lfu':
         targetKey = entries.reduce(
-          (min, [key, entry]) => (entry.accessCount < min[1].accessCount ? [key, entry] : min),
-          entries[0]
+          (min, [key, entry]) => (entry.accessCount < min![1]!.accessCount ? [key, entry] : min),
+          entries[0]!
         )[0];
         break;
       case 'fifo':
         targetKey = entries.reduce(
-          (min, [key, entry]) => (entry.createdAt < min[1].createdAt ? [key, entry] : min),
-          entries[0]
+          (min, [key, entry]) => (entry.createdAt < min![1]!.createdAt ? [key, entry] : min),
+          entries[0]!
         )[0];
         break;
       default:
-        targetKey = entries[0][0];
+        targetKey = entries[0]![0];
     }
 
     this.cache.delete(targetKey);

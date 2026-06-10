@@ -70,10 +70,10 @@ describe('CellProtectionEngine', () => {
       CellProtectionEngine.protect('B2', 'hidden', 'user-1', 'sensitive');
       const sheet = CellProtectionEngine.getProtectionSheet();
       expect(sheet).toHaveLength(2);
-      expect(sheet[0].cellRef).toBe('A1');
-      expect(sheet[0].type).toBe('locked');
-      expect(sheet[1].cellRef).toBe('B2');
-      expect(sheet[1].type).toBe('hidden');
+      expect(sheet![0]!.cellRef).toBe('A1');
+      expect(sheet![0]!.type).toBe('locked');
+      expect(sheet![1]!.cellRef).toBe('B2');
+      expect(sheet![1]!.type).toBe('hidden');
     });
   });
 

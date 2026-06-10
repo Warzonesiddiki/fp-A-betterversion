@@ -1,0 +1,10 @@
+src/pages/accounting/DepreciationPage.tsx
+src/pages/accounting/MultiBookPage.tsx
+src/pages/admin/BenchmarksPage.tsx
+src/pages/admin/DebugPage.tsx
+src/pages/ai/AIIntelligencePage.tsx
+src/pages/ai/NLQChatPage.tsx
+src/pages/analytics/AnalyticsPage.tsx
+src/pages/analytics/BenchmarkingPage.tsx
+src/pages/analytics/DashboardBuilderPage.tsx
+src/pages/analytics/DataLineagePage.tsx

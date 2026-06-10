@@ -124,7 +124,7 @@ describe('TemplateMarketplace', () => {
     ];
     renderTemplateMarketplace({ templates, onSelect });
     const cards = screen.getAllByTestId('card');
-    fireEvent.click(cards[1]);
+    fireEvent.click(cards[1]!);
     expect(onSelect).toHaveBeenCalledWith('2');
   });
 
@@ -136,8 +136,8 @@ describe('TemplateMarketplace', () => {
     renderTemplateMarketplace({ templates });
     const badges = screen.getAllByTestId('badge');
     expect(badges).toHaveLength(2);
-    expect(badges[0]).toHaveTextContent('Financial');
-    expect(badges[1]).toHaveTextContent('Operational');
+    expect(badges[0]!).toHaveTextContent('Financial');
+    expect(badges[1]!).toHaveTextContent('Operational');
   });
 
   it('renders empty state with dashed border styling', () => {

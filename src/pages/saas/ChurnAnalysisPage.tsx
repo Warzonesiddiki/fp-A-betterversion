@@ -109,7 +109,7 @@ function buildSegmentChurn(
     const churn = 1.5 + Math.random() * 4;
 
     const segments = ['Enterprise', 'Mid-Market', 'SMB', 'Startup'];
-    const segment = segments[entities.indexOf(entityId) % segments.length];
+    const segment = segments[entities.indexOf(entityId) % segments.length]!;
 
     return {
       segment,
@@ -139,10 +139,10 @@ function buildAtRiskCustomers(
 
     return {
       name,
-      segment: segments[i % segments.length],
+      segment: segments[i % segments.length]!,
       mrr: Math.abs(mrr),
-      riskScore: riskScores[i % riskScores.length],
-      lastLogin: lastLogins[i % lastLogins.length],
+      riskScore: riskScores[i % riskScores.length]!,
+      lastLogin: lastLogins[i % lastLogins.length]!,
     };
   });
 }
@@ -174,9 +174,9 @@ export default function ChurnAnalysisPage() {
     const totalAtRiskMRR = atRiskCustomers.reduce((s, c) => s + c.mrr, 0);
 
     return {
-      customerChurn: latest.customerChurn,
-      revenueChurn: latest.revenueChurn,
-      saveRate: latest.saveRate,
+      customerChurn: latest!.customerChurn,
+      revenueChurn: latest!.revenueChurn,
+      saveRate: latest!.saveRate,
       atRiskCount: atRiskCustomers.length,
       totalAtRiskMRR,
     };

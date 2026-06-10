@@ -135,7 +135,7 @@ export const useConstructionStore = create<ConstructionState>()(
       updateChangeOrder: (id, updates) =>
         set((state) => {
           const idx = state.changeOrders.findIndex((o) => o.id === id);
-          if (idx !== -1) Object.assign(state.changeOrders[idx], updates);
+          if (idx !== -1) Object.assign(state.changeOrders[idx]!, updates);
         }),
 
       setCostLedger: (entries) =>

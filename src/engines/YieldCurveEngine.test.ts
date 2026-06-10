@@ -9,9 +9,9 @@ describe('YieldCurveEngine', () => {
         { maturity: 1, rate: 0.01 },
         { maturity: 10, rate: 0.04 },
       ]);
-      expect(result[0].maturity).toBe(1);
-      expect(result[1].maturity).toBe(5);
-      expect(result[2].maturity).toBe(10);
+      expect(result![0]!.maturity).toBe(1);
+      expect(result![1]!.maturity).toBe(5);
+      expect(result![2]!.maturity).toBe(10);
     });
 
     it('should preserve rates', () => {
@@ -19,8 +19,8 @@ describe('YieldCurveEngine', () => {
         { maturity: 1, rate: 0.02 },
         { maturity: 5, rate: 0.03 },
       ]);
-      expect(result[0].rate).toBe(0.02);
-      expect(result[1].rate).toBe(0.03);
+      expect(result![0]!.rate).toBe(0.02);
+      expect(result![1]!.rate).toBe(0.03);
     });
 
     it('should handle single point', () => {

@@ -1,0 +1,308 @@
+{
+  "agent": "agent-50",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T06234",
+      "cat": "a11y",
+      "title": "SectorTemplatePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SectorTemplatePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06237",
+      "cat": "a11y",
+      "title": "PluginMarketplacePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for PluginMarketplacePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06240",
+      "cat": "a11y",
+      "title": "PluginInstalledPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for PluginInstalledPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06243",
+      "cat": "a11y",
+      "title": "PluginDetailPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for PluginDetailPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06246",
+      "cat": "a11y",
+      "title": "NotificationsPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for NotificationsPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06249",
+      "cat": "a11y",
+      "title": "EmailTemplatesPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for EmailTemplatesPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06252",
+      "cat": "a11y",
+      "title": "SMSTemplatesPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SMSTemplatesPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06255",
+      "cat": "a11y",
+      "title": "IntegrationListPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for IntegrationListPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06258",
+      "cat": "a11y",
+      "title": "ConnectorPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ConnectorPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06261",
+      "cat": "a11y",
+      "title": "WebhookPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for WebhookPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06264",
+      "cat": "a11y",
+      "title": "BackupRestorePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for BackupRestorePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06267",
+      "cat": "a11y",
+      "title": "MigrationPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for MigrationPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06270",
+      "cat": "a11y",
+      "title": "ExportPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ExportPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06273",
+      "cat": "a11y",
+      "title": "ImportPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ImportPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06276",
+      "cat": "a11y",
+      "title": "DataLineagePage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DataLineagePage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06279",
+      "cat": "a11y",
+      "title": "DataQualityPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DataQualityPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06282",
+      "cat": "a11y",
+      "title": "DataCatalogPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DataCatalogPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06285",
+      "cat": "a11y",
+      "title": "AnomalyDetectionPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for AnomalyDetectionPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06288",
+      "cat": "a11y",
+      "title": "FraudDetectionPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for FraudDetectionPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06290",
+      "cat": "a11y",
+      "title": "A11y: NVDA screen reader test",
+      "spec": "Verify and document NVDA screen reader test compliance across the application."
+    },
+    {
+      "id": "T06291",
+      "cat": "a11y",
+      "title": "A11y: JAWS screen reader test",
+      "spec": "Verify and document JAWS screen reader test compliance across the application."
+    },
+    {
+      "id": "T06292",
+      "cat": "a11y",
+      "title": "A11y: VoiceOver macOS",
+      "spec": "Verify and document VoiceOver macOS compliance across the application."
+    },
+    {
+      "id": "T06293",
+      "cat": "a11y",
+      "title": "A11y: VoiceOver iOS",
+      "spec": "Verify and document VoiceOver iOS compliance across the application."
+    },
+    {
+      "id": "T06294",
+      "cat": "a11y",
+      "title": "A11y: TalkBack Android",
+      "spec": "Verify and document TalkBack Android compliance across the application."
+    },
+    {
+      "id": "T06295",
+      "cat": "a11y",
+      "title": "A11y: ChromeVox",
+      "spec": "Verify and document ChromeVox compliance across the application."
+    },
+    {
+      "id": "T06296",
+      "cat": "a11y",
+      "title": "A11y: Color blindness protanopia",
+      "spec": "Verify and document Color blindness protanopia compliance across the application."
+    },
+    {
+      "id": "T06297",
+      "cat": "a11y",
+      "title": "A11y: Color blindness deuteranopia",
+      "spec": "Verify and document Color blindness deuteranopia compliance across the application."
+    },
+    {
+      "id": "T06298",
+      "cat": "a11y",
+      "title": "A11y: Color blindness tritanopia",
+      "spec": "Verify and document Color blindness tritanopia compliance across the application."
+    },
+    {
+      "id": "T06299",
+      "cat": "a11y",
+      "title": "A11y: High contrast mode",
+      "spec": "Verify and document High contrast mode compliance across the application."
+    },
+    {
+      "id": "T06300",
+      "cat": "a11y",
+      "title": "A11y: Reduced motion",
+      "spec": "Verify and document Reduced motion compliance across the application."
+    },
+    {
+      "id": "T06301",
+      "cat": "a11y",
+      "title": "A11y: Forced colors mode",
+      "spec": "Verify and document Forced colors mode compliance across the application."
+    },
+    {
+      "id": "T06302",
+      "cat": "a11y",
+      "title": "A11y: Zoom 200%",
+      "spec": "Verify and document Zoom 200% compliance across the application."
+    },
+    {
+      "id": "T06303",
+      "cat": "a11y",
+      "title": "A11y: Zoom 400%",
+      "spec": "Verify and document Zoom 400% compliance across the application."
+    },
+    {
+      "id": "T06304",
+      "cat": "a11y",
+      "title": "A11y: Reflow at 320px",
+      "spec": "Verify and document Reflow at 320px compliance across the application."
+    },
+    {
+      "id": "T06305",
+      "cat": "a11y",
+      "title": "A11y: Dyslexia-friendly font",
+      "spec": "Verify and document Dyslexia-friendly font compliance across the application."
+    },
+    {
+      "id": "T06306",
+      "cat": "a11y",
+      "title": "A11y: Reading guide support",
+      "spec": "Verify and document Reading guide support compliance across the application."
+    },
+    {
+      "id": "T06307",
+      "cat": "a11y",
+      "title": "A11y: Motor impairment (large targets)",
+      "spec": "Verify and document Motor impairment (large targets) compliance across the application."
+    },
+    {
+      "id": "T06308",
+      "cat": "a11y",
+      "title": "A11y: Motor impairment (timing)",
+      "spec": "Verify and document Motor impairment (timing) compliance across the application."
+    },
+    {
+      "id": "T06309",
+      "cat": "a11y",
+      "title": "A11y: Cognitive load (plain language)",
+      "spec": "Verify and document Cognitive load (plain language) compliance across the application."
+    },
+    {
+      "id": "T06310",
+      "cat": "a11y",
+      "title": "A11y: Screen reader live regions",
+      "spec": "Verify and document Screen reader live regions compliance across the application."
+    },
+    {
+      "id": "T06311",
+      "cat": "a11y",
+      "title": "A11y: ARIA Authoring Practices",
+      "spec": "Verify and document ARIA Authoring Practices compliance across the application."
+    },
+    {
+      "id": "T06312",
+      "cat": "a11y",
+      "title": "A11y: Cognitive accessibility (WCAG 2.2)",
+      "spec": "Verify and document Cognitive accessibility (WCAG 2.2) compliance across the application."
+    },
+    {
+      "id": "T06313",
+      "cat": "a11y",
+      "title": "A11y: Keyboard focus visible always",
+      "spec": "Verify and document Keyboard focus visible always compliance across the application."
+    },
+    {
+      "id": "T06314",
+      "cat": "a11y",
+      "title": "A11y: Skip links per page",
+      "spec": "Verify and document Skip links per page compliance across the application."
+    },
+    {
+      "id": "T06315",
+      "cat": "a11y",
+      "title": "A11y: Focus visible on custom widgets",
+      "spec": "Verify and document Focus visible on custom widgets compliance across the application."
+    },
+    {
+      "id": "T07047",
+      "cat": "a11y",
+      "title": "A11y tool: axe-core CI gate",
+      "spec": "Set up axe-core CI gate in the testing pipeline."
+    },
+    {
+      "id": "T07048",
+      "cat": "a11y",
+      "title": "A11y tool: Pa11y dashboard",
+      "spec": "Set up Pa11y dashboard in the testing pipeline."
+    },
+    {
+      "id": "T07049",
+      "cat": "a11y",
+      "title": "A11y tool: Lighthouse CI a11y",
+      "spec": "Set up Lighthouse CI a11y in the testing pipeline."
+    },
+    {
+      "id": "T07050",
+      "cat": "a11y",
+      "title": "A11y tool: Storybook a11y addon",
+      "spec": "Set up Storybook a11y addon in the testing pipeline."
+    },
+    {
+      "id": "T07051",
+      "cat": "a11y",
+      "title": "A11y tool: ESLint jsx-a11y plugin",
+      "spec": "Set up ESLint jsx-a11y plugin in the testing pipeline."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

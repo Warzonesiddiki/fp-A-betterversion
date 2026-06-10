@@ -3,7 +3,7 @@
  * Part 6 #3: Reduces import setup from 30 minutes to 30 seconds
  */
 
-interface ColumnMapping {
+export interface ColumnMapping {
   sourceColumn: string;
   targetField: string;
   confidence: number;
@@ -186,7 +186,7 @@ export class SmartImportMapper {
     // Check localStorage
     try {
       const stored = JSON.parse(localStorage.getItem('finplan_learned_mappings') ?? '{}');
-      if (stored[sourceFile]) {
+      if (stored[sourceFile]!) {
         const learned = stored[sourceFile] as LearnedMapping;
         this.learnedMappings.set(sourceFile, learned);
         return learned.mappings;
@@ -246,7 +246,7 @@ export class SmartImportMapper {
 
       for (const mapping of mappings) {
         const sourceIdx = columnIndices.get(mapping.sourceColumn);
-        const value = sourceIdx !== undefined ? row[sourceIdx] : null;
+        const value = sourceIdx !== undefined ? row![sourceIdx] : null;
         newRow.push(this.applyTransform(value, mapping.transform));
       }
 
@@ -267,7 +267,7 @@ export class SmartImportMapper {
     if (match[0] === header) return 0.95;
 
     // Partial match score based on match length vs header length
-    const matchRatio = match[0].length / header.length;
+    const matchRatio = match[0]!.length / header.length;
     return 0.5 + matchRatio * 0.4;
   }
 

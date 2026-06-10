@@ -88,12 +88,7 @@ export class WebSocketManager {
     this.setState('connecting');
 
     try {
-      const url = this.buildUrl();
-      this.ws = new WebSocket(url);
-      this.ws.onopen = this.handleOpen.bind(this);
-      this.ws.onmessage = this.handleMessage.bind(this);
-      this.ws.onclose = this.handleClose.bind(this);
-      this.ws.onerror = this.handleError.bind(this);
+      this.connectWithAuth();
     } catch {
       this.setState('disconnected');
       this.scheduleReconnect();
@@ -154,9 +149,22 @@ export class WebSocketManager {
   // --- Internal ---
 
   private buildUrl(): string {
-    const { url, token } = this.config;
-    const separator = url.includes('?') ? '&' : '?';
-    return token ? `${url}${separator}token=${encodeURIComponent(token)}` : url;
+    return this.config.url;
+  }
+
+  private connectWithAuth(): void {
+    if (!this.config.token) {
+      this.connect();
+      return;
+    }
+    this.ws = new WebSocket(this.buildUrl());
+    this.ws.onopen = () => {
+      this.handleOpen();
+      this.ws?.send(JSON.stringify({ type: 'auth', token: this.config.token }));
+    };
+    this.ws.onmessage = this.handleMessage.bind(this);
+    this.ws.onclose = this.handleClose.bind(this);
+    this.ws.onerror = this.handleError.bind(this);
   }
 
   private setState(state: ConnectionState): void {

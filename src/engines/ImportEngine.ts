@@ -194,11 +194,11 @@ function validateData(
     const rowNum = i + 2; // 1-based, +1 for header
 
     // Check column count matches header
-    if (row.length !== headers.length) {
+    if (row!.length !== headers.length) {
       warnings.push({
         row: rowNum,
         column: '',
-        message: `Row has ${row.length} columns, expected ${headers.length}`,
+        message: `Row has ${row!.length} columns, expected ${headers.length}`,
         severity: 'warning',
       });
     }
@@ -207,8 +207,8 @@ function validateData(
     if (options.numericColumns) {
       for (const col of options.numericColumns) {
         const colIdx = headers.indexOf(col);
-        if (colIdx >= 0 && colIdx < row.length) {
-          const val = row[colIdx];
+        if (colIdx >= 0 && colIdx < row!.length) {
+          const val = row![colIdx];
           if (val && val !== '' && isNaN(Number(val))) {
             errors.push({
               row: rowNum,
@@ -226,8 +226,8 @@ function validateData(
     if (options.dateColumns) {
       for (const col of options.dateColumns) {
         const colIdx = headers.indexOf(col);
-        if (colIdx >= 0 && colIdx < row.length) {
-          const val = row[colIdx];
+        if (colIdx >= 0 && colIdx < row!.length) {
+          const val = row![colIdx];
           if (val && val !== '') {
             // Accept YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY
             const isDate = /^\d{4}-\d{2}-\d{2}$/.test(val) || /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(val);
@@ -353,9 +353,9 @@ export class ImportEngine {
 
       this.setProgress('validating', 60, 'Validating data...');
 
-      const headers = rows[0];
+      const headers = rows[0]!;
       const dataRows = rows.slice(1);
-      const result = validateData(headers, dataRows, options);
+      const result = validateData(headers!, dataRows, options);
 
       this.setProgress('complete', 100, `Imported ${result.rowCount} rows`);
 
@@ -441,7 +441,7 @@ export class ImportEngine {
 
       const maxRows = options.maxRows ?? 100000;
       const rowsToProcess = data.slice(0, maxRows);
-      const headers = rowsToProcess.length > 0 ? Object.keys(rowsToProcess[0]) : [];
+      const headers = rowsToProcess.length > 0 ? Object.keys(rowsToProcess[0]!) : [];
 
       const errors: ImportError[] = [];
       const warnings: ImportError[] = [];
@@ -465,7 +465,7 @@ export class ImportEngine {
         for (let i = 0; i < rowsToProcess.length; i++) {
           const row = rowsToProcess[i];
           for (const field of options.numericFields) {
-            const val = row[field];
+            const val = row![field];
             if (val !== undefined && val !== null && val !== '' && isNaN(Number(val))) {
               errors.push({
                 row: i + 2,

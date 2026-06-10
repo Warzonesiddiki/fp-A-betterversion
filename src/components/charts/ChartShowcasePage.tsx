@@ -102,7 +102,7 @@ export function ChartShowcasePage() {
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base">{chart.title}</CardTitle>
               <ChartExportButton
-                chartRef={refs[i]}
+                chartRef={refs[i]!}
                 filename={chart.title.toLowerCase().replace(/\s/g, '-')}
               />
             </CardHeader>

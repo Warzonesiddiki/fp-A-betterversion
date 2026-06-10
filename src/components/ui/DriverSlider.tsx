@@ -38,6 +38,8 @@ export const DriverSlider: React.FC<DriverSliderProps> = ({
         'flex flex-col space-y-4 p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg transition-all',
         disabled && 'opacity-50 grayscale pointer-events-none'
       )}
+      role="region"
+      aria-label="DriverSlider"
     >
       <div className="flex items-center justify-between">
         <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
@@ -59,7 +61,7 @@ export const DriverSlider: React.FC<DriverSliderProps> = ({
         max={max}
         min={min}
         step={step}
-        onValueChange={(vals) => onChange(vals[0])}
+        onValueChange={(vals) => onChange(vals[0]!)}
         disabled={disabled}
       >
         <Slider.Track className="bg-gray-100 dark:bg-gray-800 relative grow rounded-full h-[6px] border border-[var(--border-subtle)]">

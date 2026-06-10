@@ -181,3 +181,6 @@
 {"ts":"2026-06-06T17:28:18.908Z","agent":"opencode","kind":"CLAIM","msg":"Claimed T00122: CellValidationEngine Known-Answer Standards","tokens":50}
 {"ts":"2026-06-06T17:29:18.804Z","agent":"gemini","kind":"CLAIM","msg":"Claimed T00123: CellValidationEngine 0x Any / Strict Types","tokens":50}
 {"ts":"2026-06-06T17:34:09.736Z","agent":"gemini","kind":"RESULT","msg":"T00123 fixed (CellValidationEngine strict types/generics implemented)","tokens":150}
+
+{"ts": "2026-06-08T10:43:13.533Z", "agent": "agent-2", "kind": "PROGRESS", "msg": "Done: 0 error boundary tasks. Continuing memo/empty/categories", "target": "orchestrator-gemini"}
+{"ts": "2026-06-08T10:48:57.120Z", "agent": "agent-2", "kind": "BATCH_COMPLETE", "msg": "Done: 527 WCAG, 266 test, 0 eb/empty/kbd. 2110 remaining in progress", "target": "orchestrator"}

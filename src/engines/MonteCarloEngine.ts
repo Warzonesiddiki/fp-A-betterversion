@@ -258,20 +258,24 @@ function computeStdDev(variance: number): number {
 function computeMedian(sorted: readonly number[]): number {
   const n = sorted.length;
   if (n === 0) return 0;
-  if (n % 2 === 1) return sorted[(n - 1) / 2];
-  return (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+  if (n % 2 === 1) return sorted[(n - 1) / 2]!;
+  const a = sorted[n / 2 - 1]!;
+  const b = sorted[n / 2]!;
+  return (a + b) / 2;
 }
 
 function computePercentile(sorted: readonly number[], p: number): number {
   if (sorted.length === 0) return 0;
-  if (p <= 0) return sorted[0];
-  if (p >= 100) return sorted[sorted.length - 1];
+  if (p <= 0) return sorted[0]!;
+  if (p >= 100) return sorted[sorted.length - 1]!;
   const index = (p / 100) * (sorted.length - 1);
   const lower = Math.floor(index);
   const upper = Math.ceil(index);
-  if (lower === upper) return sorted[lower];
+  if (lower === upper) return sorted[lower]!;
   const fraction = index - lower;
-  return sorted[lower] * (1 - fraction) + sorted[upper] * fraction;
+  const lowerVal = sorted[lower]!;
+  const upperVal = sorted[upper]!;
+  return lowerVal * (1 - fraction) + upperVal * fraction;
 }
 
 function computeSkewness(values: readonly number[], mean: number, stdDev: number): number {
@@ -489,7 +493,7 @@ export class MonteCarloEngine {
 
       // Store values
       for (const key of validMetrics) {
-        metricValues[key].push(metrics[key]);
+        metricValues[key]!.push(metrics[key]!);
       }
     }
 
@@ -498,7 +502,7 @@ export class MonteCarloEngine {
     for (const key of validMetrics) {
       const sorted = [...metricValues[key]].sort((a, b) => a - b);
       metricResults[key] = MonteCarloEngine.computeStatistics(
-        metricValues[key],
+        metricValues[key]!,
         [],
         config.iterations,
         config.confidenceLevel
@@ -517,7 +521,7 @@ export class MonteCarloEngine {
     // Value at Risk (loss at the confidence level)
     const alpha = 1 - config.confidenceLevel;
     const varIndex = Math.floor(alpha * niSorted.length);
-    const valueAtRisk = -niSorted[Math.min(varIndex, niSorted.length - 1)];
+    const valueAtRisk = -niSorted![Math.min(varIndex, niSorted.length - 1)]!;
 
     // Conditional VaR (expected shortfall)
     const tailValues = niSorted.slice(0, varIndex + 1);
@@ -566,13 +570,13 @@ export class MonteCarloEngine {
       for (let j = 0; j <= i; j++) {
         let sum = 0;
         for (let k = 0; k < j; k++) {
-          sum += L[i][k] * L[j][k];
+          sum += L![i]![k]! * L![j]![k]!;
         }
         if (i === j) {
-          const val = correlationMatrix[i][i] - sum;
-          L[i][j] = val > 0 ? Math.sqrt(val) : 0;
+          const val = correlationMatrix![i]![i]! - sum;
+          L[i]![j] = val > 0 ? Math.sqrt(val) : 0;
         } else {
-          L[i][j] = L[j][j] !== 0 ? (correlationMatrix[i][j] - sum) / L[j][j] : 0;
+          L[i]![j] = L[j]![j] !== 0 ? (correlationMatrix![i]![j]! - sum) / L![j]![j]! : 0;
         }
       }
     }
@@ -594,7 +598,7 @@ export class MonteCarloEngine {
       for (let i = 0; i < n; i++) {
         let sum = 0;
         for (let j = 0; j <= i; j++) {
-          sum += L[i][j] * independents[j];
+          sum += L![i]![j]! * independents![j]!;
         }
         correlated.push(sum);
       }
@@ -602,8 +606,8 @@ export class MonteCarloEngine {
       // Transform to target distributions using inverse CDF (percent-point function)
       const sample: Record<string, number> = {};
       for (let i = 0; i < n; i++) {
-        const dist = distributions[i];
-        const u = 0.5 * (1 + erf(correlated[i] / Math.sqrt(2))); // normal CDF
+        const dist = distributions[i]!;
+        const u = 0.5 * (1 + erf(correlated![i]! / Math.sqrt(2))); // normal CDF
         sample[dist.name] = inverseCDF(dist, u, randomFn);
       }
 
@@ -736,8 +740,8 @@ export class MonteCarloEngine {
       median,
       stdDev,
       variance,
-      min: sorted[0],
-      max: sorted[sorted.length - 1],
+      min: sorted[0]!,
+      max: sorted[sorted.length - 1]!,
       skewness,
       kurtosis,
       percentiles,
@@ -831,21 +835,21 @@ function inverseNormalCDF(p: number): number {
   if (p < pLow) {
     q = Math.sqrt(-2 * Math.log(p));
     return (
-      (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-      ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
+      (((((c![0]! * q + c![1]!) * q + c![2]!) * q + c![3]!) * q + c![4]!) * q + c![5]!) /
+      ((((d![0]! * q + d![1]!) * q + d![2]!) * q + d![3]!) * q + 1)
     );
   } else if (p <= pHigh) {
     q = p - 0.5;
     r = q * q;
     return (
-      ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) /
-      (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
+      ((((((a![0]! * r + a![1]!) * r + a![2]!) * r + a![3]!) * r + a![4]!) * r + a![5]!) * q) /
+      (((((b![0]! * r + b![1]!) * r + b![2]!) * r + b![3]!) * r + b![4]!) * r + 1)
     );
   } else {
     q = Math.sqrt(-2 * Math.log(1 - p));
     return (
-      -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-      ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
+      -(((((c![0]! * q + c![1]!) * q + c![2]!) * q + c![3]!) * q + c![4]!) * q + c![5]!) /
+      ((((d![0]! * q + d![1]!) * q + d![2]!) * q + d![3]!) * q + 1)
     );
   }
 }

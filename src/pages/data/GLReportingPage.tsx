@@ -54,10 +54,10 @@ export default function GLReportingPage() {
       (acc, e) => {
         const acct = accounts.find((a) => a.id === e.accountId || a.code === e.accountCode);
         const type = acct?.type || 'Unknown';
-        if (!acc[type]) acc[type] = { debit: 0, credit: 0, count: 0 };
-        acc[type].debit += e.debit;
-        acc[type].credit += e.credit;
-        acc[type].count++;
+        if (!acc[type]!) acc[type] = { debit: 0, credit: 0, count: 0 };
+        acc[type]!.debit += e.debit;
+        acc[type]!.credit += e.credit;
+        acc[type]!.count++;
         return acc;
       },
       {} as Record<string, { debit: number; credit: number; count: number }>
@@ -66,7 +66,7 @@ export default function GLReportingPage() {
       totalEntries: entries.length,
       totalAccounts: accounts.length,
       accountsWithEntries: accountsWithEntries.size,
-      dateRange: dates.length >= 2 ? { start: dates[0], end: dates[dates.length - 1] } : null,
+      dateRange: dates.length >= 2 ? { start: dates[0]!, end: dates[dates.length - 1] } : null,
       typeBreakdown,
       accountTypeTotals,
       trialBalanceBalanced:

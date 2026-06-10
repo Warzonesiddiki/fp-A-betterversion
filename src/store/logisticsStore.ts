@@ -66,7 +66,7 @@ export const useLogisticsStore = create<LogisticsState>()(
         updateShipment: (id, updates) =>
           set((s) => {
             const i = s.shipments.findIndex((x) => x.id === id);
-            if (i !== -1) Object.assign(s.shipments[i], updates);
+            if (i !== -1) Object.assign(s.shipments[i]!, updates);
           }),
         removeShipment: (id) =>
           set((s) => {

@@ -64,7 +64,7 @@ export const useTelecomStore = create<TelecomState>()(
         updateSubscriber: (id, updates) =>
           set((s) => {
             const i = s.subscribers.findIndex((x) => x.id === id);
-            if (i !== -1) Object.assign(s.subscribers[i], updates);
+            if (i !== -1) Object.assign(s.subscribers[i]!, updates);
           }),
         removeSubscriber: (id) =>
           set((s) => {

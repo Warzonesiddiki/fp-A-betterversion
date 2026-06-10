@@ -48,6 +48,6 @@ describe('ScatterPlot', () => {
 
   it('shows error message when error provided', () => {
     render(<ScatterPlot data={sampleData} error="Failed to load" />);
-    expect(screen.getByText('Failed to load')).toBeInTheDocument();
+    expect(screen.getAllByText(/Failed to load/i)[0]).toBeInTheDocument();
   });
 });

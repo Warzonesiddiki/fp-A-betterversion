@@ -89,8 +89,8 @@ function computeLeaseStats(entries: readonly GLEntry[]) {
       credit: data.credit,
       netChange: data.net,
       transactions: data.count,
-      isROU: code.startsWith(LEASE_PREFIXES[0]),
-      isLiability: code.startsWith(LEASE_PREFIXES[1]),
+      isROU: code.startsWith(LEASE_PREFIXES[0]!),
+      isLiability: code.startsWith(LEASE_PREFIXES[1]!),
     }))
     .sort((a, b) => Math.abs(b.netChange) - Math.abs(a.netChange));
 

@@ -108,7 +108,7 @@ describe('QuickBooksConnector', () => {
       const result = await connector.getAccounts({ page: 1, pageSize: 50 });
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0]).toEqual({
+      expect(result.items[0]!).toEqual({
         externalId: '1',
         name: 'Assets:Checking',
         type: 'asset',
@@ -160,10 +160,10 @@ describe('QuickBooksConnector', () => {
       const result = await connector.getInvoices({ page: 1, pageSize: 50 });
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].externalId).toBe('101');
-      expect(result.items[0].number).toBe('INV-001');
-      expect(result.items[0].total).toBe(1500);
-      expect(result.items[0].lineItems).toHaveLength(1);
+      expect(result!.items[0]!.externalId).toBe('101');
+      expect(result!.items[0]!.number).toBe('INV-001');
+      expect(result!.items[0]!.total).toBe(1500);
+      expect(result!.items[0]!.lineItems).toHaveLength(1);
     });
   });
 
@@ -257,7 +257,7 @@ describe('QuickBooksConnector', () => {
         (connector as unknown as { client: { get: typeof mockGet } }).client.get = mockGet;
 
         const result = await connector.getAccounts();
-        expect(result.items[0].type).toBe(expected);
+        expect(result!.items[0]!.type).toBe(expected);
       }
     });
   });

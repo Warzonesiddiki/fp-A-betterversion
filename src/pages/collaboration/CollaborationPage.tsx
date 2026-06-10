@@ -115,7 +115,7 @@ export default function CollaborationPage() {
       authorName: displayName,
       authorInitials: displayName
         .split(' ')
-        .map((n) => n[0])
+        .map((n) => n[0]!)
         .join('')
         .toUpperCase(),
       content: newComment,

@@ -1,0 +1,308 @@
+{
+  "agent": "agent-20",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T05830",
+      "cat": "test",
+      "title": "PluginManifest test matrix",
+      "spec": "PluginManifest tested with 0/1/many plugins. Concurrent install/uninstall."
+    },
+    {
+      "id": "T05834",
+      "cat": "test",
+      "title": "PluginLoader test matrix",
+      "spec": "PluginLoader tested with 0/1/many plugins. Concurrent install/uninstall."
+    },
+    {
+      "id": "T05838",
+      "cat": "test",
+      "title": "PluginPermissions test matrix",
+      "spec": "PluginPermissions tested with 0/1/many plugins. Concurrent install/uninstall."
+    },
+    {
+      "id": "T05842",
+      "cat": "test",
+      "title": "PluginUpdate test matrix",
+      "spec": "PluginUpdate tested with 0/1/many plugins. Concurrent install/uninstall."
+    },
+    {
+      "id": "T05846",
+      "cat": "test",
+      "title": "PluginAnalytics test matrix",
+      "spec": "PluginAnalytics tested with 0/1/many plugins. Concurrent install/uninstall."
+    },
+    {
+      "id": "T05850",
+      "cat": "test",
+      "title": "PluginSignature test matrix",
+      "spec": "PluginSignature tested with 0/1/many plugins. Concurrent install/uninstall."
+    },
+    {
+      "id": "T06532",
+      "cat": "test",
+      "title": "Testing: Unit test coverage 95%",
+      "spec": "Implement, configure, and gate Unit test coverage 95% in CI."
+    },
+    {
+      "id": "T06533",
+      "cat": "test",
+      "title": "Testing: Integration test full matrix",
+      "spec": "Implement, configure, and gate Integration test full matrix in CI."
+    },
+    {
+      "id": "T06534",
+      "cat": "test",
+      "title": "Testing: E2E happy path 100%",
+      "spec": "Implement, configure, and gate E2E happy path 100% in CI."
+    },
+    {
+      "id": "T06535",
+      "cat": "test",
+      "title": "Testing: E2E sad path coverage",
+      "spec": "Implement, configure, and gate E2E sad path coverage in CI."
+    },
+    {
+      "id": "T06536",
+      "cat": "test",
+      "title": "Testing: Property-based testing",
+      "spec": "Implement, configure, and gate Property-based testing in CI."
+    },
+    {
+      "id": "T06537",
+      "cat": "test",
+      "title": "Testing: Mutation testing (Stryker)",
+      "spec": "Implement, configure, and gate Mutation testing (Stryker) in CI."
+    },
+    {
+      "id": "T06538",
+      "cat": "test",
+      "title": "Testing: Fuzz testing",
+      "spec": "Implement, configure, and gate Fuzz testing in CI."
+    },
+    {
+      "id": "T06539",
+      "cat": "test",
+      "title": "Testing: Visual regression (Chromatic)",
+      "spec": "Implement, configure, and gate Visual regression (Chromatic) in CI."
+    },
+    {
+      "id": "T06540",
+      "cat": "test",
+      "title": "Testing: Storybook coverage",
+      "spec": "Implement, configure, and gate Storybook coverage in CI."
+    },
+    {
+      "id": "T06541",
+      "cat": "test",
+      "title": "Testing: Test data factories",
+      "spec": "Implement, configure, and gate Test data factories in CI."
+    },
+    {
+      "id": "T06542",
+      "cat": "test",
+      "title": "Testing: MSW mock service worker",
+      "spec": "Implement, configure, and gate MSW mock service worker in CI."
+    },
+    {
+      "id": "T06543",
+      "cat": "test",
+      "title": "Testing: Mock Tauri commands",
+      "spec": "Implement, configure, and gate Mock Tauri commands in CI."
+    },
+    {
+      "id": "T06544",
+      "cat": "test",
+      "title": "Testing: Playwright parallel",
+      "spec": "Implement, configure, and gate Playwright parallel in CI."
+    },
+    {
+      "id": "T06545",
+      "cat": "test",
+      "title": "Testing: Playwright retry strategy",
+      "spec": "Implement, configure, and gate Playwright retry strategy in CI."
+    },
+    {
+      "id": "T06546",
+      "cat": "test",
+      "title": "Testing: Cypress component tests",
+      "spec": "Implement, configure, and gate Cypress component tests in CI."
+    },
+    {
+      "id": "T06547",
+      "cat": "test",
+      "title": "Testing: Detox mobile tests",
+      "spec": "Implement, configure, and gate Detox mobile tests in CI."
+    },
+    {
+      "id": "T06548",
+      "cat": "test",
+      "title": "Testing: Load test k6",
+      "spec": "Implement, configure, and gate Load test k6 in CI."
+    },
+    {
+      "id": "T06549",
+      "cat": "test",
+      "title": "Testing: Stress test boundaries",
+      "spec": "Implement, configure, and gate Stress test boundaries in CI."
+    },
+    {
+      "id": "T06550",
+      "cat": "test",
+      "title": "Testing: Chaos engineering",
+      "spec": "Implement, configure, and gate Chaos engineering in CI."
+    },
+    {
+      "id": "T06551",
+      "cat": "test",
+      "title": "Testing: Contract test (Pact)",
+      "spec": "Implement, configure, and gate Contract test (Pact) in CI."
+    },
+    {
+      "id": "T01827",
+      "cat": "store",
+      "title": "useFocusRestore OPFS/Debounce logic",
+      "spec": "Ensure src\\hooks\\useFocusRestore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01830",
+      "cat": "store",
+      "title": "BackupRestorePage.tsx OPFS/Debounce logic",
+      "spec": "Ensure src\\pages\\settings\\BackupRestorePage.tsx debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01833",
+      "cat": "store",
+      "title": "analyticsStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\analyticsStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01836",
+      "cat": "store",
+      "title": "authStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\authStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01839",
+      "cat": "store",
+      "title": "budgetStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\budgetStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01842",
+      "cat": "store",
+      "title": "capexStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\capexStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01845",
+      "cat": "store",
+      "title": "collaborationStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\collaborationStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01848",
+      "cat": "store",
+      "title": "constructionStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\constructionStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01851",
+      "cat": "store",
+      "title": "cubeStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\cubeStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01854",
+      "cat": "store",
+      "title": "dataStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\dataStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01857",
+      "cat": "store",
+      "title": "driverStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\driverStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01858",
+      "cat": "store",
+      "title": "educationStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\educationStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01859",
+      "cat": "store",
+      "title": "educationStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\educationStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01860",
+      "cat": "store",
+      "title": "educationStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\educationStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01861",
+      "cat": "store",
+      "title": "energyStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\energyStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01862",
+      "cat": "store",
+      "title": "energyStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\energyStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01863",
+      "cat": "store",
+      "title": "energyStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\energyStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01864",
+      "cat": "store",
+      "title": "entityStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\entityStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01865",
+      "cat": "store",
+      "title": "entityStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\entityStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01866",
+      "cat": "store",
+      "title": "entityStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\entityStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01867",
+      "cat": "store",
+      "title": "esgStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\esgStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01868",
+      "cat": "store",
+      "title": "esgStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\esgStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01869",
+      "cat": "store",
+      "title": "esgStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\esgStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01870",
+      "cat": "store",
+      "title": "forecastStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\forecastStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

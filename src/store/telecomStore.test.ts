@@ -44,7 +44,7 @@ describe('telecomStore', () => {
       status: 'Active',
     });
     expect(useTelecomStore.getState().subscribers).toHaveLength(1);
-    expect(useTelecomStore.getState().subscribers[0].plan).toBe('Basic');
+    expect(useTelecomStore!.getState().subscribers[0]!.plan).toBe('Basic');
   });
 
   it('should update a subscriber', () => {
@@ -57,8 +57,8 @@ describe('telecomStore', () => {
     });
     useTelecomStore.getState().updateSubscriber('sub3', { plan: 'Premium', monthlyRevenue: 99.99 });
     const updated = useTelecomStore.getState().subscribers[0];
-    expect(updated.plan).toBe('Premium');
-    expect(updated.monthlyRevenue).toBe(99.99);
+    expect(updated!.plan).toBe('Premium');
+    expect(updated!.monthlyRevenue).toBe(99.99);
   });
 
   it('should not update non-existent subscriber', () => {
@@ -70,7 +70,7 @@ describe('telecomStore', () => {
       status: 'Active',
     });
     useTelecomStore.getState().updateSubscriber('nonexistent', { plan: 'Premium' });
-    expect(useTelecomStore.getState().subscribers[0].plan).toBe('Basic');
+    expect(useTelecomStore!.getState().subscribers[0]!.plan).toBe('Basic');
   });
 
   it('should remove a subscriber', () => {

@@ -1,0 +1,308 @@
+{
+  "agent": "agent-24",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T04017",
+      "cat": "store",
+      "title": "PeriodCloseEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for PeriodCloseEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04021",
+      "cat": "store",
+      "title": "CellValidationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CellValidationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04025",
+      "cat": "store",
+      "title": "CellProtectionEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CellProtectionEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04029",
+      "cat": "store",
+      "title": "CellAuditTrailEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CellAuditTrailEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04033",
+      "cat": "store",
+      "title": "CellCommentEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CellCommentEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04037",
+      "cat": "store",
+      "title": "ConditionalFormattingEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ConditionalFormattingEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04041",
+      "cat": "store",
+      "title": "PivotTableEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for PivotTableEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04045",
+      "cat": "store",
+      "title": "GroupOutlineEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for GroupOutlineEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04049",
+      "cat": "store",
+      "title": "FreezePanesEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for FreezePanesEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04053",
+      "cat": "store",
+      "title": "NamedRangeEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for NamedRangeEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04057",
+      "cat": "store",
+      "title": "ArrayFormulaEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ArrayFormulaEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04061",
+      "cat": "store",
+      "title": "ExcelKeyboardEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ExcelKeyboardEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04065",
+      "cat": "store",
+      "title": "ExcelKeyboardShortcuts Zustand Selector Granularity",
+      "spec": "Perfection pass for ExcelKeyboardShortcuts: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04068",
+      "cat": "store",
+      "title": "authStore Persistence Round-Trip",
+      "spec": "Persistence test for authStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04072",
+      "cat": "store",
+      "title": "budgetStore Persistence Round-Trip",
+      "spec": "Persistence test for budgetStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04076",
+      "cat": "store",
+      "title": "capexStore Persistence Round-Trip",
+      "spec": "Persistence test for capexStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04080",
+      "cat": "store",
+      "title": "cashStore Persistence Round-Trip",
+      "spec": "Persistence test for cashStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04084",
+      "cat": "store",
+      "title": "cubeStore Persistence Round-Trip",
+      "spec": "Persistence test for cubeStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04088",
+      "cat": "store",
+      "title": "dataStore Persistence Round-Trip",
+      "spec": "Persistence test for dataStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04092",
+      "cat": "store",
+      "title": "driverStore Persistence Round-Trip",
+      "spec": "Persistence test for driverStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04096",
+      "cat": "store",
+      "title": "educationStore Persistence Round-Trip",
+      "spec": "Persistence test for educationStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04100",
+      "cat": "store",
+      "title": "energyStore Persistence Round-Trip",
+      "spec": "Persistence test for energyStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04104",
+      "cat": "store",
+      "title": "entityStore Persistence Round-Trip",
+      "spec": "Persistence test for entityStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04108",
+      "cat": "store",
+      "title": "esgStore Persistence Round-Trip",
+      "spec": "Persistence test for esgStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04112",
+      "cat": "store",
+      "title": "forecastStore Persistence Round-Trip",
+      "spec": "Persistence test for forecastStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04116",
+      "cat": "store",
+      "title": "fxRateStore Persistence Round-Trip",
+      "spec": "Persistence test for fxRateStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04120",
+      "cat": "store",
+      "title": "glStore Persistence Round-Trip",
+      "spec": "Persistence test for glStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04124",
+      "cat": "store",
+      "title": "governmentStore Persistence Round-Trip",
+      "spec": "Persistence test for governmentStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04128",
+      "cat": "store",
+      "title": "healthcareStore Persistence Round-Trip",
+      "spec": "Persistence test for healthcareStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04132",
+      "cat": "store",
+      "title": "insuranceStore Persistence Round-Trip",
+      "spec": "Persistence test for insuranceStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04136",
+      "cat": "store",
+      "title": "logisticsStore Persistence Round-Trip",
+      "spec": "Persistence test for logisticsStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04140",
+      "cat": "store",
+      "title": "notificationStore Persistence Round-Trip",
+      "spec": "Persistence test for notificationStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04144",
+      "cat": "store",
+      "title": "realEstateStore Persistence Round-Trip",
+      "spec": "Persistence test for realEstateStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04148",
+      "cat": "store",
+      "title": "reportStore Persistence Round-Trip",
+      "spec": "Persistence test for reportStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04152",
+      "cat": "store",
+      "title": "retailStore Persistence Round-Trip",
+      "spec": "Persistence test for retailStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04156",
+      "cat": "store",
+      "title": "scenarioStore Persistence Round-Trip",
+      "spec": "Persistence test for scenarioStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04160",
+      "cat": "store",
+      "title": "settingsStore Persistence Round-Trip",
+      "spec": "Persistence test for settingsStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04164",
+      "cat": "store",
+      "title": "telecomStore Persistence Round-Trip",
+      "spec": "Persistence test for telecomStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04168",
+      "cat": "store",
+      "title": "tourStore Persistence Round-Trip",
+      "spec": "Persistence test for tourStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04172",
+      "cat": "store",
+      "title": "uiStore Persistence Round-Trip",
+      "spec": "Persistence test for uiStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04176",
+      "cat": "store",
+      "title": "varianceStore Persistence Round-Trip",
+      "spec": "Persistence test for varianceStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04180",
+      "cat": "store",
+      "title": "workflowStore Persistence Round-Trip",
+      "spec": "Persistence test for workflowStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04184",
+      "cat": "store",
+      "title": "workforceStore Persistence Round-Trip",
+      "spec": "Persistence test for workforceStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04188",
+      "cat": "store",
+      "title": "collaborationStore Persistence Round-Trip",
+      "spec": "Persistence test for collaborationStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04192",
+      "cat": "store",
+      "title": "analyticsStore Persistence Round-Trip",
+      "spec": "Persistence test for analyticsStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T04196",
+      "cat": "store",
+      "title": "constructionStore Persistence Round-Trip",
+      "spec": "Persistence test for constructionStore: save -> load -> save -> load yields identical state. Schema migration."
+    },
+    {
+      "id": "T05897",
+      "cat": "store",
+      "title": "Offline: CRDT conflict resolution",
+      "spec": "Last-write-wins or CRDT (Yjs/Automerge)."
+    },
+    {
+      "id": "T05898",
+      "cat": "store",
+      "title": "Offline: Sync queue durability",
+      "spec": "Queue persists across crash."
+    },
+    {
+      "id": "T05899",
+      "cat": "store",
+      "title": "Offline: Optimistic UI with rollback",
+      "spec": "Optimistic updates with rollback on conflict."
+    },
+    {
+      "id": "T05900",
+      "cat": "store",
+      "title": "Offline: E2E encryption for sync",
+      "spec": "End-to-end encrypted sync."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

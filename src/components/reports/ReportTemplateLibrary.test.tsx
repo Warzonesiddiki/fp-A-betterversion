@@ -187,7 +187,7 @@ describe('ReportTemplateLibrary', () => {
     );
     fireEvent.click(screen.getByText(/My Reports/));
     fireEvent.click(screen.getByText('Q1 P&L Report'));
-    expect(onSelectReport).toHaveBeenCalledWith(mockSavedReports[0]);
+    expect(onSelectReport).toHaveBeenCalledWith(mockSavedReports[0]!);
   });
 
   it('renders version badge for saved reports', () => {

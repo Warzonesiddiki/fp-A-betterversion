@@ -45,9 +45,9 @@ describe('consolidationWorker', () => {
     const msg = postMessages[0] as Record<string, unknown>;
     const result = msg.result as Array<Record<string, unknown>>;
     expect(result).toHaveLength(2);
-    expect(result[0].debit).toBe(120);
-    expect(result[0].localDebit).toBe(100);
-    expect(result[1].credit).toBe(60);
+    expect(result![0]!.debit).toBe(120);
+    expect(result![0]!.localDebit).toBe(100);
+    expect(result![1]!.credit).toBe(60);
   });
 
   it('handles empty entries', () => {
@@ -80,7 +80,7 @@ describe('consolidationWorker', () => {
   it('handles unknown currency gracefully', () => {
     sendRequest([{ debit: 50, credit: 0, currency: 'GBP', accountCode: '1000' }], {}, []);
     const msg = postMessages[0] as Record<string, unknown>;
-    expect((msg.result as Array<Record<string, unknown>>)[0].debit).toBe(50);
+    expect((msg.result as Array<Record<string, unknown>>)![0]!.debit).toBe(50);
   });
 
   it('handles missing fields gracefully', () => {

@@ -85,12 +85,12 @@ export function generateExcelExport(
 
   for (let ri = 0; ri < report.layout.rows.length; ri++) {
     const row = report.layout.rows[ri];
-    if (!row.isVisible) continue;
+    if (!row!.isVisible) continue;
 
     const excelRow: Array<string | number | boolean | null> = [];
     for (let ci = 0; ci < report.layout.columns.length; ci++) {
       const col = report.layout.columns[ci];
-      if (!col.isVisible) continue;
+      if (!col!.isVisible) continue;
 
       const cell = resolved[ri]?.[ci];
       if (cell) {
@@ -145,12 +145,12 @@ export function generateCSVExport(report: ReportDefinition, cubeData: CubeData):
 
   for (let ri = 0; ri < report.layout.rows.length; ri++) {
     const row = report.layout.rows[ri];
-    if (!row.isVisible) continue;
+    if (!row!.isVisible) continue;
 
     const csvCells: string[] = [];
     for (let ci = 0; ci < report.layout.columns.length; ci++) {
       const col = report.layout.columns[ci];
-      if (!col.isVisible) continue;
+      if (!col!.isVisible) continue;
 
       const cell = resolved[ri]?.[ci];
       if (cell) {

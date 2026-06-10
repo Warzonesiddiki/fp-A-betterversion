@@ -54,8 +54,8 @@ describe('DriverLibrary', () => {
       DriverLibrary.updateDriver('headcount', 300, 'bob', 're-forecast');
       const changes = DriverLibrary.getChanges('headcount');
       expect(changes).toHaveLength(2);
-      expect(changes[0].changedBy).toBe('alice');
-      expect(changes[0].reason).toBe('hiring plan');
+      expect(changes![0]!.changedBy).toBe('alice');
+      expect(changes![0]!.reason).toBe('hiring plan');
     });
 
     it('should reject value outside range', () => {

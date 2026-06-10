@@ -75,7 +75,7 @@ export const useWorkforceStore = create<WorkforceState>()(
         updateEmployee: (id, updates) =>
           set((state) => {
             const idx = state.employees.findIndex((e) => e.id === id);
-            if (idx !== -1) Object.assign(state.employees[idx], updates);
+            if (idx !== -1) Object.assign(state.employees[idx]!, updates);
           }),
 
         removeEmployee: (id) =>

@@ -70,7 +70,7 @@ export default function CashFlowPage() {
 
     const [year, monthNum] = period.split('-').map(Number);
     const prevPeriod =
-      monthNum === 1 ? `${year - 1}-12` : `${year}-${String(monthNum - 1).padStart(2, '0')}`;
+      monthNum === 1 ? `${year! - 1}-12` : `${year}-${String(monthNum! - 1)!.padStart(2, '0')}`;
 
     const currentEntries = entries.filter((e) => (e.period || e.date.slice(0, 7)) <= period);
     const priorEntries = entries.filter((e) => (e.period || e.date.slice(0, 7)) <= prevPeriod);

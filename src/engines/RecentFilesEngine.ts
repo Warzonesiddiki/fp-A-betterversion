@@ -36,7 +36,7 @@ export class RecentFilesEngine {
   addFile(path: string, name: string, fileSize: number = 0): RecentFile {
     const existingIdx = this.files.findIndex((f) => f.path === path);
     if (existingIdx !== -1) {
-      const existing = this.files[existingIdx];
+      const existing = this.files[existingIdx]!;
       existing.lastOpened = new Date().toISOString();
       existing.openCount++;
       existing.fileSize = fileSize;

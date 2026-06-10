@@ -99,7 +99,7 @@ export default function CashForecastPage() {
       };
     });
     const burnRate = outflows / 4;
-    const endingCash = forecast[forecast.length - 1].balance;
+    const endingCash = forecast![forecast.length - 1]!.balance;
     return { inflows, outflows, net, categories, forecast, burnRate, endingCash };
   }, [entries]);
 

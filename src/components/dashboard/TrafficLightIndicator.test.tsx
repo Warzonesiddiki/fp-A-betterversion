@@ -156,7 +156,7 @@ describe('TrafficLightBatch', () => {
     const { container } = render(<TrafficLightBatch {...defaultBatchProps} />);
     // 8.2 is above min 5, should be green
     const indicators = container.querySelectorAll('.rounded-lg');
-    expect(indicators[0].className).toContain('bg-green-50');
+    expect(indicators[0]!.className).toContain('bg-green-50');
   });
 
   it('assigns yellow status to values between yellow and green thresholds', () => {

@@ -24,8 +24,8 @@ describe('notificationStore', () => {
     const state = useNotificationStore.getState();
     expect(state.notifications).toHaveLength(1);
     expect(state.unreadCount).toBe(1);
-    expect(state.notifications[0].title).toBe('Test');
-    expect(state.notifications[0].isRead).toBe(false);
+    expect(state!.notifications[0]!.title).toBe('Test');
+    expect(state!.notifications[0]!.isRead).toBe(false);
   });
 
   it('should mark notification as read', () => {
@@ -34,9 +34,9 @@ describe('notificationStore', () => {
       message: 'Test',
       type: 'info',
     } as any);
-    const id = useNotificationStore.getState().notifications[0].id;
+    const id = useNotificationStore!.getState().notifications[0]!.id;
     useNotificationStore.getState().markAsRead(id);
-    expect(useNotificationStore.getState().notifications[0].isRead).toBe(true);
+    expect(useNotificationStore!.getState().notifications[0]!.isRead).toBe(true);
     expect(useNotificationStore.getState().unreadCount).toBe(0);
   });
 

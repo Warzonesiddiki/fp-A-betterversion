@@ -109,7 +109,7 @@ describe('BudgetCollectionEngine', () => {
         lineItems: [{ accountCode: 'ADV', accountName: 'Advertising', amount: 50000 }],
       });
       const templates = engine.getTemplates();
-      const progress = engine.getProgress(templates[0].id);
+      const progress = engine.getProgress(templates![0]!.id);
       expect(progress.total).toBe(2); // 2 depts * 1 entity
       expect(progress.submitted).toBe(1);
       expect(progress.pending).toBe(1);

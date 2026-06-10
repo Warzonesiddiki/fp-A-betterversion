@@ -1,0 +1,308 @@
+{
+  "agent": "agent-02",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T00322",
+      "cat": "eng",
+      "title": "financial Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for financial."
+    },
+    {
+      "id": "T00323",
+      "cat": "eng",
+      "title": "financial 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\formula-functions\\financial.ts. Use robust generics."
+    },
+    {
+      "id": "T00324",
+      "cat": "eng",
+      "title": "financial Perf Audit 1M loops",
+      "spec": "Benchmark financial for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00325",
+      "cat": "eng",
+      "title": "helpers 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\formula-functions\\helpers.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00326",
+      "cat": "eng",
+      "title": "helpers Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for helpers."
+    },
+    {
+      "id": "T00327",
+      "cat": "eng",
+      "title": "helpers 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\formula-functions\\helpers.ts. Use robust generics."
+    },
+    {
+      "id": "T00328",
+      "cat": "eng",
+      "title": "helpers Perf Audit 1M loops",
+      "spec": "Benchmark helpers for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00329",
+      "cat": "eng",
+      "title": "logical 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\formula-functions\\logical.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00330",
+      "cat": "eng",
+      "title": "logical Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for logical."
+    },
+    {
+      "id": "T00331",
+      "cat": "eng",
+      "title": "logical 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\formula-functions\\logical.ts. Use robust generics."
+    },
+    {
+      "id": "T00332",
+      "cat": "eng",
+      "title": "logical Perf Audit 1M loops",
+      "spec": "Benchmark logical for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00333",
+      "cat": "eng",
+      "title": "lookup 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\formula-functions\\lookup.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00334",
+      "cat": "eng",
+      "title": "lookup Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for lookup."
+    },
+    {
+      "id": "T00335",
+      "cat": "eng",
+      "title": "lookup 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\formula-functions\\lookup.ts. Use robust generics."
+    },
+    {
+      "id": "T00336",
+      "cat": "eng",
+      "title": "lookup Perf Audit 1M loops",
+      "spec": "Benchmark lookup for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00337",
+      "cat": "eng",
+      "title": "math 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\formula-functions\\math.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00338",
+      "cat": "eng",
+      "title": "math Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for math."
+    },
+    {
+      "id": "T00339",
+      "cat": "eng",
+      "title": "math 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\formula-functions\\math.ts. Use robust generics."
+    },
+    {
+      "id": "T00340",
+      "cat": "eng",
+      "title": "math Perf Audit 1M loops",
+      "spec": "Benchmark math for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00341",
+      "cat": "eng",
+      "title": "statistical 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\formula-functions\\statistical.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00342",
+      "cat": "eng",
+      "title": "statistical Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for statistical."
+    },
+    {
+      "id": "T00343",
+      "cat": "eng",
+      "title": "statistical 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\formula-functions\\statistical.ts. Use robust generics."
+    },
+    {
+      "id": "T00344",
+      "cat": "eng",
+      "title": "statistical Perf Audit 1M loops",
+      "spec": "Benchmark statistical for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00345",
+      "cat": "eng",
+      "title": "text 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\formula-functions\\text.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00346",
+      "cat": "eng",
+      "title": "text Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for text."
+    },
+    {
+      "id": "T00347",
+      "cat": "eng",
+      "title": "text 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\formula-functions\\text.ts. Use robust generics."
+    },
+    {
+      "id": "T00348",
+      "cat": "eng",
+      "title": "text Perf Audit 1M loops",
+      "spec": "Benchmark text for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00349",
+      "cat": "eng",
+      "title": "FormulaAutoCompleteEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\FormulaAutoCompleteEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00350",
+      "cat": "eng",
+      "title": "FormulaAutoCompleteEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for FormulaAutoCompleteEngine."
+    },
+    {
+      "id": "T00351",
+      "cat": "eng",
+      "title": "FormulaAutoCompleteEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\FormulaAutoCompleteEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00352",
+      "cat": "eng",
+      "title": "FormulaAutoCompleteEngine Perf Audit 1M loops",
+      "spec": "Benchmark FormulaAutoCompleteEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00353",
+      "cat": "eng",
+      "title": "FormulaEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\FormulaEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00354",
+      "cat": "eng",
+      "title": "FormulaEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for FormulaEngine."
+    },
+    {
+      "id": "T00355",
+      "cat": "eng",
+      "title": "FormulaEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\FormulaEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00356",
+      "cat": "eng",
+      "title": "FormulaEngine Perf Audit 1M loops",
+      "spec": "Benchmark FormulaEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00357",
+      "cat": "eng",
+      "title": "FormulaFunctionRegistry 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\FormulaFunctionRegistry.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00358",
+      "cat": "eng",
+      "title": "FormulaFunctionRegistry Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for FormulaFunctionRegistry."
+    },
+    {
+      "id": "T00359",
+      "cat": "eng",
+      "title": "FormulaFunctionRegistry 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\FormulaFunctionRegistry.ts. Use robust generics."
+    },
+    {
+      "id": "T00360",
+      "cat": "eng",
+      "title": "FormulaFunctionRegistry Perf Audit 1M loops",
+      "spec": "Benchmark FormulaFunctionRegistry for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00361",
+      "cat": "eng",
+      "title": "FXEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\FXEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00362",
+      "cat": "eng",
+      "title": "FXEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for FXEngine."
+    },
+    {
+      "id": "T00363",
+      "cat": "eng",
+      "title": "FXEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\FXEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00364",
+      "cat": "eng",
+      "title": "FXEngine Perf Audit 1M loops",
+      "spec": "Benchmark FXEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00365",
+      "cat": "eng",
+      "title": "GlobalSearchEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\GlobalSearchEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00366",
+      "cat": "eng",
+      "title": "GlobalSearchEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for GlobalSearchEngine."
+    },
+    {
+      "id": "T00367",
+      "cat": "eng",
+      "title": "GlobalSearchEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\GlobalSearchEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00368",
+      "cat": "eng",
+      "title": "GlobalSearchEngine Perf Audit 1M loops",
+      "spec": "Benchmark GlobalSearchEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00369",
+      "cat": "eng",
+      "title": "GoalSeekEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\GoalSeekEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00370",
+      "cat": "eng",
+      "title": "GoalSeekEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for GoalSeekEngine."
+    },
+    {
+      "id": "T00371",
+      "cat": "eng",
+      "title": "GoalSeekEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\GoalSeekEngine.ts. Use robust generics."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

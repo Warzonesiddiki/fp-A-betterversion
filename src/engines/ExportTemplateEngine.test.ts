@@ -19,9 +19,9 @@ describe('ExportTemplateEngine', () => {
 
   it('should get template by id', () => {
     const templates = engine.listTemplates();
-    const tpl = engine.getTemplate(templates[0].id);
+    const tpl = engine.getTemplate(templates![0]!.id);
     expect(tpl).toBeDefined();
-    expect(tpl!.id).toBe(templates[0].id);
+    expect(tpl!.id).toBe(templates![0]!.id);
   });
 
   it('should return undefined for non-existent template', () => {

@@ -78,7 +78,7 @@ export const gammln = (x: number): number => {
     tmp = x + 5.5;
   tmp -= (x + 0.5) * Math.log(tmp);
   let ser = 1.000000000190015;
-  for (let j = 0; j < 6; j++) ser += c[j] / ++y;
+  for (let j = 0; j < 6; j++) ser += c![j]! / ++y;
   return -tmp + Math.log((2.506628274631 * ser) / x);
 };
 
@@ -166,22 +166,22 @@ export const normInv = (p: number): number => {
   if (p < pLow) {
     q = Math.sqrt(-2 * Math.log(p));
     return (
-      (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-      ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
+      (((((c![0]! * q + c![1]!) * q + c![2]!) * q + c![3]!) * q + c![4]!) * q + c![5]!) /
+      ((((d![0]! * q + d![1]!) * q + d![2]!) * q + d![3]!) * q + 1)
     );
   }
   if (p <= pHigh) {
     q = p - 0.5;
     r = q * q;
     return (
-      ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) /
-      (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
+      ((((((a![0]! * r + a![1]!) * r + a![2]!) * r + a![3]!) * r + a![4]!) * r + a![5]!) * q) /
+      (((((b![0]! * r + b![1]!) * r + b![2]!) * r + b![3]!) * r + b![4]!) * r + 1)
     );
   }
   q = Math.sqrt(-2 * Math.log(1 - p));
   return (
-    -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-    ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
+    -(((((c![0]! * q + c![1]!) * q + c![2]!) * q + c![3]!) * q + c![4]!) * q + c![5]!) /
+    ((((d![0]! * q + d![1]!) * q + d![2]!) * q + d![3]!) * q + 1)
   );
 };
 

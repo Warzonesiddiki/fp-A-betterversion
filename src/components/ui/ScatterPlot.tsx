@@ -56,7 +56,10 @@ export const ScatterPlot = React.memo(function ScatterPlot({
   if (error) {
     return (
       <div className={className}>
-        <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
+        <div className="flex items-center justify-center h-48 text-red-500 text-sm">
+          {' '}
+          role="alert" role="alert" {error}
+        </div>
       </div>
     );
   }

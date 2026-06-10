@@ -25,7 +25,7 @@ def validate_email(email: Any) -> bool:
     # 3. Domain part: alphanumeric characters and hyphens (not starting/ending).
     # 4. Top-level domain: at least two alphabetic characters.
     # Note: It also ensures no consecutive dots in the domain part.
-    pattern = r'^(?!\.)[a-zA-Z0-9._%+-]+(?<!\.)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    pattern = r'^(?!\.)[a-zA-Z0-9._%+-]+(?<!\.)@(?!\.)[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$'
     
     if not re.match(pattern, email):
         return False

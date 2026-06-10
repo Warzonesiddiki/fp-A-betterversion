@@ -63,7 +63,7 @@ function RuleRow({
         <button
           onClick={onMoveUp}
           disabled={index === 0}
-          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Move up"
         >
           ▲
@@ -72,7 +72,7 @@ function RuleRow({
         <button
           onClick={onMoveDown}
           disabled={isLast}
-          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Move down"
         >
           ▼
@@ -107,13 +107,13 @@ function RuleRow({
         </button>
         <button
           onClick={onEdit}
-          className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50"
+          className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Edit
         </button>
         <button
           onClick={onDelete}
-          className="rounded px-2 py-1 text-xs fin-negative hover:bg-red-50"
+          className="rounded px-2 py-1 text-xs fin-negative hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Delete
         </button>
@@ -191,8 +191,8 @@ export const ConditionalFormattingPanel = memo(function ConditionalFormattingPan
       const a = sortedRules[idx];
       const b = sortedRules[swapIdx];
       const newRules = rules.map((r) => {
-        if (r.id === a.id) return { ...r, priority: b.priority };
-        if (r.id === b.id) return { ...r, priority: a.priority };
+        if (r.id === a!.id) return { ...r, priority: b!.priority };
+        if (r.id === b!.id) return { ...r, priority: a!.priority };
         return r;
       });
       onRulesChange(newRules);
@@ -219,14 +219,14 @@ export const ConditionalFormattingPanel = memo(function ConditionalFormattingPan
           {rules.length === 0 && (
             <button
               onClick={handleLoadDefaults}
-              className="rounded px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+              className="rounded px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               Load Defaults
             </button>
           )}
           <button
             onClick={handleAddNew}
-            className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700"
+            className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             + Add Rule
           </button>

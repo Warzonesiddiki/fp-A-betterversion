@@ -82,7 +82,7 @@ export const useCapExStore = create<CapExState>()(
         updateProject: (id, updates) =>
           set((state) => {
             const idx = state.projects.findIndex((p) => p.id === id);
-            if (idx !== -1) Object.assign(state.projects[idx], updates);
+            if (idx !== -1) Object.assign(state.projects[idx]!, updates);
           }),
 
         removeProject: (id) =>

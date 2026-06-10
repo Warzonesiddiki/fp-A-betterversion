@@ -1,0 +1,10 @@
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { ReciprocalConfigPanel } from './ReciprocalConfigPanel';
+
+describe('ReciprocalConfigPanel', () => {
+  it('renders without crashing', () => {
+    const { container } = render(<ReciprocalConfigPanel />);
+    expect(container).toBeDefined();
+  });
+});

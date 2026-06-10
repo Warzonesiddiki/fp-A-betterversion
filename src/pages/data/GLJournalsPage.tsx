@@ -61,7 +61,7 @@ export default function GLJournalsPage() {
 
   const filtered = useMemo(() => {
     let list = entries.filter((e) => e.date >= startDate && e.date <= endDate);
-    if (accountFilter.length > 0 && accountFilter[0]) {
+    if (accountFilter.length > 0 && accountFilter[0]!) {
       list = list.filter((e) => accountFilter.includes(e.accountId));
     }
     if (search) {

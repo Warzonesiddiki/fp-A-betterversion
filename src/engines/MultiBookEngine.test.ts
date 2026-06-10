@@ -95,7 +95,7 @@ describe('MultiBookEngine', () => {
       const filtered = MultiBookEngine.listBooks('e-a');
       [b1, b2].forEach((b) => MultiBookEngine.deleteBook(b.id));
       expect(filtered).toHaveLength(1);
-      expect(filtered[0].id).toBe(b1.id);
+      expect(filtered![0]!.id).toBe(b1.id);
     });
   });
 
@@ -184,7 +184,7 @@ describe('MultiBookEngine', () => {
       const filtered = MultiBookEngine.getEntries(book.id, { period: '2026-01' });
       MultiBookEngine.deleteBook(book.id);
       expect(filtered).toHaveLength(1);
-      expect(filtered[0].debit).toBe(100);
+      expect(filtered![0]!.debit).toBe(100);
     });
 
     it('filters entries by accountId', () => {
@@ -286,11 +286,11 @@ describe('MultiBookEngine', () => {
       const consolidated = MultiBookEngine.consolidateBooks([gaap.id, ifrs.id]);
       [gaap, ifrs].forEach((b) => MultiBookEngine.deleteBook(b.id));
       expect(consolidated).toHaveLength(1);
-      expect(consolidated[0].accountId).toBe('cash');
-      expect(consolidated[0].totalDebit).toBe(1900);
-      expect(consolidated[0].totalCredit).toBe(0);
-      expect(consolidated[0].netAmount).toBe(1900);
-      expect(consolidated[0].books).toHaveLength(2);
+      expect(consolidated![0]!.accountId).toBe('cash');
+      expect(consolidated![0]!.totalDebit).toBe(1900);
+      expect(consolidated![0]!.totalCredit).toBe(0);
+      expect(consolidated![0]!.netAmount).toBe(1900);
+      expect(consolidated![0]!.books).toHaveLength(2);
     });
 
     it('detects GAAP differences', async () => {
@@ -303,8 +303,8 @@ describe('MultiBookEngine', () => {
 
       const consolidated = MultiBookEngine.consolidateBooks([gaap.id, ifrs.id]);
       [gaap, ifrs].forEach((b) => MultiBookEngine.deleteBook(b.id));
-      expect(consolidated[0].gaapDifferences.length).toBeGreaterThan(0);
-      expect(consolidated[0].gaapDifferences[0].difference).toBe(100);
+      expect(consolidated![0]!.gaapDifferences.length).toBeGreaterThan(0);
+      expect(consolidated![0]!.gaapDifferences[0]!.difference).toBe(100);
     });
 
     it('returns empty array for no books', () => {

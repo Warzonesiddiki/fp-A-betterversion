@@ -124,6 +124,8 @@ export const DataTable = memo<DataTableProps>(
             'flex flex-col items-center justify-center p-8 rounded-lg border border-red-100 bg-red-50 fin-negative dark:border-red-900 dark:bg-red-950',
             className
           )}
+          role="region"
+          aria-label="DataTable"
         >
           <AlertCircle className="h-10 w-10 mb-2" />
           <h3 className="font-semibold text-lg">Error loading data</h3>
@@ -158,9 +160,7 @@ export const DataTable = memo<DataTableProps>(
               column.align === 'center' && 'text-center'
             )}
           >
-            {column.render
-              ? String(column.render(row[column.key], row) ?? '')
-              : String(row[column.key] ?? '')}
+            {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '')}
           </td>
         ))}
       </tr>
@@ -171,9 +171,9 @@ export const DataTable = memo<DataTableProps>(
       if (!virtualizer) return null;
       const virtualItems = virtualizer.getVirtualItems();
       const totalSize = virtualizer.getTotalSize();
-      const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+      const paddingTop = virtualItems.length > 0 ? virtualItems[0]!.start : 0;
       const paddingBottom =
-        virtualItems.length > 0 ? totalSize - virtualItems[virtualItems.length - 1].end : 0;
+        virtualItems.length > 0 ? totalSize - virtualItems![virtualItems.length - 1]!.end : 0;
 
       return (
         <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -186,12 +186,12 @@ export const DataTable = memo<DataTableProps>(
             const row = filteredData[virtualRow.index];
             return (
               <tr
-                key={(row.id as React.Key) ?? virtualRow.index}
+                key={(row!.id as React.Key) ?? virtualRow.index}
                 className={cn(
                   'transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group',
                   onRowClick && 'cursor-pointer'
                 )}
-                onClick={() => onRowClick?.(row)}
+                onClick={() => onRowClick?.(row!)}
                 data-index={virtualRow.index}
               >
                 {columns.map((column) => (
@@ -204,8 +204,8 @@ export const DataTable = memo<DataTableProps>(
                     )}
                   >
                     {column.render
-                      ? column.render(row[column.key], row)
-                      : String(row[column.key] ?? '')}
+                      ? column.render(row?.[column.key], row!)
+                      : String(row?.[column.key] ?? '')}
                   </td>
                 ))}
               </tr>

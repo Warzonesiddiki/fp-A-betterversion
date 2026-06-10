@@ -67,7 +67,7 @@ function buildLinearChain(n: number): GridSetup {
   }
 
   for (let i = 1; i < n; i++) {
-    engine.setDependencies(cellIds[i], [cellIds[i - 1]]);
+    engine.setDependencies(cellIds[i]!, [cellIds[i - 1]]);
   }
 
   return { engine, values, cellIds };
@@ -158,7 +158,7 @@ describe('IncrementalCalcEngine - Dependency Graph Setup', () => {
     const ids: CellIdentifier[] = [];
     for (let i = 0; i < 1000; i++) ids.push(cell('A', i + 1));
     const start = performance.now();
-    for (let i = 1; i < ids.length; i++) engine.setDependencies(ids[i], [ids[i - 1]]);
+    for (let i = 1; i < ids.length; i++) engine.setDependencies(ids[i]!, [ids[i - 1]]);
     const elapsed = performance.now() - start;
     console.log(`  setDependencies 1K: ${fmtMs(elapsed)}`);
     expect(elapsed).toBeLessThan(20);
@@ -169,7 +169,7 @@ describe('IncrementalCalcEngine - Dependency Graph Setup', () => {
     const ids: CellIdentifier[] = [];
     for (let i = 0; i < 100_000; i++) ids.push(cell('A', i + 1));
     const start = performance.now();
-    for (let i = 1; i < ids.length; i++) engine.setDependencies(ids[i], [ids[i - 1]]);
+    for (let i = 1; i < ids.length; i++) engine.setDependencies(ids[i]!, [ids[i - 1]]);
     const elapsed = performance.now() - start;
     console.log(`  setDependencies 100K: ${fmtMs(elapsed)}`);
     expect(elapsed).toBeLessThan(5000);
@@ -180,7 +180,7 @@ describe('IncrementalCalcEngine - Dependency Graph Setup', () => {
     const ids: CellIdentifier[] = [];
     for (let i = 0; i < 1_000_000; i++) ids.push(cell('A', i + 1));
     const start = performance.now();
-    for (let i = 1; i < ids.length; i++) engine.setDependencies(ids[i], [ids[i - 1]]);
+    for (let i = 1; i < ids.length; i++) engine.setDependencies(ids[i]!, [ids[i - 1]]);
     const elapsed = performance.now() - start;
     console.log(`  setDependencies 1M: ${fmtMs(elapsed)}`);
     expect(elapsed).toBeLessThan(30000);
@@ -191,7 +191,7 @@ describe('IncrementalCalcEngine - getAffectedCells BFS', () => {
   it('getAffectedCells from leaf of 1K chain < 500ms', { timeout: 15000 }, () => {
     const { engine, cellIds } = buildLinearChain(1000);
     const start = performance.now();
-    const affected = engine.getAffectedCells(cellIds[0]);
+    const affected = engine.getAffectedCells(cellIds[0]!);
     const elapsed = performance.now() - start;
     console.log(`  getAffectedCells 1K: ${fmtMs(elapsed)}, affected=${affected.length}`);
     expect(affected.length).toBe(999);
@@ -201,7 +201,7 @@ describe('IncrementalCalcEngine - getAffectedCells BFS', () => {
   it('getAffectedCells from leaf of 10K chain < 500ms', { timeout: 15000 }, () => {
     const { engine, cellIds } = buildLinearChain(10_000);
     const start = performance.now();
-    const affected = engine.getAffectedCells(cellIds[0]);
+    const affected = engine.getAffectedCells(cellIds[0]!);
     const elapsed = performance.now() - start;
     console.log(`  getAffectedCells 10K: ${fmtMs(elapsed)}, affected=${affected.length}`);
     expect(affected.length).toBe(9999);
@@ -211,7 +211,7 @@ describe('IncrementalCalcEngine - getAffectedCells BFS', () => {
   it('getAffectedCells from leaf of 100K chain < 5000ms', { timeout: 30000 }, () => {
     const { engine, cellIds } = buildLinearChain(100_000);
     const start = performance.now();
-    const affected = engine.getAffectedCells(cellIds[0]);
+    const affected = engine.getAffectedCells(cellIds[0]!);
     const elapsed = performance.now() - start;
     console.log(`  getAffectedCells 100K: ${fmtMs(elapsed)}, affected=${affected.length}`);
     expect(affected.length).toBe(99_999);
@@ -226,7 +226,7 @@ describe('IncrementalCalcEngine - calculateIncremental', () => {
       { timeout: Math.max(maxMs * 3, 30000) },
       () => {
         const { engine, values, cellIds } = buildLinearChain(n);
-        engine.markDirty(cellIds[0]);
+        engine.markDirty(cellIds[0]!);
         const { getCellValue, setCellValue, evaluateFormula } = makeCallbacks(values);
 
         const start = performance.now();
@@ -288,7 +288,7 @@ describe('IncrementalCalcEngine - Chain Depth Impact', () => {
       { timeout: Math.max(maxMs * 3, 30000) },
       () => {
         const { engine, values, cellIds } = buildLinearChain(depth);
-        engine.markDirty(cellIds[0]);
+        engine.markDirty(cellIds[0]!);
         const { getCellValue, setCellValue, evaluateFormula } = makeCallbacks(values);
 
         const start = performance.now();
@@ -382,7 +382,7 @@ describe('IncrementalCalcEngine - Convergence Iterations', () => {
       ids.push(c);
       values.set(`${c.sheet}!${c.col}${c.row}`, 0);
     }
-    for (let i = 1; i < n; i++) engine.setDependencies(ids[i], [ids[i - 1]]);
+    for (let i = 1; i < n; i++) engine.setDependencies(ids[i]!, [ids[i - 1]]);
     for (const c of ids) engine.markDirty(c);
 
     let callCount = 0;
@@ -433,7 +433,7 @@ describe('IncrementalCalcEngine - Scaling Summary', () => {
       const setupMs = performance.now() - setupStart;
 
       // Use 1 dirty cell for consistent comparison
-      engine.markDirty(cellIds[0]);
+      engine.markDirty(cellIds[0]!);
       const { getCellValue, setCellValue, evaluateFormula } = makeCallbacks(values);
 
       const calcStart = performance.now();

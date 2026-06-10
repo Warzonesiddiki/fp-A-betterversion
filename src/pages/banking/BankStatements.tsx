@@ -131,6 +131,7 @@ export function BankStatements() {
           {formatNumber(entries.length)} entries imported
         </span>
       </header>
+      <h2 className="sr-only">Key Performance Indicators</h2>
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"

@@ -121,7 +121,7 @@ export const Sidebar = memo(function Sidebar() {
         )}
         {/* Close button on mobile */}
         <button
-          className="md:hidden p-1 rounded-md"
+          className="md:hidden p-1 rounded-md focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-muted)' }}
           onClick={closeMobileSidebar}
           aria-label={t('accessibility.menuClose')}
@@ -132,7 +132,7 @@ export const Sidebar = memo(function Sidebar() {
 
       <div className="px-3 py-3">
         <button
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-xs transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-xs transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{
             background: 'var(--bg-elevated)',
             color: 'var(--text-muted)',

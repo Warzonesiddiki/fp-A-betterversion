@@ -1,4 +1,5 @@
 use tauri_plugin_sql::{Migration, MigrationKind};
+use tauri_plugin_updater::UpdaterExt;
 
 #[tauri::command]
 pub fn get_app_info() -> serde_json::Value {
@@ -34,7 +35,18 @@ pub fn run_with_builder(builder: tauri::Builder<tauri::Wry>) {
                 .add_migrations("sqlite:finplan.db", migrations)
                 .build(),
         )
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![get_app_info])
+        .setup(|app| {
+            // Check for updates on startup
+            let handle = app.handle().clone();
+            std::thread::spawn(move || {
+                tauri::async_runtime::block_on(async move {
+                    let _ = handle.updater().check().await;
+                });
+            });
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

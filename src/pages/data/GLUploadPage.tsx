@@ -136,7 +136,7 @@ export default function GLUploadPage() {
             setImportStatus('idle');
             return;
           }
-          const headers = lines[0].split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
+          const headers = lines[0]!.split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
           const uniqueHeaders = new Set(headers);
           if (uniqueHeaders.size !== headers.length) {
             setImportError(
@@ -184,32 +184,32 @@ export default function GLUploadPage() {
 
           // Use first sheet with data, or first sheet
           const activeSheet = workbook.sheets.find((s) => s.rowCount > 0) || workbook.sheets[0];
-          setSelectedSheet(activeSheet.name);
+          setSelectedSheet(activeSheet!.name);
 
-          if (activeSheet.rowCount === 0) {
-            setImportError(`Sheet "${activeSheet.name}" contains no data rows.`);
+          if (activeSheet!.rowCount === 0) {
+            setImportError(`Sheet "${activeSheet!.name}" contains no data rows.`);
             setImportStatus('idle');
             return;
           }
-          if (activeSheet.rowCount > 100000) {
+          if (activeSheet!.rowCount > 100000) {
             setImportError(
-              `Sheet has ${activeSheet.rowCount.toLocaleString()} rows. Maximum supported is 100,000 rows per import.`
+              `Sheet has ${activeSheet!.rowCount.toLocaleString()} rows. Maximum supported is 100,000 rows per import.`
             );
             setImportStatus('idle');
             return;
           }
 
           // Convert to string rows for compatibility with existing mapper
-          const stringRows: Record<string, string>[] = activeSheet.rows.map((row) => {
+          const stringRows: Record<string, string>[] = activeSheet!.rows.map((row) => {
             const stringRow: Record<string, string> = {};
-            for (const h of activeSheet.headers) {
+            for (const h of activeSheet!.headers) {
               const val = row[h];
               stringRow[h] = val === null || val === undefined ? '' : String(val);
             }
             return stringRow;
           });
 
-          setCsvColumns(activeSheet.headers);
+          setCsvColumns(activeSheet!.headers);
           setRawData(stringRows);
           setImportStatus('idle');
           setStep(1);
@@ -293,12 +293,12 @@ export default function GLUploadPage() {
     setImportStatus('importing');
     setImportProgress(0);
     const mappedData = rawData.map((row) => {
-      const getVal = (field: string) => row[mappings[field]];
+      const getVal = (field: string) => row[mappings[field]!];
       return {
         date: getVal('postDate') || '',
         accountCode: getVal('accountCode') || '',
-        debit: parseFloat(getVal('debit')) || 0,
-        credit: parseFloat(getVal('credit')) || 0,
+        debit: parseFloat(getVal('debit')!) || 0,
+        credit: parseFloat(getVal('credit')!) || 0,
         description: getVal('description') || '',
         reference: getVal('reference') || '',
         entityId: getVal('entityId') || '',

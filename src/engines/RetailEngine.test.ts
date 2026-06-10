@@ -33,7 +33,7 @@ describe('RetailEngine', () => {
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
       expect(result).toHaveLength(1);
-      expect(result[0].revenue).toBe(700000);
+      expect(result![0]!.revenue).toBe(700000);
     });
 
     it('should calculate COGS from 50xx accounts', () => {
@@ -42,7 +42,7 @@ describe('RetailEngine', () => {
         gl('5001', 200000, { entityId: 'store-1' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].cogs).toBe(200000);
+      expect(result![0]!.cogs).toBe(200000);
     });
 
     it('should calculate labor from 51xx accounts', () => {
@@ -52,7 +52,7 @@ describe('RetailEngine', () => {
         gl('5102', 50000, { entityId: 'store-1' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].labor).toBe(150000);
+      expect(result![0]!.labor).toBe(150000);
     });
 
     it('should calculate occupancy from 52xx accounts', () => {
@@ -61,7 +61,7 @@ describe('RetailEngine', () => {
         gl('5201', 80000, { entityId: 'store-1' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].occupancy).toBe(80000);
+      expect(result![0]!.occupancy).toBe(80000);
     });
 
     it('should calculate gross profit as revenue minus COGS', () => {
@@ -70,7 +70,7 @@ describe('RetailEngine', () => {
         gl('5001', 200000, { entityId: 'store-1' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].grossProfit).toBe(300000);
+      expect(result![0]!.grossProfit).toBe(300000);
     });
 
     it('should calculate net profit as revenue minus COGS minus labor minus occupancy', () => {
@@ -81,7 +81,7 @@ describe('RetailEngine', () => {
         gl('5201', 50000, { entityId: 'store-1' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].netProfit).toBe(150000);
+      expect(result![0]!.netProfit).toBe(150000);
     });
 
     it('should calculate margin as netProfit / revenue * 100', () => {
@@ -93,7 +93,7 @@ describe('RetailEngine', () => {
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
       // netProfit = 150000, revenue = 500000 → margin = 30%
-      expect(result[0].margin).toBe(30);
+      expect(result![0]!.margin).toBe(30);
     });
 
     it('should calculate labor percent as labor / revenue * 100', () => {
@@ -102,7 +102,7 @@ describe('RetailEngine', () => {
         gl('5101', 100000, { entityId: 'store-1' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].laborPercent).toBe(20);
+      expect(result![0]!.laborPercent).toBe(20);
     });
 
     it('should return 0 margin when revenue is zero', () => {
@@ -118,12 +118,12 @@ describe('RetailEngine', () => {
         gl('4001', 500000, { entityId: 'store-3' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].rank).toBe(1);
-      expect(result[0].id).toBe('store-2');
-      expect(result[1].rank).toBe(2);
-      expect(result[1].id).toBe('store-3');
-      expect(result[2].rank).toBe(3);
-      expect(result[2].id).toBe('store-1');
+      expect(result![0]!.rank).toBe(1);
+      expect(result![0]!.id).toBe('store-2');
+      expect(result![1]!.rank).toBe(2);
+      expect(result![1]!.id).toBe('store-3');
+      expect(result![2]!.rank).toBe(3);
+      expect(result![2]!.id).toBe('store-1');
     });
 
     it('should filter out stores with zero revenue', () => {
@@ -133,7 +133,7 @@ describe('RetailEngine', () => {
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe('store-1');
+      expect(result![0]!.id).toBe('store-1');
     });
 
     it('should use accountName from first entry for store name', () => {
@@ -141,7 +141,7 @@ describe('RetailEngine', () => {
         gl('4001', 500000, { entityId: 'store-1', accountName: 'Downtown Flagship' }),
       ];
       const result = RetailEngine.getStoreBreakdown(entries);
-      expect(result[0].name).toBe('Downtown Flagship');
+      expect(result![0]!.name).toBe('Downtown Flagship');
     });
 
     it('should handle empty entries', () => {
@@ -205,8 +205,8 @@ describe('RetailEngine', () => {
       ];
       const result = RetailEngine.getPnLTrend(entries);
       expect(result).toHaveLength(3);
-      expect(result[0].month).toBe('2026-01');
-      expect(result[0].revenue).toBe(100000);
+      expect(result![0]!.month).toBe('2026-01');
+      expect(result![0]!.revenue).toBe(100000);
     });
 
     it('should calculate gross profit in trend', () => {
@@ -215,7 +215,7 @@ describe('RetailEngine', () => {
         gl('5001', 200000, { date: '2026-01-15' }),
       ];
       const result = RetailEngine.getPnLTrend(entries);
-      expect(result[0].grossProfit).toBe(300000);
+      expect(result![0]!.grossProfit).toBe(300000);
     });
 
     it('should calculate labor in trend', () => {
@@ -224,7 +224,7 @@ describe('RetailEngine', () => {
         gl('5101', 100000, { date: '2026-01-15' }),
       ];
       const result = RetailEngine.getPnLTrend(entries);
-      expect(result[0].labor).toBe(100000);
+      expect(result![0]!.labor).toBe(100000);
     });
 
     it('should limit to last 6 periods', () => {
@@ -233,7 +233,7 @@ describe('RetailEngine', () => {
       );
       const result = RetailEngine.getPnLTrend(entries);
       expect(result).toHaveLength(6);
-      expect(result[0].month).toBe('2026-03');
+      expect(result![0]!.month).toBe('2026-03');
     });
 
     it('should handle empty entries', () => {
@@ -248,9 +248,9 @@ describe('RetailEngine', () => {
         gl('4001', 150000, { date: '2026-02-15' }),
       ];
       const result = RetailEngine.getPnLTrend(entries);
-      expect(result[0].month).toBe('2026-01');
-      expect(result[1].month).toBe('2026-02');
-      expect(result[2].month).toBe('2026-03');
+      expect(result![0]!.month).toBe('2026-01');
+      expect(result![1]!.month).toBe('2026-02');
+      expect(result![2]!.month).toBe('2026-03');
     });
   });
 });

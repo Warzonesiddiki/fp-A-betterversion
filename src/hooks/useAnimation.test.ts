@@ -21,23 +21,23 @@ describe('useStagger', () => {
     mockedUseReducedMotion.mockReturnValue(false);
     const { result } = renderHook(() => useStagger(['a', 'b', 'c'], 30));
     expect(result.current).toHaveLength(3);
-    expect(result.current[0].item).toBe('a');
-    expect(result.current[0].style.animationDelay).toBe('0ms');
-    expect(result.current[1].style.animationDelay).toBe('30ms');
-    expect(result.current[2].style.animationDelay).toBe('60ms');
+    expect(result!.current[0]!.item).toBe('a');
+    expect(result!.current[0]!.style.animationDelay).toBe('0ms');
+    expect(result!.current[1]!.style.animationDelay).toBe('30ms');
+    expect(result!.current[2]!.style.animationDelay).toBe('60ms');
   });
 
   it('should use default delay of 20ms', () => {
     mockedUseReducedMotion.mockReturnValue(false);
     const { result } = renderHook(() => useStagger(['a', 'b']));
-    expect(result.current[1].style.animationDelay).toBe('20ms');
+    expect(result!.current[1]!.style.animationDelay).toBe('20ms');
   });
 
   it('should return transition:none when reduced motion', () => {
     mockedUseReducedMotion.mockReturnValue(true);
     const { result } = renderHook(() => useStagger(['a', 'b']));
-    expect(result.current[0].style).toEqual({ transition: 'none' });
-    expect(result.current[1].style).toEqual({ transition: 'none' });
+    expect(result!.current[0]!.style).toEqual({ transition: 'none' });
+    expect(result!.current[1]!.style).toEqual({ transition: 'none' });
   });
 });
 

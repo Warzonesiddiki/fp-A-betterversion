@@ -73,7 +73,7 @@ describe('ImportEngine', () => {
     const { result } = await engine.importCSV(file);
 
     expect(result.valid).toBe(true);
-    expect(result.preview[0].description).toBe('Income, net');
+    expect(result!.preview[0]!.description).toBe('Income, net');
   });
 
   it('should validate required columns', async () => {
@@ -103,7 +103,7 @@ describe('ImportEngine', () => {
     const { result } = await engine.importCSV(file);
 
     expect(result.valid).toBe(false);
-    expect(result.errors[0].message).toContain('header row');
+    expect(result!.errors[0]!.message).toContain('header row');
   });
 
   it('should handle file with only headers', async () => {
@@ -111,7 +111,7 @@ describe('ImportEngine', () => {
     const { result } = await engine.importCSV(file);
 
     expect(result.valid).toBe(false);
-    expect(result.errors[0].message).toContain('header row');
+    expect(result!.errors[0]!.message).toContain('header row');
   });
 
   it('should import JSON array', async () => {
@@ -141,7 +141,7 @@ describe('ImportEngine', () => {
     const { result } = await engine.importJSON(file);
 
     expect(result.valid).toBe(false);
-    expect(result.errors[0].message).toContain('Invalid JSON');
+    expect(result!.errors[0]!.message).toContain('Invalid JSON');
   });
 
   it('should validate JSON required fields', async () => {
@@ -161,12 +161,12 @@ describe('ImportEngine', () => {
     const { snapshot } = await engine.importCSV(file);
 
     expect(engine.getSnapshots()).toHaveLength(1);
-    expect(engine.getSnapshots()[0].fileName).toBe('data.csv');
+    expect(engine!.getSnapshots()[0]!.fileName).toBe('data.csv');
 
     // Rollback
     if (snapshot) {
       engine.rollback(snapshot.id);
-      expect(engine.getSnapshots()[0].applied).toBe(false);
+      expect(engine!.getSnapshots()[0]!.applied).toBe(false);
     }
   });
 
@@ -194,7 +194,7 @@ describe('ImportEngine', () => {
     const { result } = await engine.importFile(file);
 
     expect(result.valid).toBe(false);
-    expect(result.errors[0].message).toContain('Unsupported');
+    expect(result!.errors[0]!.message).toContain('Unsupported');
   });
 
   it('should track progress during import', async () => {

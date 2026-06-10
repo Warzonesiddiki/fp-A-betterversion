@@ -18,7 +18,7 @@ export const tauriSqlStorage: PersistStorage<any> = {
         'SELECT value FROM stores WHERE id = $1',
         [name]
       );
-      return result.length > 0 ? JSON.parse(result[0].value) : null;
+      return result.length > 0 ? JSON.parse(result![0]!.value) : null;
     } catch (err) {
       console.error('Tauri SQL getItem error:', err);
       return null;

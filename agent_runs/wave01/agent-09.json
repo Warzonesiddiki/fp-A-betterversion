@@ -1,0 +1,7 @@
+{
+  "agent": "agent-09",
+  "task": "fix-stress-test-types",
+  "status": "done",
+  "tscErrorsAfter": 0,
+  "notes": "Replaced 3x `as any` on setItem second arg with `as unknown as StorageValue<unknown>` (imported StorageValue from 'zustand/middleware'). Removed `as any` on masterStorage.__resetCache() since the method is typed in the masterStorage declaration. Preserved all test scenarios (1000 concurrent writes, failover, 5MB payload) - only type assertions changed. Verified tsc: 0 errors for masterStorage.stress.test.ts."
+}

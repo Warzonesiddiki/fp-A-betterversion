@@ -94,6 +94,8 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
     <div
       className="w-80 border-l flex flex-col h-full"
       style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)' }}
+      role="region"
+      aria-label="DriverPanel"
     >
       {/* Header */}
       <div
@@ -110,7 +112,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
           <button
             onClick={onClose}
             aria-label="Close"
-            className="p-1 rounded hover:opacity-80"
+            className="p-1 rounded hover:opacity-80 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-secondary)' }}
           >
             <X className="w-4 h-4" />
@@ -136,7 +138,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
                 return (
                   <Card key={driver.id} className="overflow-hidden">
                     <button
-                      className="w-full text-left p-3 flex items-center justify-between"
+                      className="w-full text-left p-3 flex items-center justify-between focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                       onClick={() => setExpandedDriver(isExpanded ? null : driver.id)}
                     >
                       <div>

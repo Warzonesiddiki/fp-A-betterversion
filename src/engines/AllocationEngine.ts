@@ -118,12 +118,14 @@ export class AllocationEngine {
     const roundingDiff = round2(amount - totalAllocated);
 
     // Apply rounding correction to the largest allocation target
-    if (Math.abs(roundingDiff) > 0) {
+    if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
       const largestIdx = allocations.reduce(
-        (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx].amount ? idx : maxIdx),
+        (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
         0
       );
-      allocations[largestIdx].amount = round2(allocations[largestIdx].amount + roundingDiff);
+      if (allocations[largestIdx]!) {
+        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
+      }
     }
 
     return {
@@ -195,12 +197,14 @@ export class AllocationEngine {
     // Rounding correction
     const totalAllocated = round2(sumArray(allocations.map((a) => a.amount)));
     const roundingDiff = round2(amount - totalAllocated);
-    if (Math.abs(roundingDiff) > 0) {
+    if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
       const largestIdx = allocations.reduce(
-        (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx].amount ? idx : maxIdx),
+        (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
         0
       );
-      allocations[largestIdx].amount = round2(allocations[largestIdx].amount + roundingDiff);
+      if (allocations[largestIdx]!) {
+        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
+      }
     }
 
     return {
@@ -292,10 +296,10 @@ export class AllocationEngine {
       const roundingDiff = round2(costToAllocate - totalAllocated);
       if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
         const largestIdx = allocations.reduce(
-          (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx].amount ? idx : maxIdx),
+          (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
           0
         );
-        allocations[largestIdx].amount = round2(allocations[largestIdx].amount + roundingDiff);
+        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
       }
 
       remainingCosts[svcDept] = 0;
@@ -355,11 +359,11 @@ export class AllocationEngine {
         for (const otherDept of departments) {
           if (otherDept === dept) continue;
           const pct = (servicePercentages[otherDept] ?? {})[dept] ?? 0;
-          allocatedFromOthers += totalCosts[otherDept] * (pct / 100);
+          allocatedFromOthers += totalCosts![otherDept]! * (pct / 100);
         }
 
         const newTotal = directCost + allocatedFromOthers;
-        const delta = Math.abs(newTotal - totalCosts[dept]);
+        const delta = Math.abs(newTotal - totalCosts![dept]!);
         if (delta > maxDelta) maxDelta = delta;
         totalCosts[dept] = newTotal;
       }
@@ -390,7 +394,7 @@ export class AllocationEngine {
       for (const receiver of receivers) {
         const pct = percentages[receiver] ?? 0;
         if (pct > 0) {
-          const allocated = round2(costToAllocate * (pct / 100));
+          const allocated = round2(costToAllocate! * (pct / 100));
           allocations.push({
             target: receiver,
             amount: allocated,
@@ -401,21 +405,21 @@ export class AllocationEngine {
 
       // Rounding correction
       const totalAllocated = round2(sumArray(allocations.map((a) => a.amount)));
-      const roundingDiff = round2(costToAllocate - totalAllocated);
+      const roundingDiff = round2(costToAllocate! - totalAllocated);
       if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
         const largestIdx = allocations.reduce(
-          (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx].amount ? idx : maxIdx),
+          (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
           0
         );
-        allocations[largestIdx].amount = round2(allocations[largestIdx].amount + roundingDiff);
+        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
       }
 
       results.push({
         ruleId: `reciprocal-${dept}`,
         allocations,
-        totalAllocated: round2(costToAllocate),
+        totalAllocated: round2(costToAllocate!),
         timestamp: generateTimestamp(),
-        auditComment: `Reciprocal allocation for "${dept}": total cost ${round2(costToAllocate)} (direct + reciprocal), allocated to ${allocations.length} receivers.`,
+        auditComment: `Reciprocal allocation for "${dept}": total cost ${round2(costToAllocate!)} (direct + reciprocal), allocated to ${allocations.length} receivers.`,
       });
     }
 
@@ -539,7 +543,7 @@ export class AllocationEngine {
 
       const receivers = Object.keys(servicePercentages[dept] ?? {});
       for (const receiver of receivers) {
-        if ((servicePercentages[dept][receiver] ?? 0) > 0) {
+        if ((servicePercentages[dept]![receiver] ?? 0) > 0) {
           dfs(receiver, [...path, dept]);
         }
       }

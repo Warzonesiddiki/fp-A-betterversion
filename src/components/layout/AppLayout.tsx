@@ -12,6 +12,7 @@ import { getLocaleDirection } from '@/utils/localeFormatting';
 import type { SupportedLocale } from '@/utils/localeFormatting';
 import type { CommandItem } from '@/components/ui/CommandPalette';
 import { useMemo } from 'react';
+import { useCollaborationSetup } from '@/hooks/useCollaborationInit';
 export default function AppLayout() {
   const { mobileSidebarOpen, closeMobileSidebar, commandPaletteOpen, toggleCommandPalette } =
     useUIStore();
@@ -19,6 +20,9 @@ export default function AppLayout() {
   const { i18n } = useTranslation();
   const dir = getLocaleDirection((i18n.language?.split('-')[0] ?? 'en') as SupportedLocale);
   const navigate = useNavigate();
+
+  // Initialize real-time collaboration
+  useCollaborationSetup();
   const commandItems: CommandItem[] = useMemo(
     () => [
       {

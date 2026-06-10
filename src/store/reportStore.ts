@@ -74,7 +74,7 @@ export const useReportStore = create<ReportState>()(
           set((state) => {
             const idx = state.scheduledReports.findIndex((s) => s.id === id);
             if (idx !== -1) {
-              state.scheduledReports[idx].isActive = !state.scheduledReports[idx].isActive;
+              state.scheduledReports[idx]!.isActive = !state.scheduledReports[idx]!.isActive;
             }
           }),
       })),

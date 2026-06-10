@@ -140,12 +140,12 @@ export class CubeMigrationEngine {
       return this.buildResult('csv', config, 0, 0, errors, warnings, start);
     }
 
-    const headers = lines[0].split(delimiter).map((h) => h.trim().replace(/^"|"$/g, ''));
+    const headers = lines[0]!.split(delimiter).map((h) => h.trim().replace(/^"|"$/g, ''));
     let cellsImported = 0;
     const membersAdded = new Set<string>();
 
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(delimiter).map((v) => v.trim().replace(/^"|"$/g, ''));
+      const values = lines[i]!.split(delimiter).map((v) => v.trim().replace(/^"|"$/g, ''));
       if (values.length !== headers.length) {
         errors.push({
           row: i + 1,
@@ -159,18 +159,18 @@ export class CubeMigrationEngine {
       let measureValue: number | undefined;
 
       for (let j = 0; j < headers.length; j++) {
-        const mappedDim = config.dimensionMapping[headers[j]];
-        const mappedMeasure = config.measureMapping[headers[j]];
+        const mappedDim = config.dimensionMapping[headers[j]!];
+        const mappedMeasure = config.measureMapping[headers[j]!];
 
         if (mappedDim) {
-          coords[mappedDim] = values[j];
+          coords[mappedDim] = values[j]!;
           membersAdded.add(`${mappedDim}:${values[j]}`);
         } else if (mappedMeasure) {
-          measureValue = parseFloat(values[j]);
+          measureValue = parseFloat(values[j]!);
           if (isNaN(measureValue)) {
             errors.push({
               row: i + 1,
-              column: headers[j],
+              column: headers[j]!,
               message: 'Invalid numeric value',
               severity: 'warning',
             });
@@ -222,7 +222,7 @@ export class CubeMigrationEngine {
       const coords: Record<string, string> = {};
       let measureValue: number | undefined;
 
-      for (const [key, value] of Object.entries(row)) {
+      for (const [key, value] of Object.entries(row!)) {
         const mappedDim = config.dimensionMapping[key];
         const mappedMeasure = config.measureMapping[key];
 

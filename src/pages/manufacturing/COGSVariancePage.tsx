@@ -100,15 +100,15 @@ export default function COGSVariancePage() {
         />
         <KPICard
           title="Purchase Price Variance"
-          value={metrics.breakdown[0].value}
+          value={metrics.breakdown[0]!.value}
           format="currency"
-          trend={metrics.breakdown[0].value >= 0 ? 'up' : 'down'}
+          trend={metrics.breakdown[0]!.value >= 0 ? 'up' : 'down'}
         />
         <KPICard
           title="Usage Variance"
-          value={metrics.breakdown[1].value}
+          value={metrics.breakdown[1]!.value}
           format="currency"
-          trend={metrics.breakdown[1].value >= 0 ? 'up' : 'down'}
+          trend={metrics.breakdown[1]!.value >= 0 ? 'up' : 'down'}
         />
       </div>
 
@@ -139,7 +139,7 @@ export default function COGSVariancePage() {
                   cursor={{ fill: '#1e293b' }}
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
-                      const data = payload[0].payload;
+                      const data = payload[0]!.payload;
                       return (
                         <div className="bg-slate-900 border border-slate-800 p-2 rounded shadow-xl">
                           <div className="text-xs font-bold text-slate-400 uppercase">

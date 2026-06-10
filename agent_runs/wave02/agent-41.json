@@ -1,0 +1,308 @@
+{
+  "agent": "agent-41",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T06353",
+      "cat": "sec",
+      "title": "Access: Audit log immutability",
+      "spec": "Implement, test, and audit Audit log immutability in the RBAC model."
+    },
+    {
+      "id": "T06354",
+      "cat": "sec",
+      "title": "Access: Audit log retention",
+      "spec": "Implement, test, and audit Audit log retention in the RBAC model."
+    },
+    {
+      "id": "T06355",
+      "cat": "sec",
+      "title": "Access: Separation of duties",
+      "spec": "Implement, test, and audit Separation of duties in the RBAC model."
+    },
+    {
+      "id": "T06356",
+      "cat": "sec",
+      "title": "Access: Dual control",
+      "spec": "Implement, test, and audit Dual control in the RBAC model."
+    },
+    {
+      "id": "T06357",
+      "cat": "sec",
+      "title": "Access: Four-eyes principle",
+      "spec": "Implement, test, and audit Four-eyes principle in the RBAC model."
+    },
+    {
+      "id": "T06358",
+      "cat": "sec",
+      "title": "Access: Maker-checker workflow",
+      "spec": "Implement, test, and audit Maker-checker workflow in the RBAC model."
+    },
+    {
+      "id": "T06359",
+      "cat": "sec",
+      "title": "Access: Delegation of authority",
+      "spec": "Implement, test, and audit Delegation of authority in the RBAC model."
+    },
+    {
+      "id": "T06360",
+      "cat": "sec",
+      "title": "Access: SOD violation detector",
+      "spec": "Implement, test, and audit SOD violation detector in the RBAC model."
+    },
+    {
+      "id": "T06361",
+      "cat": "sec",
+      "title": "Access: Privileged access management",
+      "spec": "Implement, test, and audit Privileged access management in the RBAC model."
+    },
+    {
+      "id": "T06362",
+      "cat": "sec",
+      "title": "Access: Access recertification",
+      "spec": "Implement, test, and audit Access recertification in the RBAC model."
+    },
+    {
+      "id": "T06363",
+      "cat": "sec",
+      "title": "Access: Orphan account detection",
+      "spec": "Implement, test, and audit Orphan account detection in the RBAC model."
+    },
+    {
+      "id": "T06364",
+      "cat": "sec",
+      "title": "Access: Excess privilege detector",
+      "spec": "Implement, test, and audit Excess privilege detector in the RBAC model."
+    },
+    {
+      "id": "T06365",
+      "cat": "sec",
+      "title": "Access: Consent management (GDPR)",
+      "spec": "Implement, test, and audit Consent management (GDPR) in the RBAC model."
+    },
+    {
+      "id": "T06552",
+      "cat": "sec",
+      "title": "Security: Secret detection (gitleaks)",
+      "spec": "Implement and enforce Secret detection (gitleaks) in the security posture."
+    },
+    {
+      "id": "T06553",
+      "cat": "sec",
+      "title": "Security: SAST (Semgrep)",
+      "spec": "Implement and enforce SAST (Semgrep) in the security posture."
+    },
+    {
+      "id": "T06554",
+      "cat": "sec",
+      "title": "Security: DAST (OWASP ZAP)",
+      "spec": "Implement and enforce DAST (OWASP ZAP) in the security posture."
+    },
+    {
+      "id": "T06555",
+      "cat": "sec",
+      "title": "Security: Dependency scan (npm audit)",
+      "spec": "Implement and enforce Dependency scan (npm audit) in the security posture."
+    },
+    {
+      "id": "T06556",
+      "cat": "sec",
+      "title": "Security: Container scan (Trivy)",
+      "spec": "Implement and enforce Container scan (Trivy) in the security posture."
+    },
+    {
+      "id": "T06557",
+      "cat": "sec",
+      "title": "Security: License compliance (FOSSA)",
+      "spec": "Implement and enforce License compliance (FOSSA) in the security posture."
+    },
+    {
+      "id": "T06558",
+      "cat": "sec",
+      "title": "Security: SBOM generation (CycloneDX)",
+      "spec": "Implement and enforce SBOM generation (CycloneDX) in the security posture."
+    },
+    {
+      "id": "T06559",
+      "cat": "sec",
+      "title": "Security: VEX (vulnerability exploit exchange)",
+      "spec": "Implement and enforce VEX (vulnerability exploit exchange) in the security posture."
+    },
+    {
+      "id": "T06560",
+      "cat": "sec",
+      "title": "Security: Threat model per feature",
+      "spec": "Implement and enforce Threat model per feature in the security posture."
+    },
+    {
+      "id": "T06561",
+      "cat": "sec",
+      "title": "Security: STRIDE per data flow",
+      "spec": "Implement and enforce STRIDE per data flow in the security posture."
+    },
+    {
+      "id": "T06562",
+      "cat": "sec",
+      "title": "Security: DREAD scoring",
+      "spec": "Implement and enforce DREAD scoring in the security posture."
+    },
+    {
+      "id": "T06563",
+      "cat": "sec",
+      "title": "Security: Attack tree per high-value asset",
+      "spec": "Implement and enforce Attack tree per high-value asset in the security posture."
+    },
+    {
+      "id": "T06564",
+      "cat": "sec",
+      "title": "Security: Pen test annual",
+      "spec": "Implement and enforce Pen test annual in the security posture."
+    },
+    {
+      "id": "T06565",
+      "cat": "sec",
+      "title": "Security: Red team exercise",
+      "spec": "Implement and enforce Red team exercise in the security posture."
+    },
+    {
+      "id": "T06566",
+      "cat": "sec",
+      "title": "Security: Bug bounty program",
+      "spec": "Implement and enforce Bug bounty program in the security posture."
+    },
+    {
+      "id": "T06567",
+      "cat": "sec",
+      "title": "Security: Responsible disclosure",
+      "spec": "Implement and enforce Responsible disclosure in the security posture."
+    },
+    {
+      "id": "T06568",
+      "cat": "sec",
+      "title": "Security: Security Champions program",
+      "spec": "Implement and enforce Security Champions program in the security posture."
+    },
+    {
+      "id": "T06569",
+      "cat": "sec",
+      "title": "Security: Security training for devs",
+      "spec": "Implement and enforce Security training for devs in the security posture."
+    },
+    {
+      "id": "T06570",
+      "cat": "sec",
+      "title": "Security: Secure SDLC gates",
+      "spec": "Implement and enforce Secure SDLC gates in the security posture."
+    },
+    {
+      "id": "T06571",
+      "cat": "sec",
+      "title": "Security: SSO enforced",
+      "spec": "Implement and enforce SSO enforced in the security posture."
+    },
+    {
+      "id": "T06572",
+      "cat": "sec",
+      "title": "Security: MFA required",
+      "spec": "Implement and enforce MFA required in the security posture."
+    },
+    {
+      "id": "T06573",
+      "cat": "sec",
+      "title": "Security: Hardware key support",
+      "spec": "Implement and enforce Hardware key support in the security posture."
+    },
+    {
+      "id": "T06574",
+      "cat": "sec",
+      "title": "Security: CSP Level 3",
+      "spec": "Implement and enforce CSP Level 3 in the security posture."
+    },
+    {
+      "id": "T06575",
+      "cat": "sec",
+      "title": "Security: HSTS preload",
+      "spec": "Implement and enforce HSTS preload in the security posture."
+    },
+    {
+      "id": "T06576",
+      "cat": "sec",
+      "title": "Security: X-Frame-Options DENY",
+      "spec": "Implement and enforce X-Frame-Options DENY in the security posture."
+    },
+    {
+      "id": "T06577",
+      "cat": "sec",
+      "title": "DR/Backup: Backup encryption at rest",
+      "spec": "Implement and verify Backup encryption at rest."
+    },
+    {
+      "id": "T06578",
+      "cat": "sec",
+      "title": "DR/Backup: Backup integrity (HMAC)",
+      "spec": "Implement and verify Backup integrity (HMAC)."
+    },
+    {
+      "id": "T06579",
+      "cat": "sec",
+      "title": "DR/Backup: Backup retention policy",
+      "spec": "Implement and verify Backup retention policy."
+    },
+    {
+      "id": "T06580",
+      "cat": "sec",
+      "title": "DR/Backup: Backup offsite (3-2-1)",
+      "spec": "Implement and verify Backup offsite (3-2-1)."
+    },
+    {
+      "id": "T06581",
+      "cat": "sec",
+      "title": "DR/Backup: Backup air-gapped copy",
+      "spec": "Implement and verify Backup air-gapped copy."
+    },
+    {
+      "id": "T06582",
+      "cat": "sec",
+      "title": "DR/Backup: RPO < 1 hour",
+      "spec": "Implement and verify RPO < 1 hour."
+    },
+    {
+      "id": "T06583",
+      "cat": "sec",
+      "title": "DR/Backup: RTO < 4 hours",
+      "spec": "Implement and verify RTO < 4 hours."
+    },
+    {
+      "id": "T06584",
+      "cat": "sec",
+      "title": "DR/Backup: DR drill quarterly",
+      "spec": "Implement and verify DR drill quarterly."
+    },
+    {
+      "id": "T06585",
+      "cat": "sec",
+      "title": "DR/Backup: Restore test monthly",
+      "spec": "Implement and verify Restore test monthly."
+    },
+    {
+      "id": "T06586",
+      "cat": "sec",
+      "title": "DR/Backup: Point-in-time recovery",
+      "spec": "Implement and verify Point-in-time recovery."
+    },
+    {
+      "id": "T06587",
+      "cat": "sec",
+      "title": "DR/Backup: Cross-region failover",
+      "spec": "Implement and verify Cross-region failover."
+    },
+    {
+      "id": "T06588",
+      "cat": "sec",
+      "title": "DR/Backup: Backup immutability",
+      "spec": "Implement and verify Backup immutability."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

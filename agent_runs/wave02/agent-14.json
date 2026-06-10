@@ -1,0 +1,308 @@
+{
+  "agent": "agent-14",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T05965",
+      "cat": "eng",
+      "title": "Format: FEC French",
+      "spec": "Implement, test, and benchmark FEC French handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05966",
+      "cat": "eng",
+      "title": "Format: SIE Swedish",
+      "spec": "Implement, test, and benchmark SIE Swedish handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05967",
+      "cat": "eng",
+      "title": "Format: DATEV German",
+      "spec": "Implement, test, and benchmark DATEV German handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05968",
+      "cat": "eng",
+      "title": "Format: SAFT-T",
+      "spec": "Implement, test, and benchmark SAFT-T handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05969",
+      "cat": "eng",
+      "title": "Format: GDPdU German audit",
+      "spec": "Implement, test, and benchmark GDPdU German audit handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05970",
+      "cat": "eng",
+      "title": "Format: CSV encoding detection",
+      "spec": "Implement, test, and benchmark CSV encoding detection handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05971",
+      "cat": "eng",
+      "title": "Format: CSV dialect detection",
+      "spec": "Implement, test, and benchmark CSV dialect detection handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05972",
+      "cat": "eng",
+      "title": "Format: CSV large file streaming",
+      "spec": "Implement, test, and benchmark CSV large file streaming handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05973",
+      "cat": "eng",
+      "title": "Format: Excel formula text",
+      "spec": "Implement, test, and benchmark Excel formula text handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05974",
+      "cat": "eng",
+      "title": "Format: Excel pivot table",
+      "spec": "Implement, test, and benchmark Excel pivot table handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T05975",
+      "cat": "eng",
+      "title": "Format: Excel named range",
+      "spec": "Implement, test, and benchmark Excel named range handling. Cover happy path, edge cases, security, error reporting."
+    },
+    {
+      "id": "T06366",
+      "cat": "eng",
+      "title": "Tax: US Federal",
+      "spec": "Tax rules, filing, audit, e-invoicing for US Federal. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06367",
+      "cat": "eng",
+      "title": "Tax: US state (CA)",
+      "spec": "Tax rules, filing, audit, e-invoicing for US state (CA). Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06368",
+      "cat": "eng",
+      "title": "Tax: US state (NY)",
+      "spec": "Tax rules, filing, audit, e-invoicing for US state (NY). Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06369",
+      "cat": "eng",
+      "title": "Tax: US state (TX)",
+      "spec": "Tax rules, filing, audit, e-invoicing for US state (TX). Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06370",
+      "cat": "eng",
+      "title": "Tax: US state (FL)",
+      "spec": "Tax rules, filing, audit, e-invoicing for US state (FL). Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06371",
+      "cat": "eng",
+      "title": "Tax: UK HMRC",
+      "spec": "Tax rules, filing, audit, e-invoicing for UK HMRC. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06372",
+      "cat": "eng",
+      "title": "Tax: UK VAT",
+      "spec": "Tax rules, filing, audit, e-invoicing for UK VAT. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06373",
+      "cat": "eng",
+      "title": "Tax: DE Federal",
+      "spec": "Tax rules, filing, audit, e-invoicing for DE Federal. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06374",
+      "cat": "eng",
+      "title": "Tax: DE UStG",
+      "spec": "Tax rules, filing, audit, e-invoicing for DE UStG. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06375",
+      "cat": "eng",
+      "title": "Tax: FR DGFiP",
+      "spec": "Tax rules, filing, audit, e-invoicing for FR DGFiP. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06376",
+      "cat": "eng",
+      "title": "Tax: IT Agenzia",
+      "spec": "Tax rules, filing, audit, e-invoicing for IT Agenzia. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06377",
+      "cat": "eng",
+      "title": "Tax: ES AEAT",
+      "spec": "Tax rules, filing, audit, e-invoicing for ES AEAT. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06378",
+      "cat": "eng",
+      "title": "Tax: NL Belastingdienst",
+      "spec": "Tax rules, filing, audit, e-invoicing for NL Belastingdienst. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06379",
+      "cat": "eng",
+      "title": "Tax: CA CRA",
+      "spec": "Tax rules, filing, audit, e-invoicing for CA CRA. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06380",
+      "cat": "eng",
+      "title": "Tax: AU ATO",
+      "spec": "Tax rules, filing, audit, e-invoicing for AU ATO. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06381",
+      "cat": "eng",
+      "title": "Tax: IN GST",
+      "spec": "Tax rules, filing, audit, e-invoicing for IN GST. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06382",
+      "cat": "eng",
+      "title": "Tax: JP NTA",
+      "spec": "Tax rules, filing, audit, e-invoicing for JP NTA. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06383",
+      "cat": "eng",
+      "title": "Tax: CN SAT",
+      "spec": "Tax rules, filing, audit, e-invoicing for CN SAT. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06384",
+      "cat": "eng",
+      "title": "Tax: HK IRD",
+      "spec": "Tax rules, filing, audit, e-invoicing for HK IRD. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06385",
+      "cat": "eng",
+      "title": "Tax: SG IRAS",
+      "spec": "Tax rules, filing, audit, e-invoicing for SG IRAS. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06386",
+      "cat": "eng",
+      "title": "Tax: BR Receita Federal",
+      "spec": "Tax rules, filing, audit, e-invoicing for BR Receita Federal. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06387",
+      "cat": "eng",
+      "title": "Tax: MX SAT",
+      "spec": "Tax rules, filing, audit, e-invoicing for MX SAT. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06388",
+      "cat": "eng",
+      "title": "Tax: AR AFIP",
+      "spec": "Tax rules, filing, audit, e-invoicing for AR AFIP. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06389",
+      "cat": "eng",
+      "title": "Tax: ZA SARS",
+      "spec": "Tax rules, filing, audit, e-invoicing for ZA SARS. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06390",
+      "cat": "eng",
+      "title": "Tax: NG FIRS",
+      "spec": "Tax rules, filing, audit, e-invoicing for NG FIRS. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06391",
+      "cat": "eng",
+      "title": "Tax: EG ETA",
+      "spec": "Tax rules, filing, audit, e-invoicing for EG ETA. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06392",
+      "cat": "eng",
+      "title": "Tax: AE FTA",
+      "spec": "Tax rules, filing, audit, e-invoicing for AE FTA. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06393",
+      "cat": "eng",
+      "title": "Tax: SA ZATCA",
+      "spec": "Tax rules, filing, audit, e-invoicing for SA ZATCA. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06394",
+      "cat": "eng",
+      "title": "Tax: CH FTA",
+      "spec": "Tax rules, filing, audit, e-invoicing for CH FTA. Updated annually. Rate tables sourced from official publication."
+    },
+    {
+      "id": "T06395",
+      "cat": "eng",
+      "title": "Standard: IFRS 15 Revenue",
+      "spec": "Implement engine, test cases, and disclosure templates for IFRS 15 Revenue."
+    },
+    {
+      "id": "T06396",
+      "cat": "eng",
+      "title": "Standard: IFRS 16 Leases",
+      "spec": "Implement engine, test cases, and disclosure templates for IFRS 16 Leases."
+    },
+    {
+      "id": "T06397",
+      "cat": "eng",
+      "title": "Standard: IFRS 17 Insurance",
+      "spec": "Implement engine, test cases, and disclosure templates for IFRS 17 Insurance."
+    },
+    {
+      "id": "T06398",
+      "cat": "eng",
+      "title": "Standard: IAS 19 Employee Benefits",
+      "spec": "Implement engine, test cases, and disclosure templates for IAS 19 Employee Benefits."
+    },
+    {
+      "id": "T06399",
+      "cat": "eng",
+      "title": "Standard: IAS 37 Provisions",
+      "spec": "Implement engine, test cases, and disclosure templates for IAS 37 Provisions."
+    },
+    {
+      "id": "T06400",
+      "cat": "eng",
+      "title": "Standard: GAAP ASC 606 Revenue",
+      "spec": "Implement engine, test cases, and disclosure templates for GAAP ASC 606 Revenue."
+    },
+    {
+      "id": "T06401",
+      "cat": "eng",
+      "title": "Standard: GAAP ASC 842 Leases",
+      "spec": "Implement engine, test cases, and disclosure templates for GAAP ASC 842 Leases."
+    },
+    {
+      "id": "T06402",
+      "cat": "eng",
+      "title": "Standard: GAAP ASC 326 CECL",
+      "spec": "Implement engine, test cases, and disclosure templates for GAAP ASC 326 CECL."
+    },
+    {
+      "id": "T06403",
+      "cat": "eng",
+      "title": "Standard: GAAP ASC 805 Business Combinations",
+      "spec": "Implement engine, test cases, and disclosure templates for GAAP ASC 805 Business Combinations."
+    },
+    {
+      "id": "T06404",
+      "cat": "eng",
+      "title": "Standard: SOX 302 Quarterly Cert",
+      "spec": "Implement engine, test cases, and disclosure templates for SOX 302 Quarterly Cert."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

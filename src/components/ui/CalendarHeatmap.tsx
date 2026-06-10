@@ -21,12 +21,16 @@ export const CalendarHeatmap: React.FC<CalendarHeatmapProps> = React.memo(
   }) => {
     if (!data || data.length === 0)
       return (
-        <div className="flex items-center justify-center h-16 text-slate-400 dark:text-slate-300">
+        <div
+          className="flex items-center justify-center h-16 text-slate-400 dark:text-slate-300"
+          role="region"
+          aria-label="CalendarHeatmap"
+        >
           No data
         </div>
       );
 
-    const dataMap = new Map(data.map((d) => [d.date, d.value]));
+    const dataMap = new Map(data.map((d) => [d.date ?? '', d.value]));
     const values = data.map((d) => d.value);
     const minVal = Math.min(...values);
     const maxVal = Math.max(...values);
@@ -36,11 +40,11 @@ export const CalendarHeatmap: React.FC<CalendarHeatmapProps> = React.memo(
     const end = endDate ? new Date(endDate) : new Date();
 
     const getColor = (value: number | undefined): string => {
-      if (value === undefined || value === null) return colorScale[0];
-      if (range === 0) return colorScale[Math.floor(colorScale.length / 2)];
+      if (value === undefined || value === null) return colorScale[0]!;
+      if (range === 0) return colorScale[Math.floor(colorScale.length / 2)]!;
       const normalized = (value - minVal) / range;
       const idx = Math.min(Math.floor(normalized * (colorScale.length - 1)), colorScale.length - 1);
-      return colorScale[idx];
+      return colorScale[idx]!;
     };
 
     const weeks: Date[][] = [];
@@ -85,7 +89,7 @@ export const CalendarHeatmap: React.FC<CalendarHeatmapProps> = React.memo(
               {Array.from({ length: 7 }, (_, di) => {
                 const date = week.find((d) => d.getDay() === di);
                 if (!date) return <div key={di} className="w-4 h-4" />;
-                const dateStr = date.toISOString().split('T')[0];
+                const dateStr = date.toISOString().split('T')[0]!;
                 const value = dataMap.get(dateStr);
 
                 return (

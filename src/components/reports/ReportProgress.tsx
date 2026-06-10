@@ -160,7 +160,7 @@ export function ReportProgress({
             <button
               type="button"
               onClick={onRetryFailed}
-              className="text-xs text-blue-400 hover:text-blue-300"
+              className="text-xs text-blue-400 hover:text-blue-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               Retry failed
             </button>
@@ -169,7 +169,7 @@ export function ReportProgress({
             <button
               type="button"
               onClick={onCancel}
-              className="text-xs text-red-400 hover:text-red-300"
+              className="text-xs text-red-400 hover:text-red-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               Cancel
             </button>
@@ -215,7 +215,7 @@ export function ReportProgress({
 
       {/* Error summary from engine progress */}
       {progress.errors.length > 0 && (
-        <div className="rounded-md bg-red-950/30 border border-red-800/50 p-3">
+        <div className="rounded-md bg-red-950/30 border border-red-800/50 p-3"> role="alert"  role="alert" 
           <p className="text-xs font-medium text-red-400 mb-1">
             {progress.errors.length} error{progress.errors.length !== 1 ? 's' : ''}
           </p>

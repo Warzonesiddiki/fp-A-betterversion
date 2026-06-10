@@ -148,9 +148,9 @@ export class WorkflowEngine {
     this.requests.set(id, request);
     const firstStep = workflow.steps[0];
     if (
-      firstStep.condition &&
+      firstStep!.condition &&
       amount !== undefined &&
-      !this.evaluateCondition(firstStep.condition, amount)
+      !this.evaluateCondition(firstStep!.condition, amount)
     ) {
       request.state = 'approved';
       request.history.push({

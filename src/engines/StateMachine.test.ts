@@ -88,7 +88,7 @@ describe('StateMachine', () => {
 
     const available = sm.getAvailableTransitions('draft', makeContext({ userRoles: ['viewer'] }));
     expect(available).toHaveLength(1);
-    expect(available[0].to).toBe('active');
+    expect(available![0]!.to).toBe('active');
   });
 
   it('should return target states', () => {

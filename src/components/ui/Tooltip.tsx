@@ -65,7 +65,7 @@ function Tooltip({
           role="tooltip"
           className={cn(
             'absolute z-50 rounded-md bg-gray-900 px-3 py-1.5 text-xs text-white shadow-md dark:bg-gray-700',
-            positionClasses[side],
+            positionClasses[side]!,
             className
           )}
         >

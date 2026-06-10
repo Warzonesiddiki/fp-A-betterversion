@@ -107,7 +107,7 @@ export const useHealthcareStore = create<HealthcareState>()(
       updateProgram: (id, updates) =>
         set((state) => {
           const idx = state.programs.findIndex((p) => p.id === id);
-          if (idx !== -1) Object.assign(state.programs[idx], updates);
+          if (idx !== -1) Object.assign(state.programs[idx]!, updates);
         }),
     }))
   )

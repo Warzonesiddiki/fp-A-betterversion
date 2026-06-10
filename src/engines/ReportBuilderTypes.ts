@@ -330,4 +330,3 @@ const _SUBTOTAL_STYLE: Partial<CellStyle> = {
   bold: true,
   borderTop: 'thin',
 };
-

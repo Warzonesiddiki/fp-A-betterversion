@@ -137,8 +137,8 @@ function eliminateIntercompany(
     const entityIds = Array.from(entityBalances.keys());
     for (let i = 0; i < entityIds.length; i++) {
       for (let j = i + 1; j < entityIds.length; j++) {
-        const fromBalance = entityBalances.get(entityIds[i]) ?? 0;
-        const toBalance = entityBalances.get(entityIds[j]) ?? 0;
+        const fromBalance = entityBalances.get(entityIds[i]!) ?? 0;
+        const toBalance = entityBalances.get(entityIds[j]!) ?? 0;
 
         if (fromBalance !== 0 && toBalance !== 0) {
           const autoKey = `${entityIds[i]}:${entityIds[j]}:${accountCode}`;
@@ -252,7 +252,7 @@ function applyEliminationsAndAdjustments(
         accountName: adj.accountName,
         amount: adj.debitAmount - adj.creditAmount,
         currency: 'USD',
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0]!,
         entityId: adj.entityId,
       });
     }

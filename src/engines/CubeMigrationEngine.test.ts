@@ -73,7 +73,7 @@ describe('CubeMigrationEngine', () => {
       const result = engine.migrateFromCSV(csvConfig, csv);
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0].message).toContain('at least a header and one data row');
+      expect(result!.errors[0]!.message).toContain('at least a header and one data row');
     });
 
     it('should report row column mismatch errors', () => {
@@ -131,13 +131,13 @@ describe('CubeMigrationEngine', () => {
     it('should fail on invalid JSON', () => {
       const result = engine.migrateFromJSON(jsonConfig, 'not json{{{');
       expect(result.success).toBe(false);
-      expect(result.errors[0].message).toContain('Invalid JSON');
+      expect(result!.errors[0]!.message).toContain('Invalid JSON');
     });
 
     it('should fail when JSON is not an array', () => {
       const result = engine.migrateFromJSON(jsonConfig, '{"region":"East"}');
       expect(result.success).toBe(false);
-      expect(result.errors[0].message).toContain('must be an array');
+      expect(result!.errors[0]!.message).toContain('must be an array');
     });
 
     it('should handle empty array', () => {

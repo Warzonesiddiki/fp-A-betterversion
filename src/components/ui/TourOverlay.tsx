@@ -36,7 +36,11 @@ export function TourOverlay() {
   if (!isActive || !step) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] pointer-events-none">
+    <div
+      className="fixed inset-0 z-[9999] pointer-events-none"
+      role="region"
+      aria-label="TourOverlay"
+    >
       <div
         className="absolute inset-0 bg-black/50 transition-opacity"
         style={{
@@ -77,7 +81,7 @@ export function TourOverlay() {
             <button
               onClick={stopTour}
               aria-label="Close tour"
-              className="text-slate-500 hover:text-white transition-colors"
+              className="text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               <X className="h-4 w-4" />
             </button>

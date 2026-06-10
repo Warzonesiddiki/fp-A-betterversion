@@ -76,7 +76,7 @@ describe('WorkerPool (alternative implementation)', () => {
 
       await new Promise((r) => setTimeout(r, 10));
 
-      expect(instances[0].postMessage).toHaveBeenCalled();
+      expect(instances![0]!.postMessage).toHaveBeenCalled();
       pool.terminate();
     });
 
@@ -90,9 +90,9 @@ describe('WorkerPool (alternative implementation)', () => {
       await new Promise((r) => setTimeout(r, 10));
 
       const worker = instances[0];
-      expect(worker.onmessage).toBeTruthy();
+      expect(worker!.onmessage).toBeTruthy();
 
-      worker.onmessage!({ data: { result: 42 } } as MessageEvent);
+      worker!.onmessage!({ data: { result: 42 } } as MessageEvent);
 
       const result = await promise;
       expect(result.result).toEqual({ result: 42 });
@@ -110,9 +110,9 @@ describe('WorkerPool (alternative implementation)', () => {
       await new Promise((r) => setTimeout(r, 10));
 
       const worker = instances[0];
-      expect(worker.onerror).toBeTruthy();
+      expect(worker!.onerror).toBeTruthy();
 
-      worker.onerror!({ message: 'Worker crashed', error: new Error('crash') } as ErrorEvent);
+      worker!.onerror!({ message: 'Worker crashed', error: new Error('crash') } as ErrorEvent);
 
       await expect(promise).rejects.toThrow();
       pool.terminate();
@@ -150,7 +150,7 @@ describe('WorkerPool (alternative implementation)', () => {
       await new Promise((r) => setTimeout(r, 10));
       expect(pool.getQueueLength()).toBe(2);
 
-      instances[0].onmessage!({ data: { result: 'done' } } as MessageEvent);
+      instances![0]!.onmessage!({ data: { result: 'done' } } as MessageEvent);
       await new Promise((r) => setTimeout(r, 10));
 
       expect(pool.getQueueLength()).toBe(1);
@@ -284,7 +284,7 @@ describe('WorkerPool (alternative implementation)', () => {
 
       await new Promise((r) => setTimeout(r, 10));
 
-      instances[0].onmessage!({ data: { result: 'done' } } as MessageEvent);
+      instances![0]!.onmessage!({ data: { result: 'done' } } as MessageEvent);
       await new Promise((r) => setTimeout(r, 10));
 
       expect(pool.getStats().totalCompleted).toBe(1);
@@ -321,7 +321,7 @@ describe('WorkerPool (alternative implementation)', () => {
 
       await new Promise((r) => setTimeout(r, 10));
 
-      instances[0].onmessage!({ data: { result: 'done' } } as MessageEvent);
+      instances![0]!.onmessage!({ data: { result: 'done' } } as MessageEvent);
       await new Promise((r) => setTimeout(r, 10));
 
       expect(pool.isIdle()).toBe(true);

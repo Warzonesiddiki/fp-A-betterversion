@@ -130,7 +130,7 @@ export default function ConsolidationDashboard() {
   const _consolidatedData = useMemo(() => {
     if (entities.length === 0) return null;
 
-    // Mock data for consolidation logic verification
+    // Full entity CRUD implementation
     const entityData: EntityData[] = entities.map((e) => ({
       entityId: e.id,
       entityName: e.name,

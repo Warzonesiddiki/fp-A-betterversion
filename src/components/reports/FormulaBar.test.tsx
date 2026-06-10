@@ -44,7 +44,7 @@ describe('FormulaBar', () => {
     const elements = screen.getAllByText('B3');
     expect(elements.length).toBeGreaterThanOrEqual(1);
     // The first one should be the cell position badge
-    expect(elements[0]).toBeInTheDocument();
+    expect(elements[0]!).toBeInTheDocument();
   });
 
   it('renders quick cell references', () => {
@@ -88,7 +88,7 @@ describe('FormulaBar', () => {
     render(<FormulaBar {...defaultProps} />);
     // Click the first A1 reference (quick ref button)
     const refs = screen.getAllByText('A1');
-    fireEvent.click(refs[0]);
+    fireEvent.click(refs[0]!);
     const input = screen.getByLabelText('Formula expression') as HTMLInputElement;
     expect(input.value).toContain('A1');
   });

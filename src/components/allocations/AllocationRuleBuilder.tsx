@@ -250,6 +250,8 @@ export function AllocationRuleBuilder({
         'flex flex-col gap-4 p-4 bg-[var(--bg-surface)] rounded-lg border border-[var(--border-subtle)]',
         className
       )}
+      role="region"
+      aria-label="AllocationRuleBuilder"
     >
       <div className="flex items-center gap-2">
         <Settings2 className="h-5 w-5 text-blue-500" />
@@ -455,6 +457,8 @@ export function AllocationRuleBuilder({
 
       {error && (
         <div className="rounded-md bg-red-500/10 border border-red-500/30 px-3 py-2 text-xs text-red-400">
+          {' '}
+          role="alert"
           {error}
         </div>
       )}
@@ -464,7 +468,7 @@ export function AllocationRuleBuilder({
           type="button"
           onClick={handlePreview}
           disabled={!canPreview}
-          className="flex items-center gap-1.5 rounded-md bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded-md bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           <Play className="h-3.5 w-3.5" /> Preview
         </button>
@@ -472,7 +476,7 @@ export function AllocationRuleBuilder({
           type="button"
           onClick={handleSave}
           disabled={!canPreview || !ruleName}
-          className="rounded-md border border-[var(--border-subtle)] px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:border-gray-400 disabled:opacity-50"
+          className="rounded-md border border-[var(--border-subtle)] px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:border-gray-400 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Save Rule
         </button>

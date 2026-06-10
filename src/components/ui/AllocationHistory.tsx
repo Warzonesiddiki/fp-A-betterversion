@@ -73,7 +73,11 @@ const HistoryRow: React.FC<{
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="border border-[var(--border-subtle)] rounded-md overflow-hidden">
+    <div
+      className="border border-[var(--border-subtle)] rounded-md overflow-hidden"
+      role="region"
+      aria-label="AllocationHistory"
+    >
       {/* Summary row */}
       <button
         type="button"

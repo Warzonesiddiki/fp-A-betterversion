@@ -76,7 +76,7 @@ export class DimensionalModelingEngine {
     filters: Record<string, string[]>
   ): Record<string, unknown>[] {
     return data.filter((row) => {
-      return Object.entries(filters).every(([dim, members]) => members.includes(String(row[dim])));
+      return Object.entries(filters).every(([dim, members]) => members.includes(String(row[dim]!)));
     });
   }
 
@@ -96,8 +96,8 @@ export class DimensionalModelingEngine {
   ): Record<string, unknown>[] {
     const grouped = new Map<string, number>();
     for (const row of data) {
-      const key = String(row[dimensionId]);
-      const value = Number(row[measure]) || 0;
+      const key = String(row[dimensionId]!);
+      const value = Number(row[measure]!) || 0;
       grouped.set(key, (grouped.get(key) ?? 0) + value);
     }
     return Array.from(grouped.entries()).map(([key, value]) => ({

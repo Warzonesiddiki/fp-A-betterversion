@@ -79,9 +79,9 @@ export class DataQualityEngine {
     const profile: Record<string, ReturnType<typeof this.profile>[string]> = {};
     if (data.length === 0) return profile;
 
-    const fields = Object.keys(data[0]);
+    const fields = Object.keys(data[0]!);
     for (const field of fields) {
-      const values = data.map((row) => row[field]);
+      const values = data.map((row) => row[field]!);
       const nulls = values.filter((v) => v === null || v === undefined || v === '').length;
       const unique = new Set(values.map((v) => JSON.stringify(v))).size;
       const types: Record<string, number> = {};
@@ -109,7 +109,7 @@ export class DataQualityEngine {
       const failedRows: number[] = [];
       for (let i = 0; i < data.length; i++) {
         const row = data[i];
-        const value = row[rule.field];
+        const value = row![rule.field];
         if (rule.check(value, row)) {
           passed++;
         } else {
@@ -144,7 +144,7 @@ export class DataQualityEngine {
       dimensionCounts[r.dimension] = (dimensionCounts[r.dimension] || 0) + 1;
     }
     for (const dim of Object.keys(dimensionScores) as QualityDimension[]) {
-      if (dimensionCounts[dim]) dimensionScores[dim] /= dimensionCounts[dim];
+      if (dimensionCounts[dim]!) dimensionScores[dim] /= dimensionCounts[dim];
       else dimensionScores[dim] = 1;
     }
 

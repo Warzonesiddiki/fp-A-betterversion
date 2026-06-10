@@ -118,14 +118,18 @@ export function CommentaryTemplate({
   const forecastTemplates = BUILT_IN_TEMPLATES.filter((t) => t.category === 'forecast');
 
   return (
-    <div className={`bg-slate-900 border border-slate-700 rounded-lg shadow-xl ${className}`}>
+    <div
+      className={`bg-slate-900 border border-slate-700 rounded-lg shadow-xl ${className}`}
+      role="region"
+      aria-label="CommentaryTemplate"
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
         <h3 className="text-sm font-medium text-slate-200">Commentary Templates</h3>
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700"
+          className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close"
         >
           ✕
@@ -182,7 +186,7 @@ export function CommentaryTemplate({
         <button
           type="button"
           onClick={onClose}
-          className="px-3 py-1.5 text-sm text-slate-400 hover:text-slate-200 rounded hover:bg-slate-700"
+          className="px-3 py-1.5 text-sm text-slate-400 hover:text-slate-200 rounded hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Cancel
         </button>
@@ -190,7 +194,7 @@ export function CommentaryTemplate({
           type="button"
           onClick={handleSelect}
           disabled={!selectedId}
-          className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded font-medium hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded font-medium hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Insert
         </button>

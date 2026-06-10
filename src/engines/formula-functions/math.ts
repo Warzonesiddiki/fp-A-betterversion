@@ -89,8 +89,8 @@ export function SUMIF(
   const sums = sumRange !== undefined ? (Array.isArray(sumRange) ? sumRange : [sumRange]) : vals;
   let s = 0;
   for (let i = 0; i < vals.length; i++) {
-    if (!isNaN(vals[i]) && vals[i] === criteria && i < sums.length && !isNaN(sums[i])) {
-      s += sums[i];
+    if (!isNaN(vals[i]!) && vals[i] === criteria && i < sums.length && !isNaN(sums[i]!)) {
+      s += sums![i]!;
     }
   }
   return s;
@@ -109,23 +109,23 @@ export function SUMIFS(vals: number | number[], ...args: (number | number[])[]):
   for (let i = 0; i < v.length; i++) {
     let match = true;
     for (let j = 0; j < args.length; j += 2) {
-      const crit = Array.isArray(args[j]) ? (args[j] as number[]) : [args[j] as number];
+      const crit = Array.isArray(args[j]!) ? (args[j] as number[]) : [args[j] as number];
       if (crit[i] !== args[j + 1]) {
         match = false;
         break;
       }
     }
-    if (match && !isNaN(v[i])) s += v[i];
+    if (match && !isNaN(v[i]!)) s += v![i]!;
   }
   return s;
 }
 export function COUNTIFS(...args: (number | number[])[]): number {
-  const first = Array.isArray(args[0]) ? (args[0] as number[]) : [args[0] as number];
+  const first = Array.isArray(args[0]!) ? (args[0] as number[]) : [args[0] as number];
   let c = 0;
   for (let i = 0; i < first.length; i++) {
     let match = true;
     for (let j = 0; j < args.length; j += 2) {
-      const crit = Array.isArray(args[j]) ? (args[j] as number[]) : [args[j] as number];
+      const crit = Array.isArray(args[j]!) ? (args[j] as number[]) : [args[j] as number];
       if (crit[i] !== args[j + 1]) {
         match = false;
         break;
@@ -142,14 +142,14 @@ export function AVERAGEIFS(vals: number | number[], ...args: (number | number[])
   for (let i = 0; i < v.length; i++) {
     let match = true;
     for (let j = 0; j < args.length; j += 2) {
-      const crit = Array.isArray(args[j]) ? (args[j] as number[]) : [args[j] as number];
+      const crit = Array.isArray(args[j]!) ? (args[j] as number[]) : [args[j] as number];
       if (crit[i] !== args[j + 1]) {
         match = false;
         break;
       }
     }
     if (match) {
-      s += v[i];
+      s += v![i]!;
       c++;
     }
   }
@@ -798,9 +798,9 @@ export function registerMathFunctions(r: (fn: FormulaFunction) => void): void {
       let result = '',
         num = n;
       for (let i = 0; i < vals.length; i++) {
-        while (num >= vals[i]) {
+        while (num >= vals![i]!) {
           result += syms[i];
-          num -= vals[i];
+          num -= vals![i]!;
         }
       }
       return Number(result.replace(/[IVXLCDM]/g, (c) => String(c.charCodeAt(0))));

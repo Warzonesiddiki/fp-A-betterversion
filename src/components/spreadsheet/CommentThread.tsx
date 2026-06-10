@@ -148,7 +148,7 @@ export function CommentThread({
             type="button"
             onClick={handleSubmitReply}
             disabled={!replyText.trim()}
-            className="rounded bg-[var(--accent-primary)] p-1.5 text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="rounded bg-[var(--accent-primary)] p-1.5 text-white transition-opacity hover:opacity-90 disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             aria-label="Send reply"
           >
             <Send className="h-3.5 w-3.5" />

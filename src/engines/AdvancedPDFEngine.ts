@@ -170,7 +170,7 @@ export class AdvancedPDFEngine {
 
       x = 22;
       for (const col of columns) {
-        const value = row[col.key];
+        const value = row![col.key];
         let formatted: string;
 
         switch (col.format) {

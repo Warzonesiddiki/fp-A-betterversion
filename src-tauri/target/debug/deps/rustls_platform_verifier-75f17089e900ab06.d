@@ -1,0 +1,8 @@
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src-tauri\target\debug\deps\rustls_platform_verifier-75f17089e900ab06.d: C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\lib.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\verification\mod.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\verification\windows.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\../README.md
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src-tauri\target\debug\deps\librustls_platform_verifier-75f17089e900ab06.rmeta: C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\lib.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\verification\mod.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\verification\windows.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\../README.md
+
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\lib.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\verification\mod.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\verification\windows.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rustls-platform-verifier-0.7.0\src\../README.md:

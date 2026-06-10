@@ -21,7 +21,7 @@ export class FiscalCalendar {
     const startMonth = config.startMonth < 1 || config.startMonth > 12 ? 1 : config.startMonth;
     const periods: FiscalPeriodInput[] = [];
 
-    const formatDate = (date: Date): string => date.toISOString().split('T')[0];
+    const formatDate = (date: Date): string => date.toISOString().split('T')[0]!;
 
     if (config.calendarType === 'Standard') {
       for (let i = 0; i < 12; i++) {
@@ -46,7 +46,7 @@ export class FiscalCalendar {
         for (let p = 0; p < 3; p++) {
           const weeks = pattern[p];
           const startDate = new Date(currentDate);
-          currentDate.setDate(currentDate.getDate() + weeks * 7 - 1);
+          currentDate.setDate(currentDate.getDate() + weeks! * 7 - 1);
           const endDate = new Date(currentDate);
           currentDate.setDate(currentDate.getDate() + 1);
 
@@ -90,8 +90,8 @@ export class FiscalCalendar {
         year,
         periodNumber: periods.length + 1,
         name: 'ADJ',
-        startDate: lastPeriod.endDate,
-        endDate: lastPeriod.endDate,
+        startDate: lastPeriod!.endDate,
+        endDate: lastPeriod!.endDate,
         periodType: 'Adjusting',
         isAdjustingPeriod: true,
       });
@@ -102,7 +102,7 @@ export class FiscalCalendar {
 
   static getPeriodForDate(date: Date, periods: FiscalPeriodInput[]): FiscalPeriodInput | null {
     const dateStr = date.toISOString().split('T')[0];
-    return periods.find((p) => dateStr >= p.startDate && dateStr <= p.endDate) || null;
+    return periods.find((p) => dateStr! >= p.startDate && dateStr! <= p.endDate) || null;
   }
 
   static getYearToDate(throughMonth: number, periods: FiscalPeriodInput[]): FiscalPeriodInput[] {

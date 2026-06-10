@@ -289,7 +289,7 @@ function compareValues(
       const n = condition.rankValue ?? 10;
       const threshold =
         condition.operator === 'topN' ? sortedDesc[n - 1] : sortedDesc[sortedDesc.length - n];
-      return condition.operator === 'topN' ? numVal >= threshold : numVal <= threshold;
+      return condition.operator === 'topN' ? numVal >= threshold! : numVal <= threshold!;
     case 'aboveAverage':
       if (!allValues || allValues.length === 0) return false;
       const avg = allValues.reduce((s, v) => s + v, 0) / allValues.length;

@@ -80,7 +80,7 @@ export class SensitivityTableEngine {
     for (let ri = 0; ri < rowValues.length; ri++) {
       const row: number[] = [];
       for (let ci = 0; ci < colValues.length; ci++) {
-        const value = computeFn(rowValues[ri], colValues[ci]);
+        const value = computeFn(rowValues[ri]!, colValues[ci]!);
         row.push(value);
         if (value < min) min = value;
         if (value > max) max = value;
@@ -137,7 +137,7 @@ export class SensitivityTableEngine {
 
     return {
       rows: table.table.map((row, ri) => ({
-        label: table.rowLabels[ri],
+        label: table.rowLabels[ri]!,
         values: row.map((v) => formatFn(v)),
         isBaseRow: table.config.rowValues[ri] === table.config.baseCase.row,
       })),

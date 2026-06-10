@@ -57,7 +57,7 @@ describe('cubeStore', () => {
       useCubeStore.getState().initialize();
       const members = getEngine().getMembers('Currency');
       expect(members).toHaveLength(1);
-      expect(members[0].code).toBe('USD');
+      expect(members![0]!.code).toBe('USD');
     });
 
     it('should set isInitialized to true', () => {
@@ -444,8 +444,8 @@ describe('cubeStore', () => {
 
       const diff = store.compareSnapshots(snap1.id, snap2.id);
       expect(diff.changed.length).toBeGreaterThan(0);
-      expect(diff.changed[0].oldValue).toBe(100);
-      expect(diff.changed[0].newValue).toBe(200);
+      expect(diff!.changed[0]!.oldValue).toBe(100);
+      expect(diff!.changed[0]!.newValue).toBe(200);
     });
 
     it('should detect added cells in diff', () => {
@@ -600,7 +600,7 @@ describe('cubeStore', () => {
       });
       const members = store.getMembers('Account');
       expect(members).toHaveLength(1);
-      expect(members[0].code).toBe('1000');
+      expect(members![0]!.code).toBe('1000');
     });
   });
 

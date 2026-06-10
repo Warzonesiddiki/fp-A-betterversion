@@ -64,7 +64,7 @@ export function ICReconciliationReport({
   const totalDifference = report.entityPairs.reduce((s, l) => s + l.difference, 0);
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-6', className)} role="region" aria-label="ICReconciliationReport">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -230,6 +230,8 @@ export function ICReconciliationReport({
                   key={i}
                   className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20"
                 >
+                  {' '}
+                  role="alert" role="alert"
                   <div>
                     <span className="font-medium">
                       {line.entityA} ↔ {line.entityB}

@@ -34,7 +34,7 @@ describe('AdvancedPDFEngine', () => {
         { title: 'Net Income', items: [] },
       ];
       expect(sections.length).toBe(3);
-      expect(sections[0].title).toBe('Revenue');
+      expect(sections![0]!.title).toBe('Revenue');
     });
 
     it('generates balance sheet structure', () => {

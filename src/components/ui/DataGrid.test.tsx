@@ -520,7 +520,7 @@ describe('DataGrid', () => {
 
     it('handles columns with pinned property', () => {
       const colsWithPinned = [
-        { ...mockColumns[0], pinned: 'left' as const },
+        { ...mockColumns[0]!, pinned: 'left' as const },
         ...mockColumns.slice(1),
       ];
       render(<DataGrid rows={mockRows} columns={colsWithPinned} />);
@@ -528,7 +528,7 @@ describe('DataGrid', () => {
     });
 
     it('handles columns with flex property', () => {
-      const colsWithFlex = [{ ...mockColumns[0], flex: 1 }, ...mockColumns.slice(1)];
+      const colsWithFlex = [{ ...mockColumns[0]!, flex: 1 }, ...mockColumns.slice(1)];
       render(<DataGrid rows={mockRows} columns={colsWithFlex} />);
       expect(screen.getByRole('grid')).toBeInTheDocument();
     });

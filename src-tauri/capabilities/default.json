@@ -12,6 +12,7 @@
     "dialog:default",
     "sql:default",
     "sql:allow-execute",
-    "sql:allow-query"
+    "sql:allow-query",
+    "updater:default"
   ]
 }

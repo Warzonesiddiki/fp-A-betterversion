@@ -56,7 +56,7 @@ export class FairValueEngine {
     if (terminalGrowthRate !== undefined && futureCashFlows.length > 0) {
       const lastCF = futureCashFlows[futureCashFlows.length - 1];
       const terminalValue =
-        (lastCF * (1 + terminalGrowthRate)) / (discountRate - terminalGrowthRate);
+        (lastCF! * (1 + terminalGrowthRate)) / (discountRate - terminalGrowthRate);
       return pv + terminalValue / Math.pow(1 + discountRate, futureCashFlows.length);
     }
     return pv;

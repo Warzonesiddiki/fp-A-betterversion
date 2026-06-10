@@ -1,0 +1,10 @@
+src/store/analyticsStore.ts
+src/store/authStore.ts
+src/store/budgetStore.ts
+src/store/capexStore.ts
+src/store/collaborationStore.ts
+src/store/constructionStore.ts
+src/store/cubeStore.ts
+src/store/dataStore.ts
+src/store/driverStore.ts
+src/store/educationStore.ts

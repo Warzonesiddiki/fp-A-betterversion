@@ -76,7 +76,7 @@ export function GLColumnMapper({ csvColumns, mappings, onMap, onAutoMap }: GLCol
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" role="region" aria-label="GLColumnMapper">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {targetFields.map((f) => {
           const isMapped = !!mappings[f.key];

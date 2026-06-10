@@ -96,7 +96,10 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
       const target = index + dir;
       if (target < 0 || target >= prev.length) return prev;
       const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
+      const a = next[index];
+      const b = next[target];
+      next[index] = b!;
+      next[target] = a!;
       return next.map((s, i) => ({ ...s, order: i }));
     });
   }, []);

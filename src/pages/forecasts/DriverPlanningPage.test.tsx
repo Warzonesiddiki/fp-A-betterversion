@@ -201,7 +201,7 @@ describe('DriverPlanningPage', () => {
   it('opens add form when Add Driver is clicked', () => {
     render(<DriverPlanningPage />);
     const addButtons = screen.getAllByText('Add Driver');
-    fireEvent.click(addButtons[0]);
+    fireEvent.click(addButtons[0]!);
     expect(screen.getByText('Add New Driver')).toBeInTheDocument();
     expect(screen.getByText('Driver Name *')).toBeInTheDocument();
   });
@@ -224,7 +224,7 @@ describe('DriverPlanningPage', () => {
   it('renders the add form with all fields', () => {
     render(<DriverPlanningPage />);
     const addButtons = screen.getAllByText('Add Driver');
-    fireEvent.click(addButtons[0]);
+    fireEvent.click(addButtons[0]!);
 
     expect(screen.getByText('Driver Name *')).toBeInTheDocument();
     expect(screen.getByText('Category')).toBeInTheDocument();
@@ -249,7 +249,7 @@ describe('DriverPlanningPage', () => {
   it('calls addDriver when form is submitted with valid data', () => {
     render(<DriverPlanningPage />);
     const addButtons = screen.getAllByText('Add Driver');
-    fireEvent.click(addButtons[0]);
+    fireEvent.click(addButtons[0]!);
 
     // Fill in the name
     const nameInput = screen.getByPlaceholderText('e.g. Revenue Growth Rate');
@@ -257,7 +257,7 @@ describe('DriverPlanningPage', () => {
 
     // Click the form's Add Driver button (index 1: header=0, form=1, empty-state=2, quick-actions=3)
     const submitButtons = screen.getAllByText('Add Driver');
-    fireEvent.click(submitButtons[1]);
+    fireEvent.click(submitButtons[1]!);
 
     expect(mockAddDriver).toHaveBeenCalledWith(
       expect.objectContaining({

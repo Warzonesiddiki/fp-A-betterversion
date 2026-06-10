@@ -52,18 +52,18 @@ describe('varianceStore', () => {
       .getState()
       .addAnalysis(createMockAnalysis({ accountName: 'Revenue Variance' }));
     expect(useVarianceStore.getState().analyses).toHaveLength(1);
-    expect(useVarianceStore.getState().analyses[0].accountName).toBe('Revenue Variance');
+    expect(useVarianceStore!.getState().analyses[0]!.accountName).toBe('Revenue Variance');
   });
 
   it('should assign id to new analysis', () => {
     useVarianceStore.getState().addAnalysis(createMockAnalysis());
-    expect(useVarianceStore.getState().analyses[0].id).toBeDefined();
-    expect(useVarianceStore.getState().analyses[0].id).toContain('var-');
+    expect(useVarianceStore!.getState().analyses[0]!.id).toBeDefined();
+    expect(useVarianceStore!.getState().analyses[0]!.id).toContain('var-');
   });
 
   it('should delete an analysis', () => {
     useVarianceStore.getState().addAnalysis(createMockAnalysis());
-    const id = useVarianceStore.getState().analyses[0].id;
+    const id = useVarianceStore!.getState().analyses[0]!.id;
     useVarianceStore.getState().deleteAnalysis(id);
     expect(useVarianceStore.getState().analyses).toHaveLength(0);
   });
@@ -105,7 +105,7 @@ describe('varianceStore', () => {
       ]);
     useVarianceStore.getState().deleteAnalysis('var-b');
     expect(useVarianceStore.getState().analyses).toHaveLength(2);
-    expect(useVarianceStore.getState().analyses[0].accountName).toBe('A');
-    expect(useVarianceStore.getState().analyses[1].accountName).toBe('C');
+    expect(useVarianceStore!.getState().analyses[0]!.accountName).toBe('A');
+    expect(useVarianceStore!.getState().analyses[1]!.accountName).toBe('C');
   });
 });

@@ -59,7 +59,7 @@ describe('dataStore', () => {
     useDataStore.getState().setAccounts([createAccount('a1', '1010', 'Cash')]);
     useDataStore.getState().setAccounts([createAccount('a2', '2000', 'AP')]);
     expect(useDataStore.getState().accounts).toHaveLength(1);
-    expect(useDataStore.getState().accounts[0].code).toBe('2000');
+    expect(useDataStore!.getState().accounts[0]!.code).toBe('2000');
   });
 
   // --- addAccount ---
@@ -83,9 +83,9 @@ describe('dataStore', () => {
     useDataStore.getState().addAccount(input);
     const state = useDataStore.getState();
     expect(state.accounts).toHaveLength(1);
-    expect(state.accounts[0].id).toMatch(/^acct-/);
-    expect(state.accounts[0].code).toBe('3000');
-    expect(state.accounts[0].children).toEqual([]);
+    expect(state!.accounts[0]!.id).toMatch(/^acct-/);
+    expect(state!.accounts[0]!.code).toBe('3000');
+    expect(state!.accounts[0]!.children).toEqual([]);
   });
 
   it('should add multiple accounts', () => {
@@ -128,8 +128,8 @@ describe('dataStore', () => {
     useDataStore.setState({ accounts: [createAccount('a1', '1010', 'Cash')] });
     useDataStore.getState().updateAccount('a1', { name: 'Cash & Equivalents', isActive: false });
     const state = useDataStore.getState();
-    expect(state.accounts[0].name).toBe('Cash & Equivalents');
-    expect(state.accounts[0].isActive).toBe(false);
+    expect(state!.accounts[0]!.name).toBe('Cash & Equivalents');
+    expect(state!.accounts[0]!.isActive).toBe(false);
   });
 
   it('should not throw when updating non-existent account', () => {
@@ -137,7 +137,7 @@ describe('dataStore', () => {
     expect(() =>
       useDataStore.getState().updateAccount('non-existent', { name: 'Ghost' })
     ).not.toThrow();
-    expect(useDataStore.getState().accounts[0].name).toBe('Cash');
+    expect(useDataStore!.getState().accounts[0]!.name).toBe('Cash');
   });
 
   it('should update nested child account', () => {
@@ -145,7 +145,7 @@ describe('dataStore', () => {
     const parent = { ...createAccount('a1', '1010', 'Cash'), children: [child] };
     useDataStore.setState({ accounts: [parent] });
     useDataStore.getState().updateAccount('a2', { name: 'Petty Cash Fund' });
-    expect(useDataStore.getState().accounts[0].children[0].name).toBe('Petty Cash Fund');
+    expect(useDataStore!.getState().accounts[0]!.children[0]!.name).toBe('Petty Cash Fund');
   });
 
   // --- deleteAccount ---
@@ -159,7 +159,7 @@ describe('dataStore', () => {
     });
     useDataStore.getState().deleteAccount('a1');
     expect(useDataStore.getState().accounts).toHaveLength(1);
-    expect(useDataStore.getState().accounts[0].id).toBe('a2');
+    expect(useDataStore!.getState().accounts[0]!.id).toBe('a2');
   });
 
   it('should clear selectedAccountId when deleting selected account', () => {
@@ -190,7 +190,7 @@ describe('dataStore', () => {
     const parent = { ...createAccount('a1', '1010', 'Cash'), children: [child] };
     useDataStore.setState({ accounts: [parent] });
     useDataStore.getState().deleteAccount('a2');
-    expect(useDataStore.getState().accounts[0].children).toHaveLength(0);
+    expect(useDataStore!.getState().accounts[0]!.children).toHaveLength(0);
   });
 
   it('should not throw when deleting non-existent account', () => {
@@ -204,13 +204,13 @@ describe('dataStore', () => {
   it('should toggle isActive from true to false', () => {
     useDataStore.setState({ accounts: [createAccount('a1', '1010', 'Cash', { isActive: true })] });
     useDataStore.getState().toggleAccountActive('a1');
-    expect(useDataStore.getState().accounts[0].isActive).toBe(false);
+    expect(useDataStore!.getState().accounts[0]!.isActive).toBe(false);
   });
 
   it('should toggle isActive from false to true', () => {
     useDataStore.setState({ accounts: [createAccount('a1', '1010', 'Cash', { isActive: false })] });
     useDataStore.getState().toggleAccountActive('a1');
-    expect(useDataStore.getState().accounts[0].isActive).toBe(true);
+    expect(useDataStore!.getState().accounts[0]!.isActive).toBe(true);
   });
 
   it('should toggle nested child account', () => {
@@ -221,7 +221,7 @@ describe('dataStore', () => {
     const parent = { ...createAccount('a1', '1010', 'Cash'), children: [child] };
     useDataStore.setState({ accounts: [parent] });
     useDataStore.getState().toggleAccountActive('a2');
-    expect(useDataStore.getState().accounts[0].children[0].isActive).toBe(true);
+    expect(useDataStore!.getState().accounts[0]!.children[0]!.isActive).toBe(true);
   });
 
   it('should not throw when toggling non-existent account', () => {
@@ -245,10 +245,10 @@ describe('dataStore', () => {
     expect(id).toMatch(/^import-/);
     const state = useDataStore.getState();
     expect(state.importJobs).toHaveLength(1);
-    expect(state.importJobs[0].id).toBe(id);
-    expect(state.importJobs[0].status).toBe('Pending');
-    expect(state.importJobs[0].filename).toBe('accounts.csv');
-    expect(state.importJobs[0].startedAt).toBeDefined();
+    expect(state!.importJobs[0]!.id).toBe(id);
+    expect(state!.importJobs[0]!.status).toBe('Pending');
+    expect(state!.importJobs[0]!.filename).toBe('accounts.csv');
+    expect(state!.importJobs[0]!.startedAt).toBeDefined();
   });
 
   it('should prepend new import jobs', () => {
@@ -273,7 +273,7 @@ describe('dataStore', () => {
       startedByName: 'John',
     });
     expect(useDataStore.getState().importJobs).toHaveLength(2);
-    expect(useDataStore.getState().importJobs[0].filename).toBe('second.csv');
+    expect(useDataStore!.getState().importJobs[0]!.filename).toBe('second.csv');
   });
 
   // --- updateImportStatus ---
@@ -298,8 +298,8 @@ describe('dataStore', () => {
     });
     useDataStore.getState().updateImportStatus('import-1', 'Completed');
     const state = useDataStore.getState();
-    expect(state.importJobs[0].status).toBe('Completed');
-    expect(state.importJobs[0].completedAt).toBeDefined();
+    expect(state!.importJobs[0]!.status).toBe('Completed');
+    expect(state!.importJobs[0]!.completedAt).toBeDefined();
     expect(state.lastImportDate).toBeDefined();
   });
 
@@ -323,8 +323,8 @@ describe('dataStore', () => {
     });
     useDataStore.getState().updateImportStatus('import-1', 'Failed', 'Invalid file format');
     const state = useDataStore.getState();
-    expect(state.importJobs[0].status).toBe('Failed');
-    expect(state.importJobs[0].error).toBe('Invalid file format');
+    expect(state!.importJobs[0]!.status).toBe('Failed');
+    expect(state!.importJobs[0]!.error).toBe('Invalid file format');
     expect(state.lastImportDate).toBeNull();
   });
 

@@ -65,8 +65,8 @@ describe('SegmentReportingEngine', () => {
       });
       const report = SegmentReportingEngine.getSegmentReport('2024-Q1');
       expect(report).toHaveLength(1);
-      expect(report[0].segment.name).toBe('North America');
-      expect(report[0].revenue).toBe(1200000);
+      expect(report![0]!.segment.name).toBe('North America');
+      expect(report![0]!.revenue).toBe(1200000);
     });
   });
 
@@ -94,8 +94,8 @@ describe('SegmentReportingEngine', () => {
 
       const report = SegmentReportingEngine.getSegmentReport('2024-Q1');
       expect(report).toHaveLength(2);
-      expect(report[0].netIncome).toBe(1500000);
-      expect(report[1].netIncome).toBe(800000);
+      expect(report![0]!.netIncome).toBe(1500000);
+      expect(report![1]!.netIncome).toBe(800000);
     });
 
     it('should include profit margins', () => {
@@ -109,7 +109,7 @@ describe('SegmentReportingEngine', () => {
         liabilities: 2000000,
       });
       const report = SegmentReportingEngine.getSegmentReport('2024-Q1');
-      expect(report[0].margin).toBeCloseTo(0.7);
+      expect(report![0]!.margin).toBeCloseTo(0.7);
     });
   });
 

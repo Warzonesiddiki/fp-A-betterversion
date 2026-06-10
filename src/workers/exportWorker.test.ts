@@ -56,7 +56,7 @@ describe('exportWorker', () => {
     const msg = postMessages[0] as Record<string, unknown>;
     const parsed = JSON.parse(msg.result as string);
     expect(parsed).toHaveLength(2);
-    expect(parsed[0].name).toBe('Alice');
+    expect(parsed[0]!.name).toBe('Alice');
     expect(msg.mimeType).toBe('application/json');
   });
 
@@ -75,7 +75,7 @@ describe('exportWorker', () => {
     );
     const msg = postMessages[0] as Record<string, unknown>;
     const lines = (msg.result as string).split('\n');
-    expect(lines[1]).toContain('"Alice",');
+    expect(lines[1]!).toContain('"Alice",');
   });
 
   it('escapes quotes in CSV values', () => {
@@ -104,7 +104,7 @@ describe('exportWorker', () => {
     );
     const msg = postMessages[0] as Record<string, unknown>;
     const lines = (msg.result as string).split('\n');
-    expect(lines[0]).toContain('name');
+    expect(lines[0]!).toContain('name');
     expect(lines).toHaveLength(1);
   });
 
@@ -121,6 +121,6 @@ describe('exportWorker', () => {
     const msg = postMessages[0] as Record<string, unknown>;
     const lines = (msg.result as string).split('\n');
     expect(lines).toHaveLength(2);
-    expect(lines[1]).toContain('1');
+    expect(lines[1]!).toContain('1');
   });
 });

@@ -263,8 +263,8 @@ describe('CubeEnginePersistence', () => {
 
       const cells = await persistence.loadCells();
       expect(cells).toHaveLength(1);
-      expect(cells[0].cellKey).toBe(cellKey);
-      expect(cells[0].cell.value).toBe(100000);
+      expect(cells![0]!.cellKey).toBe(cellKey);
+      expect(cells![0]!.cell.value).toBe(100000);
     });
 
     it('should save multiple cells at once', async () => {
@@ -290,7 +290,7 @@ describe('CubeEnginePersistence', () => {
 
       const glCells = await persistence.loadCells('gl');
       expect(glCells).toHaveLength(1);
-      expect(glCells[0].cell.value).toBe(100);
+      expect(glCells![0]!.cell.value).toBe(100);
     });
 
     it('should delete a cell', async () => {
@@ -332,7 +332,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const cells = await persistence.loadCells();
-      expect(cells[0].cell.coords).toEqual({
+      expect(cells![0]!.cell.coords).toEqual({
         Account: 'COGS',
         Entity: 'UK',
         Time: '2024-02',
@@ -349,8 +349,8 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const cells = await persistence.loadCells();
-      expect(cells[0].cell.comment).toBe('Test comment');
-      expect(cells[0].cell.attachment).toBe('file.pdf');
+      expect(cells![0]!.cell.comment).toBe('Test comment');
+      expect(cells![0]!.cell.attachment).toBe('file.pdf');
     });
 
     it('should overwrite existing cell on save', async () => {
@@ -363,7 +363,7 @@ describe('CubeEnginePersistence', () => {
 
       const cells = await persistence.loadCells();
       expect(cells).toHaveLength(1);
-      expect(cells[0].cell.value).toBe(200);
+      expect(cells![0]!.cell.value).toBe(200);
     });
 
     it('should handle empty cells load', async () => {
@@ -378,7 +378,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const cells = await persistence.loadCells();
-      expect(cells[0].cell.value).toBe('text value');
+      expect(cells![0]!.cell.value).toBe('text value');
     });
 
     it('should handle cells with boolean values', async () => {
@@ -388,7 +388,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const cells = await persistence.loadCells();
-      expect(cells[0].cell.value).toBe(true);
+      expect(cells![0]!.cell.value).toBe(true);
     });
   });
 
@@ -435,8 +435,8 @@ describe('CubeEnginePersistence', () => {
       const loaded = await persistence.loadDimensions();
       const account = loaded.get('Account');
       expect(account?.hierarchies).toHaveLength(1);
-      expect(account?.hierarchies[0].name).toBe('reporting');
-      expect(account?.hierarchies[0].levels).toEqual(['category', 'account']);
+      expect(account?.hierarchies[0]!.name).toBe('reporting');
+      expect(account?.hierarchies[0]!.levels).toEqual(['category', 'account']);
     });
 
     it('should preserve dimension attributes', async () => {
@@ -448,7 +448,7 @@ describe('CubeEnginePersistence', () => {
       const loaded = await persistence.loadDimensions();
       const account = loaded.get('Account');
       expect(account?.attributes).toHaveLength(1);
-      expect(account?.attributes[0].name).toBe('description');
+      expect(account?.attributes[0]!.name).toBe('description');
     });
 
     it('should preserve dimension members', async () => {
@@ -473,7 +473,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveDimensions(new Map([['Account', dim2]]));
 
       const loaded = await persistence.loadDimensions();
-      expect(loaded.get('Account')?.attributes[0].name).toBe('newAttr');
+      expect(loaded!.get('Account')?.attributes[0]!.name).toBe('newAttr');
     });
 
     it('should handle empty dimensions load', async () => {
@@ -591,9 +591,9 @@ describe('CubeEnginePersistence', () => {
       const loaded = await persistence.loadCubes();
       const measures = loaded.get('gl')?.measures;
       expect(measures).toHaveLength(2);
-      expect(measures?.[0].name).toBe('amount');
-      expect(measures?.[0].dataType).toBe('numeric');
-      expect(measures?.[0].aggregation).toBe('sum');
+      expect(measures?.[0]!.name).toBe('amount');
+      expect(measures?.[0]!.dataType).toBe('numeric');
+      expect(measures?.[0]!.aggregation).toBe('sum');
     });
 
     it('should preserve cube storage mode', async () => {
@@ -632,8 +632,8 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCubes(new Map([['gl', cube]]));
 
       const loaded = await persistence.loadCubes();
-      expect(loaded.get('gl')?.measures[0].precision).toBe(2);
-      expect(loaded.get('gl')?.measures[0].currency).toBe(true);
+      expect(loaded!.get('gl')?.measures[0]!.precision).toBe(2);
+      expect(loaded!.get('gl')?.measures[0]!.currency).toBe(true);
     });
   });
 
@@ -652,7 +652,7 @@ describe('CubeEnginePersistence', () => {
 
       const loaded = await persistence.loadHistory();
       expect(loaded).toHaveLength(1);
-      expect(loaded[0].id).toBe('hist-1');
+      expect(loaded![0]!.id).toBe('hist-1');
     });
 
     it('should save multiple history entries', async () => {
@@ -673,7 +673,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveHistory([entry]);
 
       const loaded = await persistence.loadHistory();
-      expect(loaded[0].cellId).toBe('custom-cell-id');
+      expect(loaded![0]!.cellId).toBe('custom-cell-id');
     });
 
     it('should preserve history oldValue and newValue', async () => {
@@ -684,8 +684,8 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveHistory([entry]);
 
       const loaded = await persistence.loadHistory();
-      expect(loaded[0].oldValue).toBe(50000);
-      expect(loaded[0].newValue).toBe(100000);
+      expect(loaded![0]!.oldValue).toBe(50000);
+      expect(loaded![0]!.newValue).toBe(100000);
     });
 
     it('should preserve history dataType', async () => {
@@ -693,7 +693,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveHistory([entry]);
 
       const loaded = await persistence.loadHistory();
-      expect(loaded[0].dataType).toBe('calculated');
+      expect(loaded![0]!.dataType).toBe('calculated');
     });
 
     it('should preserve history reason', async () => {
@@ -701,7 +701,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveHistory([entry]);
 
       const loaded = await persistence.loadHistory();
-      expect(loaded[0].reason).toBe('Manual adjustment');
+      expect(loaded![0]!.reason).toBe('Manual adjustment');
     });
 
     it('should preserve history timestamp', async () => {
@@ -709,7 +709,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveHistory([entry]);
 
       const loaded = await persistence.loadHistory();
-      expect(loaded[0].timestamp).toBe('2024-06-15T10:30:00Z');
+      expect(loaded![0]!.timestamp).toBe('2024-06-15T10:30:00Z');
     });
 
     it('should handle null oldValue', async () => {
@@ -717,7 +717,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveHistory([entry]);
 
       const loaded = await persistence.loadHistory();
-      expect(loaded[0].oldValue).toBeNull();
+      expect(loaded![0]!.oldValue).toBeNull();
     });
 
     it('should not duplicate history entries', async () => {
@@ -753,7 +753,7 @@ describe('CubeEnginePersistence', () => {
 
       const loaded = await persistence.loadSnapshots();
       expect(loaded.snapshots).toHaveLength(1);
-      expect(loaded.snapshots[0].name).toBe('Test Snapshot');
+      expect(loaded!.snapshots[0]!.name).toBe('Test Snapshot');
     });
 
     it('should save multiple snapshots', async () => {
@@ -795,7 +795,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveSnapshots([snapshot], snapshotCells);
 
       const loaded = await persistence.loadSnapshots();
-      expect(loaded.snapshots[0].description).toBe('Year-end snapshot');
+      expect(loaded!.snapshots[0]!.description).toBe('Year-end snapshot');
     });
 
     it('should preserve snapshot createdAt', async () => {
@@ -805,7 +805,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveSnapshots([snapshot], snapshotCells);
 
       const loaded = await persistence.loadSnapshots();
-      expect(loaded.snapshots[0].createdAt).toBe('2024-12-31T23:59:59Z');
+      expect(loaded!.snapshots[0]!.createdAt).toBe('2024-12-31T23:59:59Z');
     });
 
     it('should overwrite snapshots on save', async () => {
@@ -817,7 +817,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveSnapshots([snapshot2], snapshotCells);
 
       const loaded = await persistence.loadSnapshots();
-      expect(loaded.snapshots[0].name).toBe('New');
+      expect(loaded!.snapshots[0]!.name).toBe('New');
     });
 
     it('should handle empty snapshots load', async () => {
@@ -857,10 +857,10 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const loaded = await persistence.loadCells();
-      expect(loaded[0].cell.value).toBe(999999.99);
-      expect(loaded[0].cell.dataType).toBe('calculated');
-      expect(loaded[0].cell.comment).toBe('Test comment');
-      expect(loaded[0].cell.attachment).toBe('doc.pdf');
+      expect(loaded![0]!.cell.value).toBe(999999.99);
+      expect(loaded![0]!.cell.dataType).toBe('calculated');
+      expect(loaded![0]!.cell.comment).toBe('Test comment');
+      expect(loaded![0]!.cell.attachment).toBe('doc.pdf');
     });
 
     it('should preserve dimension hierarchy through save/load cycle', async () => {
@@ -870,7 +870,7 @@ describe('CubeEnginePersistence', () => {
       const loaded = await persistence.loadDimensions();
       const account = loaded.get('Account');
 
-      expect(account?.hierarchies[0].levels).toEqual(['category', 'account']);
+      expect(account?.hierarchies[0]!.levels).toEqual(['category', 'account']);
       expect(account?.members.get('Account:Revenue')?.hierarchy).toBe('reporting');
     });
 
@@ -881,8 +881,8 @@ describe('CubeEnginePersistence', () => {
       const loaded = await persistence.loadCubes();
       const measures = loaded.get('gl')?.measures;
 
-      expect(measures?.[0].name).toBe('amount');
-      expect(measures?.[0].aggregation).toBe('sum');
+      expect(measures?.[0]!.name).toBe('amount');
+      expect(measures?.[0]!.aggregation).toBe('sum');
     });
 
     it('should preserve history through save/load cycle', async () => {
@@ -894,9 +894,9 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveHistory([entry]);
 
       const loaded = await persistence.loadHistory();
-      expect(loaded[0].oldValue).toBe(50000);
-      expect(loaded[0].newValue).toBe(100000);
-      expect(loaded[0].reason).toBe('Budget adjustment');
+      expect(loaded![0]!.oldValue).toBe(50000);
+      expect(loaded![0]!.newValue).toBe(100000);
+      expect(loaded![0]!.reason).toBe('Budget adjustment');
     });
 
     it('should preserve snapshot cell values through save/load cycle', async () => {
@@ -935,7 +935,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const loaded = await persistence.loadCells();
-      expect(loaded[0].cell.value).toBe(Number.MAX_SAFE_INTEGER);
+      expect(loaded![0]!.cell.value).toBe(Number.MAX_SAFE_INTEGER);
     });
 
     it('should handle negative numbers', async () => {
@@ -945,7 +945,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const loaded = await persistence.loadCells();
-      expect(loaded[0].cell.value).toBe(-999999.99);
+      expect(loaded![0]!.cell.value).toBe(-999999.99);
     });
 
     it('should handle zero values', async () => {
@@ -955,7 +955,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const loaded = await persistence.loadCells();
-      expect(loaded[0].cell.value).toBe(0);
+      expect(loaded![0]!.cell.value).toBe(0);
     });
 
     it('should handle empty coordinates', async () => {
@@ -965,7 +965,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const loaded = await persistence.loadCells();
-      expect(loaded[0].cell.coords).toEqual({});
+      expect(loaded![0]!.cell.coords).toEqual({});
     });
 
     it('should handle dimension with no members', async () => {
@@ -1015,7 +1015,7 @@ describe('CubeEnginePersistence', () => {
       await persistence.saveCell('gl', cell, cellKey);
 
       const loaded = await persistence.loadCells();
-      expect(loaded[0].cellKey).toBe(cellKey);
+      expect(loaded![0]!.cellKey).toBe(cellKey);
     });
 
     it('should handle concurrent saves', async () => {

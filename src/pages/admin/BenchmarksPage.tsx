@@ -65,10 +65,10 @@ const BenchmarksPage: React.FC = () => {
     history.forEach((res) => {
       // Round to nearest second to group the batch
       const ts = Math.floor(res.timestamp / 1000) * 1000;
-      if (!groups[ts]) {
+      if (!groups[ts]!) {
         groups[ts] = { timestamp: ts, timeLabel: new Date(ts).toLocaleTimeString() };
       }
-      groups[ts][res.name] = res.duration;
+      groups[ts]![res.name] = res.duration;
     });
 
     return Object.values(groups).sort((a, b) => a.timestamp - b.timestamp);

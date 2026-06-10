@@ -86,7 +86,9 @@ describe('AnomalyExplainer', () => {
       ];
       const ranked = AnomalyExplainer.rankBySeverity(anomalies);
       expect(ranked).toHaveLength(2);
-      expect(Math.abs(ranked[0].deviation)).toBeGreaterThanOrEqual(Math.abs(ranked[1].deviation));
+      expect(Math.abs(ranked![0]!.deviation)).toBeGreaterThanOrEqual(
+        Math.abs(ranked![1]!.deviation)
+      );
     });
 
     it('should handle empty array', () => {

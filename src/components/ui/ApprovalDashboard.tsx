@@ -39,7 +39,7 @@ export const ApprovalDashboard = memo(function ApprovalDashboard({ stats, classN
   ];
 
   const bottleneckEntries = useMemo(
-    () => Object.entries(stats.bottlenecks).sort((a, b) => b[1] - a[1]),
+    () => Object.entries(stats.bottlenecks).sort((a, b) => b[1] - a[1]!),
     [stats.bottlenecks]
   );
   const topBottleneck = bottleneckEntries[0];
@@ -123,6 +123,8 @@ export const ApprovalDashboard = memo(function ApprovalDashboard({ stats, classN
                   key={req.id}
                   className="flex items-center justify-between text-sm border-l-2 border-red-500 pl-2"
                 >
+                  {' '}
+                  role="alert" role="alert"
                   <div>
                     <p className="font-medium">{req.title}</p>
                     <p className="text-xs text-[var(--text-muted)]">by {req.requester}</p>

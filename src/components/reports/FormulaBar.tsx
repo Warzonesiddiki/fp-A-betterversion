@@ -164,7 +164,7 @@ export function FormulaBar({
   }, []);
 
   return (
-    <div className={cn('bg-slate-900 border border-slate-700 rounded-lg space-y-3', className)}>
+    <div className={cn('bg-slate-900 border border-slate-700 rounded-lg space-y-3', className)} role="region" aria-label="FormulaBar">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-3">
         <div className="flex items-center gap-2">
@@ -188,7 +188,7 @@ export function FormulaBar({
           </button>
           <button
             onClick={onCancel}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             aria-label="Cancel formula editing"
           >
             <X className="h-4 w-4" />

@@ -82,6 +82,8 @@ export const TornadoChart = memo(function TornadoChart({
         'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
         className
       )}
+      role="region"
+      aria-label="TornadoChart"
     >
       {title && (
         <div className="mb-4">
@@ -118,7 +120,9 @@ export const TornadoChart = memo(function TornadoChart({
               cursor={{ fill: 'transparent' }}
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
-                const d = payload[0].payload as ChartDataItem;
+                const firstPayload = payload[0];
+                if (!firstPayload) return null;
+                const d = firstPayload.payload as ChartDataItem;
                 return (
                   <div className="bg-[var(--bg-surface)] p-3 border border-[var(--border-subtle)] shadow-xl rounded-lg text-xs">
                     <p className="font-bold text-gray-700 dark:text-gray-300 mb-1">{d.name}</p>
@@ -175,7 +179,7 @@ export const TornadoChart = memo(function TornadoChart({
       </div>
       <div className="flex items-center justify-center gap-4 mt-2 text-xs text-[var(--text-muted)]">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-2 rounded bg-red-500 opacity-80" />
+          <div className="w-3 h-2 rounded bg-red-500 opacity-80" /> role="alert" role="alert"
           <span>Downside</span>
         </div>
         <div className="flex items-center gap-1">

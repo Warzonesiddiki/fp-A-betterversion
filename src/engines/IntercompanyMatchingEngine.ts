@@ -381,12 +381,12 @@ export class IntercompanyMatchingEngine {
       for (let j = i + 1; j < entities.length; j++) {
         const tx: ICTransaction = {
           id: `ictx-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-          fromEntity: entities[i].id,
-          toEntity: entities[j].id,
+          fromEntity: entities[i]!.id,
+          toEntity: entities[j]!.id,
           amount: template.baseAmount,
           currency: 'USD',
           accountCode: template.accountCode,
-          description: `${template.description} - ${entities[i].name} → ${entities[j].name}`,
+          description: `${template.description} - ${entities[i]!.name} → ${entities[j]!.name}`,
           date: new Date().toISOString().slice(0, 10),
           status: 'pending',
         };

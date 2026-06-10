@@ -208,7 +208,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           const { row, col } = action.payload as { row: number; col: number };
           if (row >= 0 && row < rows.length && col >= 0 && col < columns.length) {
             setSelectedCell({ row, col });
-            gridRef.current.api.setFocusedCell(row, columns[col].field);
+            gridRef.current.api.setFocusedCell(row, columns[col]!.field);
           }
           break;
         }
@@ -216,7 +216,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           setIsEditing(true);
           gridRef.current.api.startEditingCell({
             rowIndex: selectedCell.row,
-            colKey: columns[selectedCell.col].field,
+            colKey: columns![selectedCell.col]!.field,
           });
           break;
         }

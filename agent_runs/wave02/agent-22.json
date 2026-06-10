@@ -1,0 +1,308 @@
+{
+  "agent": "agent-22",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T01921",
+      "cat": "store",
+      "title": "uiStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\uiStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01922",
+      "cat": "store",
+      "title": "uiStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\uiStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01923",
+      "cat": "store",
+      "title": "uiStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\uiStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01924",
+      "cat": "store",
+      "title": "varianceStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\varianceStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01925",
+      "cat": "store",
+      "title": "varianceStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\varianceStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01926",
+      "cat": "store",
+      "title": "varianceStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\varianceStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01927",
+      "cat": "store",
+      "title": "workflowStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\workflowStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01928",
+      "cat": "store",
+      "title": "workflowStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\workflowStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01929",
+      "cat": "store",
+      "title": "workflowStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\workflowStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01930",
+      "cat": "store",
+      "title": "workforceStore CWE-922 Encryption Check",
+      "spec": "Ensure src\\store\\workforceStore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01931",
+      "cat": "store",
+      "title": "workforceStore Immer Mutability Strict",
+      "spec": "Verify src\\store\\workforceStore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01932",
+      "cat": "store",
+      "title": "workforceStore OPFS/Debounce logic",
+      "spec": "Ensure src\\store\\workforceStore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01933",
+      "cat": "store",
+      "title": "storeTestUtils CWE-922 Encryption Check",
+      "spec": "Ensure src\\test\\storeTestUtils.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01934",
+      "cat": "store",
+      "title": "storeTestUtils Immer Mutability Strict",
+      "spec": "Verify src\\test\\storeTestUtils.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01935",
+      "cat": "store",
+      "title": "storeTestUtils OPFS/Debounce logic",
+      "spec": "Ensure src\\test\\storeTestUtils.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01936",
+      "cat": "store",
+      "title": "backupRestore CWE-922 Encryption Check",
+      "spec": "Ensure src\\utils\\backupRestore.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01937",
+      "cat": "store",
+      "title": "backupRestore Immer Mutability Strict",
+      "spec": "Verify src\\utils\\backupRestore.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01938",
+      "cat": "store",
+      "title": "backupRestore OPFS/Debounce logic",
+      "spec": "Ensure src\\utils\\backupRestore.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T01939",
+      "cat": "store",
+      "title": "storeCache CWE-922 Encryption Check",
+      "spec": "Ensure src\\utils\\storeCache.ts does not leak PII to plain localStorage. Use encryptStorage."
+    },
+    {
+      "id": "T01940",
+      "cat": "store",
+      "title": "storeCache Immer Mutability Strict",
+      "spec": "Verify src\\utils\\storeCache.ts uses draft mutations correctly with no state leaks."
+    },
+    {
+      "id": "T01941",
+      "cat": "store",
+      "title": "storeCache OPFS/Debounce logic",
+      "spec": "Ensure src\\utils\\storeCache.ts debounce saves to OPFS atomically to prevent corruption."
+    },
+    {
+      "id": "T03701",
+      "cat": "store",
+      "title": "SafeMathParser Zustand Selector Granularity",
+      "spec": "Perfection pass for SafeMathParser: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03705",
+      "cat": "store",
+      "title": "FormulaEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for FormulaEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03709",
+      "cat": "store",
+      "title": "FormulaFunctionRegistry Zustand Selector Granularity",
+      "spec": "Perfection pass for FormulaFunctionRegistry: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03713",
+      "cat": "store",
+      "title": "CubeEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CubeEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03717",
+      "cat": "store",
+      "title": "CubeEnginePersistence Zustand Selector Granularity",
+      "spec": "Perfection pass for CubeEnginePersistence: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03721",
+      "cat": "store",
+      "title": "ConsolidationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ConsolidationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03725",
+      "cat": "store",
+      "title": "ThreeStatementEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ThreeStatementEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03729",
+      "cat": "store",
+      "title": "MonteCarloEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for MonteCarloEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03733",
+      "cat": "store",
+      "title": "ForecastMethodEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ForecastMethodEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03737",
+      "cat": "store",
+      "title": "DriverCascadeEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for DriverCascadeEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03741",
+      "cat": "store",
+      "title": "MasterDataEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for MasterDataEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03745",
+      "cat": "store",
+      "title": "MigrationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for MigrationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03749",
+      "cat": "store",
+      "title": "SOXComplianceEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for SOXComplianceEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03753",
+      "cat": "store",
+      "title": "AnomalyDetectionEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for AnomalyDetectionEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03757",
+      "cat": "store",
+      "title": "ValidationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ValidationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03761",
+      "cat": "store",
+      "title": "ReportBuilderEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ReportBuilderEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03765",
+      "cat": "store",
+      "title": "ProfessionalExportEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ProfessionalExportEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03769",
+      "cat": "store",
+      "title": "NLQEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for NLQEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03773",
+      "cat": "store",
+      "title": "AICopilotEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for AICopilotEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03777",
+      "cat": "store",
+      "title": "PluginEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for PluginEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03781",
+      "cat": "store",
+      "title": "WorkflowEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for WorkflowEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03785",
+      "cat": "store",
+      "title": "WorkflowTemplateEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for WorkflowTemplateEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03789",
+      "cat": "store",
+      "title": "AllocationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for AllocationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03793",
+      "cat": "store",
+      "title": "FXEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for FXEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03797",
+      "cat": "store",
+      "title": "MultiCurrencyEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for MultiCurrencyEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03801",
+      "cat": "store",
+      "title": "MultiBookEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for MultiBookEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03805",
+      "cat": "store",
+      "title": "MDXEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for MDXEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03809",
+      "cat": "store",
+      "title": "ExcelImportEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ExcelImportEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03813",
+      "cat": "store",
+      "title": "ImportEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ImportEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

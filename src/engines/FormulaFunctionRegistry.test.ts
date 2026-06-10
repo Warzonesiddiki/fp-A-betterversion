@@ -273,8 +273,8 @@ describe('FormulaFunctionRegistry', () => {
 
     it('DISTRIBUTE: by distribution array', () => {
       const result = FormulaFunctionRegistry.DISTRIBUTE(1000, [10, 20, 30, 40] as any);
-      expect(result[0]).toBeCloseTo(100);
-      expect(result[3]).toBeCloseTo(400);
+      expect(result[0]!).toBeCloseTo(100);
+      expect(result[3]!).toBeCloseTo(400);
     });
 
     it('SPLIT: by ratios', () => {

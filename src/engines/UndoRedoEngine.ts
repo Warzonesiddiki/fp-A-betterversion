@@ -96,17 +96,17 @@ export class UndoRedoEngine<T = unknown> {
     if (storeKey) {
       // Find last action for this store
       for (let i = this.undoStack.length - 1; i >= 0; i--) {
-        if (this.undoStack[i].storeKey === storeKey) {
+        if (this.undoStack[i]!.storeKey === storeKey) {
           idx = i;
           break;
         }
       }
-      if (idx < 0 || this.undoStack[idx].storeKey !== storeKey) return null;
+      if (idx < 0 || this.undoStack[idx]!.storeKey !== storeKey) return null;
     }
 
     if (this.undoStack.length === 0) return null;
 
-    const action = this.undoStack.splice(idx, 1)[0];
+    const action = this.undoStack.splice(idx, 1)![0]!;
     this.redoStack.push(action);
 
     this.notifyListeners(action, 'undo');
@@ -123,7 +123,7 @@ export class UndoRedoEngine<T = unknown> {
     if (storeKey) {
       const idx = this.redoStack.findLastIndex((a) => a.storeKey === storeKey);
       if (idx < 0) return null;
-      action = this.redoStack.splice(idx, 1)[0];
+      action = this.redoStack.splice(idx, 1)![0]!;
     } else {
       action = this.redoStack.pop()!;
     }
@@ -169,7 +169,7 @@ export class UndoRedoEngine<T = unknown> {
     const undone: UndoAction[] = [];
     while (this.undoStack.length > 0) {
       const last = this.undoStack[this.undoStack.length - 1];
-      if (last.id === actionId) break;
+      if (last!.id === actionId) break;
       const action = this.undo()!;
       if (action) undone.push(action);
     }

@@ -7,7 +7,7 @@ interface ColorScaleOptionsProps {
 
 export function ColorScaleOptions({ rule, onChange }: ColorScaleOptionsProps) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="region" aria-label="ColorScaleOptions">
       <div>
         <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
           Scale Type

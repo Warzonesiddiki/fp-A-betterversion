@@ -115,7 +115,7 @@ export class ArrayFormulaEngine {
    */
   private static sumproduct(data: number[][]): ArrayResult {
     if (data.length < 2) return { values: [[0]], rows: 1, cols: 1 };
-    const result = data[0].reduce((sum, val, i) => {
+    const result = data[0]!.reduce((sum, val, i) => {
       const multiplier = data[1]?.[i] ?? 0;
       return sum + val * multiplier;
     }, 0);

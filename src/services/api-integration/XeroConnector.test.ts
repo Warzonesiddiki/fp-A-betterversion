@@ -99,11 +99,11 @@ describe('XeroConnector', () => {
       const result = await connector.getAccounts({ page: 1, pageSize: 50 });
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].externalId).toBe('acct-1');
-      expect(result.items[0].name).toBe('Business Bank Account');
-      expect(result.items[0].type).toBe('asset');
-      expect(result.items[0].currency).toBe('NZD');
-      expect(result.items[0].active).toBe(true);
+      expect(result!.items[0]!.externalId).toBe('acct-1');
+      expect(result!.items[0]!.name).toBe('Business Bank Account');
+      expect(result!.items[0]!.type).toBe('asset');
+      expect(result!.items[0]!.currency).toBe('NZD');
+      expect(result!.items[0]!.active).toBe(true);
     });
   });
 
@@ -146,13 +146,13 @@ describe('XeroConnector', () => {
       const result = await connector.getInvoices({ page: 1, pageSize: 50 });
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].externalId).toBe('inv-1');
-      expect(result.items[0].number).toBe('INV-001');
-      expect(result.items[0].status).toBe('sent');
-      expect(result.items[0].total).toBe(1150);
-      expect(result.items[0].tax).toBe(150);
-      expect(result.items[0].lineItems).toHaveLength(1);
-      expect(result.items[0].customerId).toBe('contact-1');
+      expect(result!.items[0]!.externalId).toBe('inv-1');
+      expect(result!.items[0]!.number).toBe('INV-001');
+      expect(result!.items[0]!.status).toBe('sent');
+      expect(result!.items[0]!.total).toBe(1150);
+      expect(result!.items[0]!.tax).toBe(150);
+      expect(result!.items[0]!.lineItems).toHaveLength(1);
+      expect(result!.items[0]!.customerId).toBe('contact-1');
     });
   });
 
@@ -191,9 +191,9 @@ describe('XeroConnector', () => {
       const result = await connector.getTransactions('bank-1', { page: 1, pageSize: 50 });
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].externalId).toBe('txn-1-line-1');
-      expect(result.items[0].amount).toBe(250);
-      expect(result.items[0].type).toBe('credit');
+      expect(result!.items[0]!.externalId).toBe('txn-1-line-1');
+      expect(result!.items[0]!.amount).toBe(250);
+      expect(result!.items[0]!.type).toBe('credit');
     });
   });
 
@@ -228,9 +228,9 @@ describe('XeroConnector', () => {
       const result = await connector.getBudgets({ page: 1, pageSize: 50 });
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].externalId).toBe('budget-1');
-      expect(result.items[0].name).toBe('FY2024 Budget');
-      expect(result.items[0].entries).toHaveLength(2);
+      expect(result!.items[0]!.externalId).toBe('budget-1');
+      expect(result!.items[0]!.name).toBe('FY2024 Budget');
+      expect(result!.items[0]!.entries).toHaveLength(2);
     });
 
     it('should return empty when budgets API not available', async () => {
@@ -276,7 +276,7 @@ describe('XeroConnector', () => {
         (connector as unknown as { client: { get: typeof mockGet } }).client.get = mockGet;
 
         const result = await connector.getAccounts();
-        expect(result.items[0].type).toBe(expected);
+        expect(result!.items[0]!.type).toBe(expected);
       }
     });
   });
@@ -318,7 +318,7 @@ describe('XeroConnector', () => {
         (connector as unknown as { client: { get: typeof mockGet } }).client.get = mockGet;
 
         const result = await connector.getInvoices();
-        expect(result.items[0].status).toBe(expected);
+        expect(result!.items[0]!.status).toBe(expected);
       }
     });
   });

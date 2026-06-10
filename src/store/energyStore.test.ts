@@ -44,7 +44,7 @@ describe('energyStore', () => {
       roi: '8%',
     });
     expect(useEnergyStore.getState().assets).toHaveLength(1);
-    expect(useEnergyStore.getState().assets[0].name).toBe('Wind Farm');
+    expect(useEnergyStore!.getState().assets[0]!.name).toBe('Wind Farm');
   });
 
   it('should remove an asset', () => {
@@ -68,7 +68,7 @@ describe('energyStore', () => {
     });
     useEnergyStore.getState().removeAsset('S-01');
     expect(useEnergyStore.getState().assets).toHaveLength(1);
-    expect(useEnergyStore.getState().assets[0].id).toBe('W-01');
+    expect(useEnergyStore!.getState().assets[0]!.id).toBe('W-01');
   });
 
   it('should set generation trend', () => {

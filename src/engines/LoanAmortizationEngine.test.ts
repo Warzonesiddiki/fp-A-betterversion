@@ -28,7 +28,7 @@ describe('LoanAmortizationEngine', () => {
 
     it('should have final balance near zero', () => {
       const result = LoanAmortizationEngine.schedule(100000, 0.06, 12);
-      expect(result.schedule[11].balance).toBeCloseTo(0, 0);
+      expect(result!.schedule[11]!.balance).toBeCloseTo(0, 0);
     });
 
     it('should track total interest', () => {
@@ -47,14 +47,14 @@ describe('LoanAmortizationEngine', () => {
     it('should decrease balance over time', () => {
       const result = LoanAmortizationEngine.schedule(100000, 0.06, 12);
       for (let i = 1; i < result.schedule.length; i++) {
-        expect(result.schedule[i].balance).toBeLessThan(result.schedule[i - 1].balance);
+        expect(result!.schedule[i]!.balance).toBeLessThan(result!.schedule[i - 1]!.balance);
       }
     });
 
     it('should increase principal portion over time', () => {
       const result = LoanAmortizationEngine.schedule(100000, 0.06, 12);
       for (let i = 1; i < result.schedule.length; i++) {
-        expect(result.schedule[i].principal).toBeGreaterThan(result.schedule[i - 1].principal);
+        expect(result!.schedule[i]!.principal).toBeGreaterThan(result!.schedule[i - 1]!.principal);
       }
     });
   });

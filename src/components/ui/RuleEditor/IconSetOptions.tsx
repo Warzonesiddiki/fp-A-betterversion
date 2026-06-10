@@ -8,7 +8,7 @@ interface IconSetOptionsProps {
 
 export function IconSetOptions({ rule, onChange }: IconSetOptionsProps) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="region" aria-label="IconSetOptions">
       <div>
         <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
           Icon Set

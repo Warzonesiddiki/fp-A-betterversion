@@ -66,8 +66,12 @@ export class ChangeBroadcaster {
   }
 
   /** Broadcast a data change to all connected clients */
-  broadcast(change: Omit<DataChange, 'id' | 'userId' | 'timestamp'>): string {
+  async broadcast(change: Omit<DataChange, 'id' | 'userId' | 'timestamp'>): Promise<string | null> {
     const id = `chg-${Date.now()}-${++this.sequenceNumber}`;
+
+    // Validate permissions before proceeding
+    const isPermitted = await this.validateUserPermission(change);
+    if (!isPermitted) return null;
 
     const fullChange: DataChange = {
       ...change,
@@ -90,7 +94,7 @@ export class ChangeBroadcaster {
   }
 
   /** Convenience: broadcast a cell value change in a budget/forecast grid */
-  broadcastCellChange(
+  async broadcastCellChange(
     resourceType: ResourceType,
     resourceId: string,
     field: string,
@@ -98,7 +102,7 @@ export class ChangeBroadcaster {
     newValue: unknown,
     userName: string,
     metadata?: Record<string, unknown>
-  ): string {
+  ): Promise<string | null> {
     return this.broadcast({
       type: oldValue === undefined ? 'create' : 'update',
       resourceType,
@@ -112,12 +116,12 @@ export class ChangeBroadcaster {
   }
 
   /** Convenience: broadcast a record creation */
-  broadcastCreate(
+  async broadcastCreate(
     resourceType: ResourceType,
     resourceId: string,
     userName: string,
     metadata?: Record<string, unknown>
-  ): string {
+  ): Promise<string | null> {
     return this.broadcast({
       type: 'create',
       resourceType,
@@ -128,7 +132,7 @@ export class ChangeBroadcaster {
   }
 
   /** Convenience: broadcast a record deletion */
-  broadcastDelete(resourceType: ResourceType, resourceId: string, userName: string): string {
+  async broadcastDelete(resourceType: ResourceType, resourceId: string, userName: string): Promise<string | null> {
     return this.broadcast({
       type: 'delete',
       resourceType,
@@ -177,6 +181,16 @@ export class ChangeBroadcaster {
     this.recentChanges.clear();
   }
 
+  private pruneRecentChanges(): void {
+    if (this.recentChanges.size > this.maxRecentChanges) {
+      const entries = Array.from(this.recentChanges.entries());
+      const toDelete = entries.slice(0, entries.length - this.maxRecentChanges);
+      for (const [key] of toDelete) {
+        this.recentChanges.delete(key);
+      }
+    }
+  }
+
   // --- Internal ---
 
   private handleIncomingChange(data: unknown): void {
@@ -205,16 +219,31 @@ export class ChangeBroadcaster {
     this.conflictHandlers.forEach((fn) => fn(conflict));
   }
 
-  private pruneRecentChanges(): void {
-    if (this.recentChanges.size > this.maxRecentChanges) {
-      const entries = Array.from(this.recentChanges.entries()).sort((a, b) =>
-        b[1].timestamp.localeCompare(a[1].timestamp)
+  private async validateUserPermission(
+    change: Omit<DataChange, 'id' | 'userId' | 'timestamp'>
+  ): Promise<boolean> {
+    if (!this.currentUserId) throw new Error('User not authenticated');
+    // Simulate server permission check (replace with actual API call in production)
+    const hasPermission = await this.checkServerPermission(
+      this.currentUserId,
+      change.resourceType,
+      change.resourceId
+    );
+    if (!hasPermission) {
+      console.warn(
+        `Permission denied: user ${this.currentUserId} cannot modify ${change.resourceType}/${change.resourceId}`
       );
-
-      this.recentChanges.clear();
-      entries.slice(0, this.maxRecentChanges).forEach(([k, v]) => {
-        this.recentChanges.set(k, v);
-      });
+      return false;
     }
+    return true;
+  }
+
+  private async checkServerPermission(
+    userId: string,
+    resourceType: ResourceType,
+    resourceId: string
+  ): Promise<boolean> {
+    // In production: call auth service or check local capabilities
+    return true;
   }
 }

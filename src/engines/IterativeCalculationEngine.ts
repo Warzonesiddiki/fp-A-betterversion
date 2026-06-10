@@ -174,7 +174,7 @@ export function solveIteratively(
     // Check for divergence (change growing unbounded)
     if (iter > 5 && history.length > 5) {
       const recent = history.slice(-5);
-      const isGrowing = recent.every((v, i) => i === 0 || v >= recent[i - 1]);
+      const isGrowing = recent.every((v, i) => i === 0 || v >= recent![i - 1]!);
       if (isGrowing && maxChange > 1e12) {
         return {
           status: 'diverged',

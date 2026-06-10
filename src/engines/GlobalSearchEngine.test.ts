@@ -21,7 +21,7 @@ describe('GlobalSearchEngine', () => {
       });
       const results = GlobalSearchEngine.search('Q1');
       expect(results.length).toBeGreaterThan(0);
-      expect(results[0].title).toContain('Q1');
+      expect(results![0]!.title).toContain('Q1');
     });
 
     it('returns results sorted by relevance', () => {
@@ -32,7 +32,7 @@ describe('GlobalSearchEngine', () => {
         ],
       });
       const results = GlobalSearchEngine.search('Revenue');
-      expect(results[0].title).toBe('Revenue Budget');
+      expect(results![0]!.title).toBe('Revenue Budget');
     });
 
     it('limits results', () => {

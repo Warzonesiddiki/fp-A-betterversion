@@ -98,8 +98,8 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
           }
           raw.push(values);
         });
-        if (raw.length > 1) {
-          const headers = raw[0].map(String);
+        if (raw.length > 1 && raw[0]!) {
+          const headers = raw[0]!.map(String);
           const rows = raw.slice(1, 11).map((row) =>
             headers.reduce(
               (obj, h, i) => ({
@@ -156,7 +156,7 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
     }
   };
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="region" aria-label="MigrationWizard">
       <ProgressStepper
         steps={steps.map((s, i) => ({
           label: s.label,
@@ -166,6 +166,8 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
       />
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+          {' '}
+          role="alert" role="alert"
           <AlertTriangle className="h-4 w-4" />
           <span>{error}</span>
         </div>
@@ -361,7 +363,7 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
             {previewData.length > 0 ? (
               <DataTable
                 data={previewData}
-                columns={Object.keys(previewData[0]).map((key) => ({
+                columns={Object.keys(previewData[0]!)!.map((key) => ({
                   key,
                   header: key,
                   width: '150px',
@@ -471,6 +473,8 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
             {progress.status === 'error' && (
               <div className="space-y-4">
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-center gap-2">
+                  {' '}
+                  role="alert" role="alert"
                   <AlertTriangle className="h-4 w-4" />
                   Import failed. {progress.message}
                 </div>

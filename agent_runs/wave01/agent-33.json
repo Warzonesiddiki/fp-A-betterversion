@@ -1,0 +1,8 @@
+{
+  "agent": "agent-33",
+  "task": "Add JSDoc comments to public functions in src/engines/BondPricingEngine.ts",
+  "status": "success",
+  "jsdocLinesAdded": 58,
+  "tscErrorsAfter": 0,
+  "notes": "Added JSDoc blocks to BondPricingEngine class and its 5 public static methods (price, yieldToMaturity, duration, accruedInterest, dirtyPrice). Each block documents params and return value. The private priceDerivative was intentionally left without JSDoc per the 'public functions' scope. Verification: node run-tsc.cjs filtered for BondPricingEngine returned 0 lines (0 errors), matching baseline."
+}

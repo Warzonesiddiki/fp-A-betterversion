@@ -200,7 +200,7 @@ function AddShortcutDialog({ onAdd, onClose }: AddDialogProps) {
         <div className="flex justify-end gap-2 mt-5">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm rounded-lg border"
+            className="px-4 py-2 text-sm rounded-lg border focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
           >
             Cancel
@@ -339,7 +339,7 @@ export function KeyboardOverlay({ isOpen, onClose }: KeyboardOverlayProps) {
               <button
                 onClick={onClose}
                 aria-label="Close"
-                className="p-1 rounded hover:opacity-80"
+                className="p-1 rounded hover:opacity-80 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 <X className="w-5 h-5" />

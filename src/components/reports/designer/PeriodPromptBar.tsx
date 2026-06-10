@@ -33,7 +33,7 @@ function PromptSelect({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" role="region" aria-label="PeriodPromptBar">
       <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold whitespace-nowrap">
         {label}
       </label>

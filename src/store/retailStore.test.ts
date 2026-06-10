@@ -48,7 +48,7 @@ describe('retailStore', () => {
       reorderLevel: 10,
     });
     expect(useRetailStore.getState().products).toHaveLength(1);
-    expect(useRetailStore.getState().products[0].name).toBe('Gadget');
+    expect(useRetailStore!.getState().products[0]!.name).toBe('Gadget');
   });
 
   it('should update a product', () => {
@@ -64,8 +64,8 @@ describe('retailStore', () => {
     });
     useRetailStore.getState().updateProduct('p3', { price: 24.99, stock: 180 });
     const updated = useRetailStore.getState().products[0];
-    expect(updated.price).toBe(24.99);
-    expect(updated.stock).toBe(180);
+    expect(updated!.price).toBe(24.99);
+    expect(updated!.stock).toBe(180);
   });
 
   it('should not update non-existent product', () => {
@@ -80,7 +80,7 @@ describe('retailStore', () => {
       reorderLevel: 10,
     });
     useRetailStore.getState().updateProduct('nonexistent', { price: 999 });
-    expect(useRetailStore.getState().products[0].price).toBe(10);
+    expect(useRetailStore!.getState().products[0]!.price).toBe(10);
   });
 
   it('should remove a product', () => {
@@ -214,8 +214,8 @@ describe('retailStore', () => {
     ]);
     const top2 = useRetailStore.getState().getTopStores(2);
     expect(top2).toHaveLength(2);
-    expect(top2[0].name).toBe('B');
-    expect(top2[1].name).toBe('C');
+    expect(top2![0]!.name).toBe('B');
+    expect(top2![1]!.name).toBe('C');
   });
 
   it('should handle getTopStores with count larger than stores', () => {

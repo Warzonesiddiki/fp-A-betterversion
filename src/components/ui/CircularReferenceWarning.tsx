@@ -98,7 +98,7 @@ export function CircularReferenceWarning({
           {onRecalc && (
             <button
               onClick={onRecalc}
-              className="px-3 py-1 text-xs font-medium rounded bg-white dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800/80 border transition-colors"
+              className="px-3 py-1 text-xs font-medium rounded bg-white dark:bg-gray-800/50 hover:bg-white dark:bg-gray-800/80 border transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               Recalculate
             </button>

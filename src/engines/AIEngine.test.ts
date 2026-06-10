@@ -129,8 +129,8 @@ describe('AIEngine', () => {
 
       const result = await AIEngine.detectAnomalies(['Good transaction', 'Suspicious wire']);
       expect(result).toHaveLength(2);
-      expect(result[0].sentiment).toBe('POSITIVE');
-      expect(result[1].sentiment).toBe('NEGATIVE');
+      expect(result![0]!.sentiment).toBe('POSITIVE');
+      expect(result![1]!.sentiment).toBe('NEGATIVE');
     });
 
     it('should return empty array for empty input', async () => {

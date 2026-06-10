@@ -247,7 +247,7 @@ export function PluginDetail({
                 href={plugin.homepage}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline dark:text-blue-400"
+                className="text-blue-600 hover:underline dark:text-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               >
                 Homepage
               </a>
@@ -257,7 +257,7 @@ export function PluginDetail({
                 href={plugin.repository}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline dark:text-blue-400"
+                className="text-blue-600 hover:underline dark:text-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               >
                 Repository
               </a>

@@ -1,0 +1,8 @@
+{
+  "agent": "agent-46",
+  "task": "Add JSDoc comments to public functions in src/engines/AllocationRuleEngine.ts",
+  "status": "success",
+  "jsdocLinesAdded": 33,
+  "tscErrorsAfter": 0,
+  "notes": "Expanded one-line JSDoc stubs into full JSDoc blocks with @param and @returns for all 7 public static methods (create, update, delete, getAll, getByAccount, allocate, validate) on the AllocationRuleEngine class. Net new lines: create +3, update +4, delete +3, getAll +3, getByAccount +3, allocate +11, validate +6 = 33 total. Verification command `node run-tsc.cjs 2>&1 | Select-String \"AllocationRuleEngine\" | Measure-Object -Line` returns 0. Three pre-existing tsc errors exist in src/App.tsx and src/pages/accounting/__tests__/DepreciationPage.test.tsx (default-export / lazy() type issues) but are unrelated to AllocationRuleEngine."
+}

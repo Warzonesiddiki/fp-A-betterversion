@@ -142,7 +142,7 @@ export class PresenceService {
 
   /** Get the cursor color for a user */
   getColorForUser(userId: string): string {
-    return this.colorMap.get(userId) ?? CURSOR_COLORS[0];
+    return this.colorMap.get(userId) ?? CURSOR_COLORS[0]!;
   }
 
   /** Subscribe to presence changes */
@@ -218,7 +218,7 @@ export class PresenceService {
 
   private assignColor(userId: string): void {
     if (!this.colorMap.has(userId)) {
-      this.colorMap.set(userId, CURSOR_COLORS[this.colorIndex % CURSOR_COLORS.length]);
+      this.colorMap.set(userId, CURSOR_COLORS[this.colorIndex % CURSOR_COLORS.length]!);
       this.colorIndex++;
     }
   }

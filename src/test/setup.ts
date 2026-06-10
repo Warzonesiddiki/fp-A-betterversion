@@ -10,26 +10,27 @@ vi.mock('sql.js', () => {
     private tables = new Map<string, Map<string, string>>();
     run(sql: string, _params?: unknown[]) {
       const match = sql.match(/CREATE TABLE IF NOT EXISTS (\w+)/i);
-      if (match && !this.tables.has(match[1])) this.tables.set(match[1], new Map());
+      if (match && !this.tables.has(match[1]!)) this.tables.set(match[1]!, new Map());
       const insertMatch = sql.match(
         /INSERT OR REPLACE INTO (\w+) \(id, value\) VALUES \(\?, \?\)/i
       );
       if (insertMatch) {
-        const tbl = this.tables.get(insertMatch[1]);
-        if (tbl && _params && _params.length >= 2) tbl.set(String(_params[0]), String(_params[1]));
+        const tbl = this.tables.get(insertMatch[1]!);
+        if (tbl && _params && _params.length >= 2)
+          tbl.set(String(_params[0]!), String(_params[1]!));
       }
       const deleteMatch = sql.match(/DELETE FROM (\w+) WHERE id = \?/i);
       if (deleteMatch) {
-        const tbl = this.tables.get(deleteMatch[1]);
-        if (tbl && _params && _params.length >= 1) tbl.delete(String(_params[0]));
+        const tbl = this.tables.get(deleteMatch[1]!);
+        if (tbl && _params && _params.length >= 1) tbl.delete(String(_params[0]!));
       }
     }
     exec(sql: string, _params?: unknown[]) {
       const selMatch = sql.match(/SELECT value FROM (\w+) WHERE id = \?/i);
       if (selMatch) {
-        const tbl = this.tables.get(selMatch[1]);
+        const tbl = this.tables.get(selMatch[1]!);
         if (tbl && _params && _params.length >= 1) {
-          const val = tbl.get(String(_params[0]));
+          const val = tbl.get(String(_params[0]!));
           return val ? [{ columns: ['value'], values: [[val]] }] : [];
         }
       }

@@ -165,13 +165,13 @@ describe('TemplateLibrary', () => {
     it('should filter by industry SaaS', () => {
       const results = lib.getTemplatesByIndustry('SaaS');
       expect(results).toHaveLength(1);
-      expect(results[0].id).toBe('tpl-saas-metrics');
+      expect(results![0]!.id).toBe('tpl-saas-metrics');
     });
 
     it('should filter by industry Manufacturing', () => {
       const results = lib.getTemplatesByIndustry('Manufacturing');
       expect(results).toHaveLength(1);
-      expect(results[0].id).toBe('tpl-manufacturing');
+      expect(results![0]!.id).toBe('tpl-manufacturing');
     });
 
     it('should filter by industry Retail', () => {
@@ -197,7 +197,7 @@ describe('TemplateLibrary', () => {
     it('should filter by category', () => {
       const categories = lib.getAllCategories();
       if (categories.length > 0) {
-        const results = lib.getTemplatesByCategory(categories[0]);
+        const results = lib.getTemplatesByCategory(categories[0]!);
         expect(results.length).toBeGreaterThanOrEqual(1);
       }
     });
@@ -250,15 +250,15 @@ describe('TemplateLibrary', () => {
       const model1 = lib.instantiate('tpl-saas-metrics');
       const model2 = lib.instantiate('tpl-saas-metrics');
       if (model1.generatedDrivers.length > 0) {
-        model1.generatedDrivers[0].defaultValue = 999;
-        expect(model2.generatedDrivers[0].defaultValue).not.toBe(999);
+        model1!.generatedDrivers[0]!.defaultValue = 999;
+        expect(model2!.generatedDrivers[0]!.defaultValue).not.toBe(999);
       }
     });
 
     it('should apply driver overrides', () => {
       const tpl = lib.getTemplate('tpl-saas-metrics')!;
       if (tpl.drivers.length > 0) {
-        const driverId = tpl.drivers[0].id;
+        const driverId = tpl!.drivers[0]!.id;
         const model = lib.instantiate('tpl-saas-metrics', {
           [driverId]: 15,
         });

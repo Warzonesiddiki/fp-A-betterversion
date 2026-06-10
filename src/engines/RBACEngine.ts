@@ -106,8 +106,8 @@ export class RBACEngine {
     const roles = this.getUserRoles(userId);
     if (roles.length === 0) return null;
     return roles.reduce(
-      (highest, r) => (ROLE_HIERARCHY[r.role] > ROLE_HIERARCHY[highest] ? r.role : highest),
-      roles[0].role
+      (highest, r) => (ROLE_HIERARCHY[r.role] > ROLE_HIERARCHY[highest]! ? r.role : highest),
+      roles[0]!.role
     );
   }
 

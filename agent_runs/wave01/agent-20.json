@@ -1,0 +1,8 @@
+{
+  "agent": "agent-20",
+  "task": "Fix 58 errors in src/wasm/assembly/types.ts (f64/i32/bool not found) by excluding src/wasm/assembly/** from tsconfig.json",
+  "status": "success",
+  "totalTscErrorsBefore": 75,
+  "totalTscErrorsAfter": 13,
+  "notes": "Added top-level exclude ['src/wasm/assembly/**'] to tsconfig.json. These are AssemblyScript files (not regular TypeScript) and use AssemblyScript-only types like f64/i32/bool that tsc cannot resolve. wasm/assembly error count: 59 -> 0. Total tsc errors: 75 -> 13 (drop of 62; user expected ~58, the extra drop is from cascading 'Cannot find name' errors that disappeared once the file was excluded). Did not modify the wasm file itself."
+}

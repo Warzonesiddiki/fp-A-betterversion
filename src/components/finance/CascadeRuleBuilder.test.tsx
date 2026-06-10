@@ -149,6 +149,6 @@ describe('CascadeRuleBuilder', () => {
     // The form-level Add Rule button should be disabled when account is empty
     const addButtons = screen.getAllByText('Add Rule');
     // The second one is the form button
-    expect(addButtons[1]).toBeDisabled();
+    expect(addButtons[1]!).toBeDisabled();
   });
 });

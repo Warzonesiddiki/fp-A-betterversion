@@ -111,7 +111,7 @@ export default function BudgetVAReport() {
 
     topVariances.forEach((v) => {
       items.push({
-        label: v.accountName.split(' ')[0], // Short name
+        label: v.accountName.split(' ')[0]!, // Short name
         value: v.variance,
       });
     });
@@ -127,7 +127,7 @@ export default function BudgetVAReport() {
 
   const barChartData = useMemo(() => {
     return reportData.slice(0, 8).map((d) => ({
-      name: d.accountName.split(' ')[0],
+      name: d.accountName.split(' ')[0]!,
       Budget: d.budget,
       Actual: d.actual,
     }));
@@ -135,7 +135,7 @@ export default function BudgetVAReport() {
 
   const varianceData = useMemo<VarianceDataPoint[]>(() => {
     return reportData.slice(0, 8).map((d) => ({
-      name: d.accountName.split(' ')[0],
+      name: d.accountName.split(' ')[0]!,
       budget: d.budget,
       actual: d.actual,
     }));

@@ -29,7 +29,7 @@ export const MONTHS_FULL = [
 
 export const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
-export const QUARTER_MONTHS: Record<string, number[]> = {
+export const QUARTER_MONTHS: Record<'Q1' | 'Q2' | 'Q3' | 'Q4', number[]> = {
   Q1: [0, 1, 2],
   Q2: [3, 4, 5],
   Q3: [6, 7, 8],

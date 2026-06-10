@@ -56,11 +56,12 @@ export function ScenarioMerge({ scenarios, onMerge }: ScenarioMergeProps) {
 
   const computeMerge = useCallback((): MergedScenario => {
     if (selected.length === 0) throw new Error('No scenarios selected');
-    if (selected.length === 1) {
+    const first = selected[0];
+    if (selected.length === 1 && first) {
       return {
         name: mergedName,
-        metrics: { ...selected[0].calculatedMetrics },
-        sources: Object.fromEntries(METRICS.map((m) => [m.key, selected[0].id])),
+        metrics: { ...first.calculatedMetrics },
+        sources: Object.fromEntries(METRICS.map((m) => [m.key, first.id])),
         assumptions: {},
       };
     }

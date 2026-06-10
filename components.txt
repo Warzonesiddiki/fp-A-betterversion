@@ -1,0 +1,10 @@
+src/components/admin/DependencyGraph.tsx
+src/components/ai/AICopilotPanel.tsx
+src/components/ai/AnomalyHighlight.tsx
+src/components/ai/CopilotAlertsTab.tsx
+src/components/ai/CopilotChatTab.tsx
+src/components/ai/CopilotFormulaDisplay.tsx
+src/components/ai/CopilotInsightsTab.tsx
+src/components/ai/CopilotSidebar.tsx
+src/components/ai/NLQChat.tsx
+src/components/allocations/AllocationAuditTrail.tsx

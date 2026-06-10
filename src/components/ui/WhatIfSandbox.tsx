@@ -69,7 +69,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
     {
       id: 'scenario-1',
       name: 'Optimistic',
-      color: SCENARIO_COLORS[0],
+      color: SCENARIO_COLORS[0]!,
       drivers: [
         {
           id: 'd1',
@@ -94,7 +94,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
     {
       id: 'scenario-2',
       name: 'Pessimistic',
-      color: SCENARIO_COLORS[1],
+      color: SCENARIO_COLORS[1]!,
       drivers: [
         {
           id: 'd3',
@@ -138,7 +138,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
     const newScenario: ScenarioDefinition = {
       id: newId,
       name: `Scenario ${scenarios.length + 1}`,
-      color: SCENARIO_COLORS[colorIndex],
+      color: SCENARIO_COLORS[colorIndex]!,
       drivers: [],
       metrics: null,
       isLocked: false,
@@ -276,8 +276,8 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                 </span>
                 <span className="font-medium text-[var(--text-primary)] dark:text-gray-100">
                   {key.includes('Margin')
-                    ? `${baseMetrics[key].toFixed(1)}%`
-                    : formatCurrency(baseMetrics[key])}
+                    ? `${baseMetrics[key]!.toFixed(1)}%`
+                    : formatCurrency(baseMetrics[key]!)}
                 </span>
               </div>
             ))}

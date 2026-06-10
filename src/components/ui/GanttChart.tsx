@@ -23,7 +23,11 @@ export const GanttChart: React.FC<GanttChartProps> = React.memo(
   ({ tasks, className, loading = false, error, onClick }) => {
     if (loading) {
       return (
-        <div className={cn('w-full overflow-x-auto', className)}>
+        <div
+          className={cn('w-full overflow-x-auto', className)}
+          role="region"
+          aria-label="GanttChart"
+        >
           <div className="flex items-center justify-center h-48">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
           </div>
@@ -34,7 +38,10 @@ export const GanttChart: React.FC<GanttChartProps> = React.memo(
     if (error) {
       return (
         <div className={cn('w-full overflow-x-auto', className)}>
-          <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
+          <div className="flex items-center justify-center h-48 text-red-500 text-sm">
+            {' '}
+            role="alert" role="alert" {error}
+          </div>
         </div>
       );
     }

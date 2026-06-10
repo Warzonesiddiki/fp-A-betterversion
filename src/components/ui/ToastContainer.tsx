@@ -22,7 +22,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({ position = 'top-
     <div
       className={cn(
         'fixed z-[100] flex flex-col gap-3 w-full max-w-sm pointer-events-none',
-        positionClasses[position]
+        positionClasses[position]!
       )}
       role="status"
       aria-live="polite"

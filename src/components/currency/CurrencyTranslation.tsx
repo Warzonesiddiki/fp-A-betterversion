@@ -125,7 +125,7 @@ export function CurrencyTranslation() {
   }, [rows]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="region" aria-label="CurrencyTranslation">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">ASC 830 Currency Translation</h2>

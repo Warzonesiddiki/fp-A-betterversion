@@ -57,8 +57,8 @@ export class ReconciliationEngine {
     const mapA = new Map<unknown, DataRow>();
     const mapB = new Map<unknown, DataRow>();
 
-    for (const row of sourceA) mapA.set(row[key], row);
-    for (const row of sourceB) mapB.set(row[key], row);
+    for (const row of sourceA) mapA.set(row[key]!, row);
+    for (const row of sourceB) mapB.set(row[key]!, row);
 
     const matched: MatchedPair[] = [];
     const unmatchedA: DataRow[] = [];
@@ -79,8 +79,8 @@ export class ReconciliationEngine {
             discrepancies.push({
               key: String(k),
               field,
-              valueA: a[field],
-              valueB: b[field],
+              valueA: a[field]!,
+              valueB: b[field]!,
               difference: Math.abs(valA - valB),
               withinTolerance: Math.abs(valA - valB) < 0.01,
             });
@@ -127,8 +127,8 @@ export class ReconciliationEngine {
             discrepancies.push({
               key: pair.key,
               field,
-              valueA: pair.recordA[field],
-              valueB: pair.recordB[field],
+              valueA: pair.recordA[field]!,
+              valueB: pair.recordB[field]!,
               difference: diff,
               withinTolerance: diff <= tolerance,
             });

@@ -82,7 +82,7 @@ function topologicalSort(cells: Set<string>, graph: Map<string, Set<string>>): s
   let head = 0;
 
   while (head < queue.length) {
-    const current = queue[head++];
+    const current = queue[head++]!;
     result.push(current);
 
     // Find cells that depend on current
@@ -109,7 +109,7 @@ function getAffectedCells(startCell: string, reverseGraph: Map<string, Set<strin
   let head = 0;
 
   while (head < queue.length) {
-    const current = queue[head++];
+    const current = queue[head++]!;
     if (affected.has(current)) continue;
     affected.add(current);
 

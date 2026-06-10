@@ -72,7 +72,7 @@ export function CellComments({
         <button
           type="button"
           onClick={onClose}
-          className="rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+          className="rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close comments"
         >
           <X className="h-4 w-4" />
@@ -125,7 +125,7 @@ export function CellComments({
             type="button"
             onClick={handleAddComment}
             disabled={!newComment.trim()}
-            className="rounded-lg bg-[var(--accent-primary)] px-3 py-2 text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="rounded-lg bg-[var(--accent-primary)] px-3 py-2 text-white transition-opacity hover:opacity-90 disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             aria-label="Add comment"
           >
             <Send className="h-4 w-4" />

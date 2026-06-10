@@ -74,7 +74,7 @@ export function ScenarioComparison({
   );
 
   const baseScenario = useMemo(
-    () => selected.find((s) => s.type === 'Base') ?? selected[0],
+    () => selected.find((s) => s.type === 'Base') ?? selected[0]!,
     [selected]
   );
 

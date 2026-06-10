@@ -47,7 +47,7 @@ describe('DebtScheduleEngine', () => {
         amortizationType: 'fully_amortizing',
       });
       const lastEntry = result.schedule[result.schedule.length - 1];
-      expect(lastEntry.endingBalance).toBeCloseTo(0, 0);
+      expect(lastEntry!.endingBalance).toBeCloseTo(0, 0);
     });
 
     it('should track cumulative interest', () => {
@@ -63,8 +63,8 @@ describe('DebtScheduleEngine', () => {
         amortizationType: 'fully_amortizing',
       });
       const lastEntry = result.schedule[result.schedule.length - 1];
-      expect(lastEntry.cumulativeInterest).toBeGreaterThan(0);
-      expect(result.totalInterest).toBeCloseTo(lastEntry.cumulativeInterest, 0);
+      expect(lastEntry!.cumulativeInterest).toBeGreaterThan(0);
+      expect(result.totalInterest).toBeCloseTo(lastEntry!.cumulativeInterest, 0);
     });
 
     it('should have consistent payments', () => {

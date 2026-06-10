@@ -405,6 +405,22 @@ const CLIPBOARD: ShortcutDef[] = [
     category: 'Clipboard',
     action: 'copyCellAbove',
   },
+  {
+    id: uid(),
+    key: 'd',
+    ctrl: true,
+    description: 'Fill down (copy value from top)',
+    category: 'Editing',
+    action: 'fillDown',
+  },
+  {
+    id: uid(),
+    key: 'r',
+    ctrl: true,
+    description: 'Fill right (copy value from left)',
+    category: 'Editing',
+    action: 'fillRight',
+  },
 ];
 
 const FORMATTING: ShortcutDef[] = [

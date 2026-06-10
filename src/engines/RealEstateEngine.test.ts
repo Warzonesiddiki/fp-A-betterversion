@@ -201,9 +201,9 @@ describe('RealEstateEngine', () => {
       ];
       const result = RealEstateEngine.getPropertyBreakdown(entries);
       expect(result).toHaveLength(2);
-      expect(result[0].purchasePrice).toBe(10000000);
-      expect(result[0].currentVal).toBe(12000000);
-      expect(result[0].name).toBe('Tower A');
+      expect(result![0]!.purchasePrice).toBe(10000000);
+      expect(result![0]!.currentVal).toBe(12000000);
+      expect(result![0]!.name).toBe('Tower A');
     });
 
     it('should assign status based on cost basis threshold', () => {
@@ -233,7 +233,7 @@ describe('RealEstateEngine', () => {
     it('should use accountName from first entry for property name', () => {
       const entries = [gl('1501', 10000000, { entityId: 'prop-1', accountName: 'Skyline Tower' })];
       const result = RealEstateEngine.getPropertyBreakdown(entries);
-      expect(result[0].name).toBe('Skyline Tower');
+      expect(result![0]!.name).toBe('Skyline Tower');
     });
   });
 });

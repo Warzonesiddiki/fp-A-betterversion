@@ -18,7 +18,7 @@ export function FormulaAutocomplete({ value, show, onSelect, onClose }: FormulaA
     if (!value.startsWith('=')) return '';
     const afterEquals = value.slice(1);
     const match = afterEquals.match(/([A-Z_]+)$/i);
-    return match ? match[1].toUpperCase() : '';
+    return match ? match[1]!.toUpperCase() : '';
   }, [value]);
 
   const filteredFunctions = useMemo(() => {
@@ -52,6 +52,25 @@ export function FormulaAutocomplete({ value, show, onSelect, onClose }: FormulaA
     },
     [onSelect, onClose]
   );
+
+  useEffect(() => {
+    const handleKey = (e: CustomEvent<string>) => {
+      const key = e.detail;
+      if (key === 'ArrowDown') {
+        setSelectedIndex((prev) => Math.min(prev + 1, filteredFunctions.length - 1));
+      } else if (key === 'ArrowUp') {
+        setSelectedIndex((prev) => Math.max(prev - 1, 0));
+      } else if (key === 'Enter' || key === 'Tab') {
+        if (filteredFunctions[selectedIndex]!) {
+          handleSelect(filteredFunctions[selectedIndex]!);
+        }
+      } else if (key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('formula-autocomplete-key', handleKey as EventListener);
+    return () => window.removeEventListener('formula-autocomplete-key', handleKey as EventListener);
+  }, [filteredFunctions, selectedIndex, handleSelect, onClose]);
 
   if (!show || filteredFunctions.length === 0) return null;
 
@@ -131,7 +150,7 @@ export function FormulaAutocomplete({ value, show, onSelect, onClose }: FormulaA
             Parameters
           </div>
           <div className="flex flex-wrap gap-1">
-            {filteredFunctions[selectedIndex].params.map((param, i) => (
+            {filteredFunctions[selectedIndex]!.params.map((param, i) => (
               <span
                 key={param}
                 className={cn(

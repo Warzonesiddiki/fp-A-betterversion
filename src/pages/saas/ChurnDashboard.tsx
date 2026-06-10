@@ -78,9 +78,9 @@ export default function ChurnDashboard() {
     const latest = MONTHLY_CHURN[MONTHLY_CHURN.length - 1];
     const totalAtRiskMRR = AT_RISK.reduce((s, c) => s + c.mrr, 0);
     return {
-      customerChurn: latest.customerChurn,
-      revenueChurn: latest.revenueChurn,
-      saveRate: latest.saveRate,
+      customerChurn: latest!.customerChurn,
+      revenueChurn: latest!.revenueChurn,
+      saveRate: latest!.saveRate,
       atRiskCount: AT_RISK.length,
       totalAtRiskMRR,
     };

@@ -30,26 +30,26 @@ describe('analyticsStore', () => {
   it('should add a chart', () => {
     useAnalyticsStore.getState().addChart({ name: 'Test Chart', type: 'bar' } as any);
     expect(useAnalyticsStore.getState().charts).toHaveLength(1);
-    expect(useAnalyticsStore.getState().charts[0].name).toBe('Test Chart');
+    expect(useAnalyticsStore!.getState().charts[0]!.name).toBe('Test Chart');
   });
 
   it('should update a chart', () => {
     useAnalyticsStore.getState().addChart({ name: 'Chart 1', type: 'bar' } as any);
-    const id = useAnalyticsStore.getState().charts[0].id;
+    const id = useAnalyticsStore!.getState().charts[0]!.id;
     useAnalyticsStore.getState().updateChart(id, { name: 'Updated' });
-    expect(useAnalyticsStore.getState().charts[0].name).toBe('Updated');
+    expect(useAnalyticsStore!.getState().charts[0]!.name).toBe('Updated');
   });
 
   it('should remove a chart', () => {
     useAnalyticsStore.getState().addChart({ name: 'Chart 1', type: 'bar' } as any);
-    const id = useAnalyticsStore.getState().charts[0].id;
+    const id = useAnalyticsStore!.getState().charts[0]!.id;
     useAnalyticsStore.getState().removeChart(id);
     expect(useAnalyticsStore.getState().charts).toHaveLength(0);
   });
 
   it('should clear selected chart when removed', () => {
     useAnalyticsStore.getState().addChart({ name: 'Chart 1', type: 'bar' } as any);
-    const id = useAnalyticsStore.getState().charts[0].id;
+    const id = useAnalyticsStore!.getState().charts[0]!.id;
     useAnalyticsStore.getState().setSelectedChart(id);
     useAnalyticsStore.getState().removeChart(id);
     expect(useAnalyticsStore.getState().selectedChartId).toBeNull();

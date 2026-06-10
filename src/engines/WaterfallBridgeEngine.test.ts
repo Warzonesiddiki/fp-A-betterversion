@@ -19,9 +19,9 @@ describe('WaterfallBridgeEngine', () => {
         'End'
       );
       expect(bridge.items.length).toBeGreaterThan(0);
-      expect(bridge.items[0].label).toBe('Start');
-      expect(bridge.items[0].value).toBe(1000);
-      expect(bridge.items[bridge.items.length - 1].label).toBe('End');
+      expect(bridge!.items[0]!.label).toBe('Start');
+      expect(bridge!.items[0]!.value).toBe(1000);
+      expect(bridge!.items[bridge.items.length - 1]!.label).toBe('End');
     });
 
     it('should calculate correct totals', () => {
@@ -43,8 +43,8 @@ describe('WaterfallBridgeEngine', () => {
     it('should handle empty components', () => {
       const bridge = WaterfallBridgeEngine.build('Start', 1000, [], 'End');
       expect(bridge.items).toHaveLength(2);
-      expect(bridge.items[0].type).toBe('start');
-      expect(bridge.items[1].type).toBe('end');
+      expect(bridge!.items[0]!.type).toBe('start');
+      expect(bridge!.items[1]!.type).toBe('end');
       expect(bridge.endValue).toBe(1000);
     });
   });

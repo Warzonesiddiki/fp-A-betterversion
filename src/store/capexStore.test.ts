@@ -54,7 +54,7 @@ describe('capexStore', () => {
       irr: 10,
     });
     expect(useCapExStore.getState().projects).toHaveLength(1);
-    expect(useCapExStore.getState().projects[0].name).toBe('Office Renovation');
+    expect(useCapExStore!.getState().projects[0]!.name).toBe('Office Renovation');
   });
 
   it('should update a project', () => {
@@ -72,8 +72,8 @@ describe('capexStore', () => {
     });
     useCapExStore.getState().updateProject('p3', { status: 'completed', actual: 195000 });
     const updated = useCapExStore.getState().projects[0];
-    expect(updated.status).toBe('completed');
-    expect(updated.actual).toBe(195000);
+    expect(updated!.status).toBe('completed');
+    expect(updated!.actual).toBe(195000);
   });
 
   it('should not update non-existent project', () => {
@@ -90,7 +90,7 @@ describe('capexStore', () => {
       irr: 5,
     });
     useCapExStore.getState().updateProject('nonexistent', { status: 'completed' });
-    expect(useCapExStore.getState().projects[0].status).toBe('planned');
+    expect(useCapExStore!.getState().projects[0]!.status).toBe('planned');
   });
 
   it('should remove a project', () => {

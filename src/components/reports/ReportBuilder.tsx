@@ -97,16 +97,22 @@ export function ReportBuilder({
   const undo = useCallback(() => {
     if (historyIndex > 0) {
       const next = historyIndex - 1;
-      setHistoryIndex(next);
-      setReport(history[next]);
+      const nextReport = history[next];
+      if (nextReport) {
+        setHistoryIndex(next);
+        setReport(nextReport);
+      }
     }
   }, [historyIndex, history]);
 
   const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const next = historyIndex + 1;
-      setHistoryIndex(next);
-      setReport(history[next]);
+      const nextReport = history[next];
+      if (nextReport) {
+        setHistoryIndex(next);
+        setReport(nextReport);
+      }
     }
   }, [historyIndex, history]);
 
@@ -502,7 +508,7 @@ export function ReportBuilder({
                       </span>
                       {row.grouping && <Layers className="h-3 w-3 text-slate-500 flex-shrink-0" />}
                       <button
-                        className="text-slate-500 hover:text-red-400 flex-shrink-0"
+                        className="text-slate-500 hover:text-red-400 flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           removeRow(row.id);
@@ -575,7 +581,7 @@ export function ReportBuilder({
                         </span>
                         <span className="text-slate-300">{col.header}</span>
                         <button
-                          className="text-slate-500 hover:text-red-400 ml-1"
+                          className="text-slate-500 hover:text-red-400 ml-1 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             removeColumn(col.id);
@@ -597,14 +603,14 @@ export function ReportBuilder({
                 {selectedRowIndex !== null && report.layout.rows[selectedRowIndex] && (
                   <div className="space-y-2">
                     <p className="text-xs font-medium text-slate-400">
-                      Row {selectedRowIndex + 1} — {report.layout.rows[selectedRowIndex].type}
+                      Row {selectedRowIndex + 1} — {report.layout.rows[selectedRowIndex]!.type}
                     </p>
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={
                           (
-                            report.layout.rows[selectedRowIndex].cells.find(
+                            report.layout.rows[selectedRowIndex]!.cells.find(
                               (_, ci) => report.layout.columns[ci]?.type === 'label'
                             )?.content as { content?: { text?: string } }
                           )?.content?.text ?? ''
@@ -614,7 +620,7 @@ export function ReportBuilder({
                         className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
                       />
                       <select
-                        value={report.layout.rows[selectedRowIndex].type}
+                        value={report.layout.rows[selectedRowIndex]!.type}
                         onChange={(e) => {
                           const newType = e.target.value as RowType;
                           updateLayout((layout) => {
@@ -635,39 +641,42 @@ export function ReportBuilder({
                     </div>
                   </div>
                 )}
-                {selectedColIndex !== null && report.layout.columns[selectedColIndex] && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-slate-400">
-                      Column {selectedColIndex + 1} — {report.layout.columns[selectedColIndex].type}
-                    </p>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={report.layout.columns[selectedColIndex].header}
-                        onChange={(e) => updateColumnHeader(selectedColIndex, e.target.value)}
-                        placeholder="Column header..."
-                        className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
-                      />
-                      <input
-                        type="number"
-                        value={report.layout.columns[selectedColIndex].width}
-                        onChange={(e) => {
-                          const width = parseInt(e.target.value, 10) || 100;
-                          updateLayout((layout) =>
-                            ReportBuilderEngine.setColumnWidth(
-                              layout,
-                              report.layout.columns[selectedColIndex].id,
-                              width
-                            )
-                          );
-                        }}
-                        className="w-20 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
-                        min={40}
-                        aria-label="Column width"
-                      />
+                {selectedColIndex !== null && report.layout.columns[selectedColIndex] && (() => {
+                  const col = report.layout.columns[selectedColIndex]!;
+                  return (
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-slate-400">
+                        Column {selectedColIndex + 1} — {col.type}
+                      </p>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={col.header}
+                          onChange={(e) => updateColumnHeader(selectedColIndex, e.target.value)}
+                          placeholder="Column header..."
+                          className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                        />
+                        <input
+                          type="number"
+                          value={col.width}
+                          onChange={(e) => {
+                            const width = parseInt(e.target.value, 10) || 100;
+                            updateLayout((layout) =>
+                              ReportBuilderEngine.setColumnWidth(
+                                layout,
+                                col.id,
+                                width
+                              )
+                            );
+                          }}
+                          className="w-20 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                          min={40}
+                          aria-label="Column width"
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             )}
           </div>

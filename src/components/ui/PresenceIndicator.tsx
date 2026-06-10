@@ -21,7 +21,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
     <div
       className={cn(
         'w-2.5 h-2.5 rounded-full ring-2 ring-[var(--bg-surface)]',
-        statusColors[status],
+        statusColors[status]!,
         className
       )}
       aria-label={`Status: ${status}`}

@@ -62,7 +62,9 @@ export class DrillThroughEngine {
   }
 
   getCurrentLevel(): DrillLevel | null {
-    return this.currentPath.length > 0 ? this.currentPath[this.currentPath.length - 1].level : null;
+    return this.currentPath.length > 0
+      ? this!.currentPath[this.currentPath.length - 1]!.level
+      : null;
   }
 
   canDrillDown(context: DrillContext): boolean {
@@ -125,7 +127,7 @@ export class DrillThroughEngine {
       const node = graph.nodes.find((n) => n.id === id);
       if (node) {
         crumbs.push({
-          level: LEVEL_ORDER[depth],
+          level: LEVEL_ORDER[depth]!,
           label: node.name,
           context: { ...context, extra: { ...context.extra, nodeId: id } },
         });
@@ -144,7 +146,7 @@ export class DrillThroughEngine {
 
   private getNextLevel(current: DrillLevel): DrillLevel | null {
     const idx = LEVEL_ORDER.indexOf(current);
-    return idx < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[idx + 1] : null;
+    return idx < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[idx + 1] ?? null : null;
   }
 
   private buildLabel(level: DrillLevel, ctx: DrillContext): string {

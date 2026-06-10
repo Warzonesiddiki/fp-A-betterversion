@@ -128,7 +128,7 @@ export default function RealEstateDashboardPage() {
         breakdown
           .filter((p) => p.status === (i === 0 ? 'Core' : 'Value-Add'))
           .reduce((acc, p) => acc + p.currentVal, 0) || 20000000 / (i + 1),
-      color: colors[i],
+      color: colors[i]!,
     }));
   }, [entries]);
 

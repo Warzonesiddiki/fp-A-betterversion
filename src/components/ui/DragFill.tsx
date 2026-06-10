@@ -31,19 +31,19 @@ function detectFillPattern(values: (number | string)[]): FillMode {
   // Check for arithmetic series (constant difference)
   const diffs: number[] = [];
   for (let i = 1; i < nums.length; i++) {
-    diffs.push(nums[i] - nums[i - 1]);
+    diffs.push(nums[i]! - nums[i - 1]!);
   }
-  const allSameDiff = diffs.every((d) => Math.abs(d - diffs[0]) < 0.0001);
+  const allSameDiff = diffs.every((d) => Math.abs(d - diffs[0]!) < 0.0001);
   if (allSameDiff && diffs[0] !== 0) return 'linear';
 
   // Check for geometric series (constant ratio)
   const ratios: number[] = [];
   for (let i = 1; i < nums.length; i++) {
     if (nums[i - 1] !== 0) {
-      ratios.push(nums[i] / nums[i - 1]);
+      ratios.push(nums[i]! / nums[i - 1]!);
     }
   }
-  const allSameRatio = ratios.length > 0 && ratios.every((r) => Math.abs(r - ratios[0]) < 0.0001);
+  const allSameRatio = ratios.length > 0 && ratios.every((r) => Math.abs(r - ratios[0]!) < 0.0001);
   if (allSameRatio && ratios[0] !== 1) return 'growth';
 
   return 'copy';
@@ -58,30 +58,30 @@ function generateFillValues(
 
   if (mode === 'copy') {
     for (let i = 0; i < count; i++) {
-      result.push(values[i % values.length]);
+      result.push(values[i % values.length]!);
     }
   } else if (mode === 'linear' && values.length >= 2) {
     const nums = values.filter((v): v is number => typeof v === 'number');
     if (nums.length >= 2) {
-      const diff = nums[nums.length - 1] - nums[nums.length - 2];
+      const diff = nums[nums.length - 1]! - nums[nums.length - 2]!;
       const lastNum = nums[nums.length - 1];
       for (let i = 0; i < count; i++) {
-        result.push(lastNum + diff * (i + 1));
+        result.push(lastNum! + diff * (i + 1));
       }
     }
   } else if (mode === 'growth' && values.length >= 2) {
     const nums = values.filter((v): v is number => typeof v === 'number');
     if (nums.length >= 2 && nums[nums.length - 2] !== 0) {
-      const ratio = nums[nums.length - 1] / nums[nums.length - 2];
+      const ratio = nums[nums.length - 1]! / nums[nums.length - 2]!;
       const lastNum = nums[nums.length - 1];
       for (let i = 0; i < count; i++) {
-        result.push(lastNum * Math.pow(ratio, i + 1));
+        result.push(lastNum! * Math.pow(ratio, i + 1));
       }
     }
   } else {
     // Fallback to copy
     for (let i = 0; i < count; i++) {
-      result.push(values[i % values.length]);
+      result.push(values[i % values.length]!);
     }
   }
 
@@ -195,7 +195,7 @@ export function DragFill({
             Fill Options
           </div>
           <button
-            className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2"
+            className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             onClick={() => handleModeSelect('copy')}
           >
             <span className="w-4 h-4 rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[9px] font-mono">
@@ -205,7 +205,7 @@ export function DragFill({
           </button>
           {pattern === 'linear' && (
             <button
-              className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2"
+              className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               onClick={() => handleModeSelect('linear')}
             >
               <span className="w-4 h-4 rounded bg-blue-100 flex items-center justify-center text-[9px] font-mono text-blue-600">
@@ -216,7 +216,7 @@ export function DragFill({
           )}
           {pattern === 'growth' && (
             <button
-              className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2"
+              className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               onClick={() => handleModeSelect('growth')}
             >
               <span className="w-4 h-4 rounded bg-green-100 flex items-center justify-center text-[9px] font-mono fin-positive">
@@ -226,7 +226,7 @@ export function DragFill({
             </button>
           )}
           <button
-            className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2"
+            className="w-full px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-hover)] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             onClick={() => handleModeSelect('series')}
           >
             <span className="w-4 h-4 rounded bg-amber-100 flex items-center justify-center text-[9px] font-mono text-amber-600">

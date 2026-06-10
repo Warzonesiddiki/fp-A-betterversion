@@ -32,7 +32,7 @@ export const ActivityFeed = memo(function ActivityFeed({ maxItems = 10 }: Activi
   }
 
   return (
-    <div className="space-y-0">
+    <div className="space-y-0" role="region" aria-label="ActivityFeed">
       {activities.map((item: ActivityItem, i: number) => (
         <div
           key={item.id || i}

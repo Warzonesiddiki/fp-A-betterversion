@@ -41,7 +41,7 @@ function createEntry(
 }
 
 function emit(entry: LogEntry): void {
-  if (LOG_LEVELS[entry.level] < LOG_LEVELS[minLevel]) return;
+  if (LOG_LEVELS[entry.level] < LOG_LEVELS[minLevel]!) return;
 
   logBuffer.push(entry);
   if (logBuffer.length > MAX_BUFFER) logBuffer.shift();

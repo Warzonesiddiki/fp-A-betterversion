@@ -42,7 +42,7 @@ describe('insuranceStore', () => {
       effective: '2026-07-01',
     });
     expect(useInsuranceStore.getState().rateFilings).toHaveLength(1);
-    expect(useInsuranceStore.getState().rateFilings[0].line).toBe('Homeowners');
+    expect(useInsuranceStore!.getState().rateFilings[0]!.line).toBe('Homeowners');
   });
 
   it('should update a rate filing', () => {
@@ -56,7 +56,7 @@ describe('insuranceStore', () => {
       effective: '2026-08-01',
     });
     useInsuranceStore.getState().updateRateFiling('RF-002', { status: 'Approved' });
-    expect(useInsuranceStore.getState().rateFilings[0].status).toBe('Approved');
+    expect(useInsuranceStore!.getState().rateFilings[0]!.status).toBe('Approved');
   });
 
   it('should not update non-existent filing', () => {
@@ -70,6 +70,6 @@ describe('insuranceStore', () => {
       effective: '2026-09-01',
     });
     useInsuranceStore.getState().updateRateFiling('RF-999', { status: 'Approved' });
-    expect(useInsuranceStore.getState().rateFilings[0].status).toBe('Pending');
+    expect(useInsuranceStore!.getState().rateFilings[0]!.status).toBe('Pending');
   });
 });

@@ -48,7 +48,7 @@ describe('logisticsStore', () => {
       eta: '2026-01-15',
     });
     expect(useLogisticsStore.getState().shipments).toHaveLength(1);
-    expect(useLogisticsStore.getState().shipments[0].carrier).toBe('Hapag-Lloyd');
+    expect(useLogisticsStore!.getState().shipments[0]!.carrier).toBe('Hapag-Lloyd');
   });
 
   it('should update a shipment', () => {
@@ -62,7 +62,7 @@ describe('logisticsStore', () => {
       eta: '2026-03-01',
     });
     useLogisticsStore.getState().updateShipment('s3', { status: 'Delivered' });
-    expect(useLogisticsStore.getState().shipments[0].status).toBe('Delivered');
+    expect(useLogisticsStore!.getState().shipments[0]!.status).toBe('Delivered');
   });
 
   it('should not update non-existent shipment', () => {
@@ -76,7 +76,7 @@ describe('logisticsStore', () => {
       eta: '2026-01-01',
     });
     useLogisticsStore.getState().updateShipment('nonexistent', { status: 'Delivered' });
-    expect(useLogisticsStore.getState().shipments[0].status).toBe('In Transit');
+    expect(useLogisticsStore!.getState().shipments[0]!.status).toBe('In Transit');
   });
 
   it('should remove a shipment', () => {

@@ -117,7 +117,7 @@ describe('ConditionalFormattingEngine', () => {
       visualType: 'backgroundColor',
     };
     const reordered = reorderRules([r1, r2]);
-    expect(reordered[0].name).toBe('Second');
+    expect(reordered![0]!.name).toBe('Second');
   });
 
   it('should evaluate multiple rules and return highest priority match', () => {

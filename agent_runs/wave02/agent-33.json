@@ -1,0 +1,308 @@
+{
+  "agent": "agent-33",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T04027",
+      "cat": "perf",
+      "title": "CellProtectionEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CellProtectionEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04031",
+      "cat": "perf",
+      "title": "CellAuditTrailEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CellAuditTrailEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04035",
+      "cat": "perf",
+      "title": "CellCommentEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for CellCommentEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04039",
+      "cat": "perf",
+      "title": "ConditionalFormattingEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ConditionalFormattingEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04043",
+      "cat": "perf",
+      "title": "PivotTableEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for PivotTableEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04047",
+      "cat": "perf",
+      "title": "GroupOutlineEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for GroupOutlineEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04051",
+      "cat": "perf",
+      "title": "FreezePanesEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for FreezePanesEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04055",
+      "cat": "perf",
+      "title": "NamedRangeEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for NamedRangeEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04059",
+      "cat": "perf",
+      "title": "ArrayFormulaEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ArrayFormulaEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04063",
+      "cat": "perf",
+      "title": "ExcelKeyboardEngine Allocation Audit 100K ops",
+      "spec": "Perfection pass for ExcelKeyboardEngine: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04067",
+      "cat": "perf",
+      "title": "ExcelKeyboardShortcuts Allocation Audit 100K ops",
+      "spec": "Perfection pass for ExcelKeyboardShortcuts: Zero-copy where possible. Reuse typed arrays. No hidden quadratic in hot path.."
+    },
+    {
+      "id": "T04202",
+      "cat": "perf",
+      "title": "accounting page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in accounting optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04206",
+      "cat": "perf",
+      "title": "admin page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in admin optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04210",
+      "cat": "perf",
+      "title": "ai page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in ai optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04214",
+      "cat": "perf",
+      "title": "analytics page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in analytics optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04218",
+      "cat": "perf",
+      "title": "audit page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in audit optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04222",
+      "cat": "perf",
+      "title": "auth page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in auth optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04226",
+      "cat": "perf",
+      "title": "banking page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in banking optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04230",
+      "cat": "perf",
+      "title": "bonds page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in bonds optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04234",
+      "cat": "perf",
+      "title": "budgets page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in budgets optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04238",
+      "cat": "perf",
+      "title": "capex page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in capex optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04242",
+      "cat": "perf",
+      "title": "cash page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in cash optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04246",
+      "cat": "perf",
+      "title": "charts page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in charts optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04250",
+      "cat": "perf",
+      "title": "collaboration page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in collaboration optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04254",
+      "cat": "perf",
+      "title": "consolidation page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in consolidation optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04258",
+      "cat": "perf",
+      "title": "construction page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in construction optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04262",
+      "cat": "perf",
+      "title": "credit page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in credit optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04266",
+      "cat": "perf",
+      "title": "currency page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in currency optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04270",
+      "cat": "perf",
+      "title": "dashboard page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in dashboard optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04274",
+      "cat": "perf",
+      "title": "data page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in data optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04278",
+      "cat": "perf",
+      "title": "education page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in education optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04282",
+      "cat": "perf",
+      "title": "energy page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in energy optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04286",
+      "cat": "perf",
+      "title": "esg page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in esg optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04290",
+      "cat": "perf",
+      "title": "forecasts page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in forecasts optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04294",
+      "cat": "perf",
+      "title": "government page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in government optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04298",
+      "cat": "perf",
+      "title": "healthcare page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in healthcare optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04302",
+      "cat": "perf",
+      "title": "insurance page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in insurance optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04306",
+      "cat": "perf",
+      "title": "lease page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in lease optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04310",
+      "cat": "perf",
+      "title": "logistics page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in logistics optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04314",
+      "cat": "perf",
+      "title": "manufacturing page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in manufacturing optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04318",
+      "cat": "perf",
+      "title": "onboarding page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in onboarding optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04322",
+      "cat": "perf",
+      "title": "plugins page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in plugins optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04326",
+      "cat": "perf",
+      "title": "realestate page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in realestate optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04330",
+      "cat": "perf",
+      "title": "reports page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in reports optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04334",
+      "cat": "perf",
+      "title": "retail page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in retail optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04338",
+      "cat": "perf",
+      "title": "revenue page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in revenue optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04342",
+      "cat": "perf",
+      "title": "saas page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in saas optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04346",
+      "cat": "perf",
+      "title": "scenarios page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in scenarios optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04350",
+      "cat": "perf",
+      "title": "sector page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in sector optimized. Critical CSS inlined."
+    },
+    {
+      "id": "T04354",
+      "cat": "perf",
+      "title": "sectors page LCP < 2.5s",
+      "spec": "Largest Contentful Paint in sectors optimized. Critical CSS inlined."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

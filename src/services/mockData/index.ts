@@ -875,7 +875,7 @@ for (const [code, data] of Object.entries(_seedData)) {
 
 // Add summary accounts (calculated)
 for (const code of ['4000', '5000', '6000', '7000', '8000', '8100', '8200']) {
-  if (!MONTHLY_BUDGET[code]) {
+  if (!MONTHLY_BUDGET[code]!) {
     MONTHLY_BUDGET[code] = Array.from({ length: 12 }, () => 0);
     MONTHLY_ACTUALS[code] = Array.from({ length: 12 }, () => 0);
   }
@@ -959,7 +959,7 @@ export function computeVarianceAnalysis(
     actualTotal += a;
     monthlyBreakdown.push({
       month: m,
-      monthName: monthNames[m - 1],
+      monthName: monthNames[m - 1]!,
       budget: b,
       actual: a,
       variance: v,

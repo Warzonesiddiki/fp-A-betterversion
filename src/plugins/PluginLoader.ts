@@ -89,7 +89,7 @@ export class PluginLoader {
       const parse = (v: string) => v.replace(/^v/, '').split('.').map(Number);
       const cur = parse(CURRENT_VERSION);
       const max = parse(manifest.maxFinPlanVersion);
-      if (cur[0] > max[0] || (cur[0] === max[0] && cur[1] > max[1])) {
+      if (cur![0]! > max![0]! || (cur[0] === max[0] && cur![1]! > max![1]!)) {
         errors.push(
           `Requires FinPlan <= ${manifest.maxFinPlanVersion}, current: ${CURRENT_VERSION}`
         );

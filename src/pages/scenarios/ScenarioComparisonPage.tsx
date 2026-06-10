@@ -75,7 +75,7 @@ export function ScenarioComparisonPage() {
   );
 
   const baseScenario = useMemo(
-    () => selectedScenarios.find((s) => s.type === 'Base') ?? selectedScenarios[0],
+    () => selectedScenarios.find((s) => s.type === 'Base') ?? selectedScenarios[0]!,
     [selectedScenarios]
   );
 
@@ -92,8 +92,8 @@ export function ScenarioComparisonPage() {
   const barMetric = METRICS[0];
   const barMaxValue = useMemo(
     () =>
-      Math.max(1, ...selectedScenarios.map((s) => Math.abs(s.calculatedMetrics[barMetric.key]))),
-    [selectedScenarios, barMetric.key]
+      Math.max(1, ...selectedScenarios.map((s) => Math.abs(s.calculatedMetrics[barMetric!.key]))),
+    [selectedScenarios, barMetric!.key]
   );
 
   if (scenarios.length === 0) {

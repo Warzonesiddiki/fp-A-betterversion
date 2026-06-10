@@ -17,7 +17,7 @@ function getApiKey(): string {
       'NIM API keys not configured. Set VITE_NIM_API_KEY_1 and/or VITE_NIM_API_KEY_2 in .env'
     );
   }
-  const key = keys[activeKeyIndex % keys.length];
+  const key = keys[activeKeyIndex % keys.length]!;
   activeKeyIndex++;
   return key;
 }

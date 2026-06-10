@@ -729,14 +729,14 @@ export class SOXComplianceEngine {
     if (entries.length > 1) {
       const sorted = [...entries].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
       for (let i = 1; i < sorted.length; i++) {
-        const prevTime = new Date(sorted[i - 1].timestamp).getTime();
-        const currTime = new Date(sorted[i].timestamp).getTime();
+        const prevTime = new Date(sorted![i - 1]!.timestamp).getTime();
+        const currTime = new Date(sorted![i]!.timestamp).getTime();
         const gapHours = (currTime - prevTime) / (1000 * 60 * 60);
         // Flag gaps longer than 72 hours as potential audit trail holes
         if (gapHours > 72) {
           gapsDetected.push({
-            startDate: sorted[i - 1].timestamp,
-            endDate: sorted[i].timestamp,
+            startDate: sorted![i - 1]!.timestamp,
+            endDate: sorted![i]!.timestamp,
             durationHours: Math.round(gapHours),
           });
         }
@@ -747,7 +747,7 @@ export class SOXComplianceEngine {
     if (requirement.tamperProof && entries.length > 1) {
       const timestamps = entries.map((e) => new Date(e.timestamp).getTime());
       for (let i = 1; i < timestamps.length; i++) {
-        if (timestamps[i] < timestamps[i - 1]) {
+        if (timestamps![i]! < timestamps![i - 1]!) {
           tamperDetected = true;
           break;
         }
@@ -1016,7 +1016,7 @@ export class SOXComplianceEngine {
         continue;
       }
 
-      const lastActivity = entries[0].timestamp;
+      const lastActivity = entries[0]!.timestamp;
       const daysSince = Math.floor(
         (now - new Date(lastActivity).getTime()) / (1000 * 60 * 60 * 24)
       );

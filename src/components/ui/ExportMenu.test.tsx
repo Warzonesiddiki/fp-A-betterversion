@@ -51,12 +51,12 @@ describe('ExportMenu', () => {
 
   it('button is disabled when disabled prop is true', () => {
     render(<ExportMenu onExport={() => {}} disabled />);
-    expect(screen.getByRole('button')).toBeDisabled();
+    expect(screen.getByRole('button', { name: /export/i })).toBeDisabled();
   });
 
   it('shows dropdown options when clicked', () => {
     render(<ExportMenu onExport={() => {}} />);
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button', { name: /export/i }));
     expect(screen.getByText('Excel (.xlsx)')).toBeInTheDocument();
     expect(screen.getByText('PDF Document')).toBeInTheDocument();
     expect(screen.getByText('CSV (Data Only)')).toBeInTheDocument();

@@ -369,7 +369,7 @@ describe('CubeSecurityEngine', () => {
       const parsed = JSON.parse(json);
       expect(Array.isArray(parsed)).toBe(true);
       expect(parsed).toHaveLength(1);
-      expect(parsed[0].userId).toBe('user-1');
+      expect(parsed[0]!.userId).toBe('user-1');
     });
 
     it('should import rules from JSON', () => {

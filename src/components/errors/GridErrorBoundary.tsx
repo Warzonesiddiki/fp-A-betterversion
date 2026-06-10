@@ -46,7 +46,7 @@ export class GridErrorBoundary extends Component<Props, State> {
               </div>
               <button
                 onClick={this.handleRetry}
-                className="flex items-center gap-1 px-2 py-1 text-xs text-yellow-700 border border-yellow-300 rounded hover:bg-yellow-100"
+                className="flex items-center gap-1 px-2 py-1 text-xs text-yellow-700 border border-yellow-300 rounded hover:bg-yellow-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               >
                 <RefreshCw className="w-3 h-3" /> Retry Grid
               </button>
@@ -97,7 +97,7 @@ export class GridErrorBoundary extends Component<Props, State> {
           </p>
           <button
             onClick={this.handleRetry}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             <RefreshCw className="w-3 h-3" /> Retry
           </button>

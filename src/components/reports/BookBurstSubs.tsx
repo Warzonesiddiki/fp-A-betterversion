@@ -69,7 +69,7 @@ interface VariableEditorProps {
 
 export function VariableEditor({ variables, values, onChange }: VariableEditorProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" role="region" aria-label="BookBurstSubs">
       <h4 className="text-xs font-medium text-slate-400">Variable Substitution</h4>
       <div className="grid grid-cols-2 gap-2">
         {variables.map((v) => (

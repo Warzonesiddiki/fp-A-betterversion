@@ -164,7 +164,7 @@ export class SpreadEngine {
     const rounded = amounts.map((a) => Math.round(a * 100) / 100);
     const diff = Math.round((targetTotal - rounded.reduce((s, a) => s + a, 0)) * 100) / 100;
     if (diff !== 0 && rounded.length > 0) {
-      rounded[rounded.length - 1] += diff;
+      rounded![rounded.length - 1]! += diff;
     }
     return rounded;
   }

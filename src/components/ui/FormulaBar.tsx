@@ -28,10 +28,10 @@ export function FormulaBar({
     if (!value.startsWith('=')) return '';
     const afterEquals = value.slice(1);
     const match = afterEquals.match(/([A-Z_]+)$/i);
-    return match ? match[1].toUpperCase() : '';
+    return match ? match[1]!.toUpperCase() : '';
   }, [value]);
 
-  useEffect(() => {
+  useMemo(() => {
     setShowAutocomplete(currentToken.length >= 2);
   }, [currentToken]);
 
@@ -48,8 +48,9 @@ export function FormulaBar({
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (showAutocomplete) {
-        if (e.key === 'Escape') {
-          setShowAutocomplete(false);
+        if (['ArrowDown', 'ArrowUp', 'Tab', 'Enter', 'Escape'].includes(e.key)) {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('formula-autocomplete-key', { detail: e.key }));
         }
         return;
       }

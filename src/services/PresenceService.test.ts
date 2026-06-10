@@ -83,7 +83,7 @@ describe('PresenceService', () => {
     });
 
     expect(presence.getUsers()).toHaveLength(1);
-    expect(presence.getUsers()[0].userId).toBe('user-2');
+    expect(presence!.getUsers()[0]!.userId).toBe('user-2');
     expect(handler).toHaveBeenCalledWith(expect.objectContaining({ type: 'join' }));
   });
 
@@ -135,8 +135,8 @@ describe('PresenceService', () => {
     });
 
     const users = presence.getUsers();
-    expect(users[0].activeResourceType).toBe('budget');
-    expect(users[0].activeResourceId).toBe('bgt-001');
+    expect(users![0]!.activeResourceType).toBe('budget');
+    expect(users![0]!.activeResourceId).toBe('bgt-001');
   });
 
   it('should filter users by resource', () => {
@@ -169,7 +169,7 @@ describe('PresenceService', () => {
 
     const budgetViewers = presence.getUsersOnResource('budget', 'bgt-001');
     expect(budgetViewers).toHaveLength(1);
-    expect(budgetViewers[0].userId).toBe('user-1');
+    expect(budgetViewers![0]!.userId).toBe('user-1');
   });
 
   it('should detect locked cells', () => {

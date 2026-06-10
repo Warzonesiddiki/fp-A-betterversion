@@ -112,12 +112,12 @@ interface MatrixHeaderProps {
 
 function MatrixHeader({ entities, selected, onToggleAll, onToggleEntity }: MatrixHeaderProps) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1" role="region" aria-label="BookBurstBuilder">
       <div className="w-48 shrink-0 text-xs text-slate-500 font-medium">
         <button
           type="button"
           onClick={onToggleAll}
-          className="hover:text-white transition-colors"
+          className="hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           {selected.size === entities.length ? 'Deselect All' : 'Select All'}
         </button>
@@ -246,7 +246,10 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
   const handleToggleCell = useCallback((reportIdx: number, entityIdx: number) => {
     setMatrix((prev) => {
       const next = prev.map((row) => row.map((cell) => ({ ...cell })));
-      next[reportIdx]![entityIdx]!.selected = !next[reportIdx]![entityIdx]!.selected;
+      const targetRow = next[reportIdx];
+      if (targetRow && targetRow[entityIdx]!) {
+        targetRow[entityIdx]!.selected = !targetRow[entityIdx]!.selected;
+      }
       return next;
     });
   }, []);
@@ -255,10 +258,16 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
     (reportIdx: number) => {
       setMatrix((prev) => {
         const row = prev[reportIdx];
+        if (!row) return prev;
         const allSelected = row.every((c) => c.selected);
         const next = prev.map((r) => r.map((cell) => ({ ...cell })));
-        for (let j = 0; j < entities.length; j++) {
-          next[reportIdx]![j]!.selected = !allSelected;
+        const targetRow = next[reportIdx];
+        if (targetRow) {
+          for (let j = 0; j < entities.length; j++) {
+            if (targetRow[j]!) {
+              targetRow[j]!.selected = !allSelected;
+            }
+          }
         }
         return next;
       });
@@ -306,8 +315,10 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
     const usedTemplates = new Set<string>();
     for (let ri = 0; ri < PRESETS.length; ri++) {
       const preset = PRESETS[ri];
-      const entityIds = matrix[ri]
-        .map((cell, ei) => (cell.selected ? entities[ei].id : null))
+      const matrixRow = matrix[ri];
+      if (!preset || !matrixRow) continue;
+      const entityIds = matrixRow
+        .map((cell, ei) => (cell.selected ? entities[ei]!.id : null))
         .filter((id): id is string => id !== null);
 
       if (entityIds.length > 0 && !usedTemplates.has(preset.id)) {
@@ -354,7 +365,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
       entity: Entity,
       jobIdx: number
     ): Promise<void> => {
-      if (cancelledRef.current) return;
+      if (cancelledRef.current || !preset) return;
 
       setJobs((prev) =>
         prev.map((j, i) => (i === jobIdx ? { ...j, status: 'running', startedAt: Date.now() } : j))
@@ -425,9 +436,13 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
       [];
     let jobIdx = 0;
     for (let ri = 0; ri < PRESETS.length; ri++) {
+      const preset = PRESETS[ri];
+      const matrixRow = matrix[ri];
+      if (!preset || !matrixRow) continue;
       for (const entity of allEntities) {
-        if (matrix[ri].some((c) => c.selected && entities[matrix[ri].indexOf(c)]?.id === entity.id)) {
-          workQueue.push({ preset: PRESETS[ri], entity, jobIdx });
+        const entityIdx = entities.findIndex((e) => e.id === entity.id);
+        if (entityIdx >= 0 && matrixRow[entityIdx]?.selected) {
+          workQueue.push({ preset, entity, jobIdx });
         }
         jobIdx++;
       }
@@ -535,7 +550,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
         <button
           type="button"
           onClick={handleSelectAll}
-          className="text-blue-400 hover:text-blue-300"
+          className="text-blue-400 hover:text-blue-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Select All
         </button>
@@ -543,7 +558,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
         <button
           type="button"
           onClick={handleDeselectAll}
-          className="text-blue-400 hover:text-blue-300"
+          className="text-blue-400 hover:text-blue-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Deselect All
         </button>

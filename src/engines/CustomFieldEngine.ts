@@ -88,7 +88,8 @@ class SafeMathParser {
     const start = this.pos;
     while (
       this.pos < this.input.length &&
-      ((this.input[this.pos] >= '0' && this.input[this.pos] <= '9') || this.input[this.pos] === '.')
+      ((this!.input[this.pos]! >= '0' && this!.input[this.pos]! <= '9') ||
+        this.input[this.pos] === '.')
     ) {
       this.pos++;
     }

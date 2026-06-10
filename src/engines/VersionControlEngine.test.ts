@@ -237,8 +237,8 @@ describe('VersionControlEngine', () => {
       engine.commit(branchId, 'Third', 'admin', [sampleChange({ newValue: 400 })]);
       const commits = engine.getBranchCommits(branchId);
       expect(commits).toHaveLength(3);
-      expect(commits[0].message).toBe('First');
-      expect(commits[2].message).toBe('Third');
+      expect(commits![0]!.message).toBe('First');
+      expect(commits![2]!.message).toBe('Third');
     });
 
     it('should count commits', () => {
@@ -251,7 +251,7 @@ describe('VersionControlEngine', () => {
       const changes = sampleChanges(5);
       engine.commit(branchId, 'Bulk update', 'admin', changes);
       const commits = engine.getBranchCommits(branchId);
-      expect(commits[0].cellChanges).toHaveLength(5);
+      expect(commits![0]!.cellChanges).toHaveLength(5);
     });
   });
 
@@ -277,8 +277,8 @@ describe('VersionControlEngine', () => {
 
       const diff = engine.diff(main.id, feature.id);
       expect(diff.changes).toHaveLength(1);
-      expect(diff.changes[0].from).toBeNull();
-      expect(diff.changes[0].to).toBe(200);
+      expect(diff!.changes[0]!.from).toBeNull();
+      expect(diff!.changes[0]!.to).toBe(200);
     });
 
     it('should detect cell modifications', () => {
@@ -292,8 +292,8 @@ describe('VersionControlEngine', () => {
 
       const diff = engine.diff(main.id, feature.id);
       expect(diff.changes).toHaveLength(1);
-      expect(diff.changes[0].from).toBe(100);
-      expect(diff.changes[0].to).toBe(250);
+      expect(diff!.changes[0]!.from).toBe(100);
+      expect(diff!.changes[0]!.to).toBe(250);
     });
 
     it('should detect cell deletions', () => {
@@ -307,8 +307,8 @@ describe('VersionControlEngine', () => {
 
       const diff = engine.diff(main.id, feature.id);
       expect(diff.changes).toHaveLength(1);
-      expect(diff.changes[0].from).toBe(500);
-      expect(diff.changes[0].to).toBeNull();
+      expect(diff!.changes[0]!.from).toBe(500);
+      expect(diff!.changes[0]!.to).toBeNull();
     });
 
     it('should diff between two commits', () => {
@@ -320,8 +320,8 @@ describe('VersionControlEngine', () => {
 
       const diff = engine.diffCommits(c1.id, c2.id);
       expect(diff.changes).toHaveLength(1);
-      expect(diff.changes[0].from).toBe(100);
-      expect(diff.changes[0].to).toBe(200);
+      expect(diff!.changes[0]!.from).toBe(100);
+      expect(diff!.changes[0]!.to).toBe(200);
     });
 
     it('should throw for non-existent branches in diff', () => {
@@ -395,9 +395,9 @@ describe('VersionControlEngine', () => {
       const result = engine.merge(branchA.id, branchB.id, 'admin');
       expect(result.success).toBe(false);
       expect(result.conflicts).toHaveLength(1);
-      expect(result.conflicts[0].branchAValue).toBe(200);
-      expect(result.conflicts[0].branchBValue).toBe(300);
-      expect(result.conflicts[0].baseValue).toBe(100);
+      expect(result!.conflicts[0]!.branchAValue).toBe(200);
+      expect(result!.conflicts[0]!.branchBValue).toBe(300);
+      expect(result!.conflicts[0]!.baseValue).toBe(100);
     });
 
     it('should auto-merge non-overlapping changes', () => {
@@ -475,8 +475,8 @@ describe('VersionControlEngine', () => {
       const result = engine.merge(a.id, b.id, 'admin');
       expect(result.success).toBe(false);
       expect(result.conflicts).toHaveLength(1);
-      expect(result.conflicts[0].branchAValue).toBeNull();
-      expect(result.conflicts[0].branchBValue).toBe(200);
+      expect(result!.conflicts[0]!.branchAValue).toBeNull();
+      expect(result!.conflicts[0]!.branchBValue).toBe(200);
     });
 
     it('should auto-merge when source changed but target did not', () => {
@@ -629,7 +629,7 @@ describe('VersionControlEngine', () => {
       // Only Revenue conflicts (both changed to different values)
       // COGS unchanged on both branches -> no conflict
       expect(conflicts).toHaveLength(1);
-      expect(conflicts[0].coords.Account).toBe('Revenue');
+      expect(conflicts![0]!.coords.Account).toBe('Revenue');
     });
 
     it('should include base value in conflict report', () => {
@@ -643,7 +643,7 @@ describe('VersionControlEngine', () => {
       engine.commit(b.id, 'B', 'user2', [sampleChange({ oldValue: 42, newValue: 200 })]);
 
       const conflicts = engine.detectConflicts(a.id, b.id);
-      expect(conflicts[0].baseValue).toBe(42);
+      expect(conflicts![0]!.baseValue).toBe(42);
     });
   });
 
@@ -660,9 +660,9 @@ describe('VersionControlEngine', () => {
 
       const timeline = engine.getTimeline(branch.id);
       expect(timeline).toHaveLength(3);
-      expect(timeline[0].message).toBe('First');
-      expect(timeline[1].message).toBe('Second');
-      expect(timeline[2].message).toBe('Third');
+      expect(timeline![0]!.message).toBe('First');
+      expect(timeline![1]!.message).toBe('Second');
+      expect(timeline![2]!.message).toBe('Third');
     });
 
     it('should return empty timeline for branch with no commits', () => {
@@ -691,8 +691,8 @@ describe('VersionControlEngine', () => {
         'amount'
       );
       expect(history).toHaveLength(2);
-      expect(history[0].newValue).toBe(100);
-      expect(history[1].newValue).toBe(200);
+      expect(history![0]!.newValue).toBe(100);
+      expect(history![1]!.newValue).toBe(200);
     });
 
     it('should isolate history between branches', () => {
@@ -709,8 +709,8 @@ describe('VersionControlEngine', () => {
 
       expect(mainTimeline).toHaveLength(1);
       expect(featureTimeline).toHaveLength(1);
-      expect(mainTimeline[0].message).toBe('Main commit');
-      expect(featureTimeline[0].message).toBe('Feature commit');
+      expect(mainTimeline![0]!.message).toBe('Main commit');
+      expect(featureTimeline![0]!.message).toBe('Feature commit');
     });
   });
 
@@ -763,8 +763,8 @@ describe('VersionControlEngine', () => {
 
       const commits = restored.getBranchCommits(main.id);
       expect(commits).toHaveLength(2);
-      expect(commits[0].message).toBe('First');
-      expect(commits[1].message).toBe('Second');
+      expect(commits![0]!.message).toBe('First');
+      expect(commits![1]!.message).toBe('Second');
     });
 
     it('should preserve snapshot data after deserialization', () => {

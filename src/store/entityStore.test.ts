@@ -68,7 +68,7 @@ describe('entityStore', () => {
 
     expect(id).toMatch(/^ent-\d+$/);
     expect(useEntityStore.getState().entities).toHaveLength(1);
-    expect(useEntityStore.getState().entities[0].name).toBe('New Entity');
+    expect(useEntityStore!.getState().entities[0]!.name).toBe('New Entity');
   });
 
   // --- updateEntity ---
@@ -78,7 +78,7 @@ describe('entityStore', () => {
 
     useEntityStore.getState().updateEntity('ent-1', { name: 'Updated Name' });
 
-    expect(useEntityStore.getState().entities[0].name).toBe('Updated Name');
+    expect(useEntityStore!.getState().entities[0]!.name).toBe('Updated Name');
   });
 
   it('should not update if entity not found', () => {
@@ -86,7 +86,7 @@ describe('entityStore', () => {
 
     useEntityStore.getState().updateEntity('nonexistent', { name: 'Updated' });
 
-    expect(useEntityStore.getState().entities[0].name).toBe('Test Entity');
+    expect(useEntityStore!.getState().entities[0]!.name).toBe('Test Entity');
   });
 
   // --- deleteEntity ---
@@ -227,7 +227,7 @@ describe('entityStore', () => {
 
     expect(tree).toHaveLength(4);
     // Root should be first
-    expect(tree[0].id).toBe('ent-root');
+    expect(tree![0]!.id).toBe('ent-root');
   });
 
   it('should return subtree from specified root', () => {
@@ -242,8 +242,8 @@ describe('entityStore', () => {
     const subtree = useEntityStore.getState().getEntityTree('ent-child1');
 
     expect(subtree).toHaveLength(2);
-    expect(subtree[0].id).toBe('ent-child1');
-    expect(subtree[1].id).toBe('ent-grandchild');
+    expect(subtree![0]!.id).toBe('ent-child1');
+    expect(subtree![1]!.id).toBe('ent-grandchild');
   });
 
   // --- Offline cache ---

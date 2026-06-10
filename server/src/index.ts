@@ -21,8 +21,38 @@ const IS_PRODUCTION = (process.env.NODE_ENV ?? 'development') === 'production';
 // Global Middleware
 // ---------------------------------------------------------------------------
 
-// Security headers
-app.use(helmet());
+// Security headers with explicit CSP
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for CSS-in-JS
+        imgSrc: ["'self'", "data:", "blob:"],
+        fontSrc: ["'self'"],
+        connectSrc: ["'self'"],
+        frameAncestors: ["'none'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: true,
+    crossOriginResourcePolicy: { policy: "same-origin" },
+    dnsPrefetchControl: { allow: false },
+    frameguard: { action: "deny" },
+    hidePoweredBy: true,
+    hsts: IS_PRODUCTION
+      ? { maxAge: 31536000, includeSubDomains: true, preload: true }
+      : false,
+    ieNoOpen: true,
+    noSniff: true,
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    xssFilter: true,
+  })
+);
 
 // CORS — allow the Vite dev server in dev, locked origin in production
 app.use(

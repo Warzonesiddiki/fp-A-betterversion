@@ -14,12 +14,12 @@ export const BudgetVsActualHeader = memo(function BudgetVsActualHeader({
   onExportExcel,
 }: BudgetVsActualHeaderProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between" role="region" aria-label="BudgetVsActualHeader">
       <div className="flex items-center space-x-4">
         <h1 className="text-2xl font-black text-[var(--text-primary)]">Budget vs Actual</h1>
         <button
           onClick={onHelpClick}
-          className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+          className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5" />

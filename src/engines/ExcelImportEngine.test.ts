@@ -82,13 +82,13 @@ describe('ExcelImportEngine', () => {
         { 'Post Date': '2024-01-15', Account: '1000', DR: '500', CR: '0', Desc: 'Test entry' },
         { 'Post Date': '2024-01-16', Account: '2000', DR: '0', CR: '300', Desc: 'Another entry' },
       ];
-      const mappings = engine.autoDetectMappings(Object.keys(rows[0]), rows);
+      const mappings = engine.autoDetectMappings(Object.keys(rows[0]!), rows);
       const result = engine.mapData(rows, mappings);
 
       expect(result.mapped.length).toBe(2);
-      expect(result.mapped[0].accountCode).toBe('1000');
-      expect(result.mapped[0].debit).toBe(500);
-      expect(result.mapped[1].credit).toBe(300);
+      expect(result!.mapped[0]!.accountCode).toBe('1000');
+      expect(result!.mapped[0]!.debit).toBe(500);
+      expect(result!.mapped[1]!.credit).toBe(300);
     });
 
     it('errors on missing account code', () => {
@@ -101,7 +101,7 @@ describe('ExcelImportEngine', () => {
       ];
       const result = engine.mapData(rows, mappings);
       expect(result.errors.length).toBe(1);
-      expect(result.errors[0].column).toBe('accountCode');
+      expect(result!.errors[0]!.column).toBe('accountCode');
     });
 
     it('warns on missing date', () => {
@@ -124,7 +124,7 @@ describe('ExcelImportEngine', () => {
         { sourceColumn: 'Amount', targetField: 'amount' as const, confidence: 1, reason: '' },
       ];
       const result = engine.mapData(rows, mappings);
-      expect(result.mapped[0].amount).toBe(1234.56);
+      expect(result!.mapped[0]!.amount).toBe(1234.56);
     });
   });
 
@@ -194,7 +194,7 @@ describe('ExcelImportEngine', () => {
       ];
       const result = engine.validate(rows);
       expect(result.warnings.length).toBeGreaterThan(0);
-      expect(result.warnings[0].message).toContain('imbalanced');
+      expect(result!.warnings[0]!.message).toContain('imbalanced');
     });
 
     it('errors on empty data', () => {

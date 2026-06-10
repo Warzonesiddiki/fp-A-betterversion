@@ -33,7 +33,7 @@ describe('CubeEngine', () => {
       ]);
       const dim = engine.getDimension('Entity');
       expect(dim?.hierarchies).toHaveLength(1);
-      expect(dim?.hierarchies[0].levels).toEqual(['group', 'entity']);
+      expect(dim?.hierarchies[0]!.levels).toEqual(['group', 'entity']);
     });
 
     it('should register dimension with attributes', () => {
@@ -177,7 +177,7 @@ describe('CubeEngine', () => {
     it('should get ancestors', () => {
       const ancestors = engine.getAncestors('Entity', 'Entity:ENT1');
       expect(ancestors).toHaveLength(1);
-      expect(ancestors[0].code).toBe('GRP');
+      expect(ancestors![0]!.code).toBe('GRP');
     });
 
     it('should get descendants', () => {
@@ -472,10 +472,10 @@ describe('CubeEngine', () => {
         'value'
       );
       expect(history).toHaveLength(2);
-      expect(history[0].oldValue).toBeNull();
-      expect(history[0].newValue).toBe(100);
-      expect(history[1].oldValue).toBe(100);
-      expect(history[1].newValue).toBe(200);
+      expect(history![0]!.oldValue).toBeNull();
+      expect(history![0]!.newValue).toBe(100);
+      expect(history![1]!.oldValue).toBe(100);
+      expect(history![1]!.newValue).toBe(200);
     });
 
     it('should return empty history for never-written cell', () => {
@@ -701,8 +701,8 @@ describe('CubeEngine', () => {
 
       const diff = engine.compareSnapshots(snapA.id, snapB.id);
       expect(diff.summary.cellsChanged).toBe(1);
-      expect(diff.changed[0].oldValue).toBe(100);
-      expect(diff.changed[0].newValue).toBe(200);
+      expect(diff!.changed[0]!.oldValue).toBe(100);
+      expect(diff!.changed[0]!.newValue).toBe(200);
     });
 
     it('should detect added cells in diff', async () => {

@@ -134,7 +134,7 @@ export const Navbar = memo(function Navbar() {
               style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}
             >
               <button
-                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 style={{ color: 'var(--text-secondary)' }}
                 onClick={() => {
                   navigate('/budgets/create');
@@ -144,7 +144,7 @@ export const Navbar = memo(function Navbar() {
                 <FileBarChart className="w-3.5 h-3.5" /> New Budget
               </button>
               <button
-                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 style={{ color: 'var(--text-secondary)' }}
                 onClick={() => {
                   navigate('/forecasts/create');
@@ -154,7 +154,7 @@ export const Navbar = memo(function Navbar() {
                 <TrendingUp className="w-3.5 h-3.5" /> New Forecast
               </button>
               <button
-                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 style={{ color: 'var(--text-secondary)' }}
                 onClick={() => {
                   navigate('/data/gl-upload');
@@ -233,7 +233,7 @@ export const Navbar = memo(function Navbar() {
               className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-white"
               style={{ background: 'var(--accent-primary)' }}
             >
-              {user ? user.firstName[0] + user.lastName[0] : 'U'}
+              {user ? (user.firstName[0] ?? '') + (user.lastName[0] ?? '') : 'U'}
             </div>
             <ChevronDown
               className="w-3 h-3 hidden sm:block"
@@ -255,7 +255,7 @@ export const Navbar = memo(function Navbar() {
                 </p>
               </div>
               <button
-                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 style={{ color: 'var(--text-secondary)' }}
                 onClick={() => {
                   navigate('/profile');
@@ -265,7 +265,7 @@ export const Navbar = memo(function Navbar() {
                 <User className="w-3.5 h-3.5" /> Profile
               </button>
               <button
-                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 style={{ color: 'var(--text-secondary)' }}
                 onClick={() => {
                   navigate('/settings');
@@ -275,7 +275,7 @@ export const Navbar = memo(function Navbar() {
                 <Settings className="w-3.5 h-3.5" /> Settings
               </button>
               <button
-                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 style={{ color: 'var(--text-secondary)' }}
                 onClick={() => {
                   navigate('/help');
@@ -286,7 +286,7 @@ export const Navbar = memo(function Navbar() {
               </button>
               <div className="border-t" style={{ borderColor: 'var(--border-subtle)' }}>
                 <button
-                  className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs"
+                  className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                   style={{ color: 'var(--negative)' }}
                   onClick={() => {
                     useAuthStore.getState().logout();

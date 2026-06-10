@@ -124,7 +124,7 @@ describe('HeatmapGrid', () => {
       render(<HeatmapGrid {...defaultProps} onCellClick={onCellClick} />);
 
       const cells = screen.getAllByText('10.2');
-      fireEvent.click(cells[0]);
+      fireEvent.click(cells[0]!);
       expect(onCellClick).toHaveBeenCalledWith('Revenue', 'Q1', 10.2);
     });
 
@@ -133,7 +133,7 @@ describe('HeatmapGrid', () => {
       render(<HeatmapGrid {...defaultProps} onCellHover={onCellHover} />);
 
       const cells = screen.getAllByText('10.2');
-      fireEvent.mouseEnter(cells[0]);
+      fireEvent.mouseEnter(cells[0]!);
       expect(onCellHover).toHaveBeenCalledWith('Revenue', 'Q1', 10.2);
     });
 
@@ -143,10 +143,10 @@ describe('HeatmapGrid', () => {
       const firstCell = cells[0];
 
       fireEvent.mouseEnter(firstCell);
-      expect(firstCell.className).toContain('ring-2');
+      expect(firstCell!.className).toContain('ring-2');
 
       fireEvent.mouseLeave(firstCell);
-      expect(firstCell.className).not.toContain('ring-2');
+      expect(firstCell!.className).not.toContain('ring-2');
     });
   });
 

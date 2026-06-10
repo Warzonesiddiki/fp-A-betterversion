@@ -118,7 +118,7 @@ describe('ConsolidationAdjustmentsEngine', () => {
       ConsolidationAdjustmentsEngine.eliminateIntercompany('A', 'B', 100, 'Sub', '2024-Q2');
       const entries = ConsolidationAdjustmentsEngine.getEntries('2024-Q1');
       expect(entries).toHaveLength(1);
-      expect(entries[0].period).toBe('2024-Q1');
+      expect(entries![0]!.period).toBe('2024-Q1');
     });
   });
 

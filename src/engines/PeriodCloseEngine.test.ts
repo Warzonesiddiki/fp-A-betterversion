@@ -143,7 +143,7 @@ describe('PeriodCloseEngine', () => {
       ];
       const breaches = PeriodCloseEngine.getSLABreaches(tasks, '2025-01-01');
       expect(breaches).toHaveLength(1);
-      expect(breaches[0].taskId).toBe('t1');
+      expect(breaches![0]!.taskId).toBe('t1');
     });
 
     it('should not report completed tasks as breaches', () => {

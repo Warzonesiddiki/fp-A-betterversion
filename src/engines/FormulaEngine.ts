@@ -89,7 +89,7 @@ export class FormulaEngine {
           tokens[current] === '=' ||
           tokens[current] === '<>')
       ) {
-        const op = tokens[current++];
+        const op = tokens[current++]!;
         const right = parseExpression();
         node = { type: 'op', value: op, children: [node, right] };
       }
@@ -99,7 +99,7 @@ export class FormulaEngine {
     const parseExpression = (): FormulaNode => {
       let node = parseTerm();
       while (current < tokens.length && (tokens[current] === '+' || tokens[current] === '-')) {
-        const op = tokens[current++];
+        const op = tokens[current++]!;
         const right = parseTerm();
         node = { type: 'op', value: op, children: [node, right] };
       }
@@ -109,7 +109,7 @@ export class FormulaEngine {
     const parseTerm = (): FormulaNode => {
       let node = parseFactor();
       while (current < tokens.length && (tokens[current] === '*' || tokens[current] === '/')) {
-        const op = tokens[current++];
+        const op = tokens[current++]!;
         const right = parseFactor();
         node = { type: 'op', value: op, children: [node, right] };
       }
@@ -191,8 +191,8 @@ export class FormulaEngine {
           return getCellValue(node.value);
         }
         case 'op': {
-          const left = evalNode(node.children[0]);
-          const right = evalNode(node.children[1]);
+          const left = evalNode(node.children[0]!);
+          const right = evalNode(node.children[1]!);
           switch (node.value as FormulaOp) {
             case '+':
               return left + right;
@@ -231,8 +231,8 @@ export class FormulaEngine {
             }, 0);
           }
           if (funcName === 'IF') {
-            const condition = evalNode(node.children[0]);
-            return condition !== 0 ? evalNode(node.children[1]) : evalNode(node.children[2]);
+            const condition = evalNode(node.children[0]!);
+            return condition !== 0 ? evalNode(node.children[1]!) : evalNode(node.children[2]!);
           }
           if (funcName === 'COUNT') {
             return node.children.reduce((acc, child) => {
@@ -245,7 +245,7 @@ export class FormulaEngine {
             }, 0);
           }
           if (funcName === 'NPV') {
-            const rate = evalNode(node.children[0]);
+            const rate = evalNode(node.children[0]!);
             const cashflows = node.children.slice(1).flatMap((child) => {
               if (child.type === 'range') return this.evaluateRange(child.value, getCellValue);
               return [evalNode(child)];
@@ -254,9 +254,9 @@ export class FormulaEngine {
             return cashflows.reduce((acc, cf, i) => acc + cf / Math.pow(1 + rate, i + 1), 0);
           }
           if (funcName === 'CAGR') {
-            const ev = evalNode(node.children[0]);
-            const bv = evalNode(node.children[1]);
-            const n = evalNode(node.children[2]);
+            const ev = evalNode(node.children[0]!);
+            const bv = evalNode(node.children[1]!);
+            const n = evalNode(node.children[2]!);
             if (bv <= 0 || n <= 0) return 0;
             return Math.pow(ev / bv, 1 / n) - 1;
           }
@@ -271,7 +271,7 @@ export class FormulaEngine {
     let error: string | undefined;
 
     try {
-      result = evalNode(nodes[0]);
+      result = evalNode(nodes[0]!);
     } catch (e: unknown) {
       error = e instanceof Error ? e.message : 'Evaluation error';
     }
@@ -285,15 +285,15 @@ export class FormulaEngine {
 
   private static evaluateRange(range: string, getCellValue: (ref: string) => number): number[] {
     const [start, end] = range.split(':');
-    const startMatch = start.match(/([A-Z]+)([0-9]+)/);
-    const endMatch = end.match(/([A-Z]+)([0-9]+)/);
+    const startMatch = start!.match(/([A-Z]+)([0-9]+)/);
+    const endMatch = end!.match(/([A-Z]+)([0-9]+)/);
 
     if (!startMatch || !endMatch) return [];
 
     const startCol = startMatch[1];
-    const startRow = parseInt(startMatch[2]);
+    const startRow = parseInt(startMatch[2]!);
     const endCol = endMatch[1];
-    const endRow = parseInt(endMatch[2]);
+    const endRow = parseInt(endMatch[2]!);
 
     const values: number[] = [];
 
@@ -304,8 +304,8 @@ export class FormulaEngine {
       }
     } else if (startRow === endRow) {
       // Handle column range (A-Z only for simplicity)
-      const startCode = startCol.charCodeAt(0);
-      const endCode = endCol.charCodeAt(0);
+      const startCode = startCol!.charCodeAt(0);
+      const endCode = endCol!.charCodeAt(0);
       for (let c = startCode; c <= endCode; c++) {
         values.push(getCellValue(`${String.fromCharCode(c)}${startRow}`));
       }
@@ -325,20 +325,20 @@ export class FormulaEngine {
       } else if (node.type === 'range') {
         // Expand range into individual cell references
         const [start, end] = node.value.split(':');
-        const startMatch = start.match(/([A-Z]+)([0-9]+)/);
-        const endMatch = end.match(/([A-Z]+)([0-9]+)/);
+        const startMatch = start!.match(/([A-Z]+)([0-9]+)/);
+        const endMatch = end!.match(/([A-Z]+)([0-9]+)/);
         if (startMatch && endMatch) {
           const startCol = startMatch[1];
-          const startRow = parseInt(startMatch[2]);
+          const startRow = parseInt(startMatch[2]!);
           const endCol = endMatch[1];
-          const endRow = parseInt(endMatch[2]);
+          const endRow = parseInt(endMatch[2]!);
           if (startCol === endCol) {
             for (let r = startRow; r <= endRow; r++) {
               deps.push(`${startCol}${r}`);
             }
           } else {
-            const startCode = startCol.charCodeAt(0);
-            const endCode = endCol.charCodeAt(0);
+            const startCode = startCol!.charCodeAt(0);
+            const endCode = endCol!.charCodeAt(0);
             for (let c = startCode; c <= endCode; c++) {
               for (let r = startRow; r <= endRow; r++) {
                 deps.push(`${String.fromCharCode(c)}${r}`);

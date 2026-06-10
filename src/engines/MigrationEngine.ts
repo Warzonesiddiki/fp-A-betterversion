@@ -471,7 +471,7 @@ export class MigrationEngine {
     const allRows = worksheetToRows(worksheet);
     if (allRows.length === 0) return { headers: [], dataRows: [] };
 
-    const headers = allRows[0].map(String);
+    const headers = allRows[0]!.map(String);
     const dataRows = allRows.slice(1).map((row) =>
       headers.reduce(
         (obj, h, i) => ({
@@ -530,7 +530,7 @@ export class MigrationEngine {
       return {
         name: worksheet.name,
         rows: Math.max(0, allRows.length - 1),
-        columns: allRows.length > 0 ? allRows[0].map(String) : [],
+        columns: allRows.length > 0 ? allRows[0]!.map(String) : [],
       };
     });
 
@@ -619,7 +619,7 @@ export class MigrationEngine {
 
       this.setProgress('validating', 60, 'Validating data...');
 
-      const headers: string[] = allRows[0].map(String);
+      const headers: string[] = allRows[0]!.map(String);
       const maxRows = options.maxRows ?? 100000;
       const dataRows = allRows
         .slice(1, maxRows + 1)

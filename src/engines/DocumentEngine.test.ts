@@ -41,7 +41,7 @@ describe('DocumentEngine', () => {
       engine.createVersion(doc, 'Bob');
       const history = engine.getVersionHistory('doc-1');
       expect(history).toHaveLength(2);
-      expect(history[0].version).toBe(2);
+      expect(history![0]!.version).toBe(2);
     });
 
     it('should return empty for unknown document', () => {
@@ -71,7 +71,7 @@ describe('DocumentEngine', () => {
       const version = engine.createVersion(doc, 'Alice');
       engine.signDocument(version.id, 'Bob');
       const history = engine.getVersionHistory('doc-1');
-      expect(history[0].signatures).toContain('Bob');
+      expect(history![0]!.signatures).toContain('Bob');
     });
 
     it('should not duplicate signatures', () => {
@@ -79,7 +79,7 @@ describe('DocumentEngine', () => {
       engine.signDocument(version.id, 'Bob');
       engine.signDocument(version.id, 'Bob');
       const history = engine.getVersionHistory('doc-1');
-      expect(history[0].signatures).toHaveLength(1);
+      expect(history![0]!.signatures).toHaveLength(1);
     });
   });
 });

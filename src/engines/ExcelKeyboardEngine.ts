@@ -64,6 +64,10 @@ export class ExcelKeyboardEngine {
           return { type: 'undo' };
         case 'y':
           return { type: 'redo' };
+        case 'd':
+          return { type: 'fill', payload: { direction: 'down' } };
+        case 'r':
+          return { type: 'fill', payload: { direction: 'right' } };
       }
     }
 

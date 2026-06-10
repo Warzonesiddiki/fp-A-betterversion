@@ -43,7 +43,11 @@ export class EngineErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="flex flex-col items-center justify-center p-6 border border-red-200 rounded-lg bg-red-50 dark:bg-red-950 dark:border-red-800">
+        <div
+          className="flex flex-col items-center justify-center p-6 border border-red-200 rounded-lg bg-red-50 dark:bg-red-950 dark:border-red-800"
+          role="region"
+          aria-label="EngineErrorBoundary"
+        >
           <AlertTriangle className="w-8 h-8 text-red-500 mb-3" />
           <h3 className="text-sm font-semibold text-red-700 dark:text-red-300 mb-1">
             {this.props.engineName ?? 'Engine'} Error
@@ -53,7 +57,7 @@ export class EngineErrorBoundary extends Component<Props, State> {
           </p>
           <button
             onClick={this.handleRetry}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             <RefreshCw className="w-3 h-3" />
             Recalculate

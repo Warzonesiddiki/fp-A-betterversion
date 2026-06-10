@@ -219,7 +219,7 @@ export class ExportTemplateEngine {
       pdf.setFont(style.fontFamily, 'normal');
       for (let i = 0; i < tocSections.length; i++) {
         pdf.setTextColor(60);
-        pdf.text(`${i + 1}. ${substituteVars(tocSections[i].title, ctx)}`, margin + 4, y);
+        pdf.text(`${i + 1}. ${substituteVars(tocSections![i]!.title, ctx)}`, margin + 4, y);
         pdf.setTextColor(150);
         pdf.text(`...${i + 2}`, pageW - margin, y, { align: 'right' });
         y += 7;
@@ -364,18 +364,18 @@ export class ExportTemplateEngine {
       pdf.setFontSize(8);
       pdf.setTextColor(100);
       pdf.setFont(style.fontFamily, 'normal');
-      pdf.text(kpi.label, x + 4, y + 8);
+      pdf.text(kpi!.label, x + 4, y + 8);
 
       pdf.setFontSize(14);
       pdf.setTextColor(0);
       pdf.setFont(style.fontFamily, 'bold');
-      pdf.text(kpi.value, x + 4, y + 20);
+      pdf.text(kpi!.value, x + 4, y + 20);
 
-      if (kpi.change) {
+      if (kpi!.change) {
         pdf.setFontSize(8);
-        const isPositive = kpi.change.startsWith('+');
+        const isPositive = kpi!.change.startsWith('+');
         pdf.setTextColor(isPositive ? 22 : 220, isPositive ? 160 : 38, isPositive ? 90 : 38);
-        pdf.text(kpi.change, x + 4, y + 27);
+        pdf.text(kpi!.change, x + 4, y + 27);
       }
     }
 

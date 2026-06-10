@@ -132,7 +132,7 @@ export const useInsuranceStore = create<InsuranceState>()(
       updateRateFiling: (id, updates) =>
         set((state) => {
           const idx = state.rateFilings.findIndex((f) => f.id === id);
-          if (idx !== -1) Object.assign(state.rateFilings[idx], updates);
+          if (idx !== -1) Object.assign(state.rateFilings[idx]!, updates);
         }),
     }))
   )

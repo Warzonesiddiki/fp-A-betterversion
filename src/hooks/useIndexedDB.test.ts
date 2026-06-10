@@ -43,7 +43,7 @@ describe('useIndexedDB', () => {
     const promise = result.current.getItem('key1');
 
     // Simulate IDB success
-    const openReq = (indexedDB.open as any).mock.results[0].value;
+    const openReq = (indexedDB.open as any).mock.results[0]!.value;
     openReq.onsuccess();
 
     const getReq = { onsuccess: null, result: 'value1' };
@@ -64,7 +64,7 @@ describe('useIndexedDB', () => {
 
     const promise = result.current.setItem('key1', 'value1');
 
-    const openReq = (indexedDB.open as any).mock.results[0].value;
+    const openReq = (indexedDB.open as any).mock.results[0]!.value;
     openReq.onsuccess();
 
     const putReq = { onsuccess: null };

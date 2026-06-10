@@ -123,7 +123,7 @@ export default function BudgetVsActualPage() {
     if (selectedBudgetId) return selectedBudgetId;
     if (budgets.length === 0) return '';
     const approved = budgets.find((b) => b.status === 'Approved');
-    return approved?.id ?? budgets[0].id;
+    return approved?.id ?? budgets[0]!.id;
   }, [selectedBudgetId, budgets]);
 
   const activeLineItems = useMemo(

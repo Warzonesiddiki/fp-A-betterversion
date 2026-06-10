@@ -431,7 +431,7 @@ describe('ReportBuilderEngine', () => {
       const updated = ReportBuilderEngine.addRow(layout, 'data');
 
       expect(updated.rows).toHaveLength(3);
-      expect(updated.rows[2].type).toBe('data');
+      expect(updated!.rows[2]!.type).toBe('data');
     });
 
     it('should add a row at a specific index', () => {
@@ -439,14 +439,14 @@ describe('ReportBuilderEngine', () => {
       const updated = ReportBuilderEngine.addRow(layout, 'subtotal', 1);
 
       expect(updated.rows).toHaveLength(3);
-      expect(updated.rows[1].type).toBe('subtotal');
+      expect(updated!.rows[1]!.type).toBe('subtotal');
     });
 
     it('should create cells matching column count', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.addRow(layout, 'data');
 
-      expect(updated.rows[2].cells).toHaveLength(layout.columns.length);
+      expect(updated!.rows[2]!.cells).toHaveLength(layout.columns.length);
     });
 
     it('should clamp index to array length', () => {
@@ -470,7 +470,7 @@ describe('ReportBuilderEngine', () => {
       const updated = ReportBuilderEngine.removeRow(layout, 'row-1');
 
       expect(updated.rows).toHaveLength(1);
-      expect(updated.rows[0].id).toBe('row-2');
+      expect(updated!.rows[0]!.id).toBe('row-2');
     });
 
     it('should return same layout if row ID not found', () => {
@@ -487,15 +487,15 @@ describe('ReportBuilderEngine', () => {
       // Move row-1 (index 0) to index 1
       const updated = ReportBuilderEngine.moveRow(layout, 'row-1', 1);
 
-      expect(updated.rows[0].id).toBe('row-2');
-      expect(updated.rows[1].id).toBe('row-1');
+      expect(updated!.rows[0]!.id).toBe('row-2');
+      expect(updated!.rows[1]!.id).toBe('row-1');
     });
 
     it('should return same layout if row ID not found', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.moveRow(layout, 'nonexistent', 1);
 
-      expect(updated.rows[0].id).toBe('row-1');
+      expect(updated!.rows[0]!.id).toBe('row-1');
     });
   });
 
@@ -514,7 +514,7 @@ describe('ReportBuilderEngine', () => {
       });
 
       expect(updated.columns).toHaveLength(3);
-      expect(updated.columns[2].header).toBe('Budget');
+      expect(updated!.columns[2]!.header).toBe('Budget');
     });
 
     it('should add a column at a specific index', () => {
@@ -531,7 +531,7 @@ describe('ReportBuilderEngine', () => {
       );
 
       expect(updated.columns).toHaveLength(3);
-      expect(updated.columns[1].header).toBe('Forecast');
+      expect(updated!.columns[1]!.header).toBe('Forecast');
     });
 
     it('should add cells to all rows for the new column', () => {
@@ -557,8 +557,8 @@ describe('ReportBuilderEngine', () => {
         period: 'budget',
       });
 
-      const colId = updated.columns[2].id;
-      expect(updated.columnWidths[colId]).toBe(160);
+      const colId = updated!.columns[2]!.id;
+      expect(updated.columnWidths[colId]!).toBe(160);
     });
   });
 
@@ -568,7 +568,7 @@ describe('ReportBuilderEngine', () => {
       const updated = ReportBuilderEngine.removeColumn(layout, 'col-value');
 
       expect(updated.columns).toHaveLength(1);
-      expect(updated.columns[0].id).toBe('col-label');
+      expect(updated!.columns[0]!.id).toBe('col-label');
     });
 
     it('should remove cells from all rows', () => {
@@ -608,9 +608,9 @@ describe('ReportBuilderEngine', () => {
       };
       const updated = ReportBuilderEngine.updateCell(layout, 0, 0, newContent);
 
-      const cell = updated.rows[0].cells[0];
-      expect(cell.type).toBe('text');
-      expect((cell.content as { content: TextCellContent }).content.text).toBe('Updated Text');
+      const cell = updated!.rows[0]!.cells[0];
+      expect(cell!.type).toBe('text');
+      expect((cell!.content as { content: TextCellContent }).content.text).toBe('Updated Text');
     });
 
     it('should merge cell styles when provided', () => {
@@ -624,10 +624,10 @@ describe('ReportBuilderEngine', () => {
         italic: true,
       });
 
-      const cell = updated.rows[0].cells[0];
-      expect(cell.style.bold).toBe(true);
-      expect(cell.style.italic).toBe(true);
-      expect(cell.style.fontSize).toBe(11); // Default preserved
+      const cell = updated!.rows[0]!.cells[0];
+      expect(cell!.style.bold).toBe(true);
+      expect(cell!.style.italic).toBe(true);
+      expect(cell!.style.fontSize).toBe(11); // Default preserved
     });
 
     it('should throw if row index is out of bounds', () => {
@@ -665,7 +665,7 @@ describe('ReportBuilderEngine', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.toggleRowVisibility(layout, 'row-1');
 
-      expect(updated.rows[0].isVisible).toBe(false);
+      expect(updated!.rows[0]!.isVisible).toBe(false);
     });
 
     it('should toggle row visibility from false to true', () => {
@@ -675,7 +675,7 @@ describe('ReportBuilderEngine', () => {
       };
       const updated = ReportBuilderEngine.toggleRowVisibility(layout, 'row-1');
 
-      expect(updated.rows[0].isVisible).toBe(true);
+      expect(updated!.rows[0]!.isVisible).toBe(true);
     });
   });
 
@@ -684,7 +684,7 @@ describe('ReportBuilderEngine', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.toggleColumnVisibility(layout, 'col-value');
 
-      expect(updated.columns[1].isVisible).toBe(false);
+      expect(updated!.columns[1]!.isVisible).toBe(false);
     });
   });
 
@@ -697,7 +697,7 @@ describe('ReportBuilderEngine', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.setColumnWidth(layout, 'col-value', 200);
 
-      expect(updated.columns[1].width).toBe(200);
+      expect(updated!.columns[1]!.width).toBe(200);
       expect(updated.columnWidths['col-value']).toBe(200);
     });
 
@@ -714,7 +714,7 @@ describe('ReportBuilderEngine', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.setRowHeight(layout, 'row-1', 40);
 
-      expect(updated.rows[0].height).toBe(40);
+      expect(updated!.rows[0]!.height).toBe(40);
     });
 
     it('should throw for negative height', () => {
@@ -732,7 +732,7 @@ describe('ReportBuilderEngine', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.createRowGroup(layout, 'row-1', 0);
 
-      expect(updated.rows[0].grouping).toEqual({
+      expect(updated!.rows[0]!.grouping).toEqual({
         level: 0,
         parentId: undefined,
         state: 'expanded',
@@ -743,7 +743,11 @@ describe('ReportBuilderEngine', () => {
       const layout = createTestLayout();
       const updated = ReportBuilderEngine.createRowGroup(layout, 'row-2', 1, 'row-1');
 
-      expect(updated.rows[1].grouping).toEqual({ level: 1, parentId: 'row-1', state: 'expanded' });
+      expect(updated!.rows[1]!.grouping).toEqual({
+        level: 1,
+        parentId: 'row-1',
+        state: 'expanded',
+      });
     });
   });
 
@@ -753,7 +757,7 @@ describe('ReportBuilderEngine', () => {
       const grouped = ReportBuilderEngine.createRowGroup(layout, 'row-1', 0);
       const toggled = ReportBuilderEngine.toggleGroupState(grouped, 'row-1');
 
-      expect(toggled.rows[0].grouping?.state).toBe('collapsed');
+      expect(toggled!.rows[0]!.grouping?.state).toBe('collapsed');
     });
 
     it('should toggle from collapsed back to expanded', () => {
@@ -762,14 +766,14 @@ describe('ReportBuilderEngine', () => {
       const toggled = ReportBuilderEngine.toggleGroupState(grouped, 'row-1');
       const toggledBack = ReportBuilderEngine.toggleGroupState(toggled, 'row-1');
 
-      expect(toggledBack.rows[0].grouping?.state).toBe('expanded');
+      expect(toggledBack!.rows[0]!.grouping?.state).toBe('expanded');
     });
 
     it('should not affect rows without grouping', () => {
       const layout = createTestLayout();
       const toggled = ReportBuilderEngine.toggleGroupState(layout, 'row-1');
 
-      expect(toggled.rows[0].grouping).toBeUndefined();
+      expect(toggled!.rows[0]!.grouping).toBeUndefined();
     });
   });
 
@@ -791,9 +795,9 @@ describe('ReportBuilderEngine', () => {
 
       const hidden = ReportBuilderEngine.setGroupChildrenVisibility(layout, 'row-1', false);
 
-      expect(hidden.rows[1].isVisible).toBe(false);
+      expect(hidden!.rows[1]!.isVisible).toBe(false);
       // Non-children should remain visible
-      expect(hidden.rows[0].isVisible).toBe(true);
+      expect(hidden!.rows[0]!.isVisible).toBe(true);
     });
 
     it('should show children when visible is true', () => {
@@ -814,7 +818,7 @@ describe('ReportBuilderEngine', () => {
 
       const shown = ReportBuilderEngine.setGroupChildrenVisibility(layout, 'row-1', true);
 
-      expect(shown.rows[1].isVisible).toBe(true);
+      expect(shown!.rows[1]!.isVisible).toBe(true);
     });
 
     it('should return same layout if row has no grouping', () => {
@@ -855,7 +859,7 @@ describe('ReportBuilderEngine', () => {
         backgroundColor: '#F0F0F0',
       });
 
-      for (const cell of styled.rows[0].cells) {
+      for (const cell of styled!.rows[0]!.cells) {
         expect(cell.style.bold).toBe(true);
         expect(cell.style.backgroundColor).toBe('#F0F0F0');
       }
@@ -865,7 +869,7 @@ describe('ReportBuilderEngine', () => {
       const layout = createTestLayout();
       const styled = ReportBuilderEngine.applyRowStyle(layout, 0, { bold: true });
 
-      expect(styled.rows[1].cells[0].style.bold).toBe(false);
+      expect(styled!.rows[1]!.cells[0]!.style.bold).toBe(false);
     });
 
     it('should throw for out-of-bounds row index', () => {
@@ -893,7 +897,7 @@ describe('ReportBuilderEngine', () => {
 
       const content = updated.content as { content: MetricCellContent };
       expect(content.content.conditionalFormats).toHaveLength(1);
-      expect(content.content.conditionalFormats![0].condition).toBe('lt');
+      expect(content!.content.conditionalFormats![0]!.condition).toBe('lt');
     });
 
     it('should add conditional format to a formula cell', () => {
@@ -1094,9 +1098,9 @@ describe('ReportBuilderEngine', () => {
       const shared = ReportBuilderEngine.shareReport(report, 'user-2', 'view', 'user-1');
 
       expect(shared.shares).toHaveLength(1);
-      expect(shared.shares[0].userId).toBe('user-2');
-      expect(shared.shares[0].permission).toBe('view');
-      expect(shared.shares[0].sharedBy).toBe('user-1');
+      expect(shared!.shares[0]!.userId).toBe('user-2');
+      expect(shared!.shares[0]!.permission).toBe('view');
+      expect(shared!.shares[0]!.sharedBy).toBe('user-1');
     });
 
     it('should update existing share permission', () => {
@@ -1105,7 +1109,7 @@ describe('ReportBuilderEngine', () => {
       const updated = ReportBuilderEngine.shareReport(report, 'user-2', 'edit', 'user-1');
 
       expect(updated.shares).toHaveLength(1);
-      expect(updated.shares[0].permission).toBe('edit');
+      expect(updated!.shares[0]!.permission).toBe('edit');
     });
 
     it('should not mutate original', () => {
@@ -1132,7 +1136,7 @@ describe('ReportBuilderEngine', () => {
       const unshared = ReportBuilderEngine.unshareReport(report, 'user-2');
 
       expect(unshared.shares).toHaveLength(1);
-      expect(unshared.shares[0].userId).toBe('user-3');
+      expect(unshared!.shares[0]!.userId).toBe('user-3');
     });
   });
 
@@ -1273,17 +1277,17 @@ describe('ReportBuilderEngine', () => {
     it('should fail when row cell count mismatches column count', () => {
       const report = createTestReport();
       // Add an extra cell to first row
-      report.layout.rows[0].cells.push(createTextCell('extra'));
+      report!.layout.rows[0]!.cells.push(createTextCell('extra'));
       const result = ReportBuilderEngine.validateReport(report);
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0]).toContain('Row 0 has 3 cells but expected 2');
+      expect(result.errors[0]!).toContain('Row 0 has 3 cells but expected 2');
     });
 
     it('should fail for formula cell with empty expression', () => {
       const report = createTestReport();
-      report.layout.rows[0].cells[0] = {
-        ...report.layout.rows[0].cells[0],
+      report!.layout.rows[0]!.cells[0] = {
+        ...report!.layout.rows[0]!.cells[0]!,
         type: 'formula',
         content: {
           type: 'formula',
@@ -1391,7 +1395,7 @@ describe('ReportBuilderEngine', () => {
       ];
       for (const template of standardTemplates) {
         const layout = ReportBuilderEngine.getTemplateLayout(template);
-        expect(layout.columns[0].type).toBe('label');
+        expect(layout!.columns[0]!.type).toBe('label');
       }
     });
 
@@ -1438,11 +1442,11 @@ describe('ReportBuilderEngine', () => {
   describe('getVisibleRows', () => {
     it('should return only visible rows', () => {
       const layout = createTestLayout();
-      layout.rows[1].isVisible = false;
+      layout!.rows[1]!.isVisible = false;
       const visible = ReportBuilderEngine.getVisibleRows(layout);
 
       expect(visible).toHaveLength(1);
-      expect(visible[0].id).toBe('row-1');
+      expect(visible![0]!.id).toBe('row-1');
     });
 
     it('should return all rows when all visible', () => {
@@ -1456,11 +1460,11 @@ describe('ReportBuilderEngine', () => {
   describe('getVisibleColumns', () => {
     it('should return only visible columns', () => {
       const layout = createTestLayout();
-      layout.columns[1].isVisible = false;
+      layout!.columns[1]!.isVisible = false;
       const visible = ReportBuilderEngine.getVisibleColumns(layout);
 
       expect(visible).toHaveLength(1);
-      expect(visible[0].id).toBe('col-label');
+      expect(visible![0]!.id).toBe('col-label');
     });
   });
 
@@ -1520,8 +1524,8 @@ describe('ReportBuilderEngine', () => {
 
     it('should count mixed cell types', () => {
       const layout = createTestLayout();
-      layout.rows[0].cells[1] = createFormulaCell('A1/B1');
-      layout.rows[1].cells[1] = {
+      layout!.rows[0]!.cells[1] = createFormulaCell('A1/B1');
+      layout!.rows[1]!.cells[1] = {
         id: 'chart-1',
         type: 'chart',
         content: {
@@ -1756,9 +1760,9 @@ describe('ReportBuilderEngine', () => {
       const resolved = ReportBuilderEngine.resolveLayout(layout, cubeData);
 
       expect(resolved).toHaveLength(2);
-      expect(resolved[0]).toHaveLength(2);
-      expect(resolved[0][1].rawValue).toBe(100000);
-      expect(resolved[1][1].rawValue).toBe(60000);
+      expect(resolved[0]!).toHaveLength(2);
+      expect(resolved![0]![1!].rawValue).toBe(100000);
+      expect(resolved![1]![1!].rawValue).toBe(60000);
     });
 
     it('should handle empty layout', () => {
@@ -2013,7 +2017,7 @@ describe('ReportBuilderEngine', () => {
     it('should detect circular references in formula cells', () => {
       const layout = createTestLayout();
       // Create a circular reference: A1 references B1, B1 references A1
-      layout.rows[0].cells[0] = {
+      layout!.rows[0]!.cells[0] = {
         id: 'cell-A1',
         type: 'formula',
         content: {
@@ -2025,7 +2029,7 @@ describe('ReportBuilderEngine', () => {
         rowspan: 1,
         isVisible: true,
       };
-      layout.rows[0].cells[1] = {
+      layout!.rows[0]!.cells[1] = {
         id: 'cell-B1',
         type: 'formula',
         content: {
@@ -2045,7 +2049,7 @@ describe('ReportBuilderEngine', () => {
 
     it('should handle formulas without circular references', () => {
       const layout = createTestLayout();
-      layout.rows[0].cells[0] = {
+      layout!.rows[0]!.cells[0] = {
         id: 'cell-A1',
         type: 'formula',
         content: {
@@ -2122,16 +2126,16 @@ describe('ReportBuilderEngine', () => {
       const result = ReportBuilderEngine.generateExcelExport(report, cubeData);
 
       expect(result.sheets).toHaveLength(1);
-      expect(result.sheets[0].name).toBe('Test Report');
-      expect(result.sheets[0].data.length).toBeGreaterThan(0);
-      expect(result.sheets[0].data[0]).toEqual(['Item', 'Actual']); // Header row
+      expect(result!.sheets[0]!.name).toBe('Test Report');
+      expect(result!.sheets[0]!.data.length).toBeGreaterThan(0);
+      expect(result!.sheets[0]!.data[0]!).toEqual(['Item', 'Actual']); // Header row
     });
 
     it('should include column widths', () => {
       const report = createTestReport();
       const result = ReportBuilderEngine.generateExcelExport(report, {});
 
-      expect(result.sheets[0].columnWidths).toEqual([200, 140]);
+      expect(result!.sheets[0]!.columnWidths).toEqual([200, 140]);
     });
 
     it('should include metadata', () => {
@@ -2152,15 +2156,15 @@ describe('ReportBuilderEngine', () => {
 
       const result = ReportBuilderEngine.generateExcelExport(report, cubeData);
       // First data row (index 1, index 0 is header), second column (index 1, index 0 is label)
-      expect(result.sheets[0].data[1][1]).toBe(250000);
-      expect(result.sheets[0].data[2][1]).toBe(150000);
+      expect(result!.sheets[0]!.data[1]![1]).toBe(250000);
+      expect(result!.sheets[0]!.data[2]![1]).toBe(150000);
     });
 
     it('should truncate long sheet names to 31 characters', () => {
       const report = { ...createTestReport(), name: 'A'.repeat(50) };
       const result = ReportBuilderEngine.generateExcelExport(report, {});
 
-      expect(result.sheets[0].name).toHaveLength(31);
+      expect(result!.sheets[0]!.name).toHaveLength(31);
     });
   });
 
@@ -2188,26 +2192,26 @@ describe('ReportBuilderEngine', () => {
       const result = ReportBuilderEngine.generateCSVExport(report, {});
 
       const lines = result.content.split('\n');
-      expect(lines[0]).toBe('Item,Actual');
+      expect(lines[0]!).toBe('Item,Actual');
     });
 
     it('should escape values containing commas', () => {
       const report = createTestReport();
       // Modify first cell to contain a comma
-      report.layout.rows[0].cells[0] = createTextCell('Revenue, Net');
+      report!.layout.rows[0]!.cells[0] = createTextCell('Revenue, Net');
       const result = ReportBuilderEngine.generateCSVExport(report, {});
 
       const lines = result.content.split('\n');
-      expect(lines[1]).toContain('"Revenue, Net"');
+      expect(lines[1]!).toContain('"Revenue, Net"');
     });
 
     it('should escape values containing quotes', () => {
       const report = createTestReport();
-      report.layout.rows[0].cells[0] = createTextCell('Revenue "Gross"');
+      report!.layout.rows[0]!.cells[0] = createTextCell('Revenue "Gross"');
       const result = ReportBuilderEngine.generateCSVExport(report, {});
 
       const lines = result.content.split('\n');
-      expect(lines[1]).toContain('"Revenue ""Gross"""');
+      expect(lines[1]!).toContain('"Revenue ""Gross"""');
     });
 
     it('should sanitize filename', () => {
@@ -2223,7 +2227,7 @@ describe('ReportBuilderEngine', () => {
 
       const lines = result.content.split('\n');
       // CSV export uses rawValue (null → empty), not formattedValue ('—')
-      expect(lines[1]).toContain(',');
+      expect(lines[1]!).toContain(',');
     });
   });
 
@@ -2251,8 +2255,8 @@ describe('ReportBuilderEngine', () => {
       const updated = ReportBuilderEngine.addParameter(report, testParam);
 
       expect(updated.parameters).toHaveLength(1);
-      expect(updated.parameters![0].id).toBe('param-1');
-      expect(updated.parameters![0].name).toBe('period');
+      expect(updated!.parameters![0]!.id).toBe('param-1');
+      expect(updated!.parameters![0]!.name).toBe('period');
     });
 
     it('should throw if parameter ID already exists', () => {
@@ -2285,7 +2289,7 @@ describe('ReportBuilderEngine', () => {
       report = ReportBuilderEngine.addParameter(report, param);
 
       const updated = ReportBuilderEngine.updateParameterValue(report, 'param-1', 'Q2');
-      expect(updated.parameters![0].value).toBe('Q2');
+      expect(updated!.parameters![0]!.value).toBe('Q2');
     });
 
     it('should throw if parameter not found', () => {
@@ -2339,7 +2343,7 @@ describe('ReportBuilderEngine', () => {
 
       const updated = ReportBuilderEngine.removeParameter(report, 'p1');
       expect(updated.parameters).toHaveLength(1);
-      expect(updated.parameters![0].id).toBe('p2');
+      expect(updated!.parameters![0]!.id).toBe('p2');
     });
   });
 

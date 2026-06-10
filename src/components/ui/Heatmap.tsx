@@ -38,6 +38,8 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
             'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
             className
           )}
+          role="region"
+          aria-label="Heatmap"
         >
           <div className="flex items-center justify-center h-48">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
@@ -93,7 +95,7 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
       const gridMap: Record<string, Record<string, number>> = {};
       data.forEach((cell) => {
         if (!gridMap[cell.row]) gridMap[cell.row] = {};
-        gridMap[cell.row][cell.col] = cell.value;
+        gridMap[cell.row]![cell.col] = cell.value;
       });
 
       return {
@@ -171,7 +173,7 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
                     <div
                       key={`${row}-${col}`}
                       className="aspect-square min-w-[30px] rounded-[2px] transition-all hover:scale-110 hover:z-10 hover:shadow-lg cursor-pointer group relative"
-                      style={{ backgroundColor: getColor(val) }}
+                      style={{ backgroundColor: getColor(val!) }}
                       onClick={
                         onClick && val !== undefined
                           ? () => onClick({ row, col, value: Number(val) })

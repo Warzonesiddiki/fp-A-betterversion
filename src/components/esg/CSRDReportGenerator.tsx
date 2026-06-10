@@ -191,7 +191,9 @@ export function CSRDReportGenerator({ className }: CSRDReportGeneratorProps) {
         </Card>
         <Card className="p-4">
           <div className="text-sm text-slate-400 mb-1">Non-Compliant</div>
-          <div className="text-3xl font-bold text-red-400">{complianceStats.nonCompliant}</div>
+          <div className="text-3xl font-bold text-red-400" role="alert">
+            {complianceStats.nonCompliant}
+          </div>
         </Card>
       </div>
 

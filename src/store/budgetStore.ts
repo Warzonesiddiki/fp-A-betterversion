@@ -57,11 +57,11 @@ export const useBudgetStore = create<BudgetState>()(
             const idx = state.lineItems.findIndex((i) => i.id === id);
             if (idx !== -1) {
               const oldItem = state.lineItems[idx];
-              Object.assign(state.lineItems[idx], updates);
+              Object.assign(state.lineItems[idx]!, updates);
               state.lastChange = {
                 cellId: id,
-                oldValue: oldItem.amount,
-                newValue: updates.amount ?? oldItem.amount,
+                oldValue: oldItem!.amount,
+                newValue: updates.amount ?? oldItem!.amount,
                 timestamp: new Date().toISOString(),
               };
             }
@@ -227,7 +227,7 @@ export const useBudgetStore = create<BudgetState>()(
           const { historyIndex, history } = get();
           if (historyIndex > 0) {
             set((state) => {
-              state.lineItems = history[historyIndex - 1];
+              state.lineItems = history[historyIndex - 1]!;
               state.historyIndex = historyIndex - 1;
             });
           }
@@ -237,7 +237,7 @@ export const useBudgetStore = create<BudgetState>()(
           const { historyIndex, history } = get();
           if (historyIndex < history.length - 1) {
             set((state) => {
-              state.lineItems = history[historyIndex + 1];
+              state.lineItems = history[historyIndex + 1]!;
               state.historyIndex = historyIndex + 1;
             });
           }

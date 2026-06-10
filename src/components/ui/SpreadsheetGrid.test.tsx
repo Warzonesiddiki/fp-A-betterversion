@@ -420,7 +420,7 @@ describe('SpreadsheetGrid', () => {
     it('handles percent column type', () => {
       const sheetsWithPercent = [
         {
-          ...mockSheets[0],
+          ...mockSheets[0]!,
           columns: [{ field: 'growth', headerName: 'Growth', type: 'percent' as const }],
         },
       ];
@@ -436,7 +436,7 @@ describe('SpreadsheetGrid', () => {
     it('handles text column type', () => {
       const sheetsWithText = [
         {
-          ...mockSheets[0],
+          ...mockSheets[0]!,
           columns: [{ field: 'name', headerName: 'Name', type: 'text' as const }],
         },
       ];
@@ -473,7 +473,7 @@ describe('SpreadsheetGrid', () => {
     it('handles empty rows in sheet', () => {
       const emptySheets = [
         {
-          ...mockSheets[0],
+          ...mockSheets[0]!,
           rows: [],
         },
       ];

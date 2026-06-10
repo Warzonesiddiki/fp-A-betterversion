@@ -34,18 +34,18 @@ export class StreamImportEngine {
     const lines = text.split(/\r?\n/);
     if (lines.length === 0) return;
 
-    const delimiter = lines[0].includes('\t') ? '\t' : ',';
-    const headers = this.parseLine(lines[0], delimiter);
+    const delimiter = lines[0]!.includes('\t') ? '\t' : ',';
+    const headers = this.parseLine(lines[0]!, delimiter);
     let rowIndex = 0;
 
     for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const line = lines[i]!.trim();
       if (!line) continue;
 
       const values = this.parseLine(line, delimiter);
       const data: Record<string, unknown> = {};
       for (let h = 0; h < headers.length; h++) {
-        data[headers[h]] = values[h] ?? '';
+        data[headers[h]!] = values[h] ?? '';
       }
 
       yield { rowIndex: rowIndex++, data, raw: line };

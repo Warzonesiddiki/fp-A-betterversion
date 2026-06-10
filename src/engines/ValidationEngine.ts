@@ -117,7 +117,7 @@ export interface ValidationReport {
 
 /**
  * CellData is a nested map: cube -> row -> col -> measure -> value
- * Example: data['GL']['2024-Q1']['1000']['debit'] = 50000
+ * Example: data['GL']!['2024-Q1']['1000']['debit'] = 50000
  */
 export type CellData = Record<string, Record<string, Record<string, Record<string, number>>>>;
 
@@ -214,7 +214,7 @@ export class ValidationEngine {
     for (const acct of cfg.debitAccounts) {
       const cell = periodData[acct];
       if (cell && cfg.measure in cell) {
-        const val = cell[cfg.measure];
+        const val = cell[cfg.measure]!;
         debitTotal += val;
         if (val !== 0) {
           affectedCells.push({
@@ -230,7 +230,7 @@ export class ValidationEngine {
     for (const acct of cfg.creditAccounts) {
       const cell = periodData[acct];
       if (cell && cfg.measure in cell) {
-        const val = cell[cfg.measure];
+        const val = cell[cfg.measure]!;
         creditTotal += val;
         if (val !== 0) {
           affectedCells.push({
@@ -277,7 +277,7 @@ export class ValidationEngine {
         const cell = periodData[acct];
         if (!cell || !(cfg.measure in cell)) continue;
 
-        const val = cell[cfg.measure];
+        const val = cell[cfg.measure]!;
         if (val < cfg.min || val > cfg.max) {
           affectedCells.push({
             cube: cfg.cube,
@@ -319,8 +319,8 @@ export class ValidationEngine {
     }
 
     for (let i = 1; i < cfg.periods.length; i++) {
-      const prevPeriod = cfg.periods[i - 1];
-      const currPeriod = cfg.periods[i];
+      const prevPeriod = cfg.periods[i - 1]!;
+      const currPeriod = cfg.periods[i]!;
 
       const prevCell = cube[prevPeriod]?.[cfg.account];
       const currCell = cube[currPeriod]?.[cfg.account];
@@ -329,8 +329,8 @@ export class ValidationEngine {
         continue;
       }
 
-      const prevVal = prevCell[cfg.measure];
-      const currVal = currCell[cfg.measure];
+      const prevVal = prevCell[cfg.measure]!;
+      const currVal = currCell[cfg.measure]!;
 
       if (prevVal === 0) {
         if (currVal !== 0) {
@@ -397,8 +397,8 @@ export class ValidationEngine {
         continue;
       }
 
-      const numVal = numCell[cfg.measure];
-      const denVal = denCell[cfg.measure];
+      const numVal = numCell[cfg.measure]!;
+      const denVal = denCell[cfg.measure]!;
 
       if (denVal === 0) {
         if (numVal !== 0) {
@@ -421,7 +421,7 @@ export class ValidationEngine {
         continue;
       }
 
-      const actualRatio = numVal / denVal;
+      const actualRatio = numVal! / denVal!;
       const diffPct = Math.abs((actualRatio - cfg.expectedRatio) / cfg.expectedRatio) * 100;
 
       if (diffPct > cfg.tolerancePct) {
@@ -664,8 +664,10 @@ export class ValidationEngine {
     col: string,
     measure: string
   ): boolean {
-    return (
-      cube in data && row in data[cube] && col in data[cube][row] && measure in data[cube][row][col]
-    );
+    if (!(cube in data)) return false;
+    const cubeData = data[cube]!;
+    if (!(row in cubeData)) return false;
+    const rowData = cubeData[row]!;
+    return col in rowData && measure in rowData[col]!;
   }
 }

@@ -59,10 +59,29 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
   className,
 }) => {
   const gridRef = useRef<AgGridReact>(null);
+  const gridContainerRef = useRef<HTMLDivElement>(null);
   const findInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Drag-fill state
+  const fillHandleRef = useRef<HTMLDivElement>(null);
+  const isDraggingFill = useRef(false);
+  const fillStartRef = useRef<{ row: number; col: number } | null>(null);
+  const [dragHighlight, setDragHighlight] = useState<{
+    startRow: number;
+    startCol: number;
+    endRow: number;
+    endCol: number;
+  } | null>(null);
+  const handlePositionRef = useRef<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [, forceUpdate] = useState(0);
 
   // Toolbar states
   const [showFindReplace, setShowFindReplace] = useState(false);
@@ -247,6 +266,68 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
     gridRef.current.api.exportDataAsCsv();
   }, []);
 
+  const fillRange = useCallback(
+    (fromRow: number, fromCol: number, toRow: number, toCol: number) => {
+      if (!gridRef.current || preset !== 'spreadsheet') return;
+      const api = gridRef.current.api;
+      const sourceCol = columns[fromCol];
+      if (!sourceCol) return;
+
+      const minRow = Math.min(fromRow, toRow);
+      const maxRow = Math.max(fromRow, toRow);
+      const minCol = Math.min(fromCol, toCol);
+      const maxCol = Math.max(fromCol, toCol);
+
+      // Get source value
+      const sourceNode = api.getDisplayedRowAtIndex(fromRow);
+      const sourceValue = sourceNode?.data?.[sourceCol.field];
+      const isNumber = typeof sourceValue === 'number' && Number.isFinite(sourceValue);
+
+      // Fill cells
+      for (let r = minRow; r <= maxRow; r++) {
+        for (let c = minCol; c <= maxCol; c++) {
+          if (r === fromRow && c === fromCol) continue;
+          const col = columns[c];
+          if (!col) continue;
+          const node = api.getDisplayedRowAtIndex(r);
+          if (!node) continue;
+
+          let fillValue = sourceValue;
+          // Auto-increment for numeric series
+          if (isNumber) {
+            const rowOffset = r - fromRow;
+            const colOffset = c - fromCol;
+            fillValue = sourceValue! + rowOffset + colOffset;
+          }
+
+          node.setDataValue(col.field, fillValue);
+        }
+      }
+
+      setDragHighlight(null);
+    },
+    [columns, preset]
+  );
+
+  const updateHandlePosition = useCallback(() => {
+    if (!selectedCell || !gridContainerRef.current) {
+      handlePositionRef.current = null;
+      return;
+    }
+    // Query for the focused cell element using AG Grid's cell focus class
+    const cellEl = gridContainerRef.current.querySelector('.ag-cell-focus') as HTMLElement | null;
+    if (!cellEl) return;
+    const rect = cellEl.getBoundingClientRect();
+    const gridRect = gridContainerRef.current.getBoundingClientRect();
+    handlePositionRef.current = {
+      top: rect.bottom - gridRect.top - 6,
+      left: rect.right - gridRect.left - 6,
+      width: 12,
+      height: 12,
+    };
+    forceUpdate((n) => n + 1);
+  }, [selectedCell]);
+
   const handleKeyDown = useCallback(
     async (e: React.KeyboardEvent) => {
       if (!gridRef.current || !selectedCell) return;
@@ -285,7 +366,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
             const { row, col } = action.payload as { row: number; col: number };
             if (row >= 0 && row < rows.length && col >= 0 && col < columns.length) {
               setSelectedCell({ row, col });
-              gridRef.current.api.setFocusedCell(row, columns[col].field);
+              gridRef.current.api.setFocusedCell(row, columns[col]!.field);
             }
             break;
           }
@@ -293,7 +374,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
             setIsEditing(true);
             gridRef.current.api.startEditingCell({
               rowIndex: selectedCell.row,
-              colKey: columns[selectedCell.col].field,
+              colKey: columns[selectedCell.col]!.field,
             });
             break;
           }
@@ -303,6 +384,18 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
               .map((node) => columns.map((c) => node.data[c.field]).join('\t'))
               .join('\n');
             await navigator.clipboard.writeText(tsv);
+            e.preventDefault();
+            break;
+          }
+          case 'fill': {
+            const fillPayload = action.payload as { direction: string };
+            if (fillPayload?.direction === 'down') {
+              const targetRow = Math.min(selectedCell.row + 1, rows.length - 1);
+              fillRange(selectedCell.row, selectedCell.col, targetRow, selectedCell.col);
+            } else if (fillPayload?.direction === 'right') {
+              const targetCol = Math.min(selectedCell.col + 1, columns.length - 1);
+              fillRange(selectedCell.row, selectedCell.col, selectedCell.row, targetCol);
+            }
             e.preventDefault();
             break;
           }
@@ -346,13 +439,72 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
         if (params.rowIndex !== null) {
           const colIndex = columns.findIndex((c) => c.field === params.column.getColId());
           setSelectedCell({ row: params.rowIndex, col: colIndex });
+          updateHandlePosition();
         }
       },
       onCellEditingStarted: () => setIsEditing(true),
       onCellEditingStopped: () => setIsEditing(false),
       ...gridOptions,
     }),
-    [gridOptions, columns, getRowStyle]
+    [gridOptions, columns, getRowStyle, updateHandlePosition]
+  );
+
+  // Drag-fill mouse handlers
+  const handleFillMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (!selectedCell) return;
+      isDraggingFill.current = true;
+      fillStartRef.current = { ...selectedCell };
+      setDragHighlight({
+        startRow: selectedCell.row,
+        startCol: selectedCell.col,
+        endRow: selectedCell.row,
+        endCol: selectedCell.col,
+      });
+
+      const handleMouseMove = (ev: MouseEvent) => {
+        if (!isDraggingFill.current || !gridContainerRef.current || !fillStartRef.current) return;
+        // Convert mouse position to cell coordinates using the grid container
+        const gridRect = gridContainerRef.current.getBoundingClientRect();
+        const relX = ev.clientX - gridRect.left;
+        const relY = ev.clientY - gridRect.top;
+
+        // Estimate row/col from pixel position
+        const rowHeight = 32;
+        const headerHeight = 40;
+        const gridRows = Math.floor((relY - headerHeight) / rowHeight);
+        const avgColWidth = (gridRect.width - 50) / Math.max(columns.length, 1);
+        const gridCol = Math.floor(relX / avgColWidth);
+
+        if (fillStartRef.current) {
+          setDragHighlight({
+            startRow: fillStartRef.current.row,
+            startCol: fillStartRef.current.col,
+            endRow: Math.max(0, Math.min(gridRows, rows.length - 1)),
+            endCol: Math.max(0, Math.min(gridCol, columns.length - 1)),
+          });
+        }
+      };
+
+      const handleMouseUp = () => {
+        if (isDraggingFill.current && fillStartRef.current && dragHighlight) {
+          const { startRow, startCol, endRow, endCol } = dragHighlight;
+          if (startRow !== endRow || startCol !== endCol) {
+            fillRange(startRow, startCol, endRow, endCol);
+          }
+        }
+        isDraggingFill.current = false;
+        fillStartRef.current = null;
+        setDragHighlight(null);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    },
+    [selectedCell, columns.length, rows.length, dragHighlight, fillRange]
   );
 
   return (
@@ -381,7 +533,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
           </button>
           <button
             onClick={handleExport}
-            className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
+            className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             title="Export CSV"
           >
             Export CSV
@@ -401,7 +553,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
           />
           <button
             onClick={handleFind}
-            className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             Search
           </button>
@@ -414,7 +566,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
           />
           <button
             onClick={handleReplace}
-            className="px-2 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+            className="px-2 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             Replace All
           </button>
@@ -440,14 +592,14 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
             readOnly
             value={
               selectedCell
-                ? String(rows[selectedCell.row]?.[columns[selectedCell.col]?.field] ?? '')
+                ? String(rows[selectedCell.row]?.[columns[selectedCell.col]?.field ?? ''] ?? '')
                 : ''
             }
           />
         </div>
       )}
 
-      <div className="flex-1 min-h-0 w-full">
+      <div className="flex-1 min-h-0 w-full relative">
         <AgGridReact
           ref={gridRef}
           rowData={rows}
@@ -458,6 +610,34 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
           gridOptions={mergedGridOptions}
           className="h-full w-full"
         />
+        {/* Drag-fill handle — visible only in spreadsheet mode with a selected cell */}
+        {preset === 'spreadsheet' && selectedCell && !isEditing && handlePositionRef.current && (
+          <div
+            ref={fillHandleRef}
+            className="absolute z-50 cursor-crosshair bg-blue-600 border-2 border-white rounded-sm shadow-sm hover:bg-blue-700 transition-colors"
+            style={{
+              top: handlePositionRef.current.top,
+              left: handlePositionRef.current.left,
+              width: handlePositionRef.current.width,
+              height: handlePositionRef.current.height,
+            }}
+            onMouseDown={handleFillMouseDown}
+            title="Drag to fill cells"
+          />
+        )}
+
+        {/* Drag highlight overlay */}
+        {preset === 'spreadsheet' && dragHighlight && (
+          <div
+            className="absolute pointer-events-none z-40 rounded border-2 border-blue-500 bg-blue-500/10"
+            style={{
+              top: 40 + Math.min(dragHighlight.startRow, dragHighlight.endRow) * 32,
+              left: 0,
+              width: '100%',
+              height: (Math.abs(dragHighlight.endRow - dragHighlight.startRow) + 1) * 32,
+            }}
+          />
+        )}
       </div>
 
       {loading && (

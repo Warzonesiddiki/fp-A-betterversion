@@ -1,0 +1,308 @@
+{
+  "agent": "agent-37",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T06605",
+      "cat": "perf",
+      "title": "Caching: Prefetch on hover",
+      "spec": "Implement and verify Prefetch on hover."
+    },
+    {
+      "id": "T06606",
+      "cat": "perf",
+      "title": "Caching: Preload critical chunks",
+      "spec": "Implement and verify Preload critical chunks."
+    },
+    {
+      "id": "T02546",
+      "cat": "sec",
+      "title": "Audit all package-lock.json deps",
+      "spec": "Check for high/critical vulnerabilities via npm audit."
+    },
+    {
+      "id": "T02551",
+      "cat": "sec",
+      "title": "Tauri IPC fuzzing",
+      "spec": "Fuzz tauri invoke commands"
+    },
+    {
+      "id": "T02553",
+      "cat": "sec",
+      "title": "CWE-1321 Prototype Pollution",
+      "spec": "Audit deepmerge/lodash usages"
+    },
+    {
+      "id": "T02554",
+      "cat": "sec",
+      "title": "CWE-79 XSS sink check",
+      "spec": "Audit all raw HTML sets"
+    },
+    {
+      "id": "T03056",
+      "cat": "sec",
+      "title": "XSS prevention in cell formula renderer",
+      "spec": "Audit FormulaEngine + ReportBuilder cell HTML rendering. Add DOMPurify sanitize on every untrusted formula output. Block onerror/onload/javascript: scheme in hyperlinks."
+    },
+    {
+      "id": "T03057",
+      "cat": "sec",
+      "title": "CSV/Excel formula injection prevention",
+      "spec": "Prefix =+-@ cells on import. Sanitize first char in every cell value during CSV import. Test with =cmd|\" /C calc\"!A0 attack vector."
+    },
+    {
+      "id": "T03058",
+      "cat": "sec",
+      "title": "Hyperlink URL allowlist",
+      "spec": "Only http/https/mailto/tel schemes allowed in cell hyperlinks. Block javascript:, data:, vbscript:, file:. Provide escape hatch for trusted internal domains."
+    },
+    {
+      "id": "T03059",
+      "cat": "sec",
+      "title": "CSP report-only then enforce",
+      "spec": "Add Content-Security-Policy meta to index.html with report-uri. Start report-only, log violations, then move to enforce."
+    },
+    {
+      "id": "T03060",
+      "cat": "sec",
+      "title": "CSP for Tauri webview",
+      "spec": "Add CSP via tauri.conf.json with connect-src/img-src/style-src allowlist for offline-first app."
+    },
+    {
+      "id": "T03061",
+      "cat": "sec",
+      "title": "Subresource Integrity for vendor scripts",
+      "spec": "Add SRI hash to every external <script> and <link>. Use sha384 baseline."
+    },
+    {
+      "id": "T03062",
+      "cat": "sec",
+      "title": "Tauri allowlist minimalism",
+      "spec": "Trim tauri.conf.json allowlist to only required commands. Each plugin capability must justify its inclusion."
+    },
+    {
+      "id": "T03063",
+      "cat": "sec",
+      "title": "Tauri command input validation",
+      "spec": "Use zod schemas to validate every Tauri command input from webview. Reject unknown keys."
+    },
+    {
+      "id": "T03064",
+      "cat": "sec",
+      "title": "IndexedDB encryption at rest",
+      "spec": "Wrap all IndexedDB payloads with AES-GCM via Web Crypto API. Key derived via PBKDF2 from user passphrase."
+    },
+    {
+      "id": "T03065",
+      "cat": "sec",
+      "title": "Master storage encryption audit",
+      "spec": "Verify masterStorage persists only ciphertext. No plaintext in dev tools."
+    },
+    {
+      "id": "T03066",
+      "cat": "sec",
+      "title": "Token rotation cadence",
+      "spec": "Verify tokenRotation utility rotates every 15min idle, 24h hard limit, single-use refresh token."
+    },
+    {
+      "id": "T03067",
+      "cat": "sec",
+      "title": "Session hijack prevention",
+      "spec": "Bind session to (ip+userAgent+canvasFingerprint). Invalidate on mismatch with grace period."
+    },
+    {
+      "id": "T03068",
+      "cat": "sec",
+      "title": "Brute force auth protection",
+      "spec": "Add exponential backoff after 3 failed attempts. CAPTCHA at 5. Lockout at 10 within 15min."
+    },
+    {
+      "id": "T03069",
+      "cat": "sec",
+      "title": "Auth token expiry enforcement",
+      "spec": "Test token TTL on idle + absolute. Refresh flow must re-auth on expired refresh token."
+    },
+    {
+      "id": "T03070",
+      "cat": "sec",
+      "title": "Refresh token reuse detection",
+      "spec": "Reuse triggers family revocation. Test stolen-then-replayed scenario."
+    },
+    {
+      "id": "T03071",
+      "cat": "sec",
+      "title": "WebAuthn passkey registration",
+      "spec": "Add WebAuthn enrollment for desktop users. TouchID/Windows Hello."
+    },
+    {
+      "id": "T03072",
+      "cat": "sec",
+      "title": "Biometric unlock for Tauri",
+      "spec": "Use @tauri-apps/plugin-biometric (if available) or keychain integration."
+    },
+    {
+      "id": "T03073",
+      "cat": "sec",
+      "title": "TOTP fallback path",
+      "spec": "Backup codes + SMS fallback for when TOTP device is lost."
+    },
+    {
+      "id": "T03074",
+      "cat": "sec",
+      "title": "File upload size limits",
+      "spec": "Enforce 50MB import, 100MB attachment limits. Reject with clear error before reading bytes."
+    },
+    {
+      "id": "T03075",
+      "cat": "sec",
+      "title": "File content-type validation",
+      "spec": "Check magic bytes, not just MIME from form. Reject .xlsx containing HTML."
+    },
+    {
+      "id": "T03076",
+      "cat": "sec",
+      "title": "Malware scanning for imports",
+      "spec": "Run ClamAV-like signature check on workbook imports. At minimum: macro presence detection."
+    },
+    {
+      "id": "T03077",
+      "cat": "sec",
+      "title": "DDE safety in Excel imports",
+      "spec": "Disable DDE in exceljs parser. Strip =DDE() formulas."
+    },
+    {
+      "id": "T03078",
+      "cat": "sec",
+      "title": "XLM macro safety",
+      "spec": "Strip XLM macros from imported workbooks. Microsoft documents attack surface."
+    },
+    {
+      "id": "T03079",
+      "cat": "sec",
+      "title": "HTML sanitization in cell comments",
+      "spec": "Use DOMPurify with strict allowlist for cell rich-text. Strip script/style/event handlers."
+    },
+    {
+      "id": "T03080",
+      "cat": "sec",
+      "title": "NLQ input sanitization",
+      "spec": "NLQEngine.ts: sanitize user prompt. Block prompt-injection attempts targeting LLM."
+    },
+    {
+      "id": "T03081",
+      "cat": "sec",
+      "title": "Prompt injection in LLM calls",
+      "spec": "Wrap all @huggingface/transformers calls with system-prompt isolation. Test with indirect injection payloads."
+    },
+    {
+      "id": "T03082",
+      "cat": "sec",
+      "title": "Plugin sandbox escape audit",
+      "spec": "Audit PluginSandbox.ts for postMessage/Iframe boundary leaks. Block DOM access beyond iframe."
+    },
+    {
+      "id": "T03083",
+      "cat": "sec",
+      "title": "Plugin permission model",
+      "spec": "Per-plugin capability tokens. User must grant network, file, clipboard explicitly."
+    },
+    {
+      "id": "T03084",
+      "cat": "sec",
+      "title": "Plugin API resource limits",
+      "spec": "Cap plugin memory, CPU, and API call rate."
+    },
+    {
+      "id": "T03085",
+      "cat": "sec",
+      "title": "Plugin version negotiation",
+      "spec": "Plugin manifest declares min/max host version. Reject incompatible at load."
+    },
+    {
+      "id": "T03086",
+      "cat": "sec",
+      "title": "Plugin marketplace signing",
+      "spec": "Ed25519 sign plugin bundles. Verify against pinned public key."
+    },
+    {
+      "id": "T03087",
+      "cat": "sec",
+      "title": "Dependency vulnerability scan",
+      "spec": "npm audit --omit=dev + OSV-Scanner in CI. Block on critical/high."
+    },
+    {
+      "id": "T03088",
+      "cat": "sec",
+      "title": "License compliance check",
+      "spec": "Verify no GPL/AGPL contamination. Allow MIT, Apache-2.0, BSD-3."
+    },
+    {
+      "id": "T03089",
+      "cat": "sec",
+      "title": "Secret leakage in bundle",
+      "spec": "Scan dist/ for API keys, tokens, .env values. Fail build on match."
+    },
+    {
+      "id": "T03090",
+      "cat": "sec",
+      "title": "Console.* in production",
+      "spec": "Ensure console.log/info/debug are stripped from prod bundle. Keep warn/error."
+    },
+    {
+      "id": "T03091",
+      "cat": "sec",
+      "title": "Error message PII scrubbing",
+      "spec": "Scrub emails, phone, SSN, credit card from any error message before logging."
+    },
+    {
+      "id": "T03092",
+      "cat": "sec",
+      "title": "Email PII detection in cells",
+      "spec": "Auto-classify cells containing PII. Enforce column-level encryption."
+    },
+    {
+      "id": "T03093",
+      "cat": "sec",
+      "title": "Data classification enforcement",
+      "spec": "Tag every model field with classification: public|internal|confidential|restricted."
+    },
+    {
+      "id": "T03094",
+      "cat": "sec",
+      "title": "GDPR right to erasure",
+      "spec": "User can request full data wipe across all stores, workers, IndexedDB, Tauri."
+    },
+    {
+      "id": "T03095",
+      "cat": "sec",
+      "title": "CCPA opt-out signals",
+      "spec": "Honor Global Privacy Control header on web."
+    },
+    {
+      "id": "T03096",
+      "cat": "sec",
+      "title": "HIPAA audit log integrity",
+      "spec": "Append-only hash-chained audit log. Detect tampering."
+    },
+    {
+      "id": "T03097",
+      "cat": "sec",
+      "title": "SOX segregation of duties",
+      "spec": "WorkflowEngine must enforce role separation: preparer ≠ approver ≠ admin."
+    },
+    {
+      "id": "T03098",
+      "cat": "sec",
+      "title": "Encrypted backups at rest",
+      "spec": "Backup files use AES-256-GCM with user-derived key."
+    },
+    {
+      "id": "T03099",
+      "cat": "sec",
+      "title": "Key escrow recovery flow",
+      "spec": "Optional recovery key printed at setup, hashed and stored separately."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

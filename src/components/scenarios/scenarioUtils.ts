@@ -176,7 +176,7 @@ export function pickBest(
       best = s;
     }
   }
-  return { value: best.calculatedMetrics[key], sourceId: best.id };
+  return { value: best.calculatedMetrics[key]!, sourceId: best.id };
 }
 
 export function pickWorst(
@@ -192,11 +192,11 @@ export function pickWorst(
       worst = s;
     }
   }
-  return { value: worst.calculatedMetrics[key], sourceId: worst.id };
+  return { value: worst.calculatedMetrics[key]!, sourceId: worst.id };
 }
 
 export function averageValue(scenarios: Scenario[], key: keyof ScenarioMetrics): number {
-  const sum = scenarios.reduce((acc, s) => acc + s.calculatedMetrics[key], 0);
+  const sum = scenarios.reduce((acc, s) => acc + s.calculatedMetrics[key]!, 0);
   return sum / scenarios.length;
 }
 

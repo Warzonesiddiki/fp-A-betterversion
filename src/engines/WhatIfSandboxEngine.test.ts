@@ -256,7 +256,7 @@ describe('WhatIfSandboxEngine', () => {
 
       const comparison = engine.compare(sandboxA.id, sandboxB.id);
       expect(comparison.differences).toHaveLength(1);
-      expect(comparison.differences[0].delta).toBe(200000);
+      expect(comparison!.differences[0]!.delta).toBe(200000);
       expect(comparison.summary.totalDifferences).toBe(1);
     });
 
@@ -347,8 +347,8 @@ describe('WhatIfSandboxEngine', () => {
       );
 
       const comparison = engine.compare(sandboxA.id, sandboxB.id);
-      expect(comparison.differences[0].delta).toBe(200000); // Revenue: largest delta
-      expect(comparison.differences[1].delta).toBe(-100000); // COGS: second largest
+      expect(comparison!.differences[0]!.delta).toBe(200000); // Revenue: largest delta
+      expect(comparison!.differences[1]!.delta).toBe(-100000); // COGS: second largest
     });
   });
 

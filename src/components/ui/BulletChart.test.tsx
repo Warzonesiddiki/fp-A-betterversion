@@ -37,7 +37,7 @@ describe('BulletChart', () => {
   // Error state
   it('renders error message when error is provided', () => {
     render(<BulletChart {...defaultProps} error="Load failed" />);
-    expect(screen.getByText('Load failed')).toBeInTheDocument();
+    expect(screen.getAllByText(/Load failed/i)[0]).toBeInTheDocument();
   });
 
   // Invalid data

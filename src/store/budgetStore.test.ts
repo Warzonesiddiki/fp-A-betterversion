@@ -118,7 +118,7 @@ describe('budgetStore', () => {
     useBudgetStore.getState().setBudgets(first);
     useBudgetStore.getState().setBudgets(second);
     expect(useBudgetStore.getState().budgets).toHaveLength(1);
-    expect(useBudgetStore.getState().budgets[0].name).toBe('Second');
+    expect(useBudgetStore!.getState().budgets[0]!.name).toBe('Second');
   });
 
   // --- setActiveBudget ---
@@ -155,7 +155,7 @@ describe('budgetStore', () => {
     useBudgetStore.getState().setLineItems([createLineItem({ id: 'item-1', amount: 1000 })]);
     useBudgetStore.getState().setLineItems([createLineItem({ id: 'item-2', amount: 2000 })]);
     expect(useBudgetStore.getState().lineItems).toHaveLength(1);
-    expect(useBudgetStore.getState().lineItems[0].amount).toBe(2000);
+    expect(useBudgetStore!.getState().lineItems[0]!.amount).toBe(2000);
   });
 
   // --- updateLineItem ---
@@ -164,7 +164,7 @@ describe('budgetStore', () => {
     useBudgetStore.setState({ lineItems: [createLineItem({ id: 'item-1', amount: 1000 })] });
     useBudgetStore.getState().updateLineItem('item-1', { amount: 2000 });
     const state = useBudgetStore.getState();
-    expect(state.lineItems[0].amount).toBe(2000);
+    expect(state!.lineItems[0]!.amount).toBe(2000);
     expect(state.lastChange).not.toBeNull();
     expect(state.lastChange!.cellId).toBe('item-1');
   });
@@ -173,7 +173,7 @@ describe('budgetStore', () => {
     useBudgetStore.setState({ lineItems: [createLineItem({ id: 'item-1', amount: 1000 })] });
     useBudgetStore.getState().updateLineItem('non-existent', { amount: 5000 });
     const state = useBudgetStore.getState();
-    expect(state.lineItems[0].amount).toBe(1000);
+    expect(state!.lineItems[0]!.amount).toBe(1000);
     expect(state.lastChange).toBeNull();
   });
 
@@ -185,11 +185,11 @@ describe('budgetStore', () => {
     expect(id).toMatch(/^bgt-/);
     const state = useBudgetStore.getState();
     expect(state.budgets).toHaveLength(1);
-    expect(state.budgets[0].id).toBe(id);
-    expect(state.budgets[0].name).toBe('FY2024 Budget');
-    expect(state.budgets[0].createdBy).toBe('usr-001');
-    expect(state.budgets[0].createdAt).toBeDefined();
-    expect(state.budgets[0].updatedAt).toBeDefined();
+    expect(state!.budgets[0]!.id).toBe(id);
+    expect(state!.budgets[0]!.name).toBe('FY2024 Budget');
+    expect(state!.budgets[0]!.createdBy).toBe('usr-001');
+    expect(state!.budgets[0]!.createdAt).toBeDefined();
+    expect(state!.budgets[0]!.updatedAt).toBeDefined();
   });
 
   it('should create multiple budgets', () => {
@@ -270,8 +270,8 @@ describe('budgetStore', () => {
     expect(newId).toMatch(/^bgt-/);
     const state = useBudgetStore.getState();
     expect(state.budgets).toHaveLength(2);
-    expect(state.budgets[1].name).toBe('Original (Copy)');
-    expect(state.budgets[1].id).toBe(newId);
+    expect(state!.budgets[1]!.name).toBe('Original (Copy)');
+    expect(state!.budgets[1]!.id).toBe(newId);
   });
 
   it('should return empty string when duplicating non-existent budget', () => {
@@ -298,7 +298,7 @@ describe('budgetStore', () => {
     await submitPromise;
     const state = useBudgetStore.getState();
     expect(state.isSubmitting).toBe(false);
-    expect(state.budgets[0].status).toBe('InReview');
+    expect(state!.budgets[0]!.status).toBe('InReview');
   });
 
   // --- approveBudget ---
@@ -315,7 +315,7 @@ describe('budgetStore', () => {
     ] as Budget[];
     useBudgetStore.setState({ budgets });
     useBudgetStore.getState().approveBudget('bgt-1');
-    expect(useBudgetStore.getState().budgets[0].status).toBe('Approved');
+    expect(useBudgetStore!.getState().budgets[0]!.status).toBe('Approved');
   });
 
   it('should not throw when approving non-existent budget', () => {
@@ -336,7 +336,7 @@ describe('budgetStore', () => {
     ] as Budget[];
     useBudgetStore.setState({ budgets });
     useBudgetStore.getState().rejectBudget('bgt-1');
-    expect(useBudgetStore.getState().budgets[0].status).toBe('Draft');
+    expect(useBudgetStore!.getState().budgets[0]!.status).toBe('Draft');
   });
 
   it('should reject non-existent budget without error', () => {

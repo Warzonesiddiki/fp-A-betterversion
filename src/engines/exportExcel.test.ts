@@ -85,9 +85,9 @@ describe('exportToExcel', () => {
     await exportToExcel(data, config);
 
     expect(mockWorksheet.columns).toHaveLength(2);
-    expect(mockWorksheet.columns[0].header).toBe('Name');
-    expect(mockWorksheet.columns[0].key).toBe('Name');
-    expect(mockWorksheet.columns[0].width).toBeGreaterThan(0);
+    expect(mockWorksheet.columns[0]!.header).toBe('Name');
+    expect(mockWorksheet.columns[0]!.key).toBe('Name');
+    expect(mockWorksheet.columns[0]!.width).toBeGreaterThan(0);
   });
 
   it('should call saveAs with correct filename', async () => {

@@ -245,7 +245,7 @@ export class ConsolidationEngine {
 
     try {
       // Step 0: Calculate effective ownership percentages for the hierarchy
-      const parentId = entities[0].entityId;
+      const parentId = entities[0]!.entityId;
       const effectiveOwnershipMap = this.calculateEffectiveOwnership(parentId, ownerships);
 
       // Step 1: Translate foreign subsidiaries to reporting currency
@@ -480,8 +480,8 @@ export class ConsolidationEngine {
       const entityIds = Array.from(entityBalances.keys());
       for (let i = 0; i < entityIds.length; i++) {
         for (let j = i + 1; j < entityIds.length; j++) {
-          const fromId = entityIds[i];
-          const toId = entityIds[j];
+          const fromId = entityIds[i]!;
+          const toId = entityIds[j]!;
           const fromBalance = entityBalances.get(fromId) ?? 0;
           const toBalance = entityBalances.get(toId) ?? 0;
 
@@ -674,9 +674,9 @@ export class ConsolidationEngine {
       if (investmentEntries && investmentEntries.length > 0) {
         const totalInvestment = investmentEntries.reduce((sum, e) => sum + e.amount, 0);
         eliminations.push({
-          fromEntityId: entities[0].entityId,
+          fromEntityId: entities[0]!.entityId,
           toEntityId: vie.entityId,
-          accountCode: investmentEntries[0].accountCode,
+          accountCode: investmentEntries[0]!.accountCode,
           accountName: 'Investment in VIE',
           eliminatedAmount: -totalInvestment,
           debitAmount: 0,
@@ -994,16 +994,16 @@ export class ConsolidationEngine {
       const gw = goodwillCalculations[i];
       const ownership = ownerships[i];
 
-      if (gw.goodwill <= 0) continue;
+      if (gw!.goodwill <= 0) continue;
 
       // Add goodwill as an asset
       adjustments.push({
         accountCode: '1800',
         accountName: 'Goodwill',
-        entityId: ownership.parentId,
-        debitAmount: gw.goodwill,
+        entityId: ownership!.parentId,
+        debitAmount: gw!.goodwill,
         creditAmount: 0,
-        description: `Goodwill from acquisition of ${ownership.childId}`,
+        description: `Goodwill from acquisition of ${ownership!.childId}`,
         type: 'goodwill',
       });
 
@@ -1067,7 +1067,7 @@ export class ConsolidationEngine {
           debit: adjustment.debitAmount,
           credit: adjustment.creditAmount,
           netChange: adjustment.debitAmount - adjustment.creditAmount,
-          date: new Date().toISOString().split('T')[0],
+          date: new Date().toISOString().split('T')[0] ?? '',
           amount: adjustment.debitAmount - adjustment.creditAmount,
           description: '',
           reference: '',

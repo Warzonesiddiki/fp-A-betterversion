@@ -73,8 +73,8 @@ describe('ManufacturingEngine', () => {
     it('should return monthly output trend', () => {
       const trend = ManufacturingEngine.getOutputTrend(mockEntries);
       expect(trend.length).toBeGreaterThan(0);
-      expect(trend[0]).toHaveProperty('month');
-      expect(trend[0]).toHaveProperty('output');
+      expect(trend[0]!).toHaveProperty('month');
+      expect(trend[0]!).toHaveProperty('output');
     });
   });
 });

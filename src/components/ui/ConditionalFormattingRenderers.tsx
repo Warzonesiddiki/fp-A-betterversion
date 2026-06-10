@@ -74,16 +74,16 @@ export interface IconSetRendererProps {
 export function IconSetRenderer({ iconIndex, config, className, value }: IconSetRendererProps) {
   const icons = ICON_SETS[config.type] ?? ICON_SETS['3-arrows'];
   const colors = ICON_COLORS[config.type] ?? ICON_COLORS['3-arrows'];
-  const safeIdx = Math.max(0, Math.min(icons.length - 1, iconIndex));
+  const safeIdx = Math.max(0, Math.min(icons!.length - 1, iconIndex));
 
   return (
     <div className={cn('flex items-center gap-1', className)}>
       <span
         className="text-sm leading-none"
-        style={{ color: colors[safeIdx] }}
-        aria-label={`Rating: ${safeIdx + 1} of ${icons.length}`}
+        style={{ color: colors![safeIdx] }}
+        aria-label={`Rating: ${safeIdx + 1} of ${icons!.length}`}
       >
-        {icons[safeIdx]}
+        {icons![safeIdx]}
       </span>
       {!config.showIconOnly && value !== undefined && (
         <span className="tabular-nums text-xs">
@@ -143,7 +143,7 @@ export function VarianceHighlighter({ value, direction, className }: VarianceHig
     <div
       className={cn(
         'flex items-center justify-end w-full px-2 py-1 rounded-sm tabular-nums text-xs font-medium',
-        VARIANCE_STYLES[direction],
+        VARIANCE_STYLES[direction]!,
         className
       )}
     >

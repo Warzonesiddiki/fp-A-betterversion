@@ -1,0 +1,308 @@
+{
+  "agent": "agent-44",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T04329",
+      "cat": "a11y",
+      "title": "reports page axe-core pass",
+      "spec": "Run axe-core on every page in reports. Zero violations."
+    },
+    {
+      "id": "T04333",
+      "cat": "a11y",
+      "title": "retail page axe-core pass",
+      "spec": "Run axe-core on every page in retail. Zero violations."
+    },
+    {
+      "id": "T04337",
+      "cat": "a11y",
+      "title": "revenue page axe-core pass",
+      "spec": "Run axe-core on every page in revenue. Zero violations."
+    },
+    {
+      "id": "T04341",
+      "cat": "a11y",
+      "title": "saas page axe-core pass",
+      "spec": "Run axe-core on every page in saas. Zero violations."
+    },
+    {
+      "id": "T04345",
+      "cat": "a11y",
+      "title": "scenarios page axe-core pass",
+      "spec": "Run axe-core on every page in scenarios. Zero violations."
+    },
+    {
+      "id": "T04349",
+      "cat": "a11y",
+      "title": "sector page axe-core pass",
+      "spec": "Run axe-core on every page in sector. Zero violations."
+    },
+    {
+      "id": "T04353",
+      "cat": "a11y",
+      "title": "sectors page axe-core pass",
+      "spec": "Run axe-core on every page in sectors. Zero violations."
+    },
+    {
+      "id": "T04357",
+      "cat": "a11y",
+      "title": "settings page axe-core pass",
+      "spec": "Run axe-core on every page in settings. Zero violations."
+    },
+    {
+      "id": "T04361",
+      "cat": "a11y",
+      "title": "tax page axe-core pass",
+      "spec": "Run axe-core on every page in tax. Zero violations."
+    },
+    {
+      "id": "T04365",
+      "cat": "a11y",
+      "title": "telecom page axe-core pass",
+      "spec": "Run axe-core on every page in telecom. Zero violations."
+    },
+    {
+      "id": "T04369",
+      "cat": "a11y",
+      "title": "templates page axe-core pass",
+      "spec": "Run axe-core on every page in templates. Zero violations."
+    },
+    {
+      "id": "T04373",
+      "cat": "a11y",
+      "title": "treasury page axe-core pass",
+      "spec": "Run axe-core on every page in treasury. Zero violations."
+    },
+    {
+      "id": "T04377",
+      "cat": "a11y",
+      "title": "variance page axe-core pass",
+      "spec": "Run axe-core on every page in variance. Zero violations."
+    },
+    {
+      "id": "T04381",
+      "cat": "a11y",
+      "title": "workforce page axe-core pass",
+      "spec": "Run axe-core on every page in workforce. Zero violations."
+    },
+    {
+      "id": "T05004",
+      "cat": "a11y",
+      "title": "WCAG 2.2 1.1.1 Non-text Content compliance audit",
+      "spec": "Audit codebase for 1.1.1 Non-text Content. Document violations and fix path."
+    },
+    {
+      "id": "T05005",
+      "cat": "a11y",
+      "title": "WCAG 2.2 1.3.1 Info and Relationships compliance audit",
+      "spec": "Audit codebase for 1.3.1 Info and Relationships. Document violations and fix path."
+    },
+    {
+      "id": "T05006",
+      "cat": "a11y",
+      "title": "WCAG 2.2 1.4.3 Contrast Minimum compliance audit",
+      "spec": "Audit codebase for 1.4.3 Contrast Minimum. Document violations and fix path."
+    },
+    {
+      "id": "T05007",
+      "cat": "a11y",
+      "title": "WCAG 2.2 1.4.11 Non-text Contrast compliance audit",
+      "spec": "Audit codebase for 1.4.11 Non-text Contrast. Document violations and fix path."
+    },
+    {
+      "id": "T05008",
+      "cat": "a11y",
+      "title": "WCAG 2.2 1.4.12 Text Spacing compliance audit",
+      "spec": "Audit codebase for 1.4.12 Text Spacing. Document violations and fix path."
+    },
+    {
+      "id": "T05009",
+      "cat": "a11y",
+      "title": "WCAG 2.2 1.4.13 Content on Hover compliance audit",
+      "spec": "Audit codebase for 1.4.13 Content on Hover. Document violations and fix path."
+    },
+    {
+      "id": "T05010",
+      "cat": "a11y",
+      "title": "WCAG 2.2 2.1.1 Keyboard compliance audit",
+      "spec": "Audit codebase for 2.1.1 Keyboard. Document violations and fix path."
+    },
+    {
+      "id": "T05011",
+      "cat": "a11y",
+      "title": "WCAG 2.2 2.1.2 No Keyboard Trap compliance audit",
+      "spec": "Audit codebase for 2.1.2 No Keyboard Trap. Document violations and fix path."
+    },
+    {
+      "id": "T05012",
+      "cat": "a11y",
+      "title": "WCAG 2.2 2.4.3 Focus Order compliance audit",
+      "spec": "Audit codebase for 2.4.3 Focus Order. Document violations and fix path."
+    },
+    {
+      "id": "T05013",
+      "cat": "a11y",
+      "title": "WCAG 2.2 2.4.7 Focus Visible compliance audit",
+      "spec": "Audit codebase for 2.4.7 Focus Visible. Document violations and fix path."
+    },
+    {
+      "id": "T05014",
+      "cat": "a11y",
+      "title": "WCAG 2.2 2.4.11 Focus Not Obscured (Min) compliance audit",
+      "spec": "Audit codebase for 2.4.11 Focus Not Obscured (Min). Document violations and fix path."
+    },
+    {
+      "id": "T05015",
+      "cat": "a11y",
+      "title": "WCAG 2.2 2.5.7 Dragging Movements compliance audit",
+      "spec": "Audit codebase for 2.5.7 Dragging Movements. Document violations and fix path."
+    },
+    {
+      "id": "T05016",
+      "cat": "a11y",
+      "title": "WCAG 2.2 2.5.8 Target Size (Min) compliance audit",
+      "spec": "Audit codebase for 2.5.8 Target Size (Min). Document violations and fix path."
+    },
+    {
+      "id": "T05017",
+      "cat": "a11y",
+      "title": "WCAG 2.2 3.3.1 Error Identification compliance audit",
+      "spec": "Audit codebase for 3.3.1 Error Identification. Document violations and fix path."
+    },
+    {
+      "id": "T05018",
+      "cat": "a11y",
+      "title": "WCAG 2.2 4.1.2 Name, Role, Value compliance audit",
+      "spec": "Audit codebase for 4.1.2 Name, Role, Value. Document violations and fix path."
+    },
+    {
+      "id": "T05399",
+      "cat": "a11y",
+      "title": "AppShell keyboard audit",
+      "spec": "All AppShell variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05401",
+      "cat": "a11y",
+      "title": "AsidePanel keyboard audit",
+      "spec": "All AsidePanel variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05403",
+      "cat": "a11y",
+      "title": "AuditTrailViewer keyboard audit",
+      "spec": "All AuditTrailViewer variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05405",
+      "cat": "a11y",
+      "title": "AutoCompleteInput keyboard audit",
+      "spec": "All AutoCompleteInput variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05407",
+      "cat": "a11y",
+      "title": "BarChart keyboard audit",
+      "spec": "All BarChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05409",
+      "cat": "a11y",
+      "title": "BottomSheet keyboard audit",
+      "spec": "All BottomSheet variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05411",
+      "cat": "a11y",
+      "title": "BoxPlot keyboard audit",
+      "spec": "All BoxPlot variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05413",
+      "cat": "a11y",
+      "title": "BreadcrumbItem keyboard audit",
+      "spec": "All BreadcrumbItem variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05415",
+      "cat": "a11y",
+      "title": "BrushChart keyboard audit",
+      "spec": "All BrushChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05417",
+      "cat": "a11y",
+      "title": "BubbleChart keyboard audit",
+      "spec": "All BubbleChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05419",
+      "cat": "a11y",
+      "title": "Card keyboard audit",
+      "spec": "All Card variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05421",
+      "cat": "a11y",
+      "title": "Carousel keyboard audit",
+      "spec": "All Carousel variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05423",
+      "cat": "a11y",
+      "title": "CellEditor keyboard audit",
+      "spec": "All CellEditor variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05425",
+      "cat": "a11y",
+      "title": "ChartContainer keyboard audit",
+      "spec": "All ChartContainer variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05427",
+      "cat": "a11y",
+      "title": "ChartLegend keyboard audit",
+      "spec": "All ChartLegend variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05429",
+      "cat": "a11y",
+      "title": "ChartTooltip keyboard audit",
+      "spec": "All ChartTooltip variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05431",
+      "cat": "a11y",
+      "title": "Checkbox keyboard audit",
+      "spec": "All Checkbox variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05433",
+      "cat": "a11y",
+      "title": "Chip keyboard audit",
+      "spec": "All Chip variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05435",
+      "cat": "a11y",
+      "title": "CollapsiblePanel keyboard audit",
+      "spec": "All CollapsiblePanel variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05437",
+      "cat": "a11y",
+      "title": "ColorPicker keyboard audit",
+      "spec": "All ColorPicker variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05439",
+      "cat": "a11y",
+      "title": "ColumnChooser keyboard audit",
+      "spec": "All ColumnChooser variants pass keyboard-only navigation audit."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

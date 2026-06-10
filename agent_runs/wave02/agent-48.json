@@ -1,0 +1,308 @@
+{
+  "agent": "agent-48",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T05741",
+      "cat": "a11y",
+      "title": "TableFooter keyboard audit",
+      "spec": "All TableFooter variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05743",
+      "cat": "a11y",
+      "title": "TableHeader keyboard audit",
+      "spec": "All TableHeader variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05745",
+      "cat": "a11y",
+      "title": "TableRow keyboard audit",
+      "spec": "All TableRow variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05747",
+      "cat": "a11y",
+      "title": "Tag keyboard audit",
+      "spec": "All Tag variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05749",
+      "cat": "a11y",
+      "title": "TagInput keyboard audit",
+      "spec": "All TagInput variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05751",
+      "cat": "a11y",
+      "title": "TextField keyboard audit",
+      "spec": "All TextField variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05753",
+      "cat": "a11y",
+      "title": "TextInput keyboard audit",
+      "spec": "All TextInput variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05755",
+      "cat": "a11y",
+      "title": "TextLink keyboard audit",
+      "spec": "All TextLink variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05757",
+      "cat": "a11y",
+      "title": "ThemeProvider keyboard audit",
+      "spec": "All ThemeProvider variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05759",
+      "cat": "a11y",
+      "title": "Timeline keyboard audit",
+      "spec": "All Timeline variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05761",
+      "cat": "a11y",
+      "title": "TimelineEvent keyboard audit",
+      "spec": "All TimelineEvent variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05763",
+      "cat": "a11y",
+      "title": "TimePicker keyboard audit",
+      "spec": "All TimePicker variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05765",
+      "cat": "a11y",
+      "title": "TimeSeriesChart keyboard audit",
+      "spec": "All TimeSeriesChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05767",
+      "cat": "a11y",
+      "title": "TitleBar keyboard audit",
+      "spec": "All TitleBar variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05769",
+      "cat": "a11y",
+      "title": "ToastItem keyboard audit",
+      "spec": "All ToastItem variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05771",
+      "cat": "a11y",
+      "title": "Toggle keyboard audit",
+      "spec": "All Toggle variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05773",
+      "cat": "a11y",
+      "title": "ToggleButton keyboard audit",
+      "spec": "All ToggleButton variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05775",
+      "cat": "a11y",
+      "title": "ToggleGroup keyboard audit",
+      "spec": "All ToggleGroup variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05777",
+      "cat": "a11y",
+      "title": "TopBar keyboard audit",
+      "spec": "All TopBar variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05779",
+      "cat": "a11y",
+      "title": "TreeNode keyboard audit",
+      "spec": "All TreeNode variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05781",
+      "cat": "a11y",
+      "title": "TrendArrow keyboard audit",
+      "spec": "All TrendArrow variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05783",
+      "cat": "a11y",
+      "title": "TrendLine keyboard audit",
+      "spec": "All TrendLine variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05785",
+      "cat": "a11y",
+      "title": "TreemapNode keyboard audit",
+      "spec": "All TreemapNode variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05787",
+      "cat": "a11y",
+      "title": "UndoToast keyboard audit",
+      "spec": "All UndoToast variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05789",
+      "cat": "a11y",
+      "title": "UnitToggle keyboard audit",
+      "spec": "All UnitToggle variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05791",
+      "cat": "a11y",
+      "title": "UpdateBanner keyboard audit",
+      "spec": "All UpdateBanner variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05793",
+      "cat": "a11y",
+      "title": "UploadButton keyboard audit",
+      "spec": "All UploadButton variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05795",
+      "cat": "a11y",
+      "title": "UserAvatar keyboard audit",
+      "spec": "All UserAvatar variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05797",
+      "cat": "a11y",
+      "title": "UserMenu keyboard audit",
+      "spec": "All UserMenu variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05799",
+      "cat": "a11y",
+      "title": "ValidationBadge keyboard audit",
+      "spec": "All ValidationBadge variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05801",
+      "cat": "a11y",
+      "title": "VariableEditor keyboard audit",
+      "spec": "All VariableEditor variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05803",
+      "cat": "a11y",
+      "title": "VersionBadge keyboard audit",
+      "spec": "All VersionBadge variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05805",
+      "cat": "a11y",
+      "title": "ViewSwitcher keyboard audit",
+      "spec": "All ViewSwitcher variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05807",
+      "cat": "a11y",
+      "title": "VirtualList keyboard audit",
+      "spec": "All VirtualList variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05809",
+      "cat": "a11y",
+      "title": "WizardStep keyboard audit",
+      "spec": "All WizardStep variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05811",
+      "cat": "a11y",
+      "title": "WizardStepper keyboard audit",
+      "spec": "All WizardStepper variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T06042",
+      "cat": "a11y",
+      "title": "DashboardPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DashboardPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06045",
+      "cat": "a11y",
+      "title": "LoginPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for LoginPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06048",
+      "cat": "a11y",
+      "title": "SignupPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SignupPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06051",
+      "cat": "a11y",
+      "title": "OnboardingPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for OnboardingPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06054",
+      "cat": "a11y",
+      "title": "SettingsPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SettingsPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06057",
+      "cat": "a11y",
+      "title": "BudgetListPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for BudgetListPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06060",
+      "cat": "a11y",
+      "title": "BudgetEditorPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for BudgetEditorPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06063",
+      "cat": "a11y",
+      "title": "BudgetApprovalPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for BudgetApprovalPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06066",
+      "cat": "a11y",
+      "title": "BudgetComparisonPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for BudgetComparisonPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06069",
+      "cat": "a11y",
+      "title": "ForecastPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ForecastPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06072",
+      "cat": "a11y",
+      "title": "RollingForecastPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for RollingForecastPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06075",
+      "cat": "a11y",
+      "title": "DriverModelingPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for DriverModelingPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06078",
+      "cat": "a11y",
+      "title": "SensitivityPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for SensitivityPage. All WCAG 2.2 AA issues fixed."
+    },
+    {
+      "id": "T06081",
+      "cat": "a11y",
+      "title": "ScenarioListPage a11y deep audit",
+      "spec": "axe-core + manual screen reader test for ScenarioListPage. All WCAG 2.2 AA issues fixed."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

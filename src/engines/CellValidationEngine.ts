@@ -126,7 +126,9 @@ export class CellValidationEngine {
       case 'required':
         return value !== null && value !== undefined && value !== '';
       case 'pattern':
-        return new RegExp((rule.params as ValidationRuleParams['pattern']).regex).test(String(value));
+        return new RegExp((rule.params as ValidationRuleParams['pattern']).regex).test(
+          String(value)
+        );
       default:
         return true;
     }

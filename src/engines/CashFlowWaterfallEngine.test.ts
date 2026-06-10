@@ -60,8 +60,8 @@ describe('CashFlowWaterfallEngine', () => {
         { inflows: 50000, outflows: 30000 },
       ]);
       expect(result.length).toBe(6);
-      expect(result[0].closingBalance).toBe(120000);
-      expect(result[5].closingBalance).toBe(220000);
+      expect(result![0]!.closingBalance).toBe(120000);
+      expect(result![5]!.closingBalance).toBe(220000);
     });
 
     it('should handle negative cash flow', () => {
@@ -70,7 +70,7 @@ describe('CashFlowWaterfallEngine', () => {
         { inflows: 20000, outflows: 30000 },
         { inflows: 20000, outflows: 30000 },
       ]);
-      expect(result[2].closingBalance).toBe(70000);
+      expect(result![2]!.closingBalance).toBe(70000);
     });
   });
 });

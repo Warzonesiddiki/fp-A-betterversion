@@ -121,7 +121,7 @@ export function AboutDialog({ isOpen, onClose }: AboutDialogProps) {
                   href={tech.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors hover:opacity-80"
+                  className="flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors hover:opacity-80 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                   style={{
                     background: 'var(--bg-tertiary)',
                     color: 'var(--text-primary)',

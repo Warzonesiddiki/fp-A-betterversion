@@ -49,7 +49,7 @@ export default async function exportToExcel(data: ExportData, config: ExportConf
   ];
 
   worksheet.columns = data.headers.map((h, i) => {
-    const maxLen = Math.max(h.length, ...data.rows.map((r) => String(rowValue(r[i])).length));
+    const maxLen = Math.max(h.length, ...data.rows.map((r) => String(rowValue(r[i]!)).length));
     return {
       header: h,
       key: h,
@@ -101,7 +101,7 @@ export async function exportToExcelWithConditionalFormatting(
   worksheet.views = [{ state: 'frozen', xSplit: EXCEL_FREEZE_X, ySplit: EXCEL_FREEZE_Y }];
 
   worksheet.columns = data.headers.map((h, i) => {
-    const maxLen = Math.max(h.length, ...data.rows.map((r) => String(rowValue(r[i])).length));
+    const maxLen = Math.max(h.length, ...data.rows.map((r) => String(rowValue(r[i]!)).length));
     return { header: h, key: h, width: maxLen + EXCEL_COL_WIDTH_PADDING };
   });
 

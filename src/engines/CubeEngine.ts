@@ -508,7 +508,7 @@ export class CubeEngine {
     if (this.snapshots.length > 0) {
       const ids = this.snapshots.map((s) => {
         const match = s.id.match(/snap-(\d+)-(\d+)/);
-        return match ? parseInt(match[2], 10) : 0;
+        return match ? parseInt(match[2]!, 10) : 0;
       });
       this.snapshotCounter = Math.max(...ids, 0);
     }
@@ -521,7 +521,7 @@ export class CubeEngine {
     await this.storage.saveCubes(this.cubes);
 
     const cellEntries = Array.from(this.cells.entries()).map(([key, cell]) => ({
-      cube: key.split('|')[0],
+      cube: key.split('|')[0]!,
       cell,
       cellKey: key,
     }));
@@ -677,7 +677,7 @@ export class CubeEngine {
     // Walk backwards through the snapshot chain, collecting values
     const result = new Map<string, unknown>();
     for (let i = snapshotIndex; i >= 0; i--) {
-      const snapId = this.snapshots[i].id;
+      const snapId = this.snapshots[i]!.id;
       const cells = this.snapshotCells.get(snapId);
       if (!cells) continue;
 
@@ -737,12 +737,12 @@ export class CubeEngine {
 
   private parseCellAddress(key: string): CellAddress {
     const parts = key.split('|');
-    const cube = parts[0];
-    const measure = parts[parts.length - 1];
+    const cube = parts[0]!;
+    const measure = parts[parts.length - 1]!;
     const coords: Record<string, string> = {};
     for (let i = 1; i < parts.length - 1; i++) {
-      const [dim, memberId] = parts[i].split('=');
-      coords[dim] = memberId;
+      const [dim, memberId] = parts[i]!.split('=');
+      coords[dim!] = memberId!;
     }
     return { cube, coords, measure };
   }

@@ -160,11 +160,11 @@ describe('MasterDataEngine', () => {
       engine.update('entity-1', { name: 'Updated' }, 'admin', 'correction');
       const changes = engine.getChanges('entity-1');
       expect(changes).toHaveLength(1);
-      expect(changes[0].changedBy).toBe('admin');
-      expect(changes[0].reason).toBe('correction');
-      expect(changes[0].field).toBe('name');
-      expect(changes[0].oldValue).toBe('Corporate HQ');
-      expect(changes[0].newValue).toBe('Updated');
+      expect(changes![0]!.changedBy).toBe('admin');
+      expect(changes![0]!.reason).toBe('correction');
+      expect(changes![0]!.field).toBe('name');
+      expect(changes![0]!.oldValue).toBe('Corporate HQ');
+      expect(changes![0]!.newValue).toBe('Updated');
     });
 
     it('should not record change when value is identical', () => {
@@ -191,7 +191,7 @@ describe('MasterDataEngine', () => {
 
       const results = engine.search('corporate');
       expect(results).toHaveLength(1);
-      expect(results[0].code).toBe('CORP');
+      expect(results![0]!.code).toBe('CORP');
     });
 
     it('should search by code', () => {
@@ -312,15 +312,15 @@ describe('MasterDataEngine', () => {
     it('should build hierarchy tree', () => {
       const tree = engine.getHierarchy('entity');
       expect(tree).toHaveLength(1);
-      expect(tree[0].code).toBe('CORP');
-      expect(tree[0].children).toHaveLength(2);
-      expect(tree[0].children[0].children).toHaveLength(1);
+      expect(tree![0]!.code).toBe('CORP');
+      expect(tree![0]!.children).toHaveLength(2);
+      expect(tree![0]!.children[0]!.children).toHaveLength(1);
     });
 
     it('should build hierarchy from specific root', () => {
       const tree = engine.getHierarchy('entity', 'na');
       expect(tree).toHaveLength(1);
-      expect(tree[0].code).toBe('NA');
+      expect(tree![0]!.code).toBe('NA');
     });
 
     it('should return empty for non-existent root', () => {
@@ -331,17 +331,17 @@ describe('MasterDataEngine', () => {
     it('should compute correct path', () => {
       const path = engine.getPath('us');
       expect(path).toHaveLength(3);
-      expect(path[0].code).toBe('CORP');
-      expect(path[1].code).toBe('NA');
-      expect(path[2].code).toBe('US');
+      expect(path![0]!.code).toBe('CORP');
+      expect(path![1]!.code).toBe('NA');
+      expect(path![2]!.code).toBe('US');
     });
 
     it('should include level and path in hierarchy nodes', () => {
       const tree = engine.getHierarchy('entity');
-      expect(tree[0].level).toBe(0);
-      expect(tree[0].path).toEqual(['CORP']);
-      expect(tree[0].children[0].level).toBe(1);
-      expect(tree[0].children[0].path).toEqual(['CORP', 'NA']);
+      expect(tree![0]!.level).toBe(0);
+      expect(tree![0]!.path).toEqual(['CORP']);
+      expect(tree![0]!.children[0]!.level).toBe(1);
+      expect(tree![0]!.children[0]!.path).toEqual(['CORP', 'NA']);
     });
   });
 
@@ -446,8 +446,8 @@ describe('MasterDataEngine', () => {
       engine.update('entity-1', { name: 'A' }, 'admin');
       engine.update('entity-1', { name: 'B' }, 'admin');
       const changes = engine.getChanges();
-      expect(new Date(changes[0].changedAt).getTime()).toBeGreaterThanOrEqual(
-        new Date(changes[1].changedAt).getTime()
+      expect(new Date(changes![0]!.changedAt).getTime()).toBeGreaterThanOrEqual(
+        new Date(changes![1]!.changedAt).getTime()
       );
     });
   });
@@ -523,15 +523,15 @@ describe('MasterDataEngine', () => {
     it('should create system entities', () => {
       const entities = createSystemEntities();
       expect(entities.length).toBeGreaterThan(0);
-      expect(entities[0].code).toBe('CORP');
-      expect(entities[0].parentId).toBeNull();
-      expect(entities[1].parentId).toBe('entity-corp');
+      expect(entities![0]!.code).toBe('CORP');
+      expect(entities![0]!.parentId).toBeNull();
+      expect(entities![1]!.parentId).toBe('entity-corp');
     });
 
     it('should create system accounts', () => {
       const accounts = createSystemAccounts();
       expect(accounts.length).toBeGreaterThan(0);
-      expect(accounts[0].code).toBe('BS');
+      expect(accounts![0]!.code).toBe('BS');
       expect(accounts.some((a) => a.code === 'REV')).toBe(true);
     });
 

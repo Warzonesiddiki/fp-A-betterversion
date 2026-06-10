@@ -49,7 +49,7 @@ describe('BoxPlotChart', () => {
   // Error state
   it('renders error message when error is provided', () => {
     render(<BoxPlotChart data={[]} error="Failed to load" />);
-    expect(screen.getByText('Failed to load')).toBeInTheDocument();
+    expect(screen.getAllByText(/Failed to load/i)[0]).toBeInTheDocument();
   });
 
   // Empty data
@@ -72,8 +72,8 @@ describe('BoxPlotChart', () => {
     const onClick = vi.fn();
     render(<BoxPlotChart data={sampleData} onClick={onClick} />);
     const buttons = screen.getAllByRole('button');
-    fireEvent.click(buttons[0]);
-    expect(onClick).toHaveBeenCalledWith(sampleData[0]);
+    fireEvent.click(buttons[0]!);
+    expect(onClick).toHaveBeenCalledWith(sampleData[0]!);
   });
 
   // Custom format

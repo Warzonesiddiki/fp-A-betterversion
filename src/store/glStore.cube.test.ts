@@ -152,9 +152,9 @@ describe('glStore ↔ CubeEngine integration', () => {
       useGLStore.getState().generateTrialBalance();
       const tb = useGLStore.getState().trialBalance;
       expect(tb).toHaveLength(1);
-      expect(tb[0].debit).toBe(500);
-      expect(tb[0].credit).toBe(200);
-      expect(tb[0].netChange).toBe(300);
+      expect(tb![0]!.debit).toBe(500);
+      expect(tb![0]!.credit).toBe(200);
+      expect(tb![0]!.netChange).toBe(300);
     });
   });
 

@@ -88,7 +88,7 @@ describe('FXEngine', () => {
       FXEngine.setRate('USD', 'EUR', 0.9, '2026-06-01');
       const result = FXEngine.getHistoricalRates('USD', 'EUR', '2026-02-01', '2026-04-01');
       expect(result).toHaveLength(1);
-      expect(result[0].rate).toBe(0.87);
+      expect(result![0]!.rate).toBe(0.87);
     });
 
     it('returns empty for no matches', () => {
@@ -181,7 +181,7 @@ describe('FXEngine', () => {
       FXEngine.setRate('USD', 'GBP', 0.75, '2026-01-01');
       const all = FXEngine.getAllRates();
       expect(all).toHaveLength(2);
-      expect(all[0].date).toBe('2026-01-01');
+      expect(all![0]!.date).toBe('2026-01-01');
     });
 
     it('clears all rates', () => {

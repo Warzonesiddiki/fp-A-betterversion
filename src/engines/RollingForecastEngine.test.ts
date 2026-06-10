@@ -87,9 +87,9 @@ describe('RollingForecastEngine', () => {
 
       expect(result.actualizedCount).toBe(2);
       expect(result.newWindow.length).toBeGreaterThan(3);
-      expect(result.newWindow[0].isActual).toBe(true);
+      expect(result!.newWindow[0]!.isActual).toBe(true);
       // Value is blended: 105 * 0.7 + 100 * 0.3 = 103.5
-      expect(result.newWindow[0].value).toBe(103.5);
+      expect(result!.newWindow[0]!.value).toBe(103.5);
     });
 
     it('should throw when forecast not configured', () => {
@@ -126,8 +126,8 @@ describe('RollingForecastEngine', () => {
 
       const result = engine.rollForward('fc-1', new Map([['2026-01', 120]]), () => 100, periods);
       // weighted blend: 120 * 0.7 + 100 * 0.3 = 114
-      expect(result.newWindow[0].isActual).toBe(true);
-      expect(result.newWindow[0].value).toBe(114);
+      expect(result!.newWindow[0]!.isActual).toBe(true);
+      expect(result!.newWindow[0]!.value).toBe(114);
       expect(result.actualizedCount).toBe(1);
     });
 
@@ -140,8 +140,8 @@ describe('RollingForecastEngine', () => {
       const periods: ForecastPeriod[] = [{ period: '2026-01', isActual: false, value: 100 }];
 
       const result = engine.rollForward('fc-1', new Map([['2026-01', 120]]), () => 100, periods);
-      expect(result.newWindow[0].isActual).toBe(true);
-      expect(result.newWindow[0].value).toBe(120);
+      expect(result!.newWindow[0]!.isActual).toBe(true);
+      expect(result!.newWindow[0]!.value).toBe(120);
     });
   });
 
@@ -158,8 +158,8 @@ describe('RollingForecastEngine', () => {
       const result = engine.rollForward('fc-1', new Map(), () => 110, periods);
       const forecastPeriods = result.newWindow.filter((p) => !p.isActual);
       expect(forecastPeriods.length).toBeGreaterThan(0);
-      expect(forecastPeriods[0].confidence).toBeGreaterThan(0);
-      expect(forecastPeriods[0].confidence).toBeLessThanOrEqual(1);
+      expect(forecastPeriods![0]!.confidence).toBeGreaterThan(0);
+      expect(forecastPeriods![0]!.confidence).toBeLessThanOrEqual(1);
     });
   });
 

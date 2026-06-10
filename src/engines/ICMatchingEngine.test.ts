@@ -43,8 +43,8 @@ describe('ICMatchingEngine', () => {
     const target = makeTarget();
     const pairs = engine.autoMatch([source], [target]);
     expect(pairs.length).toBe(1);
-    expect(pairs[0].status).toBe('matched');
-    expect(pairs[0].amountDifference).toBe(0);
+    expect(pairs![0]!.status).toBe('matched');
+    expect(pairs![0]!.amountDifference).toBe(0);
   });
 
   it('should auto-match partial pairs (amount difference)', () => {
@@ -52,7 +52,7 @@ describe('ICMatchingEngine', () => {
     const target = makeTarget({ amount: -990 });
     const pairs = engine.autoMatch([source], [target]);
     expect(pairs.length).toBe(1);
-    expect(pairs[0].amountDifference).toBe(10);
+    expect(pairs![0]!.amountDifference).toBe(10);
   });
 
   it('should not match when amounts are same sign', () => {
@@ -107,7 +107,7 @@ describe('ICMatchingEngine', () => {
     // Get matches from autoMatch result, then unmatch
     const pairs = engine.autoMatch([source], [target]);
     if (pairs.length > 0) {
-      expect(engine.unmatch(pairs[0].id)).toBe(true);
+      expect(engine.unmatch(pairs![0]!.id)).toBe(true);
     }
   });
 

@@ -149,6 +149,6 @@ describe('ContextMenu', () => {
   // it('has focus-visible styles on menu items', () => {
   //   render(<ContextMenu {...defaultProps} />);
   //   const items = screen.getAllByRole('menuitem');
-  //   expect(items[0].className).toContain('focus-visible:ring-2');
+  //   expect(items[0]!.className).toContain('focus-visible:ring-2');
   // });
 });

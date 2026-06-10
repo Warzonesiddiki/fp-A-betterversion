@@ -103,7 +103,11 @@ export function ConditionalRuleEditor({
   );
 
   return (
-    <div className="space-y-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4">
+    <div
+      className="space-y-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4"
+      role="region"
+      aria-label="ConditionalRuleEditor"
+    >
       {/* Name */}
       <div>
         <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
@@ -520,13 +524,13 @@ export function ConditionalRuleEditor({
       <div className="flex justify-end gap-2 pt-2">
         <button
           onClick={onCancel}
-          className="rounded px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+          className="rounded px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Cancel
         </button>
         <button
           onClick={onSave}
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Save Rule
         </button>

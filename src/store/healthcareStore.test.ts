@@ -39,7 +39,7 @@ describe('healthcareStore', () => {
       status: 'High',
     });
     expect(useHealthcareStore.getState().programs).toHaveLength(1);
-    expect(useHealthcareStore.getState().programs[0].program).toBe('Diabetes Management');
+    expect(useHealthcareStore!.getState().programs[0]!.program).toBe('Diabetes Management');
   });
 
   it('should update a program', () => {
@@ -53,8 +53,8 @@ describe('healthcareStore', () => {
     });
     useHealthcareStore.getState().updateProgram('p-2', { status: 'High', qualityScore: '92%' });
     const updated = useHealthcareStore.getState().programs[0];
-    expect(updated.status).toBe('High');
-    expect(updated.qualityScore).toBe('92%');
+    expect(updated!.status).toBe('High');
+    expect(updated!.qualityScore).toBe('92%');
   });
 
   it('should not update non-existent program', () => {
@@ -67,6 +67,6 @@ describe('healthcareStore', () => {
       status: 'Medium',
     });
     useHealthcareStore.getState().updateProgram('p-999', { status: 'High' });
-    expect(useHealthcareStore.getState().programs[0].status).toBe('Medium');
+    expect(useHealthcareStore!.getState().programs[0]!.status).toBe('Medium');
   });
 });

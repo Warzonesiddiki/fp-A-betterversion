@@ -3,7 +3,11 @@ import { lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
 import LoadingScreen from './components/ui/LoadingScreen';
-import { ErrorBoundary } from './components/ui';
+import { ErrorBoundary, AsyncErrorBoundary } from './components/ui';
+import {
+  RouteGroupErrorBoundary,
+  RouteSkeleton,
+} from './components/errors/RouteGroupErrorBoundary';
 import { useFirstRun } from './hooks/useFirstRun';
 
 // Core (not route-dependent)
@@ -138,17 +142,29 @@ const DrillDownWindowPage = lazy(() => import('./pages/DrillDownWindowPage'));
 
 /**
  * RouteGroupWrapper provides a shared ErrorBoundary and Suspense context
- * for logical groups of routes.
+ * for logical groups of routes, using domain-aware error boundaries
+ * and loading skeletons.
  */
-function RouteGroupWrapper() {
+function RouteGroupWrapper({ domain }: { domain: keyof typeof DOMAIN_MAP }) {
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<LoadingScreen />}>
+    <RouteGroupErrorBoundary domain={domain}>
+      <Suspense fallback={<RouteSkeleton domain={domain} />}>
         <Outlet />
       </Suspense>
-    </ErrorBoundary>
+    </RouteGroupErrorBoundary>
   );
 }
+
+/** Domain map for RouteGroupWrapper */
+const DOMAIN_MAP = {
+  core: 'core' as const,
+  dataGL: 'dataGL' as const,
+  finops: 'finops' as const,
+  cash: 'cash' as const,
+  reports: 'reports' as const,
+  industry: 'industry' as const,
+  utility: 'utility' as const,
+};
 
 const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
@@ -235,7 +251,7 @@ export default function App() {
               />
 
               {/* Core Modules Group */}
-              <Route element={<RouteGroupWrapper />}>
+              <Route element={<RouteGroupWrapper domain="core" />}>
                 <Route path="/budgets" element={<BudgetListPage />} />
                 <Route path="/budgets/create" element={<BudgetCreatePage />} />
                 <Route path="/budgets/bva" element={<BudgetVAReport />} />
@@ -259,7 +275,7 @@ export default function App() {
               </Route>
 
               {/* Data & GL Group */}
-              <Route element={<RouteGroupWrapper />}>
+              <Route element={<RouteGroupWrapper domain="dataGL" />}>
                 <Route path="/data" element={<DataImportPage />} />
                 <Route path="/data/migration" element={<MigrationPage />} />
                 <Route path="/data/chart-of-accounts" element={<ChartOfAccountsPage />} />
@@ -273,7 +289,7 @@ export default function App() {
               </Route>
 
               {/* Financial Operations Group */}
-              <Route element={<RouteGroupWrapper />}>
+              <Route element={<RouteGroupWrapper domain="finops" />}>
                 <Route path="/consolidation" element={<ConsolidationDashboard />} />
                 <Route path="/consolidation/ic-eliminations" element={<ICEliminationPage />} />
                 <Route path="/consolidation/ownership" element={<OwnershipTreePage />} />
@@ -291,7 +307,7 @@ export default function App() {
               </Route>
 
               {/* Cash & Treasury Group */}
-              <Route element={<RouteGroupWrapper />}>
+              <Route element={<RouteGroupWrapper domain="cash" />}>
                 <Route path="/cash/forecast" element={<CashForecastPage />} />
                 <Route path="/cash/debt" element={<DebtSchedulePage />} />
                 <Route path="/cash/working-capital" element={<WorkingCapitalPage />} />
@@ -300,7 +316,7 @@ export default function App() {
               </Route>
 
               {/* Reports Group */}
-              <Route element={<RouteGroupWrapper />}>
+              <Route element={<RouteGroupWrapper domain="reports" />}>
                 <Route path="/reports" element={<ReportsListPage />} />
                 <Route path="/reports/profit-loss" element={<ProfitLossPage />} />
                 <Route path="/reports/balance-sheet" element={<BalanceSheetPage />} />
@@ -312,7 +328,7 @@ export default function App() {
               </Route>
 
               {/* Industry-Specific & Workforce Group */}
-              <Route element={<RouteGroupWrapper />}>
+              <Route element={<RouteGroupWrapper domain="industry" />}>
                 <Route path="/workforce/headcount" element={<HeadcountPlanPage />} />
                 <Route path="/workforce/compensation" element={<CompModelingPage />} />
                 <Route path="/workforce/payroll" element={<PayrollForecastPage />} />
@@ -340,7 +356,7 @@ export default function App() {
               </Route>
 
               {/* Utility & Collaboration Group */}
-              <Route element={<RouteGroupWrapper />}>
+              <Route element={<RouteGroupWrapper domain="utility" />}>
                 <Route path="/admin/debug" element={<DebugPage />} />
                 <Route path="/accounting/depreciation" element={<DepreciationPage />} />
                 <Route path="/accounting/multi-book" element={<MultiBookPage />} />

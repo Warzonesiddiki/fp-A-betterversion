@@ -1,0 +1,8 @@
+{
+  "agent": "agent-48",
+  "task": "Add JSDoc comments to public functions in src/engines/AggregationDesigner.ts",
+  "status": "success",
+  "jsdocLinesAdded": 117,
+  "tscErrorsAfter": 0,
+  "notes": "Added JSDoc to class AggregationDesigner and all 8 public methods (define, getDefinition, listDefinitions, deleteDefinition, materialize, query, refresh, getStats). Private parseCellKey left undocumented per spec. TSC check via run-tsc.cjs filtered for 'AggregationDesigner' returned 0 lines (0 errors). All JSDoc blocks use @param, @returns, and {@link} cross-references consistent with AGENTS.md conventions."
+}

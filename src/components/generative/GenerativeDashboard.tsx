@@ -111,7 +111,11 @@ const registry = defineRegistry({
         return <GaugeChart value={Number(data?.[0]?.value ?? 0)} max={100} label={title} />;
       default:
         return (
-          <div className="h-48 flex items-center justify-center text-muted-foreground">
+          <div
+            className="h-48 flex items-center justify-center text-muted-foreground"
+            role="region"
+            aria-label="GenerativeDashboard"
+          >
             Chart type: {type}
           </div>
         );

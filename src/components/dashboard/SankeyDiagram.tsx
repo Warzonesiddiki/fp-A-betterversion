@@ -151,11 +151,12 @@ export const SankeyDiagram = memo(function SankeyDiagram({
 
       colNodes.forEach((n, nIdx) => {
         const nodeH = totalValue > 0 ? Math.max(8, (n.value / totalValue) * availableH) : 20;
+        const defaultColor = DEFAULT_COLORS[nIdx % DEFAULT_COLORS.length] ?? '#3b82f6';
         const ln: LayoutNode = {
           id: n.id,
           label: n.label,
           value: n.value,
-          color: n.color ?? DEFAULT_COLORS[nIdx % DEFAULT_COLORS.length],
+          color: n.color ?? defaultColor,
           x: 40 + colIdx * colWidth,
           y: yOffset,
           h: nodeH,
@@ -208,6 +209,8 @@ export const SankeyDiagram = memo(function SankeyDiagram({
         'w-full p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
         className
       )}
+      role="region"
+      aria-label="SankeyDiagram"
     >
       {title && (
         <div className="mb-3">

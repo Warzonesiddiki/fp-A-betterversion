@@ -85,8 +85,8 @@ describe('ImpairmentEngine', () => {
       ];
       const results = ImpairmentEngine.testBatchImpairment(assets);
       expect(results).toHaveLength(2);
-      expect(results[0].isImpaired).toBe(true);
-      expect(results[1].isImpaired).toBe(false);
+      expect(results![0]!.isImpaired).toBe(true);
+      expect(results![1]!.isImpaired).toBe(false);
     });
 
     it('should handle empty array', () => {

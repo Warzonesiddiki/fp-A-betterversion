@@ -311,7 +311,7 @@ export function PERCENTILE(v: unknown, p: number): number {
   const idx = (p / 100) * (sorted.length - 1);
   const lo = Math.floor(idx),
     hi = Math.ceil(idx);
-  return lo === hi ? sorted[lo] : sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+  return lo === hi ? sorted[lo]! : sorted[lo]! + (sorted[hi]! - sorted[lo]!) * (idx - lo);
 }
 
 // =============================================================================

@@ -96,7 +96,7 @@ describe('WorkflowBuilderEngine', () => {
   it('should create from template', () => {
     const wf = engine.createWorkflow('Test', 'test');
     engine.saveAsTemplate(wf.id, 'My Template');
-    const newWf = engine.createFromTemplate(engine.listTemplates()[0].id, 'New Workflow');
+    const newWf = engine.createFromTemplate(engine!.listTemplates()[0]!.id, 'New Workflow');
     expect(newWf?.name).toBe('New Workflow');
   });
 

@@ -79,7 +79,7 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
 
   if (metrics.length === 0) {
     return (
-      <div className={className}>
+      <div className={className} role="region" aria-label="ESGMetricsDashboard">
         <Card>
           <CardContent className="p-12 text-center">
             <Leaf className="h-10 w-10 text-slate-400 mx-auto mb-4" />
@@ -211,7 +211,7 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
                 <div className="text-xs text-slate-500 dark:text-slate-400">At Risk</div>
               </div>
               <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400" role="alert">
                   {initiativeStats.behind}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">Behind</div>

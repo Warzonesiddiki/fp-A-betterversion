@@ -78,7 +78,7 @@ export function SpreadsheetGrid({
   const [copiedRange, setCopiedRange] = useState<Record<string, unknown>[] | null>(null);
 
   const currentSheet = useMemo(
-    () => sheets.find((s) => s.id === activeSheetId) || sheets[0],
+    () => sheets.find((s) => s.id === activeSheetId) || sheets[0]!,
     [sheets, activeSheetId]
   );
 

@@ -63,7 +63,7 @@ export const useESGStore = create<ESGState>()(
         updateMetric: (id, updates) =>
           set((state) => {
             const idx = state.metrics.findIndex((m) => m.id === id);
-            if (idx !== -1) Object.assign(state.metrics[idx], updates);
+            if (idx !== -1) Object.assign(state.metrics[idx]!, updates);
           }),
 
         removeMetric: (id) =>

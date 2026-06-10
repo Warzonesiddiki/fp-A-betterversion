@@ -77,15 +77,15 @@ export class PivotTableEngine {
       for (const cv of columnValues) {
         const matching = filtered.filter(
           (d) =>
-            config.rows.every((r) => String(d[r]) === String(rv[r])) &&
-            config.columns.every((c) => String(d[c]) === String(cv[c]))
+            config.rows.every((r) => String(d[r]!) === String(rv[r]!)) &&
+            config.columns.every((c) => String(d[c]!) === String(cv[c]!))
         );
         cells.push(this.aggregateCells(matching, config.values));
       }
 
       if (config.showTotals && columnValues.length > 0) {
         const allForRow = filtered.filter((d) =>
-          config.rows.every((r) => String(d[r]) === String(rv[r]))
+          config.rows.every((r) => String(d[r]!) === String(rv[r]!))
         );
         cells.push(this.aggregateCells(allForRow, config.values));
       }
@@ -103,7 +103,7 @@ export class PivotTableEngine {
       const totalCells: PivotCell[] = [];
       for (const cv of columnValues) {
         const matching = filtered.filter((d) =>
-          config.columns.every((c) => String(d[c]) === String(cv[c]))
+          config.columns.every((c) => String(d[c]!) === String(cv[c]!))
         );
         totalCells.push(this.aggregateCells(matching, config.values));
       }
@@ -187,7 +187,7 @@ export class PivotTableEngine {
   ): Record<string, unknown>[] {
     return data.filter((row) =>
       Object.entries(filters).every(
-        ([field, allowed]) => allowed.length === 0 || allowed.includes(String(row[field]))
+        ([field, allowed]) => allowed.length === 0 || allowed.includes(String(row[field]!))
       )
     );
   }
@@ -219,8 +219,8 @@ export class PivotTableEngine {
       return { value: null, formattedValue: '', isTotal: false };
     }
     const v = values[0];
-    const nums = data.map((d) => Number(d[v.field]) || 0);
-    const agg = this.aggregate(nums, v.aggregation);
+    const nums = data.map((d) => Number(d[v!.field]) || 0);
+    const agg = this.aggregate(nums, v!.aggregation);
     return { value: agg, formattedValue: this.formatNumber(agg), isTotal: false };
   }
 
@@ -240,7 +240,7 @@ export class PivotTableEngine {
       case 'median': {
         const sorted = [...values].sort((a, b) => a - b);
         const mid = Math.floor(sorted.length / 2);
-        return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        return sorted.length % 2 ? sorted[mid]! : (sorted![mid - 1]! + sorted![mid]!) / 2;
       }
       default:
         return 0;

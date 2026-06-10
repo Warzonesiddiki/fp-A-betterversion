@@ -70,11 +70,11 @@ export function ReportDesigner() {
   );
 
   const undo = useCallback(() => {
-    if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); setReport(history[historyIndex - 1]); }
+    if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); setReport(history[historyIndex - 1]!); }
   }, [historyIndex, history]);
 
   const redo = useCallback(() => {
-    if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); setReport(history[historyIndex + 1]); }
+    if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); setReport(history[historyIndex + 1]!); }
   }, [historyIndex, history]);
 
   const updateLayout = useCallback(
@@ -165,7 +165,7 @@ export function ReportDesigner() {
   const validation = useMemo(() => ReportBuilderEngine.validateReport(report), [report]);
 
   return (
-    <div className="flex h-full w-full bg-slate-950 overflow-hidden font-sans antialiased text-slate-200">
+    <div className="flex h-full w-full bg-slate-950 overflow-hidden font-sans antialiased text-slate-200" role="region" aria-label="ReportDesigner">
       {!previewMode && <DesignerSidebar onDragStart={(e, item) => { e.dataTransfer.setData('application/json', JSON.stringify(item)); }} />}
 
       <div className="flex-1 flex flex-col relative overflow-hidden">

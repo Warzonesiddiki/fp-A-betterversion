@@ -105,7 +105,7 @@ describe('OnboardingWizard', () => {
 
   it('displays welcome message on first step', () => {
     render(<OnboardingWizard onComplete={() => {}} />);
-    expect(screen.getByText('Welcome to FinPlan Pro')).toBeInTheDocument();
+    expect(screen.getByText('onboarding.welcome.title')).toBeInTheDocument();
   });
 
   it('displays progress stepper', () => {
@@ -115,6 +115,6 @@ describe('OnboardingWizard', () => {
 
   it('displays "Let\'s Start" button', () => {
     render(<OnboardingWizard onComplete={() => {}} />);
-    expect(screen.getByText("Let's Start")).toBeInTheDocument();
+    expect(screen.getByText('onboarding.welcome.start')).toBeInTheDocument();
   });
 });

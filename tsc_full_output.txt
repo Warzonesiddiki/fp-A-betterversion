@@ -1,0 +1,27 @@
+﻿src/engines/AIEngine.test.ts(95,14): error TS18047: 'result' is possibly 'null'.
+src/engines/AIEngine.ts(18,5): error TS2578: Unused '@ts-expect-error' directive.
+src/engines/ConsolidationEngine.test.ts(651,14): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '1' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.test.ts(652,14): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '1' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.test.ts(663,14): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '0' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.test.ts(682,14): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '0' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.test.ts(718,14): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '0' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.test.ts(720,14): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '0' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.test.ts(722,14): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '0' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.ts(265,28): error TS2488: Type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/engines/ConsolidationEngine.ts(270,28): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+  Property '0' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.ts(271,53): error TS2339: Property 'slice' does not exist on type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }'.
+src/engines/ConsolidationEngine.ts(275,28): error TS2488: Type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/engines/ConsolidationEngine.ts(295,9): error TS2345: Argument of type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }' is not assignable to parameter of type 'EntityData[]'.
+  Type '{ entities: EntityData[]; ctaDetails: CTADetail[]; }' is missing the following properties from type 'EntityData[]': length, pop, push, concat, and 35 more.
+src/engines/ConsolidationEngine.ts(357,7): error TS2741: Property 'ctaDetails' is missing in type '{ consolidatedEntries: GLEntry[]; eliminations: EliminationEntry[]; adjustments: ConsolidationAdjustment[]; minorityInterest: number; ... 10 more ...; worksheet: ConsolidationWorksheet; }' but required in type 'ConsolidatedResult'.
+src/engines/ConsolidationEngine.ts(928,5): error TS2741: Property 'ctaDetails' is missing in type '{ consolidatedEntries: never[]; eliminations: never[]; adjustments: never[]; minorityInterest: number; minorityInterestDetails: never[]; totalEquity: number; totalAssets: number; totalLiabilities: number; ... 6 more ...; worksheet: { ...; }; }' but required in type 'ConsolidatedResult'.
+src/pages/DashboardPage.tsx(62,53): error TS2304: Cannot find name 'monthlyTrend'.
+src/pages/DashboardPage.tsx(74,22): error TS7006: Parameter 'd' implicitly has an 'any' type.

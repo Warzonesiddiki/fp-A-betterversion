@@ -46,7 +46,7 @@ export function TemplateModal({
             <h2 className="text-sm font-bold text-white">New Report from Template</h2>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white text-lg leading-none"
+              className="text-slate-400 hover:text-white text-lg leading-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               &times;
             </button>

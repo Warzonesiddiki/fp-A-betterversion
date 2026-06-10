@@ -35,13 +35,13 @@ describe('CommandPalette', () => {
 
   it('shows search input', () => {
     render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
-    const input = screen.getByPlaceholderText('Search commands...');
+    const input = screen.getByRole('combobox');
     expect(input).toBeInTheDocument();
   });
 
   it('filters items based on search query', () => {
     render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
-    const input = screen.getByPlaceholderText('Search commands...');
+    const input = screen.getByRole('combobox');
     fireEvent.change(input, { target: { value: 'Export' } });
     expect(screen.getByText('Export Data')).toBeInTheDocument();
     expect(screen.queryByText('New Project')).not.toBeInTheDocument();
@@ -49,9 +49,9 @@ describe('CommandPalette', () => {
 
   it('shows empty state when no items match', () => {
     render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
-    const input = screen.getByPlaceholderText('Search commands...');
+    const input = screen.getByRole('combobox');
     fireEvent.change(input, { target: { value: 'zzzzz' } });
-    expect(screen.getByText(/no commands found/i)).toBeInTheDocument();
+    expect(screen.getByText(/commands.notFound/i)).toBeInTheDocument();
   });
 
   it('shows category headers', () => {
@@ -74,13 +74,13 @@ describe('CommandPalette', () => {
     const onClose = vi.fn();
     render(<CommandPalette items={items} isOpen={true} onClose={onClose} />);
     fireEvent.click(screen.getByText('Open File'));
-    expect(items[1].onSelect).toHaveBeenCalled();
+    expect(items[1]!.onSelect).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
   });
 
   it('restores all items when search is cleared', () => {
     render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
-    const input = screen.getByPlaceholderText('Search commands...');
+    const input = screen.getByRole('combobox');
     fireEvent.change(input, { target: { value: 'Export' } });
     expect(screen.queryByText('New Project')).not.toBeInTheDocument();
     fireEvent.change(input, { target: { value: '' } });

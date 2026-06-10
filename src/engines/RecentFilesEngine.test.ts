@@ -37,7 +37,7 @@ describe('RecentFilesEngine', () => {
     if (file) file.lastOpened = new Date(Date.now() + 1000).toISOString();
     engine.addFile('/a.finplan', 'A');
     const files = engine.getFiles();
-    expect(files[0].path).toBe('/a.finplan');
+    expect(files![0]!.path).toBe('/a.finplan');
   });
 
   it('should remove a file', () => {
@@ -69,7 +69,7 @@ describe('RecentFilesEngine', () => {
     engine.addFile('/b.finplan', 'B');
     engine.pin('/b.finplan');
     const files = engine.getFiles();
-    expect(files[0].path).toBe('/b.finplan');
+    expect(files![0]!.path).toBe('/b.finplan');
   });
 
   it('should prune to max entries', () => {

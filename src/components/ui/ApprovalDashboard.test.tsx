@@ -74,7 +74,7 @@ describe('ApprovalDashboard', () => {
 
   it('renders no bottlenecks message when empty', () => {
     render(<ApprovalDashboard stats={makeStats({ bottlenecks: {} })} />);
-    expect(screen.getByText('No pending requests')).toBeInTheDocument();
+    expect(screen.getByText('dashboard.noPendingRequests')).toBeInTheDocument();
   });
 
   it('renders bottleneck entries', () => {
@@ -92,7 +92,7 @@ describe('ApprovalDashboard', () => {
 
   it('renders no SLA breaches message when empty', () => {
     render(<ApprovalDashboard stats={makeStats({ slaBreaches: [] })} />);
-    expect(screen.getByText('No SLA breaches')).toBeInTheDocument();
+    expect(screen.getByText('dashboard.noSlaBreaches')).toBeInTheDocument();
   });
 
   it('renders SLA breach entries', () => {
@@ -114,7 +114,7 @@ describe('ApprovalDashboard', () => {
     render(<ApprovalDashboard stats={makeStats({ slaBreaches: breaches })} />);
     expect(screen.getByText('Budget Approval Q1')).toBeInTheDocument();
     expect(screen.getByText('by Alice')).toBeInTheDocument();
-    expect(screen.getByText('Overdue')).toBeInTheDocument();
+    expect(screen.getByText('status.overdue')).toBeInTheDocument();
   });
 
   it('renders SLA breach badge count', () => {

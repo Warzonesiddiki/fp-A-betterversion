@@ -1,0 +1,308 @@
+{
+  "agent": "agent-45",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T05441",
+      "cat": "a11y",
+      "title": "CommandPalette keyboard audit",
+      "spec": "All CommandPalette variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05443",
+      "cat": "a11y",
+      "title": "ContextMenuItem keyboard audit",
+      "spec": "All ContextMenuItem variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05445",
+      "cat": "a11y",
+      "title": "ContextualHelp keyboard audit",
+      "spec": "All ContextualHelp variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05447",
+      "cat": "a11y",
+      "title": "CurrencyDisplay keyboard audit",
+      "spec": "All CurrencyDisplay variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05449",
+      "cat": "a11y",
+      "title": "DashboardCard keyboard audit",
+      "spec": "All DashboardCard variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05451",
+      "cat": "a11y",
+      "title": "DashboardGrid keyboard audit",
+      "spec": "All DashboardGrid variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05453",
+      "cat": "a11y",
+      "title": "DashboardTile keyboard audit",
+      "spec": "All DashboardTile variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05455",
+      "cat": "a11y",
+      "title": "DateInput keyboard audit",
+      "spec": "All DateInput variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05457",
+      "cat": "a11y",
+      "title": "DateRangePicker keyboard audit",
+      "spec": "All DateRangePicker variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05459",
+      "cat": "a11y",
+      "title": "DebateTimeline keyboard audit",
+      "spec": "All DebateTimeline variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05461",
+      "cat": "a11y",
+      "title": "DecisionTrace keyboard audit",
+      "spec": "All DecisionTrace variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05463",
+      "cat": "a11y",
+      "title": "DiffViewer keyboard audit",
+      "spec": "All DiffViewer variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05465",
+      "cat": "a11y",
+      "title": "DisclosurePanel keyboard audit",
+      "spec": "All DisclosurePanel variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05467",
+      "cat": "a11y",
+      "title": "DistributionChart keyboard audit",
+      "spec": "All DistributionChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05469",
+      "cat": "a11y",
+      "title": "Divider keyboard audit",
+      "spec": "All Divider variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05471",
+      "cat": "a11y",
+      "title": "DrillPath keyboard audit",
+      "spec": "All DrillPath variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05473",
+      "cat": "a11y",
+      "title": "DropZone keyboard audit",
+      "spec": "All DropZone variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05475",
+      "cat": "a11y",
+      "title": "EditableCell keyboard audit",
+      "spec": "All EditableCell variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05477",
+      "cat": "a11y",
+      "title": "EmptyStateIllustration keyboard audit",
+      "spec": "All EmptyStateIllustration variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05479",
+      "cat": "a11y",
+      "title": "EntityPicker keyboard audit",
+      "spec": "All EntityPicker variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05481",
+      "cat": "a11y",
+      "title": "ErrorDisplay keyboard audit",
+      "spec": "All ErrorDisplay variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05483",
+      "cat": "a11y",
+      "title": "ErrorRetryButton keyboard audit",
+      "spec": "All ErrorRetryButton variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05485",
+      "cat": "a11y",
+      "title": "ExcelGrid keyboard audit",
+      "spec": "All ExcelGrid variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05487",
+      "cat": "a11y",
+      "title": "ExpenseChart keyboard audit",
+      "spec": "All ExpenseChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05489",
+      "cat": "a11y",
+      "title": "ExportButton keyboard audit",
+      "spec": "All ExportButton variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05491",
+      "cat": "a11y",
+      "title": "FadeIn keyboard audit",
+      "spec": "All FadeIn variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05493",
+      "cat": "a11y",
+      "title": "FeatureCard keyboard audit",
+      "spec": "All FeatureCard variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05495",
+      "cat": "a11y",
+      "title": "FieldHelpText keyboard audit",
+      "spec": "All FieldHelpText variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05497",
+      "cat": "a11y",
+      "title": "FilePicker keyboard audit",
+      "spec": "All FilePicker variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05499",
+      "cat": "a11y",
+      "title": "FilterBar keyboard audit",
+      "spec": "All FilterBar variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05501",
+      "cat": "a11y",
+      "title": "FilterChip keyboard audit",
+      "spec": "All FilterChip variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05503",
+      "cat": "a11y",
+      "title": "FilterDropdown keyboard audit",
+      "spec": "All FilterDropdown variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05505",
+      "cat": "a11y",
+      "title": "FinancialRatioCard keyboard audit",
+      "spec": "All FinancialRatioCard variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05507",
+      "cat": "a11y",
+      "title": "Form keyboard audit",
+      "spec": "All Form variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05509",
+      "cat": "a11y",
+      "title": "FormError keyboard audit",
+      "spec": "All FormError variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05511",
+      "cat": "a11y",
+      "title": "FormField keyboard audit",
+      "spec": "All FormField variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05513",
+      "cat": "a11y",
+      "title": "FormRow keyboard audit",
+      "spec": "All FormRow variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05515",
+      "cat": "a11y",
+      "title": "FormSection keyboard audit",
+      "spec": "All FormSection variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05517",
+      "cat": "a11y",
+      "title": "FunnelStepChart keyboard audit",
+      "spec": "All FunnelStepChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05519",
+      "cat": "a11y",
+      "title": "GanttBar keyboard audit",
+      "spec": "All GanttBar variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05521",
+      "cat": "a11y",
+      "title": "GanttRow keyboard audit",
+      "spec": "All GanttRow variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05523",
+      "cat": "a11y",
+      "title": "GoalProgressCard keyboard audit",
+      "spec": "All GoalProgressCard variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05525",
+      "cat": "a11y",
+      "title": "GroupingPanel keyboard audit",
+      "spec": "All GroupingPanel variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05527",
+      "cat": "a11y",
+      "title": "HeatmapCell keyboard audit",
+      "spec": "All HeatmapCell variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05529",
+      "cat": "a11y",
+      "title": "HelpLink keyboard audit",
+      "spec": "All HelpLink variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05531",
+      "cat": "a11y",
+      "title": "HierarchyTree keyboard audit",
+      "spec": "All HierarchyTree variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05533",
+      "cat": "a11y",
+      "title": "HistogramChart keyboard audit",
+      "spec": "All HistogramChart variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05535",
+      "cat": "a11y",
+      "title": "IconButton keyboard audit",
+      "spec": "All IconButton variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05537",
+      "cat": "a11y",
+      "title": "ImportButton keyboard audit",
+      "spec": "All ImportButton variants pass keyboard-only navigation audit."
+    },
+    {
+      "id": "T05539",
+      "cat": "a11y",
+      "title": "InfoBadge keyboard audit",
+      "spec": "All InfoBadge variants pass keyboard-only navigation audit."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

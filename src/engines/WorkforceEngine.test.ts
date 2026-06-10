@@ -17,25 +17,25 @@ describe('WorkforceEngine', () => {
     it('should forecast headcount over multiple periods', () => {
       const result = WorkforceEngine.forecastHeadcount(input, 4);
       expect(result).toHaveLength(4);
-      expect(result[0].startingHeadcount).toBe(100);
+      expect(result![0]!.startingHeadcount).toBe(100);
     });
 
     it('should apply attrition as percentage', () => {
       const result = WorkforceEngine.forecastHeadcount(input, 2);
-      expect(result[0].departures).toBe(10);
+      expect(result![0]!.departures).toBe(10);
     });
 
     it('should add hires in the correct period', () => {
       const result = WorkforceEngine.forecastHeadcount(input, 2);
-      expect(result[0].hires).toBe(5);
-      expect(result[1].hires).toBe(3);
+      expect(result![0]!.hires).toBe(5);
+      expect(result![1]!.hires).toBe(3);
     });
 
     it('should handle zero hires gracefully', () => {
       const noHires: HeadcountInput = { current: 50, hires: [], attrition: 5, rampTime: 1 };
       const result = WorkforceEngine.forecastHeadcount(noHires, 2);
-      expect(result[0].hires).toBe(0);
-      expect(result[0].endingHeadcount).toBe(47);
+      expect(result![0]!.hires).toBe(0);
+      expect(result![0]!.endingHeadcount).toBe(47);
     });
   });
 
@@ -78,19 +78,19 @@ describe('WorkforceEngine', () => {
     it('should model hiring ramp', () => {
       const result = WorkforceEngine.modelHiring(50, 100, 5);
       expect(result).toHaveLength(5);
-      expect(result[4].total).toBeGreaterThanOrEqual(100);
+      expect(result![4]!.total).toBeGreaterThanOrEqual(100);
     });
 
     it('should handle target below current', () => {
       const result = WorkforceEngine.modelHiring(100, 50, 3);
       expect(result.every((r) => r.hires <= 0)).toBe(true);
-      expect(result[result.length - 1].total).toBeLessThan(100);
+      expect(result![result.length - 1]!.total).toBeLessThan(100);
     });
 
     it('should report productive headcount separately', () => {
       const result = WorkforceEngine.modelHiring(0, 10, 2);
-      expect(result[0].productive).toBe(0);
-      expect(result[0].total).toBe(result[0].hires);
+      expect(result![0]!.productive).toBe(0);
+      expect(result![0]!.total).toBe(result![0]!.hires);
     });
   });
 });

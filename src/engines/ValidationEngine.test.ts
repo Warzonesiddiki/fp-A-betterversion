@@ -29,9 +29,9 @@ function makeCellData(
   const data: CellData = {};
   for (const e of entries) {
     if (!data[e.cube]) data[e.cube] = {};
-    if (!data[e.cube][e.row]) data[e.cube][e.row] = {};
-    if (!data[e.cube][e.row][e.col]) data[e.cube][e.row][e.col] = {};
-    data[e.cube][e.row][e.col][e.measure] = e.value;
+    if (!data![e.cube]![e.row]) data![e.cube]![e.row] = {};
+    if (!data![e.cube]![e.row!][e.col]) data![e.cube]![e.row!][e.col] = {};
+    data![e.cube]![e.row!]![e.col!]![e.measure!] = e.value;
   }
   return data;
 }
@@ -226,7 +226,7 @@ describe('ValidationEngine', () => {
       const result = ValidationEngine.validateRule(rangeRule, data);
       expect(result.passed).toBe(false);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].col).toBe('opex');
+      expect(result!.affectedCells[0]!.col).toBe('opex');
     });
 
     it('should fail when a value is below the minimum', () => {
@@ -567,8 +567,8 @@ describe('ValidationEngine', () => {
       const result = ValidationEngine.validateRule(rule, data);
       expect(result.passed).toBe(false);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].col).toBe('opex');
-      expect(result.affectedCells[0].row).toBe('2024-Q1');
+      expect(result!.affectedCells[0]!.col).toBe('opex');
+      expect(result!.affectedCells[0]!.row).toBe('2024-Q1');
     });
 
     it('should fail when an entire period is missing', () => {
@@ -917,8 +917,8 @@ describe('ValidationEngine', () => {
 
       const report = ValidationEngine.validate(rules, {});
       expect(report.results).toHaveLength(2);
-      expect(report.results[0].passed).toBe(false); // active fails
-      expect(report.results[1].passed).toBe(true); // inactive skipped
+      expect(report!.results[0]!.passed).toBe(false); // active fails
+      expect(report!.results[1]!.passed).toBe(true); // inactive skipped
     });
   });
 
@@ -1175,8 +1175,8 @@ describe('ValidationEngine', () => {
       const result = ValidationEngine.validateRule(rule, {});
       expect(result.passed).toBe(false);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].row).toBe('p');
-      expect(result.affectedCells[0].col).toBe('a');
+      expect(result!.affectedCells[0]!.row).toBe('p');
+      expect(result!.affectedCells[0]!.col).toBe('a');
     });
 
     it('should handle zero tolerance in cross check', () => {

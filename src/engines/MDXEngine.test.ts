@@ -12,10 +12,10 @@ describe('parseMDX', () => {
     const query = parseMDX('SELECT {[Account].[Revenue]} ON 0 FROM [Finance]');
     expect(query.cube).toBe('finance');
     expect(query.axes).toHaveLength(1);
-    expect(query.axes[0].index).toBe(0);
+    expect(query!.axes[0]!.index).toBe(0);
     // Parser normalizes to UPPERCASE
-    expect(query.axes[0].dimensions[0].dimension).toBe('ACCOUNT');
-    expect(query.axes[0].dimensions[0].members).toEqual(['REVENUE']);
+    expect(query!.axes[0]!.dimensions[0]!.dimension).toBe('ACCOUNT');
+    expect(query!.axes[0]!.dimensions[0]!.members).toEqual(['REVENUE']);
   });
 
   it('should parse multi-axis query (rows and columns)', () => {
@@ -23,8 +23,8 @@ describe('parseMDX', () => {
       'SELECT {[Account].[Revenue]} ON 0, {[Period].[2024]} ON 1 FROM [Finance]'
     );
     expect(query.axes).toHaveLength(2);
-    expect(query.axes[0].index).toBe(0);
-    expect(query.axes[1].index).toBe(1);
+    expect(query!.axes[0]!.index).toBe(0);
+    expect(query!.axes[1]!.index).toBe(1);
   });
 
   it('should parse NON EMPTY modifier', () => {
@@ -58,9 +58,9 @@ describe('parseMDX', () => {
     );
     expect(query.calculatedMembers).toHaveLength(1);
     // parseCalculatedMembers uses the original (non-uppercased) mdx
-    expect(query.calculatedMembers[0].name).toBe('Growth');
-    expect(query.calculatedMembers[0].formula).toBe('[Account].[Revenue] * 1.1');
-    expect(query.calculatedMembers[0].dimension).toBe('Account');
+    expect(query!.calculatedMembers[0]!.name).toBe('Growth');
+    expect(query!.calculatedMembers[0]!.formula).toBe('[Account].[Revenue] * 1.1');
+    expect(query!.calculatedMembers[0]!.dimension).toBe('Account');
   });
 
   it('should parse ORDER BY clause', () => {
@@ -81,7 +81,7 @@ describe('parseMDX', () => {
 
   it('should handle .ALL members', () => {
     const query = parseMDX('SELECT {[Account].ALL} ON 0 FROM [Finance]');
-    expect(query.axes[0].dimensions[0].isAll).toBe(true);
+    expect(query!.axes[0]!.dimensions[0]!.isAll).toBe(true);
   });
 
   it('should normalize whitespace', () => {
@@ -96,10 +96,10 @@ describe('parseMDX', () => {
 
   it('should handle multiple members on one axis', () => {
     const query = parseMDX('SELECT {[Account].[Revenue], [Account].[COGS]} ON 0 FROM [Finance]');
-    expect(query.axes[0].dimensions).toHaveLength(2);
+    expect(query!.axes[0]!.dimensions).toHaveLength(2);
     // Parser uppercases the normalized string
-    expect(query.axes[0].dimensions[0].members).toEqual(['REVENUE']);
-    expect(query.axes[0].dimensions[1].members).toEqual(['COGS']);
+    expect(query!.axes[0]!.dimensions[0]!.members).toEqual(['REVENUE']);
+    expect(query!.axes[0]!.dimensions[1]!.members).toEqual(['COGS']);
   });
 });
 
@@ -140,7 +140,7 @@ describe('MDXEngine', () => {
       nonEmpty: false,
     };
     const result = engine.evaluate(query);
-    expect(result.axes[0].tuples.length).toBeGreaterThan(0);
+    expect(result!.axes[0]!.tuples.length).toBeGreaterThan(0);
   });
 
   it('should filter cells by slicer (WHERE clause)', () => {
@@ -171,8 +171,8 @@ describe('MDXEngine', () => {
 
   it('should build axis results with tuples', () => {
     const result = engine.execute('SELECT {[Account].[Revenue]} ON 0 FROM [Finance]');
-    expect(result.axes[0].index).toBe(0);
-    for (const tuple of result.axes[0].tuples) {
+    expect(result!.axes[0]!.index).toBe(0);
+    for (const tuple of result!.axes[0]!.tuples) {
       expect(tuple.members).toBeDefined();
       expect(tuple.members.length).toBeGreaterThan(0);
     }
@@ -182,7 +182,7 @@ describe('MDXEngine', () => {
     const result = engine.execute(
       'SELECT {[Account].[Revenue]} ON 0 ORDER ON 0 ASC FROM [Finance]'
     );
-    const tupleKeys = result.axes[0].tuples.map((t) => t.members.map((m) => m.member).join('|'));
+    const tupleKeys = result!.axes[0]!.tuples.map((t) => t.members.map((m) => m.member).join('|'));
     const sorted = [...tupleKeys].sort();
     expect(tupleKeys).toEqual(sorted);
   });
@@ -191,7 +191,7 @@ describe('MDXEngine', () => {
     const result = engine.execute(
       'SELECT {[Account].[Revenue]} ON 0 ORDER ON 0 DESC FROM [Finance]'
     );
-    const tupleKeys = result.axes[0].tuples.map((t) => t.members.map((m) => m.member).join('|'));
+    const tupleKeys = result!.axes[0]!.tuples.map((t) => t.members.map((m) => m.member).join('|'));
     const sorted = [...tupleKeys].sort().reverse();
     expect(tupleKeys).toEqual(sorted);
   });
@@ -210,7 +210,7 @@ describe('MDXEngine', () => {
 
   it('should deduplicate tuples', () => {
     const result = engine.execute('SELECT {[Account].[Revenue]} ON 0 FROM [Finance]');
-    const keys = result.axes[0].tuples.map((t) =>
+    const keys = result!.axes[0]!.tuples.map((t) =>
       t.members.map((m) => `${m.dimension}:${m.member}`).join('|')
     );
     const uniqueKeys = [...new Set(keys)];

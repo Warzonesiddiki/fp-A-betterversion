@@ -64,7 +64,7 @@ export class AdvancedExcelEngine {
     xml += '  <sheets>\n';
 
     for (let i = 0; i < sheets.length; i++) {
-      xml += `    <sheet name="${sheets[i].name}" sheetId="${i + 1}" r:id="rId${i + 1}" />\n`;
+      xml += `    <sheet name="${sheets[i]!.name}" sheetId="${i + 1}" r:id="rId${i + 1}" />\n`;
     }
 
     xml += '  </sheets>\n';

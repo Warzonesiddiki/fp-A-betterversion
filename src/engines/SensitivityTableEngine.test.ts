@@ -14,7 +14,7 @@ describe('SensitivityTableEngine', () => {
         computeFn: (g, d) => (1000 * (1 + g)) / (1 + d),
       });
       expect(result.table).toHaveLength(3);
-      expect(result.table[0]).toHaveLength(3);
+      expect(result.table[0]!).toHaveLength(3);
       expect(result.rowLabels).toHaveLength(3);
       expect(result.colLabels).toHaveLength(3);
     });
@@ -63,7 +63,7 @@ describe('SensitivityTableEngine', () => {
         computeFn: () => 1234,
       });
       const formatted = SensitivityTableEngine.formatTable(table, 'currency');
-      expect(formatted.rows[0].values[0]).toContain('1,234');
+      expect(formatted!.rows[0]!.values[0]!).toContain('1,234');
     });
   });
 
@@ -74,7 +74,7 @@ describe('SensitivityTableEngine', () => {
         { name: 'Volume', baseValue: 100, lowValue: 80, highValue: 120, impactFn: (v) => v },
       ]);
       expect(result.sortedByRange).toHaveLength(2);
-      expect(result.sortedByRange[0].name).toBe('Price');
+      expect(result!.sortedByRange[0]!.name).toBe('Price');
       expect(result.baseValue).toBe(100);
     });
   });

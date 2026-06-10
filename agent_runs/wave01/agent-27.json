@@ -1,0 +1,8 @@
+{
+  "agent": "agent-27",
+  "task": "Add JSDoc comments to public functions in src/engines/AllocationEngine.ts and verify zero tsc errors for that file",
+  "status": "success",
+  "jsdocLinesAdded": 83,
+  "tscErrorsAfter": 0,
+  "notes": "Added JSDoc blocks to all 10 public static methods on AllocationEngine: allocateDirect, allocateByDriver, allocateStepDown, allocateReciprocal, toCubeCells, validateDirectRule, validateDriverValues, computeEffectivePercentages, mergeAllocationResults, detectCircularReferences. Each block includes summary, @param tags, @returns tag, and @throws where applicable. Total 83 JSDoc asterisk/content lines added. Verification command returned Measure-Object -Line = 0 for AllocationEngine-filtered tsc output. The 3 pre-existing tsc errors in the full output (App.tsx LoadingScreen default export, DepreciationPage lazy import, DepreciationPage.test.tsx named export) are unrelated to AllocationEngine and were present before this change."
+}

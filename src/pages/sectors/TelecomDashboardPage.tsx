@@ -140,7 +140,7 @@ export function TelecomDashboardPage() {
               <Bar
                 dataKey="value"
                 radius={[4, 4, 0, 0]}
-                onMouseEnter={(_, index) => setActiveSegment(revenueBySegment[index].name)}
+                onMouseEnter={(_, index) => setActiveSegment(revenueBySegment![index]!.name)}
               >
                 {revenueBySegment.map((_, index) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />

@@ -1,0 +1,308 @@
+{
+  "agent": "agent-04",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T00422",
+      "cat": "eng",
+      "title": "LeaseEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for LeaseEngine."
+    },
+    {
+      "id": "T00423",
+      "cat": "eng",
+      "title": "LeaseEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\LeaseEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00424",
+      "cat": "eng",
+      "title": "LeaseEngine Perf Audit 1M loops",
+      "spec": "Benchmark LeaseEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00425",
+      "cat": "eng",
+      "title": "LoanAmortizationEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\LoanAmortizationEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00426",
+      "cat": "eng",
+      "title": "LoanAmortizationEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for LoanAmortizationEngine."
+    },
+    {
+      "id": "T00427",
+      "cat": "eng",
+      "title": "LoanAmortizationEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\LoanAmortizationEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00428",
+      "cat": "eng",
+      "title": "LoanAmortizationEngine Perf Audit 1M loops",
+      "spec": "Benchmark LoanAmortizationEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00429",
+      "cat": "eng",
+      "title": "ManufacturingEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ManufacturingEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00430",
+      "cat": "eng",
+      "title": "ManufacturingEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ManufacturingEngine."
+    },
+    {
+      "id": "T00431",
+      "cat": "eng",
+      "title": "ManufacturingEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ManufacturingEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00432",
+      "cat": "eng",
+      "title": "ManufacturingEngine Perf Audit 1M loops",
+      "spec": "Benchmark ManufacturingEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00433",
+      "cat": "eng",
+      "title": "MasterDataEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\MasterDataEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00434",
+      "cat": "eng",
+      "title": "MasterDataEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for MasterDataEngine."
+    },
+    {
+      "id": "T00435",
+      "cat": "eng",
+      "title": "MasterDataEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\MasterDataEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00436",
+      "cat": "eng",
+      "title": "MasterDataEngine Perf Audit 1M loops",
+      "spec": "Benchmark MasterDataEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00437",
+      "cat": "eng",
+      "title": "MDXEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\MDXEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00438",
+      "cat": "eng",
+      "title": "MDXEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for MDXEngine."
+    },
+    {
+      "id": "T00439",
+      "cat": "eng",
+      "title": "MDXEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\MDXEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00440",
+      "cat": "eng",
+      "title": "MDXEngine Perf Audit 1M loops",
+      "spec": "Benchmark MDXEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00441",
+      "cat": "eng",
+      "title": "MigrationEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\MigrationEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00442",
+      "cat": "eng",
+      "title": "MigrationEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for MigrationEngine."
+    },
+    {
+      "id": "T00443",
+      "cat": "eng",
+      "title": "MigrationEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\MigrationEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00444",
+      "cat": "eng",
+      "title": "MigrationEngine Perf Audit 1M loops",
+      "spec": "Benchmark MigrationEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00445",
+      "cat": "eng",
+      "title": "MonteCarloEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\MonteCarloEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00446",
+      "cat": "eng",
+      "title": "MonteCarloEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for MonteCarloEngine."
+    },
+    {
+      "id": "T00447",
+      "cat": "eng",
+      "title": "MonteCarloEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\MonteCarloEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00448",
+      "cat": "eng",
+      "title": "MonteCarloEngine Perf Audit 1M loops",
+      "spec": "Benchmark MonteCarloEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00449",
+      "cat": "eng",
+      "title": "MultiBookEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\MultiBookEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00450",
+      "cat": "eng",
+      "title": "MultiBookEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for MultiBookEngine."
+    },
+    {
+      "id": "T00451",
+      "cat": "eng",
+      "title": "MultiBookEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\MultiBookEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00452",
+      "cat": "eng",
+      "title": "MultiBookEngine Perf Audit 1M loops",
+      "spec": "Benchmark MultiBookEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00453",
+      "cat": "eng",
+      "title": "MultiCurrencyEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\MultiCurrencyEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00454",
+      "cat": "eng",
+      "title": "MultiCurrencyEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for MultiCurrencyEngine."
+    },
+    {
+      "id": "T00455",
+      "cat": "eng",
+      "title": "MultiCurrencyEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\MultiCurrencyEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00456",
+      "cat": "eng",
+      "title": "MultiCurrencyEngine Perf Audit 1M loops",
+      "spec": "Benchmark MultiCurrencyEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00457",
+      "cat": "eng",
+      "title": "NamedRangeEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\NamedRangeEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00458",
+      "cat": "eng",
+      "title": "NamedRangeEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for NamedRangeEngine."
+    },
+    {
+      "id": "T00459",
+      "cat": "eng",
+      "title": "NamedRangeEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\NamedRangeEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00460",
+      "cat": "eng",
+      "title": "NamedRangeEngine Perf Audit 1M loops",
+      "spec": "Benchmark NamedRangeEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00461",
+      "cat": "eng",
+      "title": "NLQEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\NLQEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00462",
+      "cat": "eng",
+      "title": "NLQEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for NLQEngine."
+    },
+    {
+      "id": "T00463",
+      "cat": "eng",
+      "title": "NLQEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\NLQEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00464",
+      "cat": "eng",
+      "title": "NLQEngine Perf Audit 1M loops",
+      "spec": "Benchmark NLQEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00465",
+      "cat": "eng",
+      "title": "OptionPricingEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\OptionPricingEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00466",
+      "cat": "eng",
+      "title": "OptionPricingEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for OptionPricingEngine."
+    },
+    {
+      "id": "T00467",
+      "cat": "eng",
+      "title": "OptionPricingEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\OptionPricingEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00468",
+      "cat": "eng",
+      "title": "OptionPricingEngine Perf Audit 1M loops",
+      "spec": "Benchmark OptionPricingEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00469",
+      "cat": "eng",
+      "title": "PeriodCloseEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\PeriodCloseEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00470",
+      "cat": "eng",
+      "title": "PeriodCloseEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for PeriodCloseEngine."
+    },
+    {
+      "id": "T00471",
+      "cat": "eng",
+      "title": "PeriodCloseEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\PeriodCloseEngine.ts. Use robust generics."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

@@ -114,8 +114,8 @@ function AnomalyCard({
             {formatValue(anomaly.dataPoint.value)}
           </span>
           <span style={{ color: 'var(--text-muted)' }}>
-            Expected: {formatValue(anomaly.expectedRange[0])} -{' '}
-            {formatValue(anomaly.expectedRange[1])}
+            Expected: {formatValue(anomaly.expectedRange[0]!)} -{' '}
+            {formatValue(anomaly.expectedRange[1]!)}
           </span>
         </div>
       </div>

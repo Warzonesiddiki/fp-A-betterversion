@@ -37,7 +37,7 @@ describe('constructionStore', () => {
       impact: 'High',
     });
     expect(useConstructionStore.getState().changeOrders).toHaveLength(1);
-    expect(useConstructionStore.getState().changeOrders[0].id).toBe('CO-500');
+    expect(useConstructionStore!.getState().changeOrders[0]!.id).toBe('CO-500');
   });
 
   it('should update a change order', () => {
@@ -50,7 +50,7 @@ describe('constructionStore', () => {
       impact: 'Medium',
     });
     useConstructionStore.getState().updateChangeOrder('CO-501', { status: 'Approved' });
-    expect(useConstructionStore.getState().changeOrders[0].status).toBe('Approved');
+    expect(useConstructionStore!.getState().changeOrders[0]!.status).toBe('Approved');
   });
 
   it('should not update non-existent change order', () => {
@@ -63,7 +63,7 @@ describe('constructionStore', () => {
       impact: 'Low',
     });
     useConstructionStore.getState().updateChangeOrder('CO-999', { status: 'Approved' });
-    expect(useConstructionStore.getState().changeOrders[0].status).toBe('Pending');
+    expect(useConstructionStore!.getState().changeOrders[0]!.status).toBe('Pending');
   });
 
   it('should set cost ledger', () => {

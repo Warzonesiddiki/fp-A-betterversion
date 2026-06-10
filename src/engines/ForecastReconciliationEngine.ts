@@ -144,7 +144,7 @@ export class ForecastReconciliationEngine {
           case 'weighted':
             if (weights && weights.length === amounts.length) {
               const totalWeight = weights.reduce((s, w) => s + w, 0);
-              merged = amounts.reduce((s, a, i) => s + a * weights[i], 0) / totalWeight;
+              merged = amounts.reduce((s, a, i) => s + a * weights![i]!, 0) / totalWeight;
             } else {
               merged = amounts.reduce((s, a) => s + a, 0) / amounts.length;
             }

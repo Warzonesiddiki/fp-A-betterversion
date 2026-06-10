@@ -58,7 +58,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
       e.preventDefault();
       setIsDragActive(false);
 
-      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      if (e.dataTransfer.files && e.dataTransfer.files[0]!) {
         const file = e.dataTransfer.files[0];
         if (validateFile(file)) {
           setCurrentFile(file);
@@ -80,7 +80,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
   }, []);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files && e.target.files[0]!) {
       const file = e.target.files[0];
       if (validateFile(file)) {
         setCurrentFile(file);
@@ -147,7 +147,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
               <button
                 onClick={removeFile}
                 aria-label="Remove file"
-                className="p-1 hover:bg-red-50 rounded-md transition-colors text-red-400"
+                className="p-1 hover:bg-red-50 rounded-md transition-colors text-red-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -200,6 +200,8 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
 
         {error && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 px-3 py-1.5 bg-red-50 fin-negative rounded-full border border-red-100 animate-in fade-in slide-in-from-bottom-2">
+            {' '}
+            role="alert" role="alert"
             <AlertCircle className="h-3.5 w-3.5" />
             <span className="text-[10px] font-bold uppercase tracking-widest">{error}</span>
           </div>

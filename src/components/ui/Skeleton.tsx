@@ -39,8 +39,8 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   };
 
   const style = {
-    width: width || defaultDimensions[variant].width,
-    height: height || defaultDimensions[variant].height,
+    width: width || defaultDimensions[variant]!.width,
+    height: height || defaultDimensions[variant]!.height,
   };
 
   return (
@@ -53,7 +53,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className={cn(baseClasses, variantClasses[variant], className)}
+          className={cn(baseClasses, variantClasses[variant]!, className)}
           style={style}
           aria-hidden="true"
         >

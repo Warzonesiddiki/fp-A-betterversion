@@ -64,7 +64,7 @@ export function parseMDX(mdx: string): MDXQuery {
 
   const cubeMatch = normalized.match(/FROM\s+\[([^\]]+)\]/);
   if (!cubeMatch) throw new Error('MDX: Missing FROM clause');
-  const cube = cubeMatch[1].toLowerCase();
+  const cube = cubeMatch[1]!.toLowerCase();
 
   const axes = parseAxes(normalized);
   const slicer = parseSlicer(normalized);
@@ -80,8 +80,8 @@ function parseAxes(mdx: string): MDXAxis[] {
   const axisPattern = /\{\s*([^}]+)\s*\}\s+ON\s+(\d+)/g;
   let match = axisPattern.exec(mdx);
   while (match) {
-    const membersStr = match[1];
-    const index = parseInt(match[2], 10);
+    const membersStr = match[1]!;
+    const index = parseInt(match[2] ?? '0', 10);
     const dimensions = parseDimensionExpressions(membersStr);
     axes.push({ index, dimensions });
     match = axisPattern.exec(mdx);
@@ -98,10 +98,10 @@ function parseDimensionExpressions(membersStr: string): MDXDimensionExpression[]
   for (const part of parts) {
     const dimMatch = part.match(/\[([^\]]+)\]\.\[([^\]]+)\]/);
     if (dimMatch) {
-      dims.push({ dimension: dimMatch[1], members: [dimMatch[2]], isAll: false });
+      dims.push({ dimension: dimMatch[1] ?? '', members: [dimMatch[2] ?? ''], isAll: false });
     } else if (part.includes('.ALL')) {
       const allMatch = part.match(/\[([^\]]+)\]\.ALL/);
-      if (allMatch) dims.push({ dimension: allMatch[1], members: [], isAll: true });
+      if (allMatch) dims.push({ dimension: allMatch[1] ?? '', members: [], isAll: true });
     }
   }
   return dims;
@@ -110,7 +110,7 @@ function parseDimensionExpressions(membersStr: string): MDXDimensionExpression[]
 function parseSlicer(mdx: string): MDXSlicer {
   const whereMatch = mdx.match(/WHERE\s+\(\s*\[([^\]]+)\]\.\[([^\]]+)\]/i);
   if (!whereMatch) return { dimension: '', members: [] };
-  return { dimension: whereMatch[1], members: [whereMatch[2]] };
+  return { dimension: whereMatch[1] ?? '', members: [whereMatch[2] ?? ''] };
 }
 
 function parseCalculatedMembers(mdx: string): MDXCalculatedMember[] {
@@ -118,7 +118,7 @@ function parseCalculatedMembers(mdx: string): MDXCalculatedMember[] {
   const pattern = /MEMBER\s+\[([^\]]+)\]\.\[([^\]]+)\]\s+AS\s+'([^']+)'/gi;
   let match = pattern.exec(mdx);
   while (match) {
-    members.push({ dimension: match[1], name: match[2], formula: match[3] });
+    members.push({ dimension: match[1] ?? '', name: match[2] ?? '', formula: match[3] ?? '' });
     match = pattern.exec(mdx);
   }
   return members;
@@ -129,7 +129,7 @@ function parseOrderBy(mdx: string): MDXQuery['orderBy'] {
   const dirMatch = mdx.match(/(ASC|DESC)/i);
   if (orderMatch) {
     return {
-      axis: parseInt(orderMatch[1], 10),
+      axis: parseInt(orderMatch[1]!, 10),
       direction: (dirMatch?.[1]?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC',
     };
   }
@@ -180,7 +180,7 @@ export class MDXEngine {
 
       let inSlicer = true;
       if (query.slicer.dimension && query.slicer.members.length > 0) {
-        const slicerVal = coords[query.slicer.dimension];
+        const slicerVal = coords[query.slicer.dimension] ?? '';
         inSlicer = query.slicer.members.includes(slicerVal);
       }
 

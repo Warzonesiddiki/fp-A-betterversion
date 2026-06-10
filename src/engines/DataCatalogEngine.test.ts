@@ -46,7 +46,7 @@ describe('DataCatalogEngine', () => {
       });
       const results = engine.search('Revenue');
       expect(results.length).toBeGreaterThan(0);
-      expect(results[0].asset.name).toBe('Revenue Table');
+      expect(results![0]!.asset.name).toBe('Revenue Table');
     });
   });
 

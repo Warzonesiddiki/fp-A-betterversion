@@ -31,8 +31,8 @@ describe('RevRecEngine', () => {
   describe('allocateTransactionPrice', () => {
     it('should allocate price proportionally', () => {
       const result = RevRecEngine.allocateTransactionPrice(baseContract);
-      expect(result[0].allocationPercentage).toBeCloseTo(0.667, 2);
-      expect(result[1].allocationPercentage).toBeCloseTo(0.333, 2);
+      expect(result![0]!.allocationPercentage).toBeCloseTo(0.667, 2);
+      expect(result![1]!.allocationPercentage).toBeCloseTo(0.333, 2);
     });
 
     it('should handle zero total standalone price', () => {
@@ -50,7 +50,7 @@ describe('RevRecEngine', () => {
         ],
       };
       const result = RevRecEngine.allocateTransactionPrice(contract);
-      expect(result[0].allocationPercentage).toBe(0);
+      expect(result![0]!.allocationPercentage).toBe(0);
     });
   });
 
@@ -66,8 +66,8 @@ describe('RevRecEngine', () => {
       expect(result).toHaveLength(3);
       // allocateTransactionPrice re-calculates: PO-1=80000 (80000/120000*120000), PO-2=40000
       // PIT recognizes 80000 in period 0; OT straight-line = 40000/3 = 13333.33/period
-      expect(result[0].amount).toBeCloseTo(93333.33, 0);
-      expect(result[2].remainingToRecognize).toBeCloseTo(0, 5);
+      expect(result![0]!.amount).toBeCloseTo(93333.33, 0);
+      expect(result![2]!.remainingToRecognize).toBeCloseTo(0, 5);
     });
 
     it('should handle single period', () => {
@@ -78,7 +78,7 @@ describe('RevRecEngine', () => {
       const contract = { ...baseContract, performanceObligations: obligations };
       const result = RevRecEngine.calculateRevenueSchedule(contract, ['2024-01']);
       // PIT recognizes 80000 + OT straight-line 40000 = 120000
-      expect(result[0].amount).toBe(120000);
+      expect(result![0]!.amount).toBe(120000);
     });
 
     it('should NOT recognize point-in-time when completionMetric is undefined', () => {
@@ -99,9 +99,9 @@ describe('RevRecEngine', () => {
       const periods = ['2024-01', '2024-02'];
       const result = RevRecEngine.calculateRevenueSchedule(contract, periods);
       // Should NOT recognize — completionMetric must be explicitly >= 1
-      expect(result[0].amount).toBe(0);
-      expect(result[1].amount).toBe(0);
-      expect(result[0].remainingToRecognize).toBe(100000);
+      expect(result![0]!.amount).toBe(0);
+      expect(result![1]!.amount).toBe(0);
+      expect(result![0]!.remainingToRecognize).toBe(100000);
     });
 
     it('should recognize point-in-time when completionMetric is 1', () => {
@@ -121,9 +121,9 @@ describe('RevRecEngine', () => {
       };
       const periods = ['2024-01', '2024-02'];
       const result = RevRecEngine.calculateRevenueSchedule(contract, periods);
-      expect(result[0].amount).toBe(50000);
-      expect(result[1].amount).toBe(0);
-      expect(result[0].remainingToRecognize).toBe(0);
+      expect(result![0]!.amount).toBe(50000);
+      expect(result![1]!.amount).toBe(0);
+      expect(result![0]!.remainingToRecognize).toBe(0);
     });
   });
 
@@ -174,8 +174,8 @@ describe('RevRecEngine', () => {
         '2024-01',
         '2024-02',
       ]);
-      expect(result[0].contractLiability).toBe(40000); // 50000 billed - 10000 recognized
-      expect(result[0].contractAsset).toBe(0);
+      expect(result![0]!.contractLiability).toBe(40000); // 50000 billed - 10000 recognized
+      expect(result![0]!.contractAsset).toBe(0);
     });
 
     it('should calculate contract asset (unbilled) when recognized > billed', () => {
@@ -184,8 +184,8 @@ describe('RevRecEngine', () => {
       ];
       const billed = new Map([['2024-01', 10000]]);
       const result = RevRecEngine.getContractAssetLiability('ct-1', schedules, billed, ['2024-01']);
-      expect(result[0].contractAsset).toBe(40000); // 50000 recognized - 10000 billed
-      expect(result[0].contractLiability).toBe(0);
+      expect(result![0]!.contractAsset).toBe(40000); // 50000 recognized - 10000 billed
+      expect(result![0]!.contractLiability).toBe(0);
     });
   });
 

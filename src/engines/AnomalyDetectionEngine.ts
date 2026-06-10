@@ -172,7 +172,7 @@ function median(values: number[]): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+  return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!;
 }
 
 function stdDev(values: number[], avg?: number): number {
@@ -194,8 +194,8 @@ function percentile(sorted: number[], p: number): number {
   const idx = (p / 100) * (sorted.length - 1);
   const lower = Math.floor(idx);
   const upper = Math.ceil(idx);
-  if (lower === upper) return sorted[lower];
-  return sorted[lower] + (sorted[upper] - sorted[lower]) * (idx - lower);
+  if (lower === upper) return sorted[lower]!;
+  return sorted[lower]! + (sorted[upper]! - sorted[lower]!) * (idx - lower);
 }
 
 function skewness(values: number[], avg?: number, sd?: number): number {
@@ -269,8 +269,8 @@ export class AnomalyDetectionEngine {
       median: med,
       stdDev: sd,
       mad: md,
-      min: sorted[0],
-      max: sorted[sorted.length - 1],
+      min: sorted[0]!,
+      max: sorted[sorted.length - 1]!,
       q1,
       q3,
       iqr: q3 - q1,
@@ -437,7 +437,7 @@ export class AnomalyDetectionEngine {
     const direction = this.classifyTrend(slope, rSquared, values);
 
     // Forecast
-    const last = indices[indices.length - 1];
+    const last = indices[indices.length - 1]!;
     const forecast = this.forecast(slope, intercept, last, values, this.config.forecastPeriods);
 
     return {
@@ -525,7 +525,7 @@ export class AnomalyDetectionEngine {
     for (let pos = 0; pos < period; pos++) {
       const posValues: number[] = [];
       for (let i = pos; i < values.length; i += period) {
-        posValues.push(values[i]);
+        posValues.push(values[i]!);
       }
       const m = mean(posValues);
       const sd = stdDev(posValues, m);
@@ -536,20 +536,20 @@ export class AnomalyDetectionEngine {
     for (let i = 0; i < dataPoints.length; i++) {
       const pos = i % period;
       const stats = seasonalStats[pos];
-      if (stats.stdDev === 0 || stats.count < 2) continue;
+      if (stats!.stdDev === 0 || stats!.count < 2) continue;
 
-      const zScore = Math.abs((dataPoints[i].value - stats.mean) / stats.stdDev);
+      const zScore = Math.abs((dataPoints[i]!.value - stats!.mean) / stats!.stdDev);
       if (zScore > this.config.zScoreThreshold) {
         const score = Math.min(zScore / (this.config.zScoreThreshold * 2), 1);
         anomalies.push({
-          dataPoint: dataPoints[i],
+          dataPoint: dataPoints[i]!,
           method: 'seasonal',
           severity: this.classifySeverity(score),
           score,
-          reason: `Seasonal position ${pos}: value ${dataPoints[i].value.toFixed(2)} deviates ${zScore.toFixed(2)} standard deviations from seasonal mean ${stats.mean.toFixed(2)}`,
+          reason: `Seasonal position ${pos}: value ${dataPoints[i]!.value.toFixed(2)} deviates ${zScore.toFixed(2)} standard deviations from seasonal mean ${stats!.mean.toFixed(2)}`,
           expectedRange: [
-            stats.mean - this.config.zScoreThreshold * stats.stdDev,
-            stats.mean + this.config.zScoreThreshold * stats.stdDev,
+            stats!.mean - this.config.zScoreThreshold * stats!.stdDev,
+            stats!.mean + this.config.zScoreThreshold * stats!.stdDev,
           ],
         });
       }
@@ -631,7 +631,7 @@ export class AnomalyDetectionEngine {
 
     const sumX = x.reduce((s, v) => s + v, 0);
     const sumY = y.reduce((s, v) => s + v, 0);
-    const sumXY = x.reduce((s, v, i) => s + v * y[i], 0);
+    const sumXY = x.reduce((s, v, i) => s + v * y[i]!, 0);
     const sumX2 = x.reduce((s, v) => s + v * v, 0);
     const sumY2 = y.reduce((s, v) => s + v * v, 0);
 
@@ -642,7 +642,7 @@ export class AnomalyDetectionEngine {
     const intercept = (sumY - slope * sumX) / n;
 
     // R-squared
-    const ssRes = y.reduce((s, yi, i) => s + (yi - (slope * x[i] + intercept)) ** 2, 0);
+    const ssRes = y.reduce((s, yi, i) => s + (yi - (slope * x[i]! + intercept)) ** 2, 0);
     const yMean = sumY / n;
     const ssTot = y.reduce((s, yi) => s + (yi - yMean) ** 2, 0);
     const rSquared = ssTot === 0 ? 0 : 1 - ssRes / ssTot;
@@ -674,8 +674,8 @@ export class AnomalyDetectionEngine {
     if (values.length < 2) return [];
     const result: number[] = [0]; // First point has no prior
     for (let i = 1; i < values.length; i++) {
-      const prev = values[i - 1];
-      result.push(prev === 0 ? 0 : ((values[i] - prev) / Math.abs(prev)) * 100);
+      const prev = values[i - 1]!;
+      result.push(prev === 0 ? 0 : ((values[i]! - prev) / Math.abs(prev)) * 100);
     }
     return result;
   }
@@ -698,7 +698,7 @@ export class AnomalyDetectionEngine {
       const diff = Math.abs(rightMean - leftMean);
       if (diff > overallStd * 1.5) {
         // Avoid clustering nearby change points
-        if (changePoints.length === 0 || i - changePoints[changePoints.length - 1] >= w) {
+        if (changePoints.length === 0 || i - changePoints[changePoints.length - 1]! >= w) {
           changePoints.push(i);
         }
       }

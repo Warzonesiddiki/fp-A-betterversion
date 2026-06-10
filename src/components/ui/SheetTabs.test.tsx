@@ -47,9 +47,9 @@ describe('SheetTabs', () => {
   it('marks active sheet with aria-selected', () => {
     render(<SheetTabs {...defaultProps} activeSheetId="s2" />);
     const tabs = screen.getAllByRole('tab');
-    expect(tabs[0]).toHaveAttribute('aria-selected', 'false');
-    expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
-    expect(tabs[2]).toHaveAttribute('aria-selected', 'false');
+    expect(tabs[0]!).toHaveAttribute('aria-selected', 'false');
+    expect(tabs[1]!).toHaveAttribute('aria-selected', 'true');
+    expect(tabs[2]!).toHaveAttribute('aria-selected', 'false');
   });
 
   it('renders add sheet button', () => {
@@ -139,7 +139,7 @@ describe('SheetTabs', () => {
     const onSheetChange = vi.fn();
     render(<SheetTabs {...defaultProps} onSheetChange={onSheetChange} />);
     const tabs = screen.getAllByRole('tab');
-    fireEvent.keyDown(tabs[1], { key: 'Enter' });
+    fireEvent.keyDown(tabs[1]!, { key: 'Enter' });
     expect(onSheetChange).toHaveBeenCalledWith('s2');
   });
 
@@ -147,7 +147,7 @@ describe('SheetTabs', () => {
     const onSheetChange = vi.fn();
     render(<SheetTabs {...defaultProps} onSheetChange={onSheetChange} />);
     const tabs = screen.getAllByRole('tab');
-    fireEvent.keyDown(tabs[2], { key: ' ' });
+    fireEvent.keyDown(tabs[2]!, { key: ' ' });
     expect(onSheetChange).toHaveBeenCalledWith('s3');
   });
 });

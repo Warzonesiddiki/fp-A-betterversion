@@ -97,7 +97,7 @@ describe('SaaSMetricsEngine', () => {
       ];
       const result = SaaSMetricsEngine.buildCohortTable(data);
       expect(result).toHaveLength(1);
-      expect(result[0].averageRevenuePerCustomer).toBe(2080);
+      expect(result![0]!.averageRevenuePerCustomer).toBe(2080);
     });
 
     it('should handle empty data', () => {

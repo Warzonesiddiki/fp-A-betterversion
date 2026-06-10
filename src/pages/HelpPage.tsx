@@ -135,6 +135,7 @@ export default function HelpPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
+      <h2 className="sr-only">Topics</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {filteredTopics.map((t, i) => (
           <Card
@@ -157,7 +158,7 @@ export default function HelpPage() {
 
       <Card>
         <CardContent className="p-4">
-          <h3 className="font-semibold mb-3">Keyboard Shortcuts</h3>
+          <h2 className="font-semibold mb-3">Keyboard Shortcuts</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-sm">
             {shortcuts.map((s) => (
               <div key={s.key} className="flex items-center gap-2 py-0.5">
@@ -173,7 +174,7 @@ export default function HelpPage() {
 
       <Card>
         <CardContent className="p-4">
-          <h3 className="font-semibold mb-3">Frequently Asked Questions</h3>
+          <h2 className="font-semibold mb-3">Frequently Asked Questions</h2>
           <div className="space-y-2">
             {faqs.map((faq, i) => (
               <div key={i} className="border border-slate-700 rounded-lg overflow-hidden">

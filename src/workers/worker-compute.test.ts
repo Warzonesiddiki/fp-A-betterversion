@@ -39,14 +39,14 @@ function computeStatistics(values: number[]) {
     const idx = (p / 100) * (n - 1);
     const low = Math.floor(idx);
     const high = Math.ceil(idx);
-    if (low === high) return sorted[low];
-    return sorted[low] + (sorted[high] - sorted[low]) * (idx - low);
+    if (low === high) return sorted[low]!;
+    return sorted[low]! + (sorted[high]! - sorted[low]!) * (idx - low);
   };
 
   return {
     mean,
     stdDev,
-    min: sorted[0],
+    min: sorted[0]!,
     max: sorted[n - 1],
     p5: percentile(5),
     p25: percentile(25),
@@ -266,9 +266,9 @@ describe('Worker compute logic', () => {
 
       const match = key.match(/^(.+)!(.+?)(\d+)$/);
       expect(match).toBeTruthy();
-      expect(match![1]).toBe('Sheet1');
-      expect(match![2]).toBe('AB');
-      expect(match![3]).toBe('42');
+      expect(match![1]!).toBe('Sheet1');
+      expect(match![2]!).toBe('AB');
+      expect(match![3]!).toBe('42');
     });
   });
 
@@ -316,7 +316,7 @@ describe('Worker compute logic', () => {
       const request: ConsolidationRequest = { entities, ownerships };
 
       expect(request.entities.length).toBe(1);
-      expect(request.entities[0].entityId).toBe('P');
+      expect(request.entities[0]!.entityId).toBe('P');
     });
 
     it('should define BatchCalcRequest shape', () => {

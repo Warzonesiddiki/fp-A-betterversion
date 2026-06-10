@@ -41,7 +41,7 @@ describe('settingsStore', () => {
       role: 'analyst',
     } as any);
     expect(useSettingsStore.getState().users).toHaveLength(1);
-    expect(useSettingsStore.getState().users[0].name).toBe('John');
+    expect(useSettingsStore!.getState().users[0]!.name).toBe('John');
   });
 
   it('should update a user', () => {
@@ -50,9 +50,9 @@ describe('settingsStore', () => {
       email: 'john@test.com',
       role: 'analyst',
     } as any);
-    const id = useSettingsStore.getState().users[0].id;
+    const id = useSettingsStore!.getState().users[0]!.id;
     useSettingsStore.getState().updateUser(id, { name: 'Jane' });
-    expect(useSettingsStore.getState().users[0].name).toBe('Jane');
+    expect(useSettingsStore!.getState().users[0]!.name).toBe('Jane');
   });
 
   it('should delete a user', () => {
@@ -61,7 +61,7 @@ describe('settingsStore', () => {
       email: 'john@test.com',
       role: 'analyst',
     } as any);
-    const id = useSettingsStore.getState().users[0].id;
+    const id = useSettingsStore!.getState().users[0]!.id;
     useSettingsStore.getState().deleteUser(id);
     expect(useSettingsStore.getState().users).toHaveLength(0);
   });
@@ -81,7 +81,7 @@ describe('settingsStore', () => {
   it('should update role permissions', () => {
     useSettingsStore.setState({ roles: [{ id: 'r1', name: 'Admin', permissions: [] }] as any });
     useSettingsStore.getState().updateRolePermissions('r1', ['read', 'write']);
-    expect(useSettingsStore.getState().roles[0].permissions).toEqual(['read', 'write']);
+    expect(useSettingsStore!.getState().roles[0]!.permissions).toEqual(['read', 'write']);
   });
 
   it('should update preferences', () => {

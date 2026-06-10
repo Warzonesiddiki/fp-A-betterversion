@@ -171,6 +171,6 @@ describe('useSector', () => {
     const { result } = renderHook(() => useSector());
 
     expect(result.current.availableSectors).toHaveLength(2);
-    expect(result.current.availableSectors[0].name).toBe('Technology');
+    expect(result!.current.availableSectors[0]!.name).toBe('Technology');
   });
 });

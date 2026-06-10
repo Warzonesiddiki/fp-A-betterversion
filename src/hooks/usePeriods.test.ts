@@ -47,8 +47,8 @@ describe('usePeriods', () => {
     });
     const { result } = renderHook(() => usePeriods());
     expect(result.current.length).toBe(2);
-    expect(result.current[0].name).toBe('January');
-    expect(result.current[1].name).toBe('February');
+    expect(result!.current[0]!.name).toBe('January');
+    expect(result!.current[1]!.name).toBe('February');
   });
 
   it('should handle invalid dates gracefully', () => {
@@ -69,8 +69,8 @@ describe('usePeriods', () => {
       ],
     });
     const { result } = renderHook(() => usePeriods());
-    expect(result.current[0].name).toBe('January');
-    expect(result.current[1].name).toBe('March');
+    expect(result!.current[0]!.name).toBe('January');
+    expect(result!.current[1]!.name).toBe('March');
   });
 
   it('should skip entries without dates', () => {
@@ -80,6 +80,6 @@ describe('usePeriods', () => {
     });
     const { result } = renderHook(() => usePeriods());
     expect(result.current.length).toBe(1);
-    expect(result.current[0].name).toBe('June');
+    expect(result!.current[0]!.name).toBe('June');
   });
 });

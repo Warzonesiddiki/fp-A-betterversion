@@ -81,7 +81,7 @@ describe('ImportEngine (base)', () => {
       const { result } = await engine.importCSV(file);
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0].message).toContain('header row');
+      expect(result!.errors[0]!.message).toContain('header row');
     });
 
     it('should handle quoted fields with commas', async () => {
@@ -90,7 +90,7 @@ describe('ImportEngine (base)', () => {
       const { result } = await engine.importCSV(file);
 
       expect(result.valid).toBe(true);
-      expect(result.preview[0].Name).toBe('Acme, Inc');
+      expect(result!.preview[0]!.Name).toBe('Acme, Inc');
     });
   });
 
@@ -122,7 +122,7 @@ describe('ImportEngine (base)', () => {
       const { result } = await engine.importJSON(file);
 
       expect(result.valid).toBe(false);
-      expect(result.errors[0].message).toContain('Invalid JSON');
+      expect(result!.errors[0]!.message).toContain('Invalid JSON');
     });
   });
 
@@ -181,8 +181,8 @@ describe('ImportEngine (base)', () => {
       await engine.importCSV(file);
 
       expect(progressEvents.length).toBeGreaterThanOrEqual(3);
-      expect(progressEvents[0].status).toBe('reading');
-      expect(progressEvents[progressEvents.length - 1].status).toBe('complete');
+      expect(progressEvents![0]!.status).toBe('reading');
+      expect(progressEvents![progressEvents.length - 1]!.status).toBe('complete');
     });
   });
 });
@@ -347,8 +347,8 @@ describe('MigrationEngine', () => {
       await engine.executeMigration(file, mappings);
 
       expect(progressEvents.length).toBeGreaterThanOrEqual(3);
-      expect(progressEvents[0].status).toBe('reading');
-      expect(progressEvents[progressEvents.length - 1].status).toBe('complete');
+      expect(progressEvents![0]!.status).toBe('reading');
+      expect(progressEvents![progressEvents.length - 1]!.status).toBe('complete');
     });
   });
 });

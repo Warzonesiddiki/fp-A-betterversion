@@ -178,7 +178,7 @@ describe('DashboardTemplate', () => {
       const onKPIClick = vi.fn();
       render(<DashboardTemplate type="cfo" onKPIClick={onKPIClick} />);
       const drillButtons = screen.getAllByText('drill');
-      fireEvent.click(drillButtons[0]);
+      fireEvent.click(drillButtons[0]!);
       expect(onKPIClick).toHaveBeenCalled();
     });
 

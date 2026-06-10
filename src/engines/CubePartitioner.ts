@@ -84,7 +84,7 @@ export class CubePartitioner {
     if (!pc) return false;
     const idx = pc.partitions.findIndex((p) => p.id === partitionId);
     if (idx === -1) return false;
-    pc.totalCells -= pc.partitions[idx].metadata.cellCount;
+    pc.totalCells -= pc.partitions[idx]!.metadata.cellCount;
     pc.partitions.splice(idx, 1);
     return true;
   }

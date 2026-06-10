@@ -72,19 +72,19 @@ describe('AICopilotEngine', () => {
     it('should detect unmatched closing parenthesis', () => {
       const errors = AICopilotEngine.detectFormulaError('SUM(A1:A10))');
       expect(errors.length).toBeGreaterThan(0);
-      expect(errors[0].severity).toBe('error');
+      expect(errors![0]!.severity).toBe('error');
     });
 
     it('should detect unmatched opening parenthesis', () => {
       const errors = AICopilotEngine.detectFormulaError('SUM(A1:A10');
       expect(errors.length).toBeGreaterThan(0);
-      expect(errors[0].message).toContain('Unmatched opening');
+      expect(errors![0]!.message).toContain('Unmatched opening');
     });
 
     it('should detect invalid operator sequences', () => {
       const errors = AICopilotEngine.detectFormulaError('A1 // B1');
       expect(errors.length).toBeGreaterThan(0);
-      expect(errors[0].severity).toBe('warning');
+      expect(errors![0]!.severity).toBe('warning');
     });
 
     it('should return empty for valid formula', () => {

@@ -57,20 +57,20 @@ describe('FinancialInstrumentsEngine', () => {
     it('should generate amortization schedule', () => {
       const schedule = FinancialInstrumentsEngine.loanAmortization(100000, 0.06, 360);
       expect(schedule).toHaveLength(360);
-      expect(schedule[0].payment).toBeCloseTo(599.55, 0);
-      expect(schedule[359].balance).toBeCloseTo(0, 0);
+      expect(schedule![0]!.payment).toBeCloseTo(599.55, 0);
+      expect(schedule![359]!.balance).toBeCloseTo(0, 0);
     });
 
     it('should have decreasing interest over time', () => {
       const schedule = FinancialInstrumentsEngine.loanAmortization(100000, 0.06, 360);
-      expect(schedule[0].interest).toBeGreaterThan(schedule[100].interest);
-      expect(schedule[100].interest).toBeGreaterThan(schedule[200].interest);
+      expect(schedule![0]!.interest).toBeGreaterThan(schedule![100]!.interest);
+      expect(schedule![100]!.interest).toBeGreaterThan(schedule![200]!.interest);
     });
 
     it('should have increasing principal over time', () => {
       const schedule = FinancialInstrumentsEngine.loanAmortization(100000, 0.06, 360);
-      expect(schedule[0].principal).toBeLessThan(schedule[100].principal);
-      expect(schedule[100].principal).toBeLessThan(schedule[200].principal);
+      expect(schedule![0]!.principal).toBeLessThan(schedule![100]!.principal);
+      expect(schedule![100]!.principal).toBeLessThan(schedule![200]!.principal);
     });
   });
 
@@ -149,7 +149,7 @@ describe('FinancialInstrumentsEngine', () => {
         0,
         100
       );
-      expect(result.terminalValue).toBeGreaterThan(result.freeCashFlows[0]);
+      expect(result.terminalValue).toBeGreaterThan(result.freeCashFlows[0]!);
     });
   });
 

@@ -62,8 +62,8 @@ describe('formulaWorker', () => {
       });
       const last = getLastResult();
       expect(last?.result).toHaveLength(2);
-      expect(last?.result?.[0].profit).toBe(600);
-      expect(last?.result?.[0].margin).toBe(60);
+      expect(last?.result?.[0]!.profit).toBe(600);
+      expect(last?.result?.[0]!.margin).toBe(60);
     });
 
     it('evaluates formulas with only numbers', () => {
@@ -76,10 +76,10 @@ describe('formulaWorker', () => {
         formulas: { sum: 'a + b', product: 'a * b' },
       });
       const last = getLastResult();
-      expect(last?.result?.[0].sum).toBe(30);
-      expect(last?.result?.[0].product).toBe(200);
-      expect(last?.result?.[1].sum).toBe(10);
-      expect(last?.result?.[1].product).toBe(25);
+      expect(last?.result?.[0]!.sum).toBe(30);
+      expect(last?.result?.[0]!.product).toBe(200);
+      expect(last?.result?.[1]!.sum).toBe(10);
+      expect(last?.result?.[1]!.product).toBe(25);
     });
 
     it('handles empty formulas', () => {
@@ -115,7 +115,7 @@ describe('formulaWorker', () => {
         dirtyCells: ['0'],
       });
       const last = getLastResult();
-      expect(last?.result?.[0].sum).toBe(30);
+      expect(last?.result?.[0]!.sum).toBe(30);
       expect(last?.result?.[1]).toEqual({ a: 5, b: 5, sum: 10 });
     });
 
@@ -130,8 +130,8 @@ describe('formulaWorker', () => {
         dirtyCells: ['*'],
       });
       const last = getLastResult();
-      expect(last?.result?.[0].sum).toBe(3);
-      expect(last?.result?.[1].sum).toBe(7);
+      expect(last?.result?.[0]!.sum).toBe(3);
+      expect(last?.result?.[1]!.sum).toBe(7);
     });
 
     it('throws when dirtyCells is missing', () => {
@@ -156,8 +156,8 @@ describe('formulaWorker', () => {
       expect(postMessages.filter((m) => m.type === 'progress')).toHaveLength(1);
       const last = getLastResult();
       expect(last?.result).toHaveLength(2);
-      expect(last?.result?.[0].doubled).toBe(20);
-      expect(last?.result?.[1].doubled).toBe(40);
+      expect(last?.result?.[0]!.doubled).toBe(20);
+      expect(last?.result?.[1]!.doubled).toBe(40);
       expect(last?.batchIndex).toBe(0);
     });
 
@@ -171,7 +171,7 @@ describe('formulaWorker', () => {
       });
       const last = getLastResult();
       expect(last?.result).toHaveLength(1);
-      expect(last?.result?.[0].doubled).toBe(60);
+      expect(last?.result?.[0]!.doubled).toBe(60);
     });
 
     it('throws when batchIndex or totalBatches is missing', () => {
@@ -192,7 +192,7 @@ describe('formulaWorker', () => {
         formulas: { b: 'a + process.exit(0)' },
       });
       const last = getLastResult();
-      expect(last?.result?.[0].b).toBe(0);
+      expect(last?.result?.[0]!.b).toBe(0);
     });
 
     it('handles division', () => {
@@ -202,7 +202,7 @@ describe('formulaWorker', () => {
         formulas: { quotient: 'a / b' },
       });
       const last = getLastResult();
-      expect(last?.result?.[0].quotient).toBeCloseTo(3.333, 1);
+      expect(last?.result?.[0]!.quotient).toBeCloseTo(3.333, 1);
     });
 
     it('handles parentheses', () => {
@@ -212,7 +212,7 @@ describe('formulaWorker', () => {
         formulas: { result: '(a + b) * c' },
       });
       const last = getLastResult();
-      expect(last?.result?.[0].result).toBe(20);
+      expect(last?.result?.[0]!.result).toBe(20);
     });
   });
 
@@ -233,7 +233,7 @@ describe('formulaWorker', () => {
         formulas: { b: 'nonexistent * 2' },
       });
       const last = getLastResult();
-      expect(last?.result?.[0].b).toBe(0);
+      expect(last?.result?.[0]!.b).toBe(0);
     });
   });
 });

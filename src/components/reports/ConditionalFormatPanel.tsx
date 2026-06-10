@@ -91,7 +91,7 @@ export function ConditionalFormatPanel({
   );
 
   return (
-    <div className={cn('bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-4', className)}>
+    <div className={cn('bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-4', className)} role="region" aria-label="ConditionalFormatPanel">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-white flex items-center gap-2">
@@ -100,7 +100,7 @@ export function ConditionalFormatPanel({
         </h4>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white transition-colors"
+          className="text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close conditional formatting"
         >
           <X className="h-4 w-4" />

@@ -197,7 +197,7 @@ export default function HeadcountPlanPage() {
             <KPIValue label="Avg Cost/Head" value={formatCurrency(data.avgCost)} />
             <KPIValue
               label="Attrition Rate"
-              value={`${data.trend[data.trend.length - 1].attrition}%`}
+              value={`${data!.trend[data.trend.length - 1]!.attrition}%`}
               icon={<TrendingDown className="h-4 w-4" />}
             />
           </div>

@@ -106,7 +106,7 @@ export const useRealEstateStore = create<RealEstateState>()(
       updateFacility: (id, updates) =>
         set((state) => {
           const idx = state.facilities.findIndex((f) => f.id === id);
-          if (idx !== -1) Object.assign(state.facilities[idx], updates);
+          if (idx !== -1) Object.assign(state.facilities[idx]!, updates);
         }),
 
       removeFacility: (id) =>

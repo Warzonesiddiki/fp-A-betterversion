@@ -163,6 +163,7 @@ export interface Scenario {
   readonly type: 'Base' | 'Optimistic' | 'Pessimistic' | 'Custom';
   readonly probability: number;
   readonly isActive: boolean;
+  readonly isLocked: boolean;
   readonly assumptions: readonly ScenarioAssumption[];
   readonly calculatedMetrics: ScenarioMetrics;
   readonly createdBy: string;
@@ -240,6 +241,7 @@ export interface ExchangeRate {
   readonly toCurrency: string;
   readonly rate: number;
   readonly effectiveDate: string;
+  readonly source?: 'manual' | 'api' | 'feed';
 }
 
 export interface ActivityLog {
@@ -624,10 +626,14 @@ export interface ScenarioState {
   readonly error: string | null;
   readonly setScenarios: (scenarios: Scenario[]) => void;
   readonly setSelectedScenario: (id: string) => void;
-  readonly createScenario: (scenario: Omit<Scenario, 'id' | 'createdAt' | 'updatedAt'>) => string;
+  readonly createScenario: (
+    scenario: Omit<Scenario, 'id' | 'createdAt' | 'updatedAt' | 'isLocked'>
+  ) => string;
   readonly updateScenario: (id: string, updates: Partial<Scenario>) => void;
   readonly deleteScenario: (id: string) => void;
   readonly toggleScenarioComparison: (id: string) => void;
+  readonly lockScenario: (id: string) => void;
+  readonly unlockScenario: (id: string) => void;
   readonly setError: (error: string | null) => void;
   readonly clearError: () => void;
   readonly setLoading: (loading: boolean) => void;

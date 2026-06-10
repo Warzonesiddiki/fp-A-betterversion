@@ -38,7 +38,7 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
     const newIndex = index + dir;
     if (newIndex < 0 || newIndex >= steps.length) return;
     const newSteps = [...steps];
-    [newSteps[index], newSteps[newIndex]] = [newSteps[newIndex], newSteps[index]];
+    [newSteps[index]!, newSteps[newIndex]!] = [newSteps[newIndex]!, newSteps[index]!];
     setSteps(newSteps.map((s, i) => ({ ...s, order: i })));
   };
 
@@ -52,7 +52,7 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
       id: initial?.id ?? '',
       name,
       description,
-      steps,
+      steps: steps as WorkflowStep[],
       createdBy: initial?.createdBy ?? 'user',
       createdAt: initial?.createdAt ?? '',
       isTemplate: false,

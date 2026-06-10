@@ -52,8 +52,8 @@ export function NLQInput({
       if (e.key === 'Enter') {
         e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < filtered.length) {
-          setValue(filtered[selectedIndex]);
-          onSubmit(filtered[selectedIndex]);
+          setValue(filtered[selectedIndex]!);
+          onSubmit(filtered[selectedIndex]!);
           setShowSuggestions(false);
           setSelectedIndex(-1);
         } else {
@@ -85,7 +85,7 @@ export function NLQInput({
   }, []);
 
   return (
-    <div className={cn('relative w-full max-w-2xl', className)}>
+    <div className={cn('relative w-full max-w-2xl', className)} role="region" aria-label="NLQInput">
       <div className="relative flex items-center">
         <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
         <input

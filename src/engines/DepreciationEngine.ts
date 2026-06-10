@@ -75,7 +75,7 @@ export class DepreciationEngine {
   static macrs(cost: number, life: number, year: number): number {
     const rates = this.MACRS_RATES[life];
     if (!rates || year < 1 || year > rates.length) return 0;
-    return cost * rates[year - 1];
+    return cost * rates![year - 1]!;
   }
 
   static macrsSchedule(cost: number, life: number): DepreciationEntry[] {

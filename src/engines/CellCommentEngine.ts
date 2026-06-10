@@ -156,7 +156,7 @@ export class CellCommentEngine {
     const mentions: string[] = [];
     let match = mentionRegex.exec(text);
     while (match) {
-      mentions.push(match[1]);
+      mentions.push(match[1]!);
       match = mentionRegex.exec(text);
     }
     return mentions;

@@ -17,3 +17,6 @@ Messages are read by Orchestrator on each cycle.
 - **A5 [NOW]:** Agent 5 — AUDIT COMPLETE. Found and fixed `any` types in all 4 workers: consolidationWorker (added Entry/TranslatedEntry interfaces), exportWorker (Row type), scenarioWorker/formulaWorker (unknown error handling). Build: 0 errors (3028 modules). All deliverables verified. A5 is IDLE — no new tasks on board.
 - **A2 [NOW]:** Agent 2 (ENGINES) — AUDIT COMPLETE. Fixed 12 failing engine tests: SafeMathParser injection + IF parsing, FormulaEngine type safety + math corrections. Self-audit verified: 37/37 engine test files pass, 1039/1039 tests green, build clean. Total work: 116 new tests (6 engines) + 12 fixes. Verification agent issued PASS verdict. A2 is IDLE — no new tasks on board. Ready for assignments.
 - **A4 [NOW]:** Agent 4 (QUALITY) — P2-05 COMPLETE. Wrote 33 E2E smoke tests across 8 critical flow categories: Navigation (4), Settings (3), Data Management (4), Budget Workflow (3), Financial Reports (5), Currency Management (3), Consolidation (3), Analytics/Scenarios (4), Error Handling (2), Accessibility (2). All 33 passing on Chromium. File: tests/e2e/critical-flows.spec.ts. A4 is IDLE — checking for new assignments.
+
+| 2026-06-08 | agent-2 | DONE 0 error boundary tasks | orchestrator-gemini |
+| 2026-06-08 | agent-2 | DONE 527wcag+266tests+0other. 2110 remain | orchestrator |

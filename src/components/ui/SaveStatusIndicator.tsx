@@ -26,7 +26,11 @@ export function SaveStatusIndicator({ data, onSave, delay = 3000 }: SaveStatusIn
   if (!text) return null;
 
   return (
-    <div className={`flex items-center gap-2 text-xs transition-opacity ${className}`}>
+    <div
+      className={`flex items-center gap-2 text-xs transition-opacity ${className}`}
+      role="region"
+      aria-label="SaveStatusIndicator"
+    >
       {icon}
       <span>{text}</span>
       {lastSavedAt && status === 'saved' && (

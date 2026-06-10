@@ -184,12 +184,12 @@ describe('AnomalyDetectionEngine', () => {
       const anomalies = engine.detectZScoreAnomalies(data);
       expect(anomalies.length).toBeGreaterThan(0);
       const a = anomalies[0];
-      expect(a.method).toBe('zscore');
-      expect(['critical', 'high', 'medium', 'low']).toContain(a.severity);
-      expect(a.reason).toContain('Z-score');
-      expect(a.expectedRange).toHaveLength(2);
-      expect(a.score).toBeGreaterThanOrEqual(0);
-      expect(a.score).toBeLessThanOrEqual(1);
+      expect(a!.method).toBe('zscore');
+      expect(['critical', 'high', 'medium', 'low']).toContain(a!.severity);
+      expect(a!.reason).toContain('Z-score');
+      expect(a!.expectedRange).toHaveLength(2);
+      expect(a!.score).toBeGreaterThanOrEqual(0);
+      expect(a!.score).toBeLessThanOrEqual(1);
     });
   });
 
@@ -202,8 +202,8 @@ describe('AnomalyDetectionEngine', () => {
       const data = makePoints([10, 12, 11, 13, 10, 14, 11, 12, 13, 500]);
       const anomalies = engine.detectModifiedZScoreAnomalies(data);
       expect(anomalies.length).toBeGreaterThanOrEqual(1);
-      expect(anomalies[0].method).toBe('modified-zscore');
-      expect(anomalies[0].reason).toContain('Modified Z-score');
+      expect(anomalies![0]!.method).toBe('modified-zscore');
+      expect(anomalies![0]!.reason).toContain('Modified Z-score');
     });
 
     it('should not flag normal data', () => {
@@ -268,8 +268,8 @@ describe('AnomalyDetectionEngine', () => {
       const data = makePoints([10, 12, 11, 13, 10, 14, 11, 12, 13, 100]);
       const anomalies = engine.detectIQRAnomalies(data);
       if (anomalies.length > 0) {
-        expect(anomalies[0].reason).toContain('IQR fences');
-        expect(anomalies[0].method).toBe('iqr');
+        expect(anomalies![0]!.reason).toContain('IQR fences');
+        expect(anomalies![0]!.method).toBe('iqr');
       }
     });
   });
@@ -310,7 +310,7 @@ describe('AnomalyDetectionEngine', () => {
       const data = makePoints([1, 2, 3, 2, 1, 2, 3, 100, 2, -50]);
       const result = engine.detectAllAnomalies(data);
       for (let i = 1; i < result.anomalies.length; i++) {
-        expect(result.anomalies[i - 1].score).toBeGreaterThanOrEqual(result.anomalies[i].score);
+        expect(result!.anomalies[i - 1]!.score).toBeGreaterThanOrEqual(result!.anomalies[i]!.score);
       }
     });
 
@@ -369,21 +369,21 @@ describe('AnomalyDetectionEngine', () => {
       const result = engine.analyzeTrend(data);
       expect(result.movingAverage).toHaveLength(5);
       // First MA value should be 10 (only first point)
-      expect(result.movingAverage[0]).toBe(10);
+      expect(result.movingAverage[0]!).toBe(10);
       // Second MA value should be average of [10, 20]
-      expect(result.movingAverage[1]).toBe(15);
+      expect(result.movingAverage[1]!).toBe(15);
       // Third MA value should be average of [10, 20, 30]
-      expect(result.movingAverage[2]).toBe(20);
+      expect(result.movingAverage[2]!).toBe(20);
     });
 
     it('should compute rate of change', () => {
       const data = makePoints([100, 110, 121, 100]);
       const result = engine.analyzeTrend(data);
       expect(result.rateOfChange).toHaveLength(4);
-      expect(result.rateOfChange[0]).toBe(0); // First point
-      expect(result.rateOfChange[1]).toBeCloseTo(10, 0); // 10% increase
-      expect(result.rateOfChange[2]).toBeCloseTo(10, 0); // 10% increase
-      expect(result.rateOfChange[3]).toBeLessThan(0); // Decrease
+      expect(result.rateOfChange[0]!).toBe(0); // First point
+      expect(result.rateOfChange[1]!).toBeCloseTo(10, 0); // 10% increase
+      expect(result.rateOfChange[2]!).toBeCloseTo(10, 0); // 10% increase
+      expect(result.rateOfChange[3]!).toBeLessThan(0); // Decrease
     });
 
     it('should detect change points', () => {
@@ -398,7 +398,7 @@ describe('AnomalyDetectionEngine', () => {
       const result = engine.analyzeTrend(data);
       expect(result.forecast).toHaveLength(5);
       // Forecast should continue upward trend
-      expect(result.forecast[0].value).toBeGreaterThan(10);
+      expect(result!.forecast[0]!.value).toBeGreaterThan(10);
       // Each forecast should have bounds
       for (const fp of result.forecast) {
         expect(fp.lowerBound).toBeLessThan(fp.value);
@@ -413,7 +413,7 @@ describe('AnomalyDetectionEngine', () => {
       const result = engine.analyzeTrend(data);
       const widths = result.forecast.map((fp) => fp.upperBound - fp.lowerBound);
       for (let i = 1; i < widths.length; i++) {
-        expect(widths[i]).toBeGreaterThan(widths[i - 1]);
+        expect(widths[i]!).toBeGreaterThan(widths[i - 1]);
       }
     });
   });
@@ -447,8 +447,8 @@ describe('AnomalyDetectionEngine', () => {
       const data = makePoints([1, 2, 3, 4, 5, 6, 7, 8, 9, 200]);
       const anomalies = engine.detectTrendBreakAnomalies(data);
       if (anomalies.length > 0) {
-        expect(anomalies[0].method).toBe('trend-break');
-        expect(anomalies[0].reason).toContain('trend');
+        expect(anomalies![0]!.method).toBe('trend-break');
+        expect(anomalies![0]!.reason).toContain('trend');
       }
     });
   });
@@ -500,8 +500,8 @@ describe('AnomalyDetectionEngine', () => {
       const data = makePoints([10, 20, 30, 40, 10, 20, 30, 40, 10, 20, 300, 40]);
       const anomalies = engine.detectSeasonalAnomalies(data);
       if (anomalies.length > 0) {
-        expect(anomalies[0].reason).toContain('Seasonal position');
-        expect(anomalies[0].method).toBe('seasonal');
+        expect(anomalies![0]!.reason).toContain('Seasonal position');
+        expect(anomalies![0]!.method).toBe('seasonal');
       }
     });
   });
@@ -561,9 +561,9 @@ describe('AnomalyDetectionEngine', () => {
 
     it('fromValues should respect startIndex', () => {
       const points = AnomalyDetectionEngine.fromValues([10, 20, 30], 100);
-      expect(points[0].index).toBe(100);
-      expect(points[1].index).toBe(101);
-      expect(points[2].index).toBe(102);
+      expect(points![0]!.index).toBe(100);
+      expect(points![1]!.index).toBe(101);
+      expect(points![2]!.index).toBe(102);
     });
 
     it('fromTimeSeries should create DataPoint array from timestamps', () => {
@@ -622,7 +622,7 @@ describe('AnomalyDetectionEngine', () => {
     it('should handle zero values in rate of change', () => {
       const data = makePoints([0, 10, 20, 30, 40]);
       const result = engine.analyzeTrend(data);
-      expect(result.rateOfChange[1]).toBe(0); // prev=0, should be 0 to avoid division by zero
+      expect(result.rateOfChange[1]!).toBe(0); // prev=0, should be 0 to avoid division by zero
     });
 
     it('should handle all zeros', () => {
@@ -647,8 +647,8 @@ describe('AnomalyDetectionEngine', () => {
       ];
       const result = engine.detectAllAnomalies(data);
       expect(result.anomalies.length).toBeGreaterThanOrEqual(1);
-      expect(result.anomalies[0].dataPoint.label).toBe('revenue');
-      expect(result.anomalies[0].dataPoint.metadata).toEqual({ entity: 'A' });
+      expect(result!.anomalies[0]!.dataPoint.label).toBe('revenue');
+      expect(result!.anomalies[0]!.dataPoint.metadata).toEqual({ entity: 'A' });
     });
   });
 

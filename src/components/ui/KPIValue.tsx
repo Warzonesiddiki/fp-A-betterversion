@@ -54,6 +54,8 @@ export const KPIValue: React.FC<KPIValueProps> = ({
         'flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm transition-all hover:shadow-md group',
         className
       )}
+      role="region"
+      aria-label={label}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">

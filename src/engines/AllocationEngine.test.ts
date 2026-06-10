@@ -77,9 +77,9 @@ describe('AllocationEngine', () => {
       expect(result.ruleId).toBe('r1');
       expect(result.allocations).toHaveLength(3);
       expect(result.totalAllocated).toBe(100000);
-      expect(result.allocations[0].amount).toBe(40000);
-      expect(result.allocations[1].amount).toBe(30000);
-      expect(result.allocations[2].amount).toBe(30000);
+      expect(result!.allocations[0]!.amount).toBe(40000);
+      expect(result!.allocations[1]!.amount).toBe(30000);
+      expect(result!.allocations[2]!.amount).toBe(30000);
     });
 
     it('should include audit comment with rule name and id', () => {
@@ -101,8 +101,8 @@ describe('AllocationEngine', () => {
 
       expect(result.totalAllocated).toBe(0);
       expect(result.allocations).toHaveLength(2);
-      expect(result.allocations[0].amount).toBe(0);
-      expect(result.allocations[1].amount).toBe(0);
+      expect(result!.allocations[0]!.amount).toBe(0);
+      expect(result!.allocations[1]!.amount).toBe(0);
     });
 
     it('should handle single target at 100%', () => {
@@ -110,8 +110,8 @@ describe('AllocationEngine', () => {
       const result = AllocationEngine.allocateDirect(rule, 75000);
 
       expect(result.allocations).toHaveLength(1);
-      expect(result.allocations[0].amount).toBe(75000);
-      expect(result.allocations[0].percentage).toBe(100);
+      expect(result!.allocations[0]!.amount).toBe(75000);
+      expect(result!.allocations[0]!.percentage).toBe(100);
     });
 
     it('should apply rounding correction to largest allocation', () => {
@@ -164,7 +164,7 @@ describe('AllocationEngine', () => {
       const result = AllocationEngine.allocateDirect(rule, 1000000000);
 
       expect(result.totalAllocated).toBe(1000000000);
-      expect(result.allocations[0].amount).toBe(250000000);
+      expect(result!.allocations[0]!.amount).toBe(250000000);
     });
   });
 
@@ -186,9 +186,9 @@ describe('AllocationEngine', () => {
       };
       const result = AllocationEngine.allocateByDriver(rule, 100000, driverValues);
 
-      expect(result.allocations[0].amount).toBe(50000);
-      expect(result.allocations[1].amount).toBe(30000);
-      expect(result.allocations[2].amount).toBe(20000);
+      expect(result!.allocations[0]!.amount).toBe(50000);
+      expect(result!.allocations[1]!.amount).toBe(30000);
+      expect(result!.allocations[2]!.amount).toBe(20000);
       expect(result.totalAllocated).toBe(100000);
     });
 
@@ -202,8 +202,8 @@ describe('AllocationEngine', () => {
 
       // A: 100*2=200, B: 100*1=100, total=300
       // A gets 200/300 = 66.67%, B gets 100/300 = 33.33%
-      expect(result.allocations[0].amount).toBe(60000);
-      expect(result.allocations[1].amount).toBe(30000);
+      expect(result!.allocations[0]!.amount).toBe(60000);
+      expect(result!.allocations[1]!.amount).toBe(30000);
     });
 
     it('should handle zero amount for driver allocation', () => {
@@ -211,7 +211,7 @@ describe('AllocationEngine', () => {
       const result = AllocationEngine.allocateByDriver(rule, 0, { A: 100, B: 100 });
 
       expect(result.totalAllocated).toBe(0);
-      expect(result.allocations[0].amount).toBe(0);
+      expect(result!.allocations[0]!.amount).toBe(0);
     });
 
     it('should throw if total weighted driver is zero', () => {
@@ -240,8 +240,8 @@ describe('AllocationEngine', () => {
       // Only A has a driver value, B is missing -> treated as 0
       // But total would be just A's value
       const result = AllocationEngine.allocateByDriver(rule, 1000, { A: 100 });
-      expect(result.allocations[0].amount).toBe(1000);
-      expect(result.allocations[1].amount).toBe(0);
+      expect(result!.allocations[0]!.amount).toBe(1000);
+      expect(result!.allocations[1]!.amount).toBe(0);
     });
 
     it('should handle single target with driver', () => {
@@ -249,8 +249,8 @@ describe('AllocationEngine', () => {
       const result = AllocationEngine.allocateByDriver(rule, 5000, { Only: 42 });
 
       expect(result.allocations).toHaveLength(1);
-      expect(result.allocations[0].amount).toBe(5000);
-      expect(result.allocations[0].percentage).toBe(100);
+      expect(result!.allocations[0]!.amount).toBe(5000);
+      expect(result!.allocations[0]!.percentage).toBe(100);
     });
 
     it('should handle equal driver values', () => {
@@ -261,9 +261,9 @@ describe('AllocationEngine', () => {
       ]);
       const result = AllocationEngine.allocateByDriver(rule, 30000, { A: 10, B: 10, C: 10 });
 
-      expect(result.allocations[0].amount).toBe(10000);
-      expect(result.allocations[1].amount).toBe(10000);
-      expect(result.allocations[2].amount).toBe(10000);
+      expect(result!.allocations[0]!.amount).toBe(10000);
+      expect(result!.allocations[1]!.amount).toBe(10000);
+      expect(result!.allocations[2]!.amount).toBe(10000);
     });
 
     it('should apply rounding correction for driver allocation', () => {
@@ -311,13 +311,13 @@ describe('AllocationEngine', () => {
       expect(results).toHaveLength(2);
 
       // IT allocates first: 100k to HR(20k), Engineering(50k), Sales(30k)
-      expect(results[0].ruleId).toBe('step-down-IT');
-      expect(results[0].totalAllocated).toBe(100000);
+      expect(results![0]!.ruleId).toBe('step-down-IT');
+      expect(results![0]!.totalAllocated).toBe(100000);
 
       // HR allocates second: 50k original + 20k from IT = 70k
       // HR allocates to Engineering(60%) and Sales(40%)
-      expect(results[1].ruleId).toBe('step-down-HR');
-      expect(results[1].totalAllocated).toBe(70000);
+      expect(results![1]!.ruleId).toBe('step-down-HR');
+      expect(results![1]!.totalAllocated).toBe(70000);
     });
 
     it('should not allocate back to already-processed service departments', () => {
@@ -333,11 +333,11 @@ describe('AllocationEngine', () => {
       const results = AllocationEngine.allocateStepDown(config);
 
       // A allocates to B and P1
-      expect(results[0].allocations).toHaveLength(2);
+      expect(results![0]!.allocations).toHaveLength(2);
 
       // B should NOT allocate back to A (already processed)
-      expect(results[1].allocations).toHaveLength(1);
-      expect(results[1].allocations[0].target).toBe('P1');
+      expect(results![1]!.allocations).toHaveLength(1);
+      expect(results![1]!.allocations[0]!.target).toBe('P1');
     });
 
     it('should accumulate costs in production departments', () => {
@@ -352,8 +352,8 @@ describe('AllocationEngine', () => {
       const results = AllocationEngine.allocateStepDown(config);
 
       // Single service department, straightforward
-      expect(results[0].allocations[0].amount).toBe(600);
-      expect(results[0].allocations[1].amount).toBe(400);
+      expect(results![0]!.allocations[0]!.amount).toBe(600);
+      expect(results![0]!.allocations[1]!.amount).toBe(400);
     });
 
     it('should handle zero cost service department', () => {
@@ -368,9 +368,9 @@ describe('AllocationEngine', () => {
       };
       const results = AllocationEngine.allocateStepDown(config);
 
-      expect(results[0].totalAllocated).toBe(1000);
-      expect(results[1].totalAllocated).toBe(0);
-      expect(results[1].allocations).toHaveLength(0);
+      expect(results![0]!.totalAllocated).toBe(1000);
+      expect(results![1]!.totalAllocated).toBe(0);
+      expect(results![1]!.allocations).toHaveLength(0);
     });
 
     it('should throw if no service departments', () => {
@@ -425,9 +425,9 @@ describe('AllocationEngine', () => {
       expect(results).toHaveLength(3);
 
       // Verify total cost flows to P1
-      const p1FromS1 = results[0].allocations.find((a) => a.target === 'P1')?.amount ?? 0;
-      const p1FromS2 = results[1].allocations.find((a) => a.target === 'P1')?.amount ?? 0;
-      const p1FromS3 = results[2].allocations.find((a) => a.target === 'P1')?.amount ?? 0;
+      const p1FromS1 = results![0]!.allocations.find((a) => a.target === 'P1')?.amount ?? 0;
+      const p1FromS2 = results![1]!.allocations.find((a) => a.target === 'P1')?.amount ?? 0;
+      const p1FromS3 = results![2]!.allocations.find((a) => a.target === 'P1')?.amount ?? 0;
 
       // Total to P1 should be S1's direct + cascaded from S2 and S3
       expect(p1FromS1 + p1FromS2 + p1FromS3).toBeGreaterThan(0);
@@ -442,8 +442,8 @@ describe('AllocationEngine', () => {
       };
       const results = AllocationEngine.allocateStepDown(config);
 
-      expect(results[0].auditComment).toContain('IT');
-      expect(results[0].auditComment).toContain('1000');
+      expect(results![0]!.auditComment).toContain('IT');
+      expect(results![0]!.auditComment).toContain('1000');
     });
   });
 
@@ -490,8 +490,8 @@ describe('AllocationEngine', () => {
 
       const itResult = results.find((r) => r.ruleId === 'reciprocal-IT');
       expect(itResult!.allocations).toHaveLength(1);
-      expect(itResult!.allocations[0].amount).toBe(1000);
-      expect(itResult!.allocations[0].target).toBe('Engineering');
+      expect(itResult!.allocations[0]!.amount).toBe(1000);
+      expect(itResult!.allocations[0]!.target).toBe('Engineering');
     });
 
     it('should handle zero cost department', () => {
@@ -505,8 +505,8 @@ describe('AllocationEngine', () => {
       };
       const results = AllocationEngine.allocateReciprocal(config);
 
-      expect(results[0].totalAllocated).toBe(0);
-      expect(results[1].totalAllocated).toBe(0);
+      expect(results![0]!.totalAllocated).toBe(0);
+      expect(results![1]!.totalAllocated).toBe(0);
     });
 
     it('should throw if no departments provided', () => {
@@ -558,8 +558,8 @@ describe('AllocationEngine', () => {
       const results = AllocationEngine.allocateReciprocal(config);
 
       expect(results).toHaveLength(1);
-      expect(results[0].totalAllocated).toBe(5000);
-      expect(results[0].allocations).toHaveLength(0);
+      expect(results![0]!.totalAllocated).toBe(5000);
+      expect(results![0]!.allocations).toHaveLength(0);
     });
 
     it('should include audit comments referencing reciprocal method', () => {
@@ -573,8 +573,8 @@ describe('AllocationEngine', () => {
       };
       const results = AllocationEngine.allocateReciprocal(config);
 
-      expect(results[0].auditComment).toContain('Reciprocal');
-      expect(results[0].auditComment).toContain('IT');
+      expect(results![0]!.auditComment).toContain('Reciprocal');
+      expect(results![0]!.auditComment).toContain('IT');
     });
 
     it('should produce allocations that respect service percentages', () => {
@@ -621,10 +621,10 @@ describe('AllocationEngine', () => {
       const cells = AllocationEngine.toCubeCells(result, 'Period', 'Account', 'CostCenter');
 
       expect(cells).toHaveLength(2);
-      expect(cells[0].dataType).toBe('calculated');
-      expect(cells[0].value).toBe(5000);
-      expect(cells[0].coords.CostCenter).toBe('Eng');
-      expect(cells[1].coords.CostCenter).toBe('Sales');
+      expect(cells![0]!.dataType).toBe('calculated');
+      expect(cells![0]!.value).toBe(5000);
+      expect(cells![0]!.coords.CostCenter).toBe('Eng');
+      expect(cells![1]!.coords.CostCenter).toBe('Sales');
     });
 
     it('should include audit comment in each cube cell', () => {
@@ -637,7 +637,7 @@ describe('AllocationEngine', () => {
       };
       const cells = AllocationEngine.toCubeCells(result, 'P', 'Acct', 'CC');
 
-      expect(cells[0].comment).toBe('Audit trail comment');
+      expect(cells![0]!.comment).toBe('Audit trail comment');
     });
 
     it('should use custom measure name', () => {
@@ -650,7 +650,7 @@ describe('AllocationEngine', () => {
       };
       const cells = AllocationEngine.toCubeCells(result, 'P', 'Acct', 'CC', 'cost');
 
-      expect(cells[0].measure).toBe('cost');
+      expect(cells![0]!.measure).toBe('cost');
     });
 
     it('should handle empty allocations', () => {
@@ -691,8 +691,8 @@ describe('AllocationEngine', () => {
       const warnings = AllocationEngine.validateDriverValues(rule, { A: 100 });
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0]).toContain('Missing');
-      expect(warnings[0]).toContain('B');
+      expect(warnings[0]!).toContain('Missing');
+      expect(warnings[0]!).toContain('B');
     });
 
     it('should return warnings for zero driver values', () => {
@@ -700,7 +700,7 @@ describe('AllocationEngine', () => {
       const warnings = AllocationEngine.validateDriverValues(rule, { A: 0 });
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0]).toContain('Zero');
+      expect(warnings[0]!).toContain('Zero');
     });
 
     it('should return warnings for negative driver values', () => {
@@ -708,7 +708,7 @@ describe('AllocationEngine', () => {
       const warnings = AllocationEngine.validateDriverValues(rule, { A: -5 });
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0]).toContain('Negative');
+      expect(warnings[0]!).toContain('Negative');
     });
 
     it('should return empty warnings for valid driver values', () => {
@@ -775,8 +775,8 @@ describe('AllocationEngine', () => {
       });
 
       expect(cycles.length).toBeGreaterThan(0);
-      expect(cycles[0]).toContain('A');
-      expect(cycles[0]).toContain('B');
+      expect(cycles[0]!).toContain('A');
+      expect(cycles[0]!).toContain('B');
     });
 
     it('should return empty for no circular references', () => {
@@ -820,16 +820,16 @@ describe('AllocationEngine', () => {
 
       // A: 10*10=100, B: 10*1=10, total=110
       // A: 100/110 * 1100 = 1000, B: 10/110 * 1100 = 100
-      expect(result.allocations[0].amount).toBe(1000);
-      expect(result.allocations[1].amount).toBe(100);
+      expect(result!.allocations[0]!.amount).toBe(1000);
+      expect(result!.allocations[1]!.amount).toBe(100);
     });
 
     it('should preserve percentage in direct allocation result', () => {
       const rule = createDirectRule('e3', 'Pct Preserve', [target('A', 75), target('B', 25)]);
       const result = AllocationEngine.allocateDirect(rule, 4000);
 
-      expect(result.allocations[0].percentage).toBe(75);
-      expect(result.allocations[1].percentage).toBe(25);
+      expect(result!.allocations[0]!.percentage).toBe(75);
+      expect(result!.allocations[1]!.percentage).toBe(25);
     });
 
     it('should handle step-down with single service and single production', () => {
@@ -842,8 +842,8 @@ describe('AllocationEngine', () => {
       const results = AllocationEngine.allocateStepDown(config);
 
       expect(results).toHaveLength(1);
-      expect(results[0].allocations[0].amount).toBe(5000);
-      expect(results[0].allocations[0].target).toBe('Prod');
+      expect(results![0]!.allocations[0]!.amount).toBe(5000);
+      expect(results![0]!.allocations[0]!.target).toBe('Prod');
     });
 
     it('should handle reciprocal allocation with asymmetric services', () => {
@@ -886,8 +886,8 @@ describe('AllocationEngine', () => {
       };
       const results = AllocationEngine.allocateStepDown(config);
 
-      expect(results[0].allocations).toHaveLength(2);
-      const total = results[0].allocations.reduce((s, a) => s + a.amount, 0);
+      expect(results![0]!.allocations).toHaveLength(2);
+      const total = results![0]!.allocations.reduce((s, a) => s + a.amount, 0);
       expect(total).toBe(100);
     });
   });

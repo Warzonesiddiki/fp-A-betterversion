@@ -37,9 +37,9 @@ export class FXEngine {
     if (entries.length === 0) return 0;
     if (date) {
       const entry = entries.find((e) => e.date <= date) ?? entries[entries.length - 1];
-      return entry.rate;
+      return entry!.rate;
     }
-    return entries[entries.length - 1].rate;
+    return entries![entries.length - 1]!.rate;
   }
 
   static convert(amount: number, from: string, to: string, date?: string): number {
@@ -117,7 +117,7 @@ export class FXEngine {
       filtered = entries.filter((e) => e.date.startsWith(year));
     }
 
-    if (filtered.length === 0) return entries[entries.length - 1].rate;
+    if (filtered.length === 0) return entries![entries.length - 1]!.rate;
     const sum = filtered.reduce((acc, e) => acc + e.rate, 0);
     return sum / filtered.length;
   }

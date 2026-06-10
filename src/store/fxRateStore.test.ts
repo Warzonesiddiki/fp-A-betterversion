@@ -27,7 +27,7 @@ describe('fxRateStore', () => {
       effectiveDate: '2026-01-01',
     });
     expect(useFxRateStore.getState().rates).toHaveLength(1);
-    expect(useFxRateStore.getState().rates[0].fromCurrency).toBe('USD');
+    expect(useFxRateStore!.getState().rates[0]!.fromCurrency).toBe('USD');
   });
 
   it('should update a rate', () => {
@@ -39,7 +39,7 @@ describe('fxRateStore', () => {
       effectiveDate: '2026-01-01',
     });
     useFxRateStore.getState().updateRate('r3', { rate: 158.5 });
-    expect(useFxRateStore.getState().rates[0].rate).toBe(158.5);
+    expect(useFxRateStore!.getState().rates[0]!.rate).toBe(158.5);
   });
 
   it('should not update non-existent rate', () => {
@@ -51,7 +51,7 @@ describe('fxRateStore', () => {
       effectiveDate: '2026-01-01',
     });
     useFxRateStore.getState().updateRate('nonexistent', { rate: 999 });
-    expect(useFxRateStore.getState().rates[0].rate).toBe(1.36);
+    expect(useFxRateStore!.getState().rates[0]!.rate).toBe(1.36);
   });
 
   it('should delete a rate', () => {

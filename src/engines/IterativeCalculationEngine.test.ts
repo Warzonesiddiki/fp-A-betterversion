@@ -39,8 +39,8 @@ describe('IterativeCalculationEngine', () => {
 
     const cycles = detectCircularReferences(graph);
     expect(cycles.length).toBeGreaterThan(0);
-    expect(cycles[0].cells).toContain('A1');
-    expect(cycles[0].cells).toContain('B1');
+    expect(cycles![0]!.cells).toContain('A1');
+    expect(cycles![0]!.cells).toContain('B1');
   });
 
   it('should detect no circular references in acyclic graph', () => {

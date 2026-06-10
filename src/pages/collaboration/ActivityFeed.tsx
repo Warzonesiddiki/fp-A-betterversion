@@ -160,6 +160,7 @@ export function ActivityFeed() {
           icon={<TrendingUp className="h-4 w-4" aria-hidden="true" />}
         />
       </section>
+      <h2 className="sr-only">Feed Data</h2>
       <Card aria-label="Account Overview" aria-live="polite">
         <CardHeader>
           <CardTitle id="account-overview-title">Account Overview</CardTitle>

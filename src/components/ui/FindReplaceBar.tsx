@@ -34,7 +34,7 @@ export const FindReplaceBar: React.FC<FindReplaceBarProps> = ({
     />
     <button
       onClick={onFind}
-      className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+      className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
       aria-label="Search"
     >
       Search
@@ -49,14 +49,14 @@ export const FindReplaceBar: React.FC<FindReplaceBarProps> = ({
     />
     <button
       onClick={onReplace}
-      className="px-2 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+      className="px-2 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
       aria-label="Replace all"
     >
       Replace All
     </button>
     <button
       onClick={onClose}
-      className="px-2 py-1 text-sm hover:bg-[var(--bg-surface)] rounded"
+      className="px-2 py-1 text-sm hover:bg-[var(--bg-surface)] rounded focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
       aria-label="Close find and replace"
     >
       ✕

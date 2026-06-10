@@ -202,7 +202,7 @@ export class ReportBookEngine {
     const idx = book.entries.findIndex((e) => e.id === entryId);
     if (idx === -1) throw new Error(`Entry "${entryId}" not found`);
 
-    book.entries[idx] = { ...book.entries[idx], ...updates };
+    book.entries[idx] = { ...book.entries[idx]!, ...updates };
     book.updatedAt = new Date().toISOString();
   }
 

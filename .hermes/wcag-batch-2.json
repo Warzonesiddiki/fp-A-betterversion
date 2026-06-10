@@ -1,0 +1,34 @@
+[
+  {
+    "id": "T00889",
+    "name": "ICMatchingPanel"
+  },
+  {
+    "id": "T00893",
+    "name": "ICReconciliation"
+  },
+  {
+    "id": "T00897",
+    "name": "JobCostDashboard"
+  },
+  {
+    "id": "T00901",
+    "name": "CurrencyTranslation"
+  },
+  {
+    "id": "T00905",
+    "name": "FXRateManager"
+  },
+  {
+    "id": "T00909",
+    "name": "HedgeManager"
+  },
+  {
+    "id": "T00913",
+    "name": "ActivityFeed"
+  },
+  {
+    "id": "T00917",
+    "name": "ComboChart"
+  }
+]

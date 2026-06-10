@@ -16,7 +16,11 @@ export interface TemplateMarketplaceProps {
 export function TemplateMarketplace({ templates, onSelect }: TemplateMarketplaceProps) {
   if (templates.length === 0) {
     return (
-      <div className="p-12 text-center text-slate-500 bg-slate-900 rounded-xl border border-dashed border-slate-700">
+      <div
+        className="p-12 text-center text-slate-500 bg-slate-900 rounded-xl border border-dashed border-slate-700"
+        role="region"
+        aria-label="TemplateMarketplace"
+      >
         No templates available
       </div>
     );
@@ -35,7 +39,7 @@ export function TemplateMarketplace({ templates, onSelect }: TemplateMarketplace
             <Badge variant="default">{t.category}</Badge>
           </div>
           <p className="text-sm text-slate-400 mb-6 flex-1">{t.description}</p>
-          <button className="text-sm text-blue-400 font-semibold hover:text-blue-300 self-start">
+          <button className="text-sm text-blue-400 font-semibold hover:text-blue-300 self-start focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1">
             Use Template
           </button>
         </Card>

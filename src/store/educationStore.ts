@@ -68,7 +68,7 @@ export const useEducationStore = create<EducationState>()(
         updateProgram: (id, updates) =>
           set((s) => {
             const i = s.programs.findIndex((p) => p.id === id);
-            if (i !== -1) Object.assign(s.programs[i], updates);
+            if (i !== -1) Object.assign(s.programs[i]!, updates);
           }),
         removeProgram: (id) =>
           set((s) => {

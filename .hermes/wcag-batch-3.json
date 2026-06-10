@@ -1,0 +1,34 @@
+[
+  {
+    "id": "T00921",
+    "name": "DashboardTemplate"
+  },
+  {
+    "id": "T00925",
+    "name": "GaugeChart"
+  },
+  {
+    "id": "T00929",
+    "name": "HeatmapGrid"
+  },
+  {
+    "id": "T00933",
+    "name": "KPICard"
+  },
+  {
+    "id": "T00937",
+    "name": "KPICardEnhanced"
+  },
+  {
+    "id": "T00941",
+    "name": "SankeyDiagram"
+  },
+  {
+    "id": "T00945",
+    "name": "TornadoChart"
+  },
+  {
+    "id": "T00949",
+    "name": "TrafficLightIndicator"
+  }
+]

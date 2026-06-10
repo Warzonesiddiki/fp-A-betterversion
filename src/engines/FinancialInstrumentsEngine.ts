@@ -277,11 +277,11 @@ export class FinancialInstrumentsEngine {
     sharesOutstanding: number
   ): DCFResult {
     const lastFCF = freeCashFlows[freeCashFlows.length - 1];
-    const terminalValue = (lastFCF * (1 + terminalGrowthRate)) / (wacc - terminalGrowthRate);
+    const terminalValue = (lastFCF! * (1 + terminalGrowthRate)) / (wacc - terminalGrowthRate);
 
     let pvFCFs = 0;
     for (let i = 0; i < freeCashFlows.length; i++) {
-      pvFCFs += freeCashFlows[i] / Math.pow(1 + wacc, i + 1);
+      pvFCFs += freeCashFlows![i]! / Math.pow(1 + wacc, i + 1);
     }
 
     const pvTerminal = terminalValue / Math.pow(1 + wacc, freeCashFlows.length);
@@ -336,12 +336,12 @@ export class FinancialInstrumentsEngine {
 
   static linearInterpolation(x: number[], y: number[], targetX: number): number {
     for (let i = 0; i < x.length - 1; i++) {
-      if (targetX >= x[i] && targetX <= x[i + 1]) {
-        const t = (targetX - x[i]) / (x[i + 1] - x[i]);
-        return y[i] + t * (y[i + 1] - y[i]);
+      if (targetX >= x![i]! && targetX <= x![i + 1]!) {
+        const t = (targetX - x![i]!) / (x![i + 1]! - x![i]!);
+        return y![i]! + t * (y![i + 1]! - y![i]!);
       }
     }
-    return targetX <= x[0] ? y[0] : y[y.length - 1];
+    return targetX <= x![0]! ? y[0]! : y[y.length - 1]!;
   }
 
   // ---------------------------------------------------------------------------

@@ -1,0 +1,8 @@
+{
+  "agent": "agent-30",
+  "task": "Add JSDoc comments to public functions in src/engines/CashEngine.ts",
+  "status": "success",
+  "jsdocLinesAdded": 76,
+  "tscErrorsAfter": 0,
+  "notes": "Added comprehensive JSDoc to the WeeklyCashFlow interface (6 fields), the CashEngine class itself, and all 5 public static methods (forecast13Week, calculateDSO, calculateDPO, calculateDIO, calculateCCC). Each method documents its purpose, all @param tags, @returns, and edge-case behaviour (e.g. division-by-zero guards). Verification command `node run-tsc.cjs 2>&1 | Select-String 'CashEngine' | Measure-Object -Line` returned 0, matching the required threshold. File grew from 67 to 143 lines (all additions are JSDoc content)."
+}

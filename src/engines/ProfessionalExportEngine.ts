@@ -736,7 +736,7 @@ export class ProfessionalExportEngine {
     const boxH = items.length * itemHeight + boxPadding * 2 + 8;
 
     // Background
-    pdf.setFillColor(color[0], color[1], color[2]);
+    pdf.setFillColor(color[0]!, color[1]!, color[2]!);
     pdf.rect(boxX, this.y, boxW, boxH, 'F');
 
     // Left accent bar
@@ -956,7 +956,7 @@ export class ProfessionalExportEngine {
   private detectTotalRow(section: TableSection): number {
     // Find the last row that looks like a total (first cell contains "total", "net", "gross", "ebitda", etc.)
     for (let i = section.rows.length - 1; i >= 0; i--) {
-      const label = String(section.rows[i][0] || '').toLowerCase();
+      const label = String(section.rows[i]![0] || '').toLowerCase();
       if (
         label.includes('total') ||
         label.includes('net ') ||

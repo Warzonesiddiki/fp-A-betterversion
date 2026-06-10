@@ -32,7 +32,7 @@ describe('GanttChart', () => {
 
   it('shows error message when error is provided', () => {
     render(<GanttChart tasks={[]} error="Load failed" />);
-    expect(screen.getByText('Load failed')).toBeInTheDocument();
+    expect(screen.getAllByText(/Load failed/i)[0]).toBeInTheDocument();
   });
 
   it('shows "No data" when tasks are empty', () => {

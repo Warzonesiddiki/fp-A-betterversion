@@ -19,19 +19,19 @@ describe('LeaseEngine', () => {
 
     it('should start with correct opening balance', () => {
       const result = LeaseEngine.calculateROUAsset(baseLease);
-      expect(result[0].openingBalance).toBeGreaterThan(0);
-      expect(result[0].openingBalance).toBeLessThan(60000);
+      expect(result![0]!.openingBalance).toBeGreaterThan(0);
+      expect(result![0]!.openingBalance).toBeLessThan(60000);
     });
 
     it('should end with zero closing balance', () => {
       const result = LeaseEngine.calculateROUAsset(baseLease);
-      expect(result[11].closingBalance).toBeCloseTo(0, 10);
+      expect(result![11]!.closingBalance).toBeCloseTo(0, 10);
     });
 
     it('should have consistent depreciation across periods', () => {
       const result = LeaseEngine.calculateROUAsset(baseLease);
       const depExpenses = result.map((r) => r.depreciation);
-      depExpenses.forEach((d) => expect(d).toBeCloseTo(depExpenses[0], 8));
+      depExpenses.forEach((d) => expect(d).toBeCloseTo(depExpenses[0]!, 8));
     });
   });
 
@@ -43,26 +43,26 @@ describe('LeaseEngine', () => {
 
     it('should decrease liability over time', () => {
       const result = LeaseEngine.calculateLeaseLiability(baseLease);
-      expect(result[0].closingBalance).toBeGreaterThan(result[11].closingBalance);
+      expect(result![0]!.closingBalance).toBeGreaterThan(result![11]!.closingBalance);
     });
 
     it('should end near zero', () => {
       const result = LeaseEngine.calculateLeaseLiability(baseLease);
-      expect(result[11].closingBalance).toBeCloseTo(0, 10);
+      expect(result![11]!.closingBalance).toBeCloseTo(0, 10);
     });
 
     it('should handle varying payments', () => {
       const lease = { ...baseLease, leasePayments: [6000, 5000, 4000, ...Array(9).fill(5000)] };
       const result = LeaseEngine.calculateLeaseLiability(lease);
       expect(result).toHaveLength(12);
-      expect(result[0].payment).toBe(6000);
+      expect(result![0]!.payment).toBe(6000);
     });
 
     it('should calculate interest correctly', () => {
       const result = LeaseEngine.calculateLeaseLiability(baseLease);
       const monthlyRate = Math.pow(1 + 0.05, 1 / 12) - 1;
-      const expectedInterest = result[0].openingBalance * monthlyRate;
-      expect(result[0].interest).toBeCloseTo(expectedInterest, 6);
+      const expectedInterest = result![0]!.openingBalance * monthlyRate;
+      expect(result![0]!.interest).toBeCloseTo(expectedInterest, 6);
     });
 
     it('should have payment = interest + reduction', () => {
@@ -170,7 +170,7 @@ describe('LeaseEngine', () => {
   describe('modifyLease', () => {
     it('should modify payments', () => {
       const modified = LeaseEngine.modifyLease(baseLease, { newPayments: Array(12).fill(6000) });
-      expect(modified.leasePayments[0]).toBe(6000);
+      expect(modified.leasePayments[0]!).toBe(6000);
       expect(modified.leaseTerm).toBe(12);
     });
 
@@ -202,9 +202,9 @@ describe('LeaseEngine', () => {
 
     it('should use last payment amount for new months', () => {
       const extended = LeaseEngine.extendLease(baseLease, 3);
-      expect(extended.leasePayments[12]).toBe(5000);
-      expect(extended.leasePayments[13]).toBe(5000);
-      expect(extended.leasePayments[14]).toBe(5000);
+      expect(extended.leasePayments[12]!).toBe(5000);
+      expect(extended.leasePayments[13]!).toBe(5000);
+      expect(extended.leasePayments[14]!).toBe(5000);
     });
   });
 

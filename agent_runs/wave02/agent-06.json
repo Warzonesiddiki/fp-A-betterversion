@@ -1,0 +1,308 @@
+{
+  "agent": "agent-06",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T00522",
+      "cat": "eng",
+      "title": "ReportBookEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportBookEngine."
+    },
+    {
+      "id": "T00523",
+      "cat": "eng",
+      "title": "ReportBookEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportBookEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00524",
+      "cat": "eng",
+      "title": "ReportBookEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportBookEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00525",
+      "cat": "eng",
+      "title": "ReportBuilderEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportBuilderEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00526",
+      "cat": "eng",
+      "title": "ReportBuilderEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportBuilderEngine."
+    },
+    {
+      "id": "T00527",
+      "cat": "eng",
+      "title": "ReportBuilderEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportBuilderEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00528",
+      "cat": "eng",
+      "title": "ReportBuilderEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportBuilderEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00529",
+      "cat": "eng",
+      "title": "ReportBuilderTypes 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportBuilderTypes.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00530",
+      "cat": "eng",
+      "title": "ReportBuilderTypes Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportBuilderTypes."
+    },
+    {
+      "id": "T00531",
+      "cat": "eng",
+      "title": "ReportBuilderTypes 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportBuilderTypes.ts. Use robust generics."
+    },
+    {
+      "id": "T00532",
+      "cat": "eng",
+      "title": "ReportBuilderTypes Perf Audit 1M loops",
+      "spec": "Benchmark ReportBuilderTypes for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00533",
+      "cat": "eng",
+      "title": "ReportCacheEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportCacheEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00534",
+      "cat": "eng",
+      "title": "ReportCacheEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportCacheEngine."
+    },
+    {
+      "id": "T00535",
+      "cat": "eng",
+      "title": "ReportCacheEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportCacheEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00536",
+      "cat": "eng",
+      "title": "ReportCacheEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportCacheEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00537",
+      "cat": "eng",
+      "title": "ReportDistributionEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportDistributionEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00538",
+      "cat": "eng",
+      "title": "ReportDistributionEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportDistributionEngine."
+    },
+    {
+      "id": "T00539",
+      "cat": "eng",
+      "title": "ReportDistributionEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportDistributionEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00540",
+      "cat": "eng",
+      "title": "ReportDistributionEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportDistributionEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00541",
+      "cat": "eng",
+      "title": "ReportLayoutEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportLayoutEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00542",
+      "cat": "eng",
+      "title": "ReportLayoutEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportLayoutEngine."
+    },
+    {
+      "id": "T00543",
+      "cat": "eng",
+      "title": "ReportLayoutEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportLayoutEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00544",
+      "cat": "eng",
+      "title": "ReportLayoutEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportLayoutEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00545",
+      "cat": "eng",
+      "title": "ReportSchedulerEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportSchedulerEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00546",
+      "cat": "eng",
+      "title": "ReportSchedulerEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportSchedulerEngine."
+    },
+    {
+      "id": "T00547",
+      "cat": "eng",
+      "title": "ReportSchedulerEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportSchedulerEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00548",
+      "cat": "eng",
+      "title": "ReportSchedulerEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportSchedulerEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00549",
+      "cat": "eng",
+      "title": "ReportSchedulingEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportSchedulingEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00550",
+      "cat": "eng",
+      "title": "ReportSchedulingEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportSchedulingEngine."
+    },
+    {
+      "id": "T00551",
+      "cat": "eng",
+      "title": "ReportSchedulingEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportSchedulingEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00552",
+      "cat": "eng",
+      "title": "ReportSchedulingEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportSchedulingEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00553",
+      "cat": "eng",
+      "title": "ReportVersionEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\ReportVersionEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00554",
+      "cat": "eng",
+      "title": "ReportVersionEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for ReportVersionEngine."
+    },
+    {
+      "id": "T00555",
+      "cat": "eng",
+      "title": "ReportVersionEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\ReportVersionEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00556",
+      "cat": "eng",
+      "title": "ReportVersionEngine Perf Audit 1M loops",
+      "spec": "Benchmark ReportVersionEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00557",
+      "cat": "eng",
+      "title": "RetailEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\RetailEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00558",
+      "cat": "eng",
+      "title": "RetailEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for RetailEngine."
+    },
+    {
+      "id": "T00559",
+      "cat": "eng",
+      "title": "RetailEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\RetailEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00560",
+      "cat": "eng",
+      "title": "RetailEngine Perf Audit 1M loops",
+      "spec": "Benchmark RetailEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00561",
+      "cat": "eng",
+      "title": "RevRecEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\RevRecEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00562",
+      "cat": "eng",
+      "title": "RevRecEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for RevRecEngine."
+    },
+    {
+      "id": "T00563",
+      "cat": "eng",
+      "title": "RevRecEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\RevRecEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00564",
+      "cat": "eng",
+      "title": "RevRecEngine Perf Audit 1M loops",
+      "spec": "Benchmark RevRecEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00565",
+      "cat": "eng",
+      "title": "RollingForecastEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\RollingForecastEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00566",
+      "cat": "eng",
+      "title": "RollingForecastEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for RollingForecastEngine."
+    },
+    {
+      "id": "T00567",
+      "cat": "eng",
+      "title": "RollingForecastEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\RollingForecastEngine.ts. Use robust generics."
+    },
+    {
+      "id": "T00568",
+      "cat": "eng",
+      "title": "RollingForecastEngine Perf Audit 1M loops",
+      "spec": "Benchmark RollingForecastEngine for 1M iterations. Optimize array allocations."
+    },
+    {
+      "id": "T00569",
+      "cat": "eng",
+      "title": "SaaSMetricsEngine 100% Branch Coverage",
+      "spec": "Write exhaustive tests for src\\engines\\SaaSMetricsEngine.ts achieving 100% branch/line coverage."
+    },
+    {
+      "id": "T00570",
+      "cat": "eng",
+      "title": "SaaSMetricsEngine Known-Answer Standards",
+      "spec": "Add exact FASB/IAS/GAAP mathematical match tests for SaaSMetricsEngine."
+    },
+    {
+      "id": "T00571",
+      "cat": "eng",
+      "title": "SaaSMetricsEngine 0x Any / Strict Types",
+      "spec": "Eliminate all implicit/explicit any in src\\engines\\SaaSMetricsEngine.ts. Use robust generics."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

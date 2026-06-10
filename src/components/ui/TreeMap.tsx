@@ -92,6 +92,8 @@ export const TreeMap: React.FC<TreeMapProps> = ({
           'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
           className
         )}
+        role="region"
+        aria-label="TreeMap"
       >
         <div className="flex items-center justify-center h-48">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
@@ -108,7 +110,10 @@ export const TreeMap: React.FC<TreeMapProps> = ({
           className
         )}
       >
-        <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
+        <div className="flex items-center justify-center h-48 text-red-500 text-sm">
+          {' '}
+          role="alert" role="alert" {error}
+        </div>
       </div>
     );
   }
@@ -161,7 +166,7 @@ export const TreeMap: React.FC<TreeMapProps> = ({
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const d = payload[0].payload;
+                  const d = payload[0]!.payload;
                   return (
                     <div className="bg-slate-900 text-white p-2 rounded shadow-xl border border-slate-800 text-[10px]">
                       <div className="font-black uppercase tracking-wider mb-1">{d.name}</div>

@@ -1,0 +1,14 @@
+{
+  "agent": "agent-15",
+  "wave": "wave01",
+  "task": "Fix BatchOperationEngine.test.ts line 180 UUID template literal type error",
+  "file": "src/engines/BatchOperationEngine.test.ts",
+  "line": 180,
+  "error_before": "src/engines/BatchOperationEngine.test.ts(180,61): error TS2322: Type 'string' is not assignable to type '`${string}-${string}-${string}-${string}-${string}`'.",
+  "root_cause": "vi.spyOn(crypto, 'randomUUID').mockImplementation was returning Math.random().toString() (plain string), but TypeScript's lib.dom.d.ts types crypto.randomUUID() as returning the UUID template literal type. The mock return value must match the typed signature.",
+  "fix_applied": "Cast the return value to the UUID template literal type using `as `${string}-${string}-${string}-${string}-${string}` so the mock satisfies crypto.randomUUID's typed return without changing test behavior (history cap logic depends only on entry count, not on UUID contents).",
+  "diff": "src/engines/BatchOperationEngine.test.ts:180 - added `as `${string}-${string}-${string}-${string}-${string}` cast to Math.random().toString()",
+  "verification_command": "node run-tsc.cjs 2>&1 | Select-String \"BatchOperationEngine.test\" | Measure-Object -Line",
+  "verification_result": "0",
+  "status": "fixed"
+}

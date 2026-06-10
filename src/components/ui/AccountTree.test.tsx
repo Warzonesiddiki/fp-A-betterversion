@@ -6,6 +6,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { AccountTree } from './AccountTree';
 import type { GLAccount } from '@/types';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
+
 const makeAccount = (overrides: Partial<GLAccount> = {}): GLAccount => ({
   id: '1',
   code: '1000',
@@ -50,13 +54,13 @@ const accounts: GLAccount[] = [
 describe('AccountTree', () => {
   it('renders empty state when no accounts provided', () => {
     render(<AccountTree accounts={[]} onSelect={vi.fn()} />);
-    expect(screen.getByText('No accounts found')).toBeInTheDocument();
+    expect(screen.getByText('accounts.notFound')).toBeInTheDocument();
   });
 
   it('renders empty state when accounts is undefined', () => {
     // @ts-expect-error testing undefined case
     render(<AccountTree accounts={undefined} onSelect={vi.fn()} />);
-    expect(screen.getByText('No accounts found')).toBeInTheDocument();
+    expect(screen.getByText('accounts.notFound')).toBeInTheDocument();
   });
 
   it('renders account names', () => {

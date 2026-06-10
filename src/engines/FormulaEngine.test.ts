@@ -11,32 +11,32 @@ describe('FormulaEngine', () => {
         const result = FormulaEngine.parseFormula('1+2');
         expect(result.valid).toBe(true);
         expect(result.nodes).toHaveLength(1);
-        expect(result.nodes[0].type).toBe('op');
-        expect(result.nodes[0].value).toBe('+');
+        expect(result!.nodes[0]!.type).toBe('op');
+        expect(result!.nodes[0]!.value).toBe('+');
       });
 
       it('should parse simple subtraction', () => {
         const result = FormulaEngine.parseFormula('10-5');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].value).toBe('-');
+        expect(result!.nodes[0]!.value).toBe('-');
       });
 
       it('should parse simple multiplication', () => {
         const result = FormulaEngine.parseFormula('3*4');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].value).toBe('*');
+        expect(result!.nodes[0]!.value).toBe('*');
       });
 
       it('should parse simple division', () => {
         const result = FormulaEngine.parseFormula('10/2');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].value).toBe('/');
+        expect(result!.nodes[0]!.value).toBe('/');
       });
 
       it('should handle leading equals sign', () => {
         const result = FormulaEngine.parseFormula('=1+1');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('op');
+        expect(result!.nodes[0]!.type).toBe('op');
       });
 
       it('should parse empty string as valid', () => {
@@ -54,68 +54,68 @@ describe('FormulaEngine', () => {
       it('should parse cell references', () => {
         const result = FormulaEngine.parseFormula('A1');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('ref');
-        expect(result.nodes[0].value).toBe('A1');
+        expect(result!.nodes[0]!.type).toBe('ref');
+        expect(result!.nodes[0]!.value).toBe('A1');
       });
 
       it('should parse multi-letter column references', () => {
         const result = FormulaEngine.parseFormula('AA1');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('ref');
-        expect(result.nodes[0].value).toBe('AA1');
+        expect(result!.nodes[0]!.type).toBe('ref');
+        expect(result!.nodes[0]!.value).toBe('AA1');
       });
 
       it('should parse underscore references', () => {
         const result = FormulaEngine.parseFormula('_var1');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('ref');
+        expect(result!.nodes[0]!.type).toBe('ref');
       });
 
       it('should parse floating point numbers', () => {
         const result = FormulaEngine.parseFormula('3.14');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('number');
-        expect(result.nodes[0].value).toBe('3.14');
+        expect(result!.nodes[0]!.type).toBe('number');
+        expect(result!.nodes[0]!.value).toBe('3.14');
       });
 
       it('should parse numbers with multiple digits', () => {
         const result = FormulaEngine.parseFormula('12345.67');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].value).toBe('12345.67');
+        expect(result!.nodes[0]!.value).toBe('12345.67');
       });
 
       it('should parse function calls', () => {
         const result = FormulaEngine.parseFormula('SUM(A1:A5)');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('func');
-        expect(result.nodes[0].value).toBe('SUM');
+        expect(result!.nodes[0]!.type).toBe('func');
+        expect(result!.nodes[0]!.value).toBe('SUM');
       });
 
       it('should parse function with multiple arguments', () => {
         const result = FormulaEngine.parseFormula('SUM(1,2,3)');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('func');
-        expect(result.nodes[0].children).toHaveLength(3);
+        expect(result!.nodes[0]!.type).toBe('func');
+        expect(result!.nodes[0]!.children).toHaveLength(3);
       });
 
       it('should parse function with no arguments', () => {
         const result = FormulaEngine.parseFormula('NOW()');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('func');
-        expect(result.nodes[0].children).toHaveLength(0);
+        expect(result!.nodes[0]!.type).toBe('func');
+        expect(result!.nodes[0]!.children).toHaveLength(0);
       });
 
       it('should parse range references', () => {
         const result = FormulaEngine.parseFormula('A1:B5');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('range');
-        expect(result.nodes[0].value).toBe('A1:B5');
+        expect(result!.nodes[0]!.type).toBe('range');
+        expect(result!.nodes[0]!.value).toBe('A1:B5');
       });
 
       it('should parse nested parentheses', () => {
         const result = FormulaEngine.parseFormula('((1+2)*3)');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('op');
+        expect(result!.nodes[0]!.type).toBe('op');
       });
 
       it('should parse deeply nested parentheses', () => {
@@ -126,7 +126,7 @@ describe('FormulaEngine', () => {
       it('should parse complex formula with mixed operations', () => {
         const result = FormulaEngine.parseFormula('A1+B2*C3-D4/E5');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('op');
+        expect(result!.nodes[0]!.type).toBe('op');
       });
 
       it('should parse formula with function inside expression', () => {
@@ -142,9 +142,9 @@ describe('FormulaEngine', () => {
       it('should parse IF function with literals', () => {
         const result = FormulaEngine.parseFormula('IF(1,100,200)');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('func');
-        expect(result.nodes[0].value).toBe('IF');
-        expect(result.nodes[0].children).toHaveLength(3);
+        expect(result!.nodes[0]!.type).toBe('func');
+        expect(result!.nodes[0]!.value).toBe('IF');
+        expect(result!.nodes[0]!.children).toHaveLength(3);
       });
 
       it('should parse IF function with cell reference condition', () => {
@@ -155,22 +155,22 @@ describe('FormulaEngine', () => {
       it('should parse NPV function', () => {
         const result = FormulaEngine.parseFormula('NPV(0.1,100,200,300)');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].value).toBe('NPV');
+        expect(result!.nodes[0]!.value).toBe('NPV');
       });
 
       it('should parse CAGR function', () => {
         const result = FormulaEngine.parseFormula('CAGR(150,100,3)');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].value).toBe('CAGR');
+        expect(result!.nodes[0]!.value).toBe('CAGR');
       });
 
       it('should parse comparison operators as op nodes', () => {
         // parseComparison handles >=, so A1>=B1 becomes an op node with children [A1, B1]
         const result = FormulaEngine.parseFormula('A1>=B1');
         expect(result.valid).toBe(true);
-        expect(result.nodes[0].type).toBe('op');
-        expect(result.nodes[0].value).toBe('>=');
-        expect(result.nodes[0].children).toHaveLength(2);
+        expect(result!.nodes[0]!.type).toBe('op');
+        expect(result!.nodes[0]!.value).toBe('>=');
+        expect(result!.nodes[0]!.children).toHaveLength(2);
       });
     });
 

@@ -12,7 +12,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = props.id ?? generatedId;
     const errorId = `${inputId}-error`;
     return (
-      <div className="space-y-1">
+      <div className="space-y-1" role="region" aria-label="Input">
         {label && (
           <label htmlFor={inputId} className="text-sm font-medium text-[var(--text-primary)]">
             {label}

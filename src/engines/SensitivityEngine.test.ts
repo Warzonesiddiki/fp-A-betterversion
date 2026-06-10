@@ -9,7 +9,7 @@ describe('SensitivityEngine', () => {
           { name: 'Price', baseValue: 100, lowValue: 80, highValue: 120 },
           { name: 'Volume', baseValue: 1000, lowValue: 800, highValue: 1200 },
         ],
-        (vars) => vars.Price * vars.Volume,
+        (vars) => vars!.Price! * vars!.Volume!,
         { Price: 100, Volume: 1000 }
       );
       expect(result).toHaveLength(2);
@@ -21,19 +21,19 @@ describe('SensitivityEngine', () => {
           { name: 'Small', baseValue: 100, lowValue: 90, highValue: 110 },
           { name: 'Large', baseValue: 100, lowValue: 50, highValue: 150 },
         ],
-        (vars) => vars.Small + vars.Large,
+        (vars) => vars!.Small! + vars!.Large!,
         { Small: 100, Large: 100 }
       );
-      expect(result[0].name).toBe('Large');
+      expect(result![0]!.name).toBe('Large');
     });
 
     it('should calculate swing correctly', () => {
       const result = SensitivityEngine.tornado(
         [{ name: 'X', baseValue: 10, lowValue: 5, highValue: 15 }],
-        (vars) => vars.X * 2,
+        (vars) => vars!.X! * 2,
         { X: 10 }
       );
-      expect(result[0].swing).toBe(20);
+      expect(result![0]!.swing).toBe(20);
     });
 
     it('should handle single variable', () => {
@@ -43,7 +43,7 @@ describe('SensitivityEngine', () => {
         { A: 100 }
       );
       expect(result).toHaveLength(1);
-      expect(result[0].rank).toBe(1);
+      expect(result![0]!.rank).toBe(1);
     });
   });
 });

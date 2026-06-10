@@ -51,8 +51,8 @@ describe('AuditLogEngine', () => {
 
     const recent = engine.getRecent(2);
     expect(recent.length).toBe(2);
-    expect(recent[0].resourceId).toBe('b3');
-    expect(recent[1].resourceId).toBe('b2');
+    expect(recent![0]!.resourceId).toBe('b3');
+    expect(recent![1]!.resourceId).toBe('b2');
   });
 
   it('should filter by userId', () => {
@@ -73,7 +73,7 @@ describe('AuditLogEngine', () => {
 
     const filtered = engine.filter({ userId: 'user1' });
     expect(filtered.length).toBe(1);
-    expect(filtered[0].userId).toBe('user1');
+    expect(filtered![0]!.userId).toBe('user1');
   });
 
   it('should filter by action', () => {
@@ -94,7 +94,7 @@ describe('AuditLogEngine', () => {
 
     const filtered = engine.filter({ action: 'create' });
     expect(filtered.length).toBe(1);
-    expect(filtered[0].action).toBe('create');
+    expect(filtered![0]!.action).toBe('create');
   });
 
   it('should filter by resource', () => {
@@ -115,7 +115,7 @@ describe('AuditLogEngine', () => {
 
     const filtered = engine.filter({ resource: 'budget' });
     expect(filtered.length).toBe(1);
-    expect(filtered[0].resource).toBe('budget');
+    expect(filtered![0]!.resource).toBe('budget');
   });
 
   it('should get by resource', () => {

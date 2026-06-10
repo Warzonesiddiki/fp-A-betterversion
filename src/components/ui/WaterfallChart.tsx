@@ -148,7 +148,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
               cursor={{ fill: 'transparent' }}
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const data = payload[0].payload;
+                  const data = payload[0]!.payload;
                   return (
                     <div className="bg-[var(--bg-surface)] p-2 border border-[var(--border-subtle)] shadow-xl rounded-md">
                       <p className="text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">

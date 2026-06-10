@@ -124,7 +124,7 @@ export class ETLPipelineEngine {
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
       for (const mapping of this.mappings) {
-        const value = row[mapping.sourceField];
+        const value = row![mapping.sourceField];
 
         // Check required fields
         if (mapping.required && (value === null || value === undefined || value === '')) {
@@ -187,9 +187,9 @@ export class ETLPipelineEngine {
   profile(data: Record<string, unknown>[]): ColumnStats[] {
     if (data.length === 0) return [];
 
-    const headers = Object.keys(data[0]);
+    const headers = Object.keys(data[0]!);
     return headers.map((name) => {
-      const values = data.map((row) => row[name]);
+      const values = data.map((row) => row[name]!);
       const nonNull = values.filter((v) => v !== null && v !== undefined && v !== '');
       const distinct = new Set(nonNull);
 
@@ -338,7 +338,7 @@ export class ETLPipelineEngine {
     }
 
     return Array.from(groups.entries()).map(([key, rows]) => {
-      const values = rows.map((r) => Number(r[aggField])).filter((n) => !isNaN(n));
+      const values = rows.map((r) => Number(r[aggField]!)).filter((n) => !isNaN(n));
       let result: number;
       switch (aggFunc) {
         case 'sum':

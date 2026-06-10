@@ -151,7 +151,7 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
           <button
             onClick={onClose}
             aria-label="Close"
-            className="p-1 rounded hover:opacity-80"
+            className="p-1 rounded hover:opacity-80 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-secondary)' }}
           >
             <X className="w-4 h-4" />

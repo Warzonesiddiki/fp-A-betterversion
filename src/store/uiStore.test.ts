@@ -53,13 +53,13 @@ describe('uiStore', () => {
     vi.useFakeTimers();
     useUIStore.getState().addToast({ message: 'Test', type: 'success' } as any);
     expect(useUIStore.getState().toasts).toHaveLength(1);
-    expect(useUIStore.getState().toasts[0].message).toBe('Test');
+    expect(useUIStore!.getState().toasts[0]!.message).toBe('Test');
     vi.useRealTimers();
   });
 
   it('should remove a toast', () => {
     useUIStore.getState().addToast({ message: 'Test', type: 'success' } as any);
-    const id = useUIStore.getState().toasts[0].id;
+    const id = useUIStore!.getState().toasts[0]!.id;
     useUIStore.getState().removeToast(id);
     expect(useUIStore.getState().toasts).toHaveLength(0);
   });

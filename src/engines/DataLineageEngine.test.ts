@@ -18,7 +18,7 @@ describe('DataLineageEngine', () => {
       ];
       const graph = engine.buildGraph(sources);
       expect(graph.nodes).toHaveLength(2);
-      expect(graph.nodes[0].type).toBe('source');
+      expect(graph!.nodes[0]!.type).toBe('source');
     });
 
     it('should return empty graph for empty sources', () => {

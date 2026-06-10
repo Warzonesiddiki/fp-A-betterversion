@@ -209,7 +209,7 @@ export function BoardPackTemplate({
         <div className="flex gap-2">
           <button
             onClick={handleExportPDF}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             Export PDF
           </button>
@@ -231,7 +231,7 @@ export function BoardPackTemplate({
           <div className="grid grid-cols-3 gap-3">
             <button
               onClick={handleExportPDF}
-              className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+              className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               PDF
             </button>

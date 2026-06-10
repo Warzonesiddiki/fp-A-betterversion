@@ -45,7 +45,7 @@ describe('DimensionalModelingEngine', () => {
       expect(dim).toBeDefined();
       expect(dim!.name).toBe('Time');
       expect(dim!.hierarchies).toHaveLength(1);
-      expect(dim!.hierarchies[0].levels).toHaveLength(3);
+      expect(dim!.hierarchies[0]!.levels).toHaveLength(3);
     });
 
     it('should register multiple dimensions', () => {
@@ -103,7 +103,7 @@ describe('DimensionalModelingEngine', () => {
       ];
       const result = DimensionalModelingEngine.slice(data, 'time', 'Jan');
       expect(result).toHaveLength(1);
-      expect(result[0].revenue).toBe(100);
+      expect(result![0]!.revenue).toBe(100);
     });
 
     it('should return empty array when no match', () => {
@@ -132,7 +132,7 @@ describe('DimensionalModelingEngine', () => {
       ];
       const result = DimensionalModelingEngine.dice(data, { time: ['Jan'], region: ['US'] });
       expect(result).toHaveLength(1);
-      expect(result[0].revenue).toBe(100);
+      expect(result![0]!.revenue).toBe(100);
     });
   });
 

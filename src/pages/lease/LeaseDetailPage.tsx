@@ -160,7 +160,7 @@ export default function LeaseDetailPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [selectedLease, setSelectedLease] = useState<LeaseRecord>(mockLeases[0]);
+  const [selectedLease, setSelectedLease] = useState<LeaseRecord>(mockLeases[0]!);
 
   useEffect(() => {
     document.title = 'FinPlan Pro - Lease Detail';

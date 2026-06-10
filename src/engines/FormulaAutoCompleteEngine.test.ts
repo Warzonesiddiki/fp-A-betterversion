@@ -6,19 +6,19 @@ describe('FormulaAutoCompleteEngine', () => {
     it('should suggest SUM for SU', () => {
       const suggestions = FormulaAutoCompleteEngine.suggest('SU');
       expect(suggestions.length).toBeGreaterThan(0);
-      expect(suggestions[0].text).toBe('SUM');
+      expect(suggestions![0]!.text).toBe('SUM');
     });
 
     it('should suggest VLOOKUP for VL', () => {
       const suggestions = FormulaAutoCompleteEngine.suggest('VL');
       expect(suggestions.length).toBeGreaterThan(0);
-      expect(suggestions[0].text).toBe('VLOOKUP');
+      expect(suggestions![0]!.text).toBe('VLOOKUP');
     });
 
     it('should suggest IF for IF', () => {
       const suggestions = FormulaAutoCompleteEngine.suggest('IF');
       expect(suggestions.length).toBeGreaterThan(0);
-      expect(suggestions[0].text).toBe('IF');
+      expect(suggestions![0]!.text).toBe('IF');
     });
 
     it('should return empty for non-matching prefix', () => {
@@ -33,17 +33,17 @@ describe('FormulaAutoCompleteEngine', () => {
 
     it('should include category in suggestion', () => {
       const suggestions = FormulaAutoCompleteEngine.suggest('SU');
-      expect(suggestions[0].category).toBeDefined();
+      expect(suggestions![0]!.category).toBeDefined();
     });
 
     it('should include insertText in suggestion', () => {
       const suggestions = FormulaAutoCompleteEngine.suggest('SU');
-      expect(suggestions[0].insertText).toBe('SUM(');
+      expect(suggestions![0]!.insertText).toBe('SUM(');
     });
 
     it('should include description in suggestion', () => {
       const suggestions = FormulaAutoCompleteEngine.suggest('SU');
-      expect(suggestions[0].description).toBeDefined();
+      expect(suggestions![0]!.description).toBeDefined();
     });
   });
 

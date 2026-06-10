@@ -17,8 +17,8 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = ({ value, onChange, per
     const groups: Record<string, FiscalPeriod[]> = {};
     periods.forEach((p) => {
       const q = `Q${Math.ceil(p.periodNumber / 3)} ${p.year}`;
-      if (!groups[q]) groups[q] = [];
-      groups[q].push(p);
+      if (!groups[q]!) groups[q] = [];
+      groups[q]!.push(p);
     });
     return groups;
   }, [periods]);

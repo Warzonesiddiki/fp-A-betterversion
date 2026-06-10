@@ -345,7 +345,7 @@ export class CubeMigration {
   }
 
   getLatestReport(): MigrationReport | null {
-    return this.reports.length > 0 ? this.reports[this.reports.length - 1] : null;
+    return this.reports.length > 0 ? this.reports[this.reports.length - 1]! : null;
   }
 
   getBackups(): MigrationBackup[] {

@@ -94,7 +94,7 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
     setCurrentMatchIdx(results.length > 0 ? 0 : -1);
 
     if (results.length > 0) {
-      navigateToMatch(results[0]);
+      navigateToMatch(results[0]!);
     }
   }, [gridApi, findText, matchCase, useRegex, searchInFormulas, navigateToMatch]);
 
@@ -102,19 +102,19 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
     if (matches.length === 0) return;
     const next = (currentMatchIdx + 1) % matches.length;
     setCurrentMatchIdx(next);
-    navigateToMatch(matches[next]);
+    navigateToMatch(matches[next]!);
   }, [matches, currentMatchIdx, navigateToMatch]);
 
   const goToPrev = useCallback(() => {
     if (matches.length === 0) return;
     const prev = (currentMatchIdx - 1 + matches.length) % matches.length;
     setCurrentMatchIdx(prev);
-    navigateToMatch(matches[prev]);
+    navigateToMatch(matches[prev]!);
   }, [matches, currentMatchIdx, navigateToMatch, setCurrentMatchIdx]);
 
   // Replace current match
   const handleReplace = useCallback(() => {
-    if (!gridApi || currentMatchIdx < 0 || !matches[currentMatchIdx]) return;
+    if (!gridApi || currentMatchIdx < 0 || !matches[currentMatchIdx]!) return;
     const match = matches[currentMatchIdx];
     const node = gridApi.getDisplayedRowAtIndex(match.rowIndex);
     if (node?.data) {
@@ -258,7 +258,7 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
         <span className="text-sm font-semibold text-[var(--text-primary)]">Find and Replace</span>
         <button
           onClick={onClose}
-          className="p-1 rounded hover:bg-[var(--bg-muted)] transition-colors"
+          className="p-1 rounded hover:bg-[var(--bg-muted)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
@@ -339,7 +339,7 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
           <button
             onClick={goToPrev}
             disabled={matches.length === 0}
-            className="p-1.5 rounded hover:bg-[var(--bg-surface)] disabled:opacity-30 transition-colors"
+            className="p-1.5 rounded hover:bg-[var(--bg-surface)] disabled:opacity-30 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             aria-label="Previous match"
             title="Previous (Shift+Enter)"
           >
@@ -348,7 +348,7 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
           <button
             onClick={goToNext}
             disabled={matches.length === 0}
-            className="p-1.5 rounded hover:bg-[var(--bg-surface)] disabled:opacity-30 transition-colors"
+            className="p-1.5 rounded hover:bg-[var(--bg-surface)] disabled:opacity-30 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             aria-label="Next match"
             title="Next (Enter)"
           >
@@ -371,14 +371,14 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
           <button
             onClick={handleReplace}
             disabled={currentMatchIdx < 0}
-            className="px-2.5 py-1 text-xs font-medium rounded border border-[var(--border-subtle)] hover:bg-[var(--bg-surface)] disabled:opacity-30 transition-colors"
+            className="px-2.5 py-1 text-xs font-medium rounded border border-[var(--border-subtle)] hover:bg-[var(--bg-surface)] disabled:opacity-30 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             Replace
           </button>
           <button
             onClick={handleReplaceAll}
             disabled={matches.length === 0}
-            className="px-2.5 py-1 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-30 transition-colors"
+            className="px-2.5 py-1 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-30 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
             Replace All
           </button>

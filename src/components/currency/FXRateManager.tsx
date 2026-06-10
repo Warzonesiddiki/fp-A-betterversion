@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { FXEngine, type FXRateEntry } from '@/engines/FXEngine';
+import { useFxRateStore } from '@/store/fxRateStore';
 import { Plus, TrendingUp, TrendingDown, History, Trash2 } from 'lucide-react';
 import { CURRENCIES, SOURCE_LABEL, SOURCE_VARIANT, formatMoney } from './constants';
 
@@ -24,11 +25,35 @@ const EMPTY_FORM: RateForm = {
 };
 
 export function FXRateManager() {
-  const [rates, setRates] = useState<FXRateEntry[]>(FXEngine.getAllRates());
+  const storeRates = useFxRateStore((s) => s.rates);
+  const addRate = useFxRateStore((s) => s.addRate);
+  const deleteRate = useFxRateStore((s) => s.deleteRate);
+
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<RateForm>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof RateForm, string>>>({});
   const [selectedPair, setSelectedPair] = useState<string | null>(null);
+
+  useEffect(() => {
+    FXEngine.clearRates();
+    for (const r of storeRates) {
+      FXEngine.setRate(r.fromCurrency, r.toCurrency, r.rate, r.effectiveDate, r.source ?? 'manual');
+    }
+  }, [storeRates]);
+
+  const rates = useMemo(() => {
+    const all: FXRateEntry[] = [];
+    for (const r of storeRates) {
+      all.push({
+        from: r.fromCurrency,
+        to: r.toCurrency,
+        rate: r.rate,
+        date: r.effectiveDate,
+        source: r.source ?? 'manual',
+      });
+    }
+    return all.sort((a, b) => a.date.localeCompare(b.date));
+  }, [storeRates]);
 
   const pairs = useMemo(() => {
     const map = new Map<string, FXRateEntry[]>();
@@ -68,21 +93,26 @@ export function FXRateManager() {
     const errs = validate(form);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    FXEngine.setRate(form.fromCurrency, form.toCurrency, Number(form.rate), form.date, form.source);
-    setRates(FXEngine.getAllRates());
+    addRate({
+      id: `fx-${Date.now()}`,
+      fromCurrency: form.fromCurrency,
+      toCurrency: form.toCurrency,
+      rate: Number(form.rate),
+      effectiveDate: form.date,
+      source: form.source,
+    });
     setForm(EMPTY_FORM);
     setShowForm(false);
-  }, [form, validate]);
+  }, [form, validate, addRate]);
 
   const handleDelete = useCallback(
     (from: string, to: string, date: string) => {
-      FXEngine.clearRates();
-      for (const r of rates.filter((r) => !(r.from === from && r.to === to && r.date === date))) {
-        FXEngine.setRate(r.from, r.to, r.rate, r.date, r.source);
-      }
-      setRates(FXEngine.getAllRates());
+      const match = storeRates.find(
+        (r) => r.fromCurrency === from && r.toCurrency === to && r.effectiveDate === date
+      );
+      if (match) deleteRate(match.id);
     },
-    [rates]
+    [storeRates, deleteRate]
   );
 
   return (

@@ -70,7 +70,7 @@ const DEFAULT_PII_TYPES: PIIType[] = [
   },
   {
     name: 'date_of_birth',
-    pattern: /\b(?:0[1-9]|1[0-2])[/-](?:0[1-9]|[12]\d|3[01])[/-](?:19|20)\d{2}\b/g,
+    pattern: /\b(?:0[1-9]|1[0-2])[/-](?:0[1-9]|[12]\d|3[01]!)[/-](?:19|20)\d{2}\b/g,
     sensitivity: 'confidential',
     description: 'Date of birth',
   },
@@ -208,9 +208,9 @@ export class DataClassificationEngine {
 
   classifyDataset(data: Record<string, unknown>[]): ClassificationResult[] {
     if (data.length === 0) return [];
-    const fields = Object.keys(data[0]);
+    const fields = Object.keys(data[0]!);
     return fields.map((field) => {
-      const values = data.map((row) => row[field]);
+      const values = data.map((row) => row[field]!);
       return this.classifyField(field, values);
     });
   }
@@ -237,7 +237,7 @@ export class DataClassificationEngine {
     switch (piiType) {
       case 'email': {
         const parts = value.split('@');
-        return parts.length === 2 ? `${parts[0][0]}***@${parts[1]}` : '***';
+        return parts.length === 2 ? `${parts[0]![0]}***@${parts[1]}` : '***';
       }
       case 'phone':
         return value.replace(/\d/g, '*').replace(/\*{4}$/, '****');

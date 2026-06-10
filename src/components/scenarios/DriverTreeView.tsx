@@ -10,7 +10,11 @@ export interface DriverTreeViewProps {
 export function DriverTreeView({ assumptions, onUpdate, readOnly }: DriverTreeViewProps) {
   if (assumptions.length === 0) {
     return (
-      <div className="p-6 text-center text-slate-500 bg-slate-900 rounded-lg">
+      <div
+        className="p-6 text-center text-slate-500 bg-slate-900 rounded-lg"
+        role="region"
+        aria-label="DriverTreeView"
+      >
         No drivers defined
       </div>
     );
@@ -18,8 +22,8 @@ export function DriverTreeView({ assumptions, onUpdate, readOnly }: DriverTreeVi
 
   const groups = assumptions.reduce(
     (acc, a) => {
-      acc[a.driverType] = acc[a.driverType] || [];
-      acc[a.driverType].push(a);
+      const existing = acc[a.driverType];
+      acc[a.driverType] = existing ? [...existing, a] : [a];
       return acc;
     },
     {} as Record<string, ScenarioAssumption[]>

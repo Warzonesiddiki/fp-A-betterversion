@@ -158,7 +158,7 @@ export class SessionEngine {
     const activeSessions = this.getActiveSessions(userId);
     if (activeSessions.length >= this.config.maxConcurrentSessions) {
       const oldest = activeSessions.sort((a, b) => a.lastActivity.localeCompare(b.lastActivity))[0];
-      this.invalidateSession(oldest.id);
+      this.invalidateSession(oldest!.id);
     }
   }
 }

@@ -116,7 +116,7 @@ export class InsuranceEngine {
           name: line.name,
           written,
           earned,
-          color: LINE_COLORS[idx % LINE_COLORS.length],
+          color: LINE_COLORS[idx % LINE_COLORS.length]!,
         };
       })
       .filter((l) => l.written > 0 || l.earned > 0);

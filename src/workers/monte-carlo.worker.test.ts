@@ -55,7 +55,7 @@ describe('monte-carlo.worker', () => {
       });
       expect(result1?.results.length).toBe(100);
       expect(result2?.results.length).toBe(100);
-      expect(result1?.results[0].output).toBe(result2?.results[0].output);
+      expect(result1?.results[0]!.output).toBe(result2?.results[0]!.output);
       expect(result1?.statistics.mean).toBe(result2?.statistics.mean);
     });
 
@@ -78,7 +78,7 @@ describe('monte-carlo.worker', () => {
       });
       const outputs1 = result1?.results.map((r) => r.output) ?? [];
       const outputs2 = result2?.results.map((r) => r.output) ?? [];
-      const same = outputs1.every((v, i) => v === outputs2[i]);
+      const same = outputs1.every((v, i) => v === outputs2[i]!);
       expect(same).toBe(false);
     });
   });
@@ -147,7 +147,7 @@ describe('monte-carlo.worker', () => {
       });
       const progressMsgs = postMessages.filter((m) => m.type === 'progress');
       expect(progressMsgs.length).toBeGreaterThan(0);
-      expect(progressMsgs[0].progress?.percent).toBeGreaterThanOrEqual(0);
+      expect(progressMsgs![0]!.progress?.percent).toBeGreaterThanOrEqual(0);
     });
   });
 

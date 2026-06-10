@@ -12,7 +12,11 @@ export interface VarianceTableProps {
 export function VarianceTable({ analyses, onCommentaryEdit }: VarianceTableProps) {
   if (analyses.length === 0) {
     return (
-      <div className="p-12 text-center text-slate-500 bg-slate-900 rounded-lg border border-slate-800">
+      <div
+        className="p-12 text-center text-slate-500 bg-slate-900 rounded-lg border border-slate-800"
+        role="region"
+        aria-label="VarianceTable"
+      >
         No variance data
       </div>
     );

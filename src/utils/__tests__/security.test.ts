@@ -269,7 +269,7 @@ describe('security', () => {
 
     it('returns error for non-string input', () => {
       const result = sanitizeUserInput(123);
-      expect(result.errors[0]).toContain('expected a string');
+      expect(result.errors[0]!).toContain('expected a string');
     });
 
     it('returns error for too-long input', () => {

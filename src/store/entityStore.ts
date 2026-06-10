@@ -74,7 +74,7 @@ export const useEntityStore = create<EntityState>()(
           set((state) => {
             const idx = state.entities.findIndex((e) => e.id === id);
             if (idx !== -1) {
-              Object.assign(state.entities[idx], updates);
+              Object.assign(state.entities[idx]!, updates);
             }
           });
         },

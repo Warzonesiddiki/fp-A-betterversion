@@ -70,8 +70,8 @@ function tokenize(expr: string): string[] {
     const ch = s[i];
 
     if (
-      (ch >= '0' && ch <= '9') ||
-      (ch === '.' && i + 1 < s.length && s[i + 1] >= '0' && s[i + 1] <= '9') ||
+      (ch! >= '0' && ch! <= '9') ||
+      (ch === '.' && i + 1 < s.length && s![i + 1]! >= '0' && s![i + 1]! <= '9') ||
       (ch === '-' &&
         (tokens.length === 0 ||
           tokens[tokens.length - 1] === '(' ||
@@ -79,13 +79,13 @@ function tokenize(expr: string): string[] {
     ) {
       let num = ch;
       i++;
-      while (i < s.length && ((s[i] >= '0' && s[i] <= '9') || s[i] === '.')) {
-        num += s[i];
+      while (i < s.length && ((s[i]! >= '0' && s[i]! <= '9') || s[i]! === '.')) {
+        num! += s[i]!;
         i++;
       }
-      tokens.push(num);
-    } else if ('+-*/()'.includes(ch)) {
-      tokens.push(ch);
+      tokens.push(num!);
+    } else if ('+-*/()'.includes(ch!)) {
+      tokens.push(ch!);
       i++;
     } else {
       i++;
@@ -286,12 +286,12 @@ export function detectCircularReferences(layout: ReportLayout): FormulaDependenc
   const dependencies = new Map<string, string[]>();
 
   for (let ri = 0; ri < layout.rows.length; ri++) {
-    for (let ci = 0; ci < layout.rows[ri].cells.length; ci++) {
-      const cell = layout.rows[ri].cells[ci];
-      cellIdMap.set(cell.id, { row: ri, col: ci });
+    for (let ci = 0; ci < layout.rows[ri]!.cells.length; ci++) {
+      const cell = layout.rows[ri]!.cells[ci];
+      cellIdMap.set(cell!.id, { row: ri, col: ci });
 
-      if (cell.type === 'formula') {
-        const formulaContent = cell.content as { content: FormulaCellContent };
+      if (cell!.type === 'formula') {
+        const formulaContent = cell!.content as { content: FormulaCellContent };
         const refs = parseFormulaReferences(formulaContent.content.expression);
         const depIds: string[] = [];
         for (const ref of refs) {
@@ -305,7 +305,7 @@ export function detectCircularReferences(layout: ReportLayout): FormulaDependenc
             }
           }
         }
-        dependencies.set(cell.id, depIds);
+        dependencies.set(cell!.id, depIds);
       }
     }
   }
@@ -385,7 +385,7 @@ export function identifySectionRanges(layout: ReportLayout): Array<{
   let startIndex = 0;
 
   for (let i = 0; i < layout.rows.length; i++) {
-    const rowType = layout.rows[i].type;
+    const rowType = layout.rows[i]!.type;
     const normalizedType: 'data' | 'subtotal' | 'total' =
       rowType === 'data' || rowType === 'header'
         ? 'data'
@@ -439,12 +439,12 @@ export function autoPopulateTotals(
 
     for (let colIdx = 0; colIdx < layout.columns.length; colIdx++) {
       const col = layout.columns[colIdx];
-      if (col.type === 'label') continue;
+      if (col!.type === 'label') continue;
 
-      const existingCell = rows[section.startIndex].cells[colIdx];
+      const existingCell = rows![section.startIndex]!.cells[colIdx];
 
-      if (existingCell.type === 'metric') {
-        rows[section.startIndex].cells[colIdx] = {
+      if (existingCell!.type === 'metric') {
+        rows![section.startIndex]!.cells[colIdx] = {
           ...existingCell,
           content: {
             type: 'metric' as const,
@@ -456,7 +456,7 @@ export function autoPopulateTotals(
               showSign: false,
             },
           },
-        };
+        } as ReportCell;
       }
     }
   }
@@ -474,7 +474,7 @@ export function getSections(layout: ReportLayout): ReportSection[] {
 
   for (let i = 0; i < layout.rows.length; i++) {
     const row = layout.rows[i];
-    const sectionType = rowTypeToSectionType(row.type);
+    const sectionType = rowTypeToSectionType(row!.type);
 
     if (!currentSection || currentSection.type !== sectionType) {
       if (currentSection) {
@@ -524,7 +524,7 @@ function getSectionTitle(
   sectionType: ReportSection['type']
 ): string {
   const row = layout.rows[rowIndex];
-  const labelCell = row.cells.find((_, ci) => layout.columns[ci]?.type === 'label');
+  const labelCell = row!.cells.find((_, ci) => layout.columns[ci]?.type === 'label');
   if (labelCell) {
     const textContent = labelCell.content as { content?: { text?: string } };
     if (textContent.content?.text) return textContent.content.text;

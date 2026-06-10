@@ -35,7 +35,7 @@ function FilterRow({
   onRemove: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800/50 group">
+    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800/50 group" role="region" aria-label="FilterPanel">
       <GripVertical className="h-3 w-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
       <span className="text-xs text-blue-400 font-medium truncate min-w-0 flex-shrink-0 max-w-[80px]">
         {filter.label}
@@ -60,7 +60,7 @@ function FilterRow({
       />
       <button
         onClick={onRemove}
-        className="text-slate-600 hover:text-red-400 transition-colors flex-shrink-0"
+        className="text-slate-600 hover:text-red-400 transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         aria-label={`Remove filter ${filter.label}`}
       >
         <X className="h-3 w-3" />

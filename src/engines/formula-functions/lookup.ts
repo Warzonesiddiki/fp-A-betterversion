@@ -74,7 +74,7 @@ export function FILTER(vals: number, include: number): number[] {
 }
 export function INDEX(arr: unknown, rowIdx: number, colIdx?: number): number {
   // 2D array: INDEX(array, row_num, col_num)
-  if (Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0])) {
+  if (Array.isArray(arr) && arr.length > 0 && Array.isArray(arr[0]!)) {
     const row = arr[rowIdx] as number[];
     if (!row) return 0;
     if (colIdx !== undefined) return row[colIdx] ?? 0;
@@ -100,7 +100,7 @@ export function MINVERSE(m: unknown): number[] {
       cofactors.push(((-1) ** (i + j) * MDETERM(minor as unknown as number)) as number);
     }
   const adj: number[] = [];
-  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) adj.push(cofactors[j * n + i] / det);
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) adj.push(cofactors![j * n + i]! / det);
   return adj;
 }
 
@@ -126,7 +126,7 @@ export function XLOOKUP(lookup: number, searchArr: unknown, returnArr: unknown):
 }
 export function VLOOKUP(lookup: number, table: unknown, colIdx: number, _approx = 0): number {
   // Support 2D table: find lookup value in first column, return value from colIdx column
-  if (Array.isArray(table) && table.length > 0 && Array.isArray(table[0])) {
+  if (Array.isArray(table) && table.length > 0 && Array.isArray(table[0]!)) {
     for (const row of table as number[][]) {
       if (row[0] === lookup) {
         return row[colIdx] ?? 0;
@@ -141,7 +141,7 @@ export function VLOOKUP(lookup: number, table: unknown, colIdx: number, _approx 
 }
 export function HLOOKUP(lookup: number, table: unknown, rowIdx: number, _approx = 0): number {
   // Support 2D table: find lookup value in first row, return value from rowIdx row
-  if (Array.isArray(table) && table.length > 0 && Array.isArray(table[0])) {
+  if (Array.isArray(table) && table.length > 0 && Array.isArray(table[0]!)) {
     const firstRow = table[0] as number[];
     const colIdx = firstRow.indexOf(lookup);
     if (colIdx >= 0 && rowIdx < table.length) {

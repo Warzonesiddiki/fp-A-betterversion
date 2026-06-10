@@ -48,8 +48,8 @@ export const sqlJsStorage: PersistStorage<any> = {
     try {
       const db = await getDb();
       const result = db.exec(`SELECT value FROM ${TABLE_NAME} WHERE id = ?`, [name]);
-      if (result.length > 0 && result[0].values.length > 0) {
-        return JSON.parse(result[0].values[0][0] as string);
+      if (result.length > 0 && result[0]!.values.length > 0) {
+        return JSON.parse(result[0]!.values[0]![0] as string);
       }
       return null;
     } catch (err) {

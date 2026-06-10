@@ -27,7 +27,7 @@ describe('Input', () => {
     const ref = vi.fn();
     render(<Input ref={ref} />);
     expect(ref).toHaveBeenCalled();
-    expect(ref.mock.calls[0][0]).toBeInstanceOf(HTMLInputElement);
+    expect(ref!.mock.calls[0]![0]).toBeInstanceOf(HTMLInputElement);
   });
 
   it('applies className', () => {

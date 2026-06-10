@@ -11,14 +11,14 @@ describe('SmartImportMapping', () => {
       const headers = ['Date', 'Revenue', 'Expenses', 'Profit'];
       const suggestions = SmartImportMapping.suggestMappings(headers);
       expect(suggestions.length).toBeGreaterThanOrEqual(1);
-      expect(suggestions[0].sourceColumn).toBe('Date');
-      expect(suggestions[0].confidence).toBeGreaterThan(0);
+      expect(suggestions![0]!.sourceColumn).toBe('Date');
+      expect(suggestions![0]!.confidence).toBeGreaterThan(0);
     });
 
     it('should handle case-insensitive matching', () => {
       const headers = ['DATE', 'REVENUE', 'EXPENSES'];
       const suggestions = SmartImportMapping.suggestMappings(headers);
-      expect(suggestions[0].sourceColumn).toBe('DATE');
+      expect(suggestions![0]!.sourceColumn).toBe('DATE');
     });
 
     it('should return empty array for unknown headers', () => {
@@ -53,7 +53,7 @@ describe('SmartImportMapping', () => {
       ];
       SmartImportMapping.learnFromImport(headers, mappings);
       const learned = SmartImportMapping.getLearnedMappings('Date|Amount');
-      expect(learned[0].sourceColumn).toBe('Date');
+      expect(learned![0]!.sourceColumn).toBe('Date');
     });
   });
 

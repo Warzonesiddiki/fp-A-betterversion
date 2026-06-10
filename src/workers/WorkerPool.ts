@@ -194,19 +194,16 @@ export class WorkerPool {
   private findAvailableWorker(): InternalWorker | null {
     for (let i = 0; i < this.workers.length; i++) {
       const idx = (this.roundRobinIndex + i) % this.workers.length;
-      if (!this.workers[idx].busy) {
+      if (!this.workers[idx]!.busy) {
         this.roundRobinIndex = (idx + 1) % this.workers.length;
-        return this.workers[idx];
+        return this.workers[idx]!;
       }
     }
 
-    let leastBusy = this.workers[0];
-    for (const worker of this.workers) {
-      if (worker.taskCount < leastBusy.taskCount) {
-        leastBusy = worker;
-      }
-    }
-    return leastBusy.busy ? null : leastBusy;
+    const leastBusy = this.workers.reduce<InternalWorker | null>((min, w) =>
+      min === null || w.taskCount < min.taskCount ? w : min
+    , null);
+    return leastBusy && !leastBusy.busy ? leastBusy : null;
   }
 
   async executeBatch<T>(tasks: WorkerTask<T>[]): Promise<WorkerResult[]> {
@@ -248,7 +245,7 @@ export class WorkerPool {
     const queueIndex = this.taskQueue.findIndex((t) => t.task.id === taskId);
     if (queueIndex !== -1) {
       const [removed] = this.taskQueue.splice(queueIndex, 1);
-      removed.reject(new Error('Task cancelled'));
+      removed!.reject(new Error('Task cancelled'));
       return true;
     }
 

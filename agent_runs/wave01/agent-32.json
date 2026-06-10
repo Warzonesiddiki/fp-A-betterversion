@@ -1,0 +1,8 @@
+{
+  "agent": "agent-32",
+  "task": "Add JSDoc comments to public functions in src/engines/BankingEngine.ts",
+  "status": "success",
+  "jsdocLinesAdded": 31,
+  "tscErrorsAfter": 0,
+  "notes": "Enhanced 3 existing JSDoc blocks (calculateLoanLossStats, calculateCapitalStats, calculateNIMStats) with @template/@param/@returns tags and added a new 7-line class-level JSDoc for BankingEngine. Pre-existing JSDocs documented account-code assumptions only; new JSDocs are full contracts that describe inputs, return shape, and behavior. Verification command `node run-tsc.cjs 2>&1 | Select-String \"BankingEngine\" | Measure-Object -Line` returned 0 (matches required gate). No code logic changed."
+}

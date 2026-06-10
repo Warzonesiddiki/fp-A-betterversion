@@ -110,6 +110,8 @@ export function FileUploader({
       {/* Error Display */}
       {progress.status === 'error' && (
         <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          {' '}
+          role="alert" role="alert"
           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm font-bold text-red-500">Import Failed</p>

@@ -1,0 +1,9 @@
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src-tauri\target\debug\deps\global_hotkey-c80c3adddf6cf54c.d: C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\lib.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\error.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\hotkey.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\platform_impl\mod.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\platform_impl\windows\mod.rs
+
+C:\Users\Tahir\Desktop\frontend that i want\fp&A\src-tauri\target\debug\deps\libglobal_hotkey-c80c3adddf6cf54c.rmeta: C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\lib.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\error.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\hotkey.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\platform_impl\mod.rs C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\platform_impl\windows\mod.rs
+
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\lib.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\error.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\hotkey.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\platform_impl\mod.rs:
+C:\Users\Tahir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\global-hotkey-0.8.0\src\platform_impl\windows\mod.rs:

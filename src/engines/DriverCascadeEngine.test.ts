@@ -284,8 +284,8 @@ describe('DriverCascadeEngine', () => {
 
       const result = engine.calculateCascade(driver.id, 110, readCell);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].newValue).toBe(5500000);
-      expect(result.affectedCells[0].delta).toBe(500000);
+      expect(result!.affectedCells[0]!.newValue).toBe(5500000);
+      expect(result!.affectedCells[0]!.delta).toBe(500000);
     });
 
     it('should calculate multiplicative cascade', () => {
@@ -323,7 +323,7 @@ describe('DriverCascadeEngine', () => {
 
       const result = engine.calculateCascade(driver.id, 20, readCell);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].newValue).toBe(2000000);
+      expect(result!.affectedCells[0]!.newValue).toBe(2000000);
     });
 
     it('should calculate replacement cascade', () => {
@@ -351,7 +351,7 @@ describe('DriverCascadeEngine', () => {
       const readCell = () => 100000;
       const result = engine.calculateCascade(driver.id, 30, readCell);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].newValue).toBe(30);
+      expect(result!.affectedCells[0]!.newValue).toBe(30);
     });
 
     it('should not create affected cell when delta is zero', () => {
@@ -418,7 +418,7 @@ describe('DriverCascadeEngine', () => {
       const readCell = () => 600000;
       const result = engine.calculateCascade(driver.id, 15, readCell);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].delta).toBe(3);
+      expect(result!.affectedCells[0]!.delta).toBe(3);
     });
   });
 
@@ -453,7 +453,7 @@ describe('DriverCascadeEngine', () => {
       const readCell = () => 100000;
       const result = engine.calculateCascade(driver.id, 120, readCell);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].newValue).toBe(120000);
+      expect(result!.affectedCells[0]!.newValue).toBe(120000);
     });
 
     it('should handle formula with current value', () => {
@@ -482,7 +482,7 @@ describe('DriverCascadeEngine', () => {
       const readCell = () => 1000000;
       const result = engine.calculateCascade(driver.id, 15, readCell);
       expect(result.affectedCells).toHaveLength(1);
-      expect(result.affectedCells[0].newValue).toBe(1150000);
+      expect(result!.affectedCells[0]!.newValue).toBe(1150000);
     });
 
     it('should fallback to current value on invalid formula', () => {

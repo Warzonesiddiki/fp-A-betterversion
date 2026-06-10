@@ -13,7 +13,7 @@ export function ColorStyleOptions({ rule, onChange }: ColorStyleOptionsProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="region" aria-label="ColorStyleOptions">
       {rule.visualType === 'backgroundColor' && (
         <div>
           <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">

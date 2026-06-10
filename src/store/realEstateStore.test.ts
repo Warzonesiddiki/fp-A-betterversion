@@ -48,7 +48,7 @@ describe('realEstateStore', () => {
       efficiency: '88%',
     });
     expect(useRealEstateStore.getState().facilities).toHaveLength(1);
-    expect(useRealEstateStore.getState().facilities[0].name).toBe('Tower B');
+    expect(useRealEstateStore!.getState().facilities[0]!.name).toBe('Tower B');
   });
 
   it('should update a facility', () => {
@@ -65,8 +65,8 @@ describe('realEstateStore', () => {
       .getState()
       .updateFacility('F-3', { efficiency: '97%', name: 'Tower C Premium' });
     const updated = useRealEstateStore.getState().facilities[0];
-    expect(updated.efficiency).toBe('97%');
-    expect(updated.name).toBe('Tower C Premium');
+    expect(updated!.efficiency).toBe('97%');
+    expect(updated!.name).toBe('Tower C Premium');
   });
 
   it('should remove a facility', () => {
@@ -90,7 +90,7 @@ describe('realEstateStore', () => {
     });
     useRealEstateStore.getState().removeFacility('F-4');
     expect(useRealEstateStore.getState().facilities).toHaveLength(1);
-    expect(useRealEstateStore.getState().facilities[0].id).toBe('F-5');
+    expect(useRealEstateStore!.getState().facilities[0]!.id).toBe('F-5');
   });
 
   it('should not update non-existent facility', () => {
@@ -104,6 +104,6 @@ describe('realEstateStore', () => {
       efficiency: '90%',
     });
     useRealEstateStore.getState().updateFacility('F-999', { efficiency: '99%' });
-    expect(useRealEstateStore.getState().facilities[0].efficiency).toBe('90%');
+    expect(useRealEstateStore!.getState().facilities[0]!.efficiency).toBe('90%');
   });
 });

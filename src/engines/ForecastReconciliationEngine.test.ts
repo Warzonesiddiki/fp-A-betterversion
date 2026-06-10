@@ -53,8 +53,8 @@ describe('ForecastReconciliationEngine', () => {
 
       const result = ForecastReconciliationEngine.reconcile(sources);
       expect(result.variances).toHaveLength(1);
-      expect(result.variances[0].accountCode).toBe('REV');
-      expect(result.variances[0].flag).toBe('critical');
+      expect(result!.variances[0]!.accountCode).toBe('REV');
+      expect(result!.variances[0]!.flag).toBe('critical');
     });
 
     it('should return summary with correct flag counts', () => {
@@ -93,9 +93,9 @@ describe('ForecastReconciliationEngine', () => {
 
       const merged = ForecastReconciliationEngine.merge(sources, 'average');
       expect(merged).toHaveLength(3);
-      expect(merged[0].amount).toBe(12.5);
-      expect(merged[1].amount).toBe(22.5);
-      expect(merged[2].amount).toBe(32.5);
+      expect(merged![0]!.amount).toBe(12.5);
+      expect(merged![1]!.amount).toBe(22.5);
+      expect(merged![2]!.amount).toBe(32.5);
     });
 
     it('should handle single source', () => {
@@ -108,8 +108,8 @@ describe('ForecastReconciliationEngine', () => {
 
       const merged = ForecastReconciliationEngine.merge(sources, 'average');
       expect(merged).toHaveLength(2);
-      expect(merged[0].amount).toBe(100);
-      expect(merged[1].amount).toBe(200);
+      expect(merged![0]!.amount).toBe(100);
+      expect(merged![1]!.amount).toBe(200);
     });
 
     it('should handle empty source array', () => {
@@ -124,7 +124,7 @@ describe('ForecastReconciliationEngine', () => {
       ];
 
       const merged = ForecastReconciliationEngine.merge(sources, 'weighted', [3, 1]);
-      expect(merged[0].amount).toBe(125);
+      expect(merged![0]!.amount).toBe(125);
     });
 
     it('should support top_down_priority strategy', () => {
@@ -134,7 +134,7 @@ describe('ForecastReconciliationEngine', () => {
       ];
 
       const merged = ForecastReconciliationEngine.merge(sources, 'top_down_priority');
-      expect(merged[0].amount).toBe(1000);
+      expect(merged![0]!.amount).toBe(1000);
     });
   });
 });

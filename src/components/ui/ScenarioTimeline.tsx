@@ -59,7 +59,11 @@ function CustomTooltip({
 }) {
   if (!active || !payload) return null;
   return (
-    <div className="rounded-lg border border-[var(--border-subtle)] bg-white dark:bg-gray-800 p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+    <div
+      className="rounded-lg border border-[var(--border-subtle)] bg-white dark:bg-gray-800 p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+      role="region"
+      aria-label="ScenarioTimeline"
+    >
       <p className="text-xs font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)] mb-2">
         {label}
       </p>
@@ -90,13 +94,13 @@ export function ScenarioTimeline({
   const chartData = useMemo(() => {
     return periods.map((period, i) => {
       const point: Record<string, number | string> = { period };
-      point.Base = baseValues[i];
+      point.Base = baseValues[i]!;
       scenarios.forEach((s) => {
-        point[s.name] = s.values[i];
+        point[s.name] = s.values[i]!;
       });
       if (confidenceBands) {
-        point.confidenceLow = confidenceBands.low[i];
-        point.confidenceHigh = confidenceBands.high[i];
+        point.confidenceLow = confidenceBands.low[i]!;
+        point.confidenceHigh = confidenceBands.high[i]!;
       }
       return point;
     });
@@ -110,7 +114,7 @@ export function ScenarioTimeline({
       const base = baseValues[i];
       if (base === 0) return;
       scenarios.forEach((s) => {
-        const divergence = ((s.values[i] - base) / base) * 100;
+        const divergence = ((s.values[i]! - base!) / base!) * 100;
         if (Math.abs(divergence) > 10) {
           // >10% divergence is inflection
           points.push({ period, scenario: s.name, divergence });

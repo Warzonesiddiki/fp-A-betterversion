@@ -165,6 +165,7 @@ export default function ForecastBuilderPage() {
         ))}
       </div>
 
+      <h2 className="sr-only">Forecast Charts</h2>
       <Card>
         <CardHeader>
           <CardTitle>Revenue Forecast with Confidence Bands</CardTitle>

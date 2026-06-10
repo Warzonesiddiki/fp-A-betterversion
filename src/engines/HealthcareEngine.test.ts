@@ -134,14 +134,14 @@ describe('HealthcareEngine', () => {
       ];
       const result = HealthcareEngine.getPayerMix(entries);
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Medicare');
+      expect(result![0]!.name).toBe('Medicare');
     });
 
     it('should include color property for each payer', () => {
       const entries = [gl('4001', 100000)];
       const result = HealthcareEngine.getPayerMix(entries);
-      expect(result[0].color).toBeDefined();
-      expect(typeof result[0].color).toBe('string');
+      expect(result![0]!.color).toBeDefined();
+      expect(typeof result![0]!.color).toBe('string');
     });
 
     it('should return empty array when no 40xx entries exist', () => {

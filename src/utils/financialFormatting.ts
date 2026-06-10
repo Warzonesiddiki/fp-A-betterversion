@@ -96,12 +96,12 @@ export function parseFinancialInput(input: string): number | null {
   cleaned = cleaned.replace(/[$€£¥,]/g, '');
   const compactMatch = cleaned.match(/^([\d.]+)\s*([KMB])$/i);
   if (compactMatch) {
-    const num = parseFloat(compactMatch[1]);
+    const num = parseFloat(compactMatch[1]!);
     const multiplier: Record<string, number> = { K: 1_000, M: 1_000_000, B: 1_000_000_000 };
-    return (isParens ? -1 : 1) * num * multiplier[compactMatch[2].toUpperCase()];
+    return (isParens ? -1 : 1) * num * multiplier![compactMatch[2]!.toUpperCase()]!;
   }
   const pctMatch = cleaned.match(/^([\d.]+)%$/);
-  if (pctMatch) return (isParens ? -1 : 1) * parseFloat(pctMatch[1]);
+  if (pctMatch) return (isParens ? -1 : 1) * parseFloat(pctMatch[1]!);
   const num = parseFloat(cleaned);
   if (isNaN(num)) return null;
   return isParens ? -num : num;

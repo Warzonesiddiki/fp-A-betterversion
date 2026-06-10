@@ -254,7 +254,7 @@ describe('FormulaBar', () => {
     it('sets aria-selected on the active option', () => {
       render(<FormulaBar {...defaultProps} value="=SU" />);
       const options = screen.getAllByRole('option');
-      expect(options[0]).toHaveAttribute('aria-selected', 'true');
+      expect(options[0]!).toHaveAttribute('aria-selected', 'true');
     });
 
     it('shows parameters for selected function', () => {

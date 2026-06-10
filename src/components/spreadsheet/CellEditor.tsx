@@ -91,8 +91,8 @@ export function CellEditor({
   const insertSuggestion = useCallback(
     (item: AutocompleteSuggestion) => {
       const lastTokenMatch = editValue.match(/([A-Za-z0-9_$]+)$/);
-      if (lastTokenMatch) {
-        const before = editValue.slice(0, editValue.length - lastTokenMatch[1].length);
+      if (lastTokenMatch && lastTokenMatch[1]!) {
+        const before = editValue.slice(0, editValue.length - lastTokenMatch[1]!.length);
         setEditValue(`${before}${item.insertText}`);
       } else {
         setEditValue(`${editValue}${item.insertText}`);
@@ -136,15 +136,15 @@ export function CellEditor({
         }
         if (e.key === 'Tab') {
           e.preventDefault();
-          if (suggestions[suggestionIndex]) {
-            insertSuggestion(suggestions[suggestionIndex]);
+          if (suggestions[suggestionIndex]!) {
+            insertSuggestion(suggestions[suggestionIndex]!);
           }
           return;
         }
         if (e.key === 'Enter') {
           e.preventDefault();
-          if (suggestions[suggestionIndex]) {
-            insertSuggestion(suggestions[suggestionIndex]);
+          if (suggestions[suggestionIndex]!) {
+            insertSuggestion(suggestions[suggestionIndex]!);
           }
           // Don't commit yet — let user continue editing formula
           return;

@@ -173,7 +173,7 @@ describe('WorkflowSchedulerEngine', () => {
     it('removes a calendar event', () => {
       engine.addCalendarEvent('X', '2026-06-01', 'custom');
       const events = engine.getCalendarEvents();
-      expect(engine.removeCalendarEvent(events[0].id)).toBe(true);
+      expect(engine.removeCalendarEvent(events![0]!.id)).toBe(true);
       expect(engine.getCalendarEvents().length).toBe(0);
     });
   });

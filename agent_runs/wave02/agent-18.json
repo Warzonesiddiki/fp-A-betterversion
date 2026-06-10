@@ -1,0 +1,308 @@
+{
+  "agent": "agent-18",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T05207",
+      "cat": "test",
+      "title": "CostAllocationEngine property-based tests",
+      "spec": "fast-check property tests for CostAllocationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05209",
+      "cat": "test",
+      "title": "CostCenterEngine property-based tests",
+      "spec": "fast-check property tests for CostCenterEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05211",
+      "cat": "test",
+      "title": "CurrencyRevaluationEngine property-based tests",
+      "spec": "fast-check property tests for CurrencyRevaluationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05213",
+      "cat": "test",
+      "title": "CustomDimensionEngine property-based tests",
+      "spec": "fast-check property tests for CustomDimensionEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05215",
+      "cat": "test",
+      "title": "DataLineageEngine property-based tests",
+      "spec": "fast-check property tests for DataLineageEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05217",
+      "cat": "test",
+      "title": "DepreciationScheduleEngine property-based tests",
+      "spec": "fast-check property tests for DepreciationScheduleEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05219",
+      "cat": "test",
+      "title": "DimensionEngine property-based tests",
+      "spec": "fast-check property tests for DimensionEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05221",
+      "cat": "test",
+      "title": "DriverAssignmentEngine property-based tests",
+      "spec": "fast-check property tests for DriverAssignmentEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05223",
+      "cat": "test",
+      "title": "EliminationEngine property-based tests",
+      "spec": "fast-check property tests for EliminationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05225",
+      "cat": "test",
+      "title": "EntityResolutionEngine property-based tests",
+      "spec": "fast-check property tests for EntityResolutionEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05227",
+      "cat": "test",
+      "title": "EquityEngine property-based tests",
+      "spec": "fast-check property tests for EquityEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05229",
+      "cat": "test",
+      "title": "ExpenseAllocationEngine property-based tests",
+      "spec": "fast-check property tests for ExpenseAllocationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05231",
+      "cat": "test",
+      "title": "FinancialCloseEngine property-based tests",
+      "spec": "fast-check property tests for FinancialCloseEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05233",
+      "cat": "test",
+      "title": "FinancialRatiosEngine property-based tests",
+      "spec": "fast-check property tests for FinancialRatiosEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05235",
+      "cat": "test",
+      "title": "FiscalCalendarEngine property-based tests",
+      "spec": "fast-check property tests for FiscalCalendarEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05237",
+      "cat": "test",
+      "title": "FixedAssetEngine property-based tests",
+      "spec": "fast-check property tests for FixedAssetEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05239",
+      "cat": "test",
+      "title": "ForecastingAdjustmentEngine property-based tests",
+      "spec": "fast-check property tests for ForecastingAdjustmentEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05241",
+      "cat": "test",
+      "title": "FXHedgingEngine property-based tests",
+      "spec": "fast-check property tests for FXHedgingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05243",
+      "cat": "test",
+      "title": "GainLossEngine property-based tests",
+      "spec": "fast-check property tests for GainLossEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05245",
+      "cat": "test",
+      "title": "GLPostingEngine property-based tests",
+      "spec": "fast-check property tests for GLPostingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05247",
+      "cat": "test",
+      "title": "GoodwillEngine property-based tests",
+      "spec": "fast-check property tests for GoodwillEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05249",
+      "cat": "test",
+      "title": "GroupReportingEngine property-based tests",
+      "spec": "fast-check property tests for GroupReportingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05251",
+      "cat": "test",
+      "title": "HeadcountEngine property-based tests",
+      "spec": "fast-check property tests for HeadcountEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05253",
+      "cat": "test",
+      "title": "HedgeAccountingEngine property-based tests",
+      "spec": "fast-check property tests for HedgeAccountingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05255",
+      "cat": "test",
+      "title": "HyperinflationEngine property-based tests",
+      "spec": "fast-check property tests for HyperinflationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05257",
+      "cat": "test",
+      "title": "InflationAdjustEngine property-based tests",
+      "spec": "fast-check property tests for InflationAdjustEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05259",
+      "cat": "test",
+      "title": "InsuranceReservingEngine property-based tests",
+      "spec": "fast-check property tests for InsuranceReservingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05261",
+      "cat": "test",
+      "title": "IntercompanyEliminationEngine property-based tests",
+      "spec": "fast-check property tests for IntercompanyEliminationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05263",
+      "cat": "test",
+      "title": "InventoryValuationEngine property-based tests",
+      "spec": "fast-check property tests for InventoryValuationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05265",
+      "cat": "test",
+      "title": "InvestmentEngine property-based tests",
+      "spec": "fast-check property tests for InvestmentEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05267",
+      "cat": "test",
+      "title": "JournalsEngine property-based tests",
+      "spec": "fast-check property tests for JournalsEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05269",
+      "cat": "test",
+      "title": "KPIComputationEngine property-based tests",
+      "spec": "fast-check property tests for KPIComputationEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05271",
+      "cat": "test",
+      "title": "LeaseAccountingEngine property-based tests",
+      "spec": "fast-check property tests for LeaseAccountingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05273",
+      "cat": "test",
+      "title": "LiabilityEngine property-based tests",
+      "spec": "fast-check property tests for LiabilityEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05275",
+      "cat": "test",
+      "title": "LiquidityEngine property-based tests",
+      "spec": "fast-check property tests for LiquidityEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05277",
+      "cat": "test",
+      "title": "LoanLossProvisionEngine property-based tests",
+      "spec": "fast-check property tests for LoanLossProvisionEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05279",
+      "cat": "test",
+      "title": "MarginAnalysisEngine property-based tests",
+      "spec": "fast-check property tests for MarginAnalysisEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05281",
+      "cat": "test",
+      "title": "MarketDataEngine property-based tests",
+      "spec": "fast-check property tests for MarketDataEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05283",
+      "cat": "test",
+      "title": "MasterDataMatchEngine property-based tests",
+      "spec": "fast-check property tests for MasterDataMatchEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05285",
+      "cat": "test",
+      "title": "MaterialityEngine property-based tests",
+      "spec": "fast-check property tests for MaterialityEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05287",
+      "cat": "test",
+      "title": "MiFIDReportingEngine property-based tests",
+      "spec": "fast-check property tests for MiFIDReportingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05289",
+      "cat": "test",
+      "title": "MonteCarloVaREngine property-based tests",
+      "spec": "fast-check property tests for MonteCarloVaREngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05291",
+      "cat": "test",
+      "title": "MultidimensionalEngine property-based tests",
+      "spec": "fast-check property tests for MultidimensionalEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05293",
+      "cat": "test",
+      "title": "NettingEngine property-based tests",
+      "spec": "fast-check property tests for NettingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05295",
+      "cat": "test",
+      "title": "PensionEngine property-based tests",
+      "spec": "fast-check property tests for PensionEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05297",
+      "cat": "test",
+      "title": "PeriodEndEngine property-based tests",
+      "spec": "fast-check property tests for PeriodEndEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05299",
+      "cat": "test",
+      "title": "PortfolioEngine property-based tests",
+      "spec": "fast-check property tests for PortfolioEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05301",
+      "cat": "test",
+      "title": "PostingEngine property-based tests",
+      "spec": "fast-check property tests for PostingEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05303",
+      "cat": "test",
+      "title": "PriceVarianceEngine property-based tests",
+      "spec": "fast-check property tests for PriceVarianceEngine: invariants, commutativity, idempotency."
+    },
+    {
+      "id": "T05305",
+      "cat": "test",
+      "title": "ProcurementEngine property-based tests",
+      "spec": "fast-check property tests for ProcurementEngine: invariants, commutativity, idempotency."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

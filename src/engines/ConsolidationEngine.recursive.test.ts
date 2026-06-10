@@ -117,10 +117,10 @@ describe('ConsolidationEngine - Recursive Hierarchies', () => {
     expect(tree.entityId).toBe('A');
     expect(tree.effectivePct).toBe(100);
     expect(tree.children).toHaveLength(1);
-    expect(tree.children[0].entityId).toBe('B');
-    expect(tree.children[0].effectivePct).toBe(80);
-    expect(tree.children[0].children).toHaveLength(1);
-    expect(tree.children[0].children[0].entityId).toBe('C');
-    expect(tree.children[0].children[0].effectivePct).toBe(40);
+    expect(tree!.children[0]!.entityId).toBe('B');
+    expect(tree!.children[0]!.effectivePct).toBe(80);
+    expect(tree!.children[0]!.children).toHaveLength(1);
+    expect(tree!.children[0]!.children[0]!.entityId).toBe('C');
+    expect(tree!.children[0]!.children[0]!.effectivePct).toBe(40);
   });
 });

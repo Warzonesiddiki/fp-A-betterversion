@@ -335,13 +335,13 @@ export class CellAuditTrailEngine {
   getLatestValue(cellId: string): unknown | null {
     const history = this.getHistory(cellId);
     if (history.length === 0) return null;
-    return history[0].newValue;
+    return history[0]!.newValue;
   }
 
   getPreviousValue(cellId: string): unknown | null {
     const history = this.getHistory(cellId);
     if (history.length < 2) return null;
-    return history[1].newValue;
+    return history[1]!.newValue;
   }
 
   getValueAtTime(cellId: string, timestamp: string): unknown | null {
@@ -350,7 +350,7 @@ export class CellAuditTrailEngine {
       .filter((h) => h.cellId === cellId && new Date(h.timestamp).getTime() <= time)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     if (entries.length === 0) return null;
-    return entries[0].newValue;
+    return entries[0]!.newValue;
   }
 
   revertToState(cellId: string, timestamp: string): ExtendedAuditEntry | null {
@@ -375,10 +375,10 @@ export class CellAuditTrailEngine {
   submitForApproval(entryId: string): ExtendedAuditEntry | null {
     const idx = this.history.findIndex((h) => h.id === entryId);
     if (idx === -1) return null;
-    const entry = this.history[idx];
+    const entry = this.history[idx]!;
     if (entry.approvalStatus && entry.approvalStatus !== 'pending') return entry;
 
-    const updated: ExtendedAuditEntry = { ...entry, approvalStatus: 'pending' };
+    const updated: ExtendedAuditEntry = { ...entry, approvalStatus: 'pending' } as ExtendedAuditEntry;
     this.history[idx] = Object.freeze(updated);
     return updated;
   }
@@ -386,14 +386,14 @@ export class CellAuditTrailEngine {
   approveEntry(entryId: string, approvedBy: string): ExtendedAuditEntry | null {
     const idx = this.history.findIndex((h) => h.id === entryId);
     if (idx === -1) return null;
-    const entry = this.history[idx];
+    const entry = this.history[idx]!;
 
     const updated: ExtendedAuditEntry = {
       ...entry,
       approvalStatus: 'approved',
       approvedBy,
       approvedAt: new Date().toISOString(),
-    };
+    } as ExtendedAuditEntry;
     this.history[idx] = Object.freeze(updated);
     return updated;
   }
@@ -401,14 +401,14 @@ export class CellAuditTrailEngine {
   rejectEntry(entryId: string, rejectedBy: string): ExtendedAuditEntry | null {
     const idx = this.history.findIndex((h) => h.id === entryId);
     if (idx === -1) return null;
-    const entry = this.history[idx];
+    const entry = this.history[idx]!;
 
     const updated: ExtendedAuditEntry = {
       ...entry,
       approvalStatus: 'rejected',
       approvedBy: rejectedBy,
       approvedAt: new Date().toISOString(),
-    };
+    } as ExtendedAuditEntry;
     this.history[idx] = Object.freeze(updated);
     return updated;
   }
@@ -426,8 +426,8 @@ export class CellAuditTrailEngine {
       const sorted = [...this.history].sort(
         (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       );
-      earliest = sorted[0].timestamp;
-      latest = sorted[sorted.length - 1].timestamp;
+      earliest = sorted[0]!.timestamp;
+      latest = sorted![sorted.length - 1]!.timestamp;
     }
 
     const changesByType: Record<string, number> = {};

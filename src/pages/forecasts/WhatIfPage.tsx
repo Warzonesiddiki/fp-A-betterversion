@@ -366,8 +366,8 @@ export default function WhatIfPage() {
                     <label className="text-sm font-medium">{a.label}</label>
                     <span className="text-sm text-muted-foreground">
                       {a.unit === '$'
-                        ? formatCurrency(assumptions[a.key])
-                        : `${assumptions[a.key]}${a.unit}`}
+                        ? formatCurrency(assumptions[a.key]!)
+                        : `${assumptions[a.key]!}${a.unit}`}
                     </span>
                   </div>
                   <input

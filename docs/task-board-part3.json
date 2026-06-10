@@ -1,0 +1,3502 @@
+﻿[
+    {
+        "id":  "PAGE-TEST-001",
+        "title":  "Page: BankStatements smoke test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  89,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/banking/BankStatements.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-002",
+        "title":  "Page: BankStatements integration test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  85,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/banking/BankStatements.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-003",
+        "title":  "Page: BankStatements accessibility test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  78,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/banking/BankStatements.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-004",
+        "title":  "Page: ForecastBuilderPage smoke test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  87,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/forecasts/ForecastBuilderPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-005",
+        "title":  "Page: ForecastBuilderPage integration test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  87,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/forecasts/ForecastBuilderPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-006",
+        "title":  "Page: ForecastBuilderPage accessibility test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  86,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/forecasts/ForecastBuilderPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-007",
+        "title":  "Page: HelpPage smoke test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  80,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/HelpPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-008",
+        "title":  "Page: HelpPage integration test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  82,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/HelpPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-009",
+        "title":  "Page: HelpPage accessibility test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  76,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/HelpPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-010",
+        "title":  "Page: ActivityFeed smoke test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  81,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/collaboration/ActivityFeed.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-011",
+        "title":  "Page: ActivityFeed integration test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  80,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/collaboration/ActivityFeed.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-012",
+        "title":  "Page: ActivityFeed accessibility test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  84,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/collaboration/ActivityFeed.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-013",
+        "title":  "Page: InventoryDashboard smoke test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  88,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/retail/InventoryDashboard.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-014",
+        "title":  "Page: InventoryDashboard integration test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  76,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/retail/InventoryDashboard.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-015",
+        "title":  "Page: InventoryDashboard accessibility test",
+        "status":  "completed",
+        "claimedBy":  "gemini",
+        "priority":  82,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/retail/InventoryDashboard.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-016",
+        "title":  "Page: ImportJobHistory smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/ImportJobHistory.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-017",
+        "title":  "Page: ImportJobHistory integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/ImportJobHistory.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-018",
+        "title":  "Page: ImportJobHistory accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/ImportJobHistory.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-019",
+        "title":  "Page: ValuationPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/realestate/ValuationPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-020",
+        "title":  "Page: ValuationPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/realestate/ValuationPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-021",
+        "title":  "Page: ValuationPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/realestate/ValuationPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-022",
+        "title":  "Page: UserManagementPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/settings/UserManagementPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-023",
+        "title":  "Page: UserManagementPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/settings/UserManagementPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-024",
+        "title":  "Page: UserManagementPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/settings/UserManagementPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-025",
+        "title":  "Page: IntegrationSettingsPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/settings/IntegrationSettingsPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-026",
+        "title":  "Page: IntegrationSettingsPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/settings/IntegrationSettingsPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-027",
+        "title":  "Page: IntegrationSettingsPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/settings/IntegrationSettingsPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-028",
+        "title":  "Page: ICEliminationPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/consolidation/ICEliminationPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-029",
+        "title":  "Page: ICEliminationPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/consolidation/ICEliminationPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-030",
+        "title":  "Page: ICEliminationPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/consolidation/ICEliminationPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-031",
+        "title":  "Page: BenchmarksPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/admin/BenchmarksPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-032",
+        "title":  "Page: BenchmarksPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/admin/BenchmarksPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-033",
+        "title":  "Page: BenchmarksPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/admin/BenchmarksPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-034",
+        "title":  "Page: CapitalAdequacyPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/banking/CapitalAdequacyPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-035",
+        "title":  "Page: CapitalAdequacyPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/banking/CapitalAdequacyPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-036",
+        "title":  "Page: CapitalAdequacyPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/banking/CapitalAdequacyPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-037",
+        "title":  "Page: LoginPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/auth/LoginPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-038",
+        "title":  "Page: LoginPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/auth/LoginPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-039",
+        "title":  "Page: LoginPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/auth/LoginPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-040",
+        "title":  "Page: PropertyPortfolioPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/realestate/PropertyPortfolioPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-041",
+        "title":  "Page: PropertyPortfolioPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/realestate/PropertyPortfolioPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-042",
+        "title":  "Page: PropertyPortfolioPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/realestate/PropertyPortfolioPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-043",
+        "title":  "Page: ImpairmentPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/audit/ImpairmentPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-044",
+        "title":  "Page: ImpairmentPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/audit/ImpairmentPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-045",
+        "title":  "Page: ImpairmentPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/audit/ImpairmentPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-046",
+        "title":  "Page: CollaborationPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/collaboration/CollaborationPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-047",
+        "title":  "Page: CollaborationPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/collaboration/CollaborationPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-048",
+        "title":  "Page: CollaborationPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/collaboration/CollaborationPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-049",
+        "title":  "Page: CompModelingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/workforce/CompModelingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-050",
+        "title":  "Page: CompModelingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/workforce/CompModelingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-051",
+        "title":  "Page: CompModelingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/workforce/CompModelingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-052",
+        "title":  "Page: RealEstateDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sector/RealEstateDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-053",
+        "title":  "Page: RealEstateDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sector/RealEstateDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-054",
+        "title":  "Page: RealEstateDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sector/RealEstateDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-055",
+        "title":  "Page: TelecomPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/telecom/TelecomPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-056",
+        "title":  "Page: TelecomPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/telecom/TelecomPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-057",
+        "title":  "Page: TelecomPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/telecom/TelecomPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-058",
+        "title":  "Page: MigrationPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/MigrationPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-059",
+        "title":  "Page: MigrationPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/MigrationPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-060",
+        "title":  "Page: MigrationPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/MigrationPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-061",
+        "title":  "Page: LogisticsDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sector/LogisticsDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-062",
+        "title":  "Page: LogisticsDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sector/LogisticsDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-063",
+        "title":  "Page: LogisticsDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sector/LogisticsDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-064",
+        "title":  "Page: StorePerformancePage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/retail/StorePerformancePage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-065",
+        "title":  "Page: StorePerformancePage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/retail/StorePerformancePage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-066",
+        "title":  "Page: StorePerformancePage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/retail/StorePerformancePage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-067",
+        "title":  "Page: BankReconciliation smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/banking/BankReconciliation.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-068",
+        "title":  "Page: BankReconciliation integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/banking/BankReconciliation.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-069",
+        "title":  "Page: BankReconciliation accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/banking/BankReconciliation.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-070",
+        "title":  "Page: RetailDashboard smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/retail/RetailDashboard.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-071",
+        "title":  "Page: RetailDashboard integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/retail/RetailDashboard.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-072",
+        "title":  "Page: RetailDashboard accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/retail/RetailDashboard.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-073",
+        "title":  "Page: BudgetCreatePage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/budgets/BudgetCreatePage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-074",
+        "title":  "Page: BudgetCreatePage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/budgets/BudgetCreatePage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-075",
+        "title":  "Page: BudgetCreatePage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/budgets/BudgetCreatePage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-076",
+        "title":  "Page: ChartOfAccountsPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/charts/ChartOfAccountsPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-077",
+        "title":  "Page: ChartOfAccountsPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/charts/ChartOfAccountsPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-078",
+        "title":  "Page: ChartOfAccountsPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/charts/ChartOfAccountsPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-079",
+        "title":  "Page: GovernmentDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sectors/GovernmentDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-080",
+        "title":  "Page: GovernmentDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sectors/GovernmentDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-081",
+        "title":  "Page: GovernmentDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sectors/GovernmentDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-082",
+        "title":  "Page: SettingsPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/settings/SettingsPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-083",
+        "title":  "Page: SettingsPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/settings/SettingsPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-084",
+        "title":  "Page: SettingsPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/settings/SettingsPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-085",
+        "title":  "Page: BudgetVsActualHeader smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/components/BudgetVsActualHeader.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-086",
+        "title":  "Page: BudgetVsActualHeader integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/components/BudgetVsActualHeader.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-087",
+        "title":  "Page: BudgetVsActualHeader accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/components/BudgetVsActualHeader.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-088",
+        "title":  "Page: ChurnAnalysisPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/saas/ChurnAnalysisPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-089",
+        "title":  "Page: ChurnAnalysisPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/saas/ChurnAnalysisPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-090",
+        "title":  "Page: ChurnAnalysisPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/saas/ChurnAnalysisPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-091",
+        "title":  "Page: BudgetDetailPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/budgets/BudgetDetailPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-092",
+        "title":  "Page: BudgetDetailPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/budgets/BudgetDetailPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-093",
+        "title":  "Page: BudgetDetailPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/budgets/BudgetDetailPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-094",
+        "title":  "Page: DrillDownWindowPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/DrillDownWindowPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-095",
+        "title":  "Page: DrillDownWindowPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/DrillDownWindowPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-096",
+        "title":  "Page: DrillDownWindowPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/DrillDownWindowPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-097",
+        "title":  "Page: ReconciliationPanel smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/ReconciliationPanel.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-098",
+        "title":  "Page: ReconciliationPanel integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/ReconciliationPanel.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-099",
+        "title":  "Page: ReconciliationPanel accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/ReconciliationPanel.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-100",
+        "title":  "Page: EquipmentManagementPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sector/EquipmentManagementPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-101",
+        "title":  "Page: EquipmentManagementPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sector/EquipmentManagementPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-102",
+        "title":  "Page: EquipmentManagementPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sector/EquipmentManagementPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-103",
+        "title":  "Page: ProfitLossPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/ProfitLossPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-104",
+        "title":  "Page: ProfitLossPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/ProfitLossPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-105",
+        "title":  "Page: ProfitLossPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/ProfitLossPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-106",
+        "title":  "Page: GLUploadPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/GLUploadPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-107",
+        "title":  "Page: GLUploadPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/GLUploadPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-108",
+        "title":  "Page: GLUploadPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/GLUploadPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-109",
+        "title":  "Page: ProjectCostingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/construction/ProjectCostingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-110",
+        "title":  "Page: ProjectCostingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/construction/ProjectCostingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-111",
+        "title":  "Page: ProjectCostingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/construction/ProjectCostingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-112",
+        "title":  "Page: CashForecastPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/cash/CashForecastPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-113",
+        "title":  "Page: CashForecastPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/cash/CashForecastPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-114",
+        "title":  "Page: CashForecastPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/cash/CashForecastPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-115",
+        "title":  "Page: BudgetVsActualTable smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/components/BudgetVsActualTable.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-116",
+        "title":  "Page: BudgetVsActualTable integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/components/BudgetVsActualTable.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-117",
+        "title":  "Page: BudgetVsActualTable accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/components/BudgetVsActualTable.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-118",
+        "title":  "Page: ARRDashboard smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/saas/ARRDashboard.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-119",
+        "title":  "Page: ARRDashboard integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/saas/ARRDashboard.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-120",
+        "title":  "Page: ARRDashboard accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/saas/ARRDashboard.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-121",
+        "title":  "Page: DataFlowMapPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/DataFlowMapPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-122",
+        "title":  "Page: DataFlowMapPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/DataFlowMapPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-123",
+        "title":  "Page: DataFlowMapPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/DataFlowMapPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-124",
+        "title":  "Page: ClaimsAnalyticsPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/insurance/ClaimsAnalyticsPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-125",
+        "title":  "Page: ClaimsAnalyticsPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/insurance/ClaimsAnalyticsPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-126",
+        "title":  "Page: ClaimsAnalyticsPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/insurance/ClaimsAnalyticsPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-127",
+        "title":  "Page: GLReportingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/GLReportingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-128",
+        "title":  "Page: GLReportingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/GLReportingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-129",
+        "title":  "Page: GLReportingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/GLReportingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-130",
+        "title":  "Page: ConstructionDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/construction/ConstructionDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-131",
+        "title":  "Page: ConstructionDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/construction/ConstructionDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-132",
+        "title":  "Page: ConstructionDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/construction/ConstructionDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-133",
+        "title":  "Page: RenewableEnergyPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/energy/RenewableEnergyPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-134",
+        "title":  "Page: RenewableEnergyPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/energy/RenewableEnergyPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-135",
+        "title":  "Page: RenewableEnergyPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/energy/RenewableEnergyPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-136",
+        "title":  "Page: FXExposurePage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/treasury/FXExposurePage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-137",
+        "title":  "Page: FXExposurePage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/treasury/FXExposurePage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-138",
+        "title":  "Page: FXExposurePage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/treasury/FXExposurePage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-139",
+        "title":  "Page: RetailDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/retail/RetailDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-140",
+        "title":  "Page: RetailDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/retail/RetailDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-141",
+        "title":  "Page: RetailDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/retail/RetailDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-142",
+        "title":  "Page: EnergySectorPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/energy/EnergySectorPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-143",
+        "title":  "Page: EnergySectorPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/energy/EnergySectorPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-144",
+        "title":  "Page: EnergySectorPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/energy/EnergySectorPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-145",
+        "title":  "Page: LeaseDashboard smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/lease/LeaseDashboard.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-146",
+        "title":  "Page: LeaseDashboard integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/lease/LeaseDashboard.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-147",
+        "title":  "Page: LeaseDashboard accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/lease/LeaseDashboard.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-148",
+        "title":  "Page: ReportTemplateLibraryPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/ReportTemplateLibraryPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-149",
+        "title":  "Page: ReportTemplateLibraryPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/ReportTemplateLibraryPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-150",
+        "title":  "Page: ReportTemplateLibraryPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/ReportTemplateLibraryPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-151",
+        "title":  "Page: LogisticsDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sectors/LogisticsDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-152",
+        "title":  "Page: LogisticsDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sectors/LogisticsDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-153",
+        "title":  "Page: LogisticsDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sectors/LogisticsDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-154",
+        "title":  "Page: ThreeStatementDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/ThreeStatementDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-155",
+        "title":  "Page: ThreeStatementDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/ThreeStatementDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-156",
+        "title":  "Page: ThreeStatementDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/ThreeStatementDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-157",
+        "title":  "Page: LeaseAccountingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/lease/LeaseAccountingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-158",
+        "title":  "Page: LeaseAccountingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/lease/LeaseAccountingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-159",
+        "title":  "Page: LeaseAccountingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/lease/LeaseAccountingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-160",
+        "title":  "Page: ManufacturingDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sector/ManufacturingDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-161",
+        "title":  "Page: ManufacturingDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sector/ManufacturingDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-162",
+        "title":  "Page: ManufacturingDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sector/ManufacturingDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-163",
+        "title":  "Page: RollingForecastPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/forecasts/RollingForecastPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-164",
+        "title":  "Page: RollingForecastPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/forecasts/RollingForecastPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-165",
+        "title":  "Page: RollingForecastPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/forecasts/RollingForecastPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-166",
+        "title":  "Page: ReportsListPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/ReportsListPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-167",
+        "title":  "Page: ReportsListPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/ReportsListPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-168",
+        "title":  "Page: ReportsListPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/ReportsListPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-169",
+        "title":  "Page: RegisterPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/auth/RegisterPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-170",
+        "title":  "Page: RegisterPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/auth/RegisterPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-171",
+        "title":  "Page: RegisterPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/auth/RegisterPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-172",
+        "title":  "Page: VarianceDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/variance/VarianceDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-173",
+        "title":  "Page: VarianceDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/variance/VarianceDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-174",
+        "title":  "Page: VarianceDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/variance/VarianceDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-175",
+        "title":  "Page: AnalyticsPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/analytics/AnalyticsPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-176",
+        "title":  "Page: AnalyticsPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/analytics/AnalyticsPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-177",
+        "title":  "Page: AnalyticsPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/analytics/AnalyticsPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-178",
+        "title":  "Page: EmissionsTradingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sector/EmissionsTradingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-179",
+        "title":  "Page: EmissionsTradingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sector/EmissionsTradingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-180",
+        "title":  "Page: EmissionsTradingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sector/EmissionsTradingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-181",
+        "title":  "Page: ConsolidationDashboard smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/consolidation/ConsolidationDashboard.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-182",
+        "title":  "Page: ConsolidationDashboard integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/consolidation/ConsolidationDashboard.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-183",
+        "title":  "Page: ConsolidationDashboard accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/consolidation/ConsolidationDashboard.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-184",
+        "title":  "Page: SectorPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sector/SectorPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-185",
+        "title":  "Page: SectorPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sector/SectorPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-186",
+        "title":  "Page: SectorPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sector/SectorPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-187",
+        "title":  "Page: FinancialStatementTemplates smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/FinancialStatementTemplates.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-188",
+        "title":  "Page: FinancialStatementTemplates integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/FinancialStatementTemplates.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-189",
+        "title":  "Page: FinancialStatementTemplates accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/FinancialStatementTemplates.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-190",
+        "title":  "Page: ValueBasedCarePage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/healthcare/ValueBasedCarePage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-191",
+        "title":  "Page: ValueBasedCarePage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/healthcare/ValueBasedCarePage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-192",
+        "title":  "Page: ValueBasedCarePage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/healthcare/ValueBasedCarePage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-193",
+        "title":  "Page: CohortAnalysisPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/saas/CohortAnalysisPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-194",
+        "title":  "Page: CohortAnalysisPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/saas/CohortAnalysisPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-195",
+        "title":  "Page: CohortAnalysisPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/saas/CohortAnalysisPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-196",
+        "title":  "Page: ChartOfAccountsPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/ChartOfAccountsPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-197",
+        "title":  "Page: ChartOfAccountsPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/ChartOfAccountsPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-198",
+        "title":  "Page: ChartOfAccountsPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/ChartOfAccountsPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-199",
+        "title":  "Page: InsuranceDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/sector/InsuranceDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-200",
+        "title":  "Page: InsuranceDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/sector/InsuranceDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-201",
+        "title":  "Page: InsuranceDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/sector/InsuranceDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-202",
+        "title":  "Page: SOXCompliancePage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/audit/SOXCompliancePage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-203",
+        "title":  "Page: SOXCompliancePage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/audit/SOXCompliancePage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-204",
+        "title":  "Page: SOXCompliancePage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/audit/SOXCompliancePage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-205",
+        "title":  "Page: StoreDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/retail/StoreDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-206",
+        "title":  "Page: StoreDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/retail/StoreDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-207",
+        "title":  "Page: StoreDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/retail/StoreDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-208",
+        "title":  "Page: DashboardBuilderPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/analytics/DashboardBuilderPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-209",
+        "title":  "Page: DashboardBuilderPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/analytics/DashboardBuilderPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-210",
+        "title":  "Page: DashboardBuilderPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/analytics/DashboardBuilderPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-211",
+        "title":  "Page: ManufacturingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/manufacturing/ManufacturingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-212",
+        "title":  "Page: ManufacturingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/manufacturing/ManufacturingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-213",
+        "title":  "Page: ManufacturingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/manufacturing/ManufacturingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-214",
+        "title":  "Page: UnderwritingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/insurance/UnderwritingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-215",
+        "title":  "Page: UnderwritingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/insurance/UnderwritingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-216",
+        "title":  "Page: UnderwritingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/insurance/UnderwritingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-217",
+        "title":  "Page: ConsolidationPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  88,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/consolidation/ConsolidationPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-218",
+        "title":  "Page: ConsolidationPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/consolidation/ConsolidationPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-219",
+        "title":  "Page: ConsolidationPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/consolidation/ConsolidationPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-220",
+        "title":  "Page: COGSVariancePage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/manufacturing/COGSVariancePage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-221",
+        "title":  "Page: COGSVariancePage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/manufacturing/COGSVariancePage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-222",
+        "title":  "Page: COGSVariancePage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/manufacturing/COGSVariancePage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-223",
+        "title":  "Page: ScenarioListPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/scenarios/ScenarioListPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-224",
+        "title":  "Page: ScenarioListPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  79,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/scenarios/ScenarioListPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-225",
+        "title":  "Page: ScenarioListPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  83,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/scenarios/ScenarioListPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-226",
+        "title":  "Page: InventoryPlanningPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  86,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/retail/InventoryPlanningPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-227",
+        "title":  "Page: InventoryPlanningPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  77,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/retail/InventoryPlanningPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-228",
+        "title":  "Page: InventoryPlanningPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/retail/InventoryPlanningPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-229",
+        "title":  "Page: HedgeManagementPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/currency/HedgeManagementPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-230",
+        "title":  "Page: HedgeManagementPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  75,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/currency/HedgeManagementPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-231",
+        "title":  "Page: HedgeManagementPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  80,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/currency/HedgeManagementPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-232",
+        "title":  "Page: REITDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/realestate/REITDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-233",
+        "title":  "Page: REITDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/realestate/REITDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-234",
+        "title":  "Page: REITDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/realestate/REITDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-235",
+        "title":  "Page: ReportBookBuilder smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/reports/ReportBookBuilder.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-236",
+        "title":  "Page: ReportBookBuilder integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "ruby",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/reports/ReportBookBuilder.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-237",
+        "title":  "Page: ReportBookBuilder accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/reports/ReportBookBuilder.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-238",
+        "title":  "Page: EquipmentManagementPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/construction/EquipmentManagementPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-239",
+        "title":  "Page: EquipmentManagementPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  81,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/construction/EquipmentManagementPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-240",
+        "title":  "Page: EquipmentManagementPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "cobalt",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/construction/EquipmentManagementPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-241",
+        "title":  "Page: CarbonDashboardPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  78,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/esg/CarbonDashboardPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-242",
+        "title":  "Page: CarbonDashboardPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/esg/CarbonDashboardPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-243",
+        "title":  "Page: CarbonDashboardPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  84,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/esg/CarbonDashboardPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-244",
+        "title":  "Page: GLJournalsPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  76,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/data/GLJournalsPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-245",
+        "title":  "Page: GLJournalsPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  89,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/data/GLJournalsPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-246",
+        "title":  "Page: GLJournalsPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  90,
+        "role":  "violet",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/data/GLJournalsPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-247",
+        "title":  "Page: TransferPricingPage smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/tax/TransferPricingPage.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-248",
+        "title":  "Page: TransferPricingPage integration test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  85,
+        "role":  "emerald",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write integration test for src/pages/tax/TransferPricingPage.tsx: user flows, form submissions, navigation, data loading.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-249",
+        "title":  "Page: TransferPricingPage accessibility test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  82,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write accessibility test for src/pages/tax/TransferPricingPage.tsx using jest-axe: WCAG 2.2 AA compliance, keyboard nav, ARIA.",
+        "category":  "Page Test Coverage"
+    },
+    {
+        "id":  "PAGE-TEST-250",
+        "title":  "Page: EnergyProductionDashboard smoke test",
+        "status":  "unclaimed",
+        "claimedBy":  "",
+        "priority":  87,
+        "role":  "amber",
+        "deps":  [
+
+                 ],
+        "createdAt":  "2026-06-06T21:00:00Z",
+        "spec":  "Write smoke test for src/pages/energy/EnergyProductionDashboard.tsx: renders without crash, lazy-loaded route test pattern.",
+        "category":  "Page Test Coverage"
+    }
+]

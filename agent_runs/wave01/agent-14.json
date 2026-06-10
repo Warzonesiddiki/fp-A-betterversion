@@ -1,0 +1,35 @@
+{
+  "agent": "agent-14",
+  "wave": "wave01",
+  "target_file": "src/engines/AIEngine.ts",
+  "fixes": [
+    {
+      "line": 28,
+      "type": "remove_unused_directive",
+      "before": "      // @ts-expect-error Transformers may not be installed\n      const mod = await import('@huggingface/transformers');",
+      "after": "      const mod = await import('@huggingface/transformers');",
+      "reason": "tsc reported the @ts-expect-error directive as unused (the dynamic import type-checked cleanly under the project tsconfig), so the directive was removed to avoid the TS2578 'unused @ts-expect-error' error."
+    },
+    {
+      "line": 30,
+      "type": "wrap_import_to_match_type",
+      "before": "      this.pipeline = mod.pipeline;",
+      "after": "      this.pipeline = ((task: string, model?: string, options?: Record<string, unknown>) =>\n        mod.pipeline(task as never, model, options)) as unknown as PipelineFunction;",
+      "reason": "mod.pipeline from @huggingface/transformers is typed as (task: PipelineType, ...) => Promise<Pipeline> with a string-literal-union/enum task argument, while AIEngine.PipelineFunction is a string-based callable. Wrapped the import in a thin adapter that maps the local string task to the library's expected type (cast as never to bypass the enum narrowing) and re-casts the result back to the locally-declared PipelineFunction. Preserves the existing call sites (this.pipeline!('text-classification', ...), etc.) without changing downstream code."
+    }
+  ],
+  "verification": {
+    "command": "node run-tsc.cjs 2>&1 | Select-String \"src/engines/AIEngine.ts\" | Measure-Object -Line",
+    "expected": 0,
+    "actual": 0,
+    "status": "pass"
+  },
+  "files_touched": [
+    "src/engines/AIEngine.ts"
+  ],
+  "files_not_touched": [
+    "src/engines/AIEngine.ts (other lines)",
+    "any other file in the repository"
+  ],
+  "notes": "Single-file fix. Two contiguous edits inside loadTransformers(): removed a stale @ts-expect-error on line 28 and wrapped the dynamic import of @huggingface/transformers on line 30 with an adapter satisfying the local PipelineFunction type. No other lines in the file were modified, and no other files in the repo were touched."
+}

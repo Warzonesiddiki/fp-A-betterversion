@@ -64,7 +64,7 @@ function calcMAPE(actual: number[], predicted: number[]): number {
   let count = 0;
   for (let i = 0; i < actual.length; i++) {
     if (actual[i] !== 0) {
-      sum += Math.abs((actual[i] - predicted[i]) / actual[i]);
+      sum += Math.abs((actual[i]! - predicted[i]!) / actual[i]!);
       count++;
     }
   }
@@ -74,7 +74,7 @@ function calcMAPE(actual: number[], predicted: number[]): number {
 function calcRMSE(actual: number[], predicted: number[]): number {
   let sum = 0;
   for (let i = 0; i < actual.length; i++) {
-    sum += (actual[i] - predicted[i]) ** 2;
+    sum += (actual[i]! - predicted[i]!) ** 2;
   }
   return Math.sqrt(sum / actual.length);
 }
@@ -82,7 +82,7 @@ function calcRMSE(actual: number[], predicted: number[]): number {
 function calcMAE(actual: number[], predicted: number[]): number {
   let sum = 0;
   for (let i = 0; i < actual.length; i++) {
-    sum += Math.abs(actual[i] - predicted[i]);
+    sum += Math.abs(actual[i]! - predicted[i]!);
   }
   return sum / actual.length;
 }
@@ -92,8 +92,8 @@ function calcR2(actual: number[], predicted: number[]): number {
   let ssRes = 0;
   let ssTot = 0;
   for (let i = 0; i < actual.length; i++) {
-    ssRes += (actual[i] - predicted[i]) ** 2;
-    ssTot += (actual[i] - m) ** 2;
+    ssRes += (actual[i]! - predicted[i]!) ** 2;
+    ssTot += (actual[i]! - m) ** 2;
   }
   return ssTot === 0 ? 0 : 1 - ssRes / ssTot;
 }
@@ -135,7 +135,7 @@ export class ForecastMethodEngine {
     for (let i = window - 1; i < data.length; i++) {
       let sum = 0;
       for (let j = i - window + 1; j <= i; j++) {
-        sum += data[j];
+        sum += data[j]!;
       }
       fitted[i] = sum / window;
     }
@@ -147,7 +147,7 @@ export class ForecastMethodEngine {
 
     const validFitted = fitted.filter((v) => !isNaN(v));
     const correspondingActual = data.slice(window - 1);
-    const residuals = correspondingActual.map((v, i) => v - validFitted[i]);
+    const residuals = correspondingActual.map((v, i) => v - validFitted[i]!);
     const ci = buildConfidenceIntervals(residuals, forecast.length);
 
     return {
@@ -172,7 +172,7 @@ export class ForecastMethodEngine {
     for (let i = window - 1; i < data.length; i++) {
       let sum = 0;
       for (let j = 0; j < window; j++) {
-        sum += data[i - window + 1 + j] * normalizedWeights[j];
+        sum += data[i - window + 1 + j]! * normalizedWeights[j]!;
       }
       fitted[i] = sum;
     }
@@ -181,13 +181,13 @@ export class ForecastMethodEngine {
     const lastWindow = data.slice(-window);
     let fSum = 0;
     for (let j = 0; j < window; j++) {
-      fSum += lastWindow[j] * normalizedWeights[j];
+      fSum += lastWindow[j]! * normalizedWeights[j]!;
     }
     forecast.push(fSum);
 
     const validFitted = fitted.filter((v) => !isNaN(v));
     const correspondingActual = data.slice(window - 1);
-    const residuals = correspondingActual.map((v, i) => v - validFitted[i]);
+    const residuals = correspondingActual.map((v, i) => v - validFitted[i]!);
     const ci = buildConfidenceIntervals(residuals, forecast.length);
 
     return {
@@ -207,15 +207,15 @@ export class ForecastMethodEngine {
       throw new Error('Need at least 2 data points');
     }
 
-    const fitted: number[] = [data[0]];
+    const fitted: number[] = [data[0]!];
     for (let i = 1; i < data.length; i++) {
-      fitted.push(alpha * data[i] + (1 - alpha) * fitted[i - 1]);
+      fitted.push(alpha * data[i]! + (1 - alpha) * fitted[i - 1]!);
     }
 
-    const lastFitted = fitted[fitted.length - 1];
+    const lastFitted = fitted[fitted.length - 1]!;
     const forecast = [lastFitted];
 
-    const residuals = data.slice(1).map((v, i) => v - fitted[i]);
+    const residuals = data.slice(1).map((v, i) => v - fitted[i]!);
     const ci = buildConfidenceIntervals(residuals, forecast.length);
 
     return {
@@ -256,7 +256,7 @@ export class ForecastMethodEngine {
     let ssXY = 0;
     let ssXX = 0;
     for (let i = 0; i < n; i++) {
-      ssXY += (i - xMean) * (data[i] - yMean);
+      ssXY += (i - xMean) * (data[i]! - yMean);
       ssXX += (i - xMean) ** 2;
     }
 
@@ -267,7 +267,7 @@ export class ForecastMethodEngine {
 
     const fitted = Array.from({ length: n }, (_, i) => predict(i));
     const forecast = Array.from({ length: periodsToForecast }, (_, i) => predict(n + i));
-    const residuals = data.map((v, i) => v - fitted[i]);
+    const residuals = data.map((v, i) => v - fitted[i]!);
 
     const metrics = buildMetrics(data, fitted);
 
@@ -304,26 +304,26 @@ export class ForecastMethodEngine {
     for (let i = halfP; i < n - halfP; i++) {
       let sum = 0;
       for (let j = i - halfP; j <= i + halfP; j++) {
-        sum += data[j];
+        sum += data[j]!;
       }
       trend[i] = sum / period;
     }
 
     // Fill edges by extending nearest valid trend value
     for (let i = 0; i < halfP; i++) {
-      trend[i] = trend[halfP];
+      trend[i] = trend[halfP]!;
     }
     for (let i = n - halfP; i < n; i++) {
-      trend[i] = trend[n - halfP - 1];
+      trend[i] = trend[n - halfP - 1]!;
     }
 
     // Step 2: Detrend to get seasonal component
     const detrended: number[] = [];
     for (let i = 0; i < n; i++) {
       if (mode === 'additive') {
-        detrended.push(data[i] - trend[i]);
+        detrended.push(data[i]! - trend[i]!);
       } else {
-        detrended.push(trend[i] !== 0 ? data[i] / trend[i] : 1);
+        detrended.push(trend[i] !== 0 ? data[i]! / trend[i]! : 1);
       }
     }
 
@@ -332,40 +332,40 @@ export class ForecastMethodEngine {
     const counts: number[] = new Array(period).fill(0);
 
     for (let i = 0; i < n; i++) {
-      seasonalIndices[i % period] += detrended[i];
-      counts[i % period]++;
+      seasonalIndices[i % period]! += detrended[i]!;
+      counts[i % period]!++;
     }
 
     for (let i = 0; i < period; i++) {
-      seasonalIndices[i] /= counts[i];
+      seasonalIndices[i]! /= counts[i]!;
     }
 
     // Normalize: additive should sum to 0, multiplicative should multiply to 1
     if (mode === 'additive') {
       const sMean = mean(seasonalIndices);
       for (let i = 0; i < period; i++) {
-        seasonalIndices[i] -= sMean;
+        seasonalIndices[i]! -= sMean;
       }
     } else {
       const sMean = mean(seasonalIndices);
       if (sMean !== 0) {
         for (let i = 0; i < period; i++) {
-          seasonalIndices[i] /= sMean;
+          seasonalIndices[i]! /= sMean;
         }
       }
     }
 
     // Step 4: Build full seasonal array
-    const seasonal: number[] = Array.from({ length: n }, (_, i) => seasonalIndices[i % period]);
+    const seasonal: number[] = Array.from({ length: n }, (_, i) => seasonalIndices[i % period]!);
 
     // Step 5: Compute residual
     const residual: number[] = [];
     for (let i = 0; i < n; i++) {
       if (mode === 'additive') {
-        residual.push(data[i] - trend[i] - seasonal[i]);
+        residual.push(data[i]! - trend[i]! - seasonal[i]!);
       } else {
-        const denom = trend[i] * seasonal[i];
-        residual.push(denom !== 0 ? data[i] / denom : 0);
+        const denom = trend[i]! * seasonal[i]!;
+        residual.push(denom !== 0 ? data[i]! / denom : 0);
       }
     }
 
@@ -373,9 +373,9 @@ export class ForecastMethodEngine {
     const deseasonalized: number[] = [];
     for (let i = 0; i < n; i++) {
       if (mode === 'additive') {
-        deseasonalized.push(data[i] - seasonal[i]);
+        deseasonalized.push(data[i]! - seasonal[i]!);
       } else {
-        deseasonalized.push(seasonal[i] !== 0 ? data[i] / seasonal[i] : data[i]);
+        deseasonalized.push(seasonal[i] !== 0 ? data[i]! / seasonal[i]! : data[i]!);
       }
     }
 
@@ -383,9 +383,9 @@ export class ForecastMethodEngine {
     const reconstructed: number[] = [];
     for (let i = 0; i < n; i++) {
       if (mode === 'additive') {
-        reconstructed.push(trend[i] + seasonal[i]);
+        reconstructed.push(trend[i]! + seasonal[i]!);
       } else {
-        reconstructed.push(trend[i] * seasonal[i]);
+        reconstructed.push(trend[i]! * seasonal[i]!);
       }
     }
 
@@ -422,7 +422,7 @@ export class ForecastMethodEngine {
     // Initialize level as mean of first season
     let levelInit = 0;
     for (let i = 0; i < period; i++) {
-      levelInit += data[i];
+      levelInit += data[i]!;
     }
     levelInit /= period;
 
@@ -430,9 +430,9 @@ export class ForecastMethodEngine {
     let trendInit = 0;
     for (let i = 0; i < period; i++) {
       if (mode === 'additive') {
-        trendInit += data[period + i] - data[i];
+        trendInit += data[period + i]! - data[i]!;
       } else {
-        trendInit += data[i] !== 0 ? data[period + i] / data[i] : 1;
+        trendInit += data[i] !== 0 ? data[period + i]! / data[i]! : 1;
       }
     }
     trendInit /= period;
@@ -444,9 +444,9 @@ export class ForecastMethodEngine {
     const seasonalInit: number[] = new Array(period);
     for (let i = 0; i < period; i++) {
       if (mode === 'additive') {
-        seasonalInit[i] = data[i] - levelInit;
+        seasonalInit[i] = data[i]! - levelInit;
       } else {
-        seasonalInit[i] = levelInit !== 0 ? data[i] / levelInit : 1;
+        seasonalInit[i] = levelInit !== 0 ? data[i]! / levelInit : 1;
       }
     }
 
@@ -460,16 +460,16 @@ export class ForecastMethodEngine {
     // First season: use initial values
     for (let i = 0; i < period; i++) {
       if (mode === 'additive') {
-        fitted[i] = levelInit + trendInit * 0 + seasonalInit[i];
+        fitted[i] = levelInit + trendInit * 0 + seasonalInit[i]!;
       } else {
-        fitted[i] = levelInit * trendInit ** 0 * seasonalInit[i];
+        fitted[i] = levelInit * trendInit ** 0 * seasonalInit[i]!;
       }
     }
 
     // Run HW from period onwards
     for (let i = period; i < n; i++) {
-      const prevLevel = level[level.length - 1];
-      const prevTrend = trend[trend.length - 1];
+      const prevLevel = level[level.length - 1]!;
+      const prevTrend = trend[trend.length - 1]!;
       const seasonIdx = i % period;
       const prevSeason = seasonal[((i - period) % period) + (i - period >= 0 ? 0 : period)];
 
@@ -479,18 +479,19 @@ export class ForecastMethodEngine {
       let forecastVal: number;
 
       if (mode === 'additive') {
-        forecastVal = prevLevel + prevTrend + seasonalInit[seasonIdx];
-        newLevel = alpha * (data[i] - seasonal[seasonIdx]) + (1 - alpha) * (prevLevel + prevTrend);
-        newTrend = beta * (newLevel - prevLevel) + (1 - beta) * prevTrend;
-        newSeason = gamma * (data[i] - newLevel) + (1 - gamma) * seasonal[seasonIdx];
-      } else {
-        forecastVal = prevLevel * prevTrend * seasonal[seasonIdx];
+        forecastVal = prevLevel + prevTrend + seasonalInit[seasonIdx]!;
         newLevel =
-          alpha * (seasonal[seasonIdx] !== 0 ? data[i] / seasonal[seasonIdx] : data[i]) +
+          alpha * (data[i]! - seasonal[seasonIdx]!) + (1 - alpha) * (prevLevel + prevTrend);
+        newTrend = beta * (newLevel - prevLevel) + (1 - beta) * prevTrend;
+        newSeason = gamma * (data[i]! - newLevel) + (1 - gamma) * seasonal[seasonIdx]!;
+      } else {
+        forecastVal = prevLevel * prevTrend * seasonal[seasonIdx]!;
+        newLevel =
+          alpha * (seasonal[seasonIdx] !== 0 ? data[i]! / seasonal[seasonIdx]! : data[i]!) +
           (1 - alpha) * (prevLevel * prevTrend);
         newTrend = beta * (prevLevel !== 0 ? newLevel / prevLevel : 1) + (1 - beta) * prevTrend;
         newSeason =
-          gamma * (newLevel !== 0 ? data[i] / newLevel : 1) + (1 - gamma) * seasonal[seasonIdx];
+          gamma * (newLevel !== 0 ? data[i]! / newLevel : 1) + (1 - gamma) * seasonal[seasonIdx]!;
       }
 
       level.push(newLevel);
@@ -500,23 +501,23 @@ export class ForecastMethodEngine {
     }
 
     // Generate forecasts
-    const lastLevel = level[level.length - 1];
-    const lastTrend = trend[trend.length - 1];
+    const lastLevel = level[level.length - 1]!;
+    const lastTrend = trend[trend.length - 1]!;
     const forecast: number[] = [];
 
     for (let h = 1; h <= periodsToForecast; h++) {
       const seasonIdx = (n + h - 1) % period;
       if (mode === 'additive') {
-        forecast.push(lastLevel + lastTrend * h + seasonal[seasonIdx]);
+        forecast.push(lastLevel + lastTrend * h + seasonal[seasonIdx]!);
       } else {
-        forecast.push(lastLevel * lastTrend ** h * seasonal[seasonIdx]);
+        forecast.push(lastLevel * lastTrend ** h * seasonal[seasonIdx]!);
       }
     }
 
     // Accuracy
     const validFitted = fitted.filter((_, i) => i >= period);
     const correspondingActual = data.slice(period);
-    const residuals = correspondingActual.map((v, i) => v - validFitted[i]);
+    const residuals = correspondingActual.map((v, i) => v - validFitted[i]!);
     const ci = buildConfidenceIntervals(residuals, periodsToForecast);
 
     return {
@@ -616,7 +617,7 @@ export class ForecastMethodEngine {
     for (let idx = 0; idx < candidates.length; idx++) {
       const method = candidates[idx];
       try {
-        const testForecast = method.forecast(train, test.length);
+        const testForecast = method!.forecast(train, test.length);
         const rmse = calcRMSE(test, testForecast.slice(0, test.length));
         if (isFinite(rmse)) {
           scores.push({ idx, rmse });
@@ -645,8 +646,8 @@ export class ForecastMethodEngine {
 
     for (const { idx } of top) {
       const method = candidates[idx];
-      forecasts.push(method.forecast(data, periodsToForecast));
-      fittedArrays.push(method.fitted(data, data));
+      forecasts.push(method!.forecast(data, periodsToForecast));
+      fittedArrays.push(method!.fitted(data, data));
     }
 
     // Weighted ensemble
@@ -654,7 +655,8 @@ export class ForecastMethodEngine {
     for (let h = 0; h < periodsToForecast; h++) {
       let sum = 0;
       for (let m = 0; m < top.length; m++) {
-        sum += (forecasts[m][h] ?? forecasts[m][forecasts[m].length - 1]) * weights[m];
+        const f = forecasts[m]!;
+        sum += (f[h] ?? f[f.length - 1]!) * weights[m]!;
       }
       forecast.push(sum);
     }
@@ -664,9 +666,9 @@ export class ForecastMethodEngine {
       let sum = 0;
       let validCount = 0;
       for (let m = 0; m < top.length; m++) {
-        const val = fittedArrays[m][i];
+        const val = fittedArrays[m]![i];
         if (val !== undefined && isFinite(val)) {
-          sum += val * weights[m];
+          sum += val * weights[m]!;
           validCount++;
         }
       }
@@ -674,8 +676,8 @@ export class ForecastMethodEngine {
         validCount > 0
           ? sum /
               weights.slice(0, top.length).reduce((a, _, j) => {
-                const val = fittedArrays[j][i];
-                return val !== undefined && isFinite(val) ? a + weights[j] : a;
+                const val = fittedArrays[j]![i];
+                return val !== undefined && isFinite(val) ? a + weights[j]! : a;
               }, 0)
           : NaN
       );
@@ -684,8 +686,8 @@ export class ForecastMethodEngine {
     // Compute residuals on valid fitted values
     const validPairs: { actual: number; predicted: number }[] = [];
     for (let i = 0; i < data.length; i++) {
-      if (isFinite(fitted[i])) {
-        validPairs.push({ actual: data[i], predicted: fitted[i] });
+      if (isFinite(fitted[i]!)) {
+        validPairs.push({ actual: data[i]!, predicted: fitted[i]! });
       }
     }
 

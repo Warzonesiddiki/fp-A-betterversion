@@ -48,7 +48,7 @@ export class QueryCache<T = unknown> {
   private hashKey(params: Record<string, unknown>): string {
     const sorted = Object.keys(params)
       .sort()
-      .map((key) => `${key}:${JSON.stringify(params[key])}`)
+      .map((key) => `${key}:${JSON.stringify(params[key]!)}`)
       .join('|');
     return this.simpleHash(sorted);
   }

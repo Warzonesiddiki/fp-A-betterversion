@@ -43,7 +43,7 @@ const CardHeader = forwardRef<
 >(({ className, density = 'comfortable', ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex flex-col space-y-1.5', densityHeaderPadding[density], className)}
+    className={cn('flex flex-col space-y-1.5', densityHeaderPadding[density]!, className)}
     {...props}
   />
 ));
@@ -56,7 +56,7 @@ const CardTitle = forwardRef<
   // eslint-disable-next-line jsx-a11y/heading-has-content -- content passed via {...props}
   <h3
     ref={ref}
-    className={cn('font-semibold leading-none tracking-tight', densityTitle[density], className)}
+    className={cn('font-semibold leading-none tracking-tight', densityTitle[density]!, className)}
     {...props}
   />
 ));
@@ -73,7 +73,7 @@ const CardContent = forwardRef<
   HTMLDivElement,
   HTMLAttributes<HTMLDivElement> & { density?: Density }
 >(({ className, density = 'comfortable', ...props }, ref) => (
-  <div ref={ref} className={cn(densityPadding[density], 'pt-0', className)} {...props} />
+  <div ref={ref} className={cn(densityPadding[density]!, 'pt-0', className)} {...props} />
 ));
 CardContent.displayName = 'CardContent';
 
@@ -83,7 +83,7 @@ const CardFooter = forwardRef<
 >(({ className, density = 'comfortable', ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex items-center', densityPadding[density], 'pt-0', className)}
+    className={cn('flex items-center', densityPadding[density]!, 'pt-0', className)}
     {...props}
   />
 ));

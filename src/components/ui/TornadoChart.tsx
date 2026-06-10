@@ -86,7 +86,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
       </div>
     );
 
-  const baseValue = data.length > 0 ? data[0].baseValue : 0;
+  const baseValue = data.length > 0 ? data[0]!.baseValue : 0;
 
   const formatValue = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -139,7 +139,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const d = payload[0].payload;
+                  const d = payload[0]!.payload;
                   return (
                     <div className="bg-[var(--bg-surface)] p-3 border border-[var(--border-subtle)] shadow-2xl rounded-lg">
                       <p className="text-[10px] font-black uppercase text-[var(--text-muted)] mb-2 tracking-widest">

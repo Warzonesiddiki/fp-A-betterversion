@@ -1,0 +1,8 @@
+{
+  "agent": "agent-31",
+  "task": "Add JSDoc comments to public functions in src/engines/CapExEngine.ts",
+  "status": "success",
+  "jsdocLinesAdded": 46,
+  "tscErrorsAfter": 0,
+  "notes": "Added JSDoc blocks to all 5 public static methods (calculateDepreciation, calculateNPV, calculateIRR, calculatePaybackPeriod, calculateROI). File grew from 84 to 130 lines (delta = 46). tsc verification with `node run-tsc.cjs 2>&1 | Select-String \"CapExEngine\" | Measure-Object -Line` returned 0."
+}

@@ -22,6 +22,7 @@ export { DrillDownModal } from './DrillDownModal';
 export { DriverSlider } from './DriverSlider';
 export { EntityTree } from './EntityTree';
 export { ErrorBoundary } from './ErrorBoundary';
+export { AsyncErrorBoundary } from './AsyncErrorBoundary';
 export { ExportMenu } from './ExportMenu';
 export { FileDropZone } from './FileDropZone';
 export { FinancialTable } from './FinancialTable';

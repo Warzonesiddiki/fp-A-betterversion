@@ -17,18 +17,11 @@ export function CopilotSidebar({ gl, budget, className }: CopilotSidebarProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const pageContext = useMemo(() => getContextForPath(location.pathname), [location.pathname]);
-
-  const [messages, setMessages] = useState<CopilotMessage[]>(() => [
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: `I'm your financial copilot. I can help with formulas, variance analysis, and data insights. You're on the **${pageContext.label}** page — try one of the suggestions below.`,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<CopilotMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const pageContext = useMemo(() => getContextForPath(location.pathname), [location.pathname]);
+
   const [formulaResult, setFormulaResult] = useState<ReturnType<
     typeof AICopilotEngine.suggestFormula
   > | null>(null);

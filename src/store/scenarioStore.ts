@@ -25,6 +25,7 @@ export const useScenarioStore = create<ScenarioState>()(
           const newScenario: Scenario = {
             ...scenario,
             id: `scn-${Date.now()}`,
+            isLocked: false,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           };
@@ -34,15 +35,17 @@ export const useScenarioStore = create<ScenarioState>()(
 
         updateScenario: (id, updates) => {
           set((state) => ({
-            scenarios: state.scenarios.map((s) =>
-              s.id === id ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s
-            ),
+            scenarios: state.scenarios.map((s) => {
+              if (s.id !== id) return s;
+              if (s.isLocked) return s;
+              return { ...s, ...updates, updatedAt: new Date().toISOString() };
+            }),
           }));
         },
 
         deleteScenario: (id) => {
           set((state) => ({
-            scenarios: state.scenarios.filter((s) => s.id !== id),
+            scenarios: state.scenarios.filter((s) => s.id !== id || s.isLocked),
             selectedScenarioId: state.selectedScenarioId === id ? null : state.selectedScenarioId,
           }));
         },
@@ -56,6 +59,22 @@ export const useScenarioStore = create<ScenarioState>()(
                 : [...state.comparedScenarioIds, id],
             };
           });
+        },
+
+        lockScenario: (id) => {
+          set((state) => ({
+            scenarios: state.scenarios.map((s) =>
+              s.id === id ? { ...s, isLocked: true, updatedAt: new Date().toISOString() } : s
+            ),
+          }));
+        },
+
+        unlockScenario: (id) => {
+          set((state) => ({
+            scenarios: state.scenarios.map((s) =>
+              s.id === id ? { ...s, isLocked: false, updatedAt: new Date().toISOString() } : s
+            ),
+          }));
         },
       }),
       {

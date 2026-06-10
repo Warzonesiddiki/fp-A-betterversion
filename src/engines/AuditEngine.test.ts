@@ -136,7 +136,7 @@ describe('AuditEngine', () => {
       expect(results).toHaveLength(2);
       // Entries have nearly identical timestamps — just verify descending order property
       for (let i = 0; i < results.length - 1; i++) {
-        expect(results[i].timestamp >= results[i + 1].timestamp).toBe(true);
+        expect(results![i]!.timestamp >= results![i + 1]!.timestamp).toBe(true);
       }
     });
   });
@@ -154,9 +154,9 @@ describe('AuditEngine', () => {
       const csv = AuditEngine.exportCSV();
       const lines = csv.split('\n');
       expect(lines).toHaveLength(2);
-      expect(lines[0]).toContain('ID');
-      expect(lines[0]).toContain('User');
-      expect(lines[1]).toContain('Alice');
+      expect(lines[0]!).toContain('ID');
+      expect(lines[0]!).toContain('User');
+      expect(lines[1]!).toContain('Alice');
     });
 
     it('respects filters', () => {

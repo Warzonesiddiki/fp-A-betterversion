@@ -50,28 +50,32 @@ vi.mock('@/engines/ExportEngine', () => ({
 }));
 
 vi.mock('@/engines/CellAuditTrailEngine', () => ({
-  CellAuditTrailEngine: {
-    getAllEntries: vi.fn(() => []),
-  },
+  CellAuditTrailEngine: vi.fn(function () {
+    return { getAllEntries: vi.fn(() => []) };
+  }),
 }));
 
 vi.mock('@/engines/AIEngine', () => ({
-  AIEngine: {
-    init: vi.fn(async () => {}),
-    detectAnomalies: vi.fn(async () => []),
-  },
+  AIEngine: vi.fn(function () {
+    return {
+      init: vi.fn(async () => {}),
+      detectAnomalies: vi.fn(async () => []),
+    };
+  }),
 }));
 
 vi.mock('@/engines/ConsolidationEngine', () => ({
-  ConsolidationEngine: {
-    consolidate: vi.fn(() => ({
-      entries: [],
-      eliminations: [],
-      totalAssets: 0,
-      totalLiabilities: 0,
-      totalEquity: 0,
-    })),
-  },
+  ConsolidationEngine: vi.fn(function () {
+    return {
+      consolidate: vi.fn(() => ({
+        entries: [],
+        eliminations: [],
+        totalAssets: 0,
+        totalLiabilities: 0,
+        totalEquity: 0,
+      })),
+    };
+  }),
 }));
 
 // ---------------------------------------------------------------------------

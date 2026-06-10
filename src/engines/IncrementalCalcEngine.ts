@@ -49,7 +49,7 @@ export class IncrementalCalcEngine {
   private parseCellKey(key: string): CellIdentifier {
     const match = key.match(/^(.+)!(.+?)(\d+)$/);
     if (!match) throw new Error(`Invalid cell key: ${key}`);
-    return { sheet: match[1], col: match[2], row: parseInt(match[3], 10) };
+    return { sheet: match[1]!, col: match[2]!, row: parseInt(match[3]!, 10) };
   }
 
   markDirty(cell: CellIdentifier): void {
@@ -91,7 +91,7 @@ export class IncrementalCalcEngine {
     let queueHead = 0;
 
     while (queueHead < queue.length) {
-      const current = queue[queueHead++];
+      const current = queue[queueHead++]!;
       if (affected.has(current)) continue;
       affected.add(current);
 

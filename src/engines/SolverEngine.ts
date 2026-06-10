@@ -45,12 +45,12 @@ export class SolverEngine {
     const tableau: number[][] = [];
 
     for (let i = 0; i < numConstraints; i++) {
-      const row: number[] = [...constraints[i].coefficients];
+      const row: number[] = [...constraints[i]!.coefficients];
       // Add slack variables
       for (let j = 0; j < numConstraints; j++) {
         row.push(i === j ? 1 : 0);
       }
-      row.push(constraints[i].rhs);
+      row.push(constraints[i]!.rhs);
       tableau.push(row);
     }
 
@@ -79,8 +79,9 @@ export class SolverEngine {
       let enteringCol = -1;
       let minVal = -1e-10;
       for (let j = 0; j < totalCols - 1; j++) {
-        if (tableau[numConstraints][j] < minVal) {
-          minVal = tableau[numConstraints][j];
+        const val = tableau[numConstraints]![j]!;
+        if (val < minVal) {
+          minVal = val;
           enteringCol = j;
         }
       }
@@ -93,8 +94,10 @@ export class SolverEngine {
       let leavingRow = -1;
       let minRatio = Infinity;
       for (let i = 0; i < numConstraints; i++) {
-        if (tableau[i][enteringCol] > 1e-10) {
-          const ratio = tableau[i][totalCols - 1] / tableau[i][enteringCol];
+        const enteringVal = tableau[i]![enteringCol]!;
+        if (enteringVal > 1e-10) {
+          const lastCol = totalCols - 1;
+          const ratio = tableau[i]![lastCol]! / enteringVal;
           if (ratio < minRatio) {
             minRatio = ratio;
             leavingRow = i;
@@ -113,15 +116,15 @@ export class SolverEngine {
       }
 
       // Pivot
-      const pivot = tableau[leavingRow][enteringCol];
+      const pivot = tableau[leavingRow]![enteringCol]!;
       for (let j = 0; j < totalCols; j++) {
-        tableau[leavingRow][j] /= pivot;
+        tableau[leavingRow]![j]! /= pivot;
       }
       for (let i = 0; i <= numConstraints; i++) {
         if (i !== leavingRow) {
-          const factor = tableau[i][enteringCol];
+          const factor = tableau[i]![enteringCol]!;
           for (let j = 0; j < totalCols; j++) {
-            tableau[i][j] -= factor * tableau[leavingRow][j];
+            tableau[i]![j]! -= factor * tableau[leavingRow]![j]!;
           }
         }
       }
@@ -131,12 +134,13 @@ export class SolverEngine {
     // Extract solution
     const variableValues = Array(numVars).fill(0);
     for (let i = 0; i < numConstraints; i++) {
-      if (basis[i] < numVars) {
-        variableValues[basis[i]] = tableau[i][totalCols - 1];
+      const basisIdx = basis[i]!;
+      if (basisIdx < numVars) {
+        variableValues[basisIdx] = tableau[i]![totalCols - 1]!;
       }
     }
 
-    const rawObj = tableau[numConstraints][totalCols - 1];
+    const rawObj = tableau[numConstraints]![totalCols - 1]!;
     const objectiveValue = objective.direction === 'maximize' ? rawObj : -rawObj;
 
     return {
@@ -188,32 +192,35 @@ export class SolverEngine {
    */
   static solveLinearSystem(A: number[][], b: number[]): number[] | null {
     const n = A.length;
-    if (n === 0 || A[0].length !== n || b.length !== n) return null;
+    if (n === 0 || A[0]!.length !== n || b.length !== n) return null;
 
     // Augmented matrix
-    const aug: number[][] = A.map((row, i) => [...row, b[i]]);
+    const aug: number[][] = A.map((row, i) => [...row, b[i]!]);
 
     // Forward elimination with partial pivoting
     for (let col = 0; col < n; col++) {
       // Find pivot
-      let maxVal = Math.abs(aug[col][col]);
+      let maxVal = Math.abs(aug[col]![col]!);
       let maxRow = col;
       for (let row = col + 1; row < n; row++) {
-        if (Math.abs(aug[row][col]) > maxVal) {
-          maxVal = Math.abs(aug[row][col]);
+        const absVal = Math.abs(aug[row]![col]!);
+        if (absVal > maxVal) {
+          maxVal = absVal;
           maxRow = row;
         }
       }
       if (maxVal < 1e-12) return null; // Singular
 
       // Swap rows
-      [aug[col], aug[maxRow]] = [aug[maxRow], aug[col]];
+      const tmp = aug[col]!;
+      aug[col] = aug[maxRow]!;
+      aug[maxRow] = tmp;
 
       // Eliminate below
       for (let row = col + 1; row < n; row++) {
-        const factor = aug[row][col] / aug[col][col];
+        const factor = aug[row]![col]! / aug[col]![col]!;
         for (let j = col; j <= n; j++) {
-          aug[row][j] -= factor * aug[col][j];
+          aug[row]![j]! -= factor * aug[col]![j]!;
         }
       }
     }
@@ -221,11 +228,11 @@ export class SolverEngine {
     // Back substitution
     const x = Array(n).fill(0);
     for (let i = n - 1; i >= 0; i--) {
-      let sum = aug[i][n];
+      let sum = aug[i]![n]!;
       for (let j = i + 1; j < n; j++) {
-        sum -= aug[i][j] * x[j];
+        sum -= aug[i]![j]! * x[j]!;
       }
-      x[i] = sum / aug[i][i];
+      x[i] = sum / aug[i]![i]!;
     }
 
     return x;

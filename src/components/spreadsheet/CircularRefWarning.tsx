@@ -109,15 +109,19 @@ export function ConvergenceProgressIndicator({
       : convergence.status === 'diverged'
         ? 0
         : convergence.history.length > 0
-          ? Math.min(
-              95,
-              Math.max(
-                5,
-                ((Math.log10(convergence.history[0] + 1) - Math.log10(convergence.maxChange + 1)) /
-                  (Math.log10(convergence.history[0] + 1) + 1)) *
-                  100
-              )
-            )
+          ? (() => {
+              const first = convergence.history[0];
+              if (first === undefined) return 0;
+              return Math.min(
+                95,
+                Math.max(
+                  5,
+                  ((Math.log10(first + 1) - Math.log10(convergence.maxChange + 1)) /
+                    (Math.log10(first + 1) + 1)) *
+                    100
+                )
+              );
+            })()
           : 0;
 
   const statusColor =

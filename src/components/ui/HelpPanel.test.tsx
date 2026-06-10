@@ -66,7 +66,7 @@ describe('HelpPanel', () => {
     const onClose = vi.fn();
     render(<HelpPanel {...defaultProps} onClose={onClose} />);
     const buttons = screen.getAllByRole('button');
-    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[0]!);
     expect(onClose).toHaveBeenCalled();
   });
 

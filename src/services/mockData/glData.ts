@@ -942,8 +942,8 @@ export function computeTrialBalance(): TrialBalanceItem[] {
   return Array.from(grouped.entries()).map(([key, data]) => {
     const [accountCode, accountName] = key.split('::');
     return {
-      accountCode,
-      accountName,
+      accountCode: accountCode!,
+      accountName: accountName!,
       totalDebit: data.debit,
       totalCredit: data.credit,
       netBalance: data.debit - data.credit,

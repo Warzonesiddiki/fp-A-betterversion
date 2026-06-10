@@ -77,7 +77,7 @@ describe('ReconciliationEngine', () => {
       const discrepancies = ReconciliationEngine.findDiscrepancies(matched, 1000);
       const resolutions = ReconciliationEngine.autoResolve(discrepancies, 1000);
       expect(resolutions.length).toBe(discrepancies.length);
-      expect(resolutions[0].method).toBe('tolerance');
+      expect(resolutions![0]!.method).toBe('tolerance');
     });
   });
 });

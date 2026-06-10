@@ -11,7 +11,7 @@ export function IFS(c: number, t: number, f: number): number {
   return c !== 0 ? t : f;
 }
 export function CHOOSE(idx: number, ...vals: number[]): number {
-  return idx < 0 || idx >= vals.length ? 0 : vals[idx];
+  return idx < 0 || idx >= vals.length ? 0 : vals[idx]!;
 }
 export function BETWEEN(v: number, lo: number, hi: number): number {
   return v >= lo && v <= hi ? 1 : 0;
@@ -43,9 +43,9 @@ export function IFNA(v: number, alt: number): number {
 }
 export function SWITCH(val: number, ...args: number[]): number {
   for (let i = 0; i < args.length - 1; i += 2) {
-    if (val === args[i]) return args[i + 1];
+    if (val === args[i]!) return args[i + 1]!;
   }
-  return args.length % 2 === 1 ? args[args.length - 1] : 0;
+  return args.length % 2 === 1 ? args[args.length - 1]! : 0;
 }
 
 // =============================================================================
@@ -232,7 +232,7 @@ export function registerLogicalFunctions(r: (fn: FormulaFunction) => void): void
     description: 'Let binding',
     minArgs: 3,
     maxArgs: -1,
-    impl: (...args: number[]) => args[args.length - 1],
+    impl: (...args: number[]) => args[args.length - 1]!,
   });
 
   // Information

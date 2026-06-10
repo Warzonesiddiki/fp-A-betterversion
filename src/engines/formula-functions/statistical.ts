@@ -37,7 +37,7 @@ export function MEDIAN(...args: unknown[]): number {
   if (valid.length === 0) return 0;
   const s = [...valid].sort((a, b) => a - b);
   const m = Math.floor(s.length / 2);
-  return s.length % 2 === 0 ? (s[m - 1] + s[m]) / 2 : s[m];
+  return s.length % 2 === 0 ? (s[m - 1]! + s[m]!) / 2 : s[m]!;
 }
 export function STDEV(...args: unknown[]): number {
   const valid = flattenNums(args);
@@ -56,13 +56,13 @@ export function CORREL(x: unknown, y: unknown): number {
   const rawY = Array.isArray(y) ? y : [y as number];
   const pairs: [number, number][] = [];
   for (let i = 0; i < Math.min(rawX.length, rawY.length); i++) {
-    const xv = toNum(rawX[i]),
-      yv = toNum(rawY[i]);
+    const xv = toNum(rawX[i]!),
+      yv = toNum(rawY[i]!);
     if (!isNaN(xv) && !isNaN(yv)) pairs.push([xv, yv]);
   }
   if (pairs.length < 2) return 0;
-  const xa = pairs.reduce((s, p) => s + p[0], 0) / pairs.length;
-  const ya = pairs.reduce((s, p) => s + p[1], 0) / pairs.length;
+  const xa = pairs.reduce((s, p) => s + p[0]!, 0) / pairs.length;
+  const ya = pairs.reduce((s, p) => s + p[1]!, 0) / pairs.length;
   let sxy = 0,
     sx2 = 0,
     sy2 = 0;
@@ -104,13 +104,13 @@ export function COVAR(x: unknown, y: unknown): number {
   const rawY = Array.isArray(y) ? y : [y as number];
   const pairs: [number, number][] = [];
   for (let i = 0; i < Math.min(rawX.length, rawY.length); i++) {
-    const xv = toNum(rawX[i]),
-      yv = toNum(rawY[i]);
+    const xv = toNum(rawX[i]!),
+      yv = toNum(rawY[i]!);
     if (!isNaN(xv) && !isNaN(yv)) pairs.push([xv, yv]);
   }
   if (pairs.length === 0) return 0;
-  const xa = pairs.reduce((s, p) => s + p[0], 0) / pairs.length;
-  const ya = pairs.reduce((s, p) => s + p[1], 0) / pairs.length;
+  const xa = pairs.reduce((s, p) => s + p[0]!, 0) / pairs.length;
+  const ya = pairs.reduce((s, p) => s + p[1]!, 0) / pairs.length;
   return pairs.reduce((s, [px, py]) => s + (px - xa) * (py - ya), 0) / pairs.length;
 }
 export function MODE(...args: unknown[]): number {
@@ -119,7 +119,7 @@ export function MODE(...args: unknown[]): number {
   const freq = new Map<number, number>();
   valid.forEach((x) => freq.set(x, (freq.get(x) || 0) + 1));
   let maxF = 0,
-    mode = valid[0];
+    mode: number = valid[0]!;
   freq.forEach((f, k) => {
     if (f > maxF) {
       maxF = f;
@@ -144,13 +144,13 @@ export function FORECAST(x: number, ys: unknown, xs: unknown): number {
   const rawX = Array.isArray(xs) ? xs : [xs as number];
   const pairs: [number, number][] = [];
   for (let i = 0; i < Math.min(rawY.length, rawX.length); i++) {
-    const xv = toNum(rawX[i]),
-      yv = toNum(rawY[i]);
+    const xv = toNum(rawX[i]!),
+      yv = toNum(rawY[i]!);
     if (!isNaN(xv) && !isNaN(yv)) pairs.push([xv, yv]);
   }
   if (pairs.length < 2) return 0;
-  const ya = pairs.reduce((s, p) => s + p[1], 0) / pairs.length;
-  const xa = pairs.reduce((s, p) => s + p[0], 0) / pairs.length;
+  const ya = pairs.reduce((s, p) => s + p[1]!, 0) / pairs.length;
+  const xa = pairs.reduce((s, p) => s + p[0]!, 0) / pairs.length;
   let sxy = 0,
     sx2 = 0;
   for (const [px, py] of pairs) {
@@ -167,8 +167,8 @@ function linearRegression(ys: number[], xs: number[]): { slope: number; intercep
   let ssxy = 0;
   let ssxx = 0;
   for (let i = 0; i < n; i++) {
-    ssxy += (xs[i] - xMean) * (ys[i] - yMean);
-    ssxx += (xs[i] - xMean) ** 2;
+    ssxy += (xs![i]! - xMean) * (ys![i]! - yMean);
+    ssxx += (xs![i]! - xMean) ** 2;
   }
   if (ssxx === 0) return { slope: 0, intercept: yMean };
   const slope = ssxy / ssxx;
@@ -901,7 +901,7 @@ export function registerStatisticalFunctions(r: (fn: FormulaFunction) => void): 
     impl: (x: unknown, y: unknown) => {
       const xs = Array.isArray(x) ? x : [x as number];
       const ys = Array.isArray(y) ? y : [y as number];
-      return xs.reduce((s, v, i) => s + (v - ys[i]) ** 2, 0);
+      return xs.reduce((s, v, i) => s + (v - ys[i]!) ** 2, 0);
     },
   });
   r({
@@ -978,13 +978,13 @@ export function registerStatisticalFunctions(r: (fn: FormulaFunction) => void): 
       for (const v of d) {
         let placed = false;
         for (let i = 0; i < b.length; i++) {
-          if (v <= b[i]) {
-            result[i]++;
+          if (v <= b[i]!) {
+            result![i]!++;
             placed = true;
             break;
           }
         }
-        if (!placed) result[b.length]++;
+        if (!placed) result![b.length]!++;
       }
       return result;
     },
@@ -1048,7 +1048,7 @@ export function registerStatisticalFunctions(r: (fn: FormulaFunction) => void): 
       const d = Array.isArray(data) ? data : [data as number];
       const c = Array.isArray(criteriaRange) ? criteriaRange : [criteriaRange as number];
       const matched: number[] = [];
-      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]);
+      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]!);
       if (matched.length < 2) return 0;
       const avg = matched.reduce((s, x) => s + x, 0) / matched.length;
       return Math.sqrt(matched.reduce((s, x) => s + (x - avg) ** 2, 0) / (matched.length - 1));
@@ -1064,7 +1064,7 @@ export function registerStatisticalFunctions(r: (fn: FormulaFunction) => void): 
       const d = Array.isArray(data) ? data : [data as number];
       const c = Array.isArray(criteriaRange) ? criteriaRange : [criteriaRange as number];
       const matched: number[] = [];
-      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]);
+      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]!);
       if (matched.length < 1) return 0;
       const avg = matched.reduce((s, x) => s + x, 0) / matched.length;
       return Math.sqrt(matched.reduce((s, x) => s + (x - avg) ** 2, 0) / matched.length);
@@ -1080,7 +1080,7 @@ export function registerStatisticalFunctions(r: (fn: FormulaFunction) => void): 
       const d = Array.isArray(data) ? data : [data as number];
       const c = Array.isArray(criteriaRange) ? criteriaRange : [criteriaRange as number];
       const matched: number[] = [];
-      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]);
+      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]!);
       if (matched.length < 2) return 0;
       const avg = matched.reduce((s, x) => s + x, 0) / matched.length;
       return matched.reduce((s, x) => s + (x - avg) ** 2, 0) / (matched.length - 1);
@@ -1096,7 +1096,7 @@ export function registerStatisticalFunctions(r: (fn: FormulaFunction) => void): 
       const d = Array.isArray(data) ? data : [data as number];
       const c = Array.isArray(criteriaRange) ? criteriaRange : [criteriaRange as number];
       const matched: number[] = [];
-      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]);
+      for (let i = 0; i < d.length; i++) if (c[i] === criteria) matched.push(d[i]!);
       if (matched.length < 1) return 0;
       const avg = matched.reduce((s, x) => s + x, 0) / matched.length;
       return matched.reduce((s, x) => s + (x - avg) ** 2, 0) / matched.length;

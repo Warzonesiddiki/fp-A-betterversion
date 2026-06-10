@@ -53,7 +53,7 @@ function safeEval(expr: string, _context: Record<string, number>): number {
       }
       ops.pop();
     } else {
-      while (ops.length && prec[ops[ops.length - 1]] >= prec[t]) {
+      while (ops.length && prec[ops[ops.length - 1]!]! >= prec[t]!) {
         output.push(ops.pop()!);
       }
       ops.push(t);
@@ -124,9 +124,9 @@ function processIncremental(
 
   for (let i = 0; i < cells.length; i++) {
     if (dirtySet.has(String(i)) || dirtySet.has('*')) {
-      results.push(evaluateCell(cells[i], formulas));
+      results.push(evaluateCell(cells[i]!, formulas));
     } else {
-      results.push(cells[i]);
+      results.push(cells[i]!);
     }
   }
 

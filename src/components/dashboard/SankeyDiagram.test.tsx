@@ -79,7 +79,7 @@ describe('SankeyDiagram', () => {
     it('applies node colors to rect elements', () => {
       const { container } = render(<SankeyDiagram {...defaultProps} />);
       const rects = container.querySelectorAll('svg rect');
-      expect(rects[0]).toHaveAttribute('fill', '#3b82f6');
+      expect(rects[0]!).toHaveAttribute('fill', '#3b82f6');
     });
   });
 
@@ -111,7 +111,7 @@ describe('SankeyDiagram', () => {
       const onNodeClick = vi.fn();
       const { container } = render(<SankeyDiagram {...defaultProps} onNodeClick={onNodeClick} />);
       const nodeGroups = container.querySelectorAll('svg g[class*="cursor-pointer"]');
-      fireEvent.click(nodeGroups[0]);
+      fireEvent.click(nodeGroups[0]!);
       expect(onNodeClick).toHaveBeenCalled();
     });
 

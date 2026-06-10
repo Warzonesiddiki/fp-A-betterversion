@@ -134,8 +134,8 @@ export class TemplateEngine {
       instanceData[row.id] = { ...row.defaultValues } as Record<string, number | string>;
       // Initialize all columns
       for (const col of template.columns) {
-        if (instanceData[row.id][col.key] === undefined) {
-          instanceData[row.id][col.key] =
+        if (instanceData![row.id]![col.key] === undefined) {
+          instanceData![row.id]![col.key] =
             col.type === 'number' || col.type === 'currency' || col.type === 'percentage' ? 0 : '';
         }
       }
@@ -144,7 +144,7 @@ export class TemplateEngine {
     // Merge provided data
     if (data) {
       for (const [rowId, rowValues] of Object.entries(data)) {
-        instanceData[rowId] = { ...instanceData[rowId], ...rowValues };
+        instanceData[rowId] = { ...instanceData[rowId]!, ...rowValues };
       }
     }
 
@@ -264,7 +264,7 @@ export class TemplateEngine {
       if (col.formula) {
         for (const row of template.rows) {
           if (result[row.id]) {
-            result[row.id][col.key] = this.calculateFormula(col.formula, result, row.id);
+            result![row.id]![col.key] = this.calculateFormula(col.formula, result, row.id);
           }
         }
       }

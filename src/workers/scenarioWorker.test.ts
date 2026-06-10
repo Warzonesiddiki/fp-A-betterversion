@@ -32,11 +32,11 @@ describe('scenarioWorker', () => {
     const msg = postMessages[0] as Record<string, unknown>;
     const result = (msg.result as Array<Record<string, unknown>>)[0];
     expect(msg.result).toHaveLength(1);
-    expect(result.label).toBe('Growth 10%');
-    expect((result.values as number[])[0]).toBeCloseTo(110, 10);
-    expect((result.values as number[])[1]).toBeCloseTo(220, 10);
-    expect((result.values as number[])[2]).toBe(330);
-    expect(result.total).toBeCloseTo(660, 10);
+    expect(result!.label).toBe('Growth 10%');
+    expect((result!.values as number[])[0]).toBeCloseTo(110, 10);
+    expect((result!.values as number[])[1]).toBeCloseTo(220, 10);
+    expect((result!.values as number[])[2]).toBe(330);
+    expect(result!.total).toBeCloseTo(660, 10);
   });
 
   it('applies multiple scenarios', () => {
@@ -55,9 +55,9 @@ describe('scenarioWorker', () => {
     const msg = postMessages[0] as Record<string, unknown>;
     const results = msg.result as Array<Record<string, unknown>>;
     expect(results).toHaveLength(3);
-    expect(results[0].total).toBe(1200);
-    expect(results[1].total).toBe(800);
-    expect(results[2].total).toBe(1000);
+    expect(results![0]!.total).toBe(1200);
+    expect(results![1]!.total).toBe(800);
+    expect(results![2]!.total).toBe(1000);
   });
 
   it('handles empty base values', () => {
@@ -70,8 +70,8 @@ describe('scenarioWorker', () => {
       })
     );
     const msg = postMessages[0] as Record<string, unknown>;
-    expect((msg.result as Array<Record<string, unknown>>)[0].values).toEqual([]);
-    expect((msg.result as Array<Record<string, unknown>>)[0].total).toBe(0);
+    expect((msg.result as Array<Record<string, unknown>>)![0]!.values).toEqual([]);
+    expect((msg.result as Array<Record<string, unknown>>)![0]!.total).toBe(0);
   });
 
   it('handles single base value', () => {
@@ -84,8 +84,8 @@ describe('scenarioWorker', () => {
       })
     );
     const msg = postMessages[0] as Record<string, unknown>;
-    expect((msg.result as Array<Record<string, unknown>>)[0].values).toEqual([42]);
-    expect((msg.result as Array<Record<string, unknown>>)[0].total).toBe(42);
+    expect((msg.result as Array<Record<string, unknown>>)![0]!.values).toEqual([42]);
+    expect((msg.result as Array<Record<string, unknown>>)![0]!.total).toBe(42);
   });
 
   it('handles zero assumptions', () => {

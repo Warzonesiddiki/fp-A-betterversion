@@ -358,9 +358,9 @@ describe('MonteCarloEngine', () => {
           model: sumModel,
           seed: 42,
         });
-        expect(result.percentiles[50]).toBeCloseTo(result.median, 0);
-        expect(result.percentiles[5]).toBeGreaterThan(0);
-        expect(result.percentiles[95]).toBeLessThan(100);
+        expect(result.percentiles[50]!).toBeCloseTo(result.median, 0);
+        expect(result.percentiles[5]!).toBeGreaterThan(0);
+        expect(result.percentiles[95]!).toBeLessThan(100);
       });
 
       it('should compute confidence interval', () => {
@@ -424,8 +424,8 @@ describe('MonteCarloEngine', () => {
           seed: 42,
         });
         expect(result.rawSamples).toHaveLength(5);
-        expect(result.rawSamples[0]).toHaveProperty('a');
-        expect(result.rawSamples[0]).toHaveProperty('b');
+        expect(result.rawSamples[0]!).toHaveProperty('a');
+        expect(result.rawSamples[0]!).toHaveProperty('b');
       });
     });
 
@@ -920,8 +920,8 @@ describe('MonteCarloEngine', () => {
         42
       );
       expect(samples).toHaveLength(100);
-      expect(samples[0]).toHaveProperty('a');
-      expect(samples[0]).toHaveProperty('b');
+      expect(samples[0]!).toHaveProperty('a');
+      expect(samples[0]!).toHaveProperty('b');
     });
 
     it('should throw if matrix rows mismatch', () => {

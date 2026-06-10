@@ -49,11 +49,11 @@ describe('DataQualityEngine', () => {
       { name: '', age: 25 },
     ];
     const profile = engine.profile(data);
-    expect(profile.name.total).toBe(3);
-    expect(profile.name.nulls).toBe(1);
-    expect(profile.name.completeness).toBeCloseTo(2 / 3);
-    expect(profile.age.total).toBe(3);
-    expect(profile.age.nulls).toBe(1);
+    expect(profile!.name!.total).toBe(3);
+    expect(profile!.name!.nulls).toBe(1);
+    expect(profile!.name!.completeness).toBeCloseTo(2 / 3);
+    expect(profile!.age!.total).toBe(3);
+    expect(profile!.age!.nulls).toBe(1);
   });
 
   it('should return empty profile for empty data', () => {
@@ -67,7 +67,7 @@ describe('DataQualityEngine', () => {
     expect(report.overallScore).toBeCloseTo(2 / 3);
     expect(report.summary.passed).toBe(2);
     expect(report.summary.failed).toBe(1);
-    expect(report.results[0].failedRows).toEqual([1]);
+    expect(report!.results[0]!.failedRows).toEqual([1]);
   });
 
   it('should validate with numeric rule', () => {
@@ -92,7 +92,7 @@ describe('DataQualityEngine', () => {
     const report = engine.validate(data);
     // Only the duplicate (third row) fails, not the first occurrence
     expect(report.summary.failed).toBe(1);
-    expect(report.results[0].failedRows).toEqual([2]);
+    expect(report!.results[0]!.failedRows).toEqual([2]);
   });
 
   it('should calculate dimension scores', () => {

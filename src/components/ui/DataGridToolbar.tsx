@@ -38,7 +38,11 @@ export const DataGridToolbar: React.FC<DataGridToolbarProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1 bg-[var(--bg-muted)] border-b border-[var(--border-subtle)] text-xs">
+    <div
+      className="flex items-center gap-2 px-2 py-1 bg-[var(--bg-muted)] border-b border-[var(--border-subtle)] text-xs"
+      role="region"
+      aria-label="DataGridToolbar"
+    >
       {enableFindReplace && (
         <button
           onClick={() => setShowFindReplace(!showFindReplace)}
@@ -52,7 +56,7 @@ export const DataGridToolbar: React.FC<DataGridToolbarProps> = ({
       {enableExport && (
         <button
           onClick={handleExport}
-          className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
+          className="px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Export to CSV"
           title="Export CSV"
         >

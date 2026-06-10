@@ -250,7 +250,7 @@ export function registerTextFunctions(r: (fn: FormulaFunction) => void): void {
     impl: (text: number, pattern: number) => {
       try {
         const m = String(text).match(new RegExp(String(pattern)));
-        return m ? Number(m[0]) : 0;
+        return m ? Number(m[0]!) : 0;
       } catch {
         return 0;
       }

@@ -44,9 +44,9 @@ describe('FormulaAutocomplete', () => {
     render(<FormulaAutocomplete {...baseProps} />);
     const options = screen.getAllByRole('option');
     expect(options).toHaveLength(3);
-    expect(options[0]).toHaveTextContent('SUM');
-    expect(options[1]).toHaveTextContent('AVERAGE');
-    expect(options[2]).toHaveTextContent('IF');
+    expect(options[0]!).toHaveTextContent('SUM');
+    expect(options[1]!).toHaveTextContent('AVERAGE');
+    expect(options[2]!).toHaveTextContent('IF');
   });
 
   it('renders category filter buttons', () => {
@@ -70,15 +70,15 @@ describe('FormulaAutocomplete', () => {
     const onSelectFunction = vi.fn();
     render(<FormulaAutocomplete {...baseProps} onSelectFunction={onSelectFunction} />);
     const options = screen.getAllByRole('option');
-    fireEvent.mouseDown(options[0]);
-    expect(onSelectFunction).toHaveBeenCalledWith(mockFunctions[0]);
+    fireEvent.mouseDown(options[0]!);
+    expect(onSelectFunction).toHaveBeenCalledWith(mockFunctions[0]!);
   });
 
   it('calls onHoverIndex on mouse enter', () => {
     const onHoverIndex = vi.fn();
     render(<FormulaAutocomplete {...baseProps} onHoverIndex={onHoverIndex} />);
     const options = screen.getAllByRole('option');
-    fireEvent.mouseEnter(options[0]);
+    fireEvent.mouseEnter(options[0]!);
     expect(onHoverIndex).toHaveBeenCalledWith(0);
   });
 
@@ -90,6 +90,6 @@ describe('FormulaAutocomplete', () => {
   it('highlights selected function based on autocompleteIndex', () => {
     const { container } = render(<FormulaAutocomplete {...baseProps} autocompleteIndex={2} />);
     const options = container.querySelectorAll('[role="option"]');
-    expect(options[2].getAttribute('aria-selected')).toBe('true');
+    expect(options![2]!.getAttribute('aria-selected')).toBe('true');
   });
 });

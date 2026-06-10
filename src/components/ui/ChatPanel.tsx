@@ -121,7 +121,7 @@ export function ChatPanel({
           {onToggleMinimize && (
             <button
               onClick={onToggleMinimize}
-              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               aria-label="Minimize chat"
             >
               <Minimize2 className="h-4 w-4" />
@@ -130,7 +130,7 @@ export function ChatPanel({
           {onClose && (
             <button
               onClick={onClose}
-              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               aria-label="Close chat"
             >
               <X className="h-4 w-4" />

@@ -322,7 +322,7 @@ export class WorkflowSchedulerEngine {
         if (config.skipWeekends) next = this.getNextBusinessDay(next, config);
         return next;
       case 'weekly': {
-        const targetDay = config.daysOfWeek?.[0] ? this.dayToNumber(config.daysOfWeek[0]) : 1;
+        const targetDay = config.daysOfWeek?.[0] ? this.dayToNumber(config.daysOfWeek[0]!) : 1;
         next.setHours(hour, minute, 0, 0);
         const currentDay = next.getDay();
         let daysUntil = targetDay - currentDay;

@@ -19,7 +19,7 @@ const mockIndexedDB = () => {
           objectStore: () => ({
             get: (key: string) => ({
               onsuccess: null,
-              result: storage[key],
+              result: storage[key]!,
             }),
             put: (item: any) => {
               storage[item.id] = item;

@@ -223,8 +223,8 @@ describe('SOXComplianceEngine', () => {
 
       const violations = engine.checkSODViolation('user1', 'manager', 'budget');
       expect(violations.length).toBeGreaterThan(0);
-      expect(violations[0].status).toBe('fail');
-      expect(violations[0].severity).toBe('critical');
+      expect(violations![0]!.status).toBe('fail');
+      expect(violations![0]!.severity).toBe('critical');
     });
 
     it('should pass when no conflicting roles', () => {
@@ -377,8 +377,8 @@ describe('SOXComplianceEngine', () => {
       );
 
       expect(violations.length).toBe(1);
-      expect(violations[0].severity).toBe('critical');
-      expect(violations[0].details).toContain('Q4-2025');
+      expect(violations![0]!.severity).toBe('critical');
+      expect(violations![0]!.details).toContain('Q4-2025');
     });
 
     it('should pass when no closed period violations', () => {
@@ -468,7 +468,7 @@ describe('SOXComplianceEngine', () => {
 
       const results = engine.verifyPeriodCloseIntegrity(closedPeriods, currentData);
       expect(results.length).toBe(1);
-      expect(results[0].passed).toBe(true);
+      expect(results![0]!.passed).toBe(true);
     });
 
     it('should detect period close modification', () => {
@@ -477,7 +477,7 @@ describe('SOXComplianceEngine', () => {
 
       const results = engine.verifyPeriodCloseIntegrity(closedPeriods, currentData);
       expect(results.length).toBe(1);
-      expect(results[0].passed).toBe(false);
+      expect(results![0]!.passed).toBe(false);
     });
 
     it('should track integrity results', () => {

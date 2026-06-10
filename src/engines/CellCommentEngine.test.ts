@@ -50,10 +50,10 @@ describe('CellCommentEngine', () => {
   it('should resolve and unresolve a comment', () => {
     const comment = engine.addComment('A1', 'Alice', 'Test');
     expect(engine.resolveComment(comment.id)).toBe(true);
-    expect(engine.getComments('A1')[0].resolved).toBe(true);
+    expect(engine!.getComments('A1')[0]!.resolved).toBe(true);
 
     expect(engine.unresolveComment(comment.id)).toBe(true);
-    expect(engine.getComments('A1')[0].resolved).toBe(false);
+    expect(engine!.getComments('A1')[0]!.resolved).toBe(false);
   });
 
   it('should return false when resolving non-existent comment', () => {
@@ -88,7 +88,7 @@ describe('CellCommentEngine', () => {
     engine.addComment('A1', 'Alice', 'Test');
     const exported = engine.exportAll();
     expect(exported.length).toBeGreaterThan(0);
-    expect(exported[0].cellKey).toBe('A1');
+    expect(exported![0]!.cellKey).toBe('A1');
   });
 
   it('should import comments', () => {

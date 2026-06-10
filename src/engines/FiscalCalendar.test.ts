@@ -12,8 +12,8 @@ describe('FiscalCalendar', () => {
       };
       const periods = FiscalCalendar.generatePeriods(config);
       expect(periods).toHaveLength(12);
-      expect(periods[0].name).toBe('P1');
-      expect(periods[0].periodType).toBe('Monthly');
+      expect(periods![0]!.name).toBe('P1');
+      expect(periods![0]!.periodType).toBe('Monthly');
     });
 
     it('should generate 12 periods for 4-4-5 calendar', () => {
@@ -25,7 +25,7 @@ describe('FiscalCalendar', () => {
       };
       const periods = FiscalCalendar.generatePeriods(config);
       expect(periods).toHaveLength(12);
-      expect(periods[0].name).toBe('Q1 P1');
+      expect(periods![0]!.name).toBe('Q1 P1');
     });
 
     it('should generate 12 periods for 4-5-4 calendar', () => {
@@ -59,8 +59,8 @@ describe('FiscalCalendar', () => {
       };
       const periods = FiscalCalendar.generatePeriods(config);
       expect(periods).toHaveLength(13);
-      expect(periods[12].periodType).toBe('Adjusting');
-      expect(periods[12].isAdjustingPeriod).toBe(true);
+      expect(periods![12]!.periodType).toBe('Adjusting');
+      expect(periods![12]!.isAdjustingPeriod).toBe(true);
     });
 
     it('should handle non-January start month', () => {
@@ -72,7 +72,7 @@ describe('FiscalCalendar', () => {
       };
       const periods = FiscalCalendar.generatePeriods(config);
       expect(periods).toHaveLength(12);
-      expect(periods[0].periodNumber).toBe(1);
+      expect(periods![0]!.periodNumber).toBe(1);
     });
   });
 

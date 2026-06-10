@@ -18,11 +18,11 @@ const monthNames = [
 function makeMonthly(budget: number[], actual: number[]): MonthlyVariance[] {
   return budget.map((b, i) => ({
     month: i + 1,
-    monthName: monthNames[i],
+    monthName: monthNames[i]!,
     budget: b,
-    actual: actual[i],
-    variance: actual[i] - b,
-    percent: b !== 0 ? ((actual[i] - b) / Math.abs(b)) * 100 : 0,
+    actual: actual[i]!,
+    variance: actual![i]! - b,
+    percent: b !== 0 ? ((actual![i]! - b) / Math.abs(b)) * 100 : 0,
   }));
 }
 

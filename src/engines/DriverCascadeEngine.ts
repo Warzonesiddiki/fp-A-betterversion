@@ -513,8 +513,8 @@ export class DriverCascadeEngine {
       if (!groups[cell.cube]) {
         groups[cell.cube] = { count: 0, totalImpact: 0 };
       }
-      groups[cell.cube].count++;
-      groups[cell.cube].totalImpact += cell.delta;
+      groups![cell.cube]!.count++;
+      groups![cell.cube]!.totalImpact += cell.delta;
     }
     return groups;
   }

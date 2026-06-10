@@ -47,16 +47,16 @@ describe('ReportSchedulingEngine', () => {
     const s = engine.createSchedule('Test', 'rpt-1', 'daily', ['a@test.com']);
     const delivery = engine.executeSchedule(s.id);
     engine.markDelivered(delivery!.id, 1024);
-    expect(engine.getDeliveryHistory()[0].status).toBe('sent');
-    expect(engine.getDeliveryHistory()[0].fileSize).toBe(1024);
+    expect(engine!.getDeliveryHistory()[0]!.status).toBe('sent');
+    expect(engine!.getDeliveryHistory()[0]!.fileSize).toBe(1024);
   });
 
   it('should mark delivery as failed', () => {
     const s = engine.createSchedule('Test', 'rpt-1', 'daily', ['a@test.com']);
     const delivery = engine.executeSchedule(s.id);
     engine.markFailed(delivery!.id, 'SMTP error');
-    expect(engine.getDeliveryHistory()[0].status).toBe('failed');
-    expect(engine.getDeliveryHistory()[0].error).toBe('SMTP error');
+    expect(engine!.getDeliveryHistory()[0]!.status).toBe('failed');
+    expect(engine!.getDeliveryHistory()[0]!.error).toBe('SMTP error');
   });
 
   it('should manage subscriptions', () => {

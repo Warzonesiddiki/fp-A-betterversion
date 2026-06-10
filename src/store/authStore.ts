@@ -234,7 +234,7 @@ export const useAuthStore = create<AuthState>()(
 
             // Decode expiry from mock token
             const expMatch = accessToken.match(/"exp":(\d+)/);
-            const tokenExpiry = expMatch ? parseInt(expMatch[1]) * 1000 : null;
+            const tokenExpiry = expMatch ? parseInt(expMatch[1]!) * 1000 : null;
 
             set((s) => {
               s.user = mockUser as typeof s.user;
@@ -324,7 +324,7 @@ export const useAuthStore = create<AuthState>()(
               role: 'Analyst',
               avatarUrl: name
                 .split(' ')
-                .map((n) => n[0])
+                .map((n) => n[0]!)
                 .join('')
                 .toUpperCase(),
               departmentId: 'dept-finance',
@@ -364,7 +364,7 @@ export const useAuthStore = create<AuthState>()(
           try {
             const newAccessToken = generateMockToken(state.user.id, state.user.role);
             const expMatch = newAccessToken.match(/"exp":(\d+)/);
-            const tokenExpiry = expMatch ? parseInt(expMatch[1]) * 1000 : null;
+            const tokenExpiry = expMatch ? parseInt(expMatch[1]!) * 1000 : null;
             set((s) => {
               s.accessToken = newAccessToken;
               s.tokenExpiry = tokenExpiry;

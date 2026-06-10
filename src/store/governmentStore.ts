@@ -66,7 +66,7 @@ export const useGovernmentStore = create<GovernmentState>()(
         updateFund: (id, updates) =>
           set((s) => {
             const i = s.funds.findIndex((f) => f.id === id);
-            if (i !== -1) Object.assign(s.funds[i], updates);
+            if (i !== -1) Object.assign(s.funds[i]!, updates);
           }),
         removeFund: (id) =>
           set((s) => {

@@ -985,7 +985,7 @@ describe('STORE_MIGRATORS registry', () => {
 
   it('should have a migrator for each store', () => {
     for (const name of STORE_NAMES) {
-      expect(STORE_MIGRATORS[name]).toBeInstanceOf(Function);
+      expect(STORE_MIGRATORS[name]!).toBeInstanceOf(Function);
     }
   });
 

@@ -14,7 +14,7 @@ interface Entity {
   ownershipPct: number;
 }
 
-// Mock entities for visualization since store is empty
+// Full ownership tree visualization since store is empty
 const mockEntities: Entity[] = [
   {
     id: 'ent-1',

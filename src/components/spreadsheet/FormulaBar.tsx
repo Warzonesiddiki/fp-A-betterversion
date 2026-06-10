@@ -62,7 +62,7 @@ export function FormulaBar({
     (item: AutocompleteItem) => {
       const lastTokenMatch = value.match(/([A-Za-z0-9_$]+)$/);
       if (lastTokenMatch) {
-        const before = value.slice(0, value.length - lastTokenMatch[1].length);
+        const before = value.slice(0, value.length - lastTokenMatch[1]!.length);
         onChange(`${before}${item.insertText}`);
       } else {
         onChange(`${value}${item.insertText}`);
@@ -87,9 +87,9 @@ export function FormulaBar({
           return;
         }
         if (e.key === 'Tab' || e.key === 'Enter') {
-          if (suggestions[selectedIndex]) {
+          if (suggestions[selectedIndex]!) {
             e.preventDefault();
-            insertSuggestion(suggestions[selectedIndex]);
+            insertSuggestion(suggestions[selectedIndex]!);
             if (e.key === 'Enter') onEvaluate(value);
           }
           return;
@@ -124,7 +124,7 @@ export function FormulaBar({
   );
 
   const helpText = useMemo(() => {
-    if (!showSuggestions || !suggestions[selectedIndex]) return null;
+    if (!showSuggestions || !suggestions[selectedIndex]!) return null;
     const item = suggestions[selectedIndex];
     if (item.type === 'function') {
       const fnHelp = FormulaAutoCompleteEngine.getFunctionHelp(item.text);
@@ -165,7 +165,7 @@ export function FormulaBar({
           aria-expanded={showSuggestions}
           aria-controls="formula-suggestions"
           aria-activedescendant={
-            showSuggestions && suggestions[selectedIndex]
+            showSuggestions && suggestions[selectedIndex]!
               ? `suggestion-${selectedIndex}`
               : undefined
           }

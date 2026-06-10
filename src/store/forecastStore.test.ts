@@ -27,7 +27,7 @@ describe('forecastStore', () => {
     } as any);
     expect(id).toMatch(/^fcst-/);
     expect(useForecastStore.getState().forecasts).toHaveLength(1);
-    expect(useForecastStore.getState().forecasts[0].name).toBe('Q1 Forecast');
+    expect(useForecastStore!.getState().forecasts[0]!.name).toBe('Q1 Forecast');
   });
 
   it('should update a forecast', () => {
@@ -36,8 +36,8 @@ describe('forecastStore', () => {
       status: 'draft',
     } as any);
     useForecastStore.getState().updateForecast(id, { name: 'Updated' });
-    expect(useForecastStore.getState().forecasts[0].name).toBe('Updated');
-    expect(useForecastStore.getState().forecasts[0].lastUpdated).toBeDefined();
+    expect(useForecastStore!.getState().forecasts[0]!.name).toBe('Updated');
+    expect(useForecastStore!.getState().forecasts[0]!.lastUpdated).toBeDefined();
   });
 
   it('should delete a forecast', () => {
@@ -90,6 +90,6 @@ describe('forecastStore', () => {
       .getState()
       .setDrivers([{ id: 'drv-1', name: 'Growth', currentValue: 10 }] as any);
     useForecastStore.getState().updateDriver('drv-1', { currentValue: 15 });
-    expect(useForecastStore.getState().drivers[0].currentValue).toBe(15);
+    expect(useForecastStore!.getState().drivers[0]!.currentValue).toBe(15);
   });
 });

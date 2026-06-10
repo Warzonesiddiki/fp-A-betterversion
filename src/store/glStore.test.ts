@@ -96,7 +96,7 @@ describe('glStore', () => {
     expect(s.importHistory).toEqual([]);
     expect(s.lastImportEntryIds).toEqual([]);
     expect(s.columnMapping).toHaveLength(6);
-    expect(s.columnMapping[0].targetField).toBe('date');
+    expect(s!.columnMapping[0]!.targetField).toBe('date');
   });
 
   // --- setAccounts ---
@@ -183,9 +183,9 @@ describe('glStore', () => {
     useGLStore.getState().addEntry(entry);
     const state = useGLStore.getState();
     expect(state.entries).toHaveLength(1);
-    expect(state.entries[0].accountId).toBe('acct-1');
-    expect(state.entries[0].debit).toBe(500);
-    expect(state.entries[0].description).toBe('Sale');
+    expect(state!.entries[0]!.accountId).toBe('acct-1');
+    expect(state!.entries[0]!.debit).toBe(500);
+    expect(state!.entries[0]!.description).toBe('Sale');
   });
 
   it('should append entries on multiple addEntry calls', () => {
@@ -232,11 +232,11 @@ describe('glStore', () => {
     const { trialBalance, isLoading } = useGLStore.getState();
     expect(isLoading).toBe(false);
     expect(trialBalance).toHaveLength(1);
-    expect(trialBalance[0].accountId).toBe('acct-1');
-    expect(trialBalance[0].debit).toBe(1000);
-    expect(trialBalance[0].credit).toBe(0);
-    expect(trialBalance[0].netChange).toBe(1000);
-    expect(trialBalance[0].endingBalance).toBe(1000);
+    expect(trialBalance![0]!.accountId).toBe('acct-1');
+    expect(trialBalance![0]!.debit).toBe(1000);
+    expect(trialBalance![0]!.credit).toBe(0);
+    expect(trialBalance![0]!.netChange).toBe(1000);
+    expect(trialBalance![0]!.endingBalance).toBe(1000);
   });
 
   it('should aggregate multiple entries per account in trial balance', () => {
@@ -249,8 +249,8 @@ describe('glStore', () => {
     useGLStore.getState().generateTrialBalance();
     const { trialBalance } = useGLStore.getState();
     expect(trialBalance).toHaveLength(1);
-    expect(trialBalance[0].debit).toBe(1500);
-    expect(trialBalance[0].netChange).toBe(1500);
+    expect(trialBalance![0]!.debit).toBe(1500);
+    expect(trialBalance![0]!.netChange).toBe(1500);
   });
 
   it('should generate empty trial balance with no entries', () => {
@@ -443,11 +443,11 @@ describe('glStore', () => {
     useGLStore.getState().recordImport(result);
     const state = useGLStore.getState();
     expect(state.importHistory).toHaveLength(1);
-    expect(state.importHistory[0].filename).toBe('ledger.csv');
-    expect(state.importHistory[0].rowCount).toBe(100);
-    expect(state.importHistory[0].status).toBe('partial');
-    expect(state.importHistory[0].id).toMatch(/^import-/);
-    expect(state.importHistory[0].timestamp).toBeDefined();
+    expect(state!.importHistory[0]!.filename).toBe('ledger.csv');
+    expect(state!.importHistory[0]!.rowCount).toBe(100);
+    expect(state!.importHistory[0]!.status).toBe('partial');
+    expect(state!.importHistory[0]!.id).toMatch(/^import-/);
+    expect(state!.importHistory[0]!.timestamp).toBeDefined();
     expect(state.lastImportResult).not.toBeNull();
     expect(state.lastImportResult!.filename).toBe('ledger.csv');
     expect(state.lastImportResult!.timestamp).toBeDefined();
@@ -473,7 +473,7 @@ describe('glStore', () => {
       status: 'partial',
     });
     expect(useGLStore.getState().importHistory).toHaveLength(2);
-    expect(useGLStore.getState().importHistory[0].filename).toBe('second.csv');
+    expect(useGLStore!.getState().importHistory[0]!.filename).toBe('second.csv');
   });
 
   // --- undoLastImport ---

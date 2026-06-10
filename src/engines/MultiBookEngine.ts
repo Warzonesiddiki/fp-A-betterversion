@@ -203,12 +203,12 @@ export class MultiBookEngine {
       if (entry.books.length >= 2) {
         for (let i = 0; i < entry.books.length - 1; i++) {
           for (let j = i + 1; j < entry.books.length; j++) {
-            const diff = entry.books[i].debit - entry.books[j].debit;
+            const diff = entry.books[i]!.debit - entry.books[j]!.debit;
             if (Math.abs(diff) > 0.01) {
               entry.gaapDifferences.push({
                 account: entry.accountId,
-                gaap1: entry.books[i].debit,
-                gaap2: entry.books[j].debit,
+                gaap1: entry.books[i]!.debit,
+                gaap2: entry.books[j]!.debit,
                 difference: diff,
               });
             }

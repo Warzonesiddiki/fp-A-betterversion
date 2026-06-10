@@ -17,7 +17,7 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
   const previewRows = sheet.rows.slice(0, 10);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="region" aria-label="ImportPreview">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white">Data Preview</h3>
         {sheetNames.length > 1 && (

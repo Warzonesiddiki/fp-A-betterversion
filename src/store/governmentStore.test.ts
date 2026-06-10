@@ -46,7 +46,7 @@ describe('governmentStore', () => {
       status: 'At Risk',
     });
     expect(useGovernmentStore.getState().funds).toHaveLength(1);
-    expect(useGovernmentStore.getState().funds[0].fund).toBe('Education Fund');
+    expect(useGovernmentStore!.getState().funds[0]!.fund).toBe('Education Fund');
   });
 
   it('should update a fund', () => {
@@ -60,8 +60,8 @@ describe('governmentStore', () => {
     });
     useGovernmentStore.getState().updateFund('f3', { status: 'Overspent', utilized: 3200000 });
     const updated = useGovernmentStore.getState().funds[0];
-    expect(updated.status).toBe('Overspent');
-    expect(updated.utilized).toBe(3200000);
+    expect(updated!.status).toBe('Overspent');
+    expect(updated!.utilized).toBe(3200000);
   });
 
   it('should not update non-existent fund', () => {
@@ -74,7 +74,7 @@ describe('governmentStore', () => {
       status: 'On Track',
     });
     useGovernmentStore.getState().updateFund('nonexistent', { status: 'Overspent' });
-    expect(useGovernmentStore.getState().funds[0].status).toBe('On Track');
+    expect(useGovernmentStore!.getState().funds[0]!.status).toBe('On Track');
   });
 
   it('should remove a fund', () => {

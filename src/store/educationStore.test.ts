@@ -48,7 +48,7 @@ describe('educationStore', () => {
       status: 'Active',
     });
     expect(useEducationStore.getState().programs).toHaveLength(1);
-    expect(useEducationStore.getState().programs[0].name).toBe('Business Admin');
+    expect(useEducationStore!.getState().programs[0]!.name).toBe('Business Admin');
   });
 
   it('should update a program', () => {
@@ -63,8 +63,8 @@ describe('educationStore', () => {
     });
     useEducationStore.getState().updateProgram('p3', { status: 'Suspended', enrollment: 150 });
     const updated = useEducationStore.getState().programs[0];
-    expect(updated.status).toBe('Suspended');
-    expect(updated.enrollment).toBe(150);
+    expect(updated!.status).toBe('Suspended');
+    expect(updated!.enrollment).toBe(150);
   });
 
   it('should not update non-existent program', () => {
@@ -78,7 +78,7 @@ describe('educationStore', () => {
       status: 'Active',
     });
     useEducationStore.getState().updateProgram('nonexistent', { status: 'Suspended' });
-    expect(useEducationStore.getState().programs[0].status).toBe('Active');
+    expect(useEducationStore!.getState().programs[0]!.status).toBe('Active');
   });
 
   it('should remove a program', () => {

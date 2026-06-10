@@ -144,8 +144,8 @@ describe('CubeMigration', () => {
         backupBeforeMigration: false,
       });
       expect(report.results.length).toBe(2);
-      expect(report.results[0].storeName).toBe('authStore');
-      expect(report.results[1].storeName).toBe('uiStore');
+      expect(report!.results[0]!.storeName).toBe('authStore');
+      expect(report!.results[1]!.storeName).toBe('uiStore');
     });
 
     it('should handle single store migration', async () => {
@@ -154,7 +154,7 @@ describe('CubeMigration', () => {
         backupBeforeMigration: false,
       });
       expect(report.results.length).toBe(1);
-      expect(report.results[0].storeName).toBe('budgetStore');
+      expect(report!.results[0]!.storeName).toBe('budgetStore');
     });
 
     it('should handle empty store list gracefully', async () => {
@@ -172,8 +172,8 @@ describe('CubeMigration', () => {
         backupBeforeMigration: false,
       });
       expect(report.results.length).toBe(1);
-      expect(report.results[0].success).toBe(false);
-      expect(report.results[0].error).toContain('No migrator found');
+      expect(report!.results[0]!.success).toBe(false);
+      expect(report!.results[0]!.error).toContain('No migrator found');
     });
   });
 
@@ -260,18 +260,18 @@ describe('CubeMigration', () => {
 
     it('should pass verification for empty stores', async () => {
       const results = await migration.verifyMigration(['authStore']);
-      expect(results[0].passed).toBe(true);
+      expect(results![0]!.passed).toBe(true);
     });
 
     it('should include expected vs actual cell counts', async () => {
       const results = await migration.verifyMigration(['glStore']);
-      expect(results[0].expectedCells).toBeDefined();
-      expect(results[0].actualCells).toBeDefined();
+      expect(results![0]!.expectedCells).toBeDefined();
+      expect(results![0]!.actualCells).toBeDefined();
     });
 
     it('should track mismatched cells', async () => {
       const results = await migration.verifyMigration(['budgetStore']);
-      expect(Array.isArray(results[0].mismatchedCells)).toBe(true);
+      expect(Array.isArray(results![0]!.mismatchedCells)).toBe(true);
     });
 
     it('should pass verification with 90% threshold', async () => {
@@ -331,7 +331,7 @@ describe('CubeMigration', () => {
       });
       // Should stop after nonexistentStore fails
       expect(report.results.length).toBe(1);
-      expect(report.results[0].success).toBe(false);
+      expect(report!.results[0]!.success).toBe(false);
     });
 
     it('should continue migration when stopOnFailure is false', async () => {
@@ -352,7 +352,7 @@ describe('CubeMigration', () => {
         stores: ['authStore'],
         backupBeforeMigration: false,
       });
-      expect(report.results[0].success).toBe(true);
+      expect(report!.results[0]!.success).toBe(true);
     });
 
     it('should handle concurrent migrations', async () => {
@@ -360,8 +360,8 @@ describe('CubeMigration', () => {
         migration.migrate({ stores: ['authStore'], backupBeforeMigration: false }),
         migration.migrate({ stores: ['uiStore'], backupBeforeMigration: false }),
       ]);
-      expect(report1.results[0].storeName).toBe('authStore');
-      expect(report2.results[0].storeName).toBe('uiStore');
+      expect(report1!.results[0]!.storeName).toBe('authStore');
+      expect(report2!.results[0]!.storeName).toBe('uiStore');
     });
 
     it('should handle migration with very large store list', async () => {

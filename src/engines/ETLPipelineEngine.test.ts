@@ -11,7 +11,7 @@ describe('ETLPipelineEngine', () => {
   it('should auto-detect field mappings', () => {
     const mappings = engine.autoDetectMappings(['First Name', 'Last Name', 'Amount']);
     expect(mappings).toHaveLength(3);
-    expect(mappings[0].targetField).toBe('first_name');
+    expect(mappings![0]!.targetField).toBe('first_name');
   });
 
   it('should validate required fields', () => {
@@ -59,8 +59,8 @@ describe('ETLPipelineEngine', () => {
       { name: 'Test2', amount: 100 },
     ];
     const cleaned = engine.cleanse(data);
-    expect(cleaned[0].name).toBe('Test');
-    expect(cleaned[0].amount).toBeNull();
+    expect(cleaned![0]!.name).toBe('Test');
+    expect(cleaned![0]!.amount).toBeNull();
   });
 
   it('should filter data', () => {
@@ -84,7 +84,7 @@ describe('ETLPipelineEngine', () => {
     });
     const data = [{ amount: 100 }, { amount: 300 }, { amount: 200 }];
     const result = engine.executeTransforms(data);
-    expect(result[0].amount).toBe(300);
+    expect(result![0]!.amount).toBe(300);
   });
 
   it('should aggregate data', () => {

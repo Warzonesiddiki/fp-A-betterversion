@@ -1,0 +1,308 @@
+{
+  "agent": "agent-16",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T04721",
+      "cat": "test",
+      "title": "useFirstRun RTL test coverage",
+      "spec": "useFirstRun unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04724",
+      "cat": "test",
+      "title": "useFocusManagement RTL test coverage",
+      "spec": "useFocusManagement unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04727",
+      "cat": "test",
+      "title": "useFocusRestore RTL test coverage",
+      "spec": "useFocusRestore unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04730",
+      "cat": "test",
+      "title": "useFreezePanes RTL test coverage",
+      "spec": "useFreezePanes unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04733",
+      "cat": "test",
+      "title": "useIndexedDB RTL test coverage",
+      "spec": "useIndexedDB unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04736",
+      "cat": "test",
+      "title": "useIntersectionObserver RTL test coverage",
+      "spec": "useIntersectionObserver unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04739",
+      "cat": "test",
+      "title": "useKeyboardShortcuts RTL test coverage",
+      "spec": "useKeyboardShortcuts unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04742",
+      "cat": "test",
+      "title": "useOffline RTL test coverage",
+      "spec": "useOffline unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04745",
+      "cat": "test",
+      "title": "usePeriods RTL test coverage",
+      "spec": "usePeriods unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04748",
+      "cat": "test",
+      "title": "usePersistence RTL test coverage",
+      "spec": "usePersistence unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04751",
+      "cat": "test",
+      "title": "usePresence RTL test coverage",
+      "spec": "usePresence unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04754",
+      "cat": "test",
+      "title": "useReducedMotion RTL test coverage",
+      "spec": "useReducedMotion unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04757",
+      "cat": "test",
+      "title": "useSector RTL test coverage",
+      "spec": "useSector unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04760",
+      "cat": "test",
+      "title": "useSelectionStats RTL test coverage",
+      "spec": "useSelectionStats unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04763",
+      "cat": "test",
+      "title": "useTauriGlobalShortcuts RTL test coverage",
+      "spec": "useTauriGlobalShortcuts unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04766",
+      "cat": "test",
+      "title": "useTauriMenu RTL test coverage",
+      "spec": "useTauriMenu unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04769",
+      "cat": "test",
+      "title": "useThrottle RTL test coverage",
+      "spec": "useThrottle unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04772",
+      "cat": "test",
+      "title": "useTour RTL test coverage",
+      "spec": "useTour unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04775",
+      "cat": "test",
+      "title": "useUndoableAction RTL test coverage",
+      "spec": "useUndoableAction unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04778",
+      "cat": "test",
+      "title": "useUndoRedo RTL test coverage",
+      "spec": "useUndoRedo unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04781",
+      "cat": "test",
+      "title": "useURLState RTL test coverage",
+      "spec": "useURLState unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04784",
+      "cat": "test",
+      "title": "useWebSocket RTL test coverage",
+      "spec": "useWebSocket unit + integration tests with React Testing Library."
+    },
+    {
+      "id": "T04847",
+      "cat": "test",
+      "title": "backupRestore 100% branch coverage",
+      "spec": "backupRestore full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04850",
+      "cat": "test",
+      "title": "chunkedStorage 100% branch coverage",
+      "spec": "chunkedStorage full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04853",
+      "cat": "test",
+      "title": "cn 100% branch coverage",
+      "spec": "cn full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04856",
+      "cat": "test",
+      "title": "constants 100% branch coverage",
+      "spec": "constants full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04859",
+      "cat": "test",
+      "title": "encryption 100% branch coverage",
+      "spec": "encryption full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04862",
+      "cat": "test",
+      "title": "financialFormatting 100% branch coverage",
+      "spec": "financialFormatting full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04865",
+      "cat": "test",
+      "title": "formatters 100% branch coverage",
+      "spec": "formatters full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04868",
+      "cat": "test",
+      "title": "indexedDBStorage 100% branch coverage",
+      "spec": "indexedDBStorage full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04871",
+      "cat": "test",
+      "title": "localeFormatting 100% branch coverage",
+      "spec": "localeFormatting full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04874",
+      "cat": "test",
+      "title": "logger 100% branch coverage",
+      "spec": "logger full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04877",
+      "cat": "test",
+      "title": "masterStorage 100% branch coverage",
+      "spec": "masterStorage full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04880",
+      "cat": "test",
+      "title": "offlineCache 100% branch coverage",
+      "spec": "offlineCache full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04883",
+      "cat": "test",
+      "title": "performance 100% branch coverage",
+      "spec": "performance full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04886",
+      "cat": "test",
+      "title": "retry 100% branch coverage",
+      "spec": "retry full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04889",
+      "cat": "test",
+      "title": "security 100% branch coverage",
+      "spec": "security full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04892",
+      "cat": "test",
+      "title": "sqlJsStorage 100% branch coverage",
+      "spec": "sqlJsStorage full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04895",
+      "cat": "test",
+      "title": "storageConstants 100% branch coverage",
+      "spec": "storageConstants full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04898",
+      "cat": "test",
+      "title": "storeCache 100% branch coverage",
+      "spec": "storeCache full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04901",
+      "cat": "test",
+      "title": "tauriSqlStorage 100% branch coverage",
+      "spec": "tauriSqlStorage full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04904",
+      "cat": "test",
+      "title": "tokenRotation 100% branch coverage",
+      "spec": "tokenRotation full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04907",
+      "cat": "test",
+      "title": "validation 100% branch coverage",
+      "spec": "validation full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04910",
+      "cat": "test",
+      "title": "zipBuilder 100% branch coverage",
+      "spec": "zipBuilder full Vitest branch coverage including error paths."
+    },
+    {
+      "id": "T04914",
+      "cat": "test",
+      "title": "AnnualOperatingBudget template end-to-end smoke test",
+      "spec": "AnnualOperatingBudget load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04918",
+      "cat": "test",
+      "title": "BankingNIM template end-to-end smoke test",
+      "spec": "BankingNIM load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04922",
+      "cat": "test",
+      "title": "CapExPlan template end-to-end smoke test",
+      "spec": "CapExPlan load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04926",
+      "cat": "test",
+      "title": "CashFlowForecast template end-to-end smoke test",
+      "spec": "CashFlowForecast load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04930",
+      "cat": "test",
+      "title": "ConstructionProjectCosting template end-to-end smoke test",
+      "spec": "ConstructionProjectCosting load -> fill -> calc -> export -> close round-trip."
+    },
+    {
+      "id": "T04934",
+      "cat": "test",
+      "title": "EnergySectorPlanning template end-to-end smoke test",
+      "spec": "EnergySectorPlanning load -> fill -> calc -> export -> close round-trip."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

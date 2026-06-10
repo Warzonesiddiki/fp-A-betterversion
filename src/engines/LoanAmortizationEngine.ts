@@ -55,7 +55,7 @@ export class LoanAmortizationEngine {
     month: number
   ): AmortizationRow[] {
     const result: AmortizationRow[] = [];
-    let balance = schedule[0].balance + schedule[0].principal;
+    let balance = schedule[0]!.balance + schedule[0]!.principal;
     for (const row of schedule) {
       if (row.month === month) {
         balance = Math.max(0, row.balance - prepaymentAmount);

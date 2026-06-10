@@ -14,7 +14,7 @@ describe('XBRLEngine', () => {
       XBRLEngine.mapAccount('acc-1', 'revenue', 'us-gaap');
       const mappings = XBRLEngine.getMappings();
       expect(mappings.length).toBe(1);
-      expect(mappings[0].accountId).toBe('acc-1');
+      expect(mappings![0]!.accountId).toBe('acc-1');
     });
   });
 
@@ -25,7 +25,7 @@ describe('XBRLEngine', () => {
         { accountId: 'acc-1', value: 100000, period: '2026-01', entity: 'entity-1' },
       ]);
       expect(facts.length).toBe(1);
-      expect(facts[0].value).toBe(100000);
+      expect(facts![0]!.value).toBe(100000);
     });
   });
 

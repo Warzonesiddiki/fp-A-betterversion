@@ -95,15 +95,15 @@ function computeStatistics(values: number[]): MonteCarloResponse['statistics'] {
     const idx = (p / 100) * (n - 1);
     const low = Math.floor(idx);
     const high = Math.ceil(idx);
-    if (low === high) return sorted[low];
-    return sorted[low] + (sorted[high] - sorted[low]) * (idx - low);
+    if (low === high) return sorted[low]!;
+    return sorted[low]! + (sorted[high]! - sorted[low]!) * (idx - low);
   };
 
   return {
     mean,
     stdDev,
-    min: sorted[0],
-    max: sorted[n - 1],
+    min: sorted[0]!,
+    max: sorted[n - 1]!,
     p5: percentile(5),
     p25: percentile(25),
     p50: percentile(50),

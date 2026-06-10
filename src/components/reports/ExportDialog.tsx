@@ -102,10 +102,12 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
 
         for (let ri = 0; ri < report.layout.rows.length; ri++) {
           const row = report.layout.rows[ri];
+          if (!row) continue;
           if (!row.isVisible) continue;
           const exportRow: (string | number | boolean | null)[] = [];
           for (let ci = 0; ci < report.layout.columns.length; ci++) {
             const col = report.layout.columns[ci];
+            if (!col) continue;
             if (!col.isVisible) continue;
             const cell = resolved[ri]?.[ci];
             exportRow.push(cell?.rawValue ?? null);
@@ -169,7 +171,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
         </h4>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white transition-colors"
+          className="text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close export dialog"
         >
           <X className="h-4 w-4" />
@@ -300,7 +302,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
 
       {/* Status messages */}
       {exportError && (
-        <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded">
+        <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded"> role="alert"  role="alert" 
           <X className="h-3.5 w-3.5 flex-shrink-0" />
           {exportError}
         </div>

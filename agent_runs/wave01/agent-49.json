@@ -1,0 +1,8 @@
+{
+  "agent": "agent-49",
+  "task": "Add JSDoc comments to public functions in src/engines/AssumptionEngine.ts",
+  "status": "success",
+  "jsdocLinesAdded": 65,
+  "tscErrorsAfter": 0,
+  "notes": "Added JSDoc blocks to all 11 public static methods of AssumptionEngine (create, get, getAll, update, lock, unlock, getHistory, getByCategory, impactAnalysis, delete, clear). Each block documents purpose, @param tags, @returns, and @throws where applicable. File grew from 133 to 198 lines. Verification: 'node run-tsc.cjs 2>&1 | Select-String \"AssumptionEngine\" | Measure-Object -Line' = 0. The 3 pre-existing tsc errors in App.tsx and DepreciationPage.test.tsx (default export / named export mismatch) are unrelated to this file and were not introduced by this change."
+}

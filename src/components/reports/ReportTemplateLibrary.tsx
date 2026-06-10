@@ -263,7 +263,7 @@ export function ReportTemplateLibrary({
                       </span>
                       {onCloneReport && (
                         <button
-                          className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-slate-800 rounded transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-slate-800 rounded transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             onCloneReport(report);
@@ -275,7 +275,7 @@ export function ReportTemplateLibrary({
                       )}
                       {onDeleteReport && (
                         <button
-                          className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             if (window.confirm('Delete this report?')) onDeleteReport(report.id);

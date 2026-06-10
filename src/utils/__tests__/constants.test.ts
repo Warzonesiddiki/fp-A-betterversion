@@ -22,12 +22,12 @@ import {
 describe('constants', () => {
   it('MONTHS has 12 entries', () => {
     expect(MONTHS).toHaveLength(12);
-    expect(MONTHS[0]).toBe('Jan');
+    expect(MONTHS[0]!).toBe('Jan');
   });
 
   it('MONTHS_FULL has 12 entries', () => {
     expect(MONTHS_FULL).toHaveLength(12);
-    expect(MONTHS_FULL[0]).toBe('January');
+    expect(MONTHS_FULL[0]!).toBe('January');
   });
 
   it('QUARTERS are defined', () => {

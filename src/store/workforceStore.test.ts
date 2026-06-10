@@ -49,7 +49,7 @@ describe('workforceStore', () => {
       status: 'active',
     });
     expect(useWorkforceStore.getState().employees).toHaveLength(1);
-    expect(useWorkforceStore.getState().employees[0].name).toBe('Bob');
+    expect(useWorkforceStore!.getState().employees[0]!.name).toBe('Bob');
   });
 
   it('should update an employee', () => {
@@ -64,8 +64,8 @@ describe('workforceStore', () => {
     });
     useWorkforceStore.getState().updateEmployee('e3', { position: 'Lead Analyst', salary: 95000 });
     const updated = useWorkforceStore.getState().employees[0];
-    expect(updated.position).toBe('Lead Analyst');
-    expect(updated.salary).toBe(95000);
+    expect(updated!.position).toBe('Lead Analyst');
+    expect(updated!.salary).toBe(95000);
   });
 
   it('should not update non-existent employee', () => {
@@ -79,7 +79,7 @@ describe('workforceStore', () => {
       status: 'active',
     });
     useWorkforceStore.getState().updateEmployee('nonexistent', { position: 'CFO' });
-    expect(useWorkforceStore.getState().employees[0].position).toBe('Controller');
+    expect(useWorkforceStore!.getState().employees[0]!.position).toBe('Controller');
   });
 
   it('should remove an employee', () => {

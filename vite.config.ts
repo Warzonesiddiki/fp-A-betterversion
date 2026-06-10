@@ -3,9 +3,21 @@ import path from "path";
 import { fileURLToPath } from "url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type UserConfig } from "vite";
+import { defineConfig, type UserConfig, type Plugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
+
+// Strip modulepreload for ai-vendor (553kB @huggingface/transformers + 23.5MB WASM)
+// so it only loads when user opens AI copilot panel, not on every page load.
+const noAiPreload: Plugin = {
+  name: 'no-ai-vendor-preload',
+  transformIndexHtml: {
+    order: 'post',
+    handler(html) {
+      return html.replace(/<link rel="modulepreload"[^>]*\/assets\/ai-vendor[^>]*>/g, '');
+    },
+  },
+};
 
 declare module 'vite' {
   interface UserConfig {
@@ -27,6 +39,7 @@ export default defineConfig({
       brotliSize: true,
       open: false,
     })] : []),
+    noAiPreload,
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["icon-192.png", "icon-512.png"],

@@ -33,7 +33,7 @@ describe('CellAuditTrailEngine', () => {
     it('should generate ID if missing', () => {
       engine.recordChange(makeEntry({ id: '' }));
       const entries = engine.getAllEntries();
-      expect(entries[0].id).toBeTruthy();
+      expect(entries![0]!.id).toBeTruthy();
     });
   });
 
@@ -45,7 +45,7 @@ describe('CellAuditTrailEngine', () => {
 
       const history = engine.getHistory('A1');
       expect(history).toHaveLength(2);
-      expect(history[0].timestamp).toBe('2024-01-16T10:00:00Z');
+      expect(history![0]!.timestamp).toBe('2024-01-16T10:00:00Z');
     });
 
     it('should return empty for cell with no changes', () => {

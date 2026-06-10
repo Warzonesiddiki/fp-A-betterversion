@@ -37,7 +37,7 @@ export function RuleRow({
         <button
           onClick={onMoveUp}
           disabled={index === 0}
-          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Move up"
         >
           ▲
@@ -46,7 +46,7 @@ export function RuleRow({
         <button
           onClick={onMoveDown}
           disabled={isLast}
-          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Move down"
         >
           ▼
@@ -78,13 +78,13 @@ export function RuleRow({
         </button>
         <button
           onClick={onEdit}
-          className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50"
+          className="rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Edit
         </button>
         <button
           onClick={onDelete}
-          className="rounded px-2 py-1 text-xs fin-negative hover:bg-red-50"
+          className="rounded px-2 py-1 text-xs fin-negative hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         >
           Delete
         </button>

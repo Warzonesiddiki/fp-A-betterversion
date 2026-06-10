@@ -40,12 +40,12 @@ export function HeatmapChart({
   const getColor = (value: number) => {
     if (max === min) return colorScale[0];
     const ratio = (value - min) / (max - min);
-    const r1 = parseInt(colorScale[0].slice(1, 3), 16);
-    const g1 = parseInt(colorScale[0].slice(3, 5), 16);
-    const b1 = parseInt(colorScale[0].slice(5, 7), 16);
-    const r2 = parseInt(colorScale[1].slice(1, 3), 16);
-    const g2 = parseInt(colorScale[1].slice(3, 5), 16);
-    const b2 = parseInt(colorScale[1].slice(5, 7), 16);
+    const r1 = parseInt(colorScale[0]!.slice(1, 3), 16);
+    const g1 = parseInt(colorScale[0]!.slice(3, 5), 16);
+    const b1 = parseInt(colorScale[0]!.slice(5, 7), 16);
+    const r2 = parseInt(colorScale[1]!.slice(1, 3), 16);
+    const g2 = parseInt(colorScale[1]!.slice(3, 5), 16);
+    const b2 = parseInt(colorScale[1]!.slice(5, 7), 16);
     const r = Math.round(r1 + (r2 - r1) * ratio);
     const g = Math.round(g1 + (g2 - g1) * ratio);
     const b = Math.round(b1 + (b2 - b1) * ratio);

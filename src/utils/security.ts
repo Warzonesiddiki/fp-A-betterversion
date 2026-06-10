@@ -427,7 +427,7 @@ export function generateCSRFToken(): string {
     globalThis.crypto.getRandomValues(bytes);
     let token = '';
     for (let i = 0; i < length; i++) {
-      token += chars[bytes[i] % chars.length];
+      token += chars[bytes![i]! % chars.length];
     }
     _csrfToken = token;
     return token;

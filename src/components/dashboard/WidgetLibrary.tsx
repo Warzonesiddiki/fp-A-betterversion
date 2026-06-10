@@ -89,7 +89,7 @@ export function WidgetLibrary({ placedWidgets, onChange, className }: WidgetLibr
     (fromIdx: number, toIdx: number) => {
       if (fromIdx === toIdx) return;
       const updated = [...placedWidgets];
-      const [moved] = updated.splice(fromIdx, 1);
+      const moved = updated.splice(fromIdx, 1)[0]!;
       updated.splice(toIdx, 0, moved);
       onChange(updated.map((w, i) => ({ ...w, order: i })));
     },
@@ -121,7 +121,7 @@ export function WidgetLibrary({ placedWidgets, onChange, className }: WidgetLibr
   const getWidgetDef = (type: WidgetType) => WIDGET_REGISTRY.find((w) => w.type === type);
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-6', className)} role="region" aria-label="WidgetLibrary">
       {/* Widget palette */}
       <div>
         <div className="text-sm font-semibold text-[var(--text-primary)] mb-3">Widget Library</div>

@@ -232,18 +232,18 @@ export class NLQEngine {
       return {
         type: 'quarter',
         value: `Q${qMatch[1]}`,
-        year: yearMatch ? parseInt(yearMatch[1]) : undefined,
+        year: yearMatch ? parseInt(yearMatch[1]!) : undefined,
       };
     }
 
     // FY year
     const fyMatch = text.match(TIME_PATTERNS.fy);
-    if (fyMatch) return { type: 'year', value: fyMatch[1], year: parseInt(fyMatch[1]) };
+    if (fyMatch) return { type: 'year', value: fyMatch[1]!, year: parseInt(fyMatch[1]!) };
 
     // Year
     const yMatch = text.match(TIME_PATTERNS.years);
     if (yMatch && !text.match(TIME_PATTERNS.quarters)) {
-      return { type: 'year', value: yMatch[1], year: parseInt(yMatch[1]) };
+      return { type: 'year', value: yMatch[1]!, year: parseInt(yMatch[1]!) };
     }
 
     // Month
@@ -263,10 +263,10 @@ export class NLQEngine {
         'nov',
         'dec',
       ];
-      const idx = months.indexOf(mMatch[1].toLowerCase());
+      const idx = months.indexOf(mMatch[1]!.toLowerCase());
       return {
         type: 'month',
-        value: mMatch[1].charAt(0).toUpperCase() + mMatch[1].slice(1, 3),
+        value: mMatch[1]!.charAt(0).toUpperCase() + mMatch[1]!.slice(1, 3),
         year: undefined,
       };
     }
@@ -291,7 +291,7 @@ export class NLQEngine {
     // "where field = value" or "for field value"
     const whereMatch = text.match(/\bwhere\s+(\w+)\s*(=|is|equals?)\s*(\w[\w\s]*)/i);
     if (whereMatch) {
-      filters.push({ field: whereMatch[1], operator: 'eq', value: whereMatch[3].trim() });
+      filters.push({ field: whereMatch[1]!, operator: 'eq', value: whereMatch[3]!.trim() });
     }
 
     // "department sales" or "region north"
@@ -300,8 +300,8 @@ export class NLQEngine {
         // Check if there's a value after the dimension keyword
         const dimPattern = new RegExp(`\\b${patterns[0]}\\s+(\\w+)`, 'i');
         const match = text.match(dimPattern);
-        if (match && !['by', 'per', 'in', 'for'].includes(match[1].toLowerCase())) {
-          filters.push({ field: dim, operator: 'eq', value: match[1] });
+        if (match && !['by', 'per', 'in', 'for'].includes(match[1]!.toLowerCase())) {
+          filters.push({ field: dim, operator: 'eq', value: match[1]! });
         }
       }
     }
@@ -586,7 +586,7 @@ export class NLQEngine {
       case 'kpi':
         return `Total ${metric}: ${formatted}`;
       case 'comparison':
-        return `${metric}: ${data.length} items. Top: ${top.label} (${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(top.value)})`;
+        return `${metric}: ${data.length} items. Top: ${top!.label} (${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(top!.value)})`;
       case 'trend':
         return `${metric} trend over ${data.length} periods. Total: ${formatted}`;
       case 'chart':

@@ -93,7 +93,7 @@ describe('TemplateDesigner', () => {
     render(<TemplateDesigner onSave={onSave} onCancel={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: /save template/i }));
     expect(onSave).toHaveBeenCalledTimes(1);
-    const savedTemplate = onSave.mock.calls[0][0] as ExportTemplate;
+    const savedTemplate = onSave!.mock.calls[0]![0] as ExportTemplate;
     expect(savedTemplate.name).toBe('New Template');
     expect(savedTemplate.type).toBe('board_pack');
   });
@@ -159,7 +159,7 @@ describe('TemplateDesigner', () => {
     fireEvent.click(screen.getByText('+ Cover Page'));
     // Find the remove button (x) next to the section
     const removeButtons = screen.getAllByText('\u00d7');
-    fireEvent.click(removeButtons[0]);
+    fireEvent.click(removeButtons[0]!);
     // The section should be removed - Cover Page should only appear in "Add Section" now
     const addSectionButton = screen.getByText('+ Cover Page');
     expect(addSectionButton).toBeInTheDocument();

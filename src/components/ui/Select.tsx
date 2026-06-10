@@ -31,7 +31,11 @@ export const Select: React.FC<SelectProps> = ({
   label,
 }) => {
   return (
-    <div className={cn('flex flex-col gap-1.5 w-full', className)}>
+    <div
+      className={cn('flex flex-col gap-1.5 w-full', className)}
+      role="region"
+      aria-label="Select"
+    >
       {label && (
         <label
           className="text-xs font-medium text-slate-400 dark:text-slate-300"

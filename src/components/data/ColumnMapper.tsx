@@ -36,7 +36,7 @@ function confidenceBadge(confidence: number): string {
 export const ColumnMapper: React.FC<ColumnMapperProps> = ({ mappings, onChange }) => {
   const handleChange = (index: number, newField: TargetField) => {
     const updated = [...mappings];
-    updated[index] = { ...updated[index], targetField: newField };
+    updated[index] = { ...updated[index]!, targetField: newField };
     onChange(updated);
   };
 
@@ -48,7 +48,7 @@ export const ColumnMapper: React.FC<ColumnMapperProps> = ({ mappings, onChange }
   const missingRequired = requiredFields.filter((f) => !mappedTargets.has(f));
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" role="region" aria-label="ColumnMapper">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white">Column Mappings</h3>
         <div className="flex items-center gap-2">

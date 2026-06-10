@@ -143,7 +143,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-      <LiveRegion message={`Step ${step + 1}: ${steps[step].label}`} />
+      <LiveRegion message={`Step ${step + 1}: ${steps[step]!.label}`} />
       <Card className="w-full max-w-2xl bg-slate-900 border-slate-800 shadow-2xl overflow-hidden">
         <div className="p-8">
           <ProgressStepper steps={steps} currentStep={step} orientation="horizontal" />

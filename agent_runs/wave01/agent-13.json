@@ -1,0 +1,20 @@
+{
+  "agent_id": "agent-13",
+  "wave": "wave01",
+  "task": "Fix AdvancedExcelEngine.test.ts line 48 type error",
+  "file": "src/engines/AdvancedExcelEngine.test.ts",
+  "root_cause": "exportFinancialReport<T extends Record<string, unknown>> used a single T for all sections, so TypeScript inferred the heterogeneous sections array ({rev:number} vs {exp:number}) as a union of incompatible types.",
+  "decision": "Relaxed the function signature in AdvancedExcelEngine.ts (line 120) to allow heterogeneous sections using Record<string, unknown> for data and string for column keys. Test data is semantically correct (Revenue/Expenses are different schemas), and the function body already handles string-keyed access into unknown data, so the constraint added no runtime value.",
+  "change": {
+    "file": "src/engines/AdvancedExcelEngine.ts",
+    "before": "static exportFinancialReport<T extends Record<string, unknown>>(report: { title: string; sections: Array<{ name: string; data: T[]; columns: Array<{ header: string; key: Extract<keyof T, string> }>; }>; }): Blob",
+    "after": "static exportFinancialReport(report: { title: string; sections: Array<{ name: string; data: Record<string, unknown>[]; columns: Array<{ header: string; key: string }>; }>; }): Blob"
+  },
+  "verification": {
+    "command": "node run-tsc.cjs 2>&1 | Select-String \"AdvancedExcelEngine.test\" | Measure-Object -Line",
+    "result": 0,
+    "expected": 0,
+    "pass": true
+  },
+  "side_effects": "No other callers of exportFinancialReport in src/. Signature relaxation matches the function body's actual semantics (string-keyed access into unknown data). Remaining 6 tsc errors are in App.tsx/DepreciationPage/DashboardPage and unrelated to this fix."
+}

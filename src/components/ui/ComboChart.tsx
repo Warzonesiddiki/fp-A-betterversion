@@ -94,7 +94,7 @@ export function ComboChart({
               ? (e) => {
                   const p = e as unknown as { activePayload?: Array<{ payload?: unknown }> };
                   if (p?.activePayload?.[0]?.payload)
-                    onClick(p.activePayload[0].payload as Record<string, unknown>);
+                    onClick(p.activePayload[0]!.payload as Record<string, unknown>);
                 }
               : undefined
           }

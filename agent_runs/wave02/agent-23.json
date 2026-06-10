@@ -1,0 +1,308 @@
+{
+  "agent": "agent-23",
+  "wave": "wave02",
+  "taskCount": 50,
+  "tasks": [
+    {
+      "id": "T03817",
+      "cat": "store",
+      "title": "ExportTemplateEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ExportTemplateEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03821",
+      "cat": "store",
+      "title": "EncryptionEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for EncryptionEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03825",
+      "cat": "store",
+      "title": "SessionEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for SessionEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03829",
+      "cat": "store",
+      "title": "AuthEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for AuthEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03833",
+      "cat": "store",
+      "title": "DataClassificationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for DataClassificationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03837",
+      "cat": "store",
+      "title": "CubeSecurityEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CubeSecurityEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03841",
+      "cat": "store",
+      "title": "EncryptionEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for EncryptionEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03845",
+      "cat": "store",
+      "title": "RecentFilesEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for RecentFilesEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03849",
+      "cat": "store",
+      "title": "TaxEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for TaxEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03853",
+      "cat": "store",
+      "title": "RevRecEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for RevRecEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03857",
+      "cat": "store",
+      "title": "LeaseEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for LeaseEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03861",
+      "cat": "store",
+      "title": "DepreciationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for DepreciationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03865",
+      "cat": "store",
+      "title": "BondPricingEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for BondPricingEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03869",
+      "cat": "store",
+      "title": "OptionPricingEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for OptionPricingEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03873",
+      "cat": "store",
+      "title": "FairValueEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for FairValueEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03877",
+      "cat": "store",
+      "title": "BankingEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for BankingEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03881",
+      "cat": "store",
+      "title": "InsuranceEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for InsuranceEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03885",
+      "cat": "store",
+      "title": "HealthcareEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for HealthcareEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03889",
+      "cat": "store",
+      "title": "EnergyEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for EnergyEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03893",
+      "cat": "store",
+      "title": "ConstructionEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ConstructionEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03897",
+      "cat": "store",
+      "title": "ManufacturingEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ManufacturingEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03901",
+      "cat": "store",
+      "title": "RealEstateEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for RealEstateEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03905",
+      "cat": "store",
+      "title": "RetailEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for RetailEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03909",
+      "cat": "store",
+      "title": "LogisticsEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for LogisticsEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03913",
+      "cat": "store",
+      "title": "EducationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for EducationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03917",
+      "cat": "store",
+      "title": "WorkforceEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for WorkforceEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03921",
+      "cat": "store",
+      "title": "GovernmentEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for GovernmentEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03925",
+      "cat": "store",
+      "title": "ESGEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ESGEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03929",
+      "cat": "store",
+      "title": "CreditRiskEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CreditRiskEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03933",
+      "cat": "store",
+      "title": "InventoryEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for InventoryEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03937",
+      "cat": "store",
+      "title": "SpreadEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for SpreadEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03941",
+      "cat": "store",
+      "title": "YieldCurveEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for YieldCurveEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03945",
+      "cat": "store",
+      "title": "CashEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CashEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03949",
+      "cat": "store",
+      "title": "CapExEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CapExEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03953",
+      "cat": "store",
+      "title": "WorkingCapitalEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for WorkingCapitalEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03957",
+      "cat": "store",
+      "title": "DebtScheduleEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for DebtScheduleEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03961",
+      "cat": "store",
+      "title": "LoanAmortizationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for LoanAmortizationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03965",
+      "cat": "store",
+      "title": "ImpairmentEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ImpairmentEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03969",
+      "cat": "store",
+      "title": "FinancialInstrumentsEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for FinancialInstrumentsEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03973",
+      "cat": "store",
+      "title": "CashFlowWaterfallEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for CashFlowWaterfallEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03977",
+      "cat": "store",
+      "title": "BudgetCollectionEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for BudgetCollectionEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03981",
+      "cat": "store",
+      "title": "RollingForecastEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for RollingForecastEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03985",
+      "cat": "store",
+      "title": "ScenarioEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ScenarioEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03989",
+      "cat": "store",
+      "title": "WhatIfSandboxEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for WhatIfSandboxEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03993",
+      "cat": "store",
+      "title": "SensitivityEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for SensitivityEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T03997",
+      "cat": "store",
+      "title": "GoalSeekEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for GoalSeekEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04001",
+      "cat": "store",
+      "title": "SolverEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for SolverEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04005",
+      "cat": "store",
+      "title": "ICMatchingEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ICMatchingEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04009",
+      "cat": "store",
+      "title": "IntercompanyMatchingEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for IntercompanyMatchingEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    },
+    {
+      "id": "T04013",
+      "cat": "store",
+      "title": "ReconciliationEngine Zustand Selector Granularity",
+      "spec": "Perfection pass for ReconciliationEngine: Each consumer subscribes to minimum slice. Use shallow equality for object slices.."
+    }
+  ],
+  "createdAt": "2026-06-07T10:23:29.681Z"
+}

@@ -16,7 +16,7 @@ export function formatNumber(
   locale: SupportedLocale = 'en',
   options?: Intl.NumberFormatOptions
 ): string {
-  return new Intl.NumberFormat(LOCALE_MAP[locale], options).format(value);
+  return new Intl.NumberFormat(LOCALE_MAP[locale]!, options).format(value);
 }
 
 export function formatCurrency(
@@ -24,7 +24,7 @@ export function formatCurrency(
   currency: string,
   locale: SupportedLocale = 'en'
 ): string {
-  return new Intl.NumberFormat(LOCALE_MAP[locale], {
+  return new Intl.NumberFormat(LOCALE_MAP[locale]!, {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
@@ -37,7 +37,7 @@ export function formatPercent(
   locale: SupportedLocale = 'en',
   decimals: number = 1
 ): string {
-  return new Intl.NumberFormat(LOCALE_MAP[locale], {
+  return new Intl.NumberFormat(LOCALE_MAP[locale]!, {
     style: 'percent',
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -50,19 +50,19 @@ export function formatDate(
   style: 'full' | 'long' | 'medium' | 'short' = 'medium'
 ): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat(LOCALE_MAP[locale], { dateStyle: style }).format(d);
+  return new Intl.DateTimeFormat(LOCALE_MAP[locale]!, { dateStyle: style }).format(d);
 }
 
 export function formatDateTime(date: Date | string, locale: SupportedLocale = 'en'): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat(LOCALE_MAP[locale], {
+  return new Intl.DateTimeFormat(LOCALE_MAP[locale]!, {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(d);
 }
 
 export function formatCompactNumber(value: number, locale: SupportedLocale = 'en'): string {
-  return new Intl.NumberFormat(LOCALE_MAP[locale], {
+  return new Intl.NumberFormat(LOCALE_MAP[locale]!, {
     notation: 'compact',
     compactDisplay: 'short',
     maximumFractionDigits: 1,
@@ -78,7 +78,7 @@ export function getLocaleDirection(locale: SupportedLocale): 'ltr' | 'rtl' {
 }
 
 export function getCurrencySymbol(currency: string, locale: SupportedLocale = 'en'): string {
-  const parts = new Intl.NumberFormat(LOCALE_MAP[locale], {
+  const parts = new Intl.NumberFormat(LOCALE_MAP[locale]!, {
     style: 'currency',
     currency,
   }).formatToParts(0);
