@@ -470,3 +470,63 @@
 - **Data Size (Approx)**: 5.58 MB
 
 ---
+
+## masterStorage Profile - 11/6/2026, 1:28:26 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 34.52ms
+- **Average Latency per Entry**: 0.0035ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 11/6/2026, 1:42:58 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 31.86ms
+- **Average Latency per Entry**: 0.0032ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 11/6/2026, 1:52:04 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 41.37ms
+- **Average Latency per Entry**: 0.0041ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 11/6/2026, 2:14:15 pm
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 64.94ms
+- **Average Latency per Entry**: 0.0065ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 11/6/2026, 2:14:59 pm
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 50.79ms
+- **Average Latency per Entry**: 0.0051ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 11/6/2026, 2:22:38 pm
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 114.74ms
+- **Average Latency per Entry**: 0.0115ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---

@@ -7,6 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run dev              # Vite dev server on :5173 (strictPort)
 npm run build            # Production build
+npm run preview          # Preview production build
+npm run tauri:dev        # Tauri dev mode
+npm run tauri:build      # Tauri production build
 npm run lint             # ESLint with --fix
 npm run format           # Prettier --write
 npm run test             # Vitest single run (80GB heap — node --max-old-space-size=81920)
@@ -24,12 +27,12 @@ Entry: `src/main.tsx` → `src/App.tsx` (all routes defined here, lazy-loaded).
 
 | Directory | What lives here |
 |-----------|----------------|
-| `src/store/` | 32 Zustand stores, colocated `.test.ts` files |
-| `src/engines/` | 172 pure calculation engines (financial logic, no side effects) |
-| `src/pages/` | Route pages, 40+ domain subdirs, all `React.lazy` |
-| `src/components/ui/` | 110 atomic UI primitives, barrel-exported via `index.ts` |
+| `src/store/` | 20+ Zustand stores, colocated `.test.ts` files |
+| `src/engines/` | 150+ pure calculation engines (financial logic, no side effects) |
+| `src/pages/` | Route pages, 30+ domain subdirs, all `React.lazy` |
+| `src/components/ui/` | 80+ atomic UI primitives, barrel-exported via `index.ts` |
 | `src/components/` | Domain components (budget/, reports/, analytics/) |
-| `src/hooks/` | 67 custom hooks (`use` prefix) |
+| `src/hooks/` | 40+ custom hooks (`use` prefix) |
 | `src/workers/` | Web Workers (Monte Carlo, consolidation, formulas) |
 | `src/services/` | API layer, WebSocket, collaboration |
 | `src/plugins/` | Plugin system (registry, sandbox, marketplace) |

@@ -1,21 +1,92 @@
-﻿node_modules/
+# Dependencies & build output
+node_modules/
 dist/
+build/
+coverage/
+bundle-report/
+stats.html
+graphify-out/
+*.tsbuildinfo
+
+# OS / IDE
 .DS_Store
-*.log
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Env / secrets
 .env*
+!.env.example
+
+# Logs & audit trails
+*.log
 AUDIT_LOGS/
 
 # Test artifacts
 test-results/
 playwright-report/
+.nyc_output/
+__pycache__/
 
-# Agent config files
+# Root-level diagnostic dumps (don't commit these)
+/tsc_*.txt
+/tsc_*.log
+/eslint*.txt
+/eslint*.json
+!/eslint.config.js
+/build_output.txt
+/test_output.txt
+/test.txt
+/vitest_output.txt
+/worker_pool_test.txt
+/codebase-context.txt
+/depcheck_output.txt
+/IMP.txt
+/components.txt
+/engines.txt
+/pages.txt
+/stores.txt
+/tests.txt
+/wave02_setup.log
+
+# Root-level agent progress / one-off planning docs
+/agent_*_progress.md
+/AGENT_*.md
+/AI_AGENT*.md
+/AI_CONTINUATION*.md
+/*_REPORT.md
+/tsc_plan.md
+/batch_summary.json
+/data_validation_report.md
+/device_compatibility_report.md
+/licensing_dependency_report.md
+/NATIVE_BUILD_LOG.md
+/SECURITY_MIGRATION.md
+
+# Root-level orphan scripts (move to .archive/scripts/ instead of committing here)
+/*.cjs
+!eslint.config.cjs
+/*.mjs
+/check-allocation-types.mjs
+/check-types.mjs
+
+# Misc binaries / DBs in root
+/*.tgz
+/*.db
+/sdk.tgz
+/ruvector.db
+
+# Agent / AI tooling state
 .claude/
 .gemini/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
 .aider*
+.claude-flow/sessions/
+.claude-flow/data/pending-insights.jsonl
+.openclaude/
+
+# Archive of legacy/cruft (kept on disk for reference, not in git)
+.archive/
+
+# Tauri build output
+src-tauri/target/

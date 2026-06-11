@@ -1,4 +1,5 @@
 # FinPlan Pro — Enterprise FP&A Platform
+[![CI](https://github.com/finplan-pro/finplan-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/finplan-pro/finplan-pro/actions/workflows/ci.yml)
 
 [![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
