@@ -62,6 +62,51 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
       };
     }, [data]);
 
+    if (loading) {
+      return (
+        <div
+          className={cn(
+            'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
+            className
+          )}
+          role="region"
+          aria-label="Heatmap"
+        >
+          <div className="flex items-center justify-center h-48">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+          </div>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div
+          className={cn(
+            'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
+            className
+          )}
+        >
+          <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
+        </div>
+      );
+    }
+
+    if (!data || data.length === 0) {
+      return (
+        <div
+          className={cn(
+            'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
+            className
+          )}
+        >
+          <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
+            No data
+          </div>
+        </div>
+      );
+    }
+
     const getColor = (value: number) => {
       if (value === undefined) return 'transparent';
 

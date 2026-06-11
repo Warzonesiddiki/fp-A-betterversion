@@ -66,7 +66,6 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
   const [isEditing, setIsEditing] = useState(false);
 
   // Drag-fill state
-  const fillHandleRef = useRef<HTMLDivElement>(null);
   const isDraggingFill = useRef(false);
   const fillStartRef = useRef<{ row: number; col: number } | null>(null);
   const [dragHighlight, setDragHighlight] = useState<{
@@ -611,7 +610,6 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
         {/* Drag-fill handle — visible only in spreadsheet mode with a selected cell */}
         {preset === 'spreadsheet' && selectedCell && !isEditing && handlePosition && (
           <div
-            ref={fillHandleRef}
             className="absolute z-50 cursor-crosshair bg-blue-600 border-2 border-white rounded-sm shadow-sm hover:bg-blue-700 transition-colors"
             style={{
               top: handlePosition.top,
@@ -625,7 +623,6 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                handleFillMouseDown(e as unknown as React.MouseEvent);
               }
             }}
             title="Drag to fill cells"
