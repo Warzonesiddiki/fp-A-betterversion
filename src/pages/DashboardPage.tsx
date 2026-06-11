@@ -114,8 +114,10 @@ export default function DashboardPage() {
     ]);
   };
 
-  const { entries, accounts } = useGLStore();
-  const { budgets } = useBudgetStore();
+  const glStore = useGLStore();
+  const { entries, accounts } = glStore;
+  const budgetStore = useBudgetStore();
+  const { budgets } = budgetStore;
   const { sectorConfig } = useSector();
   const navigate = useNavigate();
 
@@ -254,8 +256,6 @@ export default function DashboardPage() {
   }
 
   // FinanceCopilotEngine: generate quick analysis
-  const glStore = useGLStore();
-  const budgetStore = useBudgetStore();
   const copilotAnswer = FinanceCopilotEngine.answer('what is total revenue', {
     gl: glStore,
     budget: budgetStore,

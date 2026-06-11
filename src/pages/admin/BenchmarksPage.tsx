@@ -124,8 +124,8 @@ const BenchmarksPage: React.FC = () => {
           <div className="text-3xl font-bold">
             {latestReport ? `${latestReport.aiEngine.classify.toFixed(2)}ms` : '--'}
           </div>
-          <Badge variant={latestReport?.aiEngine.classify! < 50 ? 'default' : 'destructive'}>
-            {latestReport?.aiEngine.classify! < 50 ? 'Healthy' : 'Degraded'}
+          <Badge variant={(latestReport?.aiEngine.classify ?? Infinity) < 50 ? 'default' : 'destructive'}>
+            {(latestReport?.aiEngine.classify ?? Infinity) < 50 ? 'Healthy' : 'Degraded'}
           </Badge>
         </Card>
 
@@ -137,8 +137,8 @@ const BenchmarksPage: React.FC = () => {
           <div className="text-3xl font-bold">
             {latestReport ? `${latestReport.storage.write.toFixed(2)}ms` : '--'}
           </div>
-          <Badge variant={latestReport?.storage.write! < 10 ? 'default' : 'destructive'}>
-            {latestReport?.storage.write! < 10 ? 'Fast' : 'Slow'}
+          <Badge variant={(latestReport?.storage.write ?? Infinity) < 10 ? 'default' : 'destructive'}>
+            {(latestReport?.storage.write ?? Infinity) < 10 ? 'Fast' : 'Slow'}
           </Badge>
         </Card>
 

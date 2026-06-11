@@ -75,13 +75,12 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
     endRow: number;
     endCol: number;
   } | null>(null);
-  const handlePositionRef = useRef<{
+  const [handlePosition, setHandlePosition] = useState<{
     top: number;
     left: number;
     width: number;
     height: number;
   } | null>(null);
-  const [, forceUpdate] = useState(0);
 
   // Toolbar states
   const [showFindReplace, setShowFindReplace] = useState(false);
@@ -311,7 +310,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
 
   const updateHandlePosition = useCallback(() => {
     if (!selectedCell || !gridContainerRef.current) {
-      handlePositionRef.current = null;
+      setHandlePosition(null);
       return;
     }
     // Query for the focused cell element using AG Grid's cell focus class
@@ -319,13 +318,12 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
     if (!cellEl) return;
     const rect = cellEl.getBoundingClientRect();
     const gridRect = gridContainerRef.current.getBoundingClientRect();
-    handlePositionRef.current = {
+    setHandlePosition({
       top: rect.bottom - gridRect.top - 6,
       left: rect.right - gridRect.left - 6,
       width: 12,
       height: 12,
-    };
-    forceUpdate((n) => n + 1);
+    });
   }, [selectedCell]);
 
   const handleKeyDown = useCallback(
@@ -611,17 +609,25 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
           className="h-full w-full"
         />
         {/* Drag-fill handle — visible only in spreadsheet mode with a selected cell */}
-        {preset === 'spreadsheet' && selectedCell && !isEditing && handlePositionRef.current && (
+        {preset === 'spreadsheet' && selectedCell && !isEditing && handlePosition && (
           <div
             ref={fillHandleRef}
             className="absolute z-50 cursor-crosshair bg-blue-600 border-2 border-white rounded-sm shadow-sm hover:bg-blue-700 transition-colors"
             style={{
-              top: handlePositionRef.current.top,
-              left: handlePositionRef.current.left,
-              width: handlePositionRef.current.width,
-              height: handlePositionRef.current.height,
+              top: handlePosition.top,
+              left: handlePosition.left,
+              width: handlePosition.width,
+              height: handlePosition.height,
             }}
+            role="button"
+            tabIndex={0}
             onMouseDown={handleFillMouseDown}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleFillMouseDown(e as unknown as React.MouseEvent);
+              }
+            }}
             title="Drag to fill cells"
           />
         )}

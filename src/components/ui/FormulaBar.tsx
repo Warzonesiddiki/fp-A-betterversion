@@ -31,7 +31,7 @@ export function FormulaBar({
     return match ? match[1]!.toUpperCase() : '';
   }, [value]);
 
-  useMemo(() => {
+  useEffect(() => {
     setShowAutocomplete(currentToken.length >= 2);
   }, [currentToken]);
 

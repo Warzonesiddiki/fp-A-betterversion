@@ -283,21 +283,24 @@ function compareValues(
     case 'endsWith':
       return strVal.endsWith((condition.text ?? '').toLowerCase());
     case 'topN':
-    case 'bottomN':
+    case 'bottomN': {
       if (!allValues || allValues.length === 0) return false;
       const sortedDesc = [...allValues].sort((a, b) => b - a);
       const n = condition.rankValue ?? 10;
       const threshold =
         condition.operator === 'topN' ? sortedDesc[n - 1] : sortedDesc[sortedDesc.length - n];
       return condition.operator === 'topN' ? numVal >= threshold! : numVal <= threshold!;
-    case 'aboveAverage':
+    }
+    case 'aboveAverage': {
       if (!allValues || allValues.length === 0) return false;
       const avg = allValues.reduce((s, v) => s + v, 0) / allValues.length;
       return numVal > avg;
-    case 'belowAverage':
+    }
+    case 'belowAverage': {
       if (!allValues || allValues.length === 0) return false;
       const avgBelow = allValues.reduce((s, v) => s + v, 0) / allValues.length;
       return numVal < avgBelow;
+    }
     default:
       return false;
   }

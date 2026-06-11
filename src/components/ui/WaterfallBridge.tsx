@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { cn } from '@/utils/cn';
 
 export interface WaterfallItem {
@@ -37,13 +37,15 @@ export const WaterfallBridge: React.FC<WaterfallBridgeProps> = ({
   };
 
   // Calculate running totals
-  let runningTotal = 0;
-  const processedItems = items.map((item) => {
-    const start = item.type === 'total' ? 0 : runningTotal;
-    const end = item.type === 'total' ? item.value : start + item.value;
-    runningTotal = end;
-    return { ...item, start, end };
-  });
+  const processedItems = useMemo(() => {
+    let runningTotal = 0;
+    return items.map((item) => {
+      const start = item.type === 'total' ? 0 : runningTotal;
+      const end = item.type === 'total' ? item.value : start + item.value;
+      runningTotal = end;
+      return { ...item, start, end };
+    });
+  }, [items]);
 
   const allValues = processedItems.flatMap((i) => [i.start, i.end]);
   const minVal = Math.min(...allValues);

@@ -961,7 +961,7 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   LOWER: (args) => String(args[0]!).toLowerCase() as unknown as number,
   PROPER: (args) => String(args[0]!).replace(/\b\w/g, (c) => c.toUpperCase()) as unknown as number,
   TRIM: (args) => String(args[0]!).trim() as unknown as number,
-  CLEAN: (args) => String(args[0]!).replace(/[\x00-\x1F]/g, '') as unknown as number,
+  CLEAN: (args) => String(args[0]!).replace(/[\x00-\x1F]/g, '') as unknown as number, // eslint-disable-line no-control-regex
   REPLACE: (args) => {
     const oldText = String(args[0]!);
     const start = args[1]! - 1;
@@ -1600,7 +1600,7 @@ const FUNCTIONS: Record<string, FuncImpl> = {
       ((decimalDollar - intPart) * fraction) / Math.pow(10, Math.ceil(Math.log10(fraction)));
     return intPart + fracPart;
   },
-  CLEAN_TEXT: (args) => String(args[0]!).replace(/[\x00-\x1F\x7F-\x9F]/g, '') as unknown as number,
+  CLEAN_TEXT: (args) => String(args[0]!).replace(/[\x00-\x1F\x7F-\x9F]/g, '') as unknown as number, // eslint-disable-line no-control-regex
 
   // =========================================================================
   // ADDITIONAL DATE (10+)

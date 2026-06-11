@@ -88,14 +88,12 @@ export const DataTable = memo<DataTableProps>(
     // Virtual scrolling for large datasets
     const useVirtual = filteredData.length > VIRTUAL_THRESHOLD;
 
-    const virtualizer = useVirtual
-      ? useVirtualizer({
-          count: filteredData.length,
-          getScrollElement: () => scrollRef.current,
-          estimateSize: () => ROW_HEIGHT,
-          overscan: 10,
-        })
-      : null;
+    const virtualizer = useVirtualizer({
+      count: filteredData.length,
+      getScrollElement: () => scrollRef.current,
+      estimateSize: () => ROW_HEIGHT,
+      overscan: 10,
+    });
 
     // Handle pagination (simple internal) — disabled when virtual scrolling
     const paginatedData = useMemo(() => {

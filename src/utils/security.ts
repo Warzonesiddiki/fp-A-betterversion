@@ -261,7 +261,7 @@ export function sanitizeFilename(input: string): string {
   if (!s) return '';
   return s
     .replace(/[/\\]/g, '') // remove path separators
-    .replace(/\x00/g, '') // remove null bytes
+    .replace(/\x00/g, '') // eslint-disable-line no-control-regex -- intentional null-byte sanitization
     .replace(/^\.+/, '') // remove leading dots
     .replace(/\.{2,}/g, '.'); // collapse consecutive dots
 }

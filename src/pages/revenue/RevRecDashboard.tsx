@@ -110,9 +110,13 @@ export default function RevRecDashboard() {
       },
     ];
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const pseudoRandom = (seed: number) => {
+      const x = Math.sin(seed + 1) * 10000;
+      return x - Math.floor(x);
+    };
     const timeline = months.map((m, i) => ({
       month: m,
-      recognized: Math.round((recognized / 6) * (i + 1) + Math.random() * 10000),
+      recognized: Math.round((recognized / 6) * (i + 1) + pseudoRandom(i) * 10000),
       deferred: Math.round((deferred / 6) * (6 - i)),
     }));
     const methods = [
