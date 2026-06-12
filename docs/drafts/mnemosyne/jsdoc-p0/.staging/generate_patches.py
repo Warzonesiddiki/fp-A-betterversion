@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
-"""
-Regenerate all 5 JSDoc P0 patches with correct hunk headers via diff -u.
+"""Regenerate all 5 JSDoc P0 patches with correct hunk headers via diff -u."""
 
-Strategy: for each patch, read the source file, apply a transform that
-substitutes the OLD anchor with the NEW JSDoc, write to a staging file,
-then run `diff -u` against the original source to get a clean patch.
-The OLD anchors are derived from the existing source files (re-verified).
-"""
-
-import os
 import re
 import subprocess
 import sys
@@ -20,37 +12,38 @@ STAGING = DRAFT_DIR / ".staging"
 STAGING.mkdir(exist_ok=True)
 LOG = STAGING / "generate.log"
 
-# Open log file once; replace log() with log()
 _log_fh = open(LOG, "w", encoding="utf-8", buffering=1)
+
 
 def log(msg=""):
     _log_fh.write(str(msg) + "\n")
 
 
 def run(cmd, cwd=None):
-    """Run a shell command, return (returncode, stdout, stderr)."""
     r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
     return r.returncode, r.stdout, r.stderr
 
 
 def diff_u(old_path: Path, new_path: Path, label: str) -> str:
-    """Return a unified diff with paths rewritten to a/ b/ form."""
+    """Run `diff -u` and rewrite both quoted and unquoted Windows paths to a/<rel> / b/<rel>."""
     rc, out, err = run(f'diff -u "{old_path}" "{new_path}"', cwd=REPO)
-    # diff -u returns 1 when files differ, 0 when same, 2 on error
     if rc == 0:
         return ""
     if rc != 1:
         raise RuntimeError(f"diff failed for {label}: {err}")
-    # Rewrite paths: a/<old_rel> b/<new_rel>  →  a/src/... b/src/...
     rel = old_path.relative_to(REPO).as_posix()
-    out = out.replace(f"--- {old_path.as_posix()}", f"--- a/{rel}")
-    out = out.replace(f"+++ {new_path.as_posix()}", f"+++ b/{rel}")
+    old_quoted = f'"{old_path}"'
+    old_unquoted = old_path.as_posix()
+    new_quoted = f'"{new_path}"'
+    new_unquoted = new_path.as_posix()
+    out = out.replace(old_quoted, f"a/{rel}")
+    out = out.replace(old_unquoted, f"a/{rel}")
+    out = out.replace(new_quoted, f"b/{rel}")
+    out = out.replace(new_unquoted, f"b/{rel}")
     return out
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 01: useAuth.ts
-# ─────────────────────────────────────────────────────────────────────────────
+# ── 01 useAuth.ts ────────────────────────────────────────────────────────────
 USE_AUTH_NEW_JSDOC = """/**
  * Thin selector hook that re-exports the relevant fields of the global
  * `useAuthStore` (Zustand). Use this hook anywhere a component needs to
@@ -105,12 +98,10 @@ USE_AUTH_NEW_JSDOC = """/**
 def gen_01_useAuth():
     src = REPO / "src/hooks/useAuth.ts"
     content = src.read_text(encoding="utf-8")
-    # Insert JSDoc after the import line and the blank line
     new_content = re.sub(
         r"(import \{ useAuthStore \} from '@/store/authStore';\n\n)(export function useAuth\(\) \{)",
         rf"\1{USE_AUTH_NEW_JSDOC}\2",
-        content,
-        count=1,
+        content, count=1,
     )
     if new_content == content:
         raise RuntimeError("01: substitution did not change the file")
@@ -122,30 +113,28 @@ def gen_01_useAuth():
     return len(patch.splitlines())
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 02: masterStorage.ts
-# ─────────────────────────────────────────────────────────────────────────────
+# ── 02 masterStorage.ts ──────────────────────────────────────────────────────
 MASTER_STORAGE_NEW_JSDOC = """/**
  * Encrypted, persistent key-value store that backs the entire FinPlan Pro
  * offline-first architecture. On first access, it transparently chooses
  * the right backend for the current environment:
  *
- *   • **Tauri runtime** (`window.__TAURI__` is defined) → `chunkedTauriStorage`
+ *   - **Tauri runtime** (`window.__TAURI__` is defined) -> `chunkedTauriStorage`
  *     via `@tauri-apps/plugin-store`. Data is written to the OS's app-data
- *     directory in small chunks (≤ 32 KB each) to stay well below Tauri's
+ *     directory in small chunks (<= 32 KB each) to stay well below Tauri's
  *     per-write IPC limit and avoid backend `serde_json` errors on large blobs.
- *   • **Web/browser fallback** (no Tauri) → `chunkedSqlJsStorage` via the
+ *   - **Web/browser fallback** (no Tauri) -> `chunkedSqlJsStorage` via the
  *     sql.js WebAssembly build, writing to IndexedDB. Used for the in-browser
  *     demo / Storybook / Cypress runs.
  *
- * **kdfVersion semantics** — the value at the `kdfVersion` key tracks the
+ * **kdfVersion semantics** - the value at the `kdfVersion` key tracks the
  * Argon2id parameter set used to derive the master key from the user's
  * password. Bumping it (currently `1`) triggers an automatic re-wrap of every
  * encrypted blob on next successful unlock: data is decrypted with the old
  * params, re-encrypted with the new ones, and the `kdfVersion` key is updated.
  * This is the migration path we use to roll out stronger KDF parameters
  * without forcing a destructive re-onboarding. **Never** delete or rename
- * this key without coordinating with Mnemosyne — the re-wrap logic in
+ * this key without coordinating with Mnemosyne - the re-wrap logic in
  * `unlockMasterKey()` reads it on every unlock.
  *
  * **The encryption envelope** itself is documented in `src/utils/crypto.ts`
@@ -166,9 +155,9 @@ MASTER_STORAGE_NEW_JSDOC = """/**
  * ));
  * ```
  *
- * @see {@link unlockMasterKey} in `src/utils/crypto.ts` — the re-wrap consumer
- * @see ADR-002 in `docs/STRATEGIC_DECISIONS_LOG.md` — offline-first rationale
- * @see DRAFT v0.1 — Mnemosyne 2026-06-12 (JSDoc P0)
+ * @see {@link unlockMasterKey} in `src/utils/crypto.ts` - the re-wrap consumer
+ * @see ADR-002 in `docs/STRATEGIC_DECISIONS_LOG.md` - offline-first rationale
+ * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
  */
 """
 
@@ -179,8 +168,7 @@ def gen_02_masterStorage():
     new_content = re.sub(
         r"(//\n)(export function masterStorage)",
         rf"\1{MASTER_STORAGE_NEW_JSDOC}\2",
-        content,
-        count=1,
+        content, count=1,
     )
     if new_content == content:
         raise RuntimeError("02: substitution did not change the file")
@@ -192,31 +180,29 @@ def gen_02_masterStorage():
     return len(patch.splitlines())
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 03: MonteCarloEngine.simulate
-# ─────────────────────────────────────────────────────────────────────────────
+# ── 03 MonteCarloEngine.simulate ─────────────────────────────────────────────
 MONTE_SIMULATE_NEW_JSDOC = """  /**
    * Run a general-purpose Monte Carlo simulation over the supplied
    * `config` and return the full statistical distribution of outcomes.
    *
    * Pipeline (executed sequentially; deterministic given a fixed seed):
-   *   1. **Seed the PRNG** — `config.seed ?? crypto.randomUUID()` is fed
+   *   1. **Seed the PRNG** - `config.seed ?? crypto.randomUUID()` is fed
    *      into a Mulberry32 generator so reruns with the same seed produce
    *      byte-identical results (critical for audit + regression tests).
-   *   2. **Sample inputs** — for each of `config.iterations` iterations,
+   *   2. **Sample inputs** - for each of `config.iterations` iterations,
    *      draw one sample per input variable. Sampling uses the distribution
    *      declared on the input (`normal`, `lognormal`, `uniform`, `triangular`,
    *      or `empirical` from a histogram bucket array). Correlated inputs
    *      share a Cholesky-decomposed copula matrix from `config.correlation`.
-   *   3. **Evaluate model** — the user's pure function `config.model(inputs)`
+   *   3. **Evaluate model** - the user's pure function `config.model(inputs)`
    *      is called with the sampled inputs. The function is expected to be
    *      cheap, deterministic, and side-effect free; we run it `iterations`
    *      times in a tight loop.
-   *   4. **Aggregate statistics** — mean, median, std-dev, percentiles
+   *   4. **Aggregate statistics** - mean, median, std-dev, percentiles
    *      (P5 / P25 / P50 / P75 / P95 / P99), and a histogram bucketed at
    *      `config.histogramBuckets ?? 50` evenly-spaced bins.
    *
-   * **What this method does NOT do** (intentionally — kept out of the hot
+   * **What this method does NOT do** (intentionally - kept out of the hot
    * path so it can be tested independently):
    *   - It does **not** render charts. The returned `histogram` is raw data;
    *     visualization is the UI layer's job (see `MonteCarloChart.tsx`).
@@ -226,21 +212,21 @@ MONTE_SIMULATE_NEW_JSDOC = """  /**
    *     `model` function will produce non-reproducible runs.
    *
    * @param config - Simulation configuration:
-   *   - `inputs`: `MonteCarloInput[]` — variable definitions + distributions
-   *   - `iterations`: `number` — typically 1k–100k; > 1M is slow in the
+   *   - `inputs`: `MonteCarloInput[]` - variable definitions + distributions
+   *   - `iterations`: `number` - typically 1k-100k; > 1M is slow in the
    *     browser, offload to a Web Worker via `useMonteCarloWorker` instead
-   *   - `seed`: `string` (optional) — for reproducible runs
-   *   - `correlation`: `number[][]` (optional) — correlation matrix
-   *   - `model`: `(inputs: Record<string, number>) => number` — pure fn
+   *   - `seed`: `string` (optional) - for reproducible runs
+   *   - `correlation`: `number[][]` (optional) - correlation matrix
+   *   - `model`: `(inputs: Record<string, number>) => number` - pure fn
    *   - `histogramBuckets`: `number` (optional, default 50)
    * @returns `MonteCarloResult` with:
    *   - `mean`, `median`, `stdDev`, `min`, `max`
    *   - `percentiles: Record<'P5'|'P25'|'P50'|'P75'|'P95'|'P99', number>`
    *   - `histogram: { binStart: number; binEnd: number; count: number }[]`
-   *   - `raw: number[]` — the full sorted sample array (use sparingly;
-   *     10k iterations ≈ 80 KB in memory)
-   *   - `seed: string` — the actual seed used (echoed back for audit)
-   *   - `iterations: number` — actual count executed
+   *   - `raw: number[]` - the full sorted sample array (use sparingly;
+   *     10k iterations ~ 80 KB in memory)
+   *   - `seed: string` - the actual seed used (echoed back for audit)
+   *   - `iterations: number` - actual count executed
    *
    * @throws `RangeError` if `iterations < 1` or `iterations > 1_000_000`
    * @throws `TypeError` if `model` is not a function
@@ -256,13 +242,13 @@ MONTE_SIMULATE_NEW_JSDOC = """  /**
    *   model: (i) => i.revenue - i.cost,
    *   seed: 'audit-2026-Q2',
    * });
-   * console.log(`P50 profit: $${result.percentiles.P50.toLocaleString()}`);  // (intentional in JSDoc example)
+   * console.log('P50 profit: $' + result.percentiles.P50.toLocaleString());
    * ```
    *
-   * @see {@link MonteCarloWorker} in `src/workers/` — for > 100k iterations
-   * @see ADR-007 in `docs/STRATEGIC_DECISIONS_LOG.md` — why we built our own
+   * @see {@link MonteCarloWorker} in `src/workers/` - for > 100k iterations
+   * @see ADR-007 in `docs/STRATEGIC_DECISIONS_LOG.md` - why we built our own
    *   instead of pulling in `sim.js` (license + bundle size + audit needs)
-   * @see DRAFT v0.1 — Mnemosyne 2026-06-12 (JSDoc P0)
+   * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
    */
   static simulate(config: MonteCarloConfig): MonteCarloResult {"""
 
@@ -270,7 +256,6 @@ MONTE_SIMULATE_NEW_JSDOC = """  /**
 def gen_03_monteCarlo():
     src = REPO / "src/engines/MonteCarloEngine.ts"
     content = src.read_text(encoding="utf-8")
-    # The old anchor (6 lines of sparse JSDoc + the signature line)
     OLD = (
         "  /**\n"
         "   * Run a general-purpose Monte Carlo simulation.\n"
@@ -291,21 +276,19 @@ def gen_03_monteCarlo():
     return len(patch.splitlines())
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 04: CapExEngine.calculateIRR
-# ─────────────────────────────────────────────────────────────────────────────
+# ── 04 CapExEngine.calculateIRR ──────────────────────────────────────────────
 CAPEX_IRR_NEW_JSDOC = """  /**
    * Internal Rate of Return for an arbitrary sequence of cash flows.
    *
    * The IRR is the discount rate `r` that makes the Net Present Value of
    * `cashFlows` equal to zero:
    *
-   *   NPV(r) = Σᵢ cashFlows[i] / (1 + r)ⁱ = 0
+   *   NPV(r) = sum_i cashFlows[i] / (1 + r)^i = 0
    *
-   * We solve this by **bisection** on the interval `r ∈ [-0.999, +10.0]`
+   * We solve this by **bisection** on the interval `r in [-0.999, +10.0]`
    * (i.e. we never go below -99.9% loss/year, and we cap at 1000% gain/year
-   * because the financial use cases — CapEx project returns, M&A multiples,
-   * LBO equity IRR — never produce sensible numbers outside that range).
+   * because the financial use cases - CapEx project returns, M&A multiples,
+   * LBO equity IRR - never produce sensible numbers outside that range).
    *
    * The solver is a plain bisection (no Newton-Raphson) because:
    *   - cashFlows can have **sign changes** (a CapEx outflow followed by
@@ -313,7 +296,7 @@ CAPEX_IRR_NEW_JSDOC = """  /**
    *     or working-capital top-ups are also modeled),
    *   - the derivative `dNPV/dr` is numerically unstable near the roots,
    *   - bisection has guaranteed convergence to a tolerance of 1e-7 in
-   *     ≤ ~50 iterations, which is more than fast enough.
+   *     <= ~50 iterations, which is more than fast enough.
    *
    * **What this method does NOT do**:
    *   - It does **not** handle the **Modified IRR (MIRR)** case. For MIRR
@@ -334,19 +317,19 @@ CAPEX_IRR_NEW_JSDOC = """  /**
    *   no sign change exists (no real root in `[-0.999, +10.0]`).
    *
    * @throws `TypeError` if `cashFlows` is null/undefined
-   * @throws `RangeError` if any cash flow is `±Infinity` or `NaN`
+   * @throws `RangeError` if any cash flow is `+/-Infinity` or `NaN`
    *
    * @example
    * ```ts
    * const irr = CapExEngine.calculateIRR([-100_000, 30_000, 40_000, 50_000]);
-   * // irr ≈ 0.0975  →  9.75% IRR
+   * // irr ~= 0.0975  ->  9.75% IRR
    * ```
    *
-   * @see {@link CapExEngine.calculateNPV} — the NPV function this bisects against
-   * @see {@link CapExEngine.calculateMIRR} — for MIRR (reinvestment-rate-aware)
-   * @see DRAFT v0.1 — Mnemosyne 2026-06-12 (JSDoc P0)
+   * @see {@link CapExEngine.calculateNPV} - the NPV function this bisects against
+   * @see {@link CapExEngine.calculateMIRR} - for MIRR (reinvestment-rate-aware)
+   * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
    *
-   * **NOTE — path discrepancy**: the Lead's JSDoc P0 spec referenced this
+   * **NOTE - path discrepancy**: the Lead's JSDoc P0 spec referenced this
    * method as `src/engines/financial/calculateIRR.ts` (module-level function).
    * It actually lives here as a static method on `CapExEngine`. The patch
    * is correct; the spec path was the wrong shape, not the doc content.
@@ -369,13 +352,11 @@ def gen_04_capExIRR():
     return len(patch.splitlines())
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 05: CubeEngine class
-# ─────────────────────────────────────────────────────────────────────────────
+# ── 05 CubeEngine class ──────────────────────────────────────────────────────
 CUBE_ENGINE_NEW_JSDOC = """/**
- * CubeEngine — the OLAP-style aggregation engine that powers every
- * cross-tab / "cube view" in FinPlan Pro (revenue by entity × quarter ×
- * product line, headcount by department × location, etc.).
+ * CubeEngine - the OLAP-style aggregation engine that powers every
+ * cross-tab / "cube view" in FinPlan Pro (revenue by entity x quarter x
+ * product line, headcount by department x location, etc.).
  *
  * Under the hood, a "cube" is a **typed multi-dimensional array**:
  *   - dimensions: an ordered list of axis names (e.g. `['entity', 'quarter', 'product']`)
@@ -383,10 +364,10 @@ CUBE_ENGINE_NEW_JSDOC = """/**
  *   - cells: a dense flat `Float64Array` indexed by row-major dimension order
  *
  * Why a dense `Float64Array` and not a sparse `Map<string, number>`?
- *   - Browser aggregation of 100k cells in a typed array is ~10× faster than
+ *   - Browser aggregation of 100k cells in a typed array is ~10x faster than
  *     a `Map` lookup per cell (no hashing, no boxing, no GC pressure).
  *   - The cube is **always materialized to its full grid** because the
- *     financial use cases assume every cell is meaningful — sparse data
+ *     financial use cases assume every cell is meaningful - sparse data
  *     is the exception, not the rule.
  *   - This also lets us hand the array off to a Web Worker by **transferring
  *     ownership** (`worker.postMessage([buffer], [buffer])`) without copy.
@@ -409,7 +390,7 @@ CUBE_ENGINE_NEW_JSDOC = """/**
  * const cube = new CubeEngine({
  *   dimensions: ['entity', 'quarter', 'product'],
  *   measures: ['revenue', 'cogs'],
- *   cells: new Float64Array(2 * 4 * 10 * 2), // 2 entities × 4 quarters × 10 products × 2 measures
+ *   cells: new Float64Array(2 * 4 * 10 * 2), // 2 entities x 4 quarters x 10 products x 2 measures
  *   shape: [2, 4, 10],
  * });
  *
@@ -419,9 +400,9 @@ CUBE_ENGINE_NEW_JSDOC = """/**
  *   .aggregate('sum');
  * ```
  *
- * @see {@link CubeLoader} in `src/loaders/CubeLoader.ts` — the data ingest path
- * @see ADR-003 in `docs/STRATEGIC_DECISIONS_LOG.md` — why typed arrays, not Maps
- * @see DRAFT v0.1 — Mnemosyne 2026-06-12 (JSDoc P0)
+ * @see {@link CubeLoader} in `src/loaders/CubeLoader.ts` - the data ingest path
+ * @see ADR-003 in `docs/STRATEGIC_DECISIONS_LOG.md` - why typed arrays, not Maps
+ * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
  */
 export class CubeEngine {"""
 
@@ -441,11 +422,7 @@ def gen_05_cubeEngine():
     return len(patch.splitlines())
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Main
-# ─────────────────────────────────────────────────────────────────────────────
 def main():
-    results = []
     funcs = [
         ("01-useAuth",           gen_01_useAuth),
         ("02-masterStorage",     gen_02_masterStorage),
@@ -453,6 +430,7 @@ def main():
         ("04-capExIRR",          gen_04_capExIRR),
         ("05-cubeEngine",        gen_05_cubeEngine),
     ]
+    results = []
     for name, fn in funcs:
         try:
             lines = fn()

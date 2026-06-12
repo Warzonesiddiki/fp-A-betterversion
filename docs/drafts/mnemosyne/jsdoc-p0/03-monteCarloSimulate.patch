@@ -1,5 +1,5 @@
 --- "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\src\\engines\\MonteCarloEngine.ts"	2026-06-13 00:37:28.721492700 +0530
-+++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\MonteCarloEngine.ts.new"	2026-06-13 01:20:43.795738400 +0530
++++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\MonteCarloEngine.ts.new"	2026-06-13 01:23:37.673919200 +0530
 @@ -1,856 +1,919 @@
 -/* eslint-disable @typescript-eslint/no-unused-vars */
 -// =============================================================================
@@ -1195,23 +1195,23 @@
 +   * `config` and return the full statistical distribution of outcomes.
 +   *
 +   * Pipeline (executed sequentially; deterministic given a fixed seed):
-+   *   1. **Seed the PRNG** — `config.seed ?? crypto.randomUUID()` is fed
++   *   1. **Seed the PRNG** - `config.seed ?? crypto.randomUUID()` is fed
 +   *      into a Mulberry32 generator so reruns with the same seed produce
 +   *      byte-identical results (critical for audit + regression tests).
-+   *   2. **Sample inputs** — for each of `config.iterations` iterations,
++   *   2. **Sample inputs** - for each of `config.iterations` iterations,
 +   *      draw one sample per input variable. Sampling uses the distribution
 +   *      declared on the input (`normal`, `lognormal`, `uniform`, `triangular`,
 +   *      or `empirical` from a histogram bucket array). Correlated inputs
 +   *      share a Cholesky-decomposed copula matrix from `config.correlation`.
-+   *   3. **Evaluate model** — the user's pure function `config.model(inputs)`
++   *   3. **Evaluate model** - the user's pure function `config.model(inputs)`
 +   *      is called with the sampled inputs. The function is expected to be
 +   *      cheap, deterministic, and side-effect free; we run it `iterations`
 +   *      times in a tight loop.
-+   *   4. **Aggregate statistics** — mean, median, std-dev, percentiles
++   *   4. **Aggregate statistics** - mean, median, std-dev, percentiles
 +   *      (P5 / P25 / P50 / P75 / P95 / P99), and a histogram bucketed at
 +   *      `config.histogramBuckets ?? 50` evenly-spaced bins.
 +   *
-+   * **What this method does NOT do** (intentionally — kept out of the hot
++   * **What this method does NOT do** (intentionally - kept out of the hot
 +   * path so it can be tested independently):
 +   *   - It does **not** render charts. The returned `histogram` is raw data;
 +   *     visualization is the UI layer's job (see `MonteCarloChart.tsx`).
@@ -1221,21 +1221,21 @@
 +   *     `model` function will produce non-reproducible runs.
 +   *
 +   * @param config - Simulation configuration:
-+   *   - `inputs`: `MonteCarloInput[]` — variable definitions + distributions
-+   *   - `iterations`: `number` — typically 1k–100k; > 1M is slow in the
++   *   - `inputs`: `MonteCarloInput[]` - variable definitions + distributions
++   *   - `iterations`: `number` - typically 1k-100k; > 1M is slow in the
 +   *     browser, offload to a Web Worker via `useMonteCarloWorker` instead
-+   *   - `seed`: `string` (optional) — for reproducible runs
-+   *   - `correlation`: `number[][]` (optional) — correlation matrix
-+   *   - `model`: `(inputs: Record<string, number>) => number` — pure fn
++   *   - `seed`: `string` (optional) - for reproducible runs
++   *   - `correlation`: `number[][]` (optional) - correlation matrix
++   *   - `model`: `(inputs: Record<string, number>) => number` - pure fn
 +   *   - `histogramBuckets`: `number` (optional, default 50)
 +   * @returns `MonteCarloResult` with:
 +   *   - `mean`, `median`, `stdDev`, `min`, `max`
 +   *   - `percentiles: Record<'P5'|'P25'|'P50'|'P75'|'P95'|'P99', number>`
 +   *   - `histogram: { binStart: number; binEnd: number; count: number }[]`
-+   *   - `raw: number[]` — the full sorted sample array (use sparingly;
-+   *     10k iterations ≈ 80 KB in memory)
-+   *   - `seed: string` — the actual seed used (echoed back for audit)
-+   *   - `iterations: number` — actual count executed
++   *   - `raw: number[]` - the full sorted sample array (use sparingly;
++   *     10k iterations ~ 80 KB in memory)
++   *   - `seed: string` - the actual seed used (echoed back for audit)
++   *   - `iterations: number` - actual count executed
 +   *
 +   * @throws `RangeError` if `iterations < 1` or `iterations > 1_000_000`
 +   * @throws `TypeError` if `model` is not a function
@@ -1251,13 +1251,13 @@
 +   *   model: (i) => i.revenue - i.cost,
 +   *   seed: 'audit-2026-Q2',
 +   * });
-+   * console.log(`P50 profit: $${result.percentiles.P50.toLocaleString()}`);  // (intentional in JSDoc example)
++   * console.log('P50 profit: $' + result.percentiles.P50.toLocaleString());
 +   * ```
 +   *
-+   * @see {@link MonteCarloWorker} in `src/workers/` — for > 100k iterations
-+   * @see ADR-007 in `docs/STRATEGIC_DECISIONS_LOG.md` — why we built our own
++   * @see {@link MonteCarloWorker} in `src/workers/` - for > 100k iterations
++   * @see ADR-007 in `docs/STRATEGIC_DECISIONS_LOG.md` - why we built our own
 +   *   instead of pulling in `sim.js` (license + bundle size + audit needs)
-+   * @see DRAFT v0.1 — Mnemosyne 2026-06-12 (JSDoc P0)
++   * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
 +   */
 +  static simulate(config: MonteCarloConfig): MonteCarloResult {
 +    // --- Validation ---

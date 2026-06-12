@@ -1,5 +1,5 @@
 --- "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\src\\engines\\CapExEngine.ts"	2026-06-13 00:37:28.697854300 +0530
-+++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\CapExEngine.ts.new"	2026-06-13 01:20:43.867928800 +0530
++++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\CapExEngine.ts.new"	2026-06-13 01:23:37.758091500 +0530
 @@ -1,84 +1,141 @@
 -import type { AssetInput, DepreciationSchedule } from '@/types/sector-types';
 -
@@ -139,12 +139,12 @@
 +   * The IRR is the discount rate `r` that makes the Net Present Value of
 +   * `cashFlows` equal to zero:
 +   *
-+   *   NPV(r) = Σᵢ cashFlows[i] / (1 + r)ⁱ = 0
++   *   NPV(r) = sum_i cashFlows[i] / (1 + r)^i = 0
 +   *
-+   * We solve this by **bisection** on the interval `r ∈ [-0.999, +10.0]`
++   * We solve this by **bisection** on the interval `r in [-0.999, +10.0]`
 +   * (i.e. we never go below -99.9% loss/year, and we cap at 1000% gain/year
-+   * because the financial use cases — CapEx project returns, M&A multiples,
-+   * LBO equity IRR — never produce sensible numbers outside that range).
++   * because the financial use cases - CapEx project returns, M&A multiples,
++   * LBO equity IRR - never produce sensible numbers outside that range).
 +   *
 +   * The solver is a plain bisection (no Newton-Raphson) because:
 +   *   - cashFlows can have **sign changes** (a CapEx outflow followed by
@@ -152,7 +152,7 @@
 +   *     or working-capital top-ups are also modeled),
 +   *   - the derivative `dNPV/dr` is numerically unstable near the roots,
 +   *   - bisection has guaranteed convergence to a tolerance of 1e-7 in
-+   *     ≤ ~50 iterations, which is more than fast enough.
++   *     <= ~50 iterations, which is more than fast enough.
 +   *
 +   * **What this method does NOT do**:
 +   *   - It does **not** handle the **Modified IRR (MIRR)** case. For MIRR
@@ -173,19 +173,19 @@
 +   *   no sign change exists (no real root in `[-0.999, +10.0]`).
 +   *
 +   * @throws `TypeError` if `cashFlows` is null/undefined
-+   * @throws `RangeError` if any cash flow is `±Infinity` or `NaN`
++   * @throws `RangeError` if any cash flow is `+/-Infinity` or `NaN`
 +   *
 +   * @example
 +   * ```ts
 +   * const irr = CapExEngine.calculateIRR([-100_000, 30_000, 40_000, 50_000]);
-+   * // irr ≈ 0.0975  →  9.75% IRR
++   * // irr ~= 0.0975  ->  9.75% IRR
 +   * ```
 +   *
-+   * @see {@link CapExEngine.calculateNPV} — the NPV function this bisects against
-+   * @see {@link CapExEngine.calculateMIRR} — for MIRR (reinvestment-rate-aware)
-+   * @see DRAFT v0.1 — Mnemosyne 2026-06-12 (JSDoc P0)
++   * @see {@link CapExEngine.calculateNPV} - the NPV function this bisects against
++   * @see {@link CapExEngine.calculateMIRR} - for MIRR (reinvestment-rate-aware)
++   * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
 +   *
-+   * **NOTE — path discrepancy**: the Lead's JSDoc P0 spec referenced this
++   * **NOTE - path discrepancy**: the Lead's JSDoc P0 spec referenced this
 +   * method as `src/engines/financial/calculateIRR.ts` (module-level function).
 +   * It actually lives here as a static method on `CapExEngine`. The patch
 +   * is correct; the spec path was the wrong shape, not the doc content.

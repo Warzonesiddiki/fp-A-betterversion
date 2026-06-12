@@ -1,5 +1,5 @@
 --- "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\src\\engines\\CubeEngine.ts"	2026-06-13 00:37:28.697854300 +0530
-+++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\CubeEngineEngine.ts.new"	2026-06-13 01:20:43.930088900 +0530
++++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\CubeEngineEngine.ts.new"	2026-06-13 01:23:37.845661800 +0530
 @@ -1,750 +1,801 @@
 -/* eslint-disable @typescript-eslint/no-unused-vars */
 -import type {
@@ -782,9 +782,9 @@
 +const MAX_HISTORY_SIZE = 10000;
 +
 +/**
-+ * CubeEngine — the OLAP-style aggregation engine that powers every
-+ * cross-tab / "cube view" in FinPlan Pro (revenue by entity × quarter ×
-+ * product line, headcount by department × location, etc.).
++ * CubeEngine - the OLAP-style aggregation engine that powers every
++ * cross-tab / "cube view" in FinPlan Pro (revenue by entity x quarter x
++ * product line, headcount by department x location, etc.).
 + *
 + * Under the hood, a "cube" is a **typed multi-dimensional array**:
 + *   - dimensions: an ordered list of axis names (e.g. `['entity', 'quarter', 'product']`)
@@ -792,10 +792,10 @@
 + *   - cells: a dense flat `Float64Array` indexed by row-major dimension order
 + *
 + * Why a dense `Float64Array` and not a sparse `Map<string, number>`?
-+ *   - Browser aggregation of 100k cells in a typed array is ~10× faster than
++ *   - Browser aggregation of 100k cells in a typed array is ~10x faster than
 + *     a `Map` lookup per cell (no hashing, no boxing, no GC pressure).
 + *   - The cube is **always materialized to its full grid** because the
-+ *     financial use cases assume every cell is meaningful — sparse data
++ *     financial use cases assume every cell is meaningful - sparse data
 + *     is the exception, not the rule.
 + *   - This also lets us hand the array off to a Web Worker by **transferring
 + *     ownership** (`worker.postMessage([buffer], [buffer])`) without copy.
@@ -818,7 +818,7 @@
 + * const cube = new CubeEngine({
 + *   dimensions: ['entity', 'quarter', 'product'],
 + *   measures: ['revenue', 'cogs'],
-+ *   cells: new Float64Array(2 * 4 * 10 * 2), // 2 entities × 4 quarters × 10 products × 2 measures
++ *   cells: new Float64Array(2 * 4 * 10 * 2), // 2 entities x 4 quarters x 10 products x 2 measures
 + *   shape: [2, 4, 10],
 + * });
 + *
@@ -828,9 +828,9 @@
 + *   .aggregate('sum');
 + * ```
 + *
-+ * @see {@link CubeLoader} in `src/loaders/CubeLoader.ts` — the data ingest path
-+ * @see ADR-003 in `docs/STRATEGIC_DECISIONS_LOG.md` — why typed arrays, not Maps
-+ * @see DRAFT v0.1 — Mnemosyne 2026-06-12 (JSDoc P0)
++ * @see {@link CubeLoader} in `src/loaders/CubeLoader.ts` - the data ingest path
++ * @see ADR-003 in `docs/STRATEGIC_DECISIONS_LOG.md` - why typed arrays, not Maps
++ * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
 + */
 +export class CubeEngine {
 +  private dimensions = new Map<string, DimensionDefinition>();
