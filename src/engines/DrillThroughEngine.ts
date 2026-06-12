@@ -146,7 +146,7 @@ export class DrillThroughEngine {
 
   private getNextLevel(current: DrillLevel): DrillLevel | null {
     const idx = LEVEL_ORDER.indexOf(current);
-    return idx < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[idx + 1] ?? null : null;
+    return idx < LEVEL_ORDER.length - 1 ? (LEVEL_ORDER[idx + 1] ?? null) : null;
   }
 
   private buildLabel(level: DrillLevel, ctx: DrillContext): string {

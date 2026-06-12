@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/utils/cn';

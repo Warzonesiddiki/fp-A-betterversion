@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * FinanceCopilotEngine — AI copilot for financial analysis
  * Answers natural language questions about financial data

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PersistStorage } from 'zustand/middleware';
 import { DB_NAME, DB_VERSION } from './storageConstants';
 

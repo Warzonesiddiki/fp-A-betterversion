@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { FunctionSquare, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { cn } from '@/utils/cn';

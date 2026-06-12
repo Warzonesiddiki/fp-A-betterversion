@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Batch Operation Engine — Execute multiple operations as a single undoable unit
  * Supports: update, delete, insert, format, protect operations

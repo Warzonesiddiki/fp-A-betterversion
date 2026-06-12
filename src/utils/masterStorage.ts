@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PersistStorage } from 'zustand/middleware';
 import { sqlJsStorage } from './sqlJsStorage';
 import { tauriSqlStorage, isTauri } from './tauriSqlStorage';

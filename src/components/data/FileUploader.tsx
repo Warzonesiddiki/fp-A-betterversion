@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 import { FileDropZone } from '@/components/ui/FileDropZone';

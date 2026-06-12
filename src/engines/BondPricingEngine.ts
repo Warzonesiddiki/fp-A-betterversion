@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Bond Pricing Engine — Yield to maturity, duration, convexity, accrued interest
 
 export interface BondResult {

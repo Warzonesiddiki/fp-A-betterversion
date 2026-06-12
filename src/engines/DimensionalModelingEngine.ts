@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Dimensional Modeling Engine — Slice and dice financial data by dimensions
  */

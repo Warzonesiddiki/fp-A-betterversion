@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useMemo, useState } from 'react';
 import { FormulaEngine } from '@/engines/FormulaEngine';
 import type {

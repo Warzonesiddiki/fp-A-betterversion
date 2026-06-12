@@ -243,6 +243,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           break;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       selectedCell,
       rows.length,

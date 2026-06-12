@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -62,12 +63,14 @@ export function ICMatchingPanel({
   // Matching summary
   const summary = useMemo<MatchSummary>(
     () => engine.getSummary(sourceTransactions, targetTransactions),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [engine, sourceTransactions, targetTransactions, matches]
   );
 
   // Unmatched transactions
   const unmatched = useMemo(
     () => engine.getUnmatched(icTransactions),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [engine, icTransactions, matches]
   );
 

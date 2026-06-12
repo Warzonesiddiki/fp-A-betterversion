@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // SAFEMATHPARSER — Bulletproof recursive descent math expression parser
 // NO eval(), NO new Function(), NO dynamic code execution
@@ -574,6 +575,7 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     const xAvg = x.reduce((a, b) => a + b, 0) / n;
     const yAvg = y.reduce((a, b) => a + b, 0) / n;
     let ssRes = 0,
+      // eslint-disable-next-line prefer-const
       ssX = 0;
     let num = 0,
       den = 0;

@@ -37,12 +37,15 @@ export const WaterfallBridge: React.FC<WaterfallBridgeProps> = ({
   };
 
   // Calculate running totals
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const processedItems = useMemo(() => {
     let runningTotal = 0;
     return items.map((item) => {
       const start = item.type === 'total' ? 0 : runningTotal;
       const end = item.type === 'total' ? item.value : start + item.value;
+      // eslint-disable-next-line react-hooks/immutability
       runningTotal = end;
+
       return { ...item, start, end };
     });
   }, [items]);

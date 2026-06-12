@@ -7,7 +7,8 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { DataGrid } from '@/components/ui/DataGrid';
 import { Activity, ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
-import { ExportEngine, BankingEngine } from '@/engines';
+import { BankingEngine } from '@/engines';
+import { ExportEngine } from '@/engines/ExportEngine';
 
 export default function NIMDashboardPage() {
   const { entries } = useGLStore();

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -399,6 +400,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedCell, rows.length, columns, isEditing, showFindReplace, showToolbar, preset]
   );
 

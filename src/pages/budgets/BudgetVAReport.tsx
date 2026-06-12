@@ -83,6 +83,7 @@ export default function BudgetVAReport() {
           variancePct,
         };
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBudget, entries]);
 
   const totals = useMemo(() => {

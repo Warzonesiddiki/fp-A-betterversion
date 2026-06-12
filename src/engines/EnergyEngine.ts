@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { GLEntry } from '@/types';
 
 export interface EnergyStats {

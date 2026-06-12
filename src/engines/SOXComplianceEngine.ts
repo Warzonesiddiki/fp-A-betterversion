@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // SOX COMPLIANCE ENGINE
 // Sarbanes-Oxley compliance: approval workflows, segregation of duties,

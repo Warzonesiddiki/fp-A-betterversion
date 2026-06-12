@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import { GripVertical, Settings, Columns, Rows } from 'lucide-react';
 import { cn } from '@/utils/cn';

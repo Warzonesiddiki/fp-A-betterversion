@@ -15,7 +15,7 @@ import {
   ZAxis,
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
-import { BondPricingEngine } from '@/engines';
+import { BondPricingEngine } from '@/engines/BondPricingEngine';
 import type { GLEntry } from '@/types';
 
 /** Derive synthetic bond instruments from GL entries. */

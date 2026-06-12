@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useBudgetStore } from '@/store/budgetStore';

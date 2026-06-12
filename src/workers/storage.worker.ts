@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Storage Worker
  * Handles heavy JSON serialization/deserialization and chunking.

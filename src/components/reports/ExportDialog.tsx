@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control, react/no-unescaped-entities */
 import { useCallback, useState } from 'react';
 import { X, FileText, Table, Download, Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';

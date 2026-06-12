@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // CUBE MIGRATION ENGINE — Migrate from other OLAP systems
 // Supports Essbase, TM1, SSAS, and generic CSV/JSON import

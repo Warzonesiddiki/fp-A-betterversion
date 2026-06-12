@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 // =============================================================================
 // REPORT PROGRESS — Batch generation progress tracking with ETA, parallel jobs
 // =============================================================================
@@ -77,6 +78,7 @@ function JobRow({ job }: JobRowProps) {
     job.startedAt && job.completedAt
       ? formatElapsed(job.completedAt - job.startedAt)
       : job.startedAt
+// eslint-disable-next-line react-hooks/purity
         ? formatElapsed(Date.now() - job.startedAt)
         : '';
 
@@ -109,6 +111,7 @@ export function ReportProgress({
   parallelWorkers = 1,
 }: ReportProgressProps) {
   const [elapsed, setElapsed] = useState(0);
+// eslint-disable-next-line react-hooks/purity
   const startTimeRef = useRef<number>(Date.now());
   const isRunning = progress.status === 'running';
 

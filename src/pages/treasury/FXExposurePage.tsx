@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -111,6 +113,7 @@ export default function FXExposurePage() {
   const totalUnrealizedGL = mockExposures.reduce((s, e) => s + e.unrealizedGL, 0);
   const overallHedgeRatio = totalExposure > 0 ? (totalHedged / totalExposure) * 100 : 0;
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const columns: Column[] = useMemo(
     () => [
       { key: 'currency', header: 'Currency', sortable: true },

@@ -17,7 +17,7 @@ function benchmark() {
       name: `Assumption ${i}`,
       value: Math.random(),
       unit: 'count',
-      category: categories[i % 5],
+      category: categories[i % 5]!,
       source: 'benchmark',
       effectiveFrom: '2026-01',
       effectiveTo: '2026-12',

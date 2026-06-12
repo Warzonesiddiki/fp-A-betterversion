@@ -63,7 +63,9 @@ function applyFilters(rows: TrialBalanceRow[], filters: TBFilterConfig[]): Trial
   if (filters.length === 0) return rows;
   return rows.filter((row) =>
     filters.every((f) => {
-      const rowVal = String((row as unknown as Record<string, unknown>)[f.type] ?? '').toLowerCase();
+      const rowVal = String(
+        (row as unknown as Record<string, unknown>)[f.type] ?? ''
+      ).toLowerCase();
       return rowVal.includes(f.value.toLowerCase());
     })
   );
@@ -129,8 +131,7 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
 
         setSelectedRow: (selectedRowId) => set({ selectedRowId }),
 
-        setPageSize: (pageSize) =>
-          set({ pageSize, currentPage: 0 }),
+        setPageSize: (pageSize) => set({ pageSize, currentPage: 0 }),
 
         setPage: (currentPage) => set({ currentPage }),
 

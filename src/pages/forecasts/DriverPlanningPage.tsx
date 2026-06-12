@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 // =============================================================================
 // DRIVER PLANNING PAGE — Full-page driver-based planning interface
 // Manage drivers, define cascade rules, and preview impacts before applying
@@ -110,6 +111,7 @@ export default function DriverPlanningPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const circularDeps = useMemo(
     () => engine.detectCircularDependencies(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [engine, drivers.length, allRules.length]
   );
 

@@ -98,6 +98,7 @@ function createSandboxProxy(): Record<string, unknown> {
         const value = globalThis[prop];
         if (typeof value === 'function') {
           // Wrap functions to prevent `this` leaking
+          // eslint-disable-next-line prefer-spread
           return (...args: unknown[]) => value.apply(undefined, args);
         }
         return value;

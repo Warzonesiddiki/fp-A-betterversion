@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo, useRef, memo } from 'react';
 import { ChevronUp, ChevronDown, AlertCircle, Search } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';

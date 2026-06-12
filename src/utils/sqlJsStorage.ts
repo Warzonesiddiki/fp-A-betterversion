@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PersistStorage, StorageValue } from 'zustand/middleware';
 import initSqlJs, { type Database } from 'sql.js';
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // REPORT BUILDER ENGINE
 // Custom financial report creation with grid-based layout

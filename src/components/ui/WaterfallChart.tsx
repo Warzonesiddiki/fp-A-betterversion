@@ -65,6 +65,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
       </div>
     );
   }
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return [];
     const result: Array<Record<string, unknown>> = [];

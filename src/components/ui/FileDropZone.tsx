@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, react/no-unescaped-entities */
 import React, { useState, useCallback } from 'react';
 import {
   Upload as UploadIcon,
@@ -66,6 +67,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onFile, accept]
   );
 

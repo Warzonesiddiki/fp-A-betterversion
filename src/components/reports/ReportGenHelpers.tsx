@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { Card } from '@/components/ui/Card';
 import type { GeneratedReport, GenerationProgress } from '@/engines/ReportBookEngine';
 

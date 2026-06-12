@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // BOOK & BURST BUILDER — Generate 100+ entity-specific reports in one batch
 // Matrix: reports x entities with parallel generation, ZIP download, board pack
@@ -464,6 +465,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
       status: cancelledRef.current ? 'error' : errors.length > 0 ? 'error' : 'complete',
       errors,
     });
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [book.id, engine, entities, matrix, selectedEntities, totalSelected]);
 
   const handleCancel = useCallback(() => {

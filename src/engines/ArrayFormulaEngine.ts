@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * ArrayFormulaEngine — Array formula support for FinPlan Pro
  * Handles multi-cell array formulas like Excel's Ctrl+Shift+Enter

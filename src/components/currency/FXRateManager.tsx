@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

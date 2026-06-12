@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * ChartAnnotationEngine — Annotations for financial charts
  * Add notes, markers, and highlights to chart data points

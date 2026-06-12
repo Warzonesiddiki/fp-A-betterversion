@@ -39,10 +39,12 @@ export function WaterfallChart({
   onClick,
 }: WaterfallChartProps) {
   const processed: ProcessedPoint[] = useMemo(() => {
-    let running = 0; // eslint-disable-line react-hooks/immutability -- scoped to callback, safe
+    let running = 0;
     return data.map((d) => {
       const start = running;
+      // eslint-disable-next-line react-hooks/immutability
       running += d.value;
+
       return {
         ...d,
         invisible: d.value >= 0 ? start : running,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // =============================================================================
 // FORMULA FUNCTION REGISTRY — Financial, Growth, Allocation & Currency
 // =============================================================================

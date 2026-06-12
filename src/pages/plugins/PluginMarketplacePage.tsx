@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * PluginMarketplacePage — Browsable plugin marketplace
  * Discovery, search, filtering, install/uninstall

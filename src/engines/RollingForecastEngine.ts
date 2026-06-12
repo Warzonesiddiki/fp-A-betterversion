@@ -331,10 +331,11 @@ export class RollingForecastEngine {
 
     const lastActual: string | null =
       state.actualizedPeriods.length > 0
-        ? state.actualizedPeriods[state.actualizedPeriods.length - 1] ?? null
+        ? (state.actualizedPeriods[state.actualizedPeriods.length - 1] ?? null)
         : null;
 
-    const firstForecast: string | null = state.pendingRollPeriods.length > 0 ? state.pendingRollPeriods[0] ?? null : null;
+    const firstForecast: string | null =
+      state.pendingRollPeriods.length > 0 ? (state.pendingRollPeriods[0] ?? null) : null;
 
     return { lastActual, firstForecast };
   }

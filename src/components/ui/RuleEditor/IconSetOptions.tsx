@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import type { ConditionalFormatRule, IconSetType } from '@/engines/ConditionalFormattingEngine';
 import { ICON_SET_TYPES } from '../ConditionalFormattingConstants';
 

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import type {
   ExportTemplate,

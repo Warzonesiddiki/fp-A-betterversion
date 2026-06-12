@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Calculation Queue — priority-based engine execution with LRU cache.
  * Prevents UI freezing by controlling concurrent calculations.

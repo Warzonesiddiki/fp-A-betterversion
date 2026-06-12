@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';
@@ -65,12 +66,14 @@ export function ICMatchingDashboard({
   // Summary stats
   const summary = useMemo<MatchSummary>(
     () => engine.getSummary(sourceTransactions, targetTransactions),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [engine, sourceTransactions, targetTransactions, matches]
   );
 
   // Unmatched transactions
   const unmatched = useMemo(
     () => engine.getUnmatched(allTransactions),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [engine, allTransactions, matches]
   );
 

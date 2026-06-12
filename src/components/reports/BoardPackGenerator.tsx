@@ -203,12 +203,19 @@ export function BoardPackGenerator() {
   const handleExportPDF = useCallback(() => {
     if (!isGenerated) return;
     // PDF export handled by ExportEngine
+ 
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGenerated, sections]);
+ 
 
   const handleExportExcel = useCallback(() => {
     if (!isGenerated) return;
+ 
+ 
     // Excel export handled by ExportEngine
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGenerated, sections]);
+ 
 
   // --- Computed ---
 

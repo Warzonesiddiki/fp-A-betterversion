@@ -1,9 +1,26 @@
-import { GLImportService, type GLImportOptions, type GLParseResult, type GLMappingResult, type GLValidationResult, type GLImportSummary, type GLImportStageProgress } from './GLImportService';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  GLImportService,
+  type GLImportOptions,
+  type GLParseResult,
+  type GLMappingResult,
+  type GLValidationResult,
+  type GLImportSummary,
+  type GLImportStageProgress,
+} from './GLImportService';
 import { useGLUploadStore } from '@/store/glUploadStore';
 import { useGLStore } from '@/store/glStore';
 import type { GLEntry, ImportResult } from '@/types';
 
-export type PipelineStage = 'detect' | 'parse' | 'map' | 'validate' | 'preview' | 'import' | 'complete' | 'error';
+export type PipelineStage =
+  | 'detect'
+  | 'parse'
+  | 'map'
+  | 'validate'
+  | 'preview'
+  | 'import'
+  | 'complete'
+  | 'error';
 
 export interface PipelineEvent {
   stage: PipelineStage;
@@ -26,7 +43,7 @@ export class ImportPipeline {
     return () => this.eventListeners.delete(listener);
   }
 
-  private emit( stage: PipelineStage, percent: number, message: string, error?: string): void {
+  private emit(stage: PipelineStage, percent: number, message: string, error?: string): void {
     const event: PipelineEvent = { stage, percent, message, error };
     this.eventListeners.forEach((l) => l(event));
   }
@@ -35,7 +52,10 @@ export class ImportPipeline {
     this.emit(p.stage, p.percent, p.message);
   };
 
-  async run(file: File, options: GLImportOptions = {}): Promise<{
+  async run(
+    file: File,
+    options: GLImportOptions = {}
+  ): Promise<{
     summary: GLImportSummary;
     entries: GLEntry[];
   }> {
@@ -50,16 +70,30 @@ export class ImportPipeline {
       const parsed: GLParseResult = await this.service.parseFile(file, options);
 
       uploadStore.setFile(
-        { name: parsed.fileName, size: file.size, format: parsed.format as any, rowCount: parsed.rowCount, columnCount: parsed.columnCount, columns: parsed.headers },
+        {
+          name: parsed.fileName,
+          size: file.size,
+          format: parsed.format as any,
+          rowCount: parsed.rowCount,
+          columnCount: parsed.columnCount,
+          columns: parsed.headers,
+        },
         parsed.headers
       );
 
       this.emit('map', 50, 'Auto-detecting column mappings...');
-      const mapped: GLMappingResult = this.service.autoDetectMappings(parsed.headers, parsed.previewRows);
+      const mapped: GLMappingResult = this.service.autoDetectMappings(
+        parsed.headers,
+        parsed.previewRows
+      );
       uploadStore.setMappings(mapped.userMappings);
 
       this.emit('validate', 70, 'Validating data...');
-      const validated: GLValidationResult = this.service.validateData(parsed.allRows, mapped.userMappings, options);
+      const validated: GLValidationResult = this.service.validateData(
+        parsed.allRows,
+        mapped.userMappings,
+        options
+      );
 
       uploadStore.setPreview(
         validated.validRows.slice(0, 20).map((row, i) => ({
@@ -89,9 +123,19 @@ export class ImportPipeline {
           accountName: String(row.accountName ?? ''),
           period: String(row.date ?? '').slice(0, 7),
           periodName: String(row.date ?? '').slice(0, 7),
-          debit: typeof row.debit === 'number' ? row.debit : parseFloat(String(row.debit ?? '0')) || 0,
-          credit: typeof row.credit === 'number' ? row.credit : parseFloat(String(row.credit ?? '0')) || 0,
-          netChange: (typeof row.debit === 'number' ? row.debit : parseFloat(String(row.debit ?? '0')) || 0) - (typeof row.credit === 'number' ? row.credit : parseFloat(String(row.credit ?? '0')) || 0),
+          debit:
+            typeof row.debit === 'number' ? row.debit : parseFloat(String(row.debit ?? '0')) || 0,
+          credit:
+            typeof row.credit === 'number'
+              ? row.credit
+              : parseFloat(String(row.credit ?? '0')) || 0,
+          netChange:
+            (typeof row.debit === 'number'
+              ? row.debit
+              : parseFloat(String(row.debit ?? '0')) || 0) -
+            (typeof row.credit === 'number'
+              ? row.credit
+              : parseFloat(String(row.credit ?? '0')) || 0),
           date: String(row.date ?? ''),
           amount: typeof row.amount === 'number' ? row.amount : 0,
           description: String(row.description ?? ''),
@@ -108,7 +152,8 @@ export class ImportPipeline {
         errorCount: summary.errorCount,
         warningCount: summary.warningCount,
         successCount: summary.importedRows,
-        status: summary.errorCount > 0 ? (summary.importedRows > 0 ? 'partial' : 'error') : 'success',
+        status:
+          summary.errorCount > 0 ? (summary.importedRows > 0 ? 'partial' : 'error') : 'success',
       };
 
       if (allEntries.length > 0) {

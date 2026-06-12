@@ -146,6 +146,7 @@ export default function PromoAnalysisPage() {
   const avgLift =
     totalBaseline > 0 ? ((totalPromoRevenue - totalBaseline) / totalBaseline) * 100 : 0;
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const columns: Column[] = useMemo(
     () => [
       { key: 'id', header: 'ID', width: '100px' },

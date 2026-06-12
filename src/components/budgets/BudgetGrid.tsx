@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from 'react';
 import { DataGrid, type DataGridColumn } from '@/components/ui/DataGrid';
 import { FormulaBar } from '@/components/ui/FormulaBar';

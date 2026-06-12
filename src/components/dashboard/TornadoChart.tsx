@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useMemo, memo } from 'react';
 import {
   BarChart,

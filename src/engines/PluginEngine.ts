@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // PLUGIN ENGINE — Part 15 Plugin Architecture
 // Manages plugin lifecycle: discovery, validation, loading, initialization

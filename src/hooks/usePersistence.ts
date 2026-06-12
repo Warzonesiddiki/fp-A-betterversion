@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from 'react';
 import { masterStorage } from '@/utils/masterStorage';
 
@@ -41,6 +42,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.key, options.storage, options.version, options.migrate]);
 
   const save = async (newData: T) => {

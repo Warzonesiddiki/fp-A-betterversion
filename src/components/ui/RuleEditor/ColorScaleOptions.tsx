@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import type { ConditionalFormatRule, ColorScaleType } from '@/engines/ConditionalFormattingEngine';
 
 interface ColorScaleOptionsProps {

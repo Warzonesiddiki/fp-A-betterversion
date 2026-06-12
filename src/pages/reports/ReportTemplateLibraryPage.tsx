@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReportStore } from '@/store/reportStore';

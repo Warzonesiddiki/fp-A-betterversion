@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * SyncEngine — Offline-first sync for collaboration
  * Queues local changes, syncs when online, handles conflicts

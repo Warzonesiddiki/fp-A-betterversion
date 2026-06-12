@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Keyboard, Search, Plus, Trash2 } from 'lucide-react';
 import {

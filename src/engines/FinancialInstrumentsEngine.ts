@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // FINANCIAL INSTRUMENTS ENGINE
 // Bond pricing, loan amortization, option pricing, DCF valuation

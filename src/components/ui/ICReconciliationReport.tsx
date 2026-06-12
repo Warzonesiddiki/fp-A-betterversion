@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';

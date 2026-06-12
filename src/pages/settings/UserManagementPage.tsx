@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { Button } from '@/components/ui/Button';

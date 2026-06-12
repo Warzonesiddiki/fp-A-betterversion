@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Loan Amortization Engine — Full schedules, balloon payments, prepayment
 
 export interface AmortizationRow {

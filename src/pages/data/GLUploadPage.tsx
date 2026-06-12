@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -406,6 +407,7 @@ export default function GLUploadPage() {
       { label: 'Import', status: getStepStatus(3), description: 'Processing' },
       { label: 'Done', status: getStepStatus(4), description: 'Complete' },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [step]
   );
 

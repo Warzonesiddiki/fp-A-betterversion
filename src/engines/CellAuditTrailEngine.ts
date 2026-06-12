@@ -378,7 +378,10 @@ export class CellAuditTrailEngine {
     const entry = this.history[idx]!;
     if (entry.approvalStatus && entry.approvalStatus !== 'pending') return entry;
 
-    const updated: ExtendedAuditEntry = { ...entry, approvalStatus: 'pending' } as ExtendedAuditEntry;
+    const updated: ExtendedAuditEntry = {
+      ...entry,
+      approvalStatus: 'pending',
+    } as ExtendedAuditEntry;
     this.history[idx] = Object.freeze(updated);
     return updated;
   }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // Change Broadcaster
 // Broadcasts data changes to connected clients and handles incoming changes
@@ -132,7 +133,11 @@ export class ChangeBroadcaster {
   }
 
   /** Convenience: broadcast a record deletion */
-  async broadcastDelete(resourceType: ResourceType, resourceId: string, userName: string): Promise<string | null> {
+  async broadcastDelete(
+    resourceType: ResourceType,
+    resourceId: string,
+    userName: string
+  ): Promise<string | null> {
     return this.broadcast({
       type: 'delete',
       resourceType,

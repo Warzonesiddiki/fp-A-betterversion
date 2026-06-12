@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * AdvancedExcelEngine — Enhanced Excel export for FinPlan Pro
  * Features: conditional formatting, named ranges, multi-sheet, cell comments

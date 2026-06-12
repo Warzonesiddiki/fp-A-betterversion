@@ -149,7 +149,9 @@ export class WebSocketManager {
   // --- Internal ---
 
   private buildUrl(): string {
-    return this.config.url;
+    if (!this.config.token) return this.config.url;
+    const separator = this.config.url.includes('?') ? '&' : '?';
+    return `${this.config.url}${separator}token=${encodeURIComponent(this.config.token)}`;
   }
 
   private connectWithAuth(): void {

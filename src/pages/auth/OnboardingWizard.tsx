@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/no-autofocus */
 import { INDUSTRIES } from '@/utils/constants';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';

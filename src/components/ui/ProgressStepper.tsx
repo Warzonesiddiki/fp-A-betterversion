@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { memo } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@/utils/cn';

@@ -116,7 +116,12 @@ export const useGLUploadStore = create<GLUploadState>()(
             state.session = session;
             state.sessionHistory.unshift(session);
             state.step = 'complete';
-            state.progress = { percent: 100, message: 'Import complete', rowsProcessed: session.rowCount, totalRows: session.rowCount };
+            state.progress = {
+              percent: 100,
+              message: 'Import complete',
+              rowsProcessed: session.rowCount,
+              totalRows: session.rowCount,
+            };
           }),
 
         reset: () => set({ ...initialState }),

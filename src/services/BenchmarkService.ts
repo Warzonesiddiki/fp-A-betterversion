@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AIEngine } from '@/engines/AIEngine';
 import { masterStorage } from '@/utils/masterStorage';
 

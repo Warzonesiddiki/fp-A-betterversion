@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * IntercompanyMatchingEngine — Match and eliminate intercompany transactions
  * Critical for multi-entity consolidation (ASC 810)

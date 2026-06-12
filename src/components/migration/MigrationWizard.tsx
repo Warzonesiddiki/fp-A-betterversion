@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { Button } from '@/components/ui/Button';

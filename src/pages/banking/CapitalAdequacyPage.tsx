@@ -18,7 +18,8 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { DataGrid } from '@/components/ui/DataGrid';
 import { Landmark, ShieldCheck, Download } from 'lucide-react';
-import { ExportEngine, BankingEngine } from '@/engines';
+import { BankingEngine } from '@/engines';
+import { ExportEngine } from '@/engines/ExportEngine';
 
 export default function CapitalAdequacyPage() {
   const { pathname } = useLocation();

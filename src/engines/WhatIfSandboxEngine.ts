@@ -356,9 +356,9 @@ export class WhatIfSandboxEngine {
     return {
       totalDifferences: differences.length,
       largestDelta: differences[0]!, // Already sorted by abs(delta)
-      largestPercentChange: [...differences].sort(
-        (a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange)
-      )[0] ?? null,
+      largestPercentChange:
+        [...differences].sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))[0] ??
+        null,
       averageDelta: Math.round((totalDelta / differences.length) * 100) / 100,
       averagePercentChange: Math.round((totalPercent / differences.length) * 100) / 100,
     };

@@ -84,7 +84,7 @@ export class AutoSaveEngine {
   }
 
   getLatestEntry(): AutoSaveEntry | null {
-    return this.entries.length > 0 ? this.entries[this.entries.length - 1] ?? null : null;
+    return this.entries.length > 0 ? (this.entries[this.entries.length - 1] ?? null) : null;
   }
 
   clearEntries(): void {

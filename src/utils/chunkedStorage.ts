@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PersistStorage } from 'zustand/middleware';
 import { CHUNK_SIZE } from './storageConstants';
 import { createStoragePool } from '../workers/worker-pool';

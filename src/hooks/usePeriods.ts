@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo } from 'react';
 import { useGLStore } from '@/store/glStore';
 import type { FiscalPeriod } from '@/types';

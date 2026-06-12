@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // ANOMALY DETECTION ENGINE — On-device AI anomaly detection
 // Statistical anomaly detection, trend analysis, outlier identification

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import type { ConditionalFormatRule } from '@/engines/ConditionalFormattingEngine';
 import { cn } from '@/utils/cn';
 import { PRESET_COLORS } from '../ConditionalFormattingConstants';

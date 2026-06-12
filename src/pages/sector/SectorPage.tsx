@@ -100,6 +100,8 @@ export default function SectorPage() {
     if (sectorConfig) {
       document.title = `FinPlan Pro — ${sectorConfig.name} Analysis`;
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectorConfig?.name]);
 
   const stats = useMemo(() => computeSectorStats(entries), [entries]);
@@ -129,6 +131,7 @@ export default function SectorPage() {
       },
       {} as Record<string, number>
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entries, sectorConfig?.defaultKPIs]);
 
   const tableData = useMemo(

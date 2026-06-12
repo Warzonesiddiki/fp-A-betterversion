@@ -200,9 +200,10 @@ export class WorkerPool {
       }
     }
 
-    const leastBusy = this.workers.reduce<InternalWorker | null>((min, w) =>
-      min === null || w.taskCount < min.taskCount ? w : min
-    , null);
+    const leastBusy = this.workers.reduce<InternalWorker | null>(
+      (min, w) => (min === null || w.taskCount < min.taskCount ? w : min),
+      null
+    );
     return leastBusy && !leastBusy.busy ? leastBusy : null;
   }
 

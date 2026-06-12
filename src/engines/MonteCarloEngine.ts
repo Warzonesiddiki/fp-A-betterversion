@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // MONTE CARLO SIMULATION ENGINE — Full-featured probabilistic analysis
 // Integrates with ScenarioEngine for financial scenario generation

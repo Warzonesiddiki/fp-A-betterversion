@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // DEBT SCHEDULE ENGINE — Debt amortization with circular interest
 // Supports multiple debt instruments, prepayment, refinancing

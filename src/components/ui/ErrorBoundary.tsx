@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertCircle, RefreshCw, Copy, ChevronDown, ChevronRight, Home } from 'lucide-react';
 

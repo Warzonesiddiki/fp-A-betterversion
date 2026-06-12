@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GitMerge, Check, ChevronDown, ChevronUp, Trophy, AlertTriangle } from 'lucide-react';

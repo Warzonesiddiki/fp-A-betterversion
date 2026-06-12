@@ -1,8 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ImportEngine, type ImportProgress } from '@/engines/ImportEngine';
-import { ExcelImportEngine, type AutoColumnMapping, type TargetField } from '@/engines/ExcelImportEngine';
+import {
+  ExcelImportEngine,
+  type AutoColumnMapping,
+  type TargetField,
+} from '@/engines/ExcelImportEngine';
 import { SmartImportMapper, type ColumnMapping as SmartMapping } from '@/engines/SmartImportMapper';
 
-export type ImportStage = 'detect' | 'parse' | 'map' | 'validate' | 'preview' | 'import' | 'complete' | 'error';
+export type ImportStage =
+  | 'detect'
+  | 'parse'
+  | 'map'
+  | 'validate'
+  | 'preview'
+  | 'import'
+  | 'complete'
+  | 'error';
 
 export interface GLImportOptions {
   requiredColumns?: string[];
@@ -151,10 +164,7 @@ export class GLImportService {
     };
   }
 
-  autoDetectMappings(
-    headers: string[],
-    sampleRows: Record<string, unknown>[]
-  ): GLMappingResult {
+  autoDetectMappings(headers: string[], sampleRows: Record<string, unknown>[]): GLMappingResult {
     this.emitProgress('map', 50, 'Auto-detecting column mappings...');
 
     const autoMappings = this.excelEngine.autoDetectMappings(headers, sampleRows);

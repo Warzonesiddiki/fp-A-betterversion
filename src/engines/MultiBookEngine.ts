@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * MultiBookEngine — Multi-book accounting for GAAP, IFRS, Tax
  * Manages parallel accounting books with cross-book consolidation
