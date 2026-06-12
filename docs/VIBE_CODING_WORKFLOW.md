@@ -5,19 +5,20 @@
 
 ## Current State
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Agent parallelism | 5 agents | Good |
-| Memory (RAM) | 32GB NODE | Good |
-| Test runner | vitest 4 workers | Good |
-| Knowledge graph | graphify | Needs re-run |
-| Obsidian brain | 35 notes | Needs cross-links |
-| Learning hooks | installed | Not generating instincts yet |
-| MCP servers | 5 | Need 5 more |
+| Component         | Status           | Notes                        |
+| ----------------- | ---------------- | ---------------------------- |
+| Agent parallelism | 5 agents         | Good                         |
+| Memory (RAM)      | 32GB NODE        | Good                         |
+| Test runner       | vitest 4 workers | Good                         |
+| Knowledge graph   | graphify         | Needs re-run                 |
+| Obsidian brain    | 35 notes         | Needs cross-links            |
+| Learning hooks    | installed        | Not generating instincts yet |
+| MCP servers       | 5                | Need 5 more                  |
 
 ## Workflow Upgrades Needed
 
 ### 1. Pre-Flight Checklist (before every session)
+
 ```
 □ npm run build — verify clean
 □ git status — check uncommitted work
@@ -27,35 +28,41 @@
 ```
 
 ### 2. Agent Allocation Template
+
 Always 5 agents, each with distinct scope:
 
-| Slot | Agent | Scope |
-|------|-------|-------|
-| 1 | test-fixer | Fix failing tests |
-| 2 | page-builder | Wire stub pages |
-| 3 | engine-builder | Build missing engines |
-| 4 | brain-updater | Update Obsidian |
-| 5 | skills-researcher | Research new patterns |
+| Slot | Agent             | Scope                 |
+| ---- | ----------------- | --------------------- |
+| 1    | test-fixer        | Fix failing tests     |
+| 2    | page-builder      | Wire stub pages       |
+| 3    | engine-builder    | Build missing engines |
+| 4    | brain-updater     | Update Obsidian       |
+| 5    | skills-researcher | Research new patterns |
 
 ### 3. Build-Test-Commit Loop
+
 ```
 Build → Test → Fix → Build → Commit
   ↑                              |
   └──────────────────────────────┘
 ```
+
 Every agent must:
+
 1. Build before editing
 2. Test after editing
 3. Commit if build passes
 4. Report: files changed, build status
 
 ### 4. Cooldown Pattern
+
 - 30 min work → 2 min pause
 - Let agents finish current task
 - Don't launch new agents during pause
 - CPU cools, memory settles
 
 ### 5. Memory Management
+
 ```
 NODE_OPTIONS: --max-old-space-size=32768
 Vitest: pool=forks, maxWorkers=4
@@ -66,6 +73,7 @@ Pagefile: 80GB (secondary)
 ## Skills to Acquire
 
 ### High Priority
+
 1. **verification-loop** — verify implementations work correctly
 2. **tdd-workflow** — test-driven development cycle
 3. **security-review** — OWASP audit before commits
@@ -73,6 +81,7 @@ Pagefile: 80GB (secondary)
 5. **coding-standards** — enforce consistency
 
 ### Medium Priority
+
 6. **e2e-testing** — Playwright E2E patterns
 7. **performance-engineer** — bundle analysis, lazy loading
 8. **architecture-decision-records** — document decisions
@@ -80,6 +89,7 @@ Pagefile: 80GB (secondary)
 10. **strategic-compact** — context management
 
 ### Low Priority
+
 11. **codebase-onboarding** — understand new repos fast
 12. **search-first** — search before coding
 13. **deep-research** — multi-source research
@@ -87,6 +97,7 @@ Pagefile: 80GB (secondary)
 ## Hooks to Install
 
 ### Pre-Edit Hook
+
 ```json
 "PreEdit": [{
   "matcher": "*",
@@ -98,6 +109,7 @@ Pagefile: 80GB (secondary)
 ```
 
 ### Post-Edit Hook
+
 ```json
 "PostEdit": [{
   "matcher": "*",
@@ -109,6 +121,7 @@ Pagefile: 80GB (secondary)
 ```
 
 ### Post-Commit Hook
+
 ```json
 "PostCommit": [{
   "matcher": "*",
@@ -122,16 +135,19 @@ Pagefile: 80GB (secondary)
 ## Obsidian Integration
 
 ### Session Start
+
 1. Read MOC-FinPlan-Pro.md
 2. Check progress/ for last session
 3. Read any blocking decisions
 
 ### During Work
+
 1. Update progress notes after each commit
 2. Log decisions as ADRs
 3. Document new features
 
 ### Session End
+
 1. Update build-status.md
 2. Update MOC if new notes added
 3. Commit brain changes
@@ -139,16 +155,19 @@ Pagefile: 80GB (secondary)
 ## Graph Integration
 
 ### Before Coding
+
 ```
 /graphify query "What depends on [component]?"
 ```
 
 ### After Changes
+
 ```
 /graphify --update
 ```
 
 ### Weekly
+
 ```
 /graphify --cluster-only
 ```
@@ -156,6 +175,7 @@ Pagefile: 80GB (secondary)
 ## Quality Gates
 
 ### Before Commit
+
 - [ ] Build passes
 - [ ] Tests pass (or failures explained)
 - [ ] No console.log in production code
@@ -164,6 +184,7 @@ Pagefile: 80GB (secondary)
 - [ ] Files under 500 lines
 
 ### Before PR
+
 - [ ] All quality gates pass
 - [ ] Obsidian brain updated
 - [ ] Graph updated

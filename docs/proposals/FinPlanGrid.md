@@ -1,12 +1,15 @@
 # Proposal: Unified `FinPlanGrid` Component
 
 ## Status
+
 **Author:** AI Reviewer / Agent
 **Date:** 2026-05-24
 **Type:** Component Consolidation / Architecture Improvement
 
 ## Context
+
 Currently, the FinPlan Pro codebase contains five distinct grid components with overlapping functionality:
+
 1. `DataTable.tsx`: Basic read-only table with virtual scrolling.
 2. `FinancialTable.tsx`: Specialized for financial reports (subtotals, variance colors).
 3. `ScenarioComparisonGrid.tsx`: Comparison-specific layout for scenarios.
@@ -16,6 +19,7 @@ Currently, the FinPlan Pro codebase contains five distinct grid components with 
 Each component implements its own virtualization, sorting, and filtering logic, leading to maintenance overhead and inconsistent UX.
 
 ## Proposal
+
 Consolidate all grid variants into a single, highly-configurable `FinPlanGrid` component powered by **AG Grid Community**.
 
 ### 1. Unified Interface
@@ -66,6 +70,7 @@ export interface FinPlanGridProps {
 ```
 
 ### 2. Benefits
+
 - **Zero Duplication**: Shared virtualization, sorting, and filtering via AG Grid.
 - **Native GUI Feel**: High performance and robust keyboard support (essential for Tauri-based desktop apps).
 - **Reduced Bundle Size**: Removes multiple manual virtualization implementations.
@@ -73,6 +78,7 @@ export interface FinPlanGridProps {
 - **Feature Richness**: Standardizes advanced features (Export, Find/Replace, Selection Stats) across all grids.
 
 ### 3. Migration Plan
+
 1. **Phase 1**: Implement `FinPlanGrid` wrapper around AG Grid.
 2. **Phase 2**: Create cell renderers for `badge`, `variance` (financial), and `comparison`.
 3. **Phase 3**: Replace `DataTable` usage in simple views.
@@ -81,12 +87,14 @@ export interface FinPlanGridProps {
 6. **Phase 6**: Remove deprecated components and manual virtualization dependencies.
 
 ### 4. Technical Implementation Details
+
 - **Variance Coloring**: Use `cellClassRules` in AG Grid to apply `fin-positive` and `fin-negative` based on row context (e.g., `row.accountType`).
 - **Subtotals**: Use AG Grid's `getRowStyle` to bold rows where `isSubtotal: true`.
 - **Keyboard Shortcuts**: Integrate `ExcelKeyboardEngine` directly into the `FinPlanGrid` event handler.
 - **Offline Reliability**: AG Grid's client-side model ensures full functionality in the Tauri shell without network roundtrips.
 
 ## Success Criteria
+
 - [ ] Single entry point for all grid-based UI in FinPlan Pro.
 - [ ] 100% feature parity with all five current components.
 - [ ] Consistent performance for datasets up to 100k+ rows.

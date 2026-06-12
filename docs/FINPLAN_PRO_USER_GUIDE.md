@@ -27,17 +27,20 @@
 ## 1. Getting Started
 
 ### Installation
+
 1. Download the installer for your OS
 2. Run the installer
 3. Launch FinPlan Pro from your applications
 
 ### First Launch
+
 1. The **Setup Wizard** appears on first launch
 2. Enter your organization name and base currency
 3. Select your industry sector (for KPI templates)
 4. Choose "Start with Demo Data" or "Start Fresh"
 
 ### Onboarding Wizard
+
 - **Step 1:** Organization setup (name, currency, fiscal year)
 - **Step 2:** Industry selection (16 sectors available)
 - **Step 3:** Data import (optional — upload Excel/CSV)
@@ -48,12 +51,14 @@
 ## 2. Dashboard
 
 The Dashboard shows key metrics at a glance:
+
 - **KPI Cards:** Revenue, Expenses, Net Income, Cash Position
 - **Charts:** Budget vs Actual, Trend Analysis, Sector KPIs
 - **Activity Feed:** Recent changes, approvals, comments
 - **Quick Actions:** Create Budget, Import Data, Generate Report
 
 ### Customization
+
 - Drag and drop widgets to rearrange
 - Click "Edit Dashboard" to add/remove widgets
 - Use Ctrl+K to open Command Palette for quick navigation
@@ -63,6 +68,7 @@ The Dashboard shows key metrics at a glance:
 ## 3. Budgeting
 
 ### Creating a Budget
+
 1. Go to **Budgets → Create New**
 2. Choose budget method:
    - **Incremental:** Build on prior year actuals
@@ -72,11 +78,13 @@ The Dashboard shows key metrics at a glance:
 5. Submit for approval
 
 ### Budget Workflow
+
 ```
 Draft → Submitted → Under Review → Approved → Locked
 ```
 
 ### Budget vs Actual
+
 - Go to **Reports → Budget vs Actual**
 - View variance by account, department, or period
 - Color-coded: Green = favorable, Red = unfavorable
@@ -86,17 +94,20 @@ Draft → Submitted → Under Review → Approved → Locked
 ## 4. Forecasting
 
 ### Rolling Forecast
+
 - Go to **Forecasts → Rolling Forecast**
 - 12-month forward-looking projection
 - Adjust assumptions via sliders
 - Auto-recalculates on change
 
 ### Driver-Based Planning
+
 - Go to **Forecasts → Driver Planning**
 - Link operational drivers to financial outcomes
 - Example: Headcount → Salary Expense
 
 ### What-If Analysis
+
 - Go to **Forecasts → What-If**
 - Adjust variables with sliders
 - See impact on P&L, Balance Sheet, Cash Flow
@@ -107,12 +118,14 @@ Draft → Submitted → Under Review → Approved → Locked
 ## 5. Scenario Planning
 
 ### Creating Scenarios
+
 1. Go to **Scenarios → Create New**
 2. Define assumptions (growth rates, cost changes)
 3. Run Monte Carlo simulation
 4. Compare scenarios side-by-side
 
 ### Sensitivity Analysis
+
 - 2-way sensitivity tables
 - Tornado diagrams for key drivers
 - Confidence intervals on forecasts
@@ -122,16 +135,19 @@ Draft → Submitted → Under Review → Approved → Locked
 ## 6. Reports
 
 ### Financial Statements
+
 - **P&L:** Revenue → COGS → Gross Profit → OpEx → Net Income
 - **Balance Sheet:** Assets = Liabilities + Equity
 - **Cash Flow:** Operating → Investing → Financing
 
 ### Report Builder
+
 - Drag and drop sections
 - Add charts, tables, KPIs
 - Export to PDF/Excel/CSV
 
 ### Auto-Commentary
+
 - AI generates variance explanations
 - Customizable templates
 - Multi-language support
@@ -141,11 +157,13 @@ Draft → Submitted → Under Review → Approved → Locked
 ## 7. Data Import
 
 ### Supported Formats
+
 - Excel (.xlsx, .xls)
 - CSV
 - JSON
 
 ### Import Process
+
 1. Go to **Data → Import**
 2. Upload file
 3. Map columns (auto-detected)
@@ -153,6 +171,7 @@ Draft → Submitted → Under Review → Approved → Locked
 5. Validate and import
 
 ### Column Mapping
+
 - Auto-detects: Account, Date, Amount, Description
 - Manual override available
 - Save mappings for reuse
@@ -162,12 +181,14 @@ Draft → Submitted → Under Review → Approved → Locked
 ## 8. Multi-Entity Consolidation
 
 ### Setup
+
 1. Go to **Settings → Entities**
 2. Add entities (departments, subsidiaries, regions)
 3. Set ownership percentages
 4. Define intercompany relationships
 
 ### Consolidation Process
+
 1. Go to **Consolidation → Run Consolidation**
 2. System automatically:
    - Eliminates intercompany transactions
@@ -180,6 +201,7 @@ Draft → Submitted → Under Review → Approved → Locked
 ## 9. Natural Language Queries
 
 ### How to Use
+
 1. Press **Ctrl+K** to open Command Palette
 2. Type a question in plain English:
    - "Show revenue by region"
@@ -188,6 +210,7 @@ Draft → Submitted → Under Review → Approved → Locked
 3. System generates chart/table automatically
 
 ### Supported Queries
+
 - Revenue/expense breakdowns
 - Budget vs actual comparisons
 - Trend analysis
@@ -198,12 +221,14 @@ Draft → Submitted → Under Review → Approved → Locked
 ## 10. Templates
 
 ### Using Templates
+
 1. Go to **Templates → Gallery**
 2. Browse by category (Budget, Forecast, Report)
 3. Preview template structure
 4. Click "Apply" to use
 
 ### Industry Templates
+
 - Technology/SaaS: ARR, NRR, Churn, LTV/CAC
 - Banking: NIM, NPL, CAR, LDR
 - Healthcare: Occupancy, ALOS, Readmission
@@ -214,34 +239,37 @@ Draft → Submitted → Under Review → Approved → Locked
 
 ## 11. Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| Ctrl+K | Command Palette |
-| Ctrl+S | Save |
-| Ctrl+Z | Undo |
-| Ctrl+Shift+Z | Redo |
-| Ctrl+N | New item |
-| Ctrl+/ | Show shortcuts |
-| F2 | Edit cell |
-| Escape | Cancel |
-| Tab | Next cell |
-| Enter | Confirm |
+| Shortcut     | Action          |
+| ------------ | --------------- |
+| Ctrl+K       | Command Palette |
+| Ctrl+S       | Save            |
+| Ctrl+Z       | Undo            |
+| Ctrl+Shift+Z | Redo            |
+| Ctrl+N       | New item        |
+| Ctrl+/       | Show shortcuts  |
+| F2           | Edit cell       |
+| Escape       | Cancel          |
+| Tab          | Next cell       |
+| Enter        | Confirm         |
 
 ---
 
 ## 12. Settings
 
 ### Organization
+
 - Name, currency, fiscal year
 - Industry sector
 
 ### Users & Roles
+
 - Admin: Full access
 - Manager: Approve budgets
 - Analyst: Create/edit
 - Viewer: Read-only
 
 ### Integrations
+
 - QuickBooks connector
 - NetSuite connector
 - Salesforce connector
@@ -268,6 +296,7 @@ A: Ensure all entities have data. Check intercompany matching.
 A: Ensure data exists for the selected period. Check filters.
 
 ### Performance Tips
+
 - Use filters to limit data scope
 - Close unused tabs
 - Restart app if sluggish
@@ -276,17 +305,17 @@ A: Ensure data exists for the selected period. Check filters.
 
 ## Competitive Advantages
 
-| Feature | FinPlan Pro | Anaplan | Pigment | Vena |
-|---------|-------------|---------|---------|------|
-| Offline-First | ✅ | ❌ | ❌ | ❌ |
-| Desktop App | ✅ | ❌ | ❌ | ❌ |
-| One-Time Price | ✅ | $50K+/yr | $40K+/yr | $30K+/yr |
-| Engine Count | 159 | ~50 | ~40 | ~30 |
-| Plugin System | ✅ | ❌ | ❌ | ❌ |
-| WCAG 2.1 AA | ✅ | ❌ | ❌ | ❌ |
-| 16 Sectors | ✅ | 5 | 3 | 4 |
-| ESG Reporting | ✅ | ❌ | ❌ | ❌ |
+| Feature        | FinPlan Pro | Anaplan  | Pigment  | Vena     |
+| -------------- | ----------- | -------- | -------- | -------- |
+| Offline-First  | ✅          | ❌       | ❌       | ❌       |
+| Desktop App    | ✅          | ❌       | ❌       | ❌       |
+| One-Time Price | ✅          | $50K+/yr | $40K+/yr | $30K+/yr |
+| Engine Count   | 159         | ~50      | ~40      | ~30      |
+| Plugin System  | ✅          | ❌       | ❌       | ❌       |
+| WCAG 2.1 AA    | ✅          | ❌       | ❌       | ❌       |
+| 16 Sectors     | ✅          | 5        | 3        | 4        |
+| ESG Reporting  | ✅          | ❌       | ❌       | ❌       |
 
 ---
 
-*This guide covers FinPlan Pro v1.0.0. For updates, check Help → About.*
+_This guide covers FinPlan Pro v1.0.0. For updates, check Help → About._

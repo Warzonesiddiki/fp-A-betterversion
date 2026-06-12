@@ -28,8 +28,10 @@ const log = (...args) => console.error('[collect-signals]', ...args);
 
 function parseArgs(argv) {
   let explicitProjectId = null;
-  let continueWithoutObservability = process.env.VERCEL_OPTIMIZE_CONTINUE_WITHOUT_OBSERVABILITY === '1';
-  let continueUnsupportedFramework = process.env.VERCEL_OPTIMIZE_CONTINUE_UNSUPPORTED_FRAMEWORK === '1';
+  let continueWithoutObservability =
+    process.env.VERCEL_OPTIMIZE_CONTINUE_WITHOUT_OBSERVABILITY === '1';
+  let continueUnsupportedFramework =
+    process.env.VERCEL_OPTIMIZE_CONTINUE_UNSUPPORTED_FRAMEWORK === '1';
 
   for (const arg of argv) {
     if (arg === '--continue-without-observability') {
@@ -54,7 +56,8 @@ function parseArgs(argv) {
 }
 
 async function main() {
-  const { explicitProjectId, continueWithoutObservability, continueUnsupportedFramework } = parseArgs(process.argv.slice(2));
+  const { explicitProjectId, continueWithoutObservability, continueUnsupportedFramework } =
+    parseArgs(process.argv.slice(2));
 
   log('checking Vercel CLI version…');
   const cli = await checkCliVersion();
@@ -71,50 +74,60 @@ async function main() {
       'NO_PROJECT_ID: pass one as argv, set VERCEL_PROJECT_ID, or run `vercel link` in this directory.'
     );
   }
-  log(`project link resolved (source=${project.source}; teamScope=${project.orgId ? 'yes' : 'no'})`);
+  log(
+    `project link resolved (source=${project.source}; teamScope=${project.orgId ? 'yes' : 'no'})`
+  );
 
   const scope = project.orgId || undefined;
 
   log('checking framework support…');
   const stack = await detectStack();
   const frameworkSupport = classifyFrameworkSupport(stack);
-  log(`framework=${stack.framework}@${stack.frameworkVersion ?? '?'} support=${frameworkSupport.status}`);
+  log(
+    `framework=${stack.framework}@${stack.frameworkVersion ?? '?'} support=${frameworkSupport.status}`
+  );
 
   if (!frameworkSupport.ok && !continueUnsupportedFramework) {
-    writeOutput({
-      schemaVersion: SCHEMA_VERSION,
-      collectedAt: new Date().toISOString(),
-      timeWindow: TIME_WINDOW,
-      projectId: project.projectId,
-      orgId: project.orgId,
-      projectIdSource: project.source,
-      frameworkSupport,
-      frameworkSupportBlocker: frameworkSupport.blocker,
-      frameworkSupportDetail: frameworkSupport.detail,
-      observabilityPlus: null,
-      observabilityPlusPreflight: null,
-      observabilityPlusUsable: null,
-      observabilityPlusBlocker: null,
-      observabilityPlusBlockerDetail: null,
-      plan: {
-        plan: 'uncertain',
-        reason: 'not collected before unsupported-framework confirmation',
+    writeOutput(
+      {
+        schemaVersion: SCHEMA_VERSION,
+        collectedAt: new Date().toISOString(),
+        timeWindow: TIME_WINDOW,
+        projectId: project.projectId,
+        orgId: project.orgId,
+        projectIdSource: project.source,
+        frameworkSupport,
+        frameworkSupportBlocker: frameworkSupport.blocker,
+        frameworkSupportDetail: frameworkSupport.detail,
+        observabilityPlus: null,
+        observabilityPlusPreflight: null,
+        observabilityPlusUsable: null,
+        observabilityPlusBlocker: null,
+        observabilityPlusBlockerDetail: null,
+        plan: {
+          plan: 'uncertain',
+          reason: 'not collected before unsupported-framework confirmation',
+        },
+        project: null,
+        contract: null,
+        usage: null,
+        usageScope: null,
+        usageTeamTotal: null,
+        usageError: 'NOT_COLLECTED_UNSUPPORTED_FRAMEWORK',
+        stack,
+        metrics: {},
+        metricsSchema: null,
       },
-      project: null,
-      contract: null,
-      usage: null,
-      usageScope: null,
-      usageTeamTotal: null,
-      usageError: 'NOT_COLLECTED_UNSUPPORTED_FRAMEWORK',
-      stack,
-      metrics: {},
-      metricsSchema: null,
-    }, { usable: true, blocker: null, detail: 'Observability Plus was not checked.' }, frameworkSupport);
+      { usable: true, blocker: null, detail: 'Observability Plus was not checked.' },
+      frameworkSupport
+    );
     return;
   }
 
   if (!frameworkSupport.ok && continueUnsupportedFramework) {
-    log('continuing after unsupported framework blocker because --continue-unsupported-framework was set');
+    log(
+      'continuing after unsupported framework blocker because --continue-unsupported-framework was set'
+    );
   }
 
   log('checking Observability Plus configuration…');
@@ -122,11 +135,15 @@ async function main() {
     orgId: project.orgId,
     projectId: project.projectId,
   });
-  log(`observabilityPlusPreflight=${observabilityPlusConfig.access === true ? 'enabled' : observabilityPlusConfig.blocker ?? 'unknown'} (${observabilityPlusConfig.source})`);
+  log(
+    `observabilityPlusPreflight=${observabilityPlusConfig.access === true ? 'enabled' : (observabilityPlusConfig.blocker ?? 'unknown')} (${observabilityPlusConfig.source})`
+  );
 
   let oplus = observabilityPlusConfig.access === true;
   if (observabilityPlusConfig.access == null) {
-    log('Observability Plus configuration preflight inconclusive; falling back to metrics schema probe…');
+    log(
+      'Observability Plus configuration preflight inconclusive; falling back to metrics schema probe…'
+    );
     oplus = await hasObservabilityPlus(scope);
   }
   log(`observabilityPlus=${oplus}`);
@@ -159,7 +176,9 @@ async function main() {
           aggregation: 'sum',
         },
       };
-      log(`metrics access check failed: ${canary?.code ?? 'unknown'} — skipping full metrics fan-out`);
+      log(
+        `metrics access check failed: ${canary?.code ?? 'unknown'} — skipping full metrics fan-out`
+      );
     } else {
       log(`metrics access check passed in ${Date.now() - t0}ms`);
     }
@@ -167,51 +186,57 @@ async function main() {
     log('skipping metric queries (Observability Plus preflight did not confirm access)');
   }
 
-  let oplusDiag = observabilityPlusConfig.access === false
-    ? {
-        usable: false,
-        blocker: observabilityPlusConfig.blocker,
-        detail: observabilityPlusConfig.detail,
-      }
-    : (metricsCanaryOk
+  let oplusDiag =
+    observabilityPlusConfig.access === false
+      ? {
+          usable: false,
+          blocker: observabilityPlusConfig.blocker,
+          detail: observabilityPlusConfig.detail,
+        }
+      : metricsCanaryOk
         ? { usable: true, blocker: null, detail: 'Observability Plus metrics access check passed.' }
-        : diagnoseObservabilityPlus(metrics, oplus));
+        : diagnoseObservabilityPlus(metrics, oplus);
 
   if (!oplusDiag.usable && !continueWithoutObservability) {
-    writeOutput({
-      schemaVersion: SCHEMA_VERSION,
-      collectedAt: new Date().toISOString(),
-      timeWindow: TIME_WINDOW,
-      projectId: project.projectId,
-      orgId: project.orgId,
-      projectIdSource: project.source,
-      observabilityPlus: oplus,
-      observabilityPlusPreflight: observabilityPlusConfig,
-      observabilityPlusUsable: oplusDiag.usable,
-      observabilityPlusBlocker: oplusDiag.blocker,
-      observabilityPlusBlockerDetail: oplusDiag.detail,
-      frameworkSupport,
-      frameworkSupportBlocker: frameworkSupport.blocker,
-      frameworkSupportDetail: frameworkSupport.detail,
-      plan: {
-        plan: 'uncertain',
-        reason: 'not collected before Observability Plus blocker confirmation',
+    writeOutput(
+      {
+        schemaVersion: SCHEMA_VERSION,
+        collectedAt: new Date().toISOString(),
+        timeWindow: TIME_WINDOW,
+        projectId: project.projectId,
+        orgId: project.orgId,
+        projectIdSource: project.source,
+        observabilityPlus: oplus,
+        observabilityPlusPreflight: observabilityPlusConfig,
+        observabilityPlusUsable: oplusDiag.usable,
+        observabilityPlusBlocker: oplusDiag.blocker,
+        observabilityPlusBlockerDetail: oplusDiag.detail,
+        frameworkSupport,
+        frameworkSupportBlocker: frameworkSupport.blocker,
+        frameworkSupportDetail: frameworkSupport.detail,
+        plan: {
+          plan: 'uncertain',
+          reason: 'not collected before Observability Plus blocker confirmation',
+        },
+        project: null,
+        contract: null,
+        usage: null,
+        usageScope: null,
+        usageTeamTotal: null,
+        usageError: 'NOT_COLLECTED_OBSERVABILITY_BLOCKED',
+        stack: null,
+        metrics,
+        metricsSchema: schema,
       },
-      project: null,
-      contract: null,
-      usage: null,
-      usageScope: null,
-      usageTeamTotal: null,
-      usageError: 'NOT_COLLECTED_OBSERVABILITY_BLOCKED',
-      stack: null,
-      metrics,
-      metricsSchema: schema,
-    }, oplusDiag);
+      oplusDiag
+    );
     return;
   }
 
   if (!oplusDiag.usable && continueWithoutObservability) {
-    log('continuing after Observability Plus blocker because --continue-without-observability was set');
+    log(
+      'continuing after Observability Plus blocker because --continue-without-observability was set'
+    );
   }
 
   log('pulling project config + contract + usage in parallel…');
@@ -231,7 +256,9 @@ async function main() {
     const contractContext = contract?.context;
     if (usage?.context && contractContext && usage.context !== contractContext) {
       usageContextMismatch = true;
-      log(`usage: WARNING context mismatch — returned context=${usage.context} but project team=${contractContext}; treating usage as unavailable for this project`);
+      log(
+        `usage: WARNING context mismatch — returned context=${usage.context} but project team=${contractContext}; treating usage as unavailable for this project`
+      );
       usage = null;
     } else {
       // Capture team total pre-filter so the report can label "this project vs team-wide" honestly.
@@ -241,14 +268,20 @@ async function main() {
         usage = filterResult.filtered;
         usageScope = 'project';
         usageTotalCost = sumUsageCosts(usage);
-        log(`usage: filtered to project — ~$${usageTotalCost.toFixed(2)} (team-wide ~$${usageTeamTotal.toFixed(2)}; unattributed ~$${filterResult.unattributedTotal.toFixed(2)})`);
+        log(
+          `usage: filtered to project — ~$${usageTotalCost.toFixed(2)} (team-wide ~$${usageTeamTotal.toFixed(2)}; unattributed ~$${filterResult.unattributedTotal.toFixed(2)})`
+        );
       } else {
         usageTotalCost = usageTeamTotal;
-        log(`usage: ~$${usageTotalCost.toFixed(2)} billed across services (team-wide — no per-project usage rows matched the linked project; report will label this team-wide)`);
+        log(
+          `usage: ~$${usageTotalCost.toFixed(2)} billed across services (team-wide — no per-project usage rows matched the linked project; report will label this team-wide)`
+        );
       }
     }
   } else {
-    log(`usage: unavailable (${usageResult?.code ?? 'unknown'}) — degrading to scanner+metrics-only mode`);
+    log(
+      `usage: unavailable (${usageResult?.code ?? 'unknown'}) — degrading to scanner+metrics-only mode`
+    );
   }
 
   // Hobby teams don't bill, so commitments=[] + usage>$0 ⇒ Pro pay-as-you-go.
@@ -259,7 +292,9 @@ async function main() {
     log(`project config: failed (${projectCfg.error}) — gates that need it will skip`);
   }
 
-  log(`stack: ${stack.framework}@${stack.frameworkVersion ?? '?'} ${stack.hasAppRouter ? 'app-router' : ''}${stack.hasPagesRouter ? ' pages-router' : ''}${stack.orm !== 'none' ? ` orm=${stack.orm}` : ''}`);
+  log(
+    `stack: ${stack.framework}@${stack.frameworkVersion ?? '?'} ${stack.hasAppRouter ? 'app-router' : ''}${stack.hasPagesRouter ? ' pages-router' : ''}${stack.orm !== 'none' ? ` orm=${stack.orm}` : ''}`
+  );
 
   // Each query is wrapped; one failure degrades only that metric.
   if (oplus && metricsCanaryOk) {
@@ -283,14 +318,14 @@ async function main() {
   // unavailable for the team) or FORBIDDEN (auth-scope mismatch). Diagnose AFTER
   // running queries by counting failure codes so the orchestrator can PAUSE and
   // surface the choice before falling back to scanner-only mode.
-  oplusDiag = observabilityPlusConfig.access === false
-    ? {
-        usable: false,
-        blocker: observabilityPlusConfig.blocker,
-        detail: observabilityPlusConfig.detail,
-      }
-    : diagnoseObservabilityPlus(metrics, oplus);
-
+  oplusDiag =
+    observabilityPlusConfig.access === false
+      ? {
+          usable: false,
+          blocker: observabilityPlusConfig.blocker,
+          detail: observabilityPlusConfig.detail,
+        }
+      : diagnoseObservabilityPlus(metrics, oplus);
 
   const output = {
     schemaVersion: SCHEMA_VERSION,
@@ -314,7 +349,9 @@ async function main() {
     usageScope,
     usageTeamTotal,
     usageError: usageResult?.ok
-      ? (usageContextMismatch ? 'USAGE_CONTEXT_MISMATCH' : null)
+      ? usageContextMismatch
+        ? 'USAGE_CONTEXT_MISMATCH'
+        : null
       : (usageResult?.code ?? 'UNKNOWN'),
     stack,
     metrics,
@@ -326,12 +363,20 @@ async function main() {
 
 function writeOutput(output, oplusDiag, frameworkSupport = output.frameworkSupport) {
   if (frameworkSupport?.blocker) {
-    log(`⚠ Framework is not supported for metric-backed route-to-file optimization: ${frameworkSupport.detail}`);
-    log('   The orchestrator should PAUSE and ask whether to continue with a limited platform/scanner audit.');
+    log(
+      `⚠ Framework is not supported for metric-backed route-to-file optimization: ${frameworkSupport.detail}`
+    );
+    log(
+      '   The orchestrator should PAUSE and ask whether to continue with a limited platform/scanner audit.'
+    );
   }
   if (!oplusDiag.usable) {
-    log(`⚠ Observability Plus is NOT usable on this project: blocker=${oplusDiag.blocker} (${oplusDiag.detail})`);
-    log('   The orchestrator should PAUSE and follow the blocker-specific remediation before proceeding.');
+    log(
+      `⚠ Observability Plus is NOT usable on this project: blocker=${oplusDiag.blocker} (${oplusDiag.detail})`
+    );
+    log(
+      '   The orchestrator should PAUSE and follow the blocker-specific remediation before proceeding.'
+    );
   }
 
   process.stdout.write(JSON.stringify(output, null, 2) + '\n');
@@ -409,7 +454,8 @@ export function diagnoseObservabilityPlus(metrics, oplusProbe) {
     return {
       usable: false,
       blocker: 'no_oplus_probe',
-      detail: 'vercel metrics schema returned non-OK; the team does not have Observability Plus enabled.',
+      detail:
+        'vercel metrics schema returned non-OK; the team does not have Observability Plus enabled.',
     };
   }
 
@@ -492,17 +538,25 @@ export function diagnoseObservabilityPlus(metrics, oplusProbe) {
     return {
       usable: true,
       blocker: 'no_traffic',
-      detail: 'Observability Plus queries succeeded but every metric returned 0 rows. Either the project has no traffic in the 14-day window, or Observability Plus retention is limited (free tier = 1 day on Pro).',
+      detail:
+        'Observability Plus queries succeeded but every metric returned 0 rows. Either the project has no traffic in the 14-day window, or Observability Plus retention is limited (free tier = 1 day on Pro).',
     };
   }
 
-  return { usable: true, blocker: null, detail: 'Observability Plus is usable; queries returned data.' };
+  return {
+    usable: true,
+    blocker: null,
+    detail: 'Observability Plus is usable; queries returned data.',
+  };
 }
 
 // Run main() only as a CLI; the test suite imports diagnoseObservabilityPlus directly.
 import { fileURLToPath } from 'node:url';
 import { realpathSync } from 'node:fs';
-if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {
+if (
+  process.argv[1] &&
+  realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))
+) {
   main().catch((err) => {
     console.error('[collect-signals] FAILED:', redactSensitiveText(err.message));
     process.exit(1);

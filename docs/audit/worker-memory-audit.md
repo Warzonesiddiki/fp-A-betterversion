@@ -14,12 +14,12 @@ The batch-calc worker and WorkerPool implementation are well-structured with no 
 
 ## Files Audited
 
-| File | Lines | Verdict |
-|------|-------|---------|
-| `src/workers/batch-calc.worker.ts` | 313 | ✅ Clean |
-| `src/workers/worker-pool.ts` | 328 | ✅ Clean |
-| `src/workers/index.ts` | 197 | ✅ Clean |
-| `src/workers/types.ts` | 192 | ✅ Clean |
+| File                               | Lines | Verdict  |
+| ---------------------------------- | ----- | -------- |
+| `src/workers/batch-calc.worker.ts` | 313   | ✅ Clean |
+| `src/workers/worker-pool.ts`       | 328   | ✅ Clean |
+| `src/workers/index.ts`             | 197   | ✅ Clean |
+| `src/workers/types.ts`             | 192   | ✅ Clean |
 
 ---
 
@@ -27,32 +27,32 @@ The batch-calc worker and WorkerPool implementation are well-structured with no 
 
 ### Worker Side (`batch-calc.worker.ts`)
 
-| Check | Status | Detail |
-|-------|--------|--------|
-| Event listeners not removed | ✅ Pass | Uses `self.onmessage` (single handler), no listener accumulation |
-| Large arrays not freed | ✅ Pass | All Maps/Sets/arrays are local to `runBatchCalc()`, GC'd after return |
-| Closures holding references | ✅ Pass | All closures are short-lived, no retained references |
-| `Function` constructor leak | ✅ Pass | Creates new function per call, but local scope allows GC |
-| Worker self-close | ⚠️ N/A | Worker doesn't call `self.close()` — by design, pool manages lifecycle |
+| Check                       | Status  | Detail                                                                 |
+| --------------------------- | ------- | ---------------------------------------------------------------------- |
+| Event listeners not removed | ✅ Pass | Uses `self.onmessage` (single handler), no listener accumulation       |
+| Large arrays not freed      | ✅ Pass | All Maps/Sets/arrays are local to `runBatchCalc()`, GC'd after return  |
+| Closures holding references | ✅ Pass | All closures are short-lived, no retained references                   |
+| `Function` constructor leak | ✅ Pass | Creates new function per call, but local scope allows GC               |
+| Worker self-close           | ⚠️ N/A  | Worker doesn't call `self.close()` — by design, pool manages lifecycle |
 
 ### Pool Side (`worker-pool.ts`)
 
-| Check | Status | Detail |
-|-------|--------|--------|
-| Message listener cleanup | ✅ Pass | `messageHandler` removed on completion, timeout, and error |
-| Error listener cleanup | ✅ Pass | `errorHandler` removed on completion, timeout, and error |
-| Timeout cleanup | ✅ Pass | `clearTimeout` called in all exit paths |
-| Worker termination on timeout | ✅ Pass | Worker terminated and removed from pool on timeout |
-| `terminate()` method | ✅ Pass | Terminates all workers, clears timers, rejects queued tasks |
-| No listener accumulation | ✅ Pass | Each task adds/removes its own listeners cleanly |
+| Check                         | Status  | Detail                                                      |
+| ----------------------------- | ------- | ----------------------------------------------------------- |
+| Message listener cleanup      | ✅ Pass | `messageHandler` removed on completion, timeout, and error  |
+| Error listener cleanup        | ✅ Pass | `errorHandler` removed on completion, timeout, and error    |
+| Timeout cleanup               | ✅ Pass | `clearTimeout` called in all exit paths                     |
+| Worker termination on timeout | ✅ Pass | Worker terminated and removed from pool on timeout          |
+| `terminate()` method          | ✅ Pass | Terminates all workers, clears timers, rejects queued tasks |
+| No listener accumulation      | ✅ Pass | Each task adds/removes its own listeners cleanly            |
 
 ### Parent Side (`index.ts`)
 
-| Check | Status | Detail |
-|-------|--------|--------|
-| `terminateAllWorkers()` exported | ✅ Pass | Properly terminates and nullifies all pools |
-| Singleton pool pattern | ✅ Pass | Lazy init, no duplicate pools |
-| `terminateAllWorkers` called | ⚠️ Advisory | Not invoked in app code — only in tests |
+| Check                            | Status      | Detail                                      |
+| -------------------------------- | ----------- | ------------------------------------------- |
+| `terminateAllWorkers()` exported | ✅ Pass     | Properly terminates and nullifies all pools |
+| Singleton pool pattern           | ✅ Pass     | Lazy init, no duplicate pools               |
+| `terminateAllWorkers` called     | ⚠️ Advisory | Not invoked in app code — only in tests     |
 
 ---
 
@@ -67,7 +67,9 @@ For the Tauri desktop shell, workers should be terminated when the window closes
 ```ts
 // In App.tsx or main.tsx
 useEffect(() => {
-  return () => { terminateAllWorkers(); };
+  return () => {
+    terminateAllWorkers();
+  };
 }, []);
 ```
 

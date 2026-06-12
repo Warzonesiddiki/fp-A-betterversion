@@ -10,27 +10,28 @@ Audited all 8 web workers in `src/workers/` for typed message boundaries, `any` 
 
 ### Worker Inventory
 
-| Worker | File | Shared Types | `any` Free | `onerror` | Status |
-|--------|------|:---:|:---:|:---:|--------|
-| monte-carlo | `monte-carlo.worker.ts` | ✅ | ✅ | ⚠️ | PASS |
-| consolidation | `consolidation.worker.ts` | ✅ | ✅ | ⚠️ | PASS |
-| batch-calc | `batch-calc.worker.ts` | ✅ | ✅ | ⚠️ | PASS |
-| storage | `storage.worker.ts` | ✅ | ❌→✅ | ⚠️ | FIXED |
-| formula | `formulaWorker.ts` | ❌ | ✅ | ⚠️ | LEGACY |
-| scenario | `scenarioWorker.ts` | ❌ | ✅ | ⚠️ | LEGACY |
-| export | `exportWorker.ts` | ❌ | ✅ | ⚠️ | LEGACY |
-| consolidation (legacy) | `consolidationWorker.ts` | ❌ | ✅ | ⚠️ | LEGACY |
+| Worker                 | File                      | Shared Types | `any` Free | `onerror` | Status |
+| ---------------------- | ------------------------- | :----------: | :--------: | :-------: | ------ |
+| monte-carlo            | `monte-carlo.worker.ts`   |      ✅      |     ✅     |    ⚠️     | PASS   |
+| consolidation          | `consolidation.worker.ts` |      ✅      |     ✅     |    ⚠️     | PASS   |
+| batch-calc             | `batch-calc.worker.ts`    |      ✅      |     ✅     |    ⚠️     | PASS   |
+| storage                | `storage.worker.ts`       |      ✅      |   ❌→✅    |    ⚠️     | FIXED  |
+| formula                | `formulaWorker.ts`        |      ❌      |     ✅     |    ⚠️     | LEGACY |
+| scenario               | `scenarioWorker.ts`       |      ❌      |     ✅     |    ⚠️     | LEGACY |
+| export                 | `exportWorker.ts`         |      ❌      |     ✅     |    ⚠️     | LEGACY |
+| consolidation (legacy) | `consolidationWorker.ts`  |      ❌      |     ✅     |    ⚠️     | LEGACY |
 
 ### Pool Implementations
 
-| Pool | File | Error Handling | Termination |
-|------|------|:---:|:---:|
-| WorkerPool | `WorkerPool.ts` | ✅ onerror + onmessageerror | ✅ terminateAll() |
+| Pool        | File             |       Error Handling        |    Termination    |
+| ----------- | ---------------- | :-------------------------: | :---------------: |
+| WorkerPool  | `WorkerPool.ts`  | ✅ onerror + onmessageerror | ✅ terminateAll() |
 | worker-pool | `worker-pool.ts` | ✅ onerror + onmessageerror | ✅ terminateAll() |
 
 ### Critical Issues
 
 #### 1. `any` Types — FIXED
+
 - **File:** `storage.worker.ts`
 - **Lines:** 11, 16
 - **Before:** `payload: any` / `payload?: any`
@@ -38,10 +39,13 @@ Audited all 8 web workers in `src/workers/` for typed message boundaries, `any` 
 - **Impact:** Eliminates last `any` in worker layer
 
 #### 2. No `self.onerror` in Any Worker
+
 All 8 workers rely solely on try/catch inside `onmessage`. None set `self.onerror` as a fallback for uncaught errors. The pool implementations (`WorkerPool.ts`, `worker-pool.ts`) do handle `onerror` and `onmessageerror` on the consumer side, providing partial coverage.
 
 #### 3. Legacy Workers Not Using Shared Types
+
 4 workers define their own message interfaces instead of using `WorkerMessage<T>`/`WorkerResponse<T>` from `types.ts`:
+
 - `formulaWorker.ts`: `FormulaWorkerRequest` / `FormulaWorkerResponse`
 - `scenarioWorker.ts`: inline message types
 - `exportWorker.ts`: custom message types
@@ -50,7 +54,9 @@ All 8 workers rely solely on try/catch inside `onmessage`. None set `self.onerro
 **Risk:** Low — these workers have no app-level consumers (only test imports). They are effectively dead code from a production standpoint.
 
 ### Pool Consumers
+
 All worker instantiation goes through `WorkerPool.ts` or `worker-pool.ts`:
+
 - 15 `new Worker(...)` calls found
 - All in `WorkerPool.ts` (pool factory) and `worker-pool.ts` (pool factory)
 - Both pools implement `onerror`, `onmessageerror`, and `terminateAll()`

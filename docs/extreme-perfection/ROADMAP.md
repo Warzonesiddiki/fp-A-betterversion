@@ -7,7 +7,8 @@
 ---
 
 ## 🏗️ Phase 1: The Unbreakable Foundation (Tauri + SQLite)
-*Goal: Move from mock data to institutional-grade local persistence.*
+
+_Goal: Move from mock data to institutional-grade local persistence._
 
 - [ ] **1.1 Native SQLite Integration:**
   - Implement Rust commands in `src-tauri` for database lifecycle (Open, Close, Backup).
@@ -19,7 +20,8 @@
   - Configure the Windows 11 NSIS installer for a "One-Click" setup experience.
 
 ## 🧠 Phase 2: Architecting the "10 Super Brains" (Expert System)
-*Goal: Upgrade the 24 existing engines into a cohesive Expert Intelligence Layer.*
+
+_Goal: Upgrade the 24 existing engines into a cohesive Expert Intelligence Layer._
 
 - [ ] **2.1 The Cross-Domain Ripple Engine:**
   - Create a deterministic dependency graph linking all 24 engines.
@@ -33,7 +35,8 @@
   - Create the logic that compares engine outputs against benchmarks to draft specific action plans.
 
 ## ✍️ Phase 3: The Narrative Layer (Gemini Integration)
-*Goal: Humanize the superhuman math while ensuring 100% privacy.*
+
+_Goal: Humanize the superhuman math while ensuring 100% privacy._
 
 - [ ] **3.1 Privacy-First Bridge:**
   - Implement local data anonymization (stripping PII/Corporate Names) before AI processing.
@@ -44,7 +47,8 @@
   - Build the "Consultant Summary" card at the top of all 74 pages.
 
 ## ✅ Phase 4: Institutional QA (100% Perfection)
-*Goal: Zero-bug delivery and extreme accuracy verification.*
+
+_Goal: Zero-bug delivery and extreme accuracy verification._
 
 - [ ] **4.1 TDD Engine Expansion:**
   - Increase Vitest coverage to 100% for all new Superbrain logic modules.
@@ -56,5 +60,6 @@
 ---
 
 ## 📜 Architectural Decisions (ADR)
+
 - **ADR-0001:** Dynamic Adversarial Decision Logic (Adopted 2026-05-15)
 - **ADR-0002:** Project-local documentation structure for Perfection Roadmap.

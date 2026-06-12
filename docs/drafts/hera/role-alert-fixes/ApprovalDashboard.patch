@@ -1,0 +1,11 @@
+--- a/src/components/ui/ApprovalDashboard.tsx
++++ b/src/components/ui/ApprovalDashboard.tsx
+@@ -126,7 +126,7 @@
+             {overdueApprovals.map((approval) => (
+               <Link
+                 key={approval.id}
+-                role="alert"
++                role="status"
+                 className="block p-3 rounded-md border border-red-200 bg-red-50 hover:bg-red-100"
+               >
+                 <div className="flex items-start gap-3">

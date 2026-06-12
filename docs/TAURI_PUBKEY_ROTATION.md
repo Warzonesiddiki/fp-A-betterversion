@@ -21,6 +21,7 @@ tauri signer generate -w ~/.tauri/finplan-pro.key
 ```
 
 This creates:
+
 - `~/.tauri/finplan-pro.key` (private key - **KEEP SECURE**)
 - `~/.tauri/finplan-pro.key.pub` (public key - add to `tauri.conf.json`)
 
@@ -35,6 +36,7 @@ This creates:
 ## Key Rotation Procedure
 
 ### When to Rotate
+
 - Annual rotation (recommended)
 - Suspected private key compromise
 - Team member with access leaves
@@ -43,6 +45,7 @@ This creates:
 ### Rotation Steps
 
 1. **Generate new key pair**
+
    ```bash
    tauri signer generate -w ~/.tauri/finplan-pro-new.key
    ```
@@ -50,6 +53,7 @@ This creates:
 2. **Update `tauri.conf.json`** with new public key
 
 3. **Sign the update** with the **old** private key (for backward compatibility)
+
    ```bash
    tauri signer sign -w ~/.tauri/finplan-pro.key \
      --app-path ./target/release/bundle/nsis/FinPlan_Pro_1.0.0_x64_en-US.msi
@@ -64,10 +68,12 @@ This creates:
 ## CI/CD Integration
 
 For automated releases, store the private key in GitHub Secrets:
+
 - `TAURI_PRIVATE_KEY` - the private key content
 - `TAURI_KEY_PASSWORD` - if key is password-protected
 
 Example release workflow step:
+
 ```yaml
 - name: Sign Tauri artifacts
   uses: tauri-apps/tauri-action@v0

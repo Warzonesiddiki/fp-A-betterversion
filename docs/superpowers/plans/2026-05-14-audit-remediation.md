@@ -13,6 +13,7 @@
 ### Task 1: Licensing & Metadata
 
 **Files:**
+
 - Create: `LICENSE`
 - Modify: `package.json`
 
@@ -23,6 +24,7 @@
 ### Task 2: Linting & Formatting Infrastructure
 
 **Files:**
+
 - Modify: `package.json`
 - Create: `.eslintrc.json`, `.prettierrc`, `.eslintignore`, `.prettierignore`
 
@@ -36,6 +38,7 @@
 ### Task 3: Testing Infrastructure Setup
 
 **Files:**
+
 - Modify: `package.json`, `vite.config.ts`
 - Create: `vitest.config.ts` (if needed) or update `vite.config.ts`
 
@@ -48,6 +51,7 @@
 ### Task 4: Security - Replace `xlsx` with `exceljs`
 
 **Files:**
+
 - Modify: `package.json`, `src/utils/export.ts` (and any other files using `xlsx`)
 
 - [ ] **Step 1: Identify all usages of `xlsx`**
@@ -59,6 +63,7 @@
 ### Task 5: Dead Code & Dependency Cleanup
 
 **Files:**
+
 - Modify: `package.json`
 - Delete: 120+ unused files identified by `knip`
 

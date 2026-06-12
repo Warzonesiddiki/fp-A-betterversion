@@ -89,7 +89,7 @@ const pivotConfig = {
   pivotMode: true,
   pivotPanelShow: 'always',
   rowGroupCols: [{ field: 'department' }, { field: 'costCenter' }],
-  pivotCols: [{ field: 'period' }],       // Q1, Q2, Q3, Q4
+  pivotCols: [{ field: 'period' }], // Q1, Q2, Q3, Q4
   valueCols: [{ field: 'amount', aggFunc: 'sum' }],
 };
 ```
@@ -134,9 +134,13 @@ export const useBudgetStore = create<BudgetState>()(
         budgets: [],
         activeBudgetId: null,
         addBudget: (budget) =>
-          set((state) => { state.budgets.push(budget); }),
+          set((state) => {
+            state.budgets.push(budget);
+          }),
         setActive: (id) =>
-          set((state) => { state.activeBudgetId = id; }),
+          set((state) => {
+            state.activeBudgetId = id;
+          }),
       })),
       {
         name: 'finplan-budget',
@@ -161,7 +165,7 @@ export const useBudgetStore = create<BudgetState>()(
       /* ... state and actions ... */
     })),
     {
-      limit: 100,                    // 100-level history
+      limit: 100, // 100-level history
       equality: (pastState, currentState) =>
         JSON.stringify(pastState) === JSON.stringify(currentState),
       handleSet: (handleSet) => {
@@ -200,7 +204,9 @@ import { devtools } from 'zustand/middleware';
 
 export const useStore = create(
   devtools(
-    immer((set) => ({ /* ... */ })),
+    immer((set) => ({
+      /* ... */
+    })),
     { name: 'FinPlan Budget Store', enabled: import.meta.env.DEV }
   )
 );
@@ -586,17 +592,17 @@ export function RevenueMarginChart({ data }: { data: RevenueMargin[] }) {
 
 ## Quick Reference — Sources
 
-| Topic | Key Source |
-|-------|-----------|
-| AG Grid Cell Renderers | https://www.ag-grid.com/react-data-grid/component-cell-renderer/ |
-| AG Grid Tree Data | https://www.ag-grid.com/javascript-data-grid/tree-data/ |
-| Zustand Middleware | https://docs.pmnd.rs/guides/typescript#middleware |
-| Zundo (Undo/Redo) | https://github.com/charkour/zundo |
-| Tauri v2 IPC | https://v2.tauri.app/develop/calling-rust/ |
-| Tauri Menus | https://v2.tauri.app/develop/system-tray/ |
-| Vitest | https://vitest.dev/guide/ |
-| Recharts | https://recharts.org/en-US |
-| Intl.NumberFormat | https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat |
+| Topic                  | Key Source                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| AG Grid Cell Renderers | https://www.ag-grid.com/react-data-grid/component-cell-renderer/                                   |
+| AG Grid Tree Data      | https://www.ag-grid.com/javascript-data-grid/tree-data/                                            |
+| Zustand Middleware     | https://docs.pmnd.rs/guides/typescript#middleware                                                  |
+| Zundo (Undo/Redo)      | https://github.com/charkour/zundo                                                                  |
+| Tauri v2 IPC           | https://v2.tauri.app/develop/calling-rust/                                                         |
+| Tauri Menus            | https://v2.tauri.app/develop/system-tray/                                                          |
+| Vitest                 | https://vitest.dev/guide/                                                                          |
+| Recharts               | https://recharts.org/en-US                                                                         |
+| Intl.NumberFormat      | https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat |
 
 ---
 
@@ -612,17 +618,20 @@ export default defineConfig({
       name: 'csp-headers',
       configureServer(server) {
         server.middlewares.use((_, res, next) => {
-          res.setHeader('Content-Security-Policy', [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",  // Vite HMR needs unsafe-inline
-            "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob:",
-            "font-src 'self'",
-            "connect-src 'self'",
-            "frame-ancestors 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-          ].join('; '));
+          res.setHeader(
+            'Content-Security-Policy',
+            [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline'", // Vite HMR needs unsafe-inline
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob:",
+              "font-src 'self'",
+              "connect-src 'self'",
+              "frame-ancestors 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; ')
+          );
           next();
         });
       },
@@ -770,9 +779,15 @@ type USD = number & { __brand: 'USD' };
 type EUR = number & { __brand: 'EUR' };
 type Percentage = number & { __brand: 'Percentage' };
 
-function usd(n: number): USD { return n as USD; }
-function eur(n: number): EUR { return n as EUR; }
-function pct(n: number): Percentage { return n as Percentage; }
+function usd(n: number): USD {
+  return n as USD;
+}
+function eur(n: number): EUR {
+  return n as EUR;
+}
+function pct(n: number): Percentage {
+  return n as Percentage;
+}
 
 // TypeScript catches: const total: USD = usd(100) + eur(50); // ERROR
 ```
@@ -801,7 +816,9 @@ function DataDisplay<T>({ response }: { response: ApiResponse<T> }) {
 function createStore<T extends Record<string, unknown>>(
   name: string,
   initialState: T,
-  actions: (set: (fn: (state: Draft<T>) => void) => void) => Record<string, (...args: unknown[]) => void>
+  actions: (
+    set: (fn: (state: Draft<T>) => void) => void
+  ) => Record<string, (...args: unknown[]) => void>
 ) {
   return create<T>()(
     subscribeWithSelector(
@@ -840,7 +857,12 @@ function createStore<T extends Record<string, unknown>>(
           <td className="px-2 py-1">{row.account}</td>
           <td className="px-2 py-1 text-right">{formatCurrency(row.budget)}</td>
           <td className="px-2 py-1 text-right">{formatCurrency(row.actual)}</td>
-          <td className={clsx('px-2 py-1 text-right font-medium', row.variance >= 0 ? 'text-green-700' : 'text-red-700')}>
+          <td
+            className={clsx(
+              'px-2 py-1 text-right font-medium',
+              row.variance >= 0 ? 'text-green-700' : 'text-red-700'
+            )}
+          >
             {formatCurrency(row.variance)}
           </td>
         </tr>
@@ -877,11 +899,14 @@ function createStore<T extends Record<string, unknown>>(
 function VarianceBadge({ value, type }: { value: number; type: 'revenue' | 'expense' }) {
   const favorable = type === 'revenue' ? value >= 0 : value <= 0;
   return (
-    <span className={clsx(
-      'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
-      favorable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-    )}>
-      {favorable ? '+' : ''}{(value * 100).toFixed(1)}%
+    <span
+      className={clsx(
+        'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
+        favorable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      )}
+    >
+      {favorable ? '+' : ''}
+      {(value * 100).toFixed(1)}%
     </span>
   );
 }
@@ -923,9 +948,15 @@ function useAsyncData<T>(fetcher: () => Promise<T>) {
   useEffect(() => {
     let cancelled = false;
     fetcher()
-      .then((data) => { if (!cancelled) setState({ status: 'success', data }); })
-      .catch((error) => { if (!cancelled) setState({ status: 'error', error: error.message }); });
-    return () => { cancelled = true; };
+      .then((data) => {
+        if (!cancelled) setState({ status: 'success', data });
+      })
+      .catch((error) => {
+        if (!cancelled) setState({ status: 'error', error: error.message });
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [fetcher]);
 
   return state;
@@ -953,10 +984,10 @@ function reportMetric(metric: { name: string; value: number; rating: string }) {
   }
 }
 
-onLCP(reportMetric);  // Largest Contentful Paint
-onFID(reportMetric);  // First Input Delay
-onCLS(reportMetric);  // Cumulative Layout Shift
-onFCP(reportMetric);  // First Contentful Paint
+onLCP(reportMetric); // Largest Contentful Paint
+onFID(reportMetric); // First Input Delay
+onCLS(reportMetric); // Cumulative Layout Shift
+onFCP(reportMetric); // First Contentful Paint
 onTTFB(reportMetric); // Time to First Byte
 ```
 
@@ -988,11 +1019,21 @@ export default defineConfig({
 
 ```typescript
 // Rate-Volume-Mix variance analysis
-function calcRateVolumeMix(budgetRate: number, budgetVol: number, actualRate: number, actualVol: number) {
+function calcRateVolumeMix(
+  budgetRate: number,
+  budgetVol: number,
+  actualRate: number,
+  actualVol: number
+) {
   const rateVariance = (actualRate - budgetRate) * budgetVol;
   const volumeVariance = (actualVol - budgetVol) * budgetRate;
   const mixVariance = (actualRate - budgetRate) * (actualVol - budgetVol);
-  return { rateVariance, volumeVariance, mixVariance, total: rateVariance + volumeVariance + mixVariance };
+  return {
+    rateVariance,
+    volumeVariance,
+    mixVariance,
+    total: rateVariance + volumeVariance + mixVariance,
+  };
 }
 ```
 
@@ -1093,23 +1134,36 @@ afterAll(() => server.close());
 function useGridKeyboard(rows: number, cols: number) {
   const [focus, setFocus] = useState({ row: 0, col: 0 });
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    switch (e.key) {
-      case 'ArrowUp':    setFocus((f) => ({ ...f, row: Math.max(0, f.row - 1) })); break;
-      case 'ArrowDown':  setFocus((f) => ({ ...f, row: Math.min(rows - 1, f.row + 1) })); break;
-      case 'ArrowLeft':  setFocus((f) => ({ ...f, col: Math.max(0, f.col - 1) })); break;
-      case 'ArrowRight': setFocus((f) => ({ ...f, col: Math.min(cols - 1, f.col + 1) })); break;
-      case 'Tab':
-        e.preventDefault();
-        setFocus((f) => ({
-          row: f.col === cols - 1 ? Math.min(rows - 1, f.row + 1) : f.row,
-          col: f.col === cols - 1 ? 0 : f.col + 1,
-        }));
-        break;
-      case 'Enter': /* activate cell */ break;
-      case 'Escape': /* deactivate cell */ break;
-    }
-  }, [rows, cols]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowUp':
+          setFocus((f) => ({ ...f, row: Math.max(0, f.row - 1) }));
+          break;
+        case 'ArrowDown':
+          setFocus((f) => ({ ...f, row: Math.min(rows - 1, f.row + 1) }));
+          break;
+        case 'ArrowLeft':
+          setFocus((f) => ({ ...f, col: Math.max(0, f.col - 1) }));
+          break;
+        case 'ArrowRight':
+          setFocus((f) => ({ ...f, col: Math.min(cols - 1, f.col + 1) }));
+          break;
+        case 'Tab':
+          e.preventDefault();
+          setFocus((f) => ({
+            row: f.col === cols - 1 ? Math.min(rows - 1, f.row + 1) : f.row,
+            col: f.col === cols - 1 ? 0 : f.col + 1,
+          }));
+          break;
+        case 'Enter':
+          /* activate cell */ break;
+        case 'Escape':
+          /* deactivate cell */ break;
+      }
+    },
+    [rows, cols]
+  );
 
   return { focus, handleKeyDown };
 }
@@ -1119,20 +1173,20 @@ function useGridKeyboard(rows: number, cols: number) {
 
 ## Summary — 15 Categories Covered
 
-| # | Category | Patterns | Priority |
-|---|----------|----------|----------|
-| 1 | AG Grid Financial | Cell renderers, tree data, pivot, performance | HIGH |
-| 2 | Zustand Middleware | Canonical stack, undo/redo, cross-store, devtools | HIGH |
-| 3 | Tauri Desktop | IPC, native menu, system tray, auto-save | HIGH |
-| 4 | React Financial UI | Currency input, fiscal picker, skeleton, abbrev | HIGH |
-| 5 | Vitest Testing | Store, engine, component, edge cases | HIGH |
-| 6 | Recharts Financial | Waterfall, variance, sparkline, multi-axis | MEDIUM |
-| 7 | OWASP Security | CSP, XSS prevention, JWT tokens | HIGH |
-| 8 | Offline-First | Service worker, IndexedDB, conflict resolution | MEDIUM |
-| 9 | TypeScript Advanced | Branded types, discriminated unions, generics | MEDIUM |
-| 10 | Tailwind Financial | Dense tables, KPI cards, variance badges | MEDIUM |
-| 11 | Error Boundaries | Financial fallback, async errors | HIGH |
-| 12 | Performance Monitoring | Web Vitals, bundle analysis | MEDIUM |
-| 13 | Financial Modeling | Variance decomposition, driver-based, consolidation | HIGH |
-| 14 | MSW Testing | API mocking, handlers, server setup | MEDIUM |
-| 15 | Keyboard Navigation | Grid nav, tab order, focus management | MEDIUM |
+| #   | Category               | Patterns                                            | Priority |
+| --- | ---------------------- | --------------------------------------------------- | -------- |
+| 1   | AG Grid Financial      | Cell renderers, tree data, pivot, performance       | HIGH     |
+| 2   | Zustand Middleware     | Canonical stack, undo/redo, cross-store, devtools   | HIGH     |
+| 3   | Tauri Desktop          | IPC, native menu, system tray, auto-save            | HIGH     |
+| 4   | React Financial UI     | Currency input, fiscal picker, skeleton, abbrev     | HIGH     |
+| 5   | Vitest Testing         | Store, engine, component, edge cases                | HIGH     |
+| 6   | Recharts Financial     | Waterfall, variance, sparkline, multi-axis          | MEDIUM   |
+| 7   | OWASP Security         | CSP, XSS prevention, JWT tokens                     | HIGH     |
+| 8   | Offline-First          | Service worker, IndexedDB, conflict resolution      | MEDIUM   |
+| 9   | TypeScript Advanced    | Branded types, discriminated unions, generics       | MEDIUM   |
+| 10  | Tailwind Financial     | Dense tables, KPI cards, variance badges            | MEDIUM   |
+| 11  | Error Boundaries       | Financial fallback, async errors                    | HIGH     |
+| 12  | Performance Monitoring | Web Vitals, bundle analysis                         | MEDIUM   |
+| 13  | Financial Modeling     | Variance decomposition, driver-based, consolidation | HIGH     |
+| 14  | MSW Testing            | API mocking, handlers, server setup                 | MEDIUM   |
+| 15  | Keyboard Navigation    | Grid nav, tab order, focus management               | MEDIUM   |

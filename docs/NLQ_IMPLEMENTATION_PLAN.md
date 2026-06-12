@@ -25,6 +25,7 @@ User Input ("show Q3 revenue by region")
 ## Components to Build
 
 ### 1. NLQ Parser (`src/engines/nlq/NLQParser.ts`)
+
 **Purpose:** Parse natural language into structured tokens
 
 ```typescript
@@ -43,6 +44,7 @@ interface NLQParseResult {
 ```
 
 **Implementation:**
+
 - Dictionary-based tokenization (financial terms → normalized forms)
 - Typo correction using Levenshtein distance
 - Synonym mapping (e.g., "revenue" → "revenue", "sales" → "revenue", "income" → "revenue")
@@ -53,6 +55,7 @@ interface NLQParseResult {
 **Dependencies:** None
 
 ### 2. Intent Classifier (`src/engines/nlq/IntentClassifier.ts`)
+
 **Purpose:** Classify user intent from parsed tokens
 
 ```typescript
@@ -66,6 +69,7 @@ interface IntentResult {
 ```
 
 **Implementation:**
+
 - Rule-based classification (pattern matching)
 - Keyword → intent mapping:
   - "show", "display", "chart", "graph" → chart
@@ -85,25 +89,29 @@ interface IntentResult {
 **Dependencies:** NLQ Parser
 
 ### 3. Entity Extractor (`src/engines/nlq/EntityExtractor.ts`)
+
 **Purpose:** Extract structured entities from parsed tokens
 
 ```typescript
 interface NLQEntities {
-  metrics: string[];        // ["revenue", "expenses"]
-  timePeriod?: {            // Q3 2024, FY2023, Jan-Dec
+  metrics: string[]; // ["revenue", "expenses"]
+  timePeriod?: {
+    // Q3 2024, FY2023, Jan-Dec
     type: 'quarter' | 'year' | 'month' | 'range';
     start?: string;
     end?: string;
     value: string;
   };
-  dimensions?: string[];    // ["region", "department", "product"]
-  filters?: Array<{         // where revenue > 1000
+  dimensions?: string[]; // ["region", "department", "product"]
+  filters?: Array<{
+    // where revenue > 1000
     field: string;
     operator: 'eq' | 'gt' | 'lt' | 'gte' | 'lte' | 'contains';
     value: string | number;
   }>;
   aggregation?: 'sum' | 'avg' | 'count' | 'min' | 'max' | 'growth';
-  comparison?: {            // vs last year, vs budget
+  comparison?: {
+    // vs last year, vs budget
     type: 'period' | 'budget' | 'scenario';
     value: string;
   };
@@ -111,6 +119,7 @@ interface NLQEntities {
 ```
 
 **Implementation:**
+
 - Time period parser (fiscal year, quarter, month, date range)
 - Metric dictionary (245+ formula functions as metric names)
 - Dimension detection from sector configs (16 industries)
@@ -122,11 +131,12 @@ interface NLQEntities {
 **Dependencies:** NLQ Parser
 
 ### 4. Query Builder (`src/engines/nlq/QueryBuilder.ts`)
+
 **Purpose:** Map extracted entities to store queries
 
 ```typescript
 interface NLQQuery {
-  store: string;           // 'gl' | 'budget' | 'forecast' | 'scenario'
+  store: string; // 'gl' | 'budget' | 'forecast' | 'scenario'
   action: 'fetch' | 'aggregate' | 'compare' | 'filter';
   fields: string[];
   filters: Record<string, unknown>;
@@ -137,6 +147,7 @@ interface NLQQuery {
 ```
 
 **Implementation:**
+
 - Metric → store mapping:
   - Revenue, expenses, P&L → glStore
   - Budget, variance → budgetStore
@@ -151,6 +162,7 @@ interface NLQQuery {
 **Dependencies:** Entity Extractor
 
 ### 5. Query Executor (`src/engines/nlq/QueryExecutor.ts`)
+
 **Purpose:** Execute queries against Zustand stores
 
 ```typescript
@@ -166,6 +178,7 @@ interface NLQResult {
 ```
 
 **Implementation:**
+
 - Direct store access via getState()
 - Data transformation (group by, aggregate, filter)
 - Time period filtering
@@ -177,6 +190,7 @@ interface NLQResult {
 **Dependencies:** Query Builder
 
 ### 6. Result Renderer (`src/components/nlq/NLQResultRenderer.tsx`)
+
 **Purpose:** Render query results as appropriate visualization
 
 ```typescript
@@ -188,6 +202,7 @@ interface NLQRenderProps {
 ```
 
 **Implementation:**
+
 - Chart rendering using existing chart components:
   - Bar chart → WaterfallChart
   - Line chart → Recharts LineChart
@@ -204,6 +219,7 @@ interface NLQRenderProps {
 **Dependencies:** Query Executor, Chart Components
 
 ### 7. Chat Interface (`src/components/nlq/ChatPanel.tsx`)
+
 **Purpose:** Conversational NLQ interface
 
 ```typescript
@@ -218,6 +234,7 @@ interface ChatMessage {
 ```
 
 **Implementation:**
+
 - Chat message list with user/assistant bubbles
 - Input field with autocomplete suggestions
 - Query history (last 10 queries)
@@ -230,6 +247,7 @@ interface ChatMessage {
 **Dependencies:** All above components
 
 ### 8. NLQ Engine (`src/engines/NLQEngine.ts`)
+
 **Purpose:** Orchestrate the full NLQ pipeline
 
 ```typescript
@@ -274,6 +292,7 @@ src/components/nlq/
 ## Integration Points
 
 ### With Existing Systems
+
 1. **FormulaEngine** — Use formula functions as metric names
 2. **AIEngine** — Use embeddings for semantic similarity (optional, for advanced matching)
 3. **Chart Components** — Use WaterfallChart, VarianceChart, SparklineChart
@@ -283,40 +302,48 @@ src/components/nlq/
 7. **Stores** — Direct access via getState()
 
 ### Command Palette Integration
+
 - Add NLQ to CommandPalette (Ctrl+K)
 - Type natural language in command palette
 - Results appear inline
 
 ### Dashboard Integration
+
 - Add NLQ widget to DashboardPage
 - Quick queries without leaving dashboard
 
 ## Implementation Phases
 
 ### Phase 1: Core Parser (2 hours)
+
 - NLQParser.ts
 - dictionaries.ts
 - synonyms.ts
 - types.ts
 
 ### Phase 2: Intent & Entity Extraction (3 hours)
+
 - IntentClassifier.ts
 - EntityExtractor.ts
 
 ### Phase 3: Query Execution (2 hours)
+
 - QueryBuilder.ts
 - QueryExecutor.ts
 
 ### Phase 4: Result Rendering (3 hours)
+
 - NLQResultRenderer.tsx
 - Integration with chart components
 
 ### Phase 5: Chat Interface (3 hours)
+
 - ChatPanel.tsx
 - ChatMessage.tsx
 - QuerySuggestion.tsx
 
 ### Phase 6: Orchestration & Testing (2 hours)
+
 - NLQEngine.ts
 - Integration tests
 - Performance optimization
@@ -325,24 +352,24 @@ src/components/nlq/
 
 ## Success Metrics
 
-| Metric | Target | How to Measure |
-|--------|--------|----------------|
-| Query accuracy | >80% | Test with 100 sample queries |
-| Response time | <500ms | Performance benchmark |
-| Intent classification | >90% | Test with labeled dataset |
-| Entity extraction | >85% | Test with labeled dataset |
-| User satisfaction | >4/5 | User testing |
+| Metric                | Target | How to Measure               |
+| --------------------- | ------ | ---------------------------- |
+| Query accuracy        | >80%   | Test with 100 sample queries |
+| Response time         | <500ms | Performance benchmark        |
+| Intent classification | >90%   | Test with labeled dataset    |
+| Entity extraction     | >85%   | Test with labeled dataset    |
+| User satisfaction     | >4/5   | User testing                 |
 
 ## Competitive Comparison
 
-| Feature | FinPlan NLQ | Vena Copilot | Cube AI | Mosaic Arc AI |
-|---------|-------------|--------------|---------|---------------|
-| Offline | ✅ YES | ❌ Cloud | ❌ Cloud | ❌ Cloud |
-| Privacy | ✅ Local | ❌ Cloud | ❌ Cloud | ❌ Cloud |
-| Speed | ✅ <500ms | ⚠️ 1-3s | ⚠️ 1-2s | ⚠️ 1-2s |
-| Custom functions | ✅ 245+ | ❌ Limited | ❌ Limited | ❌ Limited |
-| Chart types | ✅ 6 advanced | ⚠️ 3 basic | ⚠️ 4 basic | ⚠️ 3 basic |
-| Offline-first | ✅ Unique | ❌ | ❌ | ❌ |
+| Feature          | FinPlan NLQ   | Vena Copilot | Cube AI    | Mosaic Arc AI |
+| ---------------- | ------------- | ------------ | ---------- | ------------- |
+| Offline          | ✅ YES        | ❌ Cloud     | ❌ Cloud   | ❌ Cloud      |
+| Privacy          | ✅ Local      | ❌ Cloud     | ❌ Cloud   | ❌ Cloud      |
+| Speed            | ✅ <500ms     | ⚠️ 1-3s      | ⚠️ 1-2s    | ⚠️ 1-2s       |
+| Custom functions | ✅ 245+       | ❌ Limited   | ❌ Limited | ❌ Limited    |
+| Chart types      | ✅ 6 advanced | ⚠️ 3 basic   | ⚠️ 4 basic | ⚠️ 3 basic    |
+| Offline-first    | ✅ Unique     | ❌           | ❌         | ❌            |
 
 ## Key Advantages
 

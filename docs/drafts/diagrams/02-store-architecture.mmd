@@ -1,0 +1,105 @@
+<!-- DRAFT v0.1 — awaiting review — Mnemosyne 2026-06-12 -->
+# Diagram 2 — Store Architecture
+
+> **Source:** `docs/drafts/diagrams/02-store-architecture.mmd`
+> **Use:** New contributor needs the wiring — 35 stores + masterStorage + 5 middlewares
+> **Renders:** GitHub, GitLab, VS Code, docs sites
+
+```mermaid
+graph TD
+  subgraph Persisted["Persisted Stores (14)<br/>subscribeWithSelector(persist(immer(...), { storage: masterStorage }))"]
+    AUTH[authStore]
+    DATA[dataStore<br/>🔒 encrypted]
+    CUBE[cubeStore<br/>engine class]
+    UI[uiStore]
+    SET[settingsStore]
+    DASH[dashboardStore]
+    TOUR[tourStore]
+    ONB[onboardingStore]
+    ANA[analyticsPrefsStore]
+    NOT[notificationPrefsStore]
+    SCNP[scenarioPersistenceStore]
+    DRVP[driverPersistenceStore]
+    BUD[budgetStore]
+    VAR[varianceStore]
+  end
+
+  subgraph Transient["Transient Stores (21)<br/>subscribeWithSelector(immer(...)) — no persist"]
+    SCN[scenarioStore]
+    FX[fxRateStore]
+    DRV[driverStore]
+    NOTI[notificationStore]
+    COL[collaborationStore]
+    ANA2[analyticsStore]
+    ALLOC[allocationStore]
+    SENS[sensitivityStore]
+    DRILL[drillDownStore]
+    PLOT[plotStore]
+    COMP[comparisonStore]
+    FILT[filterStore]
+    SORT[sortStore]
+    PAG[paginationStore]
+    MOD[modalStore]
+    TOAS[toastStore]
+    TOUR2[tourProgressStore]
+    FF[featureFlagStore]
+    EXP[exportStore]
+    IMP[importStore]
+    MISC[...]
+  end
+
+  MS[masterStorage<br/>src/utils/masterStorage.ts<br/>── localStorage wrapper ──]
+  CRYPTO[EncryptionEngine<br/>src/engines/EncryptionEngine.ts<br/>── AES-GCM-256 + PBKDF2 600k ──]
+  LS[(localStorage<br/>── Tauri: SQLite file ──)]
+
+  AUTH --> MS
+  DATA --> MS
+  DATA --> CRYPTO
+  CUBE --> MS
+  UI --> MS
+  SET --> MS
+  DASH --> MS
+  TOUR --> MS
+  ONB --> MS
+  ANA --> MS
+  NOT --> MS
+  SCNP --> MS
+  DRVP --> MS
+  BUD --> MS
+  VAR --> MS
+
+  MS <-->|envelope + version| LS
+
+  CUBE -.->|wraps class| CUBE_E[CubeEngine<br/>class instance<br/>── partialize-excluded ──]
+  DATA -.->|reads/writes| CUBE_E
+
+  classDef persisted fill:#3B82F6,color:#fff,stroke:#1E40AF
+  classDef transient fill:#10B981,color:#fff,stroke:#065F46
+  classDef infra fill:#F59E0B,color:#000,stroke:#92400E
+  classDef engine fill:#8B5CF6,color:#fff,stroke:#5B21B6
+  classDef storage fill:#6B7280,color:#fff,stroke:#1F2937
+
+  class AUTH,DATA,CUBE,UI,SET,DASH,TOUR,ONB,ANA,NOT,SCNP,DRVP,BUD,VAR persisted
+  class SCN,FX,DRV,NOTI,COL,ANA2,ALLOC,SENS,DRILL,PLOT,COMP,FILT,SORT,PAG,MOD,TOAS,TOUR2,FF,EXP,IMP,MISC transient
+  class MS,CRYPTO infra
+  class CUBE_E engine
+  class LS storage
+```
+
+**Key annotations:**
+
+- **14 persisted + 21 transient = 35 stores** (ground truth as of 2026-06-12).
+- **`dataStore` is the only encrypted store** (PII: account names, customer names, balance sheet items). See ADR-005 + ADR-007.
+- **`cubeStore` wraps a class instance** (`CubeEngine`) — the only class-instance store; must be `partialize`-excluded.
+- **Dashed edges** are conceptual relationships, not data flow.
+
+**When a new contributor asks "which store should I use?"** — show them this diagram. The decision tree is:
+
+1. Does the data need to survive a reload? → Persisted (14 stores).
+2. Is it PII? → `dataStore` (with encryption).
+3. Is it a class instance? → Wrap in a store with `partialize` (only `cubeStore`).
+4. Otherwise → Transient (21 stores).
+
+---
+
+<!-- /DRAFT v0.1 — Mnemosyne 2026-06-12 -->

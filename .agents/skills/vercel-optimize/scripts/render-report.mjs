@@ -18,7 +18,9 @@ const HARD_REGEN_TRIGGERS = new Set([
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.recsPath || !args.gatePath || !args.signalsPath) {
-    console.error('usage: node scripts/render-report.mjs <recommendations.json> <gate.json> <signals.json> [--project NAME] [--out FILE] [--message-out FILE] [--no-timestamp] [--debug-out FILE]');
+    console.error(
+      'usage: node scripts/render-report.mjs <recommendations.json> <gate.json> <signals.json> [--project NAME] [--out FILE] [--message-out FILE] [--no-timestamp] [--debug-out FILE]'
+    );
     process.exit(1);
   }
 
@@ -57,28 +59,27 @@ async function main() {
         .filter((r, i) => (r.quality?.overall ?? 0) >= 0.55)
         .filter((r) => !hardRegenRefs.has(r.candidateRef));
   const recommendationsRaw = candidateRecommendations
-        .filter((r) => {
-          if (r?.abstain === true || r?.needsReview !== true) return true;
-          needsReviewDrops.push({
-            candidateRef: r.candidateRef ?? null,
-            reason: 'This recommendation needs a manual safety review before it is ready to apply.',
-          });
-          return false;
-        })
-        .filter((r) => {
-          if (!enforceCurrentGate) return true;
-          if (recommendationMatchesActiveCandidate(r, activeCandidates)) return true;
-          staleRecommendationDrops.push({
-            candidateRef: r.candidateRef ?? null,
-            reason: 'This recommendation came from a candidate that is not in the current run output. Re-run from a clean run directory before applying it.',
-          });
-          return false;
-        });
+    .filter((r) => {
+      if (r?.abstain === true || r?.needsReview !== true) return true;
+      needsReviewDrops.push({
+        candidateRef: r.candidateRef ?? null,
+        reason: 'This recommendation needs a manual safety review before it is ready to apply.',
+      });
+      return false;
+    })
+    .filter((r) => {
+      if (!enforceCurrentGate) return true;
+      if (recommendationMatchesActiveCandidate(r, activeCandidates)) return true;
+      staleRecommendationDrops.push({
+        candidateRef: r.candidateRef ?? null,
+        reason:
+          'This recommendation came from a candidate that is not in the current run output. Re-run from a clean run directory before applying it.',
+      });
+      return false;
+    });
   const recommendations = dedupeRecommendations(recommendationsRaw);
   const readyTargets = new Set(
-    recommendations
-      .map((r) => candidateTarget(r?.candidateRef))
-      .filter(Boolean)
+    recommendations.map((r) => candidateTarget(r?.candidateRef)).filter(Boolean)
   );
   const droppedContradictions = !Array.isArray(recsRaw)
     ? (recsRaw.recsGraded ?? [])
@@ -86,7 +87,9 @@ async function main() {
         .filter(({ r }) => hardRegenRefs.has(r.candidateRef))
         .map(({ r, i }) => ({
           candidateRef: r.candidateRef ?? null,
-          reason: publicHardRegenReason(recsRaw.regenPlan?.find((p) => p.index === i || p.candidateRef === r.candidateRef)),
+          reason: publicHardRegenReason(
+            recsRaw.regenPlan?.find((p) => p.index === i || p.candidateRef === r.candidateRef)
+          ),
         }))
     : [];
 
@@ -96,15 +99,19 @@ async function main() {
   // Contradiction-dropped recs ride alongside them so customers see WHY a rec
   // was held back instead of it silently disappearing.
   const baseAbstentions = Array.isArray(recsRaw)
-    ? recsRaw.filter((r) => r?.abstain === true).map((r) => ({
-        candidateRef: r.candidateRef ?? null,
-        reason: publicNoChangeReason(r.reason ?? '(no reason recorded)'),
-      }))
+    ? recsRaw
+        .filter((r) => r?.abstain === true)
+        .map((r) => ({
+          candidateRef: r.candidateRef ?? null,
+          reason: publicNoChangeReason(r.reason ?? '(no reason recorded)'),
+        }))
     : (recsRaw.abstentions ?? []).map((r) => ({
         ...r,
         reason: publicNoChangeReason(r.reason ?? '(no reason recorded)'),
       }));
-  const publicBaseAbstentions = baseAbstentions.filter((r) => !readyTargets.has(candidateTarget(r?.candidateRef)));
+  const publicBaseAbstentions = baseAbstentions.filter(
+    (r) => !readyTargets.has(candidateTarget(r?.candidateRef))
+  );
   // Observations: no-change findings carrying a structured non-perf finding
   // (deployment regression, error storm, etc.).
   const flattenedObservations = Array.isArray(recsRaw)
@@ -113,7 +120,10 @@ async function main() {
         ...(Array.isArray(recsRaw.observations) ? recsRaw.observations : []),
         ...(Array.isArray(recsRaw.abstentions) ? recsRaw.abstentions : []),
       ]);
-  const { observations: safeObservations, heldBackObservations } = splitCustomerSafeObservations(flattenedObservations, baseAbstentions);
+  const { observations: safeObservations, heldBackObservations } = splitCustomerSafeObservations(
+    flattenedObservations,
+    baseAbstentions
+  );
   const observations = suppressReadyCoveredObservations(safeObservations, recommendations);
 
   const abstentions = [
@@ -121,29 +131,32 @@ async function main() {
     ...droppedContradictions,
     ...staleRecommendationDrops,
     ...needsReviewDrops,
-    ...(Array.isArray(recsRaw.withheldRecommendations) ? recsRaw.withheldRecommendations.map((d) => ({
-      candidateRef: d.candidateRef ?? null,
-      reason: publicWithheldReason(d),
-      needsEvidence: true,
-    })) : []),
-    ...(Array.isArray(recsRaw.sanitizerDropped) ? recsRaw.sanitizerDropped.map((d) => ({
-      candidateRef: d.candidateRef ?? null,
-      reason: `This needs a closer review before it is safe to apply: ${d.reason ?? 'review required'}.`,
-      needsEvidence: true,
-    })) : []),
-    ...(Array.isArray(recsRaw.heldBackObservations) ? recsRaw.heldBackObservations.map((d) => ({
-      ...d,
-      needsEvidence: true,
-    })) : []),
+    ...(Array.isArray(recsRaw.withheldRecommendations)
+      ? recsRaw.withheldRecommendations.map((d) => ({
+          candidateRef: d.candidateRef ?? null,
+          reason: publicWithheldReason(d),
+          needsEvidence: true,
+        }))
+      : []),
+    ...(Array.isArray(recsRaw.sanitizerDropped)
+      ? recsRaw.sanitizerDropped.map((d) => ({
+          candidateRef: d.candidateRef ?? null,
+          reason: `This needs a closer review before it is safe to apply: ${d.reason ?? 'review required'}.`,
+          needsEvidence: true,
+        }))
+      : []),
+    ...(Array.isArray(recsRaw.heldBackObservations)
+      ? recsRaw.heldBackObservations.map((d) => ({
+          ...d,
+          needsEvidence: true,
+        }))
+      : []),
     ...heldBackObservations,
   ];
 
   // Full catalog lets the renderer recover o11ySignal + aliasRoutes that recs
   // didn't propagate, and canonicalize segment-tree candidateRefs.
-  const allCandidates = [
-    ...activeCandidates,
-    ...gated,
-  ];
+  const allCandidates = [...activeCandidates, ...gated];
 
   const md = renderReport({
     recommendations,
@@ -155,7 +168,8 @@ async function main() {
     opts: {
       projectName: args.projectName,
       generatedAt: args.noTimestamp ? null : new Date().toISOString(),
-      heldBackCount: (Number.isInteger(recsRaw.summary?.withheldRecommendations)
+      heldBackCount:
+        (Number.isInteger(recsRaw.summary?.withheldRecommendations)
           ? recsRaw.summary.withheldRecommendations
           : (Array.isArray(recsRaw.regenPlan) ? recsRaw.regenPlan.length : 0) +
             (Array.isArray(recsRaw.qualityDropped) ? recsRaw.qualityDropped.length : 0)) +
@@ -215,14 +229,17 @@ function parseArgs(argv) {
     else if (a === '--out') out.outPath = resolve(argv[++i]);
     else if (a.startsWith('--out=')) out.outPath = resolve(a.slice('--out='.length));
     else if (a === '--message-out') out.messageOutPath = resolve(argv[++i]);
-    else if (a.startsWith('--message-out=')) out.messageOutPath = resolve(a.slice('--message-out='.length));
+    else if (a.startsWith('--message-out='))
+      out.messageOutPath = resolve(a.slice('--message-out='.length));
     else if (a === '--no-timestamp') out.noTimestamp = true;
     else if (a === '--debug-out') out.debugOutPath = resolve(argv[++i]);
-    else if (a.startsWith('--debug-out=')) out.debugOutPath = resolve(a.slice('--debug-out='.length));
+    else if (a.startsWith('--debug-out='))
+      out.debugOutPath = resolve(a.slice('--debug-out='.length));
     else if (a === '--debug') {
-      console.error('[render-report] --debug no longer writes internal details into customer markdown; use --debug-out FILE');
-    }
-    else out.positional.push(a);
+      console.error(
+        '[render-report] --debug no longer writes internal details into customer markdown; use --debug-out FILE'
+      );
+    } else out.positional.push(a);
   }
   out.recsPath = out.positional[0];
   out.gatePath = out.positional[1];
@@ -275,7 +292,8 @@ function candidateMatchesRef(candidate, ref) {
   if (!candidate || candidate.kind !== ref.kind) return false;
   if (candidate.scope === 'account' || ref.target === '<account>') return true;
 
-  const candidateTarget = candidate.route ?? candidate.hostname ?? candidate.file ?? candidate.target ?? null;
+  const candidateTarget =
+    candidate.route ?? candidate.hostname ?? candidate.file ?? candidate.target ?? null;
   if (!candidateTarget || !ref.target) return false;
 
   const a = String(candidateTarget);
@@ -374,15 +392,24 @@ function contradictsNoChangeReason(observation, abstentions) {
     observation?.summary,
     observation?.evidence,
     observation?.suggestedAction,
-  ].filter(Boolean).join(' ').toLowerCase();
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
   const relevantReasons = abstentions
     .filter((a) => candidateTarget(a?.candidateRef) === target)
     .map((a) => String(a?.reason ?? '').toLowerCase());
   if (relevantReasons.length === 0) return false;
 
-  if (/\bparalleliz(?:e|ing)\b/.test(observationText) &&
-      /\bgetsession\b/.test(observationText) &&
-      relevantReasons.some((reason) => /\bgetsession\b/.test(reason) && /\b(?:gates?|redirect|auth-preserving|blocked)\b/.test(reason))) {
+  if (
+    /\bparalleliz(?:e|ing)\b/.test(observationText) &&
+    /\bgetsession\b/.test(observationText) &&
+    relevantReasons.some(
+      (reason) =>
+        /\bgetsession\b/.test(reason) &&
+        /\b(?:gates?|redirect|auth-preserving|blocked)\b/.test(reason)
+    )
+  ) {
     return true;
   }
   return false;
@@ -403,11 +430,10 @@ function publicNoChangeReason(reason) {
 }
 
 function hasUnsupportedFrameworkCausalClaim(observation) {
-  const text = [
-    observation?.summary,
-    observation?.evidence,
-    observation?.suggestedAction,
-  ].filter(Boolean).join(' ').toLowerCase();
+  const text = [observation?.summary, observation?.evidence, observation?.suggestedAction]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
   if (!text.includes('notfound') || !text.includes('use cache')) return false;
   return (
     /known next\.js cache components edge case/.test(text) ||
@@ -420,43 +446,57 @@ function hasUnsupportedFrameworkCausalClaim(observation) {
 }
 
 function hasUnsupportedStaticGenerationClaim(observation) {
-  const text = [
-    observation?.summary,
-    observation?.evidence,
-    observation?.suggestedAction,
-  ].filter(Boolean).join(' ').toLowerCase();
+  const text = [observation?.summary, observation?.evidence, observation?.suggestedAction]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
   if (!/\bgeneratestaticparams\b/.test(text)) return false;
-  return /\b(?:returns?\s*(?:an\s+)?empty|\[\])\b[^.\n]{0,240}\b(?:every request|on[- ]demand|no params? (?:are )?prebuilt|populate generatestaticparams|served from (?:the )?cdn|hit bucket|cachebreakdown)\b/i.test(text) ||
-    /\b(?:every request|on[- ]demand|no params? (?:are )?prebuilt|populate generatestaticparams|served from (?:the )?cdn|hit bucket|cachebreakdown)\b[^.\n]{0,240}\b(?:returns?\s*(?:an\s+)?empty|\[\])\b/i.test(text) ||
-    /\bdynamic\s*=\s*['"`]error['"`]\b[^.\n]{0,240}\b(?:generatestaticparams|dynamicparams|every request|on[- ]demand)\b/i.test(text);
+  return (
+    /\b(?:returns?\s*(?:an\s+)?empty|\[\])\b[^.\n]{0,240}\b(?:every request|on[- ]demand|no params? (?:are )?prebuilt|populate generatestaticparams|served from (?:the )?cdn|hit bucket|cachebreakdown)\b/i.test(
+      text
+    ) ||
+    /\b(?:every request|on[- ]demand|no params? (?:are )?prebuilt|populate generatestaticparams|served from (?:the )?cdn|hit bucket|cachebreakdown)\b[^.\n]{0,240}\b(?:returns?\s*(?:an\s+)?empty|\[\])\b/i.test(
+      text
+    ) ||
+    /\bdynamic\s*=\s*['"`]error['"`]\b[^.\n]{0,240}\b(?:generatestaticparams|dynamicparams|every request|on[- ]demand)\b/i.test(
+      text
+    )
+  );
 }
 
 function hasUnsupportedSourceAbsenceClaim(observation) {
   const ref = String(observation?.candidateRef ?? '');
   if (!ref.startsWith('route_errors:')) return false;
-  const text = [
-    observation?.summary,
-    observation?.evidence,
-    observation?.suggestedAction,
-  ].filter(Boolean).join(' ').toLowerCase();
-  return /\b(?:enoent|no\s+(?:matching|corresponding)\s+(?:mdx|file|post)|missing\s+(?:mdx|file|post)|does\s+not\s+exist|not\s+found\s+on\s+disk)\b/.test(text);
+  const text = [observation?.summary, observation?.evidence, observation?.suggestedAction]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  return /\b(?:enoent|no\s+(?:matching|corresponding)\s+(?:mdx|file|post)|missing\s+(?:mdx|file|post)|does\s+not\s+exist|not\s+found\s+on\s+disk)\b/.test(
+    text
+  );
 }
 
 function hasUnsupportedCacheLifeCdnClaim(observation) {
-  const text = [
-    observation?.summary,
-    observation?.evidence,
-    observation?.suggestedAction,
-  ].filter(Boolean).join(' ');
+  const text = [observation?.summary, observation?.evidence, observation?.suggestedAction]
+    .filter(Boolean)
+    .join(' ');
   return hasUnsupportedCacheLifeCdnText(text);
 }
 
 function hasUnsupportedCacheLifeCdnText(text) {
   if (typeof text !== 'string' || !/\bcacheLife\b/i.test(text)) return false;
   if (/\btoLaunch-\d+\b/i.test(text)) return true;
-  return /\bcacheLife\b[^.\n]{0,240}\b(?:Cache-Control|s-maxage|CDN|edge cache|cache breakdown|x-vercel-cache|HIT|MISS|function (?:still )?runs per request|every request invokes the function|canonical|toLaunch-\d+)\b/i.test(text) ||
-    /\b(?:Cache-Control|s-maxage|CDN|edge cache|cache breakdown|x-vercel-cache|HIT|MISS|function (?:still )?runs per request|every request invokes the function|canonical|toLaunch-\d+)\b[^.\n]{0,240}\bcacheLife\b/i.test(text) ||
-    /\b(?:no|never|without|missing)\s+cacheLife\b[^.\n]{0,240}\b(?:no|not|never|0%|every|per request|function)\b[^.\n]{0,120}\b(?:cache|cached|hit|runs?|invoke)/i.test(text);
+  return (
+    /\bcacheLife\b[^.\n]{0,240}\b(?:Cache-Control|s-maxage|CDN|edge cache|cache breakdown|x-vercel-cache|HIT|MISS|function (?:still )?runs per request|every request invokes the function|canonical|toLaunch-\d+)\b/i.test(
+      text
+    ) ||
+    /\b(?:Cache-Control|s-maxage|CDN|edge cache|cache breakdown|x-vercel-cache|HIT|MISS|function (?:still )?runs per request|every request invokes the function|canonical|toLaunch-\d+)\b[^.\n]{0,240}\bcacheLife\b/i.test(
+      text
+    ) ||
+    /\b(?:no|never|without|missing)\s+cacheLife\b[^.\n]{0,240}\b(?:no|not|never|0%|every|per request|function)\b[^.\n]{0,120}\b(?:cache|cached|hit|runs?|invoke)/i.test(
+      text
+    )
+  );
 }
 
 function buildDebugArtifact({
@@ -471,9 +511,7 @@ function buildDebugArtifact({
   droppedContradictions = [],
 }) {
   const wrapper = Array.isArray(recsRaw) ? null : recsRaw;
-  const sourceRecords = Array.isArray(recsRaw)
-    ? recsRaw
-    : (recsRaw.recsGraded ?? []);
+  const sourceRecords = Array.isArray(recsRaw) ? recsRaw : (recsRaw.recsGraded ?? []);
   const summary = wrapper?.summary
     ? {
         ...wrapper.summary,
@@ -525,7 +563,12 @@ function flattenObservations(records) {
       });
       continue;
     }
-    if ('summary' in record || 'evidence' in record || 'suggestedAction' in record || 'kind' in record) {
+    if (
+      'summary' in record ||
+      'evidence' in record ||
+      'suggestedAction' in record ||
+      'kind' in record
+    ) {
       out.push({
         candidateRef: record.candidateRef ?? null,
         summary: coerceOptionalString(record.summary),

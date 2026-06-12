@@ -9,19 +9,20 @@
 
 ## Summary
 
-| Group | Cycle Count | Severity | Pattern |
-|-------|------------|----------|---------|
-| Sectors index ↔ sector files | 15 | Low | Type-only import cycle |
-| DataGrid ↔ hooks | 3 | Medium | Component exports types consumed by its own hooks |
-| Formula barrel ↔ function files | 2 | Low | Barrel re-export + type import |
-| DrillTables ↔ DrillThroughChain | 1 | Medium | Mutual component dependency |
-| authStore ↔ tokenRotation | 1 | High | Store ↔ utility circular |
+| Group                           | Cycle Count | Severity | Pattern                                           |
+| ------------------------------- | ----------- | -------- | ------------------------------------------------- |
+| Sectors index ↔ sector files    | 15          | Low      | Type-only import cycle                            |
+| DataGrid ↔ hooks                | 3           | Medium   | Component exports types consumed by its own hooks |
+| Formula barrel ↔ function files | 2           | Low      | Barrel re-export + type import                    |
+| DrillTables ↔ DrillThroughChain | 1           | Medium   | Mutual component dependency                       |
+| authStore ↔ tokenRotation       | 1           | High     | Store ↔ utility circular                          |
 
 ---
 
 ## Cycle Group 1: Sector Config (15 cycles)
 
 **Files:**
+
 - `config/sectors/index.ts` → `config/sectors/{sector}.ts`
 - `config/sectors/{sector}.ts` → `config/sectors/index.ts`
 
@@ -42,6 +43,7 @@ config/sectors/agriculture.ts ← imports types only
 ## Cycle Group 2: DataGrid ↔ Hooks (3 cycles)
 
 **Files:**
+
 - `components/ui/DataGrid.tsx` → `hooks/useDataGridExport.ts`, `hooks/useFindReplace.ts`, `hooks/useSelectionStats.ts`
 - Each hook → `components/ui/DataGrid.tsx` (imports `DataGridColumn` type)
 
@@ -62,6 +64,7 @@ hooks/useSelectionStats.ts       ← imports from DataGrid.types
 ## Cycle Group 3: Formula Barrel (2 cycles)
 
 **Files:**
+
 - `components/ui/formula/formulaData.ts` → `lookupMathFunctions.ts`, `financialLogicalTextDateStatFunctions.ts`
 - Both function files → `formulaData.ts` (imports `FormulaFunction` type)
 
@@ -81,6 +84,7 @@ components/ui/formula/financialLogicalTextDateStatFunctions.ts ← imports from 
 ## Cycle Group 4: DrillTables ↔ DrillThroughChain (1 cycle)
 
 **Files:**
+
 - `DrillThroughChain.tsx` → `DrillTables.tsx` (imports `SummaryTable`, `DetailTable`, `JournalEntryTable`)
 - `DrillTables.tsx` → `DrillThroughChain.tsx` (imports `SummaryRow`, `DetailRow`, `JournalEntry` types)
 
@@ -99,6 +103,7 @@ components/spreadsheet/DrillThroughChain.tsx   ← imports types + components
 ## Cycle Group 5: authStore ↔ tokenRotation (1 cycle — HIGH)
 
 **Files:**
+
 - `store/authStore.ts` → `utils/tokenRotation.ts` (imports `startRotation`, `stopRotation`)
 - `utils/tokenRotation.ts` → `store/authStore.ts` (imports `useAuthStore`)
 
@@ -140,6 +145,7 @@ startRotation({
 ## Verification
 
 After fixes, re-run:
+
 ```bash
 node node_modules/madge/bin/cli.js --circular --extensions ts,tsx --ts-config tsconfig.json src/
 ```

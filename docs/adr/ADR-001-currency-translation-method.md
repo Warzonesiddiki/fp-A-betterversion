@@ -24,12 +24,14 @@ The engine previously lacked a documented default for which rate to use when the
 **Default to the closing rate for balance sheet translation (current rate method) and average rate for income statement translation, per IAS 21 ¶31.**
 
 The `MultiCurrencyEngine.translateBalanceSheet` method implements the current rate method as the default translation approach:
+
 - Assets/Liabilities → `closingRate` (required by IAS 21 ¶31(a))
 - Revenue/Expenses → `averageRate` (acceptable practical expedient per IAS 21 ¶40)
 - Equity → `historicalRate` (required by IAS 21 ¶31(c))
 - CTA → accumulated in OCI via `calculateTotalCTA`
 
 The `MultiCurrencyEngine.remeasure` method implements the temporal method (ASC 830-10-45) for remeasurement into functional currency:
+
 - Monetary items → `closingRate`
 - Non-monetary items → `historicalRate`
 - Remeasurement gain/loss → **P&L** (not OCI)
@@ -46,12 +48,14 @@ The `MultiCurrencyEngine.remeasure` method implements the temporal method (ASC 8
 ## Consequences
 
 ### Positive
+
 - Full IAS 21 ¶31 + ¶39 compliance for foreign operation translation
 - Full ASC 830 compliance for both translation and remeasurement
 - CTA tracking enables proper OCI reporting and disposal recycling (IAS 21 ¶48)
 - Clear separation: translation → OCI, remeasurement → P&L
 
 ### Negative
+
 - Requires maintaining three rate series (closing, average, historical) per currency pair
 - Average rate calculation must be volume-weighted for precision (see `getWeightedAverageRate` fix)
 - Historical rates for equity require transaction-level tracking
@@ -66,11 +70,11 @@ The `MultiCurrencyEngine.remeasure` method implements the temporal method (ASC 8
 
 ## Alternatives Considered
 
-| Method | Assets/Liab | Income/Exp | Equity | CTA | Use Case |
-|--------|-------------|------------|--------|-----|----------|
-| Current Rate (chosen) | Closing | Average | Historical | OCI | Foreign ops (IAS 21 default) |
-| Temporal | Closing | Closing* | Historical | P&L | Functional ≠ Local (remeasurement) |
-| Monetary/Non-monetary | Mixed | Mixed | Mixed | Mixed | Legacy/partial |
+| Method                | Assets/Liab | Income/Exp | Equity     | CTA   | Use Case                           |
+| --------------------- | ----------- | ---------- | ---------- | ----- | ---------------------------------- |
+| Current Rate (chosen) | Closing     | Average    | Historical | OCI   | Foreign ops (IAS 21 default)       |
+| Temporal              | Closing     | Closing\*  | Historical | P&L   | Functional ≠ Local (remeasurement) |
+| Monetary/Non-monetary | Mixed       | Mixed      | Mixed      | Mixed | Legacy/partial                     |
 
 \* Temporal uses closing for monetary, historical for non-monetary income/expense
 

@@ -1,4 +1,5 @@
 # 🏆 FINPLAN PRO — THE ULTIMATE FP&A PLATFORM
+
 ## Merged Master Plan: Vision × Engineering
 
 > **Mission:** Surpass Anaplan, Workday Adaptive, OneStream, Planful, Pigment, Prophix, Vena, Jirav, Cube, and Drivetrain in every non-AI capability. Unified, offline-first, free, single-file, Excel-grade, covering every FP&A domain.
@@ -12,29 +13,31 @@
 ## PART 1: VISION SYNTHESIS — BEST OF BOTH
 
 ### My Plan's Strengths (Engineering Reality)
-| Strength | Why It Matters |
-|----------|----------------|
-| Test-first approach with fix roadmap | Actually achievable in 4 weeks |
-| Existing codebase pattern-matching | Builds on working code (Zustand, AG Grid, Recharts) |
-| Concrete store/engine interfaces | No ambiguity in implementation |
-| Page-wiring map | Every page accounted for |
-| Known failing tests with root causes | Fastest path to green builds |
-| Web worker strategy | Large dataset handling proof-of-concept |
-| Performance baselines | Measurable targets |
+
+| Strength                             | Why It Matters                                      |
+| ------------------------------------ | --------------------------------------------------- |
+| Test-first approach with fix roadmap | Actually achievable in 4 weeks                      |
+| Existing codebase pattern-matching   | Builds on working code (Zustand, AG Grid, Recharts) |
+| Concrete store/engine interfaces     | No ambiguity in implementation                      |
+| Page-wiring map                      | Every page accounted for                            |
+| Known failing tests with root causes | Fastest path to green builds                        |
+| Web worker strategy                  | Large dataset handling proof-of-concept             |
+| Performance baselines                | Measurable targets                                  |
 
 ### Your Vision's Strengths (Architectural Superiority)
-| Strength | Why It Matters |
-|----------|----------------|
-| Multi-dimensional data model (cube) | True OLAP — not just flat stores |
-| Unlimited custom dimensions | Competitors cap at 7-15 dimensions |
-| 300+ Excel-compatible formulas | Power users demand Excel parity |
-| Single .fpa file format | Portable, shareable, backup-friendly |
-| Virtual scrolling grid (1M+ rows) | Enterprise datasets without lag |
-| Full consolidation workflow step-by-step | Compliance-grade close process |
-| Report designer with drag-drop | Empower non-technical users |
-| ETL pipeline builder | Self-service data integration |
-| Snapshot/compare/audit trail | Complete data governance |
-| Performance SLAs (50ms cell edit) | Feels native, not web |
+
+| Strength                                 | Why It Matters                       |
+| ---------------------------------------- | ------------------------------------ |
+| Multi-dimensional data model (cube)      | True OLAP — not just flat stores     |
+| Unlimited custom dimensions              | Competitors cap at 7-15 dimensions   |
+| 300+ Excel-compatible formulas           | Power users demand Excel parity      |
+| Single .fpa file format                  | Portable, shareable, backup-friendly |
+| Virtual scrolling grid (1M+ rows)        | Enterprise datasets without lag      |
+| Full consolidation workflow step-by-step | Compliance-grade close process       |
+| Report designer with drag-drop           | Empower non-technical users          |
+| ETL pipeline builder                     | Self-service data integration        |
+| Snapshot/compare/audit trail             | Complete data governance             |
+| Performance SLAs (50ms cell edit)        | Feels native, not web                |
 
 ### Architecture Decision
 
@@ -84,37 +87,38 @@ HYBRID LAYERED ARCHITECTURE:
 
 ### How each Module maps to existing code
 
-| Module # | Your Module | Status | Implementation Strategy |
-|:--------:|-------------|:------:|------------------------|
-| M1 | Data Model Engine | 🔴 NEW | Build CubeEngine — new TypeScript engine, SQLite-backed |
-| M2 | Spreadsheet Engine | 🟡 EXTEND | Enhance AG Grid + expand FormulaEngine to 300+ functions |
-| M3 | Chart of Accounts | 🟡 EXTEND | Enhance existing ChartOfAccountsPage + glStore |
-| M4 | Entity Management | 🔴 NEW | Build entityStore + hierarchy engine |
-| M5 | Planning & Budgeting | 🟡 EXTEND | Enhance budgetStore + forecastStore + 8 new planning engines |
-| M6 | Forecasting | 🔴 NEW | Build RollingForecastEngine + forecastStore |
-| M7 | Financial Reporting | 🟡 EXTEND | Enhance reportStore + build ReportBuilderEngine |
-| M8 | Consolidation | 🟢 EXISTING | ConsolidationEngine already exists (needs fixes + enhancements) |
-| M9 | Data Import | 🟢 EXISTING | GLUploadPage already works (enhance with ETL pipeline) |
-| M10 | Visualization | 🟢 EXISTING | Recharts + AG Grid (enhance with 20+ chart types) |
-| M11 | Close Management | 🟡 EXTEND | PeriodCloseEngine exists (add journal entry workflow) |
-| M12 | Document Management | 🟢 EXISTING | DocumentEngine exists |
-| M13 | UI/UX | 🟡 EXTEND | Enhance existing (command palette, keyboard shortcuts, themes) |
-| M14 | File Management | 🔴 NEW | .fpa single-file format via Tauri SQLite |
-| M15 | Printing | 🔴 NEW | Build print engine (jsPDF exists, need page setup) |
-| M16 | Help System | 🟡 EXTEND | Enhance existing HelpPage |
-| M17 | Performance | 🟡 OPTIMIZE | Web workers, virtual scrolling, incremental calc |
-| M18 | Installation | 🟢 EXISTING | Tauri build already works |
-| M19 | Error Handling | 🟡 EXTEND | Enhance error boundaries + add integrity checks |
-| M20 | Differentiators | 🔴 NEW | Snapshot, round-trip, audit trail, templates |
-| M21 | Sample Data | 🔴 NEW | Build sample project generator |
+| Module # | Your Module          |   Status    | Implementation Strategy                                         |
+| :------: | -------------------- | :---------: | --------------------------------------------------------------- |
+|    M1    | Data Model Engine    |   🔴 NEW    | Build CubeEngine — new TypeScript engine, SQLite-backed         |
+|    M2    | Spreadsheet Engine   |  🟡 EXTEND  | Enhance AG Grid + expand FormulaEngine to 300+ functions        |
+|    M3    | Chart of Accounts    |  🟡 EXTEND  | Enhance existing ChartOfAccountsPage + glStore                  |
+|    M4    | Entity Management    |   🔴 NEW    | Build entityStore + hierarchy engine                            |
+|    M5    | Planning & Budgeting |  🟡 EXTEND  | Enhance budgetStore + forecastStore + 8 new planning engines    |
+|    M6    | Forecasting          |   🔴 NEW    | Build RollingForecastEngine + forecastStore                     |
+|    M7    | Financial Reporting  |  🟡 EXTEND  | Enhance reportStore + build ReportBuilderEngine                 |
+|    M8    | Consolidation        | 🟢 EXISTING | ConsolidationEngine already exists (needs fixes + enhancements) |
+|    M9    | Data Import          | 🟢 EXISTING | GLUploadPage already works (enhance with ETL pipeline)          |
+|   M10    | Visualization        | 🟢 EXISTING | Recharts + AG Grid (enhance with 20+ chart types)               |
+|   M11    | Close Management     |  🟡 EXTEND  | PeriodCloseEngine exists (add journal entry workflow)           |
+|   M12    | Document Management  | 🟢 EXISTING | DocumentEngine exists                                           |
+|   M13    | UI/UX                |  🟡 EXTEND  | Enhance existing (command palette, keyboard shortcuts, themes)  |
+|   M14    | File Management      |   🔴 NEW    | .fpa single-file format via Tauri SQLite                        |
+|   M15    | Printing             |   🔴 NEW    | Build print engine (jsPDF exists, need page setup)              |
+|   M16    | Help System          |  🟡 EXTEND  | Enhance existing HelpPage                                       |
+|   M17    | Performance          | 🟡 OPTIMIZE | Web workers, virtual scrolling, incremental calc                |
+|   M18    | Installation         | 🟢 EXISTING | Tauri build already works                                       |
+|   M19    | Error Handling       |  🟡 EXTEND  | Enhance error boundaries + add integrity checks                 |
+|   M20    | Differentiators      |   🔴 NEW    | Snapshot, round-trip, audit trail, templates                    |
+|   M21    | Sample Data          |   🔴 NEW    | Build sample project generator                                  |
 
 ### STATUS LEGEND
-| Status | Meaning | Count |
-|:------:|---------|:-----:|
-| 🔴 NEW | Must be built from scratch | 7 |
-| 🟡 EXTEND | Enhances existing code significantly | 9 |
-| 🟢 EXISTING | Already works, minor enhancements | 5 |
-| 🟡 OPTIMIZE | Performance optimization of existing | 1 |
+
+|   Status    | Meaning                              | Count |
+| :---------: | ------------------------------------ | :---: |
+|   🔴 NEW    | Must be built from scratch           |   7   |
+|  🟡 EXTEND  | Enhances existing code significantly |   9   |
+| 🟢 EXISTING | Already works, minor enhancements    |   5   |
+| 🟡 OPTIMIZE | Performance optimization of existing |   1   |
 
 ---
 
@@ -123,6 +127,7 @@ HYBRID LAYERED ARCHITECTURE:
 ### Why a Cube Engine Instead of Just Zustand Stores
 
 The current architecture uses flat Zustand stores (like `glStore.entries[]`). This doesn't scale to:
+
 - Queries like "revenue by product by region for Q3 2025 vs budget"
 - Unlimited custom dimensions
 - 10M+ data cells
@@ -169,7 +174,7 @@ interface DimensionDefinition {
 
 interface HierarchyDefinition {
   name: string;
-  levels: string[];  // e.g., ['region', 'country', 'city']
+  levels: string[]; // e.g., ['region', 'country', 'city']
   effectiveDating: boolean;
 }
 
@@ -190,7 +195,7 @@ interface DimensionMember {
 
 interface CubeDefinition {
   name: string;
-  dimensions: string[];  // dimension names
+  dimensions: string[]; // dimension names
   measures: MeasureDefinition[];
   storage: 'sparse' | 'dense';
 }
@@ -198,7 +203,7 @@ interface CubeDefinition {
 interface MeasureDefinition {
   name: string;
   dataType: 'numeric' | 'text' | 'date' | 'boolean';
-  precision?: number;  // decimal places for numeric
+  precision?: number; // decimal places for numeric
   aggregation: 'sum' | 'avg' | 'count' | 'min' | 'max' | 'none';
   currency?: boolean;
 }
@@ -210,13 +215,13 @@ interface CubeCell {
   value: number | string | Date | boolean;
   dataType: 'input' | 'calculated' | 'consolidated' | 'linked' | 'imported';
   comment?: string;
-  attachment?: string;  // file path
+  attachment?: string; // file path
 }
 
 interface CubeQuery {
   cube: string;
-  rows: string[];        // dimension names to place on rows
-  columns: string[];     // dimension names to place on columns
+  rows: string[]; // dimension names to place on rows
+  columns: string[]; // dimension names to place on columns
   filters: QueryFilter[];
   measures: string[];
   aggregation?: 'sum' | 'avg' | 'count' | 'min' | 'max';
@@ -266,6 +271,7 @@ interface CubeDiff {
 ```
 
 **System Dimensions (always exist):**
+
 - `Account` — chart of accounts with hierarchies (reporting, tax)
 - `Entity` — legal entities, departments, cost centers
 - `Time` — year → quarter → month → week → day
@@ -275,9 +281,11 @@ interface CubeDiff {
 - `DataSource` — Manual, Import-Batch-X, Calculated
 
 **User Can Add Dimensions At Any Time:**
+
 - Product, Customer, Channel, Geography, Project, Cost Center, Employee, Vendor, ...
 
 **SQLite Schema (auto-generated on first use):**
+
 ```sql
 -- Dimensions table (metadata)
 CREATE TABLE dimensions (
@@ -371,6 +379,7 @@ CREATE TABLE snapshot_cells (
 ## PART 4: FORMULA ENGINE — 300+ FUNCTIONS (Your M2 + My A7)
 
 ### Current State: 5 functions (SUM, IF, COUNT, NPV, CAGR)
+
 ### Target: 300+ functions across 11 categories
 
 ### Architecture
@@ -425,6 +434,7 @@ src/engines/FormulaEngine/
 ```
 
 ### Category 1: Math & Trig (50+ functions)
+
 ```
 SUM, SUMIF, SUMIFS, SUMPRODUCT, SUBTOTAL,
 ABS, ROUND, ROUNDUP, ROUNDDOWN, CEILING, FLOOR,
@@ -441,6 +451,7 @@ ISO.CEILING, AGGREGATE
 ```
 
 ### Category 2: Logical (15 functions)
+
 ```
 IF, IFS, AND, OR, NOT, XOR,
 TRUE, FALSE, IFERROR, IFNA,
@@ -449,6 +460,7 @@ ISBLANK, ISLOGICAL, ISTEXT
 ```
 
 ### Category 3: Lookup & Reference (20 functions)
+
 ```
 VLOOKUP, HLOOKUP, INDEX, MATCH, XLOOKUP,
 OFFSET, INDIRECT, CHOOSE,
@@ -459,6 +471,7 @@ GETPIVOTDATA, RTD
 ```
 
 ### Category 4: Text (30 functions)
+
 ```
 LEFT, RIGHT, MID, LEN,
 FIND, SEARCH, SUBSTITUTE, REPLACE,
@@ -472,6 +485,7 @@ UNICHAR, UNICODE
 ```
 
 ### Category 5: Date & Time (30 functions)
+
 ```
 TODAY, NOW,
 DATE, TIME,
@@ -489,6 +503,7 @@ ISOWEEKNUM, QUARTER (custom)
 ```
 
 ### Category 6: Statistical (40 functions)
+
 ```
 AVERAGEA, AVERAGE.WEIGHTED (custom),
 COUNTBLANK, MAXA, MINA,
@@ -514,6 +529,7 @@ LARGE, SMALL, RANK, RANK.AVG, RANK.EQ
 ```
 
 ### Category 7: Financial (25 functions)
+
 ```
 NPV, IRR, XIRR, MIRR,
 PMT, PPMT, IPMT,
@@ -527,6 +543,7 @@ DOLLARDE, DOLLARFR
 ```
 
 ### Category 8: Information (15 functions)
+
 ```
 ISBLANK, ISERR, ISERROR, ISEVEN,
 ISLOGICAL, ISNA, ISNONTEXT, ISNUMBER,
@@ -536,6 +553,7 @@ TYPE, NA, ERROR.TYPE
 ```
 
 ### Category 9: Engineering (15 functions)
+
 ```
 BIN2DEC, BIN2HEX, BIN2OCT,
 DEC2BIN, DEC2HEX, DEC2OCT,
@@ -666,282 +684,296 @@ Sorting:
 
 ### FormulaEngine Test Matrix (500+ tests)
 
-| Category | Functions | Tests Per | Total Tests |
-|----------|:---------:|:---------:|:-----------:|
-| Math & Trig | 50 | 3-5 | 200 |
-| Logical | 15 | 3-4 | 50 |
-| Lookup & Reference | 20 | 4-5 | 90 |
-| Text | 30 | 3-4 | 100 |
-| Date & Time | 30 | 4-5 | 130 |
-| Statistical | 40 | 3-5 | 160 |
-| Financial | 25 | 5-8 | 150 |
-| Information | 15 | 2-3 | 35 |
-| Engineering | 15 | 3-4 | 50 |
-| FP&A custom | 15 | 5-6 | 80 |
-| Parser edge cases | — | — | 50 |
-| Performance | — | — | 10 |
-| **TOTAL** | **300+** | | **~1100** |
+| Category           | Functions | Tests Per | Total Tests |
+| ------------------ | :-------: | :-------: | :---------: |
+| Math & Trig        |    50     |    3-5    |     200     |
+| Logical            |    15     |    3-4    |     50      |
+| Lookup & Reference |    20     |    4-5    |     90      |
+| Text               |    30     |    3-4    |     100     |
+| Date & Time        |    30     |    4-5    |     130     |
+| Statistical        |    40     |    3-5    |     160     |
+| Financial          |    25     |    5-8    |     150     |
+| Information        |    15     |    2-3    |     35      |
+| Engineering        |    15     |    3-4    |     50      |
+| FP&A custom        |    15     |    5-6    |     80      |
+| Parser edge cases  |     —     |     —     |     50      |
+| Performance        |     —     |     —     |     10      |
+| **TOTAL**          | **300+**  |           |  **~1100**  |
 
 ---
 
 ## PART 5: COMPLETE STORE ROSTER (32 Total)
 
 ### Existing 14 Stores — Keep and Enhance
-| # | Store | Enhancement |
-|:-:|-------|-------------|
-| 1 | glStore | Add cube integration (read from cube, write to cube) |
-| 2 | budgetStore | Enhance with planning cycle support (M5) |
-| 3 | forecastStore | Enhance with rolling forecast (M6) |
-| 4 | scenarioStore | Add sensitivity analysis, goal seek (M5.9) |
-| 5 | dataStore | Add ETL pipeline support (M9) |
-| 6 | authStore | Keep as-is (single user, simplified) |
-| 7 | settingsStore | Add theme/UI preferences (M13) |
-| 8 | uiStore | Keep as-is |
-| 9 | notificationStore | Enhance with notification center (M13.6) |
-| 10 | tourStore | Keep as-is (first-run tour M21) |
-| 11 | varianceStore | **Wire to VarianceDashboardPage** |
-| 12 | reportStore | **Wire to ReportBuilderEngine** |
-| 13 | collaborationStore | Keep (single user → simplify to annotations) |
-| 14 | analyticsStore | **Wire to AnalyticsPage** |
+
+|  #  | Store              | Enhancement                                          |
+| :-: | ------------------ | ---------------------------------------------------- |
+|  1  | glStore            | Add cube integration (read from cube, write to cube) |
+|  2  | budgetStore        | Enhance with planning cycle support (M5)             |
+|  3  | forecastStore      | Enhance with rolling forecast (M6)                   |
+|  4  | scenarioStore      | Add sensitivity analysis, goal seek (M5.9)           |
+|  5  | dataStore          | Add ETL pipeline support (M9)                        |
+|  6  | authStore          | Keep as-is (single user, simplified)                 |
+|  7  | settingsStore      | Add theme/UI preferences (M13)                       |
+|  8  | uiStore            | Keep as-is                                           |
+|  9  | notificationStore  | Enhance with notification center (M13.6)             |
+| 10  | tourStore          | Keep as-is (first-run tour M21)                      |
+| 11  | varianceStore      | **Wire to VarianceDashboardPage**                    |
+| 12  | reportStore        | **Wire to ReportBuilderEngine**                      |
+| 13  | collaborationStore | Keep (single user → simplify to annotations)         |
+| 14  | analyticsStore     | **Wire to AnalyticsPage**                            |
 
 ### 18 New Stores — Build
-| Group | # | Store | Engine | Data Source |
-|:-----:|:-:|-------|--------|:-----------:|
-| **A** | 15 | consolidationStore | ConsolidationEngine | Cube |
-| **A** | 16 | currencyStore | MultiCurrencyEngine | Cube |
-| **A** | 17 | inventoryStore | InventoryEngine | Cube |
-| **A** | 18 | bankingStore | BankingEngine | Cube |
-| **A** | 19 | healthcareStore | HealthcareEngine | Cube |
-| **A** | 20 | realEstateStore | RealEstateEngine | Cube |
-| **A** | 21 | retailStore | RetailEngine | Cube |
-| **B** | 22 | revRecStore | RevRecEngine | Cube |
-| **B** | 23 | leaseStore | LeaseEngine | Cube |
-| **B** | 24 | taxStore | TaxEngine | Cube |
-| **B** | 25 | capexStore | CapExEngine | Cube |
-| **B** | 26 | cashStore | CashEngine | Cube |
-| **B** | 27 | workforceStore | WorkforceEngine | Cube |
-| **B** | 28 | saasStore | SaaSMetricsEngine | Cube |
-| **B** | 29 | esgStore | ESGEngine | Cube |
-| **B** | 30 | periodCloseStore | PeriodCloseEngine | Cube |
-| **C** | 31 | cellAuditStore | CellAuditTrailEngine | Cube |
-| **C** | 32 | documentStore | DocumentEngine | File system |
+
+| Group |  #  | Store              | Engine               | Data Source |
+| :---: | :-: | ------------------ | -------------------- | :---------: |
+| **A** | 15  | consolidationStore | ConsolidationEngine  |    Cube     |
+| **A** | 16  | currencyStore      | MultiCurrencyEngine  |    Cube     |
+| **A** | 17  | inventoryStore     | InventoryEngine      |    Cube     |
+| **A** | 18  | bankingStore       | BankingEngine        |    Cube     |
+| **A** | 19  | healthcareStore    | HealthcareEngine     |    Cube     |
+| **A** | 20  | realEstateStore    | RealEstateEngine     |    Cube     |
+| **A** | 21  | retailStore        | RetailEngine         |    Cube     |
+| **B** | 22  | revRecStore        | RevRecEngine         |    Cube     |
+| **B** | 23  | leaseStore         | LeaseEngine          |    Cube     |
+| **B** | 24  | taxStore           | TaxEngine            |    Cube     |
+| **B** | 25  | capexStore         | CapExEngine          |    Cube     |
+| **B** | 26  | cashStore          | CashEngine           |    Cube     |
+| **B** | 27  | workforceStore     | WorkforceEngine      |    Cube     |
+| **B** | 28  | saasStore          | SaaSMetricsEngine    |    Cube     |
+| **B** | 29  | esgStore           | ESGEngine            |    Cube     |
+| **B** | 30  | periodCloseStore   | PeriodCloseEngine    |    Cube     |
+| **C** | 31  | cellAuditStore     | CellAuditTrailEngine |    Cube     |
+| **C** | 32  | documentStore      | DocumentEngine       | File system |
 
 ---
 
 ## PART 6: COMPLETE ENGINE ROSTER (39 Total)
 
 ### Existing 24 Engines — Status
-| # | Engine | Status | Action |
-|:-:|--------|:------:|--------|
-| 1 | ConsolidationEngine | 🟡 4 failing tests | Fix + enhance M8 |
-| 2 | RevRecEngine | 🟡 2 failing tests | Fix |
-| 3 | FormulaEngine | 🟡 5 functions → 300+ | **Massive expansion** |
-| 4 | CustomFieldEngine | 🟢 working | Remove eval() |
-| 5 | ScenarioEngine | 🟢 working | Enhance M5.9 |
-| 6 | COGSVarianceEngine | 🟢 working | — |
-| 7 | SaaSMetricsEngine | 🟢 working | — |
-| 8 | CapExEngine | 🟢 working | Enhance M5.6 |
-| 9 | FiscalCalendar | 🟢 working | Extend for multi-calendar M4.4 |
-| 10 | WorkforceEngine | 🟢 working | Enhance M5.5 |
-| 11 | VarianceDecompositionEngine | 🟢 working | — |
-| 12 | UndoRedoEngine | 🟢 working | Extend to 100+ levels, persist M19 |
-| 13 | TaxEngine | 🟢 working | — |
-| 14 | PeriodCloseEngine | 🟢 working | Enhance M11 |
-| 15 | MultiCurrencyEngine | 🟢 working | Enhance M8.2 |
-| 16 | LeaseEngine | 🟢 working | — |
-| 17 | ExportEngine | 🟢 working | Enhance with print M15 |
-| 18 | ExcelKeyboardEngine | 🟢 working | Keep |
-| 19 | ESGEngine | 🟢 working | — |
-| 20 | DataLineageEngine | 🟢 working | — |
-| 21 | CashEngine | 🟢 working | Enhance M5.8 |
-| 22 | BankingEngine | 🟡 mock data | Remove mocks, wire to cube |
-| 23 | HealthcareEngine | 🟡 mock data | Remove mocks, wire to cube |
-| 24 | InventoryEngine | 🟢 working | — |
-| — | RealEstateEngine | 🟡 mock data | Remove mocks, wire to cube |
-| — | RetailEngine | 🟡 mock data | Remove mocks, wire to cube |
+
+|  #  | Engine                      |        Status         | Action                             |
+| :-: | --------------------------- | :-------------------: | ---------------------------------- |
+|  1  | ConsolidationEngine         |  🟡 4 failing tests   | Fix + enhance M8                   |
+|  2  | RevRecEngine                |  🟡 2 failing tests   | Fix                                |
+|  3  | FormulaEngine               | 🟡 5 functions → 300+ | **Massive expansion**              |
+|  4  | CustomFieldEngine           |      🟢 working       | Remove eval()                      |
+|  5  | ScenarioEngine              |      🟢 working       | Enhance M5.9                       |
+|  6  | COGSVarianceEngine          |      🟢 working       | —                                  |
+|  7  | SaaSMetricsEngine           |      🟢 working       | —                                  |
+|  8  | CapExEngine                 |      🟢 working       | Enhance M5.6                       |
+|  9  | FiscalCalendar              |      🟢 working       | Extend for multi-calendar M4.4     |
+| 10  | WorkforceEngine             |      🟢 working       | Enhance M5.5                       |
+| 11  | VarianceDecompositionEngine |      🟢 working       | —                                  |
+| 12  | UndoRedoEngine              |      🟢 working       | Extend to 100+ levels, persist M19 |
+| 13  | TaxEngine                   |      🟢 working       | —                                  |
+| 14  | PeriodCloseEngine           |      🟢 working       | Enhance M11                        |
+| 15  | MultiCurrencyEngine         |      🟢 working       | Enhance M8.2                       |
+| 16  | LeaseEngine                 |      🟢 working       | —                                  |
+| 17  | ExportEngine                |      🟢 working       | Enhance with print M15             |
+| 18  | ExcelKeyboardEngine         |      🟢 working       | Keep                               |
+| 19  | ESGEngine                   |      🟢 working       | —                                  |
+| 20  | DataLineageEngine           |      🟢 working       | —                                  |
+| 21  | CashEngine                  |      🟢 working       | Enhance M5.8                       |
+| 22  | BankingEngine               |     🟡 mock data      | Remove mocks, wire to cube         |
+| 23  | HealthcareEngine            |     🟡 mock data      | Remove mocks, wire to cube         |
+| 24  | InventoryEngine             |      🟢 working       | —                                  |
+|  —  | RealEstateEngine            |     🟡 mock data      | Remove mocks, wire to cube         |
+|  —  | RetailEngine                |     🟡 mock data      | Remove mocks, wire to cube         |
 
 ### 15 New Engines — Build
-| # | Engine | Module | Purpose |
-|:-:|--------|:------:|---------|
-| 25 | **CubeEngine** | M1 | Multi-dimensional data model (FOUNDATION) |
-| 26 | **RollingForecastEngine** | M6 | Auto-extending forecasts |
-| 27 | **DriverBasedPlanningEngine** | M5 | Driver tree → financial outcomes |
-| 28 | **ThreeStatementEngine** | M5 | Integrated P&L/BS/CF |
-| 29 | **BreakbackEngine** | M5 | Top-down target allocation |
-| 30 | **ZeroBasedBudgetEngine** | M5 | Cost pool scoring/prioritization |
-| 31 | **ProfitabilityEngine** | M7.2 | Multi-dimensional margin |
-| 32 | **SensitivityEngine** | M5.9 | Tornado/1-way/2-way/Monte Carlo |
-| 33 | **LongRangePlanningEngine** | M5 | 3-5 year strategic model |
-| 34 | **TopDownBottomUpEngine** | M5 | Multi-pass reconciliation |
-| 35 | **InsuranceEngine** | — | Premium, loss reserving |
-| 36 | **NonprofitEngine** | — | Fund accounting, grants |
-| 37 | **EducationEngine** | — | Enrollment, tuition, endowments |
-| 38 | **GovernmentEngine** | — | Fund budgeting, appropriations |
-| 39 | **HubEngine** (unified dispatch) | — | Routes all engine calls |
+
+|  #  | Engine                           | Module | Purpose                                   |
+| :-: | -------------------------------- | :----: | ----------------------------------------- |
+| 25  | **CubeEngine**                   |   M1   | Multi-dimensional data model (FOUNDATION) |
+| 26  | **RollingForecastEngine**        |   M6   | Auto-extending forecasts                  |
+| 27  | **DriverBasedPlanningEngine**    |   M5   | Driver tree → financial outcomes          |
+| 28  | **ThreeStatementEngine**         |   M5   | Integrated P&L/BS/CF                      |
+| 29  | **BreakbackEngine**              |   M5   | Top-down target allocation                |
+| 30  | **ZeroBasedBudgetEngine**        |   M5   | Cost pool scoring/prioritization          |
+| 31  | **ProfitabilityEngine**          |  M7.2  | Multi-dimensional margin                  |
+| 32  | **SensitivityEngine**            |  M5.9  | Tornado/1-way/2-way/Monte Carlo           |
+| 33  | **LongRangePlanningEngine**      |   M5   | 3-5 year strategic model                  |
+| 34  | **TopDownBottomUpEngine**        |   M5   | Multi-pass reconciliation                 |
+| 35  | **InsuranceEngine**              |   —    | Premium, loss reserving                   |
+| 36  | **NonprofitEngine**              |   —    | Fund accounting, grants                   |
+| 37  | **EducationEngine**              |   —    | Enrollment, tuition, endowments           |
+| 38  | **GovernmentEngine**             |   —    | Fund budgeting, appropriations            |
+| 39  | **HubEngine** (unified dispatch) |   —    | Routes all engine calls                   |
 
 ---
 
 ## PART 7: 8-PHASE EXECUTION ROADMAP
 
 ### PHASE 0: FOUNDATION (Days 1-5)
+
 **Goal:** Green build + CubeEngine operational
 
-| Day | Tasks |
-|:---:|-------|
-| 1 | Fix 11 failing tests (glStore, useFirstRun, RevRecEngine, ConsolidationEngine) |
-| 1 | Fix broken types (GLState, AnalyticsState, ScenarioEngine) |
-| 1 | Secure CustomFieldEngine (remove eval()) |
-| 2-3 | **Build CubeEngine** — dimension system, cube CRUD, SQLite persistence |
-| 3 | Build cube types (`src/types/cube-types.ts`) |
-| 4 | Build system dimensions (Account, Entity, Time, Scenario, Currency) |
-| 4 | Implement sparse storage + in-memory cache |
-| 5 | Write CubeEngine tests (50+ tests) |
-| 5 | Integrate cube with existing glStore (read/write through cube) |
-| **Gate** | **`npx vitest run` — 719 tests passing, 0 failures** |
+|   Day    | Tasks                                                                          |
+| :------: | ------------------------------------------------------------------------------ |
+|    1     | Fix 11 failing tests (glStore, useFirstRun, RevRecEngine, ConsolidationEngine) |
+|    1     | Fix broken types (GLState, AnalyticsState, ScenarioEngine)                     |
+|    1     | Secure CustomFieldEngine (remove eval())                                       |
+|   2-3    | **Build CubeEngine** — dimension system, cube CRUD, SQLite persistence         |
+|    3     | Build cube types (`src/types/cube-types.ts`)                                   |
+|    4     | Build system dimensions (Account, Entity, Time, Scenario, Currency)            |
+|    4     | Implement sparse storage + in-memory cache                                     |
+|    5     | Write CubeEngine tests (50+ tests)                                             |
+|    5     | Integrate cube with existing glStore (read/write through cube)                 |
+| **Gate** | **`npx vitest run` — 719 tests passing, 0 failures**                           |
 
 ### PHASE 1: FORMULA ENGINE V2 (Days 6-12)
+
 **Goal:** 300+ Excel-compatible functions
 
-| Day | Tasks |
-|:---:|-------|
-| 6 | Rewrite tokenizer (handle all Excel token types) |
-| 6 | Rewrite parser (full operator precedence, all AST node types) |
-| 7 | Build function registry pattern + evaluator |
-| 7 | Implement Math & Trig (50 functions) + tests |
-| 8 | Implement Logical (15) + Lookup & Reference (20) + tests |
-| 8 | Implement Text (30) + Date & Time (30) + tests |
-| 9 | Implement Statistical (40) + tests |
-| 10 | Implement Financial (25) + tests |
-| 10 | Implement Information (15) + Engineering (15) + tests |
-| 11 | **Implement FP&A-specific (15)** — ALLOCATE, SPREAD, CAGR, etc. |
-| 11 | Build dependency graph + incremental recalculation |
-| 12 | Build Web Worker pool for parallel calc |
-| 12 | Write 500+ total FormulaEngine tests |
-| **Gate** | **FormulaEngine: 300+ functions, 500+ tests passing** |
+|   Day    | Tasks                                                           |
+| :------: | --------------------------------------------------------------- |
+|    6     | Rewrite tokenizer (handle all Excel token types)                |
+|    6     | Rewrite parser (full operator precedence, all AST node types)   |
+|    7     | Build function registry pattern + evaluator                     |
+|    7     | Implement Math & Trig (50 functions) + tests                    |
+|    8     | Implement Logical (15) + Lookup & Reference (20) + tests        |
+|    8     | Implement Text (30) + Date & Time (30) + tests                  |
+|    9     | Implement Statistical (40) + tests                              |
+|    10    | Implement Financial (25) + tests                                |
+|    10    | Implement Information (15) + Engineering (15) + tests           |
+|    11    | **Implement FP&A-specific (15)** — ALLOCATE, SPREAD, CAGR, etc. |
+|    11    | Build dependency graph + incremental recalculation              |
+|    12    | Build Web Worker pool for parallel calc                         |
+|    12    | Write 500+ total FormulaEngine tests                            |
+| **Gate** | **FormulaEngine: 300+ functions, 500+ tests passing**           |
 
 ### PHASE 2: CORE FP&A MODULES (Days 13-20)
+
 **Goal:** Full planning, budgeting, forecasting
 
-| Day | Tasks |
-|:---:|-------|
-| 13 | **Chart of Accounts** — full hierarchy, bulk operations (M3) |
-| 13 | **Entity Management** — entityStore, hierarchies, multi-calendar (M4) |
-| 14 | **Planning Cycles** — cycle management, templates, status workflow (M5.1-2) |
-| 15 | **Data Entry** — spread functions, copy forward, driver-based (M5.3) |
-| 15 | **Scenario Modeling** — compare, merge, sensitivity, goal seek (M5.9) |
-| 16 | **Revenue Planning** — top-down, bottom-up, pipeline, pricing (M5.4) |
-| 17 | **Headcount Planning** — employee-level, comp, benefits, burden (M5.5) |
-| 17 | **CapEx Planning** — asset-level, depreciation, NBV (M5.6) |
-| 18 | **OpEx Planning** — categories, vendor modeling, allocations (M5.7) |
-| 18 | **Working Capital** — DSO/DIO/DPO, cash conversion cycle (M5.8) |
-| 19 | **Rolling Forecast** — 7 methods, accuracy tracking, auto-extend (M6) |
-| 20 | **Build 9 planning engines** + tests (RollingForecast, DriverBased, ThreeStatement, Breakback, ZBB, Profitability, Sensitivity, LongRange, TopDownBottomUp) |
-| **Gate** | **All planning modules working, 9 new engines tested** |
+|   Day    | Tasks                                                                                                                                                       |
+| :------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    13    | **Chart of Accounts** — full hierarchy, bulk operations (M3)                                                                                                |
+|    13    | **Entity Management** — entityStore, hierarchies, multi-calendar (M4)                                                                                       |
+|    14    | **Planning Cycles** — cycle management, templates, status workflow (M5.1-2)                                                                                 |
+|    15    | **Data Entry** — spread functions, copy forward, driver-based (M5.3)                                                                                        |
+|    15    | **Scenario Modeling** — compare, merge, sensitivity, goal seek (M5.9)                                                                                       |
+|    16    | **Revenue Planning** — top-down, bottom-up, pipeline, pricing (M5.4)                                                                                        |
+|    17    | **Headcount Planning** — employee-level, comp, benefits, burden (M5.5)                                                                                      |
+|    17    | **CapEx Planning** — asset-level, depreciation, NBV (M5.6)                                                                                                  |
+|    18    | **OpEx Planning** — categories, vendor modeling, allocations (M5.7)                                                                                         |
+|    18    | **Working Capital** — DSO/DIO/DPO, cash conversion cycle (M5.8)                                                                                             |
+|    19    | **Rolling Forecast** — 7 methods, accuracy tracking, auto-extend (M6)                                                                                       |
+|    20    | **Build 9 planning engines** + tests (RollingForecast, DriverBased, ThreeStatement, Breakback, ZBB, Profitability, Sensitivity, LongRange, TopDownBottomUp) |
+| **Gate** | **All planning modules working, 9 new engines tested**                                                                                                      |
 
 ### PHASE 3: CONSOLIDATION + CLOSE (Days 21-25)
+
 **Goal:** Full multi-entity consolidation
 
-| Day | Tasks |
-|:---:|-------|
-| 21 | **Consolidation Enhance** — fix failing tests, add multi-hierarchy, step workflow (M8.1/8.5) |
-| 22 | **Currency Translation** — rate table, current rate, temporal, CTA (M8.2) |
-| 22 | **IC Eliminations** — matching, auto-elimination, audit trail (M8.3) |
-| 23 | **Consolidation Adjustments** — journals, fair value, goodwill (M8.4) |
-| 23 | **Minority Interest + Equity Method** (M8.5) |
-| 24 | **Segment Reporting** — IFRS 8 / ASC 280 (M8.6) |
-| 24 | **Close Calendar + Tasks + Checklists** (M11) |
-| 25 | **Journal Entry Workflow** — draft→submit→approve→post, recurring, reversing (M11.4) |
-| **Gate** | **End-to-end consolidation: 5 entities, 3 currencies, IC eliminations** |
+|   Day    | Tasks                                                                                        |
+| :------: | -------------------------------------------------------------------------------------------- |
+|    21    | **Consolidation Enhance** — fix failing tests, add multi-hierarchy, step workflow (M8.1/8.5) |
+|    22    | **Currency Translation** — rate table, current rate, temporal, CTA (M8.2)                    |
+|    22    | **IC Eliminations** — matching, auto-elimination, audit trail (M8.3)                         |
+|    23    | **Consolidation Adjustments** — journals, fair value, goodwill (M8.4)                        |
+|    23    | **Minority Interest + Equity Method** (M8.5)                                                 |
+|    24    | **Segment Reporting** — IFRS 8 / ASC 280 (M8.6)                                              |
+|    24    | **Close Calendar + Tasks + Checklists** (M11)                                                |
+|    25    | **Journal Entry Workflow** — draft→submit→approve→post, recurring, reversing (M11.4)         |
+| **Gate** | **End-to-end consolidation: 5 entities, 3 currencies, IC eliminations**                      |
 
 ### PHASE 4: REPORTING + DASHBOARDS (Days 26-30)
+
 **Goal:** Professional financial reports and dashboards
 
-| Day | Tasks |
-|:---:|-------|
-| 26 | **Build 18 new stores** (Group A: 7 GL-driven) |
-| 27 | **Build Group B stores** (9 structured) + Group C (2 utility) |
-| 28 | **P&L, BS, CF reports** — configurable structure, multi-period, comparisons (M7.1) |
-| 28 | **Variance Analysis + Bridge/Waterfall Reports** (M7.2.1-2) |
-| 29 | **Report Designer** — drag-drop builder, table/chart/text components (M7.3) |
-| 29 | **Narrative Reporting** — rich text, merge fields, board book (M7.4) |
-| 30 | **Dashboard Builder** — 20+ chart types, KPI cards, filters, templates (M10) |
-| 30 | **Pre-built dashboards** — Executive, Revenue, Expense, Cash Flow, Headcount (M10.4) |
-| **Gate** | **All 32 stores built, report designer working, 10 pre-built dashboards** |
+|   Day    | Tasks                                                                                |
+| :------: | ------------------------------------------------------------------------------------ |
+|    26    | **Build 18 new stores** (Group A: 7 GL-driven)                                       |
+|    27    | **Build Group B stores** (9 structured) + Group C (2 utility)                        |
+|    28    | **P&L, BS, CF reports** — configurable structure, multi-period, comparisons (M7.1)   |
+|    28    | **Variance Analysis + Bridge/Waterfall Reports** (M7.2.1-2)                          |
+|    29    | **Report Designer** — drag-drop builder, table/chart/text components (M7.3)          |
+|    29    | **Narrative Reporting** — rich text, merge fields, board book (M7.4)                 |
+|    30    | **Dashboard Builder** — 20+ chart types, KPI cards, filters, templates (M10)         |
+|    30    | **Pre-built dashboards** — Executive, Revenue, Expense, Cash Flow, Headcount (M10.4) |
+| **Gate** | **All 32 stores built, report designer working, 10 pre-built dashboards**            |
 
 ### PHASE 5: DATA + FILE MANAGEMENT (Days 31-34)
+
 **Goal:** Data import/export, ETL, file operations
 
-| Day | Tasks |
-|:---:|-------|
-| 31 | **Data Import** — Excel/CSV/JSON/XML, column mapping, templates (M9.1-2) |
-| 32 | **ETL Pipeline Builder** — visual pipeline, filter/map/aggregate/join (M9.5) |
-| 32 | **ERP Import Templates** — SAP, Oracle, NetSuite, QuickBooks (M9.3) |
-| 33 | **Export** — Excel, PDF, CSV, JSON with full formatting (M9.4) |
-| 33 | **Single .fpa File Format** — SQLite-backed, AES-256, auto-save, recovery (M14) |
-| 34 | **Print Engine** — page setup, headers/footers, print preview, PDF (M15) |
-| 34 | **Backup + Restore** — manual + auto-backup (M19.4) |
-| **Gate** | **Import 100K rows in <5s, export to Excel preserves formatting** |
+|   Day    | Tasks                                                                           |
+| :------: | ------------------------------------------------------------------------------- |
+|    31    | **Data Import** — Excel/CSV/JSON/XML, column mapping, templates (M9.1-2)        |
+|    32    | **ETL Pipeline Builder** — visual pipeline, filter/map/aggregate/join (M9.5)    |
+|    32    | **ERP Import Templates** — SAP, Oracle, NetSuite, QuickBooks (M9.3)             |
+|    33    | **Export** — Excel, PDF, CSV, JSON with full formatting (M9.4)                  |
+|    33    | **Single .fpa File Format** — SQLite-backed, AES-256, auto-save, recovery (M14) |
+|    34    | **Print Engine** — page setup, headers/footers, print preview, PDF (M15)        |
+|    34    | **Backup + Restore** — manual + auto-backup (M19.4)                             |
+| **Gate** | **Import 100K rows in <5s, export to Excel preserves formatting**               |
 
 ### PHASE 6: PAGES WIRING (Days 35-40)
+
 **Goal:** Zero stub pages — every page fully interactive
 
-| Day | Tasks |
-|:---:|-------|
-| 35 | Wire Group A store pages (7 domains: consolidation, currency, inventory, banking, healthcare, real estate, retail) |
-| 36 | Wire Group B store pages (9 domains: revRec, lease, tax, capex, cash, workforce, saas, esg, periodClose) |
-| 37 | Wire Group C pages (cellAudit, document) + unused stores (variance, report, collaboration, analytics) |
-| 38 | Replace mock-data pages (18 Category E pages → real cube data) |
-| 39 | Wire energy pages + remaining category B/C pages |
-| 40 | Add missing routes + verify all 100+ pages render correctly |
-| **Gate** | **Zero stub pages, every page shows real data from cube** |
+|   Day    | Tasks                                                                                                              |
+| :------: | ------------------------------------------------------------------------------------------------------------------ |
+|    35    | Wire Group A store pages (7 domains: consolidation, currency, inventory, banking, healthcare, real estate, retail) |
+|    36    | Wire Group B store pages (9 domains: revRec, lease, tax, capex, cash, workforce, saas, esg, periodClose)           |
+|    37    | Wire Group C pages (cellAudit, document) + unused stores (variance, report, collaboration, analytics)              |
+|    38    | Replace mock-data pages (18 Category E pages → real cube data)                                                     |
+|    39    | Wire energy pages + remaining category B/C pages                                                                   |
+|    40    | Add missing routes + verify all 100+ pages render correctly                                                        |
+| **Gate** | **Zero stub pages, every page shows real data from cube**                                                          |
 
 ### PHASE 7: POLISH + DIFFERENTIATION (Days 41-46)
+
 **Goal:** Production-ready quality with unique features
 
-| Day | Tasks |
-|:---:|-------|
-| 41 | **Excel Round-Trip** — export to Excel, edit, import back (M20.1) |
-| 41 | **Snapshot + Compare** — named snapshots, diff reporting (M20.2) |
-| 42 | **Complete Audit Trail** — every change logged, filterable viewer (M20.3) |
-| 42 | **Template Library** — 20+ industry templates (SaaS, Manufacturing, Retail, Healthcare, etc.) |
-| 43 | **Data Annotations** — flag cells, add notes, annotation reports (M20.6) |
-| 43 | **Multi-Window** — multiple views of same project (M20.7) |
-| 44 | **Sample Project** — 3 years data, 5 entities, multi-currency, SCENARIO (M21) |
-| 44 | **Help System** — formula reference, context-sensitive F1, search (M16) |
-| 45 | **Performance Optimization** — virtualized rendering, lazy loading, worker pool tuning (M17) |
-| 45 | **UI/UX Polish** — command palette, keyboard shortcuts, themes, accessibility (M13) |
-| 46 | **Final Test Pass** — all tests green, performance benchmarks met |
-| 46 | **Installation Packaging** — MSI/EXE installer, system requirements verified (M18) |
-| **Gate** | **All 69 features complete, 0 failing tests, performance SLAs met** |
+|   Day    | Tasks                                                                                         |
+| :------: | --------------------------------------------------------------------------------------------- |
+|    41    | **Excel Round-Trip** — export to Excel, edit, import back (M20.1)                             |
+|    41    | **Snapshot + Compare** — named snapshots, diff reporting (M20.2)                              |
+|    42    | **Complete Audit Trail** — every change logged, filterable viewer (M20.3)                     |
+|    42    | **Template Library** — 20+ industry templates (SaaS, Manufacturing, Retail, Healthcare, etc.) |
+|    43    | **Data Annotations** — flag cells, add notes, annotation reports (M20.6)                      |
+|    43    | **Multi-Window** — multiple views of same project (M20.7)                                     |
+|    44    | **Sample Project** — 3 years data, 5 entities, multi-currency, SCENARIO (M21)                 |
+|    44    | **Help System** — formula reference, context-sensitive F1, search (M16)                       |
+|    45    | **Performance Optimization** — virtualized rendering, lazy loading, worker pool tuning (M17)  |
+|    45    | **UI/UX Polish** — command palette, keyboard shortcuts, themes, accessibility (M13)           |
+|    46    | **Final Test Pass** — all tests green, performance benchmarks met                             |
+|    46    | **Installation Packaging** — MSI/EXE installer, system requirements verified (M18)            |
+| **Gate** | **All 69 features complete, 0 failing tests, performance SLAs met**                           |
 
 ### PHASE 8: AI (Future — After All Non-AI Complete)
+
 **Not in scope for this plan. See docs/MASTER_PLAN.md §7 for details.**
 
 ---
 
 ## PART 8: PERFORMANCE SLAs
 
-| Operation | Target | Measurement |
-|-----------|:------:|:-----------:|
-| App startup | < 3s | Cold start, 10MB project |
-| Open project (10MB) | < 2s | SQLite load |
-| Open project (100MB) | < 5s | SQLite + memory map |
-| Cell edit response | < 50ms | Single cell |
-| Formula recalc (100K cells) | < 2s | 300 formulas, no I/O |
-| Formula recalc (1M cells) | < 10s | Incremental, dirty-only |
-| Report render | < 2s | P&L, 5 years monthly |
-| Dashboard render | < 3s | 10 components, 5 charts |
-| Data import (100K rows) | < 5s | CSV |
-| Data import (1M rows) | < 30s | CSV, batched |
-| Consolidation (50 entities) | < 30s | 3 currencies, IC, minority |
-| PDF export (50 pages) | < 10s | Full report |
-| Excel export (100K rows) | < 5s | xlsx |
-| Dimension query | < 100ms | 10K members |
-| Cube aggregate | < 200ms | 500K cells → 1 result |
-| Snapshot create | < 1s per GB | Full data freeze |
-| Snapshot compare | < 2s per GB | Diff two snapshots |
+| Operation                   |   Target    |        Measurement         |
+| --------------------------- | :---------: | :------------------------: |
+| App startup                 |    < 3s     |  Cold start, 10MB project  |
+| Open project (10MB)         |    < 2s     |        SQLite load         |
+| Open project (100MB)        |    < 5s     |    SQLite + memory map     |
+| Cell edit response          |   < 50ms    |        Single cell         |
+| Formula recalc (100K cells) |    < 2s     |    300 formulas, no I/O    |
+| Formula recalc (1M cells)   |    < 10s    |  Incremental, dirty-only   |
+| Report render               |    < 2s     |    P&L, 5 years monthly    |
+| Dashboard render            |    < 3s     |  10 components, 5 charts   |
+| Data import (100K rows)     |    < 5s     |            CSV             |
+| Data import (1M rows)       |    < 30s    |        CSV, batched        |
+| Consolidation (50 entities) |    < 30s    | 3 currencies, IC, minority |
+| PDF export (50 pages)       |    < 10s    |        Full report         |
+| Excel export (100K rows)    |    < 5s     |            xlsx            |
+| Dimension query             |   < 100ms   |        10K members         |
+| Cube aggregate              |   < 200ms   |   500K cells → 1 result    |
+| Snapshot create             | < 1s per GB |      Full data freeze      |
+| Snapshot compare            | < 2s per GB |     Diff two snapshots     |
 
 ### Techniques to Achieve SLAs
+
 1. **Virtualized rendering** — AG Grid already virtualized, tune row buffer
 2. **Incremental recalculation** — dependency graph, only dirty + dependents
 3. **Web Worker pool** — 4 workers (one per CPU core), balanced dispatch
@@ -956,62 +988,62 @@ Sorting:
 
 ### Priority Summary
 
-| Priority | What | Why This Order |
-|:--------:|------|----------------|
-| **P0** | Fix 11 failing tests | Must have green build to proceed |
-| **P0** | CubeEngine (M1) | Everything depends on the data model |
-| **P0** | FormulaEngine v2 (M2) | Core UI interaction, 300+ functions |
-| **P1** | Planning modules (M5) | Core FP&A — what users buy the tool for |
-| **P1** | Consolidation (M8) | Enterprise requirement |
-| **P1** | 18 new stores | State layer for all features |
-| **P2** | Reporting + Dashboards (M7, M10) | Visibility into the data |
-| **P2** | Chart of Accounts (M3) + Entities (M4) | Foundation for all planning |
-| **P2** | Data Import + ETL (M9) | User gets data in |
-| **P3** | File format + Print (M14, M15) | Polish for production use |
-| **P3** | Page wiring (all 100+) | Zero stubs |
-| **P3** | Differentiators (M20) | Excel round-trip, snapshot, audit |
-| **P4** | Template library + Sample data (M20, M21) | Learning resources |
-| **P4** | Help system (M16) | Documentation |
-| **P4** | Performance + Polish (M17, M13) | Final optimization |
+| Priority | What                                      | Why This Order                          |
+| :------: | ----------------------------------------- | --------------------------------------- |
+|  **P0**  | Fix 11 failing tests                      | Must have green build to proceed        |
+|  **P0**  | CubeEngine (M1)                           | Everything depends on the data model    |
+|  **P0**  | FormulaEngine v2 (M2)                     | Core UI interaction, 300+ functions     |
+|  **P1**  | Planning modules (M5)                     | Core FP&A — what users buy the tool for |
+|  **P1**  | Consolidation (M8)                        | Enterprise requirement                  |
+|  **P1**  | 18 new stores                             | State layer for all features            |
+|  **P2**  | Reporting + Dashboards (M7, M10)          | Visibility into the data                |
+|  **P2**  | Chart of Accounts (M3) + Entities (M4)    | Foundation for all planning             |
+|  **P2**  | Data Import + ETL (M9)                    | User gets data in                       |
+|  **P3**  | File format + Print (M14, M15)            | Polish for production use               |
+|  **P3**  | Page wiring (all 100+)                    | Zero stubs                              |
+|  **P3**  | Differentiators (M20)                     | Excel round-trip, snapshot, audit       |
+|  **P4**  | Template library + Sample data (M20, M21) | Learning resources                      |
+|  **P4**  | Help system (M16)                         | Documentation                           |
+|  **P4**  | Performance + Polish (M17, M13)           | Final optimization                      |
 
 ### Engineering Verdict: 6-8 Weeks Full Time
 
-| Phase | Days | Deliverables |
-|:-----:|:----:|-------------|
-| P0: Fix + Cube | 5 | Green build, CubeEngine operational |
-| P1: Formula v2 | 7 | 300+ functions, 500+ tests |
-| P2: FP&A Core | 8 | All planning modules, 9 new engines |
-| P3: Consolidation | 5 | Full close + consolidation workflow |
-| P4: Reporting | 5 | 32 stores, report designer, dashboards |
-| P5: Data + Files | 4 | ETL, .fpa format, print |
-| P6: Pages | 6 | All 100+ pages wired |
-| P7: Polish | 6 | Differentiators, samples, performance |
-| **Total** | **46** | **Production-ready FP&A platform** |
+|       Phase       |  Days  | Deliverables                           |
+| :---------------: | :----: | -------------------------------------- |
+|  P0: Fix + Cube   |   5    | Green build, CubeEngine operational    |
+|  P1: Formula v2   |   7    | 300+ functions, 500+ tests             |
+|   P2: FP&A Core   |   8    | All planning modules, 9 new engines    |
+| P3: Consolidation |   5    | Full close + consolidation workflow    |
+|   P4: Reporting   |   5    | 32 stores, report designer, dashboards |
+| P5: Data + Files  |   4    | ETL, .fpa format, print                |
+|     P6: Pages     |   6    | All 100+ pages wired                   |
+|    P7: Polish     |   6    | Differentiators, samples, performance  |
+|     **Total**     | **46** | **Production-ready FP&A platform**     |
 
 ---
 
 ## PART 10: COMPETITIVE COMPARISON (AFTER BUILD)
 
-| Category | Feature Count | FinPlan Pro | Best Competitor |
-|:--------:|:-------------:|:-----------:|:---------------:|
-| Data Model | Unlimited dimensions | ✅ | 7-15 (Anaplan) |
-| Formulas | 300+ Excel functions | ✅ | Limited (all) |
-| Spreadsheet | Virtual scroll 1M+ rows | ✅ | AG Grid basic |
-| Planning | 10 modules (rev/hc/capex/opex/wc) | ✅ | 4-6 modules |
-| Forecasting | Rolling + accuracy tracking | ✅ | Basic (Adaptive) |
-| Consolidation | Full workflow + multi-GAAP | ✅ | Full (OneStream) |
-| Reporting | Designer + narrative + KPIs | ✅ | Designer (Planful) |
-| Dashboards | 20 chart types + builder | ✅ | 10-15 (Pigment) |
-| ETL | Visual pipeline builder | ✅ | None (all) |
-| Audit Trail | Cell-level with snapshots | ✅ | Basic (all) |
-| Excel Round-Trip | Export → edit → import | ✅ | One-way (all) |
-| Industry Templates | 20+ bundled | ✅ | 0-5 (all) |
-| Offline | Complete | ✅ | None (all) |
-| Price | Free | ✅ | $15K-500K/yr |
+|      Category      |           Feature Count           | FinPlan Pro |  Best Competitor   |
+| :----------------: | :-------------------------------: | :---------: | :----------------: |
+|     Data Model     |       Unlimited dimensions        |     ✅      |   7-15 (Anaplan)   |
+|      Formulas      |       300+ Excel functions        |     ✅      |   Limited (all)    |
+|    Spreadsheet     |      Virtual scroll 1M+ rows      |     ✅      |   AG Grid basic    |
+|      Planning      | 10 modules (rev/hc/capex/opex/wc) |     ✅      |    4-6 modules     |
+|    Forecasting     |    Rolling + accuracy tracking    |     ✅      |  Basic (Adaptive)  |
+|   Consolidation    |    Full workflow + multi-GAAP     |     ✅      |  Full (OneStream)  |
+|     Reporting      |    Designer + narrative + KPIs    |     ✅      | Designer (Planful) |
+|     Dashboards     |     20 chart types + builder      |     ✅      |  10-15 (Pigment)   |
+|        ETL         |      Visual pipeline builder      |     ✅      |     None (all)     |
+|    Audit Trail     |     Cell-level with snapshots     |     ✅      |    Basic (all)     |
+|  Excel Round-Trip  |      Export → edit → import       |     ✅      |   One-way (all)    |
+| Industry Templates |            20+ bundled            |     ✅      |     0-5 (all)      |
+|      Offline       |             Complete              |     ✅      |     None (all)     |
+|       Price        |               Free                |     ✅      |    $15K-500K/yr    |
 
 **Verdict: FinPlan Pro will be the most feature-complete FP&A platform ever built.**
 
 ---
 
-*Merged Plan v1.0 — May 16, 2026*
-*Sources: docs/MASTER_PLAN.md + User Vision Document (21 Modules)*
+_Merged Plan v1.0 — May 16, 2026_
+_Sources: docs/MASTER_PLAN.md + User Vision Document (21 Modules)_

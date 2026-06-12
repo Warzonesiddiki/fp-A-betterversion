@@ -9,6 +9,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** Governs React component composition, Zustand state management, data fetching, performance optimization (memoization, virtualization, code splitting), form validation with Zod, and accessible responsive UI patterns. Directly applicable to every page/component in src/.
 
 **Key rules:**
+
 - Composition over inheritance — use compound component patterns (Card > CardHeader > CardBody)
 - Zustand stores with subscribeWithSelector + persist + immer middleware stack
 - Memoize expensive computations with useMemo/useCallback
@@ -25,6 +26,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** Baseline cross-project conventions — descriptive naming, immutability defaults, readability (KISS/DRY/YAGNI), error-handling expectations, and code-smell review. The shared floor that all other skills build on.
 
 **Key rules:**
+
 - Self-documenting code over comments
 - Immutability by default — no mutation of function arguments
 - Extract common logic into reusable functions/components
@@ -40,6 +42,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** Enforces test-driven development — tests BEFORE code, 80%+ coverage, unit/integration/E2E test types. Directly maps to Vitest (unit), @testing-library/react (component), and Playwright (E2E).
 
 **Key rules:**
+
 - Write tests first (RED), implement to pass (GREEN), refactor (IMPROVE)
 - Minimum 80% coverage (unit + integration + E2E)
 - All edge cases, error scenarios, and boundary conditions tested
@@ -56,6 +59,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** Post-implementation quality gate — build check, type check, lint check, test suite, and coverage verification. Ensures nothing ships broken.
 
 **Key rules:**
+
 - Phase 1: `npm run build` must pass
 - Phase 2: `npx tsc --noEmit` must pass
 - Phase 3: `npm run lint` must pass
@@ -72,6 +76,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** Security checklist for auth, input validation, secrets management, XSS/CSRF prevention, and dependency auditing. Critical for a financial application handling budget data.
 
 **Key rules:**
+
 - No hardcoded secrets — all in environment variables
 - Validate ALL user input with Zod schemas
 - Sanitize output to prevent XSS
@@ -89,6 +94,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** WCAG 2.2 compliance — screen reader testing, keyboard navigation, ARIA patterns, focus management, and semantic HTML. Essential for a data-heavy financial app with grids and charts.
 
 **Key rules:**
+
 - All interactive elements keyboard-accessible
 - Focus indicators with 3:1 minimum contrast ratio
 - Form inputs with associated labels
@@ -107,6 +113,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** Formal evaluation framework — defines pass/fail criteria for task completion, measures agent reliability with pass@k metrics, creates regression test suites for prompt/agent changes, and benchmarks performance across model versions.
 
 **Key rules:**
+
 - Define expected behavior BEFORE implementation (eval-driven development)
 - Run evals continuously during development
 - Track regressions with each change
@@ -123,6 +130,7 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 **What it does for FinPlan Pro:** Context management — suggests manual `/compact` at logical task boundaries rather than arbitrary auto-compaction. Prevents losing important context mid-task.
 
 **Key rules:**
+
 - Compact AFTER exploration, BEFORE execution (keep plan, clear research)
 - Compact AFTER completing a milestone (fresh start for next phase)
 - Compact BEFORE major context shifts (different task domain)
@@ -136,33 +144,41 @@ Skills loaded and activated for this project. Each skill is a rule layer that gu
 ## Additional Project Skills
 
 ### graphify
+
 **Purpose:** Turn codebase into navigable knowledge graph with community detection.
 **When to use:** Understanding architecture before touching anything, finding surprising connections.
 
 ### compound:ce-brainstorm
+
 **Purpose:** Interactive Q&A to think through features before planning.
 **When to use:** Before any multi-file feature — think requirements through before coding.
 
 ### compound:ce-plan
+
 **Purpose:** Turn feature ideas into detailed implementation plans.
 **When to use:** After brainstorming, before execution.
 
 ### compound:ce-code-review
+
 **Purpose:** Multi-agent code review before merging.
 **When to use:** After writing code, before committing.
 
 ### compound:ce-debug
+
 **Purpose:** Systematic bug investigation — reproduce, trace root cause, fix.
 **When to use:** When encountering bugs or test failures.
 
 ### gsd-execute-phase
+
 **Purpose:** Execute plans with atomic commits and task tracking.
 **When to use:** Working through a multi-step implementation plan.
 
 ### gsd-code-review
+
 **Purpose:** Review source files for bugs, security issues, code quality.
 **When to use:** After writing code, before merging.
 
 ### finplan-external-patterns
+
 **Purpose:** 20 patterns from external research (AG Grid, Zustand, Tauri, Excel, Recharts).
 **When to use:** Working with any of these specific technologies.

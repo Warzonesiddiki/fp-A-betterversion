@@ -855,63 +855,64 @@
 
 ## Summary
 
-| Category | DONE | PARTIAL | MISSING | % |
-|----------|------|---------|---------|---|
-| Recharts (Q601-620) | 11 | 6 | 3 | 55% |
-| Web Workers (Q621-635) | 6 | 6 | 3 | 40% |
-| AI/WebGPU (Q636-650) | 7 | 3 | 5 | 47% |
-| Routing (Q651-665) | 11 | 3 | 1 | 73% |
-| Auth (Q666-680) | 10 | 2 | 3 | 67% |
-| Persistence (Q681-695) | 4 | 8 | 3 | 27% |
-| Toast/Modal (Q696-710) | 13 | 2 | 0 | 87% |
-| Forms (Q711-725) | 8 | 4 | 3 | 53% |
-| Sidebar (Q726-735) | 7 | 2 | 1 | 70% |
-| Navbar (Q736-745) | 8 | 2 | 0 | 53% |
-| Command Palette (Q746-755) | 6 | 1 | 3 | 60% |
-| Keyboard (Q756-765) | 5 | 4 | 1 | 33% |
-| Undo/Redo (Q766-775) | 2 | 1 | 7 | 13% |
-| Cell Editing (Q776-790) | 12 | 2 | 1 | 80% |
-| Lazy Loading (Q791-800) | 7 | 2 | 1 | 70% |
-| Error Handling (Q801-815) | 9 | 4 | 2 | 60% |
-| CRUD (Q816-830) | 13 | 0 | 2 | 87% |
-| Search (Q831-840) | 3 | 1 | 6 | 30% |
-| Notifications (Q841-850) | 6 | 0 | 4 | 60% |
-| Fiscal Calendar (Q851-860) | 8 | 1 | 1 | 80% |
-| Depreciation (Q861-870) | 3 | 0 | 7 | 30% |
-| Intercompany (Q871-880) | 1 | 3 | 6 | 10% |
-| Audit Trail (Q881-890) | 6 | 3 | 1 | 60% |
-| Version Control (Q891-900) | 1 | 3 | 6 | 10% |
-| Templates (Q901-910) | 6 | 2 | 2 | 60% |
-| Print/PDF (Q911-920) | 4 | 3 | 3 | 40% |
-| Build (Q921-930) | 5 | 4 | 1 | 50% |
-| TypeScript (Q931-940) | 5 | 4 | 1 | 50% |
-| Accessibility (Q941-955) | 9 | 4 | 2 | 60% |
-| Utilities (Q956-965) | 7 | 2 | 1 | 70% |
-| Concurrency (Q966-975) | 8 | 1 | 1 | 80% |
-| Memory (Q976-985) | 7 | 1 | 1 | 70% |
-| Sensitive Data (Q986-995) | 4 | 0 | 6 | 40% |
-| Edge Cases (Q996-1005) | 6 | 0 | 4 | 60% |
-| Workflow (Q1021-1030) | 7 | 1 | 1 | 70% |
-| Hooks (Q1031-1040) | 5 | 3 | 2 | 50% |
-| Sectors (Q1041-1050) | 5 | 0 | 5 | 50% |
-| Sidebar Details (Q1051-1060) | 6 | 1 | 3 | 60% |
-| Theme (Q1061-1070) | 6 | 2 | 2 | 60% |
-| Animation (Q1071-1080) | 5 | 3 | 2 | 50% |
-| Error States (Q1081-1090) | 7 | 1 | 1 | 70% |
-| Empty States (Q1091-1105) | 15 | 0 | 0 | 100% |
-| Loading States (Q1106-1115) | 5 | 3 | 3 | 50% |
-| Data Grid (Q1116-1130) | 9 | 2 | 4 | 60% |
-| Import Pipeline (Q1131-1140) | 10 | 0 | 0 | 100% |
-| Export Pipeline (Q1141-1150) | 6 | 1 | 3 | 60% |
-| Dashboard (Q1151-1170) | 8 | 2 | 0 | 80% |
-| Settings (Q1171-1185) | 12 | 3 | 0 | 80% |
-| Profile (Q1186-1190) | 3 | 0 | 2 | 60% |
-| Help (Q1191-1195) | 2 | 0 | 3 | 40% |
-| Onboarding (Q1196-1200) | 5 | 0 | 0 | 100% |
+| Category                     | DONE | PARTIAL | MISSING | %    |
+| ---------------------------- | ---- | ------- | ------- | ---- |
+| Recharts (Q601-620)          | 11   | 6       | 3       | 55%  |
+| Web Workers (Q621-635)       | 6    | 6       | 3       | 40%  |
+| AI/WebGPU (Q636-650)         | 7    | 3       | 5       | 47%  |
+| Routing (Q651-665)           | 11   | 3       | 1       | 73%  |
+| Auth (Q666-680)              | 10   | 2       | 3       | 67%  |
+| Persistence (Q681-695)       | 4    | 8       | 3       | 27%  |
+| Toast/Modal (Q696-710)       | 13   | 2       | 0       | 87%  |
+| Forms (Q711-725)             | 8    | 4       | 3       | 53%  |
+| Sidebar (Q726-735)           | 7    | 2       | 1       | 70%  |
+| Navbar (Q736-745)            | 8    | 2       | 0       | 53%  |
+| Command Palette (Q746-755)   | 6    | 1       | 3       | 60%  |
+| Keyboard (Q756-765)          | 5    | 4       | 1       | 33%  |
+| Undo/Redo (Q766-775)         | 2    | 1       | 7       | 13%  |
+| Cell Editing (Q776-790)      | 12   | 2       | 1       | 80%  |
+| Lazy Loading (Q791-800)      | 7    | 2       | 1       | 70%  |
+| Error Handling (Q801-815)    | 9    | 4       | 2       | 60%  |
+| CRUD (Q816-830)              | 13   | 0       | 2       | 87%  |
+| Search (Q831-840)            | 3    | 1       | 6       | 30%  |
+| Notifications (Q841-850)     | 6    | 0       | 4       | 60%  |
+| Fiscal Calendar (Q851-860)   | 8    | 1       | 1       | 80%  |
+| Depreciation (Q861-870)      | 3    | 0       | 7       | 30%  |
+| Intercompany (Q871-880)      | 1    | 3       | 6       | 10%  |
+| Audit Trail (Q881-890)       | 6    | 3       | 1       | 60%  |
+| Version Control (Q891-900)   | 1    | 3       | 6       | 10%  |
+| Templates (Q901-910)         | 6    | 2       | 2       | 60%  |
+| Print/PDF (Q911-920)         | 4    | 3       | 3       | 40%  |
+| Build (Q921-930)             | 5    | 4       | 1       | 50%  |
+| TypeScript (Q931-940)        | 5    | 4       | 1       | 50%  |
+| Accessibility (Q941-955)     | 9    | 4       | 2       | 60%  |
+| Utilities (Q956-965)         | 7    | 2       | 1       | 70%  |
+| Concurrency (Q966-975)       | 8    | 1       | 1       | 80%  |
+| Memory (Q976-985)            | 7    | 1       | 1       | 70%  |
+| Sensitive Data (Q986-995)    | 4    | 0       | 6       | 40%  |
+| Edge Cases (Q996-1005)       | 6    | 0       | 4       | 60%  |
+| Workflow (Q1021-1030)        | 7    | 1       | 1       | 70%  |
+| Hooks (Q1031-1040)           | 5    | 3       | 2       | 50%  |
+| Sectors (Q1041-1050)         | 5    | 0       | 5       | 50%  |
+| Sidebar Details (Q1051-1060) | 6    | 1       | 3       | 60%  |
+| Theme (Q1061-1070)           | 6    | 2       | 2       | 60%  |
+| Animation (Q1071-1080)       | 5    | 3       | 2       | 50%  |
+| Error States (Q1081-1090)    | 7    | 1       | 1       | 70%  |
+| Empty States (Q1091-1105)    | 15   | 0       | 0       | 100% |
+| Loading States (Q1106-1115)  | 5    | 3       | 3       | 50%  |
+| Data Grid (Q1116-1130)       | 9    | 2       | 4       | 60%  |
+| Import Pipeline (Q1131-1140) | 10   | 0       | 0       | 100% |
+| Export Pipeline (Q1141-1150) | 6    | 1       | 3       | 60%  |
+| Dashboard (Q1151-1170)       | 8    | 2       | 0       | 80%  |
+| Settings (Q1171-1185)        | 12   | 3       | 0       | 80%  |
+| Profile (Q1186-1190)         | 3    | 0       | 2       | 60%  |
+| Help (Q1191-1195)            | 2    | 0       | 3       | 40%  |
+| Onboarding (Q1196-1200)      | 5    | 0       | 0       | 100% |
 
 **Overall Q601-1200: ~60% DONE, ~25% PARTIAL, ~15% MISSING**
 
 **Top 10 Priority Gaps (from Q601-1200):**
+
 1. Undo/Redo (7 MISSING) — cross-store, memory, persistence
 2. Intercompany (6 MISSING) — netting, interest, profit elimination
 3. Version Control (6 MISSING) — branching, comparison, rollback

@@ -6,12 +6,26 @@ import { deriveProjectFacts } from './project-facts.mjs';
 import { canonicalizeRoute } from './route-normalize.mjs';
 import { computeCostCoverage, renderCostCoverageMarkdown } from './cost-coverage.mjs';
 import { gates as registeredGates } from './gates/index.mjs';
-import { formatCandidateLabel, formatKind, formatPublicText, formatRoute, formatSignal } from './display-labels.mjs';
+import {
+  formatCandidateLabel,
+  formatKind,
+  formatPublicText,
+  formatRoute,
+  formatSignal,
+} from './display-labels.mjs';
 
 const PLATFORM_CAP = 3;
 const GATED_TARGET_PREVIEW = 5;
 
-export function renderReport({ recommendations = [], gated = [], abstentions = [], observations = [], signals = {}, candidates = [], opts = {} } = {}) {
+export function renderReport({
+  recommendations = [],
+  gated = [],
+  abstentions = [],
+  observations = [],
+  signals = {},
+  candidates = [],
+  opts = {},
+} = {}) {
   assertValidObservations(observations);
 
   const projectName = opts.projectName ?? signals.project?.name ?? '<project>';
@@ -117,13 +131,17 @@ export function renderReport({ recommendations = [], gated = [], abstentions = [
   if (observations.length > 0) {
     lines.push('## Observations from investigation');
     lines.push('');
-    lines.push('These are real signals from the audit, but they are not ready-to-apply recommendations.');
+    lines.push(
+      'These are real signals from the audit, but they are not ready-to-apply recommendations.'
+    );
     lines.push('');
     lines.push('| Candidate | Observation | Evidence | Suggested action | Kind |');
     lines.push('|---|---|---|---|---|');
     for (const o of observations) {
       const ref = o.candidateRef ?? '(unspecified)';
-      lines.push(`| ${escape(displayCandidateRef(ref))} | ${escape(formatEvidenceText(o.summary))} | ${escape(formatEvidenceText(o.evidence ?? '_(none recorded)_'))} | ${escape(formatEvidenceText(o.suggestedAction ?? '_(none recorded)_'))} | ${escape(formatKind(o.kind ?? 'other'))} |`);
+      lines.push(
+        `| ${escape(displayCandidateRef(ref))} | ${escape(formatEvidenceText(o.summary))} | ${escape(formatEvidenceText(o.evidence ?? '_(none recorded)_'))} | ${escape(formatEvidenceText(o.suggestedAction ?? '_(none recorded)_'))} | ${escape(formatKind(o.kind ?? 'other'))} |`
+      );
     }
     lines.push('');
   }
@@ -132,7 +150,9 @@ export function renderReport({ recommendations = [], gated = [], abstentions = [
   if (needsEvidenceRows.length > 0) {
     lines.push('## Needs more evidence');
     lines.push('');
-    lines.push('These candidates were investigated, but automated checks kept the change out of the ready-to-apply list.');
+    lines.push(
+      'These candidates were investigated, but automated checks kept the change out of the ready-to-apply list.'
+    );
     lines.push('');
     lines.push('| Candidate | Why it was held back |');
     lines.push('|---|---|');
@@ -198,7 +218,13 @@ function assertValidObservations(observations) {
   }
 }
 
-export function buildFinalReportMessage({ reportPath, markdown, recommendations = [], signals = {}, maxRecommendations = 10 } = {}) {
+export function buildFinalReportMessage({
+  reportPath,
+  markdown,
+  recommendations = [],
+  signals = {},
+  maxRecommendations = 10,
+} = {}) {
   const destination = reportPath || 'report.md';
   const coverageLine = extractCoverageLine(markdown);
   const lines = [`Report saved: ${destination}`];
@@ -209,7 +235,11 @@ export function buildFinalReportMessage({ reportPath, markdown, recommendations 
     lines.push('');
     lines.push('Open the report for details. No coverage summary was available.');
   }
-  const readyPreview = renderFinalRecommendationPreview(recommendations, signals, maxRecommendations);
+  const readyPreview = renderFinalRecommendationPreview(
+    recommendations,
+    signals,
+    maxRecommendations
+  );
   if (readyPreview.length > 0) {
     lines.push('');
     lines.push(...readyPreview);
@@ -230,7 +260,10 @@ function renderFinalRecommendationPreview(recommendations, signals, maxRecommend
     ? sortRecs(recommendations.filter((r) => r && r.abstain !== true))
     : [];
   if (ready.length === 0) return [];
-  const max = Math.max(1, Math.min(Number.isInteger(maxRecommendations) ? maxRecommendations : 5, 10));
+  const max = Math.max(
+    1,
+    Math.min(Number.isInteger(maxRecommendations) ? maxRecommendations : 5, 10)
+  );
   const shown = ready.slice(0, max);
   const lines = ['Ready recommendations:'];
   for (const [i, rec] of shown.entries()) {
@@ -242,7 +275,9 @@ function renderFinalRecommendationPreview(recommendations, signals, maxRecommend
   }
   const hidden = ready.length - shown.length;
   if (hidden > 0) {
-    lines.push(`Open the report for ${hidden} more ready recommendation${hidden === 1 ? '' : 's'} and the full evidence.`);
+    lines.push(
+      `Open the report for ${hidden} more ready recommendation${hidden === 1 ? '' : 's'} and the full evidence.`
+    );
   }
   return lines;
 }
@@ -257,9 +292,7 @@ function compactFinalText(value) {
 
 function extractCoverageLine(markdown) {
   if (typeof markdown !== 'string') return null;
-  return markdown
-    .split('\n')
-    .find((line) => line.startsWith('**Coverage**:')) ?? null;
+  return markdown.split('\n').find((line) => line.startsWith('**Coverage**:')) ?? null;
 }
 
 function stripDetailsLink(line) {
@@ -269,7 +302,9 @@ function stripDetailsLink(line) {
 // Hidden when no candidates exist (e.g., observability blocker — nothing to cover).
 function renderCoverageLine(candidates, recommendations, signals, opts = {}) {
   if (!Array.isArray(candidates) || candidates.length === 0) return null;
-  const launched = candidates.filter((c) => !c.gatedReason && !c.disqualified && c.scope !== 'account');
+  const launched = candidates.filter(
+    (c) => !c.gatedReason && !c.disqualified && c.scope !== 'account'
+  );
   const skippedByBudget = candidates.filter(
     (c) => typeof c.gatedReason === 'string' && c.gatedReason.startsWith('skippedByBudget')
   );
@@ -285,10 +320,14 @@ function renderCoverageLine(candidates, recommendations, signals, opts = {}) {
   parts.push(`Found **${total}** potential issue${total === 1 ? '' : 's'} to check`);
   parts.push(`${launched.length} investigated`);
   if (skippedByBudget.length > 0) {
-    parts.push(`${skippedByBudget.length} left for a larger run — re-run with \`--max-candidates all\` to see the rest`);
+    parts.push(
+      `${skippedByBudget.length} left for a larger run — re-run with \`--max-candidates all\` to see the rest`
+    );
   }
   if (coveredByDedup.length > 0) {
-    parts.push(`${coveredByDedup.length} similar route variant${coveredByDedup.length === 1 ? '' : 's'} grouped`);
+    parts.push(
+      `${coveredByDedup.length} similar route variant${coveredByDedup.length === 1 ? '' : 's'} grouped`
+    );
   }
   const recCount = (recommendations ?? []).filter((r) => !r.abstain && !isPlatformScope(r)).length;
   parts.push(`${recCount} recommendation${recCount === 1 ? '' : 's'} ready`);
@@ -299,8 +338,13 @@ function renderCoverageLine(candidates, recommendations, signals, opts = {}) {
   }
   const rawNoChangeCount = Number.isInteger(opts.noChangeCount)
     ? opts.noChangeCount
-    : (Array.isArray(opts.abstentions) ? opts.abstentions.length : 0);
-  const noChangeCount = Math.min(rawNoChangeCount, Math.max(0, launched.length - recCount - heldBackCount));
+    : Array.isArray(opts.abstentions)
+      ? opts.abstentions.length
+      : 0;
+  const noChangeCount = Math.min(
+    rawNoChangeCount,
+    Math.max(0, launched.length - recCount - heldBackCount)
+  );
   if (noChangeCount > 0) {
     parts.push(`${noChangeCount} investigated, no change recommended`);
   }
@@ -319,9 +363,10 @@ function renderMetadataLine(stack, plan, usage, oplus) {
     ? 'Observability Plus enabled — per-route metrics included'
     : 'Not enabled — analysis based on billing + scanner findings';
   // Plan-inference reason is debug detail — only surface when plan is uncertain.
-  const planLabel = plan.plan === 'uncertain'
-    ? `${plan.plan} (${plan.reason ?? 'no signal'})`
-    : (plan.plan ?? 'unknown');
+  const planLabel =
+    plan.plan === 'uncertain'
+      ? `${plan.plan} (${plan.reason ?? 'no signal'})`
+      : (plan.plan ?? 'unknown');
   return `**Stack**: ${stackParts}  ·  **Plan**: ${planLabel}  ·  **Period**: ${period}  ·  **Observability**: ${oplusLabel}`;
 }
 
@@ -334,7 +379,7 @@ function renderCostHeader(signals) {
     return [
       '## Cost breakdown (team-wide — `vercel usage` has no per-project filter)',
       '',
-      '_The Vercel CLI\'s `vercel usage` reports team-wide billing without a project filter (verified May 2026). This breakdown is the whole team\'s bill for the window. Per-route metrics in the rest of this report are project-scoped via `vercel metrics`._',
+      "_The Vercel CLI's `vercel usage` reports team-wide billing without a project filter (verified May 2026). This breakdown is the whole team's bill for the window. Per-route metrics in the rest of this report are project-scoped via `vercel metrics`._",
     ];
   }
   return ['## Cost breakdown'];
@@ -367,7 +412,9 @@ function renderCostBreakdown(usage, signals) {
     const total = usage.totals?.billedCost;
     if (typeof total === 'number') {
       lines.push('');
-      lines.push(`**Total billed: $${total.toFixed(2)}** _(precise observed cost; future-savings framing is magnitude, never precise)_`);
+      lines.push(
+        `**Total billed: $${total.toFixed(2)}** _(precise observed cost; future-savings framing is magnitude, never precise)_`
+      );
     }
     return lines;
   }
@@ -375,13 +422,17 @@ function renderCostBreakdown(usage, signals) {
   // Fallback to o11y-derived ranking when usage payload missing.
   const gbHr = signals.metrics?.fnGbHrByRoute?.rows ?? [];
   if (gbHr.length === 0) {
-    lines.push('_`vercel usage` was not available (free-tier or Costs feature disabled). Without per-route observability data either, we cannot rank cost drivers._');
+    lines.push(
+      '_`vercel usage` was not available (free-tier or Costs feature disabled). Without per-route observability data either, we cannot rank cost drivers._'
+    );
     return lines;
   }
   const top = groupGbHoursByCanonicalRoute(gbHr)
     .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
     .slice(0, 10);
-  lines.push('_`vercel usage` unavailable; ranking by `function_duration_gbhr` instead. These do not translate to dollars directly, but they show which routes consume billable units._');
+  lines.push(
+    '_`vercel usage` unavailable; ranking by `function_duration_gbhr` instead. These do not translate to dollars directly, but they show which routes consume billable units._'
+  );
   lines.push('');
   lines.push('| Route | GB-hr (sum, 14d) |');
   lines.push('|---|---|');
@@ -398,7 +449,9 @@ function renderRecTable(recs, signals = {}) {
   lines.push('|---|---|---|---|---|---|');
   recs.forEach((r, i) => {
     const cites = asArray(r.citations).slice(0, 2).join('<br>');
-    lines.push(`| ${i + 1} | ${r.bucket ?? '?'} | ${escape(formatRecommendationText(r.what ?? ''))} | ${escape(formatRecommendationText(impactString(r, signals)))} | ${r.effort ?? '?'} | ${cites} |`);
+    lines.push(
+      `| ${i + 1} | ${r.bucket ?? '?'} | ${escape(formatRecommendationText(r.what ?? ''))} | ${escape(formatRecommendationText(impactString(r, signals)))} | ${r.effort ?? '?'} | ${cites} |`
+    );
   });
   return lines;
 }
@@ -423,7 +476,8 @@ function renderRecDetail(rec, index, { compact = false, signals = {} } = {}) {
       .filter(Boolean)
       .slice(0, 4);
     if (refs.length > 0) {
-      const suffix = appliesAlsoTo.length > refs.length ? `, +${appliesAlsoTo.length - refs.length} more` : '';
+      const suffix =
+        appliesAlsoTo.length > refs.length ? `, +${appliesAlsoTo.length - refs.length} more` : '';
       lines.push(`_Also applies to: ${refs.map(displayCandidateRef).join(', ')}${suffix}._`);
       lines.push('');
     }
@@ -482,7 +536,9 @@ function renderGatedTable(gated) {
   lines.push('| Candidate type | Why not investigated | Targets | Count |');
   lines.push('|---|---|---|---:|');
   for (const group of groups) {
-    lines.push(`| ${escape(group.kind)} | ${escape(group.reason)} | ${formatGatedTargets(group.targets, group.count)} | ${group.count} |`);
+    lines.push(
+      `| ${escape(group.kind)} | ${escape(group.reason)} | ${formatGatedTargets(group.targets, group.count)} | ${group.count} |`
+    );
   }
   return lines;
 }
@@ -507,7 +563,12 @@ function groupGatedCandidates(gated) {
       existing.count += 1;
       existing.targets.push(String(target));
     } else {
-      byKey.set(key, { kind: String(kind), reason: String(reason), targets: [String(target)], count: 1 });
+      byKey.set(key, {
+        kind: String(kind),
+        reason: String(reason),
+        targets: [String(target)],
+        count: 1,
+      });
     }
   }
   return Array.from(byKey.values());
@@ -516,8 +577,14 @@ function groupGatedCandidates(gated) {
 function publicNoRecommendationReason(reason) {
   return formatEvidenceText(String(reason))
     .replace(/\bDropped at render:\s*/gi, '')
-    .replace(/\bverifier flagged for regen, but no regen happened\b/gi, 'needs stronger evidence before it is safe to apply')
-    .replace(/\bRe-run with a refreshed brief\.?/gi, 'Re-run the investigation after refreshing the evidence.')
+    .replace(
+      /\bverifier flagged for regen, but no regen happened\b/gi,
+      'needs stronger evidence before it is safe to apply'
+    )
+    .replace(
+      /\bRe-run with a refreshed brief\.?/gi,
+      'Re-run the investigation after refreshing the evidence.'
+    )
     .replace(/\bregen\b/gi, 're-check')
     .replace(/\bverifier\b/gi, 'verification')
     .replace(/\brec\b/gi, 'recommendation')
@@ -540,7 +607,10 @@ function splitInvestigationOutcomes(abstentions) {
 
 function publicGatedReason(reason) {
   return formatPublicText(String(reason))
-    .replace(/skippedByBudget\s*\(max-candidates=([^);]+)(?:;[^)]*)?\)/i, 'left for a larger run (max candidates: $1)')
+    .replace(
+      /skippedByBudget\s*\(max-candidates=([^);]+)(?:;[^)]*)?\)/i,
+      'left for a larger run (max candidates: $1)'
+    )
     .replace(/skippedByBudget\b/gi, 'left for a larger run')
     .replace(/\s*;\s*raise with --max-candidates N or =all/gi, '')
     .replace(/=all/g, 'all')
@@ -579,9 +649,7 @@ function displayCandidate(value) {
 
 function candidateForDisplay(value) {
   const parsed = parseCandidateRef(value?.candidateRef);
-  return parsed
-    ? displayCandidateObject(value, parsed)
-    : value;
+  return parsed ? displayCandidateObject(value, parsed) : value;
 }
 
 function displayCandidateRef(ref) {
@@ -631,23 +699,36 @@ function renderStrengths(signals) {
   const hit = cache.find((r) => r.cache_result === 'HIT' || r.cache_result === 'STALE');
   const miss = cache.find((r) => r.cache_result === 'MISS' || r.cache_result === 'BYPASS');
   if (hit && miss && (hit.value ?? 0) > (miss.value ?? 0)) {
-    lines.push(`- Cache hit-rate is healthy at the bandwidth tier — HIT/STALE bandwidth (${formatBytes(hit.value)}) exceeds MISS/BYPASS (${formatBytes(miss.value)}).`);
+    lines.push(
+      `- Cache hit-rate is healthy at the bandwidth tier — HIT/STALE bandwidth (${formatBytes(hit.value)}) exceeds MISS/BYPASS (${formatBytes(miss.value)}).`
+    );
   }
   const cold = signals.metrics?.fnStartTypeByRoute?.rows ?? [];
   const totalInv = cold.reduce((s, r) => s + (r.total ?? 0), 0);
   const totalCold = cold.reduce((s, r) => s + (r.coldCount ?? 0), 0);
   if (totalInv > 1000) {
     const coldPct = totalCold / totalInv;
-    if (coldPct < 0.02) lines.push(`- Cold-start rate is very low (${(coldPct * 100).toFixed(2)}%) — Fluid Compute or warm-instance reuse is doing its job.`);
+    if (coldPct < 0.02)
+      lines.push(
+        `- Cold-start rate is very low (${(coldPct * 100).toFixed(2)}%) — Fluid Compute or warm-instance reuse is doing its job.`
+      );
   }
   const errors = signals.metrics?.requestsByRouteStatus?.rows ?? [];
-  const total5xx = errors.filter((r) => /^5/.test(r.http_status ?? '')).reduce((s, r) => s + (r.value ?? 0), 0);
+  const total5xx = errors
+    .filter((r) => /^5/.test(r.http_status ?? ''))
+    .reduce((s, r) => s + (r.value ?? 0), 0);
   const totalReq = errors.reduce((s, r) => s + (r.value ?? 0), 0);
   if (totalReq > 1000) {
     const rate = total5xx / totalReq;
-    if (rate < 0.001) lines.push(`- 5xx rate is very low (${(rate * 100).toFixed(3)}%) on ${formatNum(totalReq)} requests.`);
+    if (rate < 0.001)
+      lines.push(
+        `- 5xx rate is very low (${(rate * 100).toFixed(3)}%) on ${formatNum(totalReq)} requests.`
+      );
   }
-  if (lines.length === 0) lines.push('_(no headline strengths to call out — see the gated table for signals we considered)_');
+  if (lines.length === 0)
+    lines.push(
+      '_(no headline strengths to call out — see the gated table for signals we considered)_'
+    );
   return lines;
 }
 
@@ -660,16 +741,34 @@ function renderConfigurationNotes(signals) {
 
 function renderDataGaps(signals) {
   const lines = [];
-  if (signals.observabilityPlus === false) lines.push('- Observability Plus not enabled — per-route latency / cache-hit / cold-start metrics unavailable.');
-  if (!signals.usage) lines.push('- `vercel usage` was unavailable — cost breakdown derived from observability where possible.');
+  if (signals.observabilityPlus === false)
+    lines.push(
+      '- Observability Plus not enabled — per-route latency / cache-hit / cold-start metrics unavailable.'
+    );
+  if (!signals.usage)
+    lines.push(
+      '- `vercel usage` was unavailable — cost breakdown derived from observability where possible.'
+    );
   const cwv = signals.metrics?.cwvCount?.rows?.[0]?.value ?? 0;
-  if (cwv === 0) lines.push('- No Speed Insights measurements — Core Web Vitals analysis dormant. Wire up Speed Insights to enable LCP/INP/CLS recommendations.');
+  if (cwv === 0)
+    lines.push(
+      '- No Speed Insights measurements — Core Web Vitals analysis dormant. Wire up Speed Insights to enable LCP/INP/CLS recommendations.'
+    );
   const isrR = signals.metrics?.isrReadsByRoute?.rows ?? [];
-  if (isrR.length === 0) lines.push('- No ISR activity observed — either the project does not use ISR or no eligible routes had traffic in the window.');
+  if (isrR.length === 0)
+    lines.push(
+      '- No ISR activity observed — either the project does not use ISR or no eligible routes had traffic in the window.'
+    );
   const images = signals.metrics?.imageCount?.rows?.[0]?.value ?? 0;
-  if (images === 0) lines.push('- No image transformations observed — either `next/image` is not used or no images served in the window.');
+  if (images === 0)
+    lines.push(
+      '- No image transformations observed — either `next/image` is not used or no images served in the window.'
+    );
   const middleware = signals.metrics?.middlewareCount?.rows ?? [];
-  if (middleware.length === 0) lines.push('- No middleware invocations — either no `middleware.ts` is shipped or its matcher excludes all observed traffic.');
+  if (middleware.length === 0)
+    lines.push(
+      '- No middleware invocations — either no `middleware.ts` is shipped or its matcher excludes all observed traffic.'
+    );
   if (lines.length === 0) lines.push('_(no relevant gaps — every signal had data)_');
   return lines;
 }
@@ -681,7 +780,9 @@ function sortRecs(recs) {
 function priorityScore(rec) {
   return typeof rec.priority === 'number' ? rec.priority : tierScore(rec.impactTier);
 }
-function tierScore(t) { return ({ high: 100, medium: 50, low: 10 })[t] ?? 0; }
+function tierScore(t) {
+  return { high: 100, medium: 50, low: 10 }[t] ?? 0;
+}
 
 function isPlatformScope(rec) {
   const k = String(rec.candidateRef ?? '').split(':')[0];
@@ -725,7 +826,9 @@ function escape(s) {
   return s.replace(/\|/g, '\\|').replace(/\n/g, ' ');
 }
 
-function asArray(v) { return Array.isArray(v) ? v : []; }
+function asArray(v) {
+  return Array.isArray(v) ? v : [];
+}
 
 function enrichRecFromCandidates(rec, candidates) {
   if (!rec || typeof rec !== 'object') return rec;

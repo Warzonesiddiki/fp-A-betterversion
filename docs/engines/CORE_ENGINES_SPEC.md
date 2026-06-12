@@ -1,4 +1,5 @@
 <!-- generated-by: gsd-doc-writer -->
+
 # Core Engines Specification
 
 This document provides detailed technical specifications for the core calculation and data engines in FinPlan Pro. These engines are pure TypeScript, deterministic, and designed for offline-first performance.
@@ -94,7 +95,7 @@ const graph = new CalculationGraph();
 graph.buildFromCells([
   { ref: 'A1', value: 100 },
   { ref: 'A2', formula: '=A1 * 2' },
-  { ref: 'B1', formula: '=A2 + 50' }
+  { ref: 'B1', formula: '=A2 + 50' },
 ]);
 
 // Change A1
@@ -146,7 +147,7 @@ await cube.writeCell('Sales', {
   coords: { Region: 'Region:US', Time: 'Time:2026-Q1' },
   measure: 'Revenue',
   value: 1250000,
-  dataType: 'currency'
+  dataType: 'currency',
 });
 
 // Aggregate

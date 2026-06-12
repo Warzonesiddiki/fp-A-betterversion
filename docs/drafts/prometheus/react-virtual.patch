@@ -1,0 +1,255 @@
+diff --git a/src/components/data/GLDataPreview.tsx b/src/components/data/GLDataPreview.tsx
+index 0000001..0000002 100644
+--- a/src/components/data/GLDataPreview.tsx
++++ b/src/components/data/GLDataPreview.tsx
+@@ -1,7 +1,9 @@
+-import React, { memo, useMemo } from 'react';
++import React, { memo, useMemo, useRef } from 'react';
++import { useVirtualizer } from '@tanstack/react-virtual';
+ import { Check, X, AlertTriangle } from 'lucide-react';
+ import { useGLMappings } from '@/hooks/useGLMappings';
+ import type { GLTransaction, AccountMapping } from '@/types/gl';
+@@ -245,7 +247,21 @@ export interface GLDataPreviewProps {
+-  return (
+-    <div className="overflow-y-auto max-h-[600px]">
+-      {data.map((tx) => (
+-        <div key={tx.id} className="flex items-center h-9 px-4 border-b border-[var(--border-default)]">
+-          <span className="w-32 text-sm">{tx.date}</span>
+-          <span className="flex-1 text-sm">{tx.description}</span>
+-          <span className="w-32 text-right font-mono">{formatCurrency(tx.amount)}</span>
+-        </div>
+-      ))}
+-    </div>
+-  );
++  const parentRef = useRef<HTMLDivElement>(null);
++  const rowVirtualizer = useVirtualizer({
++    count: data.length,
++    getScrollElement: () => parentRef.current,
++    estimateSize: () => 36,
++    overscan: 10,
++  });
++  return (
++    <div ref={parentRef} className="overflow-y-auto max-h-[600px] contain-strict">
++      <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
++        {rowVirtualizer.getVirtualItems().map((vr) => {
++          const tx = data[vr.index];
++          return (
++            <div
++              key={tx.id}
++              className="flex items-center px-4 border-b border-[var(--border-default)]"
++              style={{
++                position: 'absolute',
++                top: 0,
++                left: 0,
++                width: '100%',
++                height: `${vr.size}px`,
++                transform: `translateY(${vr.start}px)`,
++              }}
++            >
++              <span className="w-32 text-sm">{tx.date}</span>
++              <span className="flex-1 text-sm">{tx.description}</span>
++              <span className="w-32 text-right font-mono">{formatCurrency(tx.amount)}</span>
++            </div>
++          );
++        })}
++      </div>
++    </div>
++  );
+ }
+diff --git a/src/components/ui/ICMatchingDashboard.tsx b/src/components/ui/ICMatchingDashboard.tsx
+index 0000001..0000002 100644
+--- a/src/components/ui/ICMatchingDashboard.tsx
++++ b/src/components/ui/ICMatchingDashboard.tsx
+@@ -1,7 +1,9 @@
+-import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
++import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
+ import { Check, X, AlertCircle } from 'lucide-react';
+ import { useICMatching } from '@/hooks/useICMatching';
+ import type { ICTransaction } from '@/types/ic';
+@@ -480,6 +482,15 @@ export interface ICMatchingDashboardProps {
++  const parentRef = useRef<HTMLDivElement>(null);
++  const rowVirtualizer = useVirtualizer({
++    count: transactions.length,
++    getScrollElement: () => parentRef.current,
++    estimateSize: () => 48,
++    overscan: 8,
++  });
+   return (
+-    <div className="overflow-y-auto max-h-[700px]">
+-      {transactions.map((tx) => (
+-        <div key={tx.id} className="flex items-center h-12 px-4 border-b ...">
+-          {/* row content */}
+-        </div>
+-      ))}
+-    </div>
++    <div ref={parentRef} className="overflow-y-auto max-h-[700px] contain-strict">
++      <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
++        {rowVirtualizer.getVirtualItems().map((vr) => {
++          const tx = transactions[vr.index];
++          return (
++            <div key={tx.id} className="flex items-center px-4 border-b ..."
++                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${vr.size}px`, transform: `translateY(${vr.start}px)` }}>
++              {/* row content */}
++            </div>
++          );
++        })}
++      </div>
++    </div>
+   );
+ }
+diff --git a/src/components/ui/ScenarioComparisonGrid.tsx b/src/components/ui/ScenarioComparisonGrid.tsx
+index 0000001..0000002 100644
+--- a/src/components/ui/ScenarioComparisonGrid.tsx
++++ b/src/components/ui/ScenarioComparisonGrid.tsx
+@@ -1,7 +1,9 @@
+-import React, { memo, useMemo, useState } from 'react';
++import React, { memo, useMemo, useRef, useState } from 'react';
++import { useVirtualizer } from '@tanstack/react-virtual';
+ import { ChevronDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+ import { formatCurrency } from '@/utils/format';
+ import type { Scenario } from '@/types/scenario';
+@@ -88,6 +90,15 @@ export interface ScenarioComparisonGridProps {
++  const parentRef = useRef<HTMLDivElement>(null);
++  const rowVirtualizer = useVirtualizer({
++    count: scenarios.length * metrics.length,
++    getScrollElement: () => parentRef.current,
++    estimateSize: () => 50,
++    overscan: 6,
++  });
+   return (
+-    <div className="overflow-y-auto max-h-[500px]">
+-      {scenarios.map((s) => (
+-        <div key={s.id} className="...">
+-          {/* scenario row */}
+-        </div>
+-      ))}
+-    </div>
++    <div ref={parentRef} className="overflow-y-auto max-h-[500px] contain-strict">
++      <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
++        {rowVirtualizer.getVirtualItems().map((vr) => {
++          const scenarioIdx = Math.floor(vr.index / metrics.length);
++          const metricIdx = vr.index % metrics.length;
++          const s = scenarios[scenarioIdx];
++          const m = metrics[metricIdx];
++          return (
++            <div key={`${s.id}-${m}`} className="..." style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${vr.size}px`, transform: `translateY(${vr.start}px)` }}>
++              {/* cell content */}
++            </div>
++          );
++        })}
++      </div>
++    </div>
+   );
+ }
+diff --git a/src/components/ui/AccountTree.tsx b/src/components/ui/AccountTree.tsx
+index 0000001..0000002 100644
+--- a/src/components/ui/AccountTree.tsx
++++ b/src/components/ui/AccountTree.tsx
+@@ -1,7 +1,9 @@
+-import React, { useState, useMemo, memo } from 'react';
++import React, { useState, useMemo, memo, useRef } from 'react';
++import { useVirtualizer } from '@tanstack/react-virtual';
+ import { ChevronRight, ChevronDown } from 'lucide-react';
+ import { formatCurrency } from '@/utils/format';
+ import type { AccountNode } from '@/types/account';
+@@ -169,6 +171,16 @@ export interface AccountTreeProps {
++  const parentRef = useRef<HTMLDivElement>(null);
++  const flattened = useMemo(() => flattenTree(accounts, expandedIds), [accounts, expandedIds]);
++  const rowVirtualizer = useVirtualizer({
++    count: flattened.length,
++    getScrollElement: () => parentRef.current,
++    estimateSize: () => 32,
++    overscan: 8,
++    measureElement: (el) => el.getBoundingClientRect().height,
++  });
+   return (
+-    <div className="overflow-y-auto h-[600px]">
+-      {flattened.map((node) => (
+-        <div key={node.id} className="...">
+-          <AccountTreeNode node={node} depth={node.depth} />
+-        </div>
+-      ))}
+-    </div>
++    <div ref={parentRef} className="overflow-y-auto h-[600px] contain-strict">
++      <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
++        {rowVirtualizer.getVirtualItems().map((vr) => {
++          const node = flattened[vr.index];
++          return (
++            <div
++              key={node.id}
++              data-index={vr.index}
++              ref={rowVirtualizer.measureElement}
++              style={{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${vr.start}px)` }}
++            >
++              <AccountTreeNode node={node} depth={node.depth} />
++            </div>
++          );
++        })}
++      </div>
++    </div>
+   );
+ }
+diff --git a/src/components/dashboard/HeatmapGrid.tsx b/src/components/dashboard/HeatmapGrid.tsx
+index 0000001..0000002 100644
+--- a/src/components/dashboard/HeatmapGrid.tsx
++++ b/src/components/dashboard/HeatmapGrid.tsx
+@@ -1,7 +1,9 @@
+-import React, { memo, useMemo } from 'react';
++import React, { memo, useMemo, useRef } from 'react';
++import { useVirtualizer } from '@tanstack/react-virtual';
+ import { useHeatmapData } from '@/hooks/useHeatmapData';
+ import type { HeatmapSpec, HeatmapCell } from '@/types/heatmap';
+@@ -45,6 +47,21 @@ export interface HeatmapGridProps {
++  const parentRef = useRef<HTMLDivElement>(null);
++  const rowVirtualizer = useVirtualizer({
++    count: rowLabels.length,
++    getScrollElement: () => parentRef.current,
++    estimateSize: () => 24,
++    overscan: 5,
++  });
++  const colVirtualizer = useVirtualizer({
++    horizontal: true,
++    count: colLabels.length,
++    getScrollElement: () => parentRef.current,
++    estimateSize: () => 32,
++    overscan: 5,
++  });
+   return (
+-    <div className="overflow-auto h-[600px] w-full">
+-      {rowLabels.map((row, ri) => (
+-        <div key={row.id} className="flex">
+-          {colLabels.map((col, ci) => (
+-            <div key={col.id} className="heatmap-cell ..." style={{ backgroundColor: ... }}>
+-              {data[ri]?.[ci]?.label ?? ''}
+-            </div>
+-          ))}
+-        </div>
+-      ))}
+-    </div>
++    <div ref={parentRef} className="overflow-auto h-[600px] w-full contain-strict">
++      <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: `${colVirtualizer.getTotalSize()}px`, position: 'relative' }}>
++        {rowVirtualizer.getVirtualItems().flatMap((vr) =>
++          colVirtualizer.getVirtualItems().map((vc) => {
++            const cell = data[vr.index]?.[vc.index];
++            return (
++              <div
++                key={`${vr.index}-${vc.index}`}
++                className="heatmap-cell"
++                style={{
++                  position: 'absolute',
++                  top: 0, left: 0,
++                  width: `${vc.size}px`,
++                  height: `${vr.size}px`,
++                  transform: `translate(${vc.start}px, ${vr.start}px)`,
++                  backgroundColor: cell ? colorScale(cell.value) : 'transparent',
++                }}
++              >
++                <span className="text-[10px]">{cell?.label ?? ''}</span>
++              </div>
++            );
++          })
++        )}
++      </div>
++    </div>
+   );
+ }

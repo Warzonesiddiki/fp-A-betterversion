@@ -29,11 +29,13 @@ export default function SearchableGrid({ itemsPromise }) {
 Per-item `<ViewTransition name={...}>` inside a deferred list triggers cross-fades on every keystroke. Fix with `default="none"`:
 
 ```tsx
-{filteredItems.map(item => (
-  <ViewTransition key={item.id} name={`item-${item.id}`} share="morph" default="none">
-    <ItemCard item={item} />
-  </ViewTransition>
-))}
+{
+  filteredItems.map((item) => (
+    <ViewTransition key={item.id} name={`item-${item.id}`} share="morph" default="none">
+      <ItemCard item={item} />
+    </ViewTransition>
+  ));
+}
 ```
 
 ## Card Expand/Collapse with `startTransition`
@@ -52,7 +54,7 @@ export default function ItemGrid({ items }) {
   return expandedId ? (
     <ViewTransition enter="slide-in" name={`item-${expandedId}`}>
       <ItemDetail
-        item={items.find(i => i.id === expandedId)}
+        item={items.find((i) => i.id === expandedId)}
         onClose={() => {
           startTransition(() => {
             setExpandedId(null);
@@ -63,7 +65,7 @@ export default function ItemGrid({ items }) {
     </ViewTransition>
   ) : (
     <div className="grid grid-cols-3 gap-4">
-      {items.map(item => (
+      {items.map((item) => (
         <ViewTransition key={item.id} name={`item-${item.id}`}>
           <ItemCard
             item={item}
@@ -85,18 +87,33 @@ Use `as const` arrays and derived types to prevent ID clashes:
 
 ```tsx
 const transitionTypes = ['default', 'transition-to-detail', 'transition-to-list'] as const;
-const animationTypes = ['auto', 'none', 'animate-slide-from-left', 'animate-slide-from-right'] as const;
+const animationTypes = [
+  'auto',
+  'none',
+  'animate-slide-from-left',
+  'animate-slide-from-right',
+] as const;
 
 type TransitionType = (typeof transitionTypes)[number];
 type AnimationType = (typeof animationTypes)[number];
-type TransitionMap = { default: AnimationType } & Partial<Record<Exclude<TransitionType, 'default'>, AnimationType>>;
+type TransitionMap = { default: AnimationType } & Partial<
+  Record<Exclude<TransitionType, 'default'>, AnimationType>
+>;
 
-export function HorizontalTransition({ children, enter, exit }: {
+export function HorizontalTransition({
+  children,
+  enter,
+  exit,
+}: {
   children: React.ReactNode;
   enter: TransitionMap;
   exit: TransitionMap;
 }) {
-  return <ViewTransition enter={enter} exit={exit}>{children}</ViewTransition>;
+  return (
+    <ViewTransition enter={enter} exit={exit}>
+      {children}
+    </ViewTransition>
+  );
 }
 ```
 
@@ -119,7 +136,7 @@ Use `key` when content identity changes (state resets). Omit for cross-fades (ta
 Persistent elements (headers, navbars, sidebars) get captured in the page's transition snapshot. Fix with `viewTransitionName`:
 
 ```jsx
-<nav style={{ viewTransitionName: "persistent-nav" }}>{/* ... */}</nav>
+<nav style={{ viewTransitionName: 'persistent-nav' }}>{/* ... */}</nav>
 ```
 
 Then add the persistent element isolation CSS from `css-recipes.md`. For `backdrop-blur`/`backdrop-filter`, use the backdrop-blur workaround from `css-recipes.md`.
@@ -185,15 +202,19 @@ const [optimisticSort, setOptimisticSort] = useOptimistic(sort);
 function cycleSort() {
   const nextSort = getNextSort(optimisticSort);
   startTransition(() => {
-    setOptimisticSort(nextSort);  // before snapshot — no animation
-    setSort(nextSort);            // between snapshots — animates
+    setOptimisticSort(nextSort); // before snapshot — no animation
+    setSort(nextSort); // between snapshots — animates
   });
 }
 
-<button>Sort: {LABELS[optimisticSort]}</button>
-{items.sort(comparators[sort]).map(item => (
-  <ViewTransition key={item.id}><ItemCard item={item} /></ViewTransition>
-))}
+<button>Sort: {LABELS[optimisticSort]}</button>;
+{
+  items.sort(comparators[sort]).map((item) => (
+    <ViewTransition key={item.id}>
+      <ItemCard item={item} />
+    </ViewTransition>
+  ));
+}
 ```
 
 ---
@@ -206,7 +227,10 @@ Imperative control via `onEnter`, `onExit`, `onUpdate`, `onShare`. Always return
 <ViewTransition
   onEnter={(instance, types) => {
     const anim = instance.new.animate(
-      [{ transform: 'scale(0.8)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }],
+      [
+        { transform: 'scale(0.8)', opacity: 0 },
+        { transform: 'scale(1)', opacity: 1 },
+      ],
       { duration: 300, easing: 'ease-out' }
     );
     return () => anim.cancel();
@@ -224,12 +248,12 @@ The `types` array (second argument) lets you vary animation based on transition 
 
 ## Animation Timing
 
-| Interaction | Duration |
-|------------|----------|
-| Direct toggle (expand/collapse) | 100–200ms |
-| Route transition (slide) | 150–250ms |
+| Interaction                          | Duration  |
+| ------------------------------------ | --------- |
+| Direct toggle (expand/collapse)      | 100–200ms |
+| Route transition (slide)             | 150–250ms |
 | Suspense reveal (skeleton → content) | 200–400ms |
-| Shared element morph | 300–500ms |
+| Shared element morph                 | 300–500ms |
 
 ---
 

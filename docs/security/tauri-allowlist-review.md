@@ -2,7 +2,7 @@
 
 **Task:** T03345  
 **Date:** 2026-06-08  
-**Status:** COMPLETED  
+**Status:** COMPLETED
 
 ---
 
@@ -14,54 +14,55 @@ Reviewed Tauri 2.x configuration, capabilities, plugins, and CSP. Found **2 high
 
 ## Permissions Audited
 
-| Permission | Status | Risk Level |
-|-----------|--------|------------|
-| `core:default` | ✅ Keep | Low |
-| `shell:allow-execute` | ❌ **REMOVE** | **HIGH** |
-| `fs:default` | ⚠️ Restrict | Medium |
-| `fs:allow-read` | ⚠️ Restrict | Medium |
-| `fs:allow-write` | ⚠️ Restrict | Medium |
-| `dialog:default` | ✅ Keep | Low |
-| `sql:default` | ✅ Keep | Low |
-| `sql:allow-execute` | ✅ Keep | Low |
-| `sql:allow-query` | ✅ Keep | Low |
+| Permission            | Status        | Risk Level |
+| --------------------- | ------------- | ---------- |
+| `core:default`        | ✅ Keep       | Low        |
+| `shell:allow-execute` | ❌ **REMOVE** | **HIGH**   |
+| `fs:default`          | ⚠️ Restrict   | Medium     |
+| `fs:allow-read`       | ⚠️ Restrict   | Medium     |
+| `fs:allow-write`      | ⚠️ Restrict   | Medium     |
+| `dialog:default`      | ✅ Keep       | Low        |
+| `sql:default`         | ✅ Keep       | Low        |
+| `sql:allow-execute`   | ✅ Keep       | Low        |
+| `sql:allow-query`     | ✅ Keep       | Low        |
 
 ---
 
 ## Plugins Installed
 
-| Plugin | Purpose | Risk |
-|--------|---------|------|
-| `tauri-plugin-dialog` | File/folder dialogs | Low |
-| `tauri-plugin-fs` | Filesystem operations | Medium |
-| `tauri-plugin-shell` | Shell execution | **HIGH** |
-| `tauri-plugin-sql` (sqlite) | Local database | Low |
-| `tauri-plugin-window-state` | Window persistence | Low |
-| `tauri-plugin-global-shortcut` | Keyboard shortcuts | Low |
-| `tauri-plugin-notification` | Desktop notifications | Low |
-| `tauri-plugin-updater` | Auto-updates | Medium |
-| `tauri-plugin-clipboard-manager` | Clipboard access | Low |
+| Plugin                           | Purpose               | Risk     |
+| -------------------------------- | --------------------- | -------- |
+| `tauri-plugin-dialog`            | File/folder dialogs   | Low      |
+| `tauri-plugin-fs`                | Filesystem operations | Medium   |
+| `tauri-plugin-shell`             | Shell execution       | **HIGH** |
+| `tauri-plugin-sql` (sqlite)      | Local database        | Low      |
+| `tauri-plugin-window-state`      | Window persistence    | Low      |
+| `tauri-plugin-global-shortcut`   | Keyboard shortcuts    | Low      |
+| `tauri-plugin-notification`      | Desktop notifications | Low      |
+| `tauri-plugin-updater`           | Auto-updates          | Medium   |
+| `tauri-plugin-clipboard-manager` | Clipboard access      | Low      |
 
 ---
 
 ## CSP Analysis
 
 **Current CSP:**
+
 ```
 default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
 ```
 
-| Directive | Value | Assessment |
-|-----------|-------|------------|
-| `default-src` | `'self'` | ✅ Good |
-| `script-src` | `'self'` | ✅ Good - no `unsafe-eval` |
-| `style-src` | `'self' 'unsafe-inline'` | ⚠️ Minor - inline styles allowed |
-| `img-src` | `'self' data: https:` | ⚠️ External HTTPS images allowed |
-| `font-src` | `'self' data:` | ✅ Acceptable |
-| `connect-src` | `'self' ipc: http://ipc.localhost` | ✅ IPC only |
-| `frame-ancestors` | `'none'` | ✅ Prevents clickjacking |
-| `base-uri` | `'self'` | ✅ Good |
-| `form-action` | `'self'` | ✅ Good |
+| Directive         | Value                              | Assessment                       |
+| ----------------- | ---------------------------------- | -------------------------------- |
+| `default-src`     | `'self'`                           | ✅ Good                          |
+| `script-src`      | `'self'`                           | ✅ Good - no `unsafe-eval`       |
+| `style-src`       | `'self' 'unsafe-inline'`           | ⚠️ Minor - inline styles allowed |
+| `img-src`         | `'self' data: https:`              | ⚠️ External HTTPS images allowed |
+| `font-src`        | `'self' data:`                     | ✅ Acceptable                    |
+| `connect-src`     | `'self' ipc: http://ipc.localhost` | ✅ IPC only                      |
+| `frame-ancestors` | `'none'`                           | ✅ Prevents clickjacking         |
+| `base-uri`        | `'self'`                           | ✅ Good                          |
+| `form-action`     | `'self'`                           | ✅ Good                          |
 
 ---
 
@@ -86,6 +87,7 @@ default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src
 **Impact:** Sensitive file exposure (credentials, configs). Write access could corrupt data or inject malicious files.
 
 **Recommendation:** Use scoped permissions:
+
 ```json
 "fs:allow-read": {
   "allow": [{ "path": "$APPDATA/**" }]

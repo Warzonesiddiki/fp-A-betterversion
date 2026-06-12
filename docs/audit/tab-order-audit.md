@@ -9,14 +9,14 @@
 
 ## Summary
 
-| Check | Result |
-|---|---|
-| Positive tabindex values | ✅ PASS — 0 violations |
-| role="button" → tabIndex + onKeyDown | ✅ PASS — all elements covered |
-| role="tab" → tabIndex + aria-selected + onKeyDown | ✅ PASS — all elements covered |
-| role="menuitem" keyboard navigation | ✅ PASS — native buttons, managed focus |
-| Focus trap (Modal, Overlay) | ✅ PASS — FocusTrap.tsx, CopilotSidebar |
-| Focus management hooks | ✅ PASS — useFocusManagement.ts |
+| Check                                             | Result                                  |
+| ------------------------------------------------- | --------------------------------------- |
+| Positive tabindex values                          | ✅ PASS — 0 violations                  |
+| role="button" → tabIndex + onKeyDown              | ✅ PASS — all elements covered          |
+| role="tab" → tabIndex + aria-selected + onKeyDown | ✅ PASS — all elements covered          |
+| role="menuitem" keyboard navigation               | ✅ PASS — native buttons, managed focus |
+| Focus trap (Modal, Overlay)                       | ✅ PASS — FocusTrap.tsx, CopilotSidebar |
+| Focus management hooks                            | ✅ PASS — useFocusManagement.ts         |
 
 ---
 
@@ -29,10 +29,12 @@ Zero instances of `tabIndex={1}` or higher anywhere in `src/`. All values are `0
 ### 2. role="button" Elements — 30 instances audited
 
 Every `<div role="button">` has:
+
 - `tabIndex={0}` (focusable) or `tabIndex={-1}` (intentionally excluded from tab order)
 - `onKeyDown` handler checking `e.key === 'Enter' || e.key === ' '`
 
 **Files verified:**
+
 - `DataLineageViewer.tsx:55-56` ✅
 - `DashboardPage.tsx:368-421` (4 instances) ✅
 - `DeferredSchedulePage.tsx:359-360` ✅
@@ -85,6 +87,7 @@ Every `<div role="button">` has:
 ### 6. Conditional tabIndex Pattern (correct)
 
 Multiple chart components use `tabIndex={onClick ? 0 : undefined}`:
+
 - `KPICard.tsx`, `KPICardEnhanced.tsx`, `Heatmap.tsx`, `FunnelChart.tsx`
 - `GaugeChart.tsx`, `SparklineChart.tsx`, `BulletChart.tsx`, `BoxPlotChart.tsx`
 

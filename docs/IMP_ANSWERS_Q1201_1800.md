@@ -28,7 +28,7 @@
 **Q1217 Floating point precision:** No Decimal.js. Uses native float. Financial rounding at display only. ❌ MISSING
 **Q1218 CSV injection:** No sanitization of CSV output. Could contain =SUM() formulas. ❌ MISSING
 **Q1219 XSS via formulas:** SafeMathParser prevents eval(). Formula strings not rendered as HTML. ✅ DONE
-**Q1220 Prototype pollution:** SafeMathParser blocks __proto__ access. ✅ DONE
+**Q1220 Prototype pollution:** SafeMathParser blocks **proto** access. ✅ DONE
 **Q1221 Memory leak undo/redo:** No limit on undo stack. Could grow unbounded. ❌ MISSING
 **Q1222 IndexedDB key limits:** No key size validation. Large keys could fail silently. ❌ MISSING
 **Q1223 AG Grid license:** AG Grid Community (MIT for <10K revenue). Need license verification. ⚠️ PARTIAL
