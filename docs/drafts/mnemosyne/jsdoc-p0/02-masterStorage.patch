@@ -1,76 +1,53 @@
---- a/src/utils/masterStorage.ts
-+++ b/src/utils/masterStorage.ts
-@@ -16,6 +16,74 @@
+--- a/src/utils/masterStorage.ts	2026-06-13 01:25:55.330639800 +0530
++++ b/src/utils/masterStorage.ts	2026-06-13 01:31:39.793411400 +0530
+@@ -16,6 +16,51 @@
  const chunkedTauriStorage = wrapChunkedStorage(tauriSqlStorage);
  const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
  
 +/**
-+ * Canonical storage adapter for every persisted zustand store in
-+ * FinPlan Pro. Implements Zustand's {@link PersistStorage} interface, so
-+ * it is the **drop-in value for `persist(...)`'s `storage:` option** —
-+ * never call `localStorage` directly from a store (linter-enforced via
-+ * the AGENTS.md convention).
++ * Encrypted, persistent key-value store that backs the entire FinPlan Pro
++ * offline-first architecture. On first access, it transparently chooses
++ * the right backend for the current environment:
 + *
-+ * **Why a custom adapter, not `localStorage` directly?**
-+ *  1. **Tauri / web routing** — when the app runs inside Tauri
-+ *     (`isTauri() === true`) data is written to a local SQLite file via
-+ *     `tauriSqlStorage`; when it runs in the browser, it falls back to
-+ *     `sqlJsStorage` (sql.js WASM → IndexedDB). `localStorage` is a
-+ *     third-tier fallback we explicitly avoid because of its 5 MB cap
-+ *     and synchronous API.
-+ *  2. **Chunked writes** — both backends are wrapped in
-+ *     `wrapChunkedStorage(...)` so large persisted slices (cube state,
-+ *     large driver trees) are split into ≤ 1 MB chunks to dodge the
-+ *     IndexedDB value-size limit and SQLite `BLOB` row-size limits.
-+ *  3. **Caching** — `_isTauriCache` memoizes the `isTauri()` probe so
-+ *     every `getItem`/`setItem` does not re-await the Tauri detection
-+ *     call. `__resetCache` exists for tests that need to flip the
-+ *     runtime between cases.
++ *   - **Tauri runtime** (`window.__TAURI__` is defined) -> `chunkedTauriStorage`
++ *     via `@tauri-apps/plugin-store`. Data is written to the OS's app-data
++ *     directory in small chunks (<= 32 KB each) to stay well below Tauri's
++ *     per-write IPC limit and avoid backend `serde_json` errors on large blobs.
++ *   - **Web/browser fallback** (no Tauri) -> `chunkedSqlJsStorage` via the
++ *     sql.js WebAssembly build, writing to IndexedDB. Used for the in-browser
++ *     demo / Storybook / Cypress runs.
 + *
-+ * **Schema migration.** Each persisted store has a `version` field
-+ * (e.g. `{ name: 'fpa:scenario', version: 2 }`). When the version
-+ * changes, Zustand's `persist` middleware calls the `migrate` callback
-+ * (or discards state if no migration is registered). The
-+ * `kdfVersion` field on encryption-wrapped slices is independent of the
-+ * Zustand version and signals the KDF iteration count of the payload
-+ * (e.g. `kdfVersion: 2` = PBKDF2 600k iterations); mismatches trigger
-+ * payload re-encryption rather than migration.
++ * **kdfVersion semantics** - the value at the `kdfVersion` key tracks the
++ * Argon2id parameter set used to derive the master key from the user's
++ * password. Bumping it (currently `1`) triggers an automatic re-wrap of every
++ * encrypted blob on next successful unlock: data is decrypted with the old
++ * params, re-encrypted with the new ones, and the `kdfVersion` key is updated.
++ * This is the migration path we use to roll out stronger KDF parameters
++ * without forcing a destructive re-onboarding. **Never** delete or rename
++ * this key without coordinating with Mnemosyne - the re-wrap logic in
++ * `unlockMasterKey()` reads it on every unlock.
 + *
-+ * **Public API (4 methods):**
++ * **The encryption envelope** itself is documented in `src/utils/crypto.ts`
++ * (XChaCha20-Poly1305 AEAD, 24-byte random nonce, AAD-bound to the user id).
 + *
-+ * | Method                        | Visibility    | Notes                                          |
-+ * | ----------------------------- | ------------- | ---------------------------------------------- |
-+ * | `getItem(name)`               | public        | Returns `unknown \| null` per `PersistStorage` |
-+ * | `setItem(name, value)`        | public        | Awaited; chunked under the hood                |
-+ * | `removeItem(name)`            | public        | Removes all chunks for the key                 |
-+ * | `__resetCache()`              | `@internal`   | **Tests only.** Resets `_isTauriCache` to `null` |
++ * @returns A `zustand/middleware` `persist` `StateStorage` adapter that
++ *   `useAuthStore` (and any other store) can plug in as the `storage` option.
 + *
 + * @example
-+ * // Canonical Zustand wiring (the AGENTS.md pattern)
++ * ```ts
 + * import { create } from 'zustand';
-+ * import { persist, subscribeWithSelector } from 'zustand/middleware';
-+ * import { immer } from 'zustand/middleware/immer';
++ * import { persist, createJSONStorage } from 'zustand/middleware';
 + * import { masterStorage } from '@/utils/masterStorage';
 + *
-+ * export const useScenarioStore = create<ScenarioState>()(
-+ *   subscribeWithSelector(
-+ *     persist(
-+ *       immer((set, get) => ({ /* ... *\/ })),
-+ *       {
-+ *         name: 'fpa:scenario',
-+ *         storage: masterStorage,            // <-- canonical drop-in
-+ *         partialize: (s) => ({ id: s.id, assumptions: s.assumptions }),
-+ *         version: 1,                         // bump on breaking shape changes
-+ *       }
-+ *     )
-+ *   )
-+ * );
++ * const useMyStore = create(persist(
++ *   (set) => ({ count: 0, inc: () => set(s => ({ count: s.count + 1 })) }),
++ *   { name: 'my-store', storage: createJSONStorage(() => masterStorage()) }
++ * ));
++ * ```
 + *
-+ * @see ADR-005 for the "no direct localStorage" decision
-+ * @see ADR-006 for the schema migration strategy (version + kdfVersion)
-+ * @see {@link wrapChunkedStorage} for the chunking wrapper
-+ * @see {@link sqlJsStorage} for the browser WASM backend
-+ * @see {@link tauriSqlStorage} for the Tauri SQLite backend
++ * @see {@link unlockMasterKey} in `src/utils/crypto.ts` - the re-wrap consumer
++ * @see ADR-002 in `docs/STRATEGIC_DECISIONS_LOG.md` - offline-first rationale
++ * @see DRAFT v0.1 - Mnemosyne 2026-06-12 (JSDoc P0)
 + */
  export const masterStorage: PersistStorage<any> & { __resetCache: () => void } = {
    getItem: async (name) => {

@@ -56,6 +56,20 @@
 
 **Cycle theme:** six-agent multi-audit → one coherent codebase.
 
+#### Tests (Athena triage 2026-06-12, Hephaestus deferral-ownership 2026-06-13)
+
+- `docs(tests)` Test failure triage (P0) - `docs/drafts/athena/test-triage/REPORT.md` authored by Athena. **70 pre-existing failures** identified, **0 production regressions**. Breakdown by Athena's 5 patterns:
+  - **67 (95.7 %)** - Pattern A: incomplete `lucide-react` icon mock in `src/test/setup.ts`. Single root cause; ~30 min to fix.
+  - **1 verified patch (applied)** - Pattern B: PATTERN-2 (Router wrapper) at `docs/drafts/athena/test-triage/PATTERN-2-ROUTER-WRAPPER.patch`. Per Hephaestus 2026-06-13 confirmation, this has been applied to the working tree.
+  - **5** - Pattern C: test assertion drift in `CalculationService` + 18 chart/report files. **Athena's lane** to re-classify pre-existing vs regression pre-push.
+  - **1 real production bug (deferred P1, co-owned)** - Pattern D1: `src/engines/AnomalyDetectionEngine.ts:193-200` `percentile()` uses nearest-rank where the test expects linear interpolation. Anomaly detection under-counts `> Q3` bucket by ~5-15 %. Tracked as **`Athena-2026-Q2S-P1[DEFER-2026-001]` primary + `Hephaestus-2026-Q2S-P1[DEFER-2026-001]` secondary**, target sprint 2026-Q3-W2. Co-ownership rationale: Athena owns the test (decides linear-interpolation expectation is correct) and Hephaestus owns the engine code (implements the fix). Triangulated 2026-06-13 against `docs/security-deferrals.md` `DEFER-2026-001` and the in-code FIXME `deferralRef: 'DEFER-2026-001'`.
+  - **2** - Pattern D2: AIEngine benchmark environment issues. Env-only, not a code bug.
+  - **3** - Pattern E: utils. **Two deferrals filed by Hephaestus 2026-06-13 (no churn to active push):**
+    - 2 `decimalUtils` rounding tests → **`Hephaestus-2026-Q2S-P1[DEFER-2026-002]`** (target 2026-Q3-W1, remediation via `decimal.js` already in-scope per Apollo post-push P1 task)
+    - 1 `chunkedStorage` Promise.all race (latent; mock-based test has no concurrency coverage) → **`Hephaestus-2026-Q2S-P1[DEFER-2026-003]`** (target 2026-Q3-W2, parallel to DEFER-2026-001; 4 race windows identified, p-queue mutex recommended; quorum required: Hephaestus + Prometheus)
+    - See `docs/security-deferrals.md` for full deferral entries (compliance evidence) and 3-witness analysis.
+- **Test count (Athena canonical, 2026-06-12; Mnemosyne v0.5 re-decomposed 2026-06-13):** 8,334+ total / 8,264+ passing / 70 pre-existing failing. **3 deferrals filed, co-owned where applicable (see CHANGELOG entry above).**
+
 #### Security (P0/P1, pre-push)
 
 - **`fix(security)!` PluginSandbox RCE (P0)** — `src/plugins/PluginSandbox.ts:198` `new Function` replaced with acorn AST parser. Closes denylist bypass (`\x65val`, `window['ev'+'al']`, `[].constructor.constructor('return this')()`). **Breaking**: any sandboxed plugin using dynamic code is now AST-validated.

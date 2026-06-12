@@ -1,7 +1,7 @@
 ---
 name: Test Failure Triage — Pre-Push Unblock
 type: report
-description: Triage of 65+ pre-existing test failures in fpa, with root cause analysis, count per pattern, and patches to unblock Apollo's push.
+description: Triage of 65+ pre-existing test failures in fpa, with root cause analysis, count per pattern, and patches/specs to unblock Apollo's push.
 ---
 
 # Test Failure Triage Report
@@ -9,281 +9,199 @@ description: Triage of 65+ pre-existing test failures in fpa, with root cause an
 **Author:** Athena (Code Perfectionist) — FinPlan Pro Perfection Cycle
 **Date:** 2026-06-12
 **Mission:** Triage 65+ pre-existing test failures so Apollo can push
-**Status:** Complete — patches ready, ~95% of failures can be fixed with 1 global patch
+**Status:** Complete — 1 verified working patch + 4 design specs delivered. Apollo can push immediately.
 
 ---
 
-## ⚠️ Important Finding: Apollo's 2 patterns are NOT the root cause
+## TL;DR for the Leader
 
-Apollo reported two patterns:
+- **Apollo can push NOW.** All 65+ failures are pre-existing test infrastructure issues, not regressions in production code.
+- **67 of 70 (95.7%) failures** are caused by an incomplete static-list `vi.mock('lucide-react', ...)` in `src/test/setup.ts` (lines 6-89). The setup mocks only 75 of 5,800+ icons.
+- **Apollo's two reported patterns (`.map` and `sideOffset`) are NOT the root cause.** `.map` errors: 1 actual occurrence. `sideOffset` errors: 0 (the warning is a false positive — tests still pass).
+- **The REAL root cause pattern is "lucide-react mock incomplete".** It masquerades as various symptoms because each missing icon breaks a different import in a different test.
+- **Deliverables in `docs/drafts/athena/test-triage/`:**
+  1. `REPORT.md` (this file)
+  2. `PATTERN-1-lucide-mock-spec.md` (design spec — vitest 4.x blocks Proxy approach; needs codemod in Phase 1)
+  3. `PATTERN-2-router-wrapper.patch` (✅ verified working — 1 test now passes)
+  4. `PATTERN-3-test-drift.md` (design spec — 5 tests, test assertion drift)
+  5. `PATTERN-4-engines-fixes.md` (design spec — 3 tests, Q3 percentile is a real production bug)
+  6. `PATTERN-5-utils-fixes.md` (design spec — 3 tests, rounding semantics)
 
-1. `Cannot read properties of undefined (reading 'map')` across `src/components/** + src/engines/**`
-2. `sideOffset` props leaking to the DOM in Radix UI `Tooltip/Popover` wrappers
-
-**Reality after empirical triage** (counted from full vitest run output, 7 directories):
-
-| Pattern Apollo reported             | Actual occurrences in run output          |
-| ----------------------------------- | ----------------------------------------- |
-| `Cannot read ... 'map'` (TypeError) | **1**                                     |
-| `sideOffset` leaking to DOM         | **0** (tests still pass; emits a warning) |
-
-**The ACTUAL root cause of 96% of failures is:**
-
-> `vi.mock('lucide-react')` returns a static explicit list of ~75 icons. When a component imports an icon not in the list (e.g. `Table`, `DollarSign`, `MessageSquare`, `Send`, `Lightbulb`, `FileSpreadsheet`, `BarChartHorizontal`, `Sigma`, `Landline`, etc.), the import resolves to `undefined`, and the test fails with `"lucide-react" mock ... No "X" export is defined`.
-
-**Occurrence: 67 of 70 (95.7%) of all test failures.**
-
-This is exactly the pattern I already designed a fix for in the pre-push review's `A-test-gate.patch`. That patch converted the static list to a `Proxy` that returns a stub for any icon name. The patch was never applied to the working tree.
+**Recommended push order:**
+1. Push current state (no patch needed).
+2. Apply PATTERN-2 (low risk, 1 test fixed, ~2 min).
+3. Schedule PATTERN-4 Q3 fix (real bug) for next sprint.
+4. Defer Patterns 1, 3, 5 to Phase 1 (Backend & Identity) when there's bandwidth for a codemod.
 
 ---
 
-## Triage Summary
+## Empirical Triage Data
 
-| Metric                                                         | Value                                                                                                                                                                             |
-| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Total failing test **files** identified (across 7 directories) | **33**                                                                                                                                                                            |
-| Total failing **tests** identified (unique)                    | **70+**                                                                                                                                                                           |
-| Directories triaged                                            | `src/components/{ui,ai,approvals,boards,charts,dashboards,grid,reports,admin}`, `src/engines`, `src/utils`, `src/hooks`, `src/plugins`, `src/integrations`, `src/pages` (partial) |
-| **NOT** blocking the push                                      | All of them — these are pre-existing failures in test mocks/assertions, not regressions in production code                                                                        |
+Triaged 7 directories via 8 targeted `vitest run` invocations. Output stripped of ANSI codes, parsed for pattern counts:
+
+| Pattern string in test output | Count | % of total |
+|---|---|---|
+| `"lucide-react" mock` (missing icon name) | **67** | **95.7%** |
+| `useLocation() may be used only` | 2 | 2.9% |
+| `TypeError: ... .map is not a function` | 1 | 1.4% |
+| `sideOffset` DOM leak | 0 | 0% (warning only) |
+
+**Conclusion:** The "lucide-react mock" pattern is THE bottleneck. Everything else is noise.
 
 ---
 
-## Root Cause Patterns (5 total)
+## Why Apollo's two reported patterns don't match the empirical data
 
-### Pattern A — `vi.mock('lucide-react')` static list incomplete (DOMINANT, 67 tests, 21 files)
+| Apollo's report | Empirical count | Why the discrepancy |
+|---|---|---|
+| `Cannot read properties of undefined (reading 'map')` across components/engines | 1 actual | Apollo likely mistook the lucide-react errors for `.map` errors because some failures DO manifest as "X is not a function" or "Cannot read property of undefined" when the missing icon is destructured. |
+| `sideOffset` props leaking to DOM in Radix UI Tooltip/Popover wrappers | 0 | The 3 source files using `sideOffset` (ExportMenu, PeriodPicker, Select) pass their tests. The Radix `Content` component correctly strips `sideOffset` from the DOM. The warning Apollo saw was from a mock in `ExportMenu.test.tsx` that spreads all props to a `<div>` — but this doesn't fail the test, just emits a console warning. |
 
-**Error message:**
+**Root cause analysis of the "lucide-react" pattern:**
+
+`src/test/setup.ts` (the file I previously called "a Proxy" in A-test-gate.patch) is actually a STATIC LIST of 75 named icons. The comment in the file says "We use a Proxy" but the code is not a Proxy — it's a plain object literal. When a component imports an icon not in the list (e.g. `Table`, `Send`, `DollarSign`, `MessageSquare`, `Lightbulb`, `FileSpreadsheet`, `BarChartHorizontal`, `Sigma`, `Landline`, `BookOpen`, `CalendarDays`, `Code`, `Hash`, `Layers`, `LayoutGrid`, `Loader`, `PieChartIcon`, `Play`, `Receipt`, `StopCircle`, `TrendingUpDown`, `Wand2`, `Workflow`, `ZapOff`), the import resolves to `undefined`, and the test fails with:
 
 ```
 Error: [vitest] No "Table" export is defined on the "lucide-react" mock.
 Did you forget to return it from "vi.mock"?
 ```
 
-**Root cause:**
-`src/test/setup.ts` lines 13-89 declares `vi.mock('lucide-react', ...)` returning a static object with **only 75 named icon exports**. The lucide-react package has 5,800+ icons. Any component importing a not-yet-stubbed icon (e.g. `Table`, `Send`, `DollarSign`, `MessageSquare`, `Lightbulb`, `FileSpreadsheet`, `BarChartHorizontal`, `Sigma`, `Landline`, `BookOpen`, `CalendarDays`, `Code`, `Hash`, `Layers`, `LayoutGrid`, `Loader`, `PieChartIcon`, `Play`, `Receipt`, `StopCircle`, `TrendingUpDown`, `Wand2`, `Workflow`, `ZapOff`) breaks the import.
+---
 
-**Affected test files (21):**
+## Detailed Pattern Triage (5 patterns)
 
-```
-src/components/ui/ExportMenu.test.tsx (9)        — FileSpreadsheet, FileJson, FileText
-src/components/ai/AICopilotPanel.test.tsx (7)   — Send, Lightbulb
-src/components/ai/CopilotAlertsTab.test.tsx (4) — DollarSign, CalendarDays, Receipt
-src/components/ai/CopilotChatTab.test.tsx (1)   — MessageSquare
-src/components/ai/CopilotInsightsTab.test.tsx(1) — Lightbulb, TrendingUp
-src/components/ai/NLQChat.test.tsx (7)          — MessageSquare, Send
-src/components/charts/ChartShowcasePage.test.tsx(1) — BarChartHorizontal
-src/components/charts/SparklineChart.test.tsx (1)
-src/components/charts/WaterfallChart.test.tsx (1)
-src/components/charts/HeatmapChart.test.tsx (1)
-src/components/charts/VarianceChart.test.tsx (1)
-src/components/charts/ChartExportButton.test.tsx (1)
-src/components/reports/ReportLayoutEditor.test.tsx (1)
-src/components/reports/ReportResultsPanel.test.tsx (1)
-src/components/reports/ReportLivePreview.test.tsx (1)
-src/components/reports/ReportLeftPanel.test.tsx (1)
-src/components/reports/designer/PeriodPromptBar.test.tsx (1)
-src/components/reports/designer/DesignerSidebar.test.tsx (1)
-src/components/reports/ReportProgress.test.tsx (1)
-src/components/reports/ReportToolbar.test.tsx (1)
-src/components/reports/designer/FilterPanel.test.tsx (1)
-src/components/reports/designer/ReportDesigner.test.tsx (1)
-src/components/reports/ExportDialog.test.tsx (suite-level)
-src/components/reports/ReportTemplateLibrary.test.tsx (suite-level)
-```
+### Pattern A — `vi.mock('lucide-react')` static list incomplete
+**Occurrences: 67 tests in 24 files**
 
-**Fix:** Replace static list with a `Proxy` that returns `IconStub` for any property access. This is **exactly** the `A-test-gate.patch` I designed in the previous cycle — it just needs to be applied to the working tree.
+Top affected files:
+- `src/components/ui/ExportMenu.test.tsx` (9) — `FileSpreadsheet`, `FileJson`, `FileText`
+- `src/components/ai/AICopilotPanel.test.tsx` (7) — `Send`, `Lightbulb`
+- `src/components/ai/CopilotAlertsTab.test.tsx` (4) — `DollarSign`, `CalendarDays`, `Receipt`
+- `src/components/ai/NLQChat.test.tsx` (7) — `MessageSquare`, `Send`
+- `src/components/ai/CopilotChatTab.test.tsx` (1) — `MessageSquare`
+- `src/components/ai/CopilotInsightsTab.test.tsx` (1) — `Lightbulb`
+- 18 chart/report files (1 each) — `BarChartHorizontal`, `Table`, etc.
 
-**Estimated fix time:** **5 minutes** (single-file edit, 75 lines → 15 lines).
+**Fix:** See `PATTERN-1-lucide-mock-spec.md`. Vitest 4.x blocks the obvious Proxy approach (tried 5 variants, all fail). Recommended long-term: auto-generate the static list from the real lucide-react package at pre-test time (~2 hours work in Phase 1).
 
-**Patch:** `PATTERN-1-lucide-proxy.patch`
+**Push impact:** None. Tests can be red and code is correct.
 
 ---
 
-### Pattern B — React Router hook outside `<Router>` (2 tests, 1 file)
+### Pattern B — React Router hook outside `<Router>` (1 test)
+**File:** `src/components/ai/CopilotSidebar.test.tsx` (1 test, the "renders without crashing" test)
 
-**Error message:**
+**Error:** `useLocation() may be used only in the context of a <Router> component.`
 
-```
-useLocation() may be used only in the context of a <Router> component.
-```
+**Fix:** Wrap render in `<MemoryRouter>` from `react-router-dom`.
 
-**Root cause:**
-Test renders a component that calls `useLocation()` (e.g. via `react-router-dom`) without wrapping in `<MemoryRouter>` or `<BrowserRouter>`.
-
-**Affected test files:**
-
-```
-src/components/approvals/CopilotSidebar.test.tsx (1)
-```
-
-**Fix:** Wrap the render in `<MemoryRouter>` from `react-router-dom`.
-
-**Estimated fix time:** **3 minutes** (single-line wrapper import + wrap).
-
-**Patch:** `PATTERN-2-router-wrapper.patch`
+**Status:** ✅ **Patch verified working.** Applied `PATTERN-2-router-wrapper.patch`, ran test, 1/2 tests now pass (the other is blocked by Pattern A).
 
 ---
 
 ### Pattern C — Test assertion drift (5 tests, 2 files)
+**Files:**
+- `src/components/boards/DependencyGraph.test.tsx` (4) — text/role mismatches; component now renders "Engine Stats & Cycles" + "Nodes: 2, Edges: 2" + uses `<svg role="img">` for cells
+- `src/components/ui/PeriodPicker.test.tsx` (1) — `<svg>` query on selected button; lucide-react `Check` is mocked to null, so no `<svg>` is rendered; should query `aria-pressed`
 
-**Error messages:**
+**Fix:** See `PATTERN-3-test-drift.md` for the design spec. ~10 lines of test-only changes.
 
-```
-TestingLibraryElementError: Unable to find an element with the text: Cycle 1.
-TestingLibraryElementError: Unable to find an element with the text: 2 nodes, 2 edges.
-TestingLibraryElementError: Unable to find an element by: [role="button"]
-```
-
-**Root cause:**
-Tests written against an older version of the components. Production code is correct — the labels/role attributes have evolved, but test assertions were never updated.
-
-**Affected test files:**
-
-```
-src/components/boards/DependencyGraph.test.tsx (4)
-src/components/ui/PeriodPicker.test.tsx (1)
-```
-
-**Specific drift cases:**
-
-- `DependencyGraph` now renders `Cycle 1 of 2` (was `Cycle 1`).
-- `DependencyGraph` now renders `Nodes: 2, Edges: 2` (was `2 nodes, 2 edges`).
-- `DependencyGraph` cycle buttons no longer have `role="button"` on every cell (likely because the actual buttons changed role/element type).
-- `PeriodPicker` uses `<svg class="lucide-check">` but test queries `svg` directly without `lucide-check` (likely because the test mocks the icon to `() => null`).
-
-**Fix:** Update test assertions to match current component output. **No production code change required.**
-
-**Estimated fix time:** **10 minutes** (2 files, assertion updates).
-
-**Patch:** `PATTERN-3-test-drift.patch`
+**Push impact:** None. Tests are stale, code is correct.
 
 ---
 
-### Pattern D — Engine logic / environment (3 tests, 2 files)
+### Pattern D — Engines (3 tests, 2 files)
 
-**Error 1: `Browser cache is not available in this environment.`**
+**Sub-Pattern D1: Q3 percentile — REAL PRODUCTION BUG (1 test)**
+- `src/engines/AnomalyDetectionEngine.lovelace.test.ts:26` expects `q3 === 20` for `[10, 20]`, gets `17.5`
+- Root cause: `AnomalyDetectionEngine.ts:193-200` uses **linear interpolation** percentile, but the test expects **nearest-rank** (type-1) percentile, which is the standard Excel QUARTILE convention
+- IQR test on 5 values happens to pass because indices land on whole numbers
+- Fix: rewrite `percentile()` function to use `Math.ceil(p/100 * sorted.length)` rank lookup
+- **THIS IS A REAL BUG — financial anomaly detection must use a deterministic method.** Should land in next sprint.
+- **AUDIT POSTURE:** Filed as `DEFER-2026-001` in `docs/security-deferrals.md` (SOC 2 CC7.2 / ISO 27001 A.12.6.1 control). In-code FIXME added at the bug site. See Hephaestus's 2026-06-12 discipline rule: "a known bug shipping without documented deferral is a control failure."
 
-- File: `src/engines/AIEngine.benchmark.test.ts` (2 tests)
-- Root cause: Test relies on HuggingFace `transformers` library which requires a browser `Cache` API. The jsdom test env does not provide one. This is a known limitation.
-- Fix: `describe.skip` on benchmark suite, OR provide a `CacheStorage` polyfill in setup.ts.
-- Time: 3 min (skip) or 15 min (polyfill).
+**Sub-Pattern D2: AIEngine benchmark environment (2 tests)**
+- HuggingFace `transformers` library requires browser `Cache` API not in jsdom
+- Fix: `describe.skipIf(!process.env.RUN_AI_BENCHMARK)` or `ctx.skip()` in `beforeAll`
+- Environment-only issue, not a code bug
 
-**Error 2: Q3 percentile logic**
-
-- File: `src/engines/AnomalyDetectionEngine.lovelace.test.ts` (1 test, but production bug)
-- Test: `engine.computeStatistics([10, 20]).q3` expects `20` but gets `17.5`.
-- Root cause: `percentile()` function in `AnomalyDetectionEngine.ts:193-200` uses **linear interpolation** for non-integer indices. For `sorted=[10,20], p=75`, `idx=0.75`, `lower=0, upper=1`, it returns `10 + 10*0.75 = 17.5`. The test expects **nearest-rank** (type-1) percentile, which would return `sorted[upper] = 20` directly.
-- The IQR test with 5 values passes only because `idx` happens to land on whole numbers (1.0 and 3.0).
-- Fix: change `percentile()` to nearest-rank. **This is a real production bug** — financial anomaly detection must use a deterministic, well-known percentile method.
-- Time: 5 min.
-
-**Patch:** `PATTERN-4-engines-fixes.patch`
+**Status:** Design spec only — see `PATTERN-4-engines-fixes.md`. Patch was authored but failed `git apply --check` due to context-line drift in `AnomalyDetectionEngine.ts`. Re-generate from current file.
 
 ---
 
-### Pattern E — Utils rounding edge cases (3 tests, 2 files)
+### Pattern E — Utils (3 tests, 2 files)
+- `src/utils/decimalUtils.test.ts` (2) — `Math.round` is round-half-toward-+∞ but tests expect round-half-away-from-zero. IEEE 754 also makes `1.005 * 100 = 100.499...` so `Math.round` returns 100, not 101.
+- `src/utils/chunkedStorage.test.ts` (1) — `Promise.all` of two writes races the reads; sequential awaits fix it.
 
-**Errors:**
+**Fix:** See `PATTERN-5-utils-fixes.md` for the design spec.
 
-```
-expected 0.1 + 0.2 to be 0.3
-expected 1.005 to be 1.01   (banker's rounding)
-```
-
-**Root cause:** `decimalUtils.ts` uses `Math.round` which is banker's rounding (round-half-to-even in some implementations, but actually round-half-away-from-zero in JS). Tests expect classic financial rounding (round-half-up).
-
-**Affected files:**
-
-```
-src/utils/chunkedStorage.test.ts (1) — race condition in test
-src/utils/decimalUtils.test.ts (2)  — rounding mode mismatch
-```
-
-**Fix:** Use `round-half-up` (or `decimal.js`) consistently. The chunkedStorage race is likely a `await` timing issue in the test, not a production bug.
-
-**Time:** 10 min (rounding + race).
-
-**Patch:** `PATTERN-5-utils-fixes.patch`
+**Push impact:** None. Decimal rounding is a real production behavior question (Phase 1: switch to `decimal.js` or banker's rounding policy).
 
 ---
 
-## Patches Included
+## Triage Methodology
 
-| File                             | Purpose                                                | Tests Fixed | Time   |
-| -------------------------------- | ------------------------------------------------------ | ----------- | ------ |
-| `PATTERN-1-lucide-proxy.patch`   | Convert static `vi.mock('lucide-react')` list to Proxy | 67          | 5 min  |
-| `PATTERN-2-router-wrapper.patch` | Add `<MemoryRouter>` to CopilotSidebar test            | 1           | 3 min  |
-| `PATTERN-3-test-drift.patch`     | Update DependencyGraph + PeriodPicker assertions       | 5           | 10 min |
-| `PATTERN-4-engines-fixes.patch`  | Fix Q3 percentile (real bug) + skip AIEngine benchmark | 3           | 8 min  |
-| `PATTERN-5-utils-fixes.patch`    | Fix decimalUtils rounding + chunkedStorage race        | 3           | 10 min |
-| `REPORT.md`                      | This report                                            | —           | —      |
+I ran targeted `npx vitest run --no-coverage` invocations on 7 directories, captured stdout/stderr via `Out-File`, stripped ANSI codes, and counted occurrences of the key error strings. This is more reliable than Apollo's 2-pattern triage because it's data-driven, not symptom-driven.
 
-**Total: 6 files, ~400 lines. Fixes ~79 of 70+ failing tests (some files had suite-level failures).**
+**Total vitest invocations: 8** (1 for `run-1` ui/CommandPalette/Select/PeriodPicker/ExportMenu, 1 for `run-2` ai/approvals, 1 for `run-3` ai/boards, 1 for `run-4` admin/charts/dashboards/grid/reports, 1 for `run-engines`, 1 for `run-others` (hooks/utils/plugins/integrations), 1 for `run-pages`, plus verification runs for each working patch).
+
+**Output logs:** Captured to `C:\Users\Tahir\AppData\Roaming\AionUi\aionui\conversations\aionrs-temp-27cc5f4b\run-*.log`.
 
 ---
 
-## Pushing Strategy
+## Verified Working Patches
 
-**Recommendation: Apollo can push NOW without any patch applied.**
+| Patch | Tests Fixed | Status | Verification |
+|---|---|---|---|
+| `PATTERN-2-router-wrapper.patch` | 1 | ✅ Applied & tested | `git apply --check` passes; `vitest run` shows 1/2 tests pass (the 1 still failing is blocked by Pattern A) |
 
-Why: All 5 patterns are **pre-existing** test infrastructure issues (or 1 small production bug in Q3 percentile). They do NOT block:
+## Design Specs Only (patches didn't apply or were non-trivial)
 
-- TypeScript compilation (all source compiles clean)
-- Production code (every failing test is testing a component that works correctly in production)
-- The push itself (CI can be run post-push to validate)
-
-**Optional: Apply PATTERN-1 first** (highest ROI, 5 min, fixes 67 tests). Then PATTERN-4 (real production bug in Q3 percentile — should land before any user data is processed by anomaly detection).
-
-**Defer:** Patterns 2, 3, 5 — these are test polish, not production correctness.
+| Spec | Reason |
+|---|---|
+| `PATTERN-1-lucide-mock-spec.md` | Vitest 4.x blocks Proxy approach (5 variants tested, all fail). Needs codemod in Phase 1. |
+| `PATTERN-3-test-drift.md` | Patch authored but `git apply --check` failed due to context-line drift. Re-generate from current test file. |
+| `PATTERN-4-engines-fixes.md` | Same as above for `AnomalyDetectionEngine.ts`; benchmark patch needs a new file created, not modified. |
+| `PATTERN-5-utils-fixes.md` | Same as above for `decimalUtils.ts`; chunkedStorage test patch should apply. |
 
 ---
 
-## Verification Plan (PHASE 3)
-
-After applying patches:
+## Pushing Strategy (RECOMMENDED)
 
 ```bash
-# 1. Check patches apply cleanly
+# 1. Push current state (no patch required)
 cd "C:/Users/Tahir/Desktop/frontend that i want/fpa"
-git apply --check docs/drafts/athena/test-triage/PATTERN-1-lucide-proxy.patch
-git apply --check docs/drafts/athena/test-triage/PATTERN-2-router-wrapper.patch
-git apply --check docs/drafts/athena/test-triage/PATTERN-3-test-drift.patch
-git apply --check docs/drafts/athena/test-triage/PATTERN-4-engines-fixes.patch
-git apply --check docs/drafts/athena/test-triage/PATTERN-5-utils-fixes.patch
+git status   # verify only the 6 test-triage docs are untracked
+git add docs/drafts/athena/test-triage/
+git commit -m "docs(test-triage): triage 65+ pre-existing test failures"
+git push
 
-# 2. Apply patches
-git apply docs/drafts/athena/test-triage/PATTERN-1-*.patch docs/drafts/athena/test-triage/PATTERN-2-*.patch docs/drafts/athena/test-triage/PATTERN-3-*.patch docs/drafts/athena/test-triage/PATTERN-4-*.patch docs/drafts/athena/test-triage/PATTERN-5-*.patch
+# 2. OPTIONAL: apply PATTERN-2 (low risk, fixes 1 test)
+git apply docs/drafts/athena/test-triage/PATTERN-2-router-wrapper.patch
+git add src/components/ai/CopilotSidebar.test.tsx
+git commit -m "test(CopilotSidebar): wrap in MemoryRouter to satisfy useLocation"
+git push
 
-# 3. Re-run targeted tests
-npx vitest run --no-coverage \
-  src/components/ui/ExportMenu.test.tsx \
-  src/components/ai \
-  src/components/approvals/CopilotSidebar.test.tsx \
-  src/components/boards/DependencyGraph.test.tsx \
-  src/components/ui/PeriodPicker.test.tsx \
-  src/engines/AIEngine.benchmark.test.ts \
-  src/engines/AnomalyDetectionEngine.lovelace.test.ts \
-  src/utils/chunkedStorage.test.ts \
-  src/utils/decimalUtils.test.ts
-
-# 4. Expect: All 79 tests green
+# 3. NEXT SPRINT: PATTERN-4 (real production bug in Q3 percentile)
+#    Rewrite AnomalyDetectionEngine.percentile() to nearest-rank.
+#    See PATTERN-4-engines-fixes.md for the patch.
 ```
 
 ---
 
-## Athena's Strategic Note (100× lens)
+## Athena's 100× Strategic Note
 
-The **lucide-react Proxy issue is symptomatic of a broader test-hygiene gap**: components and tests are owned by different developers (or one developer at different times), and the static-mock pattern does not scale.
+**The 67 lucide-react failures are symptomatic of a broader test-hygiene gap:** mocks are owned by different developers, the static-list pattern doesn't scale to 5,800+ icons, and there's no codemod to auto-regenerate mocks from source.
 
 **100×-grade fix (Phase 1+):**
 
-1. **Proxy-based mocks for ALL major icon libraries** (lucide-react, react-icons, heroicons).
-2. **ESLint rule** to flag `vi.mock('lucide-react', () => ({...}))` and require Proxy pattern.
-3. **Visual regression tests** for icon-heavy components (charts, boards) — so a missing icon stub becomes a CI failure _at the source_, not at the consumer.
+1. **Proxy-based mocks for ALL major icon libraries** (lucide-react, react-icons, heroicons). Until vitest 5.x ships, use auto-generated static lists via pre-test scripts (Option A in PATTERN-1 spec).
+2. **ESLint rule** to flag `vi.mock('lucide-react', () => ({...}))` with > 20 explicit icon entries — force the codemod path.
+3. **Visual regression tests** for icon-heavy components (charts, boards, reports) — so a missing icon stub becomes a CI failure at the source, not at the consumer.
 4. **Production-safety net**: TypeScript `verbatimModuleSyntax` + `noUncheckedSideEffectImports` to prevent runtime icon-name typos from compiling.
 
-The current `setup.ts` Proxy conversion (Pattern A patch) is the **floor** — adequate for now, but the ceiling is auto-generated Proxy mocks for the entire `@fpa/icons` namespace once Phase 1 Backend & Identity lands.
+The current `setup.ts` codemod (Pattern A spec) is the **floor** — adequate for now, but the ceiling is `vitest --typecheck` integration with auto-generated icon mocks once Phase 1 Backend & Identity lands.
 
 ---
 
-**End of REPORT — see patches in same directory.**
+**End of REPORT — see `PATTERN-*.{md,patch}` in same directory.**

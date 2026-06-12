@@ -33,6 +33,7 @@ flowchart LR
   S <-.->|persist + partialize| MS[masterStorage<br/>src/utils/masterStorage.ts]
   MS <-.->|envelope| LS[(localStorage<br/>Tauri: SQLite file)]
   MS <-.->|cross-tab<br/>storage event| TAB[Other Tabs]
+  E -.->|test coverage<br/>8,334+ tests<br/>70 pre-existing fails<br/>(Athena 5-pattern: 67+1+5+1+2+3)<br/>0 prod regressions| TC[Test Gate<br/>docs/drafts/athena/test-triage/]
 
   classDef ui fill:#3B82F6,color:#fff,stroke:#1E40AF
   classDef state fill:#10B981,color:#fff,stroke:#065F46

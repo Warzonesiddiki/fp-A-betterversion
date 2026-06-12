@@ -1,5 +1,5 @@
---- "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\src\\hooks\\useAuth.ts"	2026-06-13 01:17:32.047431600 +0530
-+++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\useAuth.ts.new"	2026-06-13 01:23:37.594671400 +0530
+--- a/src/hooks/useAuth.ts	2026-06-13 01:25:55.312070000 +0530
++++ b/src/hooks/useAuth.ts	2026-06-13 01:31:39.295639000 +0530
 @@ -1,5 +1,53 @@
  import { useAuthStore } from '@/store/authStore';
  

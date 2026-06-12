@@ -25,21 +25,24 @@ def run(cmd, cwd=None):
 
 
 def diff_u(old_path: Path, new_path: Path, label: str) -> str:
-    """Run `diff -u` and rewrite both quoted and unquoted Windows paths to a/<rel> / b/<rel>."""
+    """Run `diff -u` and rewrite quoted Windows paths to a/<rel> / b/<rel>.
+
+    `diff -u` on Windows (git-bash / MSYS) escapes each backslash in the
+    absolute path as TWO backslashes. So the header line looks like:
+        --- "C:\\Users\\...\\file.ts"   2026-06-13 ...
+    We must match that exact double-backslash form.
+    """
     rc, out, err = run(f'diff -u "{old_path}" "{new_path}"', cwd=REPO)
     if rc == 0:
         return ""
     if rc != 1:
         raise RuntimeError(f"diff failed for {label}: {err}")
     rel = old_path.relative_to(REPO).as_posix()
-    old_quoted = f'"{old_path}"'
-    old_unquoted = old_path.as_posix()
-    new_quoted = f'"{new_path}"'
-    new_unquoted = new_path.as_posix()
-    out = out.replace(old_quoted, f"a/{rel}")
-    out = out.replace(old_unquoted, f"a/{rel}")
-    out = out.replace(new_quoted, f"b/{rel}")
-    out = out.replace(new_unquoted, f"b/{rel}")
+    # On Windows diff -u emits backslashes escaped as `\\`
+    old_q = f'"{old_path}"'.replace("\\", "\\\\")
+    new_q = f'"{new_path}"'.replace("\\", "\\\\")
+    out = out.replace(old_q, f"a/{rel}")
+    out = out.replace(new_q, f"b/{rel}")
     return out
 
 
@@ -95,6 +98,12 @@ USE_AUTH_NEW_JSDOC = """/**
 """
 
 
+def _write_patch(path: Path, content: str):
+    """Write a patch file with LF line endings (matches LF source files)."""
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(content)
+
+
 def gen_01_useAuth():
     src = REPO / "src/hooks/useAuth.ts"
     content = src.read_text(encoding="utf-8")
@@ -106,9 +115,10 @@ def gen_01_useAuth():
     if new_content == content:
         raise RuntimeError("01: substitution did not change the file")
     new_path = STAGING / "useAuth.ts.new"
-    new_path.write_text(new_content, encoding="utf-8")
+    with open(new_path, "w", encoding="utf-8", newline="") as f:
+        f.write(new_content)
     patch = diff_u(src, new_path, "01-useAuth")
-    (DRAFT_DIR / "01-useAuth.patch").write_text(patch, encoding="utf-8")
+    _write_patch(DRAFT_DIR / "01-useAuth.patch", patch)
     new_path.unlink()
     return len(patch.splitlines())
 
@@ -166,16 +176,17 @@ def gen_02_masterStorage():
     src = REPO / "src/utils/masterStorage.ts"
     content = src.read_text(encoding="utf-8")
     new_content = re.sub(
-        r"(//\n)(export function masterStorage)",
+        r"(\n)(export const masterStorage: PersistStorage<any>)",
         rf"\1{MASTER_STORAGE_NEW_JSDOC}\2",
         content, count=1,
     )
     if new_content == content:
         raise RuntimeError("02: substitution did not change the file")
     new_path = STAGING / "masterStorage.ts.new"
-    new_path.write_text(new_content, encoding="utf-8")
+    with open(new_path, "w", encoding="utf-8", newline="") as f:
+        f.write(new_content)
     patch = diff_u(src, new_path, "02-masterStorage")
-    (DRAFT_DIR / "02-masterStorage.patch").write_text(patch, encoding="utf-8")
+    _write_patch(DRAFT_DIR / "02-masterStorage.patch", patch)
     new_path.unlink()
     return len(patch.splitlines())
 
@@ -269,9 +280,10 @@ def gen_03_monteCarlo():
         raise RuntimeError("03: OLD anchor not found in source")
     new_content = content.replace(OLD, MONTE_SIMULATE_NEW_JSDOC, 1)
     new_path = STAGING / "MonteCarloEngine.ts.new"
-    new_path.write_text(new_content, encoding="utf-8")
+    with open(new_path, "w", encoding="utf-8", newline="") as f:
+        f.write(new_content)
     patch = diff_u(src, new_path, "03-monteCarloSimulate")
-    (DRAFT_DIR / "03-monteCarloSimulate.patch").write_text(patch, encoding="utf-8")
+    _write_patch(DRAFT_DIR / "03-monteCarloSimulate.patch", patch)
     new_path.unlink()
     return len(patch.splitlines())
 
@@ -345,9 +357,10 @@ def gen_04_capExIRR():
         raise RuntimeError("04: OLD anchor not found in source")
     new_content = content.replace(OLD, CAPEX_IRR_NEW_JSDOC, 1)
     new_path = STAGING / "CapExEngine.ts.new"
-    new_path.write_text(new_content, encoding="utf-8")
+    with open(new_path, "w", encoding="utf-8", newline="") as f:
+        f.write(new_content)
     patch = diff_u(src, new_path, "04-capExIRR")
-    (DRAFT_DIR / "04-capExIRR.patch").write_text(patch, encoding="utf-8")
+    _write_patch(DRAFT_DIR / "04-capExIRR.patch", patch)
     new_path.unlink()
     return len(patch.splitlines())
 
@@ -415,9 +428,10 @@ def gen_05_cubeEngine():
         raise RuntimeError("05: OLD anchor not found in source")
     new_content = content.replace(OLD, CUBE_ENGINE_NEW_JSDOC, 1)
     new_path = STAGING / "CubeEngineEngine.ts.new"
-    new_path.write_text(new_content, encoding="utf-8")
+    with open(new_path, "w", encoding="utf-8", newline="") as f:
+        f.write(new_content)
     patch = diff_u(src, new_path, "05-cubeEngine")
-    (DRAFT_DIR / "05-cubeEngine.patch").write_text(patch, encoding="utf-8")
+    _write_patch(DRAFT_DIR / "05-cubeEngine.patch", patch)
     new_path.unlink()
     return len(patch.splitlines())
 

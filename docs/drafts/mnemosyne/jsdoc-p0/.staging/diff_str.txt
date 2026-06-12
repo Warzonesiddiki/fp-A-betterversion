@@ -1,0 +1,10 @@
+--- "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\src\\hooks\\useAuth.ts"	2026-06-13 01:25:55.312070000 +0530
++++ "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\jsdoc-p0\\.staging\\test_new.ts"	2026-06-13 01:28:32.258625500 +0530
+@@ -1,6 +1 @@
+-import { useAuthStore } from '@/store/authStore';
+-
+-export function useAuth() {
+-  const { user, isAuthenticated, isLoading, login, logout, switchEntity } = useAuthStore();
+-  return { user, isAuthenticated, isLoading, login, logout, switchEntity };
+-}
++hello world

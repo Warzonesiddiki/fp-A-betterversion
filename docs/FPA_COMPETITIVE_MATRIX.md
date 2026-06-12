@@ -1,8 +1,9 @@
 # FP&A Competitive Landscape — Master Feature Matrix
 
-> **Date:** 2026-05-16
+> **Date:** 2026-05-16 (v1, this file) · 2026-06-13 (v2 refresh in `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` — adds "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping)
 > **Purpose:** Comprehensive competitor analysis to inform FinPlan Pro feature roadmap
 > **Competitors Analyzed:** 20 platforms across SMB, Mid-Market, and Enterprise tiers
+> **v2 changelog:** `docs/drafts/strategos/competitive-matrix-v2-changelog.md`
 
 ---
 
@@ -13,6 +14,9 @@
 3. [Feature Comparison Matrix](#feature-comparison-matrix)
 4. [Master Feature List (All Unique Features)](#master-feature-list)
 5. [Gap Analysis & Recommendations](#gap-analysis)
+6. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping.
+6. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping.
+6. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping. v1 below is the descriptive snapshot; v2 is the prescriptive companion.
 
 ---
 

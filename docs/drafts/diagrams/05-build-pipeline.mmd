@@ -11,7 +11,7 @@ flowchart LR
   SRC[src/<br/>202 engines + 35 stores +<br/>192 pages + 274 components] --> TSC[npx tsc --noEmit]
   TSC -->|0 errors| LINT[eslint<br/>── 0 errors, 0 warnings ──]
   LINT -->|0/0| FMT[prettier --check src/<br/>── 0 files need formatting ──]
-  FMT -->|0| TEST[vitest run<br/>── 8,331+ tests passing<br/>── 3 known fails (P0 #0 2-commit) ──]
+  FMT -->|0| TEST[vitest run<br/>── 8,334+ tests total<br/>── 8,264+ passing<br/>── 70 pre-existing fails<br/>(Pattern A: 67 lucide mock<br/>Pattern B: 1 Router wrapper applied<br/>Pattern C: 5 test drift (Athena lane)<br/>Pattern D1: 1 Q3 pct = co-owned<br/>(Athena primary, Hephaestus secondary)<br/>Pattern D2: 2 AIEngine env-only<br/>Pattern E: 3 utils) ──]
 
   TEST --> COV[vitest --coverage<br/>── v8 provider ──]
   COV -->|thresholds met| BUILD[vite build]
@@ -47,6 +47,7 @@ flowchart LR
 - **Each gate is a hard blocker** — any failure stops the pipeline.
 - **Tauri build** is parallel to web deploy; both consume `dist/`.
 - **Lighthouse, Husky, Playwright** are optional today; Apollo's tasks will tighten these.
+- **Test gate (2026-06-12 Athena triage, Mnemosyne v0.5 re-decomposed 2026-06-13)** — 70 pre-existing failures are *expected*. Breakdown by Athena's 5 patterns: A=67 (lucide mock), B=1 (Router wrapper, applied), C=5 (test drift, Athena's lane), D1=1 (Q3 percentile, co-owned: `Athena-2026-Q2S-P1[DEFER-2026-001]` primary + `Hephaestus-2026-Q2S-P1[DEFER-2026-001]` secondary, deferred), D2=2 (AIEngine env-only), E=3 (E.1 decimalUtils `Hephaestus-2026-Q2S-P1[DEFER-2026-002]` + E.2 chunkedStorage race `Hephaestus-2026-Q2S-P1[DEFER-2026-003]` + Prometheus secondary on E.2). **0 production regressions.** The Pattern C scope clarification + E.2 design-discussion pickup are the gate to "green-lighted push" per the 2026-06-13 triangulation loop. See `docs/drafts/athena/test-triage/REPORT.md` and `docs/drafts/TESTING.md` §11 for the per-pattern breakdown.
 
 **When a CI run fails**, the message tells you which gate failed. Walk left to right in the diagram to find the gate.
 

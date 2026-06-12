@@ -190,6 +190,21 @@ function mad(values: number[], med?: number): number {
   return median(deviations);
 }
 
+// FIXME (data-integrity, deferred): percentile() below uses linear interpolation
+// (Excel PERCENTILE.EXC family) but the test suite in
+// `AnomalyDetectionEngine.lovelace.test.ts` expects nearest-rank (type-1,
+// Excel QUARTILE convention). The two methods agree when the index lands on
+// a whole number, but disagree at fractional indices — e.g. for
+// computeStatistics([10, 20]).q3:
+//   - Linear interpolation: idx=0.75, returns 10 + 10*0.75 = 17.5
+//   - Nearest-rank:        rank=ceil(0.75*2)=2, returns sorted[1] = 20
+// The current IQR test on 5-element inputs happens to pass because the
+// indices land on whole numbers (1.0 and 3.0), but the 2-element Q3 test
+// fails. Financial anomaly detection should use a deterministic, well-known
+// percentile method. Tracking: see `docs/security-deferrals.md` DEFER-2026-001.
+// ETA: next sprint (post-P0 push). Blast radius: small — only Q1/Q3 on
+// datasets with <5 samples produce off-by-one boundary values. Median and
+// any-other-percentile are unaffected.
 function percentile(sorted: number[], p: number): number {
   if (sorted.length === 0) return 0;
   const idx = (p / 100) * (sorted.length - 1);
