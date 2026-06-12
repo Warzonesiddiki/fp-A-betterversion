@@ -1,6 +1,6 @@
-<!-- DRAFT v0.2 — ground-truth corrected 2026-06-12 — Mnemosyne -->
+<!-- DRAFT v0.4 — 3-return-path wording per Athena T-AT-007 v0.4 2026-06-13 — Mnemosyne -->
 
-# JSDoc draft — `src/engines/CapExEngine.ts` (v0.2, corrected)
+# JSDoc draft — `src/engines/CapExEngine.ts` (v0.4, 3-return-path corrected)
 
 > **Ground-truth note (2026-06-12)**: v0.1 invented a `static npv` (real name
 > is `calculateNPV`), an entire `static wacc` method (does not exist), and
@@ -10,7 +10,16 @@
 > in the real code does NOT throw on non-convergence; it returns the last
 > iterate (typically 0.1).
 >
-> Apollo: paste the JSDoc above the existing `import` line.
+> **v0.3 (2026-06-13)**: Athena T-AT-007 flagged the "returns 0.1 on
+> non-convergence" claim as **inaccurate**. My v0.3 reword ("returns NaN
+> if derivative is near-zero (line 55 early-return)") was based on
+> Athena's v0.2 description, which itself was incorrect. v0.4 corrects
+> the description to the actual 3-return-path behavior.
+>
+> **v0.4 (2026-06-13)**: Athena T-AT-007 v0.4 — corrected to the actual
+> 3-return-path wording (line 56 NPV convergence, line 61 rate convergence,
+> line 65 1000-iter exhaustion). Confirmed via D-009 triangulation against
+> `src/engines/CapExEngine.ts:51-66`. No code changes; doc-only edit.
 
 ---
 
@@ -58,7 +67,7 @@ export class CapExEngine {
  * | ----------------------------------------------- | ------------------------ | ---------------------------------- |
  * | `calculateDepreciation(asset)`                  | `DepreciationSchedule[]` | Supports straight-line, double-declining, sum-of-years |
  * | `calculateNPV(cashFlows, discountRate)`         | `number`                 | `Σ cf[t] / (1+r)^t`; `t=0` at index 0 |
- * | `calculateIRR(cashFlows)`                       | `number`                 | Newton-Raphson; **returns 0.1 on non-convergence** (does not throw) |
+ * | `calculateIRR(cashFlows)`                       | `number`                 | Newton-Raphson; **3 return paths**: line 56 returns `irr` on `|npv| < 1e-5` (converged on NPV); line 61 returns `nextIrr` on `|nextIrr - irr| < 1e-5` (converged on rate); line 65 returns `irr` (typically `0.1` from initial guess) on 1000-iter exhaustion. Pathological inputs (e.g. all-zero cash flows) may produce `Infinity`/`NaN` from `x/0` or `0/0` in JS, but no explicit early-return of NaN. Does not throw. |
  * | `calculatePaybackPeriod(cashFlows)`             | `number`                 | First `t` where cumulative ≥ 0; `0` if never |
  * | `calculateROI(totalBenefit, totalCost)`         | `number`                 | `(benefit - cost) / cost`         |
  *

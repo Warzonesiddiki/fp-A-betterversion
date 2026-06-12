@@ -1,40 +1,33 @@
 <!-- DRAFT v0.1 — awaiting review — Prometheus 2026-06-13 -->
 <!--
-  react-memo-10-components.patch
-  Wraps 10 heavy components in React.memo for ~18x speedup on prop changes.
-  See react-memo-bench-spec.md for benchmarks and methodology.
+  React.memo patch: 6 files, 8 total components wrapped.
 
-  STATUS (verified against current main):
-    1.  HeatmapGrid          ALREADY MEMOIZED — no-op
-    2.  AccountTree          NEW memo wrap (React.FC arrow → memo)
-    3.  ScenarioComparisonGrid  NEW memo wrap
-    4.  ReportBuilder        NEW memo wrap
-    5.  ReportResultsPanel   NEW memo wrap
-    6.  GLDataPreview        NEW memo wrap
-    7.  ICMatchingDashboard  NEW memo wrap
-    8.  DrillTables          NEW memo wrap on 3 sub-components
-    9.  GenerativeDashboard  NEW memo wrap
-   10.  Sidebar              ALREADY MEMOIZED — no-op
+  COMPONENTS ALREADY MEMOIZED AT HEAD (skipped from this patch):
+    - src/components/dashboard/HeatmapGrid.tsx     (L89)
+    - src/components/layout/Sidebar.tsx             (L33)
+    - src/components/ui/GenerativeDashboard.tsx    (L228)
+    - src/components/ui/AccountTree.tsx             (L169, arrow form)
 
-  PATH CORRECTIONS (Leader spec had wrong paths; ACTUAL paths used):
-    2.  AccountTree          hierarchy/AccountTree.tsx    -> ui/AccountTree.tsx
-    6.  GLDataPreview        gl/GLDataPreview.tsx        -> data/GLDataPreview.tsx
-    7.  ICMatchingDashboard  ic/ICMatchingDashboard.tsx  -> ui/ICMatchingDashboard.tsx
-    8.  DrillTables          dashboard/DrillTables.tsx   -> spreadsheet/DrillTables.tsx
-    9.  GenerativeDashboard  dashboard/GenerativeDashboard.tsx -> ui/GenerativeDashboard.tsx
+  COMPONENTS WRAPPED IN THIS PATCH (8 total):
+    1. src/components/data/GLDataPreview.tsx              → GLDataPreview
+    2. src/components/ui/ScenarioComparisonGrid.tsx       → ScenarioComparisonGrid
+    3. src/components/reports/ReportBuilder.tsx           → ReportBuilder
+    4. src/components/reports/ReportResultsPanel.tsx      → ReportResultsPanel
+    5. src/components/ui/ICMatchingDashboard.tsx          → ICMatchingDashboard
+    6. src/components/spreadsheet/DrillTables.tsx         → SummaryTable, DetailTable, JournalEntryTable
 
-  USECALLBACK / USEMEMO FOLLOW-UPS (separate PRs):
-    - ICMatchingDashboard: 3 callback props (onMatch, onUnmatch, onAutoMatch)
-    - DrillTables (DetailTable, JournalEntryTable): onRowClick / onCellClick
-    - ReportBuilder: complex object props (filterConfig, chartConfig)
-    - GLDataPreview: 2 callback props (onImport, onCancel)
+  Apply:  git apply react-memo-10-components.patch
+  Check:  git apply --check react-memo-10-components.patch
+  Revert: git apply -R react-memo-10-components.patch
 
-  VERIFICATION:
-    $ cd "C:/Users/Tahir/Desktop/frontend that i want/fpa"
-    $ git apply --check docs/drafts/prometheus/react-memo-10-components.patch
+  Notes:
+    - All wraps use the standard `export const Name = memo(function Name(...))` pattern.
+    - Each file has `memo` added to its existing React import (or a new import line
+      added for DrillTables which had no react import).
+    - DrillTables wraps 3 components in 1 file.
 -->
 diff --git a/src/components/data/GLDataPreview.tsx b/src/components/data/GLDataPreview.tsx
-index 103967d7..9aa088b9 100644
+index 103967d7..bd5cd446 100644
 --- a/src/components/data/GLDataPreview.tsx
 +++ b/src/components/data/GLDataPreview.tsx
 @@ -1,4 +1,4 @@
@@ -59,7 +52,7 @@ index 103967d7..9aa088b9 100644
 -}
 +});
 diff --git a/src/components/reports/ReportBuilder.tsx b/src/components/reports/ReportBuilder.tsx
-index 7e8cffa2..1a960854 100644
+index 7e8cffa2..dc338cbf 100644
 --- a/src/components/reports/ReportBuilder.tsx
 +++ b/src/components/reports/ReportBuilder.tsx
 @@ -1,4 +1,4 @@
@@ -84,7 +77,7 @@ index 7e8cffa2..1a960854 100644
 -}
 +});
 diff --git a/src/components/reports/ReportResultsPanel.tsx b/src/components/reports/ReportResultsPanel.tsx
-index 67df8216..c043b0bc 100644
+index 67df8216..a6aa79bd 100644
 --- a/src/components/reports/ReportResultsPanel.tsx
 +++ b/src/components/reports/ReportResultsPanel.tsx
 @@ -1,4 +1,4 @@
@@ -109,15 +102,16 @@ index 67df8216..c043b0bc 100644
 -}
 +});
 diff --git a/src/components/spreadsheet/DrillTables.tsx b/src/components/spreadsheet/DrillTables.tsx
-index c401c6d1..8d1ae4bb 100644
+index c401c6d1..3a44f105 100644
 --- a/src/components/spreadsheet/DrillTables.tsx
 +++ b/src/components/spreadsheet/DrillTables.tsx
-@@ -1,4 +1,5 @@
--import { Layers, FileText, BookOpen, ArrowRight } from 'lucide-react';
-+import { Layers, FileText, BookOpen, ArrowRight } from 'lucide-react';
-+import { memo } from 'react';
+@@ -1,6 +1,7 @@
+ import { Layers, FileText, BookOpen, ArrowRight } from 'lucide-react';
  import { cn } from '@/utils/cn';
  import type { SummaryRow, DetailRow, JournalEntry } from './DrillThroughChain';
++import { memo } from 'react';
+ 
+ // --- Helpers ---
  
 @@ -19,7 +20,7 @@ function varianceColor(value: number): string {
  
@@ -128,7 +122,12 @@ index c401c6d1..8d1ae4bb 100644
    data,
    onSelect,
  }: {
-@@ -106,7 +107,7 @@ export function SummaryTable({
+@@ -102,11 +103,11 @@ export function SummaryTable({
+       </table>
+     </div>
+   );
+-}
++});
  
  // --- Detail Table ---
  
@@ -137,7 +136,12 @@ index c401c6d1..8d1ae4bb 100644
    data,
    category,
    onSelect,
-@@ -222,7 +223,7 @@ export function DetailTable({
+@@ -218,11 +219,11 @@ export function DetailTable({
+       </div>
+     </div>
+   );
+-}
++});
  
  // --- Journal Entry Table ---
  
@@ -152,68 +156,17 @@ index c401c6d1..8d1ae4bb 100644
    );
 -}
 +});
-diff --git a/src/components/ui/AccountTree.tsx b/src/components/ui/AccountTree.tsx
-index 218b89a8..71446bc2 100644
---- a/src/components/ui/AccountTree.tsx
-+++ b/src/components/ui/AccountTree.tsx
-@@ -1,4 +1,4 @@
--import React, { useState, useMemo } from 'react';
-+import React, { useState, useMemo, memo } from 'react';
- import { useTranslation } from 'react-i18next';
- import { ChevronRight, ChevronDown, Calculator, Hash, FileText, Search, X } from 'lucide-react';
- import { cn } from '@/utils/cn';
-@@ -166,7 +166,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
-   );
- };
- 
--export const AccountTree: React.FC<AccountTreeProps> = ({
-+export const AccountTree: React.FC<AccountTreeProps> = memo(({
-   accounts,
-   onSelect,
-   selectedId,
-diff --git a/src/components/ui/GenerativeDashboard.tsx b/src/components/ui/GenerativeDashboard.tsx
-index 2d25e969..a5a13385 100644
---- a/src/components/ui/GenerativeDashboard.tsx
-+++ b/src/components/ui/GenerativeDashboard.tsx
-@@ -1,4 +1,4 @@
--import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
- import { KPIValue } from '@/components/ui/KPIValue';
- import {
-   BarChart,
-@@ -218,14 +218,14 @@ function renderElement(spec: DashboardSpec, elementId: string): React.ReactNode
-   return <Component {...element.props}>{childNodes}</Component>;
- }
- 
--import React from 'react';
-+import React, { memo } from 'react';
- 
- export interface GenerativeDashboardProps {
-   spec: DashboardSpec;
-   className?: string;
- }
- 
--export function GenerativeDashboard({ spec, className = '' }: GenerativeDashboardProps) {
-+export const GenerativeDashboard = memo(function GenerativeDashboard({ spec, className = '' }: GenerativeDashboardProps) {
-   return <div className={`space-y-4 ${className}`}>{renderElement(spec, spec.root)}</div>;
- }
- 
-@@ -280,4 +280,4 @@ export function nlqResultToSpec(
-       },
-     },
-   };
--}
-+});
 diff --git a/src/components/ui/ICMatchingDashboard.tsx b/src/components/ui/ICMatchingDashboard.tsx
-index 5f5643d4..94a0f925 100644
+index 5f5643d4..91b17bf8 100644
 --- a/src/components/ui/ICMatchingDashboard.tsx
 +++ b/src/components/ui/ICMatchingDashboard.tsx
-@@ -1,4 +1,4 @@
--/* eslint-disable jsx-a11y/label-has-associated-control */
-+/* eslint-disable jsx-a11y/label-has-associated-control */
- import { useCallback, useMemo, useState } from 'react';
+@@ -1,5 +1,5 @@
+ /* eslint-disable jsx-a11y/label-has-associated-control */
+-import { useCallback, useMemo, useState } from 'react';
++import { useCallback, useMemo, useState, memo } from 'react';
  import { Card, CardHeader, CardTitle, CardContent } from './Card';
  import { Button } from './Button';
+ import { Badge } from './Badge';
 @@ -31,7 +31,7 @@ interface ICMatchingDashboardProps {
    className?: string;
  }
@@ -223,14 +176,17 @@ index 5f5643d4..94a0f925 100644
    sourceTransactions,
    targetTransactions,
    allTransactions,
-@@ -465,4 +465,4 @@ function formatAmount(amount: number): string {
-     minimumFractionDigits: 0,
-     maximumFractionDigits: 0,
-   }).format(amount);
+@@ -344,7 +344,7 @@ export function ICMatchingDashboard({
+       </div>
+     </div>
+   );
 -}
 +});
+ 
+ // =============================================================================
+ // SUB-COMPONENTS
 diff --git a/src/components/ui/ScenarioComparisonGrid.tsx b/src/components/ui/ScenarioComparisonGrid.tsx
-index 4a5d09d0..e19d5b21 100644
+index 4a5d09d0..ab623e57 100644
 --- a/src/components/ui/ScenarioComparisonGrid.tsx
 +++ b/src/components/ui/ScenarioComparisonGrid.tsx
 @@ -1,4 +1,4 @@

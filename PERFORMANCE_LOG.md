@@ -1072,3 +1072,33 @@
 - **Data Size (Approx)**: 5.58 MB
 
 ---
+
+## masterStorage Profile - 13/6/2026, 3:55:52 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 91.60ms
+- **Average Latency per Entry**: 0.0092ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 13/6/2026, 4:03:25 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 79.79ms
+- **Average Latency per Entry**: 0.0080ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---
+
+## masterStorage Profile - 13/6/2026, 4:11:57 am
+- **Entries Simulated**: 10,000
+- **Total Write Latency**: 80.87ms
+- **Average Latency per Entry**: 0.0081ms
+- **Max Main-Thread Blocking**: 0.00ms
+- **Storage Backend**: IndexedDB (Mocked/JSDOM)
+- **Data Size (Approx)**: 5.58 MB
+
+---

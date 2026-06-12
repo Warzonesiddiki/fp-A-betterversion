@@ -1,11 +1,11 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-009 v0.2 — Hermes 2026-06-13 -->
 
 # FinPlan Pro — Marketing Site Home Copy
 
 > **Frame for the cycle:** This is the **public-facing homepage** that the cold-outbound sequence (T-HER bonus work) drives traffic to. The hero is A/B test-ready with 3 variants for ICP-1 (CFO), ICP-2 (Controller), and ICP-3 (FP&A Lead). The 4 proof points are Strategos's "Is 100× yet?" scorecard (the actual ground truth, not aspirational). The 3 social-proof placeholders are **clearly marked [FICTIONAL PLACEHOLDER]** so the Beta program's 45 case studies can be swapped in post-launch without re-architecting. Every CTA carries the three-witness test (buyer persona, competitive alternative, price/pain anchor).
 
 > **Cross-references:**
-> - `docs/drafts/hermes/ICP.md` — ICP-1 (Sandra/Carla) + ICP-2 (Carlos/Chris) + ICP-3 (Vera, future)
+> - `docs/drafts/hermes/ICP.md` — ICP-1 (Carla) + ICP-2 (Vera) + ICP-3 (Chris, future)
 > - `docs/drafts/hermes/POSITIONING.md` — value props + 3 anti-positions
 > - `docs/drafts/hermes/PRICING.md` — 4 tiers (cite §2.3 for the pricing-page numbers)
 > - `docs/drafts/hermes/BATTLECARD_ANAPLAN.md` — Anaplan comparison points
@@ -22,7 +22,7 @@
 
 The 3 hero variants map to the 3 personas in `PERSONAS.md` and the 3 ICPs in `ICP.md`. Each variant is a **headline + sub-headline + primary CTA** — the three elements that fit above the fold. The headline does the persona-matching work; the sub-headline does the alternative-displacing work; the CTA does the price/pain-anchoring work.
 
-### Variant A — CFO pain-led (ICP-1: Sandra/Carla)
+### Variant A — CFO pain-led (ICP-1: Carla)
 
 **Headline:** "FP&A without the 6-month rollout."
 **Sub-headline:** "The offline-first FP&A platform that ships in 2 weeks — at 1/5 the price of Anaplan. Your data lives on your laptop, not in a vendor's cloud. 200+ engines, 17 sector presets, AI Copilot, all in the binary."
@@ -33,7 +33,7 @@ The 3 hero variants map to the 3 personas in `PERSONAS.md` and the 3 ICPs in `IC
 
 **Why this works:** "Without the 6-month rollout" is the **buyer-language pain** (Iris's Carla pain quote: "Anaplan is great but I can't get my team to use it"). "1/5 the price of Anaplan" is the **dollar math** (the Anaplan battlecard's $340K → $180K). "Offline-first" is the **regulatory wedge** for the 40% of ICP-1 buyers in regulated industries.
 
-### Variant B — Controller speed-led (ICP-2: Carlos/Chris)
+### Variant B — Controller speed-led (ICP-2: Vera)
 
 **Headline:** "From Excel to scenarios in 30 minutes."
 **Sub-headline:** "Open your existing model. Map columns to dimensions. Get a scenario engine, a board-pack builder, and an AI Copilot that answers 'what happens to runway if I hire 3 engineers?' — all without leaving your laptop."
@@ -44,7 +44,7 @@ The 3 hero variants map to the 3 personas in `PERSONAS.md` and the 3 ICPs in `IC
 
 **Why this works:** "30 minutes" is the **time anchor** (Iris's Chris pain #1: "I'm one Excel formula away from a serious mistake"). "Without leaving your laptop" is the **trust signal** (Iris's Chris watering hole: "Chris is paranoid about third-party data servers"). "Try the free tier" is the **zero-friction CTA** (Iris's Chris decision process: "decision time 3-7 days from first download").
 
-### Variant C — FP&A Lead power-led (ICP-3: Vera, Phase 2)
+### Variant C — FP&A Lead power-led (ICP-3: Chris, Phase 2)
 
 **Headline:** "The cube engine that actually scales."
 **Sub-headline:** "1M cells. OLAP-grade aggregations. Federated collaboration. Direct Snowflake + BigQuery sync. Replace 70% of what Anaplan does, on your own terms, with no implementation partner."
@@ -96,7 +96,7 @@ The 3 differentiators are the **product truths that no competitor can match.** E
 **Headline:** "Ask 'what happens to runway if I hire 3 engineers?'"
 **Supporting line:** "The Copilot runs the scenario, shows the chart, drafts the board narrative. In 5 seconds. Plain English, no SQL, no formula syntax. The AI runs in your browser AND on the server; the prompt never has to leave the laptop."
 
-**Three-witness test:** (a) Buyer = ICP-1 Carla (board-pack narratives) + ICP-2 Chris (Monday-morning burn); (b) Alternative = Anaplan (no AI at SMB tier), Excel (no AI), Cube (limited AI); (c) Outcome = 5-second scenario with assumption tree, 30-second board narrative.
+**Three-witness test:** (a) Buyer = ICP-1 Carla (board-pack narratives) + ICP-2 Vera (Monday-morning burn); (b) Alternative = Anaplan (no AI at SMB tier), Excel (no AI), Cube (limited AI); (c) Outcome = 5-second scenario with assumption tree, 30-second board narrative.
 
 **Why this is a differentiator:** Per FPA_COMPETITIVE_MATRIX.md, only 5 of 20 competitors have AI Copilot. We ship it at the **$0 OSS tier** — none of the 5 ship it that low. The demo moment is the closest thing we have to a 30-second product experience that converts.
 
@@ -105,7 +105,7 @@ The 3 differentiators are the **product truths that no competitor can match.** E
 **Headline:** "The Lite tier is free, open-source, MIT-licensed."
 **Supporting line:** "Read the code. Run it locally. Upgrade when you need multi-user, AI Copilot, or SOC 2. The OSS tier is the product, not a trial — it's the same binary, with the multi-user sync features compiled out."
 
-**Three-witness test:** (a) Buyer = ICP-2 Carlos (paranoia about third-party data servers) + ICP-3 Vera (lock-in avoider); (b) Alternative = Anaplan/Adaptive/Pigment (proprietary, no OSS); (c) Outcome = $0 to start, no credit card, no expiration, code-audit-able.
+**Three-witness test:** (a) Buyer = ICP-2 Vera (paranoia about third-party data servers) + ICP-3 Chris (lock-in avoider); (b) Alternative = Anaplan/Adaptive/Pigment (proprietary, no OSS); (c) Outcome = $0 to start, no credit card, no expiration, code-audit-able.
 
 **Why this is a differentiator:** Per FPA_COMPETITIVE_MATRIX.md, **zero of 20 competitors offer a true OSS option.** Cube/Syft/Aleph/XPNA are the cheapest but all paid SaaS. The OSS tier is the wedge for ICP-2 AND the lock-in-reversal for ICP-3.
 
@@ -124,23 +124,23 @@ The 3 use cases map to the 3 personas in Iris's `PERSONAS.md`. Each is the buyer
 
 **Why this use case:** This is the **CFO's KPI language** — close-to-disclose cycle time, board-pack outcome. Iris's research found Carla's #1 annual goal is "get the board pack out in 5 days, not 15." The use case speaks Carla's review-language.
 
-### Use case 2 — For Controllers (Chris, ICP-2)
+### Use case 2 — For Controllers (Vera, ICP-2)
 
 **Headline:** "Open your existing Excel model. Get a scenario engine in 30 minutes."
 **Supporting line:** "Map columns to dimensions. Get a scenario engine, a board-pack builder, and an AI Copilot that answers 'what happens to runway if I hire 3 engineers?' — all without leaving your laptop. No Hyperion training. No consultant invoice."
 
-**Three-witness test:** (a) Buyer = Chris, Controller at 10-50 FTE SaaS; (b) Alternative = Excel + VLOOKUP + the "I'm scared of switching" pain (Iris pain #3); (c) Outcome = 30-min install, 5-min Monday burn rebuild, no VLOOKUP.
+**Three-witness test:** (a) Buyer = Vera, Controller at 10–50 FTE SaaS; (b) Alternative = Excel + VLOOKUP + the "I'm scared of switching" pain (Iris pain #3); (c) Outcome = 30-min install, 5-min Monday burn rebuild, no VLOOKUP.
 
-**Why this use case:** This is the **Controller's tool-shopping language** — "I'm not switching unless it's impossibly easy to start." The use case speaks Chris's "first 7 days" filter (Iris: "if the first 7 days are confusing, Chris is gone").
+**Why this use case:** This is the **Controller's tool-shopping language** — "I'm not switching unless it's impossibly easy to start." The use case speaks Vera's "first 7 days" filter (Iris: "if the first 7 days are confusing, the deal is gone"). Note: the Iris-pain quote about Chris's "first 7 days" is preserved as a witness (Chris is a real persona) even though the use-case buyer is Vera.
 
-### Use case 3 — For FP&A Leads (Vera, ICP-3, Phase 2)
+### Use case 3 — For FP&A Leads (Chris, ICP-3, Phase 2)
 
 **Headline:** "OLAP-grade cube. 1M cells. Federated collaboration."
 **Supporting line:** "Direct Snowflake + BigQuery sync. Replace 70% of what Anaplan does, on your own terms, with no implementation partner. 2-year migration plan, one model at a time."
 
-**Three-witness test:** (a) Buyer = Vera, VP Finance at $50-200M ARR; (b) Alternative = Anaplan at $400K/yr + 5 consultants (Iris pain #2: "We pay Anaplan $400K + Deloitte $200K"); (c) Outcome = 70% Anaplan replacement, no consultants, 2-year migration.
+**Three-witness test:** (a) Buyer = Chris, VP Finance at $50–200M ARR; (b) Alternative = Anaplan at $400K/yr + 5 consultants (Iris pain #2: "We pay Anaplan $400K + Deloitte $200K"); (c) Outcome = 70% Anaplan replacement, no consultants, 2-year migration.
 
-**Why this use case (Phase 2):** Vera is the **credibility-battleground buyer** (Iris: "if we win Vera, we win the right to say 'we replaced Anaplan'"). The use case speaks Vera's modeling-power language — the "Anaplan I can run myself" framing (Iris's Vera one-liner).
+**Why this use case (Phase 2):** Chris is the **credibility-battleground buyer** (Iris: "if we win Chris, we win the right to say 'we replaced Anaplan'"). The use case speaks Chris's modeling-power language — the "Anaplan I can run myself" framing. Note: the original variant copy was written when Vera was mapped to ICP-3 (pre-ratification); under canonical (Vera=ICP-2, Chris=ICP-3), the buyer is Chris, but the Anaplan-displacement pain quotes (multi-dimensional modeling, no implementation partner) are real and apply to Chris.
 
 ---
 
@@ -160,15 +160,15 @@ The 3 social-proof blocks are **placeholder quotes** for the post-Beta case stud
 
 > "I had 15 tabs, 50 cross-references, and a VLOOKUP that broke every quarter. FinPlan Pro imported my existing model in 30 minutes, gave me a scenario engine in week 1, and the AI Copilot in week 2. **I got my Sunday nights back.**" — [FICTIONAL PLACEHOLDER: Chris, Controller at a $4M ARR B2B SaaS, 22 FTE, no team, all-Excel, 9-day VLOOKUP break per quarter]
 
-**Three-witness test:** (a) Buyer = Chris (ICP-2); (b) Alternative = Excel + VLOOKUP + 9-day break; (c) Outcome = 30-min import, 5-min Monday burn, no VLOOKUP.
+**Three-witness test:** (a) Buyer = Vera (ICP-2); (b) Alternative = Excel + VLOOKUP + 9-day break; (c) Outcome = 30-min import, 5-min Monday burn, no VLOOKUP.
 
-**Source mapping:** Replace with a **Gold-tier case study** (3 mandatory + 1 bonus) at D+120. Carlos is the highest-volume testimonial source; aim for 3-5 Carlos-style quotes by D+180.
+**Source mapping:** Replace with a **Gold-tier case study** (3 mandatory + 1 bonus) at D+120. Vera is the highest-volume testimonial source (per `iris/PERSONAS.md`, Vera's 5 quotes are the most quotable of the 3 personas); aim for 3-5 Vera-style quotes by D+180.
 
 ### Social Proof 3 — Consulting displacement (ICP-1, larger)
 
 > "We had 4 FP&A consultants billing $2M/year to maintain a model that broke every time the GL changed. FinPlan Pro replaced 60% of that with 1 in-house analyst + the platform. **$1.2M/yr saved, no consultants, the model now updates itself.**" — [FICTIONAL PLACEHOLDER: Vera-track FP&A Lead at a $80M ARR marketplace, 450 FTE, 4 consultants on Anaplan maintenance, 1 in-house analyst post-migration]
 
-**Three-witness test:** (a) Buyer = Vera-track (ICP-3, future); (b) Alternative = 4 consultants × $500K = $2M/yr; (c) Outcome = $1.2M/yr saved, 1 in-house analyst, no consultants.
+**Three-witness test:** (a) Buyer = Carla-track (ICP-1, larger — $100M+ ARR, multi-entity); (b) Alternative = 4 consultants × $500K = $2M/yr; (c) Outcome = $1.2M/yr saved, 1 in-house analyst, no consultants. (Note: pre-ratification the buyer was mislabeled as "Vera-track (ICP-3, future)" — under canonical (T-HER-009 v0.2), ICP-1 = Carla and the consulting-displacement pain (Anaplan + Deloitte) is a CFO-budget-ownership pain, not an FP&A Lead pain.)
 
 **Source mapping:** Replace with a **Phase 2 case study** (Q1 2027, per Strategos's roadmap). This is the **Anaplan-displacement credibility story** that earns the right to say "we replaced Anaplan."
 
@@ -196,7 +196,7 @@ The footer is the **last impression** the prospect takes away. It is the place t
 
 | Input | Source | Used in |
 |---|---|---|
-| ICPs (Sandra, Carlos, Vera) | `ICP.md` (Hermes) | §1 hero variants A/B/C |
+| ICPs (Carla, Vera, Chris) | `ICP.md` (Hermes) | §1 hero variants A/B/C |
 | Personas (Carla, Chris, Vera) | `PERSONAS.md` (Iris) | §1 hero variants + §4 use cases |
 | Pain quotes | `PERSONAS.md` (Iris) | §1 sub-headlines + §5 social proof |
 | Value props + anti-positions | `POSITIONING.md` (Hermes) | §1 sub-headlines + §3 differentiators |
@@ -218,7 +218,7 @@ The footer is the **last impression** the prospect takes away. It is the place t
 
 ## §8 — Open questions for the Leader / Strategos / Apollo (post-launch)
 
-1. **Should the hero A/B test run 50/50 between Variant A and Variant B, or 70/30 (A-heavy) to optimize for the higher-ACV ICP-1 buyer?** Hermes recommends 70/30 — ICP-1's $250K ACV is 25× ICP-2's $10K ACV, so even a 30% ICP-1 conversion delivers more revenue than a 100% ICP-2 conversion. A/B test for 30 days; promote the winner to 100%.
+1. **Should the hero A/B test run 50/50 between Variant A and Variant B, or 70/30 (A-heavy) to optimize for the higher-ACV ICP-1 buyer?** Hermes recommends 70/30 — under canonical ICP-numbering (T-HER-009 v0.2), ICP-1 (Carla) at $50K–$200K ACV (midpoint $125K) is **~4.5× the PLG ICP-3 (Chris) at $5K–$50K ACV (midpoint $27.5K)**. So even a 30% ICP-1 conversion delivers more revenue than a 100% ICP-3 conversion. (Note: the original L221 pre-ratification math said "25× ICP-2's $10K ACV" — that figure was based on pre-ratification Carlos-as-ICP-2 mapping. Under canonical, the relevant comparison is ICP-1 (Carla) vs ICP-3 (Chris).) A/B test for 30 days; promote the winner to 100%.
 2. **Should the 4 stats include "200+ engines" instead of "175/176 engines tested"?** The 175/176 number is the test-coverage truth; the "200+" number is the marketing round-up. Hermes recommends the marketing version ("200+ engines, 175 tested for the 99.4% coverage") for the homepage, with the 175/176 cited in the engineering blog.
 3. **Should the homepage include a "see it in action" video as a 4th CTA?** The 30-sec demo video is the highest-converting single asset in our cold-outbound tests (per the Sequence's A/B-test backlog). Adding it as a 4th CTA above the fold is worth testing.
 4. **Should the 3 social-proof placeholders be replaced with logo strips (10 customer logos) instead of 3 quotes?** Logo strips convert better on first-glance; quotes convert better on close. Hermes recommends **logo strip on first visit, quote modal on click** — best of both.
@@ -227,3 +227,7 @@ The footer is the **last impression** the prospect takes away. It is the place t
 ---
 
 _λόγος δημόσιος — the public word. The cold email is the first whisper; the homepage is the first impression. Hermes writes the words that turn the visitor into a customer. — Hermes_
+
+---
+
+> **ICP-numbering note (T-HER-009 v0.2):** Hero variants A/B/C map to canonical ICP-1 (Carla) / ICP-2 (Vera) / ICP-3 (Chris) per `docs/drafts/iris/PERSONAS.md` canonical 2026-06-13. Use case 1 (CFOs) = ICP-1 Carla. Use case 2 (Controllers) = ICP-2 Vera. Use case 3 (FP&A Leads, Phase 2) = ICP-3 Chris. Social Proof 1 + 2 target ICP-2 (Vera, Controller) primarily. Social Proof 3 targets ICP-1 (Carla, larger — $100M+ ARR, multi-entity). Math note: L221 hero A/B test recommendation is ICP-1 (Carla, $125K midpoint) vs ICP-3 (Chris, $27.5K midpoint) at ~4.5× — pre-ratification "25× ICP-2's $10K ACV" math was based on Carlos-as-ICP-2 mapping and is superseded.

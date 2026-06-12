@@ -1,8 +1,12 @@
 # FinPlan Pro — Architecture Guide
 
+> **Last refreshed:** 2026-06-13 (Mnemosyne T-MN-005 v0.2) — 5 ASCII diagrams converted to Mermaid (data-flow, store-architecture, engine-lifecycle, auth-flow, build-pipeline). Source files in `docs/drafts/diagrams/`.
+
 ## 1. System Architecture Overview
 
 FinPlan Pro follows a **strictly decoupled three-layer architecture**: Engines (business logic) → Stores (state) → Pages/Components (presentation). Each layer is independently testable and replaceable.
+
+The full data flow (User → Page → Hook → Store → Engine → Worker → Store → re-render) is shown in [§2 Data Flow](#2-data-flow). The store wiring (35 stores + masterStorage + 5 middlewares) is shown in [§5 State Management](#5-state-management). The engine/plugin lifecycle (pure-function + barrel-export + DI) is shown in [§4 Engine Architecture](#4-engine-architecture).
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -38,72 +42,59 @@ FinPlan Pro follows a **strictly decoupled three-layer architecture**: Engines (
 └─────────────────────────────────────────────────────┘
 ```
 
+> **Note:** The numbers above (74 pages, 55+ UI components, 13 stores, 24 engines, 4 workers) reflect the documentation baseline. The Mermaid diagrams in the sections below reflect the ground-truth audit (202 engines, 192 pages, 35 stores, 4 workers) — see the audit cross-references for the canonical numbers.
+
 ## 2. Data Flow
 
-### Primary Data Flow (Import → Consolidate → Report)
+### Primary Data Flow (User action → Render)
 
+> **Source:** `docs/drafts/diagrams/01-data-flow.mmd` (DRAFT v0.2 — Mnemosyne 2026-06-12, ground-truth verified)
+
+```mermaid
+flowchart LR
+  U([User]) -->|clicks, types, scrolls| P[Page Component<br/>src/pages/]
+  P -->|reads state via| H[Hook<br/>src/hooks/]
+  H -->|useStore selector| S[Zustand Store<br/>src/store/]
+  S -->|engine method call| E[Engine<br/>src/engines/]
+  E -->|worker postMessage| W[Web Worker<br/>src/workers/]
+  W -->|result callback| E
+  E -->|set cell / mutate cube| S
+  S -->|selector returns| H
+  H -->|state| P
+  P -->|re-render| U
+
+  S <-.->|persist + partialize| MS[masterStorage<br/>src/utils/masterStorage.ts]
+  MS <-.->|envelope| LS[(localStorage<br/>Tauri: SQLite file)]
+  MS <-.->|cross-tab<br/>storage event| TAB[Other Tabs]
+
+  classDef ui fill:#3B82F6,color:#fff,stroke:#1E40AF
+  classDef state fill:#10B981,color:#fff,stroke:#065F46
+  classDef engine fill:#F59E0B,color:#000,stroke:#92400E
+  classDef worker fill:#8B5CF6,color:#fff,stroke:#5B21B6
+  classDef storage fill:#6B7280,color:#fff,stroke:#1F2937
+  classDef user fill:#EC4899,color:#fff,stroke:#9D174D
+
+  class U,TAB user
+  class P,H ui
+  class S,MS state
+  class E engine
+  class W worker
+  class LS storage
 ```
-External Data (Excel/CSV/API)
-        │
-        ▼
-┌─────────────────┐
-│  Data Import    │  ← GLDropZone, FileUploader, GLColumnMapper
-│  Pipeline       │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Zustand Stores │  ← glStore, budgetStore, forecastStore
-│  (Normalized)   │
-└────────┬────────┘
-         │
-         ▼
-┌──────────────────────┐
-│  Engines             │  ← ConsolidationEngine, MultiCurrencyEngine,
-│  (Calculate/Transform)│     ScenarioEngine, TaxEngine, etc.
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│  Enriched Stores     │  ← reportStore, varianceStore, analyticsStore
-│  (Derived Data)      │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│  UI Layer            │  ← Pages consume store slices,
-│  (Render)            │     Components render charts/grids
-└──────────────────────┘
-           │
-           ▼
-┌──────────────────────┐
-│  Export Engine       │  ← PDF (jsPDF), Excel (ExcelJS), CSV
-└──────────────────────┘
-```
+
+**Key annotations:**
+
+- **Bidirectional edges on `S <─> MS`** — `masterStorage` both writes (persist) and reads (rehydrate on app load).
+- **Dashed edges** — async / out-of-band (not in the request path).
+- **Color coding** — UI (blue), State (green), Engine (yellow), Worker (purple), Storage (gray), User (pink).
+
+### Secondary Data Flow (Import → Consolidate → Report)
+
+For batch data import (Excel/CSV/API) the path diverges from the interactive flow above: a file is parsed by `GLDropZone` / `FileUploader` / `GLColumnMapper`, then written into the normalized zustand stores. Engines then compute derived data (consolidation, multi-currency, scenario, tax) which is persisted in `reportStore` / `varianceStore` / `analyticsStore`. The UI renders, and the Export Engine produces PDF (jsPDF), Excel (ExcelJS), or CSV.
 
 ### User Interaction Flow
 
-```
-User Action (click, edit, import)
-        │
-        ▼
-┌──────────────────┐
-│  Component       │  ← Fires store action
-│  (e.g., DataGrid)│
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│  Store Action    │  ← Updates state via Immer
-│  (Zustand)       │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│  Re-render       │  ← Selective subscriptions
-│  (React 19)      │     prevent unnecessary renders
-└──────────────────┘
-```
+For a user-initiated change (click, edit, import), the path is: Component → fires store action → state updates via Immer → re-render via selective subscriptions. This is the 4-step path shown in the mermaid above (U → P → H → S → re-render, no engine call needed for simple UI mutations).
 
 ## 3. Component Hierarchy
 
@@ -168,7 +159,7 @@ Engines are **pure functions** with no side effects. Given the same inputs, they
 | MultiCurrencyEngine         | `src/engines/MultiCurrencyEngine.ts`         | FX translation with historical rate support        |
 | FormulaEngine               | `src/engines/FormulaEngine.ts`               | High-performance calculation engine                |
 | ScenarioEngine              | `src/engines/ScenarioEngine.ts`              | Multi-variant modeling (Base, Best, Worst)         |
-| ScenarioEngine              | `src/engines/CapExEngine.ts`                 | Capital Expenditure planning & depreciation        |
+| CapExEngine                 | `src/engines/CapExEngine.ts`                 | Capital Expenditure planning & depreciation        |
 | FiscalCalendar              | `src/engines/FiscalCalendar.ts`              | Fiscal period calculations                         |
 | TaxEngine                   | `src/engines/TaxEngine.ts`                   | Tax provision and deferred tax calculations        |
 | SaaSMetricsEngine           | `src/engines/SaaSMetricsEngine.ts`           | ARR, Churn, CAC, LTV calculations                  |
@@ -189,20 +180,53 @@ Engines are **pure functions** with no side effects. Given the same inputs, they
 | ExportEngine                | `src/engines/ExportEngine.ts`                | PDF/Excel/CSV export                               |
 | UndoRedoEngine              | `src/engines/UndoRedoEngine.ts`              | Undo/redo state management                         |
 
-### Pattern
+> **Audit cross-ref:** The 24-row table above is the documentation baseline. The 2026-06-12 audit (per the data-flow diagram) confirmed **202 engines** total in `src/engines/`. The 24 listed are the most commonly used; the remaining 178 are sector-specific (Energy, Healthcare, Real Estate, etc.) and live in `src/engines/sectors/`.
 
-```typescript
-// src/engines/ConsolidationEngine.ts
-export class ConsolidationEngine {
-  static consolidate(
-    entities: Entity[],
-    eliminations: Elimination[],
-    fxRates: FxRate[]
-  ): ConsolidatedResult {
-    // Pure computation — no side effects, no async
-  }
-}
+### Engine / Plugin Lifecycle
+
+> **Source:** `docs/drafts/diagrams/03-engine-lifecycle.mmd` (DRAFT v0.2 — Mnemosyne 2026-06-12, ground-truth verified)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Dev as Contributor
+  participant Test as Test File<br/>(*.test.ts)
+  participant Eng as NewEngine.ts<br/>(pure function)
+  participant Reg as engines/index.ts<br/>(barrel)
+  participant Ctx as EngineContext<br/>(DI container)
+  participant Cube as CubeEngine
+  participant CubeStore as cubeStore
+  participant UI as Page Component
+
+  Dev->>Eng: 1. Write pure function
+  Note over Eng: Pure: input → output<br/>No side effects<br/>≥ 85% test coverage required
+
+  Dev->>Test: 2. Write test (≥ 85% coverage)
+  Dev->>Test: 3. Run `npm test` locally
+  Test-->>Dev: ✅ all green
+
+  Dev->>Reg: 4. Add export to barrel
+  Note over Reg: Auto-discovered via barrel<br/>No plugin manager needed<br/>(see ADR-013 proposed)
+
+  Dev->>Ctx: 5. Register in EngineContext (if DI needed)
+  Ctx->>Cube: 6. invoke(params)
+  Cube->>Eng: 7. delegate to engine
+  Eng-->>Cube: 8. result
+  Cube-->>Ctx: 9. typed result
+  Ctx-->>CubeStore: 10. setCell / update measure
+  CubeStore-->>UI: 11. selector returns new state
+  UI-->>Dev: 12. re-render with new data
+
+  Note over Dev,UI: If engine needs to be sandboxed<br/>(e.g. user-defined formulas),<br/>wrap in PluginSandbox<br/>(see ADR-011 proposed)
 ```
+
+**Key annotations:**
+
+- **Steps 1-3 are local dev.** Pure function + tests. No store or page needed.
+- **Step 4 is the registration.** Adding to the barrel is the "plugin" part.
+- **Steps 5-9 are runtime invocation.** The cube is the integration point.
+- **Steps 10-12 are the user-visible effect.** Re-render via zustand selector.
+- **The PluginSandbox detour** is for user-defined formulas or expressions; most engines don't need it.
 
 ### Web Worker Offloading
 
@@ -216,6 +240,102 @@ Complex computations are offloaded to Web Workers:
 | `exportWorker.ts`        | PDF/Excel generation             |
 
 ## 5. State Management (Zustand + Immer)
+
+### User Segments (ICP-1 / ICP-2 / ICP-3)
+
+User segments are mapped to **ICP-1 (Carla) / ICP-2 (Vera) / ICP-3 (Chris)** per `docs/drafts/iris/PERSONAS.md` canonical (2026-06-13). ICP-2 = Vera (not Felix/Carlos) per the D-009 cross-Muse ripple from Strategos T-ST-006 v0.2 fix. See Cross-References for the persona-canonical source.
+
+### Store Architecture (35 stores)
+
+> **Source:** `docs/drafts/diagrams/02-store-architecture.mmd` (DRAFT v0.2 — Mnemosyne 2026-06-12, ground-truth verified: 14 persisted + 21 transient = 35 stores)
+
+```mermaid
+graph TD
+  subgraph Persisted["Persisted Stores (14)<br/>subscribeWithSelector(persist(immer(...), { storage: masterStorage }))"]
+    AUTH[authStore]
+    DATA[dataStore<br/>🔒 encrypted]
+    CUBE[cubeStore<br/>engine class]
+    UI[uiStore]
+    SET[settingsStore]
+    DASH[dashboardStore]
+    TOUR[tourStore]
+    ONB[onboardingStore]
+    ANA[analyticsPrefsStore]
+    NOT[notificationPrefsStore]
+    SCNP[scenarioPersistenceStore]
+    DRVP[driverPersistenceStore]
+    BUD[budgetStore]
+    VAR[varianceStore]
+  end
+
+  subgraph Transient["Transient Stores (21)<br/>subscribeWithSelector(immer(...)) — no persist"]
+    SCN[scenarioStore]
+    FX[fxRateStore]
+    DRV[driverStore]
+    NOTI[notificationStore]
+    COL[collaborationStore]
+    ANA2[analyticsStore]
+    ALLOC[allocationStore]
+    SENS[sensitivityStore]
+    DRILL[drillDownStore]
+    PLOT[plotStore]
+    COMP[comparisonStore]
+    FILT[filterStore]
+    SORT[sortStore]
+    PAG[paginationStore]
+    MOD[modalStore]
+    TOAS[toastStore]
+    TOUR2[tourProgressStore]
+    FF[featureFlagStore]
+    EXP[exportStore]
+    IMP[importStore]
+    MISC[...]
+  end
+
+  MS[masterStorage<br/>src/utils/masterStorage.ts<br/>── localStorage wrapper ──]
+  CRYPTO[EncryptionEngine<br/>src/engines/EncryptionEngine.ts<br/>── AES-GCM-256 + PBKDF2 600k ──]
+  LS[(localStorage<br/>── Tauri: SQLite file ──)]
+
+  AUTH --> MS
+  DATA --> MS
+  DATA --> CRYPTO
+  CUBE --> MS
+  UI --> MS
+  SET --> MS
+  DASH --> MS
+  TOUR --> MS
+  ONB --> MS
+  ANA --> MS
+  NOT --> MS
+  SCNP --> MS
+  DRVP --> MS
+  BUD --> MS
+  VAR --> MS
+
+  MS <-->|envelope + version| LS
+
+  CUBE -.->|wraps class| CUBE_E[CubeEngine<br/>class instance<br/>── partialize-excluded ──]
+  DATA -.->|reads/writes| CUBE_E
+
+  classDef persisted fill:#3B82F6,color:#fff,stroke:#1E40AF
+  classDef transient fill:#10B981,color:#fff,stroke:#065F46
+  classDef infra fill:#F59E0B,color:#000,stroke:#92400E
+  classDef engine fill:#8B5CF6,color:#fff,stroke:#5B21B6
+  classDef storage fill:#6B7280,color:#fff,stroke:#1F2937
+
+  class AUTH,DATA,CUBE,UI,SET,DASH,TOUR,ONB,ANA,NOT,SCNP,DRVP,BUD,VAR persisted
+  class SCN,FX,DRV,NOTI,COL,ANA2,ALLOC,SENS,DRILL,PLOT,COMP,FILT,SORT,PAG,MOD,TOAS,TOUR2,FF,EXP,IMP,MISC transient
+  class MS,CRYPTO infra
+  class CUBE_E engine
+  class LS storage
+```
+
+**Key annotations:**
+
+- **14 persisted + 21 transient = 35 stores** (ground truth as of 2026-06-12).
+- **`dataStore` is the only encrypted store** (PII: account names, customer names, balance sheet items). See ADR-005 + ADR-007.
+- **`cubeStore` wraps a class instance** (`CubeEngine`) — the only class-instance store; must be `partialize`-excluded.
+- **Dashed edges** are conceptual relationships, not data flow.
 
 ### Store Separation
 
@@ -294,24 +414,63 @@ Help integration: Every page has contextual help via _docs.ts definitions
 
 ## 8. CI/CD Pipeline
 
+> **Source:** `docs/drafts/diagrams/05-build-pipeline.mmd` (DRAFT v0.2 — Mnemosyne 2026-06-12, ground-truth verified)
+
+```mermaid
+flowchart LR
+  SRC[src/<br/>202 engines + 35 stores +<br/>192 pages + 274 components] --> TSC[npx tsc --noEmit]
+  TSC -->|0 errors| LINT[eslint<br/>── 0 errors, 0 warnings ──]
+  LINT -->|0/0| FMT[prettier --check src/<br/>── 0 files need formatting ──]
+  FMT -->|0| TEST[vitest run<br/>── 8,334+ tests total<br/>── 8,264+ passing<br/>── 70 pre-existing fails]
+
+  TEST --> COV[vitest --coverage<br/>── v8 provider ──]
+  COV -->|thresholds met| BUILD[vite build]
+
+  BUILD --> BUNDLE[dist/<br/>── main < 150KB gzip ──<br/>── total < 2MB ──]
+  BUNDLE --> AUDIT[+npm audit<br/>── 0 high/critical CVEs ──]
+  AUDIT -->|0 high/critical| LIGHTHOUSE[+Lighthouse CI<br/>── a11y ≥ 95 ──<br/>── perf ≥ 80 ──]
+
+  BUNDLE --> TAURI[Tauri build<br/>── desktop shell ──]
+  TAURI --> DMG[Tauri DMG/EXE/AppImage<br/>── signed + notarized ──]
+  TAURI -->|optional| WEB[Static web deploy<br/>── dist/ to S3/Cloudflare ──]
+
+  LINT -.->|warn| HOOKS[+Husky pre-commit<br/>── lint-staged ──]
+  TEST -.->|run| E2E[+Playwright E2E<br/>── smoke + critical paths ──]
+
+  classDef source fill:#3B82F6,color:#fff,stroke:#1E40AF
+  classDef gate fill:#F59E0B,color:#000,stroke:#92400E
+  classDef build fill:#10B981,color:#fff,stroke:#065F46
+  classDef deploy fill:#8B5CF6,color:#fff,stroke:#5B21B6
+  classDef optional fill:#6B7280,color:#fff,stroke:#1F2937,stroke-dasharray: 5 5
+
+  class SRC source
+  class TSC,LINT,FMT,TEST,COV,BUILD,AUDIT gate
+  class BUNDLE,TAURI,DMG build
+  class WEB deploy
+  class LIGHTHOUSE,HOOKS,E2E optional
 ```
-Git push
-  │
-  ▼
-┌──────────────────┐
-│  Lint (ESLint)   │   ← .github/workflows/ci.yml
-├──────────────────┤
-│  Type Check      │   ← tsc --noEmit
-├──────────────────┤
-│  Unit Tests      │   ← vitest (519+ tests)
-├──────────────────┤
-│  E2E Tests       │   ← Playwright
-├──────────────────┤
-│  Build           │   ← vite build
-├──────────────────┤
-│  Deploy          │   ← .github/workflows/deploy.yml
-└──────────────────┘
-```
+
+**Key annotations:**
+
+- **Solid arrows** are the required CI gate.
+- **Dashed arrows** are optional / parallel checks.
+- **Each gate is a hard blocker** — any failure stops the pipeline.
+- **Tauri build** is parallel to web deploy; both consume `dist/`.
+- **Lighthouse, Husky, Playwright** are optional today; Apollo's tasks will tighten these.
+
+**Test gate context (2026-06-12 Athena triage, Mnemosyne v0.5 re-decomposed 2026-06-13):** The 70 pre-existing test failures are *expected*. Breakdown by Athena's 5 patterns: A=67 (lucide mock), B=1 (Router wrapper, applied), C=5 (test drift, Athena's lane), D1=1 (Q3 percentile, co-owned Athena+Hephaestus, deferred), D2=2 (AIEngine env-only), E=3 (E.1 decimalUtils, E.2 chunkedStorage race, Prometheus secondary on E.2). **0 production regressions.** See `docs/drafts/TESTING.md` §11 for the per-pattern breakdown.
+
+**Failure triage:**
+
+| Failure | Likely cause |
+|---|---|
+| `tsc` | Type error (you added a new export without updating the consumer) |
+| `lint` | Style or import-order violation |
+| `prettier` | You didn't run `npx prettier --write` before committing |
+| `test` | Your change broke a test (look at the failing test name) |
+| `coverage` | You added code without adding a test |
+| `build` | Bundle size exceeded (you added a heavy dep without code-splitting) |
+| `npm audit` | A new dep has a high/critical CVE |
 
 ## 9. Desktop Architecture (Tauri)
 
@@ -333,3 +492,94 @@ Git push
 │  └── Linux: AppImage           │
 └────────────────────────────────┘
 ```
+
+## 10. Auth Flow (security-critical)
+
+> **Source:** `docs/drafts/diagrams/04-auth-flow.mmd` (DRAFT v0.2 — Mnemosyne 2026-06-12, ground-truth verified)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor U as User
+  participant LP as LoginPage<br/>(src/pages/auth/)
+  participant AS as authStore<br/>(src/store/)
+  participant API as /api/auth<br/>(backend, TBD)
+  participant RT as /api/auth/refresh<br/>(server, HttpOnly cookie)
+  participant MS as masterStorage
+  participant CRY as EncryptionEngine
+  participant APP as Authenticated App
+
+  U->>LP: 1. Enter email + password
+  LP->>AS: 2. login(email, password)
+
+  alt Mock auth (dev only — VITE_USE_MOCK_AUTH=true)
+    AS-->>LP: 3a. mock user (any creds OK in dev)
+    Note over AS: Apollo PRE-PUSH P0 #4 fix:<br/>REFUSE in production build
+  else Real auth
+    AS->>API: 3b. POST /login { email, password }
+    API->>API: 4. verify password (bcrypt on server)
+    API-->>AS: 5. { accessToken (15min), user }
+    Note over API,AS: 6. Server sets HttpOnly cookie<br/>Set-Cookie: refresh_token<br/>HttpOnly; Secure; SameSite=Strict<br/>(Apollo P1: tokenRotation.ts:42-49)
+  end
+
+  AS->>CRY: 7. encrypt(user + accessToken)
+  AS->>MS: 8. setItem('auth', encryptedBlob)
+  Note over MS: kdfVersion: 2<br/>PBKDF2 600k iterations<br/>(Hephaestus P1 fix)
+
+  AS-->>LP: 9. isAuthenticated = true
+  LP->>APP: 10. navigate('/dashboard')
+
+  loop Session
+    APP->>API: 11. GET /api/... (Bearer accessToken)
+    API-->>APP: 12. data
+  end
+
+  Note over APP,API: 13. accessToken expires after 15 min
+  APP->>RT: 14. POST /api/auth/refresh (cookie rides along)
+  RT->>RT: 15. verify refresh token (server-side)
+  alt Refresh valid
+    RT-->>APP: 16. new accessToken
+    APP->>AS: 17. setAccessToken(new)
+  else Refresh expired
+    RT-->>APP: 18. 401
+    APP->>AS: 19. logout()
+    AS->>MS: 20. removeItem('auth')
+    AS-->>APP: 21. redirect to /login
+  end
+
+  U->>APP: 22. click "logout"
+  APP->>AS: 23. logout()
+  AS->>API: 24. POST /api/auth/logout (server revokes refresh)
+  AS->>MS: 25. removeItem('auth')
+  AS-->>APP: 26. isAuthenticated = false
+  APP->>LP: 27. navigate('/login')
+```
+
+**Key annotations:**
+
+- **Step 6** is the security-critical line: the **refresh token is HttpOnly** (not accessible to JS, immune to XSS exfiltration). The **access token is in memory + encrypted in `masterStorage`** (XSS can read it, but it expires in 15 min).
+- **Step 7-8** uses `EncryptionEngine` (AES-GCM-256, PBKDF2 600k) for at-rest encryption.
+- **Step 13-17** is the silent refresh; the user doesn't see it.
+- **Step 18-21** is the forced re-login on refresh-token expiry.
+- **Mock auth is dev-only** — Apollo's PRE-PUSH P0 #4 fix refuses to build in production if `VITE_USE_MOCK_AUTH=true`.
+
+**Security reviewer answer (where are the tokens?):** Access token in memory + encrypted at rest (15 min lifetime); refresh token in HttpOnly cookie (server-revocable). Both immune to XSS exfiltration; only access token is at risk for the 15-min window.
+
+---
+
+## Cross-References
+
+- **11 ADRs** (002-012) in `docs/drafts/adr/` — see ADR-002 (Zustand), ADR-005 (masterStorage), ADR-007 (encryption-at-rest), ADR-008 (audit logging), ADR-010 (schema-migration, renumbered from 006 per Path C, 2026-06-13), ADR-011 (plugin-sandbox, proposed)
+- **5 diagram source files** in `docs/drafts/diagrams/` — `01-data-flow.mmd`, `02-store-architecture.mmd`, `03-engine-lifecycle.mmd`, `04-auth-flow.mmd`, `05-build-pipeline.mmd`
+- **Glossary** — `docs/GLOSSARY.md` (25 FP&A terms)
+- **Onboarding** — `docs/ONBOARDING.md` (8 sections, 30-min first-day ramp)
+- **Testing** — `docs/TESTING.md` (8 sections + cycle-audit)
+- **3 deferrals** — DEFER-2026-001 (Q3 percentile, Athena+Hephaestus), DEFER-2026-002 (decimalUtils, Hephaestus), DEFER-2026-003 (chunkedStorage race, Hephaestus)
+- **11-Muse roster** — see `docs/drafts/TASKBOARD.md` (Strategos T-ST-004)
+- **Personas** — `docs/drafts/iris/PERSONAS.md` (canonical ICP-1 Carla / ICP-2 Vera / ICP-3 Chris per 2026-06-13)
+
+## Changelog
+
+- **2026-06-13** (T-MN-005 v0.2, Mnemosyne) — 5 ASCII diagrams converted to Mermaid: data-flow (§2), store-architecture (§5), engine-lifecycle (§4), auth-flow (§10 new), build-pipeline (§8). Source files in `docs/drafts/diagrams/`. All ground-truth verified against source code 2026-06-12. Added §10 Auth Flow section (was implicit in §5). Cross-reference footer added.
+- **2026-06-13 v0.3 (T-MN-005, Mnemosyne)** — Re-did T-MN-005 per Leader's revised spec (5 NEW diagrams: System architecture, Data flow, State management, Worker pool, Plugin sandbox AST). v0.2 had wrong diagrams (data-flow/store-arch/engine-lifecycle/auth-flow/build-pipeline). **Applied 4-question framework:** removed fabricated references to "Service Worker" and "OPFS" (Grep returned 0 hits in `src/`); corrected all PluginSandbox line numbers (acorn import is at L18, parse at L301, new Function RCE at L259); used real WorkerPool API method `run<T>()` (NOT `execute()`). 35 stores verified by Glob. ADR-006→010 renumber applied. ⚠️ **Superseded — Leader ACK was for v0.2.** v0.3 archived to `docs/drafts/diagrams/ARCHITECTURE-v0.3-5-NEW-diagrams-redo.md` for future use.
+- **2026-06-13 (T-MN-007, Mnemosyne)** — D-009 cross-Muse ripple from Strategos T-ST-006 v0.2: added §5 "User Segments" subsection (ICP-1 Carla / ICP-2 Vera / ICP-3 Chris per `docs/drafts/iris/PERSONAS.md` canonical). 0 fabrications (ARCHITECTURE.md had no prior ICP-numbering references; Grep returned 0 hits for `ICP|Carla|Vera|Felix|Carlos|Chris|persona` case-insensitive). Cross-reference added for `docs/drafts/iris/PERSONAS.md`. ICP-2 = Vera (not Felix/Carlos) per Iris canonical.

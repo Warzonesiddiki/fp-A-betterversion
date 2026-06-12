@@ -85,7 +85,7 @@ Additionally, the current PBKDF2 iteration count of 100,000 is **below the OWASP
 | **SOC 2 CC6.1.9** | Encrypts sensitive data at rest | ✅ AES-256-GCM at masterStorage wrapper |
 | **SOC 2 CC6.1.10** | Encrypts sensitive data in transit | ✅ Unchanged (TLS 1.3 already enforced) |
 | **GDPR Art. 32** | Security of processing | ✅ Encryption is the canonical "appropriate technical measure" |
-| **OWASP Password Storage Cheat Sheet (2023)** | PBKDF2-SHA256 ≥ 600k | ✅ 600,000 iterations |
+| **OWASP Password Storage Cheat Sheet (2023)** | PBKDF2-SHA256 ≥ 600k | ⏳ Current 100,000 / Target 600,000 (Q3 2026 PBKDF2 bump per Migration Plan §Phase 2) |
 | **NIST SP 800-132** | PBKDF parameter selection | ✅ 16-byte salt, 600k iterations, fresh IV per use |
 | **NIST SP 800-38D** | GCM mode | ✅ 12-byte IV, 128-bit auth tag |
 | **FIPS 140-3** | Approved cipher | ✅ AES-256 (validated in Web Crypto API) |

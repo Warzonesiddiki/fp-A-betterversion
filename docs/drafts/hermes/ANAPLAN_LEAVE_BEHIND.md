@@ -1,9 +1,13 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-009 v0.2 — Hermes 2026-06-13
+
+---
+
+> **ICP-numbering note (T-HER-009 v0.2):** ICP-1 = Carla (CFO, 50-500 FTE, mid-market) per `docs/drafts/iris/PERSONAS.md` canonical 2026-06-13. This leave-behind targets Carla (ICP-1) as the primary buyer. -->
 
 # Anaplan vs FinPlan Pro vs Do Nothing — 1-Page Leave-Behind
 
 > **For:** The CFO leaving the demo. **Use:** Hand this single page to the CFO on the way out. It is the only document they will read.
-> **Cross-refs:** `BATTLECARD_ANAPLAN.md` (full sales playbook) · `ICP.md` (ICP-1: Growing Mid-market CFO) · `PRICING.md` §2.3 (Business tier)
+> **Cross-refs:** `BATTLECARD_ANAPLAN.md` (full sales playbook) · `ICP.md` (ICP-1: Growing Mid-market CFO, persona Carla) · `PRICING.md` §2.3 (Business tier)
 
 ---
 

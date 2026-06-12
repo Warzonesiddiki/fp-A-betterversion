@@ -148,7 +148,7 @@
 
 ### Architecture & Design
 
-- `ARCHITECTURE.md` — high-level system architecture
+- `ARCHITECTURE.md` — high-level system architecture (578L, refreshed 2026-06-13; 5 ASCII→Mermaid diagrams, Mnemosyne T-MN-005)
 - `DESKTOP_FIRST_ARCHITECTURE.md` — desktop-native patterns
 - `PERFORMANCE_ARCHITECTURE.md` — performance engineering
 - `DESIGN_SYSTEM_ANALYSIS.md` — design tokens, components
@@ -229,7 +229,7 @@
 - `jsdoc/*.ts.md` — 5 JSDoc patches (CubeEngine, CapExEngine, MonteCarloEngine, masterStorage, useAuth)
 - `ONBOARDING.md` — 30-min first-day path
 - `TESTING.md` — Vitest guide
-- `diagrams/01-05.mmd` + `ARCHITECTURE.md` — 5 mermaid + combined view
+- `diagrams/01-05.mmd` + `ARCHITECTURE.md` — 5 mermaid + combined view (T-MN-005 shipped 2026-06-13)
 - `CHANGELOG.md` — conventional-changelog skeleton
 
 ### Other Muses' Pre-Staged Work (in `docs/drafts/{apollo,athena,prometheus,hera,hephaestus,iris,hermes,atlas,themis}/`)

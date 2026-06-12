@@ -5,6 +5,8 @@
 > _Status: Accepted · Date: 2026-06-12 · Author: Mnemosyne (Documentation & Architecture) · Cycle: FinPlan Pro Perfection Cycle 2026-06-12_
 >
 > **Draft note:** This is the canonical 5-ADR set triaged from the Mnemosyne audit. Apollo will move this file to `docs/adr/ADR-010-schema-migration-strategy.md` when staging.
+>
+> **Replaces:** old ADR-006 (renumbered 2026-06-13 per Path C ADR reorg; new Hephaestus ADRs 006-009 inserted into the sequence)
 
 ---
 

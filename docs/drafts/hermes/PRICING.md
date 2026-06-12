@@ -1,11 +1,11 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-009 — Hermes 2026-06-13 -->
 
 # FinPlan Pro — Pricing Tiers
 
 > **Frame for the cycle:** Pricing is positioning. The four tiers below are the **commercial expression** of the two ICPs in `ICP.md` and the anti-positions in `POSITIONING.md`. The Open Source tier is not a "free trial" — it is the wedge into Anaplan's worst nightmare. The Business tier is the **target ACV** ($20K-$100K/yr ICP-1 deal). The Enterprise tier is the **moat** (regulated industries, Fortune 1000). Every tier must (a) name the buyer, (b) name the alternative it displaces, (c) name the price/pain anchor.
 
 > **Cross-references:**
-> - `docs/drafts/hermes/ICP.md` — ICP-1 (CFO) and ICP-2 (Controller)
+> - `docs/drafts/hermes/ICP.md` — ICP-1 (Carla, CFO) and ICP-2 (Vera, Controller) [canonical per `iris/PERSONAS.md` + T-ST-006 v0.2 ICP-numbering ratification]
 > - `docs/drafts/hermes/POSITIONING.md` — three anti-positions
 > - `docs/PRODUCT_VISION.md` — 5 phases (Personal → Team → Company → Ecosystem → Network); this pricing map layers 4 commercial tiers on top of those 5 product phases
 > - `docs/FPA_COMPETITIVE_MATRIX.md` — competitor price benchmarks ($0 OSS to $500K/yr Anaplan)
@@ -17,8 +17,8 @@
 
 | Tier | Price | Target ICP | What you get | What you do NOT get (constraint) |
 |---|---|---|---|---|
-| **Open Source** | **$0** forever | ICP-2 (Scrappy SaaS Controller), individual contributors, students, evaluators | Single user, all 200+ engines, local .fpa file storage, 5-year data history, all 17 sector presets, 100 AI Copilot queries/day | **No collaboration** (no multi-user, no sharing, no comments), **no cloud sync** (desktop / file only), no SSO, no audit trail |
-| **Pro** | **$99 / user / month** (annual: $83/user/mo, 2 months free) | ICP-2 (Carlos) growing into ICP-1 lite; small teams of 5–10 | Up to **10 users**, real-time collaboration, 10-year data history, **AI Copilot (100 queries/user/day)**, file-level encryption, Stripe/QuickBooks/Google Sheets sync, all 17 sectors | **Self-hosted only** (no managed cloud), no SSO/SAML, no RBAC, no audit trail, no SOC 2 |
+| **Open Source** | **$0** forever | ICP-2 (Vera, Scrappy SaaS Controller), individual contributors, students, evaluators | Single user, all 200+ engines, local .fpa file storage, 5-year data history, all 17 sector presets, 100 AI Copilot queries/day | **No collaboration** (no multi-user, no sharing, no comments), **no cloud sync** (desktop / file only), no SSO, no audit trail |
+| **Pro** | **$99 / user / month** (annual: $83/user/mo, 2 months free) | Vera (ICP-2) growing into Carla (ICP-1) lite; small teams of 5–10 | Up to **10 users**, real-time collaboration, 10-year data history, **AI Copilot (100 queries/user/day)**, file-level encryption, Stripe/QuickBooks/Google Sheets sync, all 17 sectors | **Self-hosted only** (no managed cloud), no SSO/SAML, no RBAC, no audit trail, no SOC 2 |
 | **Business** | **$499 / user / month** (annual: $415/user/mo, 2 months free; min 5 users) | **ICP-1 (Growing Mid-market CFO)**, 50–500 FTE | **Unlimited users**, audit trail, RBAC, **SOC 2 Type II (target Q3 2026)**, all integrations (NetSuite, Sage Intacct, Salesforce, Snowflake, BigQuery, etc.), cloud + on-prem, dedicated Slack channel, AI Copilot 1,000 queries/user/day | No white-label, no custom SLA, no on-prem-only deployment (cloud required) |
 | **Enterprise** | **Custom** (starting at $250K/yr ACV floor) | Fortune 1000, regulated industries (banking, defense, healthcare, public sector) | **White-label**, SSO/SAML, dedicated CSM, **custom SLA** (99.9% uptime, 1-hr P1 response), **on-prem-only deployment** option, custom integrations, custom contracts, FedRAMP roadmap | Annual contract, procurement / legal review required |
 
@@ -29,7 +29,7 @@
 ### 2.1 Open Source — $0
 
 **Three witnesses:**
-- **Buyer (a):** Carlos (ICP-2), the 10–50-emp SaaS controller, the "I'll try anything once" persona. Also: students, evaluators, individual contributors at Fortune 1000s ("I'll use it for my side-project startup before I propose it at work").
+- **Buyer (a):** Vera (ICP-2), the 10–50-emp SaaS controller, the "I'll try anything once" persona (per `iris/PERSONAS.md`). Also: students, evaluators, individual contributors at Fortune 1000s ("I'll use it for my side-project startup before I propose it at work").
 - **Alternative (b):** **Excel + Google Sheets + QuickBooks reports** — the silent incumbent for 80%+ of this segment. Cube's free tier is the closest paid alternative but Cube locks the file format.
 - **Price/pain anchor (c):** $0 to start; $0 forever for single-user; the unspoken anchor is **"if I had to buy this for $99/mo I wouldn't, so $0 is the only price that gets the install."**
 
@@ -74,7 +74,7 @@
 
 ## 3. Pricing rationale (the four constraints that shaped this)
 
-1. **The OSS tier is the wedge, not the product.** It is a $0 product whose purpose is to generate the install base that 5%-10% of which becomes Pro/Business/Enterprise revenue. Without the OSS tier, the ICP-2 funnel doesn't exist.
+1. **The OSS tier is the wedge, not the product.** It is a $0 product whose purpose is to generate the install base that 5%-10% of which becomes Pro/Business/Enterprise revenue. Without the OSS tier, the Vera (ICP-2) funnel doesn't exist.
 2. **The Pro tier must be sub-$100/user/mo.** Above $100/user/mo, Carlos's "I'll just use Google Sheets" voice wins. The $99 ceiling is the GTM hard line.
 3. **The Business tier must be ≥ $25K ACV.** Below $25K ACV the unit economics on SOC 2 + RBAC + audit trail don't pencil out; the AE sales motion doesn't pay back; ICP-1 customers self-serve to Pro and never upgrade to Business.
 4. **The Enterprise tier must require annual contracts.** Monthly Enterprise is operationally untenable (the legal/security/SLA overhead is the same regardless of term length). Annual contract with a $250K floor protects margin and signals seriousness.

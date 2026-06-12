@@ -1,11 +1,11 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-009 — Hermes 2026-06-13 -->
 
 # Anaplan Battlecard — Sales Playbook for ICP-1 (Mid-market CFO)
 
 > **Frame for the cycle:** Anaplan is the #1 incumbent in mid-market FP&A. This battlecard is the **single sheet of paper** the AE needs in the room when the buyer says "we're already on Anaplan" or "we're evaluating Anaplan." Every weakness below carries (a) the buyer persona, (b) the Anaplan SKU or behavior, and (c) the price/pain anchor the buyer can feel. The 3 most damaging objections and 3 strongest counter-moves are at §7 — print that page first.
 
 > **Cross-references:**
-> - `docs/drafts/hermes/ICP.md` — ICP-1 (Sandra, the Growing Mid-market CFO)
+> - `docs/drafts/hermes/ICP.md` — ICP-1 (Carla, the Growing Mid-market CFO) and ICP-2 (Vera, the Scrappy SaaS Controller) [canonical per `iris/PERSONAS.md` + T-ST-006 v0.2 ICP-numbering ratification]
 > - `docs/drafts/hermes/POSITIONING.md` — the "NOT Anaplan" anti-position
 > - `docs/drafts/hermes/PRICING.md` — Business tier ($499/user/mo) vs. Anaplan's $100K-$500K+/yr
 > - `docs/FPA_COMPETITIVE_MATRIX.md` — Anaplan row (full pricing breakdown)
@@ -27,7 +27,7 @@ Anaplan is the **Cloud CPM (Corporate Performance Management) incumbent** founde
 
 - **What the buyer feels:** "Anaplan's price tag is the #1 reason mid-market CFOs say no." G2 reviews (1,500+ reviews, avg 4.3/5) flag "expensive" and "high total cost of ownership" in **~40% of 1- and 2-star reviews** [5]. Capterra reviewers echo this: "great product, hard to justify the price for our size" [6].
 - **The number:** A typical 200-user Anaplan license at the published per-seat list price is **$240K-$400K/yr** before implementation. Add 5 consultants at $300/hr × 1,000 hours = **$300K implementation**, plus 15% annual maintenance = **another $60K/yr**. Year 1: **$600K-$760K**. Year 2+: **$300K-$460K/yr**.
-- **The FinPlan Pro counter:** Business tier at $499/user/mo for the same 200 users = **$1.2M/yr at full price, but 50-80% off typical ACV = $250K-$500K/yr** (see `PRICING.md` §2.3). **Year 1 savings: $260K-$510K.** That is the same conversation Sandra (ICP-1) takes to her CEO.
+- **The FinPlan Pro counter:** Business tier at $499/user/mo for the same 200 users = **$1.2M/yr at full price, but 50-80% off typical ACV = $250K-$500K/yr** (see `PRICING.md` §2.3). **Year 1 savings: $260K-$510K.** That is the same conversation Carla (ICP-1) takes to her CEO.
 
 ### 2.2 Complexity — 6-month rollout, certified model builders required
 
@@ -94,6 +94,8 @@ Anaplan is the right answer in **5 specific scenarios**, and the AE who pretends
 ---
 
 ## 6. Objection handling (the 3 most damaging)
+
+> **ICP-2 (Vera) anchor:** When sales hears "we replaced Anaplan for the Controller" or "our Controller is evaluating this", the deal is **ICP-2 / Vera** (per `docs/drafts/hermes/ICP.md` §2 — canonical `iris/PERSONAS.md` mapping, T-ST-006 v0.2 ratification). The objections below are written for **ICP-1 (Carla)** the founder-led AE-assisted motion. For ICP-2 (Vera) PLG/land-and-expand, swap "CFO takes to CEO" → "Controller evangelizes in Slack communities" and route to OSS tier funnel, not Pro. The PLG motion uses the same 5 weaknesses but the cost anchor is **$80/mo QuickBooks**, not the $400K/yr Anaplan license.
 
 ### Objection 1: "We're already on Anaplan."
 

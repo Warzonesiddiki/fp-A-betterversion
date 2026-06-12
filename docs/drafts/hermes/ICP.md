@@ -1,4 +1,4 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-009 — Hermes 2026-06-13 -->
 
 # FinPlan Pro — Ideal Customer Profile (ICP)
 
@@ -69,9 +69,11 @@
 
 ## 2. ICP-2: "The Scrappy SaaS Controller"
 
+> **Persona anchor:** Vera (see `iris/PERSONAS.md` — canonical per T-ST-006 v0.2 ICP-numbering ratification). The role descriptor "Scrappy SaaS Controller" is preserved; the persona name follows Iris's research.
+
 ### 2.1 The buyer
 
-**Persona:** "Carlos" — Controller (sometimes "Head of Finance", sometimes "the one person who does finance") at a 10–50-employee B2B SaaS startup. Often the **only finance hire**. Has Series A in the bank, 2–3 years of runway, and a CEO breathing down his neck every Monday for a "burn / runway / what if we hire 2 more engineers" update. Lives in QuickBooks + Stripe + Excel. Wears 3 hats: controller, FP&A, AR/AP. **Has never bought FP&A software** — the only tool he pays for is QuickBooks ($80/mo) and Notion ($10/mo).
+**Persona:** "Vera" — Controller (sometimes "Head of Finance", sometimes "the one person who does finance") at a 10–50-employee B2B SaaS startup. Often the **only finance hire**. Has Series A in the bank, 2–3 years of runway, and a CEO breathing down his neck every Monday for a "burn / runway / what if we hire 2 more engineers" update. Lives in QuickBooks + Stripe + Excel. Wears 3 hats: controller, FP&A, AR/AP. **Has never bought FP&A software** — the only tool he pays for is QuickBooks ($80/mo) and Notion ($10/mo).
 
 **Why this persona:** This is the **land-and-expand** engine. Carlos doesn't write a $50K check today, but he evangelizes within 18 months, becomes the buyer at $50M ARR (and re-buys at ICP-1 prices), and is the **review-site / community / word-of-mouth engine** that no marketing dollar can buy. PRODUCT_VISION.md §2 calls this "100× more verticals" — we are the default tool of the next 10,000 SaaS controllers.
 
@@ -80,7 +82,7 @@
 | Witness | Detail |
 |---|---|
 | **(a) Buyer persona** | Controller / first-finance-hire at 10–50 emp B2B SaaS, $1M-$10M ARR, Series A or pre-Series-B. Wears 3+ hats. Self-serve buyer. Often a former auditor or senior accountant, **not** a finance leader by training. |
-| **(b) Competitive alternative** | **Excel + 1 Google Sheet shared with the CEO** (the silent incumbent for 80% of this persona); **QuickBooks built-in reports** (insufficient); **Fathom / Spotlight Reporting** ($50-$200/mo, basic); **Cube** ($0 free tier exists, paid is per-seat). Carlos is **not** evaluating Anaplan or Pigment — he has **never heard of them**, and would reject them on price if he had. |
+| **(b) Competitive alternative** | **Excel + 1 Google Sheet shared with the CEO** (the silent incumbent for 80% of this persona); **QuickBooks built-in reports** (insufficient); **Fathom / Spotlight Reporting** ($50-$200/mo, basic); **Cube** ($0 free tier exists, paid is per-seat). Vera is **not** evaluating Anaplan or Pigment — he has **never heard of them**, and would reject them on price if he had. |
 | **(c) Price-or-pain anchor** | Today: **2-hour Monday morning burn/runway rebuild** + **3-day quarterly board pack** + **0 documentation** of "what we assumed." Tomorrow: **5-minute Monday morning** + **30-minute board pack** + **audit trail of every assumption**. The pain is **Sunday-night anxiety**, not "missing an integration." |
 
 ### 2.3 Demographics
@@ -118,7 +120,7 @@
 
 ## 3. ICP comparison (one-glance)
 
-| Attribute | ICP-1: Growing Mid-market CFO | ICP-2: Scrappy SaaS Controller |
+| Attribute | ICP-1: Growing Mid-market CFO (persona: Carla) | ICP-2: Scrappy SaaS Controller (persona: Vera) |
 |---|---|---|
 | Company size | 50–500 FTE | 10–50 FTE |
 | ARR | $10M-$100M | $1M-$10M |

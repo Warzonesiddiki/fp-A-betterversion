@@ -8,6 +8,7 @@
 > **Cadence:** Append on every decision. Quarterly review by founder.
 > **Format:** One row per decision. Use a new row, do not edit historical rows. To supersede a decision, add a new row that cites the old one.
 > **Sister log:** `docs/security-deferrals.md` (223L, 3 canonical deferrals) — defer the bug, never the discipline.
+> **Namespace policy (2026-06-13):** Next strategic decision = **D-010** (forward-looking; D-000..D-009 grandfathered per Leader ratification of forward-looking D-NNN reorg). Cycle protocols remain D-001..D-009 in `docs/drafts/TASKBOARD.md`. See `docs/STRATEGIC_INDEX.md` v2 for the collision table and full maintenance policy.
 
 ---
 

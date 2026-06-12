@@ -1,9 +1,9 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-009 v0.2 — Hermes 2026-06-13 -->
 
 # FinPlan Pro — Sales Deck One-Pager (30-min ICP-1 Founder Demo)
 
 > **Purpose:** The visual companion to `DISCOVERY_CALL_PLAYBOOK.md` (T-HER-004). The cold-outbound sequence (T-HER-001) gets the prospect to the call; the playbook runs the call; **this deck is what you SHOW during the call.**
-> **Audience:** B2B SaaS CFOs, 50-500 FTE, $10-100M ARR (ICP-1 / Sandra, Carla per `iris/PERSONAS.md`).
+> **Audience:** B2B SaaS CFOs, 50-500 FTE, $10-100M ARR (ICP-1 / Carla ICP-1 per `iris/PERSONAS.md`).
 > **Length cap:** 12 slides. Founder demos first 30 deals personally per Strategos T-ST-003.
 > **Three-witness rule (D-002):** every slide's primary claim cites (persona, alternative, price/pain). Sources: `PRICING.md` §2.3, `BATTLECARD_ANAPLAN.md`, `MARKETING_SITE_PRICING_PAGE.md`, T-IR-006 Wave 4.
 > **Cross-Muse coordination:** deck mirrors `DISCOVERY_CALL_PLAYBOOK.md` §3-§4 (5 questions, 2 pitch stories) and reuses copy from `MARKETING_SITE_PRICING_PAGE.md` §1-§3 for §8 pricing.
@@ -19,7 +19,7 @@
 **Speaker notes (30 sec):**
 > "Thanks for making time. I'm [founder]. I built FinPlan Pro because I spent 6 years watching CFOs at $10-100M ARR SaaS companies get stuck between Excel and Anaplan. Today I want to show you, in 30 minutes, why we think there's a third option — and why the customers who switched are saving $200K-$300K a year."
 
-*(Witness: persona=Sandra/Carla ICP-1, alternative=Anaplan per `BATTLECARD_ANAPLAN.md`, anchor=$200K-$300K/yr savings from `PRICING.md` §2.3 vs. Anaplan G2 pricing band)*
+*(Witness: persona=Carla ICP-1 (CFO), alternative=Anaplan per `BATTLECARD_ANAPLAN.md`, anchor=$200K-$300K/yr savings from `PRICING.md` §2.3 vs. Anaplan G2 pricing band)*
 
 ---
 
@@ -37,7 +37,7 @@
 **Speaker notes (3 min):**
 > "Three options on the market. Excel is what you're using today, and it works until you have to do a 3-way reconciliation between actuals, budget, and forecast — that's when it breaks. Anaplan fixes that, but the implementation is 6 months and $300K in consulting. We're proposing option 3: FinPlan Pro. Time to first model: under 15 minutes. Let me show you what that looks like."
 
-*(Witness: persona=Sandra ICP-1, alternative=Excel+Vena vs. Anaplan per `BATTLECARD_ANAPLAN.md` weaknesses #1, #2, #3, anchor=G2 reported TCO data + Vena Capterra pricing)*
+*(Witness: persona=Carla ICP-1, alternative=Excel+Vena vs. Anaplan per `BATTLECARD_ANAPLAN.md` weaknesses #1, #2, #3, anchor=G2 reported TCO data + Vena Capterra pricing)*
 
 ---
 
@@ -53,7 +53,7 @@
 **Speaker notes (2 min):**
 > "Every B2B SaaS CFO I've talked to has 3 jobs they run every quarter. Budget cycle, board pack, M&A scenario. All three are scenario-modeling problems. Excel can do them but it's slow. Anaplan can do them but it's expensive. FinPlan Pro is built specifically for these three jobs. Let me show you — live — with all three."
 
-*(Witness: persona=Sandra/Carla ICP-1, alternative=Anaplan 6-month impl. timeline, anchor=6-week vs. 6-month rollout per `BATTLECARD_ANAPLAN.md` weakness #2)*
+*(Witness: persona=Carla ICP-1 (CFO), alternative=Anaplan 6-month impl. timeline, anchor=6-week vs. 6-month rollout per `BATTLECARD_ANAPLAN.md` weakness #2)*
 
 ---
 
@@ -73,7 +73,7 @@
 **Speaker notes (during demo, not pre-scripted):**
 > "I'm going to build three scenarios live. Three minutes each. If I go over, call me out — that's the point. We're betting our company on being 10× faster than your current workflow."
 
-*(Witness: persona=Sandra/Carla ICP-1 needs to see, not hear, alternative=Anaplan 6-month impl, anchor=12-min demo vs. 6-month rollout per `BATTLECARD_ANAPLAN.md` weakness #2 + time-to-first-model <15 min from §2)*
+*(Witness: persona=Carla ICP-1 (CFO) needs to see, not hear, alternative=Anaplan 6-month impl, anchor=12-min demo vs. 6-month rollout per `BATTLECARD_ANAPLAN.md` weakness #2 + time-to-first-model <15 min from §2)*
 
 ---
 
@@ -92,7 +92,7 @@
 **Speaker notes (2 min):**
 > "Four reasons customers switch from Anaplan to FinPlan Pro. One: 4× cheaper at the seat level. Two: 6 months of implementation becomes 14 days. Three: your existing Excel models import directly — no rebuild. Four: you'll have a working model before our next call ends. These are the four numbers that matter."
 
-*(Witness: persona=Sandra/Carla ICP-1, alternative=Anaplan, anchor=4× price-per-value calc = $499 × 4 = $1,996 ≈ Anaplan's $2,000-$4,000/user/mo equivalent; impl. timeline from `BATTLECARD_ANAPLAN.md` weakness #2)*
+*(Witness: persona=Carla ICP-1 (CFO), alternative=Anaplan, anchor=4× price-per-value calc = $499 × 4 = $1,996 ≈ Anaplan's $2,000-$4,000/user/mo equivalent; impl. timeline from `BATTLECARD_ANAPLAN.md` weakness #2)*
 
 ---
 
@@ -109,7 +109,7 @@
 **Speaker notes (1 min):**
 > "Two questions I always get from CFOs. 'Are you SOC 2?' Answer: Type 1 audit Q4 2026, on track. 'What about GDPR?' Compliant, DPA ready, EU residency on Enterprise. Under the hood: AES-256 encryption-at-rest, immutable audit logs. Both have ADRs in our public docs — I'll send links after the call."
 
-*(Witness: persona=Sandra/Carla SOX-regulated, alternative=Anaplan (already SOC 2), anchor=Q4 2026 SOC 2 commitment + ADR-007/008 citations)*
+*(Witness: persona=Carla SOX-regulated, alternative=Anaplan (already SOC 2), anchor=Q4 2026 SOC 2 commitment + ADR-007/008 citations)*
 
 ---
 
@@ -127,7 +127,7 @@
 **Speaker notes (2 min):**
 > "Five customers in our Beta cohort. All B2B SaaS, all in your ARR range. I'll send the full case studies after the call — but the pattern is consistent: 50-70% cost reduction vs. Anaplan/Vena, board pack time cut by 80%, and the controller gets their weekends back."
 
-*(Witness: persona=Sandra/Carla ICP-1, alternative=Anaplan/Vena/Excel per `ICP.md` §3.1, anchor=[FICTIONAL PLACEHOLDER] pending Beta cohort D+120 launch per `BETA_PROGRAM.md` §6)*
+*(Witness: persona=Carla ICP-1 (CFO), alternative=Anaplan/Vena/Excel per `ICP.md` §3.1, anchor=[FICTIONAL PLACEHOLDER] pending Beta cohort D+120 launch per `BETA_PROGRAM.md` §6)*
 
 ---
 
@@ -147,7 +147,7 @@
 **Speaker notes (1 min):**
 > "Three tiers. Starter at $99/user/mo is for 1-10 person teams. Business at $499/user/mo is where most of our ICP-1 customers land — that's the one that includes SSO, audit log export, and the dedicated CSM. Enterprise is custom for multi-entity, SOX, 500-plus headcount. All plans include offline mode and the `.fpa` file is yours. No platform fees, no per-model fees."
 
-*(Witness: persona=Sandra/Carla ICP-1 budget band $20-100K/yr per `ICP.md` §3.1, alternative=Anaplan $100K-$500K/yr per `BATTLECARD_ANAPLAN.md`, anchor=`PRICING.md` §2.3)*
+*(Witness: persona=Carla ICP-1 (CFO) budget band $20-100K/yr per `ICP.md` §3.1, alternative=Anaplan $100K-$500K/yr per `BATTLECARD_ANAPLAN.md`, anchor=`PRICING.md` §2.3)*
 
 ---
 
@@ -167,7 +167,7 @@ Day 35  ┃ Production-ready (vs. Anaplan's 6 months)
 **Speaker notes (1 min):**
 > "Here's the timeline. Day 0: you start a 14-day full-Business-tier trial, no credit card. Day 14: we get back on a call, I show you the gotchas, we scope the close. Day 21: NDA and procurement if you need it — we have a template. Day 28: contract signed. Day 35: you're in production. Compare that to Anaplan's 6-month implementation and the ROI is obvious."
 
-*(Witness: persona=Sandra/Carla 60-90 day sales cycle per `ICP.md` §3.1, alternative=Anaplan 6-month impl per `BATTLECARD_ANAPLAN.md` weakness #2, anchor=14-day trial + 14-day close = 28-day time-to-production)*
+*(Witness: persona=Carla 60-90 day sales cycle per `ICP.md` §3.1, alternative=Anaplan 6-month impl per `BATTLECARD_ANAPLAN.md` weakness #2, anchor=14-day trial + 14-day close = 28-day time-to-production)*
 
 ---
 
@@ -183,7 +183,7 @@ Day 35  ┃ Production-ready (vs. Anaplan's 6 months)
 **Speaker notes (1 min):**
 > "Quick note on who you're talking to. I'm the founder. I demo the first 30 deals personally. After that, our AE [name] takes the demo motion. The reason: I want to make sure the first 30 customers are wildly successful, because those are the case studies that pay for the next 200. You're in the first 30."
 
-*(Witness: persona=Sandra/Carla ICP-1 needs white-glove per `ICP.md` §3.1, alternative=Anaplan AE rotation, anchor="founder demos first 30 deals" — Strategos phase-1 GTM per T-ST-003)*
+*(Witness: persona=Carla ICP-1 (CFO) needs white-glove per `ICP.md` §3.1, alternative=Anaplan AE rotation, anchor="founder demos first 30 deals" — Strategos phase-1 GTM per T-ST-003)*
 
 ---
 
@@ -199,7 +199,7 @@ Day 35  ┃ Production-ready (vs. Anaplan's 6 months)
 **Speaker notes (1 min):**
 > "Three things to de-risk this. One: 14-day full-Business-tier trial, no credit card, every feature unlocked. Two: your `.fpa` file is yours forever — open format, you can export it, walk away, and use it in Excel if you want. We're betting our product is good enough that you won't. Three: 30-day money-back guarantee on annual contracts. The worst case is you spend 14 days evaluating and walk away with a better Excel export than you have today."
 
-*(Witness: persona=Sandra/Carla risk-averse, alternative=Anaplan HyperBlock lock-in per `BATTLECARD_ANAPLAN.md` weakness #4, anchor=offline-first hammer from `OBJECTION_HANDLING_CHEATSHEET.md` #9)*
+*(Witness: persona=Carla risk-averse, alternative=Anaplan HyperBlock lock-in per `BATTLECARD_ANAPLAN.md` weakness #4, anchor=offline-first hammer from `OBJECTION_HANDLING_CHEATSHEET.md` #9)*
 
 ---
 
@@ -215,7 +215,7 @@ Day 35  ┃ Production-ready (vs. Anaplan's 6 months)
 **Speaker notes (30 sec):**
 > "Three next steps. The fastest path: book a trial kickoff via Calendly, we get you set up the same day. If your procurement team needs an NDA first, we have a template ready — I'll send the link in the follow-up email. And if you have questions, my email is on the screen. I read every message. What's the best next step for you?"
 
-*(Witness: persona=Sandra/Carla 60-90 day cycle per `ICP.md` §3.1, alternative=Anaplan procurement-heavy, anchor=14-day trial kickoff + NDA template from T-HER-003 `BETA_NDA_TEMPLATE.md`)*
+*(Witness: persona=Carla 60-90 day cycle per `ICP.md` §3.1, alternative=Anaplan procurement-heavy, anchor=14-day trial kickoff + NDA template from T-HER-003 `BETA_NDA_TEMPLATE.md`)*
 
 ---
 
@@ -230,7 +230,7 @@ Day 35  ┃ Production-ready (vs. Anaplan's 6 months)
 | `BATTLECARD_ANAPLAN.md` (T-HER-002) | §2, §5, §11 | All 5 weaknesses (price, complexity, impl, lock-in, no offline) |
 | `BETA_PROGRAM.md` (T-HER-003) §6 | §7 | D+120 case-study swap-in plan for the 5 Diamond case studies |
 | `BETA_NDA_TEMPLATE.md` (T-HER-003) | §12 | NDA link |
-| `iris/PERSONAS.md` (T-IR-001) Sandra/Carla | §1, §2, §5, §10 | Persona voice + budget band $20-100K/yr |
+| `iris/PERSONAS.md` (T-IR-001) Carla | §1, §2, §5, §10 | Persona voice + budget band $20-100K/yr |
 | T-IR-006 Wave 4 case studies | §7 | 5 anonymized Diamond archetypes |
 | `PRICING.md` §2.3 | §8 | Tier prices |
 | `docs/adr/ADR-007-encryption-at-rest.md` | §6 | Encryption claim |
@@ -275,3 +275,7 @@ Day 35  ┃ Production-ready (vs. Anaplan's 6 months)
 **Status:** Awaiting Leader ACK + answers to the 6 open questions. Will then queue T-HER-007 (partnership-outreach motion for Strategos's 4th strategic bet) as the next deliverable.
 
 — *Hermes, Marketing & Go-to-Market Muse, 2026-06-13*
+
+---
+
+> **ICP-numbering note (T-HER-009 v0.2):** This deck targets ICP-1 (Carla, CFO, 50-500 FTE, mid-market) per `docs/drafts/iris/PERSONAS.md` canonical 2026-06-13. All `persona=Carla` references in slide §3, §4, §6, §7, §8, §10, §11, §12 follow the canonical mapping. The deck is a Carla-ICP-1 narrative end-to-end.
