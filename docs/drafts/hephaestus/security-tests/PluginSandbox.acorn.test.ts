@@ -14,7 +14,7 @@
  *
  * Source under test: `src/plugins/PluginSandbox.ts`
  * Pre-existing test file: none
- * Audit reference: ADR-007 (docs/drafts/hephaestus/ADR-007-plugin-sandbox-ast.md)
+ * Audit reference: ADR-011 (docs/drafts/adr/ADR-011-plugin-sandbox-ast.md)
  */
 
 import { describe, it, expect } from 'vitest';

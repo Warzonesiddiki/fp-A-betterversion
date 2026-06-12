@@ -54,5 +54,5 @@ No claim is "claimed done" without a triangulated source.
 
 ---
 
-**Status:** DRAFT v0.1 — awaiting Leader + Themis review. 5-7 min review expected.
-**Cross-refs:** `docs/drafts/strategos/STRATEGIC_INDEX_REFRESH.md` (~210L), `docs/MUSE_LINEUP_v2.md` (187L), `docs/drafts/TASKBOARD.md` (164L), `docs/STRATEGIC_DECISIONS_LOG.md` (194L), `docs/STRATEGIC_INDEX.md` (v1, 202L, will be overwritten when Leader accepts v2).
+**Status:** DRAFT v0.1 → **FINALIZED v1.0** 2026-06-13 by Strategos (T-ST-004).
+**Cross-refs (updated 2026-06-13):** `docs/drafts/strategos/STRATEGIC_INDEX_REFRESH.md` (finalized, this file's parent spec), `docs/MUSE_LINEUP_v2.md` (187L, finalized), `docs/drafts/TASKBOARD.md` (164L), `docs/STRATEGIC_DECISIONS_LOG.md` (194L, D-000 to D-009), `docs/STRATEGIC_INDEX.md` (**v2 279L, the live file**).

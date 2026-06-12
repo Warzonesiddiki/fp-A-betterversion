@@ -17,7 +17,7 @@ FinPlan Pro is a single-page Tauri app that holds 35 zustand stores of varying s
 3. **Mutable as if with `state.foo.bar = baz`** — but in TypeScript, without violating readonly types
 4. **Selectable for fine-grained re-renders** (React 18+ concurrent rendering demands minimal re-render scope)
 5. **Compatible with class-instance state** (e.g. the `CubeEngine` cannot be serialized to JSON)
-6. **Migratable across schema versions** (see [ADR-006](/docs/adr/ADR-010-schema-migration-strategy.md))
+6. **Migratable across schema versions** (see [ADR-010](/docs/adr/ADR-010-schema-migration-strategy.md))
 
 We considered four options: Redux Toolkit, Jotai, Recoil, and zustand-without-middleware. We also considered three storage backends: raw `localStorage`, `IndexedDB`, and a custom wrapper.
 
@@ -77,7 +77,7 @@ export const useCubeStore = create<CubeState>()(
       })),
       {
         name: 'cubeStore',
-        version: 1, // see ADR-006
+        version: 1, // see ADR-010
         storage: createJSONStorage(() => masterStorage),
         partialize: (state) => {
           // class instances and internal buffers excluded
@@ -85,7 +85,7 @@ export const useCubeStore = create<CubeState>()(
           return rest;
         },
         migrate: (persistedState, version) => {
-          // see ADR-006
+          // see ADR-010
         },
       }
     )
@@ -181,7 +181,7 @@ The 21 transient: `scenarioStore` (in-memory scenario _cache_; the persistence s
 - **AGENTS.md** — the canonical pattern in code
 - **`docs/GLOSSARY.md`** — the Cube, Scenario, Driver entries that the stores wrap
 - **ADR-005** — `masterStorage` is the storage backend
-- **ADR-006** — schema migration is the version + migrate layer
+- **ADR-010** — schema migration is the version + migrate layer
 - **Hephaestus audit 2026-06-12** — security requirements (encryption at rest, HttpOnly cookies for refresh token — not for state, but adjacent)
 - **Athena v2 audit 2026-06-12** — flagged `uiStore.ts:33` direct `localStorage.setItem('theme', ...)` as a violation of this ADR; Apollo's `[Apollo post-push] Add immer wrapper to 13 stores (P0)` is the enforcement
 - **Mnemosyne audit 2026-06-12** — 35 stores; 14 persisted, 21 transient; 13 missing `immer` wrapper as of audit date

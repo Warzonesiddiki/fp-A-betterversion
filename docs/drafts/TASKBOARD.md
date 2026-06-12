@@ -51,22 +51,31 @@ If no task matches your lane:
 ### P0 — Critical (claim first)
 | Task ID | Muse | Description | Est. | Status |
 |---------|------|-------------|------|--------|
-| T-AP-010 | Apollo | Apply 13-store immer wrappers (P0 from Athena audit) | 45 min | **WAITING ON PUSH** |
-| T-PR-002 | Prometheus | react-virtual patch for 5 non-virtualized lists | 60 min | **UNCLAIMED — 7 artifacts in workspace** |
-| T-HEP-003 | Hephaestus | SOC 2 CC6/CC7 readiness audit + 3 missing ADRs | 60 min | ✅ ASSIGNED 05:15 |
-| T-HE-004 | Hera | Keyboard navigation audit + i18n key inventory | 60 min | ✅ ASSIGNED 05:15 |
-| T-AT-005 | Athena | Pre-launch readiness checklist — 30 items × 7 domains | 60 min | ✅ ASSIGNED 05:20 |
-| T-ST-003 | Strategos | Phase 1 GTM strategy (ICP ranking, feature prioritization, Q3 2026 → Q1 2027) | 60 min | ✅ ASSIGNED 05:20 |
-| T-IR-003 | Iris | Win/loss analysis framework (definitions, interview script, cadence) | 45 min | ✅ ASSIGNED 05:20 |
-| T-ATL-004 | Atlas | Observability stack (Sentry + OpenTelemetry + 4 dashboards) | 60 min | ✅ ASSIGNED 05:20 |
-| T-HER-004 | Hermes | Sales playbook (discovery call + objection cheatsheet) | 60 min | ✅ ASSIGNED 05:25 |
-| T-MN-003 | Mnemosyne | ONBOARDING.md + TESTING.md | 60 min | ✅ ASSIGNED 05:25 |
-| T-TH-002 | Themis | Continuous monitoring loop (10-min ping, 30-min drift fix, hourly log) | ongoing | ✅ ASSIGNED 05:15 |
+| T-AP-010 | Apollo | Apply 13-store immer wrappers (P0 from Athena audit) | 45 min | **WAITING ON PUSH** (pre-stage in `docs/drafts/apollo/` if Apollo wants) |
+| T-PR-002 | Prometheus | react-virtual patch for 5 non-virtualized lists | 60 min | ✅ CLAIMED 05:45 (in progress) |
+| T-HEP-003 | Hephaestus | SOC 2 CC6/CC7 readiness audit + 4 ADRs (Path C: 006-009 new, 010-012 renumbered) | 105 min | ✅ CLAIMED 05:15 (in progress) |
+| T-HE-004 | Hera | Keyboard navigation audit + i18n key inventory | 60 min | ✅ CLAIMED 05:15 (in progress) |
+| T-AT-005 | Athena | Pre-launch readiness checklist — 30 items × 7 domains | 60 min | ✅ CLAIMED 05:20 (in progress) |
+| T-ST-003 | Strategos | Phase 1 GTM strategy (ICP ranking, feature prioritization, Q3 2026 → Q1 2027) | 60 min | ✅ CLAIMED 05:20 (in progress) |
+| T-IR-003 | Iris | Win/loss analysis framework (definitions, interview script, cadence) | 60 min | ✅ CLAIMED 05:20 (in progress, pipeline 3→4→5→6) |
+| T-ATL-004 | Atlas | Observability stack (Sentry + OpenTelemetry + 4 dashboards) | 60 min | ✅ COMPLETED 05:00 |
+| T-HER-004 | Hermes | Sales playbook (discovery call + objection cheatsheet) | 60 min | ✅ COMPLETED 05:35 |
+| T-MN-003 | Mnemosyne | ONBOARDING.md + TESTING.md | 60 min | ✅ CLAIMED 05:25 (in progress) |
+| T-TH-002 | Themis | Continuous monitoring loop (10-min ping, 30-min drift fix, hourly log) | ongoing | ✅ CLAIMED 05:15 (in progress) |
+| T-IR-004 | Iris | CSM playbook (3 highest-leverage churn interventions operationalized) | 60 min | ✅ CREATED 05:45 (queued after T-IR-003) |
+| T-IR-005 | Iris | NPS survey design (3 questions, 4 cadences, per-persona interpretation) | 60 min | ✅ CREATED 05:45 (queued after T-IR-004) |
+| T-IR-006 | Iris | Beta-customer feedback plan (5 waves, 5-way routing, 90-day cadence) | 60 min | ✅ CREATED 05:45 (queued after T-IR-005) |
+| T-ATL-005 | Atlas | CI matrix adoption — 4 GHA workflows (lint, tsc, test-unit, build) | 60 min | ✅ CREATED 05:45 (in progress) |
+| T-HER-005 | Hermes | Marketing-site home copy + pricing page (3 hero variants, 3 use cases, 3 pricing tiers) | 60 min | ✅ CREATED 05:45 (in progress) |
+| T-ST-004 | Strategos | Formalize MUSE_LINEUP_v2 + STRATEGIC_INDEX_REFRESH (retroactive) | 30 min | ✅ CREATED 05:45 (queued after T-ST-003) |
 
 ### P1 — High (backlog for next cycle)
 | Task ID | Muse | Description | Est. |
 |---------|------|-------------|------|
-| T-PR-001 | Prometheus | React.memo 10-component patch (when T-PR-002 ships) | 45 min |
+| T-PR-001 | Prometheus | React.memo 10-component patch (after T-PR-002 ships) | 45 min |
+| T-PR-003 | Prometheus | Wire runMonteCarlo into GoalSeekPage.tsx:38-46 (have the wire-up) | 30 min |
+| T-PR-004 | Prometheus | SOXComplianceEngine.test.ts (1,354 LOC, biggest test gap) | 90 min |
+| T-PR-005 | Prometheus | Per-namespace i18n dynamic import (~48 kB gzip savings) | 45 min |
 | T-MN-004 | Mnemosyne | JSDoc P0 patches cascade (after Athena validates in T-AT-003) | 60 min |
 | T-MN-005 | Mnemosyne | ARCHITECTURE.md refresh with phase 1 backend context | 45 min |
 | T-HEP-004 | Hephaestus | 3 missing ADRs (006 data retention, 007 encryption finalize, 008 audit log finalize) — subset of T-HEP-003 if separated | 60 min |
@@ -75,12 +84,17 @@ If no task matches your lane:
 ### P2 — Medium (Phase 1 launch prep)
 | Task ID | Muse | Description | Est. |
 |---------|------|-------------|------|
-| T-ST-004 | Strategos | Quarterly competitive landscape refresh (Q3 2026) | 90 min |
+| T-ST-004 | Strategos | Formalize MUSE_LINEUP_v2 + STRATEGIC_INDEX_REFRESH (retroactive) | 30 min |
 | T-AT-006 | Athena | Post-launch regression suite design (10 critical user paths) | 60 min |
-| T-HER-005 | Hermes | Referral program design (Beta cohort → paid referral) | 45 min |
-| T-IR-004 | Iris | VoC dashboard wireframe + analytics spec | 60 min |
-| T-ATL-005 | Atlas | Disaster recovery runbook (3 scenarios: data loss, region down, dependency outage) | 60 min |
+| T-HER-005 | Hermes | Marketing-site home copy + pricing page (3 hero variants, 3 use cases, 3 pricing tiers) — **CONFIRMED in flight** | 60 min |
+| T-IR-004 | Iris | CSM playbook (3 highest-leverage churn interventions operationalized) — **CONFIRMED in flight** | 60 min |
+| T-ATL-005 | Atlas | husky pre-push `timeout 240` upper bound (1-line infra fix, prevents IC-1 124-timeout) | 15 min |
 | T-HEP-005 | Hephaestus | Penetration test plan + vendor selection (NCC, Trail of Bits, Cobalt) | 60 min |
+| T-ATL-006 | Atlas | Pre-commit secret scanner (Hephaestus's deliverable 019ebd1b wire-up) | 45 min |
+| T-ATL-007 | Atlas | Sentry self-hosted deployment (operationalizes T-ATL-004) | 90 min |
+| T-ATL-008 | Atlas | Disaster recovery runbook (3 scenarios: data loss, region down, dependency outage) | 60 min |
+| T-ATL-009 | Atlas | Bundle-size check script (`scripts/bundle-check.mjs`) | 30 min |
+| T-HEP-006 | Hephaestus | 4 logic-gap security test files (PluginSandbox execute, ScenarioLocking behavioral, safeJSONStorage zustand, mock-auth runtime) | 60 min |
 
 ### P3 — Low (backlog)
 *To be populated as backlog grows. Total P3 backlog post-push: 38+ tasks from initial delivery cycle.*
@@ -124,12 +138,17 @@ If no task matches your lane:
 | 2026-06-13 05:20 | Hermes | T-HER-003 (Beta program) | `docs/drafts/hermes/BETA_PROGRAM.md` 28KB (50-customer cohort, scoring rubric, D-7 to D+90 launch sequence) | ✅ ACCEPTED (T-HER-004 created) |
 | 2026-06-13 05:25 | Strategos | (bonus) STRATEGIC_INDEX_REFRESH | `docs/drafts/strategos/STRATEGIC_INDEX_REFRESH.md` 13KB + changelog | ✅ ACKNOWLEDGED |
 | 2026-06-13 05:25 | Hermes | (bonus) COLD_OUTBOUND_SEQUENCE | `docs/drafts/hermes/COLD_OUTBOUND_SEQUENCE.md` 20KB (5-touch outbound) | ✅ ACKNOWLEDGED |
+| 2026-06-13 05:45 | Atlas | T-ATL-004 (observability stack) | `docs/drafts/atlas/OBSERVABILITY_STACK.md` 457L, 8 sections (Sentry + OTel + 4 dashboards) | ✅ ACCEPTED (T-ATL-005 created) |
+| 2026-06-13 05:45 | Hermes | T-HER-004 (sales playbook) | `docs/drafts/hermes/DISCOVERY_CALL_PLAYBOOK.md` 388L + `OBJECTION_HANDLING_CHEATSHEET.md` 210L = 598 LOC | ✅ ACCEPTED (T-HER-005 created) |
+| 2026-06-13 05:45 | Strategos | (bonus) MUSE_LINEUP_v2 | `docs/MUSE_LINEUP_v2.md` 187L (D-NNN namespace collision flagged) | ✅ ACCEPTED — T-ST-004 formalized retroactively |
+| 2026-06-13 05:45 | Iris | (pre-write) NPS_SURVEY_DESIGN | `docs/drafts/iris/NPS_SURVEY_DESIGN.md` 294L (3 questions, 4 cadences, per-persona interpretation) | ✅ ACCEPTED — T-IR-005 formalized retroactively |
+| 2026-06-13 05:45 | Iris | (pre-write) BETA_FEEDBACK_PLAN | `docs/drafts/iris/BETA_FEEDBACK_PLAN.md` 308L (5 waves, 5-way routing) | ✅ ACCEPTED — T-IR-006 formalized retroactively |
 
 ---
 
 ## REVIEW STATUS
 
-- ✅ ACCEPTED (14 + 2 bonus = 16): T-ST-001 v0.2, T-ST-002, T-HER-002, T-ATL-002, T-TH-001, T-HEP-002, T-HE-003, T-MN-002, T-IR-002, T-AT-003, T-AT-004, T-ATL-003, T-HER-003 + 2 bonus
+- ✅ ACCEPTED (16 + 5 bonus = 21): T-ST-001 v0.2, T-ST-002, T-HER-002, T-ATL-002, T-TH-001, T-HEP-002, T-HE-003, T-MN-002, T-IR-002, T-AT-003, T-AT-004, T-ATL-003, T-HER-003, T-ATL-004, T-HER-004 + 5 bonus
 - 🔄 REVISION: (none yet)
 - ⏳ AWAITING REVIEW: (none — see above)
 

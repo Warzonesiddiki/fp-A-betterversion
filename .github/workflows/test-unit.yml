@@ -1,0 +1,69 @@
+# <!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+# =============================================================================
+# FinPlan Pro — Unit Test Workflow (Milestone 1 of CI matrix split)
+# See docs/drafts/atlas/CI_MATRIX.md §3.3 and docs/drafts/atlas/ci/README.md.
+# Runs Vitest single-run with 80 GiB heap; uploads coverage to Codecov.
+# Three witnesses: 8,334+ tests, 80 GiB heap, Codecov token in repo secrets.
+# =============================================================================
+
+name: test-unit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-unit-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  VITEST_HEAP_GB: "81920"   # Node --max-old-space-size in MiB = 80 GiB
+
+jobs:
+  vitest:
+    name: Vitest (single-run, 80 GiB heap, coverage)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies (npm ci, lockfile-strict)
+        run: npm ci --no-audit --no-fund
+
+      - name: Run Vitest with 80 GiB heap + coverage
+        # 80 GiB matches package.json's `test` script; the OOM-kill margin is
+        # needed because the 197M+ working-tree engines + 825+ pre-existing
+        # files hold large module graphs. See CI_MATRIX.md §3.3.
+        run: node --max-old-space-size=${{ env.VITEST_HEAP_GB }} node_modules/vitest/vitest.mjs run --coverage --reporter=default
+
+      - name: Upload coverage report (artifact, 14-day retention)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Upload coverage to Codecov
+        if: success()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: finplan-pro-unit
+          fail_ci_if_error: false   # Don't fail the run if Codecov is down; warn only
+          verbose: true

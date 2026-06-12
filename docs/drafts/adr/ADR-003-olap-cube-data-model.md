@@ -133,7 +133,7 @@ Every one of these 202 engines has the same `Cube` input shape and produces a `C
 
 - **Sparsity.** Real-world financial cubes are sparse: a 5-year monthly × 50-account × 10-entity × 4-scenario cube has 120,000 cells but only 8% are populated. We use a `Map<CellKey, CellValue>` instead of a dense array.
 - **Class instance persistence.** The cube is a class instance inside the cubeStore; `partialize` must exclude it (see [ADR-002](/docs/adr/ADR-002-zustand-state-management.md) for the partialize pattern).
-- **Memory pressure.** A large cube (millions of cells) can hit the browser heap. We use Web Workers for cube construction and persistence (see ADR-007, ADR-010).
+- **Memory pressure.** A large cube (millions of cells) can hit the browser heap. We use Web Workers for cube construction and persistence (see ADR-010).
 - **Single-source-of-truth rigidity.** If a future engine needs a non-cube shape (e.g. document store for notes), it must coexist with the cube as a separate store, not replace it.
 
 ### Neutral
@@ -190,8 +190,8 @@ Every one of these 202 engines has the same `Cube` input shape and produces a `C
 - **`docs/GLOSSARY.md`** — [Cube (OLAP)](#) term definition
 - **ADR-002** — cubeStore persistence pattern (partialize + class instance)
 - **ADR-004** — Decimal.js for currency measures in cubes
-- **ADR-006** — schema migration for cube versions
-- **ADR-007** — Web Workers for cube construction (memory pressure)
+- **ADR-010** — schema migration for cube versions
+- **ADR-010** — Web Workers for cube construction (memory pressure — not yet adopted; see follow-up)
 - **ADR-010** — Web Workers for cube aggregation
 - **Hephaestus audit 2026-06-12** — `CubeEngine.ts:51-72` Kahan summation needed for floating-point drift on aggregated sums; this ADR's currency measure layer wraps Decimal.js (see ADR-004)
 - **Athena v2 audit** — class instance serialization; cube is the canonical example

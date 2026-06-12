@@ -1,0 +1,44 @@
+# <!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+# =============================================================================
+# FinPlan Pro — TypeScript Type-Check Workflow (Milestone 1 of CI matrix split)
+# See docs/drafts/atlas/CI_MATRIX.md §3.2 and docs/drafts/atlas/ci/README.md.
+# Runs tsc --noEmit (no JS emitted) so we don't pay for a second build pass.
+# =============================================================================
+
+name: tsc
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tsc-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  typecheck:
+    name: TypeScript --noEmit
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies (npm ci, lockfile-strict)
+        run: npm ci --no-audit --no-fund
+
+      - name: TypeScript type-check (no emit)
+        run: npx tsc --noEmit

@@ -1,0 +1,48 @@
+# <!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+# =============================================================================
+# FinPlan Pro — Lint Workflow (Milestone 1 of CI matrix split)
+# See docs/drafts/atlas/CI_MATRIX.md §3 and docs/drafts/atlas/ci/README.md.
+# Mirrors the husky pre-push hook (npx eslint src --max-warnings 0).
+# If this turns red on a PR, see ON_CALL_RUNBOOK.md IC-2 (lint drift).
+# =============================================================================
+
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  eslint:
+    name: ESLint (zero-warnings)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies (npm ci, lockfile-strict)
+        run: npm ci --no-audit --no-fund
+
+      # NOTE: do NOT use `npm run lint` — that script has --fix and would mutate
+      # the working tree in CI. We invoke eslint directly with --max-warnings 0
+      # to match the husky pre-push hook exactly (see CI_MATRIX.md §3.1).
+      - name: ESLint with zero-warning gate
+        run: npx eslint src --max-warnings 0

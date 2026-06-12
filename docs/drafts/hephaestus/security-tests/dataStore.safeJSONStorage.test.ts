@@ -16,7 +16,7 @@
  *
  * Source under test: `src/utils/storage/safeJSONStorage.ts`
  * Pre-existing test file: none
- * Audit reference: ADR-008 (data-storage-scoping, decision tree: dataStore = business data, needs integrity + DoS resilience)
+ * Audit reference: ADR-012 (data-storage-scoping, decision tree: dataStore = business data, needs integrity + DoS resilience)
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';

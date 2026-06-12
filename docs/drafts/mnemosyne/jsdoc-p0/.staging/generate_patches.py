@@ -1,47 +1,14 @@
 #!/usr/bin/env python3
-"""Regenerate all 5 JSDoc P0 patches with CORRECTED content per Athena's
-T-AT-003 validation report (docs/drafts/athena/jsdoc-validation.md, 2026-06-13).
+"""Regenerate v0.2 JSDoc P0 patches - handles sources that already have v0.1 JSDoc.
 
-Key corrections vs the v0.1 patches (audited by Athena on 2026-06-13):
-  - 01 useAuth.ts:   drop the bogus `@see ADR-005` (no auth ADR exists);
-                    add `@see D-006` (security-deferral discipline).
-  - 02 masterStorage.ts:  fix `@see ADR-008` -> `@see ADR-005` (masterStorage's
-                    own canonical ADR); fix example (masterStorage is a
-                    PersistStorage object, NOT a function - remove the
-                    trailing parens in `() => masterStorage()`).
-  - 03 MonteCarloEngine.simulate:  rewrite to match the REAL API.
-                    * 7 distribution types (drop `empirical`, add
-                      `beta`/`exponential`/`poisson`).
-                    * PRNG fallback is `Math.random()`, NOT `crypto.randomUUID()`.
-                    * `simulate()` has NO `config.correlation` - Cholesky is
-                      in a separate static method
-                      `MonteCarloEngine.generateCorrelatedSamples(...)`.
-                    * ALL throws are `new Error(...)` - no `RangeError`/
-                      `TypeError` distinction.
-                    * `config.assumptions` (not `inputs`) is required.
-                    * `confidenceLevel` is required and must satisfy
-                      `0 < x < 1` (exclusive).
-  - 04 CapExEngine.calculateIRR:   rewrite to match the REAL algorithm.
-                    * Newton-Raphson (NOT bisection) with 1000-iter cap.
-                    * No sign-change check; returns the last iteration on
-                      max-iter or `NaN` on `dNpv === 0`.
-                    * No `Infinity` / `NaN` input validation.
-                    * `cashFlows.length < 2` returns `0` (not `NaN`).
-                    * Example must NOT call undefined
-                      `assertArray()` / `assertFiniteNumber()`.
-  - 05 CubeEngine:   rewrite per Athena's Option A - match the REAL class.
-                    * Storage is `Map<string, CubeCell>` (line 32-34),
-                      NOT `Float64Array`. Remove the "10x faster" claim.
-                    * No explicit constructor (class-field initializers).
-                    * `slice()` and `dice()` do NOT exist; `query(CubeQuery)`
-                      is the slicing primitive.
-                    * `aggregate(cube, coords, measure, aggregation)` DOES
-                      exist (line 263) - keep it in the example.
-                    * Use `@see ADR-003` (OLAP cube) which is correct.
+Key insight: the source files now contain the v0.1 JSDoc (33 unpushed commits
+shipped them). So the patch must REMOVE the v0.1 JSDoc and INSERT the v0.2
+JSDoc. The diff is `delete v0.1 block + add v0.2 block`.
 
-Per Athena's T-AT-003 report, patches 03/04/05 are DEFERRED to a later cycle
-(the post-push batch D-007 matrix §1.2 will apply 01+02 only). The corrections
-above are made NOW so the deferred patches are accurate when re-picked up.
+The previous script (v0.2 attempt 1) used a re.sub that assumed the v0.1
+JSDoc was NOT present, so the substitution was a no-op and the diff
+returned empty. This version explicitly matches the v0.1 JSDoc and replaces
+it.
 """
 
 import re
@@ -67,21 +34,13 @@ def run(cmd, cwd=None):
     return r.returncode, r.stdout, r.stderr
 
 
-def diff_u(old_path: Path, new_path: Path, label: str) -> str:
-    """Run `diff -u` and rewrite quoted Windows paths to a/<rel> / b/<rel>.
-
-    `diff -u` on Windows (git-bash / MSYS) escapes each backslash in the
-    absolute path as TWO backslashes. So the header line looks like:
-        --- "C:\\Users\\...\\file.ts"   2026-06-13 ...
-    We must match that exact double-backslash form.
-    """
+def diff_u(old_path: Path, new_path: Path) -> str:
     rc, out, err = run(f'diff -u "{old_path}" "{new_path}"', cwd=REPO)
     if rc == 0:
         return ""
     if rc != 1:
-        raise RuntimeError(f"diff failed for {label}: {err}")
+        raise RuntimeError(f"diff failed (rc={rc}): {err}\n--- OUT ---\n{out}")
     rel = old_path.relative_to(REPO).as_posix()
-    # On Windows diff -u emits backslashes escaped as `\\`
     old_q = f'"{old_path}"'.replace("\\", "\\\\")
     new_q = f'"{new_path}"'.replace("\\", "\\\\")
     out = out.replace(old_q, f"a/{rel}")
@@ -89,8 +48,38 @@ def diff_u(old_path: Path, new_path: Path, label: str) -> str:
     return out
 
 
+def write_patch(path: Path, content: str):
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(content)
+
+
+def gen(name: str, src: Path, old_block_regex: str, new_block: str, anchor_label: str):
+    """Replace the v0.1 JSDoc block with the v0.2 block.
+
+    old_block_regex: a Python regex with `re.DOTALL | re.MULTILINE` that
+                     matches the ENTIRE v0.1 block (including the trailing
+                     blank line), with one capture group.
+    new_block:       the replacement (new JSDoc + trailing blank line).
+    """
+    content = src.read_text(encoding="utf-8")
+    match = re.search(old_block_regex, content, flags=re.DOTALL)
+    if not match:
+        # try without v0.1 - maybe the source doesn't have it
+        raise RuntimeError(f"{name}: v0.1 block not found at anchor {anchor_label}")
+    new_content = content[:match.start()] + new_block + content[match.end():]
+    new_path = STAGING / f"{src.name}.new"
+    with open(new_path, "w", encoding="utf-8", newline="") as f:
+        f.write(new_content)
+    patch = diff_u(src, new_path)
+    new_path.unlink()
+    if not patch:
+        raise RuntimeError(f"{name}: diff was empty (no change?)")
+    write_patch(DRAFT_DIR / f"{name}.patch", patch)
+    return len(patch.splitlines())
+
+
 # ── 01 useAuth.ts ────────────────────────────────────────────────────────────
-USE_AUTH_NEW_JSDOC = """/**
+USE_AUTH_V2 = '''/**
  * Thin selector hook that re-exports the relevant fields of the global
  * `useAuthStore` (Zustand). Use this hook anywhere a component needs to
  * read the current user, auth status, or trigger a login/logout/entity-switch.
@@ -142,36 +131,29 @@ USE_AUTH_NEW_JSDOC = """/**
  *      localStorage
  * @see DRAFT v0.2 - Mnemosyne 2026-06-13 (JSDoc P0, post Athena T-AT-003)
  */
-"""
+'''
+
+USE_AUTH_V1_REGEX = (
+    r"/\*\*\n"
+    r" \* Thin selector hook for the auth store\.\n"
+    r" \*\n"
+    r" \* @returns.*?\n"
+    r" \*/\n\n"
+)
 
 
-def _write_patch(path: Path, content: str):
-    """Write a patch file with LF line endings (matches LF source files)."""
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write(content)
-
-
-def gen_01_useAuth():
-    src = REPO / "src/hooks/useAuth.ts"
-    content = src.read_text(encoding="utf-8")
-    new_content = re.sub(
-        r"(import \{ useAuthStore \} from '@/store/authStore';\n\n)(export function useAuth\(\) \{)",
-        rf"\1{USE_AUTH_NEW_JSDOC}\2",
-        content, count=1,
+def gen_01():
+    return gen(
+        "01-useAuth",
+        REPO / "src/hooks/useAuth.ts",
+        USE_AUTH_V1_REGEX,
+        USE_AUTH_V2,
+        "useAuth v0.1 JSDoc block",
     )
-    if new_content == content:
-        raise RuntimeError("01: substitution did not change the file")
-    new_path = STAGING / "useAuth.ts.new"
-    with open(new_path, "w", encoding="utf-8", newline="") as f:
-        f.write(new_content)
-    patch = diff_u(src, new_path, "01-useAuth")
-    _write_patch(DRAFT_DIR / "01-useAuth.patch", patch)
-    new_path.unlink()
-    return len(patch.splitlines())
 
 
 # ── 02 masterStorage.ts ──────────────────────────────────────────────────────
-MASTER_STORAGE_NEW_JSDOC = """/**
+MASTER_STORAGE_V2 = '''/**
  * Encrypted, persistent key-value store that backs the entire FinPlan Pro
  * offline-first architecture. On first access, it transparently chooses
  * the right backend for the current environment:
@@ -220,30 +202,37 @@ MASTER_STORAGE_NEW_JSDOC = """/**
  *      built this wrapper instead of using zustand's `localStorage` adapter
  * @see DRAFT v0.2 - Mnemosyne 2026-06-13 (JSDoc P0, post Athena T-AT-003)
  */
-"""
+'''
 
 
-def gen_02_masterStorage():
+def gen_02():
+    # The v0.1 JSDoc on masterStorage is shorter and may have multiple lines
     src = REPO / "src/utils/masterStorage.ts"
     content = src.read_text(encoding="utf-8")
-    new_content = re.sub(
-        r"(\n)(export const masterStorage: PersistStorage<any> & \{ __resetCache: \(\) => void \} = \{)",
-        rf"\1{MASTER_STORAGE_NEW_JSDOC}\2",
-        content, count=1,
+    # Find the v0.1 JSDoc block (if any) right before `export const masterStorage`
+    pat = (
+        r"/\*\*\n"
+        r" \* masterStorage[^\n]*\n"
+        r"(?: \*[^\n]*\n)*?"
+        r" \*/\n\n"
     )
-    if new_content == content:
-        raise RuntimeError("02: substitution did not change the file")
+    m = re.search(pat, content, flags=re.MULTILINE)
+    if not m:
+        raise RuntimeError("02: v0.1 JSDoc not found")
+    new_content = content[:m.start()] + MASTER_STORAGE_V2 + content[m.end():]
     new_path = STAGING / "masterStorage.ts.new"
     with open(new_path, "w", encoding="utf-8", newline="") as f:
         f.write(new_content)
-    patch = diff_u(src, new_path, "02-masterStorage")
-    _write_patch(DRAFT_DIR / "02-masterStorage.patch", patch)
+    patch = diff_u(src, new_path)
     new_path.unlink()
+    if not patch:
+        raise RuntimeError("02: diff was empty")
+    write_patch(DRAFT_DIR / "02-masterStorage.patch", patch)
     return len(patch.splitlines())
 
 
 # ── 03 MonteCarloEngine.simulate ─────────────────────────────────────────────
-MONTE_SIMULATE_NEW_JSDOC = """  /**
+MONTE_SIMULATE_V2 = '''  /**
    * Run a general-purpose Monte Carlo simulation over the supplied
    * `config` and return the full statistical distribution of outcomes.
    *
@@ -333,35 +322,39 @@ MONTE_SIMULATE_NEW_JSDOC = """  /**
    * @see DRAFT v0.2 - Mnemosyne 2026-06-13 (JSDoc P0, post Athena T-AT-003;
    *   DEFERRED per Athena §3.8 - to be re-applied in a later cycle)
    */
-  static simulate(config: MonteCarloConfig): MonteCarloResult {"""
+  static simulate(config: MonteCarloConfig): MonteCarloResult {'''
 
 
-def gen_03_monteCarlo():
+def gen_03():
     src = REPO / "src/engines/MonteCarloEngine.ts"
     content = src.read_text(encoding="utf-8")
-    OLD = (
-        "  /**\n"
-        "   * Run a general-purpose Monte Carlo simulation.\n"
-        "   *\n"
-        "   * @param config - Simulation configuration\n"
-        "   * @returns Full statistical results including confidence intervals and histogram\n"
-        "   */\n"
-        "  static simulate(config: MonteCarloConfig): MonteCarloResult {"
+    # Find v0.1 JSDoc + the static simulate line, replace with v0.2
+    pat = (
+        r"  /\*\*\n"
+        r"   \* Run a general-purpose Monte Carlo simulation\.\n"
+        r"   \*\n"
+        r"   \* @param config - Simulation configuration\n"
+        r"   \* @returns Full statistical results including confidence intervals and histogram\n"
+        r"   \*/\n"
+        r"  static simulate\(config: MonteCarloConfig\): MonteCarloResult \{"
     )
-    if OLD not in content:
-        raise RuntimeError("03: OLD anchor not found in source")
-    new_content = content.replace(OLD, MONTE_SIMULATE_NEW_JSDOC, 1)
+    m = re.search(pat, content)
+    if not m:
+        raise RuntimeError("03: v0.1 JSDoc + simulate() not found")
+    new_content = content[:m.start()] + MONTE_SIMULATE_V2 + content[m.end():]
     new_path = STAGING / "MonteCarloEngine.ts.new"
     with open(new_path, "w", encoding="utf-8", newline="") as f:
         f.write(new_content)
-    patch = diff_u(src, new_path, "03-monteCarloSimulate")
-    _write_patch(DRAFT_DIR / "03-monteCarloSimulate.patch", patch)
+    patch = diff_u(src, new_path)
     new_path.unlink()
+    if not patch:
+        raise RuntimeError("03: diff was empty")
+    write_patch(DRAFT_DIR / "03-monteCarloSimulate.patch", patch)
     return len(patch.splitlines())
 
 
 # ── 04 CapExEngine.calculateIRR ──────────────────────────────────────────────
-CAPEX_IRR_NEW_JSDOC = """  /**
+CAPEX_IRR_V2 = '''  /**
    * Internal Rate of Return for an arbitrary sequence of cash flows.
    *
    * The IRR is the discount rate `r` that makes the Net Present Value of
@@ -431,27 +424,45 @@ CAPEX_IRR_NEW_JSDOC = """  /**
    * @see DRAFT v0.2 - Mnemosyne 2026-06-13 (JSDoc P0, post Athena T-AT-003;
    *   DEFERRED per Athena §4.6 - to be re-applied in a later cycle)
    */
-  static calculateIRR(cashFlows: number[]): number {"""
+  static calculateIRR(cashFlows: number[]): number {'''
 
 
-def gen_04_capExIRR():
+def gen_04():
+    # Patch 04 - check if v0.1 JSDoc exists; if not, just add the new JSDoc
     src = REPO / "src/engines/CapExEngine.ts"
     content = src.read_text(encoding="utf-8")
-    OLD = "  static calculateIRR(cashFlows: number[]): number {"
-    if OLD not in content:
-        raise RuntimeError("04: OLD anchor not found in source")
-    new_content = content.replace(OLD, CAPEX_IRR_NEW_JSDOC, 1)
+    # Anchor: `  static calculateIRR(cashFlows: number[]): number {`
+    # v0.1 may or may not have a JSDoc; handle both
+    pat_with_v01 = (
+        r"  /\*\*\n"
+        r"   \* Calculate the Internal Rate of Return[^\n]*\n"
+        r"(?:   \*[^\n]*\n)*?"
+        r"   \*/\n"
+        r"  static calculateIRR\(cashFlows: number\[\]\): number \{"
+    )
+    m = re.search(pat_with_v01, content)
+    if m:
+        new_content = content[:m.start()] + CAPEX_IRR_V2 + content[m.end():]
+    else:
+        # No v0.1 - just prepend JSDoc
+        pat_no_v01 = r"  static calculateIRR\(cashFlows: number\[\]\): number \{"
+        m = re.search(pat_no_v01, content)
+        if not m:
+            raise RuntimeError("04: calculateIRR anchor not found")
+        new_content = content[:m.start()] + CAPEX_IRR_V2 + content[m.end():]
     new_path = STAGING / "CapExEngine.ts.new"
     with open(new_path, "w", encoding="utf-8", newline="") as f:
         f.write(new_content)
-    patch = diff_u(src, new_path, "04-capExIRR")
-    _write_patch(DRAFT_DIR / "04-capExIRR.patch", patch)
+    patch = diff_u(src, new_path)
     new_path.unlink()
+    if not patch:
+        raise RuntimeError("04: diff was empty")
+    write_patch(DRAFT_DIR / "04-capExIRR.patch", patch)
     return len(patch.splitlines())
 
 
 # ── 05 CubeEngine class ──────────────────────────────────────────────────────
-CUBE_ENGINE_NEW_JSDOC = """/**
+CUBE_ENGINE_V2 = '''/**
  * CubeEngine - the in-memory OLAP-style aggregation engine that powers every
  * cross-tab / "cube view" in FinPlan Pro (revenue by entity x quarter x
  * product line, headcount by department x location, etc.).
@@ -540,63 +551,71 @@ CUBE_ENGINE_NEW_JSDOC = """/**
  *   DEFERRED per Athena §5.7 - to be re-applied in a later cycle, per the
  *   Option A rewrite-to-match-current-API recommendation)
  */
-export class CubeEngine {"""
+export class CubeEngine {'''
 
 
-def gen_05_cubeEngine():
+def gen_05():
     src = REPO / "src/engines/CubeEngine.ts"
     content = src.read_text(encoding="utf-8")
-    OLD = "export class CubeEngine {"
-    if OLD not in content:
-        raise RuntimeError("05: OLD anchor not found in source")
-    new_content = content.replace(OLD, CUBE_ENGINE_NEW_JSDOC, 1)
+    # v0.1 might have a shorter JSDoc; look for any JSDoc right before `export class CubeEngine`
+    pat = (
+        r"/\*\*\n"
+        r" \* CubeEngine[^\n]*\n"
+        r"(?: \*[^\n]*\n)*?"
+        r" \*/\n"
+        r"export class CubeEngine \{"
+    )
+    m = re.search(pat, content, flags=re.MULTILINE)
+    if not m:
+        # No v0.1 - check if there's a `export class CubeEngine {` without JSDoc
+        if "export class CubeEngine {" in content:
+            anchor = "export class CubeEngine {"
+            new_content = content.replace(anchor, CUBE_ENGINE_V2, 1)
+        else:
+            raise RuntimeError("05: CubeEngine class anchor not found")
+    else:
+        new_content = content[:m.start()] + CUBE_ENGINE_V2 + content[m.end():]
     new_path = STAGING / "CubeEngine.ts.new"
     with open(new_path, "w", encoding="utf-8", newline="") as f:
         f.write(new_content)
-    patch = diff_u(src, new_path, "05-cubeEngine")
-    _write_patch(DRAFT_DIR / "05-cubeEngine.patch", patch)
+    patch = diff_u(src, new_path)
     new_path.unlink()
+    if not patch:
+        raise RuntimeError("05: diff was empty")
+    write_patch(DRAFT_DIR / "05-cubeEngine.patch", patch)
     return len(patch.splitlines())
 
 
 def main():
     funcs = [
-        ("01-useAuth",           gen_01_useAuth),
-        ("02-masterStorage",     gen_02_masterStorage),
-        ("03-monteCarloSimulate", gen_03_monteCarlo),
-        ("04-capExIRR",          gen_04_capExIRR),
-        ("05-cubeEngine",        gen_05_cubeEngine),
+        ("01-useAuth",            gen_01),
+        ("02-masterStorage",      gen_02),
+        ("03-monteCarloSimulate", gen_03),
+        ("04-capExIRR",           gen_04),
+        ("05-cubeEngine",         gen_05),
     ]
+    log("=== PATCH GENERATION (v0.2) - handles v0.1 already applied ===")
     results = []
     for name, fn in funcs:
         try:
             lines = fn()
-            results.append((name, lines, "OK"))
             log(f"  [OK]   {name:30s}  {lines:4d} lines")
+            results.append((name, lines, "OK"))
         except Exception as e:
-            results.append((name, 0, str(e)))
             log(f"  [FAIL] {name:30s}  {e}")
-    log("=== PATCH GENERATION RESULTS (v0.2) ===")
+            results.append((name, 0, str(e)))
+    log("=== SUMMARY ===")
     total = 0
-    ok_count = 0
+    ok = 0
     for name, lines, status in results:
         log(f"  {name:30s}  {lines:4d} lines  {status}")
         total += lines
         if status == "OK":
-            ok_count += 1
-    log(f"  {'TOTAL':30s}  {total:4d} lines  ({ok_count}/5 OK)")
+            ok += 1
+    log(f"  {'TOTAL':30s}  {total:4d} lines  ({ok}/5 OK)")
     _log_fh.close()
-    return 0 if ok_count == 5 else 1
+    return 0 if ok == 5 else 1
 
 
 if __name__ == "__main__":
-    try:
-        sys.exit(main())
-    except Exception as e:
-        try:
-            log(f"FATAL: {e}")
-            import traceback
-            traceback.print_exc(file=_log_fh)
-        except Exception:
-            pass
-        sys.exit(2)
+    sys.exit(main())

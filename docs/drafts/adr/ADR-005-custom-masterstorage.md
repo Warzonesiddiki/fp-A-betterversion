@@ -169,7 +169,7 @@ export const useUiStore = create<UiState>()(
     }),
     {
       name: 'uiStore',
-      version: 1, // see ADR-006
+      version: 1, // see ADR-010
       storage: createJSONStorage(() => masterStorage),
       // ... (optional encryption hook, see ADR-007)
     }
@@ -273,8 +273,8 @@ Athena v2's `uiStore.ts:33` finding is a violation of this ADR. Apollo's P0 task
 - **`src/utils/masterStorage.ts`** (current: 45 lines, no JSDoc on the export — see Mnemosyne audit 2026-06-12)
 - **`src/store/uiStore.ts:33`** (Athena v2 finding: direct `localStorage.setItem('theme', ...)`)
 - **ADR-002** — `masterStorage` is the storage backend for `persist`
-- **ADR-006** — schema migration policy uses `masterStorage`'s `version` field
-- **ADR-007** — Web Crypto encryption hook for PII stores (dataStore is the first)
+- **ADR-010** — schema migration policy uses `masterStorage`'s `version` field
+- **ADR-007** — Web Crypto encryption hook for PII stores (dataStore is the first; encryption-at-rest decision)
 - **Athena v2 audit 2026-06-12** — the `uiStore.ts:33` finding motivates this ADR
 - **Hephaestus audit 2026-06-12** — encryption at rest requirement (PBKDF2 600k iterations; kdfVersion migration)
 - **Mnemosyne audit 2026-06-12** — `masterStorage` is one of the 5 P0 JSDoc targets (no current JSDoc; highest-traffic file)

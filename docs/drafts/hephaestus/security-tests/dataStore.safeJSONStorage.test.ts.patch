@@ -1,178 +1,311 @@
-diff --git a/src/utils/safeJSONStorage.test.ts b/src/utils/safeJSONStorage.test.ts
+diff --git a/src/__tests__/security/dataStore.safeJSONStorage.test.ts b/src/__tests__/security/dataStore.safeJSONStorage.test.ts
 new file mode 100644
-index 0000000..00000004
+index 00000000..2c927962
 --- /dev/null
-+++ b/src/utils/safeJSONStorage.test.ts
-@@ -0,0 +1,180 @@
++++ b/src/__tests__/security/dataStore.safeJSONStorage.test.ts
+@@ -0,0 +1,305 @@
++<!-- DRAFT v0.1 — awaiting review — Hephaestus 2026-06-13 -->
 +/**
-+ * @file src/utils/safeJSONStorage.test.ts
-+ * @description Integration test for the dataStore safeJSONStorage wrapper
-+ *              (P0 #5 fix per ADR-008). Verifies:
-+ *                (1) Round-trip: get/set a value, read it back unchanged
-+ *                (2) DoS resilience: corrupt JSON in localStorage returns
-+ *                    the fallback, not a throw
-+ *                (3) Quota resilience: setItem does not throw on QuotaExceeded
-+ *                (4) Cross-tab safety: storage events propagate
-+ *                (5) Performance budget: < 5ms per round-trip at p95
-+ *                (6) Tenant isolation: per-key namespacing works
++ * SECURITY: dataStore — safeJSONStorage wrapper
 + *
-+ * @author Hephaestus (aionrs/MiniMax-M3), 2026-06-12
-+ * @see docs/drafts/hephaestus/ADR-008-data-storage-scoping.md
-+ * @see Apollo task 019ebce7-… P0 #5
++ * `safeJSONStorage` wraps an underlying PersistStorage to make it DoS-resilient:
++ *   - getItem returns null (not throws) when the underlying call throws or
++ *     returns invalid JSON
++ *   - setItem / removeItem swallow errors in DEV (logged as a warn) and stay
++ *     no-ops in PROD
++ *   - Preserves the underlying storage's optional methods (e.g., __resetCache)
++ *
++ * Why this matters for dataStore: it is the largest persisted store (cube data,
++ * scenarios, allocations). A malformed `localStorage` entry (or a quota-exceeded
++ * error) must not crash the app or wipe the rehydration path. The wrapper
++ * isolates failures to a single key, not the whole store.
++ *
++ * Source under test: `src/utils/storage/safeJSONStorage.ts`
++ * Pre-existing test file: none
++ * Audit reference: ADR-012 (data-storage-scoping, decision tree: dataStore = business data, needs integrity + DoS resilience)
 + */
 +
 +import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-+import { safeJSONStorage } from './safeJSONStorage';
++import { safeJSONStorage } from '@/utils/storage/safeJSONStorage';
++import type { AnyPersistStorage, PersistStorage } from '@/utils/storage/safeJSONStorage';
 +
-+describe('safeJSONStorage (P0 #5 fix per ADR-008)', () => {
-+  // Use a fresh in-memory mock for each test so the suite is hermetic
-+  let mockStore: Map<string, string>;
-+  let storage: ReturnType<typeof safeJSONStorage>;
++// ---------- Test fixtures ----------
 +
-+  beforeEach(() => {
-+    mockStore = new Map();
-+    // Stub localStorage with a Map-backed implementation
-+    vi.stubGlobal('localStorage', {
-+      getItem: (k: string) => mockStore.get(k) ?? null,
-+      setItem: (k: string, v: string) => {
-+        if (k === '__QUOTA_EXCEEDED__') {
-+          throw new DOMException('Quota exceeded', 'QuotaExceededError');
-+        }
-+        mockStore.set(k, v);
-+      },
-+      removeItem: (k: string) => {
-+        mockStore.delete(k);
-+      },
-+      clear: () => mockStore.clear(),
-+      key: (i: number) => Array.from(mockStore.keys())[i] ?? null,
-+      get length() {
-+        return mockStore.size;
-+      },
++/** A minimal in-memory PersistStorage for happy-path tests. */
++const makeInMemoryStorage = (): AnyPersistStorage => {
++  const map = new Map<string, string>();
++  return {
++    getItem: (name: string) => map.get(name) ?? null,
++    setItem: (name: string, value: string) => {
++      map.set(name, value);
++    },
++    removeItem: (name: string) => {
++      map.delete(name);
++    },
++  };
++};
++
++/** A storage whose getItem always throws (simulates quota corruption). */
++const makeThrowingStorage = (): AnyPersistStorage => ({
++  getItem: () => {
++    throw new Error('QuotaExceededError: localStorage is corrupted');
++  },
++  setItem: () => {
++    /* noop */
++  },
++  removeItem: () => {
++    /* noop */
++  },
++});
++
++/** A storage whose setItem always throws (simulates quota-exceeded on write). */
++const makeQuotaExceededStorage = (): AnyPersistStorage => {
++  const map = new Map<string, string>();
++  return {
++    getItem: (name: string) => map.get(name) ?? null,
++    setItem: () => {
++      throw new Error('QuotaExceededError: would exceed localStorage quota');
++    },
++    removeItem: () => {
++      throw new Error('QuotaExceededError: cannot remove from localStorage');
++    },
++  };
++};
++
++describe('SECURITY: dataStore — safeJSONStorage wrapper', () => {
++  describe('positive cases — round-trip behavior', () => {
++    it('round-trips a JSON-serializable value through the wrapper', () => {
++      // Arrange
++      const inner = makeInMemoryStorage();
++      const wrapped = safeJSONStorage<{ name: string; n: number }>(inner);
++      const value = { name: 'scenario-001', n: 42 };
++
++      // Act
++      wrapped.setItem('key1', value);
++      const result = wrapped.getItem('key1');
++
++      // Assert
++      expect(result).toEqual(value);
 +    });
-+    storage = safeJSONStorage<{ count: number }>({ count: 0 });
++
++    it('round-trips a deeply nested value', () => {
++      // Arrange
++      const inner = makeInMemoryStorage();
++      const wrapped = safeJSONStorage<{ tree: unknown }>(inner);
++      const value = {
++        tree: { a: { b: { c: [1, 2, { d: 'leaf' }] } } },
++      };
++
++      // Act
++      wrapped.setItem('deep', value);
++      const result = wrapped.getItem('deep');
++
++      // Assert
++      expect(result).toEqual(value);
++    });
++
++    it('handles a falsy-but-valid serialized return (empty string)', () => {
++      // Arrange — an empty string from getItem is a valid (rehydrated-to-default)
++      // case for zustand. The wrapper must NOT collapse it to null.
++      const inner = makeInMemoryStorage();
++      inner.setItem('empty', '');
++      const wrapped = safeJSONStorage<unknown>(inner);
++
++      // Act
++      const result = wrapped.getItem('empty');
++
++      // Assert — exact behavior depends on zustand's parser; we only assert
++      // that the wrapper does not throw. If the parser returns the empty
++      // string, the wrapper should pass it through. If the parser returns
++      // null, the wrapper should also return null. Either is acceptable;
++      // what matters is no throw.
++      expect(result === '' || result === null).toBe(true);
++    });
 +  });
 +
-+  afterEach(() => {
-+    vi.unstubAllGlobals();
-+  });
++  describe('negative cases — getItem failure (DoS resilience)', () => {
++    it('returns null when the underlying getItem throws (does NOT propagate)', () => {
++      // Arrange
++      const inner = makeThrowingStorage();
++      const wrapped = safeJSONStorage<unknown>(inner);
 +
-+  describe('round-trip: valid value is preserved', () => {
-+    it('setItem then getItem returns the same object', () => {
-+      storage.setItem('test-key', { count: 42 });
-+      expect(storage.getItem('test-key')).toEqual({ count: 42 });
++      // Act + Assert
++      expect(() => wrapped.getItem('any-key')).not.toThrow();
++      expect(wrapped.getItem('any-key')).toBeNull();
 +    });
 +
-+    it('preserves nested structures', () => {
-+      const data = { count: 1, items: ['a', 'b'], meta: { x: true } };
-+      storage.setItem('nested', data);
-+      expect(storage.getItem('nested')).toEqual(data);
++    it('returns null when the underlying getItem returns null', () => {
++      // Arrange
++      const inner = makeInMemoryStorage();
++      const wrapped = safeJSONStorage<unknown>(inner);
++
++      // Act
++      const result = wrapped.getItem('nonexistent');
++
++      // Assert
++      expect(result).toBeNull();
 +    });
 +
-+    it('preserves null values in the payload (not the same as missing key)', () => {
-+      storage.setItem('null-payload', null);
-+      expect(storage.getItem('null-payload')).toBeNull();
-+    });
++    it('returns null when the underlying getItem returns invalid JSON (corrupt entry)', () => {
++      // Arrange — simulate a corrupted localStorage entry
++      const inner = makeInMemoryStorage();
++      inner.setItem('corrupt', '{not valid JSON');
++      const wrapped = safeJSONStorage<unknown>(inner);
 +
-+    it('preserves zero and empty-string values', () => {
-+      storage.setItem('zero', 0);
-+      storage.setItem('empty', '');
-+      expect(storage.getItem('zero')).toBe(0);
-+      expect(storage.getItem('empty')).toBe('');
-+    });
-+  });
-+
-+  describe('DoS resilience: corrupt JSON returns fallback (does not throw)', () => {
-+    it('returns the fallback when stored value is malformed JSON', () => {
-+      mockStore.set('corrupt', '{BROKEN JSON');
-+      const fallback = { count: -1, recovered: true };
-+      const s = safeJSONStorage(fallback);
-+      expect(s.getItem('corrupt')).toBe(fallback);
-+    });
-+
-+    it('returns the fallback for the `undefined.map` parse-error class', () => {
-+      // The actual failing test from the cycle: localStorage stored
-+      // the literal string "undefined" (from JSON.stringify(undefined))
-+      // which is invalid JSON. The wrapper must return the fallback.
-+      mockStore.set('bad', 'undefined');
-+      const s = safeJSONStorage<number[]>([]);
-+      expect(s.getItem('bad')).toEqual([]);
-+    });
-+
-+    it('returns the fallback when stored value is null bytes (parse error)', () => {
-+      mockStore.set('bytes', '\u0000\u0000\u0000');
-+      const s = safeJSONStorage('default');
-+      expect(s.getItem('bytes')).toBe('default');
-+    });
-+
-+    it('returns the fallback for circular-reference strings (re-stringified)', () => {
-+      // A real-world scenario: a previous code path did
-+      //   localStorage.setItem(k, JSON.stringify(circularObj))
-+      // which throws at stringify time, leaving a partial value.
-+      mockStore.set('partial', '{"a":1,"b":'); // truncated
-+      const s = safeJSONStorage({ a: 0, b: 0 });
-+      expect(s.getItem('partial')).toEqual({ a: 0, b: 0 });
++      // Act + Assert
++      expect(() => wrapped.getItem('corrupt')).not.toThrow();
++      expect(wrapped.getItem('corrupt')).toBeNull();
 +    });
 +  });
 +
-+  describe('Quota resilience: setItem does not throw on QuotaExceededError', () => {
-+    it('logs a warning instead of throwing when quota is exceeded', () => {
-+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-+      const s = safeJSONStorage({});
-+      // Setting the key __QUOTA_EXCEEDED__ triggers the throw in our mock
-+      expect(() => s.setItem('__QUOTA_EXCEEDED__', { x: 1 })).not.toThrow();
-+      expect(warnSpy).toHaveBeenCalled();
++  describe('negative cases — setItem / removeItem failure (quota resilience)', () => {
++    it('does NOT throw when the underlying setItem throws (quota exceeded)', () => {
++      // Arrange
++      const inner = makeQuotaExceededStorage();
++      const wrapped = safeJSONStorage<unknown>(inner);
++
++      // Act + Assert
++      expect(() => wrapped.setItem('k', { data: 'x' })).not.toThrow();
++    });
++
++    it('does NOT throw when the underlying removeItem throws', () => {
++      // Arrange
++      const inner = makeQuotaExceededStorage();
++      const wrapped = safeJSONStorage<unknown>(inner);
++
++      // Act + Assert
++      expect(() => wrapped.removeItem('k')).not.toThrow();
++    });
++  });
++
++  describe('observability — DEV warning on failure', () => {
++    let warnSpy: ReturnType<typeof vi.spyOn>;
++
++    beforeEach(() => {
++      warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
++        /* swallow */
++      });
++    });
++
++    afterEach(() => {
 +      warnSpy.mockRestore();
 +    });
-+  });
 +
-+  describe('missing key: returns null (per Web Storage spec)', () => {
-+    it('getItem on a non-existent key returns null', () => {
-+      expect(storage.getItem('does-not-exist')).toBeNull();
++    it('logs a warning when the underlying getItem throws in DEV', () => {
++      // Arrange
++      const inner = makeThrowingStorage();
++      const wrapped = safeJSONStorage<unknown>(inner);
++
++      // Act
++      wrapped.getItem('any-key');
++
++      // Assert — the wrapper must surface the failure (otherwise the user
++      // sees a rehydration that silently disappeared, which is a worse UX
++      // than a logged warning).
++      expect(warnSpy).toHaveBeenCalled();
++      // The warning must mention the key name so the operator can correlate
++      // to a specific persisted state.
++      const warnMessage = warnSpy.mock.calls[0]?.[0]?.toString() ?? '';
++      expect(warnMessage).toMatch(/any-key|safeJSONStorage|getItem/);
 +    });
 +
-+    it('getItem on a key that was set then removed returns null', () => {
-+      storage.setItem('temp', { x: 1 });
-+      storage.removeItem('temp');
-+      expect(storage.getItem('temp')).toBeNull();
-+    });
-+  });
++    it('warning does NOT include the parsed value (PII leak prevention)', () => {
++      // Arrange — even on failure, the warning must reference the key name
++      // and error message, not the value the wrapper was trying to parse.
++      // (A wrapper that logs the value would create a PII leak path for
++      // sensitive fields like auth tokens, scenarios with PII, etc.)
++      const inner = makeThrowingStorage();
++      const wrapped = safeJSONStorage<unknown>(inner);
 +
-+  describe('performance budget: < 5ms per round-trip at p95', () => {
-+    it('p95 round-trip is under 5ms for a 1KB payload', () => {
-+      const payload = { count: 42, items: Array(50).fill({ x: 1, y: 'abc' }) };
-+      const samples: number[] = [];
-+      for (let i = 0; i < 1000; i++) {
-+        const t0 = performance.now();
-+        storage.setItem('perf', payload);
-+        const v = storage.getItem('perf');
-+        const t1 = performance.now();
-+        if (v === null) throw new Error('round-trip failed');
-+        samples.push(t1 - t0);
++      // Act
++      wrapped.getItem('auth-token-key');
++
++      // Assert
++      const allWarnArgs = warnSpy.mock.calls.flat().map((c) => String(c));
++      for (const arg of allWarnArgs) {
++        // The key name is OK; the value would NOT be. We assert that no
++        // arg contains a long random-looking string (a heuristic for a
++        // token-like value).
++        expect(arg).not.toMatch(/eyJ[A-Za-z0-9_-]{20,}/); // no JWT
++        expect(arg).not.toMatch(/nvapi-[A-Za-z0-9]{20,}/); // no NIM key
 +      }
-+      samples.sort((a, b) => a - b);
-+      const p95 = samples[Math.floor(samples.length * 0.95)] ?? 0;
-+      expect(p95).toBeLessThan(5);
 +    });
 +  });
 +
-+  describe('tenant isolation: per-key namespacing is the caller's responsibility', () => {
-+    it('two stores with different prefixes do not collide', () => {
-+      const tenantA = safeJSONStorage<{ v: string }>({ v: 'default-a' });
-+      const tenantB = safeJSONStorage<{ v: string }>({ v: 'default-b' });
-+      tenantA.setItem('tenant-a:shared-key', { v: 'a-value' });
-+      tenantB.setItem('tenant-b:shared-key', { v: 'b-value' });
-+      expect(tenantA.getItem('tenant-a:shared-key')).toEqual({ v: 'a-value' });
-+      expect(tenantB.getItem('tenant-b:shared-key')).toEqual({ v: 'b-value' });
-+      // The wrapper does not enforce the prefix; that is the caller's job.
-+      // (Phase 1: tenant isolation moves server-side; this test documents
-+      // the convention that callers should use prefixed keys.)
++  describe('pass-through — underlying storage methods are preserved', () => {
++    it('exposes the underlying storage\'s optional methods (e.g., __resetCache)', () => {
++      // Arrange
++      const resetCache = vi.fn();
++      const inner: AnyPersistStorage = {
++        ...makeInMemoryStorage(),
++        __resetCache: resetCache,
++      };
++      const wrapped = safeJSONStorage<unknown>(inner);
++
++      // Act
++      // The wrapper should expose __resetCache as a pass-through method
++      // (zustand persist calls __resetCache on certain state operations).
++      const wrappedAny = wrapped as unknown as { __resetCache?: () => void };
++      wrappedAny.__resetCache?.();
++
++      // Assert
++      expect(resetCache).toHaveBeenCalled();
++    });
++  });
++
++  describe('performance sanity', () => {
++    it('completes a wrap + set + get roundtrip in under 10ms (perf budget for rehydration)', () => {
++      // Arrange
++      const inner = makeInMemoryStorage();
++      const value = { rows: Array.from({ length: 100 }, (_, i) => ({ i, v: i * 2 })) };
++
++      // Act
++      const start = performance.now();
++      const wrapped = safeJSONStorage<typeof value>(inner);
++      wrapped.setItem('perf', value);
++      const result = wrapped.getItem('perf');
++      const elapsed = performance.now() - start;
++
++      // Assert
++      expect(result).toEqual(value);
++      expect(elapsed).toBeLessThan(10);
++    });
++  });
++
++  describe('integration — dataStore can be created with safeJSONStorage(masterStorage)', () => {
++    it('accepts a masterStorage-shaped input (compatible PersistStorage interface)', () => {
++      // Arrange — masterStorage is exported from @/utils/masterStorage; we
++      // import the type to confirm the structural contract, but do NOT
++      // actually create a masterStorage instance in this test (the worker
++      // pool + sql.js mocks would be needed for a real round-trip; that's
++      // covered by dataStore's own test file). The point here is the
++      // wrapper's TYPE accepts a masterStorage-shaped input without a cast.
++      const inner = makeInMemoryStorage();
++      // This is the call shape dataStore would use:
++      //   safeJSONStorage<MyState>(masterStorage)
++      const wrapped = safeJSONStorage<{ scenarioId: string }>(inner);
++
++      // Act
++      const writeResult: PersistStorage<{ scenarioId: string }, unknown> = wrapped;
++
++      // Assert — the type assignment is the actual test (tsc would fail
++      // at compile time if the contract mismatched). At runtime, the
++      // wrapper is functionally usable.
++      expect(typeof writeResult.setItem).toBe('function');
++      expect(typeof writeResult.getItem).toBe('function');
++      expect(typeof writeResult.removeItem).toBe('function');
 +    });
 +  });
 +});
 +
-+// ─── Migration note (for Apollo) ──────────────────────────────────────────
-+// To apply this test alongside the safeJSONStorage implementation, both
-+// must be added in the same commit. The implementation file
-+// (src/utils/safeJSONStorage.ts) is sketched in
-+// docs/drafts/hephaestus/ADR-008-data-storage-scoping.md §"Phase 0 Fix".
-+// Total mechanical sweep across 35 stores: 4-6 hours.
++// AUDIT: 2026-06-13 — Hephaestus
++// - 13 test cases across 7 categories: 3 positive, 3 getItem failure, 2 setItem/removeItem failure,
++//   2 observability (1 warn + 1 PII hygiene), 1 pass-through, 1 perf, 1 integration (13 total)
++// - Source verified: src/utils/storage/safeJSONStorage.ts (real API: safeJSONStorage<S>(storage: AnyPersistStorage): PersistStorage<S, unknown>)
++// - The original patch assumed a different API (storage: Storage, getItem returning a fallback state).
++//   Tests rewritten to match the real source. The behavioral contract is the same:
++//   DoS-resilient, null-on-failure, no-throw on quota-exceeded.
++// - No property-based test included (fast-check not in package.json).
++// - Integration with the real dataStore is not exercised here because dataStore
++//   depends on zustand persist + masterStorage + worker pool, which is its own
++//   test concern. This file tests the wrapper in isolation.

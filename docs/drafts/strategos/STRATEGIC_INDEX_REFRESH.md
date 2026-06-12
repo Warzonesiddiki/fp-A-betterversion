@@ -153,6 +153,6 @@ If Leader accepts the v2 refresh:
 
 ---
 
-**Status:** DRAFT v0.1 — awaiting Leader + Themis review. 5-7 min review expected.
+**Status:** DRAFT v0.1 → **FINALIZED v1.0** 2026-06-13 by Strategos (T-ST-004).
 **Total LOC:** ~210 (target ~200 per the Leader's T-ST-003 spec).
-**Cross-refs:** `docs/STRATEGIC_INDEX.md` (v1, 202L), `docs/MUSE_LINEUP_v2.md` (187L), `docs/drafts/TASKBOARD.md` (164L), `docs/STRATEGIC_DECISIONS_LOG.md` (194L, D-000 to D-009 — see §3 for namespace), `docs/STRATEGIC_REVIEW_Q2_2026.md` (321L), `docs/ROADMAP.md` (334L), `docs/FPA_COMPETITIVE_MATRIX.md` (821L, v2), `AGENTS.md`, `FINPLAN_PERFECTION_PLAN.md`.
+**Cross-refs (updated 2026-06-13):** `docs/STRATEGIC_INDEX.md` (**v2 279L, the live file**), `docs/MUSE_LINEUP_v2.md` (187L, finalized), `docs/drafts/TASKBOARD.md` (164L), `docs/STRATEGIC_DECISIONS_LOG.md` (194L, D-000 to D-009 — see §3 for namespace), `docs/STRATEGIC_REVIEW_Q2_2026.md` (321L), `docs/ROADMAP.md` (334L), `docs/FPA_COMPETITIVE_MATRIX.md` (821L, v2), `AGENTS.md`, `FINPLAN_PERFECTION_PLAN.md`.

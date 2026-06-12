@@ -182,6 +182,6 @@ A Muse is NOT retired for:
 
 ---
 
-**Status:** DRAFT v0.1 — awaiting Leader + Themis review. 5-7 min review expected.
+**Status:** DRAFT v0.1 → **FINALIZED v1.0** 2026-06-13 by Strategos (T-ST-004). Accepted by Leader in 2026-06-13 broadcast. 11-Muse roster, D-NNN collision recommendation (renumber to D-010..D-019), 4 strategic bets, Muse-to-roadmap mapping, slot-ID invocation table, retirement policy — all delivered.
 **Total LOC:** ~150 (target ~100-150 per the Leader's T-ST-003 spec).
 **Cross-refs:** `docs/STRATEGIC_INDEX.md` (doc-of-docs), `docs/drafts/TASKBOARD.md` (work protocol + roster), `memory/persona-strategos.md` v0.2 (Strategos), `docs/STRATEGIC_DECISIONS_LOG.md` (D-001 to D-009 strategic decisions, D-NNN namespace collision noted in §3), `docs/PRODUCT_VISION.md §2` (the 100× promise), `docs/ROADMAP.md` (5 phases + 4 strategic bets), `docs/FPA_COMPETITIVE_MATRIX.md` v2 (refreshed 2026-06-13), `docs/STRATEGIC_REVIEW_Q2_2026.md` (Q2 2026 review with the 58.7% / 42% scorecard).

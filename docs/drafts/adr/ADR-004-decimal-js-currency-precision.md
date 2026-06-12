@@ -266,7 +266,7 @@ For 1M cells with mid-point values, HALF_EVEN has zero expected bias; HALF_UP ha
 - **6 P0/P1 float-bug engines:** `TaxEngine.ts:65,89,116`, `SaaSMetricsEngine.ts:90-93`, `DriverCascadeEngine.ts:353-354`, `AllocationEngine.ts:84-99`, `SpreadEngine.ts:167`, `CubeEngine.ts:51-72`
 - **ADR-002** — `Money` values flow through zustand stores; `partialize` for class instances
 - **ADR-003** — `Money` is the value type for `Measure` values in the cube
-- **ADR-006** — `Money` serialization format (string) must be migration-stable
+- **ADR-010** — `Money` serialization format (string) must be migration-stable
 - **ADR-010** — Web Workers for heavy decimal aggregations
 - **Hephaestus audit 2026-06-12** — the use-case; this ADR is the architectural response
 - **Apollo's P1 task** — `[Apollo post-push] Add decimal.js to engine layer + rewrite 6 P0/P1 float-bug engines` is the implementation

@@ -1,0 +1,121 @@
+# <!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+# =============================================================================
+# FinPlan Pro — Production Build Workflow (Milestone 1 of CI matrix split)
+# See docs/drafts/atlas/CI_MATRIX.md §3.4 and docs/drafts/atlas/ci/README.md.
+# 3-OS matrix; uploads dist/ as artifact. The desktop installers themselves
+# are produced by release.yml (tag-triggered) — this is the web bundle only.
+# Bundle size check is Linux-only (uses GNU find/gzip).
+# =============================================================================
+
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  MAIN_CHUNK_LIMIT: 150   # KB gzip — matches legacy ci.yml
+  TOTAL_JS_LIMIT: 2048    # KB gzip — matches legacy ci.yml
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies (npm ci, lockfile-strict)
+        run: npm ci --no-audit --no-fund
+
+      - name: Vite production build
+        run: npm run build
+
+      - name: Bundle size check (Linux only — uses GNU find/gzip)
+        if: matrix.os == 'ubuntu-latest'
+        id: bundle-check
+        run: |
+          echo "## Bundle Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          MAIN_RAW=$(find dist/assets -name "index-*.js" -type f | head -1)
+          if [ -z "$MAIN_RAW" ]; then
+            echo "::error::No main chunk (index-*.js) found in dist/assets/"
+            exit 1
+          fi
+          MAIN_GZIP=$(gzip -c "$MAIN_RAW" | wc -c)
+          MAIN_KB=$((MAIN_GZIP / 1024))
+          MAIN_RAW_SIZE=$(wc -c < "$MAIN_RAW")
+          MAIN_RAW_KB=$((MAIN_RAW_SIZE / 1024))
+
+          TOTAL_RAW=0
+          TOTAL_GZIP=0
+          for f in $(find dist/assets -name "*.js" -type f); do
+            RAW_SIZE=$(wc -c < "$f")
+            GZIP_SIZE=$(gzip -c "$f" | wc -c)
+            TOTAL_RAW=$((TOTAL_RAW + RAW_SIZE))
+            TOTAL_GZIP=$((TOTAL_GZIP + GZIP_SIZE))
+          done
+          TOTAL_KB=$((TOTAL_GZIP / 1024))
+          TOTAL_RAW_KB=$((TOTAL_RAW / 1024))
+
+          echo "| Chunk | Raw (KB) | Gzip (KB) |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|----------|-----------|" >> $GITHUB_STEP_SUMMARY
+          for f in $(find dist/assets -name "*.js" -type f | sort); do
+            NAME=$(basename "$f")
+            RAW=$(($(wc -c < "$f") / 1024))
+            GZ=$(($(gzip -c "$f" | wc -c) / 1024))
+            echo "| $NAME | $RAW | $GZ |" >> $GITHUB_STEP_SUMMARY
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Main chunk:** ${MAIN_RAW_KB}KB raw -> ${MAIN_KB}KB gzip (limit: ${MAIN_CHUNK_LIMIT}KB)" >> $GITHUB_STEP_SUMMARY
+          echo "**Total JS:** ${TOTAL_RAW_KB}KB raw -> ${TOTAL_KB}KB gzip (limit: ${TOTAL_JS_LIMIT}KB)" >> $GITHUB_STEP_SUMMARY
+
+          FAIL=0
+          if [ "$MAIN_KB" -gt "$MAIN_CHUNK_LIMIT" ]; then
+            echo "::error::Main chunk ${MAIN_KB}KB gzip exceeds ${MAIN_CHUNK_LIMIT}KB limit"
+            echo ":x: **FAIL:** Main chunk exceeds ${MAIN_CHUNK_LIMIT}KB gzip limit" >> $GITHUB_STEP_SUMMARY
+            FAIL=1
+          else
+            echo ":white_check_mark: **PASS:** Main chunk within limit" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "$TOTAL_KB" -gt "$TOTAL_JS_LIMIT" ]; then
+            echo "::error::Total JS ${TOTAL_KB}KB gzip exceeds ${TOTAL_JS_LIMIT}KB limit"
+            echo ":x: **FAIL:** Total JS exceeds ${TOTAL_JS_LIMIT}KB gzip limit" >> $GITHUB_STEP_SUMMARY
+            FAIL=1
+          else
+            echo ":white_check_mark: **PASS:** Total JS within limit" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          exit $FAIL
+
+      - name: Upload dist artifact (7-day retention)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.os }}
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error

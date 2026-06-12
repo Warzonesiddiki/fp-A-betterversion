@@ -58,10 +58,10 @@ FinPlan Pro's offline-first browser SPA is **partially ready** for a SOC 2 Type 
 | 6.1.2 — Authorizes, modifies, removes access | ⚠️ **YELLOW.** No formal RBAC matrix. Single-tenant assumption; no multi-user role management in Phase 1. | Define 4 roles (Owner, Admin, Editor, Viewer) in `src/types/rbac.ts`. Add to authStore. | RBAC enum not yet defined. | Apollo (post-DEC-001) | Q3 2026 (Phase 1 backend) |
 | 6.1.3 — Authenticates network access | 🟡 **YELLOW.** Network access via Cloudflare (Phase 1). No mTLS or IP allowlist in current local-only architecture. | Cloudflare Access + mTLS for service-to-service. | Backend not yet built. | Apollo + Hephaestus | Q3-Q4 2026 |
 | 6.1.4 — Identifies and authenticates external users | ✅ **GREEN.** Mock auth has a build-time gate (`authStore.ts:18-26` + `main.tsx:8-23`). Production forces real auth. | Same. | None. | Hephaestus | Done |
-| 6.1.5 — Restricts transmission of sensitive data | 🟡 **YELLOW.** All in-app data stays in browser (no network egress). BUT plugin sandbox (CC6.8 risk) and AI Copilot (NIM) WILL transmit. CSP allows `connect-src` to NIM domain. | Document data flow in ADR-008 data-storage-scoping + sign DPA with NIM provider. | DPA not signed. NIM key rotation cadence undocumented. | Hephaestus + Hermes | Q3 2026 |
+| 6.1.5 — Restricts transmission of sensitive data | 🟡 **YELLOW.** All in-app data stays in browser (no network egress). BUT plugin sandbox (CC6.8 risk) and AI Copilot (NIM) WILL transmit. CSP allows `connect-src` to NIM domain. | Document data flow in ADR-012 data-storage-scoping + sign DPA with NIM provider. | DPA not signed. NIM key rotation cadence undocumented. | Hephaestus + Hermes | Q3 2026 |
 | 6.1.6 — Implements boundary protection | 🟡 **YELLOW.** Browser boundary = same-origin policy. No service-side boundary (Phase 1). | Cloudflare WAF + DDoS protection in Phase 1. | Backend not yet built. | Atlas (Cloudflare) | Q3-Q4 2026 |
 | 6.1.7 — Restricts data movement | 🟡 **YELLOW.** All data local to browser. No DLP. Export to Excel/CSV is unrestricted. | Document acceptable export paths. Add "export all data" warning to user. | Export warning not yet implemented. | Apollo | Q3 2026 |
-| 6.1.8 — Implements data classification | 🔴 **RED.** No formal classification scheme. ADR-008 (data storage scoping) is a draft. | Adopt ADR-008 (3 classes: PII, Business, Regulated). | ADR-008 not yet finalized. | Hephaestus | Q3 2026 (this sprint) |
+| 6.1.8 — Implements data classification | 🔴 **RED.** No formal classification scheme. ADR-012 (data storage scoping) is a draft. | Adopt ADR-012 (3 classes: PII, Business, Regulated). | ADR-012 not yet finalized. | Hephaestus | Q3 2026 (this sprint) |
 | 6.1.9 — Encrypts sensitive data at rest | 🔴 **RED.** `src/engines/EncryptionEngine.ts:12-16` provides AES-256-GCM. **BUT it is not wired into the storage layer.** `src/utils/masterStorage.ts` wraps `sqlJsStorage` (SQLite WASM in browser, tauriSqlStorage in desktop); both backends store plaintext JSON. `dataStore.ts:101` uses `safeJSONStorage(masterStorage)` which only adds try/catch — no encryption (`src/utils/storage/safeJSONStorage.ts:17-49`). | Adopt ADR-007 (encryption-at-rest) + integrate EncryptionEngine into masterStorage wrapper (or add a transparent encrypt/decrypt layer in safeJSONStorage). | Critical gap. Sensitive data is in plaintext at rest in SQLite WASM. | Hephaestus → Apollo | Q3 2026 (this sprint) |
 | 6.1.10 — Encrypts sensitive data in transit | ✅ **GREEN.** All network calls (NIM, Stripe, etc.) over HTTPS. CSP enforces HTTPS-only. | Same. | None. | Hephaestus | Done |
 
@@ -86,7 +86,7 @@ FinPlan Pro's offline-first browser SPA is **partially ready** for a SOC 2 Type 
 
 | Sub-criterion | Current state | Gap | ETA |
 |---|---|---|---|
-| 6.7.1 — Restricts data transmission | ✅ **GREEN.** Browser sandbox + CSP + same-origin. NIM is the only external call; data is non-PII by ADR-008. | DPA with NIM. | Q3 2026 |
+| 6.7.1 — Restricts data transmission | ✅ **GREEN.** Browser sandbox + CSP + same-origin. NIM is the only external call; data is non-PII by ADR-012. | DPA with NIM. | Q3 2026 |
 | 6.7.2 — Encrypts data in transit | ✅ **GREEN.** TLS 1.3. | None. | Done |
 | 6.7.3 — Authorizes data removal | 🟡 **YELLOW.** `safeJSONStorage` returns null on getItem failure (`src/utils/storage/safeJSONStorage.ts`). Data "removal" via store.reset() is not yet audited. | Add audit log entry on bulk-delete. | Q3 2026 |
 
@@ -98,7 +98,7 @@ FinPlan Pro's offline-first browser SPA is **partially ready** for a SOC 2 Type 
 
 | Sub-criterion | Current state | Gap | ETA |
 |---|---|---|---|
-| 6.8.1 — Detects malicious code | 🟡 **YELLOW.** PluginSandbox has a `validatePluginCode` allowlist-based AST check (Hephaestus ADR-007). No CSP violation reporter. No Sentry (Atlas T-ATL-004 will add). | Add Sentry + CSP report-uri. | Q3 2026 |
+| 6.8.1 — Detects malicious code | 🟡 **YELLOW.** PluginSandbox has a `validatePluginCode` allowlist-based AST check (Hephaestus ADR-011). No CSP violation reporter. No Sentry (Atlas T-ATL-004 will add). | Add Sentry + CSP report-uri. | Q3 2026 |
 | 6.8.2 — Prevents installation of unauthorized code | ✅ **GREEN.** PluginSandbox AST allowlist prevents new Function/eval. See `src/plugins/PluginSandbox.ts:194` `executeSandboxed` + `src/plugins/PluginSandbox.ts:293` `validatePluginCode`. Test in `docs/drafts/hephaestus/security-tests/PluginSandbox.acorn.test.ts` (18 cases). | None. | Done |
 | 6.8.3 — Maintains anti-malware protections | ⚠️ **N/A.** Browser delivers this. | N/A. | Done |
 | 6.8.4 — Scans for malware on endpoints | ⚠️ **N/A.** User's browser is the endpoint. | N/A. | Done |
@@ -166,7 +166,7 @@ FinPlan Pro's offline-first browser SPA is **partially ready** for a SOC 2 Type 
 | Sub-criterion | Current state | Gap | ETA |
 |---|---|---|---|
 | 7.5.1 — Restores system operation | 🟡 **YELLOW.** Local-first = data is in user's browser. Recovery is trivial (user's data is the source of truth). BUT no documented recovery procedure. | Document recovery steps. | Q3 2026 |
-| 7.5.2 — Recovers affected data | 🟡 **YELLOW.** Per store: `dataStore` and `authStore` have persist + version. Schema migration strategy is in ADR-006. | Document rollback for failed migration. | Q3 2026 |
+| 7.5.2 — Recovers affected data | 🟡 **YELLOW.** Per store: `dataStore` and `authStore` have persist + version. Schema migration strategy is in ADR-010. | Document rollback for failed migration. | Q3 2026 |
 | 7.5.3 — Performs post-incident review | 🔴 **RED.** No post-mortem template. | Create template. | Q3 2026 |
 
 **Sub-score: 0 GREEN, 2 YELLOW, 1 RED. Section score: 40/100.**
@@ -177,7 +177,7 @@ FinPlan Pro's offline-first browser SPA is **partially ready** for a SOC 2 Type 
 
 | Quarter | Milestone | Owner | Deliverable | Pre-launch readiness contribution |
 |---|---|---|---|---|
-| **Q3 2026** (now → Sep 30) | 1. Adopt ADR-007 (encryption-at-rest) — wire EncryptionEngine into masterStorage<br>2. Adopt ADR-008 (data storage scoping) — 3-class classification<br>3. Adopt ADR-006 (data retention) — define 7-year default, 30-day log retention<br>4. Create ADR-009 (incident response) — IR runbook + RACI<br>5. Add Sentry SDK + OTel to Vite build (Atlas T-ATL-004)<br>6. Add Snyk to CI<br>7. Add audit log immutability (hash chain) | Hephaestus + Apollo + Atlas | 4 new ADRs adopted; Sentry live; 1,000+ security tests in CI; 9 CC criteria moved from RED/YELLOW → GREEN | +25 readiness points (47 → 72) |
+| **Q3 2026** (now → Sep 30) | 1. Adopt ADR-007 (encryption-at-rest) — wire EncryptionEngine into masterStorage<br>2. Adopt ADR-012 (data storage scoping) — 3-class classification<br>3. Adopt ADR-006 (data retention) — define 7-year default, 30-day log retention<br>4. Create ADR-009 (incident response) — IR runbook + RACI<br>5. Add Sentry SDK + OTel to Vite build (Atlas T-ATL-004)<br>6. Add Snyk to CI<br>7. Add audit log immutability (hash chain) | Hephaestus + Apollo + Atlas | 4 new ADRs adopted; Sentry live; 1,000+ security tests in CI; 9 CC criteria moved from RED/YELLOW → GREEN | +25 readiness points (47 → 72) |
 | **Q4 2026** (Oct → Dec) | 1. SOC 2 Type 1 audit kickoff with auditor (Vanta/Drata/Secureframe — TBD)<br>2. Run SOC 2 evidence collection (3-month observation window)<br>3. Implement RBAC matrix (Owner/Admin/Editor/Viewer)<br>4. Wire Phase 1 backend (post-DEC-001) with auth middleware<br>5. DPA with NIM provider<br>6. Tabletop IR exercise (1 simulated incident)<br>7. Penetration test (1 external pen-tester) | Hephaestus + Apollo + Atlas + (auditor) | Type 1 audit report issued; pen-test report clean; DPA signed; IR tested | +13 readiness points (72 → 85) — **Type 1 target met** |
 | **Q1 2027** (Jan → Mar) | 1. SOC 2 Type 2 audit window opens (requires 6-month observation)<br>2. Implement backend-side brute-force lockout (Apollo post-push P1)<br>3. Implement CSRF middleware (Apollo post-push P2)<br>4. Implement CSP style-src tightening (Apollo post-push P2)<br>5. Refresh-token rotation (server-side cookie) | Apollo + Hephaestus | Type 2 evidence collection begins; security controls hardened | +5 readiness points (85 → 90) |
 | **Q2 2027** (Apr → Jun) | 1. Complete 6-month observation window for Type 2<br>2. Continuous compliance monitoring (Snyk + Sentry + Vanta agent)<br>3. Quarterly access review cadence established<br>4. Tabletop IR exercise (1 per quarter) | Hephaestus + Apollo | Type 2 audit report issued | +5 readiness points (90 → 95) — **Type 2 target met** |
@@ -191,10 +191,10 @@ FinPlan Pro's offline-first browser SPA is **partially ready** for a SOC 2 Type 
 
 | # | Blocker | Impact | Resolution | Owner | ETA |
 |---|---|---|---|---|---|
-| **1** | **Encryption at rest not implemented** — `masterStorage` (sqlite-backed) stores plaintext JSON. `EncryptionEngine.ts:12-16` exists but is not wired in. `dataStore.ts:101` uses `safeJSONStorage(masterStorage)` which adds try/catch but no encryption. | CC6.1.9 fails. **All user data at rest is plaintext in SQLite WASM** — including PII (per ADR-008 draft). SOC 2 auditor will flag this as a critical deficiency. | Adopt ADR-007. Wire `EncryptionEngine.encrypt` into `safeJSONStorage` wrapper (transparent encrypt/decrypt layer). Bump PBKDF2 iterations from 100k to 600k per OWASP 2023. | Hephaestus → Apollo | Q3 2026 sprint 2 |
+| **1** | **Encryption at rest not implemented** — `masterStorage` (sqlite-backed) stores plaintext JSON. `EncryptionEngine.ts:12-16` exists but is not wired in. `dataStore.ts:101` uses `safeJSONStorage(masterStorage)` which adds try/catch but no encryption. | CC6.1.9 fails. **All user data at rest is plaintext in SQLite WASM** — including PII (per ADR-012 draft). SOC 2 auditor will flag this as a critical deficiency. | Adopt ADR-007. Wire `EncryptionEngine.encrypt` into `safeJSONStorage` wrapper (transparent encrypt/decrypt layer). Bump PBKDF2 iterations from 100k to 600k per OWASP 2023. | Hephaestus → Apollo | Q3 2026 sprint 2 |
 | **2** | **No observability** — no Sentry, no OTel, no log aggregation. | CC7.1.2, CC7.2.2, CC7.1.3 all fail. Auditor will ask: "How do you detect security events in production?" Answer: "We don't." | Atlas T-ATL-004 observability stack (Sentry + OTel). | Atlas + Apollo | Q3 2026 |
 | **3** | **No incident response runbook** — Atlas's ON_CALL_RUNBOOK is for infra, not security incidents. | CC7.3.1, CC7.4.1-3 all fail. Auditor will ask: "What happens when a customer's PII is exposed?" Answer: "We panic." | Create ADR-009 + `docs/security/INCIDENT_RESPONSE.md`. RACI chart. Comms template. | Hephaestus | Q3 2026 |
-| **4** | **PBKDF2 iterations 100k** — OWASP 2023 recommends 600k for SHA-256. | CC6.1.9 fails on key derivation strength. | Bump `EncryptionEngine.ts:16` to 600,000. Add `kdfVersion` to schema (ADR-006 already supports this). Test with `docs/drafts/hephaestus/security-tests/dataStore.safeJSONStorage.test.ts` (13 cases). | Hephaestus | Q3 2026 |
+| **4** | **PBKDF2 iterations 100k** — OWASP 2023 recommends 600k for SHA-256. | CC6.1.9 fails on key derivation strength. | Bump `EncryptionEngine.ts:16` to 600,000. Add `kdfVersion` to schema (ADR-010 already supports this). Test with `docs/drafts/hephaestus/security-tests/dataStore.safeJSONStorage.test.ts` (13 cases). | Hephaestus | Q3 2026 |
 | **5** | **No vulnerability scanning** — `npm audit` ran clean on commit but no continuous scan. | CC7.1.1 fails. | Add Snyk free tier to CI. GitHub Dependabot. | Apollo | Q3 2026 |
 
 ---
@@ -231,7 +231,7 @@ Per the broader pre-launch score, this is one of the **lowest** domains. Perform
 
 ## §8 Cross-references and Artifacts
 
-- **This document's source ADRs:** ADR-005 (masterStorage), ADR-006 (schema migration), Hephaestus ADR-007 (plugin sandbox), Hephaestus ADR-008 (data storage scoping)
+- **This document's source ADRs:** ADR-005 (masterStorage), ADR-010 (schema migration), Hephaestus ADR-011 (plugin sandbox), Hephaestus ADR-012 (data storage scoping)
 - **This document's test files:** `docs/drafts/hephaestus/security-tests/PluginSandbox.acorn.test.ts` (18 cases), `mock-auth-gate.test.ts` (9 cases), `ScenarioLocking.dom.test.tsx` (6 cases), `dataStore.safeJSONStorage.test.ts` (13 cases)
 - **Companion documents:** `docs/drafts/hephaestus/build-time-secret-scanner.md`, `vite-proxy-architecture.md`, `mock-auth-build-gate.md`
 - **Sister documents:** `docs/drafts/atlas/ON_CALL_RUNBOOK.md` (infra), `docs/drafts/atlas/OBSERVABILITY_STACK.md` (T-ATL-004)
