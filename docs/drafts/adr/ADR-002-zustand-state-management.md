@@ -17,7 +17,7 @@ FinPlan Pro is a single-page Tauri app that holds 35 zustand stores of varying s
 3. **Mutable as if with `state.foo.bar = baz`** — but in TypeScript, without violating readonly types
 4. **Selectable for fine-grained re-renders** (React 18+ concurrent rendering demands minimal re-render scope)
 5. **Compatible with class-instance state** (e.g. the `CubeEngine` cannot be serialized to JSON)
-6. **Migratable across schema versions** (see [ADR-006](/docs/adr/ADR-006-schema-migration-strategy.md))
+6. **Migratable across schema versions** (see [ADR-006](/docs/adr/ADR-010-schema-migration-strategy.md))
 
 We considered four options: Redux Toolkit, Jotai, Recoil, and zustand-without-middleware. We also considered three storage backends: raw `localStorage`, `IndexedDB`, and a custom wrapper.
 
