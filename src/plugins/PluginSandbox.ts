@@ -53,6 +53,56 @@ const ALLOWED_GLOBALS = new Set([
   'URLSearchParams',
 ]);
 
+/**
+ * Property names that MUST NOT appear in a MemberExpression at any
+ * depth in the AST. These are the prototype-chain escape hatches:
+ * `({}).constructor.constructor("return globalThis")()` builds a new
+ * Function even though the source contains no `Function` or `eval`
+ * identifier. The naive node-type allowlist (CallExpression,
+ * MemberExpression, Identifier) would PASS the attack — the fix
+ * is to walk every MemberExpression and reject if `.property` is
+ * any of these names.
+ */
+const FORBIDDEN_PROPERTIES = new Set([
+  'constructor',
+  '__proto__',
+  'prototype',
+  '__defineGetter__',
+  '__defineSetter__',
+  '__lookupGetter__',
+  '__lookupSetter__',
+  // Symbols that may be written as `obj[Symbol.toPrimitive]` — the
+  // walk rejects `obj[Symbol...]` by name since `Symbol` is not in
+  // the allowlist.
+  'then',
+  'catch',
+]);
+
+/** Names of all `Function` constructor variants the spec must reject. */
+const FORBIDDEN_CONSTRUCTORS = new Set([
+  'Function',
+  'AsyncFunction',
+  'GeneratorFunction',
+  'AsyncGeneratorFunction',
+]);
+
+/**
+ * Names bound by the sandbox wrapper at the top of every executed
+ * function. Plugin code can reference these freely; anything outside
+ * this set + ALLOWED_GLOBALS + the local declaration scope is a
+ * dangling reference (which would otherwise resolve to undefined at
+ * runtime and silently produce broken formulas).
+ */
+const SANDBOX_BINDINGS = new Set([
+  'globals', // the runtime Proxy of allowed globals
+  'finplan', // alias of globals (legacy)
+  'api', // the PluginAPI object passed in
+  'console', // the (overridden) console wrapper
+  'undefined',
+  'NaN',
+  'Infinity',
+]);
+
 /** Globals explicitly blocked */
 const BLOCKED_GLOBALS = new Set([
   'fetch',
@@ -314,6 +364,9 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
         if (n.type === 'NewExpression' && callee.name === 'Function') {
           return 'new Function(...) is not allowed';
         }
+        if (n.type === 'NewExpression' && FORBIDDEN_CONSTRUCTORS.has(callee.name)) {
+          return `new ${callee.name}(...) is not allowed`;
+        }
       }
       if (callee?.type === 'MemberExpression') {
         const obj = callee.object as { type?: string; name?: string } | undefined;
@@ -334,6 +387,29 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
       // Forbid call to any blocked global by name.
       if (callee?.type === 'Identifier' && BLOCKED_GLOBALS.has(callee.name)) {
         return `call to blocked global '${callee.name}' is not allowed`;
+      }
+      break;
+    }
+    case 'MemberExpression': {
+      // Check the property name (and computed-property literal) against
+      // FORBIDDEN_PROPERTIES. This blocks the prototype-chain escape
+      // `({}).constructor.constructor("return globalThis")()` even when
+      // the call site itself is a legitimate CallExpression.
+      const prop = n.property as { type?: string; name?: string; value?: unknown } | undefined;
+      const propName = prop?.type === 'Identifier' ? prop.name : null;
+      const propLiteral =
+        prop?.type === 'Literal' && typeof prop.value === 'string' ? prop.value : null;
+      const checkName = propName ?? propLiteral;
+      if (checkName && FORBIDDEN_PROPERTIES.has(checkName)) {
+        return `member access on forbidden property '.${checkName}' is not allowed`;
+      }
+      // Reject AsyncFunction / GeneratorFunction / AsyncGeneratorFunction
+      // as new-expression targets (the Identifier-name check above only
+      // covers the unqualified 'Function' name).
+      if (n.property && (n as { computed?: boolean }).computed === false) {
+        if (propName && FORBIDDEN_CONSTRUCTORS.has(propName)) {
+          return `new <obj>.${propName}(...) is not allowed`;
+        }
       }
       break;
     }
@@ -391,11 +467,10 @@ function checkIdentifierReferences(node: unknown, declared: Set<string>): string
         name &&
         !declared.has(name) &&
         !ALLOWED_GLOBALS.has(name) &&
-        !BLOCKED_GLOBALS.has(name) // BLOCKED_GLOBALS are also defined to undefined in the wrapper
+        !BLOCKED_GLOBALS.has(name) && // BLOCKED_GLOBALS are explicitly set to undefined
+        !SANDBOX_BINDINGS.has(name) // wrapper-bound names (globals, finplan, api, console, etc.)
       ) {
-        // Could still be a property of the `globals` proxy. We can't
-        // tell statically, so we allow it through. The runtime Proxy
-        // will deny unknown properties.
+        return `reference to undeclared identifier '${name}' is not allowed`;
       }
       break;
     }
