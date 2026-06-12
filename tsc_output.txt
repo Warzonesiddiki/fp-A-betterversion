@@ -1,2 +1,0 @@
-src/engines/AssumptionEngine.benchmark.ts(20,7): error TS2322: Type '"cost" | "revenue" | "rate" | "macro" | "operational" | undefined' is not assignable to type '"cost" | "revenue" | "rate" | "macro" | "operational"'.
-  Type 'undefined' is not assignable to type '"cost" | "revenue" | "rate" | "macro" | "operational"'.

@@ -32,6 +32,7 @@ __pycache__/
 # Root-level diagnostic dumps (don't commit these)
 /tsc_*.txt
 /tsc_*.log
+/tsc_output.txt
 /eslint*.txt
 /eslint*.json
 !/eslint.config.js
