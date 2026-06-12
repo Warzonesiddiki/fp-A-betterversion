@@ -1,0 +1,18 @@
+#!/bin/sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running pre-push checks..."
+
+# TypeScript check
+if ! npx tsc --noEmit; then
+  echo "❌ TypeScript errors found. Push blocked."
+  exit 1
+fi
+
+# ESLint check
+if ! npx eslint src --max-warnings 0; then
+  echo "❌ ESLint errors found. Push blocked."
+  exit 1
+fi
+
+echo "✅ All pre-push checks passed."
