@@ -201,13 +201,50 @@ export const useAuthStore = create<AuthState>()(
         lockedUntil: null as string | null,
         tokenExpiry: null as number | null,
 
+        /**
+         * PUBLIC login entry. Branches on the VITE_USE_MOCK_AUTH env var
+         * (resolved at build time by Vite). All UI forms call this method.
+         */
         login: async (email: string, password: string) => {
+          if (isMockAuthEnabled()) {
+            await get().loginMock(email, password);
+          } else {
+            await get().loginReal(email, password);
+          }
+        },
+
+        /**
+         * Mock-auth path. Looks the user up in MOCK_USERS and accepts
+         * ANY password. Used for offline / demo / staging. Generates
+         * unsigned JWT-shaped strings via generateMockToken().
+         *
+         * Hard refusal: if `import.meta.env.PROD === true` AND
+         * isMockAuthEnabled() is also true, throws immediately —
+         * the entry-point gate in src/main.tsx already prevents the
+         * page from mounting, but this is the belt-and-suspenders
+         * defence so a future code path that bypasses main.tsx
+         * still cannot log a user in with mock auth in production.
+         */
+        loginMock: async (email: string, password: string) => {
+          if (import.meta.env.PROD === true) {
+            throw new Error(
+              'loginMock() must never run in a production build. ' +
+                'Check the MOCK_AUTH build-time gate.'
+            );
+          }
+          if (!isMockAuthEnabled()) {
+            throw new Error(
+              'Mock authentication is disabled. Set VITE_USE_MOCK_AUTH=true ' +
+                'or rebuild with a real auth backend.'
+            );
+          }
+
           set((s) => {
             s.isLoading = true;
             s.error = null;
           });
 
-          // Check brute force lockout
+          // Brute-force lockout check
           const state = get();
           if (state.lockedUntil) {
             const lockExpiry = new Date(state.lockedUntil);
@@ -236,7 +273,6 @@ export const useAuthStore = create<AuthState>()(
             // Simulate network delay
             await new Promise((r) => setTimeout(r, 500));
 
-            // Offline mock authentication
             const mockUser = MOCK_USERS[email.toLowerCase()];
             if (!mockUser) {
               set((s) => {
@@ -252,18 +288,7 @@ export const useAuthStore = create<AuthState>()(
               throw new Error(get().error ?? 'Invalid credentials.');
             }
 
-            // Mock auth path is gated on the build-time env var
-            // (VITE_USE_MOCK_AUTH). If mock auth is disabled and the
-            // user is not in the real auth path, reject the attempt.
-            if (!isMockAuthEnabled()) {
-              set((s) => {
-                s.isLoading = false;
-                s.error = 'Mock authentication is disabled in this build.';
-              });
-              throw new Error('Mock authentication is disabled. Configure a real auth backend.');
-            }
-
-            // Any password works in offline mode
+            // Any password works in offline / mock-auth mode
             const accessToken = generateMockToken(mockUser.id, mockUser.role);
             const refreshToken = generateMockToken(mockUser.id, mockUser.role);
 
@@ -289,7 +314,8 @@ export const useAuthStore = create<AuthState>()(
           } catch (error) {
             if (
               !(error as Error).message.includes('locked') &&
-              !(error as Error).message.includes('credentials')
+              !(error as Error).message.includes('credentials') &&
+              !(error as Error).message.includes('required')
             ) {
               set((s) => {
                 s.isLoading = false;
@@ -298,6 +324,33 @@ export const useAuthStore = create<AuthState>()(
             }
             throw error;
           }
+        },
+
+        /**
+         * Real-auth path. Calls the configured auth backend.
+         * Throws if the build is configured for mock auth (mock-auth
+         * builds are offline / demo only and have no real backend).
+         *
+         * The real-auth implementation in this codebase is a stub that
+         * rejects until the backend is wired up; the function is
+         * present so the call sites can compile and so the branching
+         * can be unit-tested.
+         */
+        loginReal: async (_email: string, _password: string) => {
+          if (isMockAuthEnabled()) {
+            throw new Error(
+              'loginReal() called but mock auth is enabled. Unset VITE_USE_MOCK_AUTH ' +
+                'and configure the auth backend (see src/services/auth/).'
+            );
+          }
+          // No real backend is wired in this codebase yet. When it is,
+          // replace this with a fetch('/api/auth/login', { method: 'POST',
+          // body: JSON.stringify({ email, password }) }) and store the
+          // returned access/refresh tokens via set(...).
+          throw new Error(
+            'Real authentication is not configured. Implement src/services/auth/ ' +
+              'and replace this stub with a fetch to the auth backend.'
+          );
         },
 
         logout: () => {

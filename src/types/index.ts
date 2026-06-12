@@ -400,6 +400,8 @@ export interface AuthState {
   readonly lockedUntil: string | null;
   readonly tokenExpiry: number | null;
   readonly login: (email: string, password: string) => Promise<void>;
+  readonly loginMock: (email: string, password: string) => Promise<void>;
+  readonly loginReal: (email: string, password: string) => Promise<void>;
   readonly register: (name: string, email: string, password: string) => Promise<void>;
   readonly logout: () => void;
   readonly refreshAccessToken: () => Promise<void>;
