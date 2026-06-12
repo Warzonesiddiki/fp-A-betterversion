@@ -15,15 +15,29 @@ export type AuditCategory =
 export type AuditSeverity = 'debug' | 'info' | 'warning' | 'error' | 'critical';
 
 export type AuditAction =
-  | 'create' | 'update' | 'delete'
-  | 'login' | 'logout' | 'login_failed'
-  | 'export' | 'import'
-  | 'approve' | 'reject'
-  | 'role_change' | 'permission_grant' | 'permission_revoke'
-  | 'account_activate' | 'account_deactivate'
-  | 'view' | 'search' | 'comment'
-  | 'bulk_update' | 'bulk_delete'
-  | 'system_start' | 'system_error' | 'config_change';
+  | 'create'
+  | 'update'
+  | 'delete'
+  | 'login'
+  | 'logout'
+  | 'login_failed'
+  | 'export'
+  | 'import'
+  | 'approve'
+  | 'reject'
+  | 'role_change'
+  | 'permission_grant'
+  | 'permission_revoke'
+  | 'account_activate'
+  | 'account_deactivate'
+  | 'view'
+  | 'search'
+  | 'comment'
+  | 'bulk_update'
+  | 'bulk_delete'
+  | 'system_start'
+  | 'system_error'
+  | 'config_change';
 
 export type PermissionChangeType =
   | 'role_change'
@@ -192,9 +206,9 @@ const insertDataChange = db.prepare(`
 
 export class AuditService {
   private defaultRetention: RetentionConfig = {
-    auditLogDays: 2555,      // ~7 years for SOX compliance
-    loginAttemptsDays: 90,   // 90 days for login attempts
-    dataChangesDays: 2555,   // ~7 years for data changes
+    auditLogDays: 2555, // ~7 years for SOX compliance
+    loginAttemptsDays: 90, // 90 days for login attempts
+    dataChangesDays: 2555, // ~7 years for data changes
   };
 
   // ---------------------------------------------------------------------------
@@ -231,45 +245,80 @@ export class AuditService {
     const timestamp = new Date().toISOString();
     const severity = entry.severity ?? 'info';
 
-    const oldValueStr = entry.oldValue !== undefined && entry.oldValue !== null
-      ? JSON.stringify(entry.oldValue)
-      : null;
-    const newValueStr = entry.newValue !== undefined && entry.newValue !== null
-      ? JSON.stringify(entry.newValue)
-      : null;
+    const oldValueStr =
+      entry.oldValue !== undefined && entry.oldValue !== null
+        ? JSON.stringify(entry.oldValue)
+        : null;
+    const newValueStr =
+      entry.newValue !== undefined && entry.newValue !== null
+        ? JSON.stringify(entry.newValue)
+        : null;
     const metadataStr = entry.metadata ? JSON.stringify(entry.metadata) : null;
 
     const checksum = this.computeChecksum({
-      id, timestamp, category: entry.category, action: entry.action,
-      userId: entry.userId, resourceId: entry.resourceId,
-      oldValue: oldValueStr, newValue: newValueStr,
+      id,
+      timestamp,
+      category: entry.category,
+      action: entry.action,
+      userId: entry.userId,
+      resourceId: entry.resourceId,
+      oldValue: oldValueStr,
+      newValue: newValueStr,
     });
 
     insertAuditLog.run(
-      id, timestamp, entry.category, entry.action, severity,
-      entry.userId ?? null, entry.userName ?? null, entry.userRole ?? null,
-      entry.ipAddress ?? null, entry.userAgent ?? null, entry.sessionId ?? null,
-      entry.resourceType ?? null, entry.resourceId ?? null, entry.resourceName ?? null,
-      oldValueStr, newValueStr, entry.changeSummary ?? null,
-      entry.details ?? null, metadataStr,
-      entry.requestMethod ?? null, entry.requestPath ?? null,
-      entry.responseStatus ?? null, entry.durationMs ?? null,
+      id,
+      timestamp,
+      entry.category,
+      entry.action,
+      severity,
+      entry.userId ?? null,
+      entry.userName ?? null,
+      entry.userRole ?? null,
+      entry.ipAddress ?? null,
+      entry.userAgent ?? null,
+      entry.sessionId ?? null,
+      entry.resourceType ?? null,
+      entry.resourceId ?? null,
+      entry.resourceName ?? null,
+      oldValueStr,
+      newValueStr,
+      entry.changeSummary ?? null,
+      entry.details ?? null,
+      metadataStr,
+      entry.requestMethod ?? null,
+      entry.requestPath ?? null,
+      entry.responseStatus ?? null,
+      entry.durationMs ?? null,
       checksum
     );
 
     return this.mapAuditRow({
-      id, timestamp, category: entry.category, action: entry.action, severity,
-      user_id: entry.userId ?? null, user_name: entry.userName ?? null,
-      user_role: entry.userRole ?? null, ip_address: entry.ipAddress ?? null,
-      user_agent: entry.userAgent ?? null, session_id: entry.sessionId ?? null,
-      resource_type: entry.resourceType ?? null, resource_id: entry.resourceId ?? null,
+      id,
+      timestamp,
+      category: entry.category,
+      action: entry.action,
+      severity,
+      user_id: entry.userId ?? null,
+      user_name: entry.userName ?? null,
+      user_role: entry.userRole ?? null,
+      ip_address: entry.ipAddress ?? null,
+      user_agent: entry.userAgent ?? null,
+      session_id: entry.sessionId ?? null,
+      resource_type: entry.resourceType ?? null,
+      resource_id: entry.resourceId ?? null,
       resource_name: entry.resourceName ?? null,
-      old_value: oldValueStr, new_value: newValueStr,
+      old_value: oldValueStr,
+      new_value: newValueStr,
       change_summary: entry.changeSummary ?? null,
-      details: entry.details ?? null, metadata: metadataStr,
-      request_method: entry.requestMethod ?? null, request_path: entry.requestPath ?? null,
-      response_status: entry.responseStatus ?? null, duration_ms: entry.durationMs ?? null,
-      checksum, created_at: timestamp,
+      details: entry.details ?? null,
+      metadata: metadataStr,
+      request_method: entry.requestMethod ?? null,
+      request_path: entry.requestPath ?? null,
+      response_status: entry.responseStatus ?? null,
+      duration_ms: entry.durationMs ?? null,
+      checksum,
+      created_at: timestamp,
     });
   }
 
@@ -337,18 +386,26 @@ export class AuditService {
 
     for (const change of params.changes) {
       const id = `dc-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
-      const oldValueStr = change.oldValue !== undefined && change.oldValue !== null
-        ? JSON.stringify(change.oldValue)
-        : null;
-      const newValueStr = change.newValue !== undefined && change.newValue !== null
-        ? JSON.stringify(change.newValue)
-        : null;
+      const oldValueStr =
+        change.oldValue !== undefined && change.oldValue !== null
+          ? JSON.stringify(change.oldValue)
+          : null;
+      const newValueStr =
+        change.newValue !== undefined && change.newValue !== null
+          ? JSON.stringify(change.newValue)
+          : null;
 
       insertDataChange.run(
-        id, params.userId, params.userName,
-        params.tableName, params.recordId,
-        change.field, oldValueStr, newValueStr,
-        params.changeType, params.transactionId ?? null,
+        id,
+        params.userId,
+        params.userName,
+        params.tableName,
+        params.recordId,
+        change.field,
+        oldValueStr,
+        newValueStr,
+        params.changeType,
+        params.transactionId ?? null,
         params.reason ?? null
       );
 
@@ -372,7 +429,12 @@ export class AuditService {
     // Also log to the main audit_log
     this.log({
       category: 'data_change',
-      action: params.changeType === 'insert' ? 'create' : params.changeType === 'delete' ? 'delete' : 'update',
+      action:
+        params.changeType === 'insert'
+          ? 'create'
+          : params.changeType === 'delete'
+            ? 'delete'
+            : 'update',
       severity: 'info',
       userId: params.userId,
       userName: params.userName,
@@ -382,7 +444,7 @@ export class AuditService {
       details: params.reason,
       metadata: {
         transactionId: params.transactionId,
-        changedFields: params.changes.map(c => c.field),
+        changedFields: params.changes.map((c) => c.field),
       },
     });
 
@@ -423,9 +485,11 @@ export class AuditService {
         : `Failed login for ${params.email}: ${params.failureReason ?? 'invalid credentials'}`,
     });
 
-    const row = db.prepare(
-      'SELECT * FROM audit_login_attempts WHERE email = ? ORDER BY attempted_at DESC LIMIT 1'
-    ).get(params.email) as Record<string, unknown>;
+    const row = db
+      .prepare(
+        'SELECT * FROM audit_login_attempts WHERE email = ? ORDER BY attempted_at DESC LIMIT 1'
+      )
+      .get(params.email) as Record<string, unknown>;
 
     return this.mapLoginAttemptRow(row);
   }
@@ -447,18 +511,26 @@ export class AuditService {
   }): PermissionChangeEntry {
     const id = `perm-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
     const timestamp = new Date().toISOString();
-    const oldValueStr = params.oldValue !== undefined && params.oldValue !== null
-      ? JSON.stringify(params.oldValue)
-      : null;
-    const newValueStr = params.newValue !== undefined && params.newValue !== null
-      ? JSON.stringify(params.newValue)
-      : null;
+    const oldValueStr =
+      params.oldValue !== undefined && params.oldValue !== null
+        ? JSON.stringify(params.oldValue)
+        : null;
+    const newValueStr =
+      params.newValue !== undefined && params.newValue !== null
+        ? JSON.stringify(params.newValue)
+        : null;
 
     insertPermissionChange.run(
-      id, params.changedByUserId, params.changedByUserName ?? null,
-      params.targetUserId, params.targetUserName ?? null,
-      params.changeType, oldValueStr, newValueStr,
-      params.entityId ?? null, params.reason ?? null,
+      id,
+      params.changedByUserId,
+      params.changedByUserName ?? null,
+      params.targetUserId,
+      params.targetUserName ?? null,
+      params.changeType,
+      oldValueStr,
+      newValueStr,
+      params.entityId ?? null,
+      params.reason ?? null,
       params.ipAddress ?? null
     );
 
@@ -559,16 +631,16 @@ export class AuditService {
     const limit = filter.limit ?? 50;
     const offset = filter.offset ?? 0;
 
-    const countRow = db.prepare(
-      `SELECT COUNT(*) as count FROM audit_log ${whereClause}`
-    ).get(...params) as { count: number };
+    const countRow = db
+      .prepare(`SELECT COUNT(*) as count FROM audit_log ${whereClause}`)
+      .get(...params) as { count: number };
 
-    const rows = db.prepare(
-      `SELECT * FROM audit_log ${whereClause} ORDER BY timestamp DESC LIMIT ? OFFSET ?`
-    ).all(...params, limit, offset) as Record<string, unknown>[];
+    const rows = db
+      .prepare(`SELECT * FROM audit_log ${whereClause} ORDER BY timestamp DESC LIMIT ? OFFSET ?`)
+      .all(...params, limit, offset) as Record<string, unknown>[];
 
     return {
-      entries: rows.map(row => this.mapAuditRow(row)),
+      entries: rows.map((row) => this.mapAuditRow(row)),
       total: countRow.count,
     };
   }
@@ -576,14 +648,16 @@ export class AuditService {
   /**
    * Get login attempts with optional filtering.
    */
-  getLoginAttempts(filter: {
-    email?: string;
-    ipAddress?: string;
-    success?: boolean;
-    startDate?: string;
-    endDate?: string;
-    limit?: number;
-  } = {}): LoginAttemptEntry[] {
+  getLoginAttempts(
+    filter: {
+      email?: string;
+      ipAddress?: string;
+      success?: boolean;
+      startDate?: string;
+      endDate?: string;
+      limit?: number;
+    } = {}
+  ): LoginAttemptEntry[] {
     const conditions: string[] = [];
     const params: unknown[] = [];
 
@@ -611,25 +685,29 @@ export class AuditService {
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const limit = filter.limit ?? 100;
 
-    const rows = db.prepare(
-      `SELECT * FROM audit_login_attempts ${whereClause} ORDER BY attempted_at DESC LIMIT ?`
-    ).all(...params, limit) as Record<string, unknown>[];
+    const rows = db
+      .prepare(
+        `SELECT * FROM audit_login_attempts ${whereClause} ORDER BY attempted_at DESC LIMIT ?`
+      )
+      .all(...params, limit) as Record<string, unknown>[];
 
-    return rows.map(row => this.mapLoginAttemptRow(row));
+    return rows.map((row) => this.mapLoginAttemptRow(row));
   }
 
   /**
    * Get permission changes with optional filtering.
    */
-  getPermissionChanges(filter: {
-    targetUserId?: string;
-    changedByUserId?: string;
-    changeType?: PermissionChangeType;
-    entityId?: string;
-    startDate?: string;
-    endDate?: string;
-    limit?: number;
-  } = {}): PermissionChangeEntry[] {
+  getPermissionChanges(
+    filter: {
+      targetUserId?: string;
+      changedByUserId?: string;
+      changeType?: PermissionChangeType;
+      entityId?: string;
+      startDate?: string;
+      endDate?: string;
+      limit?: number;
+    } = {}
+  ): PermissionChangeEntry[] {
     const conditions: string[] = [];
     const params: unknown[] = [];
 
@@ -661,25 +739,29 @@ export class AuditService {
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const limit = filter.limit ?? 100;
 
-    const rows = db.prepare(
-      `SELECT * FROM audit_permission_changes ${whereClause} ORDER BY timestamp DESC LIMIT ?`
-    ).all(...params, limit) as Record<string, unknown>[];
+    const rows = db
+      .prepare(
+        `SELECT * FROM audit_permission_changes ${whereClause} ORDER BY timestamp DESC LIMIT ?`
+      )
+      .all(...params, limit) as Record<string, unknown>[];
 
-    return rows.map(row => this.mapPermissionChangeRow(row));
+    return rows.map((row) => this.mapPermissionChangeRow(row));
   }
 
   /**
    * Get data changes for a specific record.
    */
-  getDataChanges(filter: {
-    tableName?: string;
-    recordId?: string;
-    userId?: string;
-    changeType?: DataChangeType;
-    startDate?: string;
-    endDate?: string;
-    limit?: number;
-  } = {}): DataChangeEntry[] {
+  getDataChanges(
+    filter: {
+      tableName?: string;
+      recordId?: string;
+      userId?: string;
+      changeType?: DataChangeType;
+      startDate?: string;
+      endDate?: string;
+      limit?: number;
+    } = {}
+  ): DataChangeEntry[] {
     const conditions: string[] = [];
     const params: unknown[] = [];
 
@@ -711,18 +793,20 @@ export class AuditService {
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const limit = filter.limit ?? 100;
 
-    const rows = db.prepare(
-      `SELECT * FROM audit_data_changes ${whereClause} ORDER BY timestamp DESC LIMIT ?`
-    ).all(...params, limit) as Record<string, unknown>[];
+    const rows = db
+      .prepare(`SELECT * FROM audit_data_changes ${whereClause} ORDER BY timestamp DESC LIMIT ?`)
+      .all(...params, limit) as Record<string, unknown>[];
 
-    return rows.map(row => this.mapDataChangeRow(row));
+    return rows.map((row) => this.mapDataChangeRow(row));
   }
 
   /**
    * Get a single audit entry by ID.
    */
   getById(id: string): AuditLogEntry | null {
-    const row = db.prepare('SELECT * FROM audit_log WHERE id = ?').get(id) as Record<string, unknown> | undefined;
+    const row = db.prepare('SELECT * FROM audit_log WHERE id = ?').get(id) as
+      | Record<string, unknown>
+      | undefined;
     return row ? this.mapAuditRow(row) : null;
   }
 
@@ -730,20 +814,22 @@ export class AuditService {
    * Get the full history for a specific resource.
    */
   getResourceHistory(resourceType: string, resourceId: string): AuditLogEntry[] {
-    const rows = db.prepare(
-      'SELECT * FROM audit_log WHERE resource_type = ? AND resource_id = ? ORDER BY timestamp DESC'
-    ).all(resourceType, resourceId) as Record<string, unknown>[];
-    return rows.map(row => this.mapAuditRow(row));
+    const rows = db
+      .prepare(
+        'SELECT * FROM audit_log WHERE resource_type = ? AND resource_id = ? ORDER BY timestamp DESC'
+      )
+      .all(resourceType, resourceId) as Record<string, unknown>[];
+    return rows.map((row) => this.mapAuditRow(row));
   }
 
   /**
    * Get the full activity for a specific user.
    */
   getUserActivity(userId: string, limit = 100): AuditLogEntry[] {
-    const rows = db.prepare(
-      'SELECT * FROM audit_log WHERE user_id = ? ORDER BY timestamp DESC LIMIT ?'
-    ).all(userId, limit) as Record<string, unknown>[];
-    return rows.map(row => this.mapAuditRow(row));
+    const rows = db
+      .prepare('SELECT * FROM audit_log WHERE user_id = ? ORDER BY timestamp DESC LIMIT ?')
+      .all(userId, limit) as Record<string, unknown>[];
+    return rows.map((row) => this.mapAuditRow(row));
   }
 
   // ---------------------------------------------------------------------------
@@ -769,40 +855,42 @@ export class AuditService {
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
     // Total count
-    const totalRow = db.prepare(
-      `SELECT COUNT(*) as count FROM audit_log ${whereClause}`
-    ).get(...whereParams) as { count: number };
+    const totalRow = db
+      .prepare(`SELECT COUNT(*) as count FROM audit_log ${whereClause}`)
+      .get(...whereParams) as { count: number };
 
     // By category
-    const categoryRows = db.prepare(
-      `SELECT category, COUNT(*) as count FROM audit_log ${whereClause} GROUP BY category`
-    ).all(...whereParams) as Array<{ category: string; count: number }>;
+    const categoryRows = db
+      .prepare(`SELECT category, COUNT(*) as count FROM audit_log ${whereClause} GROUP BY category`)
+      .all(...whereParams) as Array<{ category: string; count: number }>;
 
     // By action
-    const actionRows = db.prepare(
-      `SELECT action, COUNT(*) as count FROM audit_log ${whereClause} GROUP BY action`
-    ).all(...whereParams) as Array<{ action: string; count: number }>;
+    const actionRows = db
+      .prepare(`SELECT action, COUNT(*) as count FROM audit_log ${whereClause} GROUP BY action`)
+      .all(...whereParams) as Array<{ action: string; count: number }>;
 
     // By severity
-    const severityRows = db.prepare(
-      `SELECT severity, COUNT(*) as count FROM audit_log ${whereClause} GROUP BY severity`
-    ).all(...whereParams) as Array<{ severity: string; count: number }>;
+    const severityRows = db
+      .prepare(`SELECT severity, COUNT(*) as count FROM audit_log ${whereClause} GROUP BY severity`)
+      .all(...whereParams) as Array<{ severity: string; count: number }>;
 
     // By user
     const userWhereClause = whereClause
       ? `${whereClause} AND user_id IS NOT NULL`
       : 'WHERE user_id IS NOT NULL';
-    const userRows = db.prepare(
-      `SELECT user_id, COUNT(*) as count FROM audit_log ${userWhereClause} GROUP BY user_id ORDER BY count DESC LIMIT 10`
-    ).all(...whereParams) as Array<{ user_id: string; count: number }>;
+    const userRows = db
+      .prepare(
+        `SELECT user_id, COUNT(*) as count FROM audit_log ${userWhereClause} GROUP BY user_id ORDER BY count DESC LIMIT 10`
+      )
+      .all(...whereParams) as Array<{ user_id: string; count: number }>;
 
     // Recent errors
     const errorWhereClause = whereClause
       ? `${whereClause} AND severity IN ('error', 'critical')`
       : "WHERE severity IN ('error', 'critical')";
-    const errorRows = db.prepare(
-      `SELECT * FROM audit_log ${errorWhereClause} ORDER BY timestamp DESC LIMIT 10`
-    ).all(...whereParams) as Record<string, unknown>[];
+    const errorRows = db
+      .prepare(`SELECT * FROM audit_log ${errorWhereClause} ORDER BY timestamp DESC LIMIT 10`)
+      .all(...whereParams) as Record<string, unknown>[];
 
     // Login stats
     const loginWhereConditions: string[] = [];
@@ -815,39 +903,44 @@ export class AuditService {
       loginWhereConditions.push('attempted_at <= ?');
       loginWhereParams.push(dateRange.endDate);
     }
-    const loginWhereClause = loginWhereConditions.length > 0 ? `WHERE ${loginWhereConditions.join(' AND ')}` : '';
+    const loginWhereClause =
+      loginWhereConditions.length > 0 ? `WHERE ${loginWhereConditions.join(' AND ')}` : '';
 
-    const loginTotalRow = db.prepare(
-      `SELECT COUNT(*) as count FROM audit_login_attempts ${loginWhereClause}`
-    ).get(...loginWhereParams) as { count: number };
+    const loginTotalRow = db
+      .prepare(`SELECT COUNT(*) as count FROM audit_login_attempts ${loginWhereClause}`)
+      .get(...loginWhereParams) as { count: number };
 
     const loginSuccessWhereClause = loginWhereClause
       ? `${loginWhereClause} AND success = 1`
       : 'WHERE success = 1';
-    const loginSuccessRow = db.prepare(
-      `SELECT COUNT(*) as count FROM audit_login_attempts ${loginSuccessWhereClause}`
-    ).get(...loginWhereParams) as { count: number };
+    const loginSuccessRow = db
+      .prepare(`SELECT COUNT(*) as count FROM audit_login_attempts ${loginSuccessWhereClause}`)
+      .get(...loginWhereParams) as { count: number };
 
-    const loginUniqueRow = db.prepare(
-      `SELECT COUNT(DISTINCT email) as count FROM audit_login_attempts ${loginWhereClause}`
-    ).get(...loginWhereParams) as { count: number };
+    const loginUniqueRow = db
+      .prepare(
+        `SELECT COUNT(DISTINCT email) as count FROM audit_login_attempts ${loginWhereClause}`
+      )
+      .get(...loginWhereParams) as { count: number };
 
     // Permission stats
-    const permTotalRow = db.prepare(
-      `SELECT COUNT(*) as count FROM audit_permission_changes`
-    ).get() as { count: number };
+    const permTotalRow = db
+      .prepare(`SELECT COUNT(*) as count FROM audit_permission_changes`)
+      .get() as { count: number };
 
-    const permTypeRows = db.prepare(
-      `SELECT change_type, COUNT(*) as count FROM audit_permission_changes GROUP BY change_type`
-    ).all() as Array<{ change_type: string; count: number }>;
+    const permTypeRows = db
+      .prepare(
+        `SELECT change_type, COUNT(*) as count FROM audit_permission_changes GROUP BY change_type`
+      )
+      .all() as Array<{ change_type: string; count: number }>;
 
     return {
       total: totalRow.count,
-      byCategory: Object.fromEntries(categoryRows.map(r => [r.category, r.count])),
-      byAction: Object.fromEntries(actionRows.map(r => [r.action, r.count])),
-      bySeverity: Object.fromEntries(severityRows.map(r => [r.severity, r.count])),
-      byUser: Object.fromEntries(userRows.map(r => [r.user_id, r.count])),
-      recentErrors: errorRows.map(row => this.mapAuditRow(row)),
+      byCategory: Object.fromEntries(categoryRows.map((r) => [r.category, r.count])),
+      byAction: Object.fromEntries(actionRows.map((r) => [r.action, r.count])),
+      bySeverity: Object.fromEntries(severityRows.map((r) => [r.severity, r.count])),
+      byUser: Object.fromEntries(userRows.map((r) => [r.user_id, r.count])),
+      recentErrors: errorRows.map((row) => this.mapAuditRow(row)),
       loginStats: {
         totalAttempts: loginTotalRow.count,
         successfulLogins: loginSuccessRow.count,
@@ -856,7 +949,7 @@ export class AuditService {
       },
       permissionStats: {
         totalChanges: permTotalRow.count,
-        byType: Object.fromEntries(permTypeRows.map(r => [r.change_type, r.count])),
+        byType: Object.fromEntries(permTypeRows.map((r) => [r.change_type, r.count])),
       },
     };
   }
@@ -874,23 +967,23 @@ export class AuditService {
 
     const auditCutoff = new Date();
     auditCutoff.setDate(auditCutoff.getDate() - cfg.auditLogDays);
-    const auditResult = db.prepare(
-      'DELETE FROM audit_log WHERE timestamp < ?'
-    ).run(auditCutoff.toISOString());
+    const auditResult = db
+      .prepare('DELETE FROM audit_log WHERE timestamp < ?')
+      .run(auditCutoff.toISOString());
     totalPruned += auditResult.changes;
 
     const loginCutoff = new Date();
     loginCutoff.setDate(loginCutoff.getDate() - cfg.loginAttemptsDays);
-    const loginResult = db.prepare(
-      'DELETE FROM audit_login_attempts WHERE attempted_at < ?'
-    ).run(loginCutoff.toISOString());
+    const loginResult = db
+      .prepare('DELETE FROM audit_login_attempts WHERE attempted_at < ?')
+      .run(loginCutoff.toISOString());
     totalPruned += loginResult.changes;
 
     const dataCutoff = new Date();
     dataCutoff.setDate(dataCutoff.getDate() - cfg.dataChangesDays);
-    const dataResult = db.prepare(
-      'DELETE FROM audit_data_changes WHERE timestamp < ?'
-    ).run(dataCutoff.toISOString());
+    const dataResult = db
+      .prepare('DELETE FROM audit_data_changes WHERE timestamp < ?')
+      .run(dataCutoff.toISOString());
     totalPruned += dataResult.changes;
 
     return totalPruned;
@@ -905,17 +998,43 @@ export class AuditService {
     dataChanges: { count: number; oldestEntry: string | null };
     permissionChanges: { count: number; oldestEntry: string | null };
   } {
-    const auditCount = (db.prepare('SELECT COUNT(*) as count FROM audit_log').get() as { count: number }).count;
-    const auditOldest = (db.prepare('SELECT MIN(timestamp) as oldest FROM audit_log').get() as { oldest: string | null }).oldest;
+    const auditCount = (
+      db.prepare('SELECT COUNT(*) as count FROM audit_log').get() as { count: number }
+    ).count;
+    const auditOldest = (
+      db.prepare('SELECT MIN(timestamp) as oldest FROM audit_log').get() as {
+        oldest: string | null;
+      }
+    ).oldest;
 
-    const loginCount = (db.prepare('SELECT COUNT(*) as count FROM audit_login_attempts').get() as { count: number }).count;
-    const loginOldest = (db.prepare('SELECT MIN(attempted_at) as oldest FROM audit_login_attempts').get() as { oldest: string | null }).oldest;
+    const loginCount = (
+      db.prepare('SELECT COUNT(*) as count FROM audit_login_attempts').get() as { count: number }
+    ).count;
+    const loginOldest = (
+      db.prepare('SELECT MIN(attempted_at) as oldest FROM audit_login_attempts').get() as {
+        oldest: string | null;
+      }
+    ).oldest;
 
-    const dataCount = (db.prepare('SELECT COUNT(*) as count FROM audit_data_changes').get() as { count: number }).count;
-    const dataOldest = (db.prepare('SELECT MIN(timestamp) as oldest FROM audit_data_changes').get() as { oldest: string | null }).oldest;
+    const dataCount = (
+      db.prepare('SELECT COUNT(*) as count FROM audit_data_changes').get() as { count: number }
+    ).count;
+    const dataOldest = (
+      db.prepare('SELECT MIN(timestamp) as oldest FROM audit_data_changes').get() as {
+        oldest: string | null;
+      }
+    ).oldest;
 
-    const permCount = (db.prepare('SELECT COUNT(*) as count FROM audit_permission_changes').get() as { count: number }).count;
-    const permOldest = (db.prepare('SELECT MIN(timestamp) as oldest FROM audit_permission_changes').get() as { oldest: string | null }).oldest;
+    const permCount = (
+      db.prepare('SELECT COUNT(*) as count FROM audit_permission_changes').get() as {
+        count: number;
+      }
+    ).count;
+    const permOldest = (
+      db.prepare('SELECT MIN(timestamp) as oldest FROM audit_permission_changes').get() as {
+        oldest: string | null;
+      }
+    ).oldest;
 
     return {
       auditLog: { count: auditCount, oldestEntry: auditOldest },
@@ -936,10 +1055,20 @@ export class AuditService {
     const { entries } = this.query({ ...filter, limit: 100000 });
 
     const headers = [
-      'id', 'timestamp', 'category', 'action', 'severity',
-      'userId', 'userName', 'userRole', 'ipAddress',
-      'resourceType', 'resourceId', 'resourceName',
-      'changeSummary', 'details',
+      'id',
+      'timestamp',
+      'category',
+      'action',
+      'severity',
+      'userId',
+      'userName',
+      'userRole',
+      'ipAddress',
+      'resourceType',
+      'resourceId',
+      'resourceName',
+      'changeSummary',
+      'details',
     ];
 
     const escapeCSV = (val: unknown): string => {
@@ -951,8 +1080,8 @@ export class AuditService {
       return str;
     };
 
-    const rows = entries.map(e =>
-      headers.map(h => escapeCSV(e[h as keyof AuditLogEntry])).join(',')
+    const rows = entries.map((e) =>
+      headers.map((h) => escapeCSV(e[h as keyof AuditLogEntry])).join(',')
     );
 
     return [headers.join(','), ...rows].join('\n');

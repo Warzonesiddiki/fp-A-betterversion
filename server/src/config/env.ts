@@ -21,7 +21,7 @@ function resolveJwtSecret(): string {
   if (IS_PRODUCTION) {
     console.error(
       '[config] FATAL: JWT_SECRET environment variable is not set. ' +
-      'In production the server will not start without an explicit secret.'
+        'In production the server will not start without an explicit secret.'
     );
     process.exit(1);
   }
@@ -30,8 +30,8 @@ function resolveJwtSecret(): string {
   const generated = crypto.randomBytes(64).toString('hex');
   console.warn(
     '[config] WARNING: JWT_SECRET is not set. ' +
-    `Auto-generated a random secret for ${NODE_ENV} mode. ` +
-    'This secret will change on every restart — do NOT use in production.'
+      `Auto-generated a random secret for ${NODE_ENV} mode. ` +
+      'This secret will change on every restart — do NOT use in production.'
   );
   return generated;
 }

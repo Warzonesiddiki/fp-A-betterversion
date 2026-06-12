@@ -65,7 +65,9 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
     const params: unknown[] = [];
 
     // Entity-level access filter
-    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as string[] | null;
+    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
+      | string[]
+      | null;
     if (entityFilter !== null && entityFilter.length > 0) {
       conditions.push(`b.entity_id IN (${entityFilter.map(() => '?').join(', ')})`);
       params.push(...entityFilter);
@@ -82,20 +84,22 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    const countRow = db.prepare(
-      `SELECT COUNT(*) AS count FROM budgets b ${whereClause}`
-    ).get(...params) as { count: number } | undefined;
+    const countRow = db
+      .prepare(`SELECT COUNT(*) AS count FROM budgets b ${whereClause}`)
+      .get(...params) as { count: number } | undefined;
 
     params.push(Number(limit), Number(offset));
 
-    const rows = db.prepare(
-      `SELECT b.*, e.name AS entity_name
+    const rows = db
+      .prepare(
+        `SELECT b.*, e.name AS entity_name
        FROM budgets b
        LEFT JOIN entities e ON e.id = b.entity_id
        ${whereClause}
        ORDER BY b.created_at DESC
        LIMIT ? OFFSET ?`
-    ).all(...params);
+      )
+      .all(...params);
 
     res.json({
       data: rows,
@@ -112,27 +116,31 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
 // GET /:id — get budget with line items
 router.get('/:id', requireEntityAccess('budgets'), (req: Request, res: Response) => {
   try {
-    const budget = db.prepare(
-      `SELECT b.*, e.name AS entity_name
+    const budget = db
+      .prepare(
+        `SELECT b.*, e.name AS entity_name
        FROM budgets b
        LEFT JOIN entities e ON e.id = b.entity_id
        WHERE b.id = ? AND b.deleted_at IS NULL`
-    ).get(req.params.id);
+      )
+      .get(req.params.id);
 
     if (!budget) {
       res.status(404).json({ error: 'Budget not found' });
       return;
     }
 
-    const lineItems = db.prepare(
-      `SELECT bli.*, a.name AS account_name, a.code AS account_code,
+    const lineItems = db
+      .prepare(
+        `SELECT bli.*, a.name AS account_name, a.code AS account_code,
               d.name AS department_name
        FROM budget_line_items bli
        LEFT JOIN accounts a ON a.id = bli.account_id
        LEFT JOIN departments d ON d.id = bli.department_id
        WHERE bli.budget_id = ?
        ORDER BY bli.month, a.code`
-    ).all(req.params.id);
+      )
+      .all(req.params.id);
 
     res.json({ ...(budget as Record<string, unknown>), line_items: lineItems });
   } catch (err) {
@@ -142,31 +150,44 @@ router.get('/:id', requireEntityAccess('budgets'), (req: Request, res: Response)
 });
 
 // POST / — create budget
-router.post('/', requireEntityWriteAccess('budgets', { entityIdSource: 'body' }), (req: Request, res: Response) => {
-  try {
-    const parsed = CreateBudgetSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
-      return;
-    }
+router.post(
+  '/',
+  requireEntityWriteAccess('budgets', { entityIdSource: 'body' }),
+  (req: Request, res: Response) => {
+    try {
+      const parsed = CreateBudgetSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
+        return;
+      }
 
-    const { name, description, fiscal_year, base_currency, entity_id, status } = parsed.data;
-    const id = uuidv4();
+      const { name, description, fiscal_year, base_currency, entity_id, status } = parsed.data;
+      const id = uuidv4();
 
-    db.prepare(
-      `INSERT INTO budgets (id, name, description, fiscal_year, base_currency, entity_id, status, created_by, created_at, updated_at)
+      db.prepare(
+        `INSERT INTO budgets (id, name, description, fiscal_year, base_currency, entity_id, status, created_by, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-    ).run(id, name, description ?? null, fiscal_year, base_currency, entity_id ?? null, status ?? 'Draft', req.user!.id);
+      ).run(
+        id,
+        name,
+        description ?? null,
+        fiscal_year,
+        base_currency,
+        entity_id ?? null,
+        status ?? 'Draft',
+        req.user!.id
+      );
 
-    audit('CREATE', 'budget', id, req.user!.id, { name, fiscal_year });
+      audit('CREATE', 'budget', id, req.user!.id, { name, fiscal_year });
 
-    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(id);
-    res.status(201).json(budget);
-  } catch (err) {
-    console.error('POST /budgets error:', err);
-    res.status(500).json({ error: 'Failed to create budget' });
+      const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(id);
+      res.status(201).json(budget);
+    } catch (err) {
+      console.error('POST /budgets error:', err);
+      res.status(500).json({ error: 'Failed to create budget' });
+    }
   }
-});
+);
 
 // PUT /:id — update budget
 router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
@@ -177,9 +198,9 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
       return;
     }
 
-    const existing = db.prepare(
-      'SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL'
-    ).get(req.params.id) as { id: string; status: string } | undefined;
+    const existing = db
+      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
+      .get(req.params.id) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -209,9 +230,7 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
     fields.push("updated_at = datetime('now')");
     values.push(req.params.id);
 
-    db.prepare(
-      `UPDATE budgets SET ${fields.join(', ')} WHERE id = ?`
-    ).run(...values);
+    db.prepare(`UPDATE budgets SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
     audit('UPDATE', 'budget', req.params.id, req.user!.id, parsed.data);
 
@@ -226,9 +245,9 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
 // DELETE /:id — soft delete
 router.delete('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare(
-      'SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL'
-    ).get(req.params.id);
+    const existing = db
+      .prepare('SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL')
+      .get(req.params.id);
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -250,9 +269,9 @@ router.delete('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: R
 // POST /:id/submit — set status to InReview
 router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare(
-      'SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL'
-    ).get(req.params.id) as { id: string; status: string } | undefined;
+    const existing = db
+      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
+      .get(req.params.id) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -268,7 +287,10 @@ router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, r
       "UPDATE budgets SET status = 'InReview', updated_at = datetime('now') WHERE id = ?"
     ).run(req.params.id);
 
-    audit('SUBMIT', 'budget', req.params.id, req.user!.id, { from: existing.status, to: 'InReview' });
+    audit('SUBMIT', 'budget', req.params.id, req.user!.id, {
+      from: existing.status,
+      to: 'InReview',
+    });
 
     const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(req.params.id);
     res.json(budget);
@@ -281,9 +303,9 @@ router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, r
 // POST /:id/approve — set status to Approved
 router.post('/:id/approve', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare(
-      'SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL'
-    ).get(req.params.id) as { id: string; status: string } | undefined;
+    const existing = db
+      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
+      .get(req.params.id) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -299,7 +321,10 @@ router.post('/:id/approve', requireEntityWriteAccess('budgets'), (req: Request, 
       "UPDATE budgets SET status = 'Approved', approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now') WHERE id = ?"
     ).run(req.user!.id, req.params.id);
 
-    audit('APPROVE', 'budget', req.params.id, req.user!.id, { from: existing.status, to: 'Approved' });
+    audit('APPROVE', 'budget', req.params.id, req.user!.id, {
+      from: existing.status,
+      to: 'Approved',
+    });
 
     const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(req.params.id);
     res.json(budget);
@@ -318,9 +343,9 @@ router.post('/:id/reject', requireEntityWriteAccess('budgets'), (req: Request, r
       return;
     }
 
-    const existing = db.prepare(
-      'SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL'
-    ).get(req.params.id) as { id: string; status: string } | undefined;
+    const existing = db
+      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
+      .get(req.params.id) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -351,162 +376,189 @@ router.post('/:id/reject', requireEntityWriteAccess('budgets'), (req: Request, r
 });
 
 // GET /:id/items — list line items for budget
-router.get('/:id/items', requireParentEntityAccess('budgets', 'budget_id'), (req: Request, res: Response) => {
-  try {
-    const budget = db.prepare(
-      'SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL'
-    ).get(req.params.id);
+router.get(
+  '/:id/items',
+  requireParentEntityAccess('budgets', 'budget_id'),
+  (req: Request, res: Response) => {
+    try {
+      const budget = db
+        .prepare('SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL')
+        .get(req.params.id);
 
-    if (!budget) {
-      res.status(404).json({ error: 'Budget not found' });
-      return;
-    }
+      if (!budget) {
+        res.status(404).json({ error: 'Budget not found' });
+        return;
+      }
 
-    const items = db.prepare(
-      `SELECT bli.*, a.name AS account_name, a.code AS account_code,
+      const items = db
+        .prepare(
+          `SELECT bli.*, a.name AS account_name, a.code AS account_code,
               d.name AS department_name
        FROM budget_line_items bli
        LEFT JOIN accounts a ON a.id = bli.account_id
        LEFT JOIN departments d ON d.id = bli.department_id
        WHERE bli.budget_id = ?
        ORDER BY bli.month, a.code`
-    ).all(req.params.id);
+        )
+        .all(req.params.id);
 
-    res.json(items);
-  } catch (err) {
-    console.error('GET /budgets/:id/items error:', err);
-    res.status(500).json({ error: 'Failed to fetch line items' });
+      res.json(items);
+    } catch (err) {
+      console.error('GET /budgets/:id/items error:', err);
+      res.status(500).json({ error: 'Failed to fetch line items' });
+    }
   }
-});
+);
 
 // POST /:id/items — create line item
-router.post('/:id/items', requireParentEntityAccess('budgets', 'budget_id'), (req: Request, res: Response) => {
-  try {
-    const parsed = CreateLineItemSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
-      return;
-    }
+router.post(
+  '/:id/items',
+  requireParentEntityAccess('budgets', 'budget_id'),
+  (req: Request, res: Response) => {
+    try {
+      const parsed = CreateLineItemSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
+        return;
+      }
 
-    const budget = db.prepare(
-      'SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL'
-    ).get(req.params.id) as { id: string; status: string } | undefined;
+      const budget = db
+        .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
+        .get(req.params.id) as { id: string; status: string } | undefined;
 
-    if (!budget) {
-      res.status(404).json({ error: 'Budget not found' });
-      return;
-    }
+      if (!budget) {
+        res.status(404).json({ error: 'Budget not found' });
+        return;
+      }
 
-    if (budget.status === 'Locked') {
-      res.status(400).json({ error: 'Cannot add items to a locked budget' });
-      return;
-    }
+      if (budget.status === 'Locked') {
+        res.status(400).json({ error: 'Cannot add items to a locked budget' });
+        return;
+      }
 
-    const { account_id, month, amount, department_id, notes } = parsed.data;
-    const id = uuidv4();
+      const { account_id, month, amount, department_id, notes } = parsed.data;
+      const id = uuidv4();
 
-    db.prepare(
-      `INSERT INTO budget_line_items (id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
+      db.prepare(
+        `INSERT INTO budget_line_items (id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-    ).run(id, req.params.id, account_id, month, amount, department_id ?? null, notes ?? null);
+      ).run(id, req.params.id, account_id, month, amount, department_id ?? null, notes ?? null);
 
-    audit('CREATE', 'budget_line_item', id, req.user!.id, { budget_id: req.params.id, account_id, month, amount });
+      audit('CREATE', 'budget_line_item', id, req.user!.id, {
+        budget_id: req.params.id,
+        account_id,
+        month,
+        amount,
+      });
 
-    const item = db.prepare('SELECT * FROM budget_line_items WHERE id = ?').get(id);
-    res.status(201).json(item);
-  } catch (err) {
-    console.error('POST /budgets/:id/items error:', err);
-    res.status(500).json({ error: 'Failed to create line item' });
+      const item = db.prepare('SELECT * FROM budget_line_items WHERE id = ?').get(id);
+      res.status(201).json(item);
+    } catch (err) {
+      console.error('POST /budgets/:id/items error:', err);
+      res.status(500).json({ error: 'Failed to create line item' });
+    }
   }
-});
+);
 
 // PUT /items/:itemId — update line item
-router.put('/items/:itemId', requireParentEntityAccess('budgets', 'budget_id'), (req: Request, res: Response) => {
-  try {
-    const parsed = UpdateLineItemSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
-      return;
-    }
+router.put(
+  '/items/:itemId',
+  requireParentEntityAccess('budgets', 'budget_id'),
+  (req: Request, res: Response) => {
+    try {
+      const parsed = UpdateLineItemSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
+        return;
+      }
 
-    const existing = db.prepare(
-      `SELECT bli.id, bli.budget_id, b.status
+      const existing = db
+        .prepare(
+          `SELECT bli.id, bli.budget_id, b.status
        FROM budget_line_items bli
        JOIN budgets b ON b.id = bli.budget_id
        WHERE bli.id = ? AND b.deleted_at IS NULL`
-    ).get(req.params.itemId) as { id: string; budget_id: string; status: string } | undefined;
+        )
+        .get(req.params.itemId) as { id: string; budget_id: string; status: string } | undefined;
 
-    if (!existing) {
-      res.status(404).json({ error: 'Line item not found' });
-      return;
-    }
-
-    if (existing.status === 'Locked') {
-      res.status(400).json({ error: 'Cannot edit items in a locked budget' });
-      return;
-    }
-
-    const fields: string[] = [];
-    const values: unknown[] = [];
-
-    for (const [key, value] of Object.entries(parsed.data)) {
-      if (value !== undefined) {
-        fields.push(`${key} = ?`);
-        values.push(value);
+      if (!existing) {
+        res.status(404).json({ error: 'Line item not found' });
+        return;
       }
+
+      if (existing.status === 'Locked') {
+        res.status(400).json({ error: 'Cannot edit items in a locked budget' });
+        return;
+      }
+
+      const fields: string[] = [];
+      const values: unknown[] = [];
+
+      for (const [key, value] of Object.entries(parsed.data)) {
+        if (value !== undefined) {
+          fields.push(`${key} = ?`);
+          values.push(value);
+        }
+      }
+
+      if (fields.length === 0) {
+        res.status(400).json({ error: 'No fields to update' });
+        return;
+      }
+
+      fields.push("updated_at = datetime('now')");
+      values.push(req.params.itemId);
+
+      db.prepare(`UPDATE budget_line_items SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+
+      audit('UPDATE', 'budget_line_item', req.params.itemId, req.user!.id, parsed.data);
+
+      const item = db
+        .prepare('SELECT * FROM budget_line_items WHERE id = ?')
+        .get(req.params.itemId);
+      res.json(item);
+    } catch (err) {
+      console.error('PUT /budgets/items/:itemId error:', err);
+      res.status(500).json({ error: 'Failed to update line item' });
     }
-
-    if (fields.length === 0) {
-      res.status(400).json({ error: 'No fields to update' });
-      return;
-    }
-
-    fields.push("updated_at = datetime('now')");
-    values.push(req.params.itemId);
-
-    db.prepare(
-      `UPDATE budget_line_items SET ${fields.join(', ')} WHERE id = ?`
-    ).run(...values);
-
-    audit('UPDATE', 'budget_line_item', req.params.itemId, req.user!.id, parsed.data);
-
-    const item = db.prepare('SELECT * FROM budget_line_items WHERE id = ?').get(req.params.itemId);
-    res.json(item);
-  } catch (err) {
-    console.error('PUT /budgets/items/:itemId error:', err);
-    res.status(500).json({ error: 'Failed to update line item' });
   }
-});
+);
 
 // DELETE /items/:itemId — delete line item
-router.delete('/items/:itemId', requireParentEntityAccess('budgets', 'budget_id'), (req: Request, res: Response) => {
-  try {
-    const existing = db.prepare(
-      `SELECT bli.id, bli.budget_id, b.status
+router.delete(
+  '/items/:itemId',
+  requireParentEntityAccess('budgets', 'budget_id'),
+  (req: Request, res: Response) => {
+    try {
+      const existing = db
+        .prepare(
+          `SELECT bli.id, bli.budget_id, b.status
        FROM budget_line_items bli
        JOIN budgets b ON b.id = bli.budget_id
        WHERE bli.id = ? AND b.deleted_at IS NULL`
-    ).get(req.params.itemId) as { id: string; budget_id: string; status: string } | undefined;
+        )
+        .get(req.params.itemId) as { id: string; budget_id: string; status: string } | undefined;
 
-    if (!existing) {
-      res.status(404).json({ error: 'Line item not found' });
-      return;
+      if (!existing) {
+        res.status(404).json({ error: 'Line item not found' });
+        return;
+      }
+
+      if (existing.status === 'Locked') {
+        res.status(400).json({ error: 'Cannot delete items from a locked budget' });
+        return;
+      }
+
+      db.prepare('DELETE FROM budget_line_items WHERE id = ?').run(req.params.itemId);
+
+      audit('DELETE', 'budget_line_item', req.params.itemId, req.user!.id);
+
+      res.status(204).send();
+    } catch (err) {
+      console.error('DELETE /budgets/items/:itemId error:', err);
+      res.status(500).json({ error: 'Failed to delete line item' });
     }
-
-    if (existing.status === 'Locked') {
-      res.status(400).json({ error: 'Cannot delete items from a locked budget' });
-      return;
-    }
-
-    db.prepare('DELETE FROM budget_line_items WHERE id = ?').run(req.params.itemId);
-
-    audit('DELETE', 'budget_line_item', req.params.itemId, req.user!.id);
-
-    res.status(204).send();
-  } catch (err) {
-    console.error('DELETE /budgets/items/:itemId error:', err);
-    res.status(500).json({ error: 'Failed to delete line item' });
   }
-});
+);
 
 export default router;

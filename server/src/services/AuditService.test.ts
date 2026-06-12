@@ -262,9 +262,7 @@ describe('AuditService', () => {
         userName: 'Alice',
         tableName: 'line_items',
         recordId: 'li-1',
-        changes: [
-          { field: 'value', oldValue: 100, newValue: 200 },
-        ],
+        changes: [{ field: 'value', oldValue: 100, newValue: 200 }],
         changeType: 'update',
         transactionId: 'txn-001',
       });
@@ -278,9 +276,7 @@ describe('AuditService', () => {
         userName: 'Alice',
         tableName: 'budgets',
         recordId: 'budget-1',
-        changes: [
-          { field: 'amount', oldValue: 500, newValue: 1000 },
-        ],
+        changes: [{ field: 'amount', oldValue: 500, newValue: 1000 }],
         changeType: 'update',
       });
 
@@ -311,9 +307,7 @@ describe('AuditService', () => {
         userName: 'Alice',
         tableName: 'budgets',
         recordId: 'budget-old',
-        changes: [
-          { field: 'name', oldValue: 'Old Budget', newValue: null },
-        ],
+        changes: [{ field: 'name', oldValue: 'Old Budget', newValue: null }],
         changeType: 'delete',
       });
 
@@ -425,9 +419,27 @@ describe('AuditService', () => {
   describe('query', () => {
     beforeEach(() => {
       // Seed test data
-      service.log({ category: 'user_action', action: 'create', userId: 'user-1', resourceType: 'budget', resourceId: 'b1' });
-      service.log({ category: 'user_action', action: 'update', userId: 'user-1', resourceType: 'budget', resourceId: 'b1' });
-      service.log({ category: 'data_change', action: 'update', userId: 'user-2', resourceType: 'forecast', resourceId: 'f1' });
+      service.log({
+        category: 'user_action',
+        action: 'create',
+        userId: 'user-1',
+        resourceType: 'budget',
+        resourceId: 'b1',
+      });
+      service.log({
+        category: 'user_action',
+        action: 'update',
+        userId: 'user-1',
+        resourceType: 'budget',
+        resourceId: 'b1',
+      });
+      service.log({
+        category: 'data_change',
+        action: 'update',
+        userId: 'user-2',
+        resourceType: 'forecast',
+        resourceId: 'f1',
+      });
       service.log({ category: 'login_attempt', action: 'login', userId: 'user-1' });
       service.log({ category: 'login_attempt', action: 'login_failed', severity: 'warning' });
       service.log({ category: 'permission_change', action: 'role_change', userId: 'admin-1' });
@@ -496,8 +508,17 @@ describe('AuditService', () => {
 
   describe('getLoginAttempts', () => {
     beforeEach(() => {
-      service.logLoginAttempt({ email: 'alice@example.com', ipAddress: '192.168.1.1', success: true });
-      service.logLoginAttempt({ email: 'alice@example.com', ipAddress: '192.168.1.1', success: false, failureReason: 'Wrong password' });
+      service.logLoginAttempt({
+        email: 'alice@example.com',
+        ipAddress: '192.168.1.1',
+        success: true,
+      });
+      service.logLoginAttempt({
+        email: 'alice@example.com',
+        ipAddress: '192.168.1.1',
+        success: false,
+        failureReason: 'Wrong password',
+      });
       service.logLoginAttempt({ email: 'bob@example.com', ipAddress: '10.0.0.1', success: true });
     });
 
@@ -719,7 +740,11 @@ describe('AuditService', () => {
         resourceId: 'f1',
       });
       service.logLoginAttempt({ email: 'alice@example.com', success: true });
-      service.logLoginAttempt({ email: 'bob@example.com', success: false, failureReason: 'Wrong password' });
+      service.logLoginAttempt({
+        email: 'bob@example.com',
+        success: false,
+        failureReason: 'Wrong password',
+      });
       service.logPermissionChange({
         changedByUserId: 'admin-1',
         targetUserId: 'user-1',

@@ -46,7 +46,9 @@ test.describe('Critical Flow: Navigation', () => {
   });
 
   test('sidebar collapses and expands', async ({ page }) => {
-    const collapseBtn = page.locator('button[aria-label*="ollapse"], button[aria-label*="idebar"]').first();
+    const collapseBtn = page
+      .locator('button[aria-label*="ollapse"], button[aria-label*="idebar"]')
+      .first();
     if (await collapseBtn.isVisible()) {
       await collapseBtn.click();
       await page.waitForTimeout(400);
@@ -82,7 +84,11 @@ test.describe('Critical Flow: Settings', () => {
   });
 
   test('organization tab shows form fields', async ({ page }) => {
-    const orgInput = page.locator('input[placeholder*="organization" i], input[placeholder*="company" i], input[value*="FinPlan"]').first();
+    const orgInput = page
+      .locator(
+        'input[placeholder*="organization" i], input[placeholder*="company" i], input[value*="FinPlan"]'
+      )
+      .first();
     if (await orgInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await expect(orgInput).toBeVisible();
     }

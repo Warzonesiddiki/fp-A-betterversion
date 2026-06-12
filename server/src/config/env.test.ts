@@ -137,7 +137,11 @@ const FORBIDDEN_SECRET = 'finplan-dev-secret-change-in-production';
       offenders.push(file);
     }
   }
-  assert.equal(offenders.length, 0, `Test 6 FAILED: these files still contain the hardcoded fallback: ${offenders.join(', ')}`);
+  assert.equal(
+    offenders.length,
+    0,
+    `Test 6 FAILED: these files still contain the hardcoded fallback: ${offenders.join(', ')}`
+  );
   console.log('PASS: Test 6 — no server source files contain the hardcoded fallback');
 }
 

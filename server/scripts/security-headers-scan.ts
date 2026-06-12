@@ -24,7 +24,12 @@ async function startServer(): Promise<{ process: any; baseUrl: string }> {
   return new Promise((resolve, reject) => {
     const serverProcess = spawn('tsx', ['src/index.ts'], {
       cwd: SERVER_DIR,
-      env: { ...process.env, NODE_ENV: 'production', PORT: '3001', CORS_ORIGIN: 'https://finplan.app' },
+      env: {
+        ...process.env,
+        NODE_ENV: 'production',
+        PORT: '3001',
+        CORS_ORIGIN: 'https://finplan.app',
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
@@ -68,9 +73,16 @@ async function fetchHeaders(baseUrl: string, path: string): Promise<Record<strin
   return headers;
 }
 
-function checkHeader(headers: Record<string, string>, name: string, expected?: string | RegExp): SecurityCheck {
+function checkHeader(
+  headers: Record<string, string>,
+  name: string,
+  expected?: string | RegExp
+): SecurityCheck {
   const actual = headers[name.toLowerCase()];
-  const passed = actual !== undefined && (expected === undefined || (typeof expected === 'string' ? actual.includes(expected) : expected.test(actual)));
+  const passed =
+    actual !== undefined &&
+    (expected === undefined ||
+      (typeof expected === 'string' ? actual.includes(expected) : expected.test(actual)));
   return {
     name,
     passed,
@@ -83,20 +95,25 @@ function checkHeader(headers: Record<string, string>, name: string, expected?: s
 function checkCSP(headers: Record<string, string>): SecurityCheck {
   const csp = headers['content-security-policy'] || headers['content-security-policy-report-only'];
   const checks = [
-    { directive: "default-src", pattern: /default-src\s+['"]self['"]/ },
-    { directive: "script-src", pattern: /script-src\s+['"]self['"]/ },
-    { directive: "style-src", pattern: /style-src\s+['"]self['"]/ },
-    { directive: "frame-ancestors", pattern: /frame-ancestors\s+['"]none['"]/ },
-    { directive: "object-src", pattern: /object-src\s+['"]none['"]/ },
-    { directive: "base-uri", pattern: /base-uri\s+['"]self['"]/ },
-    { directive: "form-action", pattern: /form-action\s+['"]self['"]/ },
+    { directive: 'default-src', pattern: /default-src\s+['"]self['"]/ },
+    { directive: 'script-src', pattern: /script-src\s+['"]self['"]/ },
+    { directive: 'style-src', pattern: /style-src\s+['"]self['"]/ },
+    { directive: 'frame-ancestors', pattern: /frame-ancestors\s+['"]none['"]/ },
+    { directive: 'object-src', pattern: /object-src\s+['"]none['"]/ },
+    { directive: 'base-uri', pattern: /base-uri\s+['"]self['"]/ },
+    { directive: 'form-action', pattern: /form-action\s+['"]self['"]/ },
   ];
 
   let allPassed = true;
   const failures: string[] = [];
 
   if (!csp) {
-    return { name: 'Content-Security-Policy', passed: false, actual: 'MISSING', severity: 'critical' };
+    return {
+      name: 'Content-Security-Policy',
+      passed: false,
+      actual: 'MISSING',
+      severity: 'critical',
+    };
   }
 
   for (const check of checks) {
@@ -158,7 +175,6 @@ async function runSecurityScan(): Promise<void> {
       results.push(checkHeader(headers, 'ratelimit-remaining'));
       results.push(checkHeader(headers, 'ratelimit-reset'));
     }
-
   } catch (error) {
     console.error('[scan] Error during scan:', error);
   } finally {

@@ -19,7 +19,9 @@ router.use(requireRole('Admin', 'Manager'));
 // ---------------------------------------------------------------------------
 
 const querySchema = z.object({
-  category: z.enum(['user_action', 'data_change', 'login_attempt', 'permission_change', 'system_event']).optional(),
+  category: z
+    .enum(['user_action', 'data_change', 'login_attempt', 'permission_change', 'system_event'])
+    .optional(),
   action: z.string().optional(),
   severity: z.enum(['debug', 'info', 'warning', 'error', 'critical']).optional(),
   userId: z.string().optional(),
@@ -44,10 +46,16 @@ const loginAttemptsSchema = z.object({
 const permissionChangesSchema = z.object({
   targetUserId: z.string().optional(),
   changedByUserId: z.string().optional(),
-  changeType: z.enum([
-    'role_change', 'entity_access_granted', 'entity_access_revoked',
-    'entity_role_change', 'account_activated', 'account_deactivated',
-  ]).optional(),
+  changeType: z
+    .enum([
+      'role_change',
+      'entity_access_granted',
+      'entity_access_revoked',
+      'entity_role_change',
+      'account_activated',
+      'account_deactivated',
+    ])
+    .optional(),
   entityId: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
@@ -66,7 +74,9 @@ const dataChangesSchema = z.object({
 
 const exportSchema = z.object({
   format: z.enum(['csv', 'json']).default('csv'),
-  category: z.enum(['user_action', 'data_change', 'login_attempt', 'permission_change', 'system_event']).optional(),
+  category: z
+    .enum(['user_action', 'data_change', 'login_attempt', 'permission_change', 'system_event'])
+    .optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   userId: z.string().optional(),
@@ -216,7 +226,7 @@ router.get('/resource/:type/:id', (req, res) => {
 router.get('/user/:userId', (req, res) => {
   try {
     const { userId } = req.params;
-    const limit = parseInt(req.query.limit as string ?? '100', 10);
+    const limit = parseInt((req.query.limit as string) ?? '100', 10);
     const entries = auditService.getUserActivity(userId, limit);
     res.json({ entries, total: entries.length });
   } catch (err) {
@@ -283,7 +293,10 @@ router.post('/export', (req, res) => {
         userId: filter.userId,
       });
       res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="audit-export-${Date.now()}.json"`);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="audit-export-${Date.now()}.json"`
+      );
       res.send(json);
     }
   } catch (err) {

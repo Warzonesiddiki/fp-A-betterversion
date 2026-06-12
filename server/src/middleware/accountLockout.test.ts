@@ -212,9 +212,11 @@ describe('Account Lockout', () => {
         .replace('Z', '')
         .split('.')[0]; // "YYYY-MM-DD HH:MM:SS"
       for (let i = 0; i < 5; i++) {
-        testDb.prepare(
-          'INSERT INTO login_attempts (email, ip_address, success, attempted_at) VALUES (?, ?, 0, ?)'
-        ).run(testEmail, testIp, oldTime);
+        testDb
+          .prepare(
+            'INSERT INTO login_attempts (email, ip_address, success, attempted_at) VALUES (?, ?, 0, ?)'
+          )
+          .run(testEmail, testIp, oldTime);
       }
 
       // Account should be unlocked because attempts are outside the window
@@ -231,9 +233,11 @@ describe('Account Lockout', () => {
         .replace('Z', '')
         .split('.')[0];
       for (let i = 0; i < 4; i++) {
-        testDb.prepare(
-          'INSERT INTO login_attempts (email, ip_address, success, attempted_at) VALUES (?, ?, 0, ?)'
-        ).run(testEmail, testIp, oldTime);
+        testDb
+          .prepare(
+            'INSERT INTO login_attempts (email, ip_address, success, attempted_at) VALUES (?, ?, 0, ?)'
+          )
+          .run(testEmail, testIp, oldTime);
       }
 
       // 1 recent failure - only 1 in the 15-min window, not enough for lockout

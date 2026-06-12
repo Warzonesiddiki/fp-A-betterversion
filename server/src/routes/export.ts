@@ -23,8 +23,14 @@ const PdfExportSchema = z.object({
   entity_id: z.string().uuid().optional(),
   fiscal_year: z.number().int().optional(),
   period: z.string().optional(),
-  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date_from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  date_to: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   filters: z.record(z.unknown()).optional(),
   data: z.array(z.record(z.unknown())).optional(),
   orientation: z.enum(['portrait', 'landscape']).optional(),
@@ -77,11 +83,20 @@ function generatePdfHtml(
   headers: string[],
   orientation: string
 ): string {
-  const headerRow = headers.map((h) => `<th style="border:1px solid #ddd;padding:8px;background:#f5f5f5;text-align:left;">${h}</th>`).join('');
-  const dataRows = data.map((row) => {
-    const cells = headers.map((h) => `<td style="border:1px solid #ddd;padding:8px;">${row[h] ?? ''}</td>`).join('');
-    return `<tr>${cells}</tr>`;
-  }).join('');
+  const headerRow = headers
+    .map(
+      (h) =>
+        `<th style="border:1px solid #ddd;padding:8px;background:#f5f5f5;text-align:left;">${h}</th>`
+    )
+    .join('');
+  const dataRows = data
+    .map((row) => {
+      const cells = headers
+        .map((h) => `<td style="border:1px solid #ddd;padding:8px;">${row[h] ?? ''}</td>`)
+        .join('');
+      return `<tr>${cells}</tr>`;
+    })
+    .join('');
 
   return `<!DOCTYPE html>
 <html>
@@ -170,7 +185,17 @@ router.post('/pdf', (req: Request, res: Response) => {
       return;
     }
 
-    const { report_type, title, entity_id, fiscal_year, period, date_from, date_to, data, orientation } = parsed.data;
+    const {
+      report_type,
+      title,
+      entity_id,
+      fiscal_year,
+      period,
+      date_from,
+      date_to,
+      data,
+      orientation,
+    } = parsed.data;
 
     let reportData: Record<string, unknown>[] = data ?? [];
     let headers: string[] = [];
@@ -181,13 +206,23 @@ router.post('/pdf', (req: Request, res: Response) => {
         case 'trial_balance': {
           const conditions: string[] = [];
           const params: unknown[] = [];
-          if (entity_id) { conditions.push('ge.entity_id = ?'); params.push(entity_id); }
-          if (date_from) { conditions.push('ge.post_date >= ?'); params.push(date_from); }
-          if (date_to) { conditions.push('ge.post_date <= ?'); params.push(date_to); }
+          if (entity_id) {
+            conditions.push('ge.entity_id = ?');
+            params.push(entity_id);
+          }
+          if (date_from) {
+            conditions.push('ge.post_date >= ?');
+            params.push(date_from);
+          }
+          if (date_to) {
+            conditions.push('ge.post_date <= ?');
+            params.push(date_to);
+          }
           const joinCond = conditions.length > 0 ? `AND ${conditions.join(' AND ')}` : '';
 
-          reportData = db.prepare(
-            `SELECT a.code AS "Account Code", a.name AS "Account Name", a.type AS "Type",
+          reportData = db
+            .prepare(
+              `SELECT a.code AS "Account Code", a.name AS "Account Name", a.type AS "Type",
                     COALESCE(SUM(ge.debit), 0) AS "Total Debit",
                     COALESCE(SUM(ge.credit), 0) AS "Total Credit",
                     COALESCE(SUM(ge.debit), 0) - COALESCE(SUM(ge.credit), 0) AS "Balance"
@@ -195,19 +230,34 @@ router.post('/pdf', (req: Request, res: Response) => {
              LEFT JOIN gl_entries ge ON ge.account_id = a.id ${joinCond}
              GROUP BY a.id, a.code, a.name, a.type
              ORDER BY a.code`
-          ).all(...params) as Record<string, unknown>[];
-          headers = ['Account Code', 'Account Name', 'Type', 'Total Debit', 'Total Credit', 'Balance'];
+            )
+            .all(...params) as Record<string, unknown>[];
+          headers = [
+            'Account Code',
+            'Account Name',
+            'Type',
+            'Total Debit',
+            'Total Credit',
+            'Balance',
+          ];
           break;
         }
         case 'budget_vs_actual': {
           const conditions: string[] = ['b.deleted_at IS NULL'];
           const params: unknown[] = [];
-          if (fiscal_year) { conditions.push('b.fiscal_year = ?'); params.push(fiscal_year); }
-          if (entity_id) { conditions.push('b.entity_id = ?'); params.push(entity_id); }
+          if (fiscal_year) {
+            conditions.push('b.fiscal_year = ?');
+            params.push(fiscal_year);
+          }
+          if (entity_id) {
+            conditions.push('b.entity_id = ?');
+            params.push(entity_id);
+          }
           const whereCond = `WHERE ${conditions.join(' AND ')}`;
 
-          reportData = db.prepare(
-            `SELECT a.code AS "Account Code", a.name AS "Account Name",
+          reportData = db
+            .prepare(
+              `SELECT a.code AS "Account Code", a.name AS "Account Name",
                     b.name AS "Budget",
                     SUM(bli.amount) AS "Budget Amount",
                     COALESCE(SUM(ge.debit - ge.credit), 0) AS "Actual Amount",
@@ -221,8 +271,16 @@ router.post('/pdf', (req: Request, res: Response) => {
              ${whereCond}
              GROUP BY a.code, a.name, b.name
              ORDER BY a.code`
-          ).all(...params) as Record<string, unknown>[];
-          headers = ['Account Code', 'Account Name', 'Budget', 'Budget Amount', 'Actual Amount', 'Variance'];
+            )
+            .all(...params) as Record<string, unknown>[];
+          headers = [
+            'Account Code',
+            'Account Name',
+            'Budget',
+            'Budget Amount',
+            'Actual Amount',
+            'Variance',
+          ];
           break;
         }
         default: {
@@ -236,13 +294,26 @@ router.post('/pdf', (req: Request, res: Response) => {
     }
 
     const reportTitle = title ?? `${report_type.replace(/_/g, ' ')} Report`;
-    const html = generatePdfHtml(reportTitle, report_type, reportData, headers, orientation ?? 'portrait');
+    const html = generatePdfHtml(
+      reportTitle,
+      report_type,
+      reportData,
+      headers,
+      orientation ?? 'portrait'
+    );
 
     const exportId = uuidv4();
-    audit('EXPORT_PDF', 'report', exportId, req.user!.id, { report_type, title: reportTitle, rows: reportData.length });
+    audit('EXPORT_PDF', 'report', exportId, req.user!.id, {
+      report_type,
+      title: reportTitle,
+      rows: reportData.length,
+    });
 
     res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Content-Disposition', `attachment; filename="${reportTitle.replace(/[^a-zA-Z0-9]/g, '_')}.html"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${reportTitle.replace(/[^a-zA-Z0-9]/g, '_')}.html"`
+    );
     res.send(html);
   } catch (err) {
     console.error('POST /export/pdf error:', err);
@@ -267,10 +338,16 @@ router.post('/excel', (req: Request, res: Response) => {
     const xml = generateExcelXml(reportTitle, sheetName, headers, data, column_widths);
 
     const exportId = uuidv4();
-    audit('EXPORT_EXCEL', 'report', exportId, req.user!.id, { title: reportTitle, rows: data.length });
+    audit('EXPORT_EXCEL', 'report', exportId, req.user!.id, {
+      title: reportTitle,
+      rows: data.length,
+    });
 
     res.setHeader('Content-Type', 'application/vnd.ms-excel');
-    res.setHeader('Content-Disposition', `attachment; filename="${reportTitle.replace(/[^a-zA-Z0-9]/g, '_')}.xls"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${reportTitle.replace(/[^a-zA-Z0-9]/g, '_')}.xls"`
+    );
     res.send(xml);
   } catch (err) {
     console.error('POST /export/excel error:', err);

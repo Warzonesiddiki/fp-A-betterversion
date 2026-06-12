@@ -29,7 +29,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for CSS-in-JS
-        imgSrc: ["'self'", "data:", "blob:"],
+        imgSrc: ["'self'", 'data:', 'blob:'],
         fontSrc: ["'self'"],
         connectSrc: ["'self'"],
         frameAncestors: ["'none'"],
@@ -40,16 +40,14 @@ app.use(
     },
     crossOriginEmbedderPolicy: true,
     crossOriginOpenerPolicy: true,
-    crossOriginResourcePolicy: { policy: "same-origin" },
+    crossOriginResourcePolicy: { policy: 'same-origin' },
     dnsPrefetchControl: { allow: false },
-    frameguard: { action: "deny" },
+    frameguard: { action: 'deny' },
     hidePoweredBy: true,
-    hsts: IS_PRODUCTION
-      ? { maxAge: 31536000, includeSubDomains: true, preload: true }
-      : false,
+    hsts: IS_PRODUCTION ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
     ieNoOpen: true,
     noSniff: true,
-    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     xssFilter: true,
   })
 );
@@ -91,13 +89,15 @@ app.use('/api/audit', generalLimiter, auditRouter);
 // Rate-limited to 30 requests per 15 minutes per IP.
 function stubRouter(name: string) {
   const router = express.Router();
-  router.use(rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 30,
-    standardHeaders: 'draft-7',
-    legacyHeaders: false,
-    message: { error: 'Too many requests, please try again later.' },
-  }));
+  router.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 30,
+      standardHeaders: 'draft-7',
+      legacyHeaders: false,
+      message: { error: 'Too many requests, please try again later.' },
+    })
+  );
   router.use(authMiddleware);
   router.use(auditRequestMiddleware);
   router.all('*', (_req, res) => {

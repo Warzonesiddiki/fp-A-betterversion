@@ -14,19 +14,21 @@ router.use(authMiddleware);
 
 // --- Zod schemas ---
 
-const CreateGLEntrySchema = z.object({
-  account_id: z.string().uuid('account_id is required'),
-  entity_id: z.string().uuid('entity_id is required'),
-  post_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
-  amount: z.number(),
-  debit: z.number().min(0),
-  credit: z.number().min(0),
-  description: z.string().optional(),
-  reference: z.string().optional(),
-  department_id: z.string().uuid().optional(),
-}).refine((data) => data.debit > 0 || data.credit > 0, {
-  message: 'Either debit or credit must be greater than 0',
-});
+const CreateGLEntrySchema = z
+  .object({
+    account_id: z.string().uuid('account_id is required'),
+    entity_id: z.string().uuid('entity_id is required'),
+    post_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
+    amount: z.number(),
+    debit: z.number().min(0),
+    credit: z.number().min(0),
+    description: z.string().optional(),
+    reference: z.string().optional(),
+    department_id: z.string().uuid().optional(),
+  })
+  .refine((data) => data.debit > 0 || data.credit > 0, {
+    message: 'Either debit or credit must be greater than 0',
+  });
 
 const BulkGLEntrySchema = z.object({
   entries: z.array(CreateGLEntrySchema).min(1, 'At least one entry is required'),
@@ -69,7 +71,9 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
     const params: unknown[] = [];
 
     // Entity-level access filter
-    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as string[] | null;
+    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
+      | string[]
+      | null;
     if (entityFilter !== null && entityFilter.length > 0) {
       conditions.push(`ge.entity_id IN (${entityFilter.map(() => '?').join(', ')})`);
       params.push(...entityFilter);
@@ -97,14 +101,15 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    const countRow = db.prepare(
-      `SELECT COUNT(*) AS count FROM gl_entries ge ${whereClause}`
-    ).get(...params) as { count: number } | undefined;
+    const countRow = db
+      .prepare(`SELECT COUNT(*) AS count FROM gl_entries ge ${whereClause}`)
+      .get(...params) as { count: number } | undefined;
 
     params.push(Number(limit), Number(offset));
 
-    const rows = db.prepare(
-      `SELECT ge.*, a.name AS account_name, a.code AS account_code,
+    const rows = db
+      .prepare(
+        `SELECT ge.*, a.name AS account_name, a.code AS account_code,
               e.name AS entity_name, d.name AS department_name
        FROM gl_entries ge
        LEFT JOIN accounts a ON a.id = ge.account_id
@@ -113,7 +118,8 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
        ${whereClause}
        ORDER BY ge.post_date DESC, ge.created_at DESC
        LIMIT ? OFFSET ?`
-    ).all(...params);
+      )
+      .all(...params);
 
     res.json({
       data: rows,
@@ -128,93 +134,139 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
 });
 
 // POST /entries — create GL entry
-router.post('/entries', requireEntityWriteAccess('gl_entries', { entityIdSource: 'body' }), (req: Request, res: Response) => {
-  try {
-    const parsed = CreateGLEntrySchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
-      return;
-    }
+router.post(
+  '/entries',
+  requireEntityWriteAccess('gl_entries', { entityIdSource: 'body' }),
+  (req: Request, res: Response) => {
+    try {
+      const parsed = CreateGLEntrySchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
+        return;
+      }
 
-    const { account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id } = parsed.data;
-    const id = uuidv4();
+      const {
+        account_id,
+        entity_id,
+        post_date,
+        amount,
+        debit,
+        credit,
+        description,
+        reference,
+        department_id,
+      } = parsed.data;
+      const id = uuidv4();
 
-    db.prepare(
-      `INSERT INTO gl_entries (id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
+      db.prepare(
+        `INSERT INTO gl_entries (id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
-    ).run(id, account_id, entity_id, post_date, amount, debit, credit, description ?? null, reference ?? null, department_id ?? null, req.user!.id);
+      ).run(
+        id,
+        account_id,
+        entity_id,
+        post_date,
+        amount,
+        debit,
+        credit,
+        description ?? null,
+        reference ?? null,
+        department_id ?? null,
+        req.user!.id
+      );
 
-    audit('CREATE', 'gl_entry', id, req.user!.id, { account_id, entity_id, post_date, amount, debit, credit });
+      audit('CREATE', 'gl_entry', id, req.user!.id, {
+        account_id,
+        entity_id,
+        post_date,
+        amount,
+        debit,
+        credit,
+      });
 
-    const entry = db.prepare('SELECT * FROM gl_entries WHERE id = ?').get(id);
-    res.status(201).json(entry);
-  } catch (err) {
-    console.error('POST /gl/entries error:', err);
-    res.status(500).json({ error: 'Failed to create GL entry' });
+      const entry = db.prepare('SELECT * FROM gl_entries WHERE id = ?').get(id);
+      res.status(201).json(entry);
+    } catch (err) {
+      console.error('POST /gl/entries error:', err);
+      res.status(500).json({ error: 'Failed to create GL entry' });
+    }
   }
-});
+);
 
 // POST /entries/bulk — bulk insert GL entries
-router.post('/entries/bulk', requireEntityWriteAccess('gl_entries', { entityIdSource: 'body' }), (req: Request, res: Response) => {
-  try {
-    const parsed = BulkGLEntrySchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
-      return;
-    }
-
-    const insertStmt = db.prepare(
-      `INSERT INTO gl_entries (id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
-    );
-
-    const ids: string[] = [];
-    const insertMany = db.transaction((entries: z.infer<typeof BulkGLEntrySchema>['entries']) => {
-      for (const entry of entries) {
-        const id = uuidv4();
-        ids.push(id);
-        insertStmt.run(
-          id, entry.account_id, entry.entity_id, entry.post_date,
-          entry.amount, entry.debit, entry.credit,
-          entry.description ?? null, entry.reference ?? null,
-          entry.department_id ?? null, req.user!.id
-        );
+router.post(
+  '/entries/bulk',
+  requireEntityWriteAccess('gl_entries', { entityIdSource: 'body' }),
+  (req: Request, res: Response) => {
+    try {
+      const parsed = BulkGLEntrySchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
+        return;
       }
-    });
 
-    insertMany(parsed.data.entries);
+      const insertStmt = db.prepare(
+        `INSERT INTO gl_entries (id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+      );
 
-    audit('BULK_CREATE', 'gl_entry', ids.join(','), req.user!.id, { count: ids.length });
+      const ids: string[] = [];
+      const insertMany = db.transaction((entries: z.infer<typeof BulkGLEntrySchema>['entries']) => {
+        for (const entry of entries) {
+          const id = uuidv4();
+          ids.push(id);
+          insertStmt.run(
+            id,
+            entry.account_id,
+            entry.entity_id,
+            entry.post_date,
+            entry.amount,
+            entry.debit,
+            entry.credit,
+            entry.description ?? null,
+            entry.reference ?? null,
+            entry.department_id ?? null,
+            req.user!.id
+          );
+        }
+      });
 
-    res.status(201).json({ message: `Created ${ids.length} entries`, ids });
-  } catch (err) {
-    console.error('POST /gl/entries/bulk error:', err);
-    res.status(500).json({ error: 'Failed to bulk create GL entries' });
+      insertMany(parsed.data.entries);
+
+      audit('BULK_CREATE', 'gl_entry', ids.join(','), req.user!.id, { count: ids.length });
+
+      res.status(201).json({ message: `Created ${ids.length} entries`, ids });
+    } catch (err) {
+      console.error('POST /gl/entries/bulk error:', err);
+      res.status(500).json({ error: 'Failed to bulk create GL entries' });
+    }
   }
-});
+);
 
 // DELETE /entries/:id — delete GL entry
-router.delete('/entries/:id', requireEntityWriteAccess('gl_entries'), (req: Request, res: Response) => {
-  try {
-    const existing = db.prepare(
-      'SELECT id FROM gl_entries WHERE id = ?'
-    ).get(req.params.id);
+router.delete(
+  '/entries/:id',
+  requireEntityWriteAccess('gl_entries'),
+  (req: Request, res: Response) => {
+    try {
+      const existing = db.prepare('SELECT id FROM gl_entries WHERE id = ?').get(req.params.id);
 
-    if (!existing) {
-      res.status(404).json({ error: 'GL entry not found' });
-      return;
+      if (!existing) {
+        res.status(404).json({ error: 'GL entry not found' });
+        return;
+      }
+
+      db.prepare('DELETE FROM gl_entries WHERE id = ?').run(req.params.id);
+
+      audit('DELETE', 'gl_entry', req.params.id, req.user!.id);
+
+      res.status(204).send();
+    } catch (err) {
+      console.error('DELETE /gl/entries/:id error:', err);
+      res.status(500).json({ error: 'Failed to delete GL entry' });
     }
-
-    db.prepare('DELETE FROM gl_entries WHERE id = ?').run(req.params.id);
-
-    audit('DELETE', 'gl_entry', req.params.id, req.user!.id);
-
-    res.status(204).send();
-  } catch (err) {
-    console.error('DELETE /gl/entries/:id error:', err);
-    res.status(500).json({ error: 'Failed to delete GL entry' });
   }
-});
+);
 
 // --- Chart of Accounts Routes ---
 
@@ -232,16 +284,18 @@ router.get('/accounts', (req: Request, res: Response) => {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    const rows = db.prepare(
-      `SELECT a.*, pa.code AS parent_code, pa.name AS parent_name
+    const rows = db
+      .prepare(
+        `SELECT a.*, pa.code AS parent_code, pa.name AS parent_name
        FROM accounts a
        LEFT JOIN accounts pa ON pa.id = a.parent_id
        ${whereClause}
        ORDER BY a.code`
-    ).all(...params) as (Record<string, unknown> & { children: Record<string, unknown>[] })[];
+      )
+      .all(...params) as (Record<string, unknown> & { children: Record<string, unknown>[] })[];
 
     // Build hierarchical tree
-    const accountMap = new Map<string, typeof rows[0]>();
+    const accountMap = new Map<string, (typeof rows)[0]>();
     const roots: typeof rows = [];
 
     for (const row of rows) {
@@ -277,9 +331,7 @@ router.post('/accounts', (req: Request, res: Response) => {
     const { code, name, type, parent_id, entity_id, description, is_active } = parsed.data;
 
     // Check unique code
-    const duplicate = db.prepare(
-      'SELECT id FROM accounts WHERE code = ?'
-    ).get(code);
+    const duplicate = db.prepare('SELECT id FROM accounts WHERE code = ?').get(code);
 
     if (duplicate) {
       res.status(400).json({ error: 'Account code already exists' });
@@ -291,7 +343,16 @@ router.post('/accounts', (req: Request, res: Response) => {
     db.prepare(
       `INSERT INTO accounts (id, code, name, type, parent_id, entity_id, description, is_active, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-    ).run(id, code, name, type, parent_id ?? null, entity_id ?? null, description ?? null, is_active ?? true ? 1 : 0);
+    ).run(
+      id,
+      code,
+      name,
+      type,
+      parent_id ?? null,
+      entity_id ?? null,
+      description ?? null,
+      (is_active ?? true) ? 1 : 0
+    );
 
     audit('CREATE', 'account', id, req.user!.id, { code, name, type });
 
@@ -312,9 +373,7 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
       return;
     }
 
-    const existing = db.prepare(
-      'SELECT id FROM accounts WHERE id = ?'
-    ).get(req.params.id);
+    const existing = db.prepare('SELECT id FROM accounts WHERE id = ?').get(req.params.id);
 
     if (!existing) {
       res.status(404).json({ error: 'Account not found' });
@@ -323,9 +382,9 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
 
     // Check unique code if code is being changed
     if (parsed.data.code) {
-      const duplicate = db.prepare(
-        'SELECT id FROM accounts WHERE code = ? AND id != ?'
-      ).get(parsed.data.code, req.params.id);
+      const duplicate = db
+        .prepare('SELECT id FROM accounts WHERE code = ? AND id != ?')
+        .get(parsed.data.code, req.params.id);
 
       if (duplicate) {
         res.status(400).json({ error: 'Account code already exists' });
@@ -351,9 +410,7 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
     fields.push("updated_at = datetime('now')");
     values.push(req.params.id);
 
-    db.prepare(
-      `UPDATE accounts SET ${fields.join(', ')} WHERE id = ?`
-    ).run(...values);
+    db.prepare(`UPDATE accounts SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
     audit('UPDATE', 'account', req.params.id, req.user!.id, parsed.data);
 
@@ -373,7 +430,9 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
     const params: unknown[] = [];
 
     // Entity-level access filter
-    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as string[] | null;
+    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
+      | string[]
+      | null;
     if (entityFilter !== null && entityFilter.length > 0) {
       conditions.push(`ge.entity_id IN (${entityFilter.map(() => '?').join(', ')})`);
       params.push(...entityFilter);
@@ -397,8 +456,9 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
 
     const joinCondition = conditions.length > 0 ? `AND ${conditions.join(' AND ')}` : '';
 
-    const rows = db.prepare(
-      `SELECT
+    const rows = db
+      .prepare(
+        `SELECT
          a.id AS account_id,
          a.code AS account_code,
          a.name AS account_name,
@@ -410,7 +470,8 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
        LEFT JOIN gl_entries ge ON ge.account_id = a.id ${joinCondition}
        GROUP BY a.id, a.code, a.name, a.type
        ORDER BY a.code`
-    ).all(...params) as Record<string, unknown>[];
+      )
+      .all(...params) as Record<string, unknown>[];
 
     let totalDebit = 0;
     let totalCredit = 0;

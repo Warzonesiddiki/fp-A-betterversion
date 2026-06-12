@@ -45,9 +45,7 @@ const getLastFailedAttempt = db.prepare(
    ORDER BY attempted_at DESC LIMIT 1`
 );
 
-const clearAttempts = db.prepare(
-  'DELETE FROM login_attempts WHERE email = ?'
-);
+const clearAttempts = db.prepare('DELETE FROM login_attempts WHERE email = ?');
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -102,7 +100,11 @@ export function checkAccountLockout(email: string): LockoutStatus {
  * Record a login attempt (success or failure).
  * On success, clears all previous failed attempts for the email.
  */
-export function recordLoginAttempt(email: string, ipAddress: string | null, success: boolean): void {
+export function recordLoginAttempt(
+  email: string,
+  ipAddress: string | null,
+  success: boolean
+): void {
   insertAttempt.run(email, ipAddress, success ? 1 : 0);
 
   if (success) {

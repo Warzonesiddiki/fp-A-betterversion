@@ -72,9 +72,7 @@ describe('Rate Limiting Middleware', () => {
 
     it('should not block normal usage', async () => {
       // 50 requests should all pass
-      const promises = Array.from({ length: 50 }, () =>
-        request(app).get('/api/data/budgets')
-      );
+      const promises = Array.from({ length: 50 }, () => request(app).get('/api/data/budgets'));
       const results = await Promise.all(promises);
       const allOk = results.every((r) => r.status === 200);
       expect(allOk).toBe(true);

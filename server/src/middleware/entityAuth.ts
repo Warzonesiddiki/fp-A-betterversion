@@ -33,18 +33,18 @@ function isGlobalAdmin(req: Request): boolean {
  * Falls back to the user's global role if no explicit entity access row exists.
  */
 function getEntityRole(userId: string, entityId: string): EntityRole | null {
-  const row = db.prepare(
-    'SELECT role FROM user_entity_access WHERE user_id = ? AND entity_id = ?'
-  ).get(userId, entityId) as { role: string } | undefined;
+  const row = db
+    .prepare('SELECT role FROM user_entity_access WHERE user_id = ? AND entity_id = ?')
+    .get(userId, entityId) as { role: string } | undefined;
 
   if (row) {
     return row.role as EntityRole;
   }
 
   // Fallback: if the user's global entity_id matches, use their global role
-  const user = db.prepare(
-    'SELECT entity_id, role FROM users WHERE id = ?'
-  ).get(userId) as { entity_id: string | null; role: string } | undefined;
+  const user = db.prepare('SELECT entity_id, role FROM users WHERE id = ?').get(userId) as
+    | { entity_id: string | null; role: string }
+    | undefined;
 
   if (user && user.entity_id === entityId) {
     // Map global roles to entity roles
@@ -72,16 +72,16 @@ function getAccessibleEntityIds(userId: string, globalRole: string): string[] {
   }
 
   // Entities from user_entity_access table
-  const accessRows = db.prepare(
-    'SELECT entity_id FROM user_entity_access WHERE user_id = ?'
-  ).all(userId) as { entity_id: string }[];
+  const accessRows = db
+    .prepare('SELECT entity_id FROM user_entity_access WHERE user_id = ?')
+    .all(userId) as { entity_id: string }[];
 
   const entityIds = new Set(accessRows.map((r) => r.entity_id));
 
   // Also include the user's own entity_id
-  const user = db.prepare(
-    'SELECT entity_id FROM users WHERE id = ?'
-  ).get(userId) as { entity_id: string | null } | undefined;
+  const user = db.prepare('SELECT entity_id FROM users WHERE id = ?').get(userId) as
+    | { entity_id: string | null }
+    | undefined;
 
   if (user?.entity_id) {
     entityIds.add(user.entity_id);
@@ -134,9 +134,9 @@ export function requireEntityAccess(
       }
     } else {
       // Look up entity_id from the resource
-      const resource = db.prepare(
-        `SELECT entity_id FROM ${resourceTable} WHERE id = ?`
-      ).get(req.params.id) as { entity_id: string | null } | undefined;
+      const resource = db
+        .prepare(`SELECT entity_id FROM ${resourceTable} WHERE id = ?`)
+        .get(req.params.id) as { entity_id: string | null } | undefined;
 
       if (!resource) {
         // Resource not found — let the route handler deal with 404
@@ -205,9 +205,9 @@ export function requireEntityWriteAccess(
       }
     } else {
       // Look up entity_id from the resource
-      const resource = db.prepare(
-        `SELECT entity_id FROM ${resourceTable} WHERE id = ?`
-      ).get(req.params.id) as { entity_id: string | null } | undefined;
+      const resource = db
+        .prepare(`SELECT entity_id FROM ${resourceTable} WHERE id = ?`)
+        .get(req.params.id) as { entity_id: string | null } | undefined;
 
       if (!resource) {
         next();
@@ -252,11 +252,7 @@ export function requireEntityWriteAccess(
  *
  * Adds a `entityFilter` property to the request with accessible entity IDs.
  */
-export function filterByEntityAccess(
-  _req: Request,
-  _res: Response,
-  next: NextFunction
-): void {
+export function filterByEntityAccess(_req: Request, _res: Response, next: NextFunction): void {
   const req = _req;
   if (!req.user) {
     next();
@@ -281,10 +277,7 @@ export function filterByEntityAccess(
  * @param parentTable - Parent resource table (e.g., 'budgets')
  * @param parentForeignKey - FK column on the line item table (e.g., 'budget_id')
  */
-export function requireParentEntityAccess(
-  parentTable: string,
-  parentForeignKey: string
-) {
+export function requireParentEntityAccess(parentTable: string, parentForeignKey: string) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(401).json({ error: 'Authentication required' });
@@ -302,9 +295,11 @@ export function requireParentEntityAccess(
 
     // For PUT/DELETE on /items/:itemId, look up the parent from the line item
     if (req.params.itemId && !parentId) {
-      const lineItem = db.prepare(
-        `SELECT ${parentForeignKey} FROM ${parentTable === 'budgets' ? 'budget_line_items' : parentTable === 'forecasts' ? 'forecast_line_items' : 'scenario_line_items'} WHERE id = ?`
-      ).get(req.params.itemId) as Record<string, string> | undefined;
+      const lineItem = db
+        .prepare(
+          `SELECT ${parentForeignKey} FROM ${parentTable === 'budgets' ? 'budget_line_items' : parentTable === 'forecasts' ? 'forecast_line_items' : 'scenario_line_items'} WHERE id = ?`
+        )
+        .get(req.params.itemId) as Record<string, string> | undefined;
 
       if (lineItem) {
         parentId = lineItem[parentForeignKey];
@@ -316,9 +311,9 @@ export function requireParentEntityAccess(
       return;
     }
 
-    const parent = db.prepare(
-      `SELECT entity_id FROM ${parentTable} WHERE id = ?`
-    ).get(parentId) as { entity_id: string | null } | undefined;
+    const parent = db.prepare(`SELECT entity_id FROM ${parentTable} WHERE id = ?`).get(parentId) as
+      | { entity_id: string | null }
+      | undefined;
 
     if (!parent || !parent.entity_id) {
       next();

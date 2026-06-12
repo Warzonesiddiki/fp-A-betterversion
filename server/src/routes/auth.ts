@@ -7,10 +7,7 @@ import { db } from '../db/connection.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { JWT_SECRET } from '../config/env.js';
-import {
-  checkAccountLockout,
-  recordLoginAttempt,
-} from '../middleware/accountLockout.js';
+import { checkAccountLockout, recordLoginAttempt } from '../middleware/accountLockout.js';
 
 const router = Router();
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -95,7 +92,9 @@ function sanitizeUser(row: UserRow) {
 
 router.post('/register', validate(registerSchema), async (req, res) => {
   try {
-    const { email, password, firstName, lastName } = req.validated as z.infer<typeof registerSchema>;
+    const { email, password, firstName, lastName } = req.validated as z.infer<
+      typeof registerSchema
+    >;
 
     // Check for existing user
     const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
@@ -159,7 +158,9 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     }
 
     // Find user
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as UserRow | undefined;
+    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as
+      | UserRow
+      | undefined;
     if (!user) {
       // Record failed attempt (even for non-existent users to prevent enumeration)
       recordLoginAttempt(email, ipAddress, false);
@@ -228,9 +229,9 @@ router.post('/refresh', validate(refreshSchema), (req, res) => {
     const { refreshToken } = req.validated as z.infer<typeof refreshSchema>;
 
     // Look up refresh token in DB
-    const row = db.prepare(
-      'SELECT * FROM refresh_tokens WHERE token = ?'
-    ).get(refreshToken) as RefreshTokenRow | undefined;
+    const row = db.prepare('SELECT * FROM refresh_tokens WHERE token = ?').get(refreshToken) as
+      | RefreshTokenRow
+      | undefined;
 
     if (!row) {
       res.status(401).json({ error: 'Invalid refresh token' });
@@ -246,7 +247,9 @@ router.post('/refresh', validate(refreshSchema), (req, res) => {
     }
 
     // Fetch user to include role in the new access token
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(row.user_id) as UserRow | undefined;
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(row.user_id) as
+      | UserRow
+      | undefined;
     if (!user || !user.is_active) {
       res.status(401).json({ error: 'User not found or deactivated' });
       return;
@@ -290,7 +293,9 @@ router.post('/logout', validate(logoutSchema), (req, res) => {
 
 router.get('/me', authMiddleware, (req, res) => {
   try {
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user!.id) as UserRow | undefined;
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user!.id) as
+      | UserRow
+      | undefined;
 
     if (!user) {
       res.status(404).json({ error: 'User not found' });

@@ -61,10 +61,7 @@ export function runMigrations(): void {
   console.log('[migrate] Running database migrations...');
 
   // Run existing Tauri migration files if they exist
-  const migrationFiles = [
-    '001_initial_schema.sql',
-    '002_cube_schema.sql',
-  ];
+  const migrationFiles = ['001_initial_schema.sql', '002_cube_schema.sql'];
 
   for (const file of migrationFiles) {
     const filePath = path.join(MIGRATIONS_DIR, file);

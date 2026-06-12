@@ -54,7 +54,9 @@ function audit(
 router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
   try {
     // Entity-level access filter
-    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as string[] | null;
+    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
+      | string[]
+      | null;
     let query = `SELECT e.*, pe.name AS parent_name
        FROM entities e
        LEFT JOIN entities pe ON pe.id = e.parent_id`;
@@ -81,12 +83,14 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
 // GET /:id — get entity
 router.get('/:id', requireEntityAccess('entities'), (req: Request, res: Response) => {
   try {
-    const entity = db.prepare(
-      `SELECT e.*, pe.name AS parent_name
+    const entity = db
+      .prepare(
+        `SELECT e.*, pe.name AS parent_name
        FROM entities e
        LEFT JOIN entities pe ON pe.id = e.parent_id
        WHERE e.id = ?`
-    ).get(req.params.id);
+      )
+      .get(req.params.id);
 
     if (!entity) {
       res.status(404).json({ error: 'Entity not found' });
@@ -109,12 +113,19 @@ router.post('/', requireRole('Admin'), (req: Request, res: Response) => {
       return;
     }
 
-    const { name, code, type, base_currency, fiscal_year_start, parent_id, description, is_active } = parsed.data;
+    const {
+      name,
+      code,
+      type,
+      base_currency,
+      fiscal_year_start,
+      parent_id,
+      description,
+      is_active,
+    } = parsed.data;
 
     // Check unique code
-    const duplicate = db.prepare(
-      'SELECT id FROM entities WHERE code = ?'
-    ).get(code);
+    const duplicate = db.prepare('SELECT id FROM entities WHERE code = ?').get(code);
 
     if (duplicate) {
       res.status(400).json({ error: 'Entity code already exists' });
@@ -127,9 +138,15 @@ router.post('/', requireRole('Admin'), (req: Request, res: Response) => {
       `INSERT INTO entities (id, name, code, type, base_currency, fiscal_year_start, parent_id, description, is_active, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
     ).run(
-      id, name, code, type ?? 'company', base_currency ?? 'USD',
-      fiscal_year_start ?? 1, parent_id ?? null, description ?? null,
-      is_active ?? true ? 1 : 0
+      id,
+      name,
+      code,
+      type ?? 'company',
+      base_currency ?? 'USD',
+      fiscal_year_start ?? 1,
+      parent_id ?? null,
+      description ?? null,
+      (is_active ?? true) ? 1 : 0
     );
 
     audit('CREATE', 'entity', id, req.user!.id, { name, code, type });
@@ -151,9 +168,7 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
       return;
     }
 
-    const existing = db.prepare(
-      'SELECT id FROM entities WHERE id = ?'
-    ).get(req.params.id);
+    const existing = db.prepare('SELECT id FROM entities WHERE id = ?').get(req.params.id);
 
     if (!existing) {
       res.status(404).json({ error: 'Entity not found' });
@@ -162,9 +177,9 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
 
     // Check unique code if code is being changed
     if (parsed.data.code) {
-      const duplicate = db.prepare(
-        'SELECT id FROM entities WHERE code = ? AND id != ?'
-      ).get(parsed.data.code, req.params.id);
+      const duplicate = db
+        .prepare('SELECT id FROM entities WHERE code = ? AND id != ?')
+        .get(parsed.data.code, req.params.id);
 
       if (duplicate) {
         res.status(400).json({ error: 'Entity code already exists' });
@@ -190,9 +205,7 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
     fields.push("updated_at = datetime('now')");
     values.push(req.params.id);
 
-    db.prepare(
-      `UPDATE entities SET ${fields.join(', ')} WHERE id = ?`
-    ).run(...values);
+    db.prepare(`UPDATE entities SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
     audit('UPDATE', 'entity', req.params.id, req.user!.id, parsed.data);
 
@@ -220,8 +233,9 @@ router.get('/departments/list', (req: Request, res: Response) => {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    const rows = db.prepare(
-      `SELECT d.*, e.name AS entity_name, pd.name AS parent_name,
+    const rows = db
+      .prepare(
+        `SELECT d.*, e.name AS entity_name, pd.name AS parent_name,
               u.email AS manager_email
        FROM departments d
        LEFT JOIN entities e ON e.id = d.entity_id
@@ -229,7 +243,8 @@ router.get('/departments/list', (req: Request, res: Response) => {
        LEFT JOIN users u ON u.id = d.manager_id
        ${whereClause}
        ORDER BY d.name`
-    ).all(...params);
+      )
+      .all(...params);
 
     res.json(rows);
   } catch (err) {
@@ -253,7 +268,16 @@ router.post('/departments', requireRole('Admin'), (req: Request, res: Response) 
     db.prepare(
       `INSERT INTO departments (id, name, code, entity_id, parent_id, manager_id, description, is_active, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-    ).run(id, name, code, entity_id, parent_id ?? null, manager_id ?? null, description ?? null, is_active ?? true ? 1 : 0);
+    ).run(
+      id,
+      name,
+      code,
+      entity_id,
+      parent_id ?? null,
+      manager_id ?? null,
+      description ?? null,
+      (is_active ?? true) ? 1 : 0
+    );
 
     audit('CREATE', 'department', id, req.user!.id, { name, code, entity_id });
 
@@ -285,14 +309,15 @@ router.get('/users/list', requireRole('Admin'), (req: Request, res: Response) =>
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    const countRow = db.prepare(
-      `SELECT COUNT(*) AS count FROM users u ${whereClause}`
-    ).get(...params) as { count: number } | undefined;
+    const countRow = db
+      .prepare(`SELECT COUNT(*) AS count FROM users u ${whereClause}`)
+      .get(...params) as { count: number } | undefined;
 
     params.push(Number(limit), Number(offset));
 
-    const rows = db.prepare(
-      `SELECT u.id, u.email, u.name, u.role, u.entity_id, u.department_id,
+    const rows = db
+      .prepare(
+        `SELECT u.id, u.email, u.name, u.role, u.entity_id, u.department_id,
               u.is_active, u.created_at, u.last_login,
               e.name AS entity_name, d.name AS department_name
        FROM users u
@@ -301,7 +326,8 @@ router.get('/users/list', requireRole('Admin'), (req: Request, res: Response) =>
        ${whereClause}
        ORDER BY u.name
        LIMIT ? OFFSET ?`
-    ).all(...params);
+      )
+      .all(...params);
 
     res.json({
       data: rows,
@@ -324,15 +350,17 @@ router.get('/users/:id', (req: Request, res: Response) => {
       return;
     }
 
-    const user = db.prepare(
-      `SELECT u.id, u.email, u.name, u.role, u.entity_id, u.department_id,
+    const user = db
+      .prepare(
+        `SELECT u.id, u.email, u.name, u.role, u.entity_id, u.department_id,
               u.is_active, u.created_at, u.last_login,
               e.name AS entity_name, d.name AS department_name
        FROM users u
        LEFT JOIN entities e ON e.id = u.entity_id
        LEFT JOIN departments d ON d.id = u.department_id
        WHERE u.id = ?`
-    ).get(req.params.id);
+      )
+      .get(req.params.id);
 
     if (!user) {
       res.status(404).json({ error: 'User not found' });

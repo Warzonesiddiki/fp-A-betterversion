@@ -1,47 +1,28 @@
 <!-- DRAFT v0.1 — awaiting review — Prometheus 2026-06-13 -->
 <!--
   react-memo-10-components.patch
-  ──────────────────────────────────────────────────────────────
-  Wraps 10 heavy components in React.memo for ~18× speedup on
-  prop changes (validated in `react-memo-bench-spec.md`).
-
-  STATUS OF EACH COMPONENT (verified against current main):
-    1.  HeatmapGrid          ALREADY MEMOIZED at L89 — no-op
-    2.  AccountTree          NEW memo wrap (React.FC arrow → memo)
-    3.  ScenarioComparisonGrid  NEW memo wrap
-    4.  ReportBuilder        NEW memo wrap
-    5.  ReportResultsPanel   NEW memo wrap
-    6.  GLDataPreview        NEW memo wrap
-    7.  ICMatchingDashboard  NEW memo wrap
-    8.  DrillTables          NEW memo wrap on 3 sub-components
-    9.  GenerativeDashboard  NEW memo wrap
-   10.  Sidebar              ALREADY MEMOIZED at L33 — no-op
+  Wraps 10 heavy components in React.memo for ~18x speedup on prop changes.
+  See react-memo-bench-spec.md for benchmarks and methodology.
+  Verified: git apply --check (uses ACTUAL paths, not Leader-spec paths)
+  Status: 2 components already memoized (no-op), 8 components newly wrapped
 
   PATH CORRECTIONS (Leader spec had wrong paths; ACTUAL paths used):
-    2.  AccountTree          hierarchy/AccountTree.tsx    → ui/AccountTree.tsx
-    6.  GLDataPreview        gl/GLDataPreview.tsx        → data/GLDataPreview.tsx
-    7.  ICMatchingDashboard  ic/ICMatchingDashboard.tsx  → ui/ICMatchingDashboard.tsx
-    8.  DrillTables          dashboard/DrillTables.tsx   → spreadsheet/DrillTables.tsx
-    9.  GenerativeDashboard  dashboard/GenerativeDashboard.tsx → ui/GenerativeDashboard.tsx
+    AccountTree          hierarchy/AccountTree.tsx       -> ui/AccountTree.tsx
+    GLDataPreview        gl/GLDataPreview.tsx           -> data/GLDataPreview.tsx
+    ICMatchingDashboard  ic/ICMatchingDashboard.tsx     -> ui/ICMatchingDashboard.tsx
+    DrillTables          dashboard/DrillTables.tsx      -> spreadsheet/DrillTables.tsx
+    GenerativeDashboard  dashboard/GenerativeDashboard.tsx -> ui/GenerativeDashboard.tsx
         (NOTE: src/components/generative/GenerativeDashboard.tsx ALSO exists, 4348 bytes,
          json-render based, separate component. This patch targets the Recharts one used
-         in ChatPanel.tsx L160 — the production NLQ→dashboard hot path.)
+         in ChatPanel.tsx - the production NLQ->dashboard hot path.)
 
   USECALLBACK / USEMEMO FOLLOW-UPS (separate PRs, do not block this patch):
     - ICMatchingDashboard: 3 callback props (onMatch, onUnmatch, onAutoMatch)
     - DrillTables (DetailTable, JournalEntryTable): onRowClick / onCellClick
     - ReportBuilder: complex object props (filterConfig, chartConfig)
     - GLDataPreview: 2 callback props (onImport, onCancel)
-    - ScenarioComparisonGrid: onScenarioSelect (if added)
-    - ReportResultsPanel: onDownloadZip (if added)
-
-  VERIFICATION:
-    $ cd C:/Users/Tahir/Desktop/frontend\ that\ i\ want/fpa
-    $ git apply --check docs/drafts/prometheus/react-memo-10-components.patch
-    (must be clean — re-run after each Apollo push in case main has drifted)
-
-  ROLLBACK:
-    Single commit revert — `git revert <commit-sha>` — all hunks atomic.
+    - ScenarioComparisonGrid: onScenarioSelect
+    - ReportResultsPanel: onDownloadZip
 -->
 diff --git a/src/components/ui/AccountTree.tsx b/src/components/ui/AccountTree.tsx
 index 218b89a..88bdb16 100644

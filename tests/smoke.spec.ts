@@ -12,7 +12,7 @@ test.describe('FinPlan Pro Smoke Tests', () => {
   });
 
   test('app loads and shows dashboard or welcome', async ({ page }) => {
-    // Dashboard shows h1 "Executive Dashboard" if data exists, 
+    // Dashboard shows h1 "Executive Dashboard" if data exists,
     // or h2 "Welcome to FinPlan Pro" (from DashboardPage empty state) if empty.
     const heading = page.locator('h1, h2');
     await expect(heading.first()).toContainText(['Dashboard', 'Welcome']);
@@ -20,7 +20,10 @@ test.describe('FinPlan Pro Smoke Tests', () => {
 
   test('GL upload page renders', async ({ page }) => {
     await page.goto('/data/gl-upload');
-    await expect(page.getByRole('heading')).toContainText(['Data Import', 'Import Your Financial Data']);
+    await expect(page.getByRole('heading')).toContainText([
+      'Data Import',
+      'Import Your Financial Data',
+    ]);
   });
 
   test('chart of accounts page renders', async ({ page }) => {

@@ -91,7 +91,7 @@ function isSensitiveEndpoint(path: string): boolean {
     '/export/',
     '/admin/',
   ];
-  return sensitivePatterns.some(pattern => path.includes(pattern));
+  return sensitivePatterns.some((pattern) => path.includes(pattern));
 }
 
 /**
