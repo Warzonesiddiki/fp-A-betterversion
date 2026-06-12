@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // ALLOCATION ENGINE TESTS — 45+ tests for cost/revenue allocation
 // Covers: direct, driver-based, step-down, reciprocal methods + edge cases

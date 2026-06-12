@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest';
 import type { WorkerResponse, ConsolidationResponse, ConsolidationRequest } from './types';
 

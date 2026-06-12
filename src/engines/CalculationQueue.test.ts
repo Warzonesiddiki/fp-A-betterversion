@@ -26,35 +26,43 @@ describe('CalculationQueue', () => {
   });
 
   describe('cancel', () => {
-    it('cancels a task', () => {
-      const task = {
-        engineId: 'test-engine',
-        inputs: {},
-        priority: 'normal' as const,
-        computeFn: async () => 42,
-      };
-      queue.enqueue(task);
+    it('cancels a task', async () => {
+      const p = queue
+        .enqueue({
+          engineId: 'test-engine',
+          inputs: {},
+          priority: 'normal' as const,
+          computeFn: async () => 42,
+        })
+        .catch(() => {});
+      // The task counter starts at 0, so first enqueue gets 'calc-1'
       queue.cancel('calc-1');
+      await p;
       const stats = queue.getStats();
       expect(stats.queued).toBe(0);
     });
   });
 
   describe('cancelAll', () => {
-    it('cancels all tasks', () => {
-      queue.enqueue({
-        engineId: 'e1',
-        inputs: {},
-        priority: 'normal',
-        computeFn: async () => 1,
-      });
-      queue.enqueue({
-        engineId: 'e2',
-        inputs: {},
-        priority: 'high',
-        computeFn: async () => 2,
-      });
+    it('cancels all tasks', async () => {
+      const p1 = queue
+        .enqueue({
+          engineId: 'e1',
+          inputs: {},
+          priority: 'normal',
+          computeFn: async () => 1,
+        })
+        .catch(() => {});
+      const p2 = queue
+        .enqueue({
+          engineId: 'e2',
+          inputs: {},
+          priority: 'high',
+          computeFn: async () => 2,
+        })
+        .catch(() => {});
       queue.cancelAll();
+      await Promise.all([p1, p2]);
       const stats = queue.getStats();
       expect(stats.queued).toBe(0);
       expect(stats.running).toBe(0);

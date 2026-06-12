@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GLImportService } from './GLImportService';
 
@@ -79,7 +80,10 @@ describe('GLImportService', () => {
         columns: ['Account', 'Date', 'Debit', 'Credit', 'Entity', 'Description'],
         preview: [{ Account: '1000', Date: '2024-01-01', Debit: '100', Credit: '0' }],
       };
-      mockImportCSV.mockResolvedValue({ result: mockResult, snapshot: { id: 'snap-1', applied: false } });
+      mockImportCSV.mockResolvedValue({
+        result: mockResult,
+        snapshot: { id: 'snap-1', applied: false },
+      });
 
       const file = new File(['a,b,c\n1,2,3'], 'data.csv', { type: 'text/csv' });
       const result = await service.parseFile(file);
@@ -87,7 +91,14 @@ describe('GLImportService', () => {
       expect(result.fileName).toBe('data.csv');
       expect(result.format).toBe('csv');
       expect(result.rowCount).toBe(100);
-      expect(result.headers).toEqual(['Account', 'Date', 'Debit', 'Credit', 'Entity', 'Description']);
+      expect(result.headers).toEqual([
+        'Account',
+        'Date',
+        'Debit',
+        'Credit',
+        'Entity',
+        'Description',
+      ]);
       expect(mockImportCSV).toHaveBeenCalledTimes(1);
     });
   });
@@ -95,7 +106,12 @@ describe('GLImportService', () => {
   describe('autoDetectMappings', () => {
     it('returns mapping result from headers', () => {
       mockAutoDetect.mockReturnValue([
-        { sourceColumn: 'Account', targetField: 'accountCode', confidence: 0.95, reason: 'Keyword match' },
+        {
+          sourceColumn: 'Account',
+          targetField: 'accountCode',
+          confidence: 0.95,
+          reason: 'Keyword match',
+        },
         { sourceColumn: 'Date', targetField: 'date', confidence: 0.9, reason: 'Keyword match' },
       ]);
 

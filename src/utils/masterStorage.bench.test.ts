@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { masterStorage } from './masterStorage';
 import { generateGLEntries } from '../services/mockData/generators';

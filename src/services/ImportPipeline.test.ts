@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ImportPipeline } from './ImportPipeline';
 
@@ -166,7 +167,14 @@ describe('ImportPipeline', () => {
       rowCount: 3,
       errorCount: 1,
       warningCount: 0,
-      errors: [{ row: 3, column: 'accountCode', message: 'Missing required field: accountCode', value: '' }],
+      errors: [
+        {
+          row: 3,
+          column: 'accountCode',
+          message: 'Missing required field: accountCode',
+          value: '',
+        },
+      ],
       warnings: [],
       validRows: [
         { accountCode: '1000', debit: 100, credit: 0 },

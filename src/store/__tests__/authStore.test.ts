@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAuthStore } from '../authStore';
 import type { User } from '../../types';
@@ -51,17 +52,17 @@ describe('authStore', () => {
   });
 
   it('logs in a user', async () => {
-    await useAuthStore.getState().login('tester@finplan.com', 'anypassword');
+    await useAuthStore.getState().login('admin@finplan.com', 'anypassword');
     const state = useAuthStore.getState();
     expect(state.isAuthenticated).toBe(true);
     expect(state.user).not.toBeNull();
-    expect(state.user?.email).toBe('tester@finplan.com');
+    expect(state.user?.email).toBe('admin@finplan.com');
     expect(state.accessToken).not.toBeNull();
     expect(state.error).toBeNull();
   });
 
   it('logs out a user', async () => {
-    await useAuthStore.getState().login('tester@finplan.com', 'anypassword');
+    await useAuthStore.getState().login('admin@finplan.com', 'anypassword');
     expect(useAuthStore.getState().isAuthenticated).toBe(true);
 
     useAuthStore.getState().logout();
@@ -78,7 +79,7 @@ describe('authStore', () => {
   });
 
   it('persists across rehydration', async () => {
-    await useAuthStore.getState().login('tester@finplan.com', 'anypassword');
+    await useAuthStore.getState().login('admin@finplan.com', 'anypassword');
     const before = useAuthStore.getState();
 
     const persistedRaw = localStorage.getItem('authStore');

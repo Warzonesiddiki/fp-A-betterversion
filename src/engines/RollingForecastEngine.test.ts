@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // ROLLING FORECAST ENGINE TESTS — 40+ tests for auto-extending forecasts
 // =============================================================================

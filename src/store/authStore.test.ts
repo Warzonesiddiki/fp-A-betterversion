@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   useAuthStore,
@@ -138,6 +140,7 @@ describe('authStore', () => {
     for (let i = 0; i < 4; i++) {
       try {
         await useAuthStore.getState().login('bad@test.com', 'pass');
+        // eslint-disable-next-line no-empty
       } catch {}
     }
     await expect(useAuthStore.getState().login('bad@test.com', 'pass')).rejects.toThrow(/locked/);

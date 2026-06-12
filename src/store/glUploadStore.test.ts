@@ -42,10 +42,9 @@ describe('glUploadStore', () => {
 
   it('setFile resets mappings and preview', () => {
     useGLUploadStore.getState().setMappings({ Account: 'accountCode' });
-    useGLUploadStore.getState().setPreview(
-      [{ rowNum: 2, data: { Account: '1000' }, valid: true, errors: [] }],
-      []
-    );
+    useGLUploadStore
+      .getState()
+      .setPreview([{ rowNum: 2, data: { Account: '1000' }, valid: true, errors: [] }], []);
 
     useGLUploadStore.getState().setFile(mockFileInfo, mockFileInfo.columns);
     const state = useGLUploadStore.getState();

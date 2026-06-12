@@ -17,9 +17,39 @@ describe('glTrialBalanceStore', () => {
   });
 
   const mockRows: TrialBalanceRow[] = [
-    { accountId: '1', accountCode: '1000', accountName: 'Cash', accountType: 'Asset', beginningBalance: 10000, debit: 5000, credit: 2000, netChange: 3000, endingBalance: 13000 },
-    { accountId: '2', accountCode: '2000', accountName: 'AP', accountType: 'Liability', beginningBalance: 5000, debit: 1000, credit: 3000, netChange: -2000, endingBalance: 3000 },
-    { accountId: '3', accountCode: '3000', accountName: 'Revenue', accountType: 'Revenue', beginningBalance: 0, debit: 0, credit: 10000, netChange: -10000, endingBalance: -10000 },
+    {
+      accountId: '1',
+      accountCode: '1000',
+      accountName: 'Cash',
+      accountType: 'Asset',
+      beginningBalance: 10000,
+      debit: 5000,
+      credit: 2000,
+      netChange: 3000,
+      endingBalance: 13000,
+    },
+    {
+      accountId: '2',
+      accountCode: '2000',
+      accountName: 'AP',
+      accountType: 'Liability',
+      beginningBalance: 5000,
+      debit: 1000,
+      credit: 3000,
+      netChange: -2000,
+      endingBalance: 3000,
+    },
+    {
+      accountId: '3',
+      accountCode: '3000',
+      accountName: 'Revenue',
+      accountType: 'Revenue',
+      beginningBalance: 0,
+      debit: 0,
+      credit: 10000,
+      netChange: -10000,
+      endingBalance: -10000,
+    },
   ];
 
   it('starts with empty rows', () => {

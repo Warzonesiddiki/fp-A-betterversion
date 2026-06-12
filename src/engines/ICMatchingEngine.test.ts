@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ICMatchingEngine, type ICTransaction, type ToleranceSettings } from './ICMatchingEngine';
 

@@ -21,14 +21,40 @@ describe('ESGMetricsDashboard', () => {
   it('renders empty state when no metrics', () => {
     render(<ESGMetricsDashboard />);
     expect(screen.getByText('No ESG Metrics')).toBeInTheDocument();
-    expect(screen.getByText('Add ESG metrics to the store to view the dashboard.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Add ESG metrics to the store to view the dashboard.')
+    ).toBeInTheDocument();
   });
 
   it('renders metrics when store has data', () => {
     useESGStore.getState().setMetrics([
-      { id: 'e1', name: 'Carbon', category: 'environmental', value: 80, unit: '%', target: 100, trend: 'up' },
-      { id: 's1', name: 'Diversity', category: 'social', value: 70, unit: '%', target: 100, trend: 'up' },
-      { id: 'g1', name: 'Board Independence', category: 'governance', value: 90, unit: '%', target: 100, trend: 'up' },
+      {
+        id: 'e1',
+        name: 'Carbon',
+        category: 'environmental',
+        value: 80,
+        unit: '%',
+        target: 100,
+        trend: 'up',
+      },
+      {
+        id: 's1',
+        name: 'Diversity',
+        category: 'social',
+        value: 70,
+        unit: '%',
+        target: 100,
+        trend: 'up',
+      },
+      {
+        id: 'g1',
+        name: 'Board Independence',
+        category: 'governance',
+        value: 90,
+        unit: '%',
+        target: 100,
+        trend: 'up',
+      },
     ]);
     render(<ESGMetricsDashboard />);
     expect(screen.getByText('Overall ESG Score')).toBeInTheDocument();

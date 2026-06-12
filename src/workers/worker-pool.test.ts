@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { WorkerPool } from './worker-pool';
 import type { WorkerResponse } from './types';

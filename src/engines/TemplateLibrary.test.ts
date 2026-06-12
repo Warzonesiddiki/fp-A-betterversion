@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // TEMPLATE LIBRARY TESTS — Tests matching actual TemplateLibrary API
 // =============================================================================
