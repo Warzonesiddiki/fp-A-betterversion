@@ -5,6 +5,30 @@ import type { User, AuthState, Role } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { startRotation, stopRotation } from '../utils/tokenRotation';
 
+// --- Mock-Auth build-time gate ---
+// VITE_USE_MOCK_AUTH is a build-time switch. When `import.meta.env.PROD`
+// is true (i.e. the production bundle is being served) AND the env var
+// is explicitly 'true', the build MUST fail — mock auth generates
+// unsigned JWTs that anyone can forge, so a production deploy with
+// mock auth enabled is a hard security fail.
+//
+// This is checked once at module-evaluation time (Vite tree-shakes the
+// throw in dev / non-mock builds), so the cost is one boolean check per
+// page load.
+if (
+  import.meta.env.PROD === true &&
+  (import.meta.env.VITE_USE_MOCK_AUTH === 'true' || import.meta.env.VITE_USE_MOCK_AUTH === '1')
+) {
+  throw new Error(
+    'MOCK_AUTH MUST NOT BE ENABLED IN PRODUCTION — refusing to start. ' +
+      'Unset VITE_USE_MOCK_AUTH in your environment / CI secrets.'
+  );
+}
+// Allow `VITE_USE_MOCK_AUTH` in dev / staging; expose a typed helper so
+// the login flow can read it without re-typing the env var.
+export const isMockAuthEnabled = (): boolean =>
+  import.meta.env.VITE_USE_MOCK_AUTH === 'true' || import.meta.env.VITE_USE_MOCK_AUTH === '1';
+
 // --- RBAC Permission Matrix ---
 const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
   Admin: [
@@ -226,6 +250,17 @@ export const useAuthStore = create<AuthState>()(
                 s.isLoading = false;
               });
               throw new Error(get().error ?? 'Invalid credentials.');
+            }
+
+            // Mock auth path is gated on the build-time env var
+            // (VITE_USE_MOCK_AUTH). If mock auth is disabled and the
+            // user is not in the real auth path, reject the attempt.
+            if (!isMockAuthEnabled()) {
+              set((s) => {
+                s.isLoading = false;
+                s.error = 'Mock authentication is disabled in this build.';
+              });
+              throw new Error('Mock authentication is disabled. Configure a real auth backend.');
             }
 
             // Any password works in offline mode
