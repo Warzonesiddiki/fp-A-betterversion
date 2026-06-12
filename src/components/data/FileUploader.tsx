@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 import { FileDropZone } from '@/components/ui/FileDropZone';
@@ -112,7 +111,6 @@ export function FileUploader({
       {progress.status === 'error' && (
         <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
           {' '}
-          role="alert" role="alert"
           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm font-bold text-red-500">Import Failed</p>

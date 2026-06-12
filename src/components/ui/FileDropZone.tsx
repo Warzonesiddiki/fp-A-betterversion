@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, react/no-unescaped-entities */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useCallback } from 'react';
 import {
   Upload as UploadIcon,
@@ -203,7 +203,6 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         {error && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 px-3 py-1.5 bg-red-50 fin-negative rounded-full border border-red-100 animate-in fade-in slide-in-from-bottom-2">
             {' '}
-            role="alert" role="alert"
             <AlertCircle className="h-3.5 w-3.5" />
             <span className="text-[10px] font-bold uppercase tracking-widest">{error}</span>
           </div>

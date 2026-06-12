@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useMemo, memo } from 'react';
 import {
   BarChart,
@@ -180,7 +179,7 @@ export const TornadoChart = memo(function TornadoChart({
       </div>
       <div className="flex items-center justify-center gap-4 mt-2 text-xs text-[var(--text-muted)]">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-2 rounded bg-red-500 opacity-80" /> role="alert" role="alert"
+          <div className="w-3 h-2 rounded bg-red-500 opacity-80" />
           <span>Downside</span>
         </div>
         <div className="flex items-center gap-1">

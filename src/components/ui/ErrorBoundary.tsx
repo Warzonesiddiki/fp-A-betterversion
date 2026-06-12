@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertCircle, RefreshCw, Copy, ChevronDown, ChevronRight, Home } from 'lucide-react';
 
@@ -69,7 +68,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         >
           <div className="bg-red-50 dark:bg-red-950 p-4 rounded-full mb-6">
             {' '}
-            role="alert" role="alert"
             <AlertCircle className="h-10 w-10 text-red-500" />
           </div>
           <h2 className="text-xl font-bold mb-2 dark:text-gray-100">

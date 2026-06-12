@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/utils/cn';
@@ -125,7 +124,6 @@ export const ApprovalDashboard = memo(function ApprovalDashboard({ stats, classN
                   className="flex items-center justify-between text-sm border-l-2 border-red-500 pl-2"
                 >
                   {' '}
-                  role="alert" role="alert"
                   <div>
                     <p className="font-medium">{req.title}</p>
                     <p className="text-xs text-[var(--text-muted)]">by {req.requester}</p>

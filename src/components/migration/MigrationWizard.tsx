@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { Button } from '@/components/ui/Button';
@@ -168,7 +167,6 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
           {' '}
-          role="alert" role="alert"
           <AlertTriangle className="h-4 w-4" />
           <span>{error}</span>
         </div>
@@ -475,7 +473,6 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
               <div className="space-y-4">
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-center gap-2">
                   {' '}
-                  role="alert" role="alert"
                   <AlertTriangle className="h-4 w-4" />
                   Import failed. {progress.message}
                 </div>

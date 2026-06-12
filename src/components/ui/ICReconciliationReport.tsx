@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';
@@ -232,7 +231,6 @@ export function ICReconciliationReport({
                   className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20"
                 >
                   {' '}
-                  role="alert" role="alert"
                   <div>
                     <span className="font-medium">
                       {line.entityA} ↔ {line.entityB}

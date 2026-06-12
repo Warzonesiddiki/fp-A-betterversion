@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import { Treemap, ResponsiveContainer, Tooltip } from 'recharts';
 import { cn } from '@/utils/cn';
@@ -111,10 +110,7 @@ export const TreeMap: React.FC<TreeMapProps> = ({
           className
         )}
       >
-        <div className="flex items-center justify-center h-48 text-red-500 text-sm">
-          {' '}
-          role="alert" role="alert" {error}
-        </div>
+        <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
       </div>
     );
   }

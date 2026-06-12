@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import React, { useMemo } from 'react';
 import { cn } from '@/utils/cn';
 
@@ -70,10 +69,7 @@ export const SankeyChart: React.FC<SankeyChartProps> = React.memo(
             className
           )}
         >
-          <div className="flex items-center justify-center h-48 text-red-500 text-sm">
-            {' '}
-            role="alert" role="alert" {error}
-          </div>
+          <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
         </div>
       );
     }
