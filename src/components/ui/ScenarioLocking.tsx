@@ -55,44 +55,74 @@ export const ScenarioLocking = memo(function ScenarioLocking({
       // Default: trigger download via browser print
       const printWindow = window.open('', '_blank');
       if (printWindow) {
-        printWindow.document.write(`
-          <html>
-            <head><title>${scenarioName} — Scenario Report</title></head>
-            <body style="font-family: sans-serif; padding: 40px;">
-              <h1>${scenarioName}</h1>
-              <p style="color: #666;">Locked Scenario Report — Generated ${new Date().toLocaleDateString()}</p>
-              <table style="width: 100%; border-collapse: collapse; margin-top: 24px;">
-                <tr style="border-bottom: 2px solid #333;">
-                  <th style="text-align: left; padding: 8px;">Metric</th>
-                  <th style="text-align: right; padding: 8px;">Value</th>
-                </tr>
-                ${Object.entries({
-                  Revenue: formatCurrency(metrics.revenue),
-                  EBITDA: formatCurrency(metrics.ebitda),
-                  'Net Income': formatCurrency(metrics.netIncome),
-                  'Cash Flow': formatCurrency(metrics.cashFlow),
-                  Headcount: metrics.headcount.toString(),
-                  'Burn Rate': formatCurrency(metrics.burnRate),
-                  Runway: `${metrics.runway.toFixed(1)} months`,
-                  'Gross Margin': `${metrics.grossMargin.toFixed(1)}%`,
-                  'EBITDA Margin': `${metrics.ebitdaMargin.toFixed(1)}%`,
-                })
-                  .map(
-                    ([k, v]) =>
-                      `<tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 8px;">${k}</td>
-                    <td style="text-align: right; padding: 8px; font-family: monospace;">${v}</td>
-                  </tr>`
-                  )
-                  .join('')}
-              </table>
-              <p style="margin-top: 32px; font-size: 11px; color: #999;">
-                This scenario is locked and cannot be modified. Exported from FinPlan Pro.
-              </p>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
+        // Build the report via DOM API + textContent to avoid
+        // document.write (XSS surface — scenarioName may be user input).
+        const doc = printWindow.document;
+        doc.title = `${scenarioName} — Scenario Report`;
+        const style = doc.createElement('style');
+        style.textContent = `
+          body { font-family: sans-serif; padding: 40px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+          th { text-align: left; padding: 8px; border-bottom: 2px solid #333; }
+          td { padding: 8px; border-bottom: 1px solid #eee; }
+          td.num { text-align: right; font-family: monospace; }
+          .subtitle { color: #666; }
+          .footer { margin-top: 32px; font-size: 11px; color: #999; }
+        `;
+        doc.head.appendChild(style);
+
+        const h1 = doc.createElement('h1');
+        h1.textContent = scenarioName;
+        doc.body.appendChild(h1);
+
+        const subtitle = doc.createElement('p');
+        subtitle.className = 'subtitle';
+        subtitle.textContent = `Locked Scenario Report — Generated ${new Date().toLocaleDateString()}`;
+        doc.body.appendChild(subtitle);
+
+        const table = doc.createElement('table');
+        const thead = doc.createElement('thead');
+        const headerRow = doc.createElement('tr');
+        for (const header of ['Metric', 'Value']) {
+          const th = doc.createElement('th');
+          th.textContent = header;
+          headerRow.appendChild(th);
+        }
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = doc.createElement('tbody');
+        const rows: Array<[string, string]> = [
+          ['Revenue', formatCurrency(metrics.revenue)],
+          ['EBITDA', formatCurrency(metrics.ebitda)],
+          ['Net Income', formatCurrency(metrics.netIncome)],
+          ['Cash Flow', formatCurrency(metrics.cashFlow)],
+          ['Headcount', metrics.headcount.toString()],
+          ['Burn Rate', formatCurrency(metrics.burnRate)],
+          ['Runway', `${metrics.runway.toFixed(1)} months`],
+          ['Gross Margin', `${metrics.grossMargin.toFixed(1)}%`],
+          ['EBITDA Margin', `${metrics.ebitdaMargin.toFixed(1)}%`],
+        ];
+        for (const [k, v] of rows) {
+          const tr = doc.createElement('tr');
+          const td1 = doc.createElement('td');
+          td1.textContent = k;
+          const td2 = doc.createElement('td');
+          td2.className = 'num';
+          td2.textContent = v;
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+        doc.body.appendChild(table);
+
+        const footer = doc.createElement('p');
+        footer.className = 'footer';
+        footer.textContent =
+          'This scenario is locked and cannot be modified. Exported from FinPlan Pro.';
+        doc.body.appendChild(footer);
+
         printWindow.print();
       }
     }
