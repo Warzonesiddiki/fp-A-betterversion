@@ -4,6 +4,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import type { GLAccount, ImportJob, DataState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
+import { safeJSONStorage } from '../utils/storage/safeJSONStorage';
 
 export const useDataStore = create<DataState>()(
   subscribeWithSelector(
@@ -97,7 +98,7 @@ export const useDataStore = create<DataState>()(
       }),
       {
         name: 'data-store',
-        storage: masterStorage,
+        storage: safeJSONStorage<DataState>(() => masterStorage),
       }
     )
   )
