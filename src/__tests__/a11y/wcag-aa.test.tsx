@@ -36,7 +36,6 @@ import { Modal } from '../components/ui/Modal';
 import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
 import { ToastContainer } from '../components/ui/ToastContainer';
-import { DataGrid } from '../components/ui/DataGrid';
 import { CommandPalette } from '../components/ui/CommandPalette';
 import { DataTable } from '../components/ui/DataTable';
 import { ContextMenu } from '../components/ui/ContextMenu';
