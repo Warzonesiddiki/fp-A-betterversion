@@ -1,11 +1,11 @@
 --- a/src/components/ui/ICReconciliationReport.tsx
 +++ b/src/components/ui/ICReconciliationReport.tsx
-@@ -234,7 +234,7 @@
-                     unmatchedLines.map((line, i) => (
-                       <tr
-                         key={line.id}
--                        role="alert"
-+                        role="status"
-                         className="bg-red-50 dark:bg-red-900/10"
-                       >
-                         <td className="px-3 py-2 text-sm text-slate-700 dark:text-slate-300">
+@@ -232,7 +232,7 @@
+                 <div
+                   key={i}
+-                  className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20"
++                  role="status"
++                  className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20"
+                 >
+                   {' '}
+                   role="alert" role="alert"

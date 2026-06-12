@@ -1,10 +1,10 @@
 --- a/src/components/ui/FileDropZone.tsx
 +++ b/src/components/ui/FileDropZone.tsx
-@@ -203,7 +203,7 @@
-       {error && (
-         <div
--          role="alert"
-+          role="alert"
-           aria-live="assertive"
-           className="mt-2 text-sm text-red-600 dark:text-red-400"
-         >
+@@ -205,7 +205,7 @@
+           <div
+-            className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 px-3 py-1.5 bg-red-50 fin-negative rounded-full border border-red-100 animate-in fade-in slide-in-from-bottom-2"
++            role="alert"
++            className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 px-3 py-1.5 bg-red-50 fin-negative rounded-full border border-red-100 animate-in fade-in slide-in-from-bottom-2"
+           >
+             {' '}
+             role="alert" role="alert"

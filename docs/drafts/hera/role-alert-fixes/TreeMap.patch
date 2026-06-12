@@ -1,11 +1,6 @@
 --- a/src/components/ui/TreeMap.tsx
 +++ b/src/components/ui/TreeMap.tsx
-@@ -107,8 +107,7 @@
-       return (
-         <div
-           className={cn(
-             'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
-             className
+@@ -113,6 +113,5 @@
            )}
          >
 -          <div className="flex items-center justify-center h-48 text-red-500 text-sm">
@@ -16,5 +11,3 @@
 +            {error}
 +          </div>
          </div>
-       );
-     }
