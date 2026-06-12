@@ -1,13 +1,12 @@
 {
-  "id": "session-1779859815984",
-  "startedAt": "2026-05-27T05:30:15.984Z",
-  "cwd": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fp&A",
+  "id": "session-1781282210525",
+  "startedAt": "2026-06-12T16:36:50.525Z",
+  "cwd": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa",
   "context": {},
   "metrics": {
-    "edits": 116,
+    "edits": 0,
     "commands": 0,
     "tasks": 0,
     "errors": 0
-  },
-  "restoredAt": "2026-06-11T08:26:19.549Z"
+  }
 }
