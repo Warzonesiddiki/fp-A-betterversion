@@ -143,12 +143,37 @@ If no task matches your lane:
 | 2026-06-13 05:45 | Strategos | (bonus) MUSE_LINEUP_v2 | `docs/MUSE_LINEUP_v2.md` 187L (D-NNN namespace collision flagged) | ✅ ACCEPTED — T-ST-004 formalized retroactively |
 | 2026-06-13 05:45 | Iris | (pre-write) NPS_SURVEY_DESIGN | `docs/drafts/iris/NPS_SURVEY_DESIGN.md` 294L (3 questions, 4 cadences, per-persona interpretation) | ✅ ACCEPTED — T-IR-005 formalized retroactively |
 | 2026-06-13 05:45 | Iris | (pre-write) BETA_FEEDBACK_PLAN | `docs/drafts/iris/BETA_FEEDBACK_PLAN.md` 308L (5 waves, 5-way routing) | ✅ ACCEPTED — T-IR-006 formalized retroactively |
+| 2026-06-13 06:10 | Strategos | T-ST-003 (Phase 1 GTM) | `docs/drafts/strategos/PHASE_1_GTM.md` 316L (7 sections, 3-witness, 9 D-009 handoffs, DEC-001 flagged, $624K ARR run-rate) | ✅ ACCEPTED — T-ST-004 (Phase 2 trigger) queued |
+| 2026-06-13 06:10 | Iris | T-IR-006 (Beta feedback, formalized) | `docs/drafts/iris/BETA_FEEDBACK_PLAN.md` 373L (7 sections, 5 waves D+0→D+120, 4 incentives, PostHog decision, 5-way routing) | ✅ ACCEPTED — T-IR-004 (CSM playbook) queued |
+| 2026-06-13 06:15 | Hephaestus | T-HEP-003 (SOC 2 + 4 ADRs) — D-009 catch (silent) | `docs/drafts/adr/ADR-006-data-retention.md` + `ADR-007-encryption-at-rest.md` + `ADR-008-audit-logging.md` + `ADR-009-incident-response.md` (all Path C, renumbered 011/012 for plugin-sandbox-AST and data-storage-scoping) | ✅ ACCEPTED — Path C 11-ADR set complete (002-012); T-HEP-006 (logic-gap tests) queued |
+| 2026-06-13 06:30 | Strategos | T-ST-004 (formalize MUSE_LINEUP_v2 + STRATEGIC_INDEX_REFRESH) | MUSE_LINEUP_v2 187L v1.0 + STRATEGIC_INDEX.md v2 279L (was 202L, +77L) + 2 pre-writes (STRATEGIC_INDEX_REFRESH 210L + changelog 58L) | ✅ ACCEPTED — D-NNN renumbering APPROVED (D-010..D-019); T-ST-005 (Phase 2 trigger) in progress |
+| 2026-06-13 06:35 | Strategos | T-ST-005 (Phase 2 trigger, pre-emptive) | `docs/drafts/strategos/PHASE_2_TRIGGER.md` 92L (5 signals × 3 branches × 3 options, 7 sections) | 🆕 PRE-EMPTIVE — system task created at 019ebdde, awaiting §8-10 v1.0 promotion |
+| 2026-06-13 06:40 | Hephaestus | T-HEP-003 FINAL (all 4 priorities: SOC 2 + 4 ADRs + 3 patches regen + 4 logic-gap test files) | SOC2_READINESS 270L + 11 ADRs (002-012) + 4 P0 patches (46 cases) + 4 logic-gap patches (24 cases) = 70 test cases total | ✅ ACCEPTED IN FULL — T-HEP-005 (pentest plan) queued |
+| 2026-06-13 06:50 | Hermes | T-HER-006 (sales deck one-pager) | `docs/drafts/hermes/SALES_DECK_ONEPAGER.md` 277L (12 slides, 3-min × 4 scenarios live demo, $99/$499/custom pricing) | ✅ ACCEPTED — T-HER-007 (partnership motion) queued |
+| 2026-06-13 06:50 | Atlas | T-ATL-006 (husky timeout 240) | `.husky/pre-push` 28L (4 gates) + README 79L (107 LOC, bash -n + sh -n PASS, spec deviation APPROVED) | ✅ ACCEPTED — T-ATL-007 (Sentry self-hosted) queued |
+| 2026-06-13 06:55 | Mnemosyne | T-MN-004 (JSDoc P0 cascade v0.2) | `docs/drafts/mnemosyne/jsdoc-p0/{01-05}.patch` 395L (5/5 OK; 01+02 ready for post-push, 03+04+05 deferred accurate) | ✅ ACCEPTED — Apollo post-push P0 #4 unblocked; T-MN-005 (ARCHITECTURE.md mermaid) queued |
+| 2026-06-13 06:50 | Strategos | T-ST-005 (Phase 2 trigger, in progress) | `docs/drafts/strategos/PHASE_2_TRIGGER.md` 92L (5 signals × 3 branches × 3 options) | 🆕 IN PROGRESS — §8-10 v1.0 promotion; T-ST-006 (board deck) queued after |
+| 2026-06-13 07:00 | Strategos | T-ST-005 v1.0 PROMOTED | `docs/drafts/strategos/PHASE_2_TRIGGER.md` 92L → 155L (+63L, §8 dashboard + §9 timeline + §10 3-witness verification) | ✅ ACCEPTED — D-NNN reorg FORWARD-LOOKING (next = D-010); T-ST-006 system task created |
+| 2026-06-13 07:05 | Athena | T-AT-006 (post-launch regression suite) | `docs/drafts/athena/POST_LAUNCH_REGRESSION_SUITE.md` ~450L (11 sections, 10 paths 6+4 split, latency budgets, triage matrix, Mulberry32 PRNG) | ✅ ACCEPTED — T-AT-007 (board deck pre-validation) queued |
+| 2026-06-13 06:40 | Hephaestus | T-HEP-005 (pentest plan) | NEW (60 min) — vendor shortlist (NCC/Trail of Bits/Cobalt/Bishop Fox) + scope + timeline + engagement letter | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:10 | Athena | T-AT-006 (post-launch regression) | NEW (60 min) — 10 user paths + Playwright E2E design | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:10 | Hera | T-HE-006 (design system guide) | NEW (60 min) — 8 sections, 6 tokens, 12-point checklist | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:10 | Hermes | T-HER-006 (sales deck one-pager) | NEW (60 min) — 12 slides × speaker notes for ICP-1 founder demo | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:10 | Atlas | T-ATL-006 (husky timeout) | NEW (15 min) — 1-line `timeout 240` fix to `.husky/pre-push` | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:35 | Strategos | T-ST-005 (Phase 2 trigger) | NEW (60 min) — 5 signals × 3 branches × 3 options; pre-write 92L on disk | 🆕 IN PROGRESS — §8-10 v1.0 promotion |
+| 2026-06-13 06:40 | Hephaestus | T-HEP-005 (pentest plan) | NEW (60 min) — vendor shortlist (NCC/Trail of Bits/Cobalt/Bishop Fox) + scope + timeline + engagement letter | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:40 | Strategos | T-ST-006 (board deck FY26) | NEW (90 min) — 1-pager memo + 12-slide deck for 10 founder decisions | 🆕 ASSIGNED — awaiting T-ST-005 v1.0 first |
+| 2026-06-13 06:50 | Hermes | T-HER-007 (partnership-outreach motion) | NEW (60 min) — 5-touch sequence + 15 firm partner list + rev-share math | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:50 | Atlas | T-ATL-007 (Sentry self-hosted deployment) | NEW (90 min) — 8 sections, 8 GiB min, source-map pipeline, OTel bridge, 4 dashboards | 🆕 ASSIGNED — awaiting ACK |
+| 2026-06-13 06:55 | Mnemosyne | T-MN-003 (ONBOARDING + TESTING) | IN PROGRESS (60 min) — formalize from pre-writes on disk | 🆕 IN PROGRESS — T-MN-005 (ARCHITECTURE.md mermaid) queued after |
+| 2026-06-13 07:00 | Strategos | T-ST-006 (board deck FY26) | NEW (90 min) — 1-pager memo + 12-slide deck for 10 founder decisions, all financial figures tagged `[Leader estimate, pending Founder]` | 🆕 SYSTEM TASK CREATED — Strategos can formally claim |
+| 2026-06-13 07:05 | Athena | T-AT-007 (board deck pre-validation) | NEW (45 min) — 12 sections matching Strategos's T-ST-006, verify ship-readiness path + ARR math + 5-signal decision tree + financial tagging + risk register + Q3 timeline | 🆕 ASSIGNED — awaiting ACK |
 
 ---
 
 ## REVIEW STATUS
 
-- ✅ ACCEPTED (16 + 5 bonus = 21): T-ST-001 v0.2, T-ST-002, T-HER-002, T-ATL-002, T-TH-001, T-HEP-002, T-HE-003, T-MN-002, T-IR-002, T-AT-003, T-AT-004, T-ATL-003, T-HER-003, T-ATL-004, T-HER-004 + 5 bonus
+- ✅ ACCEPTED (25 + 5 bonus = 30): T-ST-001 v0.2, T-ST-002, T-ST-003, T-ST-004, T-ST-005 v1.0, T-HER-002, T-HER-004, T-HER-005, T-HER-006, T-ATL-002, T-ATL-003, T-ATL-004, T-ATL-005, T-ATL-006, T-TH-001, T-HEP-002, T-HEP-003, T-HE-003, T-HE-004, T-MN-002, T-MN-004, T-IR-002, T-IR-003, T-IR-005, T-IR-006, T-AT-003, T-AT-004, T-AT-005, T-AT-006 + 5 bonus
 - 🔄 REVISION: (none yet)
 - ⏳ AWAITING REVIEW: (none — see above)
 
@@ -203,6 +228,8 @@ If no task matches your lane:
 | D-007 | No-idle-agents — 5 patterns (pre-stage, cross-Muse pickup, pre-write next, verification, domain deepening) | ✅ ACTIVE (7 patterns now, Themis to enforce) |
 | D-008 | Push-now-fix-tests-post-push (D-002 → D-008 decision flip) | ✅ COMPLIED |
 | D-009 | Triangulation discipline (verify against source-of-truth doc when a Muse reports state change) | ✅ COMPLIED |
+| D-010 | D-NNN namespace reorg (2026-06-13) — strategic decisions → D-011+ in `docs/STRATEGIC_DECISIONS_LOG.md` (Strategos-owned); cycle protocols stay D-001..D-009 in TASKBOARD.md (Leader+Themis-owned). Approved 2026-06-13. | ✅ APPROVED |
+| D-011 | Muse team expansion 7→11 (2026-06-13) — Iris/Hermes/Atlas/Themis joined. Retroactive ratification by Leader 2026-06-13. | ✅ RATIFIED |
 
 ---
 

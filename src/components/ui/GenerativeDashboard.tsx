@@ -218,16 +218,16 @@ function renderElement(spec: DashboardSpec, elementId: string): React.ReactNode 
   return <Component {...element.props}>{childNodes}</Component>;
 }
 
-import React from 'react';
+import React, { memo } from 'react';
 
 export interface GenerativeDashboardProps {
   spec: DashboardSpec;
   className?: string;
 }
 
-export function GenerativeDashboard({ spec, className = '' }: GenerativeDashboardProps) {
+export const GenerativeDashboard = memo(function GenerativeDashboard({ spec, className = '' }: GenerativeDashboardProps) {
   return <div className={`space-y-4 ${className}`}>{renderElement(spec, spec.root)}</div>;
-}
+});
 
 export function nlqResultToSpec(
   data: Array<{ label: string; value: number }>,

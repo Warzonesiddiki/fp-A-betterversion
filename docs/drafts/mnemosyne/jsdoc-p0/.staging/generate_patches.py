@@ -22,6 +22,28 @@ STAGING = DRAFT_DIR / ".staging"
 STAGING.mkdir(exist_ok=True)
 LOG = STAGING / "generate.log"
 
+# On Windows `diff` is at C:\Program Files\Git\usr\bin\diff.exe (from
+# Git for Windows) but it's NOT on the PATH for our shell. Find it
+# dynamically so the script works on this and similar systems.
+DIFF_BIN = None
+for cand in [
+    r"C:\Program Files\Git\usr\bin\diff.exe",
+    r"C:\Program Files\Git\mingw64\bin\diff.exe",
+    r"C:\Program Files (x86)\Git\usr\bin\diff.exe",
+    r"C:\msys64\usr\bin\diff.exe",
+    "/usr/bin/diff",
+    "/bin/diff",
+    "diff",
+]:
+    from shutil import which
+    w = which(cand) if not cand.startswith(("C:", "/")) else (cand if Path(cand).exists() else None)
+    if w:
+        DIFF_BIN = w
+        break
+
+if DIFF_BIN is None:
+    raise SystemExit("FATAL: cannot find a `diff` executable on this system")
+
 _log_fh = open(LOG, "w", encoding="utf-8", buffering=1)
 
 
@@ -35,7 +57,7 @@ def run(cmd, cwd=None):
 
 
 def diff_u(old_path: Path, new_path: Path) -> str:
-    rc, out, err = run(f'diff -u "{old_path}" "{new_path}"', cwd=REPO)
+    rc, out, err = run(f'"{DIFF_BIN}" -u "{old_path}" "{new_path}"', cwd=REPO)
     if rc == 0:
         return ""
     if rc != 1:
@@ -137,19 +159,42 @@ USE_AUTH_V1_REGEX = (
     r"/\*\*\n"
     r" \* Thin selector hook for the auth store\.\n"
     r" \*\n"
-    r" \* @returns.*?\n"
-    r" \*/\n\n"
+    r" \* @returns [^\n]*\n"
+    r" \*/\n"
 )
 
 
 def gen_01():
-    return gen(
-        "01-useAuth",
-        REPO / "src/hooks/useAuth.ts",
-        USE_AUTH_V1_REGEX,
-        USE_AUTH_V2,
-        "useAuth v0.1 JSDoc block",
+    # useAuth.ts may or may not have v0.1 JSDoc. Handle both.
+    src = REPO / "src/hooks/useAuth.ts"
+    content = src.read_text(encoding="utf-8")
+    pat_v01 = (
+        r"/\*\*\n"
+        r" \* Thin selector hook for the auth store\.\n"
+        r" \*\n"
+        r" \* @returns [^\n]*\n"
+        r" \*/\n\n"
     )
+    m = re.search(pat_v01, content, flags=re.DOTALL)
+    if m:
+        # v0.1 exists - replace it
+        new_content = content[:m.start()] + USE_AUTH_V2 + content[m.end():]
+    else:
+        # No v0.1 - prepend v0.2 to the export function
+        if "export function useAuth() {" in content:
+            idx = content.index("export function useAuth() {")
+            new_content = content[:idx] + USE_AUTH_V2 + content[idx:]
+        else:
+            raise RuntimeError("01: useAuth() export anchor not found")
+    new_path = STAGING / "useAuth.ts.new"
+    with open(new_path, "w", encoding="utf-8", newline="") as f:
+        f.write(new_content)
+    patch = diff_u(src, new_path)
+    new_path.unlink()
+    if not patch:
+        raise RuntimeError("01: diff was empty")
+    write_patch(DRAFT_DIR / "01-useAuth.patch", patch)
+    return len(patch.splitlines())
 
 
 # ── 02 masterStorage.ts ──────────────────────────────────────────────────────
@@ -206,20 +251,37 @@ MASTER_STORAGE_V2 = '''/**
 
 
 def gen_02():
-    # The v0.1 JSDoc on masterStorage is shorter and may have multiple lines
+    # masterStorage.ts may or may not have v0.1 JSDoc. Handle both.
     src = REPO / "src/utils/masterStorage.ts"
     content = src.read_text(encoding="utf-8")
-    # Find the v0.1 JSDoc block (if any) right before `export const masterStorage`
-    pat = (
+    # Try to find a v0.1 JSDoc block immediately before `export const masterStorage`
+    pat_v01 = (
         r"/\*\*\n"
-        r" \* masterStorage[^\n]*\n"
+        r" \*[^\n]*masterStorage[^\n]*\n"
         r"(?: \*[^\n]*\n)*?"
         r" \*/\n\n"
+        r"export const masterStorage:"
     )
-    m = re.search(pat, content, flags=re.MULTILINE)
-    if not m:
-        raise RuntimeError("02: v0.1 JSDoc not found")
-    new_content = content[:m.start()] + MASTER_STORAGE_V2 + content[m.end():]
+    m = re.search(pat_v01, content)
+    if m:
+        # Replace v0.1 block (incl. trailing blank line) with the v0.2 block.
+        # The match.end() is at the start of `export const masterStorage:`;
+        # we want to insert MASTER_STORAGE_V2 (which already ends with a
+        # trailing blank line) before `export const masterStorage:`.
+        # The match start is at the `/**` of v0.1. The match captures the
+        # v0.1 block + blank line. We replace from match.start() to the
+        # position of `export const masterStorage:` (which is match.end()
+        # minus the length of "export const masterStorage:").
+        idx_export = m.end() - len("export const masterStorage:")
+        new_content = content[:m.start()] + MASTER_STORAGE_V2 + content[idx_export:]
+    else:
+        # No v0.1 - find the `export const masterStorage:` line and prepend
+        # the v0.2 JSDoc to it.
+        if "export const masterStorage:" in content:
+            idx_export = content.index("export const masterStorage:")
+            new_content = content[:idx_export] + MASTER_STORAGE_V2 + content[idx_export:]
+        else:
+            raise RuntimeError("02: export const masterStorage anchor not found")
     new_path = STAGING / "masterStorage.ts.new"
     with open(new_path, "w", encoding="utf-8", newline="") as f:
         f.write(new_content)

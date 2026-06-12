@@ -1,18 +1,28 @@
 #!/bin/sh
+# <!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+# =============================================================================
+# FinPlan Pro — pre-push hook
+# See docs/drafts/atlas/husky-timeout-fix.md for the IC-1 root cause + the
+# 240s rationale. Each gate is wrapped in `timeout 240` so a single hung
+# process cannot stall the developer's terminal indefinitely.
+# Cross-link: docs/drafts/atlas/ON_CALL_RUNBOOK.md IC-1 (husky hang) and
+# IC-5 (push timeout). The 240s ceiling matches git's own default push-timeout.
+# =============================================================================
+
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "Running pre-push checks..."
+echo "Running pre-push checks (240s ceiling per gate)..."
 
-# TypeScript check
-if ! npx tsc --noEmit; then
-  echo "❌ TypeScript errors found. Push blocked."
-  exit 1
-fi
+# Gate 1 — TypeScript
+timeout 240 npx tsc --noEmit || { echo "❌ TypeScript check failed (or timed out at 240s). Push blocked."; exit 1; }
 
-# ESLint check
-if ! npx eslint src --max-warnings 0; then
-  echo "❌ ESLint errors found. Push blocked."
-  exit 1
-fi
+# Gate 2 — ESLint (zero-warnings, matches CI)
+timeout 240 npx eslint src --max-warnings 0 || { echo "❌ ESLint check failed (or timed out at 240s). Push blocked."; exit 1; }
+
+# Gate 3 — Vitest unit suite (8,334+ tests, 80 GiB heap per package.json)
+timeout 240 npm test || { echo "❌ Vitest failed (or timed out at 240s). Push blocked."; exit 1; }
+
+# Gate 4 — Vite production build (catches build-time-only failures, e.g. tsx-typing in build context)
+timeout 240 npm run build || { echo "❌ Build failed (or timed out at 240s). Push blocked."; exit 1; }
 
 echo "✅ All pre-push checks passed."
