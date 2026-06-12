@@ -10,9 +10,19 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
+    __esModule: true,
     GitBranch: makeIcon(),
     ArrowRight: makeIcon(),
+    ArrowDown: makeIcon(),
     Database: makeIcon(),
+    FileText: makeIcon(),
+    Server: makeIcon(),
+    HardDrive: makeIcon(),
+    Boxes: makeIcon(),
+    Layers: makeIcon(),
+    ChevronRight: makeIcon(),
+    Activity: makeIcon(),
+    Zap: makeIcon(),
   };
 });
 

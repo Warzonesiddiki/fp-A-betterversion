@@ -334,7 +334,14 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
   if (!node || typeof node !== 'object' || seen.has(node)) return null;
   seen.add(node);
 
-  const n = node as { type?: string; name?: string; callee?: unknown; object?: unknown };
+  const n = node as {
+    type?: string;
+    name?: string;
+    callee?: unknown;
+    object?: unknown;
+    property?: unknown;
+    computed?: boolean;
+  };
 
   switch (n.type) {
     case 'ImportDeclaration':
@@ -364,7 +371,7 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
         if (n.type === 'NewExpression' && callee.name === 'Function') {
           return 'new Function(...) is not allowed';
         }
-        if (n.type === 'NewExpression' && FORBIDDEN_CONSTRUCTORS.has(callee.name)) {
+        if (n.type === 'NewExpression' && callee.name && FORBIDDEN_CONSTRUCTORS.has(callee.name)) {
           return `new ${callee.name}(...) is not allowed`;
         }
       }
@@ -385,7 +392,7 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
         }
       }
       // Forbid call to any blocked global by name.
-      if (callee?.type === 'Identifier' && BLOCKED_GLOBALS.has(callee.name)) {
+      if (callee?.type === 'Identifier' && callee.name && BLOCKED_GLOBALS.has(callee.name)) {
         return `call to blocked global '${callee.name}' is not allowed`;
       }
       break;
@@ -399,7 +406,7 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
       const propName = prop?.type === 'Identifier' ? prop.name : null;
       const propLiteral =
         prop?.type === 'Literal' && typeof prop.value === 'string' ? prop.value : null;
-      const checkName = propName ?? propLiteral;
+      const checkName = (propName ?? propLiteral) as string | null;
       if (checkName && FORBIDDEN_PROPERTIES.has(checkName)) {
         return `member access on forbidden property '.${checkName}' is not allowed`;
       }

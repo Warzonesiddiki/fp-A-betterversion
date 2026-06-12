@@ -98,7 +98,7 @@ export const useDataStore = create<DataState>()(
       }),
       {
         name: 'data-store',
-        storage: safeJSONStorage<DataState>(() => masterStorage),
+        storage: safeJSONStorage<DataState>(masterStorage),
       }
     )
   )
