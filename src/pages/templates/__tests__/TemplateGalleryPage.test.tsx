@@ -44,6 +44,6 @@ describe('TemplateGalleryPage', () => {
 
   it('renders heading', () => {
     render(<TemplateGalleryPage />);
-    expect(screen.getByText(/Template/i)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /template/i })).toBeTruthy();
   });
 });

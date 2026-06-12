@@ -226,8 +226,8 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     environment: 'jsdom',
     pool: 'forks',
-    maxForks: 2,
-    minForks: 1,
+    maxForks: 4,
+    minForks: 2,
     testTimeout: 30000,
     hookTimeout: 30000,
     env: {

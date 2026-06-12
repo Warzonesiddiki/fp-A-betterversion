@@ -15,32 +15,27 @@
  */
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'vitest-axe';
+import { axe } from 'vitest-axe';
 import { MemoryRouter } from 'react-router-dom';
 
-// Pages & components that must be a11y-clean. These are the routes that the
-// design-system audit flagged as high-traffic or that have the largest
-// surface of interactive controls. Keep this list curated — adding a page
-// here is the cheapest way to lock in a11y regressions.
-import LoginPage from '../pages/auth/LoginPage';
-import RegisterPage from '../pages/auth/RegisterPage';
-import DashboardPage from '../pages/dashboard/DashboardPage';
-import DataImportPage from '../pages/data/DataImportPage';
-import ChartOfAccountsPage from '../pages/data/ChartOfAccountsPage';
-import BudgetVsActualPage from '../pages/reports/BudgetVsActualPage';
-import ProfitLossPage from '../pages/reports/ProfitLossPage';
-import CashFlowPage from '../pages/reports/CashFlowPage';
+import LoginPage from '../../pages/auth/LoginPage';
+import RegisterPage from '../../pages/auth/RegisterPage';
+import DashboardPage from '../../pages/DashboardPage';
+import DataImportPage from '../../pages/data/DataImportPage';
+import ChartOfAccountsPage from '../../pages/charts/ChartOfAccountsPage';
+import SettingsPage from '../../pages/settings/SettingsPage';
+import BudgetVsActualPage from '../../pages/reports/BudgetVsActualPage';
+import ProfitLossPage from '../../pages/reports/ProfitLossPage';
+import CashFlowPage from '../../pages/reports/CashFlowPage';
 
-import { Button } from '../components/ui/Button';
-import { Modal } from '../components/ui/Modal';
-import { Input } from '../components/ui/Input';
-import { Card } from '../components/ui/Card';
-import { ToastContainer } from '../components/ui/ToastContainer';
-import { CommandPalette } from '../components/ui/CommandPalette';
-import { DataTable } from '../components/ui/DataTable';
-import { ContextMenu } from '../components/ui/ContextMenu';
-
-expect.extend(toHaveNoViolations);
+import { Button } from '../../components/ui/Button';
+import { Modal } from '../../components/ui/Modal';
+import { Input } from '../../components/ui/Input';
+import { Card } from '../../components/ui/Card';
+import { ToastContainer } from '../../components/ui/ToastContainer';
+import { CommandPalette } from '../../components/ui/CommandPalette';
+import { DataTable } from '../../components/ui/DataTable';
+import { ContextMenu } from '../../components/ui/ContextMenu';
 
 const withRouter = (ui: React.ReactNode) => (
   <MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>
@@ -51,33 +46,39 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     it('LoginPage has no detectable a11y violations', async () => {
       const { container } = render(<LoginPage />);
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
 
     it('RegisterPage has no detectable a11y violations', async () => {
-      const { container } = render(withRouter(<RegisterPage />));
+      const { container } = render(<RegisterPage />);
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
   });
 
-  describe('Primary data pages', () => {
+  describe('Main application pages', () => {
     it('DashboardPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<DashboardPage />));
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-
-    it('ChartOfAccountsPage has no detectable a11y violations', async () => {
-      const { container } = render(withRouter(<ChartOfAccountsPage />));
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
 
     it('DataImportPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<DataImportPage />));
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
+    });
+
+    it('ChartOfAccountsPage has no detectable a11y violations', async () => {
+      const { container } = render(withRouter(<ChartOfAccountsPage />));
+      const results = await axe(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('SettingsPage has no detectable a11y violations', async () => {
+      const { container } = render(withRouter(<SettingsPage />));
+      const results = await axe(container);
+      expect(results.violations).toEqual([]);
     });
   });
 
@@ -85,93 +86,76 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     it('BudgetVsActualPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<BudgetVsActualPage />));
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
 
     it('ProfitLossPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<ProfitLossPage />));
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
 
     it('CashFlowPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<CashFlowPage />));
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
   });
 
-  describe('Design-system primitives', () => {
-    it('Button has no a11y violations', async () => {
-      const { container } = render(<Button>Save</Button>);
+  describe('UI primitives', () => {
+    it('Button has no detectable a11y violations', async () => {
+      const { container } = render(<Button>Click me</Button>);
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
 
-    it('Input (with label) has no a11y violations', async () => {
+    it('Modal has no detectable a11y violations', async () => {
       const { container } = render(
-        <div>
-          <label htmlFor="test-input">Email</label>
-          <Input id="test-input" type="email" />
-        </div>
-      );
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-
-    it('Card has no a11y violations', async () => {
-      const { container } = render(<Card>content</Card>);
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-  });
-
-  describe('Overlays & dialogs', () => {
-    it('ToastContainer has no a11y violations', async () => {
-      const { container } = render(<ToastContainer toasts={[]} onDismiss={() => {}} />);
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-
-    it('Modal traps focus and has no a11y violations', async () => {
-      const { container } = render(
-        <Modal open onClose={() => {}} title="Test modal">
-          <p>Body content</p>
+        <Modal isOpen onClose={() => {}}>
+          Modal content
         </Modal>
       );
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
 
-    it('CommandPalette has no a11y violations', async () => {
-      const { container } = render(
-        withRouter(<CommandPalette open onClose={() => {}} commands={[]} onSelect={() => {}} />)
-      );
+    it('Input has no detectable a11y violations', async () => {
+      const { container } = render(<Input label="Username" />);
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-  });
-
-  describe('Data grids & tables', () => {
-    it('DataTable has no a11y violations', async () => {
-      const { container } = render(
-        <DataTable columns={[{ key: 'a', header: 'A' }]} data={[{ a: 1 }]} />
-      );
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
     });
 
-    it('ContextMenu has no a11y violations', async () => {
-      const { container } = render(
-        <ContextMenu
-          x={0}
-          y={0}
-          items={[{ label: 'Item 1', onClick: () => {} }]}
-          onClose={() => {}}
-        />
-      );
+    it('Card has no detectable a11y violations', async () => {
+      const { container } = render(<Card>Card content</Card>);
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      expect(results.violations).toEqual([]);
+    });
+
+    it('ToastContainer has no detectable a11y violations', async () => {
+      const { container } = render(<ToastContainer />);
+      const results = await axe(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('CommandPalette has no detectable a11y violations', async () => {
+      const { container } = render(withRouter(<CommandPalette isOpen onClose={() => {}} />));
+      const results = await axe(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('DataTable has no detectable a11y violations', async () => {
+      const columns = [{ key: 'name', header: 'Name' }];
+      const rows = [{ name: 'Alpha' }, { name: 'Beta' }];
+      const { container } = render(<DataTable columns={columns} rows={rows} rowKey="name" />);
+      const results = await axe(container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('ContextMenu has no detectable a11y violations', async () => {
+      const items = [{ label: 'Cut', onClick: () => {} }];
+      const { container } = render(<ContextMenu x={0} y={0} items={items} onClose={() => {}} />);
+      const results = await axe(container);
+      expect(results.violations).toEqual([]);
     });
   });
 });

@@ -24,6 +24,13 @@ vi.mock('lucide-react', () => {
     RefreshCw: makeIcon(),
     ExternalLink: makeIcon(),
     Settings: makeIcon(),
+    ChevronUp: makeIcon(),
+    ChevronDown: makeIcon(),
+    ChevronRight: makeIcon(),
+    ChevronLeft: makeIcon(),
+    Plus: makeIcon(),
+    Trash2: makeIcon(),
+    Save: makeIcon(),
   };
 });
 
@@ -36,6 +43,6 @@ describe('IntegrationSettingsPage', () => {
 
   it('renders heading', () => {
     render(<IntegrationSettingsPage />);
-    expect(screen.getByText(/Integration/i)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /integration/i })).toBeTruthy();
   });
 });
