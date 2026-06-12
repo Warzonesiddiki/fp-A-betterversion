@@ -225,7 +225,10 @@ export interface GenerativeDashboardProps {
   className?: string;
 }
 
-export const GenerativeDashboard = memo(function GenerativeDashboard({ spec, className = '' }: GenerativeDashboardProps) {
+export const GenerativeDashboard = memo(function GenerativeDashboard({
+  spec,
+  className = '',
+}: GenerativeDashboardProps) {
   return <div className={`space-y-4 ${className}`}>{renderElement(spec, spec.root)}</div>;
 });
 
