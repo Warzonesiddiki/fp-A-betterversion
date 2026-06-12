@@ -326,6 +326,9 @@ vi.mock('lucide-react', () => {
     Activity: makeIcon(),
     Sparkles: makeIcon(),
     Scale: makeIcon(),
+    ShieldAlert: makeIcon(),
+    TrendingDown: makeIcon(),
+    Info: makeIcon(),
   };
 });
 

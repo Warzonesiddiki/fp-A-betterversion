@@ -122,6 +122,10 @@ vi.mock('lucide-react', () => {
     Upload: makeIcon(),
     Target: makeIcon(),
     HelpCircle: makeIcon(),
+    ShieldAlert: makeIcon(),
+    AlertTriangle: makeIcon(),
+    Info: makeIcon(),
+    TrendingDown: makeIcon(),
   };
 });
 
