@@ -1,6 +1,6 @@
 <!-- DRAFT v0.1 — awaiting review — Hephaestus 2026-06-12 -->
 
-# ADR-007: Plugin Sandbox AST Allowlist (Property-Scope + Identifier-Scope + NewExpression-Reject)
+# ADR-011: Plugin Sandbox AST Allowlist (Property-Scope + Identifier-Scope + NewExpression-Reject)
 
 > **Status:** Proposed
 > **Date:** 2026-06-12

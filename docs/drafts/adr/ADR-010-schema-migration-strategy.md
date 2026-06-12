@@ -1,6 +1,6 @@
 <!-- DRAFT v0.1 — awaiting review — Mnemosyne 2026-06-12 -->
 
-# ADR-006: Schema migration strategy (persist + masterStorage + encryption)
+# ADR-010: Schema migration strategy (persist + masterStorage + encryption)
 
 > _Status: Accepted · Date: 2026-06-12 · Author: Mnemosyne (Documentation & Architecture) · Cycle: FinPlan Pro Perfection Cycle 2026-06-12_
 >

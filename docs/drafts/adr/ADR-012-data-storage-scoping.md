@@ -1,6 +1,6 @@
 <!-- DRAFT v0.1 — awaiting review — Hephaestus 2026-06-12 -->
 
-# ADR-008: Data Storage Scoping (PII vs Business Data vs Regulated)
+# ADR-012: Data Storage Scoping (PII vs Business Data vs Regulated)
 
 > **Status:** Proposed
 > **Date:** 2026-06-12
