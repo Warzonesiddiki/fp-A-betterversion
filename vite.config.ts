@@ -230,6 +230,13 @@ export default defineConfig({
     minForks: 1,
     testTimeout: 30000,
     hookTimeout: 30000,
+    env: {
+      // Mirror dev / staging auth behavior in tests. Without this,
+      // `isMockAuthEnabled()` returns false and login() routes to
+      // loginReal() — which throws "Real authentication is not
+      // configured", breaking every authStore test.
+      VITE_USE_MOCK_AUTH: 'true',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary', 'lcov', 'json-summary'],
