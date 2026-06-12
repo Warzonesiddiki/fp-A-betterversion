@@ -1,0 +1,113 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { PersistStorage } from 'zustand/middleware';
+import { sqlJsStorage } from './sqlJsStorage';
+import { tauriSqlStorage, isTauri } from './tauriSqlStorage';
+import { wrapChunkedStorage } from './chunkedStorage';
+
+let _isTauriCache: boolean | null = null;
+
+async function checkTauri() {
+  if (_isTauriCache === null) {
+    _isTauriCache = await isTauri();
+  }
+  return _isTauriCache;
+}
+
+const chunkedTauriStorage = wrapChunkedStorage(tauriSqlStorage);
+const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
+
+/**
+ * Canonical storage adapter for every persisted zustand store in
+ * FinPlan Pro. Implements Zustand's {@link PersistStorage} interface, so
+ * it is the **drop-in value for `persist(...)`'s `storage:` option** —
+ * never call `localStorage` directly from a store (linter-enforced via
+ * the AGENTS.md convention).
+ *
+ * **Why a custom adapter, not `localStorage` directly?**
+ *  1. **Tauri / web routing** — when the app runs inside Tauri
+ *     (`isTauri() === true`) data is written to a local SQLite file via
+ *     `tauriSqlStorage`; when it runs in the browser, it falls back to
+ *     `sqlJsStorage` (sql.js WASM → IndexedDB). `localStorage` is a
+ *     third-tier fallback we explicitly avoid because of its 5 MB cap
+ *     and synchronous API.
+ *  2. **Chunked writes** — both backends are wrapped in
+ *     `wrapChunkedStorage(...)` so large persisted slices (cube state,
+ *     large driver trees) are split into ≤ 1 MB chunks to dodge the
+ *     IndexedDB value-size limit and SQLite `BLOB` row-size limits.
+ *  3. **Caching** — `_isTauriCache` memoizes the `isTauri()` probe so
+ *     every `getItem`/`setItem` does not re-await the Tauri detection
+ *     call. `__resetCache` exists for tests that need to flip the
+ *     runtime between cases.
+ *
+ * **Schema migration.** Each persisted store has a `version` field
+ * (e.g. `{ name: 'fpa:scenario', version: 2 }`). When the version
+ * changes, Zustand's `persist` middleware calls the `migrate` callback
+ * (or discards state if no migration is registered). The
+ * `kdfVersion` field on encryption-wrapped slices is independent of the
+ * Zustand version and signals the KDF iteration count of the payload
+ * (e.g. `kdfVersion: 2` = PBKDF2 600k iterations); mismatches trigger
+ * payload re-encryption rather than migration.
+ *
+ * **Public API (4 methods):**
+ *
+ * | Method                        | Visibility    | Notes                                          |
+ * | ----------------------------- | ------------- | ---------------------------------------------- |
+ * | `getItem(name)`               | public        | Returns `unknown \| null` per `PersistStorage` |
+ * | `setItem(name, value)`        | public        | Awaited; chunked under the hood                |
+ * | `removeItem(name)`            | public        | Removes all chunks for the key                 |
+ * | `__resetCache()`              | `@internal`   | **Tests only.** Resets `_isTauriCache` to `null` |
+ *
+ * @example
+ * // Canonical Zustand wiring (the AGENTS.md pattern)
+ * import { create } from 'zustand';
+ * import { persist, subscribeWithSelector } from 'zustand/middleware';
+ * import { immer } from 'zustand/middleware/immer';
+ * import { masterStorage } from '@/utils/masterStorage';
+ *
+ * export const useScenarioStore = create<ScenarioState>()(
+ *   subscribeWithSelector(
+ *     persist(
+ *       immer((set, get) => ({ /* ... *\/ })),
+ *       {
+ *         name: 'fpa:scenario',
+ *         storage: masterStorage,            // <-- canonical drop-in
+ *         partialize: (s) => ({ id: s.id, assumptions: s.assumptions }),
+ *         version: 1,                         // bump on breaking shape changes
+ *       }
+ *     )
+ *   )
+ * );
+ *
+ * @see ADR-005 for the "no direct localStorage" decision
+ * @see ADR-006 for the schema migration strategy (version + kdfVersion)
+ * @see {@link wrapChunkedStorage} for the chunking wrapper
+ * @see {@link sqlJsStorage} for the browser WASM backend
+ * @see {@link tauriSqlStorage} for the Tauri SQLite backend
+ */
+export const masterStorage: PersistStorage<any> & { __resetCache: () => void } = {
+  getItem: async (name) => {
+    const isDesktop = await checkTauri();
+    if (isDesktop) {
+      return chunkedTauriStorage.getItem(name);
+    }
+    return chunkedSqlJsStorage.getItem(name);
+  },
+  setItem: async (name, value) => {
+    const isDesktop = await checkTauri();
+    if (isDesktop) {
+      return chunkedTauriStorage.setItem(name, value);
+    }
+    return chunkedSqlJsStorage.setItem(name, value);
+  },
+  removeItem: async (name) => {
+    const isDesktop = await checkTauri();
+    if (isDesktop) {
+      return chunkedTauriStorage.removeItem(name);
+    }
+    return chunkedSqlJsStorage.removeItem(name);
+  },
+  /** @internal For testing only */
+  __resetCache: () => {
+    _isTauriCache = null;
+  },
+};

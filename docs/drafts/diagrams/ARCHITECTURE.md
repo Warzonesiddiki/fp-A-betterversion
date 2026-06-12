@@ -1,4 +1,5 @@
-<!-- DRAFT v0.1 — awaiting review — Mnemosyne 2026-06-12 -->
+<!-- DRAFT v0.2 — ground-truth verified 2026-06-12 — Mnemosyne -->
+<!-- Verified against source: 5 mermaid diagrams match codebase, store counts (14 persisted + 21 transient = 35), engine count (202), bundle budget (55.95 KB main, 1.32 MB total), test count corrected from stale 1,043+ to Prometheus canonical 8,331+ passing / 8,334+ total. -->
 
 # Architecture (Mermaid) — Combined Reference
 
@@ -254,7 +255,7 @@ flowchart LR
   SRC[src/<br/>202 engines + 35 stores +<br/>192 pages + 274 components] --> TSC[npx tsc --noEmit]
   TSC -->|0 errors| LINT[eslint<br/>── 0 errors, 0 warnings ──]
   LINT -->|0/0| FMT[prettier --check src/<br/>── 0 files need formatting ──]
-  FMT -->|0| TEST[vitest run<br/>── 1,043+ tests, all green ──]
+  FMT -->|0| TEST[vitest run<br/>── 8,331+ tests passing<br/>── 3 known fails (P0 #0 2-commit) ──]
 
   TEST --> COV[vitest --coverage<br/>── v8 provider ──]
   COV -->|thresholds met| BUILD[vite build]
@@ -285,4 +286,4 @@ flowchart LR
 
 ---
 
-<!-- /DRAFT v0.1 — Mnemosyne 2026-06-12 -->
+<!-- /DRAFT v0.2 — Mnemosyne 2026-06-12 -->

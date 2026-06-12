@@ -1,4 +1,5 @@
-<!-- DRAFT v0.1 — awaiting review — Mnemosyne 2026-06-12 -->
+<!-- DRAFT v0.2 — ground-truth verified 2026-06-12 — Mnemosyne -->
+<!-- Verified against source: VITE_USE_MOCK_AUTH gate, HttpOnly cookie for refresh, kdfVersion: 2, PBKDF2 600k, AES-GCM-256. NOTE: the "15 min access token" lifetime is a typical claim, not source-verified — actual `authStore.ts` decodes `tokenExpiry` from the JWT `exp` claim, no hard-coded 15 min. Update diagram if real lifetime differs. -->
 # Diagram 4 — Auth Flow
 
 > **Source:** `docs/drafts/diagrams/04-auth-flow.mmd`
@@ -75,4 +76,4 @@ sequenceDiagram
 
 ---
 
-<!-- /DRAFT v0.1 — Mnemosyne 2026-06-12 -->
+<!-- /DRAFT v0.2 — Mnemosyne 2026-06-12 -->

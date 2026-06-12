@@ -1,12 +1,11 @@
---- a/src/components/ui/ScatterPlot.tsx
-+++ b/src/components/ui/ScatterPlot.tsx
-@@ -61,6 +61,5 @@
+--- a/src/components/ui/ScatterPlot.tsx	2026-06-13 00:37:28.674227100 +0530
++++ b/src/components/ui/ScatterPlot.tsx	2026-06-13 00:40:37.813735000 +0530
+@@ -58,7 +58,7 @@
+   if (error) {
+     return (
        <div className={className}>
 -        <div className="flex items-center justify-center h-48 text-red-500 text-sm">
--          {' '}
--          role="alert" role="alert" {error}
--        </div>
 +        <div role="alert" className="flex items-center justify-center h-48 text-red-500 text-sm">
-+          {error}
-+        </div>
-       </div>
+           {' '}
+           role="alert" role="alert" {error}
+         </div>

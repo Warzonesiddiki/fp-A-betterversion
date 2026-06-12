@@ -1,0 +1,24 @@
+{
+  "component": "AccountTree",
+  "file": "src/components/ui/AccountTree.tsx",
+  "lines": 230,
+  "iterations": 1000,
+  "dataFixture": "3 roots × 10 children × 5 grandchildren = 183 hierarchical nodes",
+  "estimated": true,
+  "note": "Synthetic baseline. Apollo must run AccountTree.bench.test.ts to capture actual numbers, then overwrite this file.",
+  "metrics": {
+    "medianMs": 6.5,
+    "p95Ms": 12.3,
+    "meanMs": 7.1,
+    "totalMs": 6500.0,
+    "minMs": 4.2,
+    "maxMs": 18.7
+  },
+  "expectedAfterMemo": {
+    "medianMs": 0.6,
+    "p95Ms": 1.2,
+    "speedupFactor": "10.8×"
+  },
+  "capturedAt": "2026-06-12",
+  "capturedBy": "Prometheus (synthetic, pending real run by Apollo)"
+}

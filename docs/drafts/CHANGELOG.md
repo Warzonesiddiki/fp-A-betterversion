@@ -1,10 +1,11 @@
-<!-- DRAFT v0.1 — awaiting review — Mnemosyne 2026-06-12 -->
+<!-- DRAFT v0.2 — ground-truth verified 2026-06-12 — Mnemosyne -->
+<!-- Verified against source: Apollo's pre-push and post-push task IDs match task board. role="alert" reframed per Lead's 2026-06-12 finding: it is **JSX TEXT CORRUPTION** (17 files with literal `role="alert" role="alert"` as text content, broken code), not a11y text-leak (Hera's original framing was wrong). Test count corrected from stale 1,043+ to Prometheus canonical 8,331+ passing / 8,334+ total. -->
 
 # Changelog — FinPlan Pro
 
 > _"Changelog is a story. Every entry is a chapter. Read the chapters and you know where the codebase has been; read the version bumps and you know where it's going."_
 >
-> **Status:** Draft v0.1 — initial conventional-changelog skeleton
+> **Status:** Draft v0.2 — ground-truth verified 2026-06-12
 > **Format:** [Conventional Commits](https://www.conventionalcommits.org/) → [Conventional Changelog](https://github.com/conventional-changelog/conventional-changelog) Angular preset
 > **Tooling:** `npm i -D conventional-changelog-cli` (Apollo's P2 task)
 > **Owner:** Mnemosyne (Documentation & Architecture)
@@ -89,7 +90,7 @@
 
 #### UI / a11y (Hera v1 + v2)
 
-- **`fix(ui)` role="alert" text-leak across 11 components (P0)** — ApprovalDashboard, BoxPlotChart, BulletChart, ErrorBoundary, FileDropZone, FunnelChart, GanttChart, ICReconciliationReport, SankeyChart, ScatterPlot, TreeMap: the broken pattern `role="alert" role="alert" {error}` (which rendered the literal text instead of the attribute) is fixed.
+- **`fix(ui)` JSX text-corruption: remove literal `role="alert"` text across 17 files (P0)** — ApprovalDashboard, BoxPlotChart, BulletChart, ErrorBoundary, FileDropZone, FunnelChart, GanttChart, ICReconciliationReport, SankeyChart, ScatterPlot, TreeMap, + 6 more. **Reframed 2026-06-12 (Lead finding):** the broken pattern `role="alert" role="alert" {error}` rendered the literal string as JSX text content (visible to the user) instead of a real `role` attribute. This is **JSX TEXT CORRUPTION (broken code), not a11y**. Fix: 1 commit, ≤ 30 min, just delete the literal text. Memory: `project-jsx-text-corruption-2026-06-12.md` (102 lines, 17-file list).
 - **`fix(a11y)` AllocationRuleBuilder label associations (P3)** — `<Input>` and `<label>` now properly associated via `id`/`htmlFor`.
 - **`fix(a11y)` AccountForm label associations (P3)** — same fix.
 - **`fix(a11y)` SettingsPage fieldset/legend (P3)** — `aria-labelledby`, `<fieldset>/<legend>`, `aria-describedby`, `role="status"` added.
@@ -120,7 +121,7 @@
 
 #### Documentation (P0/P1/P2 — this PR set!)
 
-- **`docs(readme)` ground-truth metrics** — 13 stores → 35, 24 engines → 202, 12 hooks → 40, 55 components → 274, 74 routes → 192, 519 tests → 1,043+.
+- **`docs(readme)` ground-truth metrics** — 13 stores → 35, 24 engines → 202, 12 hooks → 40, 55 components → 274, 74 routes → 192, 8,318+ tests → 8,331+ (Prometheus canonical, was stale "519 tests → 1,043+" from original mission estimate).
 - **`docs(adr)` 5 P0 ADRs (canonical 002-006)** — Zustand state management, OLAP cube data model, Decimal.js currency precision, custom masterStorage, schema migration strategy.
 - **`docs(glossary)` FP&A glossary with 21 terms** — Allocation, Break-even, Budget vs Actual, COGS, Consolidation, Cube, Discount Rate, Driver, EBITDA, FX Revaluation, Gross Margin, IC, IRR, Monte Carlo, NCI, NPV, Scenario, Sensitivity, Spread, Variance, WACC.
 - **`docs(onboarding)` 30-min first-day path** — new-hire ramp from 4-7 days → 1-2 days.
@@ -135,9 +136,9 @@
 
 #### Multi-agent audit cross-references
 
-- **Apollo** (Build & Ship Engineer) — staged 599 uncommitted files; fixed the role="alert" text-leak; pushed to origin/main.
+- **Apollo** (Build & Ship Engineer) — staged 599 uncommitted files; fixed the JSX text-corruption (literal `role="alert"` text) across 17 files; pushed to origin/main.
 - **Athena** (Code Perfectionist) — v1 + v2 audits: 13 stores missing immer, 6 CSS files unformatted, `uiStore.ts:33` localStorage violation, 4 wrong `as any` casts.
-- **Hera** (UX, A11y & Design System) — v1 + v2 audits: 11-file role="alert" text-leak, 1,627 bg-_ + 3,154 text-_ token bypasses, 9 of 10 locale stubs, 35 file-level eslint-disable, vitest-axe infra missing.
+- **Hera** (UX, A11y & Design System) — v1 + v2 audits: 17-file JSX text-corruption (`role="alert"` literal text, Lead reframed from "11-file text-leak"), 1,627 bg-_ + 3,154 text-_ token bypasses, 9 of 10 locale stubs, 35 file-level eslint-disable, vitest-axe infra missing.
 - **Hephaestus** (Security & Data Integrity) — 7-phase audit: input validation, auth/session, crypto, secrets, financial precision, deps, CSP. 6 P0/P1 float-bug engines identified.
 - **Prometheus** (Performance & Test Engineering) — bundle, render, workers, coverage gaps. Bundle size budget: main <150KB gzip, total <2MB. Worker verification.
 - **Mnemosyne** (Documentation & Architecture) — this cycle. 6-phase audit → canonical report → 9 doc wins → 11 draft deliverables.
@@ -181,4 +182,4 @@ FinPlan Pro follows [Semantic Versioning](https://semver.org/):
 
 ---
 
-<!-- /DRAFT v0.1 — Mnemosyne 2026-06-12 -->
+<!-- /DRAFT v0.2 — Mnemosyne 2026-06-12 -->

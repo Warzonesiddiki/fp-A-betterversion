@@ -1,0 +1,118 @@
+diff --git a/src/components/scenarios/ScenarioLocking.dom.test.tsx b/src/components/scenarios/ScenarioLocking.dom.test.tsx
+new file mode 100644
+index 0000000..00000002
+--- /dev/null
++++ b/src/components/scenarios/ScenarioLocking.dom.test.tsx
+@@ -0,0 +1,130 @@
++/**
++ * @file src/components/scenarios/ScenarioLocking.dom.test.tsx
++ * @description Integration test for the ScenarioLocking XSS fix (P0 #3).
++ *              Verifies that:
++ *                (1) the source file no longer calls document.write
++ *                (2) the print preview is built via createElement + textContent
++ *                (3) user-controlled scenarioName is HTML-escaped on render
++ *
++ * @author Hephaestus (aionrs/MiniMax-M3), 2026-06-12
++ * @see Apollo task 019ebce7-… P0 #3
++ * @see docs/drafts/hephaestus/ (Hephaestus audit 2026-06-12, P0 #3)
++ */
++
++import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
++import { render, screen, cleanup } from '@testing-library/react';
++import { readFileSync } from 'node:fs';
++import { resolve } from 'node:path';
++import { ScenarioLocking } from './ScenarioLocking';
++
++describe('ScenarioLocking — DOM API (P0 #3 fix)', () => {
++  let documentWriteSpy: ReturnType<typeof vi.spyOn>;
++  let documentWritelnSpy: ReturnType<typeof vi.spyOn>;
++
++  beforeEach(() => {
++    documentWriteSpy = vi.spyOn(document, 'write').mockImplementation(() => {});
++    documentWritelnSpy = vi.spyOn(document, 'writeln').mockImplementation(() => {});
++  });
++
++  afterEach(() => {
++    documentWriteSpy.mockRestore();
++    documentWritelnSpy.mockRestore();
++    cleanup();
++  });
++
++  describe('static check: source has no document.write', () => {
++    it('does not call document.write in the production source', () => {
++      const src = readFileSync(
++        resolve(__dirname, './ScenarioLocking.tsx'),
++        'utf8'
++      );
++      // The XSS vector was: document.write(`<html>...${scenarioName}...</html>`)
++      // After the P0 #3 fix, no document.write call should remain in this file.
++      expect(src).not.toMatch(/document\.write\s*\(/);
++      expect(src).not.toMatch(/document\.writeln\s*\(/);
++    });
++
++    it('uses createElement + textContent (or appendChild) for the print preview', () => {
++      const src = readFileSync(
++        resolve(__dirname, './ScenarioLocking.tsx'),
++        'utf8'
++      );
++      // The replacement pattern: build the print preview DOM imperatively.
++      expect(src).toMatch(/createElement|appendChild|textContent/);
++    });
++  });
++
++  describe('runtime check: document.write is never invoked', () => {
++    it('does not call document.write when the user clicks "Print"', async () => {
++      render(<ScenarioLocking scenarioId="s-1" scenarioName="Q3 2026 Plan" />);
++      // Simulate the print action
++      const printBtn = screen.getByRole('button', { name: /print/i });
++      printBtn.click();
++      expect(documentWriteSpy).not.toHaveBeenCalled();
++      expect(documentWritelnSpy).not.toHaveBeenCalled();
++    });
++
++    it('does not call document.write even with a malicious scenarioName', async () => {
++      const xss = `<img src=x onerror="alert('XSS')">`;
++      render(<ScenarioLocking scenarioId="s-1" scenarioName={xss} />);
++      const printBtn = screen.getByRole('button', { name: /print/i });
++      printBtn.click();
++      expect(documentWriteSpy).not.toHaveBeenCalled();
++      expect(documentWritelnSpy).not.toHaveBeenCalled();
++    });
++  });
++
++  describe('output: the print preview escapes user-controlled values', () => {
++    it('renders the XSS payload as text, not as HTML', () => {
++      const xss = `<script>alert('XSS')</script>`;
++      const { container } = render(
++        <ScenarioLocking scenarioId="s-1" scenarioName={xss} />
++      );
++      // The textContent of any rendered element must contain the literal
++      // characters, not be parsed as HTML. Testing-library's `getByText`
++      // asserts the visible text; an <img onerror=...> would not appear
++      // as text, so this catches the bug.
++      expect(container.textContent).toContain('<script>');
++      // No <script> tag should be in the DOM (React would have rendered
++      // it as text, not as an actual script element)
++      expect(container.querySelector('script')).toBeNull();
++    });
++
++    it('preserves the scenario name with special characters as plain text', () => {
++      const name = `Q3 & Q4 "Plan" <draft>`;
++      const { container } = render(
++        <ScenarioLocking scenarioId="s-1" scenarioName={name} />
++      );
++      expect(container.textContent).toContain('Q3 & Q4 "Plan" <draft>');
++    });
++  });
++});
++
++// ─── Test fixture stubs (would normally live in src/test/setup.ts) ──────
++// If these are not already globally registered, add the following to setup.ts:
++//
++//   import '@testing-library/jest-dom/vitest';
++//   import { vi } from 'vitest';
++//   HTMLCanvasElement.prototype.getContext = vi.fn();
++//   Element.prototype.scrollIntoView = vi.fn();
++//
++// The ScenarioLocking test relies on @testing-library/react which is
++// already in the dev deps (Apollo's `package.json` baseline).

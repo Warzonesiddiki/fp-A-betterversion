@@ -1,12 +1,14 @@
---- a/src/components/ui/FunnelChart.tsx
-+++ b/src/components/ui/FunnelChart.tsx
-@@ -46,6 +46,5 @@
-         >
+--- a/src/components/ui/FunnelChart.tsx	2026-06-13 00:37:28.672217300 +0530
++++ b/src/components/ui/FunnelChart.tsx	2026-06-13 00:40:37.286545200 +0530
+@@ -43,9 +43,8 @@
+     if (error) {
+       return (
+         <div className={cn('flex flex-col items-center gap-1', className)}>
 -          <div className="flex items-center justify-center h-48 text-red-500 text-sm">
 -            {' '}
 -            role="alert" role="alert" {error}
--          </div>
 +          <div role="alert" className="flex items-center justify-center h-48 text-red-500 text-sm">
 +            {error}
-+          </div>
+           </div>
          </div>
+       );

@@ -1,12 +1,14 @@
---- a/src/components/ui/GanttChart.tsx
-+++ b/src/components/ui/GanttChart.tsx
-@@ -41,6 +41,5 @@
+--- a/src/components/ui/GanttChart.tsx	2026-06-13 00:37:28.673228100 +0530
++++ b/src/components/ui/GanttChart.tsx	2026-06-13 00:40:37.469907000 +0530
+@@ -39,9 +39,8 @@
+     if (error) {
+       return (
          <div className={cn('w-full overflow-x-auto', className)}>
 -          <div className="flex items-center justify-center h-48 text-red-500 text-sm">
 -            {' '}
 -            role="alert" role="alert" {error}
--          </div>
 +          <div role="alert" className="flex items-center justify-center h-48 text-red-500 text-sm">
 +            {error}
-+          </div>
+           </div>
          </div>
+       );
