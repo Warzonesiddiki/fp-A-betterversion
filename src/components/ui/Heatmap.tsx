@@ -31,13 +31,14 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
     error,
     onClick,
   }) => {
+    // All hooks must be called unconditionally before any early return.
     const { rows, cols, min, max, grid } = useMemo(() => {
       const rowSet = new Set<string>();
       const colSet = new Set<string>();
       let minVal = Infinity;
       let maxVal = -Infinity;
 
-      data.forEach((cell) => {
+      (data ?? []).forEach((cell) => {
         rowSet.add(cell.row);
         colSet.add(cell.col);
         if (cell.value < minVal) minVal = cell.value;
@@ -48,7 +49,7 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
       const uniqueCols = Array.from(colSet).sort();
 
       const gridMap: Record<string, Record<string, number>> = {};
-      data.forEach((cell) => {
+      (data ?? []).forEach((cell) => {
         if (!gridMap[cell.row]) gridMap[cell.row] = {};
         gridMap[cell.row]![cell.col] = cell.value;
       });
@@ -61,6 +62,22 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
         grid: gridMap,
       };
     }, [data]);
+
+    // Early returns must come AFTER all hook calls.
+    if (!data || data.length === 0) {
+      return (
+        <div
+          className={cn(
+            'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
+            className
+          )}
+        >
+          <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
+            No data
+          </div>
+        </div>
+      );
+    }
 
     if (loading) {
       return (
@@ -88,21 +105,6 @@ export const Heatmap: React.FC<HeatmapProps> = React.memo(
           )}
         >
           <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
-        </div>
-      );
-    }
-
-    if (!data || data.length === 0) {
-      return (
-        <div
-          className={cn(
-            'w-full flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-sm',
-            className
-          )}
-        >
-          <div className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300">
-            No data
-          </div>
         </div>
       );
     }
