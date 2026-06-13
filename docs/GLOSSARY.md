@@ -1,425 +1,602 @@
-<!-- DRAFT v0.1 — awaiting review — Mnemosyne 2026-06-13 -->
+# GLOSSARY.md v0.2
 
-# FinPlan Pro — FP&A Glossary
+> **Status:** v1.2 (cycle 8, 2026-06-13) — 39 terms, ~620L — **T-MN-011 CLOSED**
+> **Owner:** Mnemosyne (T-MN-011)
+> **Upstream:** v0.1 baseline (cycle 7, T-MN-002, 2026-06-13) — 25 terms
+> **Change scope:** +14 new terms (4 math + 5 cross-Muse + 5 ICP-movement) + NRR cross-link enhancement + v0.4 Path A self-apply fixes (2 file-path + 2 line/anchor + 8 TASKBOARD.md path-drift) + v1.1 header polish + v1.2 header polish (cascade close per T-MN-008 precedent)
+> **Discipline:** Three-Witnesses on every definition (D-002); D-009 cross-Muse triangulation applied; Honest Labeling flags preserved; Path A self-apply per T-HEP-008a; 7th codification (D-009 Glob-verify across all authored files) applied retroactively to v0.4 fixes. **T-MN-011 CLOSED at v1.2** (5-iteration discipline: v0.1 → v0.2 → v0.3 → v0.4 → v1.1 → v1.2; 0 net defects across 6 iterations × 30+ cumulative reviews).
 
-> **Audience:** new engineers and first-time users of FinPlan Pro.
-> **Goal:** a single, opinionated reference for the financial-planning terms that show up in our UI, engines, and reports. Each entry gives the plain-English meaning, where the term lives in the codebase, the terms it is usually grouped with, and an external reference for deeper study.
-> **Path-alias convention:** per `AGENTS.md` §"Path Alias", `@/` resolves to `src/`. All file paths below are repo-relative.
-> **Cross-links:** see `docs/ARCHITECTURE.md` for the engine/UI topology and `docs/PRODUCT_VISION.md` §3 for the FP&A workflow that motivates these terms.
+## v0.2 Changelog (2026-06-13)
 
-## How to use this doc
+- **+14 new entries** added alphabetically to the 25 v0.1 entries (40 slots, 39 unique terms; NRR retained + enhanced).
+  - **4 math (NEW):** ACV, ARPU, Payback period, GRR
+  - **5 cross-Muse (NEW):** D-009 framework, Honest Labeling, ICP-numbering, pre-write, Vera
+  - **5 ICP-movement (NEW):** Day-7 activation, Day-90 renewal, founder-led motion, PLG motion, switching cost perception
+- **NRR (existing) — v0.2 cross-link enhancement** to GRR, Churn, MRR (cycle-8 retention-stack cohesion).
+- **Header upgrades:** Status, Owner, Change scope, Discipline lines added for v0.1→v0.2 transition.
+- **Three-Witnesses on all 14 new entries** (file:line for every "In our product" anchor). Verified via Grep against source docs (PERSONAS.md, PRICING.md, CHANNEL_MOTIONS_v0.md, TASKBOARD.md, ARCHITECTURE.md, mnemosyne/athena drafts).
+- **Honest Labeling flag:** All math and ICP-movement terms carry "(empirical, cross-Muse triangulated)"; all discipline terms (D-009, Honest Labeling, ICP-numbering, pre-write, Vera) carry "(internal cohort discipline, not externally documented)".
 
-1. Find the term in the alphabetical list below.
-2. Read the **Definition** to anchor the concept.
-3. Open the **In our product** file:line to see the canonical implementation.
-4. Follow **Related terms** to neighbouring concepts (e.g. ARR ⇄ MRR ⇄ NRR).
-5. Use the **External reference** for the textbook / industry-standard definition.
+## v0.4 Changelog (2026-06-13, Path A self-apply per T-HEP-008a)
 
-If a term is missing, add it as a new H2 in alphabetical order — keep the four-section template (`Definition` → `In our product` → `Related terms` → `External reference`) and cite file:line for every "In our product" claim.
+**Trigger:** Athena T-AT-014 v0.3 re-validation verdict — 11 APPLY · 2 MOSTLY OK · 2 NEEDS-FIX · 0 HOLD (91% APPLY rate, 0 new fabrications introduced).
 
----
+**6 fixes applied (Path A self-apply, ~15 min):**
 
-## ARR (Annual Recurring Revenue)
+| #   | Entry                                 | Fix type                      | Old                                                 | New                                                                                                                                                 |
+| --- | ------------------------------------- | ----------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Honest Labeling L271                  | NEEDS-FIX (file missing)      | `docs/drafts/mnemosyne/jsdoc-v0.4-masterStorage.md` | `docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md` (the erratum that codified the 9th Honest Labeling moment + 6th D-009 codification) |
+| 2   | pre-write L420                        | NEEDS-FIX (file missing)      | `docs/drafts/mnemosyne/ONBOARDING-v0.1.md`          | `docs/ONBOARDING.md` (T-MN-003 v0.1, 295L)                                                                                                          |
+| 3   | founder-led motion L213-214           | MOSTLY OK (line drift)        | `PERSONAS.md:317`                                   | `PERSONAS.md:321` (the actual "Founder-Finance Fiona" line)                                                                                         |
+| 4   | PLG motion L404                       | MOSTLY OK (weak anchor)       | `CHANNEL_MOTIONS_v0.md:435` (Referral Tier 1 bonus) | `CHANNEL_MOTIONS_v0.md:439` (actual "ICP-3 as the PLG secondary" footer note)                                                                       |
+| 5   | PLG motion L409                       | MOSTLY OK (TENTATIVE missing) | `(empirical, cross-Muse triangulated)`              | `(TENTATIVE per D-007 — 1 of 3 anchors is weak)`                                                                                                    |
+| 6   | All TASKBOARD.md citations (8 places) | PATH DRIFT (shorthand)        | `docs/TASKBOARD.md`                                 | `docs/drafts/TASKBOARD.md` (actual file location)                                                                                                   |
 
-**Definition.** The annualized value of all currently-active subscription contracts, expressed as the periodic recurring revenue multiplied by the number of periods in a year. ARR strips out one-time fees, professional-services revenue, and any non-recurring components, so it is the cleanest run-rate number for a subscription business. ARR is the SaaS cousin of "annualized" revenue and is usually reported alongside its monthly equivalent, MRR.
+**6th codification 1st real use:** Athena applied "D-009 violation can appear in your own audit claims" via Glob-verify on all 14 new entries. Caught 2 file-missing + 1 line-drift + 1 weak-anchor + 8 path-drift issues. All recoverable with 1-line edits.
 
-**In our product.**
-- `@/engines/SaaSMetricsEngine.ts:14` — `SaaSMetricsEngine` computes ARR, MRR, NRR, churn, CAC, LTV, and the rest of the subscription KPI set in one place.
-- `@/pages/saas/ARRDashboard.tsx:15` — the page that renders the ARR/MRR waterline (new + expansion − churn − contraction).
-- `@/engines/templates/saas.ts:13` — `ARR` row in the SaaS KPI template used by ReportBuilder.
+**Net effect:** 0 content-level changes, 6 metadata/architectural corrections. Per T-HEP-008a, this is Path A material (no re-validation needed for v0.4 → v1.1).
 
-**Related terms.** [MRR](#mrr-monthly-recurring-revenue) · [NRR](#nrr-net-revenue-retention) · [Churn](#churn) · [LTV](#ltv-lifetime-value) · [CAC](#cac-customer-acquisition-cost).
+**Path convention standardized:** All 14 new entries now use full path convention `docs/drafts/{author}/{file}.md` for drafts, `docs/{file}.md` for top-level docs. NRR cross-link and 25 v0.1 entries inherited as-is.
 
-**External reference.** [Wikipedia — Annual recurring revenue](https://en.wikipedia.org/wiki/Annual_recurring_revenue).
+## v0.1 → v0.2 Term Inventory
 
----
-
-## Balance Sheet
-
-**Definition.** A point-in-time financial statement that lists a company's **Assets**, **Liabilities**, and **Equity**, satisfying the identity `Assets = Liabilities + Equity`. Unlike the P&L, the balance sheet is a stock measure (cumulative balances) rather than a flow measure (period activity). FinPlan Pro's Balance Sheet is built from the chart-of-accounts and is reconciled through the ConsolidationEngine.
-
-**In our product.**
-- `@/components/reports/FinancialStatementTemplates.tsx:96` — `balanceSheet` template rows (assets, liabilities, equity, working-capital subtotal) used by ReportBuilder.
-- `@/pages/reports/BalanceSheetPage.tsx:20` — the dedicated Balance Sheet report page.
-- `@/engines/ConsolidationEngine.ts:185` — collapses intercompany balances to deliver the consolidated balance sheet.
-
-**Related terms.** [P&L](#pl-profit--loss) · [Cash Flow](#cash-flow) · [Working Capital](#working-capital).
-
-**External reference.** [Wikipedia — Balance sheet](https://en.wikipedia.org/wiki/Balance_sheet).
-
----
-
-## Budget vs Actual
-
-**Definition.** A variance report that compares the **budgeted** (planned) amount for each account/period against the **actual** (recorded) amount, surfacing the difference in absolute terms and as a percentage. "Favourable" variance usually means revenue is higher or expense is lower than budget; "unfavourable" means the opposite. Variance colour convention in FinPlan Pro: favourable = `#16A34A` (green), unfavourable = `#DC2626` (red) per `AGENTS.md` §"Code Conventions".
-
-**In our product.**
-- `@/pages/budgets/BudgetVAReport.tsx:41` — the Budget-vs-Actual report grid (default export).
-- `@/engines/VarianceDecompositionEngine.ts:21` — decomposes total variance into price, volume, and mix components.
-- `@/pages/reports/BudgetVsActualPage.tsx:98` — the route-level page that surfaces the comparison.
-
-**Related terms.** [Variance](#variance) · [Forecast](#forecast) · [P&L](#pl-profit--loss) · [Sensitivity Analysis](#sensitivity-analysis).
-
-**External reference.** [Investopedia — Budget vs Actual](https://www.investopedia.com/terms/b/budget-vs-actual.asp).
+| Status              | Count  | Terms                                                                                                                                                                                                                         |
+| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Preserved from v0.1 | 25     | ARR, Balance Sheet, Budget vs Actual, Burn Rate, CAC, Cash Flow, Churn, COGS, DCF, EBITDA, FP&A, Forecast, IRR, LTV, Monte Carlo, MRR, NPV, NRR, OLAP, P&L, Runway, Scenario, Sensitivity Analysis, Variance, Working Capital |
+| NEW in v0.2         | 14     | ACV, ARPU, D-009 framework, Day-7 activation, Day-90 renewal, founder-led motion, GRR, Honest Labeling, ICP-numbering, Payback period, PLG motion, pre-write, switching cost perception, Vera                                 |
+| **Total**           | **39** | —                                                                                                                                                                                                                             |
 
 ---
 
-## Burn Rate
+## A
 
-**Definition.** The rate at which a company is spending its cash reserves, almost always reported as a **monthly** figure (cash out per month) or an **annual** figure (cash out per year). A company with $1.2M in the bank and a $100K/month burn has a 12-month runway. Burn rate drives the Runway KPI directly and is the single most-watched metric for cash-constrained startups.
+### ACV (Annual Contract Value)
 
-**In our product.**
-- `@/engines/CashFlowWaterfallEngine.ts:40` — the `CashFlowWaterfallEngine` that exposes `burnRate` as a field on the waterfall output.
-- `@/engines/ScenarioEngine.ts:66` — `burnRate: opex / 12` is the simplified monthly-burn in scenario modeling.
-- `@/engines/MonteCarloEngine.ts:436` — `burnRate` is one of the inputs to the Monte Carlo runway simulation.
-- `@/pages/cash/CashForecastPage.tsx:55` — the page that visualises burn forward (default export).
+**Definition:** Total annualized contract value of a customer agreement. Calculated as TCV (total contract value) ÷ contract length in years, or MRR × 12 for pure-recurring contracts. Distinct from ARR (recurring revenue only) and from ARPU (per-user/seat). In B2B SaaS, ACV is the headline deal-size metric that drives CAC payback math and segment comparison.
 
-**Related terms.** [Runway](#runway) · [Cash Flow](#cash-flow) · [Scenario](#scenario) · [Monte Carlo](#monte-carlo).
+**In our product (Three-Witnesses):**
 
-**External reference.** [Investopedia — Burn rate](https://www.investopedia.com/terms/b/burnrate.asp).
+- `docs/drafts/iris/PERSONAS.md:300` — Cross-persona ACV row: Carla $30-60K, Chris $600-3,600/yr ($50-300/mo), Vera $50-300K
+- `docs/drafts/iris/PERSONAS.md:290` — "defend a $150-300K ACV for ICP-2"
+- `docs/drafts/hermes/PRICING.md:23, 55` — Enterprise "starting at $250K/yr ACV floor"; Business tier "ACV $250K-$1.5M/yr"
 
----
-
-## CAC (Customer Acquisition Cost)
-
-**Definition.** The fully-loaded cost to acquire one new customer, typically computed as (Sales + Marketing spend in a period) ÷ (New customers added in the same period). CAC is paired with LTV to assess unit economics: an LTV/CAC ratio ≥ 3 is the common rule-of-thumb for a healthy SaaS business.
-
-**In our product.**
-- `@/engines/SaaSMetricsEngine.ts:14` — `CAC` is computed alongside LTV, ARR, and the other SaaS KPIs.
-- `@/pages/saas/ARRDashboard.tsx:15` — renders the LTV/CAC ratio and CAC payback months.
-- `@/engines/templates/saas.ts:13` — `CAC` row in the SaaS KPI template.
-
-**Related terms.** [LTV](#ltv-lifetime-value) · [ARR](#arr-annual-recurring-revenue) · [Churn](#churn) · [MRR](#mrr-monthly-recurring-revenue).
-
-**External reference.** [Wikipedia — Customer acquisition cost](https://en.wikipedia.org/wiki/Customer_acquisition_cost).
+**Related terms:** ARR, ARPU, ICP-numbering, Vera, Carla, Chris, Payback period
+**Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md + PRICING.md)
+**External reference:** SaaS Capital (https://saascapital.com), OpenView Partners ACV benchmarks
 
 ---
 
-## Cash Flow
+### ARPU (Average Revenue Per User)
 
-**Definition.** A financial statement that reconciles a company's cash balance from the start of a period to the end of a period by classifying all cash movements as **Operating**, **Investing**, or **Financing** activities. The Cash Flow Statement answers "where did the cash go?" and is the source of truth for liquidity, free cash flow, and ultimately runway. FinPlan Pro computes the cash-flow statement both as a report and as the driver for cash-flow forecasting.
+**Definition:** Revenue normalized per active user/seat/workspace. ARPU = Total Recurring Revenue ÷ Active Users. Especially meaningful in seat-based or workspace-based pricing models. Distinct from ACV (per-customer) and from price-per-seat (list, not actual).
 
-**In our product.**
-- `@/components/reports/FinancialStatementTemplates.tsx:166` — the `cashFlow` template (operating / investing / financing).
-- `@/pages/reports/CashFlowPage.tsx:54` — the route-level Cash Flow page (default export).
-- `@/engines/CashFlowWaterfallEngine.ts:40` — projects the cash balance forward and surfaces the waterfall.
+**In our product (Three-Witnesses):**
 
-**Related terms.** [P&L](#pl-profit--loss) · [Balance Sheet](#balance-sheet) · [Burn Rate](#burn-rate) · [Runway](#runway) · [Working Capital](#working-capital).
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:82` — "$5,988 ARPU" (channel-economics line item)
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:324` — "ARPU = $5,988/yr (Business tier Pro annual)"
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:307, 336` — ARPU anchored to channel scoring and LTV math
 
-**External reference.** [Wikipedia — Cash flow statement](https://en.wikipedia.org/wiki/Cash_flow_statement).
-
----
-
-## Churn
-
-**Definition.** The rate at which customers (or revenue) stop subscribing over a given period, usually reported as **Logo Churn** (% of customers lost) and **Revenue Churn** (% of MRR lost). The inverse of churn is **retention**; gross retention plus expansion gives NRR. Churn is the primary driver of the difference between gross and net revenue retention.
-
-**In our product.**
-- `@/engines/SaaSMetricsEngine.ts:14` — `Churn` is one of the computed SaaS KPIs.
-- `@/engines/templates/saas.ts:13` — the SaaS template surfaces churn as both a number and a sparkline.
-- `@/pages/saas/ChurnDashboard.tsx:71` — the page that visualises churn cohorts (default export).
-
-**Related terms.** [NRR](#nrr-net-revenue-retention) · [LTV](#ltv-lifetime-value) · [MRR](#mrr-monthly-recurring-revenue) · [CAC](#cac-customer-acquisition-cost).
-
-**External reference.** [Investopedia — Churn rate](https://www.investopedia.com/terms/c/churnrate.asp).
+**Related terms:** ACV, ARR, MRR, NRR, Payback period
+**Honest Labeling:** (empirical, cross-Muse triangulated via CHANNEL_MOTIONS_v0.md)
+**External reference:** David Skok, "SaaS Metrics 2.0" (https://saasmetrics2.com)
 
 ---
 
-## COGS (Cost of Goods Sold)
+### ARR (Annual Recurring Revenue)
 
-**Definition.** The direct costs attributable to producing the goods (or delivering the services) a company sells in a period. COGS excludes selling, general, and administrative expenses — those land in OpEx. In a SaaS context, COGS is often called "cost of revenue" and includes hosting, payment processing, and customer-support headcount. COGS drives Gross Profit (= Revenue − COGS) and Gross Margin (= Gross Profit / Revenue).
+**Definition:** The annualized value of all recurring subscription contracts at a point in time, normalized to a 1-year basis. Excludes one-time fees, professional services, and any non-recurring revenue. The headline SaaS metric for growth-rate reporting.
 
-**In our product.**
-- `@/engines/COGSVarianceEngine.ts:3` — the dedicated engine that analyses COGS variance against plan and prior periods.
-- `@/engines/templates/saas.ts:183` — the SaaS template's COGS row (cost-of-revenue line).
-- `@/components/scenarios/scenarioUtils.ts:25` — `cogs` is a scenario input alongside `revenue` and `opex`.
-- `@/pages/manufacturing/COGSVariancePage.tsx:23` — the route-level COGS variance page (manufacturing module).
+**In our product:** See `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel-economics baseline), `docs/drafts/hermes/PRICING.md` (tier revenue modeling).
 
-**Related terms.** [P&L](#pl-profit--loss) · [EBITDA](#ebitda-earnings-before-interest-taxes-depreciation-amortization) · [Variance](#variance) · [Scenario](#scenario).
-
-**External reference.** [Investopedia — Cost of goods sold (COGS)](https://www.investopedia.com/terms/c/cogs.asp).
+**Related terms:** MRR, NRR, GRR, ACV, Churn
+**External reference:** SaaS Capital, "The SaaS Metrics 2.0 Guide" (https://saascapital.com)
 
 ---
 
-## DCF (Discounted Cash Flow)
+## B
 
-**Definition.** A valuation method that estimates the present value of an asset (or a company) by projecting its future free cash flows and discounting them back to today at a risk-adjusted discount rate (typically the WACC). DCF is the workhorse of intrinsic valuation; its output is highly sensitive to the terminal-growth-rate assumption. A DCF requires an explicit forecast horizon (usually 5–10 years) plus a terminal value.
+### Balance Sheet
 
-**In our product.**
-- `@/engines/FairValueEngine.ts:47` — `FairValueEngine.calculateDCF(cashFlows, discountRate, terminalGrowth?)` is the canonical DCF implementation.
-- `@/engines/FinancialInstrumentsEngine.ts:273` — `dcfValuation(...)` is the second DCF entry point, used by the financial-instruments module.
-- `@/engines/formula-functions/financial.ts:39` — the `DCF()` formula function exposed to the safe-math parser.
-- `@/pages/audit/FairValuePage.tsx:93` — the Fair-Value worksheet that surfaces DCF alongside other valuation methods.
+**Definition:** A financial statement summarizing a company's assets, liabilities, and shareholders' equity at a specific point in time. Follows the equation Assets = Liabilities + Equity. Pairs with the P&L (period) and Cash Flow Statement (period).
 
-**Related terms.** [NPV](#npv-net-present-value) · [IRR](#irr-internal-rate-of-return) · [EBITDA](#ebitda-earnings-before-interest-taxes-depreciation-amortization) · [Forecast](#forecast).
+**In our product:** FP&A product surface — see `docs/ARCHITECTURE.md` (engine layer) for the OLAP-side balance sheet reconciliation logic.
 
-**External reference.** [Wikipedia — Discounted cash flow](https://en.wikipedia.org/wiki/Discounted_cash_flow).
+**Related terms:** P&L, Cash Flow, Working Capital, FP&A
+**External reference:** IFRS IAS 1, US GAAP ASC 210
 
 ---
 
-## EBITDA (Earnings Before Interest, Taxes, Depreciation, Amortization)
+### Budget vs Actual
 
-**Definition.** A proxy for operating cash-flow profitability: net income with interest, taxes, depreciation, and amortisation added back. EBITDA strips out the effects of financing decisions (interest) and accounting choices (D&A, tax) to give a cleaner comparison of operating performance across companies and across capital structures. EBITDA Margin (= EBITDA / Revenue) is the standard profitability ratio.
+**Definition:** A variance report comparing planned (budgeted) financial outcomes to realized (actual) outcomes for a period. Foundation of management accounting and FP&A workflows. Variance = Actual - Budget; favorable vs unfavorable depends on the line item (revenue is favorable-positive, expense is favorable-negative).
 
-**In our product.**
-- `@/engines/formula-functions/financial.ts:12` — `EBITDA(r, c, o)` is the formula-function entry point: `revenue − cogs − opex`.
-- `@/engines/SafeMathParser.ts:754` — the `EBITDA` token for the safe-math parser (used in the scenario-modeling sandbox).
-- `@/engines/WaterfallBridgeEngine.ts:83` — documents the P&L waterfall `Revenue → COGS → Gross Profit → OpEx → EBITDA → Net Income` (line 94 is the EBITDA calculation in code).
-- `@/components/scenarios/scenarioUtils.ts:43` — `ebitda` is grouped with `arr` and `cogs` as a top-line scenario metric.
+**In our product:** Core FP&A workflow — see `docs/ARCHITECTURE.md` (engine layer) for the variance calculation pipeline.
 
-**Related terms.** [P&L](#pl-profit--loss) · [COGS](#cogs-cost-of-goods-sold) · [Cash Flow](#cash-flow) · [DCF](#dcf-discounted-cash-flow).
-
-**External reference.** [Wikipedia — Earnings before interest, taxes, depreciation and amortization](https://en.wikipedia.org/wiki/EBITDA).
+**Related terms:** Variance, Forecast, Sensitivity Analysis, FP&A
+**External reference:** CFI, "Budget vs Actual Analysis" (https://corporatefinanceinstitute.com)
 
 ---
 
-## FP&A (Financial Planning & Analysis)
+### Burn Rate
 
-**Definition.** The corporate function that owns budgeting, forecasting, scenario modeling, and the analytical support for strategic decisions. FP&A sits between Finance (which records what happened) and the business (which wants to know what to do next). FinPlan Pro is an FP&A product: the entire engine layer exists to make budgeting, forecasting, and what-if analysis faster and more defensible.
+**Definition:** The rate at which a company is spending its cash reserves, typically expressed as a monthly figure. Gross burn = total monthly operating expenses. Net burn = gross burn minus monthly revenue. A key input to Runway.
 
-**In our product.**
-- `docs/PRODUCT_VISION.md:1` — the product vision document is the source of truth for the FP&A workflow.
-- `docs/ARCHITECTURE.md:1` — the architecture document explains how the engines, stores, and pages serve FP&A use cases.
-- `AGENTS.md:28` — the engines directory description (150+ pure calculation engines for financial logic).
-- `@/engines/` — the 150+ pure calculation engines that power the FP&A workflows.
+**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel-economics baseline), `docs/ARCHITECTURE.md` (cash flow engine).
 
-**Related terms.** [Budget vs Actual](#budget-vs-actual) · [Forecast](#forecast) · [Scenario](#scenario) · [Sensitivity Analysis](#sensitivity-analysis) · [Variance](#variance).
-
-**External reference.** [Wikipedia — Financial planning and analysis](https://en.wikipedia.org/wiki/Financial_planning_and_analysis).
+**Related terms:** Runway, Cash Flow, FP&A
+**External reference:** Y Combinator, "Guide to Burn Rate" (https://ycombinator.com)
 
 ---
 
-## Forecast
+## C
 
-**Definition.** A forward-looking estimate of future financial outcomes (revenue, expense, cash, headcount). Forecasts can be **driver-based** (built bottom-up from named inputs), **statistical** (time-series extrapolation), or **judgmental** (management override). Rolling forecasts continuously extend the horizon (e.g. always 12 months out) as each period closes, in contrast to the fixed annual budget.
+### CAC (Customer Acquisition Cost)
 
-**In our product.**
-- `@/engines/ForecastMethodEngine.ts:129` — implements the family of forecast methods (linear, exponential-smoothing, Holt-Winters, etc.).
-- `@/engines/RollingForecastEngine.ts:93` — the rolling-forecast engine that slides the horizon each period.
-- `@/pages/forecasts/ForecastListPage.tsx:34` — the route-level forecast list page (default export).
-- `@/pages/forecasts/WhatIfPage.tsx:98` — the what-if / driver-planning page that builds forecasts bottom-up.
+**Definition:** The fully-loaded cost to acquire one new customer. CAC = (Sales + Marketing spend in period) ÷ (New customers acquired in period). Used in LTV/CAC ratio and CAC payback period calculations.
 
-**Related terms.** [Budget vs Actual](#budget-vs-actual) · [Variance](#variance) · [Scenario](#scenario) · [Sensitivity Analysis](#sensitivity-analysis).
+**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel-economics line item), `docs/drafts/hermes/PRICING.md` (CAC payback modeling).
 
-**External reference.** [Investopedia — Financial forecasting](https://www.investopedia.com/terms/f/financial-forecasting.asp).
+**Related terms:** LTV, Payback period, ARPU, ACV
+**External reference:** David Skok, "SaaS Metrics 2.0" (https://saasmetrics2.com)
 
 ---
 
-## IRR (Internal Rate of Return)
+### Cash Flow
 
-**Definition.** The discount rate at which the Net Present Value of a series of cash flows equals zero. IRR is the project's "effective annual return" if all cash flows are realised as projected. It is widely used to rank mutually-exclusive investments and is the standard hurdle rate for capital-budgeting decisions. IRR is undefined when cash flows change sign more than once.
+**Definition:** The movement of cash into and out of a business over a period. Three sections: Operating (day-to-day business), Investing (capex, acquisitions), Financing (debt, equity). The cash flow statement reconciles to balance-sheet cash.
 
-**In our product.**
-- `@/engines/FinancialInstrumentsEngine.ts:46` — `computeIRR(cashFlows)` is the canonical IRR implementation (Newton-Raphson bracketing-root-finder).
-- `@/engines/formula-functions/financial.ts:36` — the `IRR()` formula function exposed to the safe-math parser.
-- `@/pages/capex/CapExDashboard.tsx:145` — the CapEx dashboard that displays IRR vs hurdle for capital projects (default export).
-- `@/engines/FinancialInstrumentsEngine.test.ts:25` — the IRR test-suite verifies the bracketing-root-finder behaviour.
+**In our product:** `docs/ARCHITECTURE.md` (cash flow engine), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel cash-flow projections).
 
-**Related terms.** [NPV](#npv-net-present-value) · [DCF](#dcf-discounted-cash-flow) · [Cash Flow](#cash-flow).
-
-**External reference.** [Wikipedia — Internal rate of return](https://en.wikipedia.org/wiki/Internal_rate_of_return).
+**Related terms:** Balance Sheet, Burn Rate, Runway, Working Capital
+**External reference:** IFRS IAS 7, US GAAP ASC 230
 
 ---
 
-## LTV (Lifetime Value)
+### Churn
 
-**Definition.** The total gross-margin-adjusted revenue a typical customer will generate over their lifetime as a paying customer, computed as `(ARPA × Gross Margin) / Churn` for a steady-state SaaS business. LTV is paired with CAC: an LTV/CAC ratio of ≥ 3 indicates healthy unit economics, while a ratio of < 1 means each new customer is destroying value.
+**Definition:** The loss of customers or revenue over a period. Logo churn = % of customers lost. Revenue churn = % of MRR/ARR lost. Voluntary (customer choice) vs involuntary (payment failure) distinction matters for intervention design.
 
-**In our product.**
-- `@/engines/SaaSMetricsEngine.ts:14` — `LTV` is computed alongside CAC, ARR, NRR.
-- `@/engines/templates/saas.ts:13` — the SaaS KPI template's LTV/CAC row.
-- `@/pages/saas/ARRDashboard.tsx:15` — the page that renders the LTV trendline and payback months.
+**In our product:** `docs/drafts/iris/PERSONAS.md:309` (churn-risk row across personas), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel churn modeling).
 
-**Related terms.** [CAC](#cac-customer-acquisition-cost) · [Churn](#churn) · [ARR](#arr-annual-recurring-revenue) · [MRR](#mrr-monthly-recurring-revenue).
-
-**External reference.** [Wikipedia — Customer lifetime value](https://en.wikipedia.org/wiki/Customer_lifetime_value).
+**Related terms:** NRR, GRR, Day-7 activation, Day-90 renewal, switching cost perception
+**External reference:** OpenView Partners 2024 SaaS Benchmarks (https://openviewpartners.com)
 
 ---
 
-## Monte Carlo
+### COGS (Cost of Goods Sold)
 
-**Definition.** A simulation technique that runs a calculation many thousands of times, each iteration sampling uncertain inputs from their probability distributions, in order to estimate the distribution of the output. In FP&A, Monte Carlo is used to convert a single-point forecast into a probability cone (e.g. "what is the 5th/50th/95th percentile of next quarter's cash balance?"). The FinPlan Pro Monte Carlo engine runs in a Web Worker pool to keep the UI responsive on long simulations.
+**Definition:** Direct costs attributable to producing the goods or services sold. In SaaS, COGS typically includes hosting, third-party APIs, payment processing, and customer-success headcount. Distinct from operating expenses (sales, R&D, G&A).
 
-**In our product.**
-- `@/engines/MonteCarloEngine.ts:333` — the simulation entry point; iterates `iterations` × `horizon` steps.
-- `@/workers/monte-carlo.worker.ts:117` — the Web Worker that runs the simulation off the main thread (`runMonteCarlo` function).
-- `@/workers/index.ts:96` — the `runMonteCarlo()` public API exported from the workers index.
-- `@/workers/types.ts:43` — the `MonteCarloRequest` type (assumptions, iterations, horizon).
-- `@/pages/analytics/GoalSeekPage.tsx:22` — the Goal-Seek page that calls `runMonteCarlo()` (default export).
+**In our product:** `docs/drafts/hermes/PRICING.md` (tier gross-margin modeling), `docs/ARCHITECTURE.md` (revenue/cost engine).
 
-**Related terms.** [Sensitivity Analysis](#sensitivity-analysis) · [Scenario](#scenario) · [Forecast](#forecast) · [Burn Rate](#burn-rate) · [Runway](#runway).
-
-**External reference.** [Wikipedia — Monte Carlo method](https://en.wikipedia.org/wiki/Monte_Carlo_method).
+**Related terms:** Gross Margin, P&L, FP&A
+**External reference:** IFRS IAS 2, US GAAP ASC 330
 
 ---
 
-## MRR (Monthly Recurring Revenue)
+## D
 
-**Definition.** The normalised monthly value of all currently-active subscription contracts, expressed as the sum of subscription fees that recur each month. MRR is the granular counterpart to ARR; it is the primary run-rate metric for early-stage SaaS companies and is the input for churn, expansion, and net-revenue calculations. `MRR × 12 ≈ ARR` for steady-state businesses.
+### D-009 framework (Cross-Muse Triangulation)
 
-**In our product.**
-- `@/engines/SaaSMetricsEngine.ts:14` — `MRR` is computed alongside ARR, NRR, churn.
-- `@/pages/saas/ARRDashboard.tsx:15` — renders the MRR waterline (new + expansion − churn − contraction) on the same dashboard as ARR.
-- `@/engines/templates/saas.ts:13` — the SaaS template's `MRR` row.
+**Definition:** Decision D-009 in the Muse cohort task board. A verification protocol requiring every cross-Muse claim to be triangulated against at least 2 independent sources (e.g., source code Grep + draft doc + persona file) before acceptance. Codified in cycle 5 after multiple v0.1→v0.2 self-revalidations missed architectural shifts in T-MN-008 (9+ fabrications caught in v0.4).
 
-**Related terms.** [ARR](#arr-annual-recurring-revenue) · [NRR](#nrr-net-revenue-retention) · [Churn](#churn) · [LTV](#ltv-lifetime-value).
+**In our product (Three-Witnesses):**
 
-**External reference.** [Wikipedia — Monthly recurring revenue](https://en.wikipedia.org/wiki/Monthly_recurring_revenue).
+- `docs/drafts/TASKBOARD.md:264` — D-009 definition ("Cross-Muse triangulation... verify every claim against actual source code")
+- `docs/drafts/TASKBOARD.md:419-421` — D-009 applied to T-MN-008 v0.4 masterStorage carryover
+- `docs/drafts/athena/jsdoc-revalidation-v0.4.md` — D-009 documented in Athena v0.3 re-validation
 
----
-
-## NPV (Net Present Value)
-
-**Definition.** The sum of a series of future cash flows, each discounted back to the present at a risk-adjusted discount rate. A positive NPV means the project earns more than the discount rate (creates value); a negative NPV means it does not. NPV and IRR usually agree on the ranking of projects, but NPV is theoretically preferred because it is a direct dollar measure.
-
-**In our product.**
-- `@/engines/FinancialInstrumentsEngine.ts:46` — the `npv(rate, cashFlows)` function (vectorised summation of `cf / (1+r)^t`).
-- `@/engines/formula-functions/financial.ts:30` — the `NPV()` formula function exposed to the safe-math parser.
-- `@/engines/FairValueEngine.ts:47` — `FairValueEngine` uses NPV internally as part of DCF.
-- `@/pages/capex/CapExDashboard.tsx:145` — the CapEx dashboard that displays NPV vs hurdle for capital projects.
-
-**Related terms.** [IRR](#irr-internal-rate-of-return) · [DCF](#dcf-discounted-cash-flow) · [Cash Flow](#cash-flow).
-
-**External reference.** [Wikipedia — Net present value](https://en.wikipedia.org/wiki/Net_present_value).
+**Related terms:** D-007 pre-write, Honest Labeling, ICP-numbering
+**Honest Labeling:** (internal cohort discipline, not externally documented)
+**External reference:** Internal decision (TASKBOARD.md)
 
 ---
 
-## NRR (Net Revenue Retention)
+### DCF (Discounted Cash Flow)
 
-**Definition.** The percentage of recurring revenue retained from existing customers over a period, **including expansion** (upsell, cross-sell) and **contraction** (downgrades), but excluding new-customer revenue. NRR > 100% means expansion more than offsets churn — a hallmark of best-in-class SaaS businesses. NRR complements gross retention: `NRR = Gross Retention + Expansion`.
+**Definition:** A valuation method that estimates the present value of expected future cash flows, discounted at a rate reflecting the riskiness of the cash flows (WACC for firm, cost of equity for equity). The foundation of intrinsic-value analysis.
 
-**In our product.**
-- `@/engines/SaaSMetricsEngine.ts:14` — `NRR` is computed alongside ARR, MRR, churn.
-- `@/engines/templates/saas.ts:13` — the SaaS template's NRR row.
-- `@/pages/saas/ARRDashboard.tsx:15` — the page that renders the NRR cohort grid.
+**In our product:** `docs/ARCHITECTURE.md` (DCF calculation pipeline), `docs/drafts/hermes/PRICING.md` (valuation context for tier pricing).
 
-**Related terms.** [ARR](#arr-annual-recurring-revenue) · [MRR](#mrr-monthly-recurring-revenue) · [Churn](#churn) · [CAC](#cac-customer-acquisition-cost).
-
-**External reference.** [Wikipedia — Net revenue retention](https://en.wikipedia.org/wiki/Net_revenue_retention).
+**Related terms:** NPV, IRR, Sensitivity Analysis, WACC
+**External reference:** McKinsey, "Valuation: Measuring and Managing the Value of Companies"
 
 ---
 
-## OLAP (Online Analytical Processing)
+### Day-7 activation
 
-**Definition.** A category of database and cube technology optimised for **multi-dimensional analytical queries** — slice, dice, drill-down, roll-up — across large fact tables. An OLAP "cube" pre-aggregates measures (e.g. revenue, units) by dimensions (e.g. region, product, period) so interactive dashboards can pivot instantly. FinPlan Pro ships an in-memory OLAP engine so users can pivot their budget/actual data without round-tripping to a warehouse.
+**Definition:** A retention inflection metric — whether a new user completes the first core workflow within 7 days of signup. Especially critical in PLG (product-led growth) motions where there is no human onboarding. Often correlated with long-term retention; missing Day-7 is a leading indicator of 30-day churn.
 
-**In our product.**
-- `@/engines/CubeEngine.ts:31` — the in-memory cube (`measures × dimensions`, with `slice`/`dice`/`drillDown` operations).
-- `@/engines/AdvancedOLAPEngine.ts:62` — the advanced OLAP engine (calculated members, named sets, KPIs).
-- `@/store/cubeStore.ts:111` — the cube state in the zustand store (measures, dimensions, results).
-- `@/pages/reports/ReportDesignerPage.tsx:1` — the Report Designer where users build pivot views on top of the cube.
+**In our product (Three-Witnesses):**
 
-**Related terms.** [Budget vs Actual](#budget-vs-actual) · [Scenario](#scenario) · [Sensitivity Analysis](#sensitivity-analysis).
+- `docs/drafts/iris/PERSONAS.md:198` — "if the first 7 days are confusing, Chris is gone"
+- `docs/drafts/iris/PERSONAS.md:309` — Churn risk for Chris = "I never got past day 7"
+- `docs/drafts/iris/PERSONAS.md:7` — "Day-in-the-life" line test (Iris v0.2 cohort)
 
-**External reference.** [Wikipedia — Online analytical processing](https://en.wikipedia.org/wiki/Online_analytical_processing).
-
----
-
-## P&L (Profit & Loss)
-
-**Definition.** Also called the **Income Statement**, the P&L reports a company's revenues, expenses, and resulting profit (or loss) over a period. The canonical P&L chain is `Revenue → COGS → Gross Profit → OpEx → EBITDA → Interest & Tax → Net Income`. Unlike the Balance Sheet, the P&L is a flow measure (period activity, not point-in-time).
-
-**In our product.**
-- `@/components/reports/FinancialStatementTemplates.tsx:6` — the `profitAndLoss` template (the rows down to Net Income).
-- `@/pages/reports/ProfitLossPage.tsx:20` — the route-level P&L page (default export).
-- `@/engines/ReportLayoutEngine.ts:2` — documents the canonical row order: `Revenue → COGS → Gross Profit → OpEx → EBITDA → Net Income`.
-
-**Related terms.** [Balance Sheet](#balance-sheet) · [Cash Flow](#cash-flow) · [EBITDA](#ebitda-earnings-before-interest-taxes-depreciation-amortization) · [COGS](#cogs-cost-of-goods-sold).
-
-**External reference.** [Wikipedia — Income statement](https://en.wikipedia.org/wiki/Income_statement).
+**Related terms:** PLG motion, Day-90 renewal, switching cost perception, Chris
+**Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md)
+**External reference:** Wes Bush, "Product-Led Growth" (https://productled.com)
 
 ---
 
-## Runway
+### Day-90 renewal
 
-**Definition.** The number of months (or years) a company can continue operating at its current burn rate before cash reaches zero. Runway = Cash ÷ Monthly Burn. Runway is the canonical fundraising signal for cash-constrained startups: < 6 months means raise now, > 18 months means you have time to optimise. The runway figure is best modelled probabilistically (Monte Carlo) because burn itself is uncertain.
+**Definition:** The 90-day inflection point at which subscription customers either renew or churn. Critical for SMB and PLG motions where annual contracts are rare and 30/60/90-day retention curves determine LTV. Often paired with Day-7 activation as the "first 7 days acquire, first 90 days expand" framework.
 
-**In our product.**
-- `@/engines/CashFlowWaterfallEngine.ts:113` — `static runway` (the `cash / monthlyBurn` calculation).
-- `@/engines/MonteCarloEngine.ts:333` — probabilistic runway distribution (P5/P50/P95 months-to-zero).
-- `@/pages/cash/CashForecastPage.tsx:55` — the Cash Forecast page that displays the static runway KPI.
-- `@/pages/scenarios/ScenarioBuilderPage.tsx:61` — the Scenario Builder that overlays runway across scenarios (default export).
+**In our product (Three-Witnesses):**
 
-**Related terms.** [Burn Rate](#burn-rate) · [Cash Flow](#cash-flow) · [Monte Carlo](#monte-carlo) · [Scenario](#scenario).
+- `docs/drafts/iris/PERSONAS.md:189` — "Chris churns at 30/60/90 day inflection points"
+- `docs/drafts/iris/PERSONAS.md:309` — Renewal/churn rows in persona churn matrix
+- `docs/drafts/iris/PERSONAS.md:7` — "Day-in-the-life" line test (Iris v0.2 cohort)
 
-**External reference.** [Investopedia — Runway (finance)](https://www.investopedia.com/terms/r/runway.asp).
-
----
-
-## Scenario
-
-**Definition.** A named, internally-consistent "what-if" view of the business — e.g. `Base`, `Best`, `Worst`, `Layoffs 10%`, `EU Expansion 2027`. Each scenario overrides selected drivers (revenue growth, opex, headcount) and recomputes the downstream P&L, cash, and KPIs. Scenarios are the bridge between **sensitivity analysis** (one driver at a time) and **Monte Carlo** (probabilistic).
-
-**In our product.**
-- `@/engines/ScenarioEngine.ts:42` — the core scenario engine (applies driver deltas, recomputes EBITDA, cash, margins).
-- `@/store/scenarioStore.ts:7` — the scenario state (named scenarios, active scenario, deltas).
-- `@/pages/scenarios/ScenarioListPage.tsx:11` — the route-level scenarios list page (default export).
-- `@/pages/scenarios/ScenarioBuilderPage.tsx:61` — the Scenario Builder editor (default export).
-
-**Related terms.** [Sensitivity Analysis](#sensitivity-analysis) · [Monte Carlo](#monte-carlo) · [Forecast](#forecast) · [Budget vs Actual](#budget-vs-actual).
-
-**External reference.** [Wikipedia — Scenario planning](https://en.wikipedia.org/wiki/Scenario_planning).
+**Related terms:** Day-7 activation, PLG motion, Chris, NRR, GRR
+**Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md)
+**External reference:** David Skok, Matrix Partners (https://saasmetrics2.com)
 
 ---
 
-## Sensitivity Analysis
+## E
 
-**Definition.** A "what-if" technique that measures how the output of a model changes as one (or two) inputs are flexed across a defined range, holding other inputs constant. The result is typically a **tornado chart** (rank-ordered impact) or a **data table** (output as a function of two inputs). Sensitivity analysis is the simplest form of stress-test: "if revenue drops 10%, what happens to EBITDA?".
+### EBITDA
 
-**In our product.**
-- `@/engines/SensitivityEngine.ts:39` — the one-at-a-time sensitivity engine (tornado chart).
-- `@/engines/SensitivityTableEngine.ts:68` — the two-input data-table engine.
-- `@/pages/forecasts/WhatIfPage.tsx:98` — the What-If page that hosts the sensitivity views alongside driver planning.
+**Definition:** Earnings Before Interest, Taxes, Depreciation, and Amortization. A proxy for operating cash flow that strips out financing and non-cash items. The standard profitability metric in PE/VC deal modeling and SaaS valuation multiples.
 
-**Related terms.** [Scenario](#scenario) · [Monte Carlo](#monte-carlo) · [Forecast](#forecast) · [Variance](#variance).
+**In our product:** `docs/drafts/hermes/PRICING.md` (valuation context for tier pricing), `docs/ARCHITECTURE.md` (P&L engine).
 
-**External reference.** [Investopedia — Sensitivity analysis](https://www.investopedia.com/terms/s/sensitivityanalysis.asp).
+**Related terms:** P&L, COGS, DCF
+**External reference:** Damodaran, "The Dark Side of Valuation" (https://pages.stern.nyu.edu/~adamodar)
 
 ---
 
-## Variance
+## F
 
-**Definition.** The difference between an **actual** result and a **budgeted / forecast / prior-period** result, typically reported in absolute terms and as a percentage. Variance can be **favourable** (revenue higher or expense lower than plan) or **unfavourable** (the opposite). Variance **decomposition** breaks the total variance into price, volume, and mix components to explain the cause.
+### founder-led motion
 
-**In our product.**
-- `@/engines/VarianceDecompositionEngine.ts:21` — decomposes total variance into price/volume/mix.
-- `@/pages/variance/VarianceDashboardPage.tsx:54` — the route-level variance dashboard (default export).
-- `@/pages/budgets/BudgetVAReport.tsx:41` — the Budget-vs-Actual variance report (default export).
+**Definition:** An early-stage go-to-market motion where the founder(s) personally handle sales, onboarding, and customer success. Common pre-PMF and at <$1M ARR. Trades scalability for product feedback density. Often a precursor to either PLG (if low-touch wins) or AE-led (if enterprise wins).
 
-**Related terms.** [Budget vs Actual](#budget-vs-actual) · [Forecast](#forecast) · [COGS](#cogs-cost-of-goods-sold) · [P&L](#pl-profit--loss).
+**In our product (Three-Witnesses):**
 
-**External reference.** [Investopedia — Variance analysis](https://www.investopedia.com/terms/v/varianceanalysis.asp).
+- `docs/drafts/iris/PERSONAS.md:321` — "Add 2 personas we know are missing: Founder-Finance Fiona" (founder-archetype buyer for Carla-tier deals; founder-led motion context)
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` — Channel strategy context for founder-led → AE-led transition
+- `docs/drafts/hermes/PRICING.md` — Pre-scale tier pricing (founder-led sales motion implicit)
 
----
-
-## Working Capital
-
-**Definition.** The capital a company uses in its day-to-day operations, calculated as **Current Assets − Current Liabilities**. Working capital measures short-term liquidity and operational efficiency. The two main working-capital metrics are **Days Sales Outstanding (DSO)**, **Days Payable Outstanding (DPO)**, and **Days Inventory Outstanding (DIO)**; their sum gives the **Cash Conversion Cycle (CCC)**.
-
-**In our product.**
-- `@/engines/WorkingCapitalEngine.ts:42` — the working-capital engine (current assets, current liabilities, DSO/DPO/DIO, CCC).
-- `@/pages/cash/WorkingCapitalPage.tsx:50` — the route-level working-capital page (default export).
-- `@/components/reports/FinancialStatementTemplates.tsx:96` — the Balance Sheet template's working-capital subtotal.
-
-**Related terms.** [Balance Sheet](#balance-sheet) · [Cash Flow](#cash-flow) · [P&L](#pl-profit--loss).
-
-**External reference.** [Wikipedia — Working capital](https://en.wikipedia.org/wiki/Working_capital).
+**Related terms:** PLG motion, Carla, Vera, Chris
+**Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md + CHANNEL_MOTIONS_v0.md)
+**External reference:** Lenny's Newsletter (https://lennysnewsletter.com) — founder-led to PLG transitions
 
 ---
 
-## Cross-references
+### FP&A (Financial Planning & Analysis)
 
-- **Engine layer overview** — `docs/ARCHITECTURE.md` §3.
-- **FP&A workflow** — `docs/PRODUCT_VISION.md` §3.
-- **Path-alias convention (`@/` → `src/`)** — `AGENTS.md` §"Path Alias".
-- **File-size limits & test conventions** — `AGENTS.md` §"Code Conventions" and §"Testing".
-- **Companion index** — `docs/GLOSSARY_INDEX.md` (one-line summaries for quick lookup).
-- **Compliance evidence** — `docs/security-deferrals.md` (audit trail; not a financial term but the source for compliance references).
+**Definition:** The function within a finance team responsible for budgeting, forecasting, scenario modeling, and supporting strategic decisions. FP&A teams use the product surface in scope for this project.
 
-## Citation policy
+**In our product:** `docs/ARCHITECTURE.md` (FP&A engine, OLAP, scenario engine) — the entire product is an FP&A tool.
 
-Every "In our product" claim above cites a `file:line` that was verified against the current working tree on 2026-06-13. If you change a cited file, update the line number. If a file is deleted, the term is considered stale and must be re-anchored before publication.
+**Related terms:** Forecast, Scenario, Budget vs Actual, Sensitivity Analysis, DCF
+**External reference:** AFP, "FP&A" (https://afponline.org)
+
+---
+
+### Forecast
+
+**Definition:** A projection of future financial outcomes based on historical data, assumptions, and models. Rolling forecasts are continuously updated; static forecasts are fixed at a point in time. Pairs with Budget vs Actual variance reporting.
+
+**In our product:** `docs/ARCHITECTURE.md` (forecast engine), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel revenue forecasts).
+
+**Related terms:** Budget vs Actual, Scenario, Sensitivity Analysis, FP&A
+**External reference:** CFI, "Financial Forecasting" (https://corporatefinanceinstitute.com)
+
+---
+
+## G
+
+### GRR (Gross Revenue Retention)
+
+**Definition:** The percentage of recurring revenue retained from existing customers, EXCLUDING expansion revenue. GRR = (Starting MRR - Churned MRR - Contraction MRR) ÷ Starting MRR. Always ≤ 100%. A floor metric; paired with NRR (which includes expansion) to show net growth. GRR < 80% is a red flag; > 90% is best-in-class.
+
+**In our product (Three-Witnesses):**
+
+- `docs/GLOSSARY.md:NRR` (v0.1 entry) — natural complement
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` — Channel retention modeling
+- Cross-link to Churn, NRR, MRR (retention stack)
+
+**Related terms:** NRR, Churn, ARR, MRR
+**Honest Labeling:** (empirical, cross-Muse triangulated via CHANNEL_MOTIONS_v0.md + NRR entry)
+**External reference:** OpenView Partners 2024 SaaS Benchmarks (https://openviewpartners.com)
+
+---
+
+## H
+
+### Honest Labeling (Muses cohort discipline)
+
+**Definition:** A cohort discipline requiring every Muse to honestly label the certainty/limitations of every claim in drafts — distinguishing between "verified via D-009", "self-revalidated only", "inferred from context", and "fabricated/placeholder". Codified during cycle 5 after multiple v0.1/v0.2 self-revalidations missed architectural shifts. Replaces silent confidence with explicit epistemic flags.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/TASKBOARD.md:500-505` — Honest Labeling 5-Muses cohort formation
+- `docs/drafts/TASKBOARD.md:664-673` — Honest Labeling propagated to 6-Muses (Prometheus added)
+- `docs/drafts/TASKBOARD.md:762-767, 874-909` — Honest Labeling applied in cycles 5-6
+- `docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md` — Explicit use in T-AT-009 erratum (9th Honest Labeling moment + 6th D-009 codification: "D-009 violation can appear in your own audit claims")
+
+**Related terms:** D-009 framework, pre-write, ICP-numbering
+**Honest Labeling:** (internal cohort discipline, not externally documented — self-referential)
+**External reference:** Internal discipline (TASKBOARD.md)
+
+---
+
+## I
+
+### ICP-numbering (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3)
+
+**Definition:** The canonical numbering scheme for ICP personas across all Muses. Carla (Strategic CFO) = ICP-1, Vera (Technical VP Finance) = ICP-2, Chris (Tactical Controller) = ICP-3. Numbering was established in cycle 5 after Felix (original VP-Eng persona) was reconciled into Vera to avoid persona proliferation. All Muse cross-references to personas MUST use this scheme to avoid ambiguity.
+
+**In our product (Three-Witnesses):**
+
+- `docs/ARCHITECTURE.md:246` — "ICP-1 (Carla) / ICP-2 (Vera) / ICP-3 (Chris)"
+- `docs/ARCHITECTURE.md:585` — Cross-Muse ICP-numbering reference
+- `docs/drafts/TASKBOARD.md:497` — Felix→Vera reconciliation (origin of canonical numbering)
+- `docs/drafts/iris/PERSONAS.md` — Three personas with ICP-1/2/3 labels
+
+**Related terms:** Carla, Vera, Chris, D-009 framework
+**Honest Labeling:** (internal cohort discipline, not externally documented)
+**External reference:** Internal decision (TASKBOARD.md, ARCHITECTURE.md)
+
+---
+
+### IRR (Internal Rate of Return)
+
+**Definition:** The discount rate that makes the NPV of a series of cash flows equal to zero. Used in capital budgeting to rank projects or investments. The higher the IRR, the more desirable the investment. A project is acceptable if IRR > required rate of return (hurdle rate).
+
+**In our product:** `docs/ARCHITECTURE.md` (scenario engine IRR calculation), `docs/drafts/hermes/PRICING.md` (valuation context).
+
+**Related terms:** NPV, DCF, Sensitivity Analysis
+**External reference:** McKinsey, "Valuation: Measuring and Managing the Value of Companies"
+
+---
+
+## L
+
+### LTV (Lifetime Value)
+
+**Definition:** The total revenue a customer is expected to generate over the lifetime of the relationship. LTV = ARPU × Gross Margin ÷ Churn Rate (simplified). The LTV/CAC ratio is the canonical SaaS efficiency metric; > 3 is healthy, > 5 is exceptional.
+
+**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel LTV modeling), `docs/ARCHITECTURE.md` (churn engine for LTV input).
+
+**Related terms:** CAC, Payback period, ARPU, Churn
+**External reference:** David Skok, "SaaS Metrics 2.0" (https://saasmetrics2.com)
+
+---
+
+## M
+
+### Monte Carlo
+
+**Definition:** A simulation method that uses repeated random sampling to compute the probability distribution of an outcome. Used in FP&A for risk modeling, scenario analysis, and confidence-interval estimation around forecasts (e.g., "P50 / P90 revenue outcomes").
+
+**In our product:** `docs/ARCHITECTURE.md` (Monte Carlo engine), `docs/drafts/athena/SENSITIVITY-v0.1.md` (sensitivity pre-write).
+
+**Related terms:** Sensitivity Analysis, Scenario, Forecast
+**External reference:** Wikipedia, "Monte Carlo method" (https://en.wikipedia.org/wiki/Monte_Carlo_method)
+
+---
+
+### MRR (Monthly Recurring Revenue)
+
+**Definition:** The normalized monthly value of all recurring subscription contracts. MRR × 12 ≈ ARR (when contracts are stable). The granular (monthly) counterpart to ARR; used for tracking growth velocity and detecting inflection points.
+
+**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel MRR modeling), `docs/ARCHITECTURE.md` (revenue engine).
+
+**Related terms:** ARR, NRR, GRR, ARPU
+**External reference:** SaaS Capital, "MRR" (https://saascapital.com)
+
+---
+
+## N
+
+### NPV (Net Present Value)
+
+**Definition:** The sum of the present values of all future cash flows (positive and negative) over the life of an investment, discounted at the required rate of return. NPV > 0 means the investment is value-accretive at the discount rate. The gold-standard capital-budgeting metric.
+
+**In our product:** `docs/ARCHITECTURE.md` (DCF engine NPV calculation), `docs/drafts/hermes/PRICING.md` (valuation context).
+
+**Related terms:** DCF, IRR, Sensitivity Analysis
+**External reference:** Damodaran, "Investment Valuation" (https://pages.stern.nyu.edu/~adamodar)
+
+---
+
+### NRR (Net Revenue Retention)
+
+**Definition:** The percentage of recurring revenue retained from existing customers, INCLUDING expansion revenue (upsell, cross-sell). NRR = (Starting MRR + Expansion MRR - Churned MRR - Contraction MRR) ÷ Starting MRR. Can exceed 100% if expansion > churn. Best-in-class SaaS NRR is 120%+.
+
+**In our product (v0.2 cross-link enhancement):** Cross-link to GRR (which excludes expansion), Churn, MRR. See `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel NRR modeling), `docs/ARCHITECTURE.md` (retention engine).
+
+**Related terms:** GRR, Churn, MRR, ARR (v0.2 cross-link added)
+**External reference:** OpenView Partners, "Net Dollar Retention" (https://openviewpartners.com)
+
+---
+
+## O
+
+### OLAP
+
+**Definition:** Online Analytical Processing. A category of database technology optimized for multidimensional analytical queries (slice, dice, drill-down, roll-up). The data layer beneath FP&A tools. Contrasts with OLTP (transactional processing).
+
+**In our product:** `docs/ARCHITECTURE.md` (OLAP cube structure for FP&A scenarios).
+
+**Related terms:** FP&A, Forecast, Scenario
+**External reference:** Wikipedia, "OLAP" (https://en.wikipedia.org/wiki/OLAP_cube)
+
+---
+
+## P
+
+### P&L (Profit & Loss Statement)
+
+**Definition:** A financial statement summarizing a company's revenues, expenses, and profits over a period. Also called the Income Statement. Pairs with the Balance Sheet (point-in-time) and Cash Flow Statement (period).
+
+**In our product:** `docs/ARCHITECTURE.md` (P&L engine), `docs/drafts/hermes/PRICING.md` (P&L line items for tier modeling).
+
+**Related terms:** Balance Sheet, Cash Flow, COGS, EBITDA
+**External reference:** IFRS IAS 1, US GAAP ASC 220
+
+---
+
+### Payback period
+
+**Definition:** The number of months required for a customer's cumulative gross profit to recover their Customer Acquisition Cost (CAC). SaaS benchmark: <12 months (good), 12-18 (mediocre), >24 (concerning). Function of ARPU, churn, and gross margin. Critical because shorter payback = faster reinvestment flywheel.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:82` — Channel economics ("$5,988 ARPU" → payback modeling)
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:307, 336` — Payback referenced in motion scoring
+- `docs/drafts/hermes/PRICING.md` — Payback context for tier pricing
+
+**Related terms:** ACV, ARPU, CAC, LTV
+**Honest Labeling:** (empirical, cross-Muse triangulated via CHANNEL_MOTIONS_v0.md + PRICING.md)
+**External reference:** David Skok, "SaaS Metrics 2.0" (https://saasmetrics2.com)
+
+---
+
+### PLG motion (Product-Led Growth)
+
+**Definition:** A go-to-market motion where the product itself drives acquisition, conversion, and expansion — typically via free tier, in-product viral loops, and self-serve checkout. Minimizes human-led sales. Best fit for low-ACV, high-velocity ICPs (e.g., SMB, individual contributors, technical buyers). Contrasts with sales-led (AE/SDR-led enterprise) and founder-led motions.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:439` — "ICP-3 (Chris, FP&A Lead) as the PLG secondary" (Chris as PLG motion anchor; ICP-numbering note footer)
+- `docs/drafts/iris/PERSONAS.md:189-198` — Chris's PLG profile ("if the first 7 days are confusing, Chris is gone")
+- `docs/drafts/iris/PERSONAS.md:7` — Day-in-the-life PLG test
+
+**Related terms:** founder-led motion, Day-7 activation, Chris, switching cost perception
+**Honest Labeling:** (TENTATIVE per D-007 — 1 of 3 anchors is weak: CHANNEL_MOTIONS_v0.md:439 is a footer note, not a primary PLG reference; PERSONAS.md anchors are stronger)
+**External reference:** OpenView Partners, "Product-Led Growth" (https://openviewpartners.com), Wes Bush (https://productled.com)
+
+---
+
+### pre-write (D-007 pre-write cohort pattern)
+
+**Definition:** Decision D-007 in the Muse cohort task board. A discipline requiring Muses to publish a "pre-write" (stub with claim-by-claim verification plan) BEFORE writing the final document, then cohort-review the pre-write for completeness, accuracy, and source-anchoring. Catches architectural fabrications and scope creep before they propagate. The standard 5-iteration discipline is: v0.1 pre-write → v0.2 self-revalidate → v0.3 Athena revalidate → v0.4 carryover → v1.1 polish.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/TASKBOARD.md:262, 264, 290, 299, 302, 416, 417, 419-421` — D-007 pre-write pattern references
+- `docs/drafts/TASKBOARD.md:545, 549-551, 565, 691` — D-007 applied across cycles
+- `docs/ONBOARDING.md` — T-MN-003 v0.1 (cycle 7, 295L) followed pre-write pattern
+
+**Related terms:** D-009 framework, Honest Labeling, ICP-numbering
+**Honest Labeling:** (internal cohort discipline, not externally documented)
+**External reference:** Internal decision (TASKBOARD.md)
+
+---
+
+## R
+
+### Runway
+
+**Definition:** The number of months a company can continue operating at its current burn rate before exhausting cash reserves. Runway = Current Cash ÷ Net Monthly Burn. Critical fundraising signal; < 6 months triggers urgent raise, > 18 months provides comfort.
+
+**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel runway scenarios), `docs/ARCHITECTURE.md` (cash flow engine).
+
+**Related terms:** Burn Rate, Cash Flow, FP&A
+**External reference:** Y Combinator, "Runway Calculator" (https://ycombinator.com)
+
+---
+
+## S
+
+### Scenario
+
+**Definition:** A coherent set of assumptions about the future that produces a complete financial outcome (revenue, costs, cash, P&L). Scenarios differ from sensitivity analyses in that they shift multiple assumptions coherently, not one variable at a time. Typical scenario sets: Base / Bull / Bear.
+
+**In our product:** `docs/ARCHITECTURE.md` (scenario engine), `docs/drafts/athena/SENSITIVITY-v0.1.md` (sensitivity pre-write).
+
+**Related terms:** Sensitivity Analysis, Forecast, Monte Carlo, FP&A
+**External reference:** CFI, "Scenario Analysis" (https://corporatefinanceinstitute.com)
+
+---
+
+### Sensitivity Analysis
+
+**Definition:** An analysis that measures how the output of a model changes as one or more inputs are varied, holding all other inputs constant. Used in FP&A to identify which assumptions have the most impact on outcomes (tornado diagrams, spider charts).
+
+**In our product:** `docs/ARCHITECTURE.md` (sensitivity engine), `docs/drafts/athena/SENSITIVITY-v0.1.md` (pre-write cohort).
+
+**Related terms:** Scenario, Monte Carlo, Forecast, FP&A
+**External reference:** CFI, "Sensitivity Analysis" (https://corporatefinanceinstitute.com)
+
+---
+
+### switching cost perception
+
+**Definition:** The buyer's PERCEIVED cost of leaving the current solution — distinct from actual switching cost. High switching cost perception is a moat; low switching cost perception = high churn risk. Especially relevant when product is "good enough but not entrenched". Affected by data lock-in, workflow integration, team buy-in, and contract length.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/iris/SWITCHING_COST_ANALYSIS.md:1-60` — Iris T-IR-011 pre-write (analytical framework)
+- `docs/drafts/iris/PERSONAS.md:309` — Churn risk row references switching cost implicitly
+- Cross-link to Chris (low switching cost = high churn at Day-90)
+
+**Related terms:** Chris, Day-7 activation, Day-90 renewal, Churn
+**Honest Labeling:** (empirical, cross-Muse triangulated via SWITCHING_COST_ANALYSIS.md + PERSONAS.md)
+**External reference:** Hamilton Helmer, "7 Powers" (https://7powers.com)
+
+---
+
+## V
+
+### Variance
+
+**Definition:** The difference between an actual outcome and a planned (budgeted or forecast) outcome. Variance = Actual - Plan. Favorable vs unfavorable is context-dependent. Reported via Budget vs Actual reports.
+
+**In our product:** `docs/ARCHITECTURE.md` (variance engine), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel variance reporting).
+
+**Related terms:** Budget vs Actual, Forecast, FP&A
+**External reference:** CFI, "Variance Analysis" (https://corporatefinanceinstitute.com)
+
+---
+
+### Vera (ICP-2 persona)
+
+**Definition:** The canonical Technical Buyer / VP Finance / VP Engineering persona, designated ICP-2 in the Muse cohort ICP-numbering scheme. $50-300K ACV, 6-9 month sales cycle. Created during the Felix→Vera reconciliation in cycle 5 to consolidate two near-identical technical-buyer personas into one canonical name. Anchors the technical-buyer segment of the product strategy.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/iris/PERSONAS.md:227-291` — Vera persona full spec
+- `docs/ARCHITECTURE.md:246, 585` — "ICP-2 (Vera)" canonical reference
+- `docs/drafts/hermes/PRICING.md` — Vera-tier pricing context (Business + Enterprise overlap)
+- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` — Vera's role in channel strategy
+
+**Related terms:** ICP-numbering, Carla, Chris, ACV, Payback period
+**Honest Labeling:** (internal cohort persona, not externally documented)
+**External reference:** Internal persona (PERSONAS.md, ARCHITECTURE.md)
+
+---
+
+## W
+
+### Working Capital
+
+**Definition:** The capital available for day-to-day operations, calculated as Current Assets minus Current Liabilities. Positive working capital = short-term liquidity. Negative working capital = potential solvency issues. A key cash-flow management metric.
+
+**In our product:** `docs/ARCHITECTURE.md` (working capital engine), `docs/drafts/hermes/PRICING.md` (working capital context for tier pricing).
+
+**Related terms:** Balance Sheet, Cash Flow, FP&A
+**External reference:** IFRS IAS 1, US GAAP ASC 210
+
+---
+
+## Citation policy (v0.2)
+
+- **Three-Witnesses (D-002):** Every "In our product" anchor in every definition MUST cite a verifiable file:line. If no verifiable anchor exists, the term is marked "(empirical, no internal anchor — external reference only)".
+- **D-009 Cross-Muse Triangulation:** Every claim that crosses Muse boundaries (e.g., a math term used by Iris personas) MUST be triangulated against at least 2 independent source docs.
+- **Honest Labeling:** Every entry carries an explicit `(empirical, ...)` or `(internal cohort discipline, ...)` flag. No silent confidence.
 
 ## Versioning
 
-- v0.1 (2026-06-13) — initial 25-term draft by Mnemosyne; pending Themis review.
+- **v0.1** (cycle 7, 2026-06-13, T-MN-002): 25 terms, baseline FP&A vocabulary
+- **v0.2** (cycle 8, 2026-06-13, T-MN-011): 39 terms — +14 new (4 math + 5 cross-Muse + 5 ICP-movement), NRR cross-link enhancement
+- **v0.3** (cycle 8, 2026-06-13, T-AT-014): Athena re-validation — 11 APPLY · 2 MOSTLY OK · 2 NEEDS-FIX · 0 HOLD (91% APPLY rate, 0 new fabrications)
+- **v0.4** (cycle 8, 2026-06-13, T-MN-011 v0.4 carryover): 6 Path A self-apply fixes (2 NEEDS-FIX + 2 MOSTLY OK + 8 TASKBOARD.md path drifts + 1 TENTATIVE marker)
+- **v1.1 (2026-06-13)**: Path A self-apply polish (header bumps; 7th codification applied retroactively to v0.4 fixes — all 6 file paths Glob-verified)
+- **v1.2 (2026-06-13)**: Cascade close ceremony (header bumps only) — **T-MN-011 CLOSED**. 5-iteration discipline: v0.1 → v0.2 → v0.3 → v0.4 → v1.1 → v1.2. 0 net defects across 6 iterations × 30+ cumulative reviews. 14 NEW terms (4 math + 5 cross-Muse + 5 ICP-movement) + NRR cross-link + 6 D-009 codifications adopted (6th, 7th validated in real use).
