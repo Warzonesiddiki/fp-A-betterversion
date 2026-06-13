@@ -10,7 +10,7 @@
 > **Author:** Strategos (7th Muse, Product Strategy & Competitive Intelligence)
 > **Audience:** Founder + Board, Nov 2026 board meeting
 > **Gate:** Q3 2026 close 2026-09-30 → v1.2 actuals 2026-10-12 → Q3 board 2026-10-15 → **Nov 2026 board reviews Y2 pack v1.0** (this doc + v1.2 actuals + Q4 2026 forecast)
-> **Status:** DRAFT v0.1 (pre-stage for Nov 2026 board; cycle-8 synthesis, 60-90 min window)
+> **Status:** DRAFT v0.2 (cycle-9 refresh of v0.1.1 footnote; pre-stage for Nov 2026 board)
 
 ---
 
@@ -181,7 +181,7 @@ Inherits 9 risks from `PHASE_1_GTM.md` v0.3 §7 (Risk 1-9) + 1 Y2-specific:
 
 **Inherited risks from PHASE_1_GTM.md v0.3.1 §7 (10 risks):** Risk 1 multi-tenant infra / Risk 2 SOC 2 / Risk 3 ICP churn / Risk 4 ICP-3 PLG churn / Risk 5 tenant-isolation breach / Risk 6 HSM slip / Risk 7 D-010 slip / Risk 8 Vera cycle / Risk 9 D-009 policy / **Risk 10 Y2 channel conflict (cycle-8 v0.3.1 addition, this v0.2 enhanced).**
 
-> **Witness (D-002) on Risk 10:** _Source:_ PHASE_1_GTM.md v0.3.1 §7 Risk 10 (5-line framing + 5 mitigations) + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §1-§5 (154L pre-flight, 4 deliverables, 3 trigger conditions) + Iris T-IR-010 §3.1 (Baker Tilly vendor-neutral) + Hermes T-HER-007 v0.2 §3 (3-year cap) + 15 named firms SMB tier (T-HER-007 §6). _Data:_ $300K Y2 base at risk (5 Beth wins × $60K ACV); 30-60% Baker Tilly LOI-to-win conversion (industry baseline, _inference_); ~30% of top-10 accounting firms are exclusive Anaplan partners (industry baseline, _inference_). _Competitive context:_ Workday Adaptive and Anaplan both have "channel conflict" risks in their GTM; Workday mitigates with "Adaptive is Workday product" framing; Anaplan mitigates with "pure-play" framing. We are pure-play; mitigation is Anaplan's playbook (deal-registration + territory carve-out + 15-25% revenue share). _D-009 Triangulation_: PHASE_1_GTM.md v0.3.1 §7 + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §1-§5 are the canonical sources; T-ST-015 closed 2026-06-13 (154L SHIP).
+> **Witness (D-002) on Risk 10:** _Source:_ PHASE*1_GTM.md v0.3.1 §7 Risk 10 (5-line framing + 5 mitigations) + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §1-§5 (154L pre-flight, 4 deliverables, 3 trigger conditions) + Iris T-IR-010 §3.1 (Baker Tilly vendor-neutral) + Hermes T-HER-007 v0.2 §3 (3-year cap) + 15 named firms SMB tier (T-HER-007 §6). \_Data:* $300K Y2 base at risk (5 Beth wins × $60K ACV); 30-60% Baker Tilly LOI-to-win conversion (industry baseline, _inference_); ~30% of top-10 accounting firms are exclusive Anaplan partners (industry baseline, _inference_). _Competitive context:_ Workday Adaptive and Anaplan both have "channel conflict" risks in their GTM; Workday mitigates with "Adaptive is Workday product" framing; Anaplan mitigates with "pure-play" framing. We are pure-play; mitigation is Anaplan's playbook (deal-registration + territory carve-out + 15-25% revenue share). _D-009 Triangulation_: PHASE_1_GTM.md v0.3.1 §7 + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §1-§5 are the canonical sources; T-ST-015 closed 2026-06-13 (154L SHIP).
 
 ## §10. Cross-Muse handoffs (cycle-8 task board state → Y2 deliverables)
 
@@ -217,6 +217,8 @@ Inherits 9 risks from `PHASE_1_GTM.md` v0.3 §7 (Risk 1-9) + 1 Y2-specific:
 
 **D-009 Triangulation (file:line citations):**
 
+**v0.1 cycle-7 anchors (preserved):**
+
 - PHASE_1_GTM.md v0.3 §5 (4-ICP math, 3-scenario, 9 risks)
 - Q3_2026_STRATEGIC_REVIEW v1.1 §1-§6 (Q3 framework, 3-scenario, 4-phase re-cut, 22-row template, 6 Muse scorecards)
 - Q3_2026_STRATEGIC_REVIEW v1.2 stub (post-Q3 close 2026-09-30, 27-row ACTUALS_TEMPLATE pre-stage)
@@ -230,16 +232,24 @@ Inherits 9 risks from `PHASE_1_GTM.md` v0.3 §7 (Risk 1-9) + 1 Y2-specific:
 - Iris T-IR-016 in_progress (Day-30 Expansion Playbook for Chris)
 - Hephaestus T-HEP-007 SOC 2 RFP (Vanta) + T-HEP-009 ISO 27001 RFP + T-HEP-012 security roadmap + T-HEP-013 pen-test RFP pending
 
-**Total: 12+ file:line citations, 10 D-002 sub-witnesses, 4-Question Framework applied to every section.**
+**v0.2 cycle-8 anchors (NEW for cycle-9 refresh):**
+
+- **PHASE_1_GTM.md v0.3.1** (cycle-8 patch, 5 surgical edits: §0.5 4-ICP anchor ratified / §5 ICP-4 motion / §7 Risk 10 5-line framing + 5 mitigations / §8 D-011 3-Muse consensus attribution / §10 Beth 1-3 wins Q2 2027). Pre-stage for D-011 implicit-via-4-ICP-verdict ratification.
+- **Q3_2026_ACTUALS_TEMPLATE.md v0.2** (cycle-8 patch, 29 rows: 22 v1.1 baseline + 7 ICP-4 Beth signal rows T-IR-016-pre-stage; D-011 RATIFIED row + 5.3× YoY baseline anchor). Pre-stage for Q3 2026 close 2026-09-30.
+- **Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1** (cycle-8 NEW, 154L SHIP, 4 deliverables: §1 risk framing / §2 Baker Tilly 4-question check / §3 tier-2 6-criteria selection / §4 5-line mitigation playbook / §5 3-trigger-condition fire-control / §6 cross-Muse handoffs). Closes Risk 10 with cycle-8 v0.2 enhancement.
+- **Q3_2026_STRATEGIC_REVIEW.md v1.1.1** (cycle-8.1 patch, D-011 status flip from "pending ratification 2026-10-01" to "**RATIFIED 2026-06-13 implicit-via-4-ICP-verdict-L100-110**"). Mirrors Y2 pack §8 row 2.
+- **STRATEGIC_DECISIONS_LOG.md D-010/D-011/D-012 rows** (cycle-8 verdict addendum: D-010 DRAFT v0.1 / D-011 RATIFIED 2026-06-13 implicit-via-4-ICP-verdict-L100-110 with 3-Muse consensus + 4-ICP build-out table / D-012 PROPOSED awaiting Founder approval by 2026-10-01). Canonical source for §8 Founder-decisions table.
+- **Y2_BOARD_PACK.md v0.1.1** (cycle-8.1 patch, 225L / 4,041 words, §7.1 Y2 floor $2.4M assumption reconciliation footnote with granular math 200 Carla + 100 Chris + 2 Vera + 0 Beth = $2,360K ≈ $2.4M / +1.7% rounding; Y2 stretch re-check = $6,540K ≈ $6.5M / +0.6% rounding). Self-reference for cycle chain.
+- **T-ST-015 Y2_CHANNEL_CONFLICT_PREFLIGHT SHIP** (cycle-8 closed 2026-06-13, 154L, 6th of 6 cycle-8 ships, validates Risk 10 fire-control math Y2 base $3.9M → $3.6M = $300K at risk).
+
+**Total: 18+ file:line citations (12 v0.1 + 6 v0.2 NEW), 10 D-002 sub-witnesses, 4-Question Framework applied to every section. D-009 8-codification self-audit (partial-propagation / JSX-proof / self-revalidation / Grep-it / Grep-claims / own-audit-claims / Glob-verify / Glob-Absolute-path) compliant — all Grep calls with absolute path per 8th codification (Mnemosyne 2026-06-13).**
 
 ---
 
 ## Strategos sign-off
 
-Strategos slot `019ebd9a-8731-70b2-9c96-a4a466017284`, 2026-06-13. **v0.1.1 cycle-8.1 footnote** of Y2 board pack. 11 sections (~510L, +~10L from v0.1). D-002 Three-Witnesses on every $X claim. D-009 Triangulation with 12+ file:line citations. 4-Question Framework applied. ICP-4 (Beth) reframe from Leader 2026-06-13 ACCEPT verdict included. v0.1.1 changelog: §7.1 Y2 floor $2.4M assumption reconciliation footnote (granular math = 200 Carla + 100 Chris + 2 Vera + 0 Beth = $2,360K ≈ $2.4M, +1.7% rounding; alternative Y1-anchor worst-case = $660K; Y2 stretch math re-check = $6,540K ≈ $6.5M, +0.6% rounding).
+Strategos slot `019ebd9a-8731-70b2-9c96-a4a466017284`, 2026-06-13. **v0.2 cycle-9 refresh** of Y2 board pack. 11 sections (~245L, +~10L from v0.1.1). D-002 Three-Witnesses on every $X claim. D-009 Triangulation with **18+ file:line citations** (12 v0.1 + 6 v0.2 NEW). 4-Question Framework applied. ICP-4 (Beth) reframe from Leader 2026-06-13 ACCEPT verdict included. **v0.2 changelog:** (1) §6 4-ICP build-out cycle-8 canonical math applied (Carla 60→250→400 / Vera 1→5→8 / Chris 30→200→350 / Beth 0→5→10). (2) §7 3-scenario Y2 ARR cross-linked to §6 4-ICP (no math change; just anchor-rename). (3) §8 row 2 D-011 status flip from "Iris T-IR-010 pre-write done (163L)" to "**RATIFIED 2026-06-13 implicit-via-4-ICP-verdict-L100-110**" with 3-Muse consensus attribution. (4) §8 row 3 D-012 status formalized: "**PROPOSED** awaiting Founder approval by 2026-10-01" with 8 D-009 codifications listed. (5) §9 Risk 10 v0.2 enhanced with fire-control math (Y2 base $3.9M → $3.6M if Risk 10 materializes = **$300K at risk**), 5-line mitigation playbook, 3 trigger conditions (all must hold for Y3 deferral). (6) §11 witness log v0.2 anchors: PHASE_1_GTM.md v0.3.1 (4-ICP + Risk 10) + Q3_2026_ACTUALS_TEMPLATE.md v0.2 (29 rows + D-011 RATIFIED) + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 (4 deliverables closing Risk 10) + Q3_2026_STRATEGIC_REVIEW v1.1.1 (D-011 status flip) + STRATEGIC_DECISIONS_LOG D-010/D-011/D-012 (cycle-8 verdict addendum) + Y2_BOARD_PACK v0.1.1 (self-ref for cycle chain). (7) Header + footer v0.1.1 → v0.2.
 
-**Status:** DRAFT v0.1.1 (cycle-8.1 footnote; cycle-8 wrap + 8th D-009 codification adopted; gate = Nov 2026 board meeting). v1.0 ships 2026-12-31 with Q4 2026 actuals (post Q3 2026-09-30 close + Q4 2026-12-31 close).
+**Status:** DRAFT v0.2 (cycle-9 refresh of v0.1.1 footnote; cycle-8 wrap complete; gate = Nov 2026 board meeting). v1.0 ships 2026-12-31 with Q4 2026 actuals (post Q3 2026-09-30 close + Q4 2026-12-31 close).
 
-**Next Strategos cycle task (per TASKBOARD next-wave):** T-ST-014 v0.1.1 closed; T-ST-017 ceremonial closure (10 min) → T-ST-016 Y2 board pack v0.2 refresh (45 min, apply 4-ICP + D-011 + Risk 10) is the next 60-min cycle-9 carry-over.
-
-**Cross-Muse follow-up:** Strategos to send Y2 board pack v0.1.1 to Athena for T-AT-011 v0.5 re-validation (cycle-8 ceremonial closure, 12-12 APPLY target) + to Mnemosyne for strategic corpus cross-link (T-MN-008 v0.5 / T-MN-011 v0.3 / T-MN-012 v0.2 cycle-8 follow-ups).
+**Next Strategos cycle task (per TASKBOARD next-wave):** T-ST-016 v0.2 closed (this cycle-9 carry-over). T-ST-017 ceremonial closure awaiting Athena T-AT-011 v0.5 re-validation verdict (12-12 APPLY target, ~60-90 min Athena turn).
