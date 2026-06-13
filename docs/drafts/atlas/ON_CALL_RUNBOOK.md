@@ -39,17 +39,17 @@ vs PagerDuty (~$41/user/mo) for a 5-engineer rotation.
 
 ## 1. On-call rotation
 
-| Field                | Value                                                          |
-|----------------------|----------------------------------------------------------------|
-| Cadence              | Weekly, Monday 10:00 IST handoff                               |
-| Roles                | Primary (P) + Secondary (S); founder is Tertiary (T) for SEV-1 |
-| Compensation         | 4 hours time-off-in-lieu per week on-call; double for holidays  |
-| Handoff meeting      | 30 min, written status doc, walk through open SEV-2+           |
-| Tooling              | Opsgenie (recommended) or PagerDuty                            |
-| Paging channel       | Pager (SMS + phone call, escalate to phone after 2 SMS)        |
-| Chat channel         | `#on-call` (always-on, all engineers)                          |
-| Incident channel     | `#inc-<id>` (per-incident, archive after 30 d)                 |
-| Wiki                 | This file (`docs/drafts/atlas/ON_CALL_RUNBOOK.md`)             |
+| Field            | Value                                                          |
+| ---------------- | -------------------------------------------------------------- |
+| Cadence          | Weekly, Monday 10:00 IST handoff                               |
+| Roles            | Primary (P) + Secondary (S); founder is Tertiary (T) for SEV-1 |
+| Compensation     | 4 hours time-off-in-lieu per week on-call; double for holidays |
+| Handoff meeting  | 30 min, written status doc, walk through open SEV-2+           |
+| Tooling          | Opsgenie (recommended) or PagerDuty                            |
+| Paging channel   | Pager (SMS + phone call, escalate to phone after 2 SMS)        |
+| Chat channel     | `#on-call` (always-on, all engineers)                          |
+| Incident channel | `#inc-<id>` (per-incident, archive after 30 d)                 |
+| Wiki             | This file (`docs/drafts/atlas/ON_CALL_RUNBOOK.md`)             |
 
 **Handoff template** (filled by outgoing P, reviewed by incoming P):
 
@@ -63,6 +63,7 @@ vs PagerDuty (~$41/user/mo) for a 5-engineer rotation.
 ```
 
 **Three Witnesses (rotation).**
+
 1. Measured: weekly rotation has 5× lower burnout than daily
    (per Google SRE book, Ch. 11).
 2. Target: < 5 pages per shift, < 1 SEV-1 per quarter.
@@ -72,16 +73,17 @@ vs PagerDuty (~$41/user/mo) for a 5-engineer rotation.
 
 ---
 
-## 2. Severity levels
+## 2. Severity levels — _See INCIDENT_SEVERITY_MATRIX_v0.2.md §2 for v0.2 6-col expansion (escalation + SOC 2 CC7.4 + 3-tier comms + SEV-2 MTTR 4h→2h tightening) + §4 decision flowchart._
 
-| SEV   | Definition                                                                 | Example                                          | Page within | Comms cadence |
-|-------|----------------------------------------------------------------------------|--------------------------------------------------|-------------|----------------|
-| SEV-1 | Customer-down: production crash, data loss, security incident, all merges blocked | `masterStorage` corrupts; secret in commit       | 5 min       | Every 15 min   |
-| SEV-2 | Major degradation: one feature broken for > 50% of users                    | Push hook blocks all merges (IC-1); CSP blocks login | 15 min      | Every 30 min   |
-| SEV-3 | Minor degradation: one feature broken for < 50% of users, perf regression  | Chart page lags on 10k-row dataset               | next biz hr | Once + on fix  |
-| SEV-4 | Cosmetic: lint warning, dead code, doc drift, no user impact                | Unused import warning (current case, the 1-line fix) | GitHub issue | None           |
+| SEV   | Definition                                                                        | Example                                              | Page within  | Comms cadence |
+| ----- | --------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------ | ------------- |
+| SEV-1 | Customer-down: production crash, data loss, security incident, all merges blocked | `masterStorage` corrupts; secret in commit           | 5 min        | Every 15 min  |
+| SEV-2 | Major degradation: one feature broken for > 50% of users                          | Push hook blocks all merges (IC-1); CSP blocks login | 15 min       | Every 30 min  |
+| SEV-3 | Minor degradation: one feature broken for < 50% of users, perf regression         | Chart page lags on 10k-row dataset                   | next biz hr  | Once + on fix |
+| SEV-4 | Cosmetic: lint warning, dead code, doc drift, no user impact                      | Unused import warning (current case, the 1-line fix) | GitHub issue | None          |
 
 **Three Witnesses (severity).**
+
 1. Measured: SEV-1 incidents are ~5% of total but consume
    ~50% of on-call time (industry norm; we have no measured
    baseline yet — first quarter will calibrate).
@@ -97,15 +99,16 @@ The first 15 minutes set the tone. A confused first 5 min
 costs 30 min in cascading confusion. A clean first 5 min
 saves the whole response.
 
-| Minute  | Action                                                                                  | Owner        |
-|---------|-----------------------------------------------------------------------------------------|--------------|
-| 0-2     | **ACKNOWLEDGE** the page. Reply in `#on-call`: "Ack, ETA 10 min for war room."           | P (primary)  |
-| 2-5     | **ASSEMBLE** the war room. Open `#inc-<id>`. Add IC (incident commander), scribe, comms. | P            |
-| 5-8     | **STATUS** — confirm scope. 3 questions: how many users? which env? since when?        | S (secondary)|
-| 8-12    | **MITIGATION** — roll back the last deploy, or disable a feature flag, or failover      | P + S        |
-| 12-15   | **COMMS** — first customer-facing message: "We're investigating reports of X. Updates every 15 min." | comms |
+| Minute | Action                                                                                               | Owner         |
+| ------ | ---------------------------------------------------------------------------------------------------- | ------------- |
+| 0-2    | **ACKNOWLEDGE** the page. Reply in `#on-call`: "Ack, ETA 10 min for war room."                       | P (primary)   |
+| 2-5    | **ASSEMBLE** the war room. Open `#inc-<id>`. Add IC (incident commander), scribe, comms.             | P             |
+| 5-8    | **STATUS** — confirm scope. 3 questions: how many users? which env? since when?                      | S (secondary) |
+| 8-12   | **MITIGATION** — roll back the last deploy, or disable a feature flag, or failover                   | P + S         |
+| 12-15  | **COMMS** — first customer-facing message: "We're investigating reports of X. Updates every 15 min." | comms         |
 
 **Three Witnesses (first-15).**
+
 1. Measured: Google SRE Ch. 16 ("Being On-Call") — incidents
    that ack within 5 min resolve 30% faster than those that
    take > 10 min.
@@ -118,12 +121,12 @@ saves the whole response.
 
 ## 4. Escalation matrix
 
-| SEV   | Primary on-call | Domain experts (page within 5 min of SEV-1) | Founder | AE/CSM |
-|-------|-----------------|----------------------------------------------|---------|--------|
-| SEV-1 | P               | Atlas (infra), Apollo (build), Hephaestus (security), Hera (UX), Prometheus (perf) | T (founder-on-call) | Customer-facing comms lead |
-| SEV-2 | P               | Domain expert only (the one whose lane owns the broken surface) | Not paged | Brief status to AE if user-facing |
-| SEV-3 | S (next biz hr) | Domain expert (async) | Not paged | Not paged |
-| SEV-4 | Anyone          | Not paged                                    | Not paged | Not paged |
+| SEV   | Primary on-call | Domain experts (page within 5 min of SEV-1)                                        | Founder             | AE/CSM                            |
+| ----- | --------------- | ---------------------------------------------------------------------------------- | ------------------- | --------------------------------- |
+| SEV-1 | P               | Atlas (infra), Apollo (build), Hephaestus (security), Hera (UX), Prometheus (perf) | T (founder-on-call) | Customer-facing comms lead        |
+| SEV-2 | P               | Domain expert only (the one whose lane owns the broken surface)                    | Not paged           | Brief status to AE if user-facing |
+| SEV-3 | S (next biz hr) | Domain expert (async)                                                              | Not paged           | Not paged                         |
+| SEV-4 | Anyone          | Not paged                                                                          | Not paged           | Not paged                         |
 
 **Founder-on-call trigger:** SEV-1 AND (customer churn risk
 OR > $5K MRR impact OR legal/security disclosure required).
@@ -131,6 +134,7 @@ The founder is paged via Opsgenie's "Director" tier; the
 founder does NOT take pages for SEV-2 to SEV-4.
 
 **Three Witnesses (escalation).**
+
 1. Measured: SEV-1 responses that escalate to the right
    domain expert within 5 min close 50% faster (per
    Honeycomb incident data, public benchmarks).
@@ -146,9 +150,11 @@ founder does NOT take pages for SEV-2 to SEV-4.
 ## 5. Common incidents (7 named runbooks)
 
 ### IC-1 — Husky pre-push hook blocks all merges
+
 **Trigger.** `git push` fails with "husky - pre-push script
 failed (code 1)" or exit 124.
 **Three Witnesses.**
+
 1. Measured: this is the current P0 (2026-06-13 04:40 IST).
    `git ls-remote origin` succeeds in ~6s, so the network
    is fine. The blocker is the husky pre-push script
@@ -159,6 +165,7 @@ failed (code 1)" or exit 124.
 3. Failure: 100% of pushes blocked, cycle grinds to halt.
 
 **Runbook.**
+
 1. Diagnose: `cd "C:/Users/Tahir/Desktop/frontend that i want/fpa" && timeout 15 git ls-remote origin`
    (must succeed; if not, it's a network problem → IC-5).
 2. If network OK, run the gates individually to find the
@@ -173,9 +180,11 @@ failed (code 1)" or exit 124.
 6. Push. SEV-2 → SEV-3 once the unblock lands.
 
 ### IC-2 — Linting drift after dependency upgrade
+
 **Trigger.** `npm run lint` shows 100+ warnings after
 `npm update`.
 **Three Witnesses.**
+
 1. Measured: prettier / eslint config drift after a major
    version bump (we've seen this with `eslint-plugin-react`
    7.x → 8.x and Tailwind 3.x → 4.x).
@@ -184,6 +193,7 @@ failed (code 1)" or exit 124.
    a11y regressions slip through.
 
 **Runbook.**
+
 1. `cd <repo> && npx eslint src --fix`
 2. `npx prettier --write src/`
 3. `npx eslint src --max-warnings 0` (must be 0)
@@ -195,10 +205,12 @@ failed (code 1)" or exit 124.
 6. SEV-3.
 
 ### IC-3 — CSP blocks third-party widget
+
 **Trigger.** Browser console: "Refused to load the script
 'https://...' because it violates the following Content
 Security Policy directive: 'script-src ...'".
 **Three Witnesses.**
+
 1. Measured: CSP hardening (Hephaestus's P2 task
    `[Apollo post-push] Tighten CSP style-src`) can break
    third-party widgets (analytics, fonts, Sentry, etc.).
@@ -207,6 +219,7 @@ Security Policy directive: 'script-src ...'".
    working; silent observability gap.
 
 **Runbook.**
+
 1. Read the browser console error to find the blocked URL.
 2. Check the project's actual use:
    - If legitimate (e.g., Sentry): add the origin to CSP
@@ -221,9 +234,11 @@ Security Policy directive: 'script-src ...'".
    SEV-3 otherwise.
 
 ### IC-4 — Production crash spike in Sentry
+
 **Trigger.** > 10 Sentry events/min from a single stack
 trace.
 **Three Witnesses.**
+
 1. Measured: Sentry is already wired (per
    `tauri-pipeline.md` §5 recommendation; the wiring is
    P1 post-push, not yet landed).
@@ -233,8 +248,9 @@ trace.
    crashes that are silent to engineering.
 
 **Runbook.**
+
 1. Pause all deploys (Apollo: `gh workflow disable
-   ci.yml`).
+ci.yml`).
 2. Open the Sentry event, find the top stack trace.
 3. Identify the most recent commit touching the files
    in the stack trace.
@@ -247,8 +263,10 @@ trace.
 7. SEV-1 if user data is at risk; SEV-2 otherwise.
 
 ### IC-5 — Push to origin/main times out
+
 **Trigger.** `git push` hangs; exit 124 (timeout wrapper).
 **Three Witnesses.**
+
 1. Measured: prior cycle had this exact symptom (Leader
    pwsh, 2026-06-13). Network was fine; the cause was
    the husky hook hanging on tsc. **Different from IC-1:**
@@ -258,6 +276,7 @@ trace.
 3. Failure: cycle grinds to halt; multiple devs blocked.
 
 **Runbook.**
+
 1. Diagnose: `timeout 15 git ls-remote origin`
    - Fails (timeout): network problem. Check VPN, DNS,
      proxy. If on a corporate network, check if
@@ -266,7 +285,7 @@ trace.
    - `git config --get-regexp 'credential\.helper'`
    - Should be `manager` (Git Credential Manager). If
      empty, set it: `git config --global credential.helper
-     manager`.
+manager`.
 3. Check ahead/behind: `git log --oneline origin/main..HEAD | wc -l`
    - If 100s of commits behind: someone else force-pushed.
      Coordinate before pushing.
@@ -278,9 +297,11 @@ trace.
 6. SEV-2 if blocking the team; SEV-3 if only one dev.
 
 ### IC-6 — Tauri build fails on Linux runner
+
 **Trigger.** `cargo tauri build` fails with
 `cannot find -lwebkit2gtk-4.1` or `linker not found`.
 **Three Witnesses.**
+
 1. Measured: Tauri 2 requires webkit2gtk-4.1 (not -4.0).
    Ubuntu 22.04 ships -4.0 only; 24.04 ships -4.1.
    See `DOCKER_TAURI.md` §1.
@@ -289,6 +310,7 @@ trace.
    the app on Linux.
 
 **Runbook.**
+
 1. Check the base image in CI:
    `docker inspect <image> | grep ubuntu`
    - Must be `ubuntu:24.04` (Noble). Not 22.04 (Jammy).
@@ -302,13 +324,15 @@ trace.
      libayatana-appindicator3-dev librsvg2-dev
    ```
 4. Re-build the image: `docker build --no-cache -t
-   finplan-tauri -f Dockerfile.tauri .`
+finplan-tauri -f Dockerfile.tauri .`
 5. SEV-2 (blocks release).
 
 ### IC-7 — Notarization fails on macOS
+
 **Trigger.** `xcrun notarytool submit ... --wait` returns
 status 2 (rejected); or `xcrun stapler staple` fails.
 **Three Witnesses.**
+
 1. Measured: macOS notarization is the longest single
    step in the release pipeline (Apple-side latency
    dominates, ~5 min). Rejection is silent until you
@@ -318,17 +342,18 @@ status 2 (rejected); or `xcrun stapler staple` fails.
    deliver new versions.
 
 **Runbook.**
+
 1. Get the submission ID from the rejected run.
 2. `xcrun notarytool log <id> --developer-team-id <team>`
 3. Common causes (in order of frequency):
    - **Unsigned dylib in `Contents/Frameworks/`.** The
      Tauri bundler should handle this; if not, manually
      re-sign: `codesign --force --sign "Developer ID
-     Application: <name>" <dylib>`.
+Application: <name>" <dylib>`.
    - **Hardened runtime missing.** Add to `tauri.conf.json`:
      `"macOS": { "entitlements": null, "frameworks": [],
-       "providerShortName": null, "signingIdentity": null,
-       "entitlements": null, "exceptionDomain": "" }`.
+"providerShortName": null, "signingIdentity": null,
+"entitlements": null, "exceptionDomain": "" }`.
      Actually the field is in `bundle.macOS.entitlements`
      — set it to a file with `com.apple.security.cs.allow-jit`
      if you use any JIT (rare for FinPlan Pro).
@@ -397,6 +422,7 @@ T+90   <resolution>
 ```
 
 **Three Witnesses (PIR).**
+
 1. Measured: Google SRE Ch. 13 — blameless PIRs reduce
    incident recurrence by ~30% (per Etsy's published
    post-mortems data).
@@ -413,20 +439,21 @@ T+90   <resolution>
 Dashboard: `docs/drafts/atlas/on-call-dashboard/` (TBD
 infra debt, P3).
 
-| Metric                            | Target      | Measured         | Cadence |
-|-----------------------------------|-------------|------------------|---------|
-| MTTA — SEV-1                      | < 5 min     | (TBD)            | Weekly  |
-| MTTA — SEV-2                      | < 15 min    | (TBD)            | Weekly  |
-| MTTR — SEV-1                      | < 60 min    | (TBD)            | Weekly  |
-| MTTR — SEV-2                      | < 4 h       | (TBD)            | Weekly  |
-| Pages per on-call shift           | < 5         | (TBD)            | Weekly  |
-| % SEV-1 with written PIR          | 100%        | (TBD)            | Monthly |
-| % action items closed < 30 d      | > 80%       | (TBD)            | Monthly |
-| On-call satisfaction (1-10)       | > 7         | (TBD)            | Quarter |
-| SEV-1 frequency                   | < 1/quarter | (TBD)            | Quarter |
-| % of incidents with a runbook     | > 80%       | (TBD)            | Quarter |
+| Metric                        | Target      | Measured | Cadence |
+| ----------------------------- | ----------- | -------- | ------- |
+| MTTA — SEV-1                  | < 5 min     | (TBD)    | Weekly  |
+| MTTA — SEV-2                  | < 15 min    | (TBD)    | Weekly  |
+| MTTR — SEV-1                  | < 60 min    | (TBD)    | Weekly  |
+| MTTR — SEV-2                  | < 4 h       | (TBD)    | Weekly  |
+| Pages per on-call shift       | < 5         | (TBD)    | Weekly  |
+| % SEV-1 with written PIR      | 100%        | (TBD)    | Monthly |
+| % action items closed < 30 d  | > 80%       | (TBD)    | Monthly |
+| On-call satisfaction (1-10)   | > 7         | (TBD)    | Quarter |
+| SEV-1 frequency               | < 1/quarter | (TBD)    | Quarter |
+| % of incidents with a runbook | > 80%       | (TBD)    | Quarter |
 
 **Three Witnesses (metrics).**
+
 1. Measured: we have no metrics yet — first quarter
    (Q3 2026) is the baseline.
 2. Target: see table above.
@@ -450,6 +477,6 @@ weeks → schedule an on-call load review (Atlas lane).
 
 ---
 
-*End of ON_CALL_RUNBOOK.md v0.1 — 8 sections, 7 named
+_End of ON_CALL_RUNBOOK.md v0.1 — 8 sections, 7 named
 incidents with runbooks, PIR template, 10 health metrics.
-Three Witnesses on every claim. — Atlas*
+Three Witnesses on every claim. — Atlas_

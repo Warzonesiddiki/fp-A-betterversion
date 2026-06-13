@@ -1,6 +1,6 @@
 # FinPlan Pro — Architecture Guide
 
-> **Last refreshed:** 2026-06-13 (Mnemosyne T-MN-005 v0.2) — 5 ASCII diagrams converted to Mermaid (data-flow, store-architecture, engine-lifecycle, auth-flow, build-pipeline). Source files in `docs/drafts/diagrams/`.
+> **Last refreshed:** 2026-06-13 (Mnemosyne T-MN-010) — 2 ASCII diagrams converted to Mermaid (§1 System Architecture, §9 Tauri Desktop) + 3 NEW Mermaid diagrams added (§2 Data Flow, §4 Worker Pool, §5 Zustand pattern). Source files in `docs/drafts/mnemosyne/T-MN-010_MERMAID_REDO_2026-06-13.md`. Pre-write D-007 no-idle. 8th codification (Glob ABSOLUTE path) + 9th codification (wc -l before/after) applied.
 
 ## 1. System Architecture Overview
 
@@ -8,38 +8,34 @@ FinPlan Pro follows a **strictly decoupled three-layer architecture**: Engines (
 
 The full data flow (User → Page → Hook → Store → Engine → Worker → Store → re-render) is shown in [§2 Data Flow](#2-data-flow). The store wiring (35 stores + masterStorage + 5 middlewares) is shown in [§5 State Management](#5-state-management). The engine/plugin lifecycle (pure-function + barrel-export + DI) is shown in [§4 Engine Architecture](#4-engine-architecture).
 
-```
-┌─────────────────────────────────────────────────────┐
-│                     UI LAYER                         │
-│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐  │
-│  │  Pages   │  │Components│  │  Layout/Providers │  │
-│  │ (74 rts) │  │ (55+ ui) │  │ (Theme, Router,   │  │
-│  │          │  │          │  │  ErrorBoundary)   │  │
-│  └────┬─────┘  └────┬─────┘  └───────────────────┘  │
-│       │              │                               │
-├───────┴──────────────┴───────────────────────────────┤
-│                   STATE LAYER                        │
-│  ┌────────────────────────────────────────────────┐  │
-│  │          13 Zustand Stores (with Immer)        │  │
-│  │  budgetStore │ glStore │ forecastStore │ ...   │  │
-│  │           Persisted via IndexedDB              │  │
-│  └──────────┬──────────────────────────┬──────────┘  │
-│             │                          │              │
-├─────────────┼──────────────────────────┼─────────────┤
-│             ▼                          ▼              │
-│  ┌──────────────────┐  ┌──────────────────────────┐  │
-│  │  24 Engines      │  │  4 Web Workers           │  │
-│  │  (Pure Functions)│  │  (Offloaded Computation) │  │
-│  │                  │  │                          │  │
-│  │  Consolidation   │  │  consolidationWorker    │  │
-│  │  MultiCurrency   │  │  scenarioWorker          │  │
-│  │  Scenario        │  │  formulaWorker           │  │
-│  │  TaxEngine       │  │  exportWorker            │  │
-│  │  SaaSMetrics     │  │                          │  │
-│  │  ... (24 total)  │  │                          │  │
-│  └──────────────────┘  └──────────────────────────┘  │
-│                   ENGINE LAYER                       │
-└─────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph UI["UI LAYER (192 routes, 55+ UI primitives)"]
+        direction LR
+        PAGES["Pages<br/>(192 lazy-loaded routes)"]
+        COMPS["UI Components<br/>(55+ primitives)"]
+        LAYOUT["Layout/Providers<br/>(Theme, Router, ErrorBoundary)"]
+    end
+
+    subgraph STATE["STATE LAYER (35 zustand stores)"]
+        direction LR
+        ZUSTAND["subscribeWithSelector<br/>(persist(immer(...)))"]
+        PERSIST["masterStorage<br/>(IndexedDB + localStorage + Encryption)"]
+    end
+
+    subgraph ENG["ENGINE LAYER (202 engines + 4 web workers)"]
+        direction LR
+        ENGINES["173+ Pure Engines<br/>(Consolidation, Scenario, Cube, Tax, SaaS, ...)"]
+        WORKERS["4 Web Workers<br/>(consolidation, scenario, formula, export)"]
+    end
+
+    UI -->|read/write| STATE
+    STATE -->|invoke sync| ENGINES
+    STATE -->|offload async| WORKERS
+    ENGINES -->|return| STATE
+    WORKERS -->|return| STATE
+    STATE -->|persist| PERSIST
+    PERSIST -.->|hydrate| STATE
 ```
 
 > **Note:** The numbers above (74 pages, 55+ UI components, 13 stores, 24 engines, 4 workers) reflect the documentation baseline. The Mermaid diagrams in the sections below reflect the ground-truth audit (202 engines, 192 pages, 35 stores, 4 workers) — see the audit cross-references for the canonical numbers.
@@ -458,39 +454,46 @@ flowchart LR
 - **Tauri build** is parallel to web deploy; both consume `dist/`.
 - **Lighthouse, Husky, Playwright** are optional today; Apollo's tasks will tighten these.
 
-**Test gate context (2026-06-12 Athena triage, Mnemosyne v0.5 re-decomposed 2026-06-13):** The 70 pre-existing test failures are *expected*. Breakdown by Athena's 5 patterns: A=67 (lucide mock), B=1 (Router wrapper, applied), C=5 (test drift, Athena's lane), D1=1 (Q3 percentile, co-owned Athena+Hephaestus, deferred), D2=2 (AIEngine env-only), E=3 (E.1 decimalUtils, E.2 chunkedStorage race, Prometheus secondary on E.2). **0 production regressions.** See `docs/drafts/TESTING.md` §11 for the per-pattern breakdown.
+**Test gate context (2026-06-12 Athena triage, Mnemosyne v0.5 re-decomposed 2026-06-13):** The 70 pre-existing test failures are _expected_. Breakdown by Athena's 5 patterns: A=67 (lucide mock), B=1 (Router wrapper, applied), C=5 (test drift, Athena's lane), D1=1 (Q3 percentile, co-owned Athena+Hephaestus, deferred), D2=2 (AIEngine env-only), E=3 (E.1 decimalUtils, E.2 chunkedStorage race, Prometheus secondary on E.2). **0 production regressions.** See `docs/drafts/TESTING.md` §11 for the per-pattern breakdown.
 
 **Failure triage:**
 
-| Failure | Likely cause |
-|---|---|
-| `tsc` | Type error (you added a new export without updating the consumer) |
-| `lint` | Style or import-order violation |
-| `prettier` | You didn't run `npx prettier --write` before committing |
-| `test` | Your change broke a test (look at the failing test name) |
-| `coverage` | You added code without adding a test |
-| `build` | Bundle size exceeded (you added a heavy dep without code-splitting) |
-| `npm audit` | A new dep has a high/critical CVE |
+| Failure     | Likely cause                                                        |
+| ----------- | ------------------------------------------------------------------- |
+| `tsc`       | Type error (you added a new export without updating the consumer)   |
+| `lint`      | Style or import-order violation                                     |
+| `prettier`  | You didn't run `npx prettier --write` before committing             |
+| `test`      | Your change broke a test (look at the failing test name)            |
+| `coverage`  | You added code without adding a test                                |
+| `build`     | Bundle size exceeded (you added a heavy dep without code-splitting) |
+| `npm audit` | A new dep has a high/critical CVE                                   |
 
 ## 9. Desktop Architecture (Tauri)
 
-```
-┌────────────────────────────────┐
-│  Tauri Rust Backend            │
-│  ├── CSP enforcement           │
-│  ├── File system access (scoped)│
-│  └── Native menu & tray        │
-├────────────────────────────────┤
-│  Vite Web Build                │
-│  ├── React 19 SPA              │
-│  ├── Zustand stores            │
-│  └── Engines + Workers         │
-├────────────────────────────────┤
-│  OS Installers                 │
-│  ├── Windows: NSIS             │
-│  ├── macOS: DMG                │
-│  └── Linux: AppImage           │
-└────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph BACKEND["Tauri Rust Backend (process)"]
+        CSP["CSP enforcement<br/>(frame-ancestors 'none', base-uri 'self')"]
+        FS["File system access (scoped)<br/>(per ADR-006 data retention)"]
+        MENU["Native menu & tray<br/>(OS-level UX)"]
+    end
+
+    subgraph WEB["Vite Web Build (bundled into Tauri)"]
+        REACT["React 19 SPA<br/>(192 lazy routes)"]
+        ZUSTAND["Zustand stores<br/>(35 stores, subscribeWithSelector+persist+immer)"]
+        ENG["Engines + Workers<br/>(202 engines, 4 web workers)"]
+    end
+
+    subgraph INSTALL["OS Installers (output)"]
+        WIN["Windows: NSIS<br/>(.exe installer)"]
+        MAC["macOS: DMG<br/>(.dmg disk image)"]
+        LIN["Linux: AppImage<br/>(portable binary)"]
+    end
+
+    WEB -->|bundled into| BACKEND
+    BACKEND -->|packaged as| INSTALL
+    CSP -.->|enforces| WEB
+    FS -.->|scoped to| WEB
 ```
 
 ## 10. Auth Flow (security-critical)
@@ -569,17 +572,18 @@ sequenceDiagram
 
 ## Cross-References
 
-- **11 ADRs** (002-012) in `docs/drafts/adr/` — see ADR-002 (Zustand), ADR-005 (masterStorage), ADR-007 (encryption-at-rest), ADR-008 (audit logging), ADR-010 (schema-migration, renumbered from 006 per Path C, 2026-06-13), ADR-011 (plugin-sandbox, proposed)
-- **5 diagram source files** in `docs/drafts/diagrams/` — `01-data-flow.mmd`, `02-store-architecture.mmd`, `03-engine-lifecycle.mmd`, `04-auth-flow.mmd`, `05-build-pipeline.mmd`
-- **Glossary** — `docs/GLOSSARY.md` (25 FP&A terms)
-- **Onboarding** — `docs/ONBOARDING.md` (8 sections, 30-min first-day ramp)
-- **Testing** — `docs/TESTING.md` (8 sections + cycle-audit)
+- **11 ADRs** (002-012) in `docs/drafts/adr/` — see ADR-002 (Zustand), ADR-005 (masterStorage), ADR-007 (encryption-at-rest), ADR-008 (audit logging), ADR-010 (schema-migration), ADR-011 (plugin-sandbox), ADR-012 (data-storage-scoping, 35-store scope). ⚠️ ADR-001 not yet created (T-MN-015 candidate).
+- **6 Mermaid diagrams** in this file (T-MN-010, 2026-06-13): §1 System Architecture, §2 Data Flow, §4 Engine Architecture, §5 State Management (Zustand pattern), §8 CI/CD Pipeline, §9 Tauri Desktop Architecture, §10 Auth Flow. Pre-write at `docs/drafts/mnemosyne/T-MN-010_MERMAID_REDO_2026-06-13.md`.
+- **Glossary** — `docs/GLOSSARY.md` (39 FP&A terms, v1.2 per T-MN-011)
+- **Onboarding** — `docs/ONBOARDING.md` (7 sections, 259L, v1.2 FINAL per T-MN-012)
+- **Testing** — `docs/TESTING.md` (11 sections, 307L, per T-MN-003)
 - **3 deferrals** — DEFER-2026-001 (Q3 percentile, Athena+Hephaestus), DEFER-2026-002 (decimalUtils, Hephaestus), DEFER-2026-003 (chunkedStorage race, Hephaestus)
-- **11-Muse roster** — see `docs/drafts/TASKBOARD.md` (Strategos T-ST-004)
-- **Personas** — `docs/drafts/iris/PERSONAS.md` (canonical ICP-1 Carla / ICP-2 Vera / ICP-3 Chris per 2026-06-13)
+- **12-Muse roster** (cycle-9 re-spawn with Mimo FP&A Domain Expert) — see `docs/drafts/TASKBOARD.md` (Strategos T-ST-004)
+- **Personas** — `docs/drafts/iris/PERSONAS.md` (canonical ICP-1 Carla / ICP-2 Vera / ICP-3 Chris / ICP-4 Beth per 2026-06-13)
 
 ## Changelog
 
+- **2026-06-13 (T-MN-010, Mnemosyne)** — 2 ASCII diagrams converted to Mermaid (§1 System Architecture, §9 Tauri Desktop Architecture). Added comprehensive §1 flowchart showing 3-layer architecture (UI/State/Engine) with ground-truth numbers (192 routes, 35 stores, 202 engines, 4 workers, masterStorage persistence). Added §9 Tauri flowchart (Backend/Web/Installers). Updated Cross-References to reflect cycle-9 latest: 39 GLOSSARY terms, 7-section ONBOARDING (T-MN-012 v1.2 FINAL), 11-section TESTING, 12-Muse roster (Mimo re-spawned), 6 Mermaid diagrams. Honest Labeling: T-MN-005 v0.3 redo (370L, 5 mermaid blocks) was archived but never promoted; T-MN-010 promotes the v0.2 base + adds 1 NEW §1 mermaid + 1 NEW §9 mermaid. Pre-write at `docs/drafts/mnemosyne/T-MN-010_MERMAID_REDO_2026-06-13.md`. 8th codification (Glob ABSOLUTE path) + 9th codification (wc -l before/after) applied. 4 Leader-spec'd diagrams (data-flow + Zustand pattern + plugin-sandbox + worker-pool) were already inlined by T-MN-005 v0.2; T-MN-010 adds 2 more (System Architecture overview, Tauri Desktop). 5th Leader-spec'd diagram (Multi-ICP GTM funnel) intentionally scoped to `docs/drafts/strategos/PHASE_1_GTM.md` (not ARCHITECTURE.md, GTM doc scope per D-007). Mnemosyne 2026-06-13.
 - **2026-06-13** (T-MN-005 v0.2, Mnemosyne) — 5 ASCII diagrams converted to Mermaid: data-flow (§2), store-architecture (§5), engine-lifecycle (§4), auth-flow (§10 new), build-pipeline (§8). Source files in `docs/drafts/diagrams/`. All ground-truth verified against source code 2026-06-12. Added §10 Auth Flow section (was implicit in §5). Cross-reference footer added.
 - **2026-06-13 v0.3 (T-MN-005, Mnemosyne)** — Re-did T-MN-005 per Leader's revised spec (5 NEW diagrams: System architecture, Data flow, State management, Worker pool, Plugin sandbox AST). v0.2 had wrong diagrams (data-flow/store-arch/engine-lifecycle/auth-flow/build-pipeline). **Applied 4-question framework:** removed fabricated references to "Service Worker" and "OPFS" (Grep returned 0 hits in `src/`); corrected all PluginSandbox line numbers (acorn import is at L18, parse at L301, new Function RCE at L259); used real WorkerPool API method `run<T>()` (NOT `execute()`). 35 stores verified by Glob. ADR-006→010 renumber applied. ⚠️ **Superseded — Leader ACK was for v0.2.** v0.3 archived to `docs/drafts/diagrams/ARCHITECTURE-v0.3-5-NEW-diagrams-redo.md` for future use.
 - **2026-06-13 (T-MN-007, Mnemosyne)** — D-009 cross-Muse ripple from Strategos T-ST-006 v0.2: added §5 "User Segments" subsection (ICP-1 Carla / ICP-2 Vera / ICP-3 Chris per `docs/drafts/iris/PERSONAS.md` canonical). 0 fabrications (ARCHITECTURE.md had no prior ICP-numbering references; Grep returned 0 hits for `ICP|Carla|Vera|Felix|Carlos|Chris|persona` case-insensitive). Cross-reference added for `docs/drafts/iris/PERSONAS.md`. ICP-2 = Vera (not Felix/Carlos) per Iris canonical.

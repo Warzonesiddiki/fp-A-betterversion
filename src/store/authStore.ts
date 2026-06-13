@@ -185,6 +185,13 @@ function generateMockToken(userId: string, role: Role): string {
   return `${header}.${payload}.mock-signature`;
 }
 
+/**
+ * Auth store — security boundary for FinPlan Pro. Manages session, user, and PBKDF2 kdfVersion.
+ * T-Hephaestus T-HEP-015 migration target: kdfVersion=1 (100k) → kdfVersion=2 (600k) on next login.
+ * Build-time gate: `VITE_USE_MOCK_AUTH=true` swaps real auth for a local-only MOCK-USER session.
+ * @see ADR-007 (encryption-at-rest) + ADR-009 (incident-response) + T-HEP-015.
+ * @security Re-entrant safe, but NEVER expose `setUser` outside auth-flow handlers.
+ */
 export const useAuthStore = create<AuthState>()(
   subscribeWithSelector(
     persist(

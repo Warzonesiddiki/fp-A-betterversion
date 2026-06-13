@@ -5,6 +5,7 @@ import { cn } from '@/utils/cn';
 import { AICopilotEngine } from '@/engines/AICopilotEngine';
 import { FinanceCopilotEngine } from '@/engines/FinanceCopilotEngine';
 import { useCopilotSidebar } from '@/hooks/useCopilotSidebar';
+import { useAIAnalytics } from '@/hooks/useAIAnalytics';
 import type { CopilotMessage, CopilotSidebarProps } from './CopilotTypes';
 import { getContextForPath, generateAlerts, nextId } from './CopilotTypes';
 import { ChatTab } from './CopilotChatTab';
@@ -16,6 +17,7 @@ export function CopilotSidebar({ gl, budget, className }: CopilotSidebarProps) {
   const location = useLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { track } = useAIAnalytics();
 
   const [messages, setMessages] = useState<CopilotMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -78,11 +80,27 @@ export function CopilotSidebar({ gl, budget, className }: CopilotSidebarProps) {
       const formulaSuggestion = AICopilotEngine.suggestFormula(text);
       if (formulaSuggestion.confidence > 0) {
         setFormulaResult(formulaSuggestion);
+        track({
+          engine: 'AICopilotEngine',
+          action: 'suggestFormula',
+          latencyMs: 0,
+          confidence: formulaSuggestion.confidence,
+          inputLength: text.length,
+        });
       }
 
       setTimeout(() => {
+        const startTime = performance.now();
         try {
           const answer = FinanceCopilotEngine.answer(text, { gl, budget });
+          const latencyMs = performance.now() - startTime;
+          track({
+            engine: 'FinanceCopilotEngine',
+            action: 'answer',
+            latencyMs,
+            confidence: answer.confidence,
+            inputLength: text.length,
+          });
           const assistantMsg: CopilotMessage = {
             id: nextId('assistant'),
             role: 'assistant',
@@ -110,7 +128,7 @@ export function CopilotSidebar({ gl, budget, className }: CopilotSidebarProps) {
         }
       }, 200);
     },
-    [gl, budget, isProcessing]
+    [gl, budget, isProcessing, track]
   );
 
   const handleSuggestionClick = useCallback(

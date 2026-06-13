@@ -20,6 +20,7 @@ describe('AIEngine', () => {
     // Reset static state
     (AIEngine as any).classifier = null;
     (AIEngine as any).extractor = null;
+    (AIEngine as any).device = 'unknown';
   });
 
   describe('init', () => {
@@ -62,13 +63,16 @@ describe('AIEngine', () => {
 
     it('should fall back to WASM if WebGPU fails', async () => {
       const mockClassifier = vi.fn();
+      // WebGPU fails 3 times (initial + 2 retries), then WASM succeeds
       mockPipeline
-        .mockRejectedValueOnce(new Error('WebGPU not available'))
+        .mockRejectedValueOnce(new Error('WebGPU attempt 1'))
+        .mockRejectedValueOnce(new Error('WebGPU attempt 2'))
+        .mockRejectedValueOnce(new Error('WebGPU attempt 3'))
         .mockResolvedValueOnce(mockClassifier);
 
       await AIEngine.init();
 
-      expect(mockPipeline).toHaveBeenCalledTimes(2);
+      expect(mockPipeline).toHaveBeenCalledTimes(4);
       expect(mockPipeline).toHaveBeenLastCalledWith(
         'text-classification',
         'Xenova/distilbert-base-uncased-finetuned-sst-2-english',
@@ -137,6 +141,71 @@ describe('AIEngine', () => {
     it('should return empty array for empty input', async () => {
       const result = await AIEngine.detectAnomalies([]);
       expect(result).toHaveLength(0);
+    });
+
+    it('should report progress during batch processing', async () => {
+      const mockClassifier = vi.fn().mockResolvedValue([{ label: 'POSITIVE', score: 0.9 }]);
+      mockPipeline.mockResolvedValue(mockClassifier);
+      const onProgress = vi.fn();
+
+      await AIEngine.detectAnomalies(['a', 'b', 'c'], 2, onProgress);
+
+      expect(onProgress).toHaveBeenCalled();
+      const lastCall = onProgress.mock.calls[onProgress.mock.calls.length - 1];
+      expect(lastCall[0]).toBe(3); // processed
+      expect(lastCall[1]).toBe(3); // total
+    });
+  });
+
+  describe('getStatus', () => {
+    it('should report uninitialized state', () => {
+      const status = AIEngine.getStatus();
+      expect(status.initialized).toBe(false);
+      expect(status.device).toBe('unknown');
+      expect(status.classifierReady).toBe(false);
+      expect(status.extractorReady).toBe(false);
+    });
+
+    it('should report initialized state after init', async () => {
+      const mockClassifier = vi.fn();
+      mockPipeline.mockResolvedValue(mockClassifier);
+
+      await AIEngine.init();
+
+      const status = AIEngine.getStatus();
+      expect(status.initialized).toBe(true);
+      expect(status.device).toMatch(/^(webgpu|wasm)$/);
+      expect(status.classifierReady).toBe(true);
+    });
+  });
+
+  describe('dispose', () => {
+    it('should clean up classifier and extractor', async () => {
+      const mockDispose = vi.fn().mockResolvedValue(undefined);
+      const mockClassifier = vi.fn();
+      (mockClassifier as any).dispose = mockDispose;
+      mockPipeline.mockResolvedValue(mockClassifier);
+
+      await AIEngine.init();
+      expect(AIEngine.getStatus().initialized).toBe(true);
+
+      await AIEngine.dispose();
+      expect(AIEngine.getStatus().initialized).toBe(false);
+      expect(AIEngine.getStatus().device).toBe('unknown');
+    });
+  });
+
+  describe('getEmbeddings fallback', () => {
+    it('should fall back to WASM for embeddings if WebGPU fails', async () => {
+      const mockExtractor = vi.fn().mockResolvedValue({ data: new Float32Array([0.1]) });
+      // WebGPU fails, WASM succeeds
+      mockPipeline
+        .mockRejectedValueOnce(new Error('WebGPU failed'))
+        .mockResolvedValueOnce(mockExtractor);
+
+      const result = await AIEngine.getEmbeddings('test text');
+      expect(result).toEqual({ data: new Float32Array([0.1]) });
+      expect(mockPipeline).toHaveBeenCalledTimes(2);
     });
   });
 });

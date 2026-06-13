@@ -1,4 +1,4 @@
-<!-- DRAFT v0.2 — rewrites applied 2026-06-13 — Hermes (T-HER-008, 3 weakest-section rewrites per Leader ACK; T-HER-009 v0.2 ICP-numbering reconciled to canonical Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) -->
+<!-- DRAFT v0.3.1 — cycle 11 wave 1: §6.0 methodology footnote (4-ICP + Y2 board pack math refresh) + §6.4 4-ICP contract mod + Baker Tilly alignment added 2026-06-13 (Lead turn 15, Themis D-007 ENFORCEMENT) — Hermes (T-HER-007 v0.3 L45 methodology footnote + T-HER-007 v0.3 §6 contract mod). Prior: T-HER-008 v0.2 (3 weakest-section rewrites per Leader ACK) + T-HER-009 v0.2 ICP-numbering reconciliation (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3, Beth=ICP-4) + T-HER-007 v0.3 §6 math Three-Witnesses refresh (cycle 9/10) -->
 
 # FinPlan Pro — Partnership-Outreach Motion (Channel GTM, Strategos 4th Strategic Bet)
 
@@ -209,6 +209,18 @@ _(Witness: case-study-quality=3 archetypes matching ICP-1 JTBD, partner-attribut
 
 ## §6 — Economics (rev-share math, 4-ICP build-out, 3 scenarios)
 
+> **§6.0 Methodology footnote (NEW v0.3.1, cycle 11 wave 1, 2026-06-13, Lead dispatch turn 15):** The economics in §6 are computed under a Three-Witnesses (D-002) discipline on every $X, with TENTATIVE-marking for unverified claims. The 4-ICP build-out (Carla ICP-1 / Vera ICP-2 / Chris ICP-3 / Beth ICP-4) follows the canonical numbering from `iris/PERSONAS.md` (T-HER-009 v0.2 reconciliation). The Y2 board pack math refresh reconciles to:
+>
+> - **Y2 base** ($3.9M, **60% probability**): $2M Carla + $1.2M Chris + $400K Vera + $300K Beth = **$3.9M** (per Y2 board pack §7, T-ST-014 v0.2)
+> - **Y2 stretch** ($6.5M, **30% probability**): $3.2M Carla + $2.1M Chris + $640K Vera + $600K Beth = **$6.5M** (per Y2 board pack §7, T-ST-014 v0.2)
+> - **Y2 low** ($3.72M, **7% probability**): Vera 0 wins + Beth $120K floor = **$3.72M** (per T-ST-015 Risk 10 fire-control, Mimo T-MIMO-001 §3.2 audit)
+> - **Y2 fire-control** ($3.6M, **3% probability**): Beth drops to 0 wins + Chris drops to 175 paying = **$3.6M** (Mimo T-MIMO-001 §3.2)
+> - **Y2 expected value** (**$4.66M**, probability-weighted): 60%×$3.9M + 30%×$6.5M + 7%×$3.72M + 3%×$3.6M = **$4.66M** (Strategos T-ST-019 Founder-ping cycle confirmed, Mimo T-MIMO-002 ASC 606 audit pending cycle 11 first-wave)
+>
+> **D-002 3-witnesses pre-flight (cycle 11 wave 1):** All 5 figures above have 3 witnesses — (a) buyer persona (4-ICP per PERSONAS.md), (b) competitive alternative (Y2 board pack §6/§7), (c) price/pain anchor (T-ST-015 Risk 10 + T-MIMO-001 §3.2). Probability weighting 60/30/7/3 is the Mimo-verified 4-scenario framework.
+>
+> **Cross-Muse handoffs (cycle 11 wave 1):** Mimo T-MIMO-002 will audit the $4.66M math for ASC 606 multi-year revenue recognition (pending, cycle 11 first-wave sibling); Strategos T-ST-019 Founder-ping cycle absorbs the 60% probability Y2 base for the 2026-08-15 decision packet (4 TENTATIVE markers for §7-§9).
+
 > **Headline math (Founder ratification pending — T-HER-008 v0.2 → T-HER-007 v0.3 refresh 2026-06-13):** At **Y3 steady-state (50-user Business deal × $499/user/mo × 20% Tier 2 rev-share)**, the partner earns **$59,880/yr per partner** and FinPlan Pro nets $239,520/yr per partner. The "$5K/partner/year" in the original spec computes as $4,990/month, not $5K/yr — it appears to be a Y1-ramp estimate (5 users avg × $5,988/yr × 20% = $5,988 partner cut, closer to ~$6K/partner in Y1). The 3 scenarios below bracket the range from Y1 pilot to Y3 steady-state, with a 4th-ICP (Beth / channel-partner) row added in v0.3 per Strategos T-ST-015 (Y2 channel conflict pre-flight, 2026-06-13) + Y2 board pack §6 (4-ICP build-out) cross-link. The corrected $59,880 figure was routed to the Founder with the Strategos §8/§6 question batch (per Leader ACK 2026-06-13 07:35 IST) and is preserved verbatim here.
 
 | Scenario            | Avg users per firm | Partners live                        | ICP coverage                                                                                 | Partner rev-share / yr (total) | FinPlan Pro ARR contribution (net) |
@@ -237,6 +249,30 @@ _(Witness: case-study-quality=3 archetypes matching ICP-1 JTBD, partner-attribut
 | **Total** | 4-ICP                               | **$740K**                   | **$1.04-1.64M**                 | **$3.9M**                | **$6.5M**                | (matches PHASE_1_GTM v0.3 base $732K + Beth uplift)         |
 
 **The $4.8M ARR scenario at Y3** assumes 20 partners × 50 users avg = 1,000 channel-sourced seats. That's 1/3 of Strategos's Phase 2 GTM target per T-ST-003 §6, plus the Beth ICP-4 channel partner $300K Y2 base (per Y2 board pack §6) which represents a **net-new** $300K ARR beyond the $4.8M Tier-2-rev-share math.
+
+**§6.4 4-ICP contract mod + Baker Tilly alignment (NEW v0.3.1, cycle 11 wave 1, 2026-06-13, Lead dispatch turn 15):**
+
+The Advisory Partner agreement (cross-link to §3 Pillar 1) is extended for the 4-ICP motion as follows:
+
+**A. Per-ICP rev-share tiers (vs. default 20% Tier 2):**
+
+| ICP   | Persona                             | Rev-share | Term | Rationale                                                            |
+| ----- | ----------------------------------- | --------- | ---- | -------------------------------------------------------------------- |
+| ICP-1 | Carla (CFO $50-200M ARR)            | 20%       | 3 yr | Tier 2 default ✅ unchanged — Business tier, sales-led, 14-day trial |
+| ICP-2 | Vera (VP Finance, Anaplan-replacer) | 25%       | 3 yr | Tier 3-equivalent — Enterprise tier, longer 6-9 mo sales cycle       |
+| ICP-3 | Chris (Controller, 10-50 user SMB)  | 15%       | 3 yr | Tier 1-equivalent — Starter tier, PLG, higher volume, lower ACV      |
+| ICP-4 | Beth (Baker Tilly channel partner)  | 30%       | 3 yr | Referral fee (not rev-share) on closed-won; pilot slot guaranteed    |
+
+**B. Baker Tilly alignment clauses (per Iris T-IR-010 §3.1 vendor-neutrality + T-ST-015 §3 conflict pre-flight):**
+
+1. **Vendor-neutrality warranty:** Partner warrants no exclusive FP&A tooling partnership with Anaplan / Vena / Adaptive / Drivetrain / Pigment. Material breach = contract voidable within 90 days.
+2. **6-criteria partner selection (T-ST-015 §3):** Vendor-neutral + SaaS practice size + ICP-1 ARR concentration + tech-forward reputation + no channel conflict + 3-year commitment.
+3. **4-question Baker Tilly conflict check (T-ST-015 §3.1):** (1) Any active Anaplan partnership? (2) Preferred vendor status with Vena/Adaptive? (3) Existing FP&A tooling recommendation in last 24 months? (4) SaaS practice headcount + growth trend?
+4. **Conflict pre-flight escalation path:** If conflict surfaces mid-pilot, partner AE + Hermes AE + Strategos T-ST-015 owner within 5 business days; resolution by 14 days or pilot terminates with no penalty.
+
+**C. Pilot slot guarantee (ICP-4 channel partners only):** Baker Tilly and other vendor-neutral Tier-2 firms per T-ST-015 §3.1 get a guaranteed pilot slot in the 2026-Q4 launch cohort (max 5 partner pilots, capped at 1 per firm). Non-vendor-neutral firms (Anaplan-active) excluded from Q3-Q4 2026 cohort per §7 Risk 1.
+
+**D. Cross-Muse handoff:** These terms are pre-launch contract review candidates for Hera (legal) per the Cross-Muse Coordination "Outputs" table (legal review row). Strategos T-ST-019 absorbs the 4-ICP build-out into the 2026-08-15 Founder-ping cycle decision packet.
 
 **Beth/ICP-4 channel-partner Y2 base at risk (per Strategos T-ST-015 Risk 10):** $300K Y2 base assumes 5 channel wins × $60K ACV avg. If channel conflict materializes (Baker Tilly + 14 named Tier-2 firms have Anaplan partnerships), Y2 base drops to $120K floor (2 wins × $60K fire-control fallback). **Mitigation:** Baker Tilly is vendor-neutral per Iris T-IR-010 §3.1; Tier-2 firms need channel-conflict pre-flight (T-ST-015 §3, 6-criteria partner selection + 4-question Baker Tilly conflict check).
 
@@ -410,4 +446,4 @@ _(Witness: deferred-bet=T-ST-003 §4, bring-forward-trigger=T-ST-005 Phase 2 dec
 
 ---
 
-> **ICP-numbering note (T-HER-009 v0.2):** This motion targets ICP-1 (Carla, CFO) per `docs/drafts/iris/PERSONAS.md` canonical 2026-06-13. The 4th partner-side persona (Baker Tilly SaaS Practice Lead, T-IR-010 candidate) is NOT an ICP-1/2/3 — it is a partner-side buyer / sell-through influencer. Cross-link: T-IR-010 formalization (Iris, 2026-06-13) is the persona validation for the partner Practice Lead. The end-buyer remains Carla (ICP-1); the partner Practice Lead is the gate-keeper.
+> **ICP-numbering note (T-HER-009 v0.2 + cycle-10 era reconciliation):** This motion targets the canonical 4-ICP stack per `docs/drafts/iris/PERSONAS.md` (cycle 10 RATIFIED, 2026-06-13): ICP-1 = Carla (CFO), ICP-2 = Vera (VP Finance, Anaplan-replacer), ICP-3 = Chris (Controller, SMB PLG), ICP-4 = Beth (Baker Tilly channel partner). ICP-4 is the partner-side buyer / sell-through influencer for the channel motion — the end-buyer remains Carla (ICP-1); the Beth persona is the gate-keeper. **31st Honest Labeling moment fix (2026-06-13, self-caught, cycle 11 wave 1):** L449 of the prior v0.2 file claimed "Baker Tilly Practice Lead is NOT an ICP-1/2/3" — that line was accurate at the time of T-HER-009 v0.2 reconciliation, but is now stale. Updated to reflect the cycle-10 Beth/ICP-4 canonical numbering above.

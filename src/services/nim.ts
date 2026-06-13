@@ -180,15 +180,12 @@ export async function* nimChatStream(
 
 // --- Financial Analysis Helpers ---
 
-const FINANCIAL_SYSTEM_PROMPT = `You are a senior FP&A analyst assistant embedded in FinPlan Pro.
-You help with financial planning, budgeting, forecasting, variance analysis, and consolidation.
-Always:
-- Use precise financial terminology
-- Format numbers with commas and appropriate decimal places
-- Flag material variances (>10%)
-- Consider both favorable and unfavorable scenarios
-- Reference period-over-period trends when relevant
-- Be concise but thorough`;
+import {
+  variancePrompt,
+  forecastPrompt,
+  formulaExplanationPrompt,
+  budgetSummaryPrompt,
+} from './nim-prompts';
 
 export async function analyzeVariance(params: {
   metric: string;
@@ -196,25 +193,13 @@ export async function analyzeVariance(params: {
   budget: number;
   period: string;
 }): Promise<string> {
-  const variance = params.actual - params.budget;
-  const variancePct = params.budget !== 0 ? (variance / params.budget) * 100 : 0;
-
+  const prompt = variancePrompt(params);
   const response = await nimChat(
     [
-      { role: 'system', content: FINANCIAL_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: `Analyze this variance:
-Metric: ${params.metric}
-Actual: ${params.actual}
-Budget: ${params.budget}
-Variance: ${variance} (${variancePct.toFixed(1)}%)
-Period: ${params.period}
-
-Provide: 1) Root cause analysis, 2) Impact assessment, 3) Recommended actions.`,
-      },
+      { role: 'system', content: prompt.system },
+      { role: 'user', content: prompt.user },
     ],
-    { temperature: 0.3, max_tokens: 800 }
+    { temperature: prompt.temperature, max_tokens: prompt.maxTokens }
   );
 
   return response.choices[0]?.message?.content || 'No analysis generated.';
@@ -225,40 +210,26 @@ export async function generateForecastInsight(params: {
   historicalData: Array<{ period: string; value: number }>;
   forecastPeriods: number;
 }): Promise<string> {
-  const dataStr = params.historicalData.map((d) => `${d.period}: ${d.value}`).join('\n');
-
+  const prompt = forecastPrompt(params);
   const response = await nimChat(
     [
-      { role: 'system', content: FINANCIAL_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: `Based on this historical data for "${params.metric}":
-${dataStr}
-
-Provide a ${params.forecastPeriods}-period forecast insight including:
-1) Trend direction and strength
-2) Seasonality patterns
-3) Key assumptions
-4) Risk factors
-5) Confidence level`,
-      },
+      { role: 'system', content: prompt.system },
+      { role: 'user', content: prompt.user },
     ],
-    { temperature: 0.4, max_tokens: 1000 }
+    { temperature: prompt.temperature, max_tokens: prompt.maxTokens }
   );
 
   return response.choices[0]?.message?.content || 'No insight generated.';
 }
 
 export async function explainFormula(formula: string): Promise<string> {
+  const prompt = formulaExplanationPrompt({ formula });
   const response = await nimChat(
     [
-      { role: 'system', content: FINANCIAL_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: `Explain this financial formula in plain language:\n${formula}\n\nInclude: what it measures, when to use it, and what good/bad values look like.`,
-      },
+      { role: 'system', content: prompt.system },
+      { role: 'user', content: prompt.user },
     ],
-    { temperature: 0.2, max_tokens: 500 }
+    { temperature: prompt.temperature, max_tokens: prompt.maxTokens }
   );
 
   return response.choices[0]?.message?.content || 'No explanation generated.';
@@ -271,22 +242,13 @@ export async function summarizeBudget(budgetData: {
   lineItemCount: number;
   period: string;
 }): Promise<string> {
+  const prompt = budgetSummaryPrompt(budgetData);
   const response = await nimChat(
     [
-      { role: 'system', content: FINANCIAL_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: `Summarize this budget:
-Name: ${budgetData.name}
-Period: ${budgetData.period}
-Total Revenue: ${budgetData.totalRevenue}
-Total Expenses: ${budgetData.totalExpenses}
-Line Items: ${budgetData.lineItemCount}
-
-Provide a concise executive summary with key highlights.`,
-      },
+      { role: 'system', content: prompt.system },
+      { role: 'user', content: prompt.user },
     ],
-    { temperature: 0.3, max_tokens: 600 }
+    { temperature: prompt.temperature, max_tokens: prompt.maxTokens }
   );
 
   return response.choices[0]?.message?.content || 'No summary generated.';

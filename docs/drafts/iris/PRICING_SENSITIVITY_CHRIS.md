@@ -75,9 +75,9 @@ Working hypothesis, TENTATIVE pending Wave-2 beta:
 
 | Configuration             | Conversion rate (TENTATIVE) | Per-tenant ACV | Blended LTV (5-yr, 80% renewal)    | Verdict       |
 | ------------------------- | --------------------------- | -------------- | ---------------------------------- | ------------- |
-| **3-tier (Pro Solo)**     | 30% (premium sticker shock) | $5,364         | $11,793 (30% × 5yr × 80% × $5,364) | 🔴 LTV loser  |
-| **5-tier (Pro Standard)** | 65% (matches QBO Plus $90)  | $5,940         | $19,098 (65% × 5yr × 80% × $5,940) | 🟢 **Winner** |
-| **7-tier (Pro Team)**     | 45% (volume friction)       | $6,636         | $14,567 (45% × 5yr × 80% × $6,636) | 🟡 Mid-pack   |
+| **3-tier (Pro Solo)**     | 30% (premium sticker shock) | $5,364         | $6,437 (30% × 5yr × 80% × $5,364)  | 🔴 LTV loser  |
+| **5-tier (Pro Standard)** | 65% (matches QBO Plus $90)  | $5,940         | $15,444 (65% × 5yr × 80% × $5,940) | 🟢 **Winner** |
+| **7-tier (Pro Team)**     | 45% (volume friction)       | $6,636         | $11,945 (45% × 5yr × 80% × $6,636) | 🟡 Mid-pack   |
 
 **Why the 3-tier has 30% conversion (not 50%+):** at $149/user/mo, Chris-as-solo-controller hears "this is more than my QuickBooks + Notion combined." The math doesn't work for a 3-person team. The 3-tier is _Anaplan-priced for a QuickBooks-sized team_ — wrong product/market fit.
 
@@ -85,7 +85,7 @@ Working hypothesis, TENTATIVE pending Wave-2 beta:
 
 **Why the 7-tier has 45% conversion:** $79/user/mo looks cheap, but a 7-user team has 7 budget sign-offs (or 1 budget authority that has to convince 6 colleagues). The volume friction is real. Cube and Fathom both report this in their 7+ seat retention data (T-INFERRED from 4 G2 reviews).
 
-**Net: 5-tier has 1.3× the LTV of 7-tier and 1.6× the LTV of 3-tier.** The 5-tier is the only defensible Pro tier for Chris ICP-3.
+**Net: 5-tier has 1.3× the LTV of 7-tier and 2.4× the LTV of 3-tier.** The 5-tier is the only defensible Pro tier for Chris ICP-3.
 
 ---
 

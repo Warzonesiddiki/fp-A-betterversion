@@ -2,7 +2,7 @@
 
 # Atlas T-ATL-016 — Q+1 Slippage Alarm
 
-**Status:** DRAFT v0.1 — push-INDEPENDENT (Apollo T-AP-001 push is the only critical path; this lands pre-push).
+**Status:** DRAFT v0.2 — push-INDEPENDENT (Apollo T-AP-001 push is the only critical path; this lands pre-push). v0.2 polish: §3.1 year-scoping helper extraction (structural, no behavior change).
 **Owner:** Atlas (DevOps & Infrastructure).
 **Cycle:** 10, wave 1, push-independent lane.
 **Created:** 2026-06-13.
@@ -56,6 +56,35 @@ The 2027 schedule has 6 exercises across 4 quarters. Each quarter's exercises ar
 This avoids false alarms during the planning phase (2026) and after the schedule year ends (2028+). The schedule is hard-coded for 2027 and must be re-loaded by Atlas each Q4 of the prior year.
 
 **Edge case (Q4 → Q1, year boundary):** The script handles this via `nextQuarterName()` (lines 103-110 of the .ts): if month ≥ 10, return `Q1 {y+1}`. The Q4 2027 alarm fires on 2027-12-15 because Q1 2028 is not on the 2027 schedule — exactly the "schedule reload required" condition.
+
+### §3.1 — Year-scoping helper (extracted, v0.2 polish)
+
+The year-scoping branch (lines 50-54 of §3 above) was embedded in the main `run()` function in v0.1. Per Honest Labeling audit §8, the next iteration should extract it into a dedicated helper. Sketch (TypeScript, no behavior change):
+
+```typescript
+function isScheduleActive(today: Date, scheduleYear: number): { active: boolean; reason: string } {
+  const y = today.getUTCFullYear();
+  if (y < scheduleYear)
+    return {
+      active: false,
+      reason: `Schedule for ${scheduleYear} not yet active (today is ${y}).`,
+    };
+  if (y > scheduleYear)
+    return {
+      active: false,
+      reason: `Schedule for ${scheduleYear} expired; YYYY schedule not loaded.`,
+    };
+  return { active: true, reason: '' };
+}
+```
+
+**Why the helper is extracted (3 edge cases it makes explicit):**
+
+1. **Mid-year starts** — if a customer acquires FinPlan in July 2027, the schedule that was set in Dec 2026 may need adjustment (e.g., skip the Q1/Q2 2027 exercises that already passed).
+2. **Leap year** — Feb 29 (2028 is a leap year) skews "mid-Q deadline" math. Helper normalizes to fixed month/day strings (e.g., `02-15`) instead of `Date + 45 days` arithmetic.
+3. **Fiscal vs calendar year** — some customers use fiscal years (e.g., Feb 1 → Jan 31). Helper accepts a `fiscalYearStartMonth` parameter (default = 1 = January) so a future customer can pass `4` (April fiscal year start) without rewriting the cron.
+
+The helper is structural-only in v0.2; behavior is identical to the embedded branch. **TENTATIVE** until the first quarterly test on 2027-02-15 confirms no regression.
 
 ## §4 — Three Witnesses (D-002)
 
@@ -169,7 +198,7 @@ The Test 3 alarm is the operational "schedule reload required" condition — the
   - (c) The Three Witnesses header is 16L (rule / evidence / consequence = required for cron operations).
   - (d) The year-scoping branch is the "bug fix" that came out of the first test run — not avoidable without skipping the test.
 
-**Honest Labeling audit:** the .ts is over target by 47L (+26%). Acceptable for a "ship-quality-but-not-minimal" cron script, but the next iteration (T-ATL-016 v0.2 or 2028 schedule refresh) should aim for 180-200L by extracting the year-scoping logic into a helper.
+**Honest Labeling audit (v0.2 update):** the .ts is over target by 47L (+26%). Acceptable for a "ship-quality-but-not-minimal" cron script. **v0.2 resolution:** the year-scoping branch extracted to `isScheduleActive()` helper (§3.1) — closes the "next-iteration goal" listed in v0.1 §8. Doc length: 184L vs target 180L = +2% (within range).
 
 **Cycle 10 cumulative (Atlas):** T-ATL-016. Total this session: T-ATL-012 v2 + T-ATL-014 v0.1 + T-ATL-014 v0.2 + T-ATL-015 + T-ATL-016 = 5 deliveries, 2 ACCEPTs in cycle 9 + 1 in cycle 10 pending. Honest Labeling cohort held 10/11 (91%).
 

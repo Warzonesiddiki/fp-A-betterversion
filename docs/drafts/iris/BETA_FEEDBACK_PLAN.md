@@ -13,18 +13,18 @@
 
 ## Why a beta feedback plan is different from a research plan (and why we need both)
 
-The 30 customer discovery interviews in `INTERVIEW_SCRIPT.md` are **research** — they extract *qualitative insight* about jobs, pains, and alternatives. The beta feedback collection is **product validation** — it extracts *quantitative signal* about whether the product is working for the 50 customers who have installed it.
+The 30 customer discovery interviews in `INTERVIEW_SCRIPT.md` are **research** — they extract _qualitative insight_ about jobs, pains, and alternatives. The beta feedback collection is **product validation** — it extracts _quantitative signal_ about whether the product is working for the 50 customers who have installed it.
 
-| Dimension | Research interviews (T-IR-001) | Beta feedback (this plan) |
-|---|---|---|
-| **Goal** | Understand the *job* the user is hiring us to do | Understand whether *we* are doing the job |
-| **Sample** | 30 users (10 Carla, 10 Chris, 10 Vera), some users some non-users | 50 users (30 ICP-1 Carla, 20 ICP-3 Chris), all users |
-| **Cadence** | One 30-min conversation per user, one-time | 5 touchpoints per user over 90 days (plus Day-0 onboarding) |
-| **Output** | Quotes, themes, persona updates | Tickets, themes, product-decision triggers |
-| **Owner** | Iris (research) | Iris + PM (research + product) |
-| **Trust signal** | "We want to understand" | "We want to fix" |
+| Dimension        | Research interviews (T-IR-001)                                    | Beta feedback (this plan)                                   |
+| ---------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Goal**         | Understand the _job_ the user is hiring us to do                  | Understand whether _we_ are doing the job                   |
+| **Sample**       | 30 users (10 Carla, 10 Chris, 10 Vera), some users some non-users | 50 users (30 ICP-1 Carla, 20 ICP-3 Chris), all users        |
+| **Cadence**      | One 30-min conversation per user, one-time                        | 5 touchpoints per user over 90 days (plus Day-0 onboarding) |
+| **Output**       | Quotes, themes, persona updates                                   | Tickets, themes, product-decision triggers                  |
+| **Owner**        | Iris (research)                                                   | Iris + PM (research + product)                              |
+| **Trust signal** | "We want to understand"                                           | "We want to fix"                                            |
 
-**The two are complementary, not redundant.** The beta is our first chance to validate the personas against observed behavior. If the persona assumptions are wrong, the beta will tell us. If they're right, the beta will tell us *how right*. Either way, the personas get updated based on observed behavior, not inferred behavior. The `[INFERRED]` quotes in `PERSONAS.md` get replaced with `[VERBATIM]` quotes by Day 90.
+**The two are complementary, not redundant.** The beta is our first chance to validate the personas against observed behavior. If the persona assumptions are wrong, the beta will tell us. If they're right, the beta will tell us _how right_. Either way, the personas get updated based on observed behavior, not inferred behavior. The `[INFERRED]` quotes in `PERSONAS.md` get replaced with `[VERBATIM]` quotes by Day 90.
 
 > **The single most important thing in this plan:** The beta is the **first real test of the 3 personas**. Don't waste it on ad-hoc feedback. Cadence, routing, and the closing-the-loop follow-up are the design.
 
@@ -32,13 +32,13 @@ The 30 customer discovery interviews in `INTERVIEW_SCRIPT.md` are **research** �
 
 ## §1 — The 5-wave feedback collection (D+0 to D+120)
 
-The beta runs 90 days of in-product use, plus 30 days of public-launch feedback. We collect feedback at 5 specific waves, each with a different *goal* — not "check in" but a specific validation question. Each wave aligns to Hermes's BETA_PROGRAM.md launch sequence and the journey-map stages.
+The beta runs 90 days of in-product use, plus 30 days of public-launch feedback. We collect feedback at 5 specific waves, each with a different _goal_ — not "check in" but a specific validation question. Each wave aligns to Hermes's BETA_PROGRAM.md launch sequence and the journey-map stages.
 
-**Pre-wave (Day 0, onboarding call, 30 min):** A live onboarding call to establish the relationship, set expectations, and capture the user's *predicted* jobs and pains (which we compare to their *actual* jobs/pains at Day 30+). Owner: CSM (with Iris observing 5-10 of the 50 calls for calibration). Output: 1-page summary in `docs/research/beta/2026-Q4/summary-<user-id>-day0.md`.
+**Pre-wave (Day 0, onboarding call, 30 min):** A live onboarding call to establish the relationship, set expectations, and capture the user's _predicted_ jobs and pains (which we compare to their _actual_ jobs/pains at Day 30+). Owner: CSM (with Iris observing 5-10 of the 50 calls for calibration). Output: 1-page summary in `docs/research/beta/2026-Q4/summary-<user-id>-day0.md`.
 
 ### Wave 1 — D+0 to D+7 ("First value"): in-app micro-survey
 
-**Goal:** Measure moment-level satisfaction at the *exact moment* of first value. Zero friction by design.
+**Goal:** Measure moment-level satisfaction at the _exact moment_ of first value. Zero friction by design.
 
 **Trigger:** The `habit.first_scenario_built` analytics event fires. Immediately after, an in-app modal appears (dismissible, 1 question, 5-pt scale).
 
@@ -56,11 +56,12 @@ The beta runs 90 days of in-product use, plus 30 days of public-launch feedback.
 
 ### Wave 2 — D+7 to D+30 ("First month"): 30-min feedback session
 
-**Goal:** Validate the *actual* friction vs. the predicted friction (from Day 0). Identify the "almost killed it" features.
+**Goal:** Validate the _actual_ friction vs. the predicted friction (from Day 0). Identify the "almost killed it" features.
 
 **Channel:** Video call, 1-on-1, recorded with consent. CSM + user (Iris joins 10-15 of the 50 calls for qualitative depth).
 
 **Format (30 min, 5 questions):**
+
 1. (5 min) What worked? (3 specific features cited)
 2. (5 min) What didn't work? (verbatim, with file/screenshot)
 3. (5 min) What surprised you? (the unexpected-positive or unexpected-negative moments)
@@ -75,13 +76,14 @@ The beta runs 90 days of in-product use, plus 30 days of public-launch feedback.
 
 ### Wave 3 — D+30 to D+60 ("First NPS"): NPS survey
 
-**Goal:** The first real NPS per `NPS_SURVEY_DESIGN.md` §4 (T+90 cadence starts later, but the T+30 trial-health NPS lands in this window). Validate persona assumption (does the user match the predicted persona?). Capture the *actual* JTBD vs. predicted at Day 0.
+**Goal:** The first real NPS per `NPS_SURVEY_DESIGN.md` §4 (T+90 cadence starts later, but the T+30 trial-health NPS lands in this window). Validate persona assumption (does the user match the predicted persona?). Capture the _actual_ JTBD vs. predicted at Day 0.
 
 **Channel:** In-app survey (3 questions, ~30 sec) + 15-min follow-up email if NPS < 7 (save motion).
 
 **Format:** Q1 (NPS 0-10), Q2 (open comment "ONE thing"), Q3 (persona anchor). Per `NPS_SURVEY_DESIGN.md` §3.
 
 **Output:**
+
 - `nps.score_X` event (X = 0-10)
 - `nps.open_comment` event (the Q2 free text)
 - `nps.persona` event (the Q3 self-stated persona)
@@ -100,6 +102,7 @@ The beta runs 90 days of in-product use, plus 30 days of public-launch feedback.
 **Channel:** Video call, 1-on-1, recorded with consent. CSM + AE + user. Iris joins 10 of the 50 calls.
 
 **Format (60 min, 8 questions):**
+
 1. (5 min) Walk me through the buy/build decision. Why FinPlan Pro vs. Anaplan/Adaptive/Cube?
 2. (5 min) Walk me through the install + first import. What was the aha moment?
 3. (5 min) Walk me through the first scenario you built. Show me the screen.
@@ -110,6 +113,7 @@ The beta runs 90 days of in-product use, plus 30 days of public-launch feedback.
 8. (20 min) Can we use this? (case-study ask, logo rights, public quote permission)
 
 **Output:**
+
 - Final NPS score
 - Case study transcript (if user agrees)
 - "Almost killed it / almost saved it" verbatim pair → sales playbook + marketing collateral
@@ -126,12 +130,14 @@ The beta runs 90 days of in-product use, plus 30 days of public-launch feedback.
 **Channel:** Public NPS (in-app, post-launch) + email referral ask to Promoters + case study publication on the marketing site.
 
 **Format:**
+
 - (D+90) Public NPS survey fires for all 50 beta users + the new GA cohort
 - (D+90 to D+100) Case studies published on `/customers` page (with consent)
 - (D+100 to D+110) Referral ask: "Who else do you know who needs this?" CSM enables, doesn't ask
 - (D+110 to D+120) Re-baseline NPS for the GA cohort; compare beta NPS to GA NPS
 
 **Output:**
+
 - Public NPS score (the marketing-page headline)
 - Published case studies (≥3 by D+120)
 - Referral conversions (Promoter → 1+ peer referred)
@@ -139,7 +145,7 @@ The beta runs 90 days of in-product use, plus 30 days of public-launch feedback.
 
 **Completion target:** >60% NPS response rate; ≥3 published case studies; ≥5 referral conversions.
 
-**Per-persona variation:** None — Wave 5 is identical for all personas. It's measuring the *public* product, not the persona.
+**Per-persona variation:** None — Wave 5 is identical for all personas. It's measuring the _public_ product, not the persona.
 
 ---
 
@@ -147,13 +153,13 @@ The beta runs 90 days of in-product use, plus 30 days of public-launch feedback.
 
 Every piece of feedback — every survey response, every interview quote, every open comment — gets **one primary theme tag** + a routing rule. The 5 routes are the 5 cross-cutting concerns; we route to the Muse who owns that concern.
 
-| Theme | Route to | Examples | SLA |
-|---|---|---|---|
-| **Product** (feature requests, bugs, UX issues) | **Apollo** (PM triage) | "Missing feature: multi-entity consolidation," "Bug: Excel import fails on column Z" | P0 same-day; P1 next sprint; P2 monthly |
-| **Code quality** (technical debt, performance) | **Athena** (audit) + **Prometheus** (perf) | "The page takes 4 seconds to load on a 100k-row model," "The cube engine has a memory leak" | P0 same-day; P1 next sprint |
-| **Security** (data, access, compliance) | **Hephaestus** (audit) | "I need SOC 2 evidence for our audit," "Can we add SAML SSO?" | P0 4h (if data exposure); P1 next sprint |
-| **Marketing** (positioning, pricing, messaging) | **Hermes** (ICP, battlecards, copy) | "Your pricing page is confusing," "I didn't understand you had a free tier" | P1 next sprint (copy); P2 monthly (positioning) |
-| **Design** (visual, interaction, motion, a11y) | **Hera** (design system) | "The dark mode is broken on the variance report," "I can't tab through the import wizard" | P1 next sprint; P2 monthly |
+| Theme                                           | Route to                                   | Examples                                                                                    | SLA                                             |
+| ----------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| **Product** (feature requests, bugs, UX issues) | **Apollo** (PM triage)                     | "Missing feature: multi-entity consolidation," "Bug: Excel import fails on column Z"        | P0 same-day; P1 next sprint; P2 monthly         |
+| **Code quality** (technical debt, performance)  | **Athena** (audit) + **Prometheus** (perf) | "The page takes 4 seconds to load on a 100k-row model," "The cube engine has a memory leak" | P0 same-day; P1 next sprint                     |
+| **Security** (data, access, compliance)         | **Hephaestus** (audit)                     | "I need SOC 2 evidence for our audit," "Can we add SAML SSO?"                               | P0 4h (if data exposure); P1 next sprint        |
+| **Marketing** (positioning, pricing, messaging) | **Hermes** (ICP, battlecards, copy)        | "Your pricing page is confusing," "I didn't understand you had a free tier"                 | P1 next sprint (copy); P2 monthly (positioning) |
+| **Design** (visual, interaction, motion, a11y)  | **Hera** (design system)                   | "The dark mode is broken on the variance report," "I can't tab through the import wizard"   | P1 next sprint; P2 monthly                      |
 
 **Routing rules:**
 
@@ -171,24 +177,25 @@ One row per feedback event. Append-only. Refreshed real-time by CSM + Iris.
 
 ### Schema (one row per feedback)
 
-| Column | Source | Example |
-|---|---|---|
-| `date` | Survey or call | `2026-09-15` |
-| `customer` | `docs/research/beta/customers/<company>.md` | `acme-corp` |
-| `persona` | PERSONAS.md | `Carla (ICP-1)` |
-| `wave` | §1 | `Wave 2 (D+14)` |
-| `theme` | §2 | `Product` |
-| `verbatim_quote` | Q2 open comment or interview transcript | "The Monte Carlo is great but I can't export the sensitivity table to PDF." |
-| `action_item` | Triage outcome | `Add PDF export to Monte Carlo sensitivity table` |
-| `owner` | §2 | `Apollo` |
-| `status` | Triage workflow | `open / triaged / in_progress / shipped / wontfix` |
-| `theme_id` | `docs/research/beta/patterns.md` | `P-2026-Q4-007` (if it matches an existing pattern) |
-| `linked_ticket` | GitHub issue | `#1234` |
-| `nps_score` | Q1 of NPS survey (if applicable) | `8` |
+| Column           | Source                                      | Example                                                                     |
+| ---------------- | ------------------------------------------- | --------------------------------------------------------------------------- |
+| `date`           | Survey or call                              | `2026-09-15`                                                                |
+| `customer`       | `docs/research/beta/customers/<company>.md` | `acme-corp`                                                                 |
+| `persona`        | PERSONAS.md                                 | `Carla (ICP-1)`                                                             |
+| `wave`           | §1                                          | `Wave 2 (D+14)`                                                             |
+| `theme`          | §2                                          | `Product`                                                                   |
+| `verbatim_quote` | Q2 open comment or interview transcript     | "The Monte Carlo is great but I can't export the sensitivity table to PDF." |
+| `action_item`    | Triage outcome                              | `Add PDF export to Monte Carlo sensitivity table`                           |
+| `owner`          | §2                                          | `Apollo`                                                                    |
+| `status`         | Triage workflow                             | `open / triaged / in_progress / shipped / wontfix`                          |
+| `theme_id`       | `docs/research/beta/patterns.md`            | `P-2026-Q4-007` (if it matches an existing pattern)                         |
+| `linked_ticket`  | GitHub issue                                | `#1234`                                                                     |
+| `nps_score`      | Q1 of NPS survey (if applicable)            | `8`                                                                         |
 
 ### Cross-linking
 
 Every row links to:
+
 - The customer's 1-page brief at `docs/research/beta/customers/<company>.md` (per Hermes's playbook)
 - The pattern catalog entry at `docs/research/beta/patterns.md` (if it matches an existing pattern)
 - The shipping ticket / commit (when status = shipped)
@@ -196,6 +203,7 @@ Every row links to:
 ### Weekly rollup (Wednesdays, after the PM triage)
 
 A 1-page digest for the whole team:
+
 - Top 5 themes (by frequency this week)
 - Top 5 action items (by severity)
 - Top 5 wins (shipped this week, with user quotes)
@@ -210,13 +218,13 @@ A living catalog of cross-user patterns. One bullet per pattern. Refreshed weekl
 
 ### Pattern detection rules (the 3 thresholds that trigger escalation)
 
-| Pattern | Threshold | Action |
-|---|---|---|
-| **"What almost killed the deal"** | 3+ customers cite the same feature | **P0 product work.** This is the deal-closer for sales — fixing it unblocks the next 10 deals. |
-| **"I wish it had X" (feature request)** | 3+ customers ask for the same feature | **Roadmap candidate.** Add to the next quarter's planning. |
-| **"The Y is broken" (issue, perf, bug)** | 2+ customers cite the same issue | **P0 fix.** Reproduce, fix, ship. (The threshold is 2, not 3, because perf/bug issues compound faster than feature gaps.) |
-| **NPS dips below 0 for any cohort** | Cohort NPS < 0 for 2 consecutive waves | **Escalation to founder.** This is a save-company moment. CSM + founder + Iris meet within 48 hours. |
-| **Persona mismatch (predicted ≠ actual)** | 5+ customers' actual persona differs from predicted | **Persona update.** `PERSONAS.md` gets revised; ICP scoring gets revised; marketing positioning gets revised. |
+| Pattern                                   | Threshold                                           | Action                                                                                                                    |
+| ----------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **"What almost killed the deal"**         | 3+ customers cite the same feature                  | **P0 product work.** This is the deal-closer for sales — fixing it unblocks the next 10 deals.                            |
+| **"I wish it had X" (feature request)**   | 3+ customers ask for the same feature               | **Roadmap candidate.** Add to the next quarter's planning.                                                                |
+| **"The Y is broken" (issue, perf, bug)**  | 2+ customers cite the same issue                    | **P0 fix.** Reproduce, fix, ship. (The threshold is 2, not 3, because perf/bug issues compound faster than feature gaps.) |
+| **NPS dips below 0 for any cohort**       | Cohort NPS < 0 for 2 consecutive waves              | **Escalation to founder.** This is a save-company moment. CSM + founder + Iris meet within 48 hours.                      |
+| **Persona mismatch (predicted ≠ actual)** | 5+ customers' actual persona differs from predicted | **Persona update.** `PERSONAS.md` gets revised; ICP scoring gets revised; marketing positioning gets revised.             |
 
 ### Schema (one entry per pattern)
 
@@ -254,20 +262,22 @@ A pattern that exceeds its latency target is escalated to the founder. The metri
 
 **Recommendation: PostHog** (open-source, self-hostable, native to Vite, NPS plugin built-in, session replay for context).
 
-| Tool | Pros | Cons | Verdict |
-|---|---|---|---|
-| **PostHog** | Open-source, self-hostable, native Vite integration, NPS plugin + session replay + feature flags in one tool, $0 at our scale | Slightly less polished UI than Typeform | **✅ Choose this.** The session-replay + feature-flag combination is the killer feature — we can see *what the user was doing* when they gave an NPS 6. |
-| **Intercom** | Polished UI, good for sales-handoff | Proprietary, $$$ at our scale, overkill for 3-question surveys, doesn't integrate with our in-app analytics | ❌ |
-| **Typeform** | Best-in-class UX for the survey taker | Disconnects the response from in-app behavior — we lose the feature-usage context that makes Q2 actionable | ❌ |
+| Tool         | Pros                                                                                                                          | Cons                                                                                                        | Verdict                                                                                                                                                 |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PostHog**  | Open-source, self-hostable, native Vite integration, NPS plugin + session replay + feature flags in one tool, $0 at our scale | Slightly less polished UI than Typeform                                                                     | **✅ Choose this.** The session-replay + feature-flag combination is the killer feature — we can see _what the user was doing_ when they gave an NPS 6. |
+| **Intercom** | Polished UI, good for sales-handoff                                                                                           | Proprietary, $$$ at our scale, overkill for 3-question surveys, doesn't integrate with our in-app analytics | ❌                                                                                                                                                      |
+| **Typeform** | Best-in-class UX for the survey taker                                                                                         | Disconnects the response from in-app behavior — we lose the feature-usage context that makes Q2 actionable  | ❌                                                                                                                                                      |
 
 **Wire-up:** 1-line in `src/utils/analytics.ts`:
+
 ```ts
-posthog.capture('nps_survey_completed', { score, persona, open_comment_hash })
+posthog.capture('nps_survey_completed', { score, persona, open_comment_hash });
 ```
 
 **PostHog features used:**
+
 - **Surveys** (NPS, in-app micro-survey, post-incident NPS)
-- **Session replay** (linked from any NPS response — see *exactly* what the user did in the 30 min before they gave the 6)
+- **Session replay** (linked from any NPS response — see _exactly_ what the user did in the 30 min before they gave the 6)
 - **Feature flags** (roll out new surveys to 10% of users first; A/B test Q2 wording)
 - **Cohorts** (the install-cohort definition; the persona cohorts; the wave cohorts)
 
@@ -281,17 +291,18 @@ posthog.capture('nps_survey_completed', { score, persona, open_comment_hash })
 
 **The principle:** Friction-free for the lowest-effort waves; meaningful reward for the highest-effort waves. Don't pay for low-effort signals (it biases the sample toward the incentivized).
 
-| Wave | Effort | Incentive | Rationale |
-|---|---|---|---|
-| **Wave 1 (micro-survey, 1 question)** | <2 sec | **None.** | Paying for a 1-question in-app modal biases the sample toward the incentivized. Friction-free is the design. |
-| **Wave 2 (30-min feedback session)** | 30 min | **$50 Amazon gift card + name in case study (if customer consents)** | The gift card is a thank-you, not a payment. The case-study mention is the real incentive for ICP-1 (board-visibility). |
-| **Wave 3 (NPS, 3 questions)** | 30 sec | **None.** | Same as Wave 1 — paying for an NPS biases the score. |
-| **Wave 4 (60-min case study interview)** | 60 min | **$200 Amazon gift card + 50% Y1 discount locked for 12 months + logo rights** | The discount is the deal-closer for ICP-1; the gift card is the thank-you; the logo rights are the marketing asset. |
-| **Wave 5 (public launch feedback)** | 5 min | **Featured in launch announcement + LinkedIn shoutout** | Public recognition is the right incentive for Promoters who want to be associated with the win. |
+| Wave                                     | Effort | Incentive                                                                      | Rationale                                                                                                               |
+| ---------------------------------------- | ------ | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| **Wave 1 (micro-survey, 1 question)**    | <2 sec | **None.**                                                                      | Paying for a 1-question in-app modal biases the sample toward the incentivized. Friction-free is the design.            |
+| **Wave 2 (30-min feedback session)**     | 30 min | **$50 Amazon gift card + name in case study (if customer consents)**           | The gift card is a thank-you, not a payment. The case-study mention is the real incentive for ICP-1 (board-visibility). |
+| **Wave 3 (NPS, 3 questions)**            | 30 sec | **None.**                                                                      | Same as Wave 1 — paying for an NPS biases the score.                                                                    |
+| **Wave 4 (60-min case study interview)** | 60 min | **$200 Amazon gift card + 50% Y1 discount locked for 12 months + logo rights** | The discount is the deal-closer for ICP-1; the gift card is the thank-you; the logo rights are the marketing asset.     |
+| **Wave 5 (public launch feedback)**      | 5 min  | **Featured in launch announcement + LinkedIn shoutout**                        | Public recognition is the right incentive for Promoters who want to be associated with the win.                         |
 
 **Budget for 50 beta users (assuming 80% Wave 2 completion, 70% Wave 3, 50% Wave 4, 100% Wave 5):**
+
 - Wave 2: 40 × $50 = $2,000
-- Wave 4: 25 × $200 = $5,000 + 25 × ~$3,000 Y1 discount (varies by tier) = ~$80,000 in discount commitments (this is *expected* Y1 revenue we trade for case studies)
+- Wave 4: 25 × $200 = $5,000 + 25 × ~$3,000 Y1 discount (varies by tier) = ~$80,000 in discount commitments (this is _expected_ Y1 revenue we trade for case studies)
 - Wave 5: $0 (no cash; just public recognition)
 - **Total cash: $7,000.** Total discount commitment: ~$80,000 (which is <2% of expected Y1 ACV from the 50-user cohort).
 
@@ -301,7 +312,7 @@ posthog.capture('nps_survey_completed', { score, persona, open_comment_hash })
 
 ## §7 — Quality bar (what makes a feedback session GOOD)
 
-The difference between a useful feedback session and a useless one is the *specificity* of the quotes. Vague quotes produce vague product decisions. Specific quotes produce specific product decisions. Five rules:
+The difference between a useful feedback session and a useless one is the _specificity_ of the quotes. Vague quotes produce vague product decisions. Specific quotes produce specific product decisions. Five rules:
 
 1. **Verbatim quotes, not paraphrased.** "I love the export" is useless. "The PDF export of the variance report is the only reason I cancelled my Adaptive renewal" is a case-study quote. (Witness: in a prior beta, paraphrased quotes led to 3 product decisions that users didn't actually want; verbatim quotes caught the misalignment before shipping.)
 
@@ -316,6 +327,7 @@ The difference between a useful feedback session and a useless one is the *speci
 ### The "Three Witnesses" check (the discipline that enforces the quality bar)
 
 Every feedback entry in `feedback-log.md` must have all three witnesses:
+
 - **(a) User quote** (verbatim, not paraphrased)
 - **(b) Observed behavior** (what the user actually did, not what they said — pulled from PostHog session replay)
 - **(c) The alternative** (what they would have done instead — pulled from the buy/build discussion)
@@ -347,7 +359,7 @@ The patterns catalog at `docs/research/beta/patterns.md` is where these detectio
 - **`docs/drafts/iris/NPS_SURVEY_DESIGN.md`** — Wave 3 is the T+30 trial-health NPS; Wave 4 includes the T+90 first-real NPS. (Per the cadence in §4 of that doc.)
 - **`docs/drafts/iris/CHURN_EVENTS_TAXONOMY.md`** — the `habit.first_scenario_built` event triggers Wave 1; the `churn.*` events trigger save motions based on Wave 2-3 feedback.
 - **`docs/drafts/hermes/BETA_PROGRAM.md`** — the 50-customer cohort + scoring rubric + success criteria come from Hermes's T-HER-003.
-- **`docs/drafts/strategos/STRATEGIC_REVIEW_Q3_2026.md`** — the NPS target (+40 EOY1, +50 EOY2) is the bar Wave 3-5 measure against.
+- **`docs/STRATEGIC_REVIEW_Q2_2026.md` (Q2 strategic review)** — the NPS target (+40 EOY1, +50 EOY2) is the bar Wave 3-5 measure against. TENTATIVE: Q3 2026 review will be created at end of Q3 (2026-09-30) and may update this target.
 - **Apollo's analytics taxonomy** — the `nps_moment.*` and `nps.*` events need to be added; the PostHog wire-up is a 1-line change in `src/utils/analytics.ts`.
 - **Athena's code-quality audit** — Wave 2-4 themes tagged `Code quality` route to Athena; her audit findings update `patterns.md`.
 - **Prometheus's perf audit** — Wave 2-4 themes tagged `Code quality` with a perf angle route to Prometheus; his SLO breaches trigger the post-incident NPS.
@@ -359,14 +371,14 @@ The patterns catalog at `docs/research/beta/patterns.md` is where these detectio
 
 ## The 5-wave timing aligned with Beta launch (D+0 to D+120)
 
-| Day | Wave | Channel | Owner | Output | Target |
-|---|---|---|---|---|---|
-| D+0 | Pre-wave (onboarding) | Video call (30 min) | CSM | `summary-day0.md` | 100% of 50 users |
-| D+0 to D+7 | **Wave 1** (in-app micro-survey at first scenario) | In-app modal | Apollo (event-trigger) | `nps_moment.easy_score` | >80% completion |
-| D+7 to D+30 | **Wave 2** (30-min feedback session) | Video call (recorded) | CSM + Iris (10 of 50) | `summary-day14.md` | >80% completion |
-| D+30 to D+60 | **Wave 3** (NPS survey) | In-app (3 questions) | Apollo + CSM (save motion) | `nps.score_X` event | >70% completion |
-| D+60 to D+90 | **Wave 4** (60-min case study interview) | Video call (recorded) | CSM + AE + Iris | case study + final NPS | >50% completion; ≥5 Diamond |
-| D+90 to D+120 | **Wave 5** (public launch feedback) | Public NPS + email referral + case study publication | Hermes + CSM | public NPS + ≥3 case studies + ≥5 referrals | >60% NPS response; ≥3 published; ≥5 referrals |
+| Day           | Wave                                               | Channel                                              | Owner                      | Output                                      | Target                                        |
+| ------------- | -------------------------------------------------- | ---------------------------------------------------- | -------------------------- | ------------------------------------------- | --------------------------------------------- |
+| D+0           | Pre-wave (onboarding)                              | Video call (30 min)                                  | CSM                        | `summary-day0.md`                           | 100% of 50 users                              |
+| D+0 to D+7    | **Wave 1** (in-app micro-survey at first scenario) | In-app modal                                         | Apollo (event-trigger)     | `nps_moment.easy_score`                     | >80% completion                               |
+| D+7 to D+30   | **Wave 2** (30-min feedback session)               | Video call (recorded)                                | CSM + Iris (10 of 50)      | `summary-day14.md`                          | >80% completion                               |
+| D+30 to D+60  | **Wave 3** (NPS survey)                            | In-app (3 questions)                                 | Apollo + CSM (save motion) | `nps.score_X` event                         | >70% completion                               |
+| D+60 to D+90  | **Wave 4** (60-min case study interview)           | Video call (recorded)                                | CSM + AE + Iris            | case study + final NPS                      | >50% completion; ≥5 Diamond                   |
+| D+90 to D+120 | **Wave 5** (public launch feedback)                | Public NPS + email referral + case study publication | Hermes + CSM               | public NPS + ≥3 case studies + ≥5 referrals | >60% NPS response; ≥3 published; ≥5 referrals |
 
 ---
 

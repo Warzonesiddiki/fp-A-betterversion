@@ -1,0 +1,61 @@
+# Sentry Self-Test CI Workflow — T-ATL-021
+# Parent spec: docs/drafts/atlas/SENTRY_SELF_TEST.md (v0.1, Atlas 2026-06-13)
+# Closes: T-ATL-007 §6 "Sentry self-host has no self-alerting" gap
+# 4 self-test items: a (SDK init), b (error capture), c (alert path), d (cron monitor)
+name: sentry-self-test
+on:
+  pull_request:                       # item a only (fast, no secrets)
+  schedule:
+    - cron: '0 3 * * *'               # nightly 03:00 UTC — items a + b
+    - cron: '0 4 * * 0'               # weekly Sun 04:00 UTC — item c
+    - cron: '5 2 * * 1'               # weekly Mon 02:05 UTC — item d (5 min after T-HEP-010)
+
+jobs:
+  sdk-init-and-capture:               # items a + b share setup (saves ~90s)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Item a — SDK init
+        run: node -e "require('@sentry/react'); console.log('SDK loaded OK')"
+      - name: Item b — Error capture (synthetic, test project)
+        env:
+          SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN_TEST }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          node -e "
+            const Sentry = require('@sentry/node');
+            Sentry.init({ dsn: process.env.SENTRY_DSN, environment: 'ci-selftest' });
+            const eid = Sentry.captureException(new Error('T-ATL-021 self-test'));
+            console.log('Captured event ID:', eid);
+            Sentry.flush(5000).then(() => process.exit(0));
+          "
+
+  alert-path:                         # item c (weekly Sun 04:00 UTC)
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 4 * * 0'
+    steps:
+      - name: Item c — Trigger Sentry test alert → PagerDuty
+        run: |
+          curl -fsS -X POST \
+            "https://sentry.internal.finplanpro.com/api/0/projects/finplan-pro/javascript-vite/alert-rules/test/" \
+            -H "Authorization: Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"severity":"high","message":"T-ATL-021 weekly alert-path test"}'
+
+  cron-monitor-checkin:               # item d (weekly Mon 02:05 UTC)
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '5 2 * * 1'
+    steps:
+      - name: Item d — Verify T-HEP-010 cron check-in reached Sentry
+        run: |
+          curl -fsS \
+            "https://sentry.internal.finplanpro.com/api/0/cron-monitors/finplan-pro/audit-chain-verify/check-ins/" \
+            -H "Authorization: Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}" \
+            | jq '[.[] | select(.status=="ok")] | .[0]'

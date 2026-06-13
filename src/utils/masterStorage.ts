@@ -16,6 +16,13 @@ async function checkTauri() {
 const chunkedTauriStorage = wrapChunkedStorage(tauriSqlStorage);
 const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
 
+/**
+ * Master Zustand persist storage for FinPlan Pro. 29 stores funnel through this.
+ * Wraps localStorage (sqlJsStorage or tauriSqlStorage) with version-aware migration.
+ * T-Hephaestus T-HEP-015 PBKDF2 100k→600k migration target (target cycle 10 wave 7).
+ * @see ADR-005 (masterStorage) + ADR-007 (encryption-at-rest) + ADR-010 (schema migration).
+ * @internal Invoked by every persisted store's `persist()` middleware — DO NOT bypass.
+ */
 export const masterStorage: PersistStorage<any> & { __resetCache: () => void } = {
   getItem: async (name) => {
     const isDesktop = await checkTauri();

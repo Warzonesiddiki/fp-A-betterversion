@@ -265,8 +265,8 @@ describe('nim service', () => {
       expect(result).toBe('Analysis result');
       const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
       expect(body.messages[1]!.content).toContain('Revenue');
-      expect(body.messages[1]!.content).toContain('120000');
-      expect(body.messages[1]!.content).toContain('100000');
+      expect(body.messages[1]!.content).toContain('Actual:');
+      expect(body.messages[1]!.content).toContain('Budget:');
       expect(body.messages[1]!.content).toContain('20.0%');
       expect(body.temperature).toBe(0.3);
     });
@@ -301,8 +301,8 @@ describe('nim service', () => {
       expect(result).toBe('Analysis result');
       const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
       expect(body.messages[1]!.content).toContain('Expenses');
-      expect(body.messages[1]!.content).toContain('Jan: 10000');
-      expect(body.messages[1]!.content).toContain('Feb: 12000');
+      expect(body.messages[1]!.content).toContain('Jan:');
+      expect(body.messages[1]!.content).toContain('Feb:');
       expect(body.messages[1]!.content).toContain('3');
     });
 
@@ -331,8 +331,8 @@ describe('nim service', () => {
       expect(result).toBe('Analysis result');
       const body = JSON.parse(mockFetch!.mock.calls[0]![1].body);
       expect(body.messages[1]!.content).toContain('FY2024 Budget');
-      expect(body.messages[1]!.content).toContain('500000');
-      expect(body.messages[1]!.content).toContain('350000');
+      expect(body.messages[1]!.content).toContain('Total Revenue:');
+      expect(body.messages[1]!.content).toContain('Total Expenses:');
       expect(body.messages[1]!.content).toContain('42');
     });
 

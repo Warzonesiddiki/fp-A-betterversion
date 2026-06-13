@@ -1,8 +1,8 @@
-<!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+<!-- DRAFT v0.2 — awaiting review — Atlas 2026-06-13 -->
 
 # Atlas T-ATL-018 — GDPR DPA Template Cross-link
 
-**Status:** DRAFT v0.1 — push-INDEPENDENT (Hephaestus T-HEP-014 is ACCEPTED 2026-06-13, 305L; condition from Leader's T-ATL-015 verdict MET).
+**Status:** DRAFT v0.2 — push-INDEPENDENT (Hephaestus T-HEP-014 is ACCEPTED 2026-06-13, 305L). v0.2 adds cross-link to Sentry self-test CI (T-ATL-021, in flight).
 **Owner:** Atlas (DevOps & Infrastructure).
 **Cycle:** 10, wave 1, push-independent lane.
 **Created:** 2026-06-13.
@@ -38,16 +38,16 @@ Per T-HEP-014 §3 (verbatim from Hephaestus DPA template, 305L, ACCEPTED 2026-06
 
 ## §3 — Cross-link matrix (sub-processor × Atlas reference × DPA clause)
 
-| Sub-processor        | Atlas reference                                                                               | DPA clause (T-HEP-014)                                                                        |
-| -------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| AWS S3               | T-ATL-008 §3 backup + T-ATL-002 DOCKER_TAURI §6 release artifacts                             | Art. 28(3)(a) processing on instructions + Art. 28(3)(c) security per Art. 32                 |
-| Cloudflare R2        | T-ATL-008 §1.2 R2 Object Lock (Compliance mode, 7-year retention per ADR-008)                 | Art. 28(3)(a) + Art. 28(3)(c) + Art. 28(3)(g) breach notification                             |
-| Vanta                | T-ATL-012 v2 §3 Sentry + Vanta evidence + ADR_VERIFICATION_EVIDENCE §3 quarterly cron         | Art. 28(3)(b) confidentiality + Art. 28(3)(f) audit rights                                    |
-| Sentry (self-hosted) | T-ATL-007 Sentry deployment + T-ATL-009 SDK install + ADR_VERIFICATION_EVIDENCE §2 hash chain | Art. 28(3)(a) + Art. 28(3)(g) — self-hosted = FinPlan Pro is its own sub-processor controller |
-| Stripe               | NONE in Atlas doc tree (Strategos commercial lane)                                            | Art. 28(3)(a) + Art. 28(3)(g) — billing only, no financial data in PII scope                  |
-| OpenAI / Anthropic   | NONE in Atlas doc tree (Apollo T-AP-001 NIM proxy lane)                                       | Art. 28(3)(a) + opt-in only — AI inference not in default data path                           |
-| Postmark / SendGrid  | T-ATL-015 customer-art34-private.md L115 (HTML wrapper mention, REFERENCE-ONLY)               | Art. 28(3)(a) + Art. 28(3)(g) — Art. 34 breach notification email delivery                    |
-| Datadog (planned Y2) | NONE yet — T-ATL-019 T-HEP-010 cron cross-link will reference (push-GATED)                    | (TENTATIVE — Datadog sub-processor not active until Y2)                                       |
+| Sub-processor        | Atlas reference                                                                                                                    | DPA clause (T-HEP-014)                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| AWS S3               | T-ATL-008 §3 backup + T-ATL-002 DOCKER_TAURI §6 release artifacts                                                                  | Art. 28(3)(a) processing on instructions + Art. 28(3)(c) security per Art. 32                 |
+| Cloudflare R2        | T-ATL-008 §1.2 R2 Object Lock (Compliance mode, 7-year retention per ADR-008)                                                      | Art. 28(3)(a) + Art. 28(3)(c) + Art. 28(3)(g) breach notification                             |
+| Vanta                | T-ATL-012 v2 §3 Sentry + Vanta evidence + ADR_VERIFICATION_EVIDENCE §3 quarterly cron                                              | Art. 28(3)(b) confidentiality + Art. 28(3)(f) audit rights                                    |
+| Sentry (self-hosted) | T-ATL-007 Sentry deployment + T-ATL-009 SDK install + T-ATL-021 self-test CI (in flight) + ADR_VERIFICATION_EVIDENCE §2 hash chain | Art. 28(3)(a) + Art. 28(3)(g) — self-hosted = FinPlan Pro is its own sub-processor controller |
+| Stripe               | NONE in Atlas doc tree (Strategos commercial lane)                                                                                 | Art. 28(3)(a) + Art. 28(3)(g) — billing only, no financial data in PII scope                  |
+| OpenAI / Anthropic   | NONE in Atlas doc tree (Apollo T-AP-001 NIM proxy lane)                                                                            | Art. 28(3)(a) + opt-in only — AI inference not in default data path                           |
+| Postmark / SendGrid  | T-ATL-015 customer-art34-private.md L115 (HTML wrapper mention, REFERENCE-ONLY)                                                    | Art. 28(3)(a) + Art. 28(3)(g) — Art. 34 breach notification email delivery                    |
+| Datadog (planned Y2) | NONE yet — T-ATL-019 T-HEP-010 cron cross-link will reference (push-GATED)                                                         | (TENTATIVE — Datadog sub-processor not active until Y2)                                       |
 
 ## §4 — Three Witnesses (D-002)
 
@@ -64,6 +64,7 @@ Per T-HEP-014 §3 (verbatim from Hephaestus DPA template, 305L, ACCEPTED 2026-06
 - **Strategos T-ST-006** (board deck v0.3) — Y2 board pack. Add line item: "Atlas cross-link to DPA template (§3 sub-processor list) operational" — closes the operational compliance chain.
 - **Mnemosyne T-MN-002 GLOSSARY v0.3** — candidate terms: "sub-processor" (per Art. 28(2)), "controller authorization" (per Art. 28(7)), "30-day change notice" (per AWS DPA §7). 3 new terms for cycle 11.
 - **Apollo T-AP-001** (push) — T-ATL-018 is push-INDEPENDENT. No post-push queue item.
+- **Atlas T-ATL-021** (Sentry self-test CI, in flight) — cross-link to v0.2: T-ATL-021 verifies Sentry sub-processor (#4) is operationally observable. Closes the "Sentry can silently fail" risk that would compromise Art. 28(3)(g) breach notification chain.
 
 ## §6 — Self-assessment + Honest Labeling
 

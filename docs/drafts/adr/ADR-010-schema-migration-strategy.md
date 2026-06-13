@@ -1,4 +1,4 @@
-<!-- DRAFT v0.1 — awaiting review — Mnemosyne 2026-06-12 -->
+<!-- DRAFT v0.2 — T-MN-013 Fix #1 applied (L15 "14 → 29 stores" + L320 "All 14 → All 29 persisted stores") + D-002 footnote, Mnemosyne 2026-06-13 — awaiting Athena T-AT-015 v0.5 re-validation -->
 
 # ADR-010: Schema migration strategy (persist + masterStorage + encryption)
 
@@ -12,7 +12,7 @@
 
 ## Context and Problem Statement
 
-FinPlan Pro persists 14 stores to `masterStorage` (see [ADR-005](/docs/adr/ADR-005-custom-masterstorage.md)) and is encrypted-at-rest for PII stores (see ADR-007). The persisted state is the **user's most valuable asset** — a CFO with 2 years of budget data in `dataStore` cannot lose it to a schema change.
+FinPlan Pro persists 29 stores to `masterStorage` (see [ADR-005](/docs/adr/ADR-005-custom-masterstorage.md)) and is encrypted-at-rest for PII stores (see ADR-007). The remaining 6 stores are transient (no `masterStorage` import, no `persist` wrapper): `cubeStore` (uses `cubeMigration.ts` for state hydration — see Layer 4 below), `constructionStore`, `energyStore`, `healthcareStore`, `insuranceStore`, `realEstateStore`. The persisted state is the **user's most valuable asset** — a CFO with 2 years of budget data in `dataStore` cannot lose it to a schema change.
 
 We need a single migration strategy that:
 
@@ -317,7 +317,7 @@ The export is via `masterStorage.__exportRaw()` which dumps the raw `localStorag
 
 - **`src/utils/masterStorage.ts`** — Layer 1
 - **`src/engines/EncryptionEngine.ts:16`** — Layer 2 (PBKDF2 iterations)
-- **All 14 persisted stores** — Layer 3 (per-store `version` + `migrate`)
+- **All 29 persisted stores** — Layer 3 (per-store `version` + `migrate`)
 - **`src/engines/CubeEngine.ts`** — Layer 4 (`static VERSION = 4`)
 - **ADR-002** — zustand `persist` middleware is the integration point
 - **ADR-005** — `masterStorage` envelope is the home of `masterStorageVersion`
@@ -326,6 +326,32 @@ The export is via `masterStorage.__exportRaw()` which dumps the raw `localStorag
 - **Apollo's P0 task** `[Apollo PRE-PUSH P0 #5] dataStore.ts PII leak + DoS` — first deployment of Layer 2 + Layer 3 in production
 - **Apollo's P1 task** `[Apollo post-push] Bump PBKDF2 to 600k iterations + kdfVersion migration` — first deployment of Layer 2 migration
 - **Mnemosyne audit 2026-06-12** — schema migration is one of the 5 P0 ADRs
+- **T-MN-013 Fix #1 (2026-06-13)** — "14 stores" → "29 stores" count correction (cascade-authorized by Athena T-AT-015 v0.4, 4th ICP sign-off pending v0.5 re-validation)
+
+---
+
+## D-002 Footnote: Store count evidence (T-MN-013 Fix #1, 2026-06-13)
+
+The "29 stores persist to `masterStorage`" claim is backed by 3 independent witnesses (D-002 Three-Witnesses Rule + codification 8 Glob ABSOLUTE path + codification 9 wc -l/stat):
+
+1. **Glob witness** (codification 8, ABSOLUTE path): `C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\*.ts` returns **35 files total** (verified via `ls src/store/*.ts | wc -l`).
+2. **Grep witness #1** (masterStorage import): `Grep "from '@/utils/masterStorage'"` returns **29 unique store files**.
+3. **Grep witness #2** (persist wrapper): `Grep "from 'zustand/middleware'" + "persist("` returns **29 unique store files** (the same 29).
+
+The 6 transient stores (no `masterStorage` import, no `persist` wrapper, total 35 - 29 = 6):
+
+| Store               | Why transient                                                     | Evidence                                                |
+| ------------------- | ----------------------------------------------------------------- | ------------------------------------------------------- |
+| `cubeStore`         | Uses `cubeMigration.ts` for state hydration (Layer 4 in this ADR) | `Grep "cubeMigration"` returns `src/store/cubeStore.ts` |
+| `constructionStore` | Sector-specific state, not user-portable                          | (no masterStorage import)                               |
+| `energyStore`       | Sector-specific state, not user-portable                          | (no masterStorage import)                               |
+| `healthcareStore`   | Sector-specific state, not user-portable                          | (no masterStorage import)                               |
+| `insuranceStore`    | Sector-specific state, not user-portable                          | (no masterStorage import)                               |
+| `realEstateStore`   | Sector-specific state, not user-portable                          | (no masterStorage import)                               |
+
+**Cross-Muse handoff**: Athena T-AT-015 v0.4 (file `docs/drafts/athena/T_AT_015_v04_T_MN_013_ADR_REVIEW_2026-06-13.md`) verified this count via D-009 Triangulation (Grep + Read + Glob, 3 witnesses). 21→20 unclassified correction applied to T-MN-013 Fix #2 (ADR-012 L50-66 extension).
+
+**D-007 Honest Labeling on size**: T-MN-013 Fix #1 was calibrated at 30 min. The actual landing time will be tracked in `docs/drafts/mnemosyne/T-MN-013_ADR_FIXES_V0_1_2026-06-13.md` (in progress).
 
 ---
 

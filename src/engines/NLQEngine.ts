@@ -69,29 +69,36 @@ export interface NLQChartConfig {
 // ─── Pattern Definitions ────────────────────────────────────────────────────
 
 const METRIC_PATTERNS: Record<string, string[]> = {
-  revenue: ['revenue', 'sales', 'income', 'top line'],
-  expenses: ['expenses', 'costs', 'spending', 'expenditure', 'outgoings'],
-  profit: ['profit', 'earnings', 'net income', 'bottom line', 'margin'],
+  revenue: ['revenue', 'sales', 'income', 'top line', 'gross revenue'],
+  expenses: ['expenses', 'costs', 'spending', 'expenditure', 'outgoings', 'opex'],
+  profit: ['profit', 'earnings', 'net income', 'bottom line', 'margin', 'net profit'],
+  'gross profit': ['gross profit', 'gross margin', 'cost of goods'],
+  ebitda: ['ebitda', 'operating income', 'operating profit'],
   budget: ['budget', 'planned', 'allocated', 'forecast'],
   actual: ['actual', 'realized', 'actuals'],
-  variance: ['variance', 'difference', 'delta', 'deviation'],
-  assets: ['assets', 'total assets'],
-  liabilities: ['liabilities', 'debts', 'obligations'],
-  equity: ['equity', 'shareholders equity'],
-  cashflow: ['cash flow', 'cashflow', 'cash'],
-  headcount: ['headcount', 'employees', 'staff', 'fte'],
+  variance: ['variance', 'difference', 'delta', 'deviation', 'gap'],
+  assets: ['assets', 'total assets', 'fixed assets', 'current assets'],
+  liabilities: ['liabilities', 'debts', 'obligations', 'payables'],
+  equity: ['equity', 'shareholders equity', 'retained earnings'],
+  cashflow: ['cash flow', 'cashflow', 'cash', 'free cash flow'],
+  headcount: ['headcount', 'employees', 'staff', 'fte', 'workforce'],
   arr: ['arr', 'annual recurring revenue'],
   mrr: ['mrr', 'monthly recurring revenue'],
-  churn: ['churn', 'attrition', 'retention'],
+  churn: ['churn', 'attrition', 'retention', 'logo churn'],
+  customers: ['customers', 'accounts', 'clients', 'subscribers'],
+  pipeline: ['pipeline', 'deal value', 'bookings'],
 };
 
 const DIMENSION_PATTERNS: Record<string, string[]> = {
-  region: ['region', 'territory', 'area', 'geography'],
-  department: ['department', 'dept', 'division', 'business unit'],
-  product: ['product', 'line', 'offering', 'service'],
-  entity: ['entity', 'subsidiary', 'company'],
-  account: ['account', 'gl', 'ledger'],
-  period: ['period', 'month', 'quarter', 'year'],
+  region: ['region', 'territory', 'area', 'geography', 'country', 'market'],
+  department: ['department', 'dept', 'division', 'business unit', 'team'],
+  product: ['product', 'line', 'offering', 'service', 'sku'],
+  entity: ['entity', 'subsidiary', 'company', 'business unit'],
+  account: ['account', 'gl', 'ledger', 'account code'],
+  period: ['period', 'month', 'quarter', 'year', 'fiscal year'],
+  customer: ['customer', 'client', 'account', 'buyer'],
+  vendor: ['vendor', 'supplier', 'provider'],
+  project: ['project', 'initiative', 'program'],
 };
 
 const TIME_PATTERNS = {
@@ -198,9 +205,10 @@ export class NLQEngine {
   // ─── Metric Extraction ──────────────────────────────────────────────────
 
   private static extractMetrics(text: string): string[] {
+    const lower = text.toLowerCase();
     const found: string[] = [];
     for (const [metric, patterns] of Object.entries(METRIC_PATTERNS)) {
-      if (patterns.some((p) => text.includes(p))) {
+      if (patterns.some((p) => lower.includes(p))) {
         found.push(metric);
       }
     }
@@ -210,9 +218,10 @@ export class NLQEngine {
   // ─── Dimension Extraction ───────────────────────────────────────────────
 
   private static extractDimensions(text: string): string[] {
+    const lower = text.toLowerCase();
     const found: string[] = [];
     for (const [dim, patterns] of Object.entries(DIMENSION_PATTERNS)) {
-      if (patterns.some((p) => text.includes(p))) {
+      if (patterns.some((p) => lower.includes(p))) {
         found.push(dim);
       }
     }
@@ -347,11 +356,30 @@ export class NLQEngine {
   // ─── Confidence ─────────────────────────────────────────────────────────
 
   private static calculateConfidence(intent: NLQIntent, entities: NLQEntities): number {
-    let confidence = 0.5;
-    if (entities.metrics.length > 0) confidence += 0.2;
+    let confidence = 0.4;
+
+    // Metric detection (0-0.25)
+    if (entities.metrics.length === 1) confidence += 0.2;
+    if (entities.metrics.length >= 2) confidence += 0.25;
+
+    // Dimension detection (0-0.15)
     if (entities.dimensions.length > 0) confidence += 0.15;
-    if (entities.timePeriod) confidence += 0.1;
-    if (intent !== 'kpi') confidence += 0.05;
+
+    // Time period specificity (0-0.15)
+    if (entities.timePeriod) {
+      const tv = entities.timePeriod.value;
+      // Specific periods get higher confidence
+      if (tv === 'YTD' || tv === 'MTD' || tv === 'QTD') confidence += 0.15;
+      else if (tv.startsWith('Q') || entities.timePeriod.year) confidence += 0.12;
+      else confidence += 0.08;
+    }
+
+    // Filter presence (0-0.05)
+    if (entities.filters.length > 0) confidence += 0.05;
+
+    // Intent clarity (0-0.05)
+    if (intent === 'comparison' || intent === 'trend') confidence += 0.05;
+
     return Math.min(confidence, 1);
   }
 

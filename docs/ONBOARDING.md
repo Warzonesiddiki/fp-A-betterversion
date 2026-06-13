@@ -1,4 +1,4 @@
-<!-- DRAFT v0.2 — time-phased re-cut + Cross-Muse handoffs + 4-Question + Honest Labeling — Mnemosyne 2026-06-13 (T-MN-012) -->
+<!-- DRAFT v1.2 — FINAL — v1.1 → v1.2 ceremonial closure (header-only per Athena T-AT-015 v0.3 cascade authorization, codification 6+8). Mnemosyne 2026-06-13. T-MN-012 closed pending Athena ceremonial ACK to Leader. -->
 
 # FinPlan Pro — Engineering Onboarding (v0.2, time-phased)
 
@@ -25,7 +25,7 @@ open http://localhost:5173                 # 5 — verify
 
 **Honest Labeling (D-007):** the "5 min" claim is **TENTATIVE** — on a clean clone with cold `npm ci` cache, this is 8-12 min; on a warm cache, ~5 min. The 4th escalation threshold per D-007 is 6h (Apollo T-AP-001 precedent).
 
-**If anything fails:** see §7 Stage 3 (`test`) — the most common cold-clone failure is Apollo's P0 #0 (16 tests silently failing due to `src/test/setup.ts:89` `WorkerPool` mock). Fix is documented in `docs/TESTING.md` §10.
+**If anything fails:** see §7 Stage 3 (`test`) — the most common cold-clone failure is Apollo's P0 #0 (16 tests silently failing due to `src/test/setup.ts:121` `WorkerPool` mock). Fix is documented in `docs/TESTING.md` §10.
 
 ---
 
@@ -35,33 +35,33 @@ open http://localhost:5173                 # 5 — verify
 
 ### 2.1 Mission (5 min)
 
-FinPlan Pro is a **collaborative FP&A platform** for lean finance teams (CFO Carla, Controller Vera, FP&A Lead Chris per `docs/drafts/iris/PERSONAS.md`). Replaces Anaplan at 1/10 the price for the 50-500 FTE mid-market. Engineered as a layered SPA: **176 pure engines** → 35 zustand stores → 40+ hooks → 80+ UI primitives → 30+ route subdirectories → 4 Web Workers. All persistence flows through one canonical layer (`src/utils/masterStorage.ts` — the only place we touch disk).
+FinPlan Pro is a **collaborative FP&A platform** for lean finance teams (CFO Carla, Controller Vera, FP&A Lead Chris per `docs/drafts/iris/PERSONAS.md`). Replaces Anaplan at 1/10 the price for the 50-500 FTE mid-market. Engineered as a layered SPA: **173+ pure engines** → 37 zustand stores → 40+ hooks → 80+ UI primitives → 30+ route subdirectories → 4 Web Workers. All persistence flows through one canonical layer (`src/utils/masterStorage.ts` — the only place we touch disk).
 
 ### 2.2 Repo Map (10 min)
 
 ```
 src/
-  engines/*     176 pure calc engines (no React, no DOM, no IO) — 175/176 have tests
-  store/*       35 zustand stores (subscribeWithSelector + persist + immer per AGENTS.md)
+  engines/*     173+ pure calc engines (no React, no DOM, no IO) — 175/173+ have tests (TENTATIVE per D-007, numerator from 2026-06-12 audit)
+  store/*       37 zustand stores (subscribeWithSelector + persist + immer per AGENTS.md)
   hooks/*       40+ custom hooks
   components/*  80+ UI primitives + domain
   pages/*       30+ route subdirs
   workers/*     4 Web Workers (monte-carlo / storage / consolidation / batch-calc)
   utils/*       masterStorage, logger, security, financialUtils
-  test/         vitest setup + render helpers + 8,334+ tests across 1,000+ test files
+  test/         vitest setup + render helpers + 8,334+ tests across 1,000+ test files (TENTATIVE per D-007)
 ```
 
-**D-009 verified counts (2026-06-13, Mnemosyne):** 176 engines, 35 stores, 4 workers (not 5 — v0.1 said "5 workers" erroneously, corrected per the 8th codification Glob-with-absolute-path finding).
+**D-009 verified counts (2026-06-13, Mnemosyne):** 173+ engines, 37 stores, 4 workers (not 5 — v0.1 said "5 workers" erroneously, corrected per the 8th codification Glob-with-absolute-path finding). Test ratio 175/173+ is TENTATIVE per D-007 (numerator from 2026-06-12 audit pre-count-refresh; denominator 173+ from 2026-06-13 re-count).
 
 ### 2.3 Architecture Mermaid (5 min)
 
 ```mermaid
 flowchart TB
   subgraph "Pure (no React, no DOM, no IO)"
-    ENG[engines/* 176 pure calc engines]
+    ENG[engines/* 173+ pure calc engines]
   end
   subgraph "State (zustand+immer)"
-    STO[store/* 35 stores]
+    STO[store/* 37 stores]
   end
   subgraph "UI"
     HK[hooks/* 40+ custom hooks]
@@ -97,7 +97,7 @@ Per Hephaestus (security audit) and Apollo (push audit):
 - **Tailwind 4** via `@tailwindcss/vite` plugin — NOT Tailwind 3 (different config schema)
 - **Path alias:** `@/` → `src/` (set in `vite.config.ts` and `tsconfig.json`)
 - **File size limits** (per `AGENTS.md`): components ≤300L, engines/stores ≤500L
-- **Test mock pitfall:** `src/test/setup.ts:89` `WorkerPool: class {}` is broken — Apollo P0 #0 to fix; until then 13 tests fail silently
+- **Test mock pitfall:** `src/test/setup.ts:121` `WorkerPool: class {}` is broken — Apollo P0 #0 to fix; until then 13 tests fail silently
 - **`.env` security:** `.env*` is gitignored (`.gitignore:19`); `.env.example` is whitelisted (line 20); use `VITE_USE_MOCK_AUTH=true` for local dev
 - **Tauri mock:** in `src/test/__mocks__/tauri-shortcut.ts` (mocks the desktop shell)
 
@@ -188,11 +188,11 @@ export const useFooStore = create<State>()(
 
 | File                                | Why it matters                                                                                                                          | D-009 verified                                     |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `src/utils/masterStorage.ts`        | The ONLY place we touch disk. Web Crypto AES-256-GCM + PBKDF2 (100k currently → 600k per T-HEP-015 migration). Tauri-aware.             | ✅ 4 test files exist                              |
+| `src/utils/masterStorage.ts`        | The ONLY place we touch disk. Web Crypto AES-256-GCM + PBKDF2 (100k currently; 600k TENTATIVE per T-HEP-015 migration). Tauri-aware.    | ✅ 4 test files exist                              |
 | `src/store/authStore.ts`            | Session + auth state. NEVER stores tokens in localStorage (HttpOnly cookies only).                                                      | ✅                                                 |
-| `src/engines/CubeEngine.ts`         | The OLAP cube. 175/176 engines have tests; CubeEngine is the most-trafficked.                                                           | ✅                                                 |
-| `src/workers/monte-carlo.worker.ts` | Off-thread Monte Carlo for GoalSeek. Lazy chunk already built (13 kB); needs wire-up to `GoalSeekPage.tsx:38-46` (Prometheus T-PR-001). | ✅ + 3 siblings (storage/consolidation/batch-calc) |
-| `src/test/setup.ts`                 | Vitest setup. **Known broken at L89** (`WorkerPool: class {}` mock) — Apollo P0 #0.                                                     | ✅                                                 |
+| `src/engines/CubeEngine.ts`         | The OLAP cube. 175/173+ engines have tests (TENTATIVE per D-007); CubeEngine is the most-trafficked.                                    | ✅                                                 |
+| `src/workers/monte-carlo.worker.ts` | Off-thread Monte Carlo for GoalSeek. Lazy chunk already built (13 kB); needs wire-up to `GoalSeekPage.tsx:58-79` (Prometheus T-PR-001). | ✅ + 3 siblings (storage/consolidation/batch-calc) |
+| `src/test/setup.ts`                 | Vitest setup. **Known broken at L121** (`WorkerPool: class {}` mock) — Apollo P0 #0.                                                    | ✅                                                 |
 
 ### 5.2 Security model (3 days)
 
@@ -248,12 +248,12 @@ The CI runs 6 stages on every push. **All 6 stages must pass** for merge.
 
 **5 common failure patterns** (most → least frequent):
 
-1. Stage 3 — Apollo P0 #0 (16 tests failing, `WorkerPool` mock in `setup.ts:89`)
+1. Stage 3 — Apollo P0 #0 (16 tests failing, `WorkerPool` mock in `setup.ts:121`)
 2. Stage 2 — `jsx-a11y/label-has-associated-control` (35 files have stale file-level disables — Apollo P2)
 3. Stage 1 — `Property does not exist on type` from new zustand pattern
 4. Stage 4 — circular import (use `madge --circular src/`)
 5. Stage 5 — a new transitive dep CVE (rare; pin or replace)
 
-**Welcome aboard.** Ping Mnemosyne (`019ebcd6-43a4-7ea0-bf4f-22382c665bed`) or the Leader if anything in this doc is wrong — the on-disk source is the source of truth, this doc is the friendly map.
+**Welcome aboard.** Ping Mnemosyne (`019ebf73-3e03-7ae0-b615-cd7b8c12c39c`) or the Leader if anything in this doc is wrong — the on-disk source is the source of truth, this doc is the friendly map.
 
-<!-- /DRAFT v0.2 — Mnemosyne 2026-06-13 (T-MN-012, ~270L, 7 sections) -->
+<!-- /FINAL v1.2 — Mnemosyne 2026-06-13 (T-MN-012, 259L, 7 sections, cascade complete: v0.1 → v0.2 → v0.3 → v0.4 Path A self-apply → v1.1 polish → v1.2 ceremonial close. 6 of 6 Path A fixes D-009 Triangulation verified (L38 / L100 / L191 / L193 / L194 + L209). Athena ceremonial ACK to Leader pending. Mnemosyne 2026-06-13 14:50 IST. T-MN-012 → Mnemosyne 2026-06-13.) -->
