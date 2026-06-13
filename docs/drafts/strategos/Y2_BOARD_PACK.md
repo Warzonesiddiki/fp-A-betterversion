@@ -162,19 +162,26 @@ Per Leader 2026-06-13 ACCEPT verdict (T-ST-014 v0.1 board scan), the Y2 floor $2
 
 Inherits 9 risks from `PHASE_1_GTM.md` v0.3 §7 (Risk 1-9) + 1 Y2-specific:
 
-**Risk 10 — Y2 channel conflict with Anaplan-replacement positioning (NEW for v0.1 Y2 pack)**
+**Risk 10 — Y2 channel conflict with Anaplan-replacement positioning (cycle-8 NEW for v0.1, v0.2 enhanced with fire-control math)**
 
-- **Likelihood:** Medium (Baker Tilly + Anaplan-replacement consultancies have direct Anaplan partnerships/referral fees)
-- **Impact:** **Medium-High** — if Beth (ICP-4) channel partners refuse to position us as Anaplan-replacement (because of their own Anaplan partnerships), the Beth motion collapses to "Carla+Chris-only with channel-referral-top-up". Y2 base $3.9M becomes $3.6M (drop 5 Beth × $60K = $300K).
-- **Mitigation:**
-  1. Baker Tilly specifically: they are _not_ an Anaplan reseller (per Iris T-IR-010 §3.1 — Baker Tilly is a "vendor-neutral advisor" position), so the conflict is low
-  2. Tier 2 channel partners (T-HER-007 §6 15 named firms) need channel-conflict check before LOI; Strategos proposes a "channel conflict pre-flight" as a new T-HER-008 v0.3 sub-task
-  3. Fallback: de-risk Beth to 1-2 wins (vs 5) and reallocate to Carla+Chris ramp
-- **Cross-ref:** Hermes T-HER-007 v0.2 §3 (3-year cap on exclusivity — this is _not_ an Anaplan-replacement positioning constraint) + Iris T-IR-010 §3.1 (Baker Tilly vendor-neutral)
+- **Likelihood:** Medium-High (Baker Tilly + Anaplan-replacement consultancies have direct Anaplan partnerships/referral fees; ~30% of top-10 accounting firms are exclusive Anaplan partners per industry baseline, _inference_; Baker Tilly is _not_ listed as Anaplan "Build with Anaplan" partner per public partner directory scan 2026-06-13, _inference — D-002 transparency_)
+- **Impact:** **High** — if Beth (ICP-4) channel partners refuse to position us as Anaplan-replacement (because of their own Anaplan partnerships), the Beth motion collapses. **Fire-control math (v0.2 NEW):** Y2 base $3.9M becomes $3.6M (drop 5 Beth × $60K = $300K = **$300K Y2 base at risk**). Y2 floor $2.4M unchanged (no-Beth scenario already in floor). Y2 stretch $6.5M unchanged (Beth's $600K stretch contribution drops to $0; Carla+Vera+Chris stretch math unchanged).
+- **Mitigation (5-line playbook per Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §4):**
+  1. **Baker Tilly specifically:** they are _not_ an Anaplan reseller (per Iris T-IR-010 §3.1 — Baker Tilly is a "vendor-neutral advisor" position), so the conflict is low. **Cycle-8 v0.2 NEW:** 4-question Baker Tilly conflict-of-interest check (vendor-neutrality / Anaplan partnership disclosure / FP&A-services-led / partner-PIC profile) per Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §2 to be completed by 2026-09-15.
+  2. **Tier 2 channel partners (T-HER-007 §6 15 named firms):** need channel-conflict check before LOI; **6-criteria tier-2 partner selection** (complementary / FP&A-services-led / EU/UK+US / Anaplan-replacement book ≥5 / co-deliver first 5-7 pitches / no exclusivity) per Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §3. Recommended: Deloitte/BDO/RSM/Crowe (4 alternates: Grant Thornton, BDO USA, Wipro, Slalom, Mazars).
+  3. **Territory carve-out (cycle-8 v0.2 NEW):** Beth = enterprise-vertical >$200K ACV; Carla/Vera = mid-market ≤$200K. Eliminates direct conflict on >$200K deals.
+  4. **Deal-registration policy (cycle-8 v0.2 NEW):** 15-25% ACV revenue share for partner-registered deals; first-registered wins; non-exclusive territory.
+  5. **Quarterly channel-health review (cycle-8 v0.2 NEW):** 5-LOI conversion funnel, deal-registration count, conflict-resolution log, NPS by channel-source. Trigger if Channel-NPS < Direct-NPS by >20 points for 2 consecutive quarters.
+- **Fallback fire-control (cycle-8 v0.2 NEW — 3 trigger conditions, ALL must hold):**
+  - (a) **2+ channel conflicts** escalate to Founder by 2027-Q1
+  - (b) **Channel-NPS < Direct-NPS by >20 points** for 2 consecutive quarters (per quarterly channel-health review)
+  - (c) **Baker Tilly Q1 2026 LOI conversion rate <15%** by 2027-Q1 (vs 30-60% baseline)
+  - **If all 3 hold:** downgrade Beth Y2 base to $120K (floor) and re-cut to direct-only Y2 (Carla + Vera + Chris, no Beth). Y2 base $3.9M → $3.6M. Channel motion defers to Y3 (2028). Founder + Strategos + Hermes co-decide the Y3 deferral at the 2027-Q1 board review (~2027-02-15).
+- **Cross-ref:** PHASE_1_GTM.md v0.3.1 §7 (5-line Risk 10 framing + 5 mitigations) + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §1-§5 (full pre-flight spec, 4 deliverables, 154L) + Iris T-IR-010 §3.1 (Baker Tilly vendor-neutral) + Hermes T-HER-007 v0.2 §3 (3-year cap on exclusivity) + T-HER-008 v0.2 PARTNERSHIP_MOTION (3 weakest-section rewrites)
 
-**Inherited risks from PHASE_1_GTM.md v0.3 §7 (9 risks):** Risk 1 multi-tenant infra / Risk 2 SOC 2 / Risk 3 ICP churn / Risk 4 ICP-3 PLG churn / Risk 5 tenant-isolation breach / Risk 6 HSM slip / Risk 7 D-010 slip / Risk 8 Vera cycle / Risk 9 D-009 policy.
+**Inherited risks from PHASE_1_GTM.md v0.3.1 §7 (10 risks):** Risk 1 multi-tenant infra / Risk 2 SOC 2 / Risk 3 ICP churn / Risk 4 ICP-3 PLG churn / Risk 5 tenant-isolation breach / Risk 6 HSM slip / Risk 7 D-010 slip / Risk 8 Vera cycle / Risk 9 D-009 policy / **Risk 10 Y2 channel conflict (cycle-8 v0.3.1 addition, this v0.2 enhanced).**
 
-> **Witness (D-002) on Risk 10:** _Source:_ Iris T-IR-010 §3.1 (Baker Tilly vendor-neutral) + Hermes T-HER-007 v0.2 §3 (3-year cap) + 15 named firms SMB tier (T-HER-007 §6). _Data:_ No primary channel conflict data; this is _inference_ from public channel partnership norms. _Competitive context:_ Workday Adaptive and Anaplan both have "channel conflict" risks in their GTM; Workday mitigates with "Adaptive is Workday product" framing; Anaplan mitigates with "pure-play" framing. We are pure-play; mitigation is straightforward. _D-009 Triangulation_: T-HER-007 v0.2 §3 + §6 are the canonical sources; if Leader or Founder raises concern, escalate to T-ST-015 (Y2 channel conflict pre-flight) at 30 min.
+> **Witness (D-002) on Risk 10:** _Source:_ PHASE_1_GTM.md v0.3.1 §7 Risk 10 (5-line framing + 5 mitigations) + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §1-§5 (154L pre-flight, 4 deliverables, 3 trigger conditions) + Iris T-IR-010 §3.1 (Baker Tilly vendor-neutral) + Hermes T-HER-007 v0.2 §3 (3-year cap) + 15 named firms SMB tier (T-HER-007 §6). _Data:_ $300K Y2 base at risk (5 Beth wins × $60K ACV); 30-60% Baker Tilly LOI-to-win conversion (industry baseline, _inference_); ~30% of top-10 accounting firms are exclusive Anaplan partners (industry baseline, _inference_). _Competitive context:_ Workday Adaptive and Anaplan both have "channel conflict" risks in their GTM; Workday mitigates with "Adaptive is Workday product" framing; Anaplan mitigates with "pure-play" framing. We are pure-play; mitigation is Anaplan's playbook (deal-registration + territory carve-out + 15-25% revenue share). _D-009 Triangulation_: PHASE_1_GTM.md v0.3.1 §7 + Y2_CHANNEL_CONFLICT_PREFLIGHT.md v0.1 §1-§5 are the canonical sources; T-ST-015 closed 2026-06-13 (154L SHIP).
 
 ## §10. Cross-Muse handoffs (cycle-8 task board state → Y2 deliverables)
 
