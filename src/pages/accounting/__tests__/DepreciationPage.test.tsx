@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
@@ -9,31 +8,21 @@ vi.mock('@/store/glStore', () => ({
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: any) => children,
-  BarChart: (props: any) => <div data-testid="bar-chart" />,
+  BarChart: (props: any) => <div data-testid="bar-chart">{props.children}</div>,
   Bar: () => null,
   XAxis: () => null,
   YAxis: () => null,
   CartesianGrid: () => null,
   Tooltip: () => null,
   Legend: () => null,
+  LineChart: (props: any) => <div data-testid="line-chart">{props.children}</div>,
+  Line: () => null,
+  AreaChart: (props: any) => <div data-testid="area-chart">{props.children}</div>,
+  Area: () => null,
+  PieChart: (props: any) => <div data-testid="pie-chart">{props.children}</div>,
+  Pie: () => null,
+  Cell: () => null,
 }));
-
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    TrendingDown: makeIcon(),
-    DollarSign: makeIcon(),
-    Download: makeIcon(),
-    BarChart3: makeIcon(),
-    Landmark: makeIcon(),
-  };
-});
 
 import DepreciationPage from '@/pages/accounting/DepreciationPage';
 
@@ -44,6 +33,8 @@ describe('DepreciationPage', () => {
 
   it('renders heading', () => {
     render(<DepreciationPage />);
-    expect(screen.getByText(/Depreciation/i)).toBeTruthy();
+    expect(
+      screen.getByRole('heading', { name: /Depreciation & Amortization/i, level: 1 })
+    ).toBeTruthy();
   });
 });
