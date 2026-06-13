@@ -1,4 +1,22 @@
 <!-- T-HE-011 BUGFIX v0.1 — Hera 2026-06-13 -->
+<!--
+  ⚠️  STATUS: **OBSOLETE** as of 2026-06-13 12:50 IST — DO NOT APPLY ⚠️
+
+  This patch was generated at 05:40 IST based on the buggy state of
+  bcf44df0 (tsc exit 2). However, commit bda9f146 (2026-06-13 05:49 IST,
+  "fix(settings): convert CRLF to LF + prettier reindent org tab") ALREADY
+  FIXED the bug. Current HEAD `9dfd31f9` is CLEAN (tsc exit 0).
+
+  Apollo T-AP-001 pre-flight verified by Leader at 12:50 IST:
+  - `git show bcf44df0:src/pages/settings/SettingsPage.tsx` shows buggy state
+  - `git show HEAD:src/pages/settings/SettingsPage.tsx` shows fixed state
+  - `npx tsc --noEmit` returns exit 0
+
+  Apollo 8th escalation sent 12:50 IST with CORRECTION: "do NOT apply patch."
+
+  KEPT ON DISK for D-009 audit trail (9th "Honest Labeling" moment,
+  Leader canonical, time-bound pre-flight claim correction).
+-->
 # T-HE-011 JSX closing-order bugfix — SettingsPage.tsx
 #
 # **CRITICAL BUG IN bcf44df0**: T-HE-011 work was committed with broken JSX structure
