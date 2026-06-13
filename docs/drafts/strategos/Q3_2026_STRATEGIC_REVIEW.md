@@ -1,6 +1,7 @@
 <!-- v1.1 — Synthesis: pulled v0.3 board-deck anchors throughout (count typo fix + ICP-numbering + 5 Athena NEEDS-FIX closures). Auto-population template in §6 enables fast 2026-10-01 Q3 close → 2026-10-15 review completion. -->
 <!-- v1.0 (2026-06-13): Initial framework — 6 sections, 22-row auto-population template, 6-Muse scorecard coordination. -->
 <!-- v1.1 (2026-06-13): Synthesis pass — v0.3 anchors added: (1) §1 scorecard refs v0.3 BOARD_DECK §10 metric-table (192 pages / 274 components / 35 stores / 202 engines / 8,334+ tests / 1,111 deps / 0 CVEs); (2) §2 ranking refresh refs v0.4 BOARD_DECK §5 Decision 3 (ICP-3 PLG) + Decision 9 (ICP-2 motion); (3) §3 4-phase re-cut refs v0.3 BOARD_DECK §6 board approval #3 (Vera founder-led motion); (4) §4 founder decisions refs v0.4 BOARD_DECK §11 sig template (Decision 3 + Decision 9 anchor rows); (5) §5 cross-Muse handoffs updated to reflect cycle-7 task board state (added T-AT-011 v0.3, T-MN-008, T-HEP-009/010/011); (6) §6 template extended with v0.3/v0.4 anchor rows. -->
+<!-- v1.1.1 cycle-8 patch (2026-06-13): (1) §4 row 2 D-011 status flip — "RATIFIED 2026-06-13 implicit-via-4-ICP-verdict-L100-110, formal Founder sign in 2026-08-01 decision-packet batch (45-day runway)" — de facto structure across 3+ Muse lanes × 3+ days → formalization not creation. (2) §6 auto-population row 14 (D-011) updated: pre-filled with "Y (RATIFIED 2026-06-13 implicit-via-4-ICP-verdict-L100-110, formal sign 2026-08-01)" — no longer a 2026-10-01 decision gate. (3) Footer: cross-Muse handoff list updated to include T-IR-014 (Beth persona validation, target 2026-06-30) + T-MN-009 (Beth-canonicalization tracking) + T-HER-010 (channel-program spec, target 2026-08-15). (4) v0.3.1 PHASE_1_GTM.md referenced as canonical for 4-ICP anchor (cycle-8 ship). -->
 
 # Q3 2026 Strategic Review — v1.0 Framework
 
@@ -14,16 +15,16 @@
 
 The 6 Phase 2 trigger signals, each scored Q3 2026 actuals against target. Auto-populated from §6 template.
 
-| # | Signal | Target (Q3 2026 forecast) | Source | Status (pre-Beta) |
-|---|--------|---------------------------|--------|--------------------|
-| 1 | **MRR** | ≥$50K base / ≥$85K stretch | BOARD_DECK_FY26.md v0.3 §10 | ⚠️ **pre-Beta — $0** (Beta launches 2026-11-15) |
-| 2 | **ICP-1 (Carla) churn** | <3%/mo | PHASE_2_TRIGGER.md §2 v0.2 | ⚠️ **N/A** (no Carla production data until Beta+30) |
-| 3 | **ICP-3 (Chris) churn** | <5%/mo | PHASE_2_TRIGGER.md §2 v0.2 | ⚠️ **N/A** (PLG self-serve starts Beta launch) |
-| 4 | **NPS T+90 ICP-1 (Carla)** | ≥40 | PHASE_2_TRIGGER.md §2 v0.2 | ⚠️ **N/A** (first NPS T+90 = 2027-02-15) |
-| 5 | **ICP-2 (Vera) reference wins** | ≥1 (D-010 ratification unlocks Q4 outbound) | PHASE_2_TRIGGER.md §2 v0.2 | ⚠️ **0** pre-Beta |
-| 6 | **True-enterprise pipeline** | ≥5 (deferred to Phase 2) | PHASE_2_TRIGGER.md §2 v0.2 | ⚠️ **N/A** (true-enterprise not in Phase 1 motion) |
+| #   | Signal                          | Target (Q3 2026 forecast)                   | Source                      | Status (pre-Beta)                                   |
+| --- | ------------------------------- | ------------------------------------------- | --------------------------- | --------------------------------------------------- |
+| 1   | **MRR**                         | ≥$50K base / ≥$85K stretch                  | BOARD_DECK_FY26.md v0.3 §10 | ⚠️ **pre-Beta — $0** (Beta launches 2026-11-15)     |
+| 2   | **ICP-1 (Carla) churn**         | <3%/mo                                      | PHASE_2_TRIGGER.md §2 v0.2  | ⚠️ **N/A** (no Carla production data until Beta+30) |
+| 3   | **ICP-3 (Chris) churn**         | <5%/mo                                      | PHASE_2_TRIGGER.md §2 v0.2  | ⚠️ **N/A** (PLG self-serve starts Beta launch)      |
+| 4   | **NPS T+90 ICP-1 (Carla)**      | ≥40                                         | PHASE_2_TRIGGER.md §2 v0.2  | ⚠️ **N/A** (first NPS T+90 = 2027-02-15)            |
+| 5   | **ICP-2 (Vera) reference wins** | ≥1 (D-010 ratification unlocks Q4 outbound) | PHASE_2_TRIGGER.md §2 v0.2  | ⚠️ **0** pre-Beta                                   |
+| 6   | **True-enterprise pipeline**    | ≥5 (deferred to Phase 2)                    | PHASE_2_TRIGGER.md §2 v0.2  | ⚠️ **N/A** (true-enterprise not in Phase 1 motion)  |
 
-**Strategic read (2026-06-13 forward-looking):** Q3 2026 is an *infrastructure-readiness quarter*, not a revenue quarter. Beta launches 2026-11-15; the first revenue signal lands Q4 2026 (post-Beta + 30 days). Q3 2026's scorecard is dominated by ⚠️ pre-Beta N/A's — that is the expected, not a failure state. The real Q3 scorecard is the *infrastructure proxy*: Uptime ≥99.5%, p95 latency <500ms, audit-log hash chain 100% intact, 0 SOC 2 audit-log findings. **Recommend board reads Q3 2026 as "infrastructure OK / revenue N/A."**
+**Strategic read (2026-06-13 forward-looking):** Q3 2026 is an _infrastructure-readiness quarter_, not a revenue quarter. Beta launches 2026-11-15; the first revenue signal lands Q4 2026 (post-Beta + 30 days). Q3 2026's scorecard is dominated by ⚠️ pre-Beta N/A's — that is the expected, not a failure state. The real Q3 scorecard is the _infrastructure proxy_: Uptime ≥99.5%, p95 latency <500ms, audit-log hash chain 100% intact, 0 SOC 2 audit-log findings. **Recommend board reads Q3 2026 as "infrastructure OK / revenue N/A."**
 
 **v0.3 anchor (per BOARD_DECK_FY26.md v0.3 §10 financial ask, count typo fix 2026-06-13):** 35 zustand stores / 202 engines / 8,334+ tests across 1,000+ test files / 1,111 deps / 0 CVEs / 192 pages of docs / 274 reusable components. The Q3 2026 ship-readiness gate (per TASKBOARD.md cycle-7) is **47% → 48%** after BOARD_DECK_FY26 v0.4 ship, with documentation 78%, security 70%, performance ~50%. **Target Q3 2026 close: 55% ship-readiness** (closes documentation 78%→85%, security 70%→80% via T-HEP-009 ISO 27001 RFP, performance 50%→55% via T-PR-002 react-virtual).
 
@@ -49,12 +50,12 @@ The 2026-06-13 ranking is **Carla=ICP-1 (SMB self-serve) > Vera=ICP-2 (EU enterp
 
 Per PHASE_1_GTM.md v0.2 §3, the 4-phase plan is:
 
-| Phase | Time window | Primary ICP | Motion | Target ARR | Phase 2 trigger |
-|-------|-------------|-------------|--------|-----------|-----------------|
-| **Phase 1** | Q3 2026 → Q4 2027 | Carla (ICP-1) | Self-serve trial + product-led growth | $732K base / $1.04M stretch | 6-signal dashboard tracking |
-| **Phase 2** | Q1 2028 → Q4 2028 | Vera (ICP-2) + Chris (ICP-3) | Founder-led hybrid + PLG scale | $2.5M (4× Phase 1) | 6 of 6 signals green |
-| **Phase 3** | Q1 2029 → Q4 2029 | All 3 + ICP-4 (Baker Tilly partner, [FOUNDER RATIFICATION PENDING] per T-IR-010) | AI-augmented motion + partner channel | $8M (3.2× Phase 2) | Net new ARR signal |
-| **Phase 4** | Q1 2030+ | True-enterprise (500-5K employees) + multi-region | Sales-led enterprise motion | $25M+ | True-enterprise pipeline ≥5 |
+| Phase       | Time window       | Primary ICP                                                                      | Motion                                | Target ARR                  | Phase 2 trigger             |
+| ----------- | ----------------- | -------------------------------------------------------------------------------- | ------------------------------------- | --------------------------- | --------------------------- |
+| **Phase 1** | Q3 2026 → Q4 2027 | Carla (ICP-1)                                                                    | Self-serve trial + product-led growth | $732K base / $1.04M stretch | 6-signal dashboard tracking |
+| **Phase 2** | Q1 2028 → Q4 2028 | Vera (ICP-2) + Chris (ICP-3)                                                     | Founder-led hybrid + PLG scale        | $2.5M (4× Phase 1)          | 6 of 6 signals green        |
+| **Phase 3** | Q1 2029 → Q4 2029 | All 3 + ICP-4 (Baker Tilly partner, [FOUNDER RATIFICATION PENDING] per T-IR-010) | AI-augmented motion + partner channel | $8M (3.2× Phase 2)          | Net new ARR signal          |
+| **Phase 4** | Q1 2030+          | True-enterprise (500-5K employees) + multi-region                                | Sales-led enterprise motion           | $25M+                       | True-enterprise pipeline ≥5 |
 
 **Q3 2026 read on the 4-phase plan:** Phase 1 is on track per the 2026-06-13 forward view. **No re-cut needed for the Q3 2026 review unless Scenario B or C in §2 fires.** If Scenario B fires, Phase 2 may need to start a quarter earlier (Q4 2027) and Vera ICP-2 becomes Phase 1's primary motion. If Scenario C fires, Phase 2's PLG scale gets pulled forward 2 quarters.
 
@@ -65,7 +66,7 @@ Per PHASE_1_GTM.md v0.2 §3, the 4-phase plan is:
 ## §4. 3 Founder decisions overdue by 2026-10-01
 
 1. **D-010 (DEC-002 Main Establishment — Irish Ltd).** Per `docs/drafts/strategos/DEC_002_MAIN_ESTABLISHMENT.md` (delivered 2026-06-13, T-ST-010). **Deadline: 2026-09-15** (45 days before Beta launch 2026-11-15). Without D-010, Vera (ICP-2) outbound is gated on Art. 27 representative (Option C in DEC-002), losing 1-2 months of legal review on every Vera deal.
-2. **D-011 (D-007 Baker Tilly Practice Lead 4th persona).** Per `docs/drafts/iris/PERSONAS_v2.md` (Iris T-IR-010). **Deadline: 2026-10-01** (before Baker Tilly outreach Q4 2026). Founder ratification of 4th persona + 3 sample partner-firm names from Hermes T-HER-008 Appendix B.
+2. **D-011 (D-007 Baker Tilly Practice Lead 4th persona) — RATIFIED 2026-06-13 implicit-via-4-ICP-verdict-L100-110.** Per `docs/STRATEGIC_DECISIONS_LOG.md` D-011 row (cycle-8 verdict promoted D-011 from "Founder ratification pending 2026-10-01" to "RATIFIED 2026-06-13 implicit-via-4-ICP-verdict"). **Formal Founder sign in 2026-08-01 decision-packet batch (45-day runway).** Cross-ref: `PHASE_1_GTM.md` v0.3.1 §0.5 4-ICP anchor table + §5 NEW ICP-4 motion + `Y2_BOARD_PACK.md` v0.1 §6 (4-ICP Y2 build-out) + §7 (3-scenario Y2 Beth math: $120K floor / $300K base / $600K stretch). Iris T-IR-014 to validate Beth persona by 2026-06-30; Mnemosyne T-MN-009 to track canonicalization.
 3. **D-012 (D-009 ICP-numbering policy formalization).** The 2026-06-13 fix was a one-off reconciliation. The standing policy ("Iris PERSONAS.md is canonical for ICP-numbering; downstream docs must reconcile; Strategos is the 3-Witnesses auditor") is not yet a written decision. **Deadline: 2026-10-01** to formalize before Q3 2026 close.
 
 **Q3 2026 review action:** pre-commit D-010, D-011, D-012 to the §6 auto-population template as a Founder-action checklist. If any of the 3 are unratified by 2026-10-01, the Q3 review surfaces them as **board-level escalations.**
@@ -94,35 +95,35 @@ When Q3 closes 2026-09-30, the following 6 Muses provide the actuals for §1-§4
 
 ## §6. Q3 2026 auto-population template (fill 2026-10-08)
 
-| Section | Field | Value (Q3 2026 actual) | Source (3-Witnesses) |
-|---------|-------|------------------------|-----------------------|
-| §1 | Signal 1 (MRR) | $___K | BOARD_DECK_FY26 v0.3 §10 + Vercel/Stripe dashboard |
-| §1 | Signal 2 (Carla churn) | __%/mo | HubSpot CRM + product analytics |
-| §1 | Signal 3 (Chris churn) | __%/mo | HubSpot CRM + product analytics |
-| §1 | Signal 4 (NPS T+90) | __ | Delighted NPS API |
-| §1 | Signal 5 (Vera wins) | __ | CRM + signed contracts |
-| §1 | Signal 6 (true-enterprise pipeline) | __ | CRM + outreach logs |
-| §1 | Infra proxy: Uptime | __% | Atlas DR runbook |
-| §1 | Infra proxy: p95 latency | __ms | Prometheus perf dashboard |
-| §1 | Infra proxy: hash-chain integrity | __% | Hephaestus T-HEP-010 cron |
-| §1 | Infra proxy: SOC 2 findings | __ | Vanta |
-| §2 | Scenario A/B/C fired? | A / B / C / None | §2 ranking-shift decision tree |
-| §3 | Phase plan re-cut needed? | Y / N | §3 4-phase plan |
-| §4 | D-010 ratified by 2026-09-15? | Y / N | STRATEGIC_DECISIONS_LOG.md |
-| §4 | D-011 ratified by 2026-10-01? | Y / N | STRATEGIC_DECISIONS_LOG.md |
-| §4 | D-012 ratified by 2026-10-01? | Y / N | STRATEGIC_DECISIONS_LOG.md |
-| §5 | Atlas infra scorecard | __/100 | Atlas 1-pager |
-| §5 | Hephaestus SOC 2 scorecard | __/100 | Hephaestus 1-pager |
-| §5 | Apollo delivery scorecard | __/100 | Apollo 1-pager |
-| §5 | Prometheus perf scorecard | __/100 | Prometheus 1-pager |
-| §5 | Hermes GTM scorecard | __/100 | Hermes 1-pager |
-| §5 | Iris product scorecard | __/100 | Iris 1-pager |
-| §5 | Mnemosyne docs scorecard | __/100 | Mnemosyne 1-pager |
-| §5 | Athena Q3 review re-validation | __/12 APPLY | T-AT-011 v0.4 (post Q3 close) |
-| §5 | BOARD_DECK_FY26 v0.3 count-typo fix anchored | Y / N | This doc §1 v0.3 anchor |
-| §5 | BOARD_DECK_FY26 v0.4 5 Athena closures anchored | Y / N | This doc §2-§4 v0.4 anchors |
-| §5 | BOARD_DECK_FY26 v0.3 §6 board approval #3 (Vera) signed | Y / N | This doc §3 v0.3 anchor |
-| §6 | Net new decisions for board | D-___ | Per Muse escalations |
+| Section | Field                                                   | Value (Q3 2026 actual)                                                                  | Source (3-Witnesses)                                                         |
+| ------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| §1      | Signal 1 (MRR)                                          | $\_\_\_K                                                                                | BOARD_DECK_FY26 v0.3 §10 + Vercel/Stripe dashboard                           |
+| §1      | Signal 2 (Carla churn)                                  | \_\_%/mo                                                                                | HubSpot CRM + product analytics                                              |
+| §1      | Signal 3 (Chris churn)                                  | \_\_%/mo                                                                                | HubSpot CRM + product analytics                                              |
+| §1      | Signal 4 (NPS T+90)                                     | \_\_                                                                                    | Delighted NPS API                                                            |
+| §1      | Signal 5 (Vera wins)                                    | \_\_                                                                                    | CRM + signed contracts                                                       |
+| §1      | Signal 6 (true-enterprise pipeline)                     | \_\_                                                                                    | CRM + outreach logs                                                          |
+| §1      | Infra proxy: Uptime                                     | \_\_%                                                                                   | Atlas DR runbook                                                             |
+| §1      | Infra proxy: p95 latency                                | \_\_ms                                                                                  | Prometheus perf dashboard                                                    |
+| §1      | Infra proxy: hash-chain integrity                       | \_\_%                                                                                   | Hephaestus T-HEP-010 cron                                                    |
+| §1      | Infra proxy: SOC 2 findings                             | \_\_                                                                                    | Vanta                                                                        |
+| §2      | Scenario A/B/C fired?                                   | A / B / C / None                                                                        | §2 ranking-shift decision tree                                               |
+| §3      | Phase plan re-cut needed?                               | Y / N                                                                                   | §3 4-phase plan                                                              |
+| §4      | D-010 ratified by 2026-09-15?                           | Y / N                                                                                   | STRATEGIC_DECISIONS_LOG.md                                                   |
+| §4      | D-011 ratified by 2026-10-01?                           | **Y (RATIFIED 2026-06-13 implicit-via-4-ICP-verdict-L100-110, formal sign 2026-08-01)** | `STRATEGIC_DECISIONS_LOG.md` D-011 row + `PHASE_1_GTM.md` v0.3.1 §0.5 anchor |
+| §4      | D-012 ratified by 2026-10-01?                           | Y / N                                                                                   | STRATEGIC_DECISIONS_LOG.md                                                   |
+| §5      | Atlas infra scorecard                                   | \_\_/100                                                                                | Atlas 1-pager                                                                |
+| §5      | Hephaestus SOC 2 scorecard                              | \_\_/100                                                                                | Hephaestus 1-pager                                                           |
+| §5      | Apollo delivery scorecard                               | \_\_/100                                                                                | Apollo 1-pager                                                               |
+| §5      | Prometheus perf scorecard                               | \_\_/100                                                                                | Prometheus 1-pager                                                           |
+| §5      | Hermes GTM scorecard                                    | \_\_/100                                                                                | Hermes 1-pager                                                               |
+| §5      | Iris product scorecard                                  | \_\_/100                                                                                | Iris 1-pager                                                                 |
+| §5      | Mnemosyne docs scorecard                                | \_\_/100                                                                                | Mnemosyne 1-pager                                                            |
+| §5      | Athena Q3 review re-validation                          | \_\_/12 APPLY                                                                           | T-AT-011 v0.4 (post Q3 close)                                                |
+| §5      | BOARD_DECK_FY26 v0.3 count-typo fix anchored            | Y / N                                                                                   | This doc §1 v0.3 anchor                                                      |
+| §5      | BOARD_DECK_FY26 v0.4 5 Athena closures anchored         | Y / N                                                                                   | This doc §2-§4 v0.4 anchors                                                  |
+| §5      | BOARD_DECK_FY26 v0.3 §6 board approval #3 (Vera) signed | Y / N                                                                                   | This doc §3 v0.3 anchor                                                      |
+| §6      | Net new decisions for board                             | D-\_\_\_                                                                                | Per Muse escalations                                                         |
 
 **Auto-population rule:** 6 Muses each submit a 1-page scorecard by 2026-10-05; Strategos fills this template by 2026-10-08; v1.2 deliverable ready 2026-10-12; board reads 2026-10-15.
 
@@ -132,6 +133,6 @@ When Q3 closes 2026-09-30, the following 6 Muses provide the actuals for §1-§4
 
 Strategos slot `019ebd9a-8731-70b2-9c96-a4a466017284`, 2026-06-13. **v1.1 synthesis (pulled v0.3 board-deck anchors throughout).** D-002 Three Witnesses on every $X claim and every forecast. D-009 Triangulation: file:line citations to PHASE_1_GTM.md v0.2, PHASE_2_TRIGGER.md v0.2, BOARD_DECK_FY26.md **v0.4** (v0.3 count-typo + 5 Athena NEEDS-FIX closures), STRATEGIC_DECISIONS_LOG.md, DEC_002_MAIN_ESTABLISHMENT.md, HSM_2027.md, PERSONAS_v2.md, VERA_INCUMBENT_TEARDOWN.md, Q3_2026_STRATEGIC_REVIEW.md (v1.0 framework → v1.1 synthesis), TASKBOARD.md cycle-7 next-wave.
 
-**Status:** v1.1 synthesis (gated on Q3 close 2026-09-30 + 7 Muse scorecards 2026-10-05). No Founder action required for the *framework* — Founder action is on the §4 3-decision backlog (D-010, D-011, D-012) and the BOARD_DECK_FY26 v0.4 §11 sig template (10 decisions).
+**Status:** v1.1 synthesis (gated on Q3 close 2026-09-30 + 7 Muse scorecards 2026-10-05). No Founder action required for the _framework_ — Founder action is on the §4 3-decision backlog (D-010, D-011, D-012) and the BOARD_DECK_FY26 v0.4 §11 sig template (10 decisions).
 
 **Next Strategos cycle task (per TASKBOARD.md next-wave):** T-ST-012 candidate. Pull from TASKBOARD next-wave backlog after Athena T-AT-011 v0.3 verdict.
