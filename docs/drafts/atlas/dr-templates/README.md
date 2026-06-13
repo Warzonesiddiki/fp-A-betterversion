@@ -1,4 +1,4 @@
-<!-- DRAFT v0.2 — awaiting review — Atlas 2026-06-13 (added template #5, T-ATL-015) -->
+<!-- DRAFT v0.3 — awaiting review — Atlas 2026-06-13 (added GDPR DPA cross-link, T-ATL-018) -->
 
 # DR comms templates — index & usage
 
@@ -65,7 +65,8 @@ sed -e 's/\[SHORT_DESCRIPTION\]/EU region failover in progress/g' \
 - **Sibling runbook.** `../ON_CALL_RUNBOOK.md` §1 (T-ATL-003, ACCEPTED 2026-06-13) — SEV-1 to SEV-4 definitions
 - **Scenarios.** `../DISASTER_RECOVERY_RUNBOOK.md` §3.1-§3.5 — the 5 scenarios that trigger the templates
 - **PENDING DEC-002 candidate.** Main establishment designation (Strategos) — drives Art. 56 routing in template #4
+- **Sibling compliance.** `../GDPR_DPA_CROSSLINK.md` (T-ATL-018, DRAFT v0.1) — Atlas × Hephaestus cross-link to T-HEP-014 §3 sub-processor list. The 5 templates touch 4 of 8 sub-processors (R2, Sentry, Vanta, Postmark); the cross-link is the Art. 28 chain-of-custody for each.
 
 ---
 
-**5 templates, 1 index, CEO at-incident-time ready, sed-safe character discipline, annual review per §10. — Atlas 2026-06-13 09:15 IST (v0.2 with template #5)**
+**5 templates, 1 index, 1 GDPR DPA cross-link, CEO at-incident-time ready, sed-safe character discipline, annual review per §10. — Atlas 2026-06-13 (v0.3 with GDPR DPA cross-link)**

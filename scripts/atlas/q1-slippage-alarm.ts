@@ -28,7 +28,6 @@
  * PRE-REQS
  *   Node 18+ (built-in fetch). No npm deps. Optional env:
  *     SLACK_WEBHOOK_URL  — if set, POST alert to Slack on alarm
- *     CALENDAR_FILE      — JSON file override of the 2027 table
  *     OVERRIDE_TODAY     — ISO date for testing (e.g. 2027-04-15)
  *
  * THREE WITNESSES (D-002)
@@ -47,7 +46,6 @@
 // ---------- Config ----------
 
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL ?? '';
-const CALENDAR_FILE = process.env.CALENDAR_FILE ?? '';
 const OVERRIDE_TODAY = process.env.OVERRIDE_TODAY ?? '';
 
 // ---------- Types ----------
@@ -146,16 +144,51 @@ async function run(): Promise<AlarmResult> {
   const t = today();
   const cq = quarterOf(t);
   const nq = nextQuarterName(t);
+  const scheduleYear = parseInt(SCHEDULE_2027[0]!.date.slice(0, 4), 10);
+  const todayYear = t.getUTCFullYear();
   const next = findNextExercise(t);
   const deadline = midQDeadline(t);
 
-  // Past mid-Q of next-quarter AND next-quarter exercise not scheduled?
-  // (next is null only if today is past the last exercise of the year.)
+  // Year-scoping: the script is configured for one year (2027).
+  // - Before the schedule year: "schedule not yet active" — no alarm.
+  // - After the schedule year: "schedule expired" — no alarm until reload.
+  // - Inside the schedule year: run the Q+1 check normally.
+  if (todayYear < scheduleYear) {
+    return {
+      ok: true,
+      today: t.toISOString().slice(0, 10),
+      currentQuarter: cq,
+      nextQuarter: nq,
+      nextExercise: next ? next.name : null,
+      scheduledDate: next ? next.date : null,
+      midQDeadline: deadline.toISOString().slice(0, 10),
+      daysLate: 0,
+      slackPinged: false,
+      reason: `Schedule for ${scheduleYear} not yet active (today is ${todayYear}).`,
+    };
+  }
+  if (todayYear > scheduleYear) {
+    return {
+      ok: true,
+      today: t.toISOString().slice(0, 10),
+      currentQuarter: cq,
+      nextQuarter: nq,
+      nextExercise: null,
+      scheduledDate: null,
+      midQDeadline: deadline.toISOString().slice(0, 10),
+      daysLate: 0,
+      slackPinged: false,
+      reason: `Schedule for ${scheduleYear} expired (today is ${todayYear}); ${todayYear} schedule not loaded.`,
+    };
+  }
+
+  // Inside the schedule year. Alarm fires if past mid-Q of the CURRENT
+  // quarter AND the NEXT-quarter exercise is not on the calendar.
   const pastMidQ = t.getTime() >= deadline.getTime();
+  const nextQuarterNum = parseInt(nq.slice(1, 2), 10);
   const nextScheduled =
     next !== null &&
-    next.date.slice(0, 4) === nq.slice(3) &&
-    Math.floor(new Date(next.date).getUTCMonth() / 3) + 1 === parseInt(nq.slice(1, 2), 10);
+    Math.floor(new Date(next.date + 'T00:00:00Z').getUTCMonth() / 3) + 1 === nextQuarterNum;
 
   const ok = !pastMidQ || nextScheduled;
   const daysLate =
@@ -168,7 +201,7 @@ async function run(): Promise<AlarmResult> {
   const text = ok
     ? ''
     : `🚨 *DR tabletop slippage* — ${reason}\n` +
-      `Next exercise on record: ${next ? `${next.name} on ${next.date}` : 'NONE'}`;
+      `Next exercise on record: ${next ? `${next.name} on ${next.date}` : 'NONE — schedule reload required'}`;
 
   const slackPinged = text ? await pingSlack(text) : false;
 
