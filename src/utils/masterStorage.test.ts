@@ -39,6 +39,11 @@ vi.mock('./tauriSqlStorage', () => ({
   isTauri: mockIsTauri,
 }));
 
+// Mock wrapChunkedStorage to be a passthrough (jsdom doesn't have Web Workers)
+vi.mock('./chunkedStorage', () => ({
+  wrapChunkedStorage: (storage: any) => storage,
+}));
+
 import { masterStorage } from './masterStorage';
 
 describe('masterStorage', () => {
@@ -77,7 +82,7 @@ describe('masterStorage', () => {
       const value = { state: { data: 'test' }, version: 1 };
       await masterStorage.setItem('test-store', value);
 
-      expect(mockTauriSqlSetItem).toHaveBeenCalledWith('test-store', JSON.stringify(value));
+      expect(mockTauriSqlSetItem).toHaveBeenCalledWith('test-store', value);
     });
   });
 
