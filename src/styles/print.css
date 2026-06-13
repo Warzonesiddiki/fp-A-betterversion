@@ -59,7 +59,8 @@
     page-break-after: auto;
   }
 
-  th, td {
+  th,
+  td {
     border: 1px solid #ccc;
     padding: 4px 8px;
     text-align: left;
@@ -154,7 +155,7 @@
   }
 
   .chart-container::after {
-    content: "See attached chart";
+    content: 'See attached chart';
     font-style: italic;
     color: #666;
   }
