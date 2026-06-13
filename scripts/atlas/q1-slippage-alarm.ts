@@ -145,7 +145,7 @@ async function run(): Promise<AlarmResult> {
   const cq = quarterOf(t);
   const nq = nextQuarterName(t);
   const next = findNextExercise(t);
-  const deadline = midQDeadline(t, nq);
+  const deadline = midQDeadline(t);
 
   // Past mid-Q of next-quarter AND next-quarter exercise not scheduled?
   // (next is null only if today is past the last exercise of the year.)

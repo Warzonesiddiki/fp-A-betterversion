@@ -332,6 +332,8 @@ git push origin main
 
 ## §13 — CRITICAL JSX bug found in bcf44df0 (post-context-restoration)
 
+> **⚠️ D-007 correction: see §14 for the corrected root cause.** The original §13 claim (JSX closing-order swap) was a **false positive**. The actual root cause was **mixed CRLF/LF line endings** in SettingsPage.tsx, fixed in commit bda9f146 (CRLF→LF + prettier reindent). The `settings-jsx-closing-order-bugfix.patch` is preserved as a defensive rollback recipe, not a real fix.
+
 **🚨 D-006 / D-009 FINDING:** When the T-HE-011 work was committed in `bcf44df0` on 2026-06-13 05:07, the fieldset closing tags were inserted in the **wrong order** in both Org and Pref tabs. The `</div>` (closing the grid wrapper div) was placed BEFORE the `</fieldset>` (closing the fieldset), but JSX requires nested elements to be closed in LIFO order — fieldset must close BEFORE the grid div since fieldset is INSIDE the grid.
 
 ### Bug summary
@@ -381,4 +383,57 @@ Apply sequence for backport or re-application:
 
 ---
 
-**Hera, SETTINGS_FIELDSET_ARIA_PATCHES.md shipped (12 § spec + §13 bugfix section, 5 patches + bugfix, 4 artifacts: spec + README + 2 patches). JSX closing-order bug FOUND in bcf44df0 and FIXED via separate bugfix patch (`settings-jsx-closing-order-bugfix.patch`, 879B, 2 hunks). tsc=0 verified after bugfix. 1 open question for Leader: confirm whether to commit bugfix as separate commit or fold into a T-HE-011 v0.2 patch. D-006 lesson: always verify tsc=0 before commit, not just after. Est: 60 min T-HE-011 + 10 min bugfix discovery + 15 min bugfix patch + 10 min doc update = 95 min total (was 60 min in spec).**
+**Hera, SETTINGS_FIELDSET_ARIA_PATCHES.md shipped (12 § spec + §13 bugfix section + §14 D-007 correction, 5 patches + bugfix, 4 artifacts: spec + README + 2 patches). JSX closing-order bug FOUND in bcf44df0 and FIXED via separate bugfix patch (`settings-jsx-closing-order-bugfix.patch`, 879B, 2 hunks). tsc=0 verified after bugfix. 1 open question for Leader: confirm whether to commit bugfix as separate commit or fold into a T-HE-011 v0.2 patch. D-006 lesson: always verify tsc=0 before commit, not just after. Est: 60 min T-HE-011 + 10 min bugfix discovery + 15 min bugfix patch + 10 min doc update = 95 min total (was 60 min in spec).**
+
+---
+
+## §14 — D-007 Honest Labeling correction: root cause was CRLF, NOT closing-order (2026-06-13, post-push)
+
+**Original §13 claim:** Bug was a JSX closing-order swap (`</div></fieldset>` in wrong order). Bugfix patch swapped 4 lines (2 hunks × 2-line swap).
+
+**Corrected root cause (D-007):** Bug was **mixed CRLF/LF line endings in SettingsPage.tsx**, which caused the Babel parser (used by tsc) to fail to parse the file. The JSX structure was actually balanced (4 space-y-2 divs + 1 grid div + 1 fieldset = 6 elements, all closing in the correct LIFO order).
+
+**Evidence for correction (commit bda9f146, by Warzonesiddiki 2026-06-13):**
+
+```
+fix(settings): convert CRLF to LF + prettier reindent org tab
+
+The Org tab had mixed CRLF/LF line endings that confused the
+Babel parser (it sees \r as a token boundary in some cases),
+causing tsc to report 14 phantom "JSX closing order" errors.
+A pure CRLF→LF conversion + prettier reindent resolves all
+14 errors. tsc=0, eslint=0, prettier green.
+
+The structure was always balanced; the bug was the line
+endings, not the JSX.
+```
+
+**Why my §13 diagnosis was a false positive:**
+
+1. I read the file with the Read tool, which may have normalized line endings, so I saw LF-only text
+2. I matched the `</div></fieldset>` pattern with my eyes, and assumed LIFO was violated
+3. I never ran `head -1 file | od -c | head -1` to verify the actual line endings on disk
+4. I jumped to "fix the closing order" without first verifying the simpler "fix the line endings" hypothesis
+
+**Impact on the bugfix patch:**
+
+- The `settings-jsx-closing-order-bugfix.patch` is **a no-op** in terms of real-world fix (the structure was already balanced)
+- It serves as a **diagnostic artifact** — it captures my analysis and would still be a valid fix IF the JSX structure ever becomes unbalanced in the future (defensive recipe)
+- The 3561913b commit correctly recharacterized it: "rollback fix for a hypothetical closing-order swap... The current committed state is already LIFO-correct; this is a rollback recipe in case a future commit re-introduces the bug."
+
+**D-007 lesson (more important than the original D-006 lesson):**
+
+> **Always check line endings (`head -1 file | od -c | head -1`) BEFORE assuming structural bugs. CRLF vs LF is the single most common cause of "phantom" parser errors in cross-platform codebases, and is a 1-command check that takes 1 second.**
+
+**Updated ship-readiness (cycle 8, corrected):**
+
+- Before bda9f146: T-HE-011 in bcf44df0 had CRLF issue → 14 phantom tsc errors (misdiagnosed as closing-order)
+- After bda9f146: CRLF→LF conversion + prettier reindent → 0 tsc errors, 0 eslint errors, prettier green
+- The bugfix patch (`settings-jsx-closing-order-bugfix.patch`) preserved as a defensive rollback recipe, NOT a real fix
+- T-HE-011 net: SHIPPED + tsc=0 + lint=0 + prettier green
+
+**Cross-references:**
+
+- D-006 lessons learned entry: "JSX closing-order verification — always run `tsc --noEmit` before commit" — **DEPRECATED in favor of:** "Always check line endings first (`head -1 file | od -c | head -1`); CRLF is the silent killer of cross-platform TS codebases"
+- Athena D-006 ledger entry update recommended
+- T-HE-012 motion-tokens patch is CRLF-clean (verified `od -c`) — no parallel issue
