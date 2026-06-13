@@ -54,8 +54,13 @@ type SeverityFilter = 'all' | 'high' | 'medium' | 'low';
 // ---------------------------------------------------------------------------
 
 export function ImpactAnalysis({
-  baseScenario,
-  compareScenarios,
+  baseScenario = {
+    id: '',
+    name: 'Base',
+    assumptions: [],
+    calculatedMetrics: {} as ScenarioMetrics,
+  } as Scenario,
+  compareScenarios = [],
   onHighlightMetric,
 }: ImpactAnalysisProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(

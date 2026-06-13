@@ -57,20 +57,20 @@ export interface ReportLayoutEditorProps {
 }
 
 export function ReportLayoutEditor({
-  layout,
-  selectedRowIndex,
-  selectedColIndex,
-  onSelectRow,
-  onSelectCol,
-  onAddRow,
-  onRemoveRow,
-  onAddColumn,
-  onRemoveColumn,
-  onUpdateRowLabel,
-  onUpdateRowType,
-  onUpdateColumnHeader,
-  onUpdateColumnWidth,
-  onDrop,
+  layout = { rows: [], columns: [], columnWidths: {}, defaultRowHeight: 32, frozenColumns: 0, frozenRows: 0 } as ReportLayout,
+  selectedRowIndex = 0,
+  selectedColIndex = 0,
+  onSelectRow = () => {},
+  onSelectCol = () => {},
+  onAddRow = () => {},
+  onRemoveRow = () => {},
+  onAddColumn = () => {},
+  onRemoveColumn = () => {},
+  onUpdateRowLabel = () => {},
+  onUpdateRowType = () => {},
+  onUpdateColumnHeader = () => {},
+  onUpdateColumnWidth = () => {},
+  onDrop = () => {},
 }: ReportLayoutEditorProps) {
   const selectedRow = selectedRowIndex !== null ? layout.rows[selectedRowIndex] : null;
   const selectedCol = selectedColIndex !== null ? layout.columns[selectedColIndex] : null;

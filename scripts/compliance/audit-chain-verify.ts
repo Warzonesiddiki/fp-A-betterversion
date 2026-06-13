@@ -30,6 +30,9 @@
  */
 
 import { createHash } from 'node:crypto';
+import { appendFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { S3Client, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import * as Sentry from '@sentry/node';
 import { Vanta } from '@vanta/sdk';
@@ -47,10 +50,12 @@ const SENTRY_DSN = process.env.SENTRY_DSN ?? '';
 const VANTA_API_KEY = process.env.VANTA_API_KEY ?? '';
 
 // ============================================================================
-// Types
+// Types (exported for programmatic use: Themis T-TH-002 monitoring integration,
+// test mocks per T-HEP-018, T-HEP-019 SOC 2 evidence collector, T-HEP-020
+// Availability A1.1-A1.4 evidence collector)
 // ============================================================================
 
-interface AuditEvent {
+export interface AuditEvent {
   id: string;
   timestamp: string;
   actor: string;
@@ -60,7 +65,7 @@ interface AuditEvent {
   data: Record<string, unknown>;
 }
 
-interface VerifyResult {
+export interface VerifyResult {
   ok: boolean;
   eventsCount: number;
   brokenAt?: string;
@@ -88,7 +93,7 @@ const s3 = new S3Client({
  * Compute SHA-256 hash for an event, given the previous event's hash.
  * Matches the canonical hash function in `src/engines/AuditLogEngine.ts:89`.
  */
-function recomputeHash(event: AuditEvent, prevHash: string): string {
+export function recomputeHash(event: AuditEvent, prevHash: string): string {
   const h = createHash('sha256');
   h.update(
     JSON.stringify({
@@ -107,7 +112,7 @@ function recomputeHash(event: AuditEvent, prevHash: string): string {
  * Fetch all audit events from R2, sorted by timestamp ascending.
  * Uses R2 Object Lock to ensure no event is modified after the lock window.
  */
-async function fetchAllEvents(): Promise<AuditEvent[]> {
+export async function fetchAllEvents(): Promise<AuditEvent[]> {
   const events: AuditEvent[] = [];
   let continuationToken: string | undefined;
 
@@ -137,7 +142,7 @@ async function fetchAllEvents(): Promise<AuditEvent[]> {
  * previous event's hash, and recompute each hash from the event payload.
  * Return on first mismatch with broken-at event ID.
  */
-async function verifyChain(): Promise<VerifyResult> {
+export async function verifyChain(): Promise<VerifyResult> {
   const start = Date.now();
   const events = await fetchAllEvents();
   let prevHash = ANCHOR_HASH;
@@ -169,7 +174,7 @@ async function verifyChain(): Promise<VerifyResult> {
 // Vanta evidence upload
 // ============================================================================
 
-async function uploadVantaEvidence(result: VerifyResult): Promise<void> {
+export async function uploadVantaEvidence(result: VerifyResult): Promise<void> {
   const vanta = new Vanta({ apiKey: VANTA_API_KEY });
   await vanta.evidence.create({
     framework: 'SOC2',
@@ -186,31 +191,154 @@ async function uploadVantaEvidence(result: VerifyResult): Promise<void> {
 // Main
 // ============================================================================
 
-async function main(): Promise<void> {
+async function runVerify(opts: CliOptions): Promise<VerifyResult> {
   Sentry.init({ dsn: SENTRY_DSN, tracesSampleRate: 0.1, environment: 'compliance-cron' });
 
-  try {
-    const result = await verifyChain();
-    console.log('AUDIT_CHAIN_RESULT', result);
+  const result = await verifyChain();
+  console.log('AUDIT_CHAIN_RESULT', result);
 
-    if (result.ok) {
-      // Silent log + Vanta evidence (P3 = no page, just weekly receipt)
-      await uploadVantaEvidence(result);
+  if (opts.json) {
+    // Emit one JSONL line per event verified (CI integration / log aggregation)
+    process.stdout.write(JSON.stringify({ type: 'result', ...result }) + '\n');
+  }
+
+  if (opts.dryRun) {
+    return result;
+  }
+
+  if (result.ok) {
+    // Silent log + Vanta evidence (P3 = no page, just weekly receipt)
+    await uploadVantaEvidence(result);
+  } else {
+    // P3 = auto-page Hephaestus on-call via PagerDuty integration
+    Sentry.captureMessage('AUDIT_CHAIN_BROKEN', {
+      level: 'error',
+      tags: { severity: 'P3', runbook: 'ADR-009-IR' },
+      extra: { brokenAt: result.brokenAt, eventsCount: result.eventsCount },
+    });
+    // Still upload evidence (broken chain IS evidence)
+    await uploadVantaEvidence(result);
+  }
+  return result;
+}
+
+/**
+ * CLI flag parsing. Supports --help, --dry-run, --json.
+ * Mutates process.exit(0) on --help.
+ */
+interface CliOptions {
+  help: boolean;
+  dryRun: boolean;
+  json: boolean;
+}
+
+function parseCli(): CliOptions {
+  const args = process.argv.slice(2);
+  const opts: CliOptions = { help: false, dryRun: false, json: false };
+  for (const arg of args) {
+    if (arg === '--help' || arg === '-h') {
+      opts.help = true;
+    } else if (arg === '--dry-run') {
+      opts.dryRun = true;
+    } else if (arg === '--json') {
+      opts.json = true;
     } else {
-      // P3 = auto-page Hephaestus on-call via PagerDuty integration
-      Sentry.captureMessage('AUDIT_CHAIN_BROKEN', {
-        level: 'error',
-        tags: { severity: 'P3', runbook: 'ADR-009-IR' },
-        extra: { brokenAt: result.brokenAt, eventsCount: result.eventsCount },
-      });
-      // Still upload evidence (broken chain IS evidence)
-      await uploadVantaEvidence(result);
+      console.error(`Unknown flag: ${arg}. Run with --help for usage.`);
+      process.exit(2);
     }
-  } catch (err) {
-    // P2 = manual review (R2/Sentry/Vanta API down)
-    Sentry.captureException(err, { tags: { severity: 'P2', runbook: 'T-HEP-010-troubleshoot' } });
-    process.exit(1);
+  }
+  return opts;
+}
+
+const HELP_TEXT = `
+Audit-Chain Verify Weekly Cron — standalone (T-HEP-010)
+
+USAGE:
+  pnpm tsx scripts/compliance/audit-chain-verify.ts [options]
+
+OPTIONS:
+  --help      Print this help and exit 0
+  --dry-run   Walk the chain + log result, do NOT call Sentry or Vanta
+  --json      Emit JSONL to stdout (one line per event verified) for CI integration
+
+OUTCOMES (exit codes):
+  0  AUDIT_CHAIN_OK         — all hashes match
+  1  AUDIT_CHAIN_FETCH_ERROR — R2/Sentry/Vanta API down (P2)
+  2  AUDIT_CHAIN_BROKEN     — mismatch at event N (P3)
+
+ENV (required):
+  R2_AUDIT_BUCKET, R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY
+  ANCHOR_HASH, SENTRY_DSN, VANTA_API_KEY
+
+SEE ALSO:
+  docs/drafts/hephaestus/AUDIT_CHAIN_VERIFY_CRON_RUNBOOK.md (4-section runbook)
+  docs/drafts/hephaestus/AUDIT_CHAIN_VERIFY_CRON.md (6-section v0 spec)
+`;
+
+/**
+ * Append a structured JSONL line to the local bastion log.
+ * Per T-HEP-010 v0 §4.4 + runbook §4.1: /var/log/finplan/audit-chain-verify-<date>.log
+ * (D-007 honest-scope: silently no-ops if the directory is not writable —
+ *  logs are observable via Sentry + Vanta; local log is a tertiary stream.)
+ */
+function appendLocalLog(result: VerifyResult): void {
+  try {
+    const logDir = process.env.AUDIT_CHAIN_LOG_DIR ?? '/var/log/finplan';
+    mkdirSync(logDir, { recursive: true });
+    const logPath = join(logDir, `audit-chain-verify-${new Date().toISOString().slice(0, 10)}.log`);
+    const line = JSON.stringify({
+      timestamp: new Date().toISOString(),
+      ...result,
+    });
+    appendFileSync(logPath, line + '\n', 'utf8');
+  } catch {
+    // Local log is best-effort. Sentry + Vanta are the primary evidence streams.
   }
 }
 
-main();
+function main(): void {
+  const opts = parseCli();
+  if (opts.help) {
+    console.log(HELP_TEXT);
+    process.exit(0);
+  }
+  if (opts.dryRun) {
+    console.log('[dry-run] Would call verifyChain() + uploadVantaEvidence() if not dry-run.');
+  }
+
+  runVerify(opts)
+    .then((result) => {
+      appendLocalLog(result);
+      process.exit(result.ok ? 0 : 2);
+    })
+    .catch((err) => {
+      // P2 fetch error path — Sentry already captured
+      appendLocalLog({
+        ok: false,
+        eventsCount: 0,
+        brokenAt: err instanceof Error ? err.message : String(err),
+        durationMs: 0,
+      });
+      process.exit(1);
+    });
+}
+
+// ============================================================================
+// Standalone invocation guard (per scripts/compliance/stale-board-reconcile.ts:360
+// pattern, successfully proven in T-HEP-011 v0.4 ship). Allows `import` of
+// pure functions (recomputeHash, fetchAllEvents, verifyChain, uploadVantaEvidence)
+// WITHOUT triggering main(). Themis T-TH-002 monitoring integration + T-HEP-018
+// test mocks + T-HEP-019 SOC 2 evidence collector all import without side effects.
+// ============================================================================
+
+const isDirectInvocation = (() => {
+  // CommonJS path (ts-node, vitest with cjs interop)
+  if (typeof require !== 'undefined' && require.main === module) return true;
+  // ESM path (tsx, vite-node)
+  if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) return true;
+  return false;
+})();
+
+if (isDirectInvocation) {
+  main();
+}

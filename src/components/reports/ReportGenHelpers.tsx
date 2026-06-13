@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
+ 
 import { Card } from '@/components/ui/Card';
 import type { GeneratedReport, GenerationProgress } from '@/engines/ReportBookEngine';
 
@@ -89,7 +89,10 @@ export function ProgressPanel({ progress, elapsed }: ProgressPanelProps) {
         ))}
       </div>
       {progress.errors.length > 0 && (
-        <div className="max-h-24 overflow-auto rounded bg-red-950/30 p-2"> role="alert"  role="alert" 
+        <div
+          role="alert"
+          className="max-h-24 overflow-auto rounded bg-red-950/30 p-2"
+        > 
           <p className="text-xs font-medium text-red-400 mb-1">
             {progress.errors.length} error(s)
           </p>

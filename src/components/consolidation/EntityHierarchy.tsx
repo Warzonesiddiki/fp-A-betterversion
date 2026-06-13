@@ -270,9 +270,9 @@ function NodeRow({
 }
 
 export function EntityHierarchy({
-  entities,
-  ownerships,
-  rootEntityId,
+  entities = [],
+  ownerships = [],
+  rootEntityId = '',
   onAddEntity,
   onEditEntity,
   onDeleteEntity,

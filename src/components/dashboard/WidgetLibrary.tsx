@@ -53,7 +53,11 @@ const CATEGORIES = [
   { key: 'feed' as const, label: 'Activity' },
 ];
 
-export function WidgetLibrary({ placedWidgets, onChange, className }: WidgetLibraryProps) {
+export function WidgetLibrary({
+  placedWidgets = [],
+  onChange = () => {},
+  className,
+}: WidgetLibraryProps) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
   const dragRef = useRef<HTMLDivElement | null>(null);

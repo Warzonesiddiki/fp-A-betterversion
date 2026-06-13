@@ -91,7 +91,11 @@ export const DependencyGraph: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Dependency Graph Engine</h2>
-        <Button variant="outline" onClick={openNativeWindow}>
+        <Button
+          variant="outline"
+          onClick={openNativeWindow}
+          aria-label="Open graph debugger in new window"
+        >
           Pop Out (Native Window)
         </Button>
       </div>
@@ -107,6 +111,7 @@ export const DependencyGraph: React.FC = () => {
               value={cellInput}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCellInput(e.target.value)}
               placeholder="[{ ref: 'A1', value: 10 }, { ref: 'B1', formula: 'A1 * 2' }]"
+              aria-label="Cell Input (JSON)"
             />
             <Button onClick={handleBuildGraph} className="w-full">
               Analyze Graph
@@ -156,7 +161,7 @@ export const DependencyGraph: React.FC = () => {
 
                 {graphData.cycles.cycles.length > 0 && (
                   <div className="mt-4 p-3 border border-red-200 bg-red-50 dark:bg-red-900/20 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded">
-                    <h4 className="font-semibold mb-2">Circular References</h4>
+                    <h4 className="font-semibold mb-2">Circular References Detected</h4>
                     <ul className="list-disc pl-4 space-y-1">
                       {graphData.cycles.cycles.map((cycle: string[], i: number) => (
                         <li key={i}>{cycle.join(' → ')}</li>

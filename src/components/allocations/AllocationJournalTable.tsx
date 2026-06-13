@@ -41,6 +41,8 @@ export const AllocationJournalTable = memo(function AllocationJournalTable({
 }: AllocationJournalTableProps) {
   return (
     <div
+      role="region"
+      aria-label="Allocation Journal"
       className={cn('overflow-x-auto rounded-md border border-[var(--border-subtle)]', className)}
     >
       <table className="w-full">

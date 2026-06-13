@@ -26,7 +26,7 @@ interface VarianceChartProps {
 }
 
 export function VarianceChart({
-  data,
+  data = [],
   height = 400,
   formatValue = (v) => `$${v.toLocaleString()}`,
   ariaLabel = 'Budget vs Actual variance chart',

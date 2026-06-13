@@ -10,7 +10,11 @@ interface EntityToggleProps {
   onToggle: (id: string) => void;
 }
 
-export function EntityToggle({ entity, selected, onToggle }: EntityToggleProps) {
+export function EntityToggle({
+  entity = { id: '', name: '', currency: 'USD' } as Entity,
+  selected = false,
+  onToggle = () => {},
+}: EntityToggleProps) {
   return (
     <button
       type="button"

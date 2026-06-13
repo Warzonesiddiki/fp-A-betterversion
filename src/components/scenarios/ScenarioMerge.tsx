@@ -35,7 +35,7 @@ export interface MergedScenario {
 // Component
 // ---------------------------------------------------------------------------
 
-export function ScenarioMerge({ scenarios, onMerge }: ScenarioMergeProps) {
+export function ScenarioMerge({ scenarios = [], onMerge }: ScenarioMergeProps) {
   const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [strategy, setStrategy] = useState<MergeStrategy>('best');

@@ -55,7 +55,11 @@ function PromptSelect({
   );
 }
 
-export function PeriodPromptBar({ value, onChange, className }: PeriodPromptBarProps) {
+export function PeriodPromptBar({
+  value = { fiscalYear: 'FY 2025', quarter: 'Q1', month: 'All Months' } as PeriodPrompt,
+  onChange = () => {},
+  className,
+}: PeriodPromptBarProps) {
   return (
     <div
       className={cn(

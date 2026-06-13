@@ -19,7 +19,12 @@ interface CommentaryPanelProps {
   className?: string;
 }
 
-export function CommentaryPanel({ section, period, lineItems, className }: CommentaryPanelProps) {
+export function CommentaryPanel({
+  section = '',
+  period = '',
+  lineItems = [],
+  className,
+}: CommentaryPanelProps) {
   const [overrides, setOverrides] = useState<Record<number, string>>({});
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [draftText, setDraftText] = useState('');

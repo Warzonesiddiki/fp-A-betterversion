@@ -8,7 +8,10 @@ export interface ReportLivePreviewProps {
   cubeData: CubeData;
 }
 
-export function ReportLivePreview({ layout, cubeData }: ReportLivePreviewProps) {
+export function ReportLivePreview({
+  layout = { rows: [], columns: [], columnWidths: {}, defaultRowHeight: 32, frozenColumns: 0, frozenRows: 0 } as ReportLayout,
+  cubeData = {} as CubeData,
+}: ReportLivePreviewProps) {
   return (
     <div className="w-[420px] border-l border-slate-800 overflow-y-auto p-4 bg-slate-950/50">
       <h3 className="text-xs font-semibold text-slate-400 uppercase mb-3 flex items-center gap-1.5">

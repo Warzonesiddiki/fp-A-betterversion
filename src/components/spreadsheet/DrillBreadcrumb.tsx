@@ -21,7 +21,11 @@ const levelIcons: Record<DrillLevel['type'], string> = {
   'journal-entry': 'Journal Entry',
 };
 
-export function DrillBreadcrumb({ levels, onNavigate, className }: DrillBreadcrumbProps) {
+export function DrillBreadcrumb({
+  levels = [],
+  onNavigate = () => {},
+  className,
+}: DrillBreadcrumbProps) {
   if (levels.length === 0) return null;
 
   return (

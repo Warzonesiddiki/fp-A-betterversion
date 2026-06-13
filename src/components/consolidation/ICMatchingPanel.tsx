@@ -31,9 +31,9 @@ interface ICMatchingPanelProps {
 }
 
 export function ICMatchingPanel({
-  entries,
-  entityNames,
-  period,
+  entries = [],
+  entityNames = {},
+  period = '',
   onEliminationsGenerated,
   className,
 }: ICMatchingPanelProps) {

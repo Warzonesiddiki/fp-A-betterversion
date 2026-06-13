@@ -31,8 +31,8 @@ export interface ConsolidationWorksheetProps {
 type Tab = 'summary' | 'eliminations' | 'nci' | 'worksheet';
 
 export function ConsolidationWorksheet({
-  entities,
-  ownerships,
+  entities = [],
+  ownerships = [],
   icPairs = [],
   fxRates = [],
   adjustments = [],

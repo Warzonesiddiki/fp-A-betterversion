@@ -81,11 +81,21 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export function PluginDetail({
-  plugin,
-  isInstalled,
-  onInstall,
-  onUninstall,
-  onClose,
+  plugin = {
+    id: '',
+    name: 'Unknown Plugin',
+    description: '',
+    category: 'engine',
+    version: '0.0.0',
+    author: 'Unknown',
+    rating: 0,
+    downloads: 0,
+    permissions: [],
+  } as unknown as PluginInfo,
+  isInstalled = false,
+  onInstall = async () => {},
+  onUninstall = async () => {},
+  onClose = () => {},
 }: PluginDetailProps) {
   const [loading, setLoading] = useState(false);
 

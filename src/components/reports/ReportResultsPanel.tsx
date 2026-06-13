@@ -73,10 +73,10 @@ export interface ReportResultsPanelProps {
 // ---------------------------------------------------------------------------
 
 export function ReportResultsPanel({
-  reports,
-  sections,
-  onDownloadZip,
-  onDownloadBoardPack,
+  reports = [],
+  sections = [],
+  onDownloadZip = () => {},
+  onDownloadBoardPack = () => {},
 }: ReportResultsPanelProps) {
   const [activeTab, setActiveTab] = useState<'reports' | 'sections'>('reports');
   const [selectedReport, setSelectedReport] = useState<GeneratedReport | null>(null);

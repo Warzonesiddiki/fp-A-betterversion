@@ -46,7 +46,11 @@ type DrillView = 'summary' | 'detail' | 'journal-entry';
 
 // --- Main Component ---
 
-export function DrillThroughChain({ summaryData, period, className }: DrillThroughChainProps) {
+export function DrillThroughChain({
+  summaryData = [],
+  period = '',
+  className,
+}: DrillThroughChainProps) {
   const [currentView, setCurrentView] = useState<DrillView>('summary');
   const [selectedSummary, setSelectedSummary] = useState<SummaryRow | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<DetailRow | null>(null);

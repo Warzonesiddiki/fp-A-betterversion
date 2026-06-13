@@ -41,7 +41,7 @@ vi.mock('./tauriSqlStorage', () => ({
 
 // Mock wrapChunkedStorage to be a passthrough (jsdom doesn't have Web Workers)
 vi.mock('./chunkedStorage', () => ({
-  wrapChunkedStorage: (storage: any) => storage,
+  wrapChunkedStorage: <T>(storage: T) => storage,
 }));
 
 import { masterStorage } from './masterStorage';

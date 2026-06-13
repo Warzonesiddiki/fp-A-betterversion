@@ -16,7 +16,7 @@ interface HeatmapChartProps {
 }
 
 export function HeatmapChart({
-  data,
+  data = [],
   cellSize = 40,
   formatValue = (v) => v.toFixed(1),
   colorScale = ['#EFF6FF', '#1D4ED8'],

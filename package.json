@@ -14,6 +14,8 @@
     "test": "node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run",
     "test:watch": "node --max-old-space-size=81920 node_modules/vitest/vitest.mjs",
     "test:e2e": "node node_modules/@playwright/test/cli.js test",
+    "test:bench": "node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --include 'src/**/*.benchmark.test.ts' --include 'src/**/*.bench.test.ts' --exclude '**/*.test.ts' --exclude '**/*.test.tsx'",
+    "test:bench:ci": "node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --reporter=json --outputFile=./bench-results.json --include 'src/**/*.benchmark.test.ts' --include 'src/**/*.bench.test.ts' --exclude '**/*.test.ts' --exclude '**/*.test.tsx'",
     "bundle-check": "node scripts/bundle-check.js",
     "prepare": "husky"
   },

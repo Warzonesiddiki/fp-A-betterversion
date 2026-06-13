@@ -55,7 +55,7 @@ const defaultSeries: ComboChartSeriesConfig = {
 };
 
 export const ComboChart = memo(function ComboChart({
-  data,
+  data = [],
   height = 350,
   formatValue = (v) => v.toLocaleString(),
   series = defaultSeries,

@@ -33,7 +33,10 @@ function confidenceBadge(confidence: number): string {
   return 'bg-red-900/30 border-red-800/40';
 }
 
-export const ColumnMapper: React.FC<ColumnMapperProps> = ({ mappings, onChange }) => {
+export const ColumnMapper: React.FC<ColumnMapperProps> = ({
+  mappings = [],
+  onChange = () => {},
+}) => {
   const handleChange = (index: number, newField: TargetField) => {
     const updated = [...mappings];
     updated[index] = { ...updated[index]!, targetField: newField };

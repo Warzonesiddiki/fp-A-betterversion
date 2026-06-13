@@ -70,7 +70,7 @@ function FilterRow({
 }
 
 export function FilterPanel({
-  filters,
+  filters = [],
   onAddFilter,
   onRemoveFilter,
   onUpdateFilter,

@@ -102,9 +102,9 @@ function generateId(): string {
 // ---------------------------------------------------------------------------
 
 export function AllocationRuleBuilder({
-  sources,
-  drivers,
-  targetOptions,
+  sources = [],
+  drivers = [],
+  targetOptions = [],
   serviceDeptOptions = [],
   productionDeptOptions = [],
   onPreview,

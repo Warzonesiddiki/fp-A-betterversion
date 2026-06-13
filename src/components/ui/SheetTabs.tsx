@@ -124,7 +124,7 @@ export function SheetTabs({
                 if (e.key === 'Enter') handleRenameSubmit(sheet.id);
                 if (e.key === 'Escape') setEditingId(null);
               }}
-              className="w-20 px-1 py-0 text-xs bg-white dark:bg-gray-800 border border-blue-400 rounded outline-none"
+              className="w-20 px-1 py-0 text-xs bg-[var(--bg-surface)] border border-blue-400 rounded outline-none"
               aria-label={`Rename sheet ${sheet.name}`}
             />
           ) : (
@@ -137,7 +137,7 @@ export function SheetTabs({
                 e.stopPropagation();
                 onSheetDelete(sheet.id);
               }}
-              className="ml-1 p-0.5 rounded hover:bg-red-100 text-[var(--text-muted)] hover:fin-negative transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+              className="ml-1 p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-[var(--text-muted)] hover:fin-negative transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
               aria-label={`Delete sheet ${sheet.name}`}
             >
               <X className="h-3 w-3" />
@@ -168,7 +168,7 @@ export function SheetTabs({
             tabIndex={0}
           />
           <div
-            className="fixed z-50 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] rounded-md shadow-lg py-1 min-w-[140px]"
+            className="fixed z-50 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md shadow-lg py-1 min-w-[140px]"
             style={{ left: contextMenu.x, top: 'auto', bottom: 40 }}
             role="menu"
             aria-label="Sheet actions"

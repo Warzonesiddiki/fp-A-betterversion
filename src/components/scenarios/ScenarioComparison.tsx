@@ -45,7 +45,7 @@ type SortDir = 'asc' | 'desc';
 // ---------------------------------------------------------------------------
 
 export function ScenarioComparison({
-  scenarios,
+  scenarios = [],
   maxScenarios = 4,
   onLock,
   onExport,

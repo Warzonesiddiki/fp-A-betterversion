@@ -17,14 +17,14 @@ interface CellCommentsProps {
 }
 
 export function CellComments({
-  cellKey,
-  comments,
-  currentUser,
-  onAddComment,
-  onResolve,
-  onUnresolve,
-  onDelete,
-  onClose,
+  cellKey = '',
+  comments = [],
+  currentUser = { id: '', name: 'Anonymous' },
+  onAddComment = () => {},
+  onResolve = () => {},
+  onUnresolve = () => {},
+  onDelete = () => {},
+  onClose = () => {},
   className,
 }: CellCommentsProps) {
   const [newComment, setNewComment] = useState('');

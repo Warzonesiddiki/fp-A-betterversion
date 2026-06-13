@@ -52,7 +52,7 @@ export function CellEditor({
   style,
   className,
 }: CellEditorProps) {
-  const [editValue, setEditValue] = useState(value);
+  const [editValue, setEditValue] = useState(value ?? '');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -60,7 +60,7 @@ export function CellEditor({
 
   // Sync value when cell changes
   useEffect(() => {
-    setEditValue(value);
+    setEditValue(value ?? '');
     setShowSuggestions(false);
     setSuggestionIndex(0);
   }, [value]);

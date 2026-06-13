@@ -24,7 +24,7 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
           aria-label={label}
           aria-haspopup="menu"
           className={cn(
-            'flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md font-semibold text-sm hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
+            'flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md font-semibold text-sm hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
             className
           )}
         >
@@ -56,7 +56,7 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
             className="flex items-center space-x-2 px-3 py-2 text-sm text-[var(--text-primary)] rounded-md outline-none cursor-pointer hover:bg-[var(--bg-hover)] transition-colors group"
             onClick={() => onExport('pdf')}
           >
-            <FileText className="h-4 w-4 text-red-500 group-hover:scale-110 transition-transform" />
+            <FileText className="h-4 w-4 text-red-500 group-hover:scale-110 transition-transform dark:text-red-400" />
             <span className="font-medium">PDF Document</span>
           </DropdownMenu.Item>
 
@@ -64,7 +64,7 @@ export const ExportMenu: React.FC<ExportMenuProps> = ({
             className="flex items-center space-x-2 px-3 py-2 text-sm text-[var(--text-primary)] rounded-md outline-none cursor-pointer hover:bg-[var(--bg-hover)] transition-colors group"
             onClick={() => onExport('csv')}
           >
-            <FileDown className="h-4 w-4 text-blue-500 group-hover:scale-110 transition-transform" />
+            <FileDown className="h-4 w-4 text-blue-500 group-hover:scale-110 transition-transform dark:text-blue-400" />
             <span className="font-medium">CSV (Data Only)</span>
           </DropdownMenu.Item>
 

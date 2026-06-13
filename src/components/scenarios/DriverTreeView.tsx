@@ -7,7 +7,11 @@ export interface DriverTreeViewProps {
   readOnly?: boolean;
 }
 
-export function DriverTreeView({ assumptions, onUpdate, readOnly }: DriverTreeViewProps) {
+export function DriverTreeView({
+  assumptions = [],
+  onUpdate = () => {},
+  readOnly,
+}: DriverTreeViewProps) {
   if (assumptions.length === 0) {
     return (
       <div

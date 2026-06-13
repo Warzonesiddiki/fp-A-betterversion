@@ -237,7 +237,16 @@ export default defineConfig({
   },
   test: {
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
-    exclude: ['tests/**', 'node_modules/**'],
+    exclude: [
+      'tests/**',
+      'node_modules/**',
+      // Bench files (T-ATL-001 v0.4 bench opt-in policy):
+      // Default `npm run test` excludes all bench work; run benches
+      // explicitly via `npm run test:bench` when measuring perf.
+      '__benchmarks__/**',
+      '**/*.benchmark.test.ts',
+      '**/*.bench.test.ts',
+    ],
     setupFiles: ['./src/test/setup.ts'],
     environment: 'jsdom',
     pool: 'forks',

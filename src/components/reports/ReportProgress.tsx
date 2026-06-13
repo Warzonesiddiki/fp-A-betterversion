@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
+ 
 // =============================================================================
 // REPORT PROGRESS — Batch generation progress tracking with ETA, parallel jobs
 // =============================================================================
@@ -104,7 +104,7 @@ function JobRow({ job }: JobRowProps) {
 // ---------------------------------------------------------------------------
 
 export function ReportProgress({
-  progress,
+  progress = { total: 0, completed: 0, currentEntity: '', currentReport: '', status: 'pending', errors: [] } as GenerationProgress,
   jobs = [],
   onCancel,
   onRetryFailed,
@@ -218,7 +218,10 @@ export function ReportProgress({
 
       {/* Error summary from engine progress */}
       {progress.errors.length > 0 && (
-        <div className="rounded-md bg-red-950/30 border border-red-800/50 p-3"> role="alert"  role="alert" 
+        <div
+          role="alert"
+          className="rounded-md bg-red-950/30 border border-red-800/50 p-3"
+        > 
           <p className="text-xs font-medium text-red-400 mb-1">
             {progress.errors.length} error{progress.errors.length !== 1 ? 's' : ''}
           </p>

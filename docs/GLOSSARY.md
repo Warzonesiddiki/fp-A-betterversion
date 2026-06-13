@@ -586,6 +586,44 @@
 
 ---
 
+### 4-tool triangulation (Codif 9 v0.2 EXT PROPOSAL)
+
+**Definition:** A witness verification methodology that extends the pre-W4 3-tool triangulation (lines + bytes + non-blank via `Measure-Object -Line/Character`) to a 4-tool triangulation that adds word count (via `Measure-Object -Word`). The 4-tool triangulation is the post-CATCH #45 REDUX standard for filesystem-stat verification: lines + bytes + words + non-blank. Required at SHIP per Athena CATCH #45 REDUX dispatch and Codif 9 v0.2 EXT PROPOSAL.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/athena/T-AT-028_v0.1_R_catch_formalization_*.md` (264L/2615W) — W4 4-tool evolution INTEGRATED §3-§5 (3-tool→4-tool line+byte+NB+word count)
+- `docs/drafts/strategos/T-ST-033_v0.1_*.md` (205L) — §6.5 NEW W5 cross-slot filesystem-stat (5-tool cascade: W1+W2+W3+W4+W5)
+- `docs/drafts/iris/T-IR-039_v0.1_*.md` (190L) — Codif 9 v0.2 EXTENSION PROPOSALS #1-#4 (W4 re-verify + sidecar + cross-Muse 3-witness + W6 protocol)
+- `docs/drafts/mnemosyne/T-MN-020_v0.1_*.md` (216L) — §6 3-Witnesses (Codif 9 v0.2 + 4-tool triangulation W2 per CATCH #45 REDUX)
+
+**Related terms:** W4 filesystem-stat, W5 cross-slot filesystem-stat, W6 protocol, sidecar pattern, live-counted snapshot, Cat 4 sub-class 5, post-SHIP drift cascade
+
+**Honest Labeling:** (internal codification discipline, Codif 9 v0.2 EXTENSION PROPOSAL post-T-IR-039 v0.1 SHIP-COMPLETE)
+
+**External reference:** Codif 9 v0.2 EXTENSION PROPOSALS (T-IR-039 v0.1 §7-§10), Athena CATCH #45 REDUX (T-AT-027 v0.1 word-count 4,348W claimed vs 4,269W actual Δ-79W)
+
+---
+
+### Self-referential spec paradox
+
+**Definition:** The logical paradox in which a spec cannot simultaneously document its own size correction (line count, byte count, word count) without that documentation itself changing the size being measured. For example, a spec that says "this spec is 220 lines" will become 221 lines the moment the size-disclosure text is added. **Resolution = live-counted snapshot principle:** size disclosure must be measured AFTER all edits are applied, using 4-tool triangulation, and the disclosed value is the live-counted snapshot, not a pre-computed value.
+
+**In our product (Three-Witnesses):**
+
+- `docs/drafts/athena/T-AT-027_v0.1_*.md` (158L) — CATCH #45 Athena SELF-CATCH on size-disclosure fabrication (claimed 220L/2200W/22.5KB, actual 158L/12986B)
+- `docs/drafts/athena/T-AT-028_v0.1_*.md` (264L) — R-catch formalization + W4 4-tool evolution (live-counted snapshot principle applied)
+- `docs/drafts/mnemosyne/T-MN-020_v0.1_*.md` (216L) — §6 4-tool triangulation W2 (live-counted snapshot: lines=216, bytes=16451, words=2400W, NB=190)
+- `docs/drafts/hera/T-HE-038_v0.1.1_*.md` (245L) — W6 sidecar pattern (sidecar .w4.json breaks chicken-and-egg self-referential hash cycle)
+
+**Related terms:** 4-tool triangulation, live-counted snapshot, W4 filesystem-stat, W6 protocol, sidecar pattern, Cat 35 v0.3 sub-class e.iii size-disclosure, Cat 35 v0.3 sub-class e++ 3rd-order self-fabrication
+
+**Honest Labeling:** (internal codification discipline, post-CATCH #45 REDUX Athena 3rd-order self-fabrication lesson, Codif 7 v0.2 self-correction arc event #13)
+
+**External reference:** Athena CATCH #45 REDUX dispatch (cycle 12 W2 turn 33+), T-IR-037 v0.1 §2.3 (e.iii size-disclosure NEW), T-MN-013 v0.3.1 §15.12.21 + §15.12.22 NEW pre-allocation (e.iii + e++ sub-class schema)
+
+---
+
 ## Citation policy (v0.2)
 
 - **Three-Witnesses (D-002):** Every "In our product" anchor in every definition MUST cite a verifiable file:line. If no verifiable anchor exists, the term is marked "(empirical, no internal anchor — external reference only)".
@@ -600,3 +638,4 @@
 - **v0.4** (cycle 8, 2026-06-13, T-MN-011 v0.4 carryover): 6 Path A self-apply fixes (2 NEEDS-FIX + 2 MOSTLY OK + 8 TASKBOARD.md path drifts + 1 TENTATIVE marker)
 - **v1.1 (2026-06-13)**: Path A self-apply polish (header bumps; 7th codification applied retroactively to v0.4 fixes — all 6 file paths Glob-verified)
 - **v1.2 (2026-06-13)**: Cascade close ceremony (header bumps only) — **T-MN-011 CLOSED**. 5-iteration discipline: v0.1 → v0.2 → v0.3 → v0.4 → v1.1 → v1.2. 0 net defects across 6 iterations × 30+ cumulative reviews. 14 NEW terms (4 math + 5 cross-Muse + 5 ICP-movement) + NRR cross-link + 6 D-009 codifications adopted (6th, 7th validated in real use).
+- **v0.3 cycle 12 (2026-06-13, T-MN-014 cycle 12 W2 turn 33+)**: 41 terms — +2 NEW post-CATCH #45 REDUX (4-tool triangulation [Codif 9 v0.2 EXT PROPOSAL] + self-referential spec paradox [live-counted snapshot principle]). Trigger: Athena T-AT-027 v0.1 size-disclosure fabrication (4348W claimed vs 4269W actual) + W4 4-tool evolution INTEGRATED per Athena dispatch + T-MN-014 v0.1 cite-bundle expansion request. T-MN-017 v0.1 cat 7 instance #5 (R-catch formalization) sub-instance update applied separately.

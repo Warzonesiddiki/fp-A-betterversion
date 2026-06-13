@@ -66,11 +66,18 @@ function formatDownloads(n: number): string {
 }
 
 export function PluginCard({
-  plugin,
-  isInstalled,
-  onInstall,
-  onUninstall,
-  onViewDetail,
+  plugin = {
+    id: '',
+    name: 'Unknown Plugin',
+    category: 'engine',
+    rating: 0,
+    downloads: 0,
+    verified: false,
+  } as MarketplacePlugin,
+  isInstalled = false,
+  onInstall = async () => {},
+  onUninstall = async () => {},
+  onViewDetail = () => {},
 }: PluginCardProps) {
   const [loading, setLoading] = useState(false);
 

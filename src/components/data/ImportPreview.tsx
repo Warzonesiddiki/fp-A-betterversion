@@ -9,10 +9,10 @@ interface ImportPreviewProps {
 }
 
 export const ImportPreview: React.FC<ImportPreviewProps> = ({
-  sheet,
-  selectedSheet,
-  onSheetChange,
-  sheetNames,
+  sheet = { name: '', rows: [], rowCount: 0, columns: [], headers: [] } as unknown as ParsedSheet,
+  selectedSheet = '',
+  onSheetChange = () => {},
+  sheetNames = [],
 }) => {
   const previewRows = sheet.rows.slice(0, 10);
 

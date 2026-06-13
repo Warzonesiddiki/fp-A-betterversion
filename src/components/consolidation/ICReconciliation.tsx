@@ -25,9 +25,13 @@ interface ICReconciliationProps {
 }
 
 export function ICReconciliation({
-  report,
+  report = {
+    entityPairs: [],
+    period: '',
+    summary: { matchedCount: 0, unmatchedCount: 0, totalDifference: 0 },
+  } as ReconciliationReport,
   tolerance: externalTolerance,
-  onExport,
+  onExport = () => {},
   onAdjustTolerance,
   className,
 }: ICReconciliationProps) {
