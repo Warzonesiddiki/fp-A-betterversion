@@ -1,5 +1,6 @@
-<!-- DRAFT v1.1 — Athena Path A self-apply (header polish, no substantive change) 2026-06-13 — Mnemosyne T-MN-008 #06 -->
-<!-- v0.1 → v1.1 cascade: 1 store + 7 helpers + 11 state + 11 actions = 30 items, MOCK_AUTH gate, 4 security invariants. v0.1 = v0.2 = v0.3 = v0.4 = v1.1 — Athena 3 APPLY (no NEEDS-FIX on this patch) -->
+<!-- DRAFT v1.2 — Athena v1.2 polish cascade (apply T-AT-009 + T-AT-012 v3 cross-links, no substantive content change) 2026-06-13 — Mnemosyne T-MN-008 #06 -->
+<!-- v0.1 → v1.2 cascade: 1 store + 7 helpers + 11 state + 11 actions = 30 items, MOCK_AUTH gate, 4 security invariants. v0.1 = v0.2 = v0.3 = v0.4 = v1.1 — Athena 3 APPLY (no NEEDS-FIX on this patch) -->
+<!-- v1.2 cross-links: T-AT-012 v3 [authStore = Group A gold baseline (1 of 22); 540L exceeds AGENTS.md 500L limit → P3 backlog candidate] · T-AT-009 [ADR-002 zustand pattern cross-link; D-006 deferral fix candidate (T-AT-009 P1)] · 0 substantive content change · 5 architectural-drift Greps all pass (class MasterStorage:0, STORAGE_PREFIX:0, getStats:0, 600k:0, auditStore:0) -->
 
 # JSDoc draft — `src/store/authStore.ts` (v1.1)
 
@@ -84,48 +85,48 @@ export function canApprove(user): boolean { /* isRole(user, 'Admin', 'FP&A_Manag
 
 ### Top-level exports (8)
 
-| Export | Kind | Signature | File:line |
-|--------|------|-----------|-----------|
-| `isMockAuthEnabled` | function | `() => boolean` | L29 |
-| `useAuthStore` | zustand hook | `UseBoundStore<StoreApi<AuthState>>` | L188 |
-| `hasPermission` | function | `(user: User \| null, permission: string) => boolean` | L514 |
-| `hasAnyPermission` | function | `(user: User \| null, permissions: string[]) => boolean` | L519 |
-| `hasAllPermissions` | function | `(user: User \| null, permissions: string[]) => boolean` | L524 |
-| `isRole` | function | `(user: User \| null, ...roles: Role[]) => boolean` | L529 |
-| `isManagerOrAbove` | function | `(user: User \| null) => boolean` | L534 |
-| `canApprove` | function | `(user: User \| null) => boolean` | L538 |
+| Export              | Kind         | Signature                                                | File:line |
+| ------------------- | ------------ | -------------------------------------------------------- | --------- |
+| `isMockAuthEnabled` | function     | `() => boolean`                                          | L29       |
+| `useAuthStore`      | zustand hook | `UseBoundStore<StoreApi<AuthState>>`                     | L188      |
+| `hasPermission`     | function     | `(user: User \| null, permission: string) => boolean`    | L514      |
+| `hasAnyPermission`  | function     | `(user: User \| null, permissions: string[]) => boolean` | L519      |
+| `hasAllPermissions` | function     | `(user: User \| null, permissions: string[]) => boolean` | L524      |
+| `isRole`            | function     | `(user: User \| null, ...roles: Role[]) => boolean`      | L529      |
+| `isManagerOrAbove`  | function     | `(user: User \| null) => boolean`                        | L534      |
+| `canApprove`        | function     | `(user: User \| null) => boolean`                        | L538      |
 
 ### Store state (11 fields, L192-202)
 
-| Field | Type | Initial | Notes |
-|-------|------|---------|-------|
-| `user` | `User \| null` | `null` | Current authenticated user |
-| `accessToken` | `string \| null` | `null` | Mock JWT, NOT persisted (security) |
-| `refreshToken` | `string \| null` | `null` | Mock refresh, NOT persisted |
-| `isAuthenticated` | `boolean` | `false` | `user !== null` after login |
-| `isLoading` | `boolean` | `false` | True during login/hydration |
-| `mfaRequired` | `boolean` | `false` | Set by `login` when MFA challenge needed |
-| `activeEntityId` | `string` | `''` | Multi-entity context (persisted) |
-| `error` | `string \| null` | `null` | Last error message |
-| `loginAttempts` | `number` | `0` | Brute-force counter (persisted) |
-| `lockedUntil` | `string \| null` | `null` | ISO timestamp; 15-min lockout after 5 fails |
-| `tokenExpiry` | `number \| null` | `null` | Unix ms; NOT persisted |
+| Field             | Type             | Initial | Notes                                       |
+| ----------------- | ---------------- | ------- | ------------------------------------------- |
+| `user`            | `User \| null`   | `null`  | Current authenticated user                  |
+| `accessToken`     | `string \| null` | `null`  | Mock JWT, NOT persisted (security)          |
+| `refreshToken`    | `string \| null` | `null`  | Mock refresh, NOT persisted                 |
+| `isAuthenticated` | `boolean`        | `false` | `user !== null` after login                 |
+| `isLoading`       | `boolean`        | `false` | True during login/hydration                 |
+| `mfaRequired`     | `boolean`        | `false` | Set by `login` when MFA challenge needed    |
+| `activeEntityId`  | `string`         | `''`    | Multi-entity context (persisted)            |
+| `error`           | `string \| null` | `null`  | Last error message                          |
+| `loginAttempts`   | `number`         | `0`     | Brute-force counter (persisted)             |
+| `lockedUntil`     | `string \| null` | `null`  | ISO timestamp; 15-min lockout after 5 fails |
+| `tokenExpiry`     | `number \| null` | `null`  | Unix ms; NOT persisted                      |
 
 ### Store actions (11 methods, L204-494)
 
-| Method | Signature | Notes |
-|--------|-----------|-------|
-| `login` | `(email: string, password: string) => Promise<void>` | Public entry; branches on `VITE_USE_MOCK_AUTH` |
-| `loginMock` | `(email: string, password: string) => Promise<void>` | Throws in PROD (L229); accepts any password |
-| `loginReal` | `(_email: string, _password: string) => Promise<void>` | Stub until backend wired (L350) |
-| `logout` | `() => void` | Clears all 11 fields; stops token rotation |
-| `register` | `(name: string, email: string, password: string) => Promise<void>` | Mock-only; checks duplicate email |
-| `refreshAccessToken` | `() => Promise<void>` | Re-generates mock JWT; logs out on failure |
-| `setUser` | `(user: User) => void` | Test/dev only; bypasses login flow |
-| `switchEntity` | `(entityId: string) => void` | Multi-entity context switch |
-| `setError` | `(error: string \| null) => void` | Manual error setter |
-| `clearError` | `() => void` | Sets `error = null` |
-| `setLoading` | `(isLoading: boolean) => void` | Manual loading setter |
+| Method               | Signature                                                          | Notes                                          |
+| -------------------- | ------------------------------------------------------------------ | ---------------------------------------------- |
+| `login`              | `(email: string, password: string) => Promise<void>`               | Public entry; branches on `VITE_USE_MOCK_AUTH` |
+| `loginMock`          | `(email: string, password: string) => Promise<void>`               | Throws in PROD (L229); accepts any password    |
+| `loginReal`          | `(_email: string, _password: string) => Promise<void>`             | Stub until backend wired (L350)                |
+| `logout`             | `() => void`                                                       | Clears all 11 fields; stops token rotation     |
+| `register`           | `(name: string, email: string, password: string) => Promise<void>` | Mock-only; checks duplicate email              |
+| `refreshAccessToken` | `() => Promise<void>`                                              | Re-generates mock JWT; logs out on failure     |
+| `setUser`            | `(user: User) => void`                                             | Test/dev only; bypasses login flow             |
+| `switchEntity`       | `(entityId: string) => void`                                       | Multi-entity context switch                    |
+| `setError`           | `(error: string \| null) => void`                                  | Manual error setter                            |
+| `clearError`         | `() => void`                                                       | Sets `error = null`                            |
+| `setLoading`         | `(isLoading: boolean) => void`                                     | Manual loading setter                          |
 
 ### Persist config (L496-509)
 
@@ -135,7 +136,7 @@ export function canApprove(user): boolean { /* isRole(user, 'Admin', 'FP&A_Manag
 
 ## Proposed JSDoc to paste above `export const useAuthStore` (line 188)
 
-```ts
+````ts
 /**
  * Central auth state — single source of truth for the current user, tokens,
  * MFA challenge status, and RBAC-derived permissions. Backed by a
@@ -221,7 +222,7 @@ export function canApprove(user): boolean { /* isRole(user, 'Admin', 'FP&A_Manag
  * @see Apollo PRE-PUSH P0 #4 (VITE_USE_MOCK_AUTH build-time gate) — the
  *      primary control; this store's L18-26 throw is the secondary defence.
  */
-```
+````
 
 ---
 

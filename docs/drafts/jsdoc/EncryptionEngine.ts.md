@@ -1,5 +1,6 @@
-<!-- DRAFT v1.1 — Athena Path A self-apply (header polish, no substantive change) 2026-06-13 — Mnemosyne T-MN-008 #08 -->
-<!-- v0.1 → v1.1 cascade: v0.1 (6 fabrications, 262L claimed) → v0.2 (full rewrite, 6 methods + EncryptedData + 100k PBKDF2) → v0.3 (Athena APPLY gold-standard) → v0.4 (no changes) → v1.1 (header polish) -->
+<!-- DRAFT v1.2 — Athena v1.2 polish cascade (apply T-AT-009 + T-AT-012 v3 cross-links, no substantive content change) 2026-06-13 — Mnemosyne T-MN-008 #08 -->
+<!-- v0.1 → v1.2 cascade: v0.1 (6 fabrications, 262L claimed) → v0.2 (full rewrite, 6 methods + EncryptedData + 100k PBKDF2) → v0.3 (Athena APPLY gold-standard) → v0.4 (no changes) → v1.1 (header polish) → v1.2 (Athena v1.2 polish cascade) -->
+<!-- v1.2 cross-links: T-AT-009 [ADR-007 encryption-at-rest + ADR-009 audit logging cross-links; PBKDF2 100k→600k drift explicitly documented (Apollo P0 #1 candidate per T-AT-009 P1: D-006 deferral doesn't reference ADR-007/009/012 — fix candidate for Mnemosyne T-MN-013)] · T-AT-012 v3 [EncryptionEngine not a zustand store — no Group A/B/C classification; but referenced by ADR-007 cross-cite pattern] · 0 substantive content change · 5 architectural-drift Greps all pass (class MasterStorage:0, STORAGE_PREFIX:0, getStats:0, 600k:1 [expected: ADR-007 drift doc], auditStore:0) -->
 
 # JSDoc draft — `src/engines/EncryptionEngine.ts` (v1.1 — REWRITTEN after v0.1 fabrication catch)
 
@@ -36,49 +37,52 @@
 // Lines 1-102, src/engines/EncryptionEngine.ts
 // Header comment: "Encryption Engine - AES-256 encryption for sensitive fields. Pure TypeScript, no external dependencies"
 
-export interface EncryptedData {  // L4
-  ciphertext: string;  // base64 of AES-GCM ciphertext
-  iv: string;          // base64 of 12-byte IV
-  salt: string;        // base64 of 16-byte salt
-  algorithm: string;   // 'AES-GCM'
+export interface EncryptedData {
+  // L4
+  ciphertext: string; // base64 of AES-GCM ciphertext
+  iv: string; // base64 of 12-byte IV
+  salt: string; // base64 of 16-byte salt
+  algorithm: string; // 'AES-GCM'
 }
 
-export class EncryptionEngine {  // L11
+export class EncryptionEngine {
+  // L11
   // --- Private constants (L12-16) ---
-  private static readonly ALGORITHM = 'AES-GCM';        // L12
-  private static readonly KEY_LENGTH = 256;              // L13
-  private static readonly IV_LENGTH = 12;                // L14
-  private static readonly SALT_LENGTH = 16;              // L15
-  private static readonly ITERATIONS = 100000;           // L16 — **100k, NOT 600k**
+  private static readonly ALGORITHM = 'AES-GCM'; // L12
+  private static readonly KEY_LENGTH = 256; // L13
+  private static readonly IV_LENGTH = 12; // L14
+  private static readonly SALT_LENGTH = 16; // L15
+  private static readonly ITERATIONS = 100000; // L16 — **100k, NOT 600k**
 
   // --- 6 PUBLIC STATIC METHODS (L18-83) ---
-  static async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>  // L18
-  static async encrypt(plaintext: string, password: string): Promise<EncryptedData>  // L36
-  static async decrypt(data: EncryptedData, password: string): Promise<string>  // L54
-  static async encryptField(value: unknown, password: string): Promise<string>  // L67
-  static async decryptField<T>(encryptedStr: string, password: string): Promise<T>  // L73
-  static isEncrypted(value: unknown): boolean  // L81
+  static async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>; // L18
+  static async encrypt(plaintext: string, password: string): Promise<EncryptedData>; // L36
+  static async decrypt(data: EncryptedData, password: string): Promise<string>; // L54
+  static async encryptField(value: unknown, password: string): Promise<string>; // L67
+  static async decryptField<T>(encryptedStr: string, password: string): Promise<T>; // L73
+  static isEncrypted(value: unknown): boolean; // L81
 
   // --- 2 PRIVATE STATIC METHODS (L85-101) ---
-  private static bufferToBase64(buffer: ArrayBuffer): string  // L85
-  private static base64ToBuffer(base64: string): ArrayBuffer  // L94
+  private static bufferToBase64(buffer: ArrayBuffer): string; // L85
+  private static base64ToBuffer(base64: string): ArrayBuffer; // L94
 }
 ```
 
 ## Public surface (D-009 verified, v0.2)
 
-| Export | Kind | Signature | File:line |
-|--------|------|-----------|-----------|
-| `EncryptedData` | interface | `{ ciphertext: string; iv: string; salt: string; algorithm: string }` | L4 |
-| `EncryptionEngine` | class | (static-only methods; do NOT instantiate) | L11 |
-| `deriveKey` | static method | `(password: string, salt: Uint8Array) => Promise<CryptoKey>` | L18 |
-| `encrypt` | static method | `(plaintext: string, password: string) => Promise<EncryptedData>` | L36 |
-| `decrypt` | static method | `(data: EncryptedData, password: string) => Promise<string>` | L54 |
-| `encryptField` | static method | `(value: unknown, password: string) => Promise<string>` | L67 |
-| `decryptField<T>` | static method | `<T>(encryptedStr: string, password: string) => Promise<T>` | L73 |
-| `isEncrypted` | static method | `(value: unknown) => boolean` | L81 |
+| Export             | Kind          | Signature                                                             | File:line |
+| ------------------ | ------------- | --------------------------------------------------------------------- | --------- |
+| `EncryptedData`    | interface     | `{ ciphertext: string; iv: string; salt: string; algorithm: string }` | L4        |
+| `EncryptionEngine` | class         | (static-only methods; do NOT instantiate)                             | L11       |
+| `deriveKey`        | static method | `(password: string, salt: Uint8Array) => Promise<CryptoKey>`          | L18       |
+| `encrypt`          | static method | `(plaintext: string, password: string) => Promise<EncryptedData>`     | L36       |
+| `decrypt`          | static method | `(data: EncryptedData, password: string) => Promise<string>`          | L54       |
+| `encryptField`     | static method | `(value: unknown, password: string) => Promise<string>`               | L67       |
+| `decryptField<T>`  | static method | `<T>(encryptedStr: string, password: string) => Promise<T>`           | L73       |
+| `isEncrypted`      | static method | `(value: unknown) => boolean`                                         | L81       |
 
 **SECURITY DETAILS (D-009 verified):**
+
 - Algorithm: `AES-GCM` (L12, hard-coded constant)
 - Key length: 256 bits (L13)
 - IV: 12 bytes (L14, fresh per `encrypt` call — `crypto.getRandomValues`)
@@ -91,7 +95,7 @@ export class EncryptionEngine {  // L11
 
 ## Proposed JSDoc to paste above `export class EncryptionEngine` (line 11)
 
-```ts
+````ts
 /**
  * AES-256-GCM authenticated encryption with PBKDF2-SHA256 key derivation.
  * Pure-TypeScript wrapper around the Web Crypto API. Used for at-rest
@@ -176,7 +180,7 @@ export class EncryptionEngine {  // L11
  *      migration". When this lands, update this JSDoc and add `kdfVersion`
  *      field to `EncryptedData`.
  */
-```
+````
 
 ---
 

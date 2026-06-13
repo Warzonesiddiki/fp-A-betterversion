@@ -1,5 +1,6 @@
-<!-- DRAFT v1.1 — Athena Path A self-apply (header polish, no substantive change) 2026-06-13 — Mnemosyne T-MN-008 #10 -->
-<!-- v0.1 → v1.1 cascade: v0.1 (Option A substitute, form-utility lens, 0 fabrications) → v0.2 (clean, 0 fabrications) → v0.3 (Athena APPLY) → v0.4 (no changes) → v1.1 (header polish) -->
+<!-- DRAFT v1.2 — Athena v1.2 polish cascade (apply T-AT-009 + T-AT-012 v3 cross-links, no substantive content change) 2026-06-13 — Mnemosyne T-MN-008 #10 -->
+<!-- v0.1 → v1.2 cascade: v0.1 (Option A substitute, form-utility lens, 0 fabrications) → v0.2 (clean, 0 fabrications) → v0.3 (Athena APPLY) → v0.4 (no changes) → v1.1 (header polish) → v1.2 (Athena v1.2 polish cascade) -->
+<!-- v1.2 cross-links: T-AT-009 [no direct ADR — useConfirmation is a form-utility hook, not architecture-level; cross-link to CSM T-IR-004 §2 (Day-7 activation checklist consumer) + Iris T-IR-013 (Day-7 activation pair-doc pattern)] · T-AT-012 v3 [not a zustand store — no Group A/B/C classification; no store audit relevance] · 0 substantive content change · 5 architectural-drift Greps all pass (class MasterStorage:0, STORAGE_PREFIX:0, getStats:0, 600k:0, auditStore:0) -->
 
 # JSDoc draft — `src/hooks/useConfirmation.tsx` (v1.1)
 
@@ -46,17 +47,17 @@ export function useConfirmation() {
 
 ## Public surface (D-009 verified)
 
-| Export | Kind | Signature | File:line |
-|--------|------|-----------|-----------|
-| `useConfirmation` | function (hook) | `(): { confirm, ConfirmDialog }` | L17 |
-| `confirm` (returned) | function | `(options: ConfirmOptions) => Promise<boolean>` | L28 |
-| `ConfirmDialog` (returned) | JSX element | `<Alert open title message variant confirmText cancelText onConfirm onCancel />` | L52 |
-| `ConfirmOptions` (interface) | type | `{ title: string; message: string; variant?: 'default'\|'destructive'; confirmText?: string; cancelText?: string }` | L4-L10 |
-| `isEncrypted`-style helpers | n/a | None — this is a single-hook module | — |
+| Export                       | Kind            | Signature                                                                                                           | File:line |
+| ---------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------- | --------- |
+| `useConfirmation`            | function (hook) | `(): { confirm, ConfirmDialog }`                                                                                    | L17       |
+| `confirm` (returned)         | function        | `(options: ConfirmOptions) => Promise<boolean>`                                                                     | L28       |
+| `ConfirmDialog` (returned)   | JSX element     | `<Alert open title message variant confirmText cancelText onConfirm onCancel />`                                    | L52       |
+| `ConfirmOptions` (interface) | type            | `{ title: string; message: string; variant?: 'default'\|'destructive'; confirmText?: string; cancelText?: string }` | L4-L10    |
+| `isEncrypted`-style helpers  | n/a             | None — this is a single-hook module                                                                                 | —         |
 
 ## Proposed JSDoc to paste above `export function useConfirmation` (line 17)
 
-```tsx
+````tsx
 /**
  * React hook for imperative confirmation dialogs. Wraps the shared
  * {@link Alert} component in a promise-returning API so call sites
@@ -101,7 +102,7 @@ export function useConfirmation() {
  *
  * **Source:** `src/hooks/useConfirmation.tsx` (66L, verified 2026-06-13).
  */
-```
+````
 
 ---
 

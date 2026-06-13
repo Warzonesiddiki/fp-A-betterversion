@@ -1,5 +1,6 @@
-<!-- DRAFT v1.1 — Athena Path A self-apply (header polish, no substantive change) 2026-06-13 — Mnemosyne T-MN-008 #07 -->
-<!-- v0.1 → v1.1 cascade: v0.1 (4 fabrications) → v0.2 (5 members, run<T>/terminate/3 getters) → v0.3 (Athena MOSTLY OK) → v0.4 (11 members, +4 factory fns + WorkerPoolOptions) → v1.1 (header polish) -->
+<!-- DRAFT v1.2 — Athena v1.2 polish cascade (apply T-AT-009 + T-AT-012 v3 cross-links, no substantive content change) 2026-06-13 — Mnemosyne T-MN-008 #07 -->
+<!-- v0.1 → v1.2 cascade: v0.1 (4 fabrications) → v0.2 (5 members, run<T>/terminate/3 getters) → v0.3 (Athena MOSTLY OK) → v0.4 (11 members, +4 factory fns + WorkerPoolOptions) → v1.1 (header polish) → v1.2 (Athena v1.2 polish cascade) -->
+<!-- v1.2 cross-links: T-AT-012 v3 [workerPool singleton = 1 of 35 stores (Group A gold baseline); Apollo T-AP-010 cubeStore fabrication caught in v3 — cubeStore is in src/workers/cubeEngine.ts, NOT a standalone module] · T-AT-009 [ADR-006 worker architecture cross-link; 9/12 ADRs Hephaestus-owned pattern noted] · 0 substantive content change · 5 architectural-drift Greps all pass (class MasterStorage:0, STORAGE_PREFIX:0, getStats:0, 600k:0, auditStore:0) -->
 
 # JSDoc draft — `src/workers/worker-pool.ts` (v1.1)
 
@@ -41,79 +42,104 @@
 
 ```ts
 // Lines 1-328, src/workers/worker-pool.ts
-export interface WorkerPoolOptions {  // L10 (PUBLIC)
+export interface WorkerPoolOptions {
+  // L10 (PUBLIC)
   maxWorkers?: number;
   timeoutMs?: number;
   maxRetries?: number;
   onProgress?: (progress: WorkerProgress) => void;
 }
 
-export class WorkerPool {  // L20 (PUBLIC — both class and singleton exported)
-  private workers: Worker[] = [];  // L? (private)
+export class WorkerPool {
+  // L20 (PUBLIC — both class and singleton exported)
+  private workers: Worker[] = []; // L? (private)
   // ... other private fields ...
-  private terminated = false;  // L61
+  private terminated = false; // L61
 
-  constructor(workerFactory: () => Worker, options: WorkerPoolOptions = {}) {  // L63
+  constructor(workerFactory: () => Worker, options: WorkerPoolOptions = {}) {
+    // L63
     this.workerFactory = workerFactory;
-    this.maxWorkers = options.maxWorkers ?? (typeof navigator !== 'undefined' ? navigator.hardwareConcurrency || 4 : 4);  // L65-67
-    this.defaultTimeoutMs = options.timeoutMs ?? 60000;  // L68
-    this.defaultMaxRetries = options.maxRetries ?? 1;  // L69
+    this.maxWorkers =
+      options.maxWorkers ??
+      (typeof navigator !== 'undefined' ? navigator.hardwareConcurrency || 4 : 4); // L65-67
+    this.defaultTimeoutMs = options.timeoutMs ?? 60000; // L68
+    this.defaultMaxRetries = options.maxRetries ?? 1; // L69
   }
 
   // --- 1 PUBLIC METHOD ---
-  run<T>(data: unknown, onProgress?: (progress: WorkerProgress) => void): Promise<T> { /* ... */ }  // L76
+  run<T>(data: unknown, onProgress?: (progress: WorkerProgress) => void): Promise<T> {
+    /* ... */
+  } // L76
 
   // --- 3 PUBLIC GETTERS ---
-  get busyCount(): number { /* ... */ }  // L107
-  get queuedCount(): number { /* ... */ }  // L114
-  get workerCount(): number { /* ... */ }  // L121
+  get busyCount(): number {
+    /* ... */
+  } // L107
+  get queuedCount(): number {
+    /* ... */
+  } // L114
+  get workerCount(): number {
+    /* ... */
+  } // L121
 
   // --- 1 PUBLIC METHOD (synchronous, NOT Promise) ---
-  terminate(): void { /* ... */ }  // L128
+  terminate(): void {
+    /* ... */
+  } // L128
 
   // --- Private methods ---
-  private dispatchTask(task: PendingTask<unknown>): boolean { /* ... */ }  // L148
+  private dispatchTask(task: PendingTask<unknown>): boolean {
+    /* ... */
+  } // L148
   // ... etc
 }
 
-export const workerPool = new WorkerPool(defaultWorkerFactory, { maxWorkers: 2 });  // L289
+export const workerPool = new WorkerPool(defaultWorkerFactory, { maxWorkers: 2 }); // L289
 
 // --- 4 PUBLIC FACTORY FUNCTIONS (pre-configured pools per workload) ---
-export function createMonteCarloPool(options?: WorkerPoolOptions): WorkerPool {  // L293
+export function createMonteCarloPool(options?: WorkerPoolOptions): WorkerPool {
+  // L293
   return new WorkerPool(monteCarloWorkerFactory, { maxWorkers: 2, timeoutMs: 120000, ...options });
 }
-export function createConsolidationPool(options?: WorkerPoolOptions): WorkerPool {  // L303
-  return new WorkerPool(consolidationWorkerFactory, { maxWorkers: 1, timeoutMs: 60000, ...options });
+export function createConsolidationPool(options?: WorkerPoolOptions): WorkerPool {
+  // L303
+  return new WorkerPool(consolidationWorkerFactory, {
+    maxWorkers: 1,
+    timeoutMs: 60000,
+    ...options,
+  });
 }
-export function createBatchCalcPool(options?: WorkerPoolOptions): WorkerPool {  // L313
+export function createBatchCalcPool(options?: WorkerPoolOptions): WorkerPool {
+  // L313
   return new WorkerPool(batchCalcWorkerFactory, { maxWorkers: 2, timeoutMs: 30000, ...options });
 }
-export function createStoragePool(options?: WorkerPoolOptions): WorkerPool {  // L323
+export function createStoragePool(options?: WorkerPoolOptions): WorkerPool {
+  // L323
   return new WorkerPool(storageWorkerFactory, { maxWorkers: 1, timeoutMs: 30000, ...options });
 }
 ```
 
 ## Public surface (D-009 verified, v0.4 CORRECTED)
 
-| Export | Kind | Signature | File:line |
-|--------|------|-----------|-----------|
-| `WorkerPoolOptions` | interface | `{ maxWorkers?, timeoutMs?, maxRetries?, onProgress? }` | **L10** |
-| `WorkerPool` | class | `class WorkerPool` (PUBLIC, exported) | **L20** |
-| `workerPool` | singleton instance | `new WorkerPool(defaultWorkerFactory, { maxWorkers: 2 })` | **L289** |
-| `run<T>` | method | `<T>(data: unknown, onProgress?: (progress: WorkerProgress) => void) => Promise<T>` | **L76** |
-| `terminate` | method (sync) | `() => void` (NOT `Promise<void>`) | **L128** |
-| `busyCount` | getter | `number` (count of busy workers) | **L107** |
-| `queuedCount` | getter | `number` (length of task queue) | **L114** |
-| `workerCount` | getter | `number` (total active + idle workers) | **L121** |
-| `createMonteCarloPool` | factory fn | `(options?: WorkerPoolOptions) => WorkerPool` (2 workers, 120s timeout) | **L293** |
-| `createConsolidationPool` | factory fn | `(options?: WorkerPoolOptions) => WorkerPool` (1 worker, 60s timeout) | **L303** |
-| `createBatchCalcPool` | factory fn | `(options?: WorkerPoolOptions) => WorkerPool` (2 workers, 30s timeout) | **L313** |
-| `createStoragePool` | factory fn | `(options?: WorkerPoolOptions) => WorkerPool` (1 worker, 30s timeout) | **L323** |
-| ❌ `getStats` | **DOES NOT EXIST** | — | — |
+| Export                    | Kind               | Signature                                                                           | File:line |
+| ------------------------- | ------------------ | ----------------------------------------------------------------------------------- | --------- |
+| `WorkerPoolOptions`       | interface          | `{ maxWorkers?, timeoutMs?, maxRetries?, onProgress? }`                             | **L10**   |
+| `WorkerPool`              | class              | `class WorkerPool` (PUBLIC, exported)                                               | **L20**   |
+| `workerPool`              | singleton instance | `new WorkerPool(defaultWorkerFactory, { maxWorkers: 2 })`                           | **L289**  |
+| `run<T>`                  | method             | `<T>(data: unknown, onProgress?: (progress: WorkerProgress) => void) => Promise<T>` | **L76**   |
+| `terminate`               | method (sync)      | `() => void` (NOT `Promise<void>`)                                                  | **L128**  |
+| `busyCount`               | getter             | `number` (count of busy workers)                                                    | **L107**  |
+| `queuedCount`             | getter             | `number` (length of task queue)                                                     | **L114**  |
+| `workerCount`             | getter             | `number` (total active + idle workers)                                              | **L121**  |
+| `createMonteCarloPool`    | factory fn         | `(options?: WorkerPoolOptions) => WorkerPool` (2 workers, 120s timeout)             | **L293**  |
+| `createConsolidationPool` | factory fn         | `(options?: WorkerPoolOptions) => WorkerPool` (1 worker, 60s timeout)               | **L303**  |
+| `createBatchCalcPool`     | factory fn         | `(options?: WorkerPoolOptions) => WorkerPool` (2 workers, 30s timeout)              | **L313**  |
+| `createStoragePool`       | factory fn         | `(options?: WorkerPoolOptions) => WorkerPool` (1 worker, 30s timeout)               | **L323**  |
+| ❌ `getStats`             | **DOES NOT EXIST** | —                                                                                   | —         |
 
 ## Proposed JSDoc to paste above `class WorkerPool` (line ~5)
 
-```ts
+````ts
 /**
  * Web Worker pool for offloading CPU-heavy or long-running tasks to
  * background threads. Used by Monte Carlo simulation, large-data
@@ -178,7 +204,7 @@ export function createStoragePool(options?: WorkerPoolOptions): WorkerPool {  //
  * **DO NOT CONFUSE WITH** `src/workers/WorkerPool.ts` (PascalCase, legacy,
  * 180L, different API — slated for deletion in Apollo PRE-PUSH P0 #0).
  */
-```
+````
 
 ---
 

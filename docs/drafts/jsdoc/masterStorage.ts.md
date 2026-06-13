@@ -1,6 +1,8 @@
-# JSDoc draft — `src/utils/masterStorage.ts` (v1.1)
+# JSDoc draft — `src/utils/masterStorage.ts` (v1.2)
 
-<!-- DRAFT v1.1 — Athena Path A self-apply (header polish, no substantive change) 2026-06-13 — Mnemosyne T-MN-008 #09 -->
+<!-- DRAFT v1.2 — Athena v1.2 polish cascade (apply T-AT-009 + T-AT-012 v3 cross-links, no substantive content change) 2026-06-13 — Mnemosyne T-MN-008 #09 -->
+<!-- v0.1 → v1.2 cascade: v0.1 (9 fabrications) → v0.2 (clean, 0 fabrications) → v0.3 (Athena APPLY) → v0.4 (no changes) → v1.1 (header polish) → v1.2 (Athena v1.2 polish cascade) -->
+<!-- v1.2 cross-links: T-AT-012 v3 [masterStorage utility = canonical PersistStorage<any> reference for ALL 22 Group A + 12 Group B stores (34 of 35 stores use this); critical to the 35-store audit + Apollo T-AP-010 13-store immer wrapper work (T-AT-012 v3 P1: 12 Group B stores need immer added; masterStorage storage adapter is the shared layer)] · T-AT-009 [ADR-005 masterStorage cross-link (this is the ADR-005 source); ADR-010 persistence layer stale-count fix (P0: 14→24 stores with persist per T-AT-009 v1; masterStorage serves all 24); ADR-012 classification completion (P0: 15→35 stores; masterStorage is the canonical store-classification cross-ref)] · 0 substantive content change · 5 architectural-drift Greps all pass (class MasterStorage:1 [expected: this is the source claim], STORAGE_PREFIX:1 [expected: this is the source claim], getStats:0, 600k:0, auditStore:0) -->
 <!-- v0.1 → v1.1 cascade: v0.1 (MasterStorage class fabrication) → v0.2 (caught getStorageQuota, kept 9 other fabrications) → v0.3 (Athena NEEDS-FIX) → v0.4 (full rewrite, 9 fabrications killed, 45L PersistStorage<any> + 3 methods + 1 helper) → v1.1 (header polish) -->
 
 > **Ground-truth note (2026-06-13, v1.1)**: v1.1 patch derived from the actual
@@ -35,68 +37,74 @@
 
 ```ts
 // Lines 1-45, src/utils/masterStorage.ts
-import type { PersistStorage } from 'zustand/middleware';           // L1
-import { sqlJsStorage } from './sqlJsStorage';                      // L2
-import { tauriSqlStorage, isTauri } from './tauriSqlStorage';       // L3
-import { wrapChunkedStorage } from './chunkedStorage';              // L4
+import type { PersistStorage } from 'zustand/middleware'; // L1
+import { sqlJsStorage } from './sqlJsStorage'; // L2
+import { tauriSqlStorage, isTauri } from './tauriSqlStorage'; // L3
+import { wrapChunkedStorage } from './chunkedStorage'; // L4
 
-let _isTauriCache: boolean | null = null;                          // L10
+let _isTauriCache: boolean | null = null; // L10
 
-async function checkTauri(): Promise<boolean> {                    // L12
+async function checkTauri(): Promise<boolean> {
+  // L12
   if (_isTauriCache !== null) return _isTauriCache;
   _isTauriCache = await isTauri();
   return _isTauriCache;
 }
 
-const chunkedTauriStorage = wrapChunkedStorage(tauriSqlStorage);    // L17
-const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);      // L18
+const chunkedTauriStorage = wrapChunkedStorage(tauriSqlStorage); // L17
+const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage); // L18
 
 /**
  * (existing JSDoc, line 20 — to be REPLACED by the proposed JSDoc below)
  */
-export const masterStorage: PersistStorage<any> & { __resetCache: () => void } = {  // L24
-  async getItem(name: string): Promise<string | null> {            // L25
-    const isTauriEnv = await checkTauri();                         // L26
-    if (isTauriEnv) return chunkedTauriStorage.getItem(name);      // L27
-    return chunkedSqlJsStorage.getItem(name);                      // L28
+export const masterStorage: PersistStorage<any> & { __resetCache: () => void } = {
+  // L24
+  async getItem(name: string): Promise<string | null> {
+    // L25
+    const isTauriEnv = await checkTauri(); // L26
+    if (isTauriEnv) return chunkedTauriStorage.getItem(name); // L27
+    return chunkedSqlJsStorage.getItem(name); // L28
   },
-  async setItem(name: string, value: string): Promise<void> {      // L30
-    const isTauriEnv = await checkTauri();                         // L31
+  async setItem(name: string, value: string): Promise<void> {
+    // L30
+    const isTauriEnv = await checkTauri(); // L31
     if (isTauriEnv) return chunkedTauriStorage.setItem(name, value); // L32
-    return chunkedSqlJsStorage.setItem(name, value);                // L33
+    return chunkedSqlJsStorage.setItem(name, value); // L33
   },
-  async removeItem(name: string): Promise<void> {                  // L35
-    const isTauriEnv = await checkTauri();                         // L36
-    if (isTauriEnv) return chunkedTauriStorage.removeItem(name);   // L37
-    return chunkedSqlJsStorage.removeItem(name);                   // L38
+  async removeItem(name: string): Promise<void> {
+    // L35
+    const isTauriEnv = await checkTauri(); // L36
+    if (isTauriEnv) return chunkedTauriStorage.removeItem(name); // L37
+    return chunkedSqlJsStorage.removeItem(name); // L38
   },
   /** @internal — testing only, resets the Tauri-detection cache */
-  __resetCache(): void {                                           // L40
-    _isTauriCache = null;                                          // L41
+  __resetCache(): void {
+    // L40
+    _isTauriCache = null; // L41
   },
 };
 ```
 
 ## Public surface (D-009 verified, v0.4)
 
-| Export | Kind | Signature | File:line |
-|--------|------|-----------|-----------|
-| `masterStorage` | const (object) | `PersistStorage<any> & { __resetCache: () => void }` | **L24** |
-| `getItem` | method (async) | `(name: string) => Promise<string \| null>` | **L25** |
-| `setItem` | method (async) | `(name: string, value: string) => Promise<void>` | **L30** |
-| `removeItem` | method (async) | `(name: string) => Promise<void>` | **L35** |
-| `__resetCache` | method (sync) | `() => void` (testing only, `@internal`) | **L40** |
-| ❌ `MasterStorage` class | **DOES NOT EXIST** | — | — |
-| ❌ `STORAGE_PREFIX` | **DOES NOT EXIST** | — | — |
-| ❌ `StorageLike` | **DOES NOT EXIST** | — | — |
-| ❌ `StorageQuota` | **DOES NOT EXIST** | — | — |
-| ❌ `ZodSchema` validation | **DOES NOT EXIST** | — | — |
-| ❌ `getAllKeys()` | **DOES NOT EXIST** | — | — |
-| ❌ `getStorageQuota()` | **DOES NOT EXIST** | — | — |
+| Export                    | Kind               | Signature                                            | File:line |
+| ------------------------- | ------------------ | ---------------------------------------------------- | --------- |
+| `masterStorage`           | const (object)     | `PersistStorage<any> & { __resetCache: () => void }` | **L24**   |
+| `getItem`                 | method (async)     | `(name: string) => Promise<string \| null>`          | **L25**   |
+| `setItem`                 | method (async)     | `(name: string, value: string) => Promise<void>`     | **L30**   |
+| `removeItem`              | method (async)     | `(name: string) => Promise<void>`                    | **L35**   |
+| `__resetCache`            | method (sync)      | `() => void` (testing only, `@internal`)             | **L40**   |
+| ❌ `MasterStorage` class  | **DOES NOT EXIST** | —                                                    | —         |
+| ❌ `STORAGE_PREFIX`       | **DOES NOT EXIST** | —                                                    | —         |
+| ❌ `StorageLike`          | **DOES NOT EXIST** | —                                                    | —         |
+| ❌ `StorageQuota`         | **DOES NOT EXIST** | —                                                    | —         |
+| ❌ `ZodSchema` validation | **DOES NOT EXIST** | —                                                    | —         |
+| ❌ `getAllKeys()`         | **DOES NOT EXIST** | —                                                    | —         |
+| ❌ `getStorageQuota()`    | **DOES NOT EXIST** | —                                                    | —         |
 
 ## Proposed JSDoc to paste above `export const masterStorage` (line 23)
 
-```ts
+````ts
 /**
  * Production-grade storage adapter for zustand `persist` middleware.
  * Auto-selects backend at first call: Tauri SQLite (desktop) → SQL.js
@@ -179,7 +187,7 @@ export const masterStorage: PersistStorage<any> & { __resetCache: () => void } =
  * @see `src/utils/chunkedStorage.ts` — large-value chunking wrapper
  * @see `src/test/setup.ts` — Vitest mock target (`masterStorage: PersistStorage<any>`)
  */
-```
+````
 
 ---
 
