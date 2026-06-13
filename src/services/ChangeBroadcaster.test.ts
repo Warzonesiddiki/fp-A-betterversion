@@ -33,8 +33,8 @@ describe('ChangeBroadcaster', () => {
     broadcaster.setUser('user-1');
   });
 
-  it('should broadcast changes with generated id and timestamp', () => {
-    const id = broadcaster.broadcast({
+  it('should broadcast changes with generated id and timestamp', async () => {
+    const id = await broadcaster.broadcast({
       type: 'update',
       resourceType: 'budget',
       resourceId: 'bgt-001',
@@ -44,6 +44,7 @@ describe('ChangeBroadcaster', () => {
       userName: 'Sarah Chen',
     });
 
+    expect(typeof id).toBe('string');
     expect(id).toMatch(/^chg-/);
     expect(ws.send).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -58,8 +59,8 @@ describe('ChangeBroadcaster', () => {
     );
   });
 
-  it('should broadcast cell changes via convenience method', () => {
-    broadcaster.broadcastCellChange('budget', 'bgt-001', 'q1Amount', 100, 150, 'Sarah Chen');
+  it('should broadcast cell changes via convenience method', async () => {
+    await broadcaster.broadcastCellChange('budget', 'bgt-001', 'q1Amount', 100, 150, 'Sarah Chen');
 
     expect(ws.send).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -74,8 +75,8 @@ describe('ChangeBroadcaster', () => {
     );
   });
 
-  it('should broadcast create events', () => {
-    broadcaster.broadcastCreate('budget', 'bgt-new', 'Sarah Chen');
+  it('should broadcast create events', async () => {
+    await broadcaster.broadcastCreate('budget', 'bgt-new', 'Sarah Chen');
 
     expect(ws.send).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -84,8 +85,8 @@ describe('ChangeBroadcaster', () => {
     );
   });
 
-  it('should broadcast delete events', () => {
-    broadcaster.broadcastDelete('budget', 'bgt-old', 'Sarah Chen');
+  it('should broadcast delete events', async () => {
+    await broadcaster.broadcastDelete('budget', 'bgt-old', 'Sarah Chen');
 
     expect(ws.send).toHaveBeenCalledWith(
       expect.objectContaining({

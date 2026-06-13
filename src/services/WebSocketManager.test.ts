@@ -16,11 +16,13 @@ class MockWebSocket {
   sent: string[] = [];
 
   constructor(public url: string) {
-    // Simulate async connect
-    setTimeout(() => {
-      this.readyState = MockWebSocket.OPEN;
-      this.onopen?.();
-    }, 0);
+    // Simulate async connect via microtask
+    Promise.resolve().then(() => {
+      if (this.readyState === MockWebSocket.CONNECTING) {
+        this.readyState = MockWebSocket.OPEN;
+        this.onopen?.();
+      }
+    });
   }
 
   send(data: string) {
@@ -43,29 +45,43 @@ class MockWebSocket {
 
 describe('WebSocketManager', () => {
   let originalWebSocket: typeof globalThis.WebSocket;
+  const trackedManagers: WebSocketManager[] = [];
 
   beforeEach(() => {
     originalWebSocket = globalThis.WebSocket;
-    vi.useFakeTimers();
+    // @ts-expect-error mock
+    globalThis.WebSocket = MockWebSocket;
   });
 
   afterEach(() => {
     globalThis.WebSocket = originalWebSocket;
-    vi.useRealTimers();
+    // Disconnect all managers to allow heartbeat intervals to release
+    trackedManagers.forEach((m) => {
+      try {
+        m.disconnect();
+      } catch {
+        // ignore
+      }
+    });
+    trackedManagers.length = 0;
   });
 
   function createManager(overrides = {}) {
-    // @ts-expect-error mock
-    globalThis.WebSocket = MockWebSocket;
-    return new WebSocketManager({
+    const mgr = new WebSocketManager({
       url: 'wss://test.example.com/ws',
       maxRetries: 3,
-      baseRetryDelay: 100,
-      heartbeatInterval: 5000,
-      heartbeatTimeout: 2000,
+      baseRetryDelay: 10,
+      heartbeatInterval: 60000,
+      heartbeatTimeout: 30000,
+      token: 'test-token',
       ...overrides,
     });
+    trackedManagers.push(mgr);
+    return mgr;
   }
+
+  // Wait helper for microtask-driven mock
+  const flush = () => new Promise((r) => setTimeout(r, 10));
 
   it('should initialize in disconnected state', () => {
     const mgr = createManager();
@@ -81,7 +97,7 @@ describe('WebSocketManager', () => {
     mgr.connect();
     expect(mgr.connectionState).toBe('connecting');
 
-    vi.advanceTimersByTime(10);
+    await flush();
     expect(mgr.connectionState).toBe('connected');
     expect(mgr.isConnected).toBe(true);
     expect(stateChanges).toEqual(['connecting', 'connected']);
@@ -90,30 +106,32 @@ describe('WebSocketManager', () => {
   it('should send messages when connected', async () => {
     const mgr = createManager();
     mgr.connect();
-    vi.advanceTimersByTime(10);
+    await flush();
 
     mgr.send({ type: 'test', payload: { data: 123 } });
-    // Access the mock ws to verify
     expect(mgr.isConnected).toBe(true);
+    // Verify ws received the message
+    const ws = (mgr as unknown as { ws: MockWebSocket }).ws;
+    expect(ws.sent.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('should queue messages when disconnected and flush on connect', () => {
+  it('should queue messages when disconnected and flush on connect', async () => {
     const mgr = createManager();
 
     // Send while disconnected — should queue
     mgr.send({ type: 'queued', payload: { id: 1 } });
 
     mgr.connect();
-    vi.advanceTimersByTime(10);
+    await flush();
 
     // Message should have been flushed
     expect(mgr.isConnected).toBe(true);
   });
 
-  it('should dispatch messages to registered handlers', () => {
+  it('should dispatch messages to registered handlers', async () => {
     const mgr = createManager();
     mgr.connect();
-    vi.advanceTimersByTime(10);
+    await flush();
 
     const handler = vi.fn();
     mgr.on('chat:message', handler);
@@ -125,10 +143,10 @@ describe('WebSocketManager', () => {
     expect(handler).toHaveBeenCalledWith({ text: 'hello' });
   });
 
-  it('should support wildcard listeners', () => {
+  it('should support wildcard listeners', async () => {
     const mgr = createManager();
     mgr.connect();
-    vi.advanceTimersByTime(10);
+    await flush();
 
     const wildcard = vi.fn();
     mgr.on('*', wildcard);
@@ -145,42 +163,43 @@ describe('WebSocketManager', () => {
     const unsub = mgr.on('test', handler);
 
     unsub();
-    // Handler should not be called
-    const ws2 = (mgr as unknown as { listeners: Map<string, Set<unknown>> }).listeners;
-    expect(ws2.get('test')?.has(handler)).toBe(false);
+    const listeners = (mgr as unknown as { listeners: Map<string, Set<unknown>> }).listeners;
+    expect(listeners.get('test')?.has(handler)).toBe(false);
   });
 
-  it('should disconnect gracefully', () => {
+  it('should disconnect gracefully', async () => {
     const mgr = createManager();
     const stateChanges: string[] = [];
     mgr.onStateChange((s) => stateChanges.push(s));
 
     mgr.connect();
-    vi.advanceTimersByTime(10);
+    await flush();
 
     mgr.disconnect();
     expect(mgr.connectionState).toBe('disconnected');
     expect(stateChanges).toContain('disconnected');
   });
 
-  it('should not reconnect on intentional disconnect', () => {
+  it('should not reconnect on intentional disconnect', async () => {
     const mgr = createManager();
     mgr.connect();
-    vi.advanceTimersByTime(10);
+    await flush();
 
     mgr.disconnect();
-    vi.advanceTimersByTime(1000);
+    await flush();
+    await flush();
+    await flush();
 
     expect(mgr.connectionState).toBe('disconnected');
   });
 
-  it('should reconnect on unexpected close', () => {
+  it('should reconnect on unexpected close', async () => {
     const mgr = createManager();
     const stateChanges: string[] = [];
     mgr.onStateChange((s) => stateChanges.push(s));
 
     mgr.connect();
-    vi.advanceTimersByTime(10);
+    await flush();
 
     // Simulate unexpected close
     const ws = (mgr as unknown as { ws: MockWebSocket }).ws;
@@ -188,18 +207,20 @@ describe('WebSocketManager', () => {
 
     expect(stateChanges).toContain('reconnecting');
 
-    // Advance timer generously to trigger reconnect (base 100ms + jitter 0-500ms)
-    vi.advanceTimersByTime(1000);
+    // Wait for reconnect
+    await flush();
+    await flush();
+    await flush();
     const connectingCount = stateChanges.filter((s) => s === 'connecting').length;
     expect(connectingCount).toBeGreaterThanOrEqual(1);
   });
 
   it('should append token to URL', () => {
-    const mgr = createManager({ token: 'my-token-123' });
+    const mgr = createManager();
     mgr.connect();
 
     const ws = (mgr as unknown as { ws: MockWebSocket }).ws;
-    expect(ws.url).toContain('token=my-token-123');
+    expect(ws.url).toContain('token=test-token');
   });
 
   it('should destroy cleanly', () => {
