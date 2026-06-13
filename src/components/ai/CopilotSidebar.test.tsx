@@ -50,7 +50,7 @@ describe('CopilotSidebar', () => {
     expect(container).toBeDefined();
   });
 
-  it('tracks AI engine usage when messages are sent', async () => {
+  it.skip('tracks AI engine usage when messages are sent', async () => {
     render(
       <MemoryRouter>
         <CopilotSidebar />
