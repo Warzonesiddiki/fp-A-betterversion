@@ -1,4 +1,4 @@
-/* eslint-disable jsx-a11y/label-has-associated-control, react/no-unescaped-entities */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import { X, FileText, Table, Download, Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -303,7 +303,10 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
 
       {/* Status messages */}
       {exportError && (
-        <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded"> role="alert"  role="alert" 
+        <div
+          role="alert"
+          className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded"
+        >
           <X className="h-3.5 w-3.5 flex-shrink-0" />
           {exportError}
         </div>
