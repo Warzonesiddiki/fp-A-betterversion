@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { Notification, NotificationState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 
 export const useNotificationStore = create<NotificationState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         notifications: [],
         unreadCount: 0,
         error: null,
@@ -55,7 +56,7 @@ export const useNotificationStore = create<NotificationState>()(
           }),
 
         clearNotifications: () => set({ notifications: [], unreadCount: 0 }),
-      }),
+      })),
       {
         name: 'notification-store',
         storage: masterStorage,

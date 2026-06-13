@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector, persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 
 import type { UIState } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
@@ -14,7 +15,7 @@ import {
 export const useUIStore = create<UIState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         sidebarCollapsed: false,
         mobileSidebarOpen: false,
         theme: 'dark',
@@ -30,7 +31,9 @@ export const useUIStore = create<UIState>()(
           const isDark = theme === 'dark';
           document.documentElement.classList.toggle('dark', isDark);
           document.documentElement.classList.toggle('light', !isDark);
-          localStorage.setItem('theme', theme);
+          // Theme is persisted via the persist middleware's partialize config;
+          // no direct localStorage write (Athena v2 finding + masterStorage-as-
+          // single-source pattern, per ADR-005).
           set({ theme });
         },
         toggleCommandPalette: () => set((s) => ({ commandPaletteOpen: !s.commandPaletteOpen })),
@@ -75,11 +78,11 @@ export const useUIStore = create<UIState>()(
         setOnline: (online) => set({ isOnline: online }),
         setError: (error) => set({ error }),
         clearError: () => set({ error: null }),
-      }),
+      })),
       {
         name: 'ui-store',
         storage: masterStorage,
-        partialize: (state) => ({
+        partialize: (state: UIState) => ({
           sidebarCollapsed: state.sidebarCollapsed,
           theme: state.theme,
           globalDateRange: state.globalDateRange,

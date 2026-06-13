@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import {
   DriverCascadeEngine,
@@ -119,7 +120,7 @@ export function resetEngine(): void {
 export const useDriverStore = create<DriverState>()(
   subscribeWithSelector(
     persist(
-      (set, get) => ({
+      immer((set, get) => ({
         engine: getEngine(),
         isRecalculating: false,
         affectedCellCount: 0,
@@ -228,7 +229,7 @@ export const useDriverStore = create<DriverState>()(
             selectedDriverId: null,
           });
         },
-      }),
+      })),
       {
         name: 'driver-store',
         storage: masterStorage,

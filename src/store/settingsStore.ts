@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { UserProfile, SettingsState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 
 export const useSettingsStore = create<SettingsState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         organization: {
           name: '',
           fiscalYear: new Date().getFullYear(),
@@ -64,7 +65,7 @@ export const useSettingsStore = create<SettingsState>()(
           set((state) => ({
             preferences: { ...state.preferences, ...updates },
           })),
-      }),
+      })),
       {
         name: 'settings-store',
         storage: masterStorage,

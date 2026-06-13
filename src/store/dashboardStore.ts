@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 
 export type WidgetType =
@@ -84,7 +85,7 @@ function generateId(prefix: string): string {
 export const useDashboardStore = create<DashboardState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         dashboards: [],
         activeDashboardId: null,
         filters: {},
@@ -182,7 +183,7 @@ export const useDashboardStore = create<DashboardState>()(
         setError: (error) => set({ error }),
         clearError: () => set({ error: null }),
         setLoading: (loading) => set({ isLoading: loading }),
-      }),
+      })),
       {
         name: 'dashboard-store',
         storage: masterStorage,

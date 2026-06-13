@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { AnalyticsFilter, AnalyticsState } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
@@ -15,7 +16,7 @@ const defaultFilter: AnalyticsFilter = {
 export const useAnalyticsStore = create<AnalyticsState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         charts: [],
         selectedChartId: null,
         dateRange: { start: '2024-01-01', end: '2024-12-31' },
@@ -98,7 +99,7 @@ export const useAnalyticsStore = create<AnalyticsState>()(
             };
           });
         },
-      }),
+      })),
       {
         name: 'analytics-store',
         storage: masterStorage,

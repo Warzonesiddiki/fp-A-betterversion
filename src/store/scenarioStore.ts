@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { Scenario, ScenarioState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 
 export const useScenarioStore = create<ScenarioState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         scenarios: [],
         selectedScenarioId: null,
         comparedScenarioIds: [],
@@ -76,7 +77,7 @@ export const useScenarioStore = create<ScenarioState>()(
             ),
           }));
         },
-      }),
+      })),
       {
         name: 'scenario-store',
         storage: masterStorage,

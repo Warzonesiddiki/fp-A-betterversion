@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { VarianceState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 
 export const useVarianceStore = create<VarianceState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         analyses: [],
         isLoading: false,
         error: null,
@@ -27,7 +28,7 @@ export const useVarianceStore = create<VarianceState>()(
           set((state) => ({
             analyses: state.analyses.filter((a) => a.id !== id),
           })),
-      }),
+      })),
       {
         name: 'variance-store',
         storage: masterStorage,

@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { GLAccount, ImportJob, DataState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { safeJSONStorage } from '../utils/storage/safeJSONStorage';
@@ -9,7 +10,7 @@ import { safeJSONStorage } from '../utils/storage/safeJSONStorage';
 export const useDataStore = create<DataState>()(
   subscribeWithSelector(
     persist(
-      (set, get) => ({
+      immer((set, get) => ({
         accounts: [],
         importJobs: [],
         selectedAccountId: null,
@@ -95,7 +96,7 @@ export const useDataStore = create<DataState>()(
         },
 
         setSelectedAccount: (id) => set({ selectedAccountId: id }),
-      }),
+      })),
       {
         name: 'data-store',
         storage: safeJSONStorage<DataState>(masterStorage),

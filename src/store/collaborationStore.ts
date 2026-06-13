@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector, persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 
 import type { Comment, Task, ActivityLog, CollaborationState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
@@ -8,7 +9,7 @@ import { SyncEngine } from '../engines/SyncEngine';
 export const useCollaborationStore = create<CollaborationState>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      immer((set) => ({
         comments: [],
         tasks: [],
         approvals: [],
@@ -102,7 +103,7 @@ export const useCollaborationStore = create<CollaborationState>()(
               ...state.activityLog,
             ],
           })),
-      }),
+      })),
       {
         name: 'collaboration-store',
         storage: masterStorage,

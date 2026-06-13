@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '../utils/masterStorage';
 
 export interface TourStep {
@@ -26,7 +27,7 @@ export interface TourState {
 export const useTourStore = create<TourState>()(
   subscribeWithSelector(
     persist(
-      (set, get) => ({
+      immer((set, get) => ({
         isActive: false,
         currentStepIndex: 0,
         steps: [],
@@ -64,7 +65,7 @@ export const useTourStore = create<TourState>()(
             isActive: false,
           }));
         },
-      }),
+      })),
       {
         name: 'tour-store',
         storage: masterStorage,
