@@ -47,23 +47,25 @@ Q3: Is the data required for regulatory reporting? (SOX, GDPR financial records,
 
 ### Store Classification (Phase 0 closeout)
 
-| Store                         | Q1  | Q2  | Q3  | Class                          | Phase 0 Fix                                   | Phase 1 Fix                                                      |
-| ----------------------------- | --- | --- | --- | ------------------------------ | --------------------------------------------- | ---------------------------------------------------------------- |
-| `authStore`                   | ✅  | —   | —   | **PII**                        | Try/catch parse (DoS)                         | EncryptionEngine payload + server-side session (Phase 1 backend) |
-| `dataStore` (cubes)           | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | Tenant-isolated encryption keys (Phase 1)                        |
-| `scenarioStore`               | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | Tenant-isolated encryption + SOX audit trail (Phase 1)           |
-| `uiStore` (theme)             | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
-| `notificationStore`           | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
-| `tourStore`                   | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
-| `analyticsStore`              | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
-| `collaborationStore`          | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | Server-side (Phase 1)                                            |
-| `driverStore`                 | ❌  | ✅  | ❌  | **Confidential Business Data** | `safeJSONStorage` wrapper                     | Tenant isolation (Phase 1)                                       |
-| `fxRateStore`                 | ❌  | ✅  | ❌  | **Confidential Business Data** | `safeJSONStorage` wrapper                     | —                                                                |
-| `cubeStore` (engine instance) | ❌  | ✅  | ✅  | **Regulated Business Data**    | `partialize` to exclude engine (already done) | —                                                                |
-| `settingsStore`               | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
-| `varianceStore`               | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | —                                                                |
-| `budgetStore`                 | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | —                                                                |
-| `auditStore` (trail)          | ❌  | ❌  | ✅  | **Regulated Data**             | Append-only, hash-chain                       | Server-side immutable (Phase 1)                                  |
+| Store                              | Q1  | Q2  | Q3  | Class                          | Phase 0 Fix                                   | Phase 1 Fix                                                      |
+| ---------------------------------- | --- | --- | --- | ------------------------------ | --------------------------------------------- | ---------------------------------------------------------------- |
+| `authStore`                        | ✅  | —   | —   | **PII**                        | Try/catch parse (DoS)                         | EncryptionEngine payload + server-side session (Phase 1 backend) |
+| `dataStore` (cubes)                | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | Tenant-isolated encryption keys (Phase 1)                        |
+| `scenarioStore`                    | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | Tenant-isolated encryption + SOX audit trail (Phase 1)           |
+| `uiStore` (theme)                  | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
+| `notificationStore`                | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
+| `tourStore`                        | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
+| `analyticsStore`                   | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
+| `collaborationStore`               | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | Server-side (Phase 1)                                            |
+| `driverStore`                      | ❌  | ✅  | ❌  | **Confidential Business Data** | `safeJSONStorage` wrapper                     | Tenant isolation (Phase 1)                                       |
+| `fxRateStore`                      | ❌  | ✅  | ❌  | **Confidential Business Data** | `safeJSONStorage` wrapper                     | —                                                                |
+| `cubeStore` (engine instance)      | ❌  | ✅  | ✅  | **Regulated Business Data**    | `partialize` to exclude engine (already done) | —                                                                |
+| `settingsStore`                    | ❌  | ❌  | ❌  | **General App State**          | `safeJSONStorage` wrapper                     | —                                                                |
+| `varianceStore`                    | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | —                                                                |
+| `budgetStore`                      | ❌  | ✅  | ✅  | **Regulated Business Data**    | `safeJSONStorage` wrapper                     | —                                                                |
+| `auditLogStore` (trail, ADR-008) † | ❌  | ❌  | ✅  | **Regulated Data**             | Append-only, hash-chain                       | Server-side immutable (Phase 1) †                                |
+
+† **`auditLogStore` is PLANNED, not yet built.** Per ADR-008 §6 (L75-79, L102), the canonical store is `src/store/auditLogStore.ts` (note: `auditLogStore` with "Log", not `auditStore`). ADR-009 §6 (L190) lists it as a CODEOWNERS-required file. ADR-006 §4 (L61) + §6 (L81) defines the per-store `retention: { class: 'audit' }` config. The **existing** implementation is the engine at `src/engines/AuditLogEngine.ts:148L` (148 lines, append-only, no hash chain yet — T-HEP-010 audit-chain verify cron cycle 8 ACCEPTED adds the hash chain). There is **no** `src/services/auditLog/` (Glob verified 2026-06-13). The Regulated Data class for audit logging is canonical in **ADR-008** — ADR-012 cross-references it via this footnote, not via an invented store row. See also Athena T-AT-009 board scan §7 (which mis-locates the audit log as a service layer; corrected here per D-009 triangulation).
 
 ### Phase 0 Fix (Apollo's mechanical sweep, P0 #5)
 
@@ -100,7 +102,7 @@ This is a **single mechanical sweep** across all 35 stores. Estimated 4-6 hours 
 
 - **PII (authStore)**: Server-side session + HttpOnly cookies. EncryptionEngine payload as defense-in-depth. Right-to-erasure endpoint for GDPR.
 - **Confidential Business Data (dataStore, scenarioStore, etc.)**: Per-tenant encryption keys (BYOK), tenant-isolated namespaces in Postgres, encrypted-at-rest in storage layer.
-- **Regulated Data (dataStore, scenarioStore, auditStore)**: Hash-chained audit log (separate ADR), 7-year retention, immutable storage (S3 Object Lock or equivalent).
+- **Regulated Data (dataStore, scenarioStore, auditLogStore)**: Hash-chained audit log (canonical in ADR-008; T-HEP-010 cron adds SHA-256 chain), 7-year retention, immutable storage (R2 Object Lock Compliance mode, 60-day minimum, per Atlas T-ATL-012).
 - **General App State (uiStore, notificationStore, etc.)**: `safeJSONStorage` is sufficient. No encryption needed.
 
 ## Consequences
@@ -179,9 +181,15 @@ describe('safeJSONStorage', () => {
 - **GDPR Art. 4(1)** — definition of personal data
 - **SOC 2 CC6.1** — logical access controls (relevant for all classes)
 - **SOX § 404** — financial reporting controls (relevant for regulated business data)
+- **ADR-008-audit-logging.md** (L75-79, L81, L102) — canonical scope for the audit log; planned `src/store/auditLogStore.ts` (NOT YET BUILT) + existing `src/engines/AuditLogEngine.ts:148L` (append-only engine, no hash chain yet)
+- **ADR-006-data-retention.md** (L61, L81) — `auditLogStore` retention class = `audit`, per-store `retention: { class: 'audit' }` config
+- **ADR-009-incident-response.md** (L190) — CODEOWNERS-required PR reference for `auditLogStore` changes
+- **T-HEP-010** (cycle 8 ACCEPTED 2026-06-13) — `scripts/compliance/audit-chain-verify.ts` adds SHA-256 hash chain + Monday 02:00 UTC cron
+- **T-AT-009 board scan §7 (2026-06-13)** — flagged the `auditStore` fabrication; this ADR-012 fix closes the finding
 
 ---
 
 **Changelog:**
 
 - v0.1 (2026-06-12, Hephaestus) — initial draft. 4-class decision tree, 35-store classification table, Phase 0/1 split, 4-test suite, 3 alternatives considered.
+- v0.1.1 (2026-06-13, Hephaestus) — D-009 fix per Athena T-AT-009 §7. Renamed `auditStore` → `auditLogStore` per ADR-008 §6 canonical name. Added footnote † explaining: planned store per ADR-008 L75-79 (NOT YET BUILT), existing engine at `src/engines/AuditLogEngine.ts:148L`, NO `src/services/auditLog/` (Glob verified 2026-06-13). Updated References to cite ADR-008, ADR-006, ADR-009, T-HEP-010 (audit-chain cron cycle 8 ACCEPTED). The Regulated Data class for audit logging is canonical in ADR-008 — ADR-012 cross-references via footnote, not via an invented store row.
