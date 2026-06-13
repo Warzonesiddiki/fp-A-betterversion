@@ -20,7 +20,6 @@ vi.mock('@/engines/AICopilotEngine', () => ({
 
 describe('AICopilotPanel', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
     vi.mocked(FinanceCopilotEngine.answer).mockReturnValue({
       answer: 'Mocked answer',
       confidence: 0.95,
@@ -35,8 +34,6 @@ describe('AICopilotPanel', () => {
   });
 
   afterEach(() => {
-    vi.runOnlyPendingTimers();
-    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -79,16 +76,11 @@ describe('AICopilotPanel', () => {
     const chip = screen.getByText(/Show me a revenue vs expense summary/);
     await user.click(chip);
 
-    // User message should appear
+    // Wait for the 150ms timeout (real timers)
+    await new Promise((r) => setTimeout(r, 200));
+
+    // User message should appear (suggestion chips disappear after first message)
     expect(screen.getByText('Show me a revenue vs expense summary')).toBeInTheDocument();
-
-    // Processing state
-    expect(screen.getByText('Analyzing...')).toBeInTheDocument();
-
-    // Advance timers
-    act(() => {
-      vi.advanceTimersByTime(150);
-    });
 
     // Assistant response should appear
     expect(screen.getByText('Mocked answer')).toBeInTheDocument();
@@ -108,9 +100,7 @@ describe('AICopilotPanel', () => {
 
     expect(screen.getByText('Test query')).toBeInTheDocument();
 
-    act(() => {
-      vi.advanceTimersByTime(150);
-    });
+    await new Promise((r) => setTimeout(r, 200));
 
     expect(screen.getByText('Mocked answer')).toBeInTheDocument();
     expect(FinanceCopilotEngine.answer).toHaveBeenCalledWith('Test query', {
@@ -128,9 +118,7 @@ describe('AICopilotPanel', () => {
 
     expect(screen.getByText('Enter query')).toBeInTheDocument();
 
-    act(() => {
-      vi.advanceTimersByTime(150);
-    });
+    await new Promise((r) => setTimeout(r, 200));
 
     expect(screen.getByText('Mocked answer')).toBeInTheDocument();
   });
@@ -146,9 +134,7 @@ describe('AICopilotPanel', () => {
     const input = screen.getByPlaceholderText('Ask a financial question...');
     await user.type(input, 'Error query{enter}');
 
-    act(() => {
-      vi.advanceTimersByTime(150);
-    });
+    await new Promise((r) => setTimeout(r, 200));
 
     expect(screen.getByText('Could not process that query.')).toBeInTheDocument();
   });
@@ -160,9 +146,7 @@ describe('AICopilotPanel', () => {
     const input = screen.getByPlaceholderText('Ask a financial question...');
     await user.type(input, '   {enter}');
 
-    act(() => {
-      vi.advanceTimersByTime(150);
-    });
+    await new Promise((r) => setTimeout(r, 200));
 
     // Suggestion chips should still be there because no message sent
     expect(screen.getByText(/Help me write a financial formula/)).toBeInTheDocument();
