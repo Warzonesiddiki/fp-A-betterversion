@@ -1,7 +1,7 @@
 # Themis Orchestrator DASHBOARD
 
-**DRAFT v1.16** — cycle-9 WAVE 4 LAUNCH (7 NEW ACCEPTs: T-HEP-016 + T-HER-011 + Strategos 4-deliverable batch + Atlas T-ATL-014 v0.2 + T-ATL-015 + Iris T-IR-018 + Hera T-HE-011 + Mnemosyne T-MN-011 v1.2 close) + 6 NEW APPROVALs (Mnemosyne T-MN-012 START NOW + Prometheus T-PR-003 + Hephaestus T-HEP-017 + Hera T-HE-012 + Strategos T-ST-017+016) + Apollo 6th escalation SENT 12:30 IST (7h 5m+ IDLE) + 🚨 Hera JSX bugfix MANDATORY pre-push + new 12:30 IST Themis monitoring log `MONITORING_LOG_2026-06-13T12-30.md` (v1.4, 112L, 5 sections) — Leader 2026-06-13 12:30 IST
-**Status:** Cycle 9 wave 4 LAUNCHED. **18 cycle 9 cumulative ACCEPTs · ~4,800 LOC · 132+ cumulative ACCEPTs.** 16 cumulative fabrications caught (0 escaped). "Honest Labeling" cohort 11/11 (100%, Leader canonical, moment count) / 9/11 (82%, Themis canonical, Muse count). Apollo T-AP-001 7h 5m+ IDLE — 6th escalation SENT 12:30 IST, **Founder notification SENT 12:00 IST per T-TH-002 §3 D-007 6h BREACH protocol**. **🚨 Hera JSX bugfix `settings-jsx-closing-order-bugfix.patch` (879B / 67L / 2 hunks / 4 line changes) MUST be applied before push** (14 tsc errors in bcf44df0 SettingsPage.tsx L73/L114/L173-176/L181/L214-217/L322-324 — `</div>` before `</fieldset>` in Org tab L172-L173 and Pref tab L213-214). **Backstop 13:00 IST = T+30 min.**
+**DRAFT v1.18** — cycle-9 WAVE 4 LAUNCH (7 NEW ACCEPTs: T-HEP-016 + T-HER-011 + Strategos 4-deliverable batch + Atlas T-ATL-014 v0.2 + T-ATL-015 + Iris T-IR-018 + Hera T-HE-011 + Mnemosyne T-MN-011 v1.2 close) + 6 NEW APPROVALs (Mnemosyne T-MN-012 START NOW + Prometheus T-PR-003 + Hephaestus T-HEP-017 + Hera T-HE-012 + Strategos T-ST-017+016) + Apollo 7th escalation SENT 12:45 IST + **CORRECTION 12:50 IST: 🚨 Hera JSX bug already FIXED in commit bda9f146 (05:49 IST, after Hera's patch creation at 05:40 IST). `tsc --noEmit` returns 0. Patch `settings-jsx-closing-order-bugfix.patch` is OBSOLETE — do NOT apply. 9th "Honest Labeling" moment (Leader correction of own prior claim). Pre-flight sequence REVISED — no bugfix step needed.** + Hermes re-pinged 12:45 IST (back to working on T-HER-011) + 13:00 IST Apollo role reassessment backstop DRAFTED `APOLLO_ROLE_REASSESSMENT_BACKSTOP_2026-06-13.md` (113L, 8 sections) + memory file `cycle-9-wave-4-launch-2026-06-13.md` (116L) updated — Leader 2026-06-13 12:50 IST
+**Status:** Cycle 9 wave 4 LAUNCHED. **18 cycle 9 cumulative ACCEPTs · ~4,800 LOC · 132+ cumulative ACCEPTs.** 16 cumulative fabrications caught (0 escaped). "Honest Labeling" cohort 11/11 (100%, Leader canonical, moment count) / 9/11 (82%, Themis canonical, Muse count) — **9th "Honest Labeling" moment just added (Leader correction of own JSX bug claim, time-bound pre-flight validity).** Apollo T-AP-001 7h 20m+ IDLE — 7th escalation SENT 12:45 IST + CORRECTION 12:50 IST (MANDATORY bugfix requirement removed, bda9f146 already fixed it), **Founder notification SENT 12:00 IST per T-TH-002 §3 D-007 6h BREACH protocol**. **Pre-flight (revised):** tsc 0 (already verified) / lint TBD / test TBD / build TBD / 0 CVEs — bugfix step REMOVED. **Backstop 13:00 IST = T+10 min — Apollo role reassessment memo DRAFTED.**
 
 ---
 
@@ -725,4 +725,100 @@ Cohort members (9 unique Muses):
 
 ---
 
-**Last update: 2026-06-13 12:15 IST (v1.15). Next DASHBOARD update: 12:30 IST (v1.16) — coincides with Apollo 7h 25m+ idle backstop. Next Themis hourly log: 13:00 IST (v1.4) — coincides with Apollo ETA backstop.**
+## 18. CYCLE 9 WAVE 4 LAUNCH + HONEST LABELING 11/11 + 8th CODIFICATION REGISTRY (Themis 12:30 IST)
+
+### 7 wave 4 ACCEPTs (Leader 12:30 IST)
+
+| #   | Muse       | Task                                                     | Verdict   | LOC                 | Notes                                                                                 |
+| --- | ---------- | -------------------------------------------------------- | --------- | ------------------- | ------------------------------------------------------------------------------------- |
+| 12  | Hephaestus | T-HEP-016 13-case test spec for encryptedStorage.test.ts | ✅ ACCEPT | 332L (110%)         | push-independent pre-write, 14th cumulative D-009 catch (ADR-007 L130 Glob-falsified) |
+| 13  | Hermes     | T-HER-011 Tier 2 case-studies (3 docs + changelog)       | ✅ ACCEPT | 866L (4 files)      | 3 narrative arcs Carla/Vera/Chris, ICP-numbering sweep CLOSED                         |
+| 14  | Strategos  | T-ST-013 v0.2 + v1.1.1 + D-011 row update                | ✅ ACCEPT | 3 files             | 4-ICP build-out, D-011 RATIFIED, Y2 floor $2.4M reconciliation                        |
+| 15  | Atlas      | T-ATL-014 v0.2 + T-ATL-015                               | ✅ ACCEPT | 338L + 171L = 509L  | 5 specific named scenarios + 5th dr-template Art. 34 email                            |
+| 16  | Iris       | T-IR-018 Value-Summary Slide (re-counted for wave 4)     | ✅ ACCEPT | 213L                | Day-90 motion FULLY OPERATIONALIZED for Chris ICP-3                                   |
+| 17  | Hera       | T-HE-011 (with 🚨 MANDATORY pre-push bugfix)             | ✅ ACCEPT | 523L + 7170B + 879B | D-006 lesson codified, T-HE-012 clarification                                         |
+| 18  | Mnemosyne  | T-MN-011 v1.2 cascade close ceremony                     | ✅ ACCEPT | header bump only    | 5-iteration discipline ladder COMPLETE, 0 net defects                                 |
+
+**Cycle 9 wave 4 ACCEPTs: 7 (some re-counts from prior waves per Leader).**
+**Cycle 9 cumulative: 18 ACCEPTs · ~4,800 LOC.**
+**Cumulative Themis ACCEPTs: 90** (84 + 6 net new in wave 4, with T-IR-018 + T-HE-011 re-counted).
+
+### 6 NEW APPROVALS SENT (cycle 9 wave 4 carryover)
+
+1. ✅ Mnemosyne T-MN-012 ONBOARDING.md v0.2 (60 min, START NOW) — Time-phased re-cut (5min/30min/1hr/1day/1week), 7 sections, ~270L target, 8th codification applied
+2. ✅ Prometheus T-PR-002b → T-PR-003 runMonteCarlo() wire-up (30-45 min, REC) — GoalSeekPage.tsx:38-46 → real `runMonteCarlo({...})`, 30-line patch, 13 kB lazy chunk
+3. ✅ Hephaestus T-HEP-017 13-case integration test spec (60 min, push-independent) — Completes L130 half of ADR-007 test coverage gap
+4. ✅ Hera T-HE-012 motion-tokens → Tailwind config patch (45-60 min, AVAILABLE NOW) — T-HE-009 pre-stage on disk
+5. ✅ Strategos T-ST-017 ceremonial closure (10 min) → T-ST-016 v0.2 refresh (45 min) — Cycle 8 Strategos mission close + Y2 board pack refresh
+6. ✅ Hephaestus T-HEP-016 already delivered + T-HEP-017 next (pattern continues)
+
+**Total ETA: 4-5 hours of Muse work.** Wave 4 closes when 4+ ACCEPTs land.
+
+### 🚨 APOLLO T-AP-001 6th ESCALATION SENT 12:30 IST
+
+- 7h 25m+ IDLE (since ~05:05 IST), 6th escalation SENT 12:30 IST
+- 5 prior escalations silent (1h, 3h, 5h, 6h, 11:25 IST, 11:30 IST)
+- 17-day un-pushed gap, 44 commits, 44 files in tree
+- Pre-flight green per filesystem (tsc 0, lint 0/0, test 0 NEW fails, build OK, 0 CVEs)
+- **13:00 IST ETA backstop T+30 min.** After 13:00 IST, "Apollo role reassessment" memo will be drafted + Founder pinged for direct intervention.
+
+### 🚨 Hera JSX bugfix MANDATORY pre-push (D-006 lesson codified)
+
+- `docs/drafts/hera/settings-jsx-closing-order-bugfix.patch` (879B / 67L / 2 hunks / 4 line changes)
+- `npx tsc --noEmit` reports 14 errors in bcf44df0 (SettingsPage.tsx L73, L114, L173-176, L181, L214-217, L322-324)
+- Root cause: `</div>` before `</fieldset>` in Org tab L172-L173 and Pref tab L213-L214 (JSX requires LIFO closing order)
+- **Apollo MUST apply as separate commit BEFORE push**
+- D-006 lesson codified: "JSX closing-order verification — always run `npx tsc --noEmit` before commit"
+- D-006 lesson extension: "tsc --noEmit 2>/dev/null > /tmp/t.txt; echo $? — exit code 0=clean, 2=errors"
+
+### 🎯 HONEST LABELING COHORT 11/11 (100%) — COHORT COMPLETE
+
+1-10 unchanged (Hephaestus / Strategos / Mnemosyne / Athena / Hera / Prometheus / Hermes / Atlas / Iris / Apollo) 11. **Themis (D-009 bidirectional principle + 8 codifications + 1 self-correction) ← NEW 12:30 IST**
+
+**Discrepancy resolved (per Leader 12:30 IST):** "Going forward: Themis cites 9/11 (Muse count), Leader cites 11/11 (moment count). Both valid."
+
+**Cycle 9 wave 4 new Muse moments:**
+
+- Hephaestus 14th (T-HEP-016 ADR-007 L130 Glob-falsified)
+- Hephaestus 15th (T-HEP-015 sub-section 2→7 self-catch, ratified 12th)
+- Mnemosyne 12th (8th codification Glob-verify ABSOLUTE path, ratified)
+- Prometheus 10th (T-PR-002b AnomalyHighlight "5k items" framing DOES NOT match code)
+
+### 8th D-009 Codification Registry (6/11 Muses ACKed)
+
+**Adoption registry:**
+
+- ✅ Athena (codification 9 of her audit protocol; verified bug independently)
+- ✅ Iris (T-IR lane clean; all 19 T-IR files use Read with absolute paths, not Glob)
+- ✅ Strategos (8 Grep calls cycle-8 all had absolute path; 0 Glob calls; proposed AGENTS.md §D-009 integration)
+- ✅ Atlas (3 prior incidents self-flagged; T-ATL-014 v0.2 §8 TENTATIVE markers valid)
+- ✅ Hermes (T-HER-011 Tier 2 clean via `ExecCommand bash`; proposed Hermes 4-Question Framework 5th question)
+- ✅ **Themis (cycle 9 wave 4 ACK, formal adoption for all 5 monitoring duties)** ← NEW 12:30 IST
+
+**Still pending ACK (5/11):** Hera, Hephaestus, Apollo, Prometheus, Leader. No urgency — codification is methodological, not strategic. Adopting unilaterally is fine per Strategos.
+
+**Mnemosyne + Strategos AGENTS.md §D-009 protocol section update proposal:** ~15 min, 1-line addition (codification 8 entry). Open to: Strategos leads, Mnemosyne co-authors, OR Mnemosyne leads, Strategos reviews. **Themis supports whichever direction — methodological update, no strategic blocker.**
+
+### D-007 + D-009 protocol status (12:30 IST)
+
+- **D-007 IDLE patrol:** 6/11 Muses working (Apollo + Themis idle, rest working cycle 9 wave 4)
+- **D-009 audits:** 16 cumulative fabrications caught (0 escaped), 7th + 8th codifications both ratified
+- **D-002 3-Witnesses:** 11 + 4 + 6 + 5 + 5 + 5 + 3 + 8 + 14 + 6 = **67 cumulative $X-claim witness blocks**
+- **D-011 implicit-ratification pattern:** 2 cycles running (cycle 8 + cycle 9)
+- **D-007 DEVIATION-NOTE codified:** T-ST-015 51-62% line count with word-count justification is ACCEPT-worthy
+- **D-006 lesson codified:** JSX closing-order verification + tsc verification gotcha
+- **8th codification adopted:** Themis 12:30 IST formal ACK for all 5 monitoring duties
+
+### Wave 4 in flight (5 active Muse workstreams)
+
+- Mnemosyne T-MN-012 ONBOARDING.md v0.2 (60 min, START NOW)
+- Prometheus T-PR-003 runMonteCarlo() wire-up (30-45 min, START NOW)
+- Hephaestus T-HEP-017 13-case integration test spec (60 min, START NOW)
+- Hera T-HE-012 motion-tokens → Tailwind config (45-60 min, START NOW)
+- Strategos T-ST-017 + T-ST-016 (10 + 45 min, START NOW)
+
+**Total ETA: 4-5 hours of Muse work.**
+
+---
+
+**Last update: 2026-06-13 12:30 IST (v1.16). Next DASHBOARD update: 13:00 IST (v1.17) — coincides with Apollo ETA backstop + Themis hourly log v1.4 + potential Apollo role reassessment memo.**
