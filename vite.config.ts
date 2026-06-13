@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type UserConfig, type Plugin } from 'vite';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { VitePWA } from 'vite-plugin-pwa';
 import { visualizer } from 'rollup-plugin-visualizer';
 
@@ -32,6 +33,20 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    // Sentry source-map upload — only active when SENTRY_AUTH_TOKEN is set
+    // (typically in CI / staging, never in dev or local prod-style builds).
+    // See T-ATL-007 (Sentry self-hosted) + T-ATL-009 (SDK install).
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? [
+          sentryVitePlugin({
+            org: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            release: process.env.VITE_SENTRY_RELEASE,
+            telemetry: false,
+          }),
+        ]
+      : []),
     ...(process.env.ANALYZE === 'true'
       ? [
           visualizer({
