@@ -1,59 +1,3 @@
-<!--
-DRAFT v0.1 — Prometheus T-PR-003 (runMonteCarlo wire-up)
-File: src/pages/analytics/GoalSeekPage.tsx
-
-Expected win:
-  - Replaces inline Math.random() stub (component method L58-L86) with real worker pool call
-  - Unlocks the 13 kB Monte Carlo worker lazy chunk (already built and tested)
-  - Async/await pattern matches the rest of the codebase
-  - Preserves the existing results shape (simulations, avgProfit, median, p10, p90, positivePct, count)
-    so the existing UI (L199-228) needs zero changes
-  - Adds error handling: errors land in results.error (UI can render an error state)
-  - Uses import alias `runMonteCarloWorker` to avoid name collision with the component method
-
-Apply:   git apply docs/drafts/prometheus/run-monte-carlo-wireup.patch
-Check:   git apply --check docs/drafts/prometheus/run-monte-carlo-wireup.patch
-Revert:  git apply -R docs/drafts/prometheus/run-monte-carlo-wireup.patch
-
-Two hunks (2 modifications to 1 file):
-  H1: imports — add runMonteCarlo alias + MonteCarloRequest type import
-  H2: replace component method body with async call to the workers pool
-
-Three-witness on every claim:
-  - Worker exists: src/workers/monte-carlo.worker.ts:117 runMonteCarlo(req, opts) returns
-    Promise<MonteCarloResponse> (verified by Read tool).
-  - Pool wrapper exists: src/workers/index.ts:96 runMonteCarlo forwards to worker pool.
-  - Types exist: src/workers/types.ts has MonteCarloRequest and MonteCarloResponse.
-  - 13 kB lazy chunk: Vite worker imports are code-split by default (worker bundles are
-    async-loaded). Confirmed by grep: no other page imports @/workers directly.
-  - Math preservation: profit = revenue - costs. The worker sums assumption values,
-    so we recover (revenue, costs) from result.values and subtract in JS.
-  - The 6 stats (avgProfit, median, p10, p90, positivePct, count) are derived from
-    the sorted profits array. Existing UI reads these unchanged.
-  - error case: results.error is added as a new optional field. UI does not currently
-    render this, but the contract is forward-compatible. The eslint-disable comment
-    suppresses the no-console warning since this is a real user-facing failure that
-    should be logged (the existing Alert component is for transient messages, not errors).
-
-Why this is the right next-up after T-PR-002b:
-  - Real engineering value: stops using Math.random() for FP&A decisions
-  - Closes a "stub engine in production" gap that Hephaestus flagged in T-HEP-006
-  - Unlocks the lazy chunk: workers are code-split, so users not on the Goal
-    Seek page don't pay the 13 kB cost
-  - Tests are easy: the page test (GoalSeekPage.test.tsx) can mock the
-    workers module and assert the inputs/outputs
-
-AnomalyHighlight.tsx (T-PR-002b #2) DEFERRED to T-PR-002b.5:
-  Per D-009 triangulation (10th honest-labeling moment):
-  - Default maxDisplay=5 (AnomalyHighlight.tsx:176)
-  - Render is hard-capped via slice (L205) and .map (L235)
-  - All 2 production callers pass maxDisplay=3 (DashboardPage:574) and
-    maxDisplay=5 (VarianceDashboardPage:329). No caller passes >5.
-  - Engine itself is O(n) but fast (~10ms for n=5k).
-  - Virtualization at maxDisplay=3-5 would save 0 DOM nodes.
-  - The "5k items, highest-stakes" framing in the original brief does not
-    match the code. This is the 10th cumulative honest-labeling moment.
--->
 --- a/src/pages/analytics/GoalSeekPage.tsx
 +++ b/src/pages/analytics/GoalSeekPage.tsx
 @@ -1,13 +1,15 @@
@@ -85,7 +29,7 @@ AnomalyHighlight.tsx (T-PR-002b #2) DEFERRED to T-PR-002b.5:
 +import { runMonteCarlo as runMonteCarloWorker } from '@/workers';
 +import type { MonteCarloRequest } from '@/workers/types';
 +
-@@ -58,29 +61,41 @@
+@@ -58,29 +60,42 @@
 -  const runMonteCarlo = () => {
 -    setLoading(true);
 -    setTimeout(() => {
@@ -118,40 +62,41 @@ AnomalyHighlight.tsx (T-PR-002b #2) DEFERRED to T-PR-002b.5:
 +  const runMonteCarlo = async () => {
 +    setLoading(true);
 +    try {
-+      const base = actuals?.revenue || 1000000;
-+      const baseCosts = base * (variableCostPct / 100) + fixedCost;
-+      const request: MonteCarloRequest = {
++      const baseRevenue = actuals?.revenue ?? 0;
++      const baseCosts = (baseRevenue * (variableCostPct / 100)) + fixedCost;
++      const req: MonteCarloRequest = {
 +        iterations,
++        seed: Date.now(),
 +        assumptions: [
-+          { name: 'revenue', type: 'uniform', min: base * 0.8, max: base * 1.2 },
-+          { name: 'costs',   type: 'uniform', min: baseCosts * 0.85, max: baseCosts * 1.15 },
++          { name: 'revenue', type: 'uniform', min: baseRevenue * 0.8, max: baseRevenue * 1.2 },
++          { name: 'costs', type: 'uniform', min: baseCosts * 0.85, max: baseCosts * 1.15 },
 +        ],
 +      };
-+      const response = await runMonteCarloWorker(request);
-+      // Worker output sums assumption values; recover profit = revenue - costs.
-+      const profits = response.results.map((r) => r.values.revenue - r.values.costs).sort((a, b) => a - b);
-+      const avgProfit = profits.reduce((s, p) => s + p, 0) / profits.length;
-+      const median = profits[Math.floor(profits.length / 2)];
-+      const p10 = profits[Math.floor(profits.length * 0.1)];
-+      const p90 = profits[Math.floor(profits.length * 0.9)];
-+      const positiveOutcomes = profits.filter((p) => p >= 0).length;
++      const resp = await runMonteCarloWorker(req);
++      const sims = resp.results.map((r) => ({
++        revenue: r.values.revenue ?? 0,
++        costs: r.values.costs ?? 0,
++        profit: (r.values.revenue ?? 0) - (r.values.costs ?? 0),
++      }));
++      const profits = sims.map((s) => s.profit).sort((a, b) => a - b);
++      const n = profits.length;
++      const sum = profits.reduce((s, v) => s + v, 0);
++      const avgProfit = n > 0 ? sum / n : 0;
++      const median = n > 0 ? profits[Math.floor(n / 2)] : 0;
++      const p10 = n > 0 ? profits[Math.floor(n * 0.1)] : 0;
++      const p90 = n > 0 ? profits[Math.floor(n * 0.9)] : 0;
++      const positivePct = n > 0 ? (profits.filter((p) => p > 0).length / n) * 100 : 0;
 +      setResults({
-+        simulations: response.results.map((r, i) => ({
-+          revenue: r.values.revenue,
-+          costs: r.values.costs,
-+          profit: profits[i],
-+        })),
++        simulations: sims,
 +        avgProfit,
 +        median,
 +        p10,
 +        p90,
-+        positivePct: (positiveOutcomes / profits.length) * 100,
-+        count: profits.length,
++        positivePct,
++        count: n,
 +      });
 +    } catch (err) {
-+      // eslint-disable-next-line no-console
 +      console.error('Monte Carlo simulation failed:', err);
-+      setResults({ error: err instanceof Error ? err.message : String(err) });
 +    } finally {
 +      setLoading(false);
 +    }
