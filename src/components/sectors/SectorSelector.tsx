@@ -39,7 +39,12 @@ export interface SectorSelectorProps {
  * Renders all 16 sectors as clickable cards in a responsive grid.
  * The active sector is highlighted with a blue ring.
  */
-export function SectorSelector({ sectors, value, onChange, className }: SectorSelectorProps) {
+export function SectorSelector({
+  sectors = [],
+  value,
+  onChange = () => {},
+  className,
+}: SectorSelectorProps) {
   const sorted = useMemo(
     () => [...sectors].sort((a, b) => a.name.localeCompare(b.name)),
     [sectors]

@@ -22,9 +22,9 @@ describe('AnomalyDetectionEngine — Lovelace Audit', () => {
 
   describe('T00037: 100% Branch Coverage', () => {
     it('percentile: should hit lower===upper branch', () => {
-      // sorted.length = 2, p = 100 => idx = 1 * 1 = 1. lower=1, upper=1.
-      const stats = engine.computeStatistics([10, 20]);
-      expect(stats.q3).toBe(20);
+      // sorted.length = 5, q3 with p=75: idx = 0.75 * 4 = 3.0. lower=3, upper=3.
+      const stats = engine.computeStatistics([10, 20, 30, 40, 50]);
+      expect(stats.q3).toBe(40);
     });
 
     it('skewness: should return 0 for n < 3', () => {

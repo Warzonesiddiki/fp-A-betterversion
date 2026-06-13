@@ -86,13 +86,25 @@ function isApprover(currentStep: WorkflowStep | undefined, user: string): boolea
 }
 
 export function ApprovalWorkflow({
-  request,
+  request = {
+    id: 'preview',
+    title: 'Preview Request',
+    description: '',
+    amount: 0,
+    state: 'pending',
+    requester: { id: 'u1', name: 'Preview User', email: 'preview@example.com' },
+    steps: [],
+    currentStepId: null,
+    history: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   currentStep,
   currentUser,
-  onApprove,
-  onReject,
-  onDelegate,
-  onLock,
+  onApprove = () => {},
+  onReject = () => {},
+  onDelegate = () => {},
+  onLock = () => {},
   className,
 }: ApprovalWorkflowProps) {
   const [comment, setComment] = useState('');
@@ -190,7 +202,7 @@ export function ApprovalWorkflow({
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
             <span className="text-[var(--text-muted)]">Requester</span>
-            <p className="font-medium">{request.requester}</p>
+            <p className="font-medium">{request.requester?.name || 'Unknown'}</p>
           </div>
           <div>
             <span className="text-[var(--text-muted)]">Submitted</span>

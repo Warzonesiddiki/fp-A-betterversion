@@ -63,8 +63,8 @@ describe('NLQChat', () => {
 
     renderComponent(['/dashboard']);
 
-    const suggestionBtn = screen.getByRole('listitem', {
-      name: /Query: Show revenue by department/i,
+    const suggestionBtn = screen.getByRole('button', {
+      name: /Show revenue by department/i,
     });
     expect(suggestionBtn).toBeInTheDocument();
 
@@ -137,7 +137,11 @@ describe('NLQChat', () => {
     });
 
     expect(
-      screen.getByText(/Empty result\nTry rephrasing or check if GL data is loaded./i)
+      screen.getByText(
+        (content) =>
+          content.includes('Empty result') &&
+          content.includes('Try rephrasing or check if GL data is loaded.')
+      )
     ).toBeInTheDocument();
   });
 

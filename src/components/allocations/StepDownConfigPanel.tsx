@@ -18,10 +18,15 @@ export interface StepDownConfigPanelProps {
 // ---------------------------------------------------------------------------
 
 export function StepDownConfigPanel({
-  serviceDepts,
-  productionDepts,
-  config,
-  onChange,
+  serviceDepts = [],
+  productionDepts = [],
+  config = {
+    method: 'sequential',
+    servicePercentages: {},
+    allocationBase: 'direct',
+    precision: 2,
+  },
+  onChange = () => {},
 }: StepDownConfigPanelProps) {
   const allReceivers = useMemo(
     () => [...serviceDepts, ...productionDepts],
