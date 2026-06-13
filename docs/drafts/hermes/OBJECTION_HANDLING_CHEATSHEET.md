@@ -1,13 +1,14 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-010 Tier 2 broader drift sweep — Hermes 2026-06-13 -->
 
 # FinPlan Pro — Objection Handling Cheatsheet (Top 10)
 
-> **Frame for the cycle:** This is the **AE's pocket card** for the 10 objections that come up in 80%+ of ICP-1 (Carla) and ICP-2 (Chris) discovery calls. Each objection is handled in 3-5 sentences with the three-witness test (buyer persona, competitive alternative, price/pain anchor). The cheatsheet is designed to be **scannable in 30 seconds** during a live call — every section is structured identically (the objection → the real concern → the counter → the proof point → the follow-up question).
+> **Frame for the cycle:** This is the **AE's pocket card** for the 10 objections that come up in 80%+ of ICP-1 (Carla, CFO) and ICP-2 (Vera, Controller) discovery calls. Each objection is handled in 3-5 sentences with the three-witness test (buyer persona, competitive alternative, price/pain anchor). The cheatsheet is designed to be **scannable in 30 seconds** during a live call — every section is structured identically (the objection → the real concern → the counter → the proof point → the follow-up question).
 
 > **Cross-references:**
+>
 > - `docs/drafts/hermes/DISCOVERY_CALL_PLAYBOOK.md` — companion file, the 30-min call structure
 > - `docs/drafts/hermes/BATTLECARD_ANAPLAN.md` — 3 of the 10 objections are deep-dived there
-> - `docs/drafts/hermes/ICP.md` — ICP-1 (Sandra/Carla) + ICP-2 (Carlos/Chris)
+> - `docs/drafts/hermes/ICP.md` — ICP-1 (Carla, CFO) + ICP-2 (Vera, Controller) + ICP-3 (Chris, FP&A Lead)
 > - `docs/drafts/hermes/POSITIONING.md` — the value props that frame the counter
 > - `docs/drafts/hermes/PRICING.md` — the 4 tiers that the counter-points reference
 > - `docs/drafts/hermes/BETA_PROGRAM.md` — the 30-day pilot + 50% Y1 discount + 90-day price-lock
@@ -20,9 +21,9 @@
 
 The cheatsheet is structured as a **2-column flashcard** for each objection:
 
-| Column | Use |
-|---|---|
-| **Left — the objection** | Verbatim, in the buyer's words. Read it aloud to the AE. |
+| Column                         | Use                                                                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| **Left — the objection**       | Verbatim, in the buyer's words. Read it aloud to the AE.                                                 |
 | **Right — the 3-step counter** | Step 1: name the real concern. Step 2: counter with the proof point. Step 3: ask the follow-up question. |
 
 **The AE's rule:** never answer an objection in isolation. **Every counter ends with a question** — the question puts the conversation back in the buyer's hands and gives the AE the next data point to qualify or close.
@@ -71,7 +72,7 @@ The cheatsheet is structured as a **2-column flashcard** for each objection:
 2. **Counter with the roadmap honesty:** "Our target is **SOC 2 Type 1 by Q4 2026 and Type 2 by Q1 2027** — that's public in our roadmap. SSO (Google + Microsoft) is in MVP, RBAC and audit log are in Phase 1. For the next 90 days, the 30-day pilot runs with the same security architecture we'll have in production — AES-256-GCM encryption at rest, PBKDF2 key derivation, and your data stays on your laptop. **The .fpa file is yours** — even if we go out of business, the file opens." (per `PRICING.md` §2.3 and the security architecture in `FPA_COMPETITIVE_MATRIX.md`)
 3. **Ask:** "If we put the security architecture doc and the SOC 2 timeline in front of your security team, and they're comfortable with the 30-day pilot under the current architecture — does that unblock the eval?"
 
-**Three-witness test:** (a) Buyer = Sandra/Carla in a regulated industry (fintech/healthtech/EU); (b) Alternative = Anaplan/Adaptive (both have SOC 2 but at $200K-$500K/yr); (c) Outcome = SOC 2 Type 1 by Q4 2026, AES-256-GCM, file-ownership guarantee, 30-day pilot under current architecture.
+**Three-witness test:** (a) Buyer = Carla in a regulated industry (fintech/healthtech/EU); (b) Alternative = Anaplan/Adaptive (both have SOC 2 but at $200K-$500K/yr); (c) Outcome = SOC 2 Type 1 by Q4 2026, AES-256-GCM, file-ownership guarantee, 30-day pilot under current architecture.
 
 ---
 
@@ -91,7 +92,7 @@ The cheatsheet is structured as a **2-column flashcard** for each objection:
 
 ## 5. "Excel is fine."
 
-**The real concern:** The buyer is in denial. They've built a 15-tab, 50-cross-reference Excel model that they love and hate, and the AE is the threat. **This is the #1 ICP-2 (Chris) objection** — Iris's persona research calls it "the silent incumbent."
+**The real concern:** The buyer is in denial. They've built a 15-tab, 50-cross-reference Excel model that they love and hate, and the AE is the threat. **This is the #1 ICP-2 (Vera) objection** — Iris's persona research calls it "the silent incumbent."
 
 **The 3-step counter:**
 
@@ -99,9 +100,9 @@ The cheatsheet is structured as a **2-column flashcard** for each objection:
 2. **Counter with the breaking point:** "...it doesn't. The breaking points are: (a) the day the GL adds a new dimension and your VLOOKUP breaks for 9 days, (b) the day your CEO buys Tableau for $70/mo and now there are 2 versions of the truth, (c) the day your VLOOKUP returns #N/A and you have to send a board-pack 'correction' email. **Each of those is a 4-12 hour fix that the next quarter is going to repeat.** The FinPlan Pro replacement is $99/user/mo or $499/user/mo — the cost of one bad VLOOKUP." (per `BATTLECARD_ANAPLAN.md` §1 and Iris's `PERSONAS.md` §2 "I'm one Excel formula away from a serious mistake")
 3. **Ask:** "If I can show you a 30-min import of your existing model into FinPlan Pro, with the same numbers — would you be willing to see what the world looks like on the other side of the VLOOKUP?"
 
-**Three-witness test:** (a) Buyer = Chris (controller) or small-business CFO; (b) Alternative = Excel at $0 + the silent risk of a broken VLOOKUP; (c) Outcome = 30-min import, same numbers, $99-$499/user/mo vs. the 4-12 hour quarterly break-fix cost.
+**Three-witness test:** (a) Buyer = Vera (controller) or small-business CFO; (b) Alternative = Excel at $0 + the silent risk of a broken VLOOKUP; (c) Outcome = 30-min import, same numbers, $99-$499/user/mo vs. the 4-12 hour quarterly break-fix cost.
 
-**Source:** Iris `PERSONAS.md` §2 (Chris pain quote #1)
+**Source:** Iris `PERSONAS.md` §2 (Vera pain quote #1)
 
 ---
 

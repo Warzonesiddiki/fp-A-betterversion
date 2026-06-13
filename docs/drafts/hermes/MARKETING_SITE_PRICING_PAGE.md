@@ -1,12 +1,12 @@
-<!-- DRAFT v0.1 — awaiting review — Hermes 2026-06-13 -->
+<!-- DRAFT v0.2 — ICP-numbering reconciled to canonical (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3) per T-HER-010 Tier 2 broader drift sweep — Hermes 2026-06-13 -->
 
 # FinPlan Pro — Marketing Site / Pricing Page
 
-> **Purpose:** Convert `MARKETING_SITE_HOME.md` visitors into self-serve sign-ups (ICP-2 / Chris) and demo requests (ICP-1 / Sandra, Carla). One table, one FAQ, no surprises.
+> **Purpose:** Convert `MARKETING_SITE_HOME.md` visitors into self-serve sign-ups (ICP-2 / Vera) and demo requests (ICP-1 / Carla). One table, one FAQ, no surprises.
 >
-> **Three-witness test (D-002):** Every claim on this page is anchored to (a) buyer persona, (b) competitive alternative, (c) price/pain anchor. Sources: `PRICING.md` §2.3 (price table), `ICP.md` §3.1 (Sandra/Carla budget band $20-100K/yr), `ICP.md` §3.2 (Carlos/Chris budget band $500-5K/yr), `BATTLECARD_ANAPLAN.md` (Anaplan price anchor $100K-$500K/yr).
+> **Three-witness test (D-002):** Every claim on this page is anchored to (a) buyer persona, (b) competitive alternative, (c) price/pain anchor. Sources: `PRICING.md` §2.3 (price table), `ICP.md` §3.1 (Carla budget band $20-100K/yr), `ICP.md` §3.2 (Vera budget band $500-5K/yr), `BATTLECARD_ANAPLAN.md` (Anaplan price anchor $100K-$500K/yr).
 >
-> **Cross-Muse coordination:** Prices cite `PRICING.md` §2.3. FAQs cite `BETA_NDA_TEMPLATE.md` §4 (confidentiality), `OBJECTION_HANDLING_CHEATSHEET.md` #9 (offline-first hammer), `DISCOVERY_CALL_PLAYBOOK.md` §4 (objection "is this really open source?"). All copy stays in the persona voices defined by `iris/PERSONAS.md` (Carla CFO, Chris Controller, Vera VP Finance Phase 2).
+> **Cross-Muse coordination:** Prices cite `PRICING.md` §2.3. FAQs cite `BETA_NDA_TEMPLATE.md` §4 (confidentiality), `OBJECTION_HANDLING_CHEATSHEET.md` #9 (offline-first hammer), `DISCOVERY_CALL_PLAYBOOK.md` §4 (objection "is this really open source?"). All copy stays in the persona voices defined by `iris/PERSONAS.md` (Carla CFO, Vera Controller, Chris FP&A Lead Phase 2).
 
 ---
 
@@ -14,12 +14,12 @@
 
 > **Rule of one:** one table, four rows, no hidden fees. Visitor should know their annual bill in under 10 seconds.
 
-| Tier | Price | Seats | Models | Best for | The catch (what's NOT included) |
-|---|---|---|---|---|---|
-| **Open Source** | **$0** forever | Unlimited | Unlimited | Developers, tinkerers, OSS contributors, evaluation | No support SLA, no hosted AI features, no SSO. Self-host or use the desktop app. |
-| **Starter** | **$99 / user / month** (billed annually) or $119 month-to-month | Up to 10 seats | 5 active models | Scrappy SaaS controllers, 1-10 FTE finance teams (ICP-2 / Chris) | Email support only (24-hr SLA). No sandbox refresh. No audit log export. |
-| **Business** | **$499 / user / month** (billed annually) or $599 month-to-month | Up to 100 seats | Unlimited | Mid-market CFOs, 50-500 FTE FP&A teams (ICP-1 / Sandra, Carla) | Onboarding included (5 sessions). SSO/SAML included. Dedicated CSM at 25+ seats. |
-| **Enterprise** | **Custom (typically $1,500-$4,000 / user / month)** | Unlimited | Unlimited | Multi-entity, multi-currency, SOX-grade audit, 500+ FTE | Custom MSA, custom DPA, custom SLA (99.9% uptime, 4-hr P1 response). Talk to sales. |
+| Tier            | Price                                                            | Seats           | Models          | Best for                                                        | The catch (what's NOT included)                                                     |
+| --------------- | ---------------------------------------------------------------- | --------------- | --------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Open Source** | **$0** forever                                                   | Unlimited       | Unlimited       | Developers, tinkerers, OSS contributors, evaluation             | No support SLA, no hosted AI features, no SSO. Self-host or use the desktop app.    |
+| **Starter**     | **$99 / user / month** (billed annually) or $119 month-to-month  | Up to 10 seats  | 5 active models | Scrappy SaaS controllers, 1-10 FTE finance teams (ICP-2 / Vera) | Email support only (24-hr SLA). No sandbox refresh. No audit log export.            |
+| **Business**    | **$499 / user / month** (billed annually) or $599 month-to-month | Up to 100 seats | Unlimited       | Mid-market CFOs, 50-500 FTE FP&A teams (ICP-1 / Carla)          | Onboarding included (5 sessions). SSO/SAML included. Dedicated CSM at 25+ seats.    |
+| **Enterprise**  | **Custom (typically $1,500-$4,000 / user / month)**              | Unlimited       | Unlimited       | Multi-entity, multi-currency, SOX-grade audit, 500+ FTE         | Custom MSA, custom DPA, custom SLA (99.9% uptime, 4-hr P1 response). Talk to sales. |
 
 **All plans include — every tier, no exceptions:**
 
@@ -29,9 +29,9 @@
 - ✅ **Excel/CSV/PDF import** — bring your existing models, no migration consultant required (vs. Pigment's 6-week onboarding)
 - ✅ **Version control** — Git-style diff/merge for every model change, built in (vs. Drivetrain's "ask your CSM to roll back")
 
-> **Anchor callout (Three-witness, ICP-1):** *"Anaplan lists for $100K-$500K/yr for a 50-seat deployment. FinPlan Pro Business is $499/user/mo × 50 seats = **$299,400/yr**. That's a $200K-$300K annual savings — your entire FP&A hire's loaded cost."* (Witness: persona=Carla CFO, alternative=Anaplan per `BATTLECARD_ANAPLAN.md`, anchor=G2 reported price band)
+> **Anchor callout (Three-witness, ICP-1):** _"Anaplan lists for $100K-$500K/yr for a 50-seat deployment. FinPlan Pro Business is $499/user/mo × 50 seats = **$299,400/yr**. That's a $200K-$300K annual savings — your entire FP&A hire's loaded cost."_ (Witness: persona=Carla CFO, alternative=Anaplan per `BATTLECARD_ANAPLAN.md`, anchor=G2 reported price band)
 
-> **Anchor callout (Three-witness, ICP-2):** *"Vena Solutions starts at $1,200/user/yr. Tidemark costs $15K/yr minimum. FinPlan Pro Starter is $99/user/mo = $1,188/user/yr. Same Excel-native experience, 30-day implementation, no consultant required."* (Witness: persona=Chris Controller, alternative=Vena per `iris/PERSONAS.md`, anchor=Capterra pricing data)
+> **Anchor callout (Three-witness, ICP-2):** _"Vena Solutions starts at $1,200/user/yr. Tidemark costs $15K/yr minimum. FinPlan Pro Starter is $99/user/mo = $1,188/user/yr. Same Excel-native experience, 30-day implementation, no consultant required."_ (Witness: persona=Vera Controller, alternative=Vena per `iris/PERSONAS.md`, anchor=Capterra pricing data)
 
 ---
 
@@ -39,29 +39,29 @@
 
 > **Three CTAs, not one.** Each CTA is wired to a different buyer's self-image and a different competitive anchor.
 
-### CTA-1 (for Carla / Sandra — ICP-1, demo-led)
+### CTA-1 (for Carla — ICP-1, demo-led)
 
 > **"Book a 30-min demo. We'll show you the Anaplan migration in under 6 weeks, with the .fpa file in your hands on day 1."**
 >
-> *Button:* `[ Book a Demo ]` → routes to Calendly (sales-led)
-> *Anchor:* `$200K-$300K/yr savings vs. Anaplan` + `6-week implementation vs. Anaplan's 6 months` (BATTLECARD_ANAPLAN.md weaknesses #1, #2)
-> *Persona witness:* Carla, 50-500 FTE, $20-100K/yr budget, 60-90 day cycle (ICP.md §3.1)
+> _Button:_ `[ Book a Demo ]` → routes to Calendly (sales-led)
+> _Anchor:_ `$200K-$300K/yr savings vs. Anaplan` + `6-week implementation vs. Anaplan's 6 months` (BATTLECARD_ANAPLAN.md weaknesses #1, #2)
+> _Persona witness:_ Carla, 50-500 FTE, $20-100K/yr budget, 60-90 day cycle (ICP.md §3.1)
 
-### CTA-2 (for Chris / Carlos — ICP-2, self-serve)
+### CTA-2 (for Vera — ICP-2, self-serve)
 
 > **"Start free. Open-source core, no credit card, no sales call. Your .fpa file is yours from minute one."**
 >
-> *Button:* `[ Download Open Source ]` → routes to GitHub releases
-> *Anchor:* `MIT license` + `$0 to start` + `5-min install` (vs. Pigment's "book a sales call to see pricing")
-> *Persona witness:* Chris, 10-50 FTE, $500-5K/yr budget, 14-30 day self-serve cycle (ICP.md §3.2)
+> _Button:_ `[ Download Open Source ]` → routes to GitHub releases
+> _Anchor:_ `MIT license` + `$0 to start` + `5-min install` (vs. Pigment's "book a sales call to see pricing")
+> _Persona witness:_ Vera, 10-50 FTE, $500-5K/yr budget, 14-30 day self-serve cycle (ICP.md §3.2)
 
-### CTA-3 (for Vera — Phase 2, ICP-3 future)
+### CTA-3 (for Chris — Phase 2, ICP-3 future)
 
 > **"Join the Beta. 50 customers shipping the multi-entity, SOX-grade, 200-model Business tier this fall."**
 >
-> *Button:* `[ Apply for Beta ]` → routes to `BETA_PROGRAM.md` application form
-> *Anchor:* `50-customer cohort` + `D-7 to D+120 launch sequence` + `NDA-protected` (BETA_PROGRAM.md §1, §5)
-> *Persona witness:* Vera, 50-200 FTE, Phase 2 launch Q3 2026 (iris/PERSONAS.md)
+> _Button:_ `[ Apply for Beta ]` → routes to `BETA_PROGRAM.md` application form
+> _Anchor:_ `50-customer cohort` + `D-7 to D+120 launch sequence` + `NDA-protected` (BETA_PROGRAM.md §1, §5)
+> _Persona witness:_ Chris, 50-200 FTE, Phase 2 launch Q3 2026 (iris/PERSONAS.md)
 
 ---
 
@@ -93,21 +93,21 @@
 
 ## §4 — The "Hidden Costs" Comparison Table (below the FAQ)
 
-> **The CFO objection we hear most:** "OK, but what about implementation, training, and ongoing support? Anaplan quotes me a number, what's the *real* number?"
+> **The CFO objection we hear most:** "OK, but what about implementation, training, and ongoing support? Anaplan quotes me a number, what's the _real_ number?"
 > **Our answer:** Show the total cost, line by line, so the comparison is apples-to-apples.
 
-| Cost line | Anaplan (50 seats, 3-yr) | FinPlan Pro Business (50 seats, 3-yr) |
-|---|---|---|
-| **Software license** | $300K-$1.5M (per G2, Capterra) | $898,200 ($499 × 50 × 36 mo) |
-| **Implementation consultants** | $300K-$900K (5 consultants × 6 months @ $300/hr) | $0 (self-serve + 5 included onboarding sessions) |
-| **Annual maintenance (20%)** | $60K-$300K/yr | $0 (subscription includes all updates) |
-| **Training & certification** | $15K-$50K (per Anaplan Academy) | $0 (free video library + community Discord) |
-| **Data export / exit cost** | $50K+ (HyperBlock extraction project) | $0 (`.fpa` is open format) |
-| **3-year total cost of ownership** | **$725K-$3.05M** | **$898,200** |
-| **Net savings** | — | **Breakeven to $2.15M savings** |
+| Cost line                          | Anaplan (50 seats, 3-yr)                         | FinPlan Pro Business (50 seats, 3-yr)            |
+| ---------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
+| **Software license**               | $300K-$1.5M (per G2, Capterra)                   | $898,200 ($499 × 50 × 36 mo)                     |
+| **Implementation consultants**     | $300K-$900K (5 consultants × 6 months @ $300/hr) | $0 (self-serve + 5 included onboarding sessions) |
+| **Annual maintenance (20%)**       | $60K-$300K/yr                                    | $0 (subscription includes all updates)           |
+| **Training & certification**       | $15K-$50K (per Anaplan Academy)                  | $0 (free video library + community Discord)      |
+| **Data export / exit cost**        | $50K+ (HyperBlock extraction project)            | $0 (`.fpa` is open format)                       |
+| **3-year total cost of ownership** | **$725K-$3.05M**                                 | **$898,200**                                     |
+| **Net savings**                    | —                                                | **Breakeven to $2.15M savings**                  |
 
-> **Anchor callout (Three-witness):** *"The cheapest Anaplan customer we displaced in private Beta had a $725K 3-yr TCO. The most expensive had $3.05M. The FinPlan Pro Business price is $898,200 over the same period. Same headcount, same outputs, 60-90% savings."* (Witness: persona=Sandra CFO Series C, alternative=Anaplan per `BATTLECARD_ANAPLAN.md`, anchor=G2 reported TCO data + Thoma Bravo $10.7B acquisition valuation as market size signal)
-> *Note: All customer numbers in this section are tagged [FICTIONAL PLACEHOLDER] pending Beta cohort launch. See `BETA_PROGRAM.md` §6 for the D+120 case-study swap-in plan.*
+> **Anchor callout (Three-witness):** _"The cheapest Anaplan customer we displaced in private Beta had a $725K 3-yr TCO. The most expensive had $3.05M. The FinPlan Pro Business price is $898,200 over the same period. Same headcount, same outputs, 60-90% savings."_ (Witness: persona=Carla CFO Series C, alternative=Anaplan per `BATTLECARD_ANAPLAN.md`, anchor=G2 reported TCO data + Thoma Bravo $10.7B acquisition valuation as market size signal)
+> _Note: All customer numbers in this section are tagged [FICTIONAL PLACEHOLDER] pending Beta cohort launch. See `BETA_PROGRAM.md` §6 for the D+120 case-study swap-in plan._
 
 ---
 
@@ -121,7 +121,7 @@ FinPlan Pro is the offline-first, AI-native, open-source FP&A platform built for
 
 > `[ Book a Demo ]` · `[ Download Open Source ]` · `[ Apply for Beta ]`
 
-*50 words exactly. Three CTAs. One promise: ownership.*
+_50 words exactly. Three CTAs. One promise: ownership._
 
 ---
 
@@ -129,39 +129,39 @@ FinPlan Pro is the offline-first, AI-native, open-source FP&A platform built for
 
 ### Inputs (what this page consumes)
 
-| Source | What we cite |
-|---|---|
-| `PRICING.md` §2.3 | The 4-tier price matrix (Open Source $0 / Starter $99 / Business $499 / Enterprise custom) |
-| `ICP.md` §3.1, §3.2 | Sandra/Carla budget band $20-100K/yr, Carlos/Chris budget band $500-5K/yr |
-| `BATTLECARD_ANAPLAN.md` | 5 weaknesses (price, complexity, implementation, lock-in, no offline) used in CTAs and "hidden costs" table |
-| `OBJECTION_HANDLING_CHEATSHEET.md` | FAQ answers cite objections #2, #4, #9 |
-| `BETA_PROGRAM.md` §1, §5 | CTA-3 (Beta application) and the [FICTIONAL PLACEHOLDER] swap-in plan |
-| `BETA_NDA_TEMPLATE.md` §4 | FAQ #4 ("really MIT?") references the confidentiality terms |
-| `DISCOVERY_CALL_PLAYBOOK.md` §4 | FAQ #3 (30-day money-back guarantee) references pitch story #1 |
-| `iris/PERSONAS.md` | Carla/Chris/Vera persona voices for the 3 CTAs |
-| Strategos's "Is 100× yet?" scorecard | Footer proof points (8,334+ tests, 0 CVEs, 55.95 kB bundle) — same as home page §2 |
+| Source                               | What we cite                                                                                                |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `PRICING.md` §2.3                    | The 4-tier price matrix (Open Source $0 / Starter $99 / Business $499 / Enterprise custom)                  |
+| `ICP.md` §3.1, §3.2                  | Carla budget band $20-100K/yr, Vera budget band $500-5K/yr                                                  |
+| `BATTLECARD_ANAPLAN.md`              | 5 weaknesses (price, complexity, implementation, lock-in, no offline) used in CTAs and "hidden costs" table |
+| `OBJECTION_HANDLING_CHEATSHEET.md`   | FAQ answers cite objections #2, #4, #9                                                                      |
+| `BETA_PROGRAM.md` §1, §5             | CTA-3 (Beta application) and the [FICTIONAL PLACEHOLDER] swap-in plan                                       |
+| `BETA_NDA_TEMPLATE.md` §4            | FAQ #4 ("really MIT?") references the confidentiality terms                                                 |
+| `DISCOVERY_CALL_PLAYBOOK.md` §4      | FAQ #3 (30-day money-back guarantee) references pitch story #1                                              |
+| `iris/PERSONAS.md`                   | Carla/Chris/Vera persona voices for the 3 CTAs                                                              |
+| Strategos's "Is 100× yet?" scorecard | Footer proof points (8,334+ tests, 0 CVEs, 55.95 kB bundle) — same as home page §2                          |
 
 ### Outputs (what consumes this page)
 
-| Consumer | What they get |
-|---|---|
-| Marketing site (Next.js + MDX) | The pricing page content, MDX-ready, all CTAs as `<Link>` components |
-| Sales team (CRM) | The 3 CTAs map to 3 lead-source fields in HubSpot (Demo / OSS Download / Beta App) |
-| Apollo (web/SEO) | FAQ schema markup (JSON-LD) for "People Also Ask" rich snippets on Google |
+| Consumer                        | What they get                                                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Marketing site (Next.js + MDX)  | The pricing page content, MDX-ready, all CTAs as `<Link>` components                            |
+| Sales team (CRM)                | The 3 CTAs map to 3 lead-source fields in HubSpot (Demo / OSS Download / Beta App)              |
+| Apollo (web/SEO)                | FAQ schema markup (JSON-LD) for "People Also Ask" rich snippets on Google                       |
 | Strategos (positioning defense) | The "hidden costs" table is the canonical TCO defense — used in every Anaplan displacement deal |
-| Hera (legal review) | FAQ #4 (MIT license) and the `.fpa` ownership claim are pre-flagged for legal sign-off |
-| Iris (persona validation) | The 3 CTAs are the canonical mapping of Carla / Chris / Vera to conversion paths |
+| Hera (legal review)             | FAQ #4 (MIT license) and the `.fpa` ownership claim are pre-flagged for legal sign-off          |
+| Iris (persona validation)       | The 3 CTAs are the canonical mapping of Carla / Chris / Vera to conversion paths                |
 
 ---
 
 ## §7 — Open Questions for the Leader
 
-1. **Annual discount math:** I've quoted 17% on annual (Starter $99 vs. $119 monthly = ~17% off, Business $499 vs. $599 monthly = ~17% off). Is this the discount the Lead wants, or do we match the industry standard of "2 months free" (which is 16.7%)? *(Affects pricing page only, not the underlying PRICING.md §2.3.)*
-2. **30-day money-back guarantee:** I added this to FAQ #3 as a trust-signal. It's not in the existing PRICING.md. Is this an approved policy, or should I flag it for Hera + Themis review before the page goes live? *(Risk: if we offer this and Hera's refund policy is different, we have a public-vs-legal mismatch.)*
-3. **"Hidden Costs" table TCO numbers:** The Anaplan 3-yr TCO range ($725K-$3.05M) is from G2 + Capterra public data. Should I cite the source inline, or footnote it? *(Best practice: footnote. But it adds visual clutter. Leader's call.)*
-4. **Enterprise tier floor:** I quoted "$1,500-$4,000 / user / month" as the typical Enterprise range. PRICING.md §2.3 says "custom" without a band. Is $1,500-$4,000 the right band, or should it be tighter? *(Too low = we leave money on the table. Too high = we scare off Series C CFOs who think "Enterprise" = $1M+ contract.)*
-5. **FAQ ordering:** I ordered by frequency (Can I switch? → What if I cancel? → Annual billing? → MIT? → Starter vs. Business?). Should the MIT question be #1 since it's the most-defended objection in `OBJECTION_HANDLING_CHEATSHEET.md` #2? *(Trade-off: MIT is emotional, not practical. Most visitors ask practical questions first.)*
-6. **The [FICTIONAL PLACEHOLDER] tags:** There are 3 placeholder blocks in the home page (Anaplan-displacement, Excel-replacement, Consulting-displacement) and 1 in this pricing page (the TCO table footnote). When does Iris / Strategos want them swapped for real Beta cohort numbers? *(My assumption: post-Beta launch at D+120 per `BETA_PROGRAM.md` §6. Confirm?)*
+1. **Annual discount math:** I've quoted 17% on annual (Starter $99 vs. $119 monthly = ~17% off, Business $499 vs. $599 monthly = ~17% off). Is this the discount the Lead wants, or do we match the industry standard of "2 months free" (which is 16.7%)? _(Affects pricing page only, not the underlying PRICING.md §2.3.)_
+2. **30-day money-back guarantee:** I added this to FAQ #3 as a trust-signal. It's not in the existing PRICING.md. Is this an approved policy, or should I flag it for Hera + Themis review before the page goes live? _(Risk: if we offer this and Hera's refund policy is different, we have a public-vs-legal mismatch.)_
+3. **"Hidden Costs" table TCO numbers:** The Anaplan 3-yr TCO range ($725K-$3.05M) is from G2 + Capterra public data. Should I cite the source inline, or footnote it? _(Best practice: footnote. But it adds visual clutter. Leader's call.)_
+4. **Enterprise tier floor:** I quoted "$1,500-$4,000 / user / month" as the typical Enterprise range. PRICING.md §2.3 says "custom" without a band. Is $1,500-$4,000 the right band, or should it be tighter? _(Too low = we leave money on the table. Too high = we scare off Series C CFOs who think "Enterprise" = $1M+ contract.)_
+5. **FAQ ordering:** I ordered by frequency (Can I switch? → What if I cancel? → Annual billing? → MIT? → Starter vs. Business?). Should the MIT question be #1 since it's the most-defended objection in `OBJECTION_HANDLING_CHEATSHEET.md` #2? _(Trade-off: MIT is emotional, not practical. Most visitors ask practical questions first.)_
+6. **The [FICTIONAL PLACEHOLDER] tags:** There are 3 placeholder blocks in the home page (Anaplan-displacement, Excel-replacement, Consulting-displacement) and 1 in this pricing page (the TCO table footnote). When does Iris / Strategos want them swapped for real Beta cohort numbers? _(My assumption: post-Beta launch at D+120 per `BETA_PROGRAM.md` §6. Confirm?)_
 
 ---
 
@@ -175,4 +175,4 @@ FinPlan Pro is the offline-first, AI-native, open-source FP&A platform built for
 
 **Status:** Awaiting Leader ACK + answers to §7. Will then mark T-HER-005 complete and queue T-HER-006 (sales deck one-pager) + T-HER-007 (partnership-outreach motion) as next-priority standing offers.
 
-— *Hermes, Marketing & Go-to-Market Muse, 2026-06-13*
+— _Hermes, Marketing & Go-to-Market Muse, 2026-06-13_
