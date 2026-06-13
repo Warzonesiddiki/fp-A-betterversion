@@ -22,27 +22,28 @@ CI order: `tsc --noEmit → lint → test → build → bundle size check`. Main
 
 Entry: `src/main.tsx` → `src/App.tsx` (all routes defined here, lazy-loaded).
 
-| Directory | What lives here |
-|-----------|----------------|
-| `src/store/` | 20+ Zustand stores, colocated `.test.ts` files |
-| `src/engines/` | 150+ pure calculation engines (financial logic, no side effects) |
-| `src/pages/` | Route pages, 30+ domain subdirs, all `React.lazy` |
-| `src/components/ui/` | 80+ atomic UI primitives, barrel-exported via `index.ts` |
-| `src/components/` | Domain components (budget/, reports/, analytics/) |
-| `src/hooks/` | 40+ custom hooks (`use` prefix) |
-| `src/workers/` | Web Workers (Monte Carlo, consolidation, formulas) |
-| `src/services/` | API layer, WebSocket, collaboration |
-| `src/plugins/` | Plugin system (registry, sandbox, marketplace) |
-| `src/utils/` | Formatters, calculations, storage, encryption |
-| `src/config/` | Design tokens, keyboard shortcuts, sector configs |
-| `src/types/` | Shared TS types |
-| `src/templates/` | Report/budget templates |
-| `src/test/` | Test setup, mocks, utilities |
-| `src-tauri/` | Tauri desktop shell (Rust) |
+| Directory            | What lives here                                                  |
+| -------------------- | ---------------------------------------------------------------- |
+| `src/store/`         | 20+ Zustand stores, colocated `.test.ts` files                   |
+| `src/engines/`       | 150+ pure calculation engines (financial logic, no side effects) |
+| `src/pages/`         | Route pages, 30+ domain subdirs, all `React.lazy`                |
+| `src/components/ui/` | 80+ atomic UI primitives, barrel-exported via `index.ts`         |
+| `src/components/`    | Domain components (budget/, reports/, analytics/)                |
+| `src/hooks/`         | 40+ custom hooks (`use` prefix)                                  |
+| `src/workers/`       | Web Workers (Monte Carlo, consolidation, formulas)               |
+| `src/services/`      | API layer, WebSocket, collaboration                              |
+| `src/plugins/`       | Plugin system (registry, sandbox, marketplace)                   |
+| `src/utils/`         | Formatters, calculations, storage, encryption                    |
+| `src/config/`        | Design tokens, keyboard shortcuts, sector configs                |
+| `src/types/`         | Shared TS types                                                  |
+| `src/templates/`     | Report/budget templates                                          |
+| `src/test/`          | Test setup, mocks, utilities                                     |
+| `src-tauri/`         | Tauri desktop shell (Rust)                                       |
 
 ## Path Alias
 
 `@/` → `src/`. Use for all internal imports:
+
 ```typescript
 import { Button } from '@/components/ui/Button';
 import { useBudgetStore } from '@/store/budgetStore';
@@ -52,9 +53,12 @@ import { useBudgetStore } from '@/store/budgetStore';
 
 ```typescript
 export const useSomeStore = create<State>()(
-  subscribeWithSelector(     // outermost — fine-grained subscriptions
-    persist(                 // middle — for auth/settings/UI prefs; skip for transient data
-      immer((set, get) => ({ // innermost — immutable updates via drafts
+  subscribeWithSelector(
+    // outermost — fine-grained subscriptions
+    persist(
+      // middle — for auth/settings/UI prefs; skip for transient data
+      immer((set, get) => ({
+        // innermost — immutable updates via drafts
         // state + actions
       })),
       { name: 'store-name', storage: masterStorage }
@@ -101,3 +105,15 @@ Import `masterStorage` from `@/utils/masterStorage` for persistence. Store namin
 - MCP servers configured in `.mcp.json`: github, git, filesystem, excel-analyser, playwright
 - Multi-agent task assignments in `agents/` dir (A1–A5 phased roadmap)
 - Obsidian vault in `.obsidian/brain/` for project memory
+
+## Disciplines
+
+Every Muse applies these. Cross-Muse ripple events (codification updates, ADR changes) propagate via Mnemosyne.
+
+- **D-002 Three Witnesses** — every $X claim cites source / data / competitive context
+- **D-007 7-phase audit pattern** — pre-stage → 4-question framework → self-flag deviations
+- **D-009 Triangulation discipline** — verify state-change claims against source-of-truth via file:line. Protocol: `docs/drafts/TASKBOARD.md §PROTOCOL COMPLIANCE` (D-001 through D-009, cycle-by-cycle verifications).
+
+**8th codification (Mnemosyne 2026-06-13, adopted cycle-8):** **Glob with ABSOLUTE path** — `Glob` default CWD is the conversation temp dir, NOT project root. Always pass `path: <project root>` for cross-Muse verification. Pre-flight check before every `Glob` call.
+
+**Reference:** `docs/ONBOARDING.md` (cross-references D-009 at L7/L54/L83/L129). `docs/drafts/TASKBOARD.md §PROTOCOL COMPLIANCE` (cumulative D-009 verifications by cycle, 13 fabrications caught cumulative as of 2026-06-13, 0 escaped).

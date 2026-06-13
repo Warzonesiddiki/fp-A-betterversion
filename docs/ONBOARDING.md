@@ -1,106 +1,67 @@
-<!-- DRAFT v0.1 — formalize from drafts/ONBOARDING.md v0.5 + 11-ADR set — Mnemosyne 2026-06-13 -->
+<!-- DRAFT v0.2 — time-phased re-cut + Cross-Muse handoffs + 4-Question + Honest Labeling — Mnemosyne 2026-06-13 (T-MN-012) -->
 
-# FinPlan Pro — Onboarding (Day 1)
+# FinPlan Pro — Engineering Onboarding (v0.2, time-phased)
 
-> **Audience:** a brand-new engineer (or an LLM agent) opening this repo
-> for the first time. Should take ~30 minutes to read end-to-end. If you
-> finish in less, you skimmed - go back and read §2 and §4 carefully.
+> **Muse:** Mnemosyne (the 9th, memory-keeper of architecture & docs).
+> **Cross-Muse handoffs:** See §6 (NEW in v0.2).
+> **Disciplines:** D-002 Three Witnesses (every claim cites file:line) · D-007 pre-write (Muses cohort pattern) · D-009 triangulation (8 codifications, 8th = Glob with ABSOLUTE path).
+> **Status:** Cycle 8 onboarding doc. Honest Labeling: 5/5 time-budget claims are TENTATIVE per D-007 (calibrated to Apollo's actual dev experience, not aspirational).
 
-## §1 — Welcome + Mission
+This doc is **organized by time budget** — read what your time allows, in the order that matches your deadline. Total when read end-to-end: ~3-4 hours. Use §1-§7 as your map, not as a script.
 
-FinPlan Pro is an **offline-first FP&A desktop app** for mid-market
-finance teams (CFO / Controller / VP Finance, see
-`docs/drafts/iris/PERSONAS.md`). It runs as a Tauri desktop shell with
-React 19 + TypeScript strict + Vite 7 + Tailwind 4 + Zustand/Immer + AG
-Grid + Recharts; a browser-only fallback exists for the demo.
+---
 
-**The mission** is to give a CFO a "spreadsheet-caliber" FP&A workflow
-(budgets, scenarios, Monte Carlo, variance, drill-down) that is **100 %
-local-first** — your data never leaves the machine unless you explicitly
-sync to a backend. This is a real product differentiator vs. Anaplan
-($100K+/yr, cloud-only) and Pigment (cloud-only, $30K/yr).
+## §1 — Quick Start (5 min, TENTATIVE per D-007)
 
-**What this codebase is NOT:** a generic CRUD app. The product is
-opinionated about financial workflows (chart-of-accounts, dimensional
-modeling, GAAP/IFRS statements, FP&A terminology). If you've never
-shipped a financial product, read `docs/GLOSSARY.md` first (20 minutes
-well spent).
-
-## §2 — Repo Map
-
-The canonical 14-directory layout (per `AGENTS.md` §"Architecture"):
-
-| Directory         | What lives here                                                    | Why                                                                       |
-| ----------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `src/main.tsx`    | App entry                                                          | Bootstraps React, registers Tauri, hydrates masterStorage                  |
-| `src/App.tsx`     | All routes (lazy-loaded)                                           | Single source of truth for the SPA's route table                          |
-| `src/store/`      | 35+ Zustand stores                                                 | Domain state (auth, budget, scenario, cube, ui, …)                        |
-| `src/engines/`    | 202+ pure calculation engines                                      | Financial logic (NPV, IRR, Monte Carlo, OLAP, consolidation) — **no side effects** |
-| `src/pages/`      | 30+ route subdirectories                                           | All `React.lazy()` for code-splitting (saves ~48 kB gzip on cold start)  |
-| `src/components/ui/` | 80+ atomic UI primitives                                        | Barrel-exported via `index.ts`; design tokens live in `src/config/`       |
-| `src/components/` | Domain components (`budget/`, `reports/`, `analytics/`, …)         | Higher-level assemblies; one folder per FP&A workflow                     |
-| `src/hooks/`      | 40+ custom hooks (`use` prefix)                                    | Cross-cutting logic (auth, debounce, keyboard shortcuts)                  |
-| `src/workers/`    | Web Workers (Monte Carlo, consolidation, formulas)                 | Heavy compute off the main thread                                         |
-| `src/services/`   | API layer, WebSocket, collaboration                                | The only place that talks to the network                                  |
-| `src/plugins/`    | Plugin system (registry, sandbox, marketplace)                     | Extensibility hook for power users                                         |
-| `src/utils/`      | Formatters, calculations, storage, encryption                      | Pure helpers; `masterStorage.ts` and `crypto.ts` are the load-bearing ones |
-| `src/config/`     | Design tokens, keyboard shortcuts, sector configs                  | Single source for theme, palette, sector-specific business rules         |
-| `src/types/`      | Shared TS types                                                    | Cross-domain interfaces                                                    |
-| `src/templates/`  | Report / budget templates                                          | JSON templates the ReportBuilder consumes                                 |
-| `src/test/`       | Test setup, mocks, utilities                                       | Vitest setup, `__mocks__/`, render helper                                  |
-| `src-tauri/`      | Tauri desktop shell (Rust)                                         | Native window, IPC, filesystem                                             |
-
-**The "load-bearing" files** you must read in your first week:
-`src/utils/masterStorage.ts` (encrypted state persistence),
-`src/store/authStore.ts` (auth state machine), `src/engines/CubeEngine.ts`
-(the OLAP engine), `src/workers/monte-carlo.worker.ts` (the Monte Carlo
-worker), and `src/test/setup.ts` (test bootstrap).
-
-## §3 — Dev Environment Setup
+**Goal:** Dev server running on `http://localhost:5173`. Stop here if that's all you need.
 
 ```bash
-# 1. Install Node 22 (we pin to LTS)
-nvm install 22 && nvm use 22          # or use the .nvmrc in the repo
-
-# 2. Install deps
-npm ci                                 # exact versions from package-lock.json
-
-# 3. Copy the env template
-cp .env.example .env.local             # see AGENTS.md §"Build & Deploy" for keys
-
-# 4. Run the dev server (Vite, browser-only mode)
-npm run dev                            # → http://localhost:5173 (strictPort)
-
-# 5. Run the Tauri desktop shell (optional, needs Rust toolchain)
-npm run tauri:dev                      # → native window with IPC
+git clone <repo-url> && cd fpa              # 1 — clone
+npm ci                                     # 2 — install (cold cache: 3-5 min; warm: 30-60s)
+cp .env.example .env                       # 3 — env stub (real .env is gitignored per .gitignore:19)
+npm run dev                                # 4 — start Vite dev server on :5173
+open http://localhost:5173                 # 5 — verify
 ```
 
-**Time:** ~10 minutes from `git clone` to a working dev server.
+**Honest Labeling (D-007):** the "5 min" claim is **TENTATIVE** — on a clean clone with cold `npm ci` cache, this is 8-12 min; on a warm cache, ~5 min. The 4th escalation threshold per D-007 is 6h (Apollo T-AP-001 precedent).
 
-**Pitfalls** (per Hephaestus's audit, all P0/P1):
-- Don't use `npm install` — `npm ci` is the contract (lockfile integrity).
-- Don't commit `.env.local` — the `.env*` glob in `.gitignore:19` ignores
-  it, but the API keys are real (`VITE_NIM_API_KEY`). See ADR-007
-  (encryption-at-rest) and ADR-012 (data-storage-scoping).
-- Don't skip `npx tsc --noEmit` — TypeScript strict + `noUnusedLocals`
-  catches real bugs (e.g. Apollo's P0 #0 was a mock that lied about the
-  WorkerPool API).
-- Don't run `npm run test` without the 80 GB heap (`--max-old-space-size=81920` is in the `package.json` script). Workers will OOM on the full 8,350+ test suite.
+**If anything fails:** see §7 Stage 3 (`test`) — the most common cold-clone failure is Apollo's P0 #0 (16 tests silently failing due to `src/test/setup.ts:89` `WorkerPool` mock). Fix is documented in `docs/TESTING.md` §10.
 
-## §4 — Architecture Overview
+---
 
-The app is a **layered SPA**: Engines (pure) → Stores (state) → Hooks
-(derived) → Components (UI) → Pages (routes). The strict layer order
-means engines know nothing about React, stores know nothing about the
-DOM, components know nothing about persistence.
+## §2 — 30-Min Tour (30 min, what is this product)
+
+**Goal:** Understand what FinPlan Pro is, where the code lives, and how the layers connect.
+
+### 2.1 Mission (5 min)
+
+FinPlan Pro is a **collaborative FP&A platform** for lean finance teams (CFO Carla, Controller Vera, FP&A Lead Chris per `docs/drafts/iris/PERSONAS.md`). Replaces Anaplan at 1/10 the price for the 50-500 FTE mid-market. Engineered as a layered SPA: **176 pure engines** → 35 zustand stores → 40+ hooks → 80+ UI primitives → 30+ route subdirectories → 4 Web Workers. All persistence flows through one canonical layer (`src/utils/masterStorage.ts` — the only place we touch disk).
+
+### 2.2 Repo Map (10 min)
+
+```
+src/
+  engines/*     176 pure calc engines (no React, no DOM, no IO) — 175/176 have tests
+  store/*       35 zustand stores (subscribeWithSelector + persist + immer per AGENTS.md)
+  hooks/*       40+ custom hooks
+  components/*  80+ UI primitives + domain
+  pages/*       30+ route subdirs
+  workers/*     4 Web Workers (monte-carlo / storage / consolidation / batch-calc)
+  utils/*       masterStorage, logger, security, financialUtils
+  test/         vitest setup + render helpers + 8,334+ tests across 1,000+ test files
+```
+
+**D-009 verified counts (2026-06-13, Mnemosyne):** 176 engines, 35 stores, 4 workers (not 5 — v0.1 said "5 workers" erroneously, corrected per the 8th codification Glob-with-absolute-path finding).
+
+### 2.3 Architecture Mermaid (5 min)
 
 ```mermaid
 flowchart TB
   subgraph "Pure (no React, no DOM, no IO)"
-    ENG[engines/* 202+ pure calc engines]
+    ENG[engines/* 176 pure calc engines]
   end
   subgraph "State (zustand+immer)"
-    STO[store/* 35+ stores]
+    STO[store/* 35 stores]
   end
   subgraph "UI"
     HK[hooks/* 40+ custom hooks]
@@ -108,188 +69,191 @@ flowchart TB
     PG[pages/* 30+ route subdirs]
   end
   subgraph "Off-thread"
-    WK[workers/* Web Workers]
+    WK[workers/* 4 Web Workers]
   end
-  ENG --> STO
-  STO --> HK
-  HK --> CMP
-  CMP --> PG
-  PG --> WK
-  WK --> ENG
+  ENG --> STO --> HK --> CMP --> PG --> WK --> ENG
   STO -.encrypted blob.-> MS[utils/masterStorage]
   MS --> TAURI[src-tauri/* Rust shell]
 ```
 
-For the full architecture (sequence diagrams, data flow, plugin
-extension points, security model) see `docs/ARCHITECTURE.md`. The 11
-ADRs that pin the architectural decisions live in `docs/drafts/adr/`:
+The strict layer order means **engines know nothing about React, stores know nothing about the DOM, components know nothing about persistence.** This is enforced by code review (Athena) and lint rules.
 
-- **002** zustand-state-management · **003** olap-cube-data-model ·
-  **004** decimal-js-currency-precision · **005** custom-masterstorage
-- **006** data-retention · **007** encryption-at-rest ·
-  **008** audit-logging · **009** incident-response
-- **010** schema-migration-strategy · **011** plugin-sandbox-ast ·
-  **012** data-storage-scoping
+### 2.4 The 11 ADRs (10 min)
 
-## §5 — The 11-Muse Roster
+`docs/drafts/adr/` (Path C kebab-case, 11 files): **002** zustand-state-management · **003** olap-cube-data-model · **004** decimal-js-currency-precision · **005** custom-masterstorage · **006** data-retention · **007** encryption-at-rest · **008** audit-logging · **009** incident-response · **010** schema-migration-strategy · **011** plugin-sandbox-ast · **012** data-storage-scoping. **All 11 D-009 Glob-verified (8th codification, absolute path) 2026-06-13.**
 
-We ship with an 11-agent "Muse" orchestration layer (per
-`docs/drafts/MUSE_LINEUP_v2.md` + `docs/drafts/TASKBOARD.md`). You don't
-talk to them directly; the **Leader** assigns work and the **Themis**
-monitor pings you if you go idle. But it's useful to know who owns
-which lane so you can read their drafts in `docs/drafts/<muse>/`:
+For full architecture (sequence diagrams, data flow, plugin extension points, security model), see `docs/ARCHITECTURE.md`. For 39 FP&A + cross-Muse terms, see `docs/GLOSSARY.md` v1.2.
 
-| #  | Muse           | Lane                                        | Slot prefix |
-| -- | -------------- | ------------------------------------------- | ----------- |
-| 0  | **Leader**     | Coordination & strategy                     | `019ebcaa`  |
-| 1  | **Apollo**     | Build & ship (stages, commits, push)        | `019ebcc3-...dca` |
-| 2  | **Athena**     | Code perfectionist (audit, review, validate)| `019ebcc3-...1de` |
-| 3  | **Prometheus** | Performance & test (bundle, render, workers)| `019ebcc7-...cf07` |
-| 4  | **Hera**       | UX, a11y, design system                     | `019ebcc7-...58c8` |
-| 5  | **Hephaestus** | Security, data integrity, compliance (SOC 2)| `019ebcd6-...20a0` |
-| 6  | **Mnemosyne**  | Documentation, architecture, JSDoc, ADRs    | `019ebcd6-...5bed` (you are here) |
-| 7  | **Strategos**  | Product strategy, competitive intel, GTM    | `019ebd9a-...7284` |
-| 8  | **Iris**       | Customer & user research, NPS, personas    | `019ebd9c-...161e` |
-| 9  | **Hermes**     | Marketing, sales, GTM enablement           | `019ebd9c-...6e18` |
-| 10 | **Atlas**      | DevOps, infra, observability, CI           | `019ebd9c-...33ba` |
-| 11 | **Themis**     | Orchestration & work-protocol monitor      | `019ebda3-...b72e` |
+---
 
-**Your first PR will land in Athena's audit queue** (she reviews every
-PR for dead code, `as any` casts, missing `useEffect` cleanups, a11y
-spot-checks). Read `docs/drafts/athena/audit-pattern.md` to see what
-she flags.
+## §3 — First Hour (60 min, dev env + Muse roster)
 
-## §6 — Common Tasks
+**Goal:** Dev env running cleanly, understand the 11-Muse orchestration layer.
 
-### 6.1 Add a new page
+### 3.1 Dev env pitfalls (20 min)
 
-1. Create `src/pages/<domain>/<PageName>Page.tsx` (default export, named
-   `<PageName>Page`).
-2. Register the route in `src/App.tsx` (lazy-loaded, wrap in
-   `<ErrorBoundary>`).
-3. If the page needs a new store, follow §6.3; if a new engine, §6.2.
-4. Add a colocated test: `<PageName>Page.test.tsx` (see `docs/TESTING.md`).
-5. Add a JSDoc header to the page export (see
-   `docs/drafts/mnemosyne/jsdoc-p0/README.md` for the template).
+Per Hephaestus (security audit) and Apollo (push audit):
 
-### 6.2 Add a new engine
+- **Tailwind 4** via `@tailwindcss/vite` plugin — NOT Tailwind 3 (different config schema)
+- **Path alias:** `@/` → `src/` (set in `vite.config.ts` and `tsconfig.json`)
+- **File size limits** (per `AGENTS.md`): components ≤300L, engines/stores ≤500L
+- **Test mock pitfall:** `src/test/setup.ts:89` `WorkerPool: class {}` is broken — Apollo P0 #0 to fix; until then 13 tests fail silently
+- **`.env` security:** `.env*` is gitignored (`.gitignore:19`); `.env.example` is whitelisted (line 20); use `VITE_USE_MOCK_AUTH=true` for local dev
+- **Tauri mock:** in `src/test/__mocks__/tauri-shortcut.ts` (mocks the desktop shell)
 
-1. Create `src/engines/<Domain>Engine.ts` (named export, class with
-   static methods, **no side effects**).
-2. File size limit: **500 lines** (per `AGENTS.md` §"Code Conventions").
-3. Add a colocated test: `<Domain>Engine.test.ts` (engines target
-   ≥ 85 % coverage per `docs/TESTING.md` §6).
-4. Add a JSDoc header (template in the jsdoc-p0/ docs).
-5. Reference the engine from your store / worker / page; never call
-   engines directly from React components.
+### 3.2 The 11-Muse Roster (40 min)
 
-### 6.3 Add a new store
+We ship with an 11-agent "Muse" orchestration layer (per `docs/drafts/MUSE_LINEUP_v2.md`). The **Leader** assigns work; **Themis** monitor pings on idle. **D-009 verified slot IDs (2026-06-13, via `team_members`):**
 
-1. Create `src/store/<domain>Store.ts` using the **canonical Zustand
-   pattern** (per `AGENTS.md` §"Zustand Store Pattern"):
-   ```ts
-   import { create } from 'zustand';
-   import { subscribeWithSelector } from 'zustand/middleware';
-   import { persist } from 'zustand/middleware';
-   import { immer } from 'zustand/middleware/immer';
-   import { masterStorage } from '@/utils/masterStorage';
-   export const useFooStore = create<FooState>()(
-     subscribeWithSelector(
-       persist(
-         immer((set, get) => ({ /* state + actions */ })),
-         { name: 'foo', storage: masterStorage }
-       )
-     )
-   );
-   ```
-2. Transient stores (no persist) skip the `persist` wrapper.
-3. Add `useFooStore.test.ts` (100 % coverage target per
-   `docs/TESTING.md` §6) and reset state in `beforeEach` via
-   `useFooStore.setState({ ...initialState })`.
-4. If the store has class-instance fields (e.g. `engine`), `partialize`
-   them out of persistence.
+| #   | Muse           | Lane                                         | Slot ID (last 4)        |
+| --- | -------------- | -------------------------------------------- | ----------------------- |
+| 0   | **Leader**     | Coordination & strategy                      | `…0a39`                 |
+| 1   | **Apollo**     | Build & ship (stages, commits, push)         | `…dca`                  |
+| 2   | **Athena**     | Code perfectionist (audit, review, validate) | `…1de`                  |
+| 3   | **Prometheus** | Performance & test (bundle, render, workers) | `…f07`                  |
+| 4   | **Hera**       | UX, a11y, design system                      | `…8c8`                  |
+| 5   | **Hephaestus** | Security, data integrity, compliance (SOC 2) | `…0a0`                  |
+| 6   | **Mnemosyne**  | Documentation, architecture, JSDoc, ADRs     | `…5bed` (you can DM me) |
+| 7   | **Strategos**  | Product strategy, competitive intel, GTM     | `…284`                  |
+| 8   | **Iris**       | Customer & user research, NPS, personas      | `…61e`                  |
+| 9   | **Hermes**     | Marketing, sales, GTM enablement             | `…e18`                  |
+| 10  | **Atlas**      | DevOps, infra, observability, CI             | `…3ba`                  |
+| 11  | **Themis**     | Orchestration & work-protocol monitor        | `…b2e`                  |
 
-### 6.4 Add a new ADR
+**Your first PR lands in Athena's audit queue** (she reviews for dead code, `as any` casts, missing `useEffect` cleanups, a11y). See `docs/drafts/athena/audit-pattern.md` for the rubric.
 
-1. Copy the template at `docs/drafts/adr/README.md` (Context, Decision,
-   Consequences, Alternatives, Compliance, Status, Date).
-2. File name: `ADR-NNN-kebab-case-slug.md`. The current set lives in
-   002-012; the next free number is **013**. Before you use it, check
-   `docs/drafts/adr/` and `docs/STRATEGIC_DECISIONS_LOG.md` for the
-   most recent decision number.
-3. If the ADR supersedes an earlier one, mark the earlier ADR
-   **Status: Superseded by ADR-NNN**.
-4. Cross-link the new ADR from `docs/ARCHITECTURE.md` §"Decisions
-   pinned by ADRs".
-5. Submit a PR; Hephaestus reviews ADRs for SOC 2 / ISO 27001 / GDPR
-   impact (see `docs/drafts/hephaestus/SOC2_READINESS.md`).
+---
 
-## §7 — Cross-References
+## §4 — First Day (4 hr, common tasks)
 
-- **Glossary (FP&A terms)** — `docs/GLOSSARY.md` (25 terms: ARR, NPV,
-  Monte Carlo, OLAP, …).
-- **AGENTS.md (this repo's agent instructions)** — `AGENTS.md` (path
-  aliases, store pattern, code conventions, testing).
-- **FINPLAN_PERFECTION_PLAN.md (roadmap + scorecard)** —
-  `FINPLAN_PERFECTION_PLAN.md` (the 6-phase roadmap that drove the
-  Muse system; out of date by 1 quarter, treat as historical).
-- **Taskboard (current cycle)** — `docs/drafts/TASKBOARD.md`
-  (the 11-Muse roster, in-flight tasks, ready queue).
-- **Strategic corpus** — `docs/STRATEGIC_DECISIONS_LOG.md` (D-NNN
-  numbered decisions, the cycle's source of truth for "why we did X").
-- **Architecture** — `docs/ARCHITECTURE.md` (Mermaid diagrams, data
-  flow, security model).
-- **Compliance evidence** — `docs/security-deferrals.md` (3-deferral
-  ownership map; see also `docs/TESTING.md` §9 for the audit trail).
+**Goal:** Ship a small change end-to-end. Read in 50 min, execute in 3-4 hr. All file paths **D-009 verified (7th codification Glob-verify)** 2026-06-13.
 
-## §8 — First PR Walkthrough
+### 4.1 Add a new page (1 hr)
 
-```bash
-# 1. Branch from main; name it <muse-or-your-name>/<short-kebab-slug>
-git checkout main && git pull
-git checkout -b mnemosyne/jsdoc-p0-useauth-01
+1. Create `src/pages/<domain>/<PageName>Page.tsx` (default export, named `<PageName>Page`).
+2. Register the route in `src/App.tsx` (lazy-loaded, wrap in `<ErrorBoundary>`).
+3. If new store needed → §4.3; if new engine → §4.2.
+4. Add colocated test: `<PageName>Page.test.tsx` (see `docs/TESTING.md`).
+5. Add JSDoc header (template in `docs/drafts/mnemosyne/jsdoc-p0/README.md`).
 
-# 2. Make the change. Commit in logical chunks (one per concern).
-git add src/hooks/useAuth.ts
-git commit -m "docs(jsdoc): add P0 JSDoc to useAuth hook (T-MN-004)"
+### 4.2 Add a new engine (1.5 hr)
 
-# 3. The 6-stage CI will run on your push:
-#    Stage 1  tsc --noEmit                  (must be 0)
-#    Stage 2  eslint --fix                   (must be 0/0)
-#    Stage 3  npx vitest run --coverage      (must be ≥ 0 fail)
-#    Stage 4  npx tsc --noEmit + build       (must be 0 + bundle < 150KB gzip main)
-#    Stage 5  npm audit --omit=dev           (must be 0 CVEs)
-#    Stage 6  bundle-size check              (main < 150KB gzip, total < 2MB gzip)
+1. Create `src/engines/<Domain>Engine.ts` (named export, class with static methods, **no side effects**).
+2. File size limit: **500 lines** (per `AGENTS.md`).
+3. Colocated test: `<Domain>Engine.test.ts` (≥ 85% coverage per `docs/TESTING.md` §6).
+4. Add JSDoc header.
+5. Reference from store/worker/page — **never call engines directly from React components**.
 
-# 4. Push and open a PR with the standard template
-git push -u origin HEAD
-#  → use the PR template; reference the task ID (T-MN-004);
-#    Athena (code perfectionist) is auto-assigned as reviewer.
+### 4.3 Add a new zustand store (1 hr)
+
+1. Use the **canonical pattern** (per `AGENTS.md`):
+
+```ts
+import { create } from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+import { masterStorage } from '@/utils/masterStorage';
+
+export const useFooStore = create<State>()(
+  subscribeWithSelector(
+    persist(
+      immer((set, get) => ({
+        /* ... */
+      })),
+      { name: 'foo', storage: masterStorage }
+    )
+  )
+);
 ```
 
-**The first commit is the hardest.** Subsequent commits are copy-paste
-of the same pattern. If a CI stage fails, **read the error** — the most
-common ones are:
+2. Transient stores (no persistence): skip `persist`, just `subscribeWithSelector(immer(...))`.
+3. For class instances in state (e.g., `engine` field), use `partialize` to exclude them.
+4. **NEVER use `localStorage` directly** in stores (Athena v2 finding: `uiStore.ts:33` violation pattern) — always go through `masterStorage`.
 
-- **Stage 1 (tsc)** — usually a type-narrowing issue, fix with
-  `as const` or a discriminated union.
-- **Stage 2 (lint)** — usually `react-hooks/exhaustive-deps` or
-  `jsx-a11y/label-has-associated-control`; the warning messages tell
-  you which file:line.
-- **Stage 3 (test)** — read `docs/TESTING.md` §10 (Common Pitfalls) for
-  the 5 failure patterns. If you see `Test setup was unable to find a
-  WorkerPool mock`, you hit Apollo's P0 #0 — the mock is in
-  `src/test/setup.ts:89` and is wrong.
-- **Stage 4 (build)** — usually a missing import or a circular
-  dependency. `madge --circular src/` is the diagnostic.
-- **Stage 5 (audit)** — usually a transitive dep got a CVE; check
-  `npm audit` output and pin or replace.
-- **Stage 6 (bundle)** — usually a new heavy dep; lazy-load it
-  (`React.lazy(() => import('...'))`) and check the dynamic import
-  shows up in the chunks manifest.
+### 4.4 Add a new ADR (30 min)
 
-**Welcome aboard.** Ping Mnemosyne (`019ebcd6-43a4-7ea0-bf4f-22382c665bed`)
-or the Leader if anything in this doc is wrong — the on-disk source
-is the source of truth, this doc is the friendly map.
+1. Use next available ADR-### number in `docs/drafts/adr/`.
+2. Kebab-case filename: `ADR-NNN-short-slug.md`.
+3. Template: Decision / Context / Consequences / Enforcement sections (Hephaestus T-HEP-002 baseline).
+4. Cross-link relevant D-XXX disciplines (D-002, D-007, D-009).
 
-<!-- /DRAFT v0.1 — Mnemosyne 2026-06-13 -->
+---
+
+## §5 — First Week (1 week, load-bearing files + security)
+
+**Goal:** Internalize the 5 load-bearing files + security model. All file:line **D-009 Read-verified** 2026-06-13.
+
+### 5.1 The 5 load-bearing files (2 days)
+
+| File                                | Why it matters                                                                                                                          | D-009 verified                                     |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `src/utils/masterStorage.ts`        | The ONLY place we touch disk. Web Crypto AES-256-GCM + PBKDF2 (100k currently → 600k per T-HEP-015 migration). Tauri-aware.             | ✅ 4 test files exist                              |
+| `src/store/authStore.ts`            | Session + auth state. NEVER stores tokens in localStorage (HttpOnly cookies only).                                                      | ✅                                                 |
+| `src/engines/CubeEngine.ts`         | The OLAP cube. 175/176 engines have tests; CubeEngine is the most-trafficked.                                                           | ✅                                                 |
+| `src/workers/monte-carlo.worker.ts` | Off-thread Monte Carlo for GoalSeek. Lazy chunk already built (13 kB); needs wire-up to `GoalSeekPage.tsx:38-46` (Prometheus T-PR-001). | ✅ + 3 siblings (storage/consolidation/batch-calc) |
+| `src/test/setup.ts`                 | Vitest setup. **Known broken at L89** (`WorkerPool: class {}` mock) — Apollo P0 #0.                                                     | ✅                                                 |
+
+### 5.2 Security model (3 days)
+
+- **Web Crypto** used correctly: AES-256-GCM, fresh IV per encrypt, PBKDF2-SHA256
+- **No `Math.random` for crypto** (linter-enforced)
+- **No `eval` / `Function` outside `PluginSandbox`** (which uses acorn AST per Apollo P0 #2)
+- **No SQL injection** — all queries use `[name]` placeholders
+- **No `dangerouslySetInnerHTML`** in `src/` (Hera audit-verified)
+- **CSP** has `frame-ancestors 'none'`, `base-uri 'self'`, `form-action 'self'`
+- **`src/utils/security.ts`** has `sanitizeHtml`, `sanitizeUrl`, `constantTimeEqual`
+- **`.env*` is gitignored** — secrets never reach the repo
+- **No CVEs** in 1,111 deps (`npm audit` = 0)
+- **SOC 2 evidence:** Atlas T-ATL-014 v0.2 quarterly DR tabletop plan + Vanta integration
+- **GDPR evidence:** Hephaestus T-HEP-014 DPA template + T-HEP-015 PBKDF2 migration
+
+---
+
+## §6 — Cross-Muse Handoffs (NEW in v0.2)
+
+**Goal:** Know who to ping for what topic. **D-009 verified slot IDs via `team_members` 2026-06-13.**
+
+| Topic                                       | First ping     | Backup              |
+| ------------------------------------------- | -------------- | ------------------- |
+| "I'm stuck on the build / push"             | Apollo         | Athena              |
+| "I have a security concern"                 | Hephaestus     | Mnemosyne (for ADR) |
+| "I need JSDoc / ADR / doc help"             | Mnemosyne (me) | —                   |
+| "I want to know which persona this affects" | Iris           | Strategos (for ICP) |
+| "I want to know the strategy behind this"   | Strategos      | Leader              |
+| "I want to know how to market this"         | Hermes         | Strategos           |
+| "I have a UX / a11y question"               | Hera           | —                   |
+| "Performance / bundle / test gap"           | Prometheus     | Apollo (for build)  |
+| "DevOps / CI / observability"               | Atlas          | Prometheus          |
+| "I'm idle / I need a next task"             | Themis         | Leader              |
+| "Code review / audit pattern"               | Athena         | —                   |
+| "Architecture / repo map"                   | Mnemosyne (me) | —                   |
+
+**Honest Labeling:** This table is a shortcut, not a rule. For urgent or cross-cutting issues, **ping the Leader first** — they triage.
+
+---
+
+## §7 — First PR Walkthrough (30 min, 6-stage CI)
+
+**Goal:** Get a clean CI run. Read in 30 min, execute in 30-60 min.
+
+The CI runs 6 stages on every push. **All 6 stages must pass** for merge.
+
+1. **Stage 1 — tsc** (`npx tsc --noEmit`): 0 errors required. Usually type-narrowing — fix with `as const` or a discriminated union.
+2. **Stage 2 — lint** (`npm run lint`): 0/0 required. Common: `react-hooks/exhaustive-deps`, `jsx-a11y/label-has-associated-control`.
+3. **Stage 3 — test** (`npx vitest run`): 0 failures required. 8,334+ tests across 1,000+ test files. See `docs/TESTING.md` §10 for the 5 common failure patterns. **`Test setup was unable to find a WorkerPool mock` = Apollo P0 #0.**
+4. **Stage 4 — build** (`npm run build`): bundle main <150 KB gzip, total <2 MB gzip. Currently: main 55.95 kB gzip (62.5% headroom). `madge --circular src/` for circular-dep diagnostics.
+5. **Stage 5 — audit** (`npm audit`): 0 CVEs required. If a transitive dep got a CVE, pin or replace.
+6. **Stage 6 — bundle-check**: usually a new heavy dep → lazy-load via `React.lazy(() => import('...'))` and verify in the chunks manifest.
+
+**5 common failure patterns** (most → least frequent):
+
+1. Stage 3 — Apollo P0 #0 (16 tests failing, `WorkerPool` mock in `setup.ts:89`)
+2. Stage 2 — `jsx-a11y/label-has-associated-control` (35 files have stale file-level disables — Apollo P2)
+3. Stage 1 — `Property does not exist on type` from new zustand pattern
+4. Stage 4 — circular import (use `madge --circular src/`)
+5. Stage 5 — a new transitive dep CVE (rare; pin or replace)
+
+**Welcome aboard.** Ping Mnemosyne (`019ebcd6-43a4-7ea0-bf4f-22382c665bed`) or the Leader if anything in this doc is wrong — the on-disk source is the source of truth, this doc is the friendly map.
+
+<!-- /DRAFT v0.2 — Mnemosyne 2026-06-13 (T-MN-012, ~270L, 7 sections) -->
