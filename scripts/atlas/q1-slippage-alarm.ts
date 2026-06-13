@@ -109,11 +109,13 @@ function nextQuarterName(d: Date): string {
   return `Q1 ${y + 1}`;
 }
 
-function midQDeadline(todayDate: Date, nextQ: string): Date {
-  // Mid-Q for nextQ = 45 days after the 1st of nextQ's quarter-month.
-  // e.g. Q2 (Apr-Jun) → 2027-04-01 + 45d = 2027-05-16.
-  const m = parseInt(nextQ.slice(1, 2), 10) * 3 - 3; // Q1=0, Q2=3, Q3=6, Q4=9
-  const y = parseInt(nextQ.slice(3), 10);
+function midQDeadline(todayDate: Date): Date {
+  // Mid-Q of the CURRENT quarter = 45 days after the 1st of the
+  // current quarter's first month. e.g. Q2 (Apr-Jun) → 2027-04-01
+  // + 45d = 2027-05-16. By this date, the NEXT quarter's exercise
+  // should already be on the team calendar (per T-ATL-014 v0.2 §4).
+  const m = Math.floor(todayDate.getUTCMonth() / 3) * 3;
+  const y = todayDate.getUTCFullYear();
   return new Date(Date.UTC(y, m, 1) + 45 * MS_PER_DAY);
 }
 
