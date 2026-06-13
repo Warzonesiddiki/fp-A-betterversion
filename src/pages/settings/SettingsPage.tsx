@@ -112,65 +112,67 @@ export default function SettingsPage() {
             <CardContent className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <fieldset className="m-0 border-0 p-0">
-                  <legend className="text-base font-semibold text-white mb-4">Organization Profile</legend>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-300">Company Name</label>
-                  <input
-                    type="text"
-                    value={organization.name}
-                    onChange={(e) => updateOrganization({ name: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
-                    placeholder="Enter company name..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-300">Base Currency</label>
-                  <select
-                    aria-describedby="settings-base-currency-help"
-                    value={organization.baseCurrency}
-                    onChange={(e) => updateOrganization({ baseCurrency: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
-                  >
-                    <option value="USD">USD - US Dollar</option>
-                    <option value="EUR">EUR - Euro</option>
-                    <option value="GBP">GBP - British Pound</option>
-                    <option value="JPY">JPY - Japanese Yen</option>
-                  </select>
-                  <p id="settings-base-currency-help" className="text-xs text-slate-500 mt-1">
-                    Used as the default currency for all financial reports and transactions.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-300">
-                    Fiscal Year Start Month
-                  </label>
-                  <select
-                    aria-describedby="settings-fiscal-year-start-help"
-                    value={organization.fiscalYearStart.split('-')[1]}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
-                  >
-                    <option value="01">January</option>
-                    <option value="04">April</option>
-                    <option value="07">July</option>
-                    <option value="10">October</option>
-                  </select>
-                  <p id="settings-fiscal-year-start-help" className="text-xs text-slate-500 mt-1">
-                    Determines the 12-month period for budgets, P&L, and variance reports.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-300">Calendar Type</label>
-                  <select
-                    value={organization.calendarType}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
-                  >
-                    <option value="Standard">Standard (Monthly)</option>
-                    <option value="445">4-4-5 Retail Calendar</option>
-                    <option value="454">4-5-4 Retail Calendar</option>
-                  </select>
-                </div>
+                  <legend className="text-base font-semibold text-white mb-4">
+                    Organization Profile
+                  </legend>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-300">Company Name</label>
+                    <input
+                      type="text"
+                      value={organization.name}
+                      onChange={(e) => updateOrganization({ name: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      placeholder="Enter company name..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-300">Base Currency</label>
+                    <select
+                      aria-describedby="settings-base-currency-help"
+                      value={organization.baseCurrency}
+                      onChange={(e) => updateOrganization({ baseCurrency: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                    >
+                      <option value="USD">USD - US Dollar</option>
+                      <option value="EUR">EUR - Euro</option>
+                      <option value="GBP">GBP - British Pound</option>
+                      <option value="JPY">JPY - Japanese Yen</option>
+                    </select>
+                    <p id="settings-base-currency-help" className="text-xs text-slate-500 mt-1">
+                      Used as the default currency for all financial reports and transactions.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-300">
+                      Fiscal Year Start Month
+                    </label>
+                    <select
+                      aria-describedby="settings-fiscal-year-start-help"
+                      value={organization.fiscalYearStart.split('-')[1]}
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                    >
+                      <option value="01">January</option>
+                      <option value="04">April</option>
+                      <option value="07">July</option>
+                      <option value="10">October</option>
+                    </select>
+                    <p id="settings-fiscal-year-start-help" className="text-xs text-slate-500 mt-1">
+                      Determines the 12-month period for budgets, P&L, and variance reports.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-300">Calendar Type</label>
+                    <select
+                      value={organization.calendarType}
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                    >
+                      <option value="Standard">Standard (Monthly)</option>
+                      <option value="445">4-4-5 Retail Calendar</option>
+                      <option value="454">4-5-4 Retail Calendar</option>
+                    </select>
+                  </div>
+                </fieldset>
               </div>
-              </fieldset>
             </CardContent>
           </Card>
         </Tabs.Content>
@@ -181,37 +183,37 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <fieldset className="m-0 border-0 p-0">
                   <legend className="text-base font-semibold text-white mb-4">Preferences</legend>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-300">Decimal Places</label>
-                  <input
-                    type="number"
-                    value={organization.decimalPlaces}
-                    onChange={(e) =>
-                      updateOrganization({ decimalPlaces: parseInt(e.target.value) })
-                    }
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
-                    min="0"
-                    max="4"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-300">Date Format</label>
-                  <select
-                    aria-describedby="settings-date-format-help"
-                    value={organization.dateFormat}
-                    onChange={(e) => updateOrganization({ dateFormat: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
-                  >
-                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                  </select>
-                  <p id="settings-date-format-help" className="text-xs text-slate-500 mt-1">
-                    Used throughout the application for all date displays and report headers.
-                  </p>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-300">Decimal Places</label>
+                    <input
+                      type="number"
+                      value={organization.decimalPlaces}
+                      onChange={(e) =>
+                        updateOrganization({ decimalPlaces: parseInt(e.target.value) })
+                      }
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      min="0"
+                      max="4"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-300">Date Format</label>
+                    <select
+                      aria-describedby="settings-date-format-help"
+                      value={organization.dateFormat}
+                      onChange={(e) => updateOrganization({ dateFormat: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                    >
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                    <p id="settings-date-format-help" className="text-xs text-slate-500 mt-1">
+                      Used throughout the application for all date displays and report headers.
+                    </p>
+                  </div>
+                </fieldset>
               </div>
-              </fieldset>
             </CardContent>
           </Card>
         </Tabs.Content>
