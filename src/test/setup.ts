@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
@@ -80,47 +79,17 @@ vi.mock('sql.js', () => {
   };
 });
 
-// Mock worker pool to avoid Web Worker creation in jsdom test environment.
-// Web Workers don't work in jsdom, causing indefinite hangs.
-vi.mock('../workers/worker-pool', () => {
-  const CHUNK_SIZE = 1024 * 1024;
-  const mockPool = {
-    run: async <T>(request: { type: string; payload: any; chunkSize?: number }): Promise<T> => {
-      if (request.type === 'stringify') {
-        const json = JSON.stringify(request.payload);
-        const chunkSize = request.chunkSize ?? CHUNK_SIZE;
-        if (json.length <= chunkSize) {
-          return { payload: json } as T;
-        }
-        const chunks: string[] = [];
-        for (let i = 0; i < json.length; i += chunkSize) {
-          chunks.push(json.slice(i, i + chunkSize));
-        }
-        return { chunks, totalSize: json.length } as T;
-      }
-      if (request.type === 'parse') {
-        const json = Array.isArray(request.payload) ? request.payload.join('') : request.payload;
-        return { payload: JSON.parse(json) } as T;
-      }
-      return {} as T;
-    },
-    terminate: () => {},
-    get busyCount() {
-      return 0;
-    },
-    get queuedCount() {
-      return 0;
-    },
-    get workerCount() {
-      return 0;
-    },
-  };
-  return {
-    createStoragePool: () => mockPool,
-    createBatchCalcPool: () => mockPool,
-    WorkerPool: class {},
-  };
-});
+// Note: the previous `vi.mock('../workers/worker-pool', ...)` block was removed
+// because it was INCOMPATIBLE with the real WorkerPool API. The mock exposed
+// `WorkerPool: class {}` (no constructor), `createStoragePool` and
+// `createBatchCalcPool` returning a pool that only handled `stringify`/`parse`
+// request types, and was MISSING `createMonteCarloPool` / `createConsolidationPool`
+// entirely (undefined when imported). The real WorkerPool expects
+// `new WorkerPool(workerFactory, options?)` and the factories create pools with
+// the global `Worker` constructor — which is already mocked at the top of this
+// file (`Worker: class {}`). Tests that need controllable worker behavior use
+// their own `createMockWorkerFactory()` helper (see worker-pool.test.ts).
+// See: T-AP-001 P0 #0, fix for 13/16 failing tests.
 
 // Polyfill localStorage for Node.js v22+ where the experimental global
 // may be undefined and shadows jsdom's implementation.

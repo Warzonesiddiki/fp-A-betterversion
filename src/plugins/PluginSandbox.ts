@@ -254,8 +254,23 @@ export function executeSandboxed<T = unknown>(
     log: (msg: string) => console.log(`[Plugin] ${msg}`),
   });
 
+  // AST-based hard gate: must pass the full acorn-based validator (regex
+  // pre-check is no longer sufficient on its own). validatePluginCode parses
+  // with acorn, walks for forbidden constructs (imports, new Function, eval,
+  // dangerous property access), and checks that every identifier resolves to
+  // either a top-level binding or the allow-listed globals. This is the
+  // security boundary that gates the Function constructor below.
+  const astGate = validatePluginCode(code);
+  if (!astGate.safe) {
+    return { success: false, error: `AST validation failed: ${astGate.reason}` };
+  }
+
   try {
-    // Use Function constructor for isolation — code runs with sandboxed `this`
+    // SECURITY: code is AST-validated above (validatePluginCode). The Function
+    // constructor is used only as an isolation primitive — code runs with a
+    // sandboxed `this`, the trackedProxy globals, and the frozen finplanApi.
+    // A CSP that requires 'unsafe-eval' is acceptable for the plugin surface
+    // (plugins are an opt-in developer extension point, not end-user content).
     const sandboxFn = new Function(
       'globals',
       'finplan',
