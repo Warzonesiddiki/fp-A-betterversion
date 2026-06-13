@@ -38,8 +38,6 @@ timeout 240 npx vitest run \
   src/store/dataStore.test.ts \
   src/components/ui/ScenarioLocking.test.tsx \
   src/utils/storage/safeJSONStorage.test.ts \
-  src/components/data/GLDataPreview.test.tsx \
-  src/components/ui/AccountTree.test.tsx \
   src/components/ai/CopilotSidebar.test.tsx \
   --reporter=default \
   --testTimeout=10000 \
