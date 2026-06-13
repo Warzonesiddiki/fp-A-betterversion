@@ -1,20 +1,22 @@
-<!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+<!-- DRAFT v0.2 — awaiting review — Atlas 2026-06-13 (added template #5, T-ATL-015) -->
+
 # DR comms templates — index & usage
 
 > **Parent.** `../DISASTER_RECOVERY_RUNBOOK.md` §8 (T-ATL-008, ACCEPTED 2026-06-13).
-> **Per-template pre-stage.** This directory holds the 4 standalone files so CEO / Legal / Atlas can `cat` and `sed` at incident time instead of writing from scratch under pressure.
+> **Per-template pre-stage.** This directory holds the 5 standalone files so CEO / Legal / Atlas can `cat` and `sed` at incident time instead of writing from scratch under pressure.
 > **Source-of-truth rule.** When a template here disagrees with the inline skeleton in `DISASTER_RECOVERY_RUNBOOK.md` §8, **the standalone file wins** (the standalone is the form CEO actually fills in; the inline in the runbook is a reference, kept in sync at annual review per §10).
 
 ---
 
-## The 4 templates
+## The 5 templates
 
-| # | File | Audience | Channel | Word budget | Sed pattern | Pre-flight |
-|---|------|----------|---------|-------------|-------------|------------|
-| 1 | `customer-60-words.md` | End customers (MAU) | Email + status page + in-app banner | ≤ 60 words | Single-pass `sed` | 5 items |
-| 2 | `employee-100-words.md` | All employees | Slack `#incident` + email-all | ≤ 100 words | Single-pass `sed` | 5 items |
-| 3 | `board-200-words.md` | Board of directors + major investors | Email + 15-min Zoom | ≤ 200 words | Multi-line `sed` (financial fields are structured) | 6 items |
-| 4 | `gdpr-art-33-regulator.md` | Lead supervisory authority (Art. 56) | Email + registered post | 8 mandatory fields (Art. 33(3)) | Multi-line `sed` (8 fields are independent) | 8 items |
+| #     | File                            | Audience                                         | Channel                                                     | Word budget                                               | Sed pattern                                        | Pre-flight   | Status                                                                              |
+| ----- | ------------------------------- | ------------------------------------------------ | ----------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------- |
+| 1     | `customer-60-words.md`          | End customers (MAU)                              | Email + status page + in-app banner                         | ≤ 60 words                                                | Single-pass `sed`                                  | 5 items      | Phase 0 ready                                                                       |
+| 2     | `employee-100-words.md`         | All employees                                    | Slack `#incident` + email-all                               | ≤ 100 words                                               | Single-pass `sed`                                  | 5 items      | Phase 0 ready                                                                       |
+| 3     | `board-200-words.md`            | Board of directors + major investors             | Email + 15-min Zoom                                         | ≤ 200 words                                               | Multi-line `sed` (financial fields are structured) | 6 items      | Phase 0 ready                                                                       |
+| 4     | `gdpr-art-33-regulator.md`      | Lead supervisory authority (Art. 56)             | Email + registered post                                     | 8 mandatory fields (Art. 33(3))                           | Multi-line `sed` (8 fields are independent)        | 8 items      | Phase 0 ready                                                                       |
+| **5** | **`customer-art34-private.md`** | **Each affected data subject (1-to-1, Art. 34)** | **Per-customer email (plain-text primary, HTML secondary)** | **250-400 words (Art. 34(1) "clear and plain language")** | **Multi-line `sed` (12 fields are independent)**   | **10 items** | **Phase 1, gated on Strategos T-ST-010 (DEC-002 Main Est) ratification 2026-09-15** |
 
 ---
 
@@ -26,6 +28,7 @@ cat docs/drafts/atlas/dr-templates/customer-60-words.md  # if SEV-1/SEV-2 custom
 cat docs/drafts/atlas/dr-templates/employee-100-words.md  # always, first
 cat docs/drafts/atlas/dr-templates/board-200-words.md     # if SEV-1/SEV-2 board-facing
 cat docs/drafts/atlas/dr-templates/gdpr-art-33-regulator.md  # if §3.3 / §3.4 scenario triggered
+cat docs/drafts/atlas/dr-templates/customer-art34-private.md  # if Art. 34 high-risk threshold met (Phase 1)
 
 # 2. Fill the [BRACKETED_FIELDS] via sed (example for customer template)
 sed -e 's/\[SHORT_DESCRIPTION\]/EU region failover in progress/g' \
@@ -65,4 +68,4 @@ sed -e 's/\[SHORT_DESCRIPTION\]/EU region failover in progress/g' \
 
 ---
 
-**4 templates, 1 index, CEO at-incident-time ready, sed-safe character discipline, annual review per §10. — Atlas 2026-06-13 07:55 IST**
+**5 templates, 1 index, CEO at-incident-time ready, sed-safe character discipline, annual review per §10. — Atlas 2026-06-13 09:15 IST (v0.2 with template #5)**
