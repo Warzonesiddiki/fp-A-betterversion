@@ -92,3 +92,12 @@ __pycache__/
 # Tauri build output
 src-tauri/target/
 HANDOVER/
+
+# Agent temp directories
+.hera-tmp/
+docs/drafts/prometheus/.test/
+
+# Log files at repo root
+/audit.out
+/err.out
+
