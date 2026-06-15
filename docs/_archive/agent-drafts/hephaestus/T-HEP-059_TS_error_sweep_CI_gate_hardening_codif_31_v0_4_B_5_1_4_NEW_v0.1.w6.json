@@ -1,0 +1,20 @@
+{
+  "spec_id": "T-HEP-059",
+  "spec_version": "0.1",
+  "sidecar_purpose": "W6 eat-own-dog-food sidecar 23rd instantiation",
+  "ship_date": "2026-06-14",
+  "ship_status": "SHIP-COMPLETE",
+  "size_bytes": 10251,
+  "size_lines": 176,
+  "sha256": "6ccd73f0dd7858d38aecf1ffa90ba740cfa175ab62576e3a3d7f11a26a75b853",
+  "4_path_byte_identical": true,
+  "4_icp_tentative": "4/4",
+  "ratification_gate": "CYCLE 14 W2 TURN 1 (2026-06-22 16:00-18:00 UTC)",
+  "new_never_again_rule": "RULE #32 (TS sweep recurrence prevention)",
+  "trigger_codes": ["CL", "PH", "e.ix.5", "e.ix.6 (NEW PROPOSAL)"],
+  "key_innovation": "4-Gate MECE CI Hardening Pattern (Gate A pre-commit + Gate B pre-push + Gate C CI + Gate D post-merge) addresses ROOT-CAUSE not SYMPTOM",
+  "3_muse_joint_task_force": "Apollo LEADS + Hephaestus CO-LEADS + Prometheus CRITIC",
+  "session_id": "aionrs-temp-c0df729e",
+  "lessons_learned_count": 5,
+  "w6_instantiation_count": 23
+}

@@ -1,0 +1,212 @@
+<!-- DRAFT v0.1 — awaiting review — Prometheus 2026-06-13 -->
+<!--
+  React.memo patch: 6 files, 8 total components wrapped.
+
+  COMPONENTS ALREADY MEMOIZED AT HEAD (skipped from this patch):
+    - src/components/dashboard/HeatmapGrid.tsx     (L89)
+    - src/components/layout/Sidebar.tsx             (L33)
+    - src/components/ui/GenerativeDashboard.tsx    (L228)
+    - src/components/ui/AccountTree.tsx             (L169, arrow form)
+
+  COMPONENTS WRAPPED IN THIS PATCH (8 total):
+    1. src/components/data/GLDataPreview.tsx              → GLDataPreview
+    2. src/components/ui/ScenarioComparisonGrid.tsx       → ScenarioComparisonGrid
+    3. src/components/reports/ReportBuilder.tsx           → ReportBuilder
+    4. src/components/reports/ReportResultsPanel.tsx      → ReportResultsPanel
+    5. src/components/ui/ICMatchingDashboard.tsx          → ICMatchingDashboard
+    6. src/components/spreadsheet/DrillTables.tsx         → SummaryTable, DetailTable, JournalEntryTable
+
+  Apply:  git apply react-memo-10-components.patch
+  Check:  git apply --check react-memo-10-components.patch
+  Revert: git apply -R react-memo-10-components.patch
+
+  Notes:
+    - All wraps use the standard `export const Name = memo(function Name(...))` pattern.
+    - Each file has `memo` added to its existing React import (or a new import line
+      added for DrillTables which had no react import).
+    - DrillTables wraps 3 components in 1 file.
+-->
+diff --git a/src/components/data/GLDataPreview.tsx b/src/components/data/GLDataPreview.tsx
+index 103967d7..bd5cd446 100644
+--- a/src/components/data/GLDataPreview.tsx
++++ b/src/components/data/GLDataPreview.tsx
+@@ -1,4 +1,4 @@
+-import { useMemo } from 'react';
++import { useMemo, memo } from 'react';
+ import { Button } from '@/components/ui/Button';
+ import { AlertCircle, CheckCircle2 } from 'lucide-react';
+ import { cn } from '@/utils/cn';
+@@ -11,7 +11,7 @@ export interface GLDataPreviewProps {
+   onCancel: () => void;
+ }
+ 
+-export function GLDataPreview({
++export const GLDataPreview = memo(function GLDataPreview({
+   data,
+   mappings,
+   accounts,
+@@ -128,4 +128,4 @@ export function GLDataPreview({
+       </div>
+     </div>
+   );
+-}
++});
+diff --git a/src/components/reports/ReportBuilder.tsx b/src/components/reports/ReportBuilder.tsx
+index 7e8cffa2..dc338cbf 100644
+--- a/src/components/reports/ReportBuilder.tsx
++++ b/src/components/reports/ReportBuilder.tsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useCallback, useMemo } from 'react';
++import React, { useState, useCallback, useMemo, memo } from 'react';
+ import {
+   GripVertical,
+   Plus,
+@@ -65,7 +65,7 @@ const COLUMN_TYPES: Array<{ type: ColumnType; label: string; period?: PeriodType
+ 
+ /* ────────────────── main component ────────────────── */
+ 
+-export function ReportBuilder({
++export const ReportBuilder = memo(function ReportBuilder({
+   initialReport,
+   cubeData = {},
+   onSave,
+@@ -695,4 +695,4 @@ export function ReportBuilder({
+       )}
+     </div>
+   );
+-}
++});
+diff --git a/src/components/reports/ReportResultsPanel.tsx b/src/components/reports/ReportResultsPanel.tsx
+index 67df8216..a6aa79bd 100644
+--- a/src/components/reports/ReportResultsPanel.tsx
++++ b/src/components/reports/ReportResultsPanel.tsx
+@@ -1,4 +1,4 @@
+-import { useMemo, useState } from 'react';
++import { useMemo, useState, memo } from 'react';
+ import { Card } from '@/components/ui/Card';
+ import { Button } from '@/components/ui/Button';
+ import type { GeneratedReport, BoardPackSection } from '@/engines/ReportBookEngine';
+@@ -72,7 +72,7 @@ export interface ReportResultsPanelProps {
+ // Component
+ // ---------------------------------------------------------------------------
+ 
+-export function ReportResultsPanel({
++export const ReportResultsPanel = memo(function ReportResultsPanel({
+   reports,
+   sections,
+   onDownloadZip,
+@@ -220,4 +220,4 @@ export function ReportResultsPanel({
+       )}
+     </div>
+   );
+-}
++});
+diff --git a/src/components/spreadsheet/DrillTables.tsx b/src/components/spreadsheet/DrillTables.tsx
+index c401c6d1..3a44f105 100644
+--- a/src/components/spreadsheet/DrillTables.tsx
++++ b/src/components/spreadsheet/DrillTables.tsx
+@@ -1,6 +1,7 @@
+ import { Layers, FileText, BookOpen, ArrowRight } from 'lucide-react';
+ import { cn } from '@/utils/cn';
+ import type { SummaryRow, DetailRow, JournalEntry } from './DrillThroughChain';
++import { memo } from 'react';
+ 
+ // --- Helpers ---
+ 
+@@ -19,7 +20,7 @@ function varianceColor(value: number): string {
+ 
+ // --- Summary Table ---
+ 
+-export function SummaryTable({
++export const SummaryTable = memo(function SummaryTable({
+   data,
+   onSelect,
+ }: {
+@@ -102,11 +103,11 @@ export function SummaryTable({
+       </table>
+     </div>
+   );
+-}
++});
+ 
+ // --- Detail Table ---
+ 
+-export function DetailTable({
++export const DetailTable = memo(function DetailTable({
+   data,
+   category,
+   onSelect,
+@@ -218,11 +219,11 @@ export function DetailTable({
+       </div>
+     </div>
+   );
+-}
++});
+ 
+ // --- Journal Entry Table ---
+ 
+-export function JournalEntryTable({
++export const JournalEntryTable = memo(function JournalEntryTable({
+   data,
+   lineItem,
+ }: {
+@@ -317,4 +318,4 @@ export function JournalEntryTable({
+       </div>
+     </div>
+   );
+-}
++});
+diff --git a/src/components/ui/ICMatchingDashboard.tsx b/src/components/ui/ICMatchingDashboard.tsx
+index 5f5643d4..91b17bf8 100644
+--- a/src/components/ui/ICMatchingDashboard.tsx
++++ b/src/components/ui/ICMatchingDashboard.tsx
+@@ -1,5 +1,5 @@
+ /* eslint-disable jsx-a11y/label-has-associated-control */
+-import { useCallback, useMemo, useState } from 'react';
++import { useCallback, useMemo, useState, memo } from 'react';
+ import { Card, CardHeader, CardTitle, CardContent } from './Card';
+ import { Button } from './Button';
+ import { Badge } from './Badge';
+@@ -31,7 +31,7 @@ interface ICMatchingDashboardProps {
+   className?: string;
+ }
+ 
+-export function ICMatchingDashboard({
++export const ICMatchingDashboard = memo(function ICMatchingDashboard({
+   sourceTransactions,
+   targetTransactions,
+   allTransactions,
+@@ -344,7 +344,7 @@ export function ICMatchingDashboard({
+       </div>
+     </div>
+   );
+-}
++});
+ 
+ // =============================================================================
+ // SUB-COMPONENTS
+diff --git a/src/components/ui/ScenarioComparisonGrid.tsx b/src/components/ui/ScenarioComparisonGrid.tsx
+index 4a5d09d0..ab623e57 100644
+--- a/src/components/ui/ScenarioComparisonGrid.tsx
++++ b/src/components/ui/ScenarioComparisonGrid.tsx
+@@ -1,4 +1,4 @@
+-import { useMemo } from 'react';
++import { useMemo, memo } from 'react';
+ import { cn } from '@/utils/cn';
+ import { Card, CardContent, CardHeader, CardTitle } from './Card';
+ import { ExportMenu } from './ExportMenu';
+@@ -63,7 +63,7 @@ function VarianceCell({
+   );
+ }
+ 
+-export function ScenarioComparisonGrid({
++export const ScenarioComparisonGrid = memo(function ScenarioComparisonGrid({
+   baseMetrics,
+   scenarios,
+   className,
+@@ -234,4 +234,4 @@ export function ScenarioComparisonGrid({
+       </CardContent>
+     </Card>
+   );
+-}
++});

@@ -1,0 +1,116 @@
+diff --git a/src/__tests__/security/logic-gap/mock-auth.runtime.test.ts b/src/__tests__/security/logic-gap/mock-auth.runtime.test.ts
+new file mode 100644
+index 00000000..24fbdbe1
+--- /dev/null
++++ b/src/__tests__/security/logic-gap/mock-auth.runtime.test.ts
+@@ -0,0 +1,110 @@
++/**
++ * mock-auth — runtime gate tests (T-HEP-004 Gap 4)
++ *
++ * Closes the logic gap in `mock-auth-gate.test.ts` which tests the static
++ * `isMockAuthEnabled()` export and the source-text shape of the authStore
++ * runtime check, but does NOT exercise `useAuthStore.getState().loginMock()`.
++ *
++ * Spec: docs/drafts/hephaestus/logic-gap-test-spec.md §4
++ * ADR: ADR-006 (data retention — login events are audited), ADR-008 (audit logging)
++ * Source: src/store/authStore.ts:228-234 (the runtime PROD throw)
++ *
++ * Cases: 4
++ * Est: ~45 min
++ * Documented limitation: the PROD path (authStore.ts:229) is build-time
++ * constant and cannot be stubbed in vitest. The PROD throw remains verified
++ * by the static check in `mock-auth-gate.test.ts` (the source-text audit).
++ */
++
++import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
++
++describe('mock-auth — runtime gate (ADR-006, ADR-008)', () => {
++  let originalMockAuth: string | undefined;
++
++  beforeEach(() => {
++    originalMockAuth = process.env.VITE_USE_MOCK_AUTH;
++  });
++
++  afterEach(() => {
++    if (originalMockAuth === undefined) {
++      delete process.env.VITE_USE_MOCK_AUTH;
++    } else {
++      process.env.VITE_USE_MOCK_AUTH = originalMockAuth;
++    }
++    vi.resetModules();
++  });
++
++  // 1. In DEV (vitest default), loginMock does NOT throw the PROD message
++  it('in DEV (import.meta.env.PROD is false), loginMock does not throw the PROD message', async () => {
++    // Re-import the store fresh so the runtime check sees the current env
++    const { useAuthStore } = await import('../../../src/store/authStore');
++    // In DEV, import.meta.env.PROD is false. loginMock may succeed (if VITE_USE_MOCK_AUTH=true)
++    // or throw "Mock authentication is disabled" (if VITE_USE_MOCK_AUTH is unset).
++    // In NEITHER case should it throw the PROD message.
++    try {
++      await useAuthStore.getState().loginMock('test@example.com', 'password');
++      // Success: mock auth worked
++    } catch (e) {
++      const msg = (e as Error).message;
++      expect(msg).not.toContain('loginMock() must never run in a production build');
++    }
++  });
++
++  // 2. When VITE_USE_MOCK_AUTH === 'true', loginMock returns a User
++  it('when VITE_USE_MOCK_AUTH is "true", loginMock returns a User with a non-empty token', async () => {
++    vi.stubEnv('VITE_USE_MOCK_AUTH', 'true');
++    vi.resetModules();
++    const { useAuthStore } = await import('../../../src/store/authStore');
++    const user = await useAuthStore.getState().loginMock('test@example.com', 'password');
++    expect(user).toBeDefined();
++    expect(user.token).toBeTruthy();
++    expect(user.token.length).toBeGreaterThan(0);
++    vi.unstubAllEnvs();
++  });
++
++  // 3. When VITE_USE_MOCK_AUTH is unset, loginMock throws the "disabled" message (not PROD)
++  it('when VITE_USE_MOCK_AUTH is unset, loginMock throws "Mock authentication is disabled" (not the PROD message)', async () => {
++    vi.stubEnv('VITE_USE_MOCK_AUTH', '');
++    vi.resetModules();
++    const { useAuthStore } = await import('../../../src/store/authStore');
++    await expect(useAuthStore.getState().loginMock('test@example.com', 'password'))
++      .rejects.toThrow(/Mock authentication is disabled/);
++    // And NOT the PROD message
++    try {
++      await useAuthStore.getState().loginMock('test@example.com', 'password');
++    } catch (e) {
++      const msg = (e as Error).message;
++      expect(msg).not.toContain('loginMock() must never run in a production build');
++    }
++    vi.unstubAllEnvs();
++  });
++
++  // 4. Brute-force lockout: 5 bad attempts → 6th throws lockout message
++  it('brute-force lockout: 5 failed loginMock attempts lock the user out (6th throws)', async () => {
++    vi.stubEnv('VITE_USE_MOCK_AUTH', 'true');
++    vi.resetModules();
++    const { useAuthStore } = await import('../../../src/store/authStore');
++    const auth = useAuthStore.getState();
++
++    // Reset the bruteForce counter at the start of the test (defensive)
++    // The counter structure is internal; we assume it's accessible via setState
++    if ('bruteForce' in auth) {
++      useAuthStore.setState({ bruteForce: { count: 0, lastAttempt: 0 } } as never);
++    }
++
++    // Make 5 bad-attempt calls
++    for (let i = 0; i < 5; i++) {
++      try {
++        await auth.loginMock('test@example.com', 'wrong-password');
++      } catch {
++        // Expected to fail
++      }
++    }
++
++    // The 6th should throw the lockout message
++    await expect(auth.loginMock('test@example.com', 'wrong-password'))
++      .rejects.toThrow(/locked|too many|brute/i);
++
++    vi.unstubAllEnvs();
++  });
++});

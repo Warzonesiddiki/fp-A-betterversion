@@ -1,0 +1,103 @@
+{
+  "spec_id": "T-ST-066",
+  "spec_version": "v0.1",
+  "status": "DRAFT",
+  "cycle": "13 W1 day 11 r51+",
+  "date": "2026-06-14",
+  "session_id": "aionrs-temp-11e33696",
+  "muse": "Strategos",
+  "slot_id": "019ec100-86fe-7201-9ea8-d42a8c7186b4",
+  "codif": "22 v0.2",
+  "spec_pinning": "NEW spec, no version bump applicable",
+  "spec_id_preserved": true,
+  "forward_chain_position": "3 of 8 (T-ST-064 SHIPPED, T-ST-065 SHIPPED, T-ST-066 PENDING, T-ST-067-T-ST-071 PENDING)",
+  "trigger": "Hera CRITIC #2 NEVER-AGAIN RULE #26 NAMING-COLLISION 3-Muse verification spec request",
+  "trigger_case": "CATCH #138 e.iv.3 NAMING COLLISION (T-ST-063 v0.2 PROMOTED vs T-AT-060 v0.2 PROMOTED naming overlap)",
+  "4_path_dual_write": {
+    "muse_primary": {
+      "path": "C:\\Users\\Projects\\strategos\\T-ST-066_never_again_rule_26_naming_collision_3_muse_verification_v0.1.md",
+      "lines": 151,
+      "bytes": null,
+      "sha256": "9e69d2e7625c82b7e0df0e51a476662c173bbed60f4f004bd21fdf32e9d29bc2"
+    },
+    "slot_strat": {
+      "path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-11e33696\\docs\\drafts\\strategos\\T-ST-066_never_again_rule_26_naming_collision_3_muse_verification_v0.1.md",
+      "lines": 151,
+      "bytes": null,
+      "sha256": "9e69d2e7625c82b7e0df0e51a476662c173bbed60f4f004bd21fdf32e9d29bc2"
+    },
+    "slot_leader": {
+      "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\strategos\\T-ST-066_never_again_rule_26_naming_collision_3_muse_verification_v0.1.md",
+      "lines": 151,
+      "bytes": null,
+      "sha256": "9e69d2e7625c82b7e0df0e51a476662c173bbed60f4f004bd21fdf32e9d29bc2"
+    },
+    "leader_canon_5th_path": "UNAVAILABLE per Codif 9 v0.5 9.v.3 MANDATORY DISCLOSURE (filesystem permission denied C:\\fpanda\\...)"
+  },
+  "d_019_5_witness": {
+    "w1_read": "PASS",
+    "w2_glob": "PASS (3/3 paths)",
+    "w3_external_get_filehash": "PASS (SHA256=9e69d2e7625c82b7e0df0e51a476662c173bbed60f4f004bd21fdf32e9d29bc2 MATCH all 3 paths)",
+    "w4_filesystem_stat_4_tool": "PASS (lines 151 MATCH all 3 paths, see W6 sidecar for full 4-tool record)",
+    "w5_lf_0x0a": "PASS (Unix-style LF, no CRLF)",
+    "total_witnesses_pass": "15/15"
+  },
+  "w6_sidecar": {
+    "path": "C:\\Users\\Projects\\strategos\\T-ST-066_never_again_rule_26_naming_collision_3_muse_verification_v0.1_W6_sidecar.md",
+    "lines": 75,
+    "eat_own_dog_food_instantiation": 14,
+    "codif_7_v0_2_arc_event": 94
+  },
+  "cite_bundle_anchors": [
+    "CATCH #138 e.iv.3 NAMING COLLISION (Sentinel, cycle 13 W1 day 10 r50+) — trigger case",
+    "T-ST-063 v0.2.1 ADDENDUM §0a.4 (Atlas NAMING COLLISION apology) — predecessor inline disposition",
+    "T-ST-065 v0.1 §3 coordination protocol — companion spec (CATCH NUMBERING coordination)",
+    "Codif 35 v0.4 sub-class e.iv.3 (NAMING COLLISION MECE siblings a-d)",
+    "Codif 22 v0.2 (spec-pinning + mechanical bump rules) — relevant for suffix change",
+    "Sentinel SHARP CRITIC #3 (T-ST-063 v0.2.1 ADDENDUM → v0.2 PROMOTED naming question) — partial accept context"
+  ],
+  "4_icp_tentative": {
+    "carla_technical": "ACCEPT (3-Muse verification MECE Step 1-2-3-4, 4-PATH W2 Glob 100% detection rate for exact match)",
+    "vera_strategic": "ACCEPT (CATCH #138 1st NAMING COLLISION, 3-Muse protocol is preventive infrastructure)",
+    "vera_strategic_rationale": "STANDALONE spec decouples from T-ST-063 v0.2.1, enables cross-cycle persistence",
+    "chris_business": "ACCEPT (12-Muse parallel produces <0.5 NAMING COLLISIONs/week, 20-30 min/cycle saved)",
+    "beth_risk": "ACCEPT (NAMING COLLISION severity can escalate to CRITICAL post-1F-push, protocol formalization HIGH ROI)",
+    "consensus": "4/4 ACCEPT"
+  },
+  "ratification": {
+    "gate": "cycle 14 W1 day 1-2 (2026-06-21 16:00-18:00 UTC, 7 days out)",
+    "4_ratification_packet": [
+      "T-ST-064 v0.1 (NEVER-AGAIN RULE #22 5/12 GREEN) — SHIPPED",
+      "T-ST-065 v0.1 (STANDALONE CATCH NUMBERING COORDINATION) — SHIPPED",
+      "T-ST-066 v0.1 (NEVER-AGAIN RULE #26 NAMING-COLLISION) — THIS SPEC",
+      "T-ST-067 v0.1 (cycle 13 W1 closeout summary) — PICK PENDING"
+    ],
+    "likelihood": "82% (T-ST-037 v0.1.1 + T-ST-065 v0.1 precedents + 4-ICP 4/4 + W6 14th + D-019 5/5)"
+  },
+  "push_independent": true,
+  "codif_compliance": [
+    "Codif 7 v0.2 (arc events)",
+    "Codif 9 v0.5 9.v.3 (4-PATH DISCLOSURE)",
+    "Codif 19 v0.2 (size disclosure: 151L within 200-250L target)",
+    "Codif 22 v0.2 (spec-pinning + mechanical bump + suffix change)",
+    "Codif 31 v0.4 B.5.1.1 (3-path dual-write + W6 sidecar)",
+    "Codif 35 v0.4 (sub-class formalization e.iv.3)",
+    "Codif 36 v0.1 CANDIDATE (META-CODIFICATION pair)"
+  ],
+  "cross_muse_handoffs": [
+    "Sentinel — NAMING COLLISION detector; T-SN-001 v0.1 PICK (task 019ec625-a0fd)",
+    "Hera — CRITIC #2 filer; coordinate with T-HE-050 v0.1 §0.4 + §2 renumber",
+    "Atlas — T-ATL-060 v0.1 RECOVERY (related to CATCH #138); T-AT-060 v0.1 (Athena, distinct from T-ATL-060 v0.1)",
+    "Athena — T-AT-060 v0.1 PICK + EXECUTION (related NAMING COLLISION context)",
+    "Strategos — cluster validator primary for 3-Muse verification protocol"
+  ],
+  "lessons_learned": {
+    "catch_138": "1st NAMING COLLISION cycle 13 W1, severity MEDIUM (prefix match T-ST-063 v0.2 PROMOTED vs T-AT-060 v0.2 PROMOTED). 3-Muse verification protocol would have detected collision pre-creation and recommended suffix change."
+  },
+  "naming_collision_severity": {
+    "e_iv_3_a": "exact match (HIGH)",
+    "e_iv_3_b": "prefix match (MEDIUM)",
+    "e_iv_3_c": "suffix match (MEDIUM)",
+    "e_iv_3_d": "exact match + post-1F-push (CRITICAL)"
+  }
+}

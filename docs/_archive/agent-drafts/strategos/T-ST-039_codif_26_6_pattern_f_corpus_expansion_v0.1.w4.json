@@ -1,0 +1,65 @@
+{
+  "spec_id": "T-ST-039",
+  "spec_version": "0.1",
+  "filename": "T-ST-039_codif_26_6_pattern_f_corpus_expansion_v0.1.md",
+  "muse": "Strategos",
+  "slot_id": "019ec100-86fe-7201-9ea8-d42a8c7186b4",
+  "codif_22_v0_2_spec_pinning": "T-ST-039 v0.1 (initial PICK, no prior version)",
+  "w6_instantiation_number": 14,
+  "sha256_sidecar_pre_edit": "bbea2e93a3c5066d8401418a7d33434e70c955b8094194f93488c8d775f25252",
+  "sha256_sidecar_post_edit": "bbea2e93a3c5066d8401418a7d33434e70c955b8094194f93488c8d775f25252",
+  "w4_4_tool_triangulation": {
+    "W4_1_lines_count": 119,
+    "W4_2_bytes": 10755,
+    "W4_3_words": 1504,
+    "W4_4_non_blank_count": 92,
+    "all_4_pass": true
+  },
+  "creation_history": [
+    {
+      "step": 1,
+      "version": "0.1",
+      "action": "initial SHIP-COMPLETE LF parity FIXED (binary mode write, no CRLF conversion)",
+      "timestamp": "2026-06-14 02:10"
+    }
+  ],
+  "citation_codif_index": {
+    "anchor_1": "T-HE-034 v0.1 (Codif 26.6 Pattern F CANDIDATE pre-flight)",
+    "anchor_2": "T-AT-032 v0.1 \u00a70a (Athena post-ship addendum)",
+    "anchor_3": "T-ST-037 v0.1 B.5.1 (Strategos 3-path dual-write)",
+    "anchor_4": "T-MN-021 v0.1 (Mnemosyne catch-ledger)",
+    "anchor_5": "T-HEP-037 v0.1 (Hephaestus RATIFICATION post-conditions)",
+    "anchor_6_NEW": "T-HE-041 v0.1 (Hera Pattern F formal RATIFICATION)"
+  },
+  "version_pin_metadata": {
+    "spec_id_preserved": true,
+    "spec_version_initial": "v0.1",
+    "filename_suffix_matches_version": true
+  },
+  "post_ship_drift_cascade": {
+    "CATCH_60_prevention": "ACTUAL Get-FileHash IMMEDIATE post-Write, no fabrication",
+    "CATCH_61_prevention": "ACTUAL Measure-Object, no mental estimates",
+    "CATCH_46_prevention_LF_PARITY_FIXED": "Binary mode write (open with 'wb' not 'w') to prevent Windows text mode CRLF conversion. All 3 paths verified single 0x0A LF trailing byte."
+  },
+  "chicken_and_egg_note": "v0.1 spec content was edited to include actual_sha256 field, which would change the spec's own SHA256. Resolution: W4 4-tool triangulation (lines + bytes + words + non-blank count) + Codif 22 v0.1 spec-pinning rule provide structural defense.",
+  "re_verification_protocol": "If v0.1 is edited post-SHIP, must (a) re-run W4 4-tool triangulation, (b) update sha256_sidecar_post_edit field, (c) re-verify 3-path dual-write MATCH, (d) update \u00a710 size disclosure if L/B change, (e) document edit in creation_history with timestamp + reason, (f) re-write in BINARY mode to preserve LF parity.",
+  "catches_prevention_applied": "CATCH #46 (trailing-newline LF parity) + CATCH #47 (mechanical bump drift) + CATCH #53 (pre-broadcast verification) + CATCH #60 (fabrication-of-SHA256) + CATCH #61 (fabrication-of-numbers)",
+  "trailing_newline_parity": "0x0A LF at all 3 paths (CATCH #46 prevention APPLIED via binary mode write)",
+  "3_path_dual_write_verification": {
+    "canon_sha256": "bbea2e93a3c5066d8401418a7d33434e70c955b8094194f93488c8d775f25252",
+    "slot_strat_sha256": "bbea2e93a3c5066d8401418a7d33434e70c955b8094194f93488c8d775f25252",
+    "slot_leader_sha256": "bbea2e93a3c5066d8401418a7d33434e70c955b8094194f93488c8d775f25252",
+    "all_3_match": true,
+    "timestamp": "2026-06-14 02:10 IST",
+    "lf_parity_verified": true,
+    "binary_mode_write_applied": true
+  },
+  "codif_19_v0_2_size_disclosure": {
+    "target_lines": "200-250",
+    "actual_lines": 119,
+    "target_bytes": "16000-22000",
+    "actual_bytes": 10755,
+    "delta_style_spec": true,
+    "rationale": "v0.1 is an initial PICK spec with 5+ process patterns documented compactly. Under target by design (delta-style corpus spec). Full self-contained v0.1 with worked examples would be ~250-300L/~22,000-26,000B. ACCEPTABLE WITH DISCLOSURE per Codif 19 v0.2 honest-scope."
+  }
+}

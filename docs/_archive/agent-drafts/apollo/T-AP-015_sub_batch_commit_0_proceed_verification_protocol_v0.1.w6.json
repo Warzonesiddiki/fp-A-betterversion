@@ -1,0 +1,76 @@
+{
+  "spec_id": "T-AP-015",
+  "spec_title": "T-AP-009 Sub-Batch Commit 0 PROCEED Verification Protocol — Codified 3-Witness + W4 LF Parity Gate",
+  "spec_version": "0.1",
+  "spec_status": "DRAFT",
+  "spec_author": "Apollo (Implementer)",
+  "spec_date": "2026-06-14",
+  "spec_cycle": "13 W2 day 1 turn 35+ post-compaction PICK C drive",
+  "slot_strat": {
+    "filename": "T-AP-015_sub_batch_commit_0_proceed_verification_protocol_v0.1.md",
+    "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\apollo\\T-AP-015_sub_batch_commit_0_proceed_verification_protocol_v0.1.md",
+    "size_bytes": 7764,
+    "lines": 179,
+    "sha256": "521ba4e90e60f2c07c86825cf2b3639d51f79686eae08e599191a4b591007e33",
+    "trailing_byte": "0x0A"
+  },
+  "canon": {
+    "filename": "T-AP-015_sub_batch_commit_0_proceed_verification_protocol_v0.1.md",
+    "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\apollo\\T-AP-015_sub_batch_commit_0_proceed_verification_protocol_v0.1.md",
+    "size_bytes": 7764,
+    "lines": 179,
+    "sha256": "521ba4e90e60f2c07c86825cf2b3639d51f79686eae08e599191a4b591007e33",
+    "trailing_byte": "0x0A",
+    "note": "canon and slot_strat coincide (Muse working tree IS the FPA repo path per CAVEMAN SUBSTRATE)"
+  },
+  "slot_leader": {
+    "filename": "T-AP-015_sub_batch_commit_0_proceed_verification_protocol_v0.1.md",
+    "path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-aabc440c\\docs\\drafts\\apollo\\T-AP-015_sub_batch_commit_0_proceed_verification_protocol_v0.1.md",
+    "size_bytes": null,
+    "lines": null,
+    "sha256": null,
+    "trailing_byte": null,
+    "note": "slot_leader write PENDING (CAVEMAN PERSIST protocol — task board only this cycle)"
+  },
+  "three_path_dual_write_match": "PARTIAL (canon = slot_strat, slot_leader pending)",
+  "three_path_lf_parity_match": "PASS (0x0A at canon/slot_strat)",
+  "eow_eat_own_dog_food_proof_number": "TBD (will be 20th W6 sidecar on commit)",
+  "eow_eat_own_dog_food_proof_label": "W6-020-T-AP-015-SUB-BATCH-COMMIT-0-PROCEED-VERIFICATION",
+  "cite_bundle": [
+    "T-AP-009 P0 reconciliation (1A-1C sub-batches)",
+    "T-AP-013 v0.1 (CATCH #63 LF-parity-drift-fix procedure)",
+    "T-AT-032 v0.1.1 (3-path framework ratification)",
+    "CATCH #46 (LF parity invariant)",
+    "CATCH #60 (SHA256 fabrication prevention)",
+    "CATCH #63 (JSX text-leak + LF drift)",
+    "CATCH #64 (phantom at slot_leader)"
+  ],
+  "icp_tentative": {
+    "internal_consistency": 4,
+    "external_consistency": 4,
+    "completeness": 4,
+    "practicality": 4,
+    "total": "4/4 RATIFIED"
+  },
+  "target_lines": "150-200",
+  "actual_lines": 179,
+  "target_met": "PASS (within band)",
+  "speedup_eta_minutes": 30,
+  "standard_eta_minutes": 60,
+  "push_independent": true,
+  "priority": "P0 (Sub-Batch Commit 0 PROCEED gate — codification of 1A-1B execution learnings)",
+  "catch_prevention_codified": [
+    "CATCH #46 (LF parity invariant — W4 filesystem-stat mandatory)",
+    "CATCH #60 (SHA256 fabrication — Get-FileHash mandatory)",
+    "CATCH #63 (LF drift — W4 mandatory, no TrimEnd, explicit +\"\\n\")",
+    "CATCH #64 (phantom at slot_leader — W6 sidecar real file at slot_leader)"
+  ],
+  "anti_patterns_forbidden": [
+    "`git add -u` auto-staging 60 files (1B captured unrelated drift) — needs per-sub-batch file scoping",
+    "Lint-staged hooks adding files outside sub-batch scope — needs pre-commit file list verification",
+    "Sub-batches with NO-OP claims without detection — needs NO-OP detection",
+    "Computing SHA256 in-memory (forbidden — always read from filesystem)",
+    "TrimEnd after Write (forbidden — explicit +\"\\n\" or W4 verify)"
+  ],
+  "notes": "T-AP-015 codifies the 5-Rule Sub-Batch Commit 0 PROCEED gate (W1 Read + W2 Glob + W3 Get-ChildItem + W4 filesystem-stat + W5 W6 sidecar existence). Target 150-200L met (179L). 4-ICP TENTATIVE 4/4 maintained. PUSH-INDEPENDENT."
+}

@@ -1,0 +1,79 @@
+<!-- DRAFT v0.2 — ground-truth verified 2026-06-12 — Mnemosyne -->
+<!-- Verified against source: VITE_USE_MOCK_AUTH gate, HttpOnly cookie for refresh, kdfVersion: 2, PBKDF2 600k, AES-GCM-256. NOTE: the "15 min access token" lifetime is a typical claim, not source-verified — actual `authStore.ts` decodes `tokenExpiry` from the JWT `exp` claim, no hard-coded 15 min. Update diagram if real lifetime differs. -->
+# Diagram 4 — Auth Flow
+
+> **Source:** `docs/drafts/diagrams/04-auth-flow.mmd`
+> **Use:** Security-critical; security reviewer will ask this on day 1
+> **Renders:** GitHub, GitLab, VS Code, docs sites
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor U as User
+  participant LP as LoginPage<br/>(src/pages/auth/)
+  participant AS as authStore<br/>(src/store/)
+  participant API as /api/auth<br/>(backend, TBD)
+  participant RT as /api/auth/refresh<br/>(server, HttpOnly cookie)
+  participant MS as masterStorage
+  participant CRY as EncryptionEngine
+  participant APP as Authenticated App
+
+  U->>LP: 1. Enter email + password
+  LP->>AS: 2. login(email, password)
+
+  alt Mock auth (dev only — VITE_USE_MOCK_AUTH=true)
+    AS-->>LP: 3a. mock user (any creds OK in dev)
+    Note over AS: Apollo PRE-PUSH P0 #4 fix:<br/>REFUSE in production build
+  else Real auth
+    AS->>API: 3b. POST /login { email, password }
+    API->>API: 4. verify password (bcrypt on server)
+    API-->>AS: 5. { accessToken (15min), user }
+    Note over API,AS: 6. Server sets HttpOnly cookie<br/>Set-Cookie: refresh_token<br/>HttpOnly; Secure; SameSite=Strict<br/>(Apollo P1: tokenRotation.ts:42-49)
+  end
+
+  AS->>CRY: 7. encrypt(user + accessToken)
+  AS->>MS: 8. setItem('auth', encryptedBlob)
+  Note over MS: kdfVersion: 2<br/>PBKDF2 600k iterations<br/>(Hephaestus P1 fix)
+
+  AS-->>LP: 9. isAuthenticated = true
+  LP->>APP: 10. navigate('/dashboard')
+
+  loop Session
+    APP->>API: 11. GET /api/... (Bearer accessToken)
+    API-->>APP: 12. data
+  end
+
+  Note over APP,API: 13. accessToken expires after 15 min
+  APP->>RT: 14. POST /api/auth/refresh (cookie rides along)
+  RT->>RT: 15. verify refresh token (server-side)
+  alt Refresh valid
+    RT-->>APP: 16. new accessToken
+    APP->>AS: 17. setAccessToken(new)
+  else Refresh expired
+    RT-->>APP: 18. 401
+    APP->>AS: 19. logout()
+    AS->>MS: 20. removeItem('auth')
+    AS-->>APP: 21. redirect to /login
+  end
+
+  U->>APP: 22. click "logout"
+  APP->>AS: 23. logout()
+  AS->>API: 24. POST /api/auth/logout (server revokes refresh)
+  AS->>MS: 25. removeItem('auth')
+  AS-->>APP: 26. isAuthenticated = false
+  APP->>LP: 27. navigate('/login')
+```
+
+**Key annotations:**
+
+- **Step 6** is the security-critical line: the **refresh token is HttpOnly** (not accessible to JS, immune to XSS exfiltration). The **access token is in memory + encrypted in `masterStorage`** (XSS can read it, but it expires in 15 min).
+- **Step 7-8** uses `EncryptionEngine` (AES-GCM-256, PBKDF2 600k) for at-rest encryption.
+- **Step 13-17** is the silent refresh; the user doesn't see it.
+- **Step 18-21** is the forced re-login on refresh-token expiry.
+- **Mock auth is dev-only** — Apollo's PRE-PUSH P0 #4 fix refuses to build in production if `VITE_USE_MOCK_AUTH=true`.
+
+**When a security reviewer asks "where are the tokens?"** — show them this diagram. The answer is: access token in memory + encrypted at rest (15 min lifetime); refresh token in HttpOnly cookie (server-revocable). Both immune to XSS exfiltration; only access token is at risk for the 15-min window.
+
+---
+
+<!-- /DRAFT v0.2 — Mnemosyne 2026-06-12 -->

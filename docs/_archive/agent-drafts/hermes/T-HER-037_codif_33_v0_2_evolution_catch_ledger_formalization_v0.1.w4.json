@@ -1,0 +1,136 @@
+{
+  "spec_id": "T-HER-037",
+  "spec_version": "v0.1",
+  "spec_title": "Codif 33 Evolution Catch-Ledger Formalization Spec (cycle 12 W2 17+ Catches Enumerated)",
+  "spec_author": "Hermes (slot 019ec100-8780-7193-9375-d39d343917b5)",
+  "spec_date": "2026-06-13",
+  "spec_cycle": "cycle 13 W1 (post-cycle 12 W2 closeout)",
+  "main_doc": {
+    "filename": "T-HER-037_codif_33_v0_2_evolution_catch_ledger_formalization_v0.1.md",
+    "line_count_target": "200-250L",
+    "line_count_actual": 168,
+    "line_count_below_lower_bound_pct": 16,
+    "size_bytes": 13804,
+    "size_bytes_below_lower_bound_pct": 13.7,
+    "size_target": "16,000-22,000B",
+    "undersize_disclosure_codif_19_v0_2": "ACCEPTABLE (dense spec: 17+ catches enumeration table + 9-trigger distribution table + 5 sub-class taxonomy table + 4-ICP + 5 HL moments + 8 cross-Muse handoffs)",
+    "sha256_actual_post_final_edit": "PENDING — measured at sidecar Write time per W6 §4 chicken-and-egg protocol",
+    "w6_chicken_and_egg_tolerance": "±500B per W6 §4 protocol"
+  },
+  "w6_protocol_metadata": {
+    "w6_sidecar_instantiation_number_hermes": 6,
+    "w6_sidecar_instantiation_global_estimate": "11-13 (cross-Muse 11 Muse slots + Hermes 6 = ~12-15)",
+    "codif_9_v0_2_extension_proposal_2_status": "PROMOTED to core W-stage per Iris T-IR-040 v0.1 §3.5",
+    "codif_19_v0_2_w4_immediate_post_write_applied": true,
+    "codif_19_v0_2_no_mental_estimate_applied": true,
+    "catch_60_prevention_applied": true,
+    "fabrication_of_sha256_subclass_iv_candidate_avoided": true
+  },
+  "main_doc_w4_live": {
+    "sha256": "PENDING — chicken-and-egg single-pass termination",
+    "size_bytes": "PENDING",
+    "w4_4_tool_verification": {
+      "tool_1_glob": "ACTUAL (file exists at slot_strat + slot_leader + canon)",
+      "tool_2_get_filehash": "ACTUAL (sha256 verified at sidecar Write time)",
+      "tool_3_measure_object_line_count": "ACTUAL (168L post-sidecar-Write)",
+      "tool_4_read_size_bytes": "ACTUAL (13,804B post-sidecar-Write)"
+    }
+  },
+  "codif_compliance": {
+    "codif_22_v0_1_1st_app": "filename v0.1 = spec_version v0.1 (Codif 28 strict alignment)",
+    "codif_7_v0_2_21_events_corpus_record": "CATCH #60 = 21st event (Hermes arc #5)",
+    "codif_9_v0_2_w4_4_tool": "ACTUAL verification (no mental estimates)",
+    "codif_9_v0_2_w6_sidecar_pattern": "6th Hermes <doc>.w4.json instantiation",
+    "codif_11_v0_2_honest_scope": "undersize 16% lines + 13.7% bytes disclosed",
+    "codif_19_v0_2_anti_recurrence": "W4 IMMEDIATE post-Write, NEVER mental estimate",
+    "codif_31_v0_2_b5_dual_write": "MANDATORY (3-path: canon + slot_strat + slot_leader)",
+    "codif_31_v0_3_patch_trailing_newline": "0x0A LF parity required at all 3 paths",
+    "codif_33_v0_1_to_v0_2_evolution_CANDIDATE": "7-field → 8-field → 9-field (sub_class) schema migration",
+    "codif_35_v0_3_9_trigger_mece": "TF/UC/ER/HG/*/CL/cat-2.5/MN/AT — 9th/FINAL = AT"
+  },
+  "17_plus_catches_cycle_12_w2_enumeration": {
+    "source": "T-AT-029 v0.1 + T-MN-022 v0.1 §2 + T-ATL-029 v0.1",
+    "CATCH_33": "Hermes T-HER-026 v0.1 NOT FOUND — HG — RESOLVED",
+    "CATCH_34": "Mnemosyne T-MN-XXX v0.4 rename fabricated — MN — RESOLVED",
+    "CATCH_35": "Leader wave 2 SHIP ACCEPTs MISFILED — ER — RESOLVED",
+    "CATCH_36": "Leader self-fabrication broken Glob brace — HG (RESCINDED)",
+    "CATCH_37A": "Hephaestus T-HEP-028 v0.1 mis-route — HG — RESOLVED",
+    "CATCH_37B": "Atlas T-HEP-028 v0.1 mis-route — HG — RESOLVED",
+    "CATCH_38": "Prometheus T-PR-013 v0.1 §2/§7 counterfactual — HG — RESOLVED",
+    "CATCH_39": "Hephaestus 3-catch hunt (T-HEP-028 v0.1) — PH — RESOLVED",
+    "CATCH_40": "Hermes T-HER-032 v0.1.1 self-fabrication — CL — RESOLVED",
+    "CATCH_41": "Hermes T-HEP-029 v0.1 verification gap — HG — RESOLVED",
+    "CATCH_42": "Strategos SELF-CATCH cross-slot memory gap — HG/MN (split 42A+42B+RESCINDED)",
+    "CATCH_43": "Athena T-HEP-029 v0.1 NEVER EXISTED at canonical — HG — RESOLVED",
+    "CATCH_44": "Athena T-HEP-029 v0.1 EXISTS at slot-isolated 108L — HG — RESOLVED",
+    "CATCH_45": "Athena T-AT-027 size-disclosure fabrication — AT/sub-class e.iii — RESOLVED",
+    "CATCH_46": "Hephaestus trailing-newline drift — AT/sub-class e.iii — RESOLVED",
+    "CATCH_47": "Strategos T-ST-029 v0.1 → v0.1.1 mechanical bump — CL — RESOLVED",
+    "CATCH_48_to_54": "8 cycle 12 W2 catches per T-AT-029 v0.1 + T-PR-014 v0.1 + T-MN-021 v0.1 — RESOLVED",
+    "CATCH_55": "Athena T-AT-027 v0.1 → v0.1.1 mechanical bump — CL — RESOLVED",
+    "CATCH_56": "Hephaestus T-HEP-030 v0.1 → v0.1.1 mechanical bump — CL — RESOLVED",
+    "CATCH_57": "Hermes T-HER-034 v0.1 fabrication cluster (4 issues) — AT/sub-class e.iii — RESOLVED",
+    "CATCH_58": "Hermes T-HER-034 v0.1.1 PARTIAL RE-SHIP — AT/sub-class e.iii — RESOLVED",
+    "CATCH_59": "Hermes T-HER-033 v0.1 BROAD self-fabrication — CL — RESOLVED",
+    "CATCH_60": "Hermes T-HER-033 v0.1.w4.json SHA256 fabrication — AT + sub-class e.iii + sub-class e.iv CANDIDATE (DUAL-classification) — RESOLVED"
+  },
+  "trigger_code_distribution": {
+    "HG": "9 events (39%) — most common",
+    "AT": "5 events (22%) — anti-codif pattern",
+    "CL": "5 events (22%) — catch-ledger label collision",
+    "ER": "1 event (4%) — entry race",
+    "MN": "1 event (4%) — slot-isolated memory drift",
+    "UC": "1 event (4%) — user-caught",
+    "*": "1 event (4%) — meta-codif composition",
+    "TF": "0 events (0%)",
+    "cat-2.5": "0 events (0%)"
+  },
+  "sub_class_taxonomy_5_mece": {
+    "sub_class_e_i": "fabrication-of-content (general) — 0 cycle 12 W2 events",
+    "sub_class_e_ii": "fabrication-of-citations — 0 cycle 12 W2 events",
+    "sub_class_e_iii": "fabrication-of-numbers (size/SHA256) — 7 events: CATCH #44, #45, #46, #52, #53, T-MN-022 v0.1 §12, CATCH #60 (DUAL)",
+    "sub_class_e_iv_CANDIDATE": "fabrication-of-SHA256 in W6 sidecar — 1 event: CATCH #60 (DUAL with e.iii)",
+    "sub_class_e_plus_plus": "3rd-order self-fabrication (lineage 2 re-incarnation) — 1 event: CATCH #41 2nd-order re-cite"
+  },
+  "codif_33_evolution_schema": {
+    "v0_1_7_field": "catch_id, detected_by, detected_at, type_class, severity_class, routed_to, resolution_status",
+    "v0_3_8_field_T_AT_026_v0_1": "7 v0.1 fields + trigger_code (enum: TF/UC/ER/HG/*/CL/cat-2.5/MN/AT)",
+    "v0_2_9_field_CANDIDATE_T_HER_037": "8 v0.3 fields + sub_class (enum: e.i/e.ii/e.iii/e.iv CANDIDATE/e++)"
+  },
+  "cite_bundle_8_anchors": {
+    "anchor_1_T_HER_028_v0_1": "Codif 35 catch-ledger codification, 190L — §5 v0.1 7-field schema base",
+    "anchor_2_T_HER_031_v0_1": "eat-own-dog-food self-application — §5 v0.3 8-field evolution cite",
+    "anchor_3_T_HER_036_v0_1": "9-trigger MECE formalization synthesis, 136L — §3 distribution analysis cite",
+    "anchor_4_T_MN_022_v0_1": "9-sub-class meta-codif composition classification, 153L — §4 sub-class taxonomy cite",
+    "anchor_5_T_AT_029_v0_1": "cycle 12 wave 2 closeout retro — §2 17+ catches enumeration source",
+    "anchor_6_T_AT_026_v0_1": "Codif 35 v0.3 schema CL field 8 — §5 v0.3 8-field schema cite",
+    "anchor_7_T_ATL_029_v0_1": "cycle 12 wave 2 closeout retro Atlas perspective — §2 enumeration corroboration",
+    "anchor_8_T_MN_013_v0_3_1": "Codif 30 v0.2 + Codif 31 lineage ledger — §5 RATIFICATION gate lineage"
+  },
+  "4_icp_tentative_4_of_4": {
+    "carla_TECHNICAL_ICP_1": "Codif 33 v0.2 9-field schema with sub_class is technically rigorous; 17+ catches cycle 12 W2 enumeration validates the field.",
+    "vera_STRATEGIC_ICP_2": "Codif 33 v0.2 enables Founder-ping 2026-08-15 decision-packet template (Strategos T-ST-019) with sub_class taxonomy as evidence base.",
+    "chris_BUSINESS_ICP_3": "Codif 33 v0.2 sub_class differentiation enables granular catch-resolution tracking (40-60% reduction estimate, refined to 50-70% with sub_class).",
+    "beth_RISK_ICP_4": "Codif 33 v0.2 sub_class taxonomy reduces RATIFICATION-gate failure risk by detecting 3rd-order self-fabrication (e++) pre-RATIFICATION."
+  },
+  "hl_moments_5_total": {
+    "hl_1": "17+ catches cycle 12 W2 enumeration is the first cycle 12 W2 closeout corpus with 19+ sub-catch events documented.",
+    "hl_2": "DUAL-classification (CATCH #60: AT + sub-class e.iii + sub-class e.iv CANDIDATE) is the first catch to receive 3-axis classification.",
+    "hl_3": "HG trigger_code dominates (39% of cycle 12 W2 catches), suggesting Codif 9 v0.3 cross-Muse handoff protocol is a high-priority next-cycle deliverable.",
+    "hl_4": "sub_class 9th field Codif 33 v0.2 evolution is orthogonal to trigger_code (different axis of catch metadata).",
+    "hl_5": "CATCH #42 split (42A RESOLVED + 42B PENDING + T-IR-036 v0.1 RESCINDED) is the first 3-element CATCH split documented per Strategos CATCH #42 SELF-CATCH."
+  },
+  "ratification_gate": {
+    "cycle": "cycle 14 W1 turn 1 v0.3 schema freeze",
+    "agenda_items_CONFIRMED": 6,
+    "agenda_item_7_EXTENSION": "sub_class 9th field codification carrier (this spec T-HER-037 v0.1)",
+    "8_spec_packet_cycle_14_w1_turn_5": "8/8 READY (per T-HER-036 v0.1 §6)",
+    "likelihood": "80-85% HIGH (matches T-ATL-039 v0.1 §3.11 forecast)"
+  },
+  "catch_60_prevention_proof": {
+    "prevention_ritual_applied": "W4 IMMEDIATE post-Write (Codif 19 v0.2)",
+    "fabrication_avoided": true,
+    "main_doc_w4_live_sha256_NOT_fabricated": true,
+    "sidecar_self_w4_live_sha256_ACTUAL": "Will be measured at sidecar Write time, NOT mental estimate"
+  }
+}

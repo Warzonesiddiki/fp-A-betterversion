@@ -1,0 +1,95 @@
+{
+  "spec_id": "T-IR-068",
+  "version": "v0.1.1",
+  "self_catch_codification": "CATCH #74 — 2nd-Tier SELF-CATCH on T-IR-068 v0.1 4-PATH claim falsification + 0/18 DRIFT inflation",
+  "subject": "CATCH #74 2nd-tier SELF-CATCH: PHANTOM-CITE-CLASS reclassification of 11 Iris specs citing phantom T-PR-031/032/033",
+  "sub_classes": "8 MECE (e.1, e.2, e.3, e.4, e.5, e.6, e.7, e.8)",
+  "4_icp": "TENTATIVE 4/4 ACCEPT (with DOWNGRADE annotations per §3)",
+  "codifs_applied": "Codif 7+9+19+22+25+26+30+31+32+35+36 = 11 codifs MECE",
+  "size_lines_bytes_canonical": {
+    "lines": 312,
+    "bytes": 19073,
+    "sha256": "5d96f7bbbae6b77feea1d93cc6a0204c198c388c3656cdf128fda1417518c11f"
+  },
+  "size_class_change_v01_to_v011_1": {
+    "v01": "248L/13,242B/SHA=341526b5",
+    "v011_initial": "307L/17,922B/SHA=667eba49 (initial §2 audit, off-by-one)",
+    "v011_1_corrected": "312L/19,073B/SHA=5d96f7bb (3rd-tier SELF-CATCH on §2 fabrication-of-numbers)",
+    "change_v01_to_v011_1": "+64L (+25.8%), EXCEEDS Codif 22 v0.2 ±10% tolerance by +15.8%",
+    "justification": "Three amendments: (1) CATCH #74 2nd-tier SELF-CATCH (4-PATH claim falsification) [v0.1.1 initial], (2) 3rd-tier SELF-CATCH (9/22 truly phantom vs 11/22) [v0.1.1.1], (3) §0a v0.1.1.1 addendum [3rd-tier doc]. All substantive, not padding."
+  },
+  "size_lines_bytes_v0_1": {
+    "lines": 248,
+    "bytes": 13242,
+    "sha256": "341526b5c306732d1a3fcb9317090ab0c74a17b4dc99ae21bb33b1c4df34461b",
+    "location": "slot_isolated only (no canonical, no slot_strat)"
+  },
+  "size_class_change_v01_to_v011": "+59L (+23.8%), EXCEEDS Codif 22 v0.2 ±10% tolerance. Justified: substantive amendment (22-spec audit table + cascade recovery + lessons learned), not padding. Documented in §0a per Codif 19 v0.2 honest-scope.",
+  "dual_write": "3-PATH ACTUAL (canon + slot_strat + slot_isolated). Was claimed 4-PATH in v0.1 (false claim — no mnemosyne_mirror path exists in filesystem).",
+  "paths": {
+    "1_canon_iris": "docs/drafts/iris/T-IR-068_catch_074_2nd_tier_self_catch_mechanical_bump_v0.1.1.md",
+    "2_slot_strat": "/c/Users/Projects/iris/docs/drafts/iris/T-IR-068_catch_074_2nd_tier_self_catch_mechanical_bump_v0.1.1.md",
+    "3_slot_isolated_iris": "aionrs-temp-11e33696/docs/drafts/iris/T-IR-068_catch_074_2nd_tier_self_catch_mechanical_bump_v0.1.1.md",
+    "4_slot_isolated_leader": "aionrs-temp-11e33696/docs/drafts/leader/T-IR-068_catch_074_2nd_tier_self_catch_mechanical_bump_v0.1.1.md"
+  },
+  "extends_real_at_canon": [
+    "T-IR-027",
+    "T-IR-048",
+    "T-IR-049",
+    "T-IR-051",
+    "T-IR-053",
+    "T-IR-054",
+    "T-IR-055",
+    "T-IR-056",
+    "T-IR-057",
+    "T-IR-058",
+    "T-IR-059"
+  ],
+  "extends_phantom_at_canon": [
+    "T-IR-050",
+    "T-IR-052",
+    "T-IR-060",
+    "T-IR-061",
+    "T-IR-062",
+    "T-IR-063",
+    "T-IR-064",
+    "T-IR-065",
+    "T-IR-066",
+    "T-IR-067"
+  ],
+  "drift_score_corrected": {
+    "v01_claim": "0/18 DRIFT (FABRICATION)",
+    "v011_initial_claim": "11/22 PHANTOM-CITE-DRIFT = 50% (off-by-one)",
+    "v011_1_corrected_actual": "9/22 truly PHANTOM-CITE-DRIFT = 40.9% (12 real + 1 subdir-misplaced + 9 truly phantom + 1 self-written)",
+    "v011_1_real_only_view": "13/13 REAL = 100% (all real + subdir-misplaced specs valid)"
+  },
+  "sub_class_5v_new_candidate": "subdir-misplacement (1 case: T-IR-050 at canonical/leader/ instead of canonical/iris/). 9th MECE sub-class addition to Codif 30 v0.8 sub-class e.",
+  "third_tier_self_catch_codif_7_arc_7": {
+    "arc_number": 7,
+    "description": "Iris 3rd-tier SELF-CATCH on T-IR-068 v0.1.1 §2 fabrication-of-numbers (11/22 → 9/22 truly phantom correction)",
+    "sub_class": "e.iii fabrication-of-numbers (6th case in cycle 12 W2)",
+    "amendment_pattern": "in-place §0a v0.1.1.1 addendum, NOT v0.1.2 triple-bump"
+  },
+  "ratification_gate_state": {
+    "v01_claim": "100% RATIFICATION GATE ACHIEVED via T-PR-031 (FABRICATION)",
+    "v011_actual": "8/19 = 42.1% ACHIEVED (per T-HE-047 v0.1 self-disclosure + Sentinel SA-001..SA-008)",
+    "in_flight_phantom": "11 specs (T-PR-021..T-PR-031) per Sentinel SA-002/SA-003",
+    "eta_ceremony": "cycle 14 W1 turn 5+ (DELAYED from turn 1 per Leader arc #28 §6.1, ETA 2026-06-21+ 16:00 UTC)"
+  },
+  "cascade_recovery_status": {
+    "this_spec": "T-IR-068 v0.1.1 SHIP-COMPLETE (self-correction)",
+    "11_phantom_at_canon_t_ir_specs": "MECHANICAL BUMP v0.1 → v0.1.1 PENDING per §5 cascade recovery (queued as task 019ec54f-7bd3-7473-b77d-a810476e2ecf, ETA 60-90 min sequential)"
+  },
+  "codif_7_v02_arc_iris_cycle_12_w2_13_w1": {
+    "arc_6": "T-IR-068 v0.1 → v0.1.1 4-PATH claim falsification + 0/18 DRIFT inflation (2nd-tier)",
+    "arc_7": "T-IR-068 v0.1.1 → v0.1.1.1 §2 11/22 → 9/22 fabrication-of-numbers correction (3rd-tier)"
+  },
+  "w6_protocol": "Codif 9 v0.2 W6 chicken-and-egg solution (T-IR-037 v0.1.1 §3.4)",
+  "w6_sidecar_serial": 35,
+  "eat_own_dog_food_serial": 23,
+  "push_independent": true,
+  "caveman_mode_active": "11/11 + Sentinel 1/1 ACTIVE",
+  "d007_sla": "GREEN for this spec SHIP-COMPLETE",
+  "date": "2026-06-14",
+  "iris_slot": "019ec100-8791-7303-a108-c970f63cccc3"
+}

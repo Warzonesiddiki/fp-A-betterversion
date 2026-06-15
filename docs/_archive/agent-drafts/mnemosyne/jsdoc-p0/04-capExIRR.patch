@@ -1,0 +1,79 @@
+--- a/src/engines/CapExEngine.ts	2026-06-13 03:03:43.439474500 +0530
++++ b/src/engines/CapExEngine.ts	2026-06-13 03:27:36.422798400 +0530
+@@ -46,6 +46,76 @@
+     return cashFlows.reduce((acc, cf, i) => acc + cf / Math.pow(1 + discountRate, i), 0);
+   }
+ 
++  /**
++   * Internal Rate of Return for an arbitrary sequence of cash flows.
++   *
++   * The IRR is the discount rate `r` that makes the Net Present Value of
++   * `cashFlows` equal to zero:
++   *
++   *   NPV(r) = sum_i cashFlows[i] / (1 + r)^i = 0
++   *
++   * We solve this by **Newton-Raphson** (NOT bisection), starting from
++   * `irr = 0.1` (10% seed), with `maxIterations = 1000` and
++   * `precision = 0.00001`. The per-iteration update is
++   *   `nextIrr = irr - NPV(irr) / NPV'(irr)`.
++   *
++   * Convergence: the loop exits early (returning `irr`) when either
++   *   - `Math.abs(NPV(irr)) < precision` (NPV is effectively zero), or
++   *   - `Math.abs(nextIrr - irr) < precision` (the rate is stable).
++   *
++   * Failure modes (the loop has NO sign-change check, NO `Infinity` /
++   * `NaN` input validation):
++   *   - `cashFlows.length < 2`: returns **`0`** (NOT `NaN`). The function
++   *     silently treats single-element sequences as "no IRR to compute"
++   *     rather than throwing - the caller is expected to pre-validate.
++   *   - `NPV'(irr) === 0` (the derivative is flat at the current rate):
++   *     returns **`NaN`** from the `0/0` division. The loop does not
++   *     recover; the caller must guard against this.
++   *   - `maxIterations` (1000) reached without convergence: returns the
++   *     **`irr` from the last iteration**. The result may be far from the
++   *     true root - caller is expected to check that
++   *     `Math.abs(NPV(result))` is small.
++   *   - `Infinity` / `NaN` entries in `cashFlows` propagate through
++   *     `calculateNPV` to give `NaN` / `Infinity` results. There is NO
++   *     guard.
++   *
++   * **What this method does NOT do**:
++   *   - It does **not** handle the **Modified IRR (MIRR)** case. For MIRR
++   *     (which requires explicit finance rate + reinvestment rate) use
++   *     `CapExEngine.calculateMIRR` (separate static method).
++   *   - It does **not** return a confidence interval. Use
++   *     `MonteCarloEngine.simulate` with `model: (i) =>
++   *     CapExEngine.calculateIRR(i.cashFlows)` to get a probabilistic IRR
++   *     distribution.
++   *
++   * @param cashFlows - Array of cash flows ordered by period. **By
++   *   convention, index 0 is the initial outflow** (negative or zero) and
++   *   subsequent indices are inflows. Example: `[-100_000, 30_000, 40_000,
++   *   50_000]` represents a $100k investment that returns $30k / $40k /
++   *   $50k.
++   * @returns The discount rate `r` that zeroes the NPV, expressed as a
++   *   **decimal** (e.g. `0.18` means 18% IRR, NOT 18). Returns:
++   *   - `0` when `cashFlows.length < 2`
++   *   - `NaN` when `NPV'(irr)` is exactly 0
++   *   - the last `irr` value when `maxIterations` is reached
++   *
++   * @example
++   * ```ts
++   * const irr = CapExEngine.calculateIRR([-100_000, 30_000, 40_000, 50_000]);
++   * // irr ~= 0.0975  ->  9.75% IRR
++   *
++   * // Caller should verify the result is usable:
++   * if (!Number.isFinite(irr) || irr <= -1) {
++   *   throw new Error('IRR did not converge: ' + irr);
++   * }
++   * ```
++   *
++   * @see {@link CapExEngine.calculateNPV} - the NPV function Newton iterates against
++   * @see {@link CapExEngine.calculateNPVDerivative} - the NPV' derivative
++   * @see {@link CapExEngine.calculateMIRR} - for MIRR (reinvestment-rate-aware)
++   * @see DRAFT v0.2 - Mnemosyne 2026-06-13 (JSDoc P0, post Athena T-AT-003;
++   *   DEFERRED per Athena §4.6 - to be re-applied in a later cycle)
++   */
+   static calculateIRR(cashFlows: number[]): number {
+     let irr = 0.1;
+     const maxIterations = 1000;

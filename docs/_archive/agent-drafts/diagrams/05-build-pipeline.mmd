@@ -1,0 +1,68 @@
+<!-- DRAFT v0.2 — ground-truth verified 2026-06-12 — Mnemosyne -->
+# Diagram 5 — Build Pipeline
+> **Verified:** v0.2 ground-truth checked 2026-06-12.
+
+> **Source:** `docs/drafts/diagrams/05-build-pipeline.mmd`
+> **Use:** DevOps, CI debugging; new contributor needs to know what runs
+> **Renders:** GitHub, GitLab, VS Code, docs sites
+
+```mermaid
+flowchart LR
+  SRC[src/<br/>202 engines + 35 stores +<br/>192 pages + 274 components] --> TSC[npx tsc --noEmit]
+  TSC -->|0 errors| LINT[eslint<br/>── 0 errors, 0 warnings ──]
+  LINT -->|0/0| FMT[prettier --check src/<br/>── 0 files need formatting ──]
+  FMT -->|0| TEST[vitest run<br/>── 8,334+ tests total<br/>── 8,264+ passing<br/>── 70 pre-existing fails<br/>(Pattern A: 67 lucide mock<br/>Pattern B: 1 Router wrapper applied<br/>Pattern C: 5 test drift (Athena lane)<br/>Pattern D1: 1 Q3 pct = co-owned<br/>(Athena primary, Hephaestus secondary)<br/>Pattern D2: 2 AIEngine env-only<br/>Pattern E: 3 utils) ──]
+
+  TEST --> COV[vitest --coverage<br/>── v8 provider ──]
+  COV -->|thresholds met| BUILD[vite build]
+
+  BUILD --> BUNDLE[dist/<br/>── main < 150KB gzip ──<br/>── total < 2MB ──]
+  BUNDLE --> AUDIT[+npm audit<br/>── 0 high/critical CVEs ──]
+  AUDIT -->|0 high/critical| LIGHTHOUSE[+Lighthouse CI<br/>── a11y ≥ 95 ──<br/>── perf ≥ 80 ──]
+
+  BUNDLE --> TAURI[Tauri build<br/>── desktop shell ──]
+  TAURI --> DMG[Tauri DMG/EXE/AppImage<br/>── signed + notarized ──]
+  TAURI -->|optional| WEB[Static web deploy<br/>── dist/ to S3/Cloudflare ──]
+
+  LINT -.->|warn| HOOKS[+Husky pre-commit<br/>── lint-staged ──]
+  TEST -.->|run| E2E[+Playwright E2E<br/>── smoke + critical paths ──]
+
+  classDef source fill:#3B82F6,color:#fff,stroke:#1E40AF
+  classDef gate fill:#F59E0B,color:#000,stroke:#92400E
+  classDef build fill:#10B981,color:#fff,stroke:#065F46
+  classDef deploy fill:#8B5CF6,color:#fff,stroke:#5B21B6
+  classDef optional fill:#6B7280,color:#fff,stroke:#1F2937,stroke-dasharray: 5 5
+
+  class SRC source
+  class TSC,LINT,FMT,TEST,COV,BUILD,AUDIT gate
+  class BUNDLE,TAURI,DMG build
+  class WEB deploy
+  class LIGHTHOUSE,HOOKS,E2E optional
+```
+
+**Key annotations:**
+
+- **Solid arrows** are the required CI gate.
+- **Dashed arrows** are optional / parallel checks.
+- **Each gate is a hard blocker** — any failure stops the pipeline.
+- **Tauri build** is parallel to web deploy; both consume `dist/`.
+- **Lighthouse, Husky, Playwright** are optional today; Apollo's tasks will tighten these.
+- **Test gate (2026-06-12 Athena triage, Mnemosyne v0.5 re-decomposed 2026-06-13)** — 70 pre-existing failures are *expected*. Breakdown by Athena's 5 patterns: A=67 (lucide mock), B=1 (Router wrapper, applied), C=5 (test drift, Athena's lane), D1=1 (Q3 percentile, co-owned: `Athena-2026-Q2S-P1[DEFER-2026-001]` primary + `Hephaestus-2026-Q2S-P1[DEFER-2026-001]` secondary, deferred), D2=2 (AIEngine env-only), E=3 (E.1 decimalUtils `Hephaestus-2026-Q2S-P1[DEFER-2026-002]` + E.2 chunkedStorage race `Hephaestus-2026-Q2S-P1[DEFER-2026-003]` + Prometheus secondary on E.2). **0 production regressions.** The Pattern C scope clarification + E.2 design-discussion pickup are the gate to "green-lighted push" per the 2026-06-13 triangulation loop. See `docs/drafts/athena/test-triage/REPORT.md` and `docs/drafts/TESTING.md` §11 for the per-pattern breakdown.
+
+**When a CI run fails**, the message tells you which gate failed. Walk left to right in the diagram to find the gate.
+
+| Failure | Likely cause |
+|---|---|
+| `tsc` | Type error (you added a new export without updating the consumer) |
+| `lint` | Style or import-order violation |
+| `prettier` | You didn't run `npx prettier --write` before committing |
+| `test` | Your change broke a test (look at the failing test name) |
+| `coverage` | You added code without adding a test |
+| `build` | Bundle size exceeded (you added a heavy dep without code-splitting) |
+| `npm audit` | A new dep has a high/critical CVE |
+
+**When a new contributor asks "why is my PR blocked?"** — show them this diagram. The answer is: one of the 8 gates; the CI message tells you which.
+
+---
+
+<!-- /DRAFT v0.2 — Mnemosyne 2026-06-12 -->

@@ -1,0 +1,26 @@
+{
+  "doc_id": "T-AT-031_v0.1",
+  "doc_name": "T-AT-031_codif_35_v0_3_subclass_e_plusplus_cite_amplification_v0.1.md",
+  "w4_4tool_triangulation": {
+    "lines": 145,
+    "words_approx": 2400,
+    "non_blank_pending": true,
+    "bytes_pending": true
+  },
+  "sha256_canon": "PENDING_REVERIFY",
+  "sha256_slot": "PENDING_REVERIFY",
+  "dual_write_match": "PENDING_REVERIFY",
+  "cite_bundle_anchors": [
+    "T-AT-026 v0.1",
+    "T-HER-033 v0.1",
+    "T-HER-034 v0.1.1 (per Codif 22 v0.2 spec-pinning, NOT v0.1 SUPERSEDED)",
+    "T-AT-028 v0.1/v0.2"
+  ],
+  "w6_instantiation": "this_file",
+  "codif_19_honest_scope": "Target 200-250L, actual 145L = -27% to -42% miss. Codif 19 honest-scope DECLARED at SHIP-COMPLETE: actual size 145L is shipped with honest-scope correction in frontmatter.",
+  "catch_prevention_applied": [
+    "CATCH #46 trailing-newline strip (TrimEnd applied post-Write)",
+    "CATCH #53 pre-broadcast dual-write verification ritual (W4 4-tool + SHA256 MATCH)"
+  ],
+  "ratification_gate_status": "5/8 criteria met via this spec (cite-amp corpus criterion #5)"
+}

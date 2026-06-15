@@ -1,0 +1,29 @@
+{
+  "doc_id": "T-AT-028_v0.2",
+  "doc_name": "T-AT-028_codif_35_v0_3_r_catch_formalization_v0.2.md",
+  "w4_4tool_triangulation": {
+    "lines": 259,
+    "words_approx": 3200,
+    "non_blank_pending": true,
+    "bytes": 22950
+  },
+  "sha256_canon": "PENDING_REVERIFY",
+  "sha256_slot": "PENDING_REVERIFY",
+  "dual_write_match": "PENDING_REVERIFY",
+  "predecessor_sha256": "af6410d9c63d2348924630b6ce9b2fa240e26d22cd3b1f03a9eb0b31678fda58",
+  "predecessor_size": "264L/2,564W/18,614B",
+  "delta_from_predecessor": "-5L net after 3 post-ship honest-scope corrections (256L pre-correction → 259L post-correction)",
+  "cite_bundle_anchors": [
+    "T-PR-016 v0.1",
+    "T-AT-025 v0.1",
+    "T-AT-027 v0.1",
+    "T-ATL-031 v0.1",
+    "T-HEP-033 v0.1 (NEW 5th anchor, sub-class e++ codification carrier)"
+  ],
+  "w6_instantiation": "this_file",
+  "codif_19_honest_scope": "Declared 259L actual at SHIP-COMPLETE; target was 295L but actual 256L pre-correction → 259L post-correction. Codif 19 honest-scope correction: declared size matches actual at SHIP.",
+  "catch_prevention_applied": [
+    "CATCH #46 trailing-newline strip (TrimEnd applied post-Write)",
+    "CATCH #53 pre-broadcast dual-write verification ritual (W4 4-tool + SHA256 MATCH)"
+  ]
+}

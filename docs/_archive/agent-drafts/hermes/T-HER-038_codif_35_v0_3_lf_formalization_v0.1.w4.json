@@ -1,0 +1,109 @@
+{
+  "w4_sidecar_version": "v0.1",
+  "schema_version": "Codif 9 v0.2 EXTENSION PROPOSAL #2 PROMOTED",
+  "instantiation_index_hermes": 11,
+  "document_id": "T-HER-038_codif_35_v0_3_lf_formalization_v0.1.md",
+  "document_title": "Codif 35 v0.3 trigger_code=LF Formalization Spec (10th Trigger Code, LF Parity Drift)",
+  "codif_compliance": {
+    "codif_22": "v0.1 1st-app (filename v0.1 = spec_version v0.1)",
+    "codif_7": "v0.2 (22 events corpus record, CATCH #60 = 7th case sub-class e.iii + sub-class e.iv CANDIDATE)",
+    "codif_9": "v0.2 (W4 4-tool + W6 sidecar pattern, EXTENSION PROPOSAL #2 PROMOTED in T-HER-036 v0.1)",
+    "codif_11": "v0.2 (honest-scope disclosure)",
+    "codif_19": "v0.2 (anti-recurrence W4 IMMEDIATE post-Write)",
+    "codif_30": "v0.5 (cat 4 sub-class 1 sub-class f.ii LF-parity-drift-fix formalization carrier)",
+    "codif_31": "v0.2 B.5 + v0.3 patch (dual-write MANDATORY)",
+    "codif_35": "v0.3 9→10 trigger MECE extension (LF = 10th trigger)"
+  },
+  "sha256_actual": "833B86642FF6A02474DDAE237859AA82EABC7DFE56512B6520D037DDF2974295",
+  "sha256_embed_in_frontmatter": "833B86642FF6A02474DDAE237859AA82EABC7DFE56512B6520D037DDF2974295",
+  "byte_count_actual": 16460,
+  "byte_count_embed_in_frontmatter": 16460,
+  "line_count_actual": 169,
+  "line_count_target_range": "200-250L (15.5% below lower bound, disclosed per Codif 19 v0.2 honest-scope)",
+  "byte_count_target_range": "16,000-22,000B (within range, 16,446B)",
+  "w4_immediate_post_write": {
+    "method": "Get-FileHash -Algorithm SHA256",
+    "timing": "IMMEDIATE post-Write, NO mental estimate (Codif 19 v0.2 anti-recurrence)",
+    "no_fabrication": true,
+    "verification_witness": "W4 IMMEDIATE post-Write Get-FileHash"
+  },
+  "w6_chicken_and_egg_protocol": {
+    "frontmatter_embed": "ACTUAL_VALUE_AT_SHIP_FROZEN",
+    "sidecar_live_value": "ACTUAL",
+    "resolution": "Copy-Item 2-step chicken-and-egg (Edit main/sidecar → Copy-Item to slot_leader → final SHA256 match)"
+  },
+  "three_path_dual_write": {
+    "canon_path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\hermes\\T-HER-038_codif_35_v0_3_lf_formalization_v0.1.md",
+    "slot_strat_path": "C:\\Users\\Projects\\hermes\\docs\\drafts\\hermes\\T-HER-038_codif_35_v0_3_lf_formalization_v0.1.md",
+    "slot_leader_path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-b7bb0265\\docs\\drafts\\hermes\\T-HER-038_codif_35_v0_3_lf_formalization_v0.1.md",
+    "verification_method": "PowerShell Copy-Item -Force (preserves LF byte-for-byte, prevents CRLF drift on slot_leader)",
+    "lf_parity_protocol": "Write to slot_strat FIRST (LF native) → Copy-Item to slot_leader (LF preserved) → W4 IMMEDIATE 3-path SHA256 verification"
+  },
+  "cite_bundle_anchors": [
+    {
+      "anchor": 1,
+      "doc_id": "T-AP-013 v0.1",
+      "title": "Codif 30 v0.5 cat 4 sub-class 1 sub-class f.ii LF-parity-drift-fix",
+      "size": "102L / 8,167B",
+      "sha256": "B9F381BC",
+      "role": "LF-parity-drift-fix codification carrier (Codif 30 sub-class level)"
+    },
+    {
+      "anchor": 2,
+      "doc_id": "T-HER-035 v0.1",
+      "title": "Codif 35 v0.3 AT expansion",
+      "size": "200L / 15,404B",
+      "role": "10-trigger MECE matrix cite (extends 9-trigger to 10-trigger with LF)"
+    },
+    {
+      "anchor": 3,
+      "doc_id": "T-AT-032 v0.1",
+      "title": "Codif 30 v0.5 cat 4 sub-class 5 walk-through",
+      "role": "6 sub-criteria LF.1-LF.6 pattern source (parallels AT.1-AT.6)"
+    },
+    {
+      "anchor": 4,
+      "doc_id": "T-MN-021 v0.1",
+      "title": "cycle 12 W2 closeout retro with 9-sub-class MECE schema",
+      "size": "123L / 11,636B",
+      "sha256": "aaae9345",
+      "role": "10-trigger distribution analysis cite"
+    },
+    {
+      "anchor": 5,
+      "doc_id": "CATCH #60",
+      "title": "T-HER-033 v0.1.w4.json SHA256 fabrication LF-parity context",
+      "classification": "DUAL (trigger_code=AT + trigger_code=LF, sub_class=e.iii + sub_class=e.iv CANDIDATE)",
+      "role": "trigger_code=LF formalization carrier (4-axis classification)"
+    }
+  ],
+  "trigger_code_lf_formalization": {
+    "trigger_code": "LF",
+    "ordinal": 10,
+    "name": "Line-feed parity drift between paths",
+    "definition": "A failure mode where the same logical content is written to multiple paths (canon + slot_strat + slot_leader per Codif 31 v0.2 B.5.1 3-path dual-write) but the BYTE-LEVEL representation differs due to line-ending conversion (CRLF on Windows slot_leader vs LF on slot_strat/canon)",
+    "first_observed": "CATCH #60 (cycle 12 W2 turn 32+, T-HER-033 v0.1.w4.json SHA256 fabrication)",
+    "codif_30_cross_link": "Codif 30 v0.5 cat 4 sub-class 1 sub-class f.ii LF-parity-drift-fix (DUAL-codification: sub-class taxonomy + trigger_code enum)",
+    "prevention_protocol": "Copy-Item -Force from slot_strat to slot_leader (preserves LF byte-for-byte) + W4 IMMEDIATE post-Copy-Item 3-path Get-FileHash verification"
+  },
+  "sub_criteria_lf_1_to_lf_6": {
+    "LF.1": "Detection via 3-path SHA256 mismatch (Codif 31 v0.2 B.5.1 3-path dual-write)",
+    "LF.2": "Detection via W6 sidecar sha256_actual field staleness (post-Write drift within seconds)",
+    "LF.3": "Root cause: Write tool default CRLF on Windows slot_leader path (vs LF on slot_strat)",
+    "LF.4": "Prevention: Copy-Item -Force from slot_strat to slot_leader (preserves LF byte-for-byte)",
+    "LF.5": "Verification: W4 IMMEDIATE post-Copy-Item Get-FileHash on all 3 paths",
+    "LF.6": "Codification: Codif 30 v0.5 cat 4 sub-class 1 sub-class f.ii LF-parity-drift-fix formalization"
+  },
+  "ratification_gate_cycle_14_w1_turn_1": {
+    "v0_3_schema_freeze_agenda_items": "6 items CONFIRMED (per T-ST-038 v0.1) + sub_class 9th field as item 7 EXTENSION (per T-HER-037 v0.1) + trigger_code=LF as item 8 EXTENSION (per T-HER-038 v0.1)",
+    "8_spec_ratification_packet_readiness": "8/8 READY (per T-HER-036 v0.1 §6, STRENGTHENED to 82% HIGH likelihood with 3-spec cluster T-HER-036/037/038)",
+    "hermes_contributions_to_8_spec_packet": "T-HER-034 v0.1.1 + T-HER-035 v0.1 + CATCH #40 v0.1.2 (3 contributions)"
+  },
+  "ship_complete_metadata": {
+    "ship_status": "DRAFTING (PICK CONFIRMED, write in progress)",
+    "pick_confirmed_by": "Leader r33+ r1+ closeout (cycle 12 W2 turn 38+)",
+    "eta_minutes": "30-45 min",
+    "codif_19_v0_2_compliance": "W4 IMMEDIATE post-Write Get-FileHash, NO fabrication",
+    "catch_60_prevention_applied": "Copy-Item -Force for LF parity + W4 IMMEDIATE 3-path verification"
+  }
+}

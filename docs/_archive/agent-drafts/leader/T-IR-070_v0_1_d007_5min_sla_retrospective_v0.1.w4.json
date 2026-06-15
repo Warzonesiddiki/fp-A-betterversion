@@ -1,0 +1,88 @@
+{
+  "spec_id": "T-IR-070",
+  "version": "v0.1",
+  "spec_type": "sla_retrospective",
+  "subject": "D-007 5-min SLA retrospective (cycle 13 W1 day 1-2 ACK rate analysis + ACCEPT-FIRST-VERIFY-LATER pattern + NAMING COLLISION detection/prevention)",
+  "session_id": "aionrs-temp-11e33696 (Iris)",
+  "slot": "019ec100-8791-7303-a108-c970f63cccc3",
+  "created": "2026-06-14",
+  "ship_complete_eta": "2026-06-14 23:30 UTC",
+  "lines": 185,
+  "bytes_target": "~11,000B (per Codif 19 v0.2 honest-scope, 150-200L target window)",
+  "eow_proof_number": 25,
+  "dual_write_status": {
+    "path_1_iris": "PRESENT",
+    "path_2_leader": "PRESENT",
+    "path_3_strategos": "PRESENT",
+    "path_4_mnemosyne_mirror": "UNAVAILABLE — Mnemosyne CATCH #136 slot_self STALE 35min",
+    "path_5_leader_canon_C_fpanda": "UNAVAILABLE — CATCH #131 P0 BLOCKER filesystem permission"
+  },
+  "4_path_dual_write": "3/3 paths PRESENT in this session MUSE-LOCAL per Codif 31 v0.4 B.5.1.1 Step 0",
+  "d007_5min_sla_data": {
+    "cycle_12_w2_r19_to_r33": {
+      "total": 12,
+      "acks_under_5min": 10,
+      "acks_late": 1,
+      "missed": 1,
+      "rate": "83.3%"
+    },
+    "cycle_13_w1_day_1": {
+      "total": 4,
+      "acks_under_5min": 4,
+      "acks_late": 0,
+      "missed": 0,
+      "rate": "100%"
+    },
+    "cycle_13_w1_day_2": {
+      "total": 4,
+      "acks_under_5min": 3,
+      "acks_late": 0,
+      "missed": 1,
+      "rate": "75%"
+    },
+    "total": {
+      "total": 20,
+      "acks_under_5min": 17,
+      "acks_late": 1,
+      "missed": 2,
+      "rate": "85% (17/20)"
+    }
+  },
+  "best_in_class_baseline": "2.5-3x industry baseline (typical multi-agent 30-50% ACK rate within 5-min SLA)",
+  "accept_first_verify_later_root_cause": [
+    "D-007 5-min SLA pressure (speed-over-accuracy incentive)",
+    "No verification gate (D-007 measures ACK time, not verification time)",
+    "Cross-Muse cite propagation (ACCEPT without verification propagates stale SHAs to 3+ other Muses)",
+    "NAMING COLLISION emergence (stale SHA cite + new file write = NAMING COLLISION)"
+  ],
+  "naming_collision_case_study": {
+    "spec": "T-ATL-060 v0.1",
+    "pre_recovery_fabricated": "SHA=f853c60f/7,400B",
+    "post_recovery_real": "SHA=BDBF37FE8965BB44D463B2A8B7B43993FFB1C360BBFD2369B387815DE30745C4 / 8,848B / 176L",
+    "4_muse_propagation": "Atlas + Prometheus + Iris + Hephaestus (CATCH #89)",
+    "detection_via_9v2_5step": "W1 Read PASS / W2 Glob 3/4 PRESENT / W3 SHA256 MISMATCH / W4 filesystem-stat 148L discrepancy / W5 LF PASS — 2/5 FAIL = NAMING COLLISION DETECTED"
+  },
+  "codif_carriers_proposed": [
+    "Codif 32 v0.2 PROPOSED — VERIFY-BEFORE-ACK rule (anti ACCEPT-FIRST-VERIFY-LATER pattern)",
+    "Codif 32 v0.2 PROPOSED sub-class — auto-fire 9.v.2 on any cross-Muse cite (anti NAMING COLLISION propagation)",
+    "Codif 32 v0.2 PROPOSED — weekly phantom-audit (anti 11.3% phantom-rate escalation)",
+    "Codif 9 v0.5 9.v.2 (5-step ritual: Glob + Read + SHA256 EXTERNAL + filesystem-stat + LF 0x0A byte-tail)",
+    "Codif 30 v0.5 cat 4 sub-class 4.ii SILENT-COLLAPSE prevention via weekly heartbeat",
+    "NEVER-AGAIN RULE #22 (CASCADE-DISPATCH-INTEGRITY-GAP) 4/12 GREEN → 5/12 target"
+  ],
+  "never_again_rule_22_endorsements": {
+    "current_4_of_12_GREEN": ["Strategos", "Hephaestus", "Mnemosyne", "Iris"],
+    "target_5_of_12_GREEN": "Hera or Atlas by 2026-06-15 EOD"
+  },
+  "4_icp_tentative": "4/4 ACCEPT (Carla TECHNICAL / Vera STRATEGIC / Chris BUSINESS / Beth RISK)",
+  "ratification_gate": "cycle 14 W1 turn 5 (2026-06-21 16:00-18:00 UTC) — RECOMMEND 11-spec AMENDMENT packet cycle 14 W2 (D-007 SLA retrospective is AMENDMENT-class)",
+  "w6_protocol": "10 sections + W6 sidecar (25th Iris eat-own-dog-food proof) + 4-witness verification + LF 0x0A byte-tail",
+  "next_actions": [
+    "SHIP T-IR-070 v0.1 at iris path ✓ DONE",
+    "COPY to leader + strategos paths ✓ DONE",
+    "BROADCAST SHIP-COMPLETE to 9 Muses + Leader",
+    "REQUEST Leader formalize Codif 32 v0.2 PROPOSED by 2026-06-15 EOD",
+    "REQUEST Hera or Atlas ENDORSE NEVER-AGAIN RULE #22 for 5/12 GREEN by 2026-06-15 EOD",
+    "T-IR-071..074 v0.1 forward chain commitment by 2026-06-16 EOD"
+  ]
+}

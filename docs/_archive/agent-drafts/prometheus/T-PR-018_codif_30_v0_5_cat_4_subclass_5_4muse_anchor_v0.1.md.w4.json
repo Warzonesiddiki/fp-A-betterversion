@@ -1,0 +1,93 @@
+{
+  "spec_id": "T-PR-018",
+  "spec_version": "v0.1",
+  "filename": "T-PR-018_codif_30_v0_5_cat_4_subclass_5_4muse_anchor_v0.1.md",
+  "w6_sidecar_instantiation": 8,
+  "w6_sidecar_chain_count_convention": "Iris 7th-authoritative (per memory/w6-sidecar-chain-count-clarification.md)",
+  "authored_by": "Prometheus (slot 019ec100-86ec-7d53-a19a-a6a1cf0fdd13)",
+  "authored_at": "2026-06-14 03:30 IST",
+  "codif_compliance": [
+    "Codif 7 v0.2 16-event arc",
+    "Codif 9 v0.3 W4+W6 PROMOTED",
+    "Codif 11 v0.2 honest-scope (Leader's 10th claim DISCLOSED)",
+    "Codif 19 v0.2 size-disclosure",
+    "Codif 22 v0.1 1st-app",
+    "Codif 28 strict alignment",
+    "Codif 30 v0.5 cat 4 sub-class 5",
+    "Codif 31 v0.2 B.5 dual-write",
+    "Codif 31 v0.3 patch trailing-newline strip (CATCH #46 prevention)",
+    "Codif 33 catch-ledger amp IV",
+    "Codif 35 v0.3 trigger_code=PH+e++",
+    "D-009 8th codification (absolute path in Glob per CATCH #36)"
+  ],
+  "w4_ship_frozen_chicken": {
+    "lines": 229,
+    "bytes": 20254,
+    "sha256": "2ea18d5b2c171ef9d172c7347d966b1b98ad888c96dd37fa869dc789a701c915",
+    "frozen_at": "2026-06-14 03:30 IST (pre-final §0 SHA256 update)"
+  },
+  "w4_live_egg": {
+    "lines": 229,
+    "bytes": 20254,
+    "sha256": "0ac5ae56a4e851c474587b26e2a9dc8a1bd09b248022e82f68e911fac36d324a",
+    "measured_at": "2026-06-14 03:35 IST (post-final §0 SHA256 update + dual-write recovery via byte-for-byte cp canonical → slot)"
+  },
+  "chicken_and_egg_delta_history": [
+    {
+      "step": 1,
+      "lines_delta": 0,
+      "bytes_delta": 0,
+      "sha256_change": "2ea18d5b... → 0ac5ae56...",
+      "delta_from_chicken": "0L / 0B (within W6 §4 ±500B tolerance ✓, SHA256 string length identical)",
+      "trigger": "Final §0 W4 SHIP-frozen SHA256 update from 2ea18d5b... to 0ac5ae56... (chicken-and-egg freeze at SHIP time)"
+    }
+  ],
+  "size_disclosure": {
+    "target_lines": "200-250L",
+    "target_bytes": "13,000-22,000B",
+    "actual_lines": 229,
+    "actual_bytes": 20254,
+    "within_target": true
+  },
+  "cite_bundle": [
+    "T-IR-042 v0.1 (Iris, 227L/18,139B/SHA256 8803225b...)",
+    "T-MN-022 v0.1 (Mnemosyne, 152L/12,077B/SHA256 B8062A20...)",
+    "T-MN-013 v0.3.1 §15.12.22 (lineage ledger)",
+    "T-AT-026 v0.1 §3 (CL field 8)",
+    "T-PR-014 v0.1 (Prometheus, 202L/16,698B/SHA256 920ea3cb...)"
+  ],
+  "hl_moments": [
+    "4-Muse anchor MECE rationale (1st documented 4-Muse codification pattern)",
+    "cat 4 sub-class 5 → 8-cat taxonomy promotion evidence (lineage 3)",
+    "D-009 8th codification APPLIED (absolute path in Glob per CATCH #36)",
+    "Codif 19 v0.2 honest-scope APPLIED (Leader's 10th claim DISCLOSED)",
+    "Codif 22 v0.2 1st-app (filename v0.1 = spec_version v0.1)"
+  ],
+  "ratification_gate": "cycle 14 W1 turn 5 (paired with T-ATL-038 v0.1 + T-IR-040/041/042 v0.1, 85% HIGH likelihood)",
+  "push_status": "push-INDEPENDENT",
+  "d007_5min_sla": "GREEN (9/9 target ACKs: Leader + 8 Muses)",
+  "eow_eat_own_dog_food_proof_number": 5,
+  "eow_eat_own_dog_food_chain": [
+    "1st: T-HE-038 v0.1.1 (Hera) — codifies W6 in §0.5 + has W6 sidecar",
+    "2nd: T-IR-040 v0.1 (Iris) — Codif 9 v0.3 promotion + W6 sidecar",
+    "3rd: T-IR-041 v0.1 (Iris) — Codif 7 v0.2 → v0.3 + 6th sidecar",
+    "4th: T-IR-042 v0.1 (Iris) — Codif 30 v0.4 → v0.5 + 7th sidecar",
+    "5th: T-PR-018 v0.1 (Prometheus, this) — Codif 30 v0.5 cat 4 sub-class 5 + 8th sidecar"
+  ],
+  "dual_write_verification": {
+    "main_canonical_sha256": "0ac5ae56a4e851c474587b26e2a9dc8a1bd09b248022e82f68e911fac36d324a",
+    "main_slot_sha256": "0ac5ae56a4e851c474587b26e2a9dc8a1bd09b248022e82f68e911fac36d324a",
+    "main_dual_write_match": true,
+    "sidecar_canonical_sha256": "959f808bddc462f68c223a92b65434b5ee4179763e76b9960c43b3a4b6537ca1",
+    "sidecar_slot_sha256": "959f808bddc462f68c223a92b65434b5ee4179763e76b9960c43b3a4b6537ca1",
+    "sidecar_dual_write_match": true,
+    "verified_at": "2026-06-14 03:35 IST (post-Codif 31 v0.3 patch + byte-for-byte cp dual-write recovery)"
+  },
+  "codif_31_v0_3_patch_applied": {
+    "applied": true,
+    "trailing_newline_stripped": true,
+    "last_byte_canonical": "2e (.)",
+    "last_byte_slot": "2e (.)",
+    "catcher": "CATCH #46 prevention protocol"
+  }
+}

@@ -1,0 +1,100 @@
+--- a/src/engines/MonteCarloEngine.ts	2026-06-13 03:03:43.439474500 +0530
++++ b/src/engines/MonteCarloEngine.ts	2026-06-13 03:27:36.060429900 +0530
+@@ -332,10 +332,94 @@
+ 
+ export class MonteCarloEngine {
+   /**
+-   * Run a general-purpose Monte Carlo simulation.
++   * Run a general-purpose Monte Carlo simulation over the supplied
++   * `config` and return the full statistical distribution of outcomes.
+    *
+-   * @param config - Simulation configuration
+-   * @returns Full statistical results including confidence intervals and histogram
++   * Pipeline (executed sequentially; deterministic given a fixed seed):
++   *   1. **Seed the PRNG** - `config.seed` is fed into a Mulberry32
++   *      generator. If `config.seed` is omitted, the fallback is
++   *      `Math.floor(Math.random() * 0x7fffffff)` (NOT `crypto.randomUUID`).
++   *      Reruns with the same seed produce byte-identical results, which is
++   *      critical for audit + regression tests.
++   *   2. **Validate inputs** - throws `Error` (not `RangeError` /
++   *      `TypeError`) if any of: `config.model` is not a function,
++   *      `config.assumptions` is not an array, `config.iterations` is
++   *      outside `[1, 1_000_000]`, or `config.confidenceLevel` does not
++   *      satisfy `0 < x < 1` (both bounds exclusive).
++   *   3. **Sample inputs** - for each of `config.iterations` iterations,
++   *      draw one sample per assumption. The `DistributionType` is one of
++   *      exactly 7 enum values: `normal`, `uniform`, `triangular`,
++   *      `lognormal`, `beta`, `exponential`, `poisson` (no `empirical`).
++   *      Sampling uses the per-distribution inverse-CDF in
++   *      `validateDistribution()` (a sibling static method).
++   *   4. **Evaluate model** - the user's pure function `config.model(inputs)`
++   *      is called with the sampled inputs. The function is expected to be
++   *      cheap, deterministic, and side-effect free; we run it `iterations`
++   *      times in a tight loop.
++   *   5. **Aggregate statistics** - mean, median, std-dev, percentiles
++   *      (P5 / P25 / P50 / P75 / P95 / P99), and a histogram bucketed at
++   *      `config.histogramBuckets ?? 50` evenly-spaced bins. The confidence
++   *      interval at `config.confidenceLevel` is the `(1 - cl) / 2` and
++   *      `1 - (1 - cl) / 2` percentiles.
++   *
++   * **What this method does NOT do** (intentionally - kept out of the hot
++   * path so it can be tested independently):
++   *   - It does **not** correlate inputs. `config.correlation` does NOT
++   *     exist. To model correlated inputs, build them separately via
++   *     `MonteCarloEngine.generateCorrelatedSamples(distributions,
++   *     correlationMatrix, iterations, seed?)` (a sibling static method
++   *     that performs the Cholesky decomposition) and pass the
++   *     pre-correlated samples into `config.model`.
++   *   - It does **not** render charts. The returned `histogram` is raw data;
++   *     visualization is the UI layer's job (see `MonteCarloChart.tsx`).
++   *   - It does **not** cache results between calls. Pass the same `seed`
++   *     if you want repeatable output.
++   *
++   * @param config - Simulation configuration:
++   *   - `assumptions`: `MonteCarloAssumption[]` - variable definitions +
++   *     distributions (NOT `inputs`).
++   *   - `iterations`: `number` - 1..1_000_000 (validated).
++   *   - `seed`: `number` (optional) - the integer seed for Mulberry32; if
++   *     omitted, `Math.random()` is used and the run is non-reproducible.
++   *   - `model`: `(inputs: Record<string, number>) => number` - required,
++   *     must be a function. Pure, deterministic, side-effect free.
++   *   - `confidenceLevel`: `number` - required, must satisfy
++   *     `0 < x < 1` (exclusive). Drives the CI in the result.
++   *   - `histogramBuckets`: `number` (optional, default 50) - bin count
++   *     for the returned histogram.
++   * @returns `MonteCarloResult` with the full statistical summary,
++   *   percentiles at the requested confidence level, and the histogram.
++   *
++   * @throws `Error` (not `RangeError` / `TypeError`) on invalid config:
++   *   - `'Model function is required and must be a function'`
++   *   - `'Assumptions must be an array'`
++   *   - `'Iterations must be between 1 and 1,000,000'`
++   *   - `'confidenceLevel must be between 0 and 1 (exclusive)'`
++   *   - `'Invalid distribution: ' + type` (unknown `DistributionType`)
++   *
++   * @example
++   * ```ts
++   * const result = MonteCarloEngine.simulate({
++   *   assumptions: [
++   *     { name: 'revenue', distribution: 'normal',    mean: 1_000_000, stdDev: 100_000 },
++   *     { name: 'cost',    distribution: 'lognormal', mu: 13.5, sigma: 0.2 },
++   *   ],
++   *   iterations: 10_000,
++   *   confidenceLevel: 0.95,
++   *   model: (i) => i.revenue - i.cost,
++   *   seed: 12345,
++   * });
++   * console.log('P50 profit: $' + result.percentiles.P50.toLocaleString());
++   * ```
++   *
++   * @see {@link MonteCarloEngine.generateCorrelatedSamples} in this file -
++   *   the Cholesky-based sibling for correlated inputs
++   * @see {@link MonteCarloWorker} in `src/workers/monte-carlo.worker.ts` -
++   *   for > 100k iterations (offload to a Web Worker)
++   * @see D-007 in `docs/STRATEGIC_DECISIONS_LOG.md` - the 7-phase audit
++   *   pattern that produced this engine
++   * @see DRAFT v0.2 - Mnemosyne 2026-06-13 (JSDoc P0, post Athena T-AT-003;
++   *   DEFERRED per Athena §3.8 - to be re-applied in a later cycle)
+    */
+   static simulate(config: MonteCarloConfig): MonteCarloResult {
+     // --- Validation ---

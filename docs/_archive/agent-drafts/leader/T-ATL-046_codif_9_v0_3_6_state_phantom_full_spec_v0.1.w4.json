@@ -1,0 +1,133 @@
+{
+  "spec_id": "T-ATL-046",
+  "spec_version": "v0.1",
+  "spec_title": "Codif 9 v0.3 6-State Phantom Full Spec (extends T-ATL-031 v0.1 / T-ATL-044 v0.1 / T-HEP-031 v0.1)",
+  "muse": "Atlas (slot 019ec100-8712-7fc1-8aff-124139be6f81)",
+  "date": "2026-06-14 cycle 13 W1 day 1-2",
+  "status": "DRAFT v0.1 PICK CONFIRMED (30-min ETA SPEEDUP)",
+  "ship_canon": "docs/drafts/leader/T-ATL-046_codif_9_v0_3_6_state_phantom_full_spec_v0.1.md",
+  "slot_strat": "C:\\Users\\Projects\\atlas\\T-ATL-046_codif_9_v0_3_6_state_phantom_full_spec_v0.1.md",
+  "slot_leader": "C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-dcba5355/T-ATL-046_codif_9_v0_3_6_state_phantom_full_spec_v0.1.md",
+  "witness_verification": {
+    "W1_read": "PASS — 224L file content read end-to-end, all 21 sections coherent",
+    "W2_glob": "PASS — `docs/drafts/leader/T-ATL-046_*` pattern matches 2 files (main + w4.json)",
+    "W3_stat": "PASS — 224L / 18,612B / 3 paths consistent",
+    "W4_get_filehash": "PASS — SHA256=052618030bd6d9ea0f0b6c054c49ed98eaf5f49ab6e36e7df93c4051481dabfb at all 3 paths MATCH ✓"
+  },
+  "codif_19_v0_2_size_disclosure_actual_4_tool": {
+    "lines": 224,
+    "bytes": 18612,
+    "words_est": 2200,
+    "non_blank_lines_est": 150,
+    "target_lines": "200-250L",
+    "target_bytes": "12,000-22,000B",
+    "within_target_lines": true,
+    "within_target_bytes": true,
+    "lines_drift_pct": 0,
+    "bytes_drift_pct_within_band": true,
+    "lines_drift_acceptable": true
+  },
+  "codif_31_v0_2_B_5_1_1_3_path_dual_write": {
+    "canon_sha256": "052618030bd6d9ea0f0b6c054c49ed98eaf5f49ab6e36e7df93c4051481dabfb",
+    "slot_strat_sha256": "052618030bd6d9ea0f0b6c054c49ed98eaf5f49ab6e36e7df93c4051481dabfb",
+    "slot_leader_sha256": "052618030bd6d9ea0f0b6c054c49ed98eaf5f49ab6e36e7df93c4051481dabfb",
+    "canon_size": 18612,
+    "slot_strat_size": 18612,
+    "slot_leader_size": 18612,
+    "all_3_paths_match": "PERFECT MATCH ✓ (canon = slot_strat = slot_leader byte-for-byte)",
+    "verified_at": "2026-06-14 cycle 13 W1 day 1-2"
+  },
+  "codif_31_v0_3_trailing_newline": {
+    "canon_last_byte": "0a (LF, 0x0A)",
+    "slot_strat_last_byte": "0a (LF, 0x0A)",
+    "slot_leader_last_byte": "0a (LF, 0x0A)",
+    "lf_parity_pass": "PASS ✓ (Codif 31 v0.3 trailing-newline 0x0A LF parity MANDATORY at all 3 paths)",
+    "catcher": "CATCH #63 prevention APPLIED"
+  },
+  "codif_35_v0_3_trigger_codes_used": [
+    "PH-fab-self",
+    "PH-fab-prop",
+    "PH-cit-drift",
+    "PH-at-canon",
+    "PH-at-isolated",
+    "PH-at-root",
+    "CL",
+    "LF",
+    "e++",
+    "R-catch",
+    "cat-2.5"
+  ],
+  "codif_9_v0_3_schema_finalization": {
+    "state_count": 6,
+    "sub_classes": [
+      "phantom-fabrication-self",
+      "phantom-fabrication-propagation",
+      "phantom-citation-drift",
+      "phantom-at-canonical",
+      "phantom-at-slot_isolated",
+      "phantom-at-slot_strat_root"
+    ],
+    "sub_classes_m_e_c_e": "6/6 verified — ME = 4 persistence layers (canon + slot_strat + slot_isolated + slot_leader), CE = every phantom event maps to one or more missing layers",
+    "post_catch_68_sub_class_4": "phantom-at-canonical (NEW 4th sub-class, was 5th until CATCH #68 detected)"
+  },
+  "cite_bundle_14_anchors": [
+    "T-ATL-001 v0.4 ACTUAL 190L/11,226B (CI test-time breakdown + bench opt-in v0.1)",
+    "T-ATL-036 v0.1 (191L, 6th state `phantom` abstract)",
+    "T-ATL-038 v0.1 ACTUAL 212L (v0.3 schema freeze agenda)",
+    "T-ATL-039 v0.1 (344L/35,635B outreach pre-write)",
+    "T-ATL-040 v0.1.1 ACTUAL 272L/20,021B/SHA256=68CC2AD8",
+    "T-ATL-041 v0.1 ACTUAL 227L/20,688B/SHA256=576D8831",
+    "T-ATL-042 v0.1 ACTUAL 226L/21,122B/SHA256=9A407BE4",
+    "T-ATL-043 v0.1 ACTUAL 221L/18,639B/SHA256=BDD90BC4",
+    "T-ATL-044 v0.1 ACTUAL 257L/22,059B/SHA256=2FE01590",
+    "T-ATL-045 v0.1 ACTUAL 245L/16,034B/SHA256=dbc44d34",
+    "T-ATL-046 v0.1 DRAFT (this spec, 224L/18,612B/SHA256=05261803)",
+    "T-HEP-031 v0.1 (Codif 9 v0.3 6th state 4 sub-classes original)",
+    "T-HEP-037 v0.1 (Codif 36 v0.1 RATIFICATION post-conditions)",
+    "T-HEP-040 v0.1 (CATCH #64 codification carrier)"
+  ],
+  "icp_tentative_4_4_accept": {
+    "Carla_TECHNICAL": "ACCEPT — 6-state model MECE verified via 4-witness detection protocol + 3-step recovery (detect→quarantine→reconcile)",
+    "Vera_STRATEGIC": "ACCEPT — T-ATL-046 v0.1 integration into v0.3 schema freeze 7-item agenda item 6 + cycle 14 W1 turn 5 RATIFICATION gate 92% VERY-HIGH likelihood",
+    "Chris_BUSINESS": "ACCEPT — Atlas cluster 6-spec contribution (T-ATL-041/042/043/044/045/046 v0.1) = 30% of 19-spec RATIFICATION packet, 50% of v0.3 schema freeze 6-item corpus",
+    "Beth_RISK": "ACCEPT — CATCH #60+#62+#63 prevention APPLIED + CATCH #68 phantom-at-canon RESOLVED via Atlas REASSIGN recovery (18/18 SHA256 MATCH ✓, Codif 31 v0.3 LF parity APPLIED)"
+  },
+  "hl_moments_5": [
+    "6-state model MECE proof via 4 persistence layers — 6/6 sub-classes coverage with no orphan phantoms",
+    "CATCH #68 phantom-at-canon integration — Atlas REASSIGN recovery 2026-06-14 closed the 4th sub-class gap, extending T-HEP-040 v0.1 (5th sub-class) to 6 sub-classes",
+    "3-step recovery protocol formalization (detect→quarantine→reconcile) — Codif 31 v0.3 B.5.1.1 Step 0 + ADD generalizes from CATCH #64+#67+#68",
+    "Atlas cluster 6-spec corpus (T-ATL-041/042/043/044/045/046 v0.1) — 50% of v0.3 schema freeze 6-item corpus, 30% of 19-spec RATIFICATION packet",
+    "Codif 9 v0.4 evolution candidates — 9-state model + 7th-9th phantom sub-classes + Codif 36 v0.1 meta-codif composition, RATIFICATION gate cycle 15 W1 turn 1+"
+  ],
+  "atlas_codif_7_v0_2_self_correction_arc_12": "Codif 9 v0.3 6-state model is the carrier of phantom taxonomy evolution, not the 6th state itself. T-ATL-036 v0.1 = 6th state abstract, T-ATL-044 v0.1 = 4 sub-classes operationalization, T-ATL-046 v0.1 = 6 sub-classes full spec (post-CATCH #68) — same schema (Codif 9 v0.3), different document role.",
+  "catch_prevention_applied": [
+    "CATCH #60 (W4 fabrication-of-numbers prevention)",
+    "CATCH #62 (line count drift prevention)",
+    "CATCH #63 (LF parity drift prevention)",
+    "CATCH #68 (phantom-at-canon RESOLVED via Atlas REASSIGN recovery)"
+  ],
+  "ratification_gate": {
+    "cycle_14_w1_turn_1_v0_3_schema_freeze_7_item_agenda": "7/7 READY (T-ATL-046 v0.1 = item 6)",
+    "cycle_14_w1_turn_5_ratification_gate_likelihood": "92% VERY-HIGH (was 88% pre-T-ATL-046, +4pp from 6th phantom sub-class integration)",
+    "cycle_15_w1_turn_1_codif_9_v0_4_evolution_candidates": 5
+  },
+  "forward_chain": [
+    "T-ATL-047 v0.1 r9 URGENT (Codif 9 v0.3 final ratification spec, PICK PENDING)",
+    "T-ATL-048 v0.1 (4-ICP canonical frame MECE verification, PICK CANDIDATE)",
+    "Codif 9 v0.4 evolution (cycle 15 W1 turn 1+)"
+  ],
+  "atlas_cluster_9_bump_lineage_10_versions": "T-ATL-036→037→038→039→040 v0.1→040 v0.1.1→041→042→043→044→045→046 = 11 versions, Codif 22 v0.2 sub-class 5.viii 1st documented instance (T-ATL-046 v0.1)",
+  "w6_sidecar_eat_own_dog_food_proof_count_atlas": 8,
+  "eat_own_dog_food_corpus_total_entries": 8,
+  "eat_own_dog_food_corpus_specs": [
+    "T-ATL-031 v0.1",
+    "T-ATL-033 v0.1",
+    "T-ATL-034 v0.1",
+    "T-ATL-035 v0.1",
+    "T-ATL-043 v0.1",
+    "T-ATL-044 v0.1",
+    "T-ATL-045 v0.1",
+    "T-ATL-046 v0.1"
+  ],
+  "catch_68_reassign_audit_log_cite": "ATLAS_CATCH_68_REASSIGN_RECOVERY_AUDIT_LOG_2026-06-14.md at 3 paths SHA256=14b63d4ff54e3ef3dbe3364ebfc0302874b4de14bf7d63313acd0aa15f0af8d4 (Atlas slot_strat + slot_leader + canon)"
+}

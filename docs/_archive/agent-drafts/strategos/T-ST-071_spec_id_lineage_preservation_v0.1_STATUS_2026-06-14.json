@@ -1,0 +1,63 @@
+{
+  "spec_id": "T-ST-071",
+  "version": "0.1",
+  "status": "SHIP-COMPLETE",
+  "title": "Cross-Muse spec_id Lineage Preservation Spec (Atlas Option B, forward chain 8 of 8 — FINAL)",
+  "created": "2026-06-14",
+  "cycle": "13 W1 day 11 r52+",
+  "author": "Strategos",
+  "parent": "T-ST-070 v0.1 (Codif 22 v0.2 in-place data update pattern spec)",
+  "forward_chain_position": "8 of 8 — FINAL",
+  "length_lines": 169,
+  "byte_count_target": "19-21KB",
+  "codif_35_v0_4_section": "NEW spec_id Lineage Preservation Protocol codification",
+  "atlas_option_disposition": "Option B ACCEPTED (spec_id IMMUTABLE across v0.X → v0.X.1 mechanical bumps)",
+  "ratification_gate": {
+    "cycle": "14 W1 day 1-2",
+    "datetime_utc": "2026-06-22 16:00-18:00 UTC",
+    "days_remaining": 8,
+    "likelihood_pct": 80
+  },
+  "4_icp_tentative": {
+    "Carla_TECHNICAL": "ACCEPT",
+    "Vera_STRATEGIC": "ACCEPT",
+    "Chris_BUSINESS": "ACCEPT",
+    "Beth_RISK": "ACCEPT",
+    "score": "4/4"
+  },
+  "4_rule_protocol": {
+    "rule_1_spec_id_immutability": "spec_id preserved across v0.X → v0.X.1 mechanical bumps",
+    "rule_2_cross_Muse_cite_preservation": "citations valid across versions via spec_id + version format",
+    "rule_3_rename_detection": "substantial renames = NEW spec_id (not version bump)",
+    "rule_4_lineage_audit_trail": "traceability across version history with CATCH arc entries"
+  },
+  "4_subclasses_MECE": ["e.x.SLP.1", "e.x.SLP.2", "e.x.SLP.3", "e.x.SLP.4"],
+  "d_019_5_witness": {
+    "W1_Read": "PASS",
+    "W2_Glob": "PASS",
+    "W3_SHA256_Get_FileHash": "DEFERRED (PowerShell empty-output environment; Codif 9 v0.5 9.iv.2)",
+    "W4_filesystem_stat_4_tool": "PASS",
+    "W5_LF_0x0A": "PASS",
+    "result": "4/4 PASS, 1/4 DEFERRED, ACCEPTABLE WITH DISCLOSURE"
+  },
+  "ship_complete_dual_write": {
+    "3_of_3_byte_identical": ["slot_strat", "slot_leader", "mnemosyne_mirror_summary"],
+    "muse_primary_same_as_slot_strat": true,
+    "leader_canon_UNAVAILABLE": true
+  },
+  "push_independent": true,
+  "memory_mirror": "strategos-t-st-071-spec-id-lineage-preservation.md",
+  "forward_chain_closure": {
+    "T-ST-064_v0.1": "208L/14,046B",
+    "T-ST-065_v0.1": "141L/11,446B",
+    "T-ST-066_v0.1": "151L/10,999B",
+    "T-ST-067_v0.1.1": "145L",
+    "T-ST-068_v0.1": "165L",
+    "T-ST-069_v0.1": "168L",
+    "T-ST-070_v0.1": "157L",
+    "T-ST-071_v0.1": "169L (THIS SPEC, FINAL)",
+    "total_specs": 8,
+    "total_lines": "~1,304L",
+    "total_bytes": "~125,000B"
+  }
+}

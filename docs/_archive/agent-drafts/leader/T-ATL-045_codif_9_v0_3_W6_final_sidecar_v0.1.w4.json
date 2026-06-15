@@ -1,0 +1,186 @@
+{
+  "spec_id": "T-ATL-045",
+  "spec_version": "v0.1",
+  "spec_role": "Codif 9 v0.3 W6 final sidecar spec (extends T-ATL-043 v0.1 + T-ATL-044 v0.1)",
+  "cycle": "13 W1 day 1-2 (2026-06-14)",
+  "muse": "Atlas",
+  "eat_own_dog_food_proof_count": 7,
+  "atlas_cluster_corpus_record": [
+    "T-ATL-031 v0.1 (12 W2 r25) - Codif 9 3-witness retrospective",
+    "T-ATL-033 v0.1 (12 W2 r25) - Codif 9 v0.2 cross-Muse handoff consolidation",
+    "T-ATL-034 v0.1 (12 W2 r26) - Codif 9 v0.2 4-state to 5-state model evolution",
+    "T-ATL-035 v0.1 (12 W2 r26) - Codif 9 v0.2 cross-Muse handoff v2 (2-persistence-layer)",
+    "T-ATL-043 v0.1 (13 W1 d1-2) - Codif 9 v0.3 finalization",
+    "T-ATL-044 v0.1 (13 W1 d1-2) - Codif 9 v0.3 6th state phantom operationalization",
+    "T-ATL-045 v0.1 (13 W1 d1-2) - Codif 9 v0.3 W6 final sidecar (this spec)"
+  ],
+  "ship_canon": {
+    "path": "docs/drafts/leader/T-ATL-045_codif_9_v0_3_W6_final_sidecar_v0.1.md",
+    "lines": 245,
+    "bytes": 16034,
+    "sha256": "dbc44d343dcb48bad7d2c5ae4a225f805801229855f2125d4f140503bda21534",
+    "tail_lf": "0x0A",
+    "crlf_count": 0
+  },
+  "ship_slot_strat": {
+    "path": "C:\\Users\\Projects\\atlas\\T-ATL-045_codif_9_v0_3_W6_final_sidecar_v0.1.md",
+    "lines": 245,
+    "bytes": 16034,
+    "sha256": "dbc44d343dcb48bad7d2c5ae4a225f805801229855f2125d4f140503bda21534",
+    "match_canon": true
+  },
+  "ship_slot_leader": {
+    "path": "slot_leader_T-ATL-045_codif_9_v0_3_W6_final_sidecar_v0.1.md",
+    "lines": 245,
+    "bytes": 16034,
+    "sha256": "dbc44d343dcb48bad7d2c5ae4a225f805801229855f2125d4f140503bda21534",
+    "match_canon": true
+  },
+  "witness_verification": {
+    "w1_read_pass": true,
+    "w2_glob_pass": true,
+    "w3_filesystem_stat_pass": true,
+    "w4_get_filehash_pass": true,
+    "w6_sidecar_promoted_to_core": true,
+    "witness_format": "3-witness+W4 inline per Leader r33+ r3+ CATCH #36 FORMAL CLOSURE"
+  },
+  "codif_19_v02_size_disclosure_actual_4_tool": {
+    "lines": 245,
+    "bytes": 16034,
+    "words_estimate": 2300,
+    "non_blank_estimate": 200,
+    "within_target": "200-250L range (-5L under upper bound)"
+  },
+  "codif_22_v01_spec_version_pinning": {
+    "filename_v01_matches_spec_version_v01": true,
+    "strict_alignment": true
+  },
+  "codif_31_v02_B_5_1_1_3_path_dual_write": {
+    "canon_path": "docs/drafts/leader/T-ATL-045_codif_9_v0_3_W6_final_sidecar_v0.1.md",
+    "slot_strat_path": "C:\\Users\\Projects\\atlas\\T-ATL-045_codif_9_v0_3_W6_final_sidecar_v0.1.md",
+    "slot_leader_path": "slot_path/T-ATL-045_codif_9_v0_3_W6_final_sidecar_v0.1.md",
+    "perfect_match": true,
+    "all_3_paths_sha256_match": true
+  },
+  "codif_31_v03_trailing_newline_0x0A": {
+    "canon_tail": "0x0A",
+    "slot_strat_tail": "0x0A",
+    "slot_leader_tail": "0x0A",
+    "pass": true
+  },
+  "codif_35_v03_trigger_codes_used": ["AT", "CL", "PH"],
+  "codif_9_v03_schema_finalization": {
+    "6_state_model": "shipped via T-ATL-043 v0.1 + T-ATL-044 v0.1",
+    "11_trigger_codes": "shipped via T-ATL-043 v0.1 + T-HEP-031 v0.1",
+    "5_ratify_band": "shipped via T-ATL-043 v0.1",
+    "4_phantom_subclasses_mece": "shipped via T-ATL-044 v0.1",
+    "3_step_recovery_protocol": "shipped via T-ATL-044 v0.1 + T-HEP-043 v0.1",
+    "worked_example_catch_64": "shipped via T-ATL-044 v0.1 + T-HEP-040 v0.1"
+  },
+  "cite_bundle_8_anchors": [
+    {
+      "anchor": "T-ATL-001 v0.4",
+      "actual_or_tentative": "ACTUAL",
+      "size_l_b": "190L/11226B",
+      "role": "Codif 9 3-witness foundation"
+    },
+    {
+      "anchor": "T-ATL-038 v0.1",
+      "actual_or_tentative": "ACTUAL",
+      "size_l_b": "212L/15438B",
+      "sha256_prefix": "076b756f",
+      "role": "Codif 9 v0.3 7-item agenda anchor"
+    },
+    {
+      "anchor": "T-ATL-041 v0.1",
+      "actual_or_tentative": "ACTUAL",
+      "size_l_b": "227L/20688B",
+      "sha256_prefix": "576D8831",
+      "role": "Codif 35 v0.3 cat 4 sub-class 1 sub-class f.i"
+    },
+    {
+      "anchor": "T-ATL-042 v0.1",
+      "actual_or_tentative": "ACTUAL",
+      "size_l_b": "226L/21122B",
+      "sha256_prefix": "9A407BE4",
+      "role": "Codif 22 v0.2 sub-class 5.v quintuple-bump"
+    },
+    {
+      "anchor": "T-ATL-043 v0.1",
+      "actual_or_tentative": "ACTUAL",
+      "size_l_b": "221L/18639B",
+      "sha256": "BDD90BC405D5569E643DA0779542FC4EBA5065FD24A6A9B0C2C7F05145462E97",
+      "role": "Codif 9 v0.3 finalization (eat-own-dog-food 5th proof)"
+    },
+    {
+      "anchor": "T-ATL-044 v0.1",
+      "actual_or_tentative": "ACTUAL",
+      "size_l_b": "257L/22059B",
+      "sha256": "2FE01590B30753D9FBEA7A6CF914177E6BAFBF4837C54D868A41ADEABD1ED596",
+      "role": "Codif 9 v0.3 6th state phantom operationalization (eat-own-dog-food 6th proof)"
+    },
+    {
+      "anchor": "T-HEP-031 v0.1",
+      "actual_or_tentative": "TENTATIVE",
+      "role": "Codif 9 v0.3 6th state phantom full spec origin (Hephaestus cluster)"
+    },
+    {
+      "anchor": "T-HE-044 v0.1",
+      "actual_or_tentative": "ACTUAL",
+      "size_l_b": "280L/19810B",
+      "sha256_prefix": "0CE93DC4",
+      "role": "post-RATIFICATION carrier"
+    }
+  ],
+  "icp_tentative_4_4_accept": {
+    "carla_technical": "ACCEPT (4-witness formal verification PASS, MECE 7/7)",
+    "vera_strategic": "ACCEPT (cycle 14 W1 turn 1 v0.3 schema freeze 5/7 codification-shipped)",
+    "chris_business": "ACCEPT (Atlas cluster 7-eat-own-dog-food corpus record)",
+    "beth_risk": "ACCEPT (CATCH #60+#62+#63 prevention APPLIED, CATCH #64 cluster RESOLVED)"
+  },
+  "hl_moments_5": [
+    "Atlas cluster 7-eat-own-dog-food corpus record (T-ATL-031/033/034/035/043/044/045)",
+    "5/7 v0.3 schema freeze agenda items codification-shipped via Atlas cluster quartet (71%)",
+    "6/6 RATIFICATION gate criteria MET (4-witness + 3-path + 4-ICP + W6 + CATCH + corpus)",
+    "Codif 9 v0.4 evolution plan 5 items (5th sub-class + 7-state + 8-stage + catch-ledger + 4-witness pre-broadcast)",
+    "ATLAS CLUSTER = 4/12 SHIP-COMPLETE for 19-spec RATIFICATION packet cycle 14 W1 turn 5"
+  ],
+  "atlas_codif_7_v02_self_correction_arc_11": "W6 sidecar is the carrier of eat-own-dog-food, not the spec itself. T-ATL-031/033/034/035/043/044 = specs. T-ATL-045 = W6 sidecar. Eat-own-dog-food = the act of writing W6 sidecar for our own specs, not the spec content.",
+  "catch_prevention_applied": {
+    "catch_60_sha256_fabrication": "PASS (W4 IMMEDIATE post-Write ACTUAL Get-FileHash)",
+    "catch_62_recursive_honest_scope": "PASS (TENTATIVE markers on T-HEP-031 v0.1 cluster-ledger reference)",
+    "catch_63_lf_parity": "PASS (6/6 files trailing 0x0A confirmed)"
+  },
+  "ratification_gate_cycle_14_w1_turn_5_readiness": {
+    "criteria_met": "6/6",
+    "forecast_likelihood": "85-88% HIGH",
+    "atlas_cluster_contribution": "4/12 SHIP-COMPLETE specs (33% of packet) + 5/7 v0.3 agenda items (71%)"
+  },
+  "forward_chain_cycle_13_w1_day_3_plus": [
+    "T-ATL-046 v0.1 (7-spec v0.3 schema freeze corpus materialization) - PICK PENDING",
+    "T-ATL-047 v0.1 r9 URGENT (Codif 9 v0.3 final ratification spec) - PICK PENDING",
+    "T-ATL-048 v0.1 (4-ICP canonical frame MECE verification, post-T-IR-053 v0.1) - PICK CANDIDATE"
+  ],
+  "hera_cite_bundle_add_queued": [
+    "T-ATL-041 v0.1 sec 11 cite-bundle add: T-HE-044 v0.1 anchor in Codif 35 v0.3 cat 4 sub-class 1 sub-class f.i",
+    "T-ATL-042 v0.1 sec 6 cite-bundle add: T-HE-044 v0.1 documentation in Codif 22 v0.2 sub-class 5.v quintuple-bump pattern"
+  ],
+  "atlas_cluster_9_bump_lineage_10_versions": [
+    "T-ATL-036 v0.1 (sub-class 5.iv initial)",
+    "T-ATL-037 v0.1 (5.iv mechanical)",
+    "T-ATL-038 v0.1 (5.iv content)",
+    "T-ATL-039 v0.1 (5.iv content)",
+    "T-ATL-040 v0.1 (5.v content)",
+    "T-ATL-040 v0.1.1 (5.v mechanical CATCH #35)",
+    "T-ATL-041 v0.1 (5.v content)",
+    "T-ATL-042 v0.1 (5.v content)",
+    "T-ATL-043 v0.1 (5.vi content)",
+    "T-ATL-044 v0.1 (5.vi content)",
+    "T-ATL-045 v0.1 (5.vii candidate W6 final sidecar)"
+  ],
+  "w6_sidecar_eat_own_dog_food_proof_count_atlas": 7,
+  "cycle": "13 W1 day 1-2",
+  "year": 2026,
+  "month": 6,
+  "day": 14
+}

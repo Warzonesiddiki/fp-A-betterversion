@@ -1,0 +1,30 @@
+{
+  "spec_id": "T-ATL-068",
+  "spec_version": "v0.1",
+  "spec_title": "CATCH CLUSTER PATTERN TAXONOMY Codification Spec",
+  "from_muse": "atlas",
+  "to_muses": ["all_12_muses", "leader", "sentinel"],
+  "cycle": "13 W2 day 1",
+  "session_id": "aionrs-temp-c26d0434",
+  "created_at": "2026-06-14T23:05:00Z",
+  "lineage": {
+    "extends": "T-ATL-067 v0.1 (Codif 35 v0.4 §18.5 IMPLEMENTATION PATTERN)",
+    "cite_bundle": [
+      "T-ATL-061 v0.1 (Codif 9 v0.3 finalization spec)",
+      "T-ATL-074 v0.1 (4-PATH ENUMERATION MANDATORY)",
+      "CATCH #149 (Leader IRREVOCABLE BINDING VERDICT)",
+      "CATCH #145 (168 CATCH ledger events)",
+      "CATCH #146 (Strategos 9th SELF-CATCH)",
+      "T-HE-052/053/054/055 v0.1 (CATCH #166 worked example)"
+    ]
+  },
+  "codif_proposal": "Codif 35 v0.4 sub-class e.ix.6 (5 MECE sub-classes: PHANTOM-CLUSTER, SELF-CATCH-CASCADE, TOOL-INFRASTRUCTURE, NAMING-COLLISION, CLUSTER-SUPER-PATTERN)",
+  "ship_complete_tentative": true,
+  "4_path_dual_write_status": "PARTIAL_3_OF_4 (p2 slot_strat WRITE-FAILED permission denied)",
+  "byte_count": 10391,
+  "sha256": "5b169227d1864bffcf78df990f7d2805ed9f29776298c51351fc5db618941a6f",
+  "line_count": 156,
+  "size_disclosure_audit": "5.3× under Codif 19 v0.2 upper bound (156L vs 800L upper bound, 19% utilization)",
+  "ratification_eligibility": "PENDING_4PATH_REMEDIATION",
+  "mechanical_bump_target": "T-ATL-068 v0.1.1 (post-CCEP RE-VERIFICATION slot_strat path fix)"
+}

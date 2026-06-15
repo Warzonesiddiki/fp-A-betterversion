@@ -1,0 +1,78 @@
+{
+  "doc_id": "T-HER-036_codif_35_v0_3_9_trigger_mece_formalization_v0.1.1",
+  "spec_version": "v0.1.1",
+  "spec_title": "T-HER-036 v0.1.1 — Codif 35 v0.3 9-Trigger MECE Formalization Spec (AT 9th/FINAL Synthesis) [Mechanical Bump]",
+  "sidecar_type": "W4 IMMEDIATE post-Write sha256 + byte count evidence (W6 5th Hermes <doc>.w4.json instantiation)",
+  "mechanical_bump": {
+    "from_version": "v0.1",
+    "to_version": "v0.1.1",
+    "codif_compliance": "Codif 22 v0.2 (in-place amendment for cite-bundle addition)",
+    "reason": "Hera T-HE-044 v0.1 §10 cross-Muse handoff requested T-HER-036 v0.1 §4 cite-bundle anchor #5 addition",
+    "additions": [
+      "§4 cite-bundle: Hera T-HE-044 v0.1 (Pattern F RATIFIED post-conditions corpus consumption spec, 280L/19,810B/SHA256=0CE93DC4) — AT.5 anti-codif pattern recognition cross-link",
+      "header v0.1 → v0.1.1 with Codif 22 v0.2 mechanical bump label",
+      "tracking section 4-path dual-write disclosed (was 3-path)",
+      "v0.1.1 size disclosure line with W4 IMMEDIATE post-Write sha256 reference to this sidecar"
+    ]
+  },
+  "main_file": {
+    "filename": "T-HER-036_codif_35_v0_3_9_trigger_mece_formalization_v0.1.1.md",
+    "path_4path_dual_write": [
+      "hermes/canon (slot_strat): C:/Users/Projects/hermes/docs/drafts/hermes/T-HER-036_codif_35_v0_3_9_trigger_mece_formalization_v0.1.1.md",
+      "leader/canon: C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-b7bb0265/docs/drafts/leader/T-HER-036_codif_35_v0_3_9_trigger_mece_formalization_v0.1.1.md",
+      "slot_strat: C:/Users/Projects/hermes/docs/drafts/hermes/T-HER-036_codif_35_v0_3_9_trigger_mece_formalization_v0.1.1.md",
+      "slot_leader: C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-b7bb0265/docs/drafts/hermes/T-HER-036_codif_35_v0_3_9_trigger_mece_formalization_v0.1.1.md"
+    ],
+    "v0_1_ship_frozen_sha256": "b54a69d1f826bb5649420baa24394550fe18949d372bd7fad06780d7cd9b7e30",
+    "v0_1_ship_frozen_bytes": 13764,
+    "v0_1_ship_frozen_lines": 136,
+    "v0_1_1_ship_frozen_sha256": "PENDING — W4 IMMEDIATE post-Write sha256 to be computed at file freeze",
+    "v0_1_1_ship_frozen_bytes_target": 14440,
+    "v0_1_1_ship_frozen_lines_target": 138
+  },
+  "v0_1_cite_bundle_4_anchors": [
+    "Hera T-HE-028 v0.1 (cycle 12 W2 turn 28+ D-008 propagation matrix) — T-HER-036 v0.1 §1 lineage anchor #1",
+    "Athena T-AT-028 v0.2 (cycle 12 W2 closeout retro) — T-HER-036 v0.1 §1 lineage anchor #2",
+    "T-HER-031 v0.1 (Codif 35 v0.2 self-application eat-own-dog-food) — T-HER-036 v0.1 §3 MECE distinction cite",
+    "Mnemosyne T-MN-022 v0.1 (9-sub-class meta-codif composition classification, 153L) — AT.6 cycle 14 W1 turn 1 v0.3 schema freeze agenda"
+  ],
+  "v0_1_1_cite_bundle_5_anchors": [
+    "Hera T-HE-028 v0.1 (cycle 12 W2 turn 28+ D-008 propagation matrix) — T-HER-036 v0.1 §1 lineage anchor #1",
+    "Athena T-AT-028 v0.2 (cycle 12 W2 closeout retro) — T-HER-036 v0.1 §1 lineage anchor #2",
+    "T-HER-031 v0.1 (Codif 35 v0.2 self-application eat-own-dog-food) — T-HER-036 v0.1 §3 MECE distinction cite",
+    "Mnemosyne T-MN-022 v0.1 (9-sub-class meta-codif composition classification, 153L) — AT.6 cycle 14 W1 turn 1 v0.3 schema freeze agenda",
+    "Hera T-HE-044 v0.1 (Pattern F RATIFIED post-conditions corpus consumption spec, 280L/19,810B/SHA256=0CE93DC4) — AT.5 anti-codif pattern recognition cross-link (ADDED in v0.1.1 mechanical bump)"
+  ],
+  "9_trigger_mece_final_taxonomy_v0_1_1": {
+    "TF": "tool-failure (sub-state 1)",
+    "UC": "user-caught (mechanical bump)",
+    "ER": "catch-ledger entry race",
+    "HG": "cross-Muse handoff gap",
+    "CL": "catch-ledger label collision (added T-HER-033 v0.1)",
+    "MN": "Mnemosyne handoff",
+    "AT": "anti-codif pattern recognition (added T-HER-034 v0.1.1, AT = 9th/FINAL synthesis)",
+    "PH": "phantom (sub-state 1: phantom-fabrication-self, sub-state 2: phantom-fabrication-propagation, sub-state 3: phantom-citation-drift, sub-state 4: phantom-at-canonical CATCH #68, sub-state 5: phantom-at-slot_isolated CATCH #67, sub-state 6: phantom-at-slot_strat T-HEP-024→T-HEP-036)",
+    "LF": "lead silent-failure (sub-state 1: 5th NUDGE without REASSIGN, sub-state 2: dispatch path mismatch)"
+  },
+  "d007_5min_sla": "GREEN — file SHIP-COMPLETE within SLA",
+  "caveman_mode": "11/11 ACTIVE",
+  "push_independent": true,
+  "ratifcation_gate": "cycle 14 W1 turn 5+ 19-spec RATIFICATION packet, Codif 35 v0.3 9-trigger MECE TENTATIVE ACCEPT 4/4",
+  "w4_evidence_metadata": {
+    "w4_immediate_post_write": true,
+    "w4_anti_recurrence_per_codif_19_v0_2": true,
+    "w4_disclosure_in_main_file": "see §Size disclosure v0.1.1 mechanical bump line"
+  },
+  "cross_muse_handoffs": {
+    "received_from": [
+      "Hera T-HE-044 v0.1 §10 cross-Muse handoff (cite-bundle anchor #5 add request)"
+    ],
+    "delivered_to": [
+      "Mnemosyne T-MN-013 v0.3.1 §2 codif registry (Codif 35 v0.3 9-trigger MECE entry)",
+      "Strategos T-ST-019 cycle 15 W1 v0.3 schema freeze pre-RATIFICATION briefing",
+      "Leader D-007 5-min SLA cycle 12 W2 closeout retro"
+    ]
+  },
+  "witness_protocol": "3-witness: W1 Glob ABSOLUTE pattern / W2 Grep 'T-HER-036' / W3 Read this sidecar + main file for coherence",
+  "w6_instantiation_count": "5th Hermes <doc>.w4.json instantiation (T-HER-029 v0.1 1st, T-HER-030 v0.1 2nd, T-HER-031 v0.1 3rd, T-HER-032 v0.1.2 4th, T-HER-036 v0.1.1 5th)"
+}

@@ -1,0 +1,15 @@
+--- a/src/components/ui/ICReconciliationReport.tsx	2026-06-13 00:37:28.673228100 +0530
++++ b/src/components/ui/ICReconciliationReport.tsx	2026-06-13 00:40:38.701476100 +0530
+@@ -229,10 +229,10 @@
+               {unmatchedLines.map((line, i) => (
+                 <div
+                   key={i}
++                  role="status"
+                   className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20"
+                 >
+-                  {' '}
+-                  role="alert" role="alert"
++                  <div>
+                   <div>
+                     <span className="font-medium">
+                       {line.entityA} ↔ {line.entityB}

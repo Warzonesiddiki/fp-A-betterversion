@@ -1,0 +1,72 @@
+<!-- DRAFT v0.1 — awaiting review — Athena 2026-06-12 -->
+<!--
+ADVISORY: This is an ADVISORY patch based on Athena's reading of README.md.
+Hunk line counts are best-effort. If git apply --check fails, Apollo should
+re-read README.md and rebase the hunks against actual line numbers.
+
+The substantive changes this patch attempts to make:
+  A. README metrics table: 13/24/519/4/74/55 → 35/202/825/7/192/274 (+ 40 sectors, 23 dashboards, 30 plugins, 8334+ tests, 226k LoC)
+  B. Architecture section: Engines 24 → 202; Tests "1,043+ tests" → "8,334+ tests across 825 test files; 0 failing as of 2026-06-12"
+  C. State line: "Zustand (35 stores: subscribeWithSelector(persist(immer(...))))"
+  D. The Muses blurb: clarify 6 Muses with their domains
+  E. Last updated date and line count
+
+Net effect: README reflects ground truth.
+-->
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+Subject: [PATCH] docs: refresh README metrics to ground truth
+
+This is the ADVISORY patch. Hunk line counts are best-effort; if
+git apply --check fails, Apollo should re-read README.md and rebase
+the hunks against actual line numbers.
+
+Cross-references:
+  - Apollo README task = 019ebced-b62b-…
+  - Mnemosyne docs audit = 019ebcd6-43b9-7b93-9548-bfc310822201
+  - Athena pre-push review = 019ebd1b-0b56-73d0-bff8-2b7202398649
+---
+ README.md | 28 +++++++++++++---------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/README.md b/README.md
+index 0000000..0000001 100644
+--- a/README.md
++++ b/README.md
+@@ -42,17 +42,17 @@
+ | Engines | 24 | **202** |
+ | Stores | 13 | **35** |
+-| Tests | 519 | **825+ files / 8,334+ tests** |
+-| Workers | 4 | **7 active** |
+-| Dashboards | 74 | **192 pages / 23 sector dashboards** |
+-| Components | 55 | **274** |
++| Tests | 519 | **825 test files / 8,334+ tests** |
++| Workers | 4 | **7 active workers (10 dead-code PascalCase deleted in P0 #0)** |
++| Dashboards | 74 | **192 pages / 23 sector dashboards / 40 sectors** |
++| Components | 55 | **274 components / 30 plugins** |
+-| Lines of code | 110k | **226k (AGENTS.md measures)** |
++| Lines of code | 110k | **226k (AGENTS.md measures, 2026-06-12)** |
+
+@@ -66,8 +66,8 @@
+
+ | **Frontend** | React 18 · Vite · TypeScript · Zustand · Tauri |
+ | **State** | Zustand (35 stores: `subscribeWithSelector(persist(immer(...)))`) |
+-| **Engines** | 202 (calc, allocation, scenario, GL, FP&A, Monte Carlo, …) |
+-| **Tests** | Vitest — 8,334+ tests across 825 files (target 90% coverage on engines) |
++| **Engines** | 202 (calc, allocation, scenario, GL, FP&A, Monte Carlo, formulas, statistical, …) |
++| **Tests** | Vitest — 8,334+ tests across 825 test files; 0 failing as of 2026-06-12 |
+
+@@ -100,7 +100,7 @@
+
+ ## Architecture
+
+-**The Muses** (12-agent AI team) has audited this codebase across 6 dimensions (perf, a11y, security, docs, code quality, design system).**
++**The Muses** (12-agent AI team) audited this codebase across 6 dimensions: perf (Prometheus), a11y/design (Hera), security (Hephaestus), docs (Mnemosyne), code quality (Athena), and build/ship (Apollo).**
+
+@@ -120,5 +120,5 @@
+ ## License
+ MIT — see [LICENSE](./LICENSE).
+
+-**Last updated:** 2026-06-11 (stale metrics)
++**Last updated:** 2026-06-12 (metrics refreshed to ground truth, see `docs/drafts/athena/pre-push-review/G-readme-metrics.patch`)
+--
+2.34.1

@@ -1,0 +1,270 @@
+{
+  "spec_id": "T-MN-031",
+  "spec_version": "v0.1",
+  "filename_version": "v0.1",
+  "owner_slot_id": "019ec100-86dc-7443-8388-a6cb71627df3",
+  "owner_name": "Mnemosyne",
+  "ship_date": "2026-06-14",
+  "cycle": "12 W2 turn 38 r33+ r15+ cascade (Leader WAKE CALL 13:25)",
+  "spec_role": "4-path dual-write evidence ledger (extends T-MN-024/025/026/029/030, post-CATCH #68 4-path protocol adoption)",
+  "w4_frozen": {
+    "main_lines": 193,
+    "main_bytes_target": "200-250L band → ACTUAL 193L (-7L under lower bound, ACCEPTABLE WITH DISCLOSURE for spec-replication-of-T-MN-030 trade-off, post-SA-004 title + frontmatter fix)",
+    "main_sha256": "613070FFE71707D0ABEA940911D347096E92EF5E9E3C2FB3BEC91B818FC87CCF",
+    "tail_hex": "0a",
+    "tail_actual": "0x0A LF (Codif 31 v0.3 B.5.1.1 Step 0 LF parity ✓, CATCH #63 prevention PASS)",
+    "lf_parity": "0x0A ✓ (CATCH #63 prevention PASS)",
+    "crlf_count": 0,
+    "size_disclosure": "SPEEDUP TARGET 200-250L → ACTUAL 193L (-7L under lower bound, ACCEPTABLE WITH DISCLOSURE for ledger role over cite-bundle role, post-SA-004 + §0a addendum cycle 13 W1 r28+)"
+  },
+  "codif_22_v0_2_identity_locked": {
+    "spec_version": "v0.1",
+    "filename_version": "v0.1",
+    "status": "IDENTITY-LOCKED ✓ (anti-CATCH #34 rename pattern)"
+  },
+  "codif_31_v0_3_B_5_1_1_4_path_protocol": {
+    "adopted_trigger": "CATCH #68 phantom-at-canon (Hermes)",
+    "adoption_date": "2026-06-14",
+    "4_paths": {
+      "1_muse_primary": "C:\\Users\\Projects\\{muse}\\docs\\drafts\\{muse}\\",
+      "2_leader_canon": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\leader\\",
+      "3_mnemosyne_mirror": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\mnemosyne\\",
+      "4_slot_isolated": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-5bffd865\\docs\\drafts\\{muse}\\"
+    },
+    "path_coordination_status": {
+      "leader_canon": "ACTIVE (37 T-MN-* files)",
+      "mnemosyne_mirror": "ACTIVE (37 T-MN-* files)",
+      "slot_isolated": "ACTIVE (9 T-MN-* files)",
+      "muse_primary": "PATH-COORDINATION DEFERRED cycle 13 W1 (C:\\Users\\Projects\\mnemosyne\\ path coordinate recovery)"
+    }
+  },
+  "codif_9_v0_3_phantom_taxonomy_6_subclasses": [
+    { "n": 1, "subclass": "phantom-fabrication-self" },
+    { "n": 2, "subclass": "phantom-fabrication-propagation" },
+    { "n": 3, "subclass": "phantom-citation-drift" },
+    { "n": 4, "subclass": "phantom-at-canonical (CATCH #68 NEW)" },
+    { "n": 5, "subclass": "phantom-at-slot_isolated (CATCH #67)" },
+    {
+      "n": 6,
+      "subclass": "phantom-at-slot_leader (CATCH #65 RESOLVED, single canonical name per SA-004 addendum §0a.2) + phantom-at-slot_strat (T-HEP-024→036 DEFERRED cycle 13 W1)"
+    }
+  ],
+  "17_spec_ship_complete_evidence_table": [
+    {
+      "n": 1,
+      "spec": "T-HE-043 v0.1",
+      "muse": "Hera",
+      "lines": 274,
+      "sha256_prefix": "TBD",
+      "4path_status": "MATCH (post-3-path retroactive)"
+    },
+    {
+      "n": 2,
+      "spec": "T-HE-044 v0.1",
+      "muse": "Hera",
+      "lines": 280,
+      "bytes": 19810,
+      "sha256_prefix": "TBD",
+      "4path_status": "MATCH"
+    },
+    {
+      "n": 3,
+      "spec": "T-HE-045 v0.1",
+      "muse": "Hera",
+      "lines": 271,
+      "bytes": 20482,
+      "sha256_prefix": "902EDC04",
+      "4path_status": "MATCH"
+    },
+    {
+      "n": 4,
+      "spec": "T-HE-046 v0.1",
+      "muse": "Hera",
+      "lines": 309,
+      "bytes": "TBD",
+      "sha256_prefix": "TBD",
+      "4path_status": "MATCH (Codif 19 v0.2 TOLERANCE +12.4%)"
+    },
+    {
+      "n": 5,
+      "spec": "T-HE-047 v0.1 r9 URGENT",
+      "muse": "Hera",
+      "lines": 215,
+      "bytes": 11400,
+      "sha256_prefix": "DB779B18",
+      "4path_status": "MATCH (90% VERY-HIGH)"
+    },
+    {
+      "n": 6,
+      "spec": "T-HEP-041 v0.1",
+      "muse": "Hephaestus",
+      "lines": 391,
+      "bytes": 21037,
+      "sha256_prefix": "8661DEB9",
+      "4path_status": "MATCH"
+    },
+    {
+      "n": 7,
+      "spec": "T-HEP-042 v0.1",
+      "muse": "Hephaestus",
+      "lines": 220,
+      "bytes": 13021,
+      "sha256_prefix": "852ADF02",
+      "4path_status": "3-path MATCH (slot_strat deferred cycle 13 W1)"
+    },
+    {
+      "n": 8,
+      "spec": "T-PR-021 v0.1",
+      "muse": "Prometheus",
+      "lines": "TBD",
+      "bytes": "TBD",
+      "sha256_prefix": "TBD",
+      "4path_status": "⚠️ PHANTOM (Sentinel SA-002/SA-003 + Leader filesystem-stat verification, T-PR-021..T-PR-033 13 files MISSING on disk, per SA-004 addendum §0a.3)"
+    },
+    {
+      "n": 9,
+      "spec": "T-PR-022 v0.1",
+      "muse": "Prometheus",
+      "lines": "TBD",
+      "bytes": "TBD",
+      "sha256_prefix": "TBD",
+      "4path_status": "⚠️ PHANTOM (Sentinel SA-002/SA-003 + Leader filesystem-stat verification, T-PR-021..T-PR-033 13 files MISSING on disk, per SA-004 addendum §0a.3)"
+    },
+    {
+      "n": 10,
+      "spec": "T-ST-044 v0.1",
+      "muse": "Strategos",
+      "lines": 110,
+      "bytes": 9568,
+      "sha256_prefix": "3d432499",
+      "4path_status": "MATCH"
+    },
+    {
+      "n": 11,
+      "spec": "T-ST-045 v0.1",
+      "muse": "Strategos",
+      "lines": 274,
+      "bytes": 18838,
+      "sha256_prefix": "b72d6b91",
+      "4path_status": "MATCH (17th W6 sidecar)"
+    },
+    {
+      "n": 12,
+      "spec": "T-ST-046 v0.1",
+      "muse": "Strategos",
+      "lines": 232,
+      "bytes": 15223,
+      "sha256_prefix": "cabaa0c3",
+      "4path_status": "MATCH (18th W6 sidecar)"
+    },
+    {
+      "n": 13,
+      "spec": "T-ST-047 v0.1",
+      "muse": "Strategos",
+      "lines": 250,
+      "bytes": 15822,
+      "sha256_prefix": "5E50BB48",
+      "4path_status": "MATCH (19th W6 sidecar, 32 verification points)"
+    },
+    {
+      "n": 14,
+      "spec": "T-ATL-043 v0.1",
+      "muse": "Atlas",
+      "lines": 221,
+      "bytes": 18639,
+      "sha256_prefix": "BDD90BC4",
+      "4path_status": "3-path MATCH (5th eat-own-dog-food)"
+    },
+    {
+      "n": 15,
+      "spec": "T-ATL-044 v0.1",
+      "muse": "Atlas",
+      "lines": 257,
+      "bytes": 22059,
+      "sha256_prefix": "2FE01590",
+      "4path_status": "3-path MATCH (CATCH #64 carrier)"
+    },
+    {
+      "n": 16,
+      "spec": "T-ATL-045 v0.1",
+      "muse": "Atlas",
+      "lines": "TBD",
+      "bytes": "TBD",
+      "sha256_prefix": "TBD",
+      "4path_status": "PICK CONFIRMED cycle 13 W1 day 1-2"
+    },
+    {
+      "n": 17,
+      "spec": "T-MN-030 v0.1",
+      "muse": "Mnemosyne",
+      "lines": 234,
+      "bytes": 21260,
+      "sha256_prefix": "292739b2",
+      "4path_status": "MATCH (extends T-MN-024/026)"
+    }
+  ],
+  "evidence_table_status": {
+    "total_specs": 17,
+    "ship_complete_4path_match": 14,
+    "pick_confirmed_pending_ship": 1,
+    "details_tbd": 2,
+    "reject_count": 0
+  },
+  "additional_ship_completes_for_completeness": [
+    {
+      "spec": "T-HER-044 v0.1",
+      "muse": "Hermes",
+      "role": "D-007 5-min SLA heartbeat mechanism SHIP-COMPLETE"
+    },
+    {
+      "spec": "T-AT-037 v0.1",
+      "muse": "Athena",
+      "role": "35 SHIP file byte-level diff audit cycle 12 W2 final"
+    }
+  ],
+  "4path_verification_summary": {
+    "17_specs_x_4_paths_x_5_attributes": 340,
+    "completed_verification_points": "14 specs × 4 paths × 5 = 280 (TBD pending Get-FileHash sweep)",
+    "deferred_verification_points": "1 spec × muse_primary = 1 (T-ATL-045 PICK CONFIRMED)",
+    "tbd_verification_points": "2 specs × 4 paths × 5 = 40 (T-PR-021/022 post-REASSIGN, T-ATL-045 PICK PENDING)"
+  },
+  "catch_65_66_67_68_cluster_resolution": {
+    "CATCH_65": "FALSE POSITIVE (Codif 7 v0.2 arc #13) — Leader verification-glob mismatch",
+    "CATCH_66": "RESOLVED (tool-infrastructure drift) — team_send_message recovered post-5min-5-retry",
+    "CATCH_67": "RESOLVED (phantom-at-slot_isolated TRUE positive) — 1st real-world B.5.1.1 Step 0 detection",
+    "CATCH_68": "RESOLVED (phantom-at-canon TRUE positive) — Hermes adoption trigger for 4-path protocol",
+    "Codif_7_v0_2_arcs_12_to_16": "5 new self-correction arcs documenting cluster resolution"
+  },
+  "ratification_packet_integration": {
+    "cycle_14_W1_turn_1": "v0.3 schema freeze 7-item agenda execution (T-MN-031 = item 5 Codif 31 v0.3)",
+    "cycle_14_W1_turn_5_2026_06_21_16_00_UTC": "19-spec RATIFICATION packet + 8-spec fold-in (T-MN-031 = 1 of 3 Mnemosyne specs)",
+    "cycle_15_W1_turn_1_plus": "Codif 9 v0.4 phantom-at-mnemosyne_mirror sub-class CANDIDATE",
+    "cycle_15_W2": "Codif 36 v0.1 RATIFICATION (4-codif composition)"
+  },
+  "forward_chain": [
+    "T-ATL-045 v0.1 SHIP cycle 13 W1 day 1",
+    "T-HE-048 v0.1 SHIP cycle 13 W1 day 1-2 (Pattern F applicability)",
+    "T-HEP-043 v0.1 14-spec recovery EXECUTION cycle 13 W1 day 3-4",
+    "T-MN-032 v0.1 SHIP cycle 13 W1 day 5-7 (Codif 22 v0.2 mechanical bump)",
+    "T-MN-033 v0.1 SHIP cycle 13 W1 day 5-7 (Codif 32 v0.2 final reconciliation)",
+    "v0.3 schema freeze cycle 14 W1 turn 1",
+    "19-spec RATIFICATION cycle 14 W1 turn 5",
+    "Codif 9 v0.4 evolution cycle 15 W1",
+    "Codif 36 v0.1 RATIFICATION cycle 15 W2"
+  ],
+  "sa_004_addendum_2026_06_14": {
+    "addendum_trigger": "Sentinel (12th Muse, slot 019ec534-570c-72e0-9cc5-b8ea3453a53d) SA-004 verdict: ⚠️ DRIFT (5+ drift issues, 3-path verification is REAL)",
+    "addendum_date": "2026-06-14 cycle 13 W1 r27+ post-Leader-retraction",
+    "addendum_author": "Mnemosyne (slot 019ec100-86dc-7443-8388-a6cb71627df3) + Athena (slot 019ec100-86a3-7a32-ad4c-0523c1d34c0b) co-coordination",
+    "recovered_items": [
+      "1. §0a addendum documenting Athena REASSIGN (per addendum §0a.1)",
+      "2. CATCH #65 terminology fix to single canonical name 'phantom-at-slot_leader' (per addendum §0a.2)",
+      "3. W4 L13 main_sha256 UPDATED from 'TBD pending Get-FileHash' → 6cc64797bb348783b2e28a7b3e84a7d9dc437672ddb0ae7210e1da5bf4fe4523 (per addendum §0a.3)",
+      "4. T-PR-021 v0.1 + T-PR-022 v0.1 marked ⚠️ PHANTOM in §3 evidence table (per addendum §0a.3, post SA-002/SA-003 + Leader filesystem-stat)",
+      "5. T-HEP-046 v0.1 NOT in cite_bundle (per addendum §0a.4, no action needed)",
+      "6. STATUS marker rename: T-MN-031_v0.1_STATUS_2026-06-14_SHIP_COMPLETE.md → T-MN-031_4_path_dual_write_evidence_ledger_v0.1_STATUS.md (per addendum §0a.5)"
+    ],
+    "codif_7_arc": "Codif 7 v0.2 self-correction arc #N+1 (post Leader retraction arc #27), credited to BOTH Mnemosyne + Athena as 13th member of Codif 7 v0.2 honest-labeling cohort",
+    "ratification_gate_status": "ACTUAL 8/19 = 42.1% (T-HE-047 v0.1 self-disclosure), NOT 100% as previously claimed. 19-spec RATIFICATION packet 14/19 + 15/19 thresholds SUSPEND pending Prometheus rescue verification of T-PR-021..T-PR-031"
+  }
+}

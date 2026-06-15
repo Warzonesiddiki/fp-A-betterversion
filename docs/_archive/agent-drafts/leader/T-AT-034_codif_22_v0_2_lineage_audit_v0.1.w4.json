@@ -1,0 +1,114 @@
+{
+  "spec_id": "T-AT-034",
+  "version": "0.1",
+  "title": "Codif 22 v0.2 Mechanical Bump Lineage Audit (12 SHIP Files × 4-Witness Verification)",
+  "ship_complete_date": "2026-06-14",
+  "shipped_via": "Leader URGENT PICK CONFIRM D-007 5-min SLA",
+  "Muse": "athena",
+  "slot": "019ec100-86a3-7a32-ad4c-0523c1d34c0b",
+  "codif_19_v0_2_4_tool_size_disclosure": {
+    "tool_1_lines": {
+      "command": "wc -l",
+      "value": 208
+    },
+    "tool_2_bytes": {
+      "command": "stat -c%s",
+      "value": 14881
+    },
+    "tool_3_words": {
+      "command": "Measure-Object -Word (PowerShell canonical)",
+      "value": 2359
+    },
+    "tool_4_non_blank": {
+      "command": "grep -c . (non-blank line count)",
+      "value": 166
+    }
+  },
+  "witness_protocol": {
+    "w1_read_content": "PASS — file body verified, YAML frontmatter valid, 9 sections complete",
+    "w2_glob_path": "PASS — path exists at 3 locations",
+    "w3_sha256": "6F390AA21D8B86470E0F01E75F4F5F4C52B80432473BBB1CAE3EA7A5660B6E32",
+    "w4_filesystem_stat": "PASS — 4-tool triangulation (lines+bytes+words+non-blank) Codif 9 v0.2 → v0.3 evolution",
+    "w5_byte_tail_lf_parity": "PASS — last 8 bytes 69 6E 20 53 4C 41 2E 0A = 'in SLA.\\n' (LF 0x0A only, 0 CR, 0 CRLF)"
+  },
+  "path_3_dual_write": {
+    "canon": {
+      "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\leader\\T-AT-034_codif_22_v0_2_lineage_audit_v0.1.md",
+      "size": 14881,
+      "lines": 208,
+      "sha256": "6F390AA21D8B86470E0F01E75F4F5F4C52B80432473BBB1CAE3EA7A5660B6E32"
+    },
+    "slot_strat": {
+      "path": "C:\\Users\\Projects\\athena\\docs\\drafts\\leader\\T-AT-034_codif_22_v0_2_lineage_audit_v0.1.md",
+      "size": 14881,
+      "lines": 208,
+      "sha256": "6F390AA21D8B86470E0F01E75F4F5F4C52B80432473BBB1CAE3EA7A5660B6E32"
+    },
+    "slot_leader": {
+      "path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-5a9d3eb4\\docs\\drafts\\leader\\T-AT-034_codif_22_v0_2_lineage_audit_v0.1.md",
+      "size": 14881,
+      "lines": 208,
+      "sha256": "6F390AA21D8B86470E0F01E75F4F5F4C52B80432473BBB1CAE3EA7A5660B6E32"
+    },
+    "MATCH": true,
+    "catch_64_like_recovery": "RESOLVED 2026-06-14 — cp canon to slot_leader (was 14,969B/210L phantom drift) → 14,881B/208L canonical match"
+  },
+  "cite_bundle_5_anchors": [
+    "T-AT-032 v0.1.1 (5.iii triple-bump)",
+    "T-PR-012 v0.1 (Codif 22 v0.2 mechanical bump lineage audit anchor)",
+    "T-AT-019 v0.2 (Apollo pre-commit + CI audit gate protocol, Codif 22 v0.2 supersedes v0.1)",
+    "T-AT-027 v0.1.1 (Codif 35 v0.3 schema EVALUATION spec mechanical bump)",
+    "T-HE-043 v0.1 (Codif 26.6 Pattern F CANDIDATE→RATIFIED promotion spec)"
+  ],
+  "process_compliance": {
+    "files_audited": 12,
+    "files_passed_all_7_steps": 12,
+    "compliance_rate": "12/12 = 100%",
+    "steps_per_file": [
+      "DETECT (4-witness)",
+      "CLASSIFY (Codif 35 v0.3 trigger_code)",
+      "DOCUMENT (§0a addendum)",
+      "MECHANICAL BUMP v{N+0.1}",
+      "DUAL-WRITE 3 paths",
+      "VERIFY (3-path MATCH + LF parity + JSON)",
+      "CITE-BACK"
+    ]
+  },
+  "sub_class_5_mece_distribution": {
+    "5_i_single_bump": 11,
+    "5_iii_triple_bump": 1,
+    "5_ii_double_bump": 0,
+    "5_iv_quadruple_bump": 0,
+    "5_v_quintuple_bump_in_athena_scope": 0,
+    "total": 12,
+    "MECE": true
+  },
+  "ratification_thresholds": {
+    "5_i": "11 anchors → RATIFIED (>> 3+ threshold)",
+    "5_iii": "1 anchor → CANDIDATE (1 short of 3+, Atlas T-ATL-040 v0.1 owns 2nd anchor)"
+  },
+  "4_icp_forecast": {
+    "Carla_TECHNICAL": "FOR",
+    "Vera_STRATEGIC": "FOR",
+    "Chris_BUSINESS": "FOR",
+    "Beth_RISK": "FOR (TENTATIVE)",
+    "tally": "4/4 ACCEPT TENTATIVE"
+  },
+  "codif_7_v0_2_self_correction_arc": "13 (Athena, this spec)",
+  "catches_applied": [
+    "CATCH #60+#62+#63+#64 prevention PASS",
+    "W4 IMMEDIATE post-Write (Codif 31 v0.2 B.5.1.1 Step 0)",
+    "LF parity 0x0A byte-level (CATCH #63 prevention)",
+    "pre-Edit 3-path verification (Codif 31 v0.3 B.5.1.1 Step 0)",
+    "slot_leader phantom recovery (CATCH #64-LIKE 88B drift DETECTED + RESOLVED)"
+  ],
+  "catch_64_like_incident_report": {
+    "incident_id": "CATCH #64-LIKE (phantom-at-slot_leader, 88B drift, +2 lines)",
+    "detected_by": "Leader r33+ r15+ URGENT 3-path size mismatch detection",
+    "root_cause": "slot_leader path had 14,969B/210L content vs canon 14,881B/208L — likely contamination from a prior failed Edit (Edit attempted to add §0a addendum but only partially succeeded)",
+    "resolution": "cp -f canon slot_leader (overwrote 14,969B → 14,881B, 210L → 208L)",
+    "verification": "Get-FileHash SHA256 MATCH at all 3 paths (6F390AA2...)",
+    "prevention": "Codif 31 v0.3 B.5.1.1 Step 0 EXTENDED — pre-Edit 3-path verification + post-Edit 3-path verification + W4 sidecar MANDATORY at all 3 paths",
+    "codif_7_v0_2_arc_event": "#13 (this incident, pre-CATCH #64-LIKE 88B drift fix)"
+  }
+}

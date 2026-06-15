@@ -1,0 +1,14 @@
+--- a/src/components/ui/BulletChart.tsx	2026-06-13 00:37:28.652155700 +0530
++++ b/src/components/ui/BulletChart.tsx	2026-06-13 00:40:38.134302500 +0530
+@@ -43,9 +43,8 @@
+     if (error) {
+       return (
+         <div className={cn('w-full', className)}>
+-          <div className="flex items-center justify-center h-12 text-red-500 text-sm">
+-            {' '}
+-            role="alert" role="alert" {error}
++          <div role="alert" className="flex items-center justify-center h-12 text-red-500 text-sm">
++            {error}
+           </div>
+         </div>
+       );

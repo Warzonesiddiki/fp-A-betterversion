@@ -1,0 +1,130 @@
+diff --git a/src/__tests__/mock-auth-gate.test.ts b/src/__tests__/mock-auth-gate.test.ts
+new file mode 100644
+index 0000000..00000003
+--- /dev/null
++++ b/src/__tests__/mock-auth-gate.test.ts
+@@ -0,0 +1,120 @@
++/**
++ * @file src/__tests__/mock-auth-gate.test.ts
++ * @description Integration test for the VITE_USE_MOCK_AUTH build-time gate
++ *              (P0 #4 fix). Verifies that:
++ *                (1) The gate at the top of src/main.tsx throws when
++ *                    import.meta.env.PROD === true AND
++ *                    import.meta.env.VITE_USE_MOCK_AUTH === 'true'
++ *                (2) The gate does NOT throw in any other combination
++ *                (3) The error message is actionable (mentions the env var
++ *                    and points to the docs)
++ *
++ * @author Hephaestus (aionrs/MiniMax-M3), 2026-06-12
++ * @see docs/drafts/hephaestus/mock-auth-build-gate.md
++ * @see Apollo task 019ebce7-… P0 #4
++ */
++
++import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
++
++/**
++ * Helper: import main.tsx with a stubbed import.meta.env. Because Vite's
++ * import.meta.env is read-only at runtime, we use vi.stubEnv() which
++ * Vitest provides specifically for this purpose.
++ */
++async function importMainWithEnv(env: {
++  PROD: boolean;
++  VITE_USE_MOCK_AUTH?: string;
++  [key: string]: unknown;
++}) {
++  // Reset all module caches so the gate is re-evaluated with the new env.
++  vi.resetModules();
++  for (const [k, v] of Object.entries(env)) {
++    vi.stubEnv(k, v as string);
++  }
++  return import('@/main');
++}
++
++describe('VITE_USE_MOCK_AUTH production gate (P0 #4 fix)', () => {
++  beforeEach(() => {
++    // Clear any previous stubEnv calls
++    vi.unstubAllEnvs();
++  });
++
++  afterEach(() => {
++    vi.unstubAllEnvs();
++  });
++
++  describe('refuses to mount in production with mock auth', () => {
++    it('throws when PROD=true AND VITE_USE_MOCK_AUTH="true"', async () => {
++      await expect(
++        importMainWithEnv({ PROD: true, VITE_USE_MOCK_AUTH: 'true' })
++      ).rejects.toThrow(/VITE_USE_MOCK_AUTH=true is not allowed in production/);
++    });
++
++    it('error message names the env var to change', async () => {
++      try {
++        await importMainWithEnv({ PROD: true, VITE_USE_MOCK_AUTH: 'true' });
++        // If we reach here, the gate did not fire — fail the test
++        expect.fail('Expected gate to throw, but main.tsx loaded');
++      } catch (err) {
++        const msg = (err as Error).message;
++        expect(msg).toMatch(/VITE_USE_MOCK_AUTH/);
++        expect(msg).toMatch(/production/);
++      }
++    });
++
++    it('error message points to the gate docs', async () => {
++      try {
++        await importMainWithEnv({ PROD: true, VITE_USE_MOCK_AUTH: 'true' });
++      } catch (err) {
++        const msg = (err as Error).message;
++        expect(msg).toMatch(/mock-auth-build-gate\.md/);
++      }
++    });
++  });
++
++  describe('does not throw in safe combinations', () => {
++    it('PROD=true + VITE_USE_MOCK_AUTH="false" → loads main.tsx', async () => {
++      await expect(
++        importMainWithEnv({ PROD: true, VITE_USE_MOCK_AUTH: 'false' })
++      ).resolves.toBeDefined();
++    });
++
++    it('PROD=true + VITE_USE_MOCK_AUTH undefined → loads main.tsx', async () => {
++      await expect(
++        importMainWithEnv({ PROD: true })
++      ).resolves.toBeDefined();
++    });
++
++    it('PROD=false + VITE_USE_MOCK_AUTH="true" → loads main.tsx (dev mode OK)', async () => {
++      await expect(
++        importMainWithEnv({ PROD: false, VITE_USE_MOCK_AUTH: 'true' })
++      ).resolves.toBeDefined();
++    });
++
++    it('PROD=false + VITE_USE_MOCK_AUTH="false" → loads main.tsx', async () => {
++      await expect(
++        importMainWithEnv({ PROD: false, VITE_USE_MOCK_AUTH: 'false' })
++      ).resolves.toBeDefined();
++    });
++  });
++
++  describe('defense in depth: the authStore.login mock path is also gated', () => {
++    it('authStore.login() throws when PROD=true and MOCK_AUTH !== "true"', async () => {
++      vi.resetModules();
++      vi.stubEnv('PROD', true);
++      vi.stubEnv('VITE_USE_MOCK_AUTH', 'false');
++      const { useAuthStore } = await import('@/store/authStore');
++      // The defense-in-depth check (per mock-auth-build-gate.md §2)
++      // should refuse to even attempt the mock lookup.
++      expect(() => useAuthStore.getState().login('admin@finplan.com', 'any'))
++        .toThrow(/Mock auth path is disabled in production/);
++    });
++  });
++});
++
++// ─── Vitest config note (for Apollo) ──────────────────────────────────────
++// This test file uses `vi.stubEnv()` and `vi.unstubAllEnvs()`, which
++// require Vitest ≥ 0.26. The current `package.json` already pins
++// `vitest@^1.6.0`, so the API is available. No config changes needed.
++//
++// If `vi.stubEnv()` does not pick up the alias `@/main` (because main.tsx
++// has side effects that try to import ReactDOM), wrap the import in a
++// dynamic import inside an `it` block (as above) so the side effects
++// run only inside the test scope, not at module-load time.
