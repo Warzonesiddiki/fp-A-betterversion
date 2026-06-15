@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0.0",
+  "windowMinutes": 60,
+  "lastUpdated": "2026-06-15T18:50:00Z",
+  "generatedBy": "hera (019ecbef-9cf4-7ee3-bfed-7f8c6b6a6990) initial population from `git log --pretty=format:'%h|%ai|%s' -25`",
+  "spec": "docs/specs/muse-last-commit-cache.md",
+  "notes": [
+    "Initial population only — post-commit hook (per spec §3, owned by Atlas) will overwrite on every commit",
+    "Hephaestus last commit (df3a4c2d, BUG-RPT-001/002) is older than 25 most recent commits; included with staleData:true flag",
+    "Hephaestus's lastCommit will be replaced by post-commit hook on his next commit",
+    "Sentinel, Chronos, Leader are newly spawned Muses (019ecc6f-*); included for completeness"
+  ],
+  "muses": {
+    "hera": {
+      "slotId": "019ecbef-9cf4-7ee3-bfed-7f8c6b6a6990",
+      "lastCommit": "a829019d",
+      "lastCommitAt": "2026-06-15T18:22:44Z",
+      "lastCommitSubject": "fix(presence): safe userInitials + userName fallback (Hephaestus audit finding)"
+    },
+    "sentinel": {
+      "slotId": "019ecc6f-1c06-79c0-953c-91c537b63c39",
+      "lastCommit": "fd7befc2",
+      "lastCommitAt": "2026-06-15T18:44:08Z",
+      "lastCommitSubject": "test(e2e/journeys): Sentinel 08-temporal-edge-cases (5 tests × fiscal-year/leap-year/quarter/mid-period/cross-year)"
+    },
+    "leader": {
+      "slotId": "019ecbe4-b3b7-7720-b962-3511bb3e4288",
+      "lastCommit": "90080d40",
+      "lastCommitAt": "2026-06-15T18:36:53Z",
+      "lastCommitSubject": "docs(vision-pivot): Leader VISION_TO_REALITY_MASTER_REPORT v0.1"
+    },
+    "chronos": {
+      "slotId": "019ecc6f-1c46-78e0-b122-15d43a3f1900",
+      "lastCommit": "fc059378",
+      "lastCommitAt": "2026-06-15T18:28:18Z",
+      "lastCommitSubject": "docs(openhands): Chronos temporal audit log v0.1"
+    },
+    "mnemosyne": {
+      "slotId": "019ecbef-aed0-7583-b344-985614f1c774",
+      "lastCommit": "68353389",
+      "lastCommitAt": "2026-06-15T18:27:14Z",
+      "lastCommitSubject": "docs(codif): Mnemosyne T-MN-043 v0.2 amendment — Sub-class B (file existence) per CATCH #189"
+    },
+    "atlas": {
+      "slotId": "019ecbef-8ca9-77c1-a9a6-adf43b25f673",
+      "lastCommit": "476e5b0a",
+      "lastCommitAt": "2026-06-15T18:22:52Z",
+      "lastCommitSubject": "chore(scripts): Atlas bundle-check G3 90% warning threshold (early warning before regression)"
+    },
+    "prometheus": {
+      "slotId": "019ecbef-aee8-7ec0-aafb-63176f4a956b",
+      "lastCommit": "8548ff4a",
+      "lastCommitAt": "2026-06-15T18:19:08Z",
+      "lastCommitSubject": "docs(vision-pivot): Prometheus T-PR-039 Apollo-Temporal-Correctness cross-check v0.1 (3 engines x full test files, all 30 pass + coverage gap surfaced)"
+    },
+    "apollo": {
+      "slotId": "019ecbef-7a87-7cb2-8a03-0e6610b63a7e",
+      "lastCommit": "641b4071",
+      "lastCommitAt": "2026-06-15T17:51:49Z",
+      "lastCommitSubject": "docs(vision-pivot): Apollo CYCLE_13_GAP_MATRIX + VISION_TO_REALITY_GAP 4-horizon roadmap (re-routed from Strategos)"
+    },
+    "athena": {
+      "slotId": "019ecbef-7a9d-7150-af8b-7dda85bd872e",
+      "lastCommit": "c4f423c7",
+      "lastCommitAt": "2026-06-15T17:44:17Z",
+      "lastCommitSubject": "docs(vision-pivot): Athena FEATURE_BACKLOG.md v0.1 (55 features × 0-100% coverage)"
+    },
+    "hermes": {
+      "slotId": "019ecbef-9d12-7741-8ac2-8d3721175b39",
+      "lastCommit": "2c9ff94f",
+      "lastCommitAt": "2026-06-15T17:29:14Z",
+      "lastCommitSubject": "feat(help): P1-A Phase 1 - MergedHelpResolver + tests + HelpPanel wrapper (G14 closure, no integration yet)"
+    },
+    "hephaestus": {
+      "slotId": "019ecbef-8cb9-7cb9-7c73-bd19-b5561b383985",
+      "lastCommit": "df3a4c2d",
+      "lastCommitAt": "2026-06-15T16:50:00Z",
+      "lastCommitSubject": "fix(plugins): resolve strict-mode eval/Function conflict + AST walker false-positive (BUG-RPT-001/002)",
+      "staleData": true,
+      "staleReason": "Older than 25 most-recent commits at cache generation; will be replaced by post-commit hook on next commit"
+    }
+  }
+}
