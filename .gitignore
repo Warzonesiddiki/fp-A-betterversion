@@ -93,9 +93,16 @@ __pycache__/
 src-tauri/target/
 HANDOVER/
 
-# Agent temp directories
+# Agent temp directories (ATLAS P0 G20 hygiene)
 .hera-tmp/
-docs/drafts/prometheus/.test/
+.hermes-tmp/
+.atlas-tmp/
+# docs/drafts/ contains per-agent scratch notes (apollo, athena, atlas,
+# hephaestus, hera, hermes, iris, leader, mnemosyne, prometheus, strategos).
+# These are Muse working files and never ship to production.
+docs/drafts/
+# Local memory store (per-agent persistent notes) - not for production
+memory/
 
 # Log files at repo root
 /audit.out
