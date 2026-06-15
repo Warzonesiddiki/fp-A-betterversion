@@ -9,12 +9,22 @@ export { AggregateTableEngine } from './AggregateTableEngine';
 export { AggregationDesigner } from './AggregationDesigner';
 // export { AllocationEngine } from './AllocationEngine'; // barrel-export disabled for dynamic import splitting
 export { AllocationRuleEngine } from './AllocationRuleEngine';
-// export { AnomalyDetectionEngine } from './AnomalyDetectionEngine'; // barrel-export disabled for dynamic import splitting
+export { AnomalyDetectionEngine } from './AnomalyDetectionEngine'; // RE-ENABLED 2026-06-15
 export { AnomalyExplainer } from './AnomalyExplainer';
 export { ArrayFormulaEngine } from './ArrayFormulaEngine';
 export { AssumptionEngine } from './AssumptionEngine';
 // export { AuditEngine } from './AuditEngine'; // barrel-export disabled for dynamic import splitting
 export { AuditLogEngine } from './AuditLogEngine';
+export {
+  AuditTrailEngine,
+  type AuditEntry,
+  type AuditQuery,
+  type AuditAction,
+  type EntityType,
+  type MerkleProof,
+  type TamperDetectionResult,
+  type SOXExport,
+} from './AuditTrailEngine';
 export { AutoCommentaryEngine } from './AutoCommentaryEngine';
 // export { AutoSaveEngine } from './AutoSaveEngine'; // barrel-export disabled for dynamic import splitting
 export { BankingEngine } from './BankingEngine';
@@ -26,6 +36,15 @@ export { COGSVarianceEngine } from './COGSVarianceEngine';
 // export { CalculationGraph } from './CalculationGraph'; // barrel-export disabled for dynamic import splitting
 export { CalculationQueue } from './CalculationQueue';
 export { CapExEngine } from './CapExEngine';
+export {
+  CascadeCalculationEngine,
+  type OwnershipNode,
+  type CascadeICPair,
+  type CascadeFXRate,
+  type CascadeStep,
+  type CascadeResult,
+  type CascadeMethod,
+} from './CascadeCalculationEngine';
 export { CashEngine } from './CashEngine';
 export { CashFlowWaterfallEngine } from './CashFlowWaterfallEngine';
 export { CellAuditTrailEngine } from './CellAuditTrailEngine';
@@ -87,6 +106,19 @@ export { ExportTemplateEngine } from './ExportTemplateEngine';
 export { FairValueEngine } from './FairValueEngine';
 export { FinPlanFileEngine } from './FinPlanFileEngine';
 export { FinanceCopilotEngine } from './FinanceCopilotEngine';
+export {
+  FinancialCloseEngine,
+  type CloseTask,
+  type CloseTaskInstance,
+  type ClosePlan,
+  type CloseTaskStatus,
+  type CloseTaskPriority,
+  type ClosePeriod,
+  type CloseApproverRole,
+  type CloseValidationResult,
+  type CloseProgress,
+  type CloseConflict,
+} from './FinancialCloseEngine';
 export { FinancialInstrumentsEngine } from './FinancialInstrumentsEngine';
 export { FiscalCalendar } from './FiscalCalendar';
 export { ForecastMethodEngine } from './ForecastMethodEngine';
@@ -98,7 +130,7 @@ export { FormulaAutoCompleteEngine } from './FormulaAutoCompleteEngine';
 // StateMachine — removed from barrel to preserve EngineRegistry dynamic import splitting.
 // Import directly: import { StateMachine } from '@/engines/StateMachine';
 export { GlobalSearchEngine } from './GlobalSearchEngine';
-// export { GoalSeekEngine } from './GoalSeekEngine'; // barrel-export disabled for dynamic import splitting
+export { GoalSeekEngine } from './GoalSeekEngine'; // RE-ENABLED 2026-06-15
 export { GridOfflineEngine } from './GridOfflineEngine';
 export { GroupOutlineEngine } from './GroupOutlineEngine';
 export { HealthcareEngine } from './HealthcareEngine';
@@ -129,6 +161,14 @@ export { MultiCurrencyEngine } from './MultiCurrencyEngine';
 export { NamedRangeEngine } from './NamedRangeEngine';
 export { OptionPricingEngine } from './OptionPricingEngine';
 export { PeriodCloseEngine } from './PeriodCloseEngine';
+export {
+  PeriodLockEngine,
+  type PeriodInfo,
+  type PeriodState,
+  type PeriodTransition,
+  type PeriodLockResult,
+  type PeriodValidationResult,
+} from './PeriodLockEngine';
 // export { PivotTableEngine } from './PivotTableEngine'; // barrel-export disabled for dynamic import splitting
 export { PluginEngine } from './PluginEngine';
 export { ProfessionalExportEngine } from './ProfessionalExportEngine';
@@ -136,7 +176,30 @@ export { QueryCache } from './QueryCache';
 // export { RBACEngine } from './RBACEngine'; // barrel-export disabled for dynamic import splitting
 export { RealEstateEngine } from './RealEstateEngine';
 export { RecentFilesEngine } from './RecentFilesEngine';
+export {
+  RatioAnalysisEngine,
+  type BalanceSheet,
+  type IncomeStatement,
+  type CashFlow,
+  type RatioResult,
+  type RatioSuite,
+} from './RatioAnalysisEngine';
 export { ReconciliationEngine } from './ReconciliationEngine';
+export {
+  RegulatoryReportingEngine,
+  type ReportTemplate,
+  type ReportSection,
+  type ValidationRule,
+  type ReportData,
+  type ValidationIssue,
+  type ValidationResult,
+  type ReportFinding,
+  type SignedReport,
+  type ESGMetrics,
+  type ReportFramework,
+  type ReportSeverity,
+  type OutputFormat,
+} from './RegulatoryReportingEngine';
 // export { ReportBookEngine } from './ReportBookEngine'; // barrel-export disabled for dynamic import splitting
 // export { ReportBuilderEngine } from './ReportBuilderEngine'; // barrel-export disabled for dynamic import splitting
 export { ReportCacheEngine } from './ReportCacheEngine';
@@ -157,7 +220,7 @@ export { SaaSMetricsEngine } from './SaaSMetricsEngine';
 export { SafeMathParser } from './SafeMathParser';
 // export { ScenarioEngine } from './ScenarioEngine'; // barrel-export disabled for dynamic import splitting
 export { SegmentReportingEngine } from './SegmentReportingEngine';
-// export { SensitivityEngine } from './SensitivityEngine'; // barrel-export disabled for dynamic import splitting
+export { SensitivityEngine } from './SensitivityEngine'; // RE-ENABLED 2026-06-15
 export { SensitivityTableEngine } from './SensitivityTableEngine';
 export { SessionEngine } from './SessionEngine';
 // export { SignConventionEngine } from './SignConventionEngine'; // barrel-export disabled for dynamic import splitting
@@ -174,6 +237,16 @@ export { TemplateLibrary } from './TemplateLibrary';
 // export { ThreeStatementEngine } from './ThreeStatementEngine'; // barrel-export disabled for dynamic import splitting
 export { UndoRedoEngine } from './UndoRedoEngine';
 // export { ValidationEngine } from './ValidationEngine'; // barrel-export disabled for dynamic import splitting
+export {
+  VarianceAttributionEngine,
+  type Segment,
+  type SegmentType,
+  type VarianceAttribution,
+  type AttributionSummary,
+  type SignificanceResult,
+  type ReconciliationResult,
+  type SegmentMargin,
+} from './VarianceAttributionEngine';
 export { VarianceDecompositionEngine } from './VarianceDecompositionEngine';
 export { VersionControlEngine } from './VersionControlEngine';
 export { VisualWorkflowEngine } from './VisualWorkflowEngine';
