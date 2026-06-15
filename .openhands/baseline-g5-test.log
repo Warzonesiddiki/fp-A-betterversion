@@ -1,0 +1,25 @@
+=== G5 Test baseline ===
+Test framework: vitest v4.1.7
+Total test files in project: 832
+Test files matching include pattern: 826
+Run interrupted at 300s; partial results below
+
+--- Snapshot from earlier --bail=100 run (12.3s) ---
+Test Files: 22 failed | 3 passed | 2 skipped  (out of 27 attempted, 826 total discovered)
+Tests:      64 failed | 100 passed | 18 skipped  (out of 182 attempted)
+Duration:   12.30s
+
+--- Pattern observations (from partial full run, 300s) ---
+Common failure: 'No Table export is defined on the lucide-react mock' (FXExposurePage, DashboardBuilderPage)
+Plugin tests: PluginSandbox (13/38 fail), PluginAPI (10/21 fail), PluginLoader (1/21 fail)
+Component tests: UnderwritingDashboard (2/6 fail), ProductionDashboard (2/8 fail), AppLayout, Sidebar
+
+--- Top failure categories ---
+1. lucide-react mock missing icons (Table, etc.) - affects many pages
+2. Sidebar / AppLayout component tests failing
+3. Plugin API/Sandbox test failures (security/sandbox module issues)
+4. Page-level render tests needing store mocks
+
+--- G5 target ---
+Pass:  >=95% (currently way under due to plugin + lucide-mock issues)
+Time:  0 timeouts, 0 skips (current: many skips, no timeouts)

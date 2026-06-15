@@ -1,0 +1,41 @@
+=== G3 Bundle baseline ===
+Total JS raw:   6042224 bytes (5900 KB / 5 MB)
+Total JS gzip:  1720357 bytes (1680 KB / 1 MB)
+
+Main entry index-*.js:
+  raw:  228606 bytes (223 KB)
+  gzip: 58071 bytes (56 KB)
+
+Target G3: main <=150KB gzip, total <=2MB gzip
+Status: main PASS (56 KB <= 150 KB), total PASS (1 MB <= 2 MB)
+
+=== Top 10 largest JS chunks (raw / gzip) ===
+  grid-community-vendor-KhHM5ojt.js                   1049333 raw /  292681 gz
+  pdf-vendor-BdCGRRB4.js                               599253 raw /  172791 gz
+  ai-vendor-C1bXCBML.js                                553016 raw /  156205 gz
+  chart-vendor-CM5PJfUp.js                             432951 raw /  121674 gz
+  react-vendor-CDUs8cpo.js                             241072 raw /   77344 gz
+  index-C5u2KZqp.js                                    228606 raw /   58071 gz
+  index.es-CqU5TM38.js                                 151429 raw /   48387 gz
+  animation-vendor-DNVmdTYV.js                         132920 raw /   42974 gz
+  ui-vendor-BCzE6mnR.js                                 87731 raw /   27541 gz
+  FormulaFunctionRegistry-DtFCEGYO.js                   77087 raw /   17363 gz
+
+=== Vendors by gzip size ===
+  ai-vendor-C1bXCBML.js                               156205 gz (152 KB)
+  animation-vendor-DNVmdTYV.js                         42974 gz (41 KB)
+  chart-vendor-CM5PJfUp.js                            121674 gz (118 KB)
+  db-vendor-DsB4quvi.js                                13894 gz (13 KB)
+  excel-core-vendor-DY9TC5uh.js                       244178 gz (238 KB)
+  excel-vendor-CAUTEt2D.js                             10399 gz (10 KB)
+  form-vendor-B6IS2fW0.js                              15799 gz (15 KB)
+  grid-community-vendor-KhHM5ojt.js                   292681 gz (285 KB)
+  grid-react-vendor-CdO83kce.js                        14755 gz (14 KB)
+  i18n-vendor-BcMk_dGW.js                               2255 gz (2 KB)
+  icons-vendor-DHr9xd_g.js                             10476 gz (10 KB)
+  pdf-vendor-BdCGRRB4.js                              172791 gz (168 KB)
+  react-vendor-CDUs8cpo.js                             77344 gz (75 KB)
+  state-vendor-CJdXT68S.js                              1469 gz (1 KB)
+  style-vendor-BDIFJA3M.js                              7875 gz (7 KB)
+  ui-vendor-BCzE6mnR.js                                27541 gz (26 KB)
+  utils-vendor-DR1rHuvg.js                              5468 gz (5 KB)

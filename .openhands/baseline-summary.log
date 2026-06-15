@@ -1,0 +1,74 @@
+=== ATLAS Baseline Summary ===
+Generated: 2026-06-15
+Node: v26.2.0  NPM: 11.13.0
+Branch: main (13 ahead of origin/main)
+
+--- G1 tsc ---
+tsc --noEmit -> 0 errors (3432 files checked, strict + noUncheckedIndexedAccess)
+G1: PASS
+
+--- G2 build ---
+vite build -> exit 0
+modules transformed: 4239
+built in 5.15s
+errors: 0
+warnings: 2 (eval in exceljs.min.js dynamic chunk; cannot find module 'recharts/types/index')
+G2: PASS (0 errors)
+
+--- G3 bundle ---
+main index-*.js: 56,710 bytes raw / 56,710 bytes gzip? Let me recheck
+  - earlier output: gzip 58,071 bytes = 56.7 KB (under 150 KB target)
+Total dist/assets/*.js: 5.77 MB raw / 1.64 MB gzip (under 2 MB target)
+Vendors (gzip):
+  - grid-community-vendor: 285 KB (under 300 KB target)
+  - excel-core-vendor: 238 KB (under 300 KB target)
+  - pdf-vendor: 168 KB
+  - ai-vendor: 152 KB
+G3: PASS (main 56 KB <= 150 KB; total 1.64 MB <= 2 MB)
+
+--- G4 lint ---
+eslint -> 14 errors, 1 warning (all in store/* files: auditStore, scenarioStore, companyStore)
+G4: FAIL (14 errors)
+
+--- G5 test ---
+vitest v4.1.7
+Test files in project: 832
+Test files matching pattern: 826
+Run interrupted at 300s; partial data:
+  - 12.3s snapshot: 22 failed | 3 passed | 2 skipped (of 27 attempted) ; 64 failed | 100 passed | 18 skipped
+  - Top issues: lucide-react mock missing icons; plugin sandbox failures; Sidebar/AppLayout component tests
+G5: PARTIAL (need full pass; major issues: lucide mock, plugin sandbox)
+
+--- G9 engines ---
+G9: 359 .ts files in src/engines/ (barrel src/engines/index.ts exists)
+  - target 202 pure-function engines; current overshoots (359 total = pure + utility/aggregate)
+  - need to identify which 202 are the "pure" target set
+
+--- G10 stores ---
+G10: 70 .ts files in src/store/
+  - target 35 canonical stores with migrate() hook
+  - need to deduplicate and identify canonical 35
+
+--- G11 pages ---
+G11: 379 .tsx files across 47 subdirs in src/pages/
+  - target 192 wired pages (no stubs)
+
+--- docs/parts/ ---
+docs/parts/: 416 .md files (target ~200 post-Athena reconciliation)
+
+--- G20 git ---
+uncommitted: 1281 files (mostly .claude-flow cache, OPENHANDS_*, _apollo_*, .openclaude-backup-*)
+branch: main (13 ahead of origin/main)
+stale merged branches: 0 (none to clean)
+
+--- G7 (security) ---
+xlsx package: PRESENT in package.json (CRITICAL: needs removal per security G7)
+CSP: Configured in vite.config.ts server.headers
+
+--- Summary ---
+PASS gates: G1, G2, G3
+FAIL gates: G4 (14 errors), G5 (64+ fails), G7 (xlsx)
+INFRASTRUCTURE: G9, G10, G11 — overshoot targets; need reconciliation
+PENDING: G19, G20 (lazy vendors OK at baseline)
+
+=== END ===

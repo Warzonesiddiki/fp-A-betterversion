@@ -1,0 +1,52 @@
+
+> finplan-pro@1.0.0 lint
+> node node_modules/eslint/bin/eslint.js src --fix
+
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\plugins\PluginMarketplace.test.ts
+  30:16  warning  'p' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\analyticsStore.ts
+  106:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\budgetStore.ts
+  257:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\collaborationStore.ts
+  110:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\dashboardStore.ts
+  190:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\entityStore.ts
+  211:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\forecastStore.ts
+  148:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\fxRateStore.ts
+  35:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\notificationStore.ts
+  63:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\reportStore.ts
+  84:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\scenarioStore.ts
+  84:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\tourStore.ts
+  72:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\varianceStore.ts
+  35:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\workflowStore.ts
+  190:0  error  Parsing error: Property assignment expected
+
+C:\Users\Tahir\Desktop\frontend that i want\fpa\src\store\workforceStore.ts
+  134:0  error  Parsing error: Property assignment expected
+
+✖ 15 problems (14 errors, 1 warning)
+
