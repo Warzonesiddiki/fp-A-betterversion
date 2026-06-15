@@ -141,6 +141,107 @@ const HelpPage = lazy(() => import('./pages/HelpPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const DrillDownWindowPage = lazy(() => import('./pages/DrillDownWindowPage'));
 
+// Phase 4 G11 - additional pages (re-import batch)
+const BudgetApproval = lazy(() => import('./pages/budgets/BudgetApproval'));
+const DriverPlanningPage = lazy(() => import('./pages/forecasts/DriverPlanningPage'));
+const RollingForecastPage = lazy(() => import('./pages/forecasts/RollingForecastPage'));
+const ScenarioComparisonPage = lazy(() => import('./pages/scenarios/ScenarioComparisonPage'));
+const DataLineagePage = lazy(() => import('./pages/analytics/DataLineagePage'));
+const NLQChatPage = lazy(() => import('./pages/ai/NLQChatPage'));
+const DataFlowMapPage = lazy(() => import('./pages/data/DataFlowMapPage'));
+const DataSummaryCard = lazy(() => import('./pages/data/DataSummaryCard'));
+const MigrationWizard = lazy(() => import('./pages/data/MigrationWizard'));
+const ReconciliationPanel = lazy(() => import('./pages/data/ReconciliationPanel'));
+const ReconciliationResults = lazy(() => import('./pages/data/ReconciliationResults'));
+const ImportJobHistory = lazy(() => import('./pages/data/ImportJobHistory'));
+const VersionDiffPage = lazy(() => import('./pages/data/VersionDiffPage'));
+const SOXCompliancePage = lazy(() => import('./pages/audit/SOXCompliancePage'));
+const ConsolidationPage = lazy(() => import('./pages/consolidation/ConsolidationPage'));
+const LeaseAccountingPage = lazy(() => import('./pages/lease/LeaseAccountingPage'));
+const CapexTracker = lazy(() => import('./pages/capex/CapexTracker'));
+const BenchmarksPage = lazy(() => import('./pages/admin/BenchmarksPage'));
+const BankingDashboard = lazy(() => import('./pages/banking/BankingDashboard'));
+const BankReconciliation = lazy(() => import('./pages/banking/BankReconciliation'));
+const BankStatements = lazy(() => import('./pages/banking/BankStatements'));
+const BondPortfolioPage = lazy(() => import('./pages/bonds/BondPortfolioPage'));
+const YieldCurvePage = lazy(() => import('./pages/bonds/YieldCurvePage'));
+const CreditRiskPage = lazy(() => import('./pages/credit/CreditRiskPage'));
+const ConstructionDashboardPage = lazy(
+  () => import('./pages/construction/ConstructionDashboardPage')
+);
+const EquipmentManagementPage = lazy(() => import('./pages/construction/EquipmentManagementPage'));
+const ProjectCostingPage = lazy(() => import('./pages/construction/ProjectCostingPage'));
+const RealEstateDashboardPage = lazy(() => import('./pages/realestate/RealEstateDashboardPage'));
+const FacilityManagementPage = lazy(() => import('./pages/realestate/FacilityManagementPage'));
+const PropertyPortfolioPage = lazy(() => import('./pages/realestate/PropertyPortfolioPage'));
+const REITDashboardPage = lazy(() => import('./pages/realestate/REITDashboardPage'));
+const ValuationPage = lazy(() => import('./pages/realestate/ValuationPage'));
+const ClaimsAnalyticsPage = lazy(() => import('./pages/insurance/ClaimsAnalyticsPage'));
+const InsuranceDashboardPage = lazy(() => import('./pages/insurance/InsuranceDashboardPage'));
+const InsurancePage = lazy(() => import('./pages/insurance/InsurancePage'));
+const UnderwritingPage = lazy(() => import('./pages/insurance/UnderwritingPage'));
+const HealthcarePage = lazy(() => import('./pages/healthcare/HealthcarePage'));
+const ValueBasedCarePage = lazy(() => import('./pages/healthcare/ValueBasedCarePage'));
+const EnergySectorPage = lazy(() => import('./pages/energy/EnergySectorPage'));
+const ESGPage = lazy(() => import('./pages/esg/ESGPage'));
+const ManufacturingPage = lazy(() => import('./pages/manufacturing/ManufacturingPage'));
+const RetailDashboard = lazy(() => import('./pages/retail/RetailDashboard'));
+const RetailDashboardPage = lazy(() => import('./pages/retail/RetailDashboardPage'));
+const InventoryDashboard = lazy(() => import('./pages/retail/InventoryDashboard'));
+const InventoryPlanningPage = lazy(() => import('./pages/retail/InventoryPlanningPage'));
+const StorePerformancePage = lazy(() => import('./pages/retail/StorePerformancePage'));
+const ChurnAnalysisPage = lazy(() => import('./pages/saas/ChurnAnalysisPage'));
+const SaaSPage = lazy(() => import('./pages/saas/SaaSPage'));
+const ReportScheduler = lazy(() => import('./pages/reports/ReportScheduler'));
+const ReportTemplateLibraryPage = lazy(() => import('./pages/reports/ReportTemplateLibraryPage'));
+const ReportBookBuilder = lazy(() => import('./pages/reports/ReportBookBuilder'));
+const FinancialStatementTemplates = lazy(
+  () => import('./pages/reports/FinancialStatementTemplates')
+);
+const TemplatePreviewPage = lazy(() => import('./pages/templates/TemplatePreviewPage'));
+const ChartShowcasePage = lazy(() => import('./pages/charts/ChartShowcasePage'));
+const ChartOfAccountsPageCharts = lazy(() => import('./pages/charts/ChartOfAccountsPage'));
+const ActivityFeed = lazy(() => import('./pages/collaboration/ActivityFeed'));
+const SharedReports = lazy(() => import('./pages/collaboration/SharedReports'));
+const TeamWorkspace = lazy(() => import('./pages/collaboration/TeamWorkspace'));
+const BackupRestorePage = lazy(() => import('./pages/settings/BackupRestorePage'));
+const ConnectorSettingsPage = lazy(() => import('./pages/settings/ConnectorSettingsPage'));
+const IntegrationSettingsPage = lazy(() => import('./pages/settings/IntegrationSettingsPage'));
+const SecuritySettingsPage = lazy(() => import('./pages/settings/SecuritySettingsPage'));
+
+// Phase 4 G11 - Sector dashboards (18 sector/* + 4 sectors/* + 4 legacy aliases)
+const AgricultureDashboardPage = lazy(() => import('./pages/sector/AgricultureDashboardPage'));
+const SectorBankingDashboardPage = lazy(() => import('./pages/sector/BankingDashboardPage'));
+const SectorConstructionDashboardPage = lazy(
+  () => import('./pages/sector/ConstructionDashboardPage')
+);
+const SectorEducationDashboardPage = lazy(() => import('./pages/sector/EducationDashboardPage'));
+const EmissionsDashboardPage = lazy(() => import('./pages/sector/EmissionsTradingPage'));
+const SectorEnergyDashboardPage = lazy(() => import('./pages/sector/EnergyDashboardPage'));
+const EquipmentDashboardPage = lazy(() => import('./pages/sector/EquipmentManagementPage'));
+const SectorGovernmentDashboardPage = lazy(() => import('./pages/sector/GovernmentDashboardPage'));
+const SectorHealthcareDashboardPage = lazy(() => import('./pages/sector/HealthcareDashboardPage'));
+const HospitalityDashboardPage = lazy(() => import('./pages/sector/HospitalityDashboardPage'));
+const SectorInsuranceDashboardPage = lazy(() => import('./pages/sector/InsuranceDashboardPage'));
+const SectorLogisticsDashboardPage = lazy(() => import('./pages/sector/LogisticsDashboardPage'));
+const SectorManufacturingDashboardPage = lazy(
+  () => import('./pages/sector/ManufacturingDashboardPage')
+);
+const SectorRealEstateDashboardPage = lazy(() => import('./pages/sector/RealEstateDashboardPage'));
+const SectorRetailDashboardPage = lazy(() => import('./pages/sector/RetailDashboardPage'));
+const SectorDashboardPage = lazy(() => import('./pages/sector/SectorPage'));
+const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDashboardPage'));
+const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
+const SectorsEducationDashboardPage = lazy(() => import('./pages/sectors/EducationDashboardPage'));
+const SectorsGovernmentDashboardPage = lazy(
+  () => import('./pages/sectors/GovernmentDashboardPage')
+);
+const SectorsLogisticsDashboardPage = lazy(() => import('./pages/sectors/LogisticsDashboardPage'));
+const SectorsTelecomDashboardPage = lazy(() => import('./pages/sectors/TelecomDashboardPage'));
+const EducationPage = lazy(() => import('./pages/sector/EducationDashboardPage'));
+const GovernmentPage = lazy(() => import('./pages/sector/GovernmentDashboardPage'));
+const LogisticsPage = lazy(() => import('./pages/sector/LogisticsDashboardPage'));
+const TelecomPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
 /**
  * RouteGroupWrapper provides a shared ErrorBoundary and Suspense context
  * for logical groups of routes, using domain-aware error boundaries
@@ -287,6 +388,69 @@ export default function App() {
                 <Route path="/data/gl-account-analysis" element={<GLAccountAnalysisPage />} />
                 <Route path="/data/gl-reporting" element={<GLReportingPage />} />
                 <Route path="/audit/trail" element={<AuditTrailPage />} />
+                <Route path="/audit/sox" element={<SOXCompliancePage />} />
+                <Route path="/budgets/approval" element={<BudgetApproval />} />
+                <Route path="/forecasts/drivers" element={<DriverPlanningPage />} />
+                <Route path="/forecasts/rolling" element={<RollingForecastPage />} />
+                <Route path="/scenarios/compare" element={<ScenarioComparisonPage />} />
+                <Route path="/analytics/data-lineage" element={<DataLineagePage />} />
+                <Route path="/ai/nlq" element={<NLQChatPage />} />
+                <Route path="/data/data-flow" element={<DataFlowMapPage />} />
+                <Route path="/data/data-summary" element={<DataSummaryCard />} />
+                <Route path="/data/migration-wizard" element={<MigrationWizard />} />
+                <Route path="/data/reconciliation" element={<ReconciliationPanel />} />
+                <Route path="/data/reconciliation-results" element={<ReconciliationResults />} />
+                <Route path="/data/import-history" element={<ImportJobHistory />} />
+                <Route path="/data/version-diff" element={<VersionDiffPage />} />
+                <Route path="/consolidation/detail" element={<ConsolidationPage />} />
+                <Route path="/lease/accounting" element={<LeaseAccountingPage />} />
+                <Route path="/capex/tracker" element={<CapexTracker />} />
+                <Route path="/admin/benchmarks" element={<BenchmarksPage />} />
+                <Route path="/banking/banking" element={<BankingDashboard />} />
+                <Route path="/banking/reconciliation" element={<BankReconciliation />} />
+                <Route path="/banking/statements" element={<BankStatements />} />
+                <Route path="/bonds/portfolio" element={<BondPortfolioPage />} />
+                <Route path="/bonds/yield-curve" element={<YieldCurvePage />} />
+                <Route path="/credit/risk" element={<CreditRiskPage />} />
+                <Route path="/construction/dashboard" element={<ConstructionDashboardPage />} />
+                <Route path="/construction/equipment" element={<EquipmentManagementPage />} />
+                <Route path="/construction/project" element={<ProjectCostingPage />} />
+                <Route path="/realestate/dashboard" element={<RealEstateDashboardPage />} />
+                <Route path="/realestate/facility" element={<FacilityManagementPage />} />
+                <Route path="/realestate/portfolio" element={<PropertyPortfolioPage />} />
+                <Route path="/realestate/reit" element={<REITDashboardPage />} />
+                <Route path="/realestate/valuation" element={<ValuationPage />} />
+                <Route path="/insurance/claims" element={<ClaimsAnalyticsPage />} />
+                <Route path="/insurance/dashboard" element={<InsuranceDashboardPage />} />
+                <Route path="/insurance/insurance" element={<InsurancePage />} />
+                <Route path="/insurance/underwriting" element={<UnderwritingPage />} />
+                <Route path="/healthcare/overview" element={<HealthcarePage />} />
+                <Route path="/healthcare/value-based" element={<ValueBasedCarePage />} />
+                <Route path="/energy/sector" element={<EnergySectorPage />} />
+                <Route path="/esg/overview" element={<ESGPage />} />
+                <Route path="/manufacturing/overview" element={<ManufacturingPage />} />
+                <Route path="/retail/dashboard" element={<RetailDashboardPage />} />
+                <Route path="/retail/inventory" element={<InventoryDashboard />} />
+                <Route path="/retail/inventory-planning" element={<InventoryPlanningPage />} />
+                <Route path="/retail/retail" element={<RetailDashboard />} />
+                <Route path="/retail/performance" element={<StorePerformancePage />} />
+                <Route path="/saas/churn-analysis" element={<ChurnAnalysisPage />} />
+                <Route path="/saas/overview" element={<SaaSPage />} />
+                <Route path="/collaboration/activity" element={<ActivityFeed />} />
+                <Route path="/collaboration/shared" element={<SharedReports />} />
+                <Route path="/collaboration/team" element={<TeamWorkspace />} />
+                <Route path="/settings/backup" element={<BackupRestorePage />} />
+                <Route path="/settings/connectors" element={<ConnectorSettingsPage />} />
+                <Route path="/settings/integrations" element={<IntegrationSettingsPage />} />
+                <Route path="/settings/security" element={<SecuritySettingsPage />} />
+                <Route path="/templates/preview" element={<TemplatePreviewPage />} />
+                <Route path="/charts/chart-of-accounts" element={<ChartOfAccountsPageCharts />} />
+                <Route path="/charts/showcase" element={<ChartShowcasePage />} />
+                <Route path="/reports/designer" element={<ReportDesignerPage />} />
+                <Route path="/reports/scheduler" element={<ReportScheduler />} />
+                <Route path="/reports/library" element={<ReportTemplateLibraryPage />} />
+                <Route path="/reports/book-builder" element={<ReportBookBuilder />} />
+                <Route path="/reports/templates" element={<FinancialStatementTemplates />} />
               </Route>
 
               {/* Financial Operations Group */}
@@ -382,6 +546,40 @@ export default function App() {
                 </ErrorBoundary>
               }
             />
+            {/* Phase 4 G11 — Sector dashboards (18) + aliases */}
+            <Route path="/sector/agriculture" element={<AgricultureDashboardPage />} />
+            <Route path="/sector/banking" element={<SectorBankingDashboardPage />} />
+            <Route path="/sector/construction" element={<SectorConstructionDashboardPage />} />
+            <Route path="/sector/education" element={<SectorEducationDashboardPage />} />
+            <Route path="/sector/emissions" element={<EmissionsDashboardPage />} />
+            <Route path="/sector/energy" element={<SectorEnergyDashboardPage />} />
+            <Route path="/sector/equipment" element={<EquipmentDashboardPage />} />
+            <Route path="/sector/government" element={<SectorGovernmentDashboardPage />} />
+            <Route path="/sector/healthcare" element={<SectorHealthcareDashboardPage />} />
+            <Route path="/sector/hospitality" element={<HospitalityDashboardPage />} />
+            <Route path="/sector/insurance" element={<SectorInsuranceDashboardPage />} />
+            <Route path="/sector/logistics" element={<SectorLogisticsDashboardPage />} />
+            <Route path="/sector/manufacturing" element={<SectorManufacturingDashboardPage />} />
+            <Route path="/sector/real-estate" element={<SectorRealEstateDashboardPage />} />
+            <Route path="/sector/retail" element={<SectorRetailDashboardPage />} />
+            <Route path="/sector/sector" element={<SectorDashboardPage />} />
+            <Route path="/sector/technology" element={<TechnologyDashboardPage />} />
+            <Route
+              path="/sector/telecommunications"
+              element={<TelecommunicationsDashboardPage />}
+            />
+            <Route path="/sectors/education" element={<SectorsEducationDashboardPage />} />
+            <Route path="/sectors/government" element={<SectorsGovernmentDashboardPage />} />
+            <Route path="/sectors/logistics" element={<SectorsLogisticsDashboardPage />} />
+            <Route path="/sectors/telecom" element={<SectorsTelecomDashboardPage />} />
+            <Route path="/education" element={<EducationPage />} />
+            <Route path="/government" element={<GovernmentPage />} />
+            <Route path="/logistics" element={<LogisticsPage />} />
+            <Route path="/telecom" element={<TelecomPage />} />
+            <Route path="/forecasts/compare" element={<ScenarioComparisonPage />} />
+            <Route path="/forecasts/auto-update" element={<RollingForecastPage />} />
+            <Route path="/scenarios/merge" element={<ScenarioComparisonPage />} />
+            <Route path="/scenarios/lock" element={<ScenarioComparisonPage />} />
           </Routes>
         </Suspense>
       </ThemeProvider>

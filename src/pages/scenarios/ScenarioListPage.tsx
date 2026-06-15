@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore } from '@/store/scenarioStore';
+import { CompetitiveGapsToolbar } from '@/components/competitive/CompetitiveGapsToolbar';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { TreemapChart, TreemapDataPoint } from '@/components/charts/TreemapChart';
-import { Plus, FlaskConical } from 'lucide-react';
+import { Plus, FlaskConical, Lock, Unlock } from 'lucide-react';
 
 export default function ScenarioListPage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -16,6 +17,9 @@ export default function ScenarioListPage() {
   }, []);
 
   const { scenarios } = useScenarioStore();
+  const setSelectedScenario = useScenarioStore((s) => s.setSelectedScenario);
+  const lockScenario = useScenarioStore((s) => s.lockScenario);
+  const unlockScenario = useScenarioStore((s) => s.unlockScenario);
   const navigate = useNavigate();
   const [typeFilter, setTypeFilter] = useState('all');
 
@@ -52,6 +56,8 @@ export default function ScenarioListPage() {
 
   return (
     <div className="p-6 space-y-6">
+      <CompetitiveGapsToolbar activeSheetId="sheet-default" />
+
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center justify-between mb-6">
@@ -110,14 +116,36 @@ export default function ScenarioListPage() {
             <Card
               key={s.id}
               className="cursor-pointer hover:border-blue-500/50 transition-all"
-              onClick={() => navigate('/scenarios/' + s.id)}
+              onClick={() => {
+                setSelectedScenario(s.id);
+                navigate('/scenarios/' + s.id);
+              }}
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold">{s.name}</h3>
-                  <Badge variant={s.isActive ? 'default' : 'outline'} className="text-[10px]">
-                    {s.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
+                  <div className="flex items-center gap-1">
+                    <Badge variant={s.isActive ? 'default' : 'outline'} className="text-[10px]">
+                      {s.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (s.isLocked) unlockScenario(s.id);
+                        else lockScenario(s.id);
+                      }}
+                      title={s.isLocked ? 'Unlock scenario' : 'Lock scenario'}
+                      aria-label={s.isLocked ? `Unlock ${s.name}` : `Lock ${s.name}`}
+                      className="p-1 rounded hover:bg-slate-700 text-slate-400"
+                    >
+                      {s.isLocked ? (
+                        <Lock className="h-3.5 w-3.5 text-amber-500" />
+                      ) : (
+                        <Unlock className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 <p className="text-xs text-slate-400 mb-3 line-clamp-2">{s.description}</p>
                 <div className="flex gap-2 text-xs text-slate-500">

@@ -636,6 +636,7 @@ export interface ScenarioState {
   readonly toggleScenarioComparison: (id: string) => void;
   readonly lockScenario: (id: string) => void;
   readonly unlockScenario: (id: string) => void;
+  readonly mergeScenarios: (sourceId: string, targetId: string, mergedName?: string) => void;
   readonly setError: (error: string | null) => void;
   readonly clearError: () => void;
   readonly setLoading: (loading: boolean) => void;

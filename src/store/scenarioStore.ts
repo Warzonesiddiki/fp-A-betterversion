@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { Scenario, ScenarioState } from '../types';
@@ -77,10 +77,32 @@ export const useScenarioStore = create<ScenarioState>()(
             ),
           }));
         },
+
+        // G12 #1 — Scenario Merge: combine two scenarios into a new one
+        mergeScenarios: (sourceId, targetId, mergedName) => {
+          set((state) => {
+            const source = state.scenarios.find((s) => s.id === sourceId);
+            const target = state.scenarios.find((s) => s.id === targetId);
+            if (!source || !target) return state;
+            if (source.isLocked || target.isLocked) return state;
+            const merged: Scenario = {
+              ...target,
+              id: `scn-merge-${Date.now()}`,
+              name: mergedName || `Merge of ${source.name} + ${target.name}`,
+              isLocked: false,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              assumptions: [...target.assumptions],
+            };
+            return { scenarios: [...state.scenarios, merged] };
+          });
+        },
       })),
       {
         name: 'scenario-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )
