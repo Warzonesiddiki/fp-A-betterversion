@@ -503,6 +503,8 @@ export const useAuthStore = create<AuthState>()(
       {
         name: 'auth-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
         partialize: (state) => ({
           // Only persist non-sensitive fields
           user: state.user,
