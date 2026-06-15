@@ -70,7 +70,7 @@ export function SectorSelector({
               'flex flex-col items-start gap-1.5 rounded-xl border p-4 text-left transition-all',
               'hover:border-blue-400 hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none',
               isActive
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 shadow-md ring-1 ring-blue-500'
+                ? 'border-blue-500 bg-[var(--accent-primary)]/10 shadow-md ring-1 ring-blue-500'
                 : 'border-[var(--border-subtle)] bg-[var(--bg-surface)]'
             )}
           >
@@ -80,7 +80,7 @@ export function SectorSelector({
             <span className="text-sm font-semibold leading-tight text-[var(--text-primary)]">
               {sector.name}
             </span>
-            <span className="text-xs text-slate-400 line-clamp-2">{sector.description}</span>
+            <span className="text-xs text-[var(--text-muted)] line-clamp-2">{sector.description}</span>
             <Badge variant={isActive ? 'default' : 'secondary'} className="mt-auto">
               {sector.defaultKPIs.length} KPIs
             </Badge>

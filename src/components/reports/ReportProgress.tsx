@@ -58,7 +58,7 @@ interface StatusBadgeProps {
 
 function StatusBadge({ status }: StatusBadgeProps) {
   const config: Record<ReportJob['status'], { bg: string; text: string; label: string }> = {
-    pending: { bg: 'bg-slate-700', text: 'text-slate-400', label: 'Pending' },
+    pending: { bg: 'bg-[var(--bg-hover)]', text: 'text-[var(--text-muted)]', label: 'Pending' },
     running: { bg: 'bg-blue-900/50', text: 'text-blue-400', label: 'Running' },
     completed: { bg: 'bg-green-900/50', text: 'text-green-400', label: 'Done' },
     error: { bg: 'bg-red-900/50', text: 'text-red-400', label: 'Failed' },
@@ -85,11 +85,11 @@ function JobRow({ job }: JobRowProps) {
   return (
     <div className="flex items-center gap-2 py-1 text-xs">
       <StatusBadge status={job.status} />
-      <span className="flex-1 truncate text-slate-300">
+      <span className="flex-1 truncate text-[var(--text-secondary)]">
         {job.reportName}
-        <span className="text-slate-500"> &mdash; {job.entityName}</span>
+        <span className="text-[var(--text-muted)]"> &mdash; {job.entityName}</span>
       </span>
-      {duration && <span className="text-slate-500 tabular-nums w-14 text-right">{duration}</span>}
+      {duration && <span className="text-[var(--text-muted)] tabular-nums w-14 text-right">{duration}</span>}
       {job.error && (
         <span className="text-red-400 truncate max-w-[200px]" title={job.error}>
           {job.error}
@@ -138,11 +138,11 @@ export function ReportProgress({
   const completedJobs = useMemo(() => jobs.filter((j) => j.status === 'completed'), [jobs]);
 
   return (
-    <div className="space-y-4 rounded-lg border border-slate-700 bg-slate-900/80 p-4">
+    <div className="space-y-4 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h4 className="text-sm font-semibold text-white">Batch Generation</h4>
+          <h4 className="text-sm font-semibold text-[var(--text-primary)]">Batch Generation</h4>
           {isRunning && (
             <span className="flex items-center gap-1.5 text-xs text-blue-400">
               <span className="inline-block h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
@@ -182,7 +182,7 @@ export function ReportProgress({
 
       {/* Progress bar */}
       <div className="space-y-1">
-        <div className="h-2.5 rounded-full bg-slate-800 overflow-hidden">
+        <div className="h-2.5 rounded-full bg-[var(--bg-hover)] overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
               progress.status === 'error'
@@ -198,7 +198,7 @@ export function ReportProgress({
             aria-valuemax={100}
           />
         </div>
-        <div className="flex justify-between text-[11px] text-slate-500">
+        <div className="flex justify-between text-[11px] text-[var(--text-muted)]">
           <span>
             {progress.currentReport && isRunning
               ? `${progress.currentReport} - ${progress.currentEntity}`
@@ -211,7 +211,7 @@ export function ReportProgress({
       </div>
 
       {/* Timing */}
-      <div className="flex items-center gap-4 text-[11px] text-slate-500">
+      <div className="flex items-center gap-4 text-[11px] text-[var(--text-muted)]">
         <span>Elapsed: {formatElapsed(elapsed)}</span>
         {isRunning && eta > 0 && <span>{formatETA(eta)}</span>}
       </div>

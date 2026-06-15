@@ -132,21 +132,21 @@ export function PluginDetail({
       />
 
       {/* Panel */}
-      <div className="relative z-10 max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white dark:bg-gray-900 dark:bg-gray-800 shadow-xl dark:border dark:border-gray-700">
+      <div className="relative z-10 max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-[var(--bg-elevated)] shadow-xl dark:border border-[var(--border-default)]">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border-default)] bg-white dark:bg-gray-900 dark:bg-gray-800 px-6 py-4 dark:border-gray-700">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border-default)] bg-[var(--bg-elevated)] px-6 py-4 border-[var(--border-default)]">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-3xl">
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[var(--bg-elevated)] text-3xl">
               {plugin.icon ?? '🧩'}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-[var(--text-primary)] dark:text-white">
+                <h2 className="text-lg font-bold text-[var(--text-primary)] text-[var(--text-primary)]">
                   {plugin.name}
                 </h2>
                 {plugin.verified && <Badge variant="default">Verified</Badge>}
               </div>
-              <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+              <p className="text-sm text-[var(--text-muted)] text-[var(--text-muted)]">
                 by {plugin.author} &middot; v{plugin.version}
               </p>
             </div>
@@ -154,7 +154,7 @@ export function PluginDetail({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:hover:text-gray-200"
+            className="rounded-md p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Close"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -171,7 +171,7 @@ export function PluginDetail({
         {/* Body */}
         <div className="space-y-6 px-6 py-5">
           {/* Stats row */}
-          <div className="flex flex-wrap items-center gap-6 text-sm text-[var(--text-secondary)] dark:text-gray-300">
+          <div className="flex flex-wrap items-center gap-6 text-sm text-[var(--text-secondary)] text-[var(--text-secondary)]">
             <div className="flex items-center gap-1.5">
               <StarRating rating={plugin.rating} />
               <span>{plugin.rating.toFixed(1)}</span>
@@ -192,10 +192,10 @@ export function PluginDetail({
 
           {/* Description */}
           <div>
-            <h3 className="mb-1 text-sm font-semibold text-[var(--text-primary)] dark:text-white">
+            <h3 className="mb-1 text-sm font-semibold text-[var(--text-primary)] text-[var(--text-primary)]">
               Description
             </h3>
-            <p className="text-sm leading-relaxed text-[var(--text-secondary)] dark:text-gray-300">
+            <p className="text-sm leading-relaxed text-[var(--text-secondary)] text-[var(--text-secondary)]">
               {plugin.description}
             </p>
           </div>
@@ -203,14 +203,14 @@ export function PluginDetail({
           {/* Tags */}
           {plugin.tags && plugin.tags.length > 0 && (
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-[var(--text-primary)] dark:text-white">
+              <h3 className="mb-2 text-sm font-semibold text-[var(--text-primary)] text-[var(--text-primary)]">
                 Tags
               </h3>
               <div className="flex flex-wrap gap-2">
                 {plugin.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300 dark:bg-gray-700 dark:text-gray-300"
+                    className="rounded-full bg-[var(--bg-elevated)] px-2.5 py-1 text-xs text-[var(--text-secondary)]"
                   >
                     {tag}
                   </span>
@@ -221,7 +221,7 @@ export function PluginDetail({
 
           {/* Permissions */}
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-[var(--text-primary)] dark:text-white">
+            <h3 className="mb-2 text-sm font-semibold text-[var(--text-primary)] text-[var(--text-primary)]">
               Required Permissions
             </h3>
             <div className="space-y-1.5">
@@ -235,7 +235,7 @@ export function PluginDetail({
                   >
                     {PERMISSION_RISK[perm] ?? 'low'}
                   </span>
-                  <span className="text-sm text-[var(--text-secondary)] dark:text-gray-300">
+                  <span className="text-sm text-[var(--text-secondary)] text-[var(--text-secondary)]">
                     {PERMISSION_LABELS[perm] ?? perm}
                   </span>
                 </div>
@@ -245,7 +245,7 @@ export function PluginDetail({
 
           {/* Compatibility */}
           {plugin.minAppVersion && (
-            <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-3 text-xs text-[var(--text-muted)] dark:bg-gray-700/50 dark:text-gray-400 dark:text-gray-500">
+            <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-xs text-[var(--text-muted)]">
               Requires FinPlan Pro {plugin.minAppVersion} or later
             </div>
           )}
@@ -276,7 +276,7 @@ export function PluginDetail({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-[var(--border-default)] px-6 py-4 dark:border-gray-700">
+        <div className="flex items-center justify-end gap-3 border-t border-[var(--border-default)] px-6 py-4 border-[var(--border-default)]">
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>

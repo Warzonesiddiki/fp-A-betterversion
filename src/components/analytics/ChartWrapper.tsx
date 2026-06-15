@@ -35,7 +35,7 @@ export const ChartWrapper = memo(function ChartWrapper({
     <Card className={className}>
       <CardHeader className="flex items-center justify-between px-4 py-3">
         <div>
-          <h3 className="font-semibold text-sm dark:text-gray-100">{title}</h3>
+          <h3 className="font-semibold text-sm text-[var(--text-primary)]">{title}</h3>
           {subtitle && <p className="text-xs text-[var(--text-muted)] mt-0.5">{subtitle}</p>}
         </div>
         {exportable && (

@@ -44,14 +44,14 @@ interface CoverPagePreviewProps {
 
 function CoverPagePreview({ config }: CoverPagePreviewProps) {
   return (
-    <div className="bg-[var(--bg-surface)] rounded-lg shadow-2xl p-10 text-slate-900 min-h-[400px] flex flex-col justify-between">
+    <div className="bg-[var(--bg-elevated)] rounded-lg shadow-2xl p-10 text-[var(--text-primary)] min-h-[400px] flex flex-col justify-between">
       <div>
         {config.logoUrl && <img src={config.logoUrl} alt="Company logo" className="h-12 mb-8" />}
         <h1 className="text-3xl font-bold mb-2">{config.title}</h1>
-        {config.subtitle && <p className="text-lg text-slate-500 mb-6">{config.subtitle}</p>}
+        {config.subtitle && <p className="text-lg text-[var(--text-muted)] mb-6">{config.subtitle}</p>}
       </div>
 
-      <div className="space-y-1 text-sm text-slate-600">
+      <div className="space-y-1 text-sm text-[var(--text-secondary)]">
         <p>{config.companyName}</p>
         <p>{config.entityName}</p>
         <p>{config.coverDate}</p>
@@ -68,19 +68,19 @@ interface SectionPreviewProps {
 function SectionPreview({ section, sectionIndex }: SectionPreviewProps) {
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-semibold text-white">
+      <h4 className="text-sm font-semibold text-[var(--text-primary)]">
         {sectionIndex + 1}. {section.title}
       </h4>
       <div className="space-y-1">
         {section.reports.map((report, ri) => (
           <div
             key={ri}
-            className="flex items-center justify-between text-xs text-slate-400 bg-slate-800/30 rounded px-2 py-1"
+            className="flex items-center justify-between text-xs text-[var(--text-muted)] bg-[var(--bg-hover)] rounded px-2 py-1"
           >
             <span>
               {report.entityName} — {report.reportName}
             </span>
-            <span className="text-slate-500">{report.data.rows.length} rows</span>
+            <span className="text-[var(--text-muted)]">{report.data.rows.length} rows</span>
           </div>
         ))}
       </div>
@@ -97,7 +97,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between text-xs text-slate-400">
+      <div className="flex justify-between text-xs text-[var(--text-muted)]">
         <span>
           {progress.currentReport && `${progress.currentReport} — ${progress.currentEntity}`}
         </span>
@@ -105,7 +105,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
           {progress.completed}/{progress.total} ({pct}%)
         </span>
       </div>
-      <div className="h-2 rounded-full bg-slate-700 overflow-hidden">
+      <div className="h-2 rounded-full bg-[var(--bg-hover)] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${
             progress.status === 'error' ? 'bg-red-500' : 'bg-blue-500'
@@ -114,7 +114,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
         />
       </div>
       {progress.errors.length > 0 && (
-        <ul className="text-xs text-red-400 space-y-0.5 max-h-24 overflow-auto">
+        <ul className="text-xs text-[var(--negative)] space-y-0.5 max-h-24 overflow-auto">
           {progress.errors.map((err, i) => (
             <li key={i}>{err}</li>
           ))}
@@ -231,18 +231,18 @@ export function BoardPackGenerator() {
       {/* LEFT: Configuration */}
       <div className="lg:col-span-4 space-y-6">
         <Card className="p-4 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Board Pack Configuration</h3>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Board Pack Configuration</h3>
 
           {/* Template selector */}
           <div>
-            <label htmlFor="bp-template" className="block text-xs text-slate-400 mb-1">
+            <label htmlFor="bp-template" className="block text-xs text-[var(--text-muted)] mb-1">
               Template
             </label>
             <select
               id="bp-template"
               value={config.template}
               onChange={(e) => handleConfigChange('template', e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded text-sm text-[var(--text-primary)] px-3 py-2"
             >
               {TEMPLATE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -254,7 +254,7 @@ export function BoardPackGenerator() {
 
           {/* Title */}
           <div>
-            <label htmlFor="bp-title" className="block text-xs text-slate-400 mb-1">
+            <label htmlFor="bp-title" className="block text-xs text-[var(--text-muted)] mb-1">
               Title
             </label>
             <input
@@ -262,13 +262,13 @@ export function BoardPackGenerator() {
               type="text"
               value={config.title}
               onChange={(e) => handleConfigChange('title', e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded text-sm text-[var(--text-primary)] px-3 py-2"
             />
           </div>
 
           {/* Subtitle */}
           <div>
-            <label htmlFor="bp-subtitle" className="block text-xs text-slate-400 mb-1">
+            <label htmlFor="bp-subtitle" className="block text-xs text-[var(--text-muted)] mb-1">
               Subtitle
             </label>
             <input
@@ -276,13 +276,13 @@ export function BoardPackGenerator() {
               type="text"
               value={config.subtitle ?? ''}
               onChange={(e) => handleConfigChange('subtitle', e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded text-sm text-[var(--text-primary)] px-3 py-2"
             />
           </div>
 
           {/* Company */}
           <div>
-            <label htmlFor="bp-company" className="block text-xs text-slate-400 mb-1">
+            <label htmlFor="bp-company" className="block text-xs text-[var(--text-muted)] mb-1">
               Company Name
             </label>
             <input
@@ -290,20 +290,20 @@ export function BoardPackGenerator() {
               type="text"
               value={config.companyName}
               onChange={(e) => handleConfigChange('companyName', e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded text-sm text-[var(--text-primary)] px-3 py-2"
             />
           </div>
 
           {/* Entity */}
           <div>
-            <label htmlFor="bp-entity" className="block text-xs text-slate-400 mb-1">
+            <label htmlFor="bp-entity" className="block text-xs text-[var(--text-muted)] mb-1">
               Entity
             </label>
             <select
               id="bp-entity"
               value={config.entityName}
               onChange={(e) => handleConfigChange('entityName', e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded text-sm text-[var(--text-primary)] px-3 py-2"
             >
               <option value="All Entities (Consolidated)">All Entities (Consolidated)</option>
               {MOCK_ENTITIES.map((ent) => (
@@ -316,7 +316,7 @@ export function BoardPackGenerator() {
 
           {/* Date */}
           <div>
-            <label htmlFor="bp-cover-date" className="block text-xs text-slate-400 mb-1">
+            <label htmlFor="bp-cover-date" className="block text-xs text-[var(--text-muted)] mb-1">
               Cover Date
             </label>
             <input
@@ -324,13 +324,13 @@ export function BoardPackGenerator() {
               type="text"
               value={config.coverDate}
               onChange={(e) => handleConfigChange('coverDate', e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded text-sm text-[var(--text-primary)] px-3 py-2"
             />
           </div>
 
           {/* Options */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-xs text-slate-400">
+            <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
               <input
                 type="checkbox"
                 checked={config.includeTableOfContents}
@@ -339,7 +339,7 @@ export function BoardPackGenerator() {
               />
               Include Table of Contents
             </label>
-            <label className="flex items-center gap-2 text-xs text-slate-400">
+            <label className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
               <input
                 type="checkbox"
                 checked={config.includeExecutiveSummary}
@@ -377,7 +377,7 @@ export function BoardPackGenerator() {
                 Export Excel
               </Button>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[var(--text-muted)]">
               PDF includes cover page, table of contents, executive summary, and all report sections
               with page breaks.
             </p>
@@ -397,7 +397,7 @@ export function BoardPackGenerator() {
         {config.includeTableOfContents && (
           <Card className="p-4 space-y-2">
             <h3 className="text-sm font-semibold text-white">Table of Contents</h3>
-            <ol className="space-y-1 text-xs text-slate-400 list-decimal list-inside">
+            <ol className="space-y-1 text-xs text-[var(--text-muted)] list-decimal list-inside">
               {config.includeExecutiveSummary && <li>Executive Summary</li>}
               {book?.entries
                 .filter((e) => e.enabled)
@@ -426,7 +426,7 @@ export function BoardPackGenerator() {
 
         {/* Empty state */}
         {!isGenerated && (
-          <div className="text-center py-16 text-slate-500 text-sm">
+          <div className="text-center py-16 text-[var(--text-muted)] text-sm">
             Configure the board pack on the left and click &quot;Generate Board Pack&quot; to
             preview the output.
           </div>

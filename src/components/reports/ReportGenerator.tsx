@@ -231,15 +231,15 @@ export function ReportGenerator({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-4 space-y-4">
         <Card className="p-4 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Report Generator</h3>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Report Generator</h3>
           <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="rounded-lg bg-slate-800/50 p-2">
-              <p className="text-lg font-bold text-white">{entities.length}</p>
-              <p className="text-xs text-slate-400">Entities</p>
+            <div className="rounded-lg bg-[var(--bg-elevated)] p-2">
+              <p className="text-lg font-bold text-[var(--text-primary)]">{entities.length}</p>
+              <p className="text-xs text-[var(--text-muted)]">Entities</p>
             </div>
-            <div className="rounded-lg bg-slate-800/50 p-2">
+            <div className="rounded-lg bg-[var(--bg-elevated)] p-2">
               <p className="text-lg font-bold text-emerald-400">{totalJobs}</p>
-              <p className="text-xs text-slate-400">Total Reports</p>
+              <p className="text-xs text-[var(--text-muted)]">Total Reports</p>
             </div>
           </div>
           <Button
@@ -251,7 +251,7 @@ export function ReportGenerator({
               ? `Generating... (${(elapsed / 1000).toFixed(1)}s)`
               : `Generate ${totalJobs} Reports`}
           </Button>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--text-muted)]">
             Parallel generation in batches of {BATCH_SIZE} for maximum throughput.
           </p>
         </Card>
@@ -267,14 +267,14 @@ export function ReportGenerator({
             onDownloadBoardPack={handleDownloadBoardPack}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 text-slate-500 text-sm space-y-2">
+          <div className="flex flex-col items-center justify-center h-64 text-[var(--text-muted)] text-sm space-y-2">
             <p>
               {progress?.status === 'running'
                 ? 'Generating reports...'
                 : 'Configure and generate reports to see results.'}
             </p>
             {progress?.status === 'running' && (
-              <div className="w-48 h-2 rounded-full bg-slate-700 overflow-hidden">
+              <div className="w-48 h-2 rounded-full bg-[var(--bg-hover)] overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full transition-all duration-300"
                   style={{

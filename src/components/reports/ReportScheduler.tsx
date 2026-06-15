@@ -34,8 +34,8 @@ export function ReportScheduler({
 
   if (schedules.length === 0 && !isModalOpen) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-slate-900 border border-dashed border-slate-700 rounded-lg">
-        <p className="text-slate-400 mb-4">No schedules yet</p>
+      <div className="flex flex-col items-center justify-center p-12 bg-[var(--bg-elevated)] border border-dashed border-[var(--border-default)] rounded-lg">
+        <p className="text-[var(--text-muted)] mb-4">No schedules yet</p>
         <Button onClick={() => setIsModalOpen(true)}>Add Schedule</Button>
       </div>
     );
@@ -44,7 +44,7 @@ export function ReportScheduler({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-white">Scheduled Reports</h3>
+        <h3 className="text-lg font-semibold text-[var(--text-primary)]">Scheduled Reports</h3>
         <Button size="sm" onClick={() => setIsModalOpen(true)}>
           Add Schedule
         </Button>
@@ -54,23 +54,23 @@ export function ReportScheduler({
         {schedules.map((s) => (
           <Card key={s.id} className="p-4 flex items-center justify-between">
             <div className="flex flex-col gap-1">
-              <span className="font-bold text-slate-200">{s.reportName}</span>
-              <span className="text-xs text-slate-500 uppercase tracking-wider">
+              <span className="font-bold text-[var(--text-primary)]">{s.reportName}</span>
+              <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 {s.frequency} • {s.format}
               </span>
-              <span className="text-xs text-slate-400">Next run: {s.nextRun}</span>
+              <span className="text-xs text-[var(--text-secondary)]">Next run: {s.nextRun}</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onToggle(s.id)}
-                className={`w-10 h-6 rounded-full transition-colors ${s.isActive ? 'bg-blue-600' : 'bg-slate-700'}`}
+                className={`w-10 h-6 rounded-full transition-colors ${s.isActive ? 'bg-blue-600' : 'bg-[var(--bg-hover)]'}`}
                 aria-label={`${s.isActive ? 'Disable' : 'Enable'} ${s.reportName} schedule`}
               />
               <button
                 onClick={() => {
                   if (window.confirm('Remove this report schedule?')) onRemove(s.id);
                 }}
-                className="text-slate-500 hover:text-red-400"
+                className="text-[var(--text-muted)] hover:text-[var(--negative)]"
               >
                 Remove
               </button>

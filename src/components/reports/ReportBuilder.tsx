@@ -249,7 +249,7 @@ export function ReportBuilder({
       aria-label="Report Builder"
     >
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/50">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
         <div className="flex items-center gap-3">
           <input
             type="text"
@@ -283,7 +283,7 @@ export function ReportBuilder({
           >
             <Redo2 className="h-4 w-4" />
           </Button>
-          <div className="w-px h-5 bg-slate-700 mx-1" />
+          <div className="w-px h-5 bg-[var(--bg-hover)] mx-1" />
           <Button
             size="sm"
             variant="ghost"
@@ -314,14 +314,14 @@ export function ReportBuilder({
       ) : (
         <div className="flex flex-1 overflow-hidden">
           {/* Left Panel */}
-          <div className="w-56 border-r border-slate-800 flex flex-col overflow-hidden">
-            <div className="flex border-b border-slate-800">
+          <div className="w-56 border-r border-[var(--border-subtle)] flex flex-col overflow-hidden">
+            <div className="flex border-b border-[var(--border-subtle)]">
               <button
                 className={cn(
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
                   activePanel === 'rows'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-[var(--text-secondary)] hover:text-white'
                 )}
                 onClick={() => setActivePanel('rows')}
               >
@@ -333,7 +333,7 @@ export function ReportBuilder({
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
                   activePanel === 'columns'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-[var(--text-secondary)] hover:text-white'
                 )}
                 onClick={() => setActivePanel('columns')}
               >
@@ -345,7 +345,7 @@ export function ReportBuilder({
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
                   activePanel === 'properties'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-[var(--text-secondary)] hover:text-white'
                 )}
                 onClick={() => setActivePanel('properties')}
               >
@@ -357,19 +357,19 @@ export function ReportBuilder({
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {activePanel === 'rows' && (
                 <>
-                  <p className="text-xs text-slate-500 mb-2">Drag to add rows</p>
+                  <p className="text-xs text-[var(--text-muted)] mb-2">Drag to add rows</p>
                   {ROW_TYPES.map((rt) => (
                     <div
                       key={rt.type}
                       draggable
                       onDragStart={(e) => handleDragStart(e, { type: 'row-type', value: rt.type })}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors text-sm"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)]/50 cursor-grab hover:border-blue-500 hover:bg-[var(--bg-elevated)] transition-colors text-sm"
                     >
-                      <GripVertical className="h-3.5 w-3.5 text-slate-500" />
-                      <span className="text-xs font-mono bg-slate-700 px-1.5 py-0.5 rounded">
+                      <GripVertical className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                      <span className="text-xs font-mono bg-[var(--bg-hover)] px-1.5 py-0.5 rounded">
                         {rt.icon}
                       </span>
-                      <span className="text-slate-300">{rt.label}</span>
+                      <span className="text-[var(--text-secondary)]">{rt.label}</span>
                     </div>
                   ))}
                 </>
@@ -377,7 +377,7 @@ export function ReportBuilder({
 
               {activePanel === 'columns' && (
                 <>
-                  <p className="text-xs text-slate-500 mb-2">Drag to add columns</p>
+                  <p className="text-xs text-[var(--text-muted)] mb-2">Drag to add columns</p>
                   {COLUMN_TYPES.map((ct) => (
                     <div
                       key={ct.label}
@@ -385,10 +385,10 @@ export function ReportBuilder({
                       onDragStart={(e) =>
                         handleDragStart(e, { type: 'column-type', value: ct.label })
                       }
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors text-sm"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)]/50 cursor-grab hover:border-blue-500 hover:bg-[var(--bg-elevated)] transition-colors text-sm"
                     >
-                      <GripVertical className="h-3.5 w-3.5 text-slate-500" />
-                      <span className="text-slate-300">{ct.label}</span>
+                      <GripVertical className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                      <span className="text-[var(--text-secondary)]">{ct.label}</span>
                     </div>
                   ))}
                 </>
@@ -397,7 +397,7 @@ export function ReportBuilder({
               {activePanel === 'properties' && (
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="report-name" className="text-xs text-slate-400 block mb-1">
+                    <label htmlFor="report-name" className="text-xs text-[var(--text-secondary)] block mb-1">
                       Report Name
                     </label>
                     <input
@@ -405,13 +405,13 @@ export function ReportBuilder({
                       type="text"
                       value={report.name}
                       onChange={(e) => updateName(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm text-white"
+                      className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-sm text-white"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="report-description"
-                      className="text-xs text-slate-400 block mb-1"
+                      className="text-xs text-[var(--text-secondary)] block mb-1"
                     >
                       Description
                     </label>
@@ -423,7 +423,7 @@ export function ReportBuilder({
                           ReportBuilderEngine.updateReport(report, { description: e.target.value })
                         )
                       }
-                      className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm text-white resize-none"
+                      className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-sm text-white resize-none"
                       rows={3}
                     />
                   </div>
@@ -452,7 +452,7 @@ export function ReportBuilder({
             >
               <div className="p-4 space-y-1">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xs font-semibold text-slate-400 uppercase flex items-center gap-1.5">
+                  <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase flex items-center gap-1.5">
                     <Rows className="h-3.5 w-3.5" />
                     Rows ({report.layout.rows.length})
                   </h3>
@@ -463,7 +463,7 @@ export function ReportBuilder({
                 </div>
 
                 {report.layout.rows.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500 text-sm border-2 border-dashed border-slate-700 rounded-lg">
+                  <div className="text-center py-8 text-[var(--text-muted)] text-sm border-2 border-dashed border-[var(--border-default)] rounded-lg">
                     Drag row types here or click Add Row
                   </div>
                 ) : (
@@ -474,7 +474,7 @@ export function ReportBuilder({
                         'flex items-center gap-2 px-3 py-1.5 rounded border text-sm transition-colors cursor-pointer',
                         selectedRowIndex === ri
                           ? 'border-blue-500 bg-blue-500/10'
-                          : 'border-slate-700 bg-slate-800/30 hover:border-slate-600'
+                          : 'border-[var(--border-default)] bg-[var(--bg-elevated)]/30 hover:border-slate-600'
                       )}
                       role="button"
                       tabIndex={0}
@@ -483,7 +483,7 @@ export function ReportBuilder({
                         if (e.key === 'Enter' || e.key === ' ') setSelectedRowIndex(ri);
                       }}
                     >
-                      <GripVertical className="h-3.5 w-3.5 text-slate-500 flex-shrink-0" />
+                      <GripVertical className="h-3.5 w-3.5 text-[var(--text-muted)] flex-shrink-0" />
                       <span
                         className={cn(
                           'text-xs font-mono px-1.5 py-0.5 rounded flex-shrink-0',
@@ -494,21 +494,21 @@ export function ReportBuilder({
                               : row.type === 'header'
                                 ? 'bg-purple-500/20 text-purple-400'
                                 : row.type === 'blank'
-                                  ? 'bg-slate-600 text-slate-400'
-                                  : 'bg-slate-700 text-slate-300'
+                                  ? 'bg-[var(--bg-active)] text-[var(--text-secondary)]'
+                                  : 'bg-[var(--bg-hover)] text-[var(--text-secondary)]'
                         )}
                       >
                         {row.type.charAt(0).toUpperCase()}
                       </span>
-                      <span className="text-slate-300 truncate flex-1">
+                      <span className="text-[var(--text-secondary)] truncate flex-1">
                         {(
                           row.cells.find((_, ci) => report.layout.columns[ci]?.type === 'label')
                             ?.content as { content?: { text?: string } }
                         )?.content?.text ?? row.type}
                       </span>
-                      {row.grouping && <Layers className="h-3 w-3 text-slate-500 flex-shrink-0" />}
+                      {row.grouping && <Layers className="h-3 w-3 text-[var(--text-muted)] flex-shrink-0" />}
                       <button
-                        className="text-slate-500 hover:text-red-400 flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                        className="text-[var(--text-muted)] hover:text-red-400 flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           removeRow(row.id);
@@ -529,7 +529,7 @@ export function ReportBuilder({
                 onDrop={(e) => handleDrop(e, 'columns')}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xs font-semibold text-slate-400 uppercase flex items-center gap-1.5">
+                  <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase flex items-center gap-1.5">
                     <Columns className="h-3.5 w-3.5" />
                     Columns ({report.layout.columns.length})
                   </h3>
@@ -540,7 +540,7 @@ export function ReportBuilder({
                 </div>
 
                 {report.layout.columns.length === 0 ? (
-                  <div className="text-center py-6 text-slate-500 text-sm border-2 border-dashed border-slate-700 rounded-lg">
+                  <div className="text-center py-6 text-[var(--text-muted)] text-sm border-2 border-dashed border-[var(--border-default)] rounded-lg">
                     Drag column types here or click Add Column
                   </div>
                 ) : (
@@ -552,7 +552,7 @@ export function ReportBuilder({
                           'flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs transition-colors cursor-pointer',
                           selectedColIndex === ci
                             ? 'border-blue-500 bg-blue-500/10'
-                            : 'border-slate-700 bg-slate-800/30 hover:border-slate-600'
+                            : 'border-[var(--border-default)] bg-[var(--bg-elevated)]/30 hover:border-slate-600'
                         )}
                         role="button"
                         tabIndex={0}
@@ -572,16 +572,16 @@ export function ReportBuilder({
                                   ? 'bg-blue-500/20 text-blue-400'
                                   : col.period === 'variance'
                                     ? 'bg-amber-500/20 text-amber-400'
-                                    : 'bg-slate-600 text-slate-400'
+                                    : 'bg-[var(--bg-active)] text-[var(--text-secondary)]'
                           )}
                         >
                           {col.type === 'label'
                             ? 'L'
                             : (col.period?.charAt(0).toUpperCase() ?? 'C')}
                         </span>
-                        <span className="text-slate-300">{col.header}</span>
+                        <span className="text-[var(--text-secondary)]">{col.header}</span>
                         <button
-                          className="text-slate-500 hover:text-red-400 ml-1 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                          className="text-[var(--text-muted)] hover:text-red-400 ml-1 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             removeColumn(col.id);
@@ -599,10 +599,10 @@ export function ReportBuilder({
 
             {/* Selected item properties */}
             {(selectedRowIndex !== null || selectedColIndex !== null) && (
-              <div className="border-t border-slate-800 p-4 bg-slate-900/30">
+              <div className="border-t border-[var(--border-subtle)] p-4 bg-[var(--bg-elevated)]">
                 {selectedRowIndex !== null && report.layout.rows[selectedRowIndex] && (
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-slate-400">
+                    <p className="text-xs font-medium text-[var(--text-secondary)]">
                       Row {selectedRowIndex + 1} — {report.layout.rows[selectedRowIndex]!.type}
                     </p>
                     <div className="flex gap-2">
@@ -617,7 +617,7 @@ export function ReportBuilder({
                         }
                         onChange={(e) => updateRowLabel(selectedRowIndex, e.target.value)}
                         placeholder="Row label..."
-                        className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                        className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-white"
                       />
                       <select
                         value={report.layout.rows[selectedRowIndex]!.type}
@@ -630,7 +630,7 @@ export function ReportBuilder({
                             return { ...layout, rows };
                           });
                         }}
-                        className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                        className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-white"
                       >
                         {ROW_TYPES.map((rt) => (
                           <option key={rt.type} value={rt.type}>
@@ -645,7 +645,7 @@ export function ReportBuilder({
                   const col = report.layout.columns[selectedColIndex]!;
                   return (
                     <div className="space-y-2">
-                      <p className="text-xs font-medium text-slate-400">
+                      <p className="text-xs font-medium text-[var(--text-secondary)]">
                         Column {selectedColIndex + 1} — {col.type}
                       </p>
                       <div className="flex gap-2">
@@ -654,7 +654,7 @@ export function ReportBuilder({
                           value={col.header}
                           onChange={(e) => updateColumnHeader(selectedColIndex, e.target.value)}
                           placeholder="Column header..."
-                          className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                          className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-white"
                         />
                         <input
                           type="number"
@@ -669,7 +669,7 @@ export function ReportBuilder({
                               )
                             );
                           }}
-                          className="w-20 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                          className="w-20 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-white"
                           min={40}
                           aria-label="Column width"
                         />
@@ -682,8 +682,8 @@ export function ReportBuilder({
           </div>
 
           {/* Right Panel — Live Preview */}
-          <div className="w-[420px] border-l border-slate-800 overflow-y-auto p-4 bg-slate-950/50">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase mb-3 flex items-center gap-1.5">
+          <div className="w-[420px] border-l border-[var(--border-subtle)] overflow-y-auto p-4 bg-[var(--bg-root)]/50">
+            <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase mb-3 flex items-center gap-1.5">
               <Eye className="h-3.5 w-3.5" />
               Live Preview
             </h3>

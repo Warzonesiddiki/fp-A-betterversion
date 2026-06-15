@@ -26,14 +26,14 @@ export function ReportLeftPanel({
   onDescriptionChange,
 }: ReportLeftPanelProps) {
   return (
-    <div className="w-56 border-r border-slate-800 flex flex-col overflow-hidden">
-      <div className="flex border-b border-slate-800">
+    <div className="w-56 border-r border-[var(--border-subtle)] flex flex-col overflow-hidden">
+      <div className="flex border-b border-[var(--border-subtle)]">
         <button
           className={cn(
             'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
             activePanel === 'rows'
               ? 'text-blue-400 border-b-2 border-blue-400'
-              : 'text-slate-400 hover:text-white'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
           )}
           onClick={() => onPanelChange('rows')}
         >
@@ -45,7 +45,7 @@ export function ReportLeftPanel({
             'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
             activePanel === 'columns'
               ? 'text-blue-400 border-b-2 border-blue-400'
-              : 'text-slate-400 hover:text-white'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
           )}
           onClick={() => onPanelChange('columns')}
         >
@@ -57,7 +57,7 @@ export function ReportLeftPanel({
             'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
             activePanel === 'properties'
               ? 'text-blue-400 border-b-2 border-blue-400'
-              : 'text-slate-400 hover:text-white'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
           )}
           onClick={() => onPanelChange('properties')}
         >
@@ -69,19 +69,19 @@ export function ReportLeftPanel({
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {activePanel === 'rows' && (
           <>
-            <p className="text-xs text-slate-500 mb-2">Drag to add rows</p>
+            <p className="text-xs text-[var(--text-muted)] mb-2">Drag to add rows</p>
             {ROW_TYPES.map((rt) => (
               <div
                 key={rt.type}
                 draggable
                 onDragStart={(e) => onDragStart(e, { type: 'row-type', value: rt.type })}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors text-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] cursor-grab hover:border-blue-500 hover:bg-[var(--bg-hover)] transition-colors text-sm"
               >
-                <GripVertical className="h-3.5 w-3.5 text-slate-500" />
-                <span className="text-xs font-mono bg-slate-700 px-1.5 py-0.5 rounded">
+                <GripVertical className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                <span className="text-xs font-mono bg-[var(--bg-hover)] px-1.5 py-0.5 rounded">
                   {rt.icon}
                 </span>
-                <span className="text-slate-300">{rt.label}</span>
+                <span className="text-[var(--text-secondary)]">{rt.label}</span>
               </div>
             ))}
           </>
@@ -89,16 +89,16 @@ export function ReportLeftPanel({
 
         {activePanel === 'columns' && (
           <>
-            <p className="text-xs text-slate-500 mb-2">Drag to add columns</p>
+            <p className="text-xs text-[var(--text-muted)] mb-2">Drag to add columns</p>
             {COLUMN_TYPES.map((ct) => (
               <div
                 key={ct.label}
                 draggable
                 onDragStart={(e) => onDragStart(e, { type: 'column-type', value: ct.label })}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors text-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] cursor-grab hover:border-blue-500 hover:bg-[var(--bg-hover)] transition-colors text-sm"
               >
-                <GripVertical className="h-3.5 w-3.5 text-slate-500" />
-                <span className="text-slate-300">{ct.label}</span>
+                <GripVertical className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                <span className="text-[var(--text-secondary)]">{ct.label}</span>
               </div>
             ))}
           </>
@@ -107,20 +107,20 @@ export function ReportLeftPanel({
         {activePanel === 'properties' && (
           <div className="space-y-4">
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Report Name</label>
+              <label className="text-xs text-[var(--text-muted)] block mb-1">Report Name</label>
               <input
                 type="text"
                 value={reportName}
                 onChange={(e) => onNameChange(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm text-white"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-sm text-[var(--text-primary)]"
               />
             </div>
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Description</label>
+              <label className="text-xs text-[var(--text-muted)] block mb-1">Description</label>
               <textarea
                 value={reportDescription}
                 onChange={(e) => onDescriptionChange(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm text-white resize-none"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-sm text-[var(--text-primary)] resize-none"
                 rows={3}
               />
             </div>

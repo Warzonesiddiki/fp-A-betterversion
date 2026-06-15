@@ -49,8 +49,8 @@ const statusConfig: Record<
     glow: 'shadow-red-200/50',
   },
   gray: {
-    bg: 'bg-gray-50 dark:bg-gray-800 border-[var(--border-subtle)]',
-    dot: 'bg-gray-400',
+    bg: 'bg-[var(--bg-elevated)] border-[var(--border-subtle)]',
+    dot: 'bg-[var(--text-muted)]',
     text: 'text-[var(--text-secondary)]',
     glow: '',
   },

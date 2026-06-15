@@ -28,13 +28,13 @@ export function ReportToolbar({
   onSave,
 }: ReportToolbarProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/50">
+    <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
       <div className="flex items-center gap-3">
         <input
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          className="bg-transparent text-lg font-semibold text-white border-b border-transparent hover:border-slate-600 focus:border-blue-500 focus:outline-none px-1"
+          className="bg-transparent text-lg font-semibold text-[var(--text-primary)] border-b border-transparent hover:border-[var(--border-default)] focus:border-blue-500 focus:outline-none px-1"
           aria-label="Report name"
         />
         {errorCount > 0 && (
@@ -62,7 +62,7 @@ export function ReportToolbar({
         >
           <Redo2 className="h-4 w-4" />
         </Button>
-        <div className="w-px h-5 bg-slate-700 mx-1" />
+        <div className="w-px h-5 bg-[var(--border-default)] mx-1" />
         <Button
           size="sm"
           variant="ghost"

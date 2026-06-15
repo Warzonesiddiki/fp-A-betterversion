@@ -35,15 +35,15 @@ function FilterRow({
   onRemove: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800/50 group" role="region" aria-label="FilterPanel">
-      <GripVertical className="h-3 w-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] group" role="region" aria-label="FilterPanel">
+      <GripVertical className="h-3 w-3 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
       <span className="text-xs text-blue-400 font-medium truncate min-w-0 flex-shrink-0 max-w-[80px]">
         {filter.label}
       </span>
       <select
         value={filter.operator}
         onChange={(e) => onUpdate({ operator: e.target.value as ConditionOperator })}
-        className="bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-slate-300 focus:outline-none focus:border-blue-500 flex-shrink-0"
+        className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-1.5 py-0.5 text-[10px] text-[var(--text-secondary)] focus:outline-none focus:border-blue-500 flex-shrink-0"
       >
         {OPERATORS.map((op) => (
           <option key={op.value} value={op.value}>
@@ -55,12 +55,12 @@ function FilterRow({
         type="text"
         value={String(filter.value)}
         onChange={(e) => onUpdate({ value: e.target.value })}
-        className="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-white focus:outline-none focus:border-blue-500"
+        className="flex-1 min-w-0 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-1.5 py-0.5 text-[10px] text-[var(--text-primary)] focus:outline-none focus:border-blue-500"
         placeholder="Value..."
       />
       <button
         onClick={onRemove}
-        className="text-slate-600 hover:text-red-400 transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+        className="text-[var(--text-muted)] hover:text-[var(--negative)] transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         aria-label={`Remove filter ${filter.label}`}
       >
         <X className="h-3 w-3" />
@@ -102,15 +102,15 @@ export function FilterPanel({
       onDrop={handleDrop}
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold text-slate-400 uppercase flex items-center gap-1.5">
+        <h3 className="text-xs font-semibold text-[var(--text-muted)] uppercase flex items-center gap-1.5">
           <Filter className="h-3.5 w-3.5" />
           Filters ({filters.length})
         </h3>
       </div>
 
       {filters.length === 0 ? (
-        <div className="text-center py-4 text-slate-500 text-[10px] border-2 border-dashed border-slate-700 rounded-lg">
-          <Plus className="h-3 w-3 mx-auto mb-1 text-slate-600" />
+        <div className="text-center py-4 text-[var(--text-muted)] text-[10px] border-2 border-dashed border-[var(--border-default)] rounded-lg">
+          <Plus className="h-3 w-3 mx-auto mb-1 text-[var(--text-muted)]" />
           Drag dimensions here to filter
         </div>
       ) : (

@@ -55,7 +55,7 @@ export function SectorDashboard({
   if (!config) {
     return (
       <Card className={cn('p-8 text-center', className)}>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-[var(--text-muted)]">
           Sector &quot;{resolvedId}&quot; not found. Select a sector below.
         </p>
         <SectorSelector

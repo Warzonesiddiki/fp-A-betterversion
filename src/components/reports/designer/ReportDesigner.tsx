@@ -165,33 +165,33 @@ export function ReportDesigner() {
   const validation = useMemo(() => ReportBuilderEngine.validateReport(report), [report]);
 
   return (
-    <div className="flex h-full w-full bg-slate-950 overflow-hidden font-sans antialiased text-slate-200" role="region" aria-label="ReportDesigner">
+    <div className="flex h-full w-full bg-[var(--bg-root)] overflow-hidden font-sans antialiased text-[var(--text-secondary)]" role="region" aria-label="ReportDesigner">
       {!previewMode && <DesignerSidebar onDragStart={(e, item) => { e.dataTransfer.setData('application/json', JSON.stringify(item)); }} />}
 
       <div className="flex-1 flex flex-col relative overflow-hidden">
         {/* Toolbar */}
-        <header className="h-14 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-4 z-20">
+        <header className="h-14 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)] backdrop-blur-md flex items-center justify-between px-4 z-20">
           <div className="flex items-center gap-3">
-            <input type="text" value={report.name} onChange={(e) => setReport({ ...report, name: e.target.value })} className="bg-transparent border-none focus:ring-0 font-bold text-white p-0 text-sm h-5 w-48" aria-label="Report name" />
+            <input type="text" value={report.name} onChange={(e) => setReport({ ...report, name: e.target.value })} className="bg-transparent border-none focus:ring-0 font-bold text-[var(--text-primary)] p-0 text-sm h-5 w-48" aria-label="Report name" />
             {validation.errors.length > 0 && <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">{validation.errors.length} issue{validation.errors.length > 1 ? 's' : ''}</span>}
           </div>
           <div className="flex items-center gap-1.5">
             <Button variant="ghost" size="sm" onClick={() => setShowTemplateModal(true)}><FolderOpen className="h-3.5 w-3.5 mr-1.5" />Template</Button>
-            <div className="w-px h-5 bg-slate-700 mx-1" />
+            <div className="w-px h-5 bg-[var(--border-default)] mx-1" />
             <Button variant={subtotalsEnabled ? 'default' : 'ghost'} size="sm" onClick={() => setSubtotalsEnabled((p) => !p)} className={subtotalsEnabled ? 'bg-blue-600 hover:bg-blue-500 text-white' : ''}><Sigma className="h-3.5 w-3.5 mr-1" />Totals</Button>
-            <div className="w-px h-5 bg-slate-700 mx-1" />
+            <div className="w-px h-5 bg-[var(--border-default)] mx-1" />
             <Button variant="ghost" size="sm" onClick={undo} disabled={historyIndex === 0} aria-label="Undo"><Undo2 className="h-4 w-4" /></Button>
             <Button variant="ghost" size="sm" onClick={redo} disabled={historyIndex === history.length - 1} aria-label="Redo"><Redo2 className="h-4 w-4" /></Button>
-            <div className="w-px h-5 bg-slate-700 mx-1" />
-            <div className="flex bg-slate-800 rounded-lg p-0.5">
-              <button onClick={() => setPreviewMode(false)} className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-all', !previewMode ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white')}><Layout className="h-3 w-3" />Design</button>
-              <button onClick={() => setPreviewMode(true)} className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-all', previewMode ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white')}><Eye className="h-3 w-3" />Preview</button>
+            <div className="w-px h-5 bg-[var(--border-default)] mx-1" />
+            <div className="flex bg-[var(--bg-hover)] rounded-lg p-0.5">
+              <button onClick={() => setPreviewMode(false)} className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-all', !previewMode ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]')}><Layout className="h-3 w-3" />Design</button>
+              <button onClick={() => setPreviewMode(true)} className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-all', previewMode ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]')}><Eye className="h-3 w-3" />Preview</button>
             </div>
-            <div className="w-px h-5 bg-slate-700 mx-1" />
+            <div className="w-px h-5 bg-[var(--border-default)] mx-1" />
             <Button variant="ghost" size="sm" onClick={() => handleExport('pdf')} aria-label="Export as PDF"><FileText className="h-3.5 w-3.5" /></Button>
             <Button variant="ghost" size="sm" onClick={() => handleExport('excel')} aria-label="Export as Excel"><TableIcon className="h-3.5 w-3.5" /></Button>
             <Button variant="ghost" size="sm" onClick={() => handleExport('csv')} aria-label="Export as CSV"><Download className="h-3.5 w-3.5" /></Button>
-            <div className="w-px h-5 bg-slate-700 mx-1" />
+            <div className="w-px h-5 bg-[var(--border-default)] mx-1" />
             <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/20" onClick={handleSave}><Save className="h-3.5 w-3.5 mr-1.5" />Save</Button>
           </div>
         </header>
@@ -206,11 +206,11 @@ export function ReportDesigner() {
                 <div className="p-3 bg-blue-500/10 rounded-xl"><Layout className="h-10 w-10 text-blue-400" /></div>
                 <div className="space-y-1.5">
                   <h3 className="text-lg font-bold text-white">Build Your Report</h3>
-                  <p className="text-slate-400 text-xs">Drag dimensions and measures from the sidebar, or start from a template.</p>
+                  <p className="text-[var(--text-muted)] text-xs">Drag dimensions and measures from the sidebar, or start from a template.</p>
                 </div>
                 <div className="flex gap-3">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-800 rounded-lg text-[10px] text-slate-300 border border-slate-700"><Rows className="h-3 w-3" /> Rows</div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-800 rounded-lg text-[10px] text-slate-300 border border-slate-700"><Columns className="h-3 w-3" /> Columns</div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[var(--bg-hover)] rounded-lg text-[10px] text-[var(--text-secondary)] border border-[var(--border-default)]"><Rows className="h-3 w-3" /> Rows</div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[var(--bg-hover)] rounded-lg text-[10px] text-[var(--text-secondary)] border border-[var(--border-default)]"><Columns className="h-3 w-3" /> Columns</div>
                 </div>
                 <Button size="sm" variant="ghost" onClick={() => setShowTemplateModal(true)} className="mt-2"><FolderOpen className="h-3.5 w-3.5 mr-1.5" />Start from Template</Button>
               </motion.div>
@@ -218,17 +218,17 @@ export function ReportDesigner() {
           )}
 
           <div className="max-w-6xl mx-auto space-y-4">
-            <FilterPanel filters={filters} onAddFilter={(f) => setFilters((p) => [...p, f])} onRemoveFilter={(id) => setFilters((p) => p.filter((f) => f.id !== id))} onUpdateFilter={(id, u) => setFilters((p) => p.map((f) => (f.id === id ? { ...f, ...u } : f)))} className="bg-slate-900/40 rounded-xl border border-slate-800 p-3" />
+            <FilterPanel filters={filters} onAddFilter={(f) => setFilters((p) => [...p, f])} onRemoveFilter={(id) => setFilters((p) => p.filter((f) => f.id !== id))} onUpdateFilter={(id, u) => setFilters((p) => p.map((f) => (f.id === id ? { ...f, ...u } : f)))} className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-3" />
 
             <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, 'columns')} className="flex items-center justify-center h-10 border border-dashed border-slate-700 rounded-xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group">
-              <span className="text-[10px] uppercase tracking-tighter text-slate-600 group-hover:text-blue-400 font-bold flex items-center gap-1.5"><Plus className="h-3 w-3" />Drop Measures or Dimensions for Columns</span>
+              <span className="text-[10px] uppercase tracking-tighter text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] font-bold flex items-center gap-1.5"><Plus className="h-3 w-3" />Drop Measures or Dimensions for Columns</span>
             </div>
 
             <div className="flex gap-3 items-start">
               <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, 'rows')} className="w-7 self-stretch min-h-[200px] border border-dashed border-slate-700 rounded-xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all flex items-center justify-center group">
-                <div className="rotate-90 text-[10px] uppercase tracking-tighter text-slate-600 group-hover:text-blue-400 font-bold whitespace-nowrap"><Plus className="h-3 w-3 inline mr-1" />Rows</div>
+                <div className="rotate-90 text-[10px] uppercase tracking-tighter text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] font-bold whitespace-nowrap"><Plus className="h-3 w-3 inline mr-1" />Rows</div>
               </div>
-              <div className="flex-1 bg-slate-900/30 rounded-xl border border-slate-800 p-1 shadow-xl">
+              <div className="flex-1 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-1 shadow-xl">
                 <ReportGrid layout={report.layout} cubeData={cubeData} onExportPDF={() => handleExport('pdf')} onExportExcel={() => handleExport('excel')} onExportCSV={() => handleExport('csv')} className="rounded-lg overflow-hidden" />
               </div>
             </div>

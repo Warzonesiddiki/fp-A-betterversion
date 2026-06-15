@@ -169,7 +169,7 @@ export function VarianceDrillModal({
           <Layers className="h-5 w-5 text-blue-400" />
           <h2 className="text-lg font-semibold">{accountLabel} Variance Drill-Through</h2>
         </div>
-        <p className="text-sm text-slate-400 mb-4">
+        <p className="text-sm text-[var(--text-muted)] mb-4">
           Budget: {formatCurrency(budget)} &middot; Actual: {formatCurrency(actual)} &middot;
           Variance:{' '}
           <span className={variance >= 0 ? 'text-green-400' : 'text-red-400'}>
@@ -178,7 +178,7 @@ export function VarianceDrillModal({
         </p>
 
         {breadcrumbs.length > 0 && (
-          <div className="flex items-center gap-1 text-xs text-slate-400 mb-3 flex-wrap">
+          <div className="flex items-center gap-1 text-xs text-[var(--text-muted)] mb-3 flex-wrap">
             <button
               onClick={() => handleBreadcrumbNav('summary')}
               className="hover:text-blue-400 transition-colors"
@@ -208,27 +208,27 @@ export function VarianceDrillModal({
 
         {currentView === 'category' && (
           <div className="space-y-2">
-            <p className="text-sm text-slate-300 mb-3">
+            <p className="text-sm text-[var(--text-secondary)] mb-3">
               {filteredEntries.length} entries across {departmentGroups.length} departments. Click a
               department to drill down.
             </p>
-            <div className="overflow-hidden rounded-lg border border-slate-700">
+            <div className="overflow-hidden rounded-lg border border-[var(--border-default)]">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-800/50 text-left">
-                    <th className="px-4 py-2.5 font-medium text-slate-300">Department</th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300 text-right">Entries</th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300 text-right">
+                  <tr className="bg-[var(--bg-elevated)] text-left">
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Department</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Entries</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">
                       Total Amount
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300 text-right">Action</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
                   {departmentGroups.map((group) => (
                     <tr
                       key={group.department}
-                      className="hover:bg-slate-800/30 cursor-pointer transition-colors"
+                      className="hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
                       onClick={() => handleDrillToDepartment(group.department)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ')
@@ -236,10 +236,10 @@ export function VarianceDrillModal({
                       }}
                     >
                       <td className="px-4 py-2.5 flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-slate-400" />
+                        <Building2 className="h-4 w-4 text-[var(--text-muted)]" />
                         {group.department}
                       </td>
-                      <td className="px-4 py-2.5 text-right text-slate-300">
+                      <td className="px-4 py-2.5 text-right text-[var(--text-secondary)]">
                         {group.entries.length}
                       </td>
                       <td className="px-4 py-2.5 text-right">
@@ -248,7 +248,7 @@ export function VarianceDrillModal({
                         </span>
                       </td>
                       <td className="px-4 py-2.5 text-right">
-                        <ChevronRight className="h-4 w-4 text-slate-400 inline" />
+                        <ChevronRight className="h-4 w-4 text-[var(--text-muted)] inline" />
                       </td>
                     </tr>
                   ))}
@@ -261,8 +261,8 @@ export function VarianceDrillModal({
         {currentView === 'department' && selectedDepartment && (
           <div className="space-y-2">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm text-slate-300">
-                <span className="font-medium text-white">{selectedDepartment}</span> &middot;{' '}
+              <p className="text-sm text-[var(--text-secondary)]">
+                <span className="font-medium text-[var(--text-primary)]">{selectedDepartment}</span> &middot;{' '}
                 {selectedEntries.length} entries
               </p>
               <Button size="sm" variant="ghost" onClick={handleDrillToTransaction}>
@@ -270,19 +270,19 @@ export function VarianceDrillModal({
                 View All Transactions
               </Button>
             </div>
-            <div className="overflow-hidden rounded-lg border border-slate-700">
+            <div className="overflow-hidden rounded-lg border border-[var(--border-default)]">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-800/50 text-left">
-                    <th className="px-4 py-2.5 font-medium text-slate-300">Date</th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300">Description</th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300 text-right">Amount</th>
+                  <tr className="bg-[var(--bg-elevated)] text-left">
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Date</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Description</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
                   {selectedEntries.slice(0, 50).map((entry) => (
-                    <tr key={entry.id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="px-4 py-2 text-slate-400 whitespace-nowrap">
+                    <tr key={entry.id} className="hover:bg-[var(--bg-hover)] transition-colors">
+                      <td className="px-4 py-2 text-[var(--text-muted)] whitespace-nowrap">
                         {formatDate(entry.date)}
                       </td>
                       <td className="px-4 py-2">{entry.description}</td>
@@ -297,7 +297,7 @@ export function VarianceDrillModal({
               </table>
             </div>
             {selectedEntries.length > 50 && (
-              <p className="text-xs text-slate-500 text-center mt-2">
+              <p className="text-xs text-[var(--text-muted)] text-center mt-2">
                 Showing 50 of {selectedEntries.length} entries. Click &quot;View All
                 Transactions&quot; for full list.
               </p>
@@ -307,27 +307,27 @@ export function VarianceDrillModal({
 
         {currentView === 'transaction' && selectedDepartment && (
           <div className="space-y-2">
-            <p className="text-sm text-slate-300 mb-3">
+            <p className="text-sm text-[var(--text-secondary)] mb-3">
               All transactions for{' '}
-              <span className="font-medium text-white">{selectedDepartment}</span>
+              <span className="font-medium text-[var(--text-primary)]">{selectedDepartment}</span>
             </p>
-            <div className="overflow-hidden rounded-lg border border-slate-700 max-h-[400px] overflow-y-auto">
+            <div className="overflow-hidden rounded-lg border border-[var(--border-default)] max-h-[400px] overflow-y-auto">
               <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-slate-800 z-10">
-                  <tr className="bg-slate-800/50 text-left">
-                    <th className="px-4 py-2.5 font-medium text-slate-300">Date</th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300">Account</th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300">Description</th>
-                    <th className="px-4 py-2.5 font-medium text-slate-300 text-right">Amount</th>
+                <thead className="sticky top-0 bg-[var(--bg-elevated)] z-10">
+                  <tr className="bg-[var(--bg-elevated)] text-left">
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Date</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Account</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Description</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
                   {selectedEntries.map((entry) => (
-                    <tr key={entry.id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="px-4 py-2 text-slate-400 whitespace-nowrap">
+                    <tr key={entry.id} className="hover:bg-[var(--bg-hover)] transition-colors">
+                      <td className="px-4 py-2 text-[var(--text-muted)] whitespace-nowrap">
                         {formatDate(entry.date)}
                       </td>
-                      <td className="px-4 py-2 text-slate-300 whitespace-nowrap">
+                      <td className="px-4 py-2 text-[var(--text-secondary)] whitespace-nowrap">
                         {entry.accountCode}
                       </td>
                       <td className="px-4 py-2">{entry.description}</td>

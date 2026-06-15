@@ -165,14 +165,14 @@ export function FormulaBar({
   }, []);
 
   return (
-    <div className={cn('bg-slate-900 border border-slate-700 rounded-lg space-y-3', className)} role="region" aria-label="FormulaBar">
+    <div className={cn('bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg space-y-3', className)} role="region" aria-label="FormulaBar">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-3">
         <div className="flex items-center gap-2">
           <FunctionSquare className="h-4 w-4 text-blue-400" />
-          <span className="text-sm font-semibold text-white">Formula Bar</span>
+          <span className="text-sm font-semibold text-[var(--text-primary)]">Formula Bar</span>
           {cellPosition && (
-            <span className="text-xs text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded font-mono">
+            <span className="text-xs text-[var(--text-muted)] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded font-mono">
               {cellPosition}
             </span>
           )}
@@ -182,14 +182,14 @@ export function FormulaBar({
             onClick={() => setShowHelp(!showHelp)}
             className={cn(
               'text-xs px-2 py-1 rounded transition-colors',
-              showHelp ? 'bg-blue-500/20 text-blue-400' : 'text-slate-400 hover:text-white'
+              showHelp ? 'bg-blue-500/20 text-blue-400' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
             )}
           >
             Functions
           </button>
           <button
             onClick={onCancel}
-            className="text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             aria-label="Cancel formula editing"
           >
             <X className="h-4 w-4" />
@@ -200,7 +200,7 @@ export function FormulaBar({
       {/* Expression input */}
       <div className="px-4">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 font-mono">=</span>
+          <span className="text-xs text-[var(--text-muted)] font-mono">=</span>
           <input
             ref={inputRef}
             type="text"
@@ -216,7 +216,7 @@ export function FormulaBar({
               }
             }}
             placeholder="Enter formula (e.g., A1+B1*2, (A1-B1)/B1*100)"
-            className="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white font-mono placeholder:text-slate-600 focus:border-blue-500 focus:outline-none"
+            className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-3 py-2 text-sm text-[var(--text-primary)] font-mono placeholder:text-[var(--text-muted)] focus:border-blue-500 focus:outline-none"
             aria-label="Formula expression"
           />
         </div>
@@ -241,13 +241,13 @@ export function FormulaBar({
 
       {/* Quick cell references */}
       <div className="px-4">
-        <p className="text-xs text-slate-500 mb-1.5">Insert reference</p>
+        <p className="text-xs text-[var(--text-muted)] mb-1.5">Insert reference</p>
         <div className="flex flex-wrap gap-1">
           {quickRefs.map((ref) => (
             <button
               key={ref}
               onClick={() => handleInsertReference(ref)}
-              className="text-xs font-mono px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
+              className="text-xs font-mono px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:border-blue-500 hover:text-blue-400 transition-colors"
             >
               {ref}
             </button>
@@ -258,20 +258,20 @@ export function FormulaBar({
       {/* Function help */}
       {showHelp && (
         <div className="px-4 pb-2">
-          <p className="text-xs text-slate-500 mb-1.5">Available functions</p>
+          <p className="text-xs text-[var(--text-muted)] mb-1.5">Available functions</p>
           <div className="space-y-1 max-h-[160px] overflow-y-auto">
             {FORMULA_FUNCTIONS.map((fn) => (
               <button
                 key={fn.name}
                 onClick={() => handleInsertFunction(fn)}
-                className="w-full text-left flex items-start gap-2 px-2 py-1.5 rounded hover:bg-slate-800 transition-colors"
+                className="w-full text-left flex items-start gap-2 px-2 py-1.5 rounded hover:bg-[var(--bg-hover)] transition-colors"
               >
                 <span className="text-xs font-mono text-blue-400 font-semibold min-w-[48px]">
                   {fn.name}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <span className="text-xs text-slate-300">{fn.description}</span>
-                  <span className="text-xs text-slate-600 ml-2 font-mono">{fn.syntax}</span>
+                  <span className="text-xs text-[var(--text-secondary)]">{fn.description}</span>
+                  <span className="text-xs text-[var(--text-muted)] ml-2 font-mono">{fn.syntax}</span>
                 </div>
               </button>
             ))}
@@ -282,11 +282,11 @@ export function FormulaBar({
       {/* Options row */}
       <div className="px-4 flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-1.5">
-          <label className="text-xs text-slate-500">Format</label>
+          <label className="text-xs text-[var(--text-muted)]">Format</label>
           <select
             value={format}
             onChange={(e) => setFormat(e.target.value as NumberFormat)}
-            className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+            className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)]"
             aria-label="Number format"
           >
             <option value="currency">Currency</option>
@@ -297,27 +297,27 @@ export function FormulaBar({
           </select>
         </div>
         <div className="flex items-center gap-1.5">
-          <label className="text-xs text-slate-500">Decimals</label>
+          <label className="text-xs text-[var(--text-muted)]">Decimals</label>
           <input
             type="number"
             value={decimals}
             onChange={(e) =>
               setDecimals(Math.max(0, Math.min(10, parseInt(e.target.value, 10) || 0)))
             }
-            className="w-14 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+            className="w-14 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)]"
             min={0}
             max={10}
             aria-label="Decimal places"
           />
         </div>
         <div className="flex items-center gap-1.5 flex-1 min-w-[120px]">
-          <label className="text-xs text-slate-500">Label</label>
+          <label className="text-xs text-[var(--text-muted)]">Label</label>
           <input
             type="text"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             placeholder="Display label..."
-            className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white placeholder:text-slate-600"
+            className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]"
             aria-label="Formula display label"
           />
         </div>
@@ -331,7 +331,7 @@ export function FormulaBar({
           className={cn(
             'w-full px-3 py-2 rounded text-sm font-medium transition-colors',
             !expression.trim() || (validationResult != null && !validationResult.valid)
-              ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+              ? 'bg-[var(--bg-hover)] text-[var(--text-muted)] cursor-not-allowed'
               : 'bg-blue-600 text-white hover:bg-blue-500'
           )}
         >

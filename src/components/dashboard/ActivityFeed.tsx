@@ -25,7 +25,7 @@ export const ActivityFeed = memo(function ActivityFeed({ maxItems = 10 }: Activi
 
   if (activities.length === 0) {
     return (
-      <p className="text-slate-400 text-center py-6 text-sm">
+      <p className="text-[var(--text-muted)] text-center py-6 text-sm">
         No recent activity. Activity appears as you import data, edit budgets, and generate reports.
       </p>
     );
@@ -47,13 +47,13 @@ export const ActivityFeed = memo(function ActivityFeed({ maxItems = 10 }: Activi
                   ? 'bg-yellow-500'
                   : item.type === 'approve'
                     ? 'bg-green-500'
-                    : 'bg-slate-500')
+                    : 'bg-[var(--text-muted)]')
             }
           />
           <div className="text-sm flex-1 min-w-0">
-            <span className="font-medium text-slate-200">{item.userName || 'System'}</span>
-            <span className="text-slate-400"> {item.action || 'performed'} </span>
-            <span className="font-medium text-slate-200">{item.resourceName || 'an action'}</span>
+            <span className="font-medium text-[var(--text-primary)]">{item.userName || 'System'}</span>
+            <span className="text-[var(--text-muted)]"> {item.action || 'performed'} </span>
+            <span className="font-medium text-[var(--text-primary)]">{item.resourceName || 'an action'}</span>
             <div className="text-xs text-[var(--text-secondary)] mt-0.5">
               {item.timestamp ? formatRelativeTime(item.timestamp) : ''}
             </div>

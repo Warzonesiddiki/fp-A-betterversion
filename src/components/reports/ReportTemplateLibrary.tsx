@@ -62,7 +62,7 @@ const TEMPLATE_ICON_COLORS: Record<TemplateType, string> = {
   variance_analysis: 'text-amber-400',
   board_pack: 'text-rose-400',
   executive_summary: 'text-indigo-400',
-  custom: 'text-slate-400',
+  custom: 'text-[var(--text-muted)]',
 };
 
 /* ────────────────── template preview ────────────────── */
@@ -74,7 +74,7 @@ function TemplateThumbnail({ template }: { template: TemplateType }) {
   const previewCols = layout.columns.slice(0, 4);
 
   return (
-    <div className="bg-slate-900/50 rounded p-2 space-y-0.5">
+    <div className="bg-[var(--bg-elevated)] rounded p-2 space-y-0.5">
       {/* Header */}
       <div className="flex gap-0.5">
         {previewCols.map((col) => (
@@ -83,7 +83,7 @@ function TemplateThumbnail({ template }: { template: TemplateType }) {
             className={cn(
               'h-3 rounded-sm flex-1',
               col.type === 'label'
-                ? 'bg-slate-600'
+                ? 'bg-[var(--bg-hover)]'
                 : col.period === 'actual'
                   ? 'bg-emerald-500/30'
                   : col.period === 'budget'
@@ -102,12 +102,12 @@ function TemplateThumbnail({ template }: { template: TemplateType }) {
               className={cn(
                 'h-2 rounded-sm flex-1',
                 row.type === 'total'
-                  ? 'bg-slate-500'
+                  ? 'bg-[var(--bg-hover)]'
                   : row.type === 'subtotal'
-                    ? 'bg-slate-600/50'
+                    ? 'bg-[var(--bg-hover)]/50'
                     : ci === 0
-                      ? 'bg-slate-700'
-                      : 'bg-slate-800'
+                      ? 'bg-[var(--bg-hover)]'
+                      : 'bg-[var(--bg-elevated)]'
               )}
             />
           ))}
@@ -152,16 +152,16 @@ export function ReportTemplateLibrary({
     <div className={cn('flex flex-col h-full', className)}>
       {/* Header */}
       <div className="px-4 pt-4 pb-3 space-y-3">
-        <h2 className="text-lg font-semibold text-white">Report Library</h2>
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Report Library</h2>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-slate-800/50 rounded-lg p-1">
+        <div className="flex gap-1 bg-[var(--bg-elevated)] rounded-lg p-1">
           <button
             className={cn(
               'flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
               activeTab === 'templates'
-                ? 'bg-slate-700 text-white'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[var(--bg-active)] text-[var(--text-primary)]'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
             )}
             onClick={() => setActiveTab('templates')}
           >
@@ -170,7 +170,7 @@ export function ReportTemplateLibrary({
           <button
             className={cn(
               'flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
-              activeTab === 'saved' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+              activeTab === 'saved' ? 'bg-[var(--bg-active)] text-[var(--text-primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
             )}
             onClick={() => setActiveTab('saved')}
           >
@@ -180,13 +180,13 @@ export function ReportTemplateLibrary({
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={activeTab === 'templates' ? 'Search templates...' : 'Search reports...'}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg pl-9 pr-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-blue-500"
           />
         </div>
       </div>
@@ -208,19 +208,19 @@ export function ReportTemplateLibrary({
                   <div className="flex items-start justify-between">
                     <div
                       className={cn(
-                        'p-2 rounded-lg bg-slate-900/50',
+                        'p-2 rounded-lg bg-[var(--bg-elevated)]',
                         TEMPLATE_ICON_COLORS[template.type]
                       )}
                     >
                       {TEMPLATE_ICONS[template.type]}
                     </div>
-                    <span className="text-xs text-slate-500 bg-slate-800/50 px-2 py-0.5 rounded">
+                    <span className="text-xs text-[var(--text-muted)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded">
                       {template.type === 'custom' ? 'Blank' : 'Template'}
                     </span>
                   </div>
                   <div>
                     <h3 className="font-medium text-white text-sm">{template.name}</h3>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-2">
                       {template.description}
                     </p>
                   </div>
@@ -232,10 +232,10 @@ export function ReportTemplateLibrary({
         ) : (
           <div className="space-y-2">
             {filteredReports.length === 0 ? (
-              <div className="text-center py-12 text-slate-500">
-                <FileText className="h-10 w-10 mx-auto mb-3 text-slate-600" />
+              <div className="text-center py-12 text-[var(--text-muted)]">
+                <FileText className="h-10 w-10 mx-auto mb-3 text-[var(--text-muted)]" />
                 <p className="text-sm">No saved reports yet</p>
-                <p className="text-xs text-slate-600 mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   Create a report from a template to get started
                 </p>
               </div>
@@ -247,23 +247,23 @@ export function ReportTemplateLibrary({
                   onClick={() => onSelectReport?.(report)}
                 >
                   <CardContent className="p-3 flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-slate-800 text-slate-400">
+                    <div className="p-2 rounded-lg bg-[var(--bg-elevated)] text-[var(--text-muted)]">
                       <FileText className="h-5 w-5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-white text-sm truncate">{report.name}</h3>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-[var(--text-muted)]">
                         {report.template !== 'custom' && `${report.template.replace(/_/g, ' ')} · `}
                         Updated {new Date(report.updatedAt).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded mr-2">
+                      <span className="text-xs text-[var(--text-muted)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded mr-2">
                         v{report.version}
                       </span>
                       {onCloneReport && (
                         <button
-                          className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-slate-800 rounded transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                          className="p-1.5 text-[var(--text-muted)] hover:text-blue-400 hover:bg-[var(--bg-elevated)] rounded transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             onCloneReport(report);
@@ -275,7 +275,7 @@ export function ReportTemplateLibrary({
                       )}
                       {onDeleteReport && (
                         <button
-                          className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                          className="p-1.5 text-[var(--text-muted)] hover:text-red-400 hover:bg-[var(--bg-elevated)] rounded transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             if (window.confirm('Delete this report?')) onDeleteReport(report.id);

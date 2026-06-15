@@ -24,14 +24,14 @@ export function DrillThroughBreadcrumb({
   return (
     <nav
       aria-label="Drill-through path"
-      className={`flex items-center gap-1 text-sm text-slate-300 ${className}`}
+      className={`flex items-center gap-1 text-sm text-[var(--text-secondary)] ${className}`}
     >
       {path.map((crumb, idx) => {
         const isLast = idx === path.length - 1;
         return (
           <React.Fragment key={`${crumb.level}-${idx}`}>
             {idx > 0 && (
-              <span className="text-slate-500 mx-1" aria-hidden="true">
+              <span className="text-[var(--text-muted)] mx-1" aria-hidden="true">
                 ›
               </span>
             )}
@@ -42,7 +42,7 @@ export function DrillThroughBreadcrumb({
               className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${
                 isLast
                   ? 'text-blue-400 font-medium cursor-default'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 cursor-pointer'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] cursor-pointer'
               }`}
               aria-current={isLast ? 'page' : undefined}
             >

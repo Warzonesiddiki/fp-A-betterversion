@@ -118,10 +118,10 @@ function GridRow({
 
   const rowBg =
     row.type === 'total'
-      ? 'bg-slate-800/70 font-semibold'
+      ? 'bg-[var(--bg-elevated)] font-semibold'
       : row.type === 'subtotal'
-        ? 'bg-slate-900/40 font-medium'
-        : 'hover:bg-slate-900/30';
+        ? 'bg-[var(--bg-hover)]/40 font-medium'
+        : 'hover:bg-[var(--bg-hover)]/30';
 
   return (
     <tr className={cn('border-b border-slate-800 transition-colors', rowBg)} role="row">
@@ -166,7 +166,7 @@ function GridRow({
           >
             {isLabel && isGrouped && colIdx === allColumns.findIndex((c) => c.type === 'label') && (
               <button
-                className="inline-flex items-center mr-1 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                className="inline-flex items-center mr-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleGroup(row.id);
@@ -262,7 +262,7 @@ export function ReportGrid({
         <table className="w-full text-sm" role="grid" aria-label="Report grid">
           {/* Header */}
           <thead>
-            <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-700 bg-slate-900/50">
+            <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-default)] bg-[var(--bg-elevated)]">
               {visibleColumns.map((col) => (
                 <th
                   key={col.id}

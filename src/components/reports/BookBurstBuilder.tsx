@@ -114,7 +114,7 @@ interface MatrixHeaderProps {
 function MatrixHeader({ entities, selected, onToggleAll, onToggleEntity }: MatrixHeaderProps) {
   return (
     <div className="flex items-center gap-1" role="region" aria-label="BookBurstBuilder">
-      <div className="w-48 shrink-0 text-xs text-slate-500 font-medium">
+      <div className="w-48 shrink-0 text-xs text-[var(--text-muted)] font-medium">
         <button
           type="button"
           onClick={onToggleAll}
@@ -131,11 +131,11 @@ function MatrixHeader({ entities, selected, onToggleAll, onToggleEntity }: Matri
           className={`flex-1 min-w-[80px] text-[11px] font-medium text-center px-1 py-1.5 rounded-t-md transition-colors ${
             selected.has(entity.id)
               ? 'bg-blue-900/40 text-blue-300 border-t border-l border-r border-blue-700/50'
-              : 'bg-slate-800/30 text-slate-500 hover:text-slate-300 border-t border-l border-r border-slate-700/30'
+              : 'bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] border-t border-l border-r border-[var(--border-subtle)]'
           }`}
         >
           <span className="block truncate">{entity.name}</span>
-          <span className="text-[10px] text-slate-600">{entity.currency}</span>
+          <span className="text-[10px] text-[var(--text-muted)]">{entity.currency}</span>
         </button>
       ))}
     </div>
@@ -167,10 +167,10 @@ function MatrixRow({
       <button
         type="button"
         onClick={() => onToggleRow(reportIdx)}
-        className="w-48 shrink-0 text-left px-2 py-1.5 rounded-l-md text-xs transition-colors hover:bg-slate-800/50"
+        className="w-48 shrink-0 text-left px-2 py-1.5 rounded-l-md text-xs transition-colors hover:bg-[var(--bg-hover)]"
       >
         <span className="text-white font-medium truncate block">{preset.name}</span>
-        <span className="text-[10px] text-slate-500">
+        <span className="text-[10px] text-[var(--text-muted)]">
           {rowSelected}/{entities.filter((e) => selectedEntities.has(e.id)).length} selected
         </span>
       </button>
@@ -184,7 +184,7 @@ function MatrixRow({
             className={`flex-1 min-w-[80px] h-9 rounded-sm border transition-all text-xs font-mono ${
               isSelected
                 ? 'bg-blue-600/30 border-blue-500/50 text-blue-300'
-                : 'bg-slate-800/20 border-slate-800/50 text-slate-600 hover:border-slate-600'
+                : 'bg-[var(--bg-elevated)] border-[var(--border-default)] text-[var(--text-muted)] hover:border-[var(--border-default)]'
             }`}
           >
             {isSelected ? '1' : ''}
@@ -510,7 +510,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
             className="text-xl font-bold text-white bg-transparent border-none outline-none"
             aria-label="Book name"
           />
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">
             {totalSelected} report{totalSelected !== 1 ? 's' : ''} selected &middot;{' '}
             {selectedEntities.size} entit{selectedEntities.size !== 1 ? 'ies' : 'y'}
           </p>
@@ -519,7 +519,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
           <select
             value={outputFormat}
             onChange={(e) => setOutputFormat(e.target.value as OutputFormat)}
-            className="bg-slate-800 border border-slate-700 text-white text-xs rounded-md px-2 py-1.5"
+            className="bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-primary)] text-xs rounded-md px-2 py-1.5"
             aria-label="Output format"
           >
             <option value="csv">CSV</option>
@@ -556,7 +556,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
         >
           Select All
         </button>
-        <span className="text-slate-600">|</span>
+        <span className="text-[var(--text-muted)]">|</span>
         <button
           type="button"
           onClick={handleDeselectAll}
@@ -577,7 +577,7 @@ export const BookBurstBuilder = memo(function BookBurstBuilder() {
       )}
 
       {/* Matrix grid */}
-      <Card className="p-4 bg-slate-900/50 overflow-x-auto">
+      <Card className="p-4 bg-[var(--bg-elevated)] overflow-x-auto">
         <MatrixHeader
           entities={entities}
           selected={selectedEntities}

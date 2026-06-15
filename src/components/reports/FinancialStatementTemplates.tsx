@@ -176,15 +176,15 @@ function StatementTable({
   return (
     <div className="mb-8" role="region" aria-label="FinancialStatementTemplates">
       <div className="mb-4">
-        <h2 className="text-xl font-bold text-[var(--text-primary)] dark:text-gray-100">{title}</h2>
-        <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+        <h2 className="text-xl font-bold text-[var(--text-primary)]">{title}</h2>
+        <p className="text-sm text-[var(--text-muted)]">
           {subtitle}
         </p>
       </div>
-      <div className="overflow-x-auto border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg">
+      <div className="overflow-x-auto border border-[var(--border-default)] rounded-lg">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-800 text-white">
+            <tr className="bg-[var(--bg-elevated)] text-[var(--text-primary)]">
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -205,14 +205,14 @@ function StatementTable({
                 );
               }
               const rowClass = row.isHeader
-                ? 'bg-gray-50 dark:bg-gray-800/50 font-semibold text-gray-700 dark:text-gray-300'
+                ? 'bg-[var(--bg-elevated)] font-semibold text-[var(--text-primary)]'
                 : row.isTotal
-                  ? 'bg-blue-50 dark:bg-blue-900/20 font-bold text-[var(--text-primary)] dark:text-gray-100 border-t-2 border-blue-200 dark:border-blue-800'
-                  : 'text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500';
+                  ? 'bg-[var(--bg-elevated)] font-bold text-[var(--text-primary)] border-t-2 border-blue-500'
+                  : 'text-[var(--text-secondary)]';
               return (
                 <tr
                   key={i}
-                  className={`border-b border-gray-100 dark:border-gray-800 dark:border-gray-800 ${rowClass}`}
+                  className={`border-b border-[var(--border-subtle)] ${rowClass}`}
                 >
                   {columns.map((col) => {
                     if (col.key === 'item') {
@@ -248,8 +248,8 @@ function StatementTable({
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               isGood
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                                ? 'bg-green-500/20 text-green-400'
+                                : 'bg-red-500/20 text-red-400'
                             }`}
                           >
                             {isGood ? 'Favorable' : 'Unfavorable'}
@@ -295,7 +295,7 @@ export function ProfitLossStatement({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
           Income Statement
         </h1>
         {onExport && (
@@ -314,7 +314,7 @@ export function ProfitLossStatement({
             </button>
             <button
               onClick={() => onExport('csv')}
-              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+              className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded text-sm"
             >
               CSV
             </button>
@@ -346,7 +346,7 @@ export function BalanceSheet({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
           Balance Sheet
         </h1>
         {onExport && (
@@ -365,7 +365,7 @@ export function BalanceSheet({
             </button>
             <button
               onClick={() => onExport('csv')}
-              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+              className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded text-sm"
             >
               CSV
             </button>
@@ -398,7 +398,7 @@ export function CashFlowStatement({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
           Cash Flow Statement
         </h1>
         {onExport && (
@@ -417,7 +417,7 @@ export function CashFlowStatement({
             </button>
             <button
               onClick={() => onExport('csv')}
-              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+              className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded text-sm"
             >
               CSV
             </button>
@@ -462,7 +462,7 @@ export function BudgetVsActual({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
           Budget vs Actual
         </h1>
         {onExport && (
@@ -481,7 +481,7 @@ export function BudgetVsActual({
             </button>
             <button
               onClick={() => onExport('csv')}
-              className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm"
+              className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded text-sm"
             >
               CSV
             </button>

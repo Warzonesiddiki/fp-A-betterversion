@@ -34,14 +34,14 @@ function PromptSelect({
 }) {
   return (
     <div className="flex items-center gap-2" role="region" aria-label="PeriodPromptBar">
-      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold whitespace-nowrap">
+      <label className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-bold whitespace-nowrap">
         {label}
       </label>
       <div className="relative">
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="appearance-none bg-slate-800 border border-slate-700 rounded-lg pl-3 pr-8 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors cursor-pointer"
+          className="appearance-none bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg pl-3 pr-8 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors cursor-pointer"
         >
           {options.map((opt) => (
             <option key={opt} value={opt}>
@@ -49,7 +49,7 @@ function PromptSelect({
             </option>
           ))}
         </select>
-        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400 pointer-events-none" />
+        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)] pointer-events-none" />
       </div>
     </div>
   );
@@ -63,7 +63,7 @@ export function PeriodPromptBar({
   return (
     <div
       className={cn(
-        'flex items-center gap-4 px-4 py-2 border-b border-slate-800 bg-slate-900/30',
+        'flex items-center gap-4 px-4 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]',
         className
       )}
     >

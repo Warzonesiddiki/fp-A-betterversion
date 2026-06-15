@@ -64,13 +64,13 @@ export interface KPICardProps {
 const varianceStyles: Record<KPICardVarianceType, { bg: string; text: string }> = {
   favorable: {
     bg: 'bg-green-50 dark:bg-green-900/20 dark:bg-green-900/30',
-    text: 'text-green-700 dark:text-green-400',
+    text: 'text-green-700',
   },
   unfavorable: {
     bg: 'bg-red-50 dark:bg-red-900/20 dark:bg-red-900/30',
-    text: 'text-red-700 dark:text-red-400',
+    text: 'text-red-700',
   },
-  neutral: { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-[var(--text-muted)]' },
+  neutral: { bg: 'bg-[var(--bg-elevated)]', text: 'text-[var(--text-muted)]' },
 };
 
 const trendArrowSymbol: Record<string, string> = {
@@ -116,10 +116,10 @@ export const KPICard = memo(function KPICard({
 
   const trendColor =
     trend === 'up'
-      ? 'text-green-600 dark:text-green-400'
+      ? 'text-green-600'
       : trend === 'down'
-        ? 'text-red-600 dark:text-red-400'
-        : 'text-slate-500 dark:text-slate-400';
+        ? 'text-red-600'
+        : 'text-[var(--text-muted)]';
   const trendArrow = trend ? trendArrowSymbol[trend] : trendArrowSymbol.neutral;
 
   return (
@@ -141,7 +141,7 @@ export const KPICard = memo(function KPICard({
       aria-label={onClick ? `${title}: ${formatted}` : undefined}
     >
       <div className="flex items-start justify-between mb-1">
-        <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{title}</div>
+        <div className="text-xs text-[var(--text-muted)] truncate">{title}</div>
         {varianceBadge && (
           <span
             className={cn(

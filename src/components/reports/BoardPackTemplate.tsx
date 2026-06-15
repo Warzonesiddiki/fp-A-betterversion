@@ -38,7 +38,7 @@ function KPISummarySection({ section }: { section: TemplateSection }) {
 
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+      <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">
         {section.title}
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -48,12 +48,12 @@ function KPISummarySection({ section }: { section: TemplateSection }) {
           return (
             <div
               key={i}
-              className="bg-[var(--bg-surface)] dark:bg-gray-800 border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg p-4"
+              className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg p-4"
             >
-              <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 mb-1">
+              <p className="text-xs text-[var(--text-muted)] mb-1">
                 {kpi.label}
               </p>
-              <p className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+              <p className="text-2xl font-bold text-[var(--text-primary)]">
                 {kpi.value}
               </p>
               {kpi.change && (
@@ -91,7 +91,7 @@ function TableSection({ section }: { section: TemplateSection }) {
   return (
     <div className="mb-6">
       {section.title && (
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">
           {section.title}
         </h2>
       )}
@@ -111,7 +111,7 @@ function TableSection({ section }: { section: TemplateSection }) {
               <tr>
                 <td
                   colSpan={headers.length}
-                  className="px-3 py-4 text-center text-gray-400 dark:text-gray-500 italic"
+                  className="px-3 py-4 text-center text-gray-400 italic"
                 >
                   No data loaded — connect data source to populate
                 </td>
@@ -120,12 +120,12 @@ function TableSection({ section }: { section: TemplateSection }) {
               rows.map((row, ri) => (
                 <tr
                   key={ri}
-                  className={`border-b border-gray-100 dark:border-gray-800 dark:border-gray-800 ${
+                  className={`border-b border-gray-100 ${
                     isBoldRow(row)
-                      ? 'bg-gray-50 dark:bg-gray-800/50 font-semibold'
+                      ? 'bg-gray-50 font-semibold'
                       : ri % 2 === 0
-                        ? 'bg-white dark:bg-gray-900'
-                        : 'bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900/50'
+                        ? 'bg-white'
+                        : 'bg-gray-50'
                   }`}
                 >
                   {row.map((cell, ci) => (
@@ -152,11 +152,11 @@ function TextSection({ section, ctx }: { section: TemplateSection; ctx: ExportCo
   return (
     <div className="mb-6">
       {section.title && (
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
           {section.title}
         </h2>
       )}
-      <p className="text-sm text-[var(--text-secondary)] dark:text-gray-400 dark:text-gray-500 whitespace-pre-wrap">
+      <p className="text-sm text-[var(--text-secondary)] whitespace-pre-wrap">
         {content}
       </p>
     </div>
@@ -199,10 +199,10 @@ export function BoardPackTemplate({
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
             Board Pack Preview
           </h1>
-          <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500">
+          <p className="text-sm text-[var(--text-muted)]">
             {entity} — {period} — {currency}
           </p>
         </div>
@@ -215,7 +215,7 @@ export function BoardPackTemplate({
           </button>
           <button
             onClick={() => setShowExport(!showExport)}
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-md hover:bg-[var(--bg-hover)] text-sm"
           >
             {showExport ? 'Hide' : 'Show'} Export Options
           </button>
@@ -224,8 +224,8 @@ export function BoardPackTemplate({
 
       {/* Export options */}
       {showExport && (
-        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900 dark:bg-gray-800/50 border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <div className="mb-6 p-4 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-lg">
+          <h3 className="text-sm font-medium text-[var(--text-secondary)] mb-3">
             Export Options
           </h3>
           <div className="grid grid-cols-3 gap-3">
@@ -259,7 +259,7 @@ export function BoardPackTemplate({
                   ExportEngine.exportToCSV(exportData, { title: `Board Pack ${period}` });
                 });
               }}
-              className="px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm"
+              className="px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-md hover:bg-[var(--bg-hover)] text-sm"
             >
               CSV
             </button>
@@ -268,7 +268,7 @@ export function BoardPackTemplate({
       )}
 
       {/* Rendered sections */}
-      <div className="bg-[var(--bg-surface)] dark:bg-gray-900 border border-[var(--border-subtle)] dark:border-gray-700 rounded-lg p-6 shadow-sm">
+      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg p-6 shadow-sm">
         {sections.map((section) => {
           switch (section.type) {
             case 'cover':
@@ -283,7 +283,7 @@ export function BoardPackTemplate({
               return (
                 <hr
                   key={section.id}
-                  className="my-6 border-[var(--border-subtle)] dark:border-gray-700"
+                  className="my-6 border-[var(--border-subtle)]"
                 />
               );
             default:
@@ -293,7 +293,7 @@ export function BoardPackTemplate({
       </div>
 
       {/* Footer */}
-      <div className="mt-4 text-center text-xs text-gray-400 dark:text-gray-500">
+      <div className="mt-4 text-center text-xs text-[var(--text-muted)]">
         Generated by FinPlan Pro — {new Date().toLocaleString()}
       </div>
     </div>

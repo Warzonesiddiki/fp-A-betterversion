@@ -96,30 +96,30 @@ export function ConditionalFormatPanel({
   );
 
   return (
-    <div className={cn('bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-4', className)} role="region" aria-label="ConditionalFormatPanel">
+    <div className={cn('bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-4 space-y-4', className)} role="region" aria-label="ConditionalFormatPanel">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+        <h4 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
           <Palette className="h-4 w-4 text-blue-400" />
           Conditional Formatting
         </h4>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close conditional formatting"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
-      <p className="text-xs text-slate-500">
-        Cell type: <span className="text-slate-300 uppercase">{cell.type}</span>
+      <p className="text-xs text-[var(--text-muted)]">
+        Cell type: <span className="text-[var(--text-secondary)] uppercase">{cell.type}</span>
       </p>
 
       {/* Format rules */}
       <div className="space-y-3 max-h-[300px] overflow-y-auto">
         {formats.length === 0 ? (
-          <p className="text-xs text-slate-500 text-center py-4">
+          <p className="text-xs text-[var(--text-muted)] text-center py-4">
             No conditional formats. Add a rule to get started.
           </p>
         ) : (
@@ -130,7 +130,7 @@ export function ConditionalFormatPanel({
                 'border rounded-lg p-3 space-y-2 transition-colors',
                 editingId === format.id
                   ? 'border-blue-500 bg-blue-500/5'
-                  : 'border-slate-700 bg-slate-800/30'
+                  : 'border-[var(--border-default)] bg-[var(--bg-elevated)]/30'
               )}
               onClick={() => setEditingId(format.id)}
               role="button"
@@ -144,7 +144,7 @@ export function ConditionalFormatPanel({
             >
               {/* Condition row */}
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">If value</span>
+                <span className="text-xs text-[var(--text-muted)]">If value</span>
                 <select
                   value={format.condition}
                   onChange={(e) =>
@@ -152,7 +152,7 @@ export function ConditionalFormatPanel({
                       condition: e.target.value as ConditionOperator,
                     })
                   }
-                  className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)]"
                   aria-label="Condition operator"
                 >
                   {OPERATORS.map((op) => (
@@ -169,7 +169,7 @@ export function ConditionalFormatPanel({
                       value: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="w-24 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+                  className="w-24 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)]"
                   aria-label="Condition value"
                 />
                 <button
@@ -177,7 +177,7 @@ export function ConditionalFormatPanel({
                     e.stopPropagation();
                     handleRemoveFormat(format.id);
                   }}
-                  className="ml-auto text-slate-500 hover:text-red-400"
+                  className="ml-auto text-[var(--text-muted)] hover:text-[var(--negative)]"
                   aria-label="Remove format rule"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -190,13 +190,13 @@ export function ConditionalFormatPanel({
                 value={format.label ?? ''}
                 onChange={(e) => handleUpdateFormat(format.id, { label: e.target.value })}
                 placeholder="Optional label..."
-                className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white placeholder:text-slate-600"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]"
               />
 
               {/* Color presets */}
               {editingId === format.id && (
                 <div className="space-y-2 pt-1">
-                  <p className="text-xs text-slate-500">Quick colors</p>
+                  <p className="text-xs text-[var(--text-muted)]">Quick colors</p>
                   <div className="flex flex-wrap gap-1.5">
                     {PRESET_COLORS.map((preset) => (
                       <button
@@ -212,14 +212,14 @@ export function ConditionalFormatPanel({
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: preset.text }}
                         />
-                        <span className="text-xs text-slate-300">{preset.label}</span>
+                        <span className="text-xs text-[var(--text-secondary)]">{preset.label}</span>
                       </button>
                     ))}
                   </div>
 
                   {/* Custom colors */}
                   <div className="flex items-center gap-2">
-                    <label className="text-xs text-slate-500">Text</label>
+                    <label className="text-xs text-[var(--text-muted)]">Text</label>
                     <input
                       type="color"
                       value={format.style.textColor ?? '#FFFFFF'}
@@ -231,7 +231,7 @@ export function ConditionalFormatPanel({
                       className="w-6 h-6 rounded cursor-pointer"
                       aria-label="Text color"
                     />
-                    <label className="text-xs text-slate-500">Background</label>
+                    <label className="text-xs text-[var(--text-muted)]">Background</label>
                     <input
                       type="color"
                       value={format.style.backgroundColor ?? '#000000'}
@@ -247,7 +247,7 @@ export function ConditionalFormatPanel({
 
                   {/* Style toggles */}
                   <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-1 text-xs text-slate-400">
+                    <label className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
                       <input
                         type="checkbox"
                         checked={format.style.bold ?? false}
@@ -260,7 +260,7 @@ export function ConditionalFormatPanel({
                       />
                       Bold
                     </label>
-                    <label className="flex items-center gap-1 text-xs text-slate-400">
+                    <label className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
                       <input
                         type="checkbox"
                         checked={format.style.italic ?? false}
@@ -279,7 +279,7 @@ export function ConditionalFormatPanel({
 
               {/* Preview */}
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500">Preview:</span>
+                <span className="text-xs text-[var(--text-muted)]">Preview:</span>
                 <span
                   className="text-xs px-2 py-0.5 rounded font-mono"
                   style={{

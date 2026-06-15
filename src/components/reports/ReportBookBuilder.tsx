@@ -36,10 +36,10 @@ function PresetCard({ preset, onAdd }: PresetCardProps) {
     <button
       type="button"
       onClick={() => onAdd(preset.id, preset.name)}
-      className="text-left w-full rounded-lg border border-slate-700 bg-slate-800/50 p-3 hover:border-blue-500 hover:bg-slate-800 transition-colors"
+      className="text-left w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3 hover:border-blue-500 hover:bg-[var(--bg-hover)] transition-colors"
     >
-      <p className="text-sm font-medium text-white">{preset.name}</p>
-      <p className="text-xs text-slate-400 mt-1 line-clamp-2">{preset.description}</p>
+      <p className="text-sm font-medium text-[var(--text-primary)]">{preset.name}</p>
+      <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2">{preset.description}</p>
     </button>
   );
 }
@@ -55,22 +55,22 @@ interface EntryRowProps {
 
 function EntryRow({ entry, entities, onUpdate, onRemove, onMoveUp, onMoveDown }: EntryRowProps) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-800/30 p-3" role="region" aria-label="ReportBookBuilder">
+    <div className="flex items-start gap-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-3" role="region" aria-label="ReportBookBuilder">
       {/* Drag handle / order controls */}
       <div className="flex flex-col gap-1 pt-1">
         <button
           type="button"
           onClick={() => onMoveUp(entry.id)}
-          className="text-slate-500 hover:text-white text-xs"
+          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs"
           aria-label="Move up"
         >
           &#9650;
         </button>
-        <span className="text-xs text-slate-500 text-center">{entry.order + 1}</span>
+        <span className="text-xs text-[var(--text-muted)] text-center">{entry.order + 1}</span>
         <button
           type="button"
           onClick={() => onMoveDown(entry.id)}
-          className="text-slate-500 hover:text-white text-xs"
+          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs"
           aria-label="Move down"
         >
           &#9660;
@@ -83,10 +83,10 @@ function EntryRow({ entry, entities, onUpdate, onRemove, onMoveUp, onMoveDown }:
           type="text"
           value={entry.reportName}
           onChange={(e) => onUpdate(entry.id, { reportName: e.target.value })}
-          className="w-full bg-transparent border-b border-slate-600 text-white text-sm font-medium focus:border-blue-500 outline-none pb-1"
+          className="w-full bg-transparent border-b border-[var(--border-default)] text-[var(--text-primary)] text-sm font-medium focus:border-blue-500 outline-none pb-1"
           placeholder="Report name"
         />
-        <p className="text-xs text-slate-500">Template: {entry.templateId}</p>
+        <p className="text-xs text-[var(--text-muted)]">Template: {entry.templateId}</p>
 
         {/* Entity multi-select */}
         <div className="flex flex-wrap gap-1">
@@ -103,7 +103,7 @@ function EntryRow({ entry, entities, onUpdate, onRemove, onMoveUp, onMoveDown }:
               className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
                 entry.entityIds.includes(entity.id)
                   ? 'bg-blue-600 border-blue-500 text-white'
-                  : 'border-slate-600 text-slate-400 hover:border-slate-500'
+                  : 'border-[var(--border-default)] text-[var(--text-muted)] hover:border-[var(--border-default)]'
               }`}
             >
               {entity.name}
@@ -115,7 +115,7 @@ function EntryRow({ entry, entities, onUpdate, onRemove, onMoveUp, onMoveDown }:
         {Object.keys(entry.variables).length > 0 && (
           <div className="flex flex-wrap gap-2">
             {Object.entries(entry.variables).map(([key, val]) => (
-              <span key={key} className="text-xs text-slate-500">
+              <span key={key} className="text-xs text-[var(--text-muted)]">
                 {`{${key}}`}:
                 <input
                   type="text"
@@ -125,7 +125,7 @@ function EntryRow({ entry, entities, onUpdate, onRemove, onMoveUp, onMoveDown }:
                       variables: { ...entry.variables, [key]: e.target.value },
                     })
                   }
-                  className="ml-1 bg-transparent border-b border-slate-700 text-slate-300 w-20 text-xs focus:border-blue-500 outline-none"
+                  className="ml-1 bg-transparent border-b border-[var(--border-default)] text-[var(--text-secondary)] w-20 text-xs focus:border-blue-500 outline-none"
                 />
               </span>
             ))}
@@ -135,7 +135,7 @@ function EntryRow({ entry, entities, onUpdate, onRemove, onMoveUp, onMoveDown }:
 
       {/* Actions */}
       <div className="flex items-center gap-2">
-        <label className="flex items-center gap-1 text-xs text-slate-400">
+        <label className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
           <input
             type="checkbox"
             checked={entry.enabled}
@@ -166,7 +166,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between text-xs text-slate-400">
+      <div className="flex justify-between text-xs text-[var(--text-muted)]">
         <span>
           {progress.currentReport && `${progress.currentReport} — ${progress.currentEntity}`}
         </span>
@@ -174,7 +174,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
           {progress.completed}/{progress.total} ({pct}%)
         </span>
       </div>
-      <div className="h-2 rounded-full bg-slate-700 overflow-hidden">
+      <div className="h-2 rounded-full bg-[var(--bg-hover)] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${
             progress.status === 'error' ? 'bg-red-500' : 'bg-blue-500'
@@ -331,11 +331,11 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
         </div>
 
         <div className="pt-4 border-t border-slate-700">
-          <h4 className="text-xs font-medium text-slate-400 mb-2">Available Variables</h4>
+          <h4 className="text-xs font-medium text-[var(--text-muted)] mb-2">Available Variables</h4>
           <div className="space-y-1">
             {availableVars.map((v) => (
-              <div key={v.key} className="text-xs text-slate-500">
-                <code className="text-blue-400">{`{${v.key}}`}</code> — {v.description}
+              <div key={v.key} className="text-xs text-[var(--text-muted)]">
+                <code className="text-[var(--accent-primary)]">{`{${v.key}}`}</code> — {v.description}
               </div>
             ))}
           </div>
@@ -354,7 +354,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
               }}
               className="text-lg font-bold text-white bg-transparent border-none outline-none"
             />
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--text-muted)]">
               {book.entries.length} report(s) &middot;{' '}
               {book.entries.reduce((s, e) => s + e.entityIds.length, 0)} generation(s)
             </p>
@@ -371,7 +371,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
 
         <div className="space-y-2">
           {book.entries.length === 0 ? (
-            <div className="text-center py-12 text-slate-500 text-sm">
+            <div className="text-center py-12 text-[var(--text-muted)] text-sm">
               Add reports from the template catalog on the left.
             </div>
           ) : (
@@ -406,7 +406,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
       <div className="lg:col-span-4 space-y-4">
         <h3 className="text-sm font-semibold text-white">Preview</h3>
         {previewData ? (
-          <Card className="p-4 bg-white dark:bg-gray-800 text-slate-900 overflow-auto max-h-[600px]">
+          <Card className="p-4 bg-[var(--bg-elevated)] text-[var(--text-primary)] overflow-auto max-h-[600px]">
             <h4 className="font-bold text-sm mb-3">{previewEntry?.reportName}</h4>
             <table className="w-full text-xs">
               <thead>
@@ -437,7 +437,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
             </table>
           </Card>
         ) : (
-          <div className="text-center py-12 text-slate-500 text-sm">
+          <div className="text-center py-12 text-[var(--text-muted)] text-sm">
             Click a report entry to preview.
           </div>
         )}

@@ -129,7 +129,7 @@ export function BookBurstConfig({ onBookReady }: BookBurstConfigProps) {
       <div className="lg:col-span-4 space-y-4">
         <Card className="p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white">Entities</h3>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Entities</h3>
             <div className="flex gap-1">
               <button
                 type="button"
@@ -138,11 +138,11 @@ export function BookBurstConfig({ onBookReady }: BookBurstConfigProps) {
               >
                 All
               </button>
-              <span className="text-slate-600">|</span>
+              <span className="text-[var(--text-muted)]">|</span>
               <button
                 type="button"
                 onClick={() => setSelectedEntityIds(new Set())}
-                className="text-xs text-slate-400 hover:text-slate-300"
+                className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               >
                 None
               </button>
@@ -158,7 +158,7 @@ export function BookBurstConfig({ onBookReady }: BookBurstConfigProps) {
               />
             ))}
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--text-muted)]">
             {selectedEntityIds.size} of {MOCK_ENTITIES.length} selected
           </p>
         </Card>
@@ -171,7 +171,7 @@ export function BookBurstConfig({ onBookReady }: BookBurstConfigProps) {
       {/* CENTER: Template selection */}
       <div className="lg:col-span-4">
         <Card className="p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-white">Report Templates</h3>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Report Templates</h3>
           <div className="space-y-1.5">
             {PRESET_LIST.map((preset) => (
               <TemplateRow
@@ -191,7 +191,7 @@ export function BookBurstConfig({ onBookReady }: BookBurstConfigProps) {
         <Card className="p-4 space-y-3">
           <h3 className="text-sm font-semibold text-white">Book Configuration</h3>
           <div>
-            <label htmlFor="book-name" className="block text-xs text-slate-400 mb-1">
+            <label htmlFor="book-name" className="block text-xs text-[var(--text-muted)] mb-1">
               Book Name
             </label>
             <input
@@ -199,22 +199,22 @@ export function BookBurstConfig({ onBookReady }: BookBurstConfigProps) {
               type="text"
               value={bookName}
               onChange={(e) => setBookName(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded text-sm text-white px-3 py-2"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded text-sm text-[var(--text-primary)] px-3 py-2"
             />
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-lg bg-slate-800/50 p-2">
-              <p className="text-lg font-bold text-white">{selectedEntityIds.size}</p>
-              <p className="text-xs text-slate-400">Entities</p>
+            <div className="rounded-lg bg-[var(--bg-elevated)] p-2">
+              <p className="text-lg font-bold text-[var(--text-primary)]">{selectedEntityIds.size}</p>
+              <p className="text-xs text-[var(--text-muted)]">Entities</p>
             </div>
-            <div className="rounded-lg bg-slate-800/50 p-2">
-              <p className="text-lg font-bold text-white">{selectedTemplateIds.size}</p>
-              <p className="text-xs text-slate-400">Templates</p>
+            <div className="rounded-lg bg-[var(--bg-elevated)] p-2">
+              <p className="text-lg font-bold text-[var(--text-primary)]">{selectedTemplateIds.size}</p>
+              <p className="text-xs text-[var(--text-muted)]">Templates</p>
             </div>
-            <div className="rounded-lg bg-slate-800/50 p-2">
+            <div className="rounded-lg bg-[var(--bg-elevated)] p-2">
               <p className="text-lg font-bold text-emerald-400">{totalGenerations}</p>
-              <p className="text-xs text-slate-400">Reports</p>
+              <p className="text-xs text-[var(--text-muted)]">Reports</p>
             </div>
           </div>
 

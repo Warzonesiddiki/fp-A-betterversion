@@ -204,7 +204,7 @@ describe('ActivityFeed', () => {
     localStorage.setItem('finplan-activity-log', JSON.stringify(activities));
 
     const { container } = render(<ActivityFeed />);
-    const dot = container.querySelector('.bg-slate-500');
+    const dot = container.querySelector('[class*="bg-[var(--text-muted)]"]');
     expect(dot).toBeInTheDocument();
   });
 

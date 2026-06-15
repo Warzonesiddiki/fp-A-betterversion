@@ -13,7 +13,7 @@ export function VarianceTable({ analyses, onCommentaryEdit }: VarianceTableProps
   if (analyses.length === 0) {
     return (
       <div
-        className="p-12 text-center text-slate-500 bg-slate-900 rounded-lg border border-slate-800"
+        className="p-12 text-center text-[var(--text-muted)] bg-[var(--bg-elevated)] rounded-lg border border-[var(--border-default)]"
         role="region"
         aria-label="VarianceTable"
       >
@@ -63,7 +63,7 @@ export function VarianceTable({ analyses, onCommentaryEdit }: VarianceTableProps
             <input
               defaultValue={val as string}
               onBlur={(e) => onCommentaryEdit(row.accountId as string, e.target.value)}
-              className="bg-transparent border-none outline-none text-slate-400 text-sm w-full focus:text-white"
+              className="bg-transparent border-none outline-none text-[var(--text-muted)] text-sm w-full focus:text-[var(--text-primary)]"
             />
           ),
         },

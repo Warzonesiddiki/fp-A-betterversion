@@ -163,7 +163,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
   }, [selectedFormat, pdfOptions, report, cubeData]);
 
   return (
-    <div className={cn('bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-4', className)}>
+    <div className={cn('bg-[var(--bg-elevated)] border border-slate-700 rounded-lg p-4 space-y-4', className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-white flex items-center gap-2">
@@ -172,7 +172,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
         </h4>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          className="text-[var(--text-secondary)] hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           aria-label="Close export dialog"
         >
           <X className="h-4 w-4" />
@@ -181,7 +181,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
 
       {/* Format selection */}
       <div className="space-y-2">
-        <p className="text-xs text-slate-500">Export format</p>
+        <p className="text-xs text-[var(--text-muted)]">Export format</p>
         <div className="grid grid-cols-3 gap-2">
           {EXPORT_OPTIONS.map((option) => {
             const Icon = option.icon;
@@ -193,12 +193,12 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
                   'flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-colors',
                   selectedFormat === option.format
                     ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-700 bg-slate-800/30 hover:border-slate-600'
+                    : 'border-[var(--border-default)] bg-[var(--bg-elevated)] hover:border-[var(--border-default)]'
                 )}
               >
                 <Icon className={cn('h-5 w-5', option.color)} />
                 <span className="text-xs font-medium text-white">{option.label}</span>
-                <span className="text-[10px] text-slate-500 text-center leading-tight">
+                <span className="text-[10px] text-[var(--text-muted)] text-center leading-tight">
                   {option.description}
                 </span>
               </button>
@@ -210,11 +210,11 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
       {/* PDF options */}
       {selectedFormat === 'pdf' && (
         <div className="space-y-3 pt-2 border-t border-slate-800">
-          <p className="text-xs text-slate-400 font-medium">PDF Options</p>
+          <p className="text-xs text-[var(--text-secondary)] font-medium">PDF Options</p>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="pdf-orientation" className="text-xs text-slate-500 block mb-1">Orientation</label>
+              <label htmlFor="pdf-orientation" className="text-xs text-[var(--text-muted)] block mb-1">Orientation</label>
               <select
                 id="pdf-orientation"
                 value={pdfOptions.orientation}
@@ -224,7 +224,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
                     orientation: e.target.value as 'portrait' | 'landscape',
                   }))
                 }
-                className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-xs text-white"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-xs text-[var(--text-primary)]"
               >
                 <option value="landscape">Landscape</option>
                 <option value="portrait">Portrait</option>
@@ -232,7 +232,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
             </div>
 
             <div>
-              <label htmlFor="pdf-page-size" className="text-xs text-slate-500 block mb-1">Page Size</label>
+              <label htmlFor="pdf-page-size" className="text-xs text-[var(--text-muted)] block mb-1">Page Size</label>
               <select
                 id="pdf-page-size"
                 value={pdfOptions.pageSize}
@@ -242,7 +242,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
                     pageSize: e.target.value as 'letter' | 'a4' | 'legal',
                   }))
                 }
-                className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-xs text-white"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-xs text-[var(--text-primary)]"
               >
                 <option value="letter">Letter</option>
                 <option value="a4">A4</option>
@@ -252,7 +252,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="flex items-center gap-1.5 text-xs text-slate-400">
+            <label className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
               <input
                 type="checkbox"
                 checked={pdfOptions.showPageNumbers}
@@ -263,7 +263,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
               />
               Page numbers
             </label>
-            <label className="flex items-center gap-1.5 text-xs text-slate-400">
+            <label className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
               <input
                 type="checkbox"
                 checked={pdfOptions.showTimestamp}
@@ -277,13 +277,13 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
           </div>
 
           <div>
-            <label className="text-xs text-slate-500 block mb-1">Watermark (optional)</label>
+            <label className="text-xs text-[var(--text-muted)] block mb-1">Watermark (optional)</label>
             <input
               type="text"
               value={pdfOptions.watermark}
               onChange={(e) => setPdfOptions((prev) => ({ ...prev, watermark: e.target.value }))}
               placeholder="DRAFT, CONFIDENTIAL, etc."
-              className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-xs text-white placeholder:text-slate-600"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-xs text-[var(--text-primary)] text-[var(--text-muted)]"
             />
           </div>
         </div>
@@ -291,13 +291,13 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
 
       {/* Report summary */}
       <div className="pt-2 border-t border-slate-800">
-        <p className="text-xs text-slate-500">
-          Report: <span className="text-slate-300">{report.name}</span>
+        <p className="text-xs text-[var(--text-muted)]">
+          Report: <span className="text-[var(--text-secondary)]">{report.name}</span>
         </p>
-        <p className="text-xs text-slate-500">
-          Rows: <span className="text-slate-300">{report.layout.rows.length}</span>
+        <p className="text-xs text-[var(--text-muted)]">
+          Rows: <span className="text-[var(--text-secondary)]">{report.layout.rows.length}</span>
           {' | '}
-          Columns: <span className="text-slate-300">{report.layout.columns.length}</span>
+          Columns: <span className="text-[var(--text-secondary)]">{report.layout.columns.length}</span>
         </p>
       </div>
 
@@ -326,7 +326,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
         className={cn(
           'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded text-sm font-medium transition-colors',
           isExporting
-            ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+            ? 'bg-[var(--bg-hover)] text-[var(--text-secondary)] cursor-not-allowed'
             : 'bg-blue-600 text-white hover:bg-blue-500'
         )}
       >

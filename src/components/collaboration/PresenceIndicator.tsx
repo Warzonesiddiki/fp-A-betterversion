@@ -50,7 +50,7 @@ export function PresenceIndicator({
         ))}
         {overflow > 0 && (
           <div
-            className="flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-xs font-medium text-[var(--text-secondary)] dark:text-gray-300 border-2 border-white dark:border-gray-900"
+            className="flex items-center justify-center rounded-full bg-[var(--bg-elevated)] text-xs font-medium text-[var(--text-secondary)] border-2 border-[var(--bg-root)]"
             style={{ width: size, height: size, fontSize: size * 0.36 }}
             title={`${overflow} more user${overflow > 1 ? 's' : ''}`}
           >
@@ -72,7 +72,7 @@ function AvatarBubble({ user, size }: AvatarBubbleProps) {
 
   return (
     <div
-      className={`relative flex items-center justify-center rounded-full border-2 ${borderColor} bg-white dark:bg-gray-900 dark:bg-gray-800`}
+      className={`relative flex items-center justify-center rounded-full border-2 ${borderColor} bg-[var(--bg-elevated)]`}
       style={{ width: size, height: size }}
       title={`${user.userName} — ${user.status}`}
     >
@@ -85,14 +85,14 @@ function AvatarBubble({ user, size }: AvatarBubbleProps) {
         />
       ) : (
         <span
-          className="font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-200"
+          className="font-semibold text-[var(--text-primary)]"
           style={{ fontSize: size * 0.36 }}
         >
           {user.userInitials}
         </span>
       )}
       <span
-        className={`absolute bottom-0 right-0 rounded-full border border-white dark:border-gray-800 ${
+        className={`absolute bottom-0 right-0 rounded-full border border-[var(--bg-elevated)] ${
           user.status === 'online'
             ? 'bg-green-500'
             : user.status === 'idle'
@@ -123,7 +123,7 @@ export function PresenceCount({
 
   return (
     <span
-      className={`inline-flex items-center gap-1 text-xs text-[var(--text-muted)] dark:text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 ${className}`}
+      className={`inline-flex items-center gap-1 text-xs text-[var(--text-muted)] ${className}`}
       role="status"
       aria-label={`${viewers.length} user${viewers.length > 1 ? 's' : ''} viewing`}
     >

@@ -50,7 +50,7 @@ describe('KPICard', () => {
   describe('Loading State', () => {
     it('renders loading skeleton when loading is true', () => {
       const { container } = render(<KPICard {...defaultProps} loading />);
-      const skeletons = container.querySelectorAll('.bg-gray-200');
+      const skeletons = container.querySelectorAll('[class*="bg-[var(--skeleton-bg)]"]');
       expect(skeletons.length).toBeGreaterThan(0);
     });
 

@@ -13,8 +13,8 @@ export function ReportLivePreview({
   cubeData = {} as CubeData,
 }: ReportLivePreviewProps) {
   return (
-    <div className="w-[420px] border-l border-slate-800 overflow-y-auto p-4 bg-slate-950/50">
-      <h3 className="text-xs font-semibold text-slate-400 uppercase mb-3 flex items-center gap-1.5">
+    <div className="w-[420px] border-l border-[var(--border-subtle)] overflow-y-auto p-4 bg-[var(--bg-elevated)]">
+      <h3 className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-3 flex items-center gap-1.5">
         <Eye className="h-3.5 w-3.5" />
         Live Preview
       </h3>

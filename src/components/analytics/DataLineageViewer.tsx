@@ -18,9 +18,9 @@ export const DataLineageViewer = memo(function DataLineageViewer({
     return (
       <div
         style={{ height }}
-        className="flex items-center justify-center bg-slate-950 border border-slate-800 rounded-lg"
+        className="flex items-center justify-center bg-[var(--bg-root)] border border-[var(--border-default)] rounded-lg"
       >
-        <span className="text-slate-500">No lineage data</span>
+        <span className="text-[var(--text-muted)]">No lineage data</span>
       </div>
     );
   }
@@ -28,7 +28,7 @@ export const DataLineageViewer = memo(function DataLineageViewer({
   return (
     <div
       style={{ height }}
-      className="bg-slate-950 border border-slate-800 rounded-lg overflow-hidden p-6"
+      className="bg-[var(--bg-root)] border border-[var(--border-default)] rounded-lg overflow-hidden p-6"
     >
       <svg width="100%" height="100%" viewBox="0 0 800 400">
         {graph.nodes.map((node, i) => {

@@ -32,8 +32,8 @@ const LIFECYCLE_NODES: readonly LifecycleNode[] = [
   {
     state: 'draft',
     label: 'Draft',
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100 dark:bg-gray-800',
+    color: 'text-[var(--text-secondary)]',
+    bgColor: 'bg-[var(--bg-elevated)]',
   },
   {
     state: 'submitted',
@@ -68,7 +68,7 @@ const LIFECYCLE_NODES: readonly LifecycleNode[] = [
 ] as const;
 
 const STATE_BADGE: Record<ApprovalState, string> = {
-  draft: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  draft: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
   submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
   in_review: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
   approved: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
@@ -171,7 +171,7 @@ export function ApprovalWorkflow({
                       isActive && !isRejected && 'border-current scale-110',
                       isPast && 'border-green-500 bg-green-500 text-white',
                       isRejected && 'border-red-500 bg-red-500 text-white',
-                      !isActive && !isPast && !isRejected && 'border-gray-300 text-gray-400'
+                      !isActive && !isPast && !isRejected && 'border-[var(--border-subtle)] text-[var(--text-muted)]'
                     )}
                   >
                     {isPast ? '\u2713' : idx + 1}
@@ -179,7 +179,7 @@ export function ApprovalWorkflow({
                   <span
                     className={cn(
                       'text-[10px] mt-1 text-center whitespace-nowrap',
-                      isActive ? node.color : 'text-gray-400'
+                      isActive ? node.color : 'text-[var(--text-muted)]'
                     )}
                   >
                     {node.label}
@@ -189,7 +189,7 @@ export function ApprovalWorkflow({
                   <div
                     className={cn(
                       'flex-1 h-0.5 mx-1',
-                      isPast ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
+                      isPast ? 'bg-green-500' : 'bg-[var(--bg-hover)]'
                     )}
                   />
                 )}

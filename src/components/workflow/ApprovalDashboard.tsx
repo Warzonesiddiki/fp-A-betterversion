@@ -26,7 +26,7 @@ interface ApprovalDashboardProps {
 
 const STATE_BADGE: Record<ApprovalState, string> = {
   draft:
-    'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:bg-gray-800 dark:text-gray-300',
+    'bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
   submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
   in_review: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
   approved: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
@@ -136,8 +136,8 @@ export function ApprovalDashboard({
     {
       label: 'Avg Time',
       value: stats.avgApprovalTimeHours > 0 ? `${stats.avgApprovalTimeHours.toFixed(1)}h` : 'N/A',
-      color: 'text-slate-600',
-      bg: 'bg-slate-50 dark:bg-slate-900',
+      color: 'text-[var(--text-secondary)]',
+      bg: 'bg-[var(--bg-hover)]',
     },
   ];
 

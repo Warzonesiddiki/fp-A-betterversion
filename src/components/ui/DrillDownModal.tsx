@@ -64,7 +64,7 @@ export function DrillDownModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="xl">
       <div className="space-y-4">
-        <div className="flex justify-between items-center text-sm text-slate-400 dark:text-slate-300">
+        <div className="flex justify-between items-center text-sm text-[var(--text-muted)]">
           <span>{filteredEntries.length} transactions found</span>
           {accountPrefix && <span>Filtering by Account: {accountPrefix}*</span>}
         </div>

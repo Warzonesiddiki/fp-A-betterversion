@@ -38,9 +38,9 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
   const cubes = engine.listCubes();
 
   return (
-    <div className="w-64 border-r border-slate-800 bg-slate-900/50 flex flex-col overflow-hidden select-none">
+    <div className="w-64 border-r border-[var(--border-subtle)] bg-[var(--bg-elevated)] flex flex-col overflow-hidden select-none">
       {/* Tab Bar */}
-      <div className="flex border-b border-slate-800">
+      <div className="flex border-b border-[var(--border-subtle)]">
         {(
           [
             { id: 'data' as const, label: 'Data', icon: Database },
@@ -54,7 +54,7 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
               'flex-1 px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-center transition-colors',
               activeTab === id
                 ? 'text-blue-400 border-b-2 border-blue-400'
-                : 'text-slate-500 hover:text-slate-300'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
             )}
             onClick={() => setActiveTab(id)}
           >
@@ -70,7 +70,7 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
           <>
             {/* Dimensions */}
             <section className="space-y-2">
-              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">
+              <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-1">
                 Dimensions
               </h3>
               <div className="grid gap-1">
@@ -84,16 +84,16 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                         value: dim,
                       })
                     }
-                    className="group flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors cursor-grab active:cursor-grabbing"
+                    className="group flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-default)] transition-colors cursor-grab active:cursor-grabbing"
                   >
-                    <GripVertical className="h-3 w-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <GripVertical className="h-3 w-3 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <DimensionIcon name={dim} className="h-3.5 w-3.5 text-blue-400/70" />
-                    <span className="text-xs text-slate-300">{dim}</span>
-                    <ChevronRight className="h-3 w-3 text-slate-600 ml-auto opacity-0 group-hover:opacity-100" />
+                    <span className="text-xs text-[var(--text-secondary)]">{dim}</span>
+                    <ChevronRight className="h-3 w-3 text-[var(--text-muted)] ml-auto opacity-0 group-hover:opacity-100" />
                   </div>
                 ))}
                 {dimensions.length === 0 && (
-                  <p className="text-[10px] text-slate-600 px-2 py-3 text-center">
+                  <p className="text-[10px] text-[var(--text-muted)] px-2 py-3 text-center">
                     No dimensions registered
                   </p>
                 )}
@@ -102,7 +102,7 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
 
             {/* Measures */}
             <section className="space-y-2">
-              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">
+              <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-1">
                 Measures
               </h3>
               <div className="space-y-3">
@@ -110,7 +110,7 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                   const cube = engine.getCube(cubeName);
                   return (
                     <div key={cubeName} className="space-y-1">
-                      <div className="flex items-center gap-1.5 px-1 py-1 text-[10px] font-bold text-slate-500 uppercase">
+                      <div className="flex items-center gap-1.5 px-1 py-1 text-[10px] font-bold text-[var(--text-muted)] uppercase">
                         <Layers className="h-3 w-3" />
                         {cubeName}
                       </div>
@@ -125,21 +125,21 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                                 value: { cube: cubeName, measure: m.name },
                               })
                             }
-                            className="group flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors cursor-grab active:cursor-grabbing"
+                            className="group flex items-center gap-2 px-2 py-1 rounded hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-default)] transition-colors cursor-grab active:cursor-grabbing"
                           >
                             <Hash className="h-3 w-3 text-green-400/70" />
-                            <span className="text-xs text-slate-300">{m.name}</span>
+                            <span className="text-xs text-[var(--text-secondary)]">{m.name}</span>
                           </div>
                         ))}
                         {(!cube || cube.measures.length === 0) && (
-                          <p className="text-[10px] text-slate-600 px-2">No measures</p>
+                          <p className="text-[10px] text-[var(--text-muted)] px-2">No measures</p>
                         )}
                       </div>
                     </div>
                   );
                 })}
                 {cubes.length === 0 && (
-                  <p className="text-[10px] text-slate-600 px-2 py-3 text-center">
+                  <p className="text-[10px] text-[var(--text-muted)] px-2 py-3 text-center">
                     No cubes available
                   </p>
                 )}
@@ -151,10 +151,10 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
         {activeTab === 'elements' && (
           <>
             <section className="space-y-2">
-              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">
+              <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-1">
                 Row Types
               </h3>
-              <p className="text-[10px] text-slate-600 px-1">Drag onto the row drop zone</p>
+              <p className="text-[10px] text-[var(--text-muted)] px-1">Drag onto the row drop zone</p>
               <div className="grid gap-1">
                 {ROW_TYPES.map((rt) => (
                   <div
@@ -166,9 +166,9 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                         value: rt.type,
                       })
                     }
-                    className="flex items-center gap-2 px-2 py-1.5 rounded border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] cursor-grab hover:border-blue-500 hover:bg-[var(--bg-hover)] transition-colors"
                   >
-                    <GripVertical className="h-3 w-3 text-slate-600" />
+                    <GripVertical className="h-3 w-3 text-[var(--text-muted)]" />
                     <span
                       className={cn(
                         'text-[10px] font-mono px-1.5 py-0.5 rounded',
@@ -179,23 +179,23 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                             : rt.type === 'header'
                               ? 'bg-purple-500/20 text-purple-400'
                               : rt.type === 'blank'
-                                ? 'bg-slate-600 text-slate-400'
-                                : 'bg-slate-700 text-slate-300'
+                                ? 'bg-[var(--bg-hover)] text-[var(--text-muted)]'
+                                : 'bg-[var(--bg-hover)] text-[var(--text-secondary)]'
                       )}
                     >
                       {rt.icon}
                     </span>
-                    <span className="text-xs text-slate-300">{rt.label}</span>
+                    <span className="text-xs text-[var(--text-secondary)]">{rt.label}</span>
                   </div>
                 ))}
               </div>
             </section>
 
             <section className="space-y-2">
-              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">
+              <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-1">
                 Column Types
               </h3>
-              <p className="text-[10px] text-slate-600 px-1">Drag onto the column drop zone</p>
+              <p className="text-[10px] text-[var(--text-muted)] px-1">Drag onto the column drop zone</p>
               <div className="grid gap-1">
                 {COLUMN_TYPES.map((ct) => (
                   <div
@@ -207,9 +207,9 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                         value: ct.label,
                       })
                     }
-                    className="flex items-center gap-2 px-2 py-1.5 rounded border border-slate-700 bg-slate-800/50 cursor-grab hover:border-blue-500 hover:bg-slate-800 transition-colors"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] cursor-grab hover:border-blue-500 hover:bg-[var(--bg-hover)] transition-colors"
                   >
-                    <GripVertical className="h-3 w-3 text-slate-600" />
+                    <GripVertical className="h-3 w-3 text-[var(--text-muted)]" />
                     <span
                       className={cn(
                         'text-[10px] font-mono px-1.5 py-0.5 rounded',
@@ -221,7 +221,7 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                               ? 'bg-blue-500/20 text-blue-400'
                               : ct.period === 'variance'
                                 ? 'bg-amber-500/20 text-amber-400'
-                                : 'bg-slate-600 text-slate-400'
+                                : 'bg-[var(--bg-hover)] text-[var(--text-muted)]'
                       )}
                     >
                       {ct.type === 'label'
@@ -230,7 +230,7 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                           ? ct.period.charAt(0).toUpperCase()
                           : 'C'}
                     </span>
-                    <span className="text-xs text-slate-300">{ct.label}</span>
+                    <span className="text-xs text-[var(--text-secondary)]">{ct.label}</span>
                   </div>
                 ))}
               </div>
@@ -240,10 +240,10 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
 
         {activeTab === 'filters' && (
           <section className="space-y-2">
-            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">
+            <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-1">
               Drag Dimensions to Filter
             </h3>
-            <p className="text-[10px] text-slate-600 px-1">
+            <p className="text-[10px] text-[var(--text-muted)] px-1">
               Drop dimensions onto the filter zone in the canvas to create report filters.
             </p>
             <div className="grid gap-1">
@@ -257,10 +257,10 @@ export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
                       value: dim,
                     })
                   }
-                  className="group flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-800 border border-transparent hover:border-amber-600/30 transition-colors cursor-grab active:cursor-grabbing"
+                  className="group flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[var(--bg-hover)] border border-transparent hover:border-amber-600/30 transition-colors cursor-grab active:cursor-grabbing"
                 >
                   <Filter className="h-3 w-3 text-amber-400/70" />
-                  <span className="text-xs text-slate-300">{dim}</span>
+                  <span className="text-xs text-[var(--text-secondary)]">{dim}</span>
                 </div>
               ))}
             </div>

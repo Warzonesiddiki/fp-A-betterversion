@@ -22,13 +22,13 @@ export function EntityToggle({
       className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition-colors ${
         selected
           ? 'border-blue-500 bg-blue-600/20 text-blue-300'
-          : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
+          : 'border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:border-[var(--border-default)]'
       }`}
       aria-pressed={selected}
     >
-      <span className={`h-2 w-2 rounded-full ${selected ? 'bg-blue-400' : 'bg-slate-600'}`} />
+      <span className={`h-2 w-2 rounded-full ${selected ? 'bg-blue-400' : 'bg-[var(--bg-hover)]'}`} />
       <span className="font-medium">{entity.name}</span>
-      <span className="text-slate-500">{entity.currency}</span>
+      <span className="text-[var(--text-muted)]">{entity.currency}</span>
     </button>
   );
 }
@@ -48,13 +48,13 @@ export function TemplateRow({ preset, selected, entityCount, onToggle }: Templat
       className={`flex items-center justify-between w-full rounded-lg border px-3 py-2 text-left transition-colors ${
         selected
           ? 'border-emerald-500 bg-emerald-600/15 text-emerald-300'
-          : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
+          : 'border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:border-[var(--border-default)]'
       }`}
       aria-pressed={selected}
     >
       <div className="min-w-0">
         <p className="text-sm font-medium">{preset.name}</p>
-        <p className="text-xs text-slate-500 truncate">{preset.description}</p>
+        <p className="text-xs text-[var(--text-muted)] truncate">{preset.description}</p>
       </div>
       {selected && (
         <span className="ml-3 shrink-0 text-xs text-emerald-400">
@@ -74,11 +74,11 @@ interface VariableEditorProps {
 export function VariableEditor({ variables, values, onChange }: VariableEditorProps) {
   return (
     <div className="space-y-2" role="region" aria-label="BookBurstSubs">
-      <h4 className="text-xs font-medium text-slate-400">Variable Substitution</h4>
+      <h4 className="text-xs font-medium text-[var(--text-muted)]">Variable Substitution</h4>
       <div className="grid grid-cols-2 gap-2">
         {variables.map((v) => (
           <div key={v.key}>
-            <label htmlFor={`var-${v.key}`} className="block text-xs text-slate-500 mb-0.5">
+            <label htmlFor={`var-${v.key}`} className="block text-xs text-[var(--text-muted)] mb-0.5">
               <code className="text-blue-400">{`{${v.key}}`}</code> &mdash; {v.label}
             </label>
             <input
@@ -86,7 +86,7 @@ export function VariableEditor({ variables, values, onChange }: VariableEditorPr
               type="text"
               value={values[v.key] ?? v.defaultValue}
               onChange={(e) => onChange(v.key, e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-blue-500 outline-none"
+              className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)] focus:border-blue-500 outline-none"
               placeholder={v.defaultValue}
             />
           </div>
@@ -110,13 +110,13 @@ export function MatrixPreview({ book, entities }: MatrixPreviewProps) {
       <table className="w-full text-xs border-collapse">
         <thead>
           <tr>
-            <th className="text-left py-1 px-2 text-slate-400 border-b border-slate-700">
+            <th className="text-left py-1 px-2 text-[var(--text-muted)] border-b border-[var(--border-default)]">
               Report
             </th>
             {entities.map((e) => (
               <th
                 key={e.id}
-                className="text-center py-1 px-2 text-slate-400 border-b border-slate-700"
+                className="text-center py-1 px-2 text-[var(--text-muted)] border-b border-[var(--border-default)]"
               >
                 {e.name.split('(')[0]?.trim()}
               </th>
@@ -132,7 +132,7 @@ export function MatrixPreview({ book, entities }: MatrixPreviewProps) {
                   {entry.entityIds.includes(e.id) ? (
                     <span className="text-emerald-400">{'\u2713'}</span>
                   ) : (
-                    <span className="text-slate-600">{'\u2014'}</span>
+                    <span className="text-[var(--text-muted)]">{'\u2014'}</span>
                   )}
                 </td>
               ))}
@@ -165,13 +165,13 @@ export function ProgressBarInline({
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between text-xs text-slate-400">
+      <div className="flex justify-between text-xs text-[var(--text-muted)]">
         <span>{currentReport && `${currentReport} \u2014 ${currentEntity}`}</span>
         <span>
           {completed}/{total} ({pct}%)
         </span>
       </div>
-      <div className="h-2 rounded-full bg-slate-700 overflow-hidden">
+      <div className="h-2 rounded-full bg-[var(--bg-hover)] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${
             status === 'error' ? 'bg-red-500' : 'bg-emerald-500'

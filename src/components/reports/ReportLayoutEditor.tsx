@@ -20,9 +20,9 @@ function getRowColor(type: RowType): string {
     case 'header':
       return 'bg-purple-500/20 text-purple-400';
     case 'blank':
-      return 'bg-slate-600 text-slate-400';
+      return 'bg-[var(--bg-elevated)] text-[var(--text-muted)]';
     default:
-      return 'bg-slate-700 text-slate-300';
+      return 'bg-[var(--bg-hover)] text-[var(--text-secondary)]';
   }
 }
 
@@ -31,7 +31,7 @@ function getColColor(col: ReportColumn): string {
   if (col.period === 'actual') return 'bg-green-500/20 text-green-400';
   if (col.period === 'budget') return 'bg-blue-500/20 text-blue-400';
   if (col.period === 'variance') return 'bg-amber-500/20 text-amber-400';
-  return 'bg-slate-600 text-slate-400';
+  return 'bg-[var(--bg-elevated)] text-[var(--text-muted)]';
 }
 
 function getRowLabel(row: ReportRow, columns: ReportColumn[]): string {
@@ -84,7 +84,7 @@ export function ReportLayoutEditor({
       >
         <div className="p-4 space-y-1">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold text-[var(--text-muted)] uppercase flex items-center gap-1.5">
               <Rows className="h-3.5 w-3.5" />
               Rows ({layout.rows.length})
             </h3>
@@ -95,7 +95,7 @@ export function ReportLayoutEditor({
           </div>
 
           {layout.rows.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 text-sm border-2 border-dashed border-slate-700 rounded-lg">
+            <div className="text-center py-8 text-[var(--text-muted)] text-sm border-2 border-dashed border-slate-700 rounded-lg">
               Drag row types here or click Add Row
             </div>
           ) : (
@@ -108,14 +108,14 @@ export function ReportLayoutEditor({
                   'flex items-center gap-2 px-3 py-1.5 rounded border text-sm transition-colors cursor-pointer',
                   selectedRowIndex === ri
                     ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-700 bg-slate-800/30 hover:border-slate-600'
+                    : 'border-slate-700 bg-[var(--bg-elevated)]/30 hover:border-slate-600'
                 )}
                 onClick={() => onSelectRow(ri)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') onSelectRow(ri);
                 }}
               >
-                <GripVertical className="h-3.5 w-3.5 text-slate-500 flex-shrink-0" />
+                <GripVertical className="h-3.5 w-3.5 text-[var(--text-muted)] flex-shrink-0" />
                 <span
                   className={cn(
                     'text-xs font-mono px-1.5 py-0.5 rounded flex-shrink-0',
@@ -124,12 +124,12 @@ export function ReportLayoutEditor({
                 >
                   {row.type.charAt(0).toUpperCase()}
                 </span>
-                <span className="text-slate-300 truncate flex-1">
+                <span className="text-[var(--text-secondary)] truncate flex-1">
                   {getRowLabel(row, layout.columns)}
                 </span>
-                {row.grouping && <Layers className="h-3 w-3 text-slate-500 flex-shrink-0" />}
+                {row.grouping && <Layers className="h-3 w-3 text-[var(--text-muted)] flex-shrink-0" />}
                 <button
-                  className="text-slate-500 hover:text-red-400 flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                  className="text-[var(--text-muted)] hover:text-red-400 flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                   onClick={(e) => {
                     e.stopPropagation();
                     onRemoveRow(row.id);
@@ -149,7 +149,7 @@ export function ReportLayoutEditor({
           onDrop={(e) => onDrop(e, 'columns')}
         >
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold text-[var(--text-muted)] uppercase flex items-center gap-1.5">
               <Columns className="h-3.5 w-3.5" />
               Columns ({layout.columns.length})
             </h3>
@@ -160,7 +160,7 @@ export function ReportLayoutEditor({
           </div>
 
           {layout.columns.length === 0 ? (
-            <div className="text-center py-6 text-slate-500 text-sm border-2 border-dashed border-slate-700 rounded-lg">
+            <div className="text-center py-6 text-[var(--text-muted)] text-sm border-2 border-dashed border-slate-700 rounded-lg">
               Drag column types here or click Add Column
             </div>
           ) : (
@@ -174,7 +174,7 @@ export function ReportLayoutEditor({
                     'flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs transition-colors cursor-pointer',
                     selectedColIndex === ci
                       ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-slate-700 bg-slate-800/30 hover:border-slate-600'
+                      : 'border-slate-700 bg-[var(--bg-elevated)]/30 hover:border-slate-600'
                   )}
                   onClick={() => onSelectCol(ci)}
                   onKeyDown={(e) => {
@@ -184,9 +184,9 @@ export function ReportLayoutEditor({
                   <span className={cn('font-mono px-1 py-0.5 rounded', getColColor(col))}>
                     {col.type === 'label' ? 'L' : (col.period?.charAt(0).toUpperCase() ?? 'C')}
                   </span>
-                  <span className="text-slate-300">{col.header}</span>
+                  <span className="text-[var(--text-secondary)]">{col.header}</span>
                   <button
-                    className="text-slate-500 hover:text-red-400 ml-1 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                    className="text-[var(--text-muted)] hover:text-red-400 ml-1 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                     onClick={(e) => {
                       e.stopPropagation();
                       onRemoveColumn(col.id);
@@ -203,10 +203,10 @@ export function ReportLayoutEditor({
       </div>
 
       {(selectedRow || selectedCol) && (
-        <div className="border-t border-slate-800 p-4 bg-slate-900/30">
+        <div className="border-t border-slate-800 p-4 bg-[var(--bg-elevated)]/30">
           {selectedRow && selectedRowIndex !== null && (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-slate-400">
+              <p className="text-xs font-medium text-[var(--text-muted)]">
                 Row {selectedRowIndex + 1} — {selectedRow.type}
               </p>
               <div className="flex gap-2">
@@ -215,12 +215,12 @@ export function ReportLayoutEditor({
                   value={getRowLabel(selectedRow, layout.columns)}
                   onChange={(e) => onUpdateRowLabel(selectedRowIndex, e.target.value)}
                   placeholder="Row label..."
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                  className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-[var(--text-primary)]"
                 />
                 <select
                   value={selectedRow.type}
                   onChange={(e) => onUpdateRowType(selectedRowIndex, e.target.value as RowType)}
-                  className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-[var(--text-primary)]"
                 >
                   {ROW_TYPES.map((rt) => (
                     <option key={rt.type} value={rt.type}>
@@ -233,7 +233,7 @@ export function ReportLayoutEditor({
           )}
           {selectedCol && selectedColIndex !== null && (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-slate-400">
+              <p className="text-xs font-medium text-[var(--text-muted)]">
                 Column {selectedColIndex + 1} — {selectedCol.type}
               </p>
               <div className="flex gap-2">
@@ -242,7 +242,7 @@ export function ReportLayoutEditor({
                   value={selectedCol.header}
                   onChange={(e) => onUpdateColumnHeader(selectedColIndex, e.target.value)}
                   placeholder="Column header..."
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                  className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-[var(--text-primary)]"
                 />
                 <input
                   type="number"
@@ -250,7 +250,7 @@ export function ReportLayoutEditor({
                   onChange={(e) =>
                     onUpdateColumnWidth(selectedCol.id, parseInt(e.target.value, 10) || 100)
                   }
-                  className="w-20 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
+                  className="w-20 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-sm text-[var(--text-primary)]"
                   min={40}
                   aria-label="Column width"
                 />

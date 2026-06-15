@@ -243,7 +243,7 @@ function EliminationsView({ entries }: { entries: EliminationEntry[] }) {
                     <td className="p-2">
                       <Badge
                         variant="outline"
-                        className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                        className="bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
                       >
                         {typeBadge[e.type] ?? e.type}
                       </Badge>

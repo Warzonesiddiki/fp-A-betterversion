@@ -219,7 +219,7 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
                   <button
                     onClick={() => moveStep(idx, -1)}
                     disabled={idx === 0}
-                    className="text-gray-400 hover:text-[var(--text-secondary)] disabled:opacity-30 px-1"
+                    className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-30 px-1"
                     aria-label="Move up"
                   >
                     &uarr;
@@ -227,7 +227,7 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
                   <button
                     onClick={() => moveStep(idx, 1)}
                     disabled={idx === steps.length - 1}
-                    className="text-gray-400 hover:text-[var(--text-secondary)] disabled:opacity-30 px-1"
+                    className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-30 px-1"
                     aria-label="Move down"
                   >
                     &darr;

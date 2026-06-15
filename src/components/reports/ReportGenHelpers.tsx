@@ -51,14 +51,14 @@ export function ProgressPanel({ progress, elapsed }: ProgressPanelProps) {
   return (
     <Card className="p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Generation Progress</h3>
-        <span className="text-xs text-slate-400">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Generation Progress</h3>
+        <span className="text-xs text-[var(--text-muted)]">
           {progress.status === 'running'
             ? `${Math.round(remaining)}s remaining`
             : progress.status}
         </span>
       </div>
-      <div className="flex justify-between text-xs text-slate-400">
+      <div className="flex justify-between text-xs text-[var(--text-muted)]">
         <span>
           {progress.currentReport && `${progress.currentReport} \u2014 ${progress.currentEntity}`}
         </span>
@@ -66,7 +66,7 @@ export function ProgressPanel({ progress, elapsed }: ProgressPanelProps) {
           {progress.completed}/{progress.total} ({pct}%)
         </span>
       </div>
-      <div className="h-3 rounded-full bg-slate-700 overflow-hidden">
+      <div className="h-3 rounded-full bg-[var(--bg-hover)] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${
             progress.status === 'error' ? 'bg-red-500' : 'bg-emerald-500'
@@ -83,7 +83,7 @@ export function ProgressPanel({ progress, elapsed }: ProgressPanelProps) {
                 ? progress.errors.length > 0 && i >= progress.completed - progress.errors.length
                   ? 'bg-red-500'
                   : 'bg-emerald-500'
-                : 'bg-slate-700'
+                : 'bg-[var(--bg-hover)]'
             }`}
           />
         ))}

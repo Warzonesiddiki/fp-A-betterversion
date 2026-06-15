@@ -16,11 +16,11 @@ function ReportTable({ report }: ReportTableProps) {
     <div className="overflow-x-auto">
       <table className="w-full text-xs border-collapse">
         <thead>
-          <tr className="border-b-2 border-slate-600">
+          <tr className="border-b-2 border-[var(--border-default)]">
             {report.data.headers.map((h, i) => (
               <th
                 key={i}
-                className={`py-1.5 px-2 text-slate-400 font-medium ${
+                className={`py-1.5 px-2 text-[var(--text-muted)] font-medium ${
                   i > 0 ? 'text-right' : 'text-left'
                 }`}
               >
@@ -31,12 +31,12 @@ function ReportTable({ report }: ReportTableProps) {
         </thead>
         <tbody>
           {report.data.rows.map((row, ri) => (
-            <tr key={ri} className="border-b border-slate-800">
+            <tr key={ri} className="border-b border-[var(--border-subtle)]">
               {row.map((cell, ci) => (
                 <td
                   key={ci}
                   className={`py-1 px-2 ${ci > 0 ? 'text-right font-mono' : ''} ${
-                    ri === 0 ? 'font-semibold text-white' : 'text-slate-300'
+                    ri === 0 ? 'font-semibold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
                   }`}
                 >
                   {String(cell ?? '')}
@@ -47,9 +47,9 @@ function ReportTable({ report }: ReportTableProps) {
         </tbody>
       </table>
       {report.data.footers && report.data.footers.length > 0 && (
-        <div className="mt-2 pt-1 border-t border-slate-700">
+        <div className="mt-2 pt-1 border-t border-[var(--border-default)]">
           {report.data.footers.map((f, i) => (
-            <p key={i} className="text-xs text-slate-500">{f}</p>
+            <p key={i} className="text-xs text-[var(--text-muted)]">{f}</p>
           ))}
         </div>
       )}
@@ -91,26 +91,26 @@ export function ReportResultsPanel({
         <div className="grid grid-cols-4 gap-3 text-center">
           <div>
             <p className="text-2xl font-bold text-emerald-400">{reports.length}</p>
-            <p className="text-xs text-slate-400">Reports</p>
+            <p className="text-xs text-[var(--text-muted)]">Reports</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-white">{entityNames.length}</p>
-            <p className="text-xs text-slate-400">Entities</p>
+            <p className="text-xs text-[var(--text-muted)]">Entities</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-white">{reportNames.length}</p>
-            <p className="text-xs text-slate-400">Templates</p>
+            <p className="text-xs text-[var(--text-muted)]">Templates</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-white">{sections.length}</p>
-            <p className="text-xs text-slate-400">Sections</p>
+            <p className="text-xs text-[var(--text-muted)]">Sections</p>
           </div>
         </div>
       </Card>
 
       {/* Export */}
       <Card className="p-4 space-y-3">
-        <h3 className="text-sm font-semibold text-white">Export</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Export</h3>
         <div className="grid grid-cols-2 gap-2">
           <Button onClick={onDownloadZip} className="w-full">
             Download ZIP (CSV)
@@ -119,7 +119,7 @@ export function ReportResultsPanel({
             Board Pack (JSON)
           </Button>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-[var(--text-muted)]">
           ZIP: one CSV per report organized by entity. Board pack: structured JSON for PDF rendering.
         </p>
       </Card>
@@ -132,7 +132,7 @@ export function ReportResultsPanel({
           className={`pb-2 text-sm transition-colors ${
             activeTab === 'reports'
               ? 'border-b-2 border-blue-500 text-white'
-              : 'text-slate-400 hover:text-slate-300'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
           }`}
         >
           All Reports ({reports.length})
@@ -143,7 +143,7 @@ export function ReportResultsPanel({
           className={`pb-2 text-sm transition-colors ${
             activeTab === 'sections'
               ? 'border-b-2 border-blue-500 text-white'
-              : 'text-slate-400 hover:text-slate-300'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
           }`}
         >
           Sections ({sections.length})
@@ -162,11 +162,11 @@ export function ReportResultsPanel({
                 className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${
                   selectedReport === report
                     ? 'border-blue-500 bg-blue-600/15'
-                    : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+                    : 'border-[var(--border-default)] bg-[var(--bg-elevated)] hover:border-[var(--border-default)]'
                 }`}
               >
-                <p className="text-sm font-medium text-white truncate">{report.reportName}</p>
-                <p className="text-xs text-slate-400">
+                <p className="text-sm font-medium text-[var(--text-primary)] truncate">{report.reportName}</p>
+                <p className="text-xs text-[var(--text-muted)]">
                   {report.entityName} &middot; {report.data.rows.length} rows
                 </p>
               </button>
@@ -174,15 +174,15 @@ export function ReportResultsPanel({
           </div>
           <div>
             {selectedReport ? (
-              <Card className="p-4 bg-white dark:bg-gray-800 max-h-[500px] overflow-auto">
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">
+              <Card className="p-4 bg-[var(--bg-elevated)] max-h-[500px] overflow-auto">
+                <h4 className="text-sm font-bold text-[var(--text-primary)] mb-2">
                   {selectedReport.reportName}
                 </h4>
-                <p className="text-xs text-slate-500 mb-3">{selectedReport.entityName}</p>
+                <p className="text-xs text-[var(--text-muted)] mb-3">{selectedReport.entityName}</p>
                 <ReportTable report={selectedReport} />
               </Card>
             ) : (
-              <div className="flex items-center justify-center h-48 text-slate-500 text-sm">
+              <div className="flex items-center justify-center h-48 text-[var(--text-muted)] text-sm">
                 Select a report to preview
               </div>
             )}
@@ -195,9 +195,9 @@ export function ReportResultsPanel({
         <div className="space-y-3">
           {sections.map((section, si) => (
             <Card key={section.id} className="p-4 space-y-2">
-              <h4 className="text-sm font-semibold text-white">
+              <h4 className="text-sm font-semibold text-[var(--text-primary)]">
                 {si + 1}. {section.title}
-                <span className="ml-2 text-xs text-slate-400 font-normal">
+                <span className="ml-2 text-xs text-[var(--text-muted)] font-normal">
                   ({section.reports.length} report{section.reports.length !== 1 ? 's' : ''})
                 </span>
               </h4>
@@ -205,12 +205,12 @@ export function ReportResultsPanel({
                 {section.reports.map((report, ri) => (
                   <div
                     key={ri}
-                    className="flex items-center justify-between text-xs text-slate-400 bg-slate-800/30 rounded px-2 py-1"
+                    className="flex items-center justify-between text-xs text-[var(--text-muted)] bg-[var(--bg-elevated)] rounded px-2 py-1"
                   >
                     <span>
                       {report.entityName} &mdash; {report.reportName}
                     </span>
-                    <span className="text-slate-500">{report.data.rows.length} rows</span>
+                    <span className="text-[var(--text-muted)]">{report.data.rows.length} rows</span>
                   </div>
                 ))}
               </div>
