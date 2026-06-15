@@ -1,0 +1,41 @@
+[
+  {
+    "scenario": "chaos-ws-disconnect-mid-edit",
+    "editsBeforeDisconnect": 3,
+    "editsDuringDisconnect": 5,
+    "editsReplayedOnReconnect": 5,
+    "editOrderPreserved": true,
+    "reconnectTimeMs": 0.34,
+    "dataLoss": false,
+    "passed": true,
+    "target": "5 queued edits replayed in order, 0 data loss",
+    "serviceFile": "src/services/WebSocketManager.ts",
+    "serviceLineRef": "See WebSocketManager.ts:200-330 (offline queue + replay)"
+  },
+  {
+    "scenario": "chaos-ws-rapid-100-edits-disconnect",
+    "editsBeforeDisconnect": 0,
+    "editsDuringDisconnect": 100,
+    "editsReplayedOnReconnect": 100,
+    "editOrderPreserved": true,
+    "reconnectTimeMs": 0.1,
+    "dataLoss": false,
+    "passed": true,
+    "target": "100 rapid edits preserved in order",
+    "serviceFile": "src/services/WebSocketManager.ts",
+    "serviceLineRef": "See WebSocketManager.ts:280-310 (rapid edit enqueue path)"
+  },
+  {
+    "scenario": "chaos-ws-flaky-network-3-retries",
+    "editsBeforeDisconnect": 0,
+    "editsDuringDisconnect": 10,
+    "editsReplayedOnReconnect": 10,
+    "editOrderPreserved": true,
+    "reconnectTimeMs": 0,
+    "dataLoss": false,
+    "passed": true,
+    "target": "queue survives 3 reconnect failures, replays on 4th",
+    "serviceFile": "src/services/WebSocketManager.ts",
+    "serviceLineRef": "See WebSocketManager.ts:330-380 (retry + backoff)"
+  }
+]

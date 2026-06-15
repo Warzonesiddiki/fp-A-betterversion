@@ -1,0 +1,26 @@
+{
+  "hardware": {
+    "cpu": "AMD Ryzen 5 5600G with Radeon Graphics         ",
+    "ram": "15663MB",
+    "os": "win32 x64",
+    "node": "v26.2.0"
+  },
+  "results": [
+    {
+      "bytes": 107013,
+      "ms": 1.23
+    },
+    {
+      "bytes": 540013,
+      "ms": 5.15
+    },
+    {
+      "bytes": 1080013,
+      "ms": 12.14
+    },
+    {
+      "bytes": 5350013,
+      "ms": 89.54
+    }
+  ]
+}

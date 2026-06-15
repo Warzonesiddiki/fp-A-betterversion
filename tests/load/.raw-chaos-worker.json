@@ -1,0 +1,41 @@
+[
+  {
+    "scenario": "chaos-worker-crash-monte-carlo-50pct",
+    "crashDuringOperation": "Monte Carlo at 5000/10000 iterations",
+    "respawnTimeMs": 0.57,
+    "statePreserved": true,
+    "operationResumed": true,
+    "userNotified": true,
+    "dataLoss": false,
+    "passed": true,
+    "target": "crash at 50% → re-spawn → resume → complete all 10K",
+    "serviceFile": "src/workers/monte-carlo.worker.ts",
+    "serviceLineRef": "See workerManager.ts pattern (crash recovery wrapper)"
+  },
+  {
+    "scenario": "chaos-worker-crash-storage-5mb",
+    "crashDuringOperation": "Storage stringify at 2.5MB / 5MB",
+    "respawnTimeMs": 0.19,
+    "statePreserved": true,
+    "operationResumed": true,
+    "userNotified": true,
+    "dataLoss": false,
+    "passed": true,
+    "target": "crash mid-stringify → re-spawn → complete 5MB",
+    "serviceFile": "src/workers/storage.worker.ts",
+    "serviceLineRef": "See storage.worker.ts:21-66 (onmessage error path)"
+  },
+  {
+    "scenario": "chaos-worker-crash-5-sequential",
+    "crashDuringOperation": "4 sequential crashes",
+    "respawnTimeMs": 0.18,
+    "statePreserved": true,
+    "operationResumed": true,
+    "userNotified": true,
+    "dataLoss": false,
+    "passed": true,
+    "target": "5 sequential crashes → all recovered, op completes",
+    "serviceFile": "src/workers/workerManager.ts",
+    "serviceLineRef": "See workerManager.ts (max-retry circuit breaker pattern)"
+  }
+]

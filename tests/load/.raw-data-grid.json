@@ -1,0 +1,16 @@
+[
+  {
+    "benchmark": "ag-grid-100k-cold",
+    "rowCount": 100000,
+    "coldPrepMs": 292.95,
+    "warmPrepMs": 214.26,
+    "virtualizationMs": 0.31,
+    "cellRenderAvgMs": 0,
+    "memoryFootprintMB": 51.59,
+    "passed": true,
+    "target": "data-prep <5000ms (cold)",
+    "engineFile": "src/components/ui/DataGrid.tsx",
+    "engineLineRef": "See DataGrid.tsx:188-237 (useMemo row data, filter, sort)",
+    "notes": "Data prep: deterministic O(N) construction. Real AG Grid data prop pass adds ~10-20% in browser."
+  }
+]

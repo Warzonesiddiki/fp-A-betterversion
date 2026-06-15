@@ -1,0 +1,21 @@
+[
+  {
+    "benchmark": "monte-carlo-10k",
+    "timestamp": "2026-06-15T18:25:03.167Z",
+    "hardware": {
+      "cpu": "AMD Ryzen 5 5600G with Radeon Graphics         ",
+      "ram": "15663MB",
+      "os": "win32 x64",
+      "node": "v26.2.0"
+    },
+    "iterations": 10000,
+    "coldMs": 16.56,
+    "warmMs": 9.09,
+    "warmAvgMs": 11.92,
+    "memoryPeakMB": 12.82,
+    "passed": true,
+    "target": "<30000ms",
+    "engineFile": "src/engines/MonteCarloEngine.ts",
+    "engineLineRef": "simulate() — see MonteCarloEngine.ts:39-180"
+  }
+]
