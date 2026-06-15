@@ -1,0 +1,10 @@
+account_code,account_name,account_type,balance
+1000,Cash and Cash Equivalents,asset,50000
+1100,Accounts Receivable,asset,25000
+1200,Inventory,asset,15000
+2000,Accounts Payable,liability,18000
+3000,Owner's Equity,equity,72500
+4000,Revenue,revenue,120000
+5000,Salaries Expense,expense,45000
+5100,Rent Expense,expense,12000
+5200,Utilities Expense,expense,3500
