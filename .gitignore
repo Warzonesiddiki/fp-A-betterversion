@@ -120,7 +120,7 @@ memory/
 /pwd_test.txt
 
 # Tooling / backup directories (Apollo .gitignore, 2026-06-15)
-/.openhands/
+# /.openhands/ - REMOVED by ATLAS 2026-06-15: see ATLAS NOTE above
 /.aionrs/
 /.openclaude-backup-*/
 /mnemosyne_ship/
