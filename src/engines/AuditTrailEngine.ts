@@ -11,7 +11,16 @@
 //   CORRECTNESS: Merkle root computation, hash chain verification.
 //   PERF:       O(n) for chain build, O(log n) for Merkle proof.
 //   COMPLIANCE: SOX-grade immutability via hash chain + Merkle root.
+//
+// CHRONOS BUG-AT-1 FIX (2026-06-15): query() and exportForSOX() previously
+// compared timestamps LEXICOGRAPHICALLY (`e.timestamp < q.fromTimestamp`).
+// This is incorrect when entries have mixed timezone offsets (some 'Z', some
+// '+05:00'). Replaced with UTC epoch ms comparison via parseToUTCEpoch.
+// Audit: docs/engines/TEMPORAL_ENGINE_CORRECTNESS.md
 // =============================================================================
+
+// CHRONOS BUG-AT-1 FIX — timezone-safe timestamp comparison
+import { isInRange, parseToUTCEpoch } from './temporal';
 
 // --- Type Definitions ---
 
@@ -213,14 +222,26 @@ export class AuditTrailEngine {
   }
 
   // 7. Query entries by filter
+  // CHRONOS BUG-AT-1 FIX: timestamp range comparison now uses UTC epoch ms.
+  // Lexicographic string comparison on ISO 8601 timestamps is only correct
+  // if BOTH sides use the same timezone offset format. With mixed offsets
+  // (e.g. some 'Z', some '+05:00'), the wrong entries can be returned.
   static query(entries: readonly AuditEntry[], q: AuditQuery): readonly AuditEntry[] {
+    // Pre-compute range boundaries once (O(1) per call vs O(n) per entry).
+    const fromMs = q.fromTimestamp ? parseToUTCEpoch(q.fromTimestamp) : null;
+    const toMs = q.toTimestamp ? parseToUTCEpoch(q.toTimestamp) : null;
     return entries.filter((e) => {
       if (q.entityId && e.entityId !== q.entityId) return false;
       if (q.entityType && e.entityType !== q.entityType) return false;
       if (q.userId && e.userId !== q.userId) return false;
       if (q.action && e.action !== q.action) return false;
-      if (q.fromTimestamp && e.timestamp < q.fromTimestamp) return false;
-      if (q.toTimestamp && e.timestamp > q.toTimestamp) return false;
+      // CHRONOS FIX: compare via UTC epoch ms, not string lex order.
+      if (fromMs !== null || toMs !== null) {
+        const eMs = parseToUTCEpoch(e.timestamp);
+        if (eMs === null) return false; // exclude entries with malformed timestamps
+        if (fromMs !== null && eMs < fromMs) return false;
+        if (toMs !== null && eMs > toMs) return false;
+      }
       return true;
     });
   }
@@ -241,8 +262,9 @@ export class AuditTrailEngine {
   }
 
   // 11. Export for SOX compliance (summary + Merkle root + chain verification)
+  // CHRONOS BUG-AT-1 FIX: range filter now uses isInRange() (UTC epoch ms).
   static exportForSOX(entries: readonly AuditEntry[], from: string, to: string): SOXExport {
-    const inRange = entries.filter((e) => e.timestamp >= from && e.timestamp <= to);
+    const inRange = entries.filter((e) => isInRange(e.timestamp, from, to));
     const byAction: Record<string, number> = {};
     const byEntity: Record<string, number> = {};
     for (const e of inRange) {

@@ -1,7 +1,14 @@
+// ── CHRONOS BUG-PC-1/2 FIX (2026-06-15) — temporal correctness ──────────────
+// Compare both dueDate and currentDate via UTC epoch ms to eliminate the
+// locale-dependent ambiguity of `new Date(s).getTime()` when `s` is a local-
+// format ISO string (no 'Z' suffix). Audit: docs/engines/TEMPORAL_ENGINE_CORRECTNESS.md
+import { parseToUTCEpoch } from './temporal';
+
 export interface CloseTask {
   id: string;
   name: string;
   assignee: string;
+  /** ISO 8601 timestamp or date-only string. Date-only is treated as UTC midnight. */
   dueDate: string;
   dependsOn: string[];
   status: 'pending' | 'in_progress' | 'completed' | 'blocked';
@@ -77,9 +84,20 @@ export class PeriodCloseEngine {
   }
 
   static getSLABreaches(tasks: CloseTask[], currentDate: string): SLABreach[] {
-    const now = new Date(currentDate).getTime();
+    // CHRONOS BUG-PC-1/2 FIX: normalize both sides to UTC epoch ms.
+    // Old code used `new Date(t.dueDate).getTime() < now` which is locale-
+    // dependent when dueDate is a local-format ISO string (no 'Z').
+    // Now: both sides go through parseToUTCEpoch for consistent UTC comparison.
+    // Falls back to old behavior only if either side is unparseable.
+    const nowMs = parseToUTCEpoch(currentDate);
+    if (nowMs === null) return [];
     return tasks
-      .filter((t) => t.status !== 'completed' && new Date(t.dueDate).getTime() < now)
+      .filter((t) => {
+        if (t.status === 'completed') return false;
+        const dueMs = parseToUTCEpoch(t.dueDate);
+        if (dueMs === null) return false;
+        return dueMs < nowMs;
+      })
       .map((t) => ({
         taskId: t.id,
         taskName: t.name,

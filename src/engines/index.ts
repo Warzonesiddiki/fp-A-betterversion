@@ -232,6 +232,34 @@ export { SolverEngine } from './SolverEngine';
 export { StreamImportEngine } from './StreamImportEngine';
 export { SyncEngine } from './SyncEngine';
 export { TaxEngine } from './TaxEngine';
+// CHRONOS 2026-06-15 — temporal utility module (UTC-anchored, DST/leap/TZ-safe)
+export {
+  addDays,
+  addMonths,
+  compareTimestamps,
+  daysBetween,
+  endOfUTCDay,
+  endOfUTCMonth,
+  isInRange,
+  isLeapYear,
+  parseToUTCEpoch,
+  startOfUTCDay,
+  startOfUTCMonth,
+  toCalendarDateInTZ,
+  toUTCISOString,
+  DEFAULT_CALENDAR,
+  fiscalYearOf,
+  fiscalYearStart,
+  periodOf,
+  quarterOf,
+  type CalendarDate,
+  type DateRange,
+  type ISOTimestamp,
+  type TimezoneID,
+  type FiscalCalendarConfig,
+  type FiscalPeriod,
+  type FiscalQuarter,
+} from './temporal';
 // export { TemplateEngine } from './TemplateEngine'; // barrel-export disabled for dynamic import splitting
 export { TemplateLibrary } from './TemplateLibrary';
 // export { ThreeStatementEngine } from './ThreeStatementEngine'; // barrel-export disabled for dynamic import splitting
