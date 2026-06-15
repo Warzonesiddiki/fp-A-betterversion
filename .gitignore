@@ -101,3 +101,20 @@ docs/drafts/prometheus/.test/
 /audit.out
 /err.out
 
+# Muse scratch files (Apollo DECISION 1, 2026-06-15)
+# Per Leader grant: Apollo may amend .gitignore for Muse scratch + tooling
+# EXCLUDED (canonical, must be TRACKED): /AGENTS.md, /CLAUDE.md, /OPENHANDS_*.md
+/_*.ps1
+/_*.sh
+/_*.txt
+/check_*.ps1
+/check_*.sh
+/test_marker.txt
+/pwd_test.txt
+
+# Tooling / backup directories (Apollo .gitignore, 2026-06-15)
+/.openhands/
+/.aionrs/
+/.openclaude-backup-*/
+/mnemosyne_ship/
+
