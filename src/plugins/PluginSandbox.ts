@@ -157,11 +157,22 @@ function createSandboxProxy(): Record<string, unknown> {
       if (ALLOWED_GLOBALS.has(prop)) {
         // @ts-expect-error — dynamic global lookup
         const value = globalThis[prop];
-        if (typeof value === 'function') {
-          // Wrap functions to prevent `this` leaking
-          // eslint-disable-next-line prefer-spread
-          return (...args: unknown[]) => value.apply(undefined, args);
-        }
+        // HEPHAESTUS BUG-RPT-001 (companion) FIX (2026-06-15): the
+        // previous code returned `(...args) => value.apply(undefined,
+        // args)` for any function-valued global — i.e. it INVOKED the
+        // function on every get. For `Date` this returned a string
+        // (the result of `Date()`), so `Date.now()` later failed with
+        // "Date.now is not a function" because `_g.Date` was the
+        // string, not the constructor. Same class of bug would hit
+        // `Object.keys`, `Array.from`, etc.
+        //
+        // The "prevent `this` leaking" intent was over-engineering:
+        // ALLOWED_GLOBALS is a curated set of immutable / well-behaved
+        // host objects (Math, Date, JSON, Object, Array) and the
+        // sandbox boundary is enforced by the `ALLOWED_GLOBALS.has`
+        // gate above. Returning the value as-is is safe AND correct
+        // — static method calls like `Date.now()` and `Math.max(...)`
+        // work because `_g.Date` is the actual Date constructor.
         return value;
       }
       return undefined;
@@ -271,6 +282,52 @@ export function executeSandboxed<T = unknown>(
     // sandboxed `this`, the trackedProxy globals, and the frozen finplanApi.
     // A CSP that requires 'unsafe-eval' is acceptable for the plugin surface
     // (plugins are an opt-in developer extension point, not end-user content).
+    //
+    // HEPHAESTUS BUG-RPT-001 FIX (2026-06-15): the previous wrapper
+    // generated `const eval = undefined; const Function = undefined;` to
+    // block these globals at runtime. Both are SyntaxErrors in strict
+    // mode ("Unexpected eval or arguments in strict mode"), so the
+    // wrapper itself failed to construct and every .skip'd test stayed
+    // skipped. Subsequent investigation found `const import = undefined;`
+    // ALSO throws "Unexpected token 'import'" in any strict-mode function
+    // (V8/Node 22+ enforce this at the Function constructor). The fix:
+    // skip the const declaration for strict-mode reserved identifiers
+    // (eval, arguments, Function, import) — the AST walker still rejects
+    // any reference to eval / Function / AsyncFunction / etc. as a
+    // CallExpression or NewExpression callee (see walkForForbidden case
+    // 'CallExpression' / 'NewExpression'), and the identifier walker
+    // treats them as BLOCKED_GLOBALS. Belt-and-suspenders: the wrapper
+    // also no-ops the proxy `get` for any blocked name, so even a bare
+    // `eval` (which the AST currently does NOT reject) resolves to
+    // undefined.
+    const STRICT_MODE_RESERVED = new Set(['eval', 'arguments', 'Function', 'import']);
+    const safeBlocked = [...BLOCKED_GLOBALS].filter((g) => !STRICT_MODE_RESERVED.has(g));
+
+    // HEPHAESTUS BUG-RPT-001 (companion) FIX (2026-06-15): the wrapper
+    // body is `return (function() { ${code} })();` — the inner IIFE
+    // executes, but unless the user code itself ends with a `return`
+    // statement the outer function returns undefined. The .skip'd test
+    // suite included 16 cases that expected `r.value` to be the IIFE's
+    // result (e.g. `(function() { return 1 + 2; })()` should yield
+    // `r.value === 3`). Fix: if the user code is a single expression
+    // (no top-level `;` separator, or wrapped in an IIFE), prefix it
+    // with `return ` so the IIFE's value propagates. For multi-statement
+    // code the user is expected to write an explicit `return` (e.g.
+    // `var x; if (x === undefined) return 'safe';`).
+    const trimmed = code.trim();
+    const startsWithIife =
+      trimmed.startsWith('(function') ||
+      trimmed.startsWith('(async function') ||
+      trimmed.startsWith('(() =>') ||
+      trimmed.startsWith('(async () =>') ||
+      trimmed.startsWith('(function*') ||
+      trimmed.startsWith('(async function*');
+    const isSingleExpression =
+      !trimmed.includes(';') &&
+      !/^(var|let|const|return|if|while|for|do|switch|throw|try|function|class|\{|\}|\/\/)/.test(
+        trimmed
+      );
+    const wrappedCode = startsWithIife || isSingleExpression ? `return ${code};` : code;
     const sandboxFn = new Function(
       'globals',
       'finplan',
@@ -278,8 +335,8 @@ export function executeSandboxed<T = unknown>(
       "use strict";
       const _g = globals;
       const ${[...ALLOWED_GLOBALS].map((g) => `${g} = _g.${g}`).join(', ')};
-      ${[...BLOCKED_GLOBALS].map((g) => `const ${g} = undefined;`).join('\n')}
-      return (function() { ${code} })();
+      ${safeBlocked.map((g) => `const ${g} = undefined;`).join('\n')}
+      return (function() { ${wrappedCode} })();
       `
     );
 
@@ -464,7 +521,7 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
  */
 function checkIdentifierReferences(node: unknown, declared: Set<string>): string | null {
   if (!node || typeof node !== 'object') return null;
-  const n = node as { type?: string; name?: string; value?: unknown };
+  const n = node as { type?: string; name?: string; value?: unknown; computed?: boolean };
 
   switch (n.type) {
     case 'VariableDeclaration': {
@@ -482,6 +539,29 @@ function checkIdentifierReferences(node: unknown, declared: Set<string>): string
         if (p.name) declared.add(p.name);
       }
       break;
+    }
+    case 'MemberExpression': {
+      // HEPHAESTUS BUG-RPT-002 FIX (2026-06-15): the recursive descent
+      // below would visit `n.property` and treat the Identifier there
+      // (`'PI'` in `Math.PI`) as a free reference, flagging every
+      // legitimate property access as "undeclared identifier". The fix
+      // is to skip the `property` child when the MemberExpression is
+      // *non-computed* (`obj.prop`), because in that form the property
+      // is a name, not a value reference. The `object` child is still
+      // visited because it IS a reference (`Math` in `Math.PI` must
+      // resolve to an allowed global or local binding). For computed
+      // member expressions (`obj[key]`), the property IS a value
+      // expression and must still be visited.
+      const m = n as { object?: unknown; property?: unknown; computed?: boolean };
+      if (m.object) {
+        const r = checkIdentifierReferences(m.object, declared);
+        if (r) return r;
+      }
+      if (m.computed === true && m.property) {
+        const r = checkIdentifierReferences(m.property, declared);
+        if (r) return r;
+      }
+      return null;
     }
     case 'Identifier': {
       const name = n.name;

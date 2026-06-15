@@ -216,9 +216,12 @@ describe('executeSandboxed', () => {
   });
 
   it('exposes globals proxy as an object', () => {
+    // HEPHAESTUS BUG-RPT-001 (companion) FIX (2026-06-15): the test
+    // expected `typeof globals.Math` to be `'function'`, but `Math` is
+    // a host object — `typeof Math === 'object'`. Fixed assertion.
     const r = executeSandboxed('(function() { return typeof globals.Math; })();', safeApi);
     expect(r.success).toBe(true);
-    expect(r.value).toBe('function');
+    expect(r.value).toBe('object');
   });
 
   it('blocks direct fetch call (regex pre-check)', () => {
