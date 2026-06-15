@@ -1,0 +1,848 @@
+(node:15832) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90mC:/Users/Tahir/Desktop/frontend that i want/fpa[39m
+
+(node:20660) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2208) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12620) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11872) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14768) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20208) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:4604) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9248) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:15192) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13216) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14980) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [31m❯[39m src/components/scenarios/DriverTreeView.test.tsx [2m([22m[2m11 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 184[2mms[22m[39m
+     [32m✓[39m renders without crashing with assumptions[32m 39[2mms[22m[39m
+     [32m✓[39m renders empty state when no assumptions[32m 32[2mms[22m[39m
+     [32m✓[39m renders driver name and slider[32m 10[2mms[22m[39m
+[31m     [31m×[31m groups drivers by type property[39m[32m 26[2mms[22m[39m
+     [32m✓[39m calls onUpdate when a slider value changes[32m 18[2mms[22m[39m
+     [32m✓[39m disables sliders when readOnly is true[32m 7[2mms[22m[39m
+     [32m✓[39m does not disable sliders when readOnly is false[32m 5[2mms[22m[39m
+     [32m✓[39m does not disable sliders when readOnly is omitted[32m 5[2mms[22m[39m
+     [32m✓[39m renders multiple drivers of the same type[32m 9[2mms[22m[39m
+[31m     [31m×[31m renders multiple groups with correct headings[39m[32m 9[2mms[22m[39m
+[31m     [31m×[31m renders one heading per group[39m[32m 14[2mms[22m[39m
+ [31m❯[39m src/pages/settings/__tests__/BackupRestorePage.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 238[2mms[22m[39m
+[31m     [31m×[31m renders heading[39m[32m 235[2mms[22m[39m
+ [31m❯[39m src/pages/settings/__tests__/SecuritySettingsPage.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 298[2mms[22m[39m
+[31m     [31m×[31m renders heading[39m[32m 272[2mms[22m[39m
+ [2m[90m↓[39m[22m src/pages/saas/__tests__/ARRDashboard.test.tsx [2m([22m[2m3 tests[22m[2m)[22m
+ [2m[90m↓[39m[22m src/pages/workforce/__tests__/PayrollForecastPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m
+ [2m[90m↓[39m[22m src/pages/scenarios/__tests__/ScenarioBuilderPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m
+ [2m[90m↓[39m[22m src/pages/workforce/__tests__/HeadcountPlanPage.test.tsx [2m([22m[2m6 tests[22m[2m)[22m
+ [2m[90m↓[39m[22m src/pages/smoke-reports-retail-saas-1.test.tsx [2m([22m[2m12 tests[22m[2m)[22m
+ [2m[90m↓[39m[22m src/pages/saas/__tests__/CohortAnalysisPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m
+ [2m[90m↓[39m[22m src/pages/telecom/__tests__/TelecomPage.test.tsx [2m([22m[2m1 test[22m[2m)[22m
+ [2m[90m↓[39m[22m src/pages/settings/__tests__/ConnectorSettingsPage.test.tsx [2m([22m[2m1 test[22m[2m)[22m
+(node:5708) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/components/scenarios/DriverTreeView.test.tsx[2m > [22mDriverTreeView[2m > [22mgroups drivers by type property
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: cost Drivers. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"space-y-6"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"space-y-3"[31m
+      [36m>[31m
+        [36m<h4[31m
+          [33mclass[31m=[32m"text-xs font-bold text-slate-500 uppercase tracking-widest px-2"[31m
+        [36m>[31m
+          [0mrevenue[0m
+          [0m Drivers[0m
+        [36m</h4>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"space-y-2"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"slider-Revenue Growth"[31m
+          [36m>[31m
+            [36m<span>[31m
+              [0mRevenue Growth[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mdata-testid[31m=[32m"value-Revenue Growth"[31m
+            [36m>[31m
+              [0m12[0m
+              [0m%[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mdata-testid[31m=[32m"change-Revenue Growth"[31m
+            [36m>[31m
+              [0mChange[0m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"slider-Cost Growth"[31m
+          [36m>[31m
+            [36m<span>[31m
+              [0mCost Growth[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mdata-testid[31m=[32m"value-Cost Growth"[31m
+            [36m>[31m
+              [0m12[0m
+              [0m%[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mdata-testid[31m=[32m"change-Cost Growth"[31m
+            [36m>[31m
+              [0mChange[0m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"slider-Price Increase"[31m
+          [36m>[31m
+            [36m<span>[31m
+              [0mPrice Increase[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mdata-testid[31m=[32m"value-Price Increase"[31m
+            [36m>[31m
+              [0m12[0m
+              [0m%[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mdata-testid[31m=[32m"change-Price Increase"[31m
+            [36m>[31m
+              [0mChange[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/components/scenarios/DriverTreeView.test.tsx:[2m97:19[22m[39m
+    [90m 95|[39m     [34mrenderDriverTreeView[39m({ assumptions })[33m;[39m
+    [90m 96|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'revenue Drivers'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 97|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'cost Drivers'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   |[39m                   [31m^[39m
+    [90m 98|[39m   })[33m;[39m
+    [90m 99|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/scenarios/DriverTreeView.test.tsx[2m > [22mDriverTreeView[2m > [22mrenders multiple groups with correct headings
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: operating Drivers. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"space-y-6"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"space-y-3"[31m
+      [36m>[31m
+        [36m<h4[31m
+          [33mclass[31m=[32m"text-xs font-bold text-slate-500 uppercase tracking-widest px-2"[31m
+        [36m>[31m
+          [0mrevenue[0m
+          [0m Drivers[0m
+        [36m</h4>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"space-y-2"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"slider-Rev"[31m
+          [36m>[31m
+            [36m<span>[31m
+              [0mRev[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mdata-testid[31m=[32m"value-Rev"[31m
+            [36m>[31m
+              [0m12[0m
+              [0m%[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mdata-testid[31m=[32m"change-Rev"[31m
+            [36m>[31m
+              [0mChange[0m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"slider-OpEx"[31m
+          [36m>[31m
+            [36m<span>[31m
+              [0mOpEx[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mdata-testid[31m=[32m"value-OpEx"[31m
+            [36m>[31m
+              [0m12[0m
+              [0m%[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mdata-testid[31m=[32m"change-OpEx"[31m
+            [36m>[31m
+              [0mChange[0m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"slider-CapEx"[31m
+          [36m>[31m
+            [36m<span>[31m
+              [0mCapEx[0m
+            [36m</span>[31m
+            [36m<span[31m
+              [33mdata-testid[31m=[32m"value-CapEx"[31m
+            [36m>[31m
+              [0m12[0m
+              [0m%[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mdata-testid[31m=[32m"change-CapEx"[31m
+            [36m>[31m
+              [0mChange[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/components/scenarios/DriverTreeView.test.tsx:[2m145:19[22m[39m
+    [90m143|[39m     [34mrenderDriverTreeView[39m({ assumptions })[33m;[39m
+    [90m144|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'revenue Drivers'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m145|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'operating Drivers'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   |[39m                   [31m^[39m
+    [90m146|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'capital Drivers'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m147|[39m   })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/scenarios/DriverTreeView.test.tsx[2m > [22mDriverTreeView[2m > [22mrenders one heading per group
+[31m[1mAssertionError[22m: expected [ <h4 …(1)></h4> ] to have a length of 2 but got 1[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m src/components/scenarios/DriverTreeView.test.tsx:[2m157:22[22m[39m
+    [90m155|[39m     [34mrenderDriverTreeView[39m({ assumptions })[33m;[39m
+    [90m156|[39m     [35mconst[39m headings [33m=[39m screen[33m.[39m[34mgetAllByText[39m([36m/Drivers$/[39m)[33m;[39m
+    [90m157|[39m     [34mexpect[39m(headings)[33m.[39m[34mtoHaveLength[39m([34m2[39m)[33m;[39m
+    [90m   |[39m                      [31m^[39m
+    [90m158|[39m   })[33m;[39m
+    [90m159|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/settings/__tests__/BackupRestorePage.test.tsx[2m > [22mBackupRestorePage[2m > [22mrenders heading
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: /Backup/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h1[39m
+  [33mclass[39m=[32m"text-2xl font-bold text-white"[39m
+[36m>[39m
+  [0mBackup & Restore[0m
+[36m</h1>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"text-sm text-slate-400"[39m
+[36m>[39m
+  [0mLast Backup[0m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"font-medium text-white"[39m
+[36m>[39m
+  [0mNo recent backup[0m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2"[39m
+[36m>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"h-5 w-5 text-blue-400"[39m
+    [33mdata-testid[39m=[32m"mock-icon"[39m
+  [36m/>[39m
+  [0mExport Backup[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33maria-label[39m=[32m"Download backup file"[39m
+  [33mclass[39m=[32m"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 h-10 py-2 px-4 w-full sm:w-auto"[39m
+[36m>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"w-4 h-4 mr-2"[39m
+    [33mdata-testid[39m=[32m"mock-icon"[39m
+  [36m/>[39m
+  [0mDownload Backup[0m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2"[39m
+[36m>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"h-5 w-5 text-green-400"[39m
+    [33mdata-testid[39m=[32m"mock-icon"[39m
+  [36m/>[39m
+  [0mRestore Backup[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-sm text-slate-400"[39m
+[36m>[39m
+  [0mImport a previously exported JSON file. The backup will be verified against its checksum before restoring. [0m
+  [36m<strong>[39m
+    [0mThis will merge with existing data.[0m
+  [36m</strong>[39m
+[36m</p>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33maria-label[39m=[32m"Upload backup file"[39m
+  [33mclass[39m=[32m"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-gray-100 text-[var(--text-primary)] hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 h-10 py-2 px-4 w-full sm:w-auto"[39m
+[36m>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"w-4 h-4 mr-2"[39m
+    [33mdata-testid[39m=[32m"mock-icon"[39m
+  [36m/>[39m
+  [0mUpload Backup File[0m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-label[39m=[32m"Backup and restore page"[39m
+      [33mclass[39m=[32m"p-6 max-w-5xl mx-auto space-y-6 animate-fade-in"[39m
+      [33mrole[39m=[32m"main"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-2"[39m
+      [36m>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-2xl font-bold text-white"[39m
+        [36m>[39m
+          [0mBackup & Restore[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-slate-400 text-sm"[39m
+        [36m>[39m
+          [0mExport, import, and manage your local data for [0m
+          [0myour organization[0m
+          [0m.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid grid-cols-1 sm:grid-cols-3 gap-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-blue-400 shrink-0"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-sm text-slate-400"[39m
+              [36m>[39m
+                [0mStorage Mode[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"font-medium text-white"[39m
+              [36m>[39m
+                [0mLocal (IndexedDB)[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-green-400 shrink-0"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-sm text-slate-400"[39m
+              [36m>[39m
+                [0mLast Backup[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"font-medium text-white"[39m
+              [36m>[39m
+                [0mNo recent backup[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-violet-400 shrink-0"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-sm text-slate-400"[39m
+              [36m>[39m
+                [0mIntegrity[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"font-medium text-white"[39m
+              [36m>[39m
+                [0mSHA-256 Checksum[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-blue-400"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [0mExport Backup[0m
+          [36m</h3>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-6 pt-0 space-y-4"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-slate-400"[39m
+          [36m>[39m
+            [0mGenerate a portable JSON file containing all your local records, settings, and imported data. The file includes a SHA-256 checksum for integrity verification.[0m
+          [36m</p>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Download backup file"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 h-10 py-2 px-4 w-full sm:w-auto"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"w-4 h-4 mr-2"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [0mDownload Backup[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-green-400"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [0mRestore Backup[0m
+          [36m</h3>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-6 pt-0 space-y-4"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-slate-400"[39m
+          [36m>[39m
+            [0mImport a previously exported JSON file. The backup will be verified against its checksum before restoring. [0m
+            [36m<strong>[39m
+              [0mThis will merge with existing data.[0m
+            [36m</strong>[39m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative inline-block"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m".json"[39m
+              [33maria-label[39m=[32m"Select backup file to restore"[39m
+              [33mclass[39m=[32m"absolute inset-0 opacity-0 cursor-pointer w-full h-full"[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Upload backup file"[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-gray-100 text-[var(--text-primary)] hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 h-10 py-2 px-4 w-full sm:w-auto"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"w-4 h-4 mr-2"[39m
+                [33mdata-testid[39m=[32m"mock-icon"[39m
+              [36m/>[39m
+              [0mUpload Backup File[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-xl border text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800 border-red-500/20 bg-red-500/5"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2 text-red-400"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [0mDanger Zone[0m
+          [36m</h3>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-6 pt-0 space-y-4"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-slate-400"[39m
+          [36m>[39m
+            [0mCompletely wipe all locally stored data including budgets, forecasts, scenarios, settings, and imported GL data. [0m
+            [36m<strong>[39m
+              [0mThis action is irreversible.[0m
+            [36m</strong>[39m
+          [36m</p>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Reset application - this will delete all local data"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none dark:hover:bg-gray-700 h-10 py-2 px-4 text-red-500 hover:bg-red-500/10 hover:text-red-400 border border-red-500/20"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"w-4 h-4 mr-2"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [0mReset Application[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/settings/__tests__/BackupRestorePage.test.tsx:[2m46:19[22m[39m
+    [90m 44|[39m   [34mit[39m([32m'renders heading'[39m[33m,[39m () [33m=>[39m {
+    [90m 45|[39m     [34mrender[39m([33m<[39m[33mBackupRestorePage[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 46|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([36m/Backup/i[39m))[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   |[39m                   [31m^[39m
+    [90m 47|[39m   })[33m;[39m
+    [90m 48|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/settings/__tests__/SecuritySettingsPage.test.tsx[2m > [22mSecuritySettingsPage[2m > [22mrenders heading
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: /Security/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h1[39m
+  [33mclass[39m=[32m"text-2xl font-bold text-white"[39m
+[36m>[39m
+  [0mSecurity Settings[0m
+[36m</h1>[39m
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-slate-400 text-sm"[39m
+[36m>[39m
+  [0mManage passwords, authentication, and security preferences for[0m
+  [0m [0m
+  [0myour organization[0m
+  [0m.[0m
+[36m</p>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"text-sm text-slate-400"[39m
+[36m>[39m
+  [0mSecurity Status[0m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2"[39m
+[36m>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"h-5 w-5 text-violet-400"[39m
+    [33mdata-testid[39m=[32m"mock-icon"[39m
+  [36m/>[39m
+  [0mSecurity Preferences[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"text-xs text-slate-400"[39m
+[36m>[39m
+  [0mAdd an extra layer of security to your account[0m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"text-xs text-slate-400"[39m
+[36m>[39m
+  [0mTrack all security-related events[0m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2"[39m
+[36m>[39m
+  [36m<span[39m
+    [33mclass[39m=[32m"h-5 w-5 text-slate-400"[39m
+    [33mdata-testid[39m=[32m"mock-icon"[39m
+  [36m/>[39m
+  [0mRecent Security Activity[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"text-xs text-slate-400"[39m
+[36m>[39m
+  [0mVia security settings[0m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-label[39m=[32m"Security settings page"[39m
+      [33mclass[39m=[32m"p-6 max-w-5xl mx-auto space-y-6 animate-fade-in"[39m
+      [33mrole[39m=[32m"main"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-2"[39m
+      [36m>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-2xl font-bold text-white"[39m
+        [36m>[39m
+          [0mSecurity Settings[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-slate-400 text-sm"[39m
+        [36m>[39m
+          [0mManage passwords, authentication, and security preferences for[0m
+          [0m [0m
+          [0myour organization[0m
+          [0m.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid grid-cols-1 sm:grid-cols-3 gap-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-green-400 shrink-0"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-sm text-slate-400"[39m
+              [36m>[39m
+                [0mSecurity Status[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"font-medium text-green-400"[39m
+              [36m>[39m
+                [0mProtected[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-blue-400 shrink-0"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-sm text-slate-400"[39m
+              [36m>[39m
+                [0mMFA Status[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"font-medium text-white"[39m
+              [36m>[39m
+                [0mDisabled[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-4 flex items-center gap-3"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-amber-400 shrink-0"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-sm text-slate-400"[39m
+              [36m>[39m
+                [0mSession Timeout[0m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"font-medium text-white"[39m
+              [36m>[39m
+                [0m30[0m
+                [0m minutes[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"font-semibold tracking-tight text-2xl flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"h-5 w-5 text-blue-400"[39m
+              [33mdata-testid[39m=[32m"mock-icon"[39m
+            [36m/>[39m
+            [0mChange Password[0m
+          [36m</h3>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-6 pt-0 space-y-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 gap-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"text-sm text-slate-400"[39m
+                [33mfor[39m=[32m"current-password"[39m
+              [36m>[39m
+                [0mCurrent Password[0m
+              [36m</label>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-label[39m=[32m"Input"[39m
+                  [33mclass[39m=[32m"space-y-1"[39m
+                  [33mrole[39m=[32m"region"[39m
+                [36m>[39m
+                  [36m<input[39m
+                    [33maria-label[39m=[32m"Current password"[39m
+                    [33mclass[39m=[32m"flex h-10 w-full rounded-md border border-[var(--border-default)] bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white"[39m
+                    [33mid[39m=[32m"current-password"[39m
+                    [33mplaceholder[39m=[32m"Enter current password"[39m
+                    [33mtype[39m=[32m"password"[39m
+                    [33mvalue[39m=[32m""[39m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<button[39m
+                  [33maria-label[39m=[32m"Show password"[39m
+                  [33mclass[39m=[32m"absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"h-4 w-4"[39m
+                    [33mdata-testid[39m=[32m"mock-icon"[39m
+                  [36m/>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/settings/__tests__/SecuritySettingsPage.test.tsx:[2m43:19[22m[39m
+    [90m 41|[39m   [34mit[39m([32m'renders heading'[39m[33m,[39m () [33m=>[39m {
+    [90m 42|[39m     [34mrender[39m([33m<[39m[33mSecuritySettingsPage[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 43|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([36m/Security/i[39m))[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   |[39m                   [31m^[39m
+    [90m 44|[39m   })[33m;[39m
+    [90m 45|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[33m8 skipped[39m[90m (834)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m8 passed[39m[22m[90m (95)[39m
+[2m   Start at [22m 22:20:17
+[2m   Duration [22m 12.11s[2m (transform 11.07s, setup 11.70s, import 20.85s, tests 720ms, environment 47.58s)[22m
+
