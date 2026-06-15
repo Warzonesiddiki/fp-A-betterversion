@@ -1,0 +1,28 @@
+{
+  "spec_id": "T-HE-038",
+  "spec_version": "v0.1.1",
+  "spec_path_canonical": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\hera\\T-HE-038_codif_26_6_pattern_f_supporting_worked_examples_v0.1.md",
+  "spec_path_slot_isolated": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-586bb235\\fpa\\docs\\drafts\\hera\\T-HE-038_codif_26_6_pattern_f_supporting_worked_examples_v0.1.md",
+  "w4_sha256_canonical": "9df2617da5da6001321af639e863741ea154bf82fdec09eb6fadc1b74f5c60ad",
+  "w4_sha256_slot_isolated": "9df2617da5da6001321af639e863741ea154bf82fdec09eb6fadc1b74f5c60ad",
+  "w4_line_count_canonical": 245,
+  "w4_line_count_slot_isolated": 245,
+  "w4_match": true,
+  "w4_timestamp": "2026-06-14T01:55:00Z",
+  "w6_post_ship_drift_detected": false,
+  "w6_last_re_w4": "2026-06-14T01:50:00Z",
+  "w6_protocol_source": "T-IR-039 v0.1 §3 (cycle 12 W2 r5+, SHIP-COMPLETE 190L/14002B)",
+  "w6_sidecar_pattern_proof": "T-HE-038 v0.1.1 codifies W6 protocol in §0.5 — eat-own-dog-food proof-of-concept",
+  "w6_sidecar_instantiation": "4th sidecar per T-IR-039 v0.1 §10.5 (after T-IR-037 v0.1.1.w4.json + T-IR-038 v0.1.w4.json + T-IR-039 v0.1.w4.json)",
+  "codif_9_v0_2_ext_proposal_4": "W6 protocol (post-SHIP drift detection + cross-Muse re-W4 + sidecar <doc>.w4.json pattern)",
+  "codif_22_v0_2_compliance": "v0.1.1 mechanical bump (filename v0.1 per Codif 22 v0.2 strict alignment, spec_version v0.1.1 in frontmatter)",
+  "codif_31_v0_2_b5_dual_write": "COMPLETE (canonical = slot-isolated SHA256 MATCH ✓)",
+  "ratification_gate": "cycle 15 W1 (2026-07-15 to 2026-07-25, 75% likelihood STRENGTHENED)",
+  "4_step_ceremony_cite_target": "T-HE-038 v0.1.1 §3 (Pattern F PROCESS-PATTERN) + §3.5 (Pattern F-as-META-PATTERN REJECTED)",
+  "forward_chain": [
+    "Strategos T-ST-027 v0.1→v0.2",
+    "Mnemosyne T-MN-013 v0.3.1→v0.4 §15.12.13",
+    "Athena T-AT-023 v0.1→v0.1.1",
+    "Hera T-HE-038 v0.1.1→v0.2 mechanical bump (post-RATIFICATION)"
+  ]
+}

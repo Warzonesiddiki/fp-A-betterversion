@@ -1,0 +1,33 @@
+﻿D-019 5-WITNESS VERIFICATION (r44 dispositions file)
+============================================================
+
+[slot_leader] C:\Users\Projects\hephaestus_slot_leader\T-HEP-052_T-LE-DECISIONS-cycle_13_w1_day_4_r44_CATCH-117-RETRACTION_slot_leader_MIRROR_v0.1.md
+  W1 Read: PASS (255 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 6C86F80C899265ADE5C06F34F731B0DA9C349E0D49D21B7DBB1938AB4873FC0D
+  W4 Size: 19546 bytes
+  W5 LastByte: 0x0A
+
+[slot_strat] C:\Users\Projects\strategos\T-ST-052_T-LE-DECISIONS-cycle_13_w1_day_4_r44_CATCH-117-RETRACTION_slot_strat_MIRROR_v0.1.md
+  W1 Read: PASS (255 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 6C86F80C899265ADE5C06F34F731B0DA9C349E0D49D21B7DBB1938AB4873FC0D
+  W4 Size: 19546 bytes
+  W5 LastByte: 0x0A
+
+[mnemosyne_mirror] C:\Users\Projects\mnemosyne_mirror\T-MN-052_T-LE-DECISIONS-cycle_13_w1_day_4_r44_CATCH-117-RETRACTION_mnemosyne_mirror_MIRROR_v0.1.md
+  W1 Read: PASS (255 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 6C86F80C899265ADE5C06F34F731B0DA9C349E0D49D21B7DBB1938AB4873FC0D
+  W4 Size: 19546 bytes
+  W5 LastByte: 0x0A
+
+[canon] C:\Users\Tahir\Desktop\frontend that i want\fpa\docs\drafts\leader\T-LE-DECISIONS-cycle_13_w1_day_4_r44_CATCH-117-RETRACTION_D-029-WITHDRAWN_D-030_FILED_SENTINEL-123-124_HE-063-§0a.1_v0.1.md
+  W1 Read: PASS (255 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 6C86F80C899265ADE5C06F34F731B0DA9C349E0D49D21B7DBB1938AB4873FC0D
+  W4 Size: 19546 bytes
+  W5 LastByte: 0x0A
+
+VERIFICATION SUMMARY:
+  4-PATH DUAL-WRITE: PERFECT MATCH (4/4 SHA256 = 6C86F80C899265ADE5C06F34F731B0DA9C349E0D49D21B7DBB1938AB4873FC0D)

@@ -1,0 +1,50 @@
+{
+  "spec_id": "T-HEP-034_codif_36_v0_1_candidate_meta_codif_composition_schema_v0.1",
+  "w4_protocol_version": "Codif 9 v0.2 EXTENSION PROPOSAL #2 (PROPOSED → RATIFICATION cycle 14 W1 turn 5 per T-IR-040 v0.1)",
+  "w4_ship_frozen": {
+    "captured_at_creation": true,
+    "timestamp": "2026-06-13T02:35:00Z",
+    "lf_count": 237,
+    "byte_size": 20496,
+    "sha256": "a243e0c9e3dda92fa063aac558f49fe2998b80da41406e071cf9b4b26bd7294a"
+  },
+  "w4_live": {
+    "timestamp": "2026-06-14T02:42:00Z",
+    "lf_count": 237,
+    "byte_size": 20496,
+    "sha256": "a243e0c9e3dda92fa063aac558f49fe2998b80da41406e071cf9b4b26bd7294a"
+  },
+  "chicken_and_egg_delta_history": [
+    {
+      "delta_lf": 0,
+      "delta_bytes": 0,
+      "delta_sha256": false,
+      "reason": "POST-CATCH #58 retroactive sidecar creation: W4 SHIP-frozen and W4 live identical. last byte 0x0A trailing-NL parity ✓ (codif 31 v0.3 patch compliance). 1st meta-codif in FinPlan Pro corpus."
+    }
+  ],
+  "w6_protocol_application": {
+    "applied": true,
+    "eat_own_dog_food_proof_number": 7,
+    "note": "W6 sidecar pattern applied retroactively post-CATCH #58. 12th instantiation. Codif 36 v0.1 CANDIDATE meta-codif composition schema. 5-codif composition worked example (Codif 9+22+30+32+35 → Codif 36 v0.1, MC+5 high-water mark). 4 MECE meta-codif types (composition/lineage/supersedence/audit).",
+    "codif_31_v0_2_b5_dual_write": "✓ PERFECT MATCH canonical ↔ slot-isolated (SHA256 a243e0c9e3dda92fa063aac558f49fe2998b80da41406e071cf9b4b26bd7294a, LF 237/237, bytes 20496/20496, last byte 0x0A trailing-NL parity ✓)"
+  },
+  "catch_58_recovery": {
+    "catch_id": "CATCH #58",
+    "catch_subclass": "phantom-at-canonical (T-HEP-031 v0.1 §6 4th sub-class)",
+    "recovery_protocol": "T-HEP-031 v0.1 §6 3-step protocol",
+    "recovery_timestamp": "2026-06-14T02:50:00Z",
+    "w5_status_check_caught": true
+  },
+  "ratification_gate": {
+    "target_cycle": "cycle 15 W2",
+    "target_date_range": "2026-08-12 to 2026-08-22",
+    "likelihood_percent": 75,
+    "paired_specs": [
+      "T-HEP-031 v0.1",
+      "T-HEP-032 v0.1",
+      "T-HEP-033 v0.1",
+      "T-HEP-035 v0.1",
+      "T-AT-028 v0.1 (Codif 31 v0.3 patch evaluation)"
+    ]
+  }
+}

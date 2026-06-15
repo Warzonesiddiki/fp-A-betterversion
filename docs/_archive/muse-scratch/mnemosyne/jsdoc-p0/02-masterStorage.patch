@@ -1,0 +1,58 @@
+--- a/src/utils/masterStorage.ts	2026-06-13 03:03:43.473070800 +0530
++++ b/src/utils/masterStorage.ts	2026-06-13 03:27:35.621907000 +0530
+@@ -16,6 +16,55 @@
+ const chunkedTauriStorage = wrapChunkedStorage(tauriSqlStorage);
+ const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
+ 
++/**
++ * Encrypted, persistent key-value store that backs the entire FinPlan Pro
++ * offline-first architecture. On first access, it transparently chooses
++ * the right backend for the current environment:
++ *
++ *   - **Tauri runtime** (`window.__TAURI__` is defined) -> `chunkedTauriStorage`
++ *     via `@tauri-apps/plugin-store`. Data is written to the OS's app-data
++ *     directory in small chunks (<= 32 KB each) to stay well below Tauri's
++ *     per-write IPC limit and avoid backend `serde_json` errors on large blobs.
++ *   - **Web/browser fallback** (no Tauri) -> `chunkedSqlJsStorage` via the
++ *     sql.js WebAssembly build, writing to IndexedDB. Used for the in-browser
++ *     demo / Storybook / Cypress runs.
++ *
++ * **kdfVersion semantics** - the value at the `kdfVersion` key tracks the
++ * Argon2id parameter set used to derive the master key from the user's
++ * password. Bumping it (currently `1`) triggers an automatic re-wrap of every
++ * encrypted blob on next successful unlock: data is decrypted with the old
++ * params, re-encrypted with the new ones, and the `kdfVersion` key is updated.
++ * This is the migration path we use to roll out stronger KDF parameters
++ * without forcing a destructive re-onboarding. **Never** delete or rename
++ * this key without coordinating with Mnemosyne - the re-wrap logic in
++ * `unlockMasterKey()` reads it on every unlock.
++ *
++ * **The encryption envelope** itself is documented in `src/utils/crypto.ts`
++ * (XChaCha20-Poly1305 AEAD, 24-byte random nonce, AAD-bound to the user id).
++ *
++ * @returns A `zustand/middleware` `persist` `StateStorage` adapter
++ *   (`PersistStorage<any> & { __resetCache: () => void }`) that `useAuthStore`
++ *   and any other store can plug in directly as the `storage` option.
++ *
++ * @example
++ * ```ts
++ * import { create } from 'zustand';
++ * import { persist } from 'zustand/middleware';
++ * import { masterStorage } from '@/utils/masterStorage';
++ *
++ * const useMyStore = create(persist(
++ *   (set) => ({ count: 0, inc: () => set(s => ({ count: s.count + 1 })) }),
++ *   { name: 'my-store', storage: masterStorage }
++ * ));
++ * ```
++ *
++ * @see {@link unlockMasterKey} in `src/utils/crypto.ts` - the re-wrap consumer
++ * @see ADR-002 in `docs/drafts/adr/ADR-002-zustand-pattern.md` - offline-first
++ *      state-management rationale
++ * @see ADR-005 in `docs/drafts/adr/ADR-005-custom-masterstorage.md` - why we
++ *      built this wrapper instead of using zustand's `localStorage` adapter
++ * @see DRAFT v0.2 - Mnemosyne 2026-06-13 (JSDoc P0, post Athena T-AT-003)
++ */
+ export const masterStorage: PersistStorage<any> & { __resetCache: () => void } = {
+   getItem: async (name) => {
+     const isDesktop = await checkTauri();

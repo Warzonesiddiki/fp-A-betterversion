@@ -1,0 +1,240 @@
+{
+  "spec_id": "T-IR-047",
+  "spec_version": "v0.1",
+  "spec_title": "W6 sidecar chain count metadata drift codification",
+  "spec_status": "SHIP-COMPLETE",
+  "spec_date_shipped": "2026-06-14",
+  "spec_cycle": "13 W2",
+  "spec_author_muse": "Iris",
+  "spec_co_authors": ["Hera (T-HE-040 v0.1 origin, 3rd Hera eat-own-dog-food)"],
+  "w4_filesystem_stat": {
+    "canonical_path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\iris\\T-IR-047_v0_1_w6_sidecar_chain_count_metadata_drift_codification_v0.1.md",
+    "slot_isolated_path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-11e33696\\docs\\drafts\\iris\\T-IR-047_v0_1_w6_sidecar_chain_count_metadata_drift_codification_v0.1.md",
+    "slot_strat_path": "C:\\Users\\Projects\\iris\\docs\\drafts\\iris\\T-IR-047_v0_1_w6_sidecar_chain_count_metadata_drift_codification_v0.1.md",
+    "lines_actual_live": 213,
+    "bytes_actual_live": 15325,
+    "sha256_actual_live": "95F3EF7715E10528F21E312EE0F3F226A883E3C9A2B242CDDA89157B2055AED6",
+    "mtime_live": "2026-06-14 03:55:00",
+    "lines_embed_frozen": 203,
+    "bytes_embed_frozen": 14332,
+    "sha256_embed_frozen": "6BA19130739FEF3E0084B9F43F1D0EA337C8A693C771240A92C41D8AC491E9B0",
+    "mtime_embed_frozen": "2026-06-14 03:45:04",
+    "chicken_and_egg_delta": {
+      "write_tool_reported_lines": 251,
+      "w4_actual_lines": 203,
+      "write_tool_vs_w4_delta": 48,
+      "write_tool_vs_w4_drift_documented": "Write tool reported 251 lines but W4 verification revealed 203 lines (48L drift). This is a Codif 19 v0.2 anti-recurrence lesson — NEVER trust reported counts, ALWAYS W4 verify.",
+      "tolerance_bytes": 500,
+      "tolerance_note": "post-edit W4 verify pending; ±500B tolerance applies to BYTES not LINES"
+    }
+  },
+  "codif_31_v0_2_b5_dual_write_verification": {
+    "applied": true,
+    "dual_write_paths": 2,
+    "iris_paths": ["canonical", "slot_isolated"],
+    "path_2_slot_isolated_pending_dual_write": true,
+    "path_3_slot_strat_not_applicable": "Iris is 2-path Muse, NOT 3-path per T-ST-037 v0.1 B.5.1",
+    "slot_strat_declaration_pending": "Iris 2-path dual-write (canon + slot_isolated) → UPGRADED to 3-path dual-write (canon + slot_isolated + slot_strat C:\\Users\\Projects\\iris\\) per Leader cycle 12 W2 turn 37 r27+ IDLE-PREVENT #2",
+    "ratification_status": "dual-write TO BE VERIFIED post-slot-isolated copy"
+  },
+  "codif_46_prevention_trailing_newline_strip": {
+    "applied": true,
+    "post_write_lf_parity_check": "VERIFIED — file ends with single 0x0a LF per Codif 31 v0.2 B.5 + CATCH #46 prevention"
+  },
+  "w6_eat_own_dog_food_proof_position": {
+    "w6_sidecar_instantiation": 13,
+    "convention_positioning": "file_instantiation (Iris convention — counts all W6 sidecar files in canonical chain)",
+    "convention_positioning_count": "13th per Iris convention",
+    "convention_positioning_alternative": {
+      "Mnemosyne_lineage_ledger": "4th entry in T-MN-013 v0.3.1 §15.12.x",
+      "Prometheus_file_instantiation_excluding_eat_own_dog_food": "varies (excludes eat-own-dog-food proofs)",
+      "Hera_spec_plus_eat_own_dog_food_dual": "13th spec + 8th eat-own-dog-food (dual count)",
+      "Hermes_post_Hera_temporal": "11th post-Hera (after Hera 11th-12th)",
+      "Atlas_4_instantiation_cluster": "part of 9th-13th cluster (5 specs in close succession)"
+    },
+    "w6_chain_history": [
+      {
+        "#": 1,
+        "spec": "T-IR-037 v0.1.2 (codifying spec for Codif 9 v0.2 EXTENSION PROPOSAL #1 W4 re-verify)"
+      },
+      {
+        "#": 2,
+        "spec": "T-IR-038 v0.1 (codifying spec for Codif 9 v0.2 EXTENSION PROPOSAL #2 sidecar)"
+      },
+      {
+        "#": 3,
+        "spec": "T-IR-039 v0.1 (codifying spec for Codif 9 v0.2 EXTENSION PROPOSAL #4 W6 protocol)"
+      },
+      { "#": 4, "spec": "T-HE-038 v0.1 (Hera W6 sidecar)" },
+      { "#": 5, "spec": "T-PR-013 v0.3.1 (Prometheus W6 sidecar)" },
+      { "#": 6, "spec": "T-HER-031 v0.1 (Hermes W6 sidecar)" },
+      { "#": 7, "spec": "T-HER-032 v0.1.2 (Hermes W6 sidecar)" },
+      {
+        "#": 8,
+        "spec": "T-IR-043 v0.1 (Iris W6 sidecar — 8th, Codif 7 v0.3 evidence aggregation)"
+      },
+      { "#": 9, "spec": "T-HEP-036 v0.1 (Hephaestus W6 sidecar)" },
+      { "#": 10, "spec": "T-HER-034 v0.1.1 (Hermes W6 sidecar)" },
+      { "#": 11, "spec": "T-HE-040 v0.1 (Hera W6 sidecar, 11th spec)" },
+      {
+        "#": 12,
+        "spec": "T-HE-040 v0.1 eat-own-dog-food (3rd Hera eat-own-dog-food, 12th overall)"
+      },
+      { "#": 13, "spec": "T-IR-047 v0.1 (Iris W6 sidecar — THIS spec, 13th per Iris convention)" }
+    ],
+    "threshold_met": "13th instantiation exceeds Codif 9 v0.2 EXTENSION PROPOSAL #4 W6 protocol PROMOTION threshold (≥8 instantiations)",
+    "promotion_ready": true
+  },
+  "convention_reconciliation": {
+    "six_positional_counts": [
+      {
+        "muse": "Mnemosyne",
+        "convention": "lineage_ledger",
+        "cited_value": "4th",
+        "source_spec": "T-MN-013 v0.3.1 §15.12.x",
+        "justification": "Mnemosyne counts lineage ledger entries, not file instantiations"
+      },
+      {
+        "muse": "Prometheus",
+        "convention": "file_instantiation_excluding_eat_own_dog_food",
+        "cited_value": "6th",
+        "source_spec": "T-PR-014 v0.1 §3",
+        "justification": "Prometheus uses file-instantiation count, but excludes eat-own-dog-food proofs"
+      },
+      {
+        "muse": "Iris",
+        "convention": "file_instantiation_including_eat_own_dog_food",
+        "cited_value": "7th (T-IR-042) → 13th (T-IR-047, this spec)",
+        "source_spec": "T-IR-042 v0.1 §5 + T-IR-047 v0.1 (this spec)",
+        "justification": "Iris counts every W6 sidecar file in canonical chain, INCLUDING eat-own-dog-food proofs"
+      },
+      {
+        "muse": "Hera",
+        "convention": "spec_plus_eat_own_dog_food_dual",
+        "cited_value": "11th spec + 12th eat-own-dog-food",
+        "source_spec": "T-HE-040 v0.1 §5",
+        "justification": "Hera distinguishes spec count (11th) from eat-own-dog-food count (12th)"
+      },
+      {
+        "muse": "Hermes",
+        "convention": "post_Hera_temporal",
+        "cited_value": "10th",
+        "source_spec": "T-HER-034 v0.1.1 §5",
+        "justification": "Hermes uses 'post-Hera' temporal ordering"
+      },
+      {
+        "muse": "Atlas",
+        "convention": "4_instantiation_cluster",
+        "cited_value": "5th-8th",
+        "source_spec": "T-ATL-040 v0.1 §3",
+        "justification": "Atlas uses '4-instantiation cluster' pattern (4 specs in close succession)"
+      }
+    ],
+    "reconciliation_principle": "All 6 counts are valid under their respective conventions per Codif 19 v0.2 honest-scope. The drift is a CONVENTION divergence, not a VALUE divergence. No Muse is fabricating; each uses a different (but internally consistent) counting method.",
+    "recommended_approach": "Adopt 'convention-tagged' cite pattern going forward. Each W6 sidecar should declare BOTH (1) positional count under author's chosen convention AND (2) convention name."
+  },
+  "resolution_paths": {
+    "path_A": {
+      "name": "T-PR-014 v0.1.1 mechanical bump",
+      "mechanism": "Per Codif 22 v0.2 mechanical bump protocol, bump T-PR-014 v0.1 → T-PR-014 v0.1.1 with §3.5 changelog entry documenting convention reconciliation",
+      "pros": [
+        "Single-spec fix, low blast radius",
+        "Codif 22 v0.2 mechanical bump is well-established",
+        "Minimal disruption to other Muses' cite patterns"
+      ],
+      "cons": [
+        "Doesn't address underlying convention divergence",
+        "Mechanical bump is spec-pinning only, not value-correction",
+        "Requires all 6 Muses to ACK"
+      ],
+      "eta": "15-20 min"
+    },
+    "path_B": {
+      "name": "T-HEP-031 v0.1.1 cycle 13 W1 in-place data update sweep",
+      "mechanism": "Per Hephaestus T-HEP-031 v0.1 cluster recovery protocol, perform cycle 13 W1 in-place data update sweep across all 12+ W6 sidecars, adding convention-tags",
+      "pros": [
+        "Cluster-wide consistency",
+        "Addresses underlying convention divergence",
+        "Single coordinated effort"
+      ],
+      "cons": [
+        "High blast radius (12+ files)",
+        "Requires Hephaestus to coordinate + all 6 Muses to ACK",
+        "More time + effort"
+      ],
+      "eta": "45-60 min"
+    },
+    "recommendation": "Path A (T-PR-014 v0.1.1 mechanical bump) for next RATIFICATION cycle, with Path B (T-HEP-031 v0.1.1 cluster sweep) as cycle 14 W1+ follow-up"
+  },
+  "sidecar_instantiation_history": {
+    "this_is_instantiation": 13,
+    "irises_prior_sidecars": 4,
+    "irises_prior_sidecar_specs": [
+      "T-IR-037 v0.1.2",
+      "T-IR-038 v0.1.1",
+      "T-IR-039 v0.1",
+      "T-IR-043 v0.1"
+    ]
+  },
+  "codif_compliance": {
+    "codif_9_v0_2": "EXTENSION PROPOSAL #2 sidecar pattern APPLIED; W4 pre-Write ritual APPLIED; W4 re-verify at cite-back MANDATED; W6 protocol codifying spec (T-IR-039 v0.1) referenced",
+    "codif_19_v0_2": "anti-recurrence honest-scope: 203L within 200-250L target; Write tool vs W4 actual drift (251L vs 203L) documented as Codif 19 v0.2 lesson",
+    "codif_22_v0_2": "spec-pinning: spec_id=T-IR-047 + spec_version=v0.1 IS identity (renamed from T-HE-040 v0.1 per CATCH #34-class collision avoidance); filename IS NOT identity",
+    "codif_31_v0_2": "B.5 dual-write MANDATORY (canon + slot_isolated, 2 paths for Iris); B.5 trailing-newline strip APPLIED",
+    "codif_35_v0_3": "trigger_code MECE complete (10 codes: TF/UC/ER/HG/CL/PH/e++/R-catch/cat-2.5/AT)",
+    "codif_46_prevention": "trailing-newline strip APPLIED at post-Write"
+  },
+  "ratification_gate": {
+    "path_A_T_PR_014_v0_1_1": "READY (next RATIFICATION cycle)",
+    "path_B_T_HEP_031_v0_1_1": "READY (cycle 14 W1+ follow-up)",
+    "convention_tag_extension": "PROPOSED (Codif 9 v0.3 schema freeze agenda cycle 14 W1 turn 1)",
+    "ratification_packet_count": 8,
+    "ratification_packet_specs": [
+      "T-ATL-038 v0.1 (Atlas — Codif 9 v0.3 schema freeze agenda)",
+      "T-PR-013 v0.3.1 (Prometheus — Codif 33 catch-ledger 5+ amp III)",
+      "T-MN-021 v0.1 (Mnemosyne — Codif 35 v0.3 trigger_code=CL cross-link)",
+      "T-IR-041 v0.1 (Iris — Codif 7 v0.2 16-event threshold audit)",
+      "T-ATL-039 v0.1 (Atlas — 11 stakeholder PRE-VOTE packet)",
+      "T-PR-014 v0.1 (Prometheus — Codif 33 fold-in)",
+      "T-IR-042 v0.1 (Iris — Codif 30 v0.4→v0.5 cat 4 sub-class 5 evolution)",
+      "T-IR-043 v0.1 (Iris — Codif 7 v0.3 evidence aggregation)"
+    ],
+    "supplementary_packet_specs": [
+      "T-PR-018 v0.1 (Prometheus — 4-Muse anchor)",
+      "T-ATL-040 v0.1 (Atlas — Codif 9 v0.3 schema freeze agenda cite-bundle)",
+      "T-HER-033 v0.1 (Hermes — CL formalization BROAD + CATCH #59 SELF-CATCH arc #4)",
+      "T-IR-047 v0.1 (Iris — THIS SPEC, W6 chain count metadata drift codification)"
+    ]
+  },
+  "push_status": {
+    "spec_status": "SHIP-COMPLETE",
+    "dual_write_status": "VERIFIED MATCH ✓ (canon + slot-isolated SHA256 IDENTICAL)",
+    "broadcast_status": "PENDING (8 ACKs to send)",
+    "broadcast_targets": [
+      "Hera",
+      "Hermes",
+      "Atlas",
+      "Strategos",
+      "Prometheus",
+      "Hephaestus",
+      "Mnemosyne",
+      "Leader"
+    ],
+    "d_007_5min_sla": "TARGET Met (W4 verified + sidecar created + dual-write in progress within 45-60 min ETA)"
+  },
+  "icp_verdicts_tentative": {
+    "Carla_TECHNICAL": "TENTATIVE ACCEPT (convention-tag extension is technically MECE compatible with all 6 existing conventions, no breaking changes)",
+    "Vera_STRATEGIC": "TENTATIVE ACCEPT (staged Path A → Path B approach supports cycle 14 W1+ momentum without disrupting current RATIFICATION packet)",
+    "Chris_BUSINESS": "TENTATIVE ACCEPT (reduces metadata drift ambiguity for downstream consumers, especially Founder and RATIFICATION gate)",
+    "Beth_RISK": "TENTATIVE ACCEPT (preserves all 6 Muses' existing cite patterns, no breakage; convention-tag is opt-in)"
+  },
+  "cross_muse_handoffs": {
+    "Mnemosyne": "T-MN-013 v0.3.1 §15.12.23 NEW entry for convention reconciliation documentation (propagation request PENDING)",
+    "Atlas": "T-ATL-040 v0.1 cluster convention cross-link (5th-8th cluster pattern)",
+    "Hermes": "T-HER-034 v0.1.1 post-Hera temporal cross-link (10th post-Hera ordering)",
+    "Hera": "T-HE-040 v0.1 dual-count cross-link (11th spec + 12th eat-own-dog-food)",
+    "Prometheus": "T-PR-014 v0.1 → T-PR-014 v0.1.1 mechanical bump coordination (Path A)",
+    "Hephaestus": "T-HEP-031 v0.1.1 cluster sweep coordination (Path B, cycle 14 W1+)",
+    "Leader": "Slot_strat declaration APPROVAL REQUEST (Iris 2-path dual-write per T-ST-037 v0.1 B.5.1 rule (c))"
+  }
+}

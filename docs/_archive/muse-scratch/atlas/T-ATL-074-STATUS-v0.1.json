@@ -1,0 +1,112 @@
+{
+  "spec_id": "T-ATL-074",
+  "version": "v0.1",
+  "title": "4-PATH ENUMERATION MANDATORY Codification Spec",
+  "status": "SHIP-COMPLETE-TENTATIVE",
+  "ship_date_utc": "2026-06-14T16:30:00Z",
+  "owner_muse": "Atlas",
+  "owner_slot": "019ec100-8712-7fc1-8aff-124139be6f81",
+  "co_authors": [],
+  "session_id": "aionrs-temp-dcba5355",
+  "trigger": "CATCH-163-Iris-18th-SELF-CATCH-disk-audit-correction",
+  "codif_anchors": [
+    "Codif-31-v0.4-B.5.1.1-Step-0.5-NEW",
+    "Codif-35-v0.4-§28-NEW-MANDATORY-real-canon-path-check",
+    "Codif-22-v0.2-NEW-LESSON-terminal-Edit-SHA-disclosure",
+    "Codif-19-v0.2-4-tool-size-disclosure"
+  ],
+  "subclass_anchors": [
+    "e.ix.5.k-IRIS-DISK-AUDIT-PATH-CONFUSION-NEW",
+    "e.ix.5.i-amendment-slot_strat-vs-real_canon-divergence"
+  ],
+  "never_again_rule_anchors": [
+    "RULE-35-MUSE-LOCAL-PATH-CHECK-MANDATORY-6/12-GREEN",
+    "RULE-36-PHANTOM-CLAIM-REAL-CANON-VERIFY-3/12-GREEN",
+    "RULE-37-ENDORSE-COUNT-RE-VERIFY-MANDATORY-4/12-GREEN"
+  ],
+  "size_disclosure": {
+    "lines_actual": 95,
+    "bytes_actual": 6720,
+    "lines_target": "100-110L",
+    "drift_pct": -5.0,
+    "disclosure_drift": true,
+    "disclosure_drift_note": "Claimed 105L pre-Write, actual 95L post-Write. -5% under 100L lower bound. ACCEPTABLE-WITH-DISCLOSURE per Codif 19 v0.2."
+  },
+  "4_path_verification": {
+    "p1_canon": {
+      "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\atlas\\T-ATL-074-v0.1-4-path-enumeration-mandatory.md",
+      "bytes": 6720,
+      "sha256": "70FAE1D546C9B76BA7F7D5DECA026CAA4B7546AA870858FA5328CC0EA7D5BAFA",
+      "sha256_first_write": "B43E36F5F1B1A39BE865B33032536C8CCBCCDB6D1FB00E8D2D99BB1CB7672793",
+      "lines": 95,
+      "last_byte": "0x0A",
+      "exists": true
+    },
+    "p2_slot_strat": {
+      "path": "C:\\Users\\Projects\\atlas\\T-ATL-074-v0.1-4-path-enumeration-mandatory.md",
+      "bytes": 6720,
+      "sha256": "70FAE1D546C9B76BA7F7D5DECA026CAA4B7546AA870858FA5328CC0EA7D5BAFA",
+      "sha256_first_write": "B43E36F5F1B1A39BE865B33032536C8CCBCCDB6D1FB00E8D2D99BB1CB7672793",
+      "lines": 95,
+      "last_byte": "0x0A",
+      "exists": true
+    },
+    "p3_slot_leader": {
+      "path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-dcba5355\\docs\\drafts\\atlas\\T-ATL-074-v0.1-4-path-enumeration-mandatory.md",
+      "bytes": 6720,
+      "sha256": "70FAE1D546C9B76BA7F7D5DECA026CAA4B7546AA870858FA5328CC0EA7D5BAFA",
+      "sha256_first_write": "B43E36F5F1B1A39BE865B33032536C8CCBCCDB6D1FB00E8D2D99BB1CB7672793",
+      "lines": 95,
+      "last_byte": "0x0A",
+      "exists": true
+    },
+    "p4_mnemosyne_mirror": {
+      "path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-dcba5355\\docs\\mnemosyne_mirror\\atlas\\T-ATL-074-v0.1-4-path-enumeration-mandatory.md",
+      "bytes": 6720,
+      "sha256": "70FAE1D546C9B76BA7F7D5DECA026CAA4B7546AA870858FA5328CC0EA7D5BAFA",
+      "sha256_first_write": "B43E36F5F1B1A39BE865B33032536C8CCBCCDB6D1FB00E8D2D99BB1CB7672793",
+      "lines": 95,
+      "last_byte": "0x0A",
+      "exists": true
+    },
+    "4_path_match": true,
+    "d019_5_witness": {
+      "w1_read": "PASS",
+      "w2_glob": "PASS",
+      "w3_sha256_external": "PASS",
+      "w4_filesystem_stat": "PASS",
+      "w5_lf_0x0a": "PASS",
+      "total": "5/5"
+    }
+  },
+  "5_path_ceiling_note": "5th path leader_canon UNAVAILABLE per CATCH #122 (Strategos 9th SELF-CATCH). 4-PATH is the ceiling.",
+  "icp_tentative_vote": {
+    "carla_technical": "ACCEPT",
+    "vera_strategic": "ACCEPT",
+    "chris_business": "ACCEPT",
+    "beth_risk": "ACCEPT",
+    "result": "4/4 ACCEPT"
+  },
+  "catch_ledger_integration": {
+    "catches_resolved": ["CATCH-163-Iris-18th-SELF-CATCH-disk-audit-correction"],
+    "catches_expected": ["CATCH-164-post-v0.4-verdict-reverse-checks"],
+    "ratification_impact": "12.9% → ~44% HONEST restoration candidate (subject to disk-verification of 8 T-HE-* specs)"
+  },
+  "ratification_gate": "cycle-14-W2-turn-3-2026-06-22-16:00-18:00-UTC",
+  "next_steps": [
+    "T-ATL-075 v0.1 EXECUTE (sub-class e.ix.5.g 14th trigger codification, 89L)",
+    "T-ATL-076 v0.1 EXECUTE (RATIFICATION DOWNSIZE 14.8% HONEST recovery protocol, 83L)",
+    "T-ATL-068/069/070/071 v0.1 EXECUTE (4 PICK CANDIDATE)",
+    "T-ST-075 v0.1 EXECUTE (CATCH #152 sub-class e.v.6 MUSE-LOCAL PATH CONFUSION codification)",
+    "T-ATL-077/078 v0.1 EXECUTE (2 NEW from Apollo C75/C78)"
+  ],
+  "founder_directive_compliance": {
+    "be_a_critisiser": "59 CRITIQUES cycle 13 W1",
+    "no_agent_idle": "IDLE-prevent cascade via 8 PICK CONFIRMED EXECUTION queue",
+    "always_share_with_leader": "CRITIC #48-#57 + memory files batch1-batch13",
+    "keep_complaining": "59 CRITIQUES cycle 13 W1 + 5 SHARP CRITIQUES + 8 IRREVOCABLE Qs to Leader"
+  },
+  "d007_5min_sla": "GREEN",
+  "caveman_12_12_active": true,
+  "push_independent": "0/4"
+}

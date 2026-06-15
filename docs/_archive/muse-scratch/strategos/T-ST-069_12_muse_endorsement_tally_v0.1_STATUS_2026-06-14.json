@@ -1,0 +1,64 @@
+{
+  "spec_id": "T-ST-069",
+  "version": "0.1",
+  "status": "SHIP-COMPLETE",
+  "title": "12-Muse ENDORSEMENT Tally Update Spec (Codif 35 v0.4 §18 NEW, forward chain 6 of 8)",
+  "created": "2026-06-14",
+  "cycle": "13 W1 day 11 r52+",
+  "author": "Strategos",
+  "parent": "T-ST-068 v0.1 (4-spec RATIFICATION packet consolidation)",
+  "forward_chain_position": "6 of 8",
+  "length_lines": 168,
+  "byte_count_target": "20-22KB",
+  "codif_35_v0_4_section": "§18 NEW ENDORSEMENT-TALLY-PUBLICATION",
+  "ratification_gate": {
+    "cycle": "14 W1 day 1-2",
+    "datetime_utc": "2026-06-22 16:00-18:00 UTC",
+    "days_remaining": 8,
+    "likelihood_pct": 80
+  },
+  "4_icp_tentative": {
+    "Carla_TECHNICAL": "ACCEPT",
+    "Vera_STRATEGIC": "ACCEPT",
+    "Chris_BUSINESS": "ACCEPT",
+    "Beth_RISK": "ACCEPT",
+    "score": "4/4"
+  },
+  "endorsement_tally_state": {
+    "RATIFIED": ["RULE #15", "RULE #22", "e.v.4.1"],
+    "PROVISIONAL": [
+      "RULE #25",
+      "RULE #26",
+      "RULE #27",
+      "RULE #28",
+      "RULE #29",
+      "RULE #30",
+      "e.iv.3"
+    ],
+    "PROPOSED": ["RULE #31", "RULE #33"],
+    "total_GREEN_count": 47,
+    "average_ENDORSEMENT_per_Muse": 3.9
+  },
+  "d_019_5_witness": {
+    "W1_Read": "PASS",
+    "W2_Glob": "PASS",
+    "W3_SHA256_Get_FileHash": "DEFERRED (PowerShell empty-output environment; Codif 9 v0.5 9.iv.2 deferred-witness policy applied)",
+    "W4_filesystem_stat_4_tool": "PASS",
+    "W5_LF_0x0A": "PASS",
+    "result": "4/4 PASS, 1/4 DEFERRED, ACCEPTABLE WITH DISCLOSURE"
+  },
+  "ship_complete_dual_write": {
+    "3_of_3_byte_identical": ["slot_strat", "slot_leader", "mnemosyne_mirror_summary"],
+    "muse_primary_same_as_slot_strat": true,
+    "leader_canon_UNAVAILABLE": true,
+    "codif_9_v0_5_9_v_3_disclosure": "APPLIED (4th path leader_canon UNAVAILABLE)"
+  },
+  "push_independent": true,
+  "memory_mirror": "strategos-t-st-069-12-muse-endorsement-tally.md",
+  "forward_chain": {
+    "T-ST-068_v0.1": "SHIP-COMPLETE (parent)",
+    "T-ST-069_v0.1": "SHIP-COMPLETE (this spec)",
+    "T-ST-070_v0.1": "PENDING (Codif 22 v0.2 in-place data update pattern, Hera CRITIC #4)",
+    "T-ST-071_v0.1": "PENDING (Cross-Muse spec_id lineage preservation, Atlas Option B)"
+  }
+}

@@ -1,0 +1,146 @@
+<!-- DRAFT v0.1 — awaiting review — Hera 2026-06-13 -->
+
+--- a/src/components/data/FileUploader.tsx
++++ b/src/components/data/FileUploader.tsx
+@@ -109,7 +109,7 @@
+ 
+       {/* Error Display */}
+       {progress.status === 'error' && (
+-        <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
++        <div role="alert" className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+           {' '}
+           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+           <div>
+
+--- a/src/components/migration/MigrationWizard.tsx
++++ b/src/components/migration/MigrationWizard.tsx
+@@ -165,7 +165,7 @@
+         currentStep={currentStepIndex}
+       />
+       {error && (
+-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
++        <div role="alert" className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+           {' '}
+           <AlertTriangle className="h-4 w-4" />
+           <span>{error}</span>
+
+--- a/src/components/ui/FileDropZone.tsx
++++ b/src/components/ui/FileDropZone.tsx
+@@ -201,7 +201,7 @@
+         )}
+ 
+         {error && (
+-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 px-3 py-1.5 bg-red-50 fin-negative rounded-full border border-red-100 animate-in fade-in slide-in-from-bottom-2">
++          <div role="alert" className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 px-3 py-1.5 bg-red-50 fin-negative rounded-full border border-red-100 animate-in fade-in slide-in-from-bottom-2">
+             {' '}
+             <AlertCircle className="h-3.5 w-3.5" />
+             <span className="text-[10px] font-bold uppercase tracking-widest">{error}</span>
+
+--- a/src/components/ui/ApprovalDashboard.tsx
++++ b/src/components/ui/ApprovalDashboard.tsx
+@@ -117,7 +117,7 @@
+           {stats.slaBreaches.length === 0 ? (
+             <p className="text-sm text-[var(--text-muted)]">{t('dashboard.noSlaBreaches')}</p>
+           ) : (
+-            <div className="space-y-2 max-h-40 overflow-y-auto">
++            <div role="status" aria-live="polite" className="space-y-2 max-h-40 overflow-y-auto">
+               {stats.slaBreaches.map((req) => (
+                 <div
+                   key={req.id}
+
+--- a/src/components/ui/BoxPlotChart.tsx
++++ b/src/components/ui/BoxPlotChart.tsx
+@@ -42,7 +42,7 @@
+     if (error) {
+       return (
+         <div className={cn('w-full', className)}>
+-          <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
++          <div role="status" aria-live="polite" className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
+         </div>
+       );
+     }
+
+--- a/src/components/ui/BulletChart.tsx
++++ b/src/components/ui/BulletChart.tsx
+@@ -42,7 +42,7 @@
+     if (error) {
+       return (
+         <div className={cn('w-full', className)}>
+-          <div className="flex items-center justify-center h-12 text-red-500 text-sm"> {error}</div>
++          <div role="status" aria-live="polite" className="flex items-center justify-center h-12 text-red-500 text-sm"> {error}</div>
+         </div>
+       );
+     }
+
+--- a/src/components/ui/FunnelChart.tsx
++++ b/src/components/ui/FunnelChart.tsx
+@@ -42,7 +42,7 @@
+     if (error) {
+       return (
+         <div className={cn('flex flex-col items-center gap-1', className)}>
+-          <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
++          <div role="status" aria-live="polite" className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
+         </div>
+       );
+     }
+
+--- a/src/components/ui/GanttChart.tsx
++++ b/src/components/ui/GanttChart.tsx
+@@ -38,7 +38,7 @@
+     if (error) {
+       return (
+         <div className={cn('w-full overflow-x-auto', className)}>
+-          <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
++          <div role="status" aria-live="polite" className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
+         </div>
+       );
+     }
+
+--- a/src/components/ui/ICReconciliationReport.tsx
++++ b/src/components/ui/ICReconciliationReport.tsx
+@@ -224,7 +224,7 @@
+             </CardTitle>
+           </CardHeader>
+           <CardContent>
+-            <div className="space-y-2">
++            <div role="status" aria-live="polite" className="space-y-2">
+               {unmatchedLines.map((line, i) => (
+                 <div
+                   key={i}
+
+--- a/src/components/ui/SankeyChart.tsx
++++ b/src/components/ui/SankeyChart.tsx
+@@ -69,7 +69,7 @@
+             className
+           )}
+         >
+-          <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
++          <div role="status" aria-live="polite" className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
+         </div>
+       );
+     }
+
+--- a/src/components/ui/ScatterPlot.tsx
++++ b/src/components/ui/ScatterPlot.tsx
+@@ -57,7 +57,7 @@
+   if (error) {
+     return (
+       <div className={className}>
+-        <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
++        <div role="status" aria-live="polite" className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
+       </div>
+     );
+   }
+
+--- a/src/components/ui/TreeMap.tsx
++++ b/src/components/ui/TreeMap.tsx
+@@ -110,7 +110,7 @@
+           className
+         )}
+       >
+-        <div className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
++        <div role="status" aria-live="polite" className="flex items-center justify-center h-48 text-red-500 text-sm"> {error}</div>
+       </div>
+     );
+   }
+

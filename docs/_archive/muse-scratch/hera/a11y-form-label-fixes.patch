@@ -1,0 +1,132 @@
+diff --git a/src/pages/data/ChartOfAccountsPage.tsx b/src/pages/data/ChartOfAccountsPage.tsx
+index 7c6e2046..23f8049b 100644
+--- a/src/pages/data/ChartOfAccountsPage.tsx
++++ b/src/pages/data/ChartOfAccountsPage.tsx
+@@ -410,8 +410,9 @@ export default function ChartOfAccountsPage() {
+           </h2>
+           <div className="space-y-4">
+             <div>
+-              <label className="block text-xs font-medium text-slate-400 mb-1">Account Code</label>
++              <label htmlFor="coa-account-code" className="block text-xs font-medium text-slate-400 mb-1">Account Code</label>
+               <Input
++                id="coa-account-code"
+                 value={form.code}
+                 onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
+                 placeholder="e.g. 4100"
+@@ -420,8 +421,9 @@ export default function ChartOfAccountsPage() {
+               {formErrors.code && <p className="text-xs text-red-400 mt-1">{formErrors.code}</p>}
+             </div>
+             <div>
+-              <label className="block text-xs font-medium text-slate-400 mb-1">Account Name</label>
++              <label htmlFor="coa-account-name" className="block text-xs font-medium text-slate-400 mb-1">Account Name</label>
+               <Input
++                id="coa-account-name"
+                 value={form.name}
+                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                 placeholder="e.g. Subscription Revenue"
+@@ -430,26 +432,29 @@ export default function ChartOfAccountsPage() {
+               {formErrors.name && <p className="text-xs text-red-400 mt-1">{formErrors.name}</p>}
+             </div>
+             <div>
+-              <label className="block text-xs font-medium text-slate-400 mb-1">Account Type</label>
++              <label htmlFor="coa-account-type" className="block text-xs font-medium text-slate-400 mb-1">Account Type</label>
+               <Select
++                id="coa-account-type"
+                 options={accountTypes}
+                 value={form.type}
+                 onChange={(val) => setForm({ ...form, type: val as AccountType })}
+               />
+             </div>
+             <div>
+-              <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
++              <label htmlFor="coa-category" className="block text-xs font-medium text-slate-400 mb-1">Category</label>
+               <Input
++                id="coa-category"
+                 value={form.category}
+                 onChange={(e) => setForm({ ...form, category: e.target.value })}
+                 placeholder="e.g. Operating Revenue"
+               />
+             </div>
+             <div>
+-              <label className="block text-xs font-medium text-slate-400 mb-1">
++              <label htmlFor="coa-parent-account" className="block text-xs font-medium text-slate-400 mb-1">
+                 Parent Account (optional)
+               </label>
+               <Select
++                id="coa-parent-account"
+                 options={parentOptions}
+                 value={form.parentId || ''}
+                 onChange={(val) => setForm({ ...form, parentId: val || null })}
+
+diff --git a/src/pages/settings/SettingsPage.tsx b/src/pages/settings/SettingsPage.tsx
+index 0aed26af..22e0086b 100644
+--- a/src/pages/settings/SettingsPage.tsx
++++ b/src/pages/settings/SettingsPage.tsx
+@@ -112,8 +112,9 @@ export default function SettingsPage() {
+             <CardContent className="p-6 space-y-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-2">
+-                  <label className="text-sm font-bold text-slate-300">Company Name</label>
++                  <label htmlFor="settings-company-name" className="text-sm font-bold text-slate-300">Company Name</label>
+                   <input
++                    id="settings-company-name"
+                     type="text"
+                     value={organization.name}
+                     onChange={(e) => updateOrganization({ name: e.target.value })}
+@@ -122,8 +123,9 @@ export default function SettingsPage() {
+                   />
+                 </div>
+                 <div className="space-y-2">
+-                  <label className="text-sm font-bold text-slate-300">Base Currency</label>
++                  <label htmlFor="settings-base-currency" className="text-sm font-bold text-slate-300">Base Currency</label>
+                   <select
++                    id="settings-base-currency"
+                     value={organization.baseCurrency}
+                     onChange={(e) => updateOrganization({ baseCurrency: e.target.value })}
+                     className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+@@ -135,10 +137,11 @@ export default function SettingsPage() {
+                   </select>
+                 </div>
+                 <div className="space-y-2">
+-                  <label className="text-sm font-bold text-slate-300">
++                  <label htmlFor="settings-fiscal-year-start" className="text-sm font-bold text-slate-300">
+                     Fiscal Year Start Month
+                   </label>
+                   <select
++                    id="settings-fiscal-year-start"
+                     value={organization.fiscalYearStart.split('-')[1]}
+                     className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                   >
+@@ -149,8 +152,9 @@ export default function SettingsPage() {
+                   </select>
+                 </div>
+                 <div className="space-y-2">
+-                  <label className="text-sm font-bold text-slate-300">Calendar Type</label>
++                  <label htmlFor="settings-calendar-type" className="text-sm font-bold text-slate-300">Calendar Type</label>
+                   <select
++                    id="settings-calendar-type"
+                     value={organization.calendarType}
+                     className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                   >
+@@ -169,8 +173,9 @@ export default function SettingsPage() {
+             <CardContent className="p-6 space-y-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-2">
+-                  <label className="text-sm font-bold text-slate-300">Decimal Places</label>
++                  <label htmlFor="settings-decimal-places" className="text-sm font-bold text-slate-300">Decimal Places</label>
+                   <input
++                    id="settings-decimal-places"
+                     type="number"
+                     value={organization.decimalPlaces}
+                     onChange={(e) =>
+@@ -182,8 +187,9 @@ export default function SettingsPage() {
+                   />
+                 </div>
+                 <div className="space-y-2">
+-                  <label className="text-sm font-bold text-slate-300">Date Format</label>
++                  <label htmlFor="settings-date-format" className="text-sm font-bold text-slate-300">Date Format</label>
+                   <select
++                    id="settings-date-format"
+                     value={organization.dateFormat}
+                     onChange={(e) => updateOrganization({ dateFormat: e.target.value })}
+                     className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"

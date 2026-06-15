@@ -1,0 +1,13 @@
+<!-- DRAFT v0.1 — awaiting review — Hera 2026-06-12 -->
+
+--- a/src/components/reports/ReportProgress.tsx
++++ b/src/components/reports/ReportProgress.tsx
+@@ -218,7 +218,7 @@
+ 
+       {/* Error summary from engine progress */}
+       {progress.errors.length > 0 && (
+-        <div className="rounded-md bg-red-950/30 border border-red-800/50 p-3"> role="alert"  role="alert" 
++        <div role="alert" className="rounded-md bg-red-950/30 border border-red-800/50 p-3"> 
+           <p className="text-xs font-medium text-red-400 mb-1">
+             {progress.errors.length} error{progress.errors.length !== 1 ? 's' : ''}
+           </p>

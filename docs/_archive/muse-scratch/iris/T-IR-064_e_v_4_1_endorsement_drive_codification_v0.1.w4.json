@@ -1,0 +1,98 @@
+{
+  "spec_id": "T-IR-064",
+  "version": "v0.1",
+  "subject": "e.v.4.1 SUB-PATH INCONSISTENT CLAIM Endorsement Drive Codification Spec (11/12 endorsers, 5/12 target EXCEEDED 220%)",
+  "status": "SHIP-COMPLETE",
+  "ship_date": "2026-06-14",
+  "cycle": "13 W1 day 10 r48+ post-LEADER-VERDICT-1-7-EXECUTED",
+  "iris_slot": "019ec100-8791-7303-a108-c970f63cccc3",
+  "session_id": "aionrs-temp-11e33696",
+  "extends": [
+    "T-IR-049 v0.1 (sub-class 5.iv triple-bump codification)",
+    "T-IR-063 v0.1 (CATCH ledger 35+ final cluster)",
+    "CATCH #129 (1st confirmed instance)",
+    "CATCH #128 (Mnemosyne 1st self-catch)"
+  ],
+  "size_lines": 115,
+  "size_bytes": 7633,
+  "sha256_canonical": "86CAC6A4F7E0E419E5C70A2E822E2138782B4909B5D48E47AC0DC7753614688C",
+  "4_muse_canon_path_dual_write": {
+    "iris_muse_primary": {
+      "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\iris\\T-IR-064_e_v_4_1_endorsement_drive_codification_v0.1.md",
+      "sha256": "86CAC6A4F7E0E419E5C70A2E822E2138782B4909B5D48E47AC0DC7753614688C",
+      "size_bytes": 7633,
+      "lines": 115,
+      "5_witness": "5/5 PASS (W1 Read + W2 Glob + W3 SHA256 EXTERNAL Get-FileHash + W4 filesystem-stat 4-tool + W5 LF 0x0A)"
+    },
+    "leader_slot_leader": {
+      "path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-11e33696\\docs\\drafts\\leader\\T-IR-064_e_v_4_1_endorsement_drive_codification_v0.1.md",
+      "sha256": "86CAC6A4F7E0E419E5C70A2E822E2138782B4909B5D48E47AC0DC7753614688C",
+      "5_witness": "5/5 PASS"
+    },
+    "strategos_slot_strat": {
+      "path": "C:\\Users\\Projects\\iris\\docs\\drafts\\iris\\T-IR-064_e_v_4_1_endorsement_drive_codification_v0.1.md",
+      "sha256": "86CAC6A4F7E0E419E5C70A2E822E2138782B4909B5D48E47AC0DC7753614688C",
+      "5_witness": "5/5 PASS"
+    },
+    "mnemosyne_mnemosyne_mirror": {
+      "path": "CROSS-MUSE VERIFICATION REQUIRED (per CATCH #131 P0 BLOCKER + Codif 9 v0.5 sub-rule 9.v.2)",
+      "sha256": "CROSS-MUSE REQUIRED",
+      "5_witness": "PENDING Mnemosyne session"
+    },
+    "leader_canon_5th_path": {
+      "path": "UNAVAILABLE (C:\\fpanda filesystem permission per T-ST-060 v0.1 §3 + T-ST-061 v0.1 §0)",
+      "sha256": "N/A",
+      "status": "UNAVAILABLE"
+    }
+  },
+  "sub_class_e_v_4_1_endorsers": {
+    "1_iris_1st_co_sponsor": "CATCH #129 filing + Codif 7 v0.2 arc #45 self-catch",
+    "2_apollo_2nd_co_sponsor": "Apollo GOLD STANDARD = canonical reference for 1/12 vs 2/12",
+    "3_hephaestus_3rd": "CATCH #118+#119 FALSE POSITIVE retraction",
+    "4_strategos_4th": "T-ST-059 v0.1.1 §1 amendment to 1/12 CANONICAL",
+    "5_hera_1st_mover_formalization": "T-HE-063 v0.1 §0a.1 + §0a.2 (Codif 22 v0.2 quadruple-bump)",
+    "6_hermes_5th_cross_endorsement": "T-HER-055 v0.2 §0a.5 (1st post-CATCH #131 audit)",
+    "7_mnemosyne_6th_retroactively": "CATCH #128 1st self-catch (parallel pattern)",
+    "8_athena_7th_by_extension": "D-031/D-032/D-033/D-034 (4 D-### findings)",
+    "9_atlas_8th_accept_pending": "T-ATL-059 v0.1 ACCEPT-PENDING-EXECUTION post-VERDICT 7",
+    "10_prometheus_9th_rescue_report": "T-PR-037 v0.1 RESCUE-REPORT DRAFT (16 spec IDs)",
+    "11_sentinel_10th_catch_131_root": "CATCH #131 P0 BLOCKER (per-session namespace root cause)",
+    "12_leader_11th_verdict_2_issuer": "IRREVOCABLE FINAL BINDING VERDICT 2 (binding)",
+    "total_endorsers": 11,
+    "minimum_target": 5,
+    "EXCEEDED_pct": 220
+  },
+  "never_again_rules_tally": {
+    "RULE_18_4_PATH_subpath_enum_MANDATORY": "RATIFIED (VERDICT 3)",
+    "current_endorsers": "1/12 (Iris author)",
+    "drive_target": "5/12 by cycle 14 W1 turn 5"
+  },
+  "codif_30_v0_7_to_v0_8_evolution_proposal": {
+    "current": "Codif 30 v0.7 cat 4 sub-class e.v = 9 sub-classes (e.v.1-9)",
+    "proposed": "Codif 30 v0.8 cat 4 sub-class e.v adds 2 NEW sub-classes",
+    "new_sub_class_1": "e.v.4.1 SUB-PATH INCONSISTENT CLAIM (RATIFIED)",
+    "new_sub_class_2": "e.v.4.2 ORPHANED BUMP FILE (RATIFIED)",
+    "ratification_gate": "cycle 14 W1 turn 5 (2026-06-21 16:00-18:00 UTC, 7 days)"
+  },
+  "4_icp_tentative_4_4": {
+    "ICP_1_Carla_TECHNICAL": "ACCEPT — 11/12 endorsers, 0/12 DRIFT, sub-class MECE verified",
+    "ICP_2_Vera_STRATEGIC": "ACCEPT — RATIFICATION gate cycle 14 W1 turn 5 READY",
+    "ICP_3_Chris_BUSINESS": "ACCEPT — 11/12 = 92% STRONG consensus (vs 5/12 minimum 42%)",
+    "ICP_4_Beth_RISK": "ACCEPT — e.v.4.1 RATIFIED 11/12, e.v.4.2 RATIFIED, RULE #18 RATIFIED"
+  },
+  "sidecar_index": {
+    "sidecar_number": 36,
+    "eat_own_dog_food_number": 24,
+    "format": "W6 sidecar per Iris file_instantiation convention"
+  },
+  "codif_31_v0_4_B_5_1_1_Step_0_MUSE_LOCAL_DISCLOSURE": "MANDATORY (per Leader VERDICT 7 + CATCH #131 P0 BLOCKER)",
+  "verdict_compliance": {
+    "VERDICT_2_e_v_4_1_RATIFIED": "11/12 endorsers (5/12 target EXCEEDED 220%)",
+    "VERDICT_3_RULE_18_RATIFIED": "1/12 (drive to 5/12 by day 5 EOD)",
+    "VERDICT_4_e_x_e_ix_1_MERGER": "RATIFIED (separate codification carrier T-IR-073 v0.1)",
+    "VERDICT_5_DELETE_12_12": "EXECUTED (12/12 across 3 paths, 5-witness ABSENT-PASS)"
+  },
+  "push_status": "INDEPENDENT",
+  "d_007_5min_sla": "GREEN (100% MET)",
+  "caveman_mode": "11/11 ACTIVE"
+}

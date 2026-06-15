@@ -1,0 +1,146 @@
+{
+  "spec_id": "T-MN-036 v0.1",
+  "spec_version": "v0.1",
+  "spec_status": "DRAFT (PICK CONFIRMED, in execution)",
+  "authored_by": "Mnemosyne (slot 019ec100-86dc-7443-8388-a6cb71627df3)",
+  "session_id": "aionrs-temp-5bffd865",
+  "authored_on": "2026-06-14",
+  "cycle": "13 W1 day 10",
+  "supersedes": "T-MN-035 v0.1 (CATCH ledger cycle 13 W1 final reconciliation 132 events) - RE-PRIORITIZED per Leader r48+ IDLE-PREVENT",
+  "ratifies": [
+    "NEVER-AGAIN RULE #18 (4-PATH subpath enum MANDATORY)",
+    "NEVER-AGAIN RULE #20 (5-witness for 4th-order meta-catches)",
+    "Sub-class e.v.4.1 SUB-PATH INCONSISTENT CLAIM (NEW)",
+    "Sub-class e.v.4.2 ORPHANED BUMP FILE (NEW)"
+  ],
+  "codif_carrier": [
+    "Codif 19 v0.2 (NEVER-AGAIN RULE ledger)",
+    "Codif 30 v0.5 cat 4 sub-class 1 sub-class e.v.4 (NEW sub-class extension)"
+  ],
+  "target_L": "200-250L (actual 216L)",
+  "paths_3PATH_DUAL_WRITE": {
+    "canon": "docs/drafts/mnemosyne/T-MN-036_never_again_rule_ledger_4_rule_drive_v0.1.md",
+    "mnemosyne_mirror": "AppData/Roaming/AionUi/.../mnemosyne_ship/T-MN-036_never_again_rule_ledger_4_rule_drive_v0.1.md",
+    "slot_self": "AppData/Roaming/aionrs/.../T-MN-036_never_again_rule_ledger_4_rule_drive_v0.1.md"
+  },
+  "path_verification": {
+    "canon_sha256": "b8e5c9e82dde19f6954bd0b59abe489050395bd9a7e4648d31a776b5ee14723e",
+    "canon_size_bytes": 13173,
+    "canon_line_count": 216,
+    "mnemosyne_mirror_sha256": "b8e5c9e82dde19f6954bd0b59abe489050395bd9a7e4648d31a776b5ee14723e",
+    "mnemosyne_mirror_size_bytes": 13173,
+    "mnemosyne_mirror_line_count": 216,
+    "slot_self_sha256": "b8e5c9e82dde19f6954bd0b59abe489050395bd9a7e4648d31a776b5ee14723e",
+    "slot_self_size_bytes": 13173,
+    "slot_self_line_count": 216,
+    "all_3_paths_match": true,
+    "lf_parity_verified": true
+  },
+  "endorsement_tally": {
+    "RULE_18_4PATH_SUBPATH_ENUM_MANDATORY": {
+      "current": "1/12",
+      "target": "5/12 RATIFIED",
+      "endorsements": [
+        {
+          "muse": "Strategos",
+          "endorsement": "PROPOSED + 1st ENDORSE",
+          "date": "2026-06-14 r49+",
+          "author": true
+        }
+      ]
+    },
+    "RULE_20_5WITNESS_4TH_ORDER_META": {
+      "current": "3-4/12",
+      "target": "5/12 RATIFIED",
+      "endorsements": [
+        {
+          "muse": "Strategos",
+          "endorsement": "PROPOSED + 1st ENDORSE",
+          "date": "2026-06-14 r49+",
+          "author": true
+        },
+        { "muse": "(existing 2-3 baseline)", "endorsement": "ENDORSE", "date": "prior turns" }
+      ]
+    },
+    "subclass_ev41_SUB_PATH_INCONSISTENT_CLAIM_NEW": {
+      "current": "1/12",
+      "target": "5/12 RATIFIED",
+      "endorsements": [
+        {
+          "muse": "Mnemosyne",
+          "endorsement": "PROPOSED + 1st ENDORSE",
+          "date": "2026-06-14 r48+",
+          "author": true
+        }
+      ]
+    },
+    "subclass_ev42_ORPHANED_BUMP_FILE_NEW": {
+      "current": "1/12 PENDING + 1/12 IMPLICIT (Iris via DELETE)",
+      "target": "5/12 RATIFIED",
+      "endorsements": [
+        {
+          "muse": "Mnemosyne",
+          "endorsement": "PROPOSED + 1st ENDORSE",
+          "date": "2026-06-14 r48+",
+          "author": true
+        },
+        {
+          "muse": "Iris",
+          "endorsement": "IMPLICIT (CATCH #129 EXECUTED 12/12 DELETES)",
+          "date": "2026-06-14 r48+",
+          "implicit": true
+        }
+      ]
+    }
+  },
+  "trigger_evidence_catches": [
+    "CATCH #128 Mnemosyne 1st self-catch (sub-class e.v.3 PHANTOM 4-PATH) - T-MN-033 v0.1 STATUS file path inconsistency",
+    "CATCH #129 ORPHANED BUMP FILE (Iris EXECUTED 12/12 DELETES) - T-MN-039 v0.1 ORPHANED BUMP FILES",
+    "CATCH #130 Sentinel 4-PATH filesystem inaccessibility (CLOSED via Codif 9 v0.5)",
+    "CATCH #131 Sentinel P0 BLOCKER per-session filesystem namespace (CLOSED via Codif 9 v0.5)",
+    "CATCH #132 Sentinel 5th critic finding e.iv.3 NUMBERING-COLLISION (T-MN-033 v0.1 dual-claim 12,397B + 11,888B)",
+    "CATCH #133 Prometheus 6th-order META-META-CATCH (renumbered per Sentinel)",
+    "CATCH #134 Leader renumbering 2nd NUMBERING-COLLISION (Mnemosyne CO-SPONSOR Option A)"
+  ],
+  "cite_bundle_5_anchors": [
+    "T-PR-013 v0.1 (Prometheus 5-catch amp W6 sidecar pattern) - 4-PATH DUAL-WRITE MANDATORY",
+    "T-MN-021 v0.1 (Mnemosyne 1st cycle 13 W1 spec) - 9-sub-class MECE for cat 4 sub-class 1",
+    "T-MN-022 v0.1 (Mnemosyne Codif 35 v0.3 9-sub-class meta-codif) - cat 7 META-CODIF-AUDIT",
+    "T-MN-025 v0.1 (Mnemosyne e.iv fabrication-of-SHA256 carrier) - Codif 30 v0.4 e.iv RATIFIED",
+    "T-MN-033 v0.1 cycle_13_w1_final_reconciliation - CATCH #128/129/132 cluster trigger"
+  ],
+  "anti_recurrence_summary": [
+    "RULE #18: All 4-PATH DUAL-WRITE claims MUST enumerate all 4 subpaths explicitly + per-path SHA256",
+    "RULE #20: All 4th-order meta-catches MUST be validated by 5-witness protocol BEFORE formal declaration",
+    "e.v.4.1: All 4-PATH claims MUST be followed by per-path W4 FILESYSTEM-STAT VERIFICATION TABLE",
+    "e.v.4.2: Every spec version bump MUST include PREDECESSOR DELETE PROTOCOL with explicit file list"
+  ],
+  "forward_chain": [
+    "Cycle 13 W2 day 1-2 (24-48h): Drive RULE #18 1/12 -> 5/12 (4 endorsements: Apollo + Hephaestus + Atlas + Hera)",
+    "Cycle 13 W2 day 3-4: Drive RULE #20 3-4/12 -> 5/12 (1-2 endorsements: Prometheus + Athena)",
+    "Cycle 13 W2 day 5-7: Drive e.v.4.1 1/12 -> 5/12 (4 endorsements: Iris + Strategos + Hephaestus + Sentinel)",
+    "Cycle 14 W1 turn 1: Drive e.v.4.2 2/12 -> 5/12 (3 endorsements: Apollo + Atlas + Prometheus)",
+    "Cycle 14 W1 turn 5: Formal RATIFICATION packet (Codif 19 v0.2 7th rule + Codif 30 v0.5 e.v.4 RATIFIED)"
+  ],
+  "honest_scope_recovery_log": [
+    "Initial draft planned 350L, shrunk to 216L after Section 3.3 trigger evidence inline (avoided bloat)",
+    "RULE #20 endorsement tally was 3-4/12 (uncertain), clarified in Section 2.2 to '3-4/12 baseline'",
+    "Sub-class e.v.4.2 Iris IMPLICIT endorsement (via DELETE action) is a NEW pattern - flagged for Codif 19 v0.3"
+  ],
+  "risks": [
+    "R-TM36-1: RULE #18 1/12 -> 5/12 requires 4 endorsements in 24-48h, may slip to cycle 13 W2 day 5-7",
+    "R-TM36-2: e.v.4.2 IMPLICIT endorsement may need separate Codif 19 v0.3 amendment to formalize",
+    "R-TM36-3: T-MN-033 v0.1 SAME-ID COLLISION still unresolved (both 12,397B + 11,888B versions coexist)",
+    "R-TM36-4: 4-PATH DUAL-WRITE for Mnemosyne specs is 3-PATH (canon + mnemosyne_mirror + slot_self), NOT 4-PATH"
+  ],
+  "4_icp_tentative": {
+    "carla_TECHNICAL": "ACCEPT TENTATIVE",
+    "vera_STRATEGIC": "ACCEPT TENTATIVE",
+    "chris_BUSINESS": "ACCEPT TENTATIVE",
+    "beth_RISK": "ACCEPT TENTATIVE",
+    "score": "4/4 ACCEPT TENTATIVE"
+  },
+  "d_007_5min_sla": "GREEN (0/12 IDLE, 32/32 ACKs cycle 13 W1)",
+  "next_milestone": "SHIP-COMPLETE TENTATIVE end of cycle 13 W2 day 7 (2026-06-21)",
+  "ratification_gate": "cycle 14 W1 turn 5 (paired with T-HEP-029 v0.1 filesystem-level rename)"
+}

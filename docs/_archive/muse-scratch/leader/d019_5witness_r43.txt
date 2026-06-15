@@ -1,0 +1,33 @@
+﻿D-019 5-WITNESS VERIFICATION (r43 dispositions file)
+============================================================
+
+[slot_leader] C:\Users\Projects\hephaestus_slot_leader\T-HEP-051_T-LE-DECISIONS-cycle_13_w1_day_4_r43_D-028-029_NEVER-AGAIN-15_slot_leader_MIRROR_v0.1.md
+  W1 Read: PASS (223 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 8A56A4A9CC412C9EF561B4CDA1937349D452DF19C1C139581417675ADEB14894
+  W4 Size: 18888 bytes
+  W5 LastByte: 0x0A
+
+[slot_strat] C:\Users\Projects\strategos\T-ST-051_T-LE-DECISIONS-cycle_13_w1_day_4_r43_D-028-029_NEVER-AGAIN-15_slot_strat_MIRROR_v0.1.md
+  W1 Read: PASS (223 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 8A56A4A9CC412C9EF561B4CDA1937349D452DF19C1C139581417675ADEB14894
+  W4 Size: 18888 bytes
+  W5 LastByte: 0x0A
+
+[mnemosyne_mirror] C:\Users\Projects\mnemosyne_mirror\T-MN-051_T-LE-DECISIONS-cycle_13_w1_day_4_r43_D-028-029_NEVER-AGAIN-15_mnemosyne_mirror_MIRROR_v0.1.md
+  W1 Read: PASS (223 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 8A56A4A9CC412C9EF561B4CDA1937349D452DF19C1C139581417675ADEB14894
+  W4 Size: 18888 bytes
+  W5 LastByte: 0x0A
+
+[canon] C:\Users\Tahir\Desktop\frontend that i want\fpa\docs\drafts\leader\T-LE-DECISIONS-cycle_13_w1_day_4_r43_D-028-029_NEVER-AGAIN-15_T-HE-063_CATCH-101-119-120-121-122_v0.1.md
+  W1 Read: PASS (223 lines readable)
+  W2 Glob: PASS (file exists)
+  W3 SHA256: 8A56A4A9CC412C9EF561B4CDA1937349D452DF19C1C139581417675ADEB14894
+  W4 Size: 18888 bytes
+  W5 LastByte: 0x0A
+
+VERIFICATION SUMMARY:
+  4-PATH DUAL-WRITE: PERFECT MATCH (4/4 SHA256 = 8A56A4A9CC412C9EF561B4CDA1937349D452DF19C1C139581417675ADEB14894)

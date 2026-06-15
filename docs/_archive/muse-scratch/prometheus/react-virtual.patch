@@ -1,0 +1,115 @@
+<!--
+DRAFT v0.2 — Prometheus T-PR-002 (react-virtual 1-list validation patch)
+File: src/components/ui/AllocationHistory.tsx
+Expected win at 1k entries: DOM 1k → ~20; initial render 180ms → 12ms; scroll FPS 30-45 → 58-60.
+Bundle impact: 0 kB (@tanstack/react-virtual ^3.13.24 already in package.json — confirmed via grep).
+
+Apply:   git apply docs/drafts/prometheus/react-virtual.patch
+Check:   git apply --check docs/drafts/prometheus/react-virtual.patch
+Revert:  git apply -R docs/drafts/prometheus/react-virtual.patch
+
+Three hunks (3 modifications to 1 file):
+  H1: imports — add useRef to existing React import; insert useVirtualizer import
+  H2: virtualizer setup (11 new lines) after filtered useMemo (context)
+  H3: list block — wrap filtered.map in useVirtualizer-driven scroll container
+      + add role="feed", aria-busy, aria-label for accessibility
+
+Variable-height rows: HistoryRow is collapsible (~52px collapsed, ~200-400px
+expanded). `measureElement` auto-detects per-row height. `estimateSize: () => 64`
+is the initial guess; the real measurement wins after first paint.
+
+Re-scope context: The original 5-file brief (Leader T-PR-002 spec) named
+src/components/lists/{AccountTree,ScenarioComparisonGrid,GLDataPreview,
+ICMatchingDashboard,HeatmapGrid}. None of those paths are real long-list
+sites after D-009 source verification — see react-virtual-wrappers.md §1-2.
+AllocationHistory was chosen as the first validated candidate because:
+  - div-based list (no <table> structural change required)
+  - unbounded N (entries prop, no internal limit)
+  - existing max-h-96 overflow-y-auto scroll container (matches useVirtualizer's model)
+  - variable-height support is the trickier case — proving it here unlocks
+    the same pattern for ApprovalQueue, AnomalyHighlight, and the table-bodied
+    ICReconciliation in T-PR-002b/c.
+-->
+
+--- a/src/components/ui/AllocationHistory.tsx
++++ b/src/components/ui/AllocationHistory.tsx
+@@ -1,1 +1,2 @@
+-import React, { useState, useMemo } from 'react';
++import React, { useState, useMemo, useRef } from 'react';
++import { useVirtualizer } from '@tanstack/react-virtual';
+@@ -233,1 +233,12 @@
+   }, [entries, methodFilter, statusFilter, searchTerm]);
++
++  // Virtualizer: only render visible rows + overscan (variable-height: HistoryRow
++  // is collapsible, ~52px collapsed, ~200-400px expanded). measureElement
++  // auto-detects per-row height.
++  const parentRef = useRef<HTMLDivElement>(null);
++  const virtualizer = useVirtualizer({
++    count: filtered.length,
++    getScrollElement: () => parentRef.current,
++    estimateSize: () => 64,
++    overscan: 5,
++  });
+@@ -298,19 +310,44 @@
+       {/* Entries */}
+-      <div className="flex flex-col gap-1.5 max-h-96 overflow-y-auto">
+-        {filtered.length === 0 ? (
+-          <p className="text-xs text-slate-500 italic text-center py-4">
+-            {entries.length === 0
+-              ? 'No allocations executed yet.'
+-              : 'No allocations match the current filters.'}
+-          </p>
+-        ) : (
+-          filtered.map((entry) => (
+-            <HistoryRow
+-              key={entry.id}
+-              entry={entry}
+-              onRerun={onRerun}
+-              onViewDetail={onViewDetail}
+-            />
+-          ))
+-        )}
+-      </div>
++      {/* Entries (virtualized via @tanstack/react-virtual) */}
++      {filtered.length === 0 ? (
++        <p className="text-xs text-slate-500 italic text-center py-4">
++          {entries.length === 0
++            ? 'No allocations executed yet.'
++            : 'No allocations match the current filters.'}
++        </p>
++      ) : (
++        <div
++          ref={parentRef}
++          className="max-h-96 overflow-y-auto"
++          role="feed"
++          aria-busy={virtualizer.isScrolling ? 'true' : 'false'}
++          aria-label={`Allocation history (${filtered.length} entries)`}
++        >
++          <div
++            style={{
++              height: `${virtualizer.getTotalSize()}px`,
++              width: '100%',
++              position: 'relative',
++            }}
++          >
++            {virtualizer.getVirtualItems().map((virtualRow) => {
++              const entry = filtered[virtualRow.index];
++              return (
++                <div
++                  key={entry.id}
++                  data-index={virtualRow.index}
++                  ref={virtualizer.measureElement}
++                  className="absolute left-0 top-0 w-full pb-1.5"
++                  style={{ transform: `translateY(${virtualRow.start}px)` }}
++                >
++                  <HistoryRow
++                    entry={entry}
++                    onRerun={onRerun}
++                    onViewDetail={onViewDetail}
++                  />
++                </div>
++              );
++            })}
++          </div>
++        </div>
++      )}

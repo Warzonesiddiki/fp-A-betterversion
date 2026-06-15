@@ -1,0 +1,51 @@
+<!-- DRAFT v0.2 — ground-truth verified 2026-06-12 — Mnemosyne -->
+<!-- Verified against source: storage layer, hook → store → engine path, masterStorage routing. -->
+# Diagram 1 — Data Flow
+
+> **Source:** `docs/drafts/diagrams/01-data-flow.mmd`
+> **Use:** First-day onboarding — how a user action propagates from UI to storage
+> **Renders:** GitHub markdown, GitLab, VS Code (with Mermaid extension), `docsify`, `mkdocs-material`
+
+```mermaid
+flowchart LR
+  U([User]) -->|clicks, types, scrolls| P[Page Component<br/>src/pages/]
+  P -->|reads state via| H[Hook<br/>src/hooks/]
+  H -->|useStore selector| S[Zustand Store<br/>src/store/]
+  S -->|engine method call| E[Engine<br/>src/engines/]
+  E -->|worker postMessage| W[Web Worker<br/>src/workers/]
+  W -->|result callback| E
+  E -->|set cell / mutate cube| S
+  S -->|selector returns| H
+  H -->|state| P
+  P -->|re-render| U
+
+  S <-.->|persist + partialize| MS[masterStorage<br/>src/utils/masterStorage.ts]
+  MS <-.->|envelope| LS[(localStorage<br/>Tauri: SQLite file)]
+  MS <-.->|cross-tab<br/>storage event| TAB[Other Tabs]
+
+  classDef ui fill:#3B82F6,color:#fff,stroke:#1E40AF
+  classDef state fill:#10B981,color:#fff,stroke:#065F46
+  classDef engine fill:#F59E0B,color:#000,stroke:#92400E
+  classDef worker fill:#8B5CF6,color:#fff,stroke:#5B21B6
+  classDef storage fill:#6B7280,color:#fff,stroke:#1F2937
+  classDef user fill:#EC4899,color:#fff,stroke:#9D174D
+
+  class U,TAB user
+  class P,H ui
+  class S,MS state
+  class E engine
+  class W worker
+  class LS storage
+```
+
+**Key annotations:**
+
+- **Bidirectional edges on `S <─> MS`** — `masterStorage` both writes (persist) and reads (rehydrate on app load).
+- **Dashed edges** — async / out-of-band (not in the request path).
+- **Color coding** — UI (blue), State (green), Engine (yellow), Worker (purple), Storage (gray), User (pink).
+
+**When a new contributor asks "where does my data go?"** — show them this diagram. The answer is: Component → Hook → Store → Engine (sometimes via Worker) → back to Store → re-render. Storage is the persistence layer; cross-tab is a side effect.
+
+---
+
+<!-- /DRAFT v0.2 — Mnemosyne 2026-06-12 -->

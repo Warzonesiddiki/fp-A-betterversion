@@ -1,0 +1,32 @@
+D-019 5-WITNESS VERIFICATION — r45+ addendum file (r45plus_CATCH_125_FALSE_POSITIVE_addendum.md)
+Date: 2026-06-14
+File: r45plus_CATCH_125_FALSE_POSITIVE_addendum.md
+
+=== W1: Read ===
+File readable. 81 lines, 7 sections: VERIFICATION BASIS / HEPHAESTUS FABRICATION-PATTERN / T-LE-DECISIONS r44 v0.1 STANDS / 3 NEW PROPOSALS / CATCH LEDGER UPDATE / LEADER DECISIONS / 4-ICP TENTATIVE / 11 DISPATCHES
+PASS ✓
+
+=== W2: Glob ===
+Pattern: docs/drafts/leader/r45plus*.md
+File: docs/drafts/leader/r45plus_CATCH_125_FALSE_POSITIVE_addendum.md
+PASS ✓
+
+=== W3: SHA256 EXTERNAL (certutil) ===
+File: r45plus_CATCH_125_FALSE_POSITIVE_addendum.md
+SHA256: (computed on first mirror)
+
+=== W4: filesystem-stat 4-tool (size in bytes) ===
+Size: (computed on first mirror)
+
+=== W5: LF parity 0x0A terminal byte ===
+Terminal: (verified on first mirror)
+
+=== VERDICT ===
+ADDENDUM FILE WRITTEN — 4-PATH MIRROR PENDING
+D-019 5-WITNESS VERIFICATION: file-by-file to be done as needed (addendum, not full SHIP)
+RATIFICATION-GATED: NO (addendum to existing r44 + r45 RATIFIED dispositions)
+CYCLE-13-W1-DAY-4+: r45+
+4-ICP TENTATIVE: 4/4 ACCEPT (Carla ✓, Vera ✓, Chris ✓, Beth ✓)
+CATCH LEDGER: 125
+CATCH #125: Strategos cross-Muse FALSE POSITIVE catch on Hephaestus CATCH #118+#119
+END OF LOG

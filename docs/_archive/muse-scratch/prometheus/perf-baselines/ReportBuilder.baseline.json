@@ -1,0 +1,24 @@
+{
+  "component": "ReportBuilder",
+  "file": "src/components/reports/ReportBuilder.tsx",
+  "lines": 698,
+  "iterations": 1000,
+  "dataFixture": "Multi-panel editor (header, sidebar, preview, controls), 6 measures × 3 dimensions, forwardRef",
+  "estimated": true,
+  "note": "Synthetic baseline. Apollo must run ReportBuilder.bench.test.ts to capture actual numbers, then overwrite this file.",
+  "metrics": {
+    "medianMs": 8.2,
+    "p95Ms": 14.7,
+    "meanMs": 8.9,
+    "totalMs": 8200.0,
+    "minMs": 5.5,
+    "maxMs": 22.1
+  },
+  "expectedAfterMemo": {
+    "medianMs": 0.8,
+    "p95Ms": 1.5,
+    "speedupFactor": "10.3×"
+  },
+  "capturedAt": "2026-06-12",
+  "capturedBy": "Prometheus (synthetic, pending real run by Apollo)"
+}

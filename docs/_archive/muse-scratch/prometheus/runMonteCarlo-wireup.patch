@@ -1,0 +1,103 @@
+--- a/src/pages/analytics/GoalSeekPage.tsx
++++ b/src/pages/analytics/GoalSeekPage.tsx
+@@ -1,13 +1,15 @@
+-/* eslint-disable jsx-a11y/label-has-associated-control */
+-/* eslint-disable @typescript-eslint/no-unused-vars */
+-/* eslint-disable @typescript-eslint/no-explicit-any */
+-import { useState, useMemo } from 'react';
+-import { useNavigate } from 'react-router-dom';
+-import { useGLStore } from '@/store/glStore';
+-import { Button } from '@/components/ui/Button';
+-import { Input } from '@/components/ui/Input';
+-import { Card, CardContent } from '@/components/ui/Card';
+-import { Alert } from '@/components/ui/Alert';
+-import { Skeleton } from '@/components/ui/Skeleton';
+-import { Target, TrendingUp, BarChart3 } from 'lucide-react';
+-
++/* eslint-disable jsx-a11y/label-has-associated-control */
++/* eslint-disable @typescript-eslint/no-unused-vars */
++/* eslint-disable @typescript-eslint/no-explicit-any */
++import { useState, useMemo } from 'react';
++import { useNavigate } from 'react-router-dom';
++import { useGLStore } from '@/store/glStore';
++import { Button } from '@/components/ui/Button';
++import { Input } from '@/components/ui/Input';
++import { Card, CardContent } from '@/components/ui/Card';
++import { Alert } from '@/components/ui/Alert';
++import { Skeleton } from '@/components/ui/Skeleton';
++import { Target, TrendingUp, BarChart3 } from 'lucide-react';
++import { runMonteCarlo as runMonteCarloWorker } from '@/workers';
++import type { MonteCarloRequest } from '@/workers/types';
++
+@@ -58,29 +60,42 @@
+-  const runMonteCarlo = () => {
+-    setLoading(true);
+-    setTimeout(() => {
+-      const sims = Array.from({ length: iterations }, () => {
+-        const revMultiplier = 0.8 + Math.random() * 0.4;
+-        const costMultiplier = 0.85 + Math.random() * 0.3;
+-        const base = actuals?.revenue || 1000000;
+-        const revenue = base * revMultiplier;
+-        const costs = (base * (variableCostPct / 100) + fixedCost) * costMultiplier;
+-        return { revenue, costs, profit: revenue - costs };
+-      });
+-      const profits = sims.map((s) => s.profit).sort((a, b) => a - b);
+-      const avgProfit = profits.reduce((s, p) => s + p, 0) / profits.length;
+-      const median = profits[Math.floor(profits.length / 2)];
+-      const p10 = profits[Math.floor(profits.length * 0.1)];
+-      const p90 = profits[Math.floor(profits.length * 0.9)];
+-      const positiveOutcomes = profits.filter((p) => p >= 0).length;
+-      setResults({
+-        simulations: sims,
+-        avgProfit,
+-        median,
+-        p10,
+-        p90,
+-        positivePct: (positiveOutcomes / iterations) * 100,
+-        count: iterations,
+-      });
+-      setLoading(false);
+-    }, 500);
+-  };
++  const runMonteCarlo = async () => {
++    setLoading(true);
++    try {
++      const baseRevenue = actuals?.revenue ?? 0;
++      const baseCosts = (baseRevenue * (variableCostPct / 100)) + fixedCost;
++      const req: MonteCarloRequest = {
++        iterations,
++        seed: Date.now(),
++        assumptions: [
++          { name: 'revenue', type: 'uniform', min: baseRevenue * 0.8, max: baseRevenue * 1.2 },
++          { name: 'costs', type: 'uniform', min: baseCosts * 0.85, max: baseCosts * 1.15 },
++        ],
++      };
++      const resp = await runMonteCarloWorker(req);
++      const sims = resp.results.map((r) => ({
++        revenue: r.values.revenue ?? 0,
++        costs: r.values.costs ?? 0,
++        profit: (r.values.revenue ?? 0) - (r.values.costs ?? 0),
++      }));
++      const profits = sims.map((s) => s.profit).sort((a, b) => a - b);
++      const n = profits.length;
++      const sum = profits.reduce((s, v) => s + v, 0);
++      const avgProfit = n > 0 ? sum / n : 0;
++      const median = n > 0 ? profits[Math.floor(n / 2)] : 0;
++      const p10 = n > 0 ? profits[Math.floor(n * 0.1)] : 0;
++      const p90 = n > 0 ? profits[Math.floor(n * 0.9)] : 0;
++      const positivePct = n > 0 ? (profits.filter((p) => p > 0).length / n) * 100 : 0;
++      setResults({
++        simulations: sims,
++        avgProfit,
++        median,
++        p10,
++        p90,
++        positivePct,
++        count: n,
++      });
++    } catch (err) {
++      console.error('Monte Carlo simulation failed:', err);
++    } finally {
++      setLoading(false);
++    }
++  };

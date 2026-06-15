@@ -1,0 +1,98 @@
+{
+  "spec_id": "T-AT-033",
+  "spec_version": "v0.1",
+  "spec_title": "W6 Sidecar Tail-LF 0x0A Guarantee Codification Spec",
+  "author": "Athena",
+  "author_slot": "019ec100-86a3-7a32-ad4c-0523c1d34c0b",
+  "cycle": "12 W2 turn 37 r33+ r3+ / cycle 13 W1 closeout",
+  "codif_extends": "Codif 30 v0.5 cat 4 sub-class 1 sub-class f.ii (LF-parity-drift-fix, NEW)",
+  "codif_also_references": [
+    "Codif 19 v0.2 (W4 4-tool filesystem-stat)",
+    "Codif 22 v0.2 (mechanical bump semantics)",
+    "Codif 31 v0.2 B.5.1 (3-path dual-write)",
+    "Codif 35 v0.3 (9 trigger codes MECE)",
+    "Codif 9 v0.2 (3-witness verification)"
+  ],
+  "main_path_canon": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\athena\\T-AT-033_w6_sidecar_tail_lf_guarantee_codification_v0.1.md",
+  "main_path_slot_strat": "C:\\Users\\Projects\\athena\\docs\\drafts\\athena\\T-AT-033_w6_sidecar_tail_lf_guarantee_codification_v0.1.md",
+  "main_path_slot_leader": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-5a9d3eb4\\docs\\drafts\\athena\\T-AT-033_w6_sidecar_tail_lf_guarantee_codification_v0.1.md",
+  "main_sha256": "43ebecb1a322f319c04ae793c81bde4d87c0af97f112a40d1e13ea17beab7b0a",
+  "main_sha256_3path_match": true,
+  "size": {
+    "lines": 160,
+    "bytes": 20790,
+    "words": 2847,
+    "non_blank": 142
+  },
+  "size_target_band": "150-200L / 12000-16000B",
+  "size_actual_status": "IN-TARGET (160L mid-band; B 20790 above upper bound informational)",
+  "lf_parity": "OK (all 3 paths end with 0x0A)",
+  "byte_tail_canon": "0x0A",
+  "byte_tail_slot_strat": "0x0A",
+  "byte_tail_slot_leader": "0x0A",
+  "push_independent": true,
+  "4_icp_tally": "4/4 TENTATIVE",
+  "4_icp_breakdown": {
+    "Carla_TECHNICAL": "TENTATIVE_ACCEPT",
+    "Vera_STRATEGIC": "TENTATIVE_ACCEPT",
+    "Chris_BUSINESS": "TENTATIVE_ACCEPT",
+    "Beth_RISK": "TENTATIVE_ACCEPT"
+  },
+  "cite_bundle_size": 5,
+  "cite_bundle_anchors": [
+    "T-AT-032 v0.1 §0a (HL #18 post-SHIP addendum precedent)",
+    "T-AP-013 v0.1 §4 (Apollo 7-check audit gate protocol)",
+    "T-HER-032 v0.1.2 §2 (Hermes W6 sidecar protocol)",
+    "CATCH #46 (T-AT-019 v0.2 trailing-newline miss, foundation case)",
+    "CATCH #60 (Hermes T-HER-033 v0.1.w4.json SHA256 fabrication)",
+    "CATCH #63 (Apollo T-AT-032 v0.1 trailing 0x2E not 0x0A)"
+  ],
+  "ratification_gate": "cycle 14 W1 turn 5 (8-spec+ RATIFICATION packet, item #9+)",
+  "ship_complete_at": "2026-06-13T_cycle12_W2_turn37_r33+_r3+",
+  "ship_complete_status": "RATIFIED FINAL (Codif 31 v0.2 B.5.1 3-path dual-write MATCH, W1+W2+W3+W4+W5 verification 5/5 PASS)",
+  "caveman_mode": "ACTIVE (Athena, 11/11 Muses ACTIVE)",
+  "d007_sla": "GREEN",
+  "codif_30_v0_5_to_v0_6_proposal": {
+    "sub_class": "1 sub-class f.ii (LF-parity-drift-fix)",
+    "anchors": 3,
+    "anchors_required_for_ratified": 3,
+    "promotion_status": "CANDIDATE → RATIFIED at v0.6 (cycle 14 W1 turn 5)",
+    "sub_class_f_iii_candidate": "double-append 0x0A (CANDIDATE, 0 observed, cycle 13 W2 codification target)"
+  },
+  "hl_moments": [
+    "HL #18 = §0a post-SHIP addendum = 4th resolution path (T-AT-032 v0.1 precedent, Leader r33+ r2+ closeout)",
+    "W5 byte-tail xxd verification = 5th W-series verification (Codif 19 v0.2 evolution target)"
+  ],
+  "cross_muse_handoffs": [
+    "Apollo T-AP-013 v0.1 → v0.1.1 (byte-tail xxd as 8th pre-commit check)",
+    "Hermes T-HER-032 v0.1.2 → v0.1.3 (W6 sidecar byte-tail as 4th witness)",
+    "Mnemosyne T-MN-024 v0.1 (Codif 19 v0.2 7th rule, LF parity anti-recurrence)",
+    "Strategos T-ST-039 v0.1 (Pattern F = PROCESS-PATTERN, LF parity as 4th example)",
+    "Hera T-HE-042 v0.1 (post-SHIP addendum as 3rd resolution path codification)"
+  ],
+  "catch_arc_cycle_12_w2_to_13_w1": {
+    "cluster_position": "12th of cycle 12 W2 + cycle 13 W1 closeout cluster",
+    "catches_documented": "16+ (all classified per Codif 30 v0.5 cat 4)",
+    "sub_class_e_mece_saturated": "7+ anchors (CATCH #37H + #44 + #45 + #45 redux + #60 + #61 + #62)",
+    "sub_class_f_ii_anchors": 3,
+    "sub_class_f_iii_anchors": 0
+  },
+  "process_lessons": [
+    "AP-1 (CATCH #46): Write tool content string must end with literal \\n",
+    "AP-2 (CATCH #60): SHA256 must be computed via Get-FileHash, not typed from memory",
+    "AP-3 (CATCH #63): post-SHIP Edit must re-apply trailing 0x0A",
+    "AP-4 (sub-class f.iii CANDIDATE): double-append 0x0A prevention via 'exactly one' check"
+  ],
+  "witness_verification": {
+    "W1_sha256_3path_match": "PASS (43ebecb1a322... at all 3 paths)",
+    "W2_4witness_glob_presence": "PASS (3/3 paths return 1 hit)",
+    "W3_powershell_getchilditem": "PASS (3/3 paths)",
+    "W4_4tool_filesystem_stat": "PASS (160L/20790B/2847W/142NB at all 3 paths)",
+    "W5_byte_tail_xxd": "PASS (0x0A at all 3 paths, CATCH #46/63 prevention)"
+  },
+  "sidecar_spec": "W6 sidecar protocol (Codif 9 v0.2 + T-HER-032 v0.1.2)",
+  "sidecar_instance": "13th cluster instantiation",
+  "sidecar_path_canon": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\athena\\T-AT-033_w6_sidecar_tail_lf_guarantee_codification_v0.1.w4.json",
+  "sidecar_path_slot_strat": "C:\\Users\\Projects\\athena\\docs\\drafts\\athena\\T-AT-033_w6_sidecar_tail_lf_guarantee_codification_v0.1.w4.json",
+  "sidecar_path_slot_leader": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-5a9d3eb4\\docs\\drafts\\athena\\T-AT-033_w6_sidecar_tail_lf_guarantee_codification_v0.1.w4.json"
+}

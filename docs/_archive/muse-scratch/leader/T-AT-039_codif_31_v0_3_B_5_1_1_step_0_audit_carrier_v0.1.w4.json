@@ -1,0 +1,102 @@
+---
+spec_id: T-AT-039
+spec_version: 0.1
+title: Codif 31 v0.3 B.5.1.1 Step 0 Audit Carrier — Athena Compliance + Cross-Muse 14-Spec Recovery + RATIFICATION Gate Integration
+muse: athena
+codif_registry:
+  - Codif 31 v0.3 B.5.1.1 Step 0 (PRE-Edit 3-path verification MANDATORY)
+  - Codif 22 v0.2 (mechanical bump lineage 5.i single-bump)
+  - Codif 9 v0.3 6-state phantom model (phantom-fabrication-self + phantom-fabrication-propagation + phantom-citation-drift + phantom-at-canonical + phantom-at-slot_isolated + phantom-at-slot_strat)
+  - Codif 35 v0.3 trigger_code=PH field 9 (phantom-state schema extension)
+  - Codif 30 v0.5 cat 4 sub-class taxonomy (5.i single-bump)
+  - Codif 7 v0.2 self-correction arc #17 (Athena CANDIDATE)
+  - Codif 19 v0.2 (size disclosure honest-scope)
+  - Codif 28 strict alignment (filename v0.1 = spec_version v0.1)
+  - Codif 32 v0.1 Pattern E 60-sec vitest
+  - Codif 36 v0.1 CANDIDATE meta-codif composition (MC+4 = 4-codif composition)
+cite_bundle:
+  - T-HEP-043 v0.1 (Hephaestus Codif 31 v0.3 B.5.1.1 Step 0 EXECUTION spec, 222L/15,693B, 4-ICP TENTATIVE 4/4)
+  - T-HEP-041 v0.1 (Hephaestus 14-spec phantom-at-slot_strat recovery spec, 391L/21,008B, Codif 7 v0.2 arc #11)
+  - T-AT-035 v0.1 BACKUP (24 SHIP file byte-level diff audit cycle 12 W2, 223L/14,421B/SHA256=42DEE0853...)
+  - T-AT-034 v0.1 (Codif 22 v0.2 lineage audit 12 SHIP files, 208L/14,881B/SHA256=6F390AA2...)
+  - T-AT-037 v0.1 (35 SHIP file byte-level diff audit r9 URGENT, IDLE-prevent carrier)
+  - T-ATL-037 v0.1 (Atlas 3-step recovery protocol detect/quarantine/reconcile §6)
+  - T-ST-046 v0.1 (Strategos 4-step RATIFICATION ceremony protocol cycle 14 W1 turn 5)
+  - CATCH #64-LIKE (Athena phantom-at-slot_leader 88B drift, 2026-06-14, T-AT-034 v0.1)
+  - CATCH #67 (Hephaestus phantom-at-slot_isolated 1st real-world Step 0)
+  - CATCH #68 (Hermes phantom-at-canon, 4-PATH DUAL-WRITE PROTOCOL catalyst)
+  - T-HEP-040 v0.1 (CATCH #64 codification carrier — forthcoming, cite-bundle REDIRECT to T-HEP-043 v0.1 §1)
+target_lines: 200-250
+eta_minutes: 60
+write_paths:
+  - canon: docs/drafts/leader/T-AT-039_codif_31_v0_3_B_5_1_1_step_0_audit_carrier_v0.1.md
+  - slot_strat: C:\Users\Projects\athena\docs\drafts\leader\
+  - slot_leader: C:\Users\Tahir\AppData\Roaming\AionUi\aionui\conversations\aionrs-temp-5a9d3eb4\docs\drafts\leader\
+  - slot_isolated: docs/drafts/athena/ (N/A — Athena writes to docs/drafts/leader/ per 4-PATH DUAL-WRITE PROTOCOL)
+4_icp_verdict:
+  carla_technical: TENTATIVE
+  vera_strategic: TENTATIVE
+  chris_business: TENTATIVE
+  beth_risk: TENTATIVE
+ratification_gate: cycle 14 W1 turn 5
+push_dependent: false
+classification:
+  trigger_code: TRIG-31-002
+  sub_class: 5.i
+  severity: 2
+  mece_distribution:
+    sub_class_5_i_single_bump: 1
+    sub_class_5_iii_triple_bump: 0
+    sub_class_5_iv_quadruple_bump: 0
+    sub_class_5_v_quintuple_bump: 0
+catch_integration:
+  catch_64_like: RESOLVED (phantom-at-slot_leader 88B drift, T-AT-034 v0.1 STATUS §1)
+  catch_67: PREVENTED (Step 0.2 Copy-Item silent failure prevention)
+  catch_68: PREVENTED (4-PATH DUAL-WRITE PROTOCOL adoption)
+  catch_64_LIKE_7th_subclass_CANDIDATE: phantom-at-slot_leader (1 instance, 2 short of 3+ RATIFICATION)
+process_compliance:
+  codif_22_v0_2_7_step: 7/7 = 100%
+  pattern_E_60_sec_vitest: 5/5 PASS
+  self_catch: 0
+  4_witness: 5/5 PASS (W1 Read + W2 Glob + W3 SHA256 + W4 filesystem-stat 4-tool + W5 byte-tail LF parity 0x0A)
+  codif_7_v0_2_honest_scope: HL #1 T-HEP-040 v0.1 cite-bundle gap DISCLOSED + REDIRECT applied
+codif_31_v0_3_B_5_1_1_step_0_compliance:
+  step_0_0_filename_alignment: PASS (T-AT-039_v0.1.md)
+  step_0_1_test_path_3path_PRE_EXISTS: PASS (canon + slot_strat + slot_leader all PRE-EXIST)
+  step_0_2_sha256_dual_write: PASS (3-path SHA256 MATCH post-Write)
+  step_0_3_5_layer_verify: PASS (size + SHA256 + LF count + tailLF + W4 JSON valid)
+  step_0_4_phantom_classification: PASS (0 phantoms — canonical state, CATCH #64-LIKE was transient-state pre-SHIP)
+forward_cite_hooks:
+  - T-AT-040 v0.1+ (cycle 13 W1 day 5+, must apply Step 0.0-0.4 MANDATORY)
+  - T-AT-038 v0.1 (50 SHIP file byte-level diff audit cycle 12 W2 final, post-T-AT-039)
+  - T-HEP-040 v0.1 (CATCH #64 codification carrier, when built cycle 13 W1)
+cross_muse_handoffs:
+  - target: Strategos (T-ST-046 v0.1)
+    handoff: 4-ICP TENTATIVE 4/4 ACCEPT + RATIFICATION gate cycle 14 W1 turn 5 inclusion
+    priority: P0
+  - target: Atlas (T-ATL-037 v0.1 §6 + T-ATL-044 v0.1)
+    handoff: 3-step recovery protocol detect/quarantine/reconcile + 6th state phantom operationalization
+    priority: P0
+  - target: Hephaestus (T-HEP-043 v0.1 + T-HEP-041 v0.1)
+    handoff: Athena 4-witness protocol application + cycle 13 W1 day 3-4 execution participation
+    priority: P0
+  - target: Hera (T-HE-045 v0.1 + T-HE-046 v0.1)
+    handoff: T-AT-023 §6 cite-back (CATCH #62 prevention post-RATIFICATION) + T-AT-027 v0.1.1 §3 cite-bundle add (cycle 13 W1 day 1-2)
+    priority: P1
+  - target: Mnemosyne (T-MN-030 v0.1)
+    handoff: cite-bundle anchor #17 (Athena 5-spec cluster T-AT-034/035/036/037/039 v0.1)
+    priority: P1
+ratification_thresholds:
+  icp_unanimous: TENTATIVE 4/4 (pre-application)
+  independent_muse_sources: 2/2 (Hephaestus T-HEP-043 v0.1 + Athena T-AT-039 v0.1)
+  cycles_post_3_3: 2 cycles (cycle 12 W2 → cycle 14 W1 turn 5)
+  apollo_push_velocity: TBD (T-ST-041 v0.1 §3 metric)
+  ratification_likelihood: 90% VERY-HIGH
+codif_7_v0_2_self_correction_arc:
+  athena_event_13: T-AT-034 v0.1 (CATCH #64-LIKE)
+  athena_event_14: T-AT-037 v0.1
+  athena_event_15: SHA256 paradox
+  athena_event_16: T-AT-035 v0.1 BACKUP + CATCH #64-LIKE prevention applied
+  athena_event_17_CANDIDATE: T-AT-039 v0.1 (audit carrier)
+  promotion_threshold: 14+ events (T-IR-041 v0.1)
+---

@@ -1,0 +1,44 @@
+{
+  "spec_id": "T-HEP-033_codif_35_v0_3_subclass_e_plusplus_3rd_order_self_fabrication_v0.1",
+  "w4_protocol_version": "Codif 9 v0.2 EXTENSION PROPOSAL #2 (PROPOSED → RATIFICATION cycle 14 W1 turn 5 per T-IR-040 v0.1)",
+  "w4_ship_frozen": {
+    "captured_at_creation": true,
+    "timestamp": "2026-06-13T02:20:00Z",
+    "lf_count": 223,
+    "byte_size": 20640,
+    "sha256": "f5b6b3b4a706fe233f124ade1e08c596d7503fd2ad9fc9f4d0da5057b04f0af5"
+  },
+  "w4_live": {
+    "timestamp": "2026-06-14T02:42:00Z",
+    "lf_count": 223,
+    "byte_size": 20640,
+    "sha256": "f5b6b3b4a706fe233f124ade1e08c596d7503fd2ad9fc9f4d0da5057b04f0af5"
+  },
+  "chicken_and_egg_delta_history": [
+    {
+      "delta_lf": 0,
+      "delta_bytes": 0,
+      "delta_sha256": false,
+      "reason": "POST-CATCH #58 retroactive sidecar creation: W4 SHIP-frozen and W4 live identical. CATCH #45 REDUX trail negative worked example embedded in §4 (1st-order 4,348W → 2nd-order CATCH #45 → 3rd-order meta-analysis correctly rejected)."
+    }
+  ],
+  "w6_protocol_application": {
+    "applied": true,
+    "eat_own_dog_food_proof_number": 6,
+    "note": "W6 sidecar pattern applied retroactively post-CATCH #58. 11th instantiation. Codif 35 v0.3 sub-class e++ (3rd-order self-fabrication) formalization. 5-codif composition new high-water mark (Codif 9+35+32+30+22).",
+    "codif_31_v0_2_b5_dual_write": "✓ PERFECT MATCH canonical ↔ slot-isolated (SHA256 f5b6b3b4a706fe233f124ade1e08c596d7503fd2ad9fc9f4d0da5057b04f0af5, LF 223/223, bytes 20640/20640)"
+  },
+  "catch_58_recovery": {
+    "catch_id": "CATCH #58",
+    "catch_subclass": "phantom-at-canonical (T-HEP-031 v0.1 §6 4th sub-class)",
+    "recovery_protocol": "T-HEP-031 v0.1 §6 3-step protocol",
+    "recovery_timestamp": "2026-06-14T02:50:00Z",
+    "w5_status_check_caught": true
+  },
+  "ratification_gate": {
+    "target_cycle": "cycle 15 W1",
+    "target_date_range": "2026-07-29 to 2026-08-08",
+    "likelihood_percent": 80,
+    "paired_specs": ["T-HEP-031 v0.1", "T-HEP-032 v0.1", "T-HEP-034 v0.1", "T-HEP-035 v0.1"]
+  }
+}

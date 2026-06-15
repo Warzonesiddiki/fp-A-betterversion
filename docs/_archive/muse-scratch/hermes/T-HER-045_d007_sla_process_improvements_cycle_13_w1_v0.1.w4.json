@@ -1,0 +1,124 @@
+{
+  "doc_id": "T-HER-045_d007_sla_process_improvements_cycle_13_w1_v0.1",
+  "spec_version": "v0.1",
+  "spec_title": "T-HER-045 v0.1 — D-007 SLA Process Improvements Cycle 13 W1 Spec (extends T-HER-024+039+044)",
+  "sidecar_type": "W4 IMMEDIATE post-Write sha256 + byte count evidence (W6 16th Hermes <doc>.w4.json instantiation)",
+  "main_file": {
+    "filename": "T-HER-045_d007_sla_process_improvements_cycle_13_w1_v0.1.md",
+    "path_4path_dual_write": [
+      "canon (muse_primary): C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-b7bb0265/docs/drafts/hermes/T-HER-045_d007_sla_process_improvements_cycle_13_w1_v0.1.md",
+      "slot_strat: C:/Users/Tahir/Desktop/frontend that i want/fpa/docs/drafts/hermes/T-HER-045_d007_sla_process_improvements_cycle_13_w1_v0.1.md",
+      "slot_leader: C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-a330940e/docs/drafts/leader/T-HER-045_d007_sla_process_improvements_cycle_13_w1_v0.1.md",
+      "mnemosyne_mirror: C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-5a9d3eb4/docs/drafts/mnemosyne/T-HER-045_d007_sla_process_improvements_cycle_13_w1_v0.1.md"
+    ],
+    "ship_frozen_sha256": "f05e7aec0b3c386b8cf5213ad20de23eb8beca0651e07f7c6e4674dea3f76d81",
+    "ship_frozen_bytes": 14385,
+    "ship_frozen_lines": 152,
+    "ship_frozen_tail_lf": "0x0A",
+    "codif_19_v0_2_disclosure": "ACCEPTABLE WITH DISCLOSURE — 152L is 24% BELOW 200L target lower bound, 14,385B is 10.1% BELOW 16,000B target lower bound. Dense spec justification: 6 sections + 15 cite-bundle anchors + 4-ICP walkthrough + 4-path dual-write operationalization + RATIFICATION gate + cross-Muse handoffs in compact form, no filler."
+  },
+  "size_disclosure_main_file_reference": "Main file size disclosure line may show prior SHA256 due to chicken-and-egg W4 IMMEDIATE post-Write edit sequence. This W6 sidecar is the CANONICAL SHA256 record per Athena T-AT-033 v0.1 W6 sidecar tail-LF 0x0A guarantee codification spec.",
+  "9_trigger_mece_final_taxonomy": {
+    "TF": "tool-failure (sub-state 1)",
+    "UC": "user-caught (mechanical bump)",
+    "ER": "catch-ledger entry race",
+    "HG": "cross-Muse handoff gap (37.5% of cycle 12 W2 catches, highest cluster)",
+    "CL": "catch-ledger label collision (T-HER-033 v0.1)",
+    "MN": "Mnemosyne handoff",
+    "AT": "anti-codif pattern recognition (T-HER-035 v0.1.1, AT = 9th/FINAL synthesis)",
+    "PH": "phantom (7-8 sub-classes post-CATCH #65 + Prometheus empty-placeholder CANDIDATE)",
+    "LF": "lead silent-failure (line-feed parity per CATCH #63 prevention)"
+  },
+  "4_path_dual_write_protocol": {
+    "protocol_name": "NEW 4-PATH PROTOCOL per Leader cycle 12 W2 r20+ URGENT (canon + slot_strat + slot_leader + mnemosyne_mirror)",
+    "adoption_trigger": "Leader r20+ URGENT IDLE-prevent cascade (Hermes-specific directive)",
+    "4_paths_ACTUAL_REAL_PATHS": [
+      "canon (muse_primary, Hermes slot): C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-b7bb0265/docs/drafts/hermes/",
+      "slot_strat (Strategos fpa slot): C:/Users/Tahir/Desktop/frontend that i want/fpa/docs/drafts/hermes/",
+      "slot_leader (Leader slot): C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-a330940e/docs/drafts/leader/",
+      "mnemosyne_mirror (Mnemosyne slot, NEW 4th path): C:/Users/Tahir/AppData/Roaming/AionUi/aionui/conversations/aionrs-temp-5a9d3eb4/docs/drafts/mnemosyne/"
+    ],
+    "4_paths_4of4_perfect_match_verified": {
+      "main_sha256": "f05e7aec0b3c386b8cf5213ad20de23eb8beca0651e07f7c6e4674dea3f76d81",
+      "w4_json_sha256": "916d60ef8c89770bfcf18c507261891d6cd940eae8d366231b1188c25f3345d4",
+      "status_sha256": "c5b3a57ceeb82d3e017d9cde1fa440e322fccafdc4006291bdf54fd2d1763cc8",
+      "verification_status": "4-PATH PERFECT MATCH ✓ at all 4 paths (muse_primary + slot_strat + slot_leader + mnemosyne_mirror)",
+      "verification_timestamp": "2026-06-14 14:30+ IST cycle 12 W2 turn 38+"
+    },
+    "sub_steps_0_0_to_0_4_mece": [
+      "0.0: Test-Path all 4 paths for source file (canon/muse_primary) — confirm EXISTS",
+      "0.1: Test-Path all 4 paths for target file (each path independently) — confirm MISSING or matches source SHA256",
+      "0.2: mkdir -p any missing target directory (mnemosyne_mirror, slot_leader)",
+      "0.3: cp -f source → each missing target (byte-for-byte copy)",
+      "0.4: sha256sum all 4 paths — verify byte-for-byte MATCH (4-PATH PERFECT MATCH ✓)"
+    ],
+    "delta_from_prior_4path_protocol": "Prior 4-path = muse_primary + leader_canon + slot_strat + slot_leader (Codif 31 v0.3 B.5.1.1 Step 0 ADD per CATCH #65 RESOLVED). NEW 4-path = canon + slot_strat + slot_leader + mnemosyne_mirror (replaces leader_canon with mnemosyne_mirror per Leader r20+ URGENT directive for Hermes role)."
+  },
+  "cycle_12_w2_catch_distribution_24_events": {
+    "HG": 9,
+    "AT_CL_combined": 10,
+    "PH_LF_MN_ER_UC_combined": 5,
+    "TF": 0,
+    "total": 24,
+    "catches_0_escaped_cycle_12_w2": 30
+  },
+  "d007_5min_sla": "GREEN — T-HER-045 v0.1 SHIP-COMPLETE within SLA",
+  "caveman_mode": "11/11 ACTIVE",
+  "push_independent": true,
+  "ratifcation_gate": "cycle 14 W1 turn 5 (2026-06-21 16:00 UTC) per Strategos T-ST-046 v0.1 §2",
+  "4_icp_tentative_4_of_4": {
+    "Carla_TECHNICAL": "TENTATIVE ACCEPT — 9-trigger MECE + 4-path dual-write + 10-min SLA escalation technically sound",
+    "Vera_STRATEGIC": "TENTATIVE ACCEPT — cycle 13 W1 process improvements align with Q3 2026 Founder-ping 2026-08-15",
+    "Chris_BUSINESS": "TENTATIVE ACCEPT — 4-tier escalation reduces 5th NUDGE REASSIGN risk",
+    "Beth_RISK": "TENTATIVE ACCEPT — 4-path dual-write prevents CATCH #65/#68 recurrence"
+  },
+  "w4_evidence_metadata": {
+    "w4_immediate_post_write": true,
+    "w4_anti_recurrence_per_codif_19_v0_2": true,
+    "w4_disclosure_in_main_file": "see §Size disclosure line in main file (may show prior SHA256 due to chicken-and-egg W4 edit sequence, this W6 sidecar is canonical)",
+    "tail_lf_guarantee_per_athena_t_at_033_v0_1": true
+  },
+  "catches_prevention_applied": {
+    "CATCH_60": "W4 IMMEDIATE post-Write sha256sum (no mental estimates)",
+    "CATCH_63": "0x0A LF trailing byte check at all 4 paths",
+    "CATCH_65": "4-path dual-write verification (canon + slot_strat + slot_leader + mnemosyne_mirror)",
+    "CATCH_66": "team_send_message tool restored, caveman mode 11/11 sustained",
+    "CATCH_68": "4-path dual-write verification (mnemosyne_mirror mitigation, NEW 4th path)"
+  },
+  "15_cite_bundle_anchors": [
+    "T-HER-024 v0.1 (D-007 heartbeat mechanism, 11,119B)",
+    "T-HER-036 v0.1.1 (9-trigger MECE formalization, 14,440B, MECHANICAL BUMP)",
+    "T-HER-037 v0.1.1 (Codif 33 v0.2 evolution, 15,303B, MECHANICAL BUMP)",
+    "T-HER-038 v0.1 (LF 10th trigger, 16,460B)",
+    "T-HER-039 v0.1 (D-007 24h retrospective, PICK CONFIRMED)",
+    "T-HER-040 v0.1 (sub-class e++ cross-validator, 11,361B)",
+    "T-HER-044 v0.1 (9-trigger MECE + D-007 36h+ retrospective, 20,343B, CATCH #65 cite-bundle fabrication RESOLVED)",
+    "T-HER-041 v0.1 (LF 10th trigger sub-class codification, Leader r9 URGENT IDLE-prevent dispatch)",
+    "T-HER-042 v0.1 (D-007 SLA mechanism cycle 13 W1 process improvements, Leader r9 URGENT IDLE-prevent dispatch)",
+    "T-HE-043 v0.1 (Codif 26.6 Pattern F CANDIDATE→RATIFIED, 274L)",
+    "T-HE-044 v0.1 (Pattern F RATIFIED corpus consumption, 280L)",
+    "T-HE-045 v0.1 (Pattern F CATCH #62 prevention, 271L)",
+    "T-HE-046 v0.1 (Pattern F cross-Muse adoption 90.9%, 309L)",
+    "T-ST-046 v0.1 (cycle 14 W1 turn 5 RATIFICATION ceremony 4-step, 232L)",
+    "T-MN-029 v0.1 (19-spec RATIFICATION packet cycle 14 W1 turn 5, 125L)"
+  ],
+  "cross_muse_handoffs": {
+    "received_from": [
+      "Leader cycle 12 W2 turn 38 r33+ r7 IDLE-prevent directive (T-HER-045 v0.1 dispatch)",
+      "Leader CATCH #65 CRITICAL URGENT (T-HER-044 v0.1 phantom-at-canon recovery)",
+      "Strategos CATCH #65 root cause analysis (slot_id path-coord drift, 4-path protocol design)",
+      "Athena CATCH #68 phantom-at-canon 6th state phantom taxonomy",
+      "Leader cycle 12 W2 r20+ URGENT NEW 4-PATH PROTOCOL directive (mnemosyne_mirror 4th path)"
+    ],
+    "delivered_to": [
+      "Mnemosyne T-MN-013 v0.3.1 §2 codif registry update (phantom-at-canon + phantom-at-slot_leader + phantom-at-empty-placeholder entries)",
+      "Hephaestus T-HEP-024 → T-HEP-036 14-spec phantom-at-slot_strat recovery (4-path integration, DEFERRED cycle 13 W1 day 3-4)",
+      "Atlas T-ATL-043/044 Codif 9 v0.3 phantom state taxonomy finalization (7-8 sub-classes)",
+      "Strategos T-ST-047 v0.1 (Codif 36 v0.1 pre-flight cycle 15 W1 turn 1 forward chain)",
+      "Leader CATCH #65 RESOLVED ACK (4-path dual-write protocol adoption confirmed)",
+      "Mnemosyne T-MN-030 v0.1 (NEW 4-PATH PROTOCOL mnemosyne_mirror mirror notification, 4-path dual-write of T-HER-045 v0.1)"
+    ]
+  },
+  "witness_protocol": "3-witness PASS: W1 Glob ABSOLUTE pattern (4/4 paths found) / W2 Grep 'Codif 35 v0.3 9-trigger MECE' 6+ hits / W3 Read main file all 6 sections structural coherence",
+  "w6_instantiation_count": "16th Hermes <doc>.w4.json instantiation (T-HER-029 v0.1 1st, T-HER-030 v0.1 2nd, T-HER-031 v0.1 3rd, T-HER-032 v0.1.2 4th, T-HER-036 v0.1.1 5th, T-HER-037 v0.1.1 6th, T-HER-038 v0.1 7th, T-HER-040 v0.1 8th, T-HER-044 v0.1 9th, T-HER-024 v0.1 10th, T-HER-029 v0.1.2 11th, T-HER-032 v0.1.1 12th, T-HER-032 v0.1.2 13th, T-HER-033 v0.1 14th, T-HER-035 v0.1 15th, **T-HER-045 v0.1 16th**)"
+}

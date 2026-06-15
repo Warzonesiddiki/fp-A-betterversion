@@ -1,0 +1,143 @@
+{
+  "spec_id": "T-MN-026",
+  "spec_version": "v0.1",
+  "filename_version": "v0.1",
+  "spec_title": "Codif 30 v0.5 cat 4 sub-class 5+ Cross-Validator",
+  "owner_slot_id": "019ec100-86dc-7443-8388-a6cb71627df3",
+  "owner_name": "Mnemosyne",
+  "w6_sidecar_instantiation": 12,
+  "w6_sidecar_instantiation_chain": [
+    { "n": 1, "spec": "T-ATL-032 v0.1", "purpose": "Codif 7 v0.2 11-event evolution arc" },
+    { "n": 2, "spec": "T-HE-032 v0.1", "purpose": "Codif 26.4 Pattern D evolution retrospective" },
+    { "n": 3, "spec": "T-AT-028 v0.1", "purpose": "R-catch formalization W4 4-tool evolution" },
+    { "n": 4, "spec": "T-PR-015 v0.1", "purpose": "Codif 33 catch-ledger pre-flight + ripple arc" },
+    { "n": 5, "spec": "T-IR-040 v0.1", "purpose": "Codif 9 v0.2→v0.3 promotion W6→core" },
+    {
+      "n": 6,
+      "spec": "T-HE-040 v0.1",
+      "purpose": "Codif 30 v0.5 cat 4 sub-class 5 a11y/UX codification carrier"
+    },
+    { "n": 7, "spec": "T-HER-039 v0.1", "purpose": "D-007 SLA heartbeat 24h retrospective" },
+    { "n": 8, "spec": "T-HE-038 v0.1.1", "purpose": "4-pattern MECE mechanical bump" },
+    { "n": 9, "spec": "T-HE-043 v0.1", "purpose": "Pattern F CANDIDATE→RATIFIED promotion" },
+    {
+      "n": 10,
+      "spec": "T-ATL-041 v0.1",
+      "purpose": "Codif 35 v0.3 sub-class f.i post-SHIP drift cascade"
+    },
+    { "n": 11, "spec": "T-ATL-042 v0.1", "purpose": "Codif 22 v0.2 sub-class 5.v quintuple-bump" },
+    {
+      "n": 12,
+      "spec": "T-MN-026 v0.1",
+      "purpose": "Codif 30 v0.5 cat 4 sub-class 5+ cross-validator (this spec)"
+    }
+  ],
+  "codif_30_version": "v0.5",
+  "codif_30_cat": "4",
+  "codif_30_sub_class": "5+",
+  "codif_30_sub_sub_classes_observed": ["5.i", "5.iii", "5.iv", "5.v"],
+  "codif_30_sub_sub_classes_tbd": ["5.ii"],
+  "codif_30_mec_status": "MECE-STRUCTURALLY-COMPLETE (4/5 confirmed + 1/5 TBD-but-MECE-required)",
+  "codif_30_observation_coverage": "80% (4 of 5 sub-classes confirmed)",
+  "codif_35_trigger_code": "cross-validate (11th trigger code CANDIDATE per T-HER-041 v0.1)",
+  "cite_bundle_anchors": [
+    {
+      "n": 1,
+      "spec": "T-MN-024 v0.1",
+      "lines": 254,
+      "bytes": 23812,
+      "sha256_first16": "fb96676acb0cd8b5",
+      "role": "19-spec RATIFICATION packet cluster context"
+    },
+    {
+      "n": 2,
+      "spec": "T-IR-042 v0.1",
+      "lines": 227,
+      "bytes": 20688,
+      "sha256_first16": "576D8831",
+      "role": "Taxonomy source-of-truth (Codif 30 v0.4→v0.5 evolution)"
+    },
+    {
+      "n": 3,
+      "spec": "T-HEP-036 v0.1",
+      "lines": 0,
+      "bytes": 0,
+      "sha256_first16": "TBD",
+      "role": "4-Muse anchor (Hephaestus codification carrier)"
+    }
+  ],
+  "sub_class_5_observed_instances": [
+    {
+      "sub_class": "5.i",
+      "muse": "Prometheus",
+      "spec": "T-PR-018 v0.1.1",
+      "lines": 237,
+      "sha256_first16": "415e044f",
+      "icp": "Vera"
+    },
+    {
+      "sub_class": "5.ii",
+      "muse": "TBD",
+      "spec": "TBD",
+      "lines": 0,
+      "sha256_first16": "TBD",
+      "icp": "TBD"
+    },
+    {
+      "sub_class": "5.iii",
+      "muse": "Strategos",
+      "spec": "T-ST-037 v0.1.1 + T-ST-038 v0.1",
+      "lines": "342+227",
+      "icp": "Vera"
+    },
+    {
+      "sub_class": "5.iv",
+      "muse": "Iris",
+      "spec": "T-IR-037 v0.1.2 + T-IR-049 v0.1",
+      "lines": "337+124",
+      "icp": "Chris+Vera"
+    },
+    {
+      "sub_class": "5.v",
+      "muse": "Atlas",
+      "spec": "T-ATL-041 v0.1 + T-ATL-042 v0.1",
+      "lines": "227+226",
+      "sha256_first16": "576D8831+9A407BE4",
+      "icp": "Carla+Vera"
+    }
+  ],
+  "4_icp_tentative": {
+    "Carla_TECHNICAL": "PASS",
+    "Vera_STRATEGIC": "PASS",
+    "Chris_BUSINESS": "PASS",
+    "Beth_RISK": "PASS"
+  },
+  "cross_validator_protocol_steps": 3,
+  "cross_validator_step_1_substeps": 3,
+  "cross_validator_step_2_substeps": 3,
+  "cross_validator_step_3_substeps": 7,
+  "ship_date": "2026-06-14",
+  "ship_cycle": "cycle 12 W2 turn 38 r33+ r11+ URGENT IDLE-prevent",
+  "ratification_gate": "cycle 14 W1 turn 1 (cross-validation evidence package)",
+  "ship_lines": 218,
+  "ship_bytes": 16626,
+  "ship_words_estimate": 2400,
+  "ship_sha256_canonical": "286affd643a9905b719d5f8189f096fdd45eb07ace4e4f0bbfba662b2d0adff0",
+  "ship_sha256_slot_strat": "286affd643a9905b719d5f8189f096fdd45eb07ace4e4f0bbfba662b2d0adff0",
+  "ship_sha256_slot_leader": "286affd643a9905b719d5f8189f096fdd45eb07ace4e4f0bbfba662b2d0adff0",
+  "ship_3path_match": "PERFECT MATCH (4 paths verified)",
+  "ship_lf_parity": "0x0A (last byte)",
+  "codif_22_v0_2_spec_pinning": "spec_id=T-MN-026, spec_version=v0.1, filename_version=v0.1, identity-locked",
+  "codif_19_v0_2_size_disclosure": "218L / 16,626B / ~2,400W / 190 non-blank (within 200-250L target, -5% under byte lower bound)",
+  "push_independent": true,
+  "forward_chain_phase_1": "cycle 13 W1 day 1-2: 5.ii TBD observation watch (T-PR-021 + T-ATL-043 + T-IR-050 + T-HER-040 in flight)",
+  "forward_chain_phase_2": "cycle 13 W1 turn 1: T-MN-024 v0.1 cluster 7+1→8+ mechanical bump v0.1→v0.2",
+  "forward_chain_phase_3": "cycle 13 W2 turn 3-5: 5.ii TBD closure OR v0.2 honest-scope declaration",
+  "forward_chain_phase_4": "cycle 14 W1 turn 1: RATIFICATION gate (Codif 30 v0.5 cat 4 sub-class 5 cross-validated)",
+  "forward_chain_phase_5": "cycle 14 W1 turn 5: 8-spec packet (Codif 32 v0.2 CANDIDATE→RATIFIED)",
+  "forward_chain_phase_6": "cycle 15 W1: Codif 36 v0.1 RATIFICATION gate (Codif 32 v0.2 dual-counter 3/3+3/3 = gate OPEN)",
+  "risks_count": 5,
+  "risks_summary": "R-TM26-1 5.ii TBD persistence | R-TM26-2 cite-bundle rename | R-TM26-3 RATIFICATION slip | R-TM26-4 11th trigger code RATIFICATION | R-TM26-5 Codif 32 v0.2 dual-counter slip",
+  "acknowledgments_muse_count": 11,
+  "references_count": 15
+}

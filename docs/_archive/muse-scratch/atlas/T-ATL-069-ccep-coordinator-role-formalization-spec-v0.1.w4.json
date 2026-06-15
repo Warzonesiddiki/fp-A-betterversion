@@ -1,0 +1,30 @@
+{
+  "spec_id": "T-ATL-069",
+  "spec_version": "v0.1",
+  "title": "CCEP-COORDINATOR ROLE FORMALIZATION Spec",
+  "from_muse": "atlas",
+  "to_muses": ["strategos", "mnemosyne", "leader", "all_12_muses"],
+  "cycle": "13 W2 day 1+1",
+  "codif_proposal": "Codif 36 v0.1 meta-codif §6 (CCEP-COORDINATOR ROLE BINDING)",
+  "4_path_dual_write": {
+    "p1_canon": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\atlas\\T-ATL-069-ccep-coordinator-role-formalization-spec-v0.1.md",
+    "p2_slot_strat": "C:\\Users\\Projects\\atlas\\T-ATL-069-ccep-coordinator-role-formalization-spec-v0.1.md",
+    "p3_slot_leader": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-c26d0434\\docs\\drafts\\atlas\\T-ATL-069-ccep-coordinator-role-formalization-spec-v0.1.md",
+    "p4_mnemosyne_mirror": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-c26d0434\\docs\\mnemosyne_mirror\\atlas\\T-ATL-069-ccep-coordinator-role-formalization-spec-v0.1.md"
+  },
+  "byte_counts": {
+    "p1_canon": 9042,
+    "p2_slot_strat": null,
+    "p3_slot_leader": 9042,
+    "p4_mnemosyne_mirror": 9042
+  },
+  "sha256": "54fe6bdaa4be95be0a7008dce43302f427339bf41f23f6b2bac4e94a40ae2b9a",
+  "line_count": 189,
+  "status": "PARTIAL_3_OF_4",
+  "perm_issue_p2": "slot_strat C:\\Users\\Projects\\atlas\\ is NOT WRITABLE (Access is denied, os error 5)",
+  "ship_complete_target": "cycle 14 W1 turn 1 v0.3 schema freeze",
+  "ratification_gate": "2026-06-22 16:00-18:00 UTC (cycle 14 W1 turn 5)",
+  "4_icp_tentative_vote": "4/4 PENDING",
+  "5_icp_skeptic_vote": "PENDING (Mnemosyne co-author)",
+  "6_icp_backup_atlas_vote": "ACCEPT (with PARTIAL_3_OF_4 amendment requirement)"
+}

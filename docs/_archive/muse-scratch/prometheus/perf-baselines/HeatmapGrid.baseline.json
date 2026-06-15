@@ -1,0 +1,24 @@
+{
+  "component": "HeatmapGrid",
+  "file": "src/components/dashboard/HeatmapGrid.tsx",
+  "lines": 209,
+  "iterations": 1000,
+  "dataFixture": "20x20 = 400 cells with realistic data",
+  "estimated": true,
+  "note": "Synthetic baseline. Apollo must run HeatmapGrid.bench.test.ts to capture actual numbers, then overwrite this file.",
+  "metrics": {
+    "medianMs": 4.2,
+    "p95Ms": 8.1,
+    "meanMs": 4.5,
+    "totalMs": 4200.0,
+    "minMs": 2.8,
+    "maxMs": 12.4
+  },
+  "expectedAfterMemo": {
+    "medianMs": 0.4,
+    "p95Ms": 0.8,
+    "speedupFactor": "10.5×"
+  },
+  "capturedAt": "2026-06-12",
+  "capturedBy": "Prometheus (synthetic, pending real run by Apollo)"
+}

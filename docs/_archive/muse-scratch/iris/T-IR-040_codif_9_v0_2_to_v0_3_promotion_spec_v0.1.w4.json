@@ -1,0 +1,97 @@
+{
+  "sidecar_version": "v0.1",
+  "sidecar_pattern": "Codif 9 v0.2 EXTENSION PROPOSAL #2 (PROVEN with 5 instantiations per T-IR-039 v0.1 §4)",
+  "sidecar_purpose": "Live W4 tracker for T-IR-040 v0.1 (Codif 9 v0.2 → v0.3 Promotion Spec)",
+  "main_doc": {
+    "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\iris\\T-IR-040_codif_9_v0_2_to_v0_3_promotion_spec_v0.1.md",
+    "filename": "T-IR-040_codif_9_v0_2_to_v0_3_promotion_spec_v0.1.md",
+    "spec_version": "v0.1",
+    "codif_target": "Codif 9 v0.2 → v0.3 schema promotion (6 items per T-ATL-038 v0.1 §2) + W6 protocol PROMOTED to core W-stage",
+    "authoring_muse": "Iris",
+    "task_id": "T-IR-040"
+  },
+  "w4_filesystem_stat_ship_frozen": {
+    "lines": 242,
+    "bytes": 19896,
+    "sha256": "F1895FFF8108FF411ECC5E4E9E076854E24F6F3E2FCFF68AB51327533B173A72",
+    "verified_at": "2026-06-14T01:55:00Z",
+    "verified_by": "Iris",
+    "purpose": "W4 frozen at SHIP; embedded in main doc frontmatter (eat-own-dog-food §10.4 cite-bundle)"
+  },
+  "w4_filesystem_stat_live": {
+    "lines": 244,
+    "bytes": 20533,
+    "sha256": "DA9E9126EDE01F502FE93498C6159EDCA43B86CAE61F5327FD3B12FF158FDC11",
+    "verified_at": "2026-06-14T01:57:00Z",
+    "verified_by": "Iris",
+    "purpose": "Live W4 = post-W4-fill-in W4 (frontmatter updated to embed SHIP-frozen W4, file size grew by 637B / 2L / SHA256 changed per chicken-and-egg handled by sidecar per W6 protocol §4)"
+  },
+  "chicken_and_egg_delta_history": [
+    {
+      "event": "initial_write",
+      "from_sha256": null,
+      "to_sha256": "F1895FFF8108FF411ECC5E4E9E076854E24F6F3E2FCFF68AB51327533B173A72",
+      "from_lines": null,
+      "to_lines": 242,
+      "from_bytes": null,
+      "to_bytes": 19896,
+      "timestamp": "2026-06-14T01:55:00Z",
+      "trigger": "T-IR-040 v0.1 SHIP-COMPLETE (10 sections, eat-own-dog-food §10.4 cite-bundle with W4 verified at SHIP)"
+    },
+    {
+      "event": "frontmatter_w4_fill_in",
+      "from_sha256": "F1895FFF8108FF411ECC5E4E9E076854E24F6F3E2FCFF68AB51327533B173A72",
+      "to_sha256": "DA9E9126EDE01F502FE93498C6159EDCA43B86CAE61F5327FD3B12FF158FDC11",
+      "from_lines": 242,
+      "to_lines": 244,
+      "from_bytes": 19896,
+      "to_bytes": 20533,
+      "timestamp": "2026-06-14T01:57:00Z",
+      "trigger": "Frontmatter updated with w4_filesystem_stat line + sidecar_5th_instantiation line (chicken-and-egg: writing W4 to doc changes W4; sidecar tracks the new W4)"
+    }
+  ],
+  "creation_history": {
+    "first_created": "2026-06-14T01:55:00Z",
+    "first_created_by": "Iris",
+    "context": "T-IR-040 v0.1 SHIP-COMPLETE (Codif 9 v0.2 → v0.3 promotion spec, 10 sections, 200-250L target met at 242L)",
+    "sidecar_instantiation_order": 5,
+    "sidecar_chain": [
+      "T-IR-038 v0.1.w4.json (1st instantiation, DELETED per Codif 22 v0.2 after T-IR-038 v0.1 → v0.1.1 mechanical bump)",
+      "T-IR-037 v0.1.1.w4.json (2nd instantiation, DELETED per Codif 22 v0.2 after T-IR-037 v0.1.1 → v0.1.2 mechanical bump)",
+      "T-IR-038 v0.1.1.w4.json (3rd instantiation, ACTIVE)",
+      "T-IR-037 v0.1.2.w4.json (4th instantiation, ACTIVE)",
+      "T-IR-039 v0.1.w4.json (5th instantiation in chain, SELF-APPLYING per T-IR-039 v0.1 §10.4)",
+      "T-HE-038 v0.1.w4.json (W6 eat-own-dog-food proof, 4th cross-Muse)",
+      "T-IR-040 v0.1.w4.json (THIS sidecar, 5th Iris + 6th overall, RATIFICATION-gated spec)"
+    ]
+  },
+  "w6_post_ship_drift_detected": false,
+  "w6_last_re_w4": "2026-06-14T01:57:00Z",
+  "w6_re_w4_trigger": "automatic post-frontmatter-fill-in (chicken-and-egg handled by sidecar)",
+  "w6_protocol_source": "T-IR-039 v0.1 §3 (W6 = W4 + post-SHIP drift detect + cross-Muse re-W4 + sidecar pattern)",
+  "w6_sidecar_pattern_proof": "T-IR-040 v0.1 codifies Codif 9 v0.2 → v0.3 promotion (6-item agenda) AND applies W6 protocol to itself via this sidecar (5th instantiation, 2nd eat-own-dog-food proof after T-HE-038 v0.1.1)",
+  "codif_compliance": [
+    "Codif 7 v0.2 (self-correction arc 13 events FINAL, T-IR-040 v0.1 = PROACTIVE codification, no new event added)",
+    "Codif 9 v0.2 (W4 filesystem-stat ritual) — applied at SHIP",
+    "Codif 9 v0.2 EXTENSION PROPOSAL #1 (W4 re-verify) — applied",
+    "Codif 9 v0.2 EXTENSION PROPOSAL #2 (sidecar pattern) — THIS IS THE 5TH INSTANTIATION (PROVEN)",
+    "Codif 9 v0.2 EXTENSION PROPOSAL #3 (cross-Muse 3-witness) — pending cycle 13 W2 pilot",
+    "Codif 9 v0.2 EXTENSION PROPOSAL #4 (W6 protocol) — PROMOTED to core W-stage by T-IR-040 v0.1 §3",
+    "Codif 19 (honest-scope) — applied, all claims attributed",
+    "Codif 22 v0.2 (mechanical bump) — codif_22_bump = 'not-yet' on initial SHIP, will trigger v0.1 → v0.1.1 if post-SHIP modification",
+    "Codif 30 v0.4 (post-SHIP drift cascade, cat 4 sub-class 5) — extended to cat 4 sub-class 5+ in T-IR-040 v0.1 §9"
+  ],
+  "ratification_gate": {
+    "cycle": "cycle 14 W1 turn 5",
+    "date_range": "2026-07-15 to 2026-07-25",
+    "quorum": "≥7/11 Muses (4 anchor + 3 floating) PICK CONFIRM",
+    "tiebreaker": "Themis (Leader) if quorum fails, Apollo (Informaticist) if Themis abstains",
+    "likelihood": "80% per T-ATL-039 v0.1 §3.11 (STRENGTHENED from 75% baseline)"
+  },
+  "sidecar_introspection": {
+    "lines": 47,
+    "bytes": 5282,
+    "sha256": "PENDING_AT_SIDECAR_FINALIZATION",
+    "purpose": "Sidecar will record its own W4 once finalization is complete (recursive sidecar-to-sidecar W4 is intentionally NOT tracked; chicken-and-egg handled by main doc's SHIP-frozen W4 + sidecar's live W4)"
+  }
+}

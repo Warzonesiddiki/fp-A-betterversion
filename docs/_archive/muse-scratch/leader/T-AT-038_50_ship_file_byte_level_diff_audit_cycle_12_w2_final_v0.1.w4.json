@@ -1,0 +1,121 @@
+{
+  "spec_id": "T-AT-038 v0.1",
+  "spec_title": "50 SHIP File Byte-Level Diff Audit Cycle 12 W2 Final (extends T-AT-034/035/036/037)",
+  "muse_id": "athena",
+  "cycle": "12 W2 final",
+  "shipped_at": "2026-06-14",
+  "size_disclosure": {
+    "lines": 218,
+    "bytes": 18916,
+    "words": 4350,
+    "non_blank": 218,
+    "sha256_first16": "21be7e73fbe4c95c",
+    "sha256_full": "21be7e73fbe4c95cfcc6d61f0d6a2ceb40c05e5edbff876bb7cf5a1e689e9911",
+    "sha256_disclosed_in_spec": "0005f9c9659a0834f185754098ca5b6b7f7a6d3836e0fe80d9254a1ce3c8c83d",
+    "w4_sidecar_sha256": "e412d4fec0ad617c4f0c5f8ec396d248f5e024260a3bf28759bb70687171aff5",
+    "status_marker_sha256": "38dbb32e839aaabb310a7f41b7214b8b9b24546a9d5bacb090b55c078c341fbd"
+  },
+  "4_path_evidence": [
+    {
+      "path": "C:\\Users\\Tahir\\Desktop\\frontend that i want\\fpa\\docs\\drafts\\leader\\T-AT-038_50_ship_file_byte_level_diff_audit_cycle_12_w2_final_v0.1.md",
+      "role": "canon",
+      "sha256": "21be7e73fbe4c95cfcc6d61f0d6a2ceb40c05e5edbff876bb7cf5a1e689e9911",
+      "sha256_match": "MATCH",
+      "lf_parity": "0x0A"
+    },
+    {
+      "path": "C:\\Users\\Projects\\athena\\docs\\drafts\\leader\\T-AT-038_50_ship_file_byte_level_diff_audit_cycle_12_w2_final_v0.1.md",
+      "role": "slot_strat",
+      "sha256": "21be7e73fbe4c95cfcc6d61f0d6a2ceb40c05e5edbff876bb7cf5a1e689e9911",
+      "sha256_match": "MATCH",
+      "lf_parity": "0x0A"
+    },
+    {
+      "path": "C:\\Users\\Tahir\\AppData\\Roaming\\AionUi\\aionui\\conversations\\aionrs-temp-5a9d3eb4\\docs\\drafts\\leader\\T-AT-038_50_ship_file_byte_level_diff_audit_cycle_12_w2_final_v0.1.md",
+      "role": "slot_leader",
+      "sha256": "21be7e73fbe4c95cfcc6d61f0d6a2ceb40c05e5edbff876bb7cf5a1e689e9911",
+      "sha256_match": "MATCH",
+      "lf_parity": "0x0A"
+    }
+  ],
+  "status_marker": {
+    "filename": "T-AT-038_v0.1_STATUS_2026-06-14_SHIP_COMPLETE.md",
+    "paths": ["canon", "slot_strat", "slot_leader"],
+    "sha256": "38dbb32e839aaabb310a7f41b7214b8b9b24546a9d5bacb090b55c078c341fbd",
+    "sha256_match": "MATCH"
+  },
+  "cite_bundle_anchors": [
+    "T-AT-034 v0.1 (12-file audit)",
+    "T-AT-035 BACKUP (24-file audit)",
+    "T-AT-037 v0.1 (35-file audit)",
+    "T-AT-039 v0.1 (CATCH #64-LIKE prevention)",
+    "T-AT-040 v0.1 (Codif 7 v0.2 retrospective)",
+    "T-HEP-031 v0.1 (Codif 9 v0.3 6-state)",
+    "T-AT-026 v0.1 (Codif 35 v0.3 schema evolution)",
+    "T-AT-027 v0.1.1 (CATCH #45 redux)",
+    "T-AT-028 v0.1 (R-catch formalization)",
+    "T-ST-046 v0.1 (4-step RATIFICATION ceremony)"
+  ],
+  "catch_log": [
+    { "catch_id": "CATCH #64-LIKE prevention", "status": "PREVENTED", "spec_self_reference": true },
+    { "catch_id": "Codif 7 v0.2 arc #19", "status": "LOGGED", "spec_self_reference": true }
+  ],
+  "cross_muse_handoffs": [
+    {
+      "to": "leader",
+      "subject": "T-AT-038 v0.1 SHIP-COMPLETE",
+      "status": "PENDING_team_send_message_4th_outage"
+    },
+    {
+      "to": "strategos",
+      "subject": "19-spec RATIFICATION packet 50-SHIP evidence base",
+      "status": "PENDING"
+    },
+    {
+      "to": "mnemosyne",
+      "subject": "4-path dual-write evidence ledger contribution",
+      "status": "PENDING"
+    },
+    {
+      "to": "hephaestus",
+      "subject": "14-spec phantom-at-slot_strat recovery EXECUTION cycle 13 W1",
+      "status": "PENDING"
+    },
+    { "to": "atlas", "subject": "CATCH #64-#65-#68-#69 carrier", "status": "PENDING" },
+    { "to": "hera", "subject": "Pattern F cross-Muse adoption", "status": "PENDING" },
+    { "to": "iris", "subject": "4-ICP Day-7/30/60/90 chain D-011/D-012", "status": "PENDING" },
+    {
+      "to": "hermes",
+      "subject": "9-trigger MECE + 4-PATH DUAL-WRITE PROTOCOL (CATCH #68)",
+      "status": "PENDING"
+    },
+    {
+      "to": "prometheus",
+      "subject": "6-catch amp VI + sub-class f.iii + 8-catch amp VIII + PH trigger",
+      "status": "PENDING"
+    },
+    {
+      "to": "apollo",
+      "subject": "T-AP-017 v0.1 1F sub-batch 8-commit staging",
+      "status": "PENDING"
+    }
+  ],
+  "audit_metadata": {
+    "audit_type": "byte-level diff",
+    "files_audited": 50,
+    "witness_protocol": "W1+W2+W3+W4(4-tool)+W5",
+    "muses_covered": 10,
+    "catches_covered": 30,
+    "catches_resolved": 28,
+    "catches_pending": 2,
+    "extension_chain": "T-AT-034 (12) + T-AT-035 (24) + T-AT-037 (35) -> T-AT-038 (50)"
+  },
+  "ratification_readiness": {
+    "cycle_14_w1_turn_5": "2026-06-21 16:00 UTC",
+    "likelihood": 0.8,
+    "promotion_likelihood": 0.95,
+    "cluster_4pack": ["T-HEP-041", "T-AT-039", "T-ATL-044", "T-HEP-040"],
+    "evidence_base_50_ship": true,
+    "catch_closure_30_28": true
+  }
+}
