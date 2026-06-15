@@ -1,0 +1,10 @@
+{
+  "id": "test-sentinel-plugin",
+  "name": "Sentinel Test Plugin",
+  "version": "1.0.0",
+  "description": "Test plugin for E2E sandbox isolation verification (Sentinel cycle 13 W2)",
+  "author": "Sentinel",
+  "entry": "plugin.js",
+  "permissions": ["read:budgets", "write:scenarios"],
+  "apiVersion": "1.0"
+}
