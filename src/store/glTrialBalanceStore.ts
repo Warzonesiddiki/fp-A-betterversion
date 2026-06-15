@@ -158,6 +158,8 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
       {
         name: 'gl-trialbalance-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
         partialize: (state) => ({
           pageSize: state.pageSize,
           sortConfig: state.sortConfig,

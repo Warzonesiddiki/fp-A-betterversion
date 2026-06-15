@@ -107,6 +107,8 @@ export const useCollaborationStore = create<CollaborationState>()(
       {
         name: 'collaboration-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

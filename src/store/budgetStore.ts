@@ -254,6 +254,8 @@ export const useBudgetStore = create<BudgetState>()(
       {
         name: 'budget-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

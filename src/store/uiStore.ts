@@ -82,6 +82,8 @@ export const useUIStore = create<UIState>()(
       {
         name: 'ui-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
         partialize: (state: UIState) => ({
           sidebarCollapsed: state.sidebarCollapsed,
           theme: state.theme,

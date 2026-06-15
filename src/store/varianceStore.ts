@@ -32,6 +32,8 @@ export const useVarianceStore = create<VarianceState>()(
       {
         name: 'variance-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

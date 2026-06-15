@@ -32,6 +32,8 @@ export const useFxRateStore = create<FxRateState>()(
       {
         name: 'fx-rate-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

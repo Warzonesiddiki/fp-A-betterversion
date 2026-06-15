@@ -187,6 +187,8 @@ export const useDashboardStore = create<DashboardState>()(
       {
         name: 'dashboard-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

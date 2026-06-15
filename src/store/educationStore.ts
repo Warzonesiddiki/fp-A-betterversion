@@ -101,7 +101,12 @@ export const useEducationStore = create<EducationState>()(
         getTotalEnrollment: () => get().programs.reduce((sum, p) => sum + p.enrollment, 0),
         getActiveProgramCount: () => get().programs.filter((p) => p.status === 'Active').length,
       })),
-      { name: 'education-store', storage: masterStorage }
+      {
+        name: 'education-store',
+        storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
+      }
     )
   )
 );

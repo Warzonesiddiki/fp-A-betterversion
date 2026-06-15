@@ -105,7 +105,12 @@ export const useGovernmentStore = create<GovernmentState>()(
         },
         getFundsByStatus: (status) => get().funds.filter((f) => f.status === status),
       })),
-      { name: 'government-store', storage: masterStorage }
+      {
+        name: 'government-store',
+        storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
+      }
     )
   )
 );

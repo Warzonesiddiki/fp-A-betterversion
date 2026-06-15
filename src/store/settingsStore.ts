@@ -69,6 +69,8 @@ export const useSettingsStore = create<SettingsState>()(
       {
         name: 'settings-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
         partialize: (state) => ({
           organization: state.organization,
           preferences: state.preferences,

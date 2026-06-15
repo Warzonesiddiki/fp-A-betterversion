@@ -145,6 +145,8 @@ export const useForecastStore = create<ForecastState>()(
       {
         name: 'forecast-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

@@ -102,7 +102,12 @@ export const useRetailStore = create<RetailState>()(
 
         getTotalRevenue: () => get().stores.reduce((sum, s) => sum + s.revenue, 0),
       })),
-      { name: 'retail-store', storage: masterStorage }
+      {
+        name: 'retail-store',
+        storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
+      }
     )
   )
 );

@@ -100,6 +100,8 @@ export const useDataStore = create<DataState>()(
       {
         name: 'data-store',
         storage: safeJSONStorage<DataState>(masterStorage),
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

@@ -442,6 +442,8 @@ export const useGLStore = create<GLState>()(
       {
         name: 'gl-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
         partialize: (state) => ({
           entries: state.entries,
           importHistory: state.importHistory,

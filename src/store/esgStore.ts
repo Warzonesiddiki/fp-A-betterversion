@@ -103,7 +103,7 @@ export const useESGStore = create<ESGState>()(
           return Math.round(total / metrics.length);
         },
       })),
-      { name: 'esg-store', storage: masterStorage }
+      { name: 'esg-store', storage: masterStorage, version: 1, migrate: (state: unknown) => state }
     )
   )
 );

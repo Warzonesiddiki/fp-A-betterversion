@@ -187,6 +187,8 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
       {
         name: 'workflow-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

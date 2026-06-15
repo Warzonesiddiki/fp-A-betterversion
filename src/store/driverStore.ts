@@ -233,6 +233,8 @@ export const useDriverStore = create<DriverState>()(
       {
         name: 'driver-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
         partialize: (state) => ({
           engine: state.engine,
         }),

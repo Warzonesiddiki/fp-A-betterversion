@@ -60,6 +60,8 @@ export const useNotificationStore = create<NotificationState>()(
       {
         name: 'notification-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

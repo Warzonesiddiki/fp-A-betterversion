@@ -131,6 +131,8 @@ export const useWorkforceStore = create<WorkforceState>()(
       {
         name: 'workforce-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )

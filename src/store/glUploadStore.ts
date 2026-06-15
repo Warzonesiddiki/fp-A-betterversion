@@ -131,6 +131,8 @@ export const useGLUploadStore = create<GLUploadState>()(
       {
         name: 'gl-upload-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
         partialize: (state) => ({
           sessionHistory: state.sessionHistory,
           isAutoMapping: state.isAutoMapping,

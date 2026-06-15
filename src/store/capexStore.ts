@@ -127,7 +127,12 @@ export const useCapExStore = create<CapExState>()(
 
         getAssetsByCategory: (category) => get().assets.filter((a) => a.category === category),
       })),
-      { name: 'capex-store', storage: masterStorage }
+      {
+        name: 'capex-store',
+        storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
+      }
     )
   )
 );

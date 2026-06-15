@@ -102,7 +102,12 @@ export const useTelecomStore = create<TelecomState>()(
             : 0;
         },
       })),
-      { name: 'telecom-store', storage: masterStorage }
+      {
+        name: 'telecom-store',
+        storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
+      }
     )
   )
 );

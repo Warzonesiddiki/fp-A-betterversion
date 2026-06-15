@@ -106,7 +106,12 @@ export const useLogisticsStore = create<LogisticsState>()(
           return total > 0 ? (delivered / total) * 100 : 0;
         },
       })),
-      { name: 'logistics-store', storage: masterStorage }
+      {
+        name: 'logistics-store',
+        storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
+      }
     )
   )
 );

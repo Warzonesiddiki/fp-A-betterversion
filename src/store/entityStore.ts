@@ -208,6 +208,8 @@ export const useEntityStore = create<EntityState>()(
       {
         name: 'entity-store',
         storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
       }
     )
   )
