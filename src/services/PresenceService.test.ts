@@ -234,4 +234,120 @@ describe('PresenceService', () => {
     expect(presence.getUsers()).toHaveLength(2);
     expect(stateHandler).toHaveBeenCalled();
   });
+
+  // --- Regression: userInitials / userName fallback (Hephaestus audit finding) ---
+
+  it('should fall back to lastName when firstName is empty', () => {
+    presence.initialize({
+      id: 'user-x',
+      firstName: '',
+      lastName: 'Chen',
+      avatarUrl: null,
+    });
+
+    expect(ws.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'presence:join',
+        payload: expect.objectContaining({
+          userName: 'Chen',
+          userInitials: '?C',
+        }),
+      })
+    );
+  });
+
+  it('should fall back to firstName when lastName is empty', () => {
+    presence.initialize({
+      id: 'user-y',
+      firstName: 'Sarah',
+      lastName: '',
+      avatarUrl: null,
+    });
+
+    expect(ws.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'presence:join',
+        payload: expect.objectContaining({
+          userName: 'Sarah',
+          userInitials: 'S?',
+        }),
+      })
+    );
+  });
+
+  it('should fall back to "Guest User" / "GU" when both names are empty', () => {
+    presence.initialize({
+      id: 'user-z',
+      firstName: '',
+      lastName: '',
+      avatarUrl: null,
+    });
+
+    expect(ws.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'presence:join',
+        payload: expect.objectContaining({
+          userName: 'Guest User',
+          userInitials: 'GU',
+        }),
+      })
+    );
+  });
+
+  it('should treat whitespace-only names as empty', () => {
+    presence.initialize({
+      id: 'user-w',
+      firstName: '   ',
+      lastName: '\t',
+      avatarUrl: null,
+    });
+
+    expect(ws.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'presence:join',
+        payload: expect.objectContaining({
+          userName: 'Guest User',
+          userInitials: 'GU',
+        }),
+      })
+    );
+  });
+
+  it('should treat null/undefined names as empty', () => {
+    presence.initialize({
+      id: 'user-n',
+      firstName: null as unknown as string,
+      lastName: undefined as unknown as string,
+      avatarUrl: null,
+    });
+
+    expect(ws.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'presence:join',
+        payload: expect.objectContaining({
+          userName: 'Guest User',
+          userInitials: 'GU',
+        }),
+      })
+    );
+  });
+
+  it('should still emit standard "First Last" / "FL" for happy path', () => {
+    presence.initialize({
+      id: 'user-h',
+      firstName: 'Mike',
+      lastName: 'torres', // lowercase to verify toUpperCase()
+      avatarUrl: null,
+    });
+
+    expect(ws.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'presence:join',
+        payload: expect.objectContaining({
+          userName: 'Mike torres',
+          userInitials: 'MT',
+        }),
+      })
+    );
+  });
 });

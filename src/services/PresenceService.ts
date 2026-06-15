@@ -73,17 +73,57 @@ export class PresenceService {
     this.currentUserId = user.id;
     this.assignColor(user.id);
 
+    const { userName, userInitials } = PresenceService.computeUserFields(
+      user.firstName,
+      user.lastName
+    );
+
     this.ws.send({
       type: 'presence:join',
       payload: {
         userId: user.id,
-        userName: `${user.firstName} ${user.lastName}`,
-        userInitials: `${user.firstName[0]}${user.lastName[0]}`,
+        userName,
+        userInitials,
         avatarUrl: user.avatarUrl,
       },
     });
 
     this.startIdleDetection();
+  }
+
+  /**
+   * Compute a safe display name + initials pair for a user.
+   * Falls back gracefully when firstName/lastName are empty, whitespace-only, or null/undefined.
+   * - Both empty: "Guest User" / "GU"
+   * - First empty: "<lastName>" / "?L"
+   * - Last empty:  "<firstName>" / "F?"
+   * - Both present: "First Last" / "FL" (preserves historical contract)
+   */
+  private static computeUserFields(
+    firstName: string | null | undefined,
+    lastName: string | null | undefined
+  ): { userName: string; userInitials: string } {
+    const first = (firstName ?? '').trim();
+    const last = (lastName ?? '').trim();
+
+    let userName: string;
+    let userInitials: string;
+
+    if (first && last) {
+      userName = `${first} ${last}`;
+      userInitials = `${first[0]}${last[0]}`.toUpperCase();
+    } else if (first) {
+      userName = first;
+      userInitials = `${first[0]}?`.toUpperCase();
+    } else if (last) {
+      userName = last;
+      userInitials = `?${last[0]}`.toUpperCase();
+    } else {
+      userName = 'Guest User';
+      userInitials = 'GU';
+    }
+
+    return { userName, userInitials };
   }
 
   /** Announce what the user is currently looking at */
