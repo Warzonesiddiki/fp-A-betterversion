@@ -91,7 +91,7 @@ export function PluginDetail({
     rating: 0,
     downloads: 0,
     permissions: [],
-  } as unknown as PluginInfo,
+  } as unknown as MarketplacePlugin,
   isInstalled = false,
   onInstall = async () => {},
   onUninstall = async () => {},
