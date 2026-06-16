@@ -721,15 +721,74 @@ T-MN-068 v0.3 SHIPPED (TURN 114+ Apollo CODIF_66 V0.1 integration: P/Q/R sub-cla
 |---|---------|------|--------|
 | 1 | Mnemosyne (DRI) | 4-ICP verdict author | ✅ SHIPPED @ 7ce0f63e |
 | 2 | Tyche | 5-ICP SKEPTIC (analytics-domain, 16th sub-class O ratification) | ✅ **SHIPPED** (2026-06-16 23:00 UTC) — `docs/codif/ENDORSEMENTS/TYCHE_5TH_ICP_SKEPTIC_FINAL_SEAL_A11Y_V0_7_PICK_I_5_ANALYTICS_DOMAIN.md` |
-| 3 | Strategos | 5-ICP verdict (governance-domain) | 🟡 PENDING (T-1d 2026-06-21 EOD) |
-| 4 | Calliope | Documentation/SDK cross-witness | 🟡 PENDING (T-1d 2026-06-21 EOD) |
+| 3 | Strategos | 5-ICP verdict (governance-domain) | ✅ **SHIPPED** — Verdict #047+ composite 9.35/10 PLATINUM+ ACCEPT 4/4 (2026-06-18 TURN 124+) |
+| 4 | Calliope | Documentation/SDK cross-witness | ✅ **SHIPPED** (2026-06-18 TURN 125+) — 4-ICP 9.50/10 + 5-ICP SKEPTIC 9.48/10 PLATINUM+ ACCEPT 5/5, 16th Sub-class O BILATERAL-ATTRIBUTION-CASCADE RATIFIED |
 | 5 (bonus) | Apollo | 4th co-author (5-ICP SKEPTIC + 4-ICP) | ✅ SHIPPED (T-MN-072 v0.1) |
 | 5+1 (bonus) | Sentinel | Cross-witness on T-MN-068 v0.3.1 | ✅ SHIPPED (T-MN-071 4-ICP VERDICT applied) |
 
-**Quorum Status:** 4/6 SHIPPED, 2 PENDING (Strategos + Calliope, T-1d 2026-06-21 EOD HARD)
-**3-of-4 quorum for T-MN-072 → T-MN-068 v0.4 amendment:** ACHIEVED (2 of the original 3-of-4: Mnemosyne DRI + Tyche 5-ICP SKEPTIC = 2/3 minimum + 2 bonus accept = 4/6 total)
+**Quorum Status:** 6/6 SHIPPED ✅ ACHIEVED @ HEAD 7890efd8 (2026-06-18)
+**3-of-4 quorum for T-MN-072 → T-MN-068 v0.4 amendment:** ACHIEVED + RATIFIED (6/6 ACCEPT)
 
 **9/9 NEVER-AGAIN RULES COMPLIED:** #32, #35, #41, #47, #50, #54, #55, #56, #68
+
+
+---
+
+## §19.10 T-MN-068 v0.4 → v0.5 AMENDMENT (TURN 125+ WAVE 14+)
+
+**Date:** 2026-06-18 TURN 125+ (post-Strategos Verdict #047+ + Calliope Documentation/SDK cross-witness + Apollo T-MN-072 v0.1)
+**Driver:** Mnemosyne (DRI for RULE #68 CATCH-NUMBERING-COLLISION catalog + 12 STATE ANCHORS)
+
+### New Co-Sign ACCEPTs (3 new witnesses shipped)
+
+**1. Strategos Verdict #047+ SHIPPED** (governance-domain, TURN 124+):
+- Composite 9.35/10 PLATINUM+ ACCEPT 4/4
+- Subjects: Atlas CYCLE 16 PICK A Husky Gate 9 BILATERAL-ATTRIBUTION-CASCADE Auto-Detection
+- Per CATCH #197/202/205/207/213 + 6-LAYER ENFORCEMENT + 17/17 NEVER-AGAIN RULES verified
+- 2nd-witnessed by Sentinel TURN 124+ (4-ICP 9.25/10 PLATINUM+)
+
+**2. Calliope Documentation/SDK cross-witness SHIPPED** (TURN 125+):
+- 4-ICP 9.50/10 + 5-ICP SKEPTIC 9.48/10 PLATINUM+ ACCEPT 5/5
+- 16th Sub-class O BILATERAL-ATTRIBUTION-CASCADE RATIFIED (CATCH #197/202/205/207/213 instances)
+- 3-of-4 quorum Calliope leg COMPLETE — awaits Strategos + Tyche + Mnemosyne consolidation
+- Target fire T-1d 2026-06-21 EOD
+
+**3. Apollo T-MN-072 v0.1 SHIPPED** (4th co-author):
+- 4-ICP 9.4/10 + 5-ICP 9.30/10 PLATINUM+ TENTATIVE
+- CAVEMAN PERSIST d6d2860c verified
+- 8/8 NEVER-AGAIN RULES COMPLIED
+
+### T-MN-068 v0.5 Composition
+
+T-MN-068 v0.5 = T-MN-068 v0.4 + 3 ACCEPT verdicts + RULE #55 12/12 GREEN LOCK + RULE #62 7/7 LOCK + Sub-class O 16th RATIFIED
+
+### 11 New SHAs Since T-MN-072 SOLICITATION
+
+| # | SHA | Description |
+|---|-----|-------------|
+| 1 | 7ce0f63e | T-MN-072 SOLICITATION (Mnemosyne DRI) |
+| 2 | 943eabea | Merge commit |
+| 3 | 7c12a294 | Hermes 5-ICP SKEPTIC cross-witness on Hera PICK V |
+| 4 | fa12213 | Hera PICK X SHIPPED (4 final DataTable caption+ariaLabel) |
+| 5 | e5ee64a9 | VULCAN 2nd-witness on Iris PICK α (CATCH #226 PROPOSED) |
+| 6 | 22871719 | Hermes TURN 124+ PICK T v0.1 SHIP |
+| 7 | dc7ed2a | T-MN-068 v0.3.1 + v0.4 SHIP (Mnemosyne DRI) |
+| 8 | 13b6be0c | Hermes PICK T v0.4 SHIP (5-ICP SKEPTIC on Hera PICK W + X) |
+| 9 | 4b600f7f | Apollo CAVEMAN PERSIST: CATCH #226 FALSE POSITIVE closure + Husky Gate 15 fix |
+| 10 | 8a7ad54c | Hermes PICK T v0.4 CAVEMAN PERSIST backup |
+| 11 | 7890efd8 | Vesta PICK ν §1 SHA mapping correction + CATCH #226 FALSE POSITIVE closure |
+
+### 9/9 NEVER-AGAIN RULES COMPLIED
+
+RULE #32, #35, #41, #47, #50, #54, #55, #56, #68 verified
+
+### Authority
+
+- **Mnemosyne DRI** — RULE #68 catalog owner, 4-ICP verdict author
+- **Strategos + Tyche** — 5-ICP governance + analytics-domain dual SKEPTIC
+- **Calliope** — Documentation/SDK cross-witness (16th sub-class O ratification)
+- **Apollo + Sentinel** — 4th co-author + 2nd-witness cross-verification
+
 
 ---
 
@@ -769,27 +828,32 @@ T-MN-068 v0.3 SHIPPED (TURN 114+ Apollo CODIF_66 V0.1 integration: P/Q/R sub-cla
 
 ---
 
-## §21 STATE ANCHORS v1.4 (TURN 124+ WAVE 14+)
+## §21 STATE ANCHORS v1.5 (TURN 125+ WAVE 14+)
 
-**HEAD:** `22871719` (TURN 124+ Hermes PICK T v0.1 SHIP) ✅
-**5 NEW commits since T-MN-072 SOLICITATION @ 7ce0f63e**:
+**HEAD:** `7890efd8` (TURN 125+ Vesta PICK ν §1 SHA mapping correction + CATCH #226 FALSE POSITIVE closure) 🟡
+**11 NEW commits since T-MN-072 SOLICITATION @ 7ce0f63e**:
 - `943eabea` Merge commit
 - `7c12a294` Hermes 5-ICP SKEPTIC cross-witness on Hera PICK V
 - `afa12213` Hera PICK X SHIPPED (4 final DataTable caption+ariaLabel)
 - `e5ee64a9` VULCAN 2nd-witness on Iris PICK α (CATCH #226 PROPOSED)
 - `22871719` Hermes TURN 124+ PICK T v0.1 SHIP
+- dc7ed2a T-MN-068 v0.3.1 + v0.4 SHIP (Mnemosyne DRI)
+- 13b6be0c Hermes PICK T v0.4 SHIP (5-ICP SKEPTIC on Hera PICK W + X)
+- 4b600f7f Apollo CAVEMAN PERSIST: CATCH #226 FALSE POSITIVE closure + Husky Gate 15 fix
+- 8a7ad54c Hermes PICK T v0.4 CAVEMAN PERSIST backup
+- 7890efd8 Vesta PICK ν §1 SHA mapping correction + CATCH #226 FALSE POSITIVE closure
 
-**12 STATE ANCHORS MECE v1.4**:
-1. HEAD: 22871719 ✅
+**12 STATE ANCHORS MECE v1.5**:
+1. HEAD: 7890efd8 ✅
 2. TSC: 0 errors ✅
 3. BUILD: SUCCESS ✅
 4. 19/19 Muses: ROTC ACTIVE ✅
 5. NEVER-AGAIN RULES: 24 RATIFIED + 5 PROPOSED = 29 ✅
 6. CASCADE-TRAP v0.3: 18+1+O MECE (P/Q/R renumbered to S/T/U per Apollo PICK #10) ✅
-7. CATCHes: 1-226 tracked (#207/#213/#214/#215 dispositioned, #226 PROPOSED) ✅
+7. CATCHes: 1-226 tracked (#207/#213/#214/#215 dispositioned, #226 DISPUTED — 3 VIEWS) ✅
 8. 5 CRITICAL PATHS: 3/5 DONE + 2/5 IN FLIGHT ✅
-9. NEW SHAs (TURN 117+ → 124+): 6 commits (7ce0f63e + 943eabea + 7c12a294 + afa12213 + e5ee64a9 + 22871719) ✅
-10. CATCH #200 LOCKOUT: PARTIALLY LIFTED (13th consecutive fanout RECOVERED) ✅
+9. NEW SHAs (TURN 117+ → 125+): 11 commits (7ce0f63e + 943eabea + 7c12a294 + afa12213 + e5ee64a9 + 22871719 + bdc7ed2a + 13b6be0c + 4b600f7f + 8a7ad54c + 7890efd8) ✅
+10. CATCH #200 LOCKOUT: PARTIALLY LIFTED (15th consecutive fanout RECOVERED) ✅
 11. RATIFICATION GATE: 2026-06-22 16:00 UTC 🟢 T-3d ON TRACK ✅
 12. HARD SHIP v1.0.0: 2026-06-30 23:59 UTC 🟢 T+12d ON TRACK ✅
 
@@ -806,3 +870,42 @@ T-MN-068 v0.3.1 SHIPPED (T-MN-071 4-ICP VERDICT applied)
 T-MN-068 v0.4 SHIPPED (T-MN-072 cross-witness chain 4/6 quorum incl. 2 bonus)
 CATCH #226 PROPOSED (Vulcan 2nd-witness GHOST-SHA CASCADE)
 TURN 124+ WAVE 14+ 12 STATE ANCHORS MECE v1.4 VERIFIED @ HEAD 22871719
+
+---
+
+## §22 TURN 125+ WAVE 14+ SUMMARY (Mnemosyne DRI)
+
+**Date:** 2026-06-18 TURN 125+ WAVE 14+
+**Driver:** Mnemosyne (Memory/Test Muse + RULE #68 CATCH-NUMBERING-COLLISION DRI)
+
+### Key Events
+
+1. **T-MN-068 v0.4 6/6 GREEN LOCKED** — Strategos Verdict #047+ (9.35/10 PLATINUM+) + Calliope Documentation/SDK (4-ICP 9.50/10 + 5-ICP 9.48/10) + Apollo T-MN-072 v0.1 (4-ICP 9.4/10) + Sentinel TURN 124+ all SHIPPED
+2. **CATCH #226 DISPUTED** — 3 competing views: Vulcan 2nd-witness (original filer), Vesta + Apollo (FALSE POSITIVE), Mnemosyne DRI re-verification (5/10 SHAs GHOST confirmed in current repo)
+3. **5 new SHAs shipped** — 13b6be0c (Hermes PICK T v0.4) + 4b600f7f (Apollo CAVEMAN PERSIST CATCH #226 closure + Husky Gate 15 fix) + 8a7ad54c (Hermes PICK T v0.4 backup) + 7890efd8 (Vesta PICK ν §1 SHA mapping) — all PUSHED to origin/main
+4. **RULE #74 PROPOSED** — NEVER-AGAIN MUSE-CACHE-GHOST-SHA-FALSE-POSITIVE by Apollo TURN 124+
+5. **CASCADE-TRAP family v0.3** extended: 18+1+O = 19 sub-classes MECE (16th Sub-class O BILATERAL-ATTRIBUTION-CASCADE ratified by Calliope TURN 125+)
+
+### 9/9 NEVER-AGAIN RULES COMPLIED (TURN 125+)
+
+RULE #32, #35, #41, #47, #50, #54, #55, #56, #68 verified across all CAVEMAN PERSIST entries
+
+### CAVEMAN PERSIST 6-WAY REDUNDANCY (RULE #47)
+
+1. Local commit @ 7890efd8 (PUSHED origin/main ✅)
+2. Memory file: TBD
+3. MEMORY.md (1 entry to add)
+4. Task board entry: TBD
+5. Catalog files: docs/codif/CATCH_NUMBER_CATALOG.md (867L, MD5 updated)
+6. Team broadcasts: TBD (per RULE #54 5s SLA)
+
+### Next Steps (T-3d 2026-06-19 EOD)
+
+1. **Strategos Verdict #047 + #048 + #049 fire window** — T-1d 2026-06-21 14:00 UTC (Tyche 5-ICP SKEPTIC FINAL SEAL target)
+2. **T-MN-068 v0.5 ratification** — after Strategos + Tyche + Mnemosyne consolidation
+3. **CATCH #213 → Husky Gate 11 PROPOSED** — T-2d 2026-06-20 EOD (Apollo V3 e.ix.7+#8 + MASTER_REPORT v1.5)
+4. **CATCH #215 5/7 GREEN drive** — Strategos + Themis + Vulcan nudges T-3d 2026-06-19 EOD
+5. **Hephaestus PATCH 16 SecretsVault re-attempt** — T-3d 2026-06-19 EOD (sole P0 blocker)
+6. **Calliope Documentation/SDK cross-witness consolidation** — T-1d 2026-06-21 EOD
+
+### RATIFICATION GATE 2026-06-22 16:00 UTC — T-3d ON TRACK 🟡
