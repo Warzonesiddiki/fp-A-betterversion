@@ -197,7 +197,7 @@ export function ICReconciliation({
                     dir={sortDir}
                     onSort={toggleSort}
                   />
-                  <th className="p-2 text-left">Entity B</th>
+                  <th className="p-2 text-left" scope="col">Entity B</th>
                   <SortHeader
                     label="Account"
                     field="account"
@@ -205,8 +205,8 @@ export function ICReconciliation({
                     dir={sortDir}
                     onSort={toggleSort}
                   />
-                  <th className="p-2 text-right">Balance A</th>
-                  <th className="p-2 text-right">Balance B</th>
+                  <th className="p-2 text-right" scope="col">Balance A</th>
+                  <th className="p-2 text-right" scope="col">Balance B</th>
                   <SortHeader
                     label="Difference"
                     field="difference"
@@ -215,8 +215,8 @@ export function ICReconciliation({
                     onSort={toggleSort}
                     className="text-right"
                   />
-                  <th className="p-2 text-right">Diff %</th>
-                  <th className="p-2 text-center">Status</th>
+                  <th className="p-2 text-right" scope="col">Diff %</th>
+                  <th className="p-2 text-center" scope="col">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -419,7 +419,7 @@ function SortHeader({
   return (
     <th
       className={cn('cursor-pointer p-2 text-left hover:text-foreground', className)}
-      onClick={() => onSort(field)}
+      onClick={() = scope="col"> onSort(field)}
     >
       {label} {active && (dir === 'asc' ? '\u2191' : '\u2193')}
     </th>

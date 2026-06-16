@@ -271,13 +271,13 @@ export const HedgeManager = memo(function HedgeManager() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                <th className="px-4 py-3">Instrument</th>
-                <th className="px-4 py-3">Type</th>
-                <th className="px-4 py-3">Pair</th>
-                <th className="px-4 py-3 text-right">Notional</th>
-                <th className="px-4 py-3 text-right">P&L</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-4 py-3" scope="col">Instrument</th>
+                <th className="px-4 py-3" scope="col">Type</th>
+                <th className="px-4 py-3" scope="col">Pair</th>
+                <th className="px-4 py-3 text-right" scope="col">Notional</th>
+                <th className="px-4 py-3 text-right" scope="col">P&L</th>
+                <th className="px-4 py-3" scope="col">Status</th>
+                <th className="px-4 py-3 text-right" scope="col">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">

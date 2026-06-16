@@ -236,10 +236,10 @@ export function ImpactAnalysis({
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-[var(--border-subtle)]">
-                        <th className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]">
+                        <th className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]" scope="col">
                           Metric
                         </th>
-                        <th className="pb-3 px-3 text-right font-medium text-[var(--text-secondary)]">
+                        <th className="pb-3 px-3 text-right font-medium text-[var(--text-secondary)]" scope="col">
                           Base
                         </th>
                         {compareScenarios.map((s) => (
@@ -247,7 +247,7 @@ export function ImpactAnalysis({
                             key={s.id}
                             colSpan={2}
                             className="pb-3 px-3 text-center font-medium text-[var(--text-secondary)]"
-                          >
+                           scope="col">
                             {s.name}
                           </th>
                         ))}
@@ -257,10 +257,10 @@ export function ImpactAnalysis({
                         <th />
                         {compareScenarios.map((s) => (
                           <Fragment key={`h-${s.id}`}>
-                            <th className="pb-2 px-3 text-right text-xs font-normal text-[var(--text-tertiary)]">
+                            <th className="pb-2 px-3 text-right text-xs font-normal text-[var(--text-tertiary)]" scope="col">
                               Value
                             </th>
-                            <th className="pb-2 px-3 text-right text-xs font-normal text-[var(--text-tertiary)]">
+                            <th className="pb-2 px-3 text-right text-xs font-normal text-[var(--text-tertiary)]" scope="col">
                               Delta
                             </th>
                           </Fragment>

@@ -272,7 +272,7 @@ export function ReportGrid({
                   )}
                   style={{ width: col.width, minWidth: col.width }}
                   role="columnheader"
-                >
+                 scope="col">
                   {col.header}
                 </th>
               ))}

@@ -302,7 +302,7 @@ export default function ConsolidationDashboard() {
                     <tr>
                       <th scope="col" className="py-3 px-4">Account</th>
                       {entities.map((e) => (
-                        <th key={e.id} className="py-3 px-4 text-right">
+                        <th key={e.id} className="py-3 px-4 text-right" scope="col">
                           {e.name}
                         </th>
                       ))}

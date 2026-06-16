@@ -176,7 +176,7 @@ export function ScenarioComparisonPage() {
                       <th
                         key={s.id}
                         className="pb-3 px-3 text-right font-medium text-[var(--text-secondary)]"
-                      >
+                       scope="col">
                         {s.name}
                         {s.id === baseScenario.id && (
                           <span className="ml-1 text-xs text-blue-500">(base)</span>

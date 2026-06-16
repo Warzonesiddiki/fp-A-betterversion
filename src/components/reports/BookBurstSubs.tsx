@@ -110,14 +110,14 @@ export function MatrixPreview({ book, entities }: MatrixPreviewProps) {
       <table className="w-full text-xs border-collapse">
         <thead>
           <tr>
-            <th className="text-left py-1 px-2 text-[var(--text-muted)] border-b border-[var(--border-default)]">
+            <th className="text-left py-1 px-2 text-[var(--text-muted)] border-b border-[var(--border-default)]" scope="col">
               Report
             </th>
             {entities.map((e) => (
               <th
                 key={e.id}
                 className="text-center py-1 px-2 text-[var(--text-muted)] border-b border-[var(--border-default)]"
-              >
+               scope="col">
                 {e.name.split('(')[0]?.trim()}
               </th>
             ))}

@@ -163,19 +163,19 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
-                <th className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase tracking-wide">
+                <th className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase tracking-wide" scope="col">
                   Target
                 </th>
-                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide">
+                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide" scope="col">
                   Percentage
                 </th>
-                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide">
+                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide" scope="col">
                   Amount
                 </th>
-                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide">
+                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide" scope="col">
                   Effective %
                 </th>
-                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide">
+                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide" scope="col">
                   Distribution
                 </th>
               </tr>

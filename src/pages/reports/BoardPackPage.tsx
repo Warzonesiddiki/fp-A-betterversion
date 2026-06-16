@@ -325,10 +325,10 @@ export default function BoardPackPage() {
             <table className="w-full text-xs" role="grid" aria-label="Top Variances Analysis">
               <thead>
                 <tr className="text-left text-slate-500 border-b border-slate-800" role="row">
-                  <th className="pb-2" role="columnheader">
+                  <th className="pb-2" role="columnheader" scope="col">
                     Category
                   </th>
-                  <th className="pb-2 text-right" role="columnheader">
+                  <th className="pb-2 text-right" role="columnheader" scope="col">
                     Variance
                   </th>
                 </tr>

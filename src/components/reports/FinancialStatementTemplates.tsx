@@ -189,7 +189,7 @@ function StatementTable({
                 <th
                   key={col.key}
                   className={`px-3 py-2.5 font-medium ${col.align === 'right' ? 'text-right' : 'text-left'}`}
-                >
+                 scope="col">
                   {col.label}
                 </th>
               ))}

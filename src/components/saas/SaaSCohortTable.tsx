@@ -16,10 +16,10 @@ export function SaaSCohortTable({ data }: SaaSCohortTableProps) {
       <table className="w-full text-xs border-collapse">
         <thead className="bg-slate-900 text-slate-400">
           <tr>
-            <th className="p-2 border-b border-r border-slate-800 text-left">Cohort</th>
-            <th className="p-2 border-b border-r border-slate-800 text-right">Size</th>
+            <th className="p-2 border-b border-r border-slate-800 text-left" scope="col">Cohort</th>
+            <th className="p-2 border-b border-r border-slate-800 text-right" scope="col">Size</th>
             {Array.from({ length: 12 }).map((_, i) => (
-              <th key={i} className="p-2 border-b border-slate-800 text-center">
+              <th key={i} className="p-2 border-b border-slate-800 text-center" scope="col">
                 M{i}
               </th>
             ))}

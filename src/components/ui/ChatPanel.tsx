@@ -171,8 +171,8 @@ export function ChatPanel({
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="px-3 py-1.5 text-left font-medium">Label</th>
-                      <th className="px-3 py-1.5 text-right font-medium">Value</th>
+                      <th className="px-3 py-1.5 text-left font-medium" scope="col">Label</th>
+                      <th className="px-3 py-1.5 text-right font-medium" scope="col">Value</th>
                     </tr>
                   </thead>
                   <tbody>

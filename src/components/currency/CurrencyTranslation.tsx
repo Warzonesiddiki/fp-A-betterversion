@@ -251,13 +251,13 @@ export function CurrencyTranslation() {
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-white dark:bg-gray-900 dark:bg-slate-900 z-10">
                 <tr className="text-left text-slate-500 dark:text-slate-400 text-xs uppercase border-b border-slate-200 dark:border-slate-800">
-                  <th className="px-4 py-3">Account</th>
-                  <th className="px-4 py-3">Cat.</th>
-                  <th className="px-4 py-3 text-right">Local</th>
-                  <th className="px-4 py-3">Rate Type</th>
-                  <th className="px-4 py-3 text-right">Rate</th>
-                  <th className="px-4 py-3 text-right">Translated</th>
-                  <th className="px-4 py-3 text-right">CTA</th>
+                  <th className="px-4 py-3" scope="col">Account</th>
+                  <th className="px-4 py-3" scope="col">Cat.</th>
+                  <th className="px-4 py-3 text-right" scope="col">Local</th>
+                  <th className="px-4 py-3" scope="col">Rate Type</th>
+                  <th className="px-4 py-3 text-right" scope="col">Rate</th>
+                  <th className="px-4 py-3 text-right" scope="col">Translated</th>
+                  <th className="px-4 py-3 text-right" scope="col">CTA</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">

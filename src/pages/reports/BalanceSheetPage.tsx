@@ -162,10 +162,10 @@ export default function BalanceSheetPage() {
                 className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
                 role="row"
               >
-                <th className="px-6 py-3 w-1/2" role="columnheader">
+                <th className="px-6 py-3 w-1/2" role="columnheader" scope="col">
                   Account
                 </th>
-                <th className="px-6 py-3 text-right w-1/2" role="columnheader">
+                <th className="px-6 py-3 text-right w-1/2" role="columnheader" scope="col">
                   Amount
                 </th>
               </tr>

@@ -145,25 +145,25 @@ export default function BudgetListPage() {
                   className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
                   role="row"
                 >
-                  <th className="px-4 py-3" role="columnheader">
+                  <th className="px-4 py-3" role="columnheader" scope="col">
                     Name
                   </th>
-                  <th className="px-4 py-3 w-16" role="columnheader">
+                  <th className="px-4 py-3 w-16" role="columnheader" scope="col">
                     Year
                   </th>
-                  <th className="px-4 py-3 w-20" role="columnheader">
+                  <th className="px-4 py-3 w-20" role="columnheader" scope="col">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-right w-32" role="columnheader">
+                  <th className="px-4 py-3 text-right w-32" role="columnheader" scope="col">
                     Total Amount
                   </th>
-                  <th className="px-4 py-3 w-40" role="columnheader">
+                  <th className="px-4 py-3 w-40" role="columnheader" scope="col">
                     Departments
                   </th>
-                  <th className="px-4 py-3 w-24" role="columnheader">
+                  <th className="px-4 py-3 w-24" role="columnheader" scope="col">
                     Modified
                   </th>
-                  <th className="px-4 py-3 w-44" role="columnheader">
+                  <th className="px-4 py-3 w-44" role="columnheader" scope="col">
                     Actions
                   </th>
                 </tr>

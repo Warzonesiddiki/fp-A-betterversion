@@ -191,12 +191,12 @@ export function FXPositionGrid() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                <th className="px-4 py-3">Currency</th>
-                <th className="px-4 py-3 text-right">Long</th>
-                <th className="px-4 py-3 text-right">Short</th>
-                <th className="px-4 py-3 text-right">Net</th>
-                <th className="px-4 py-3 text-right">USD Value</th>
-                <th className="px-4 py-3 text-right">Positions</th>
+                <th className="px-4 py-3" scope="col">Currency</th>
+                <th className="px-4 py-3 text-right" scope="col">Long</th>
+                <th className="px-4 py-3 text-right" scope="col">Short</th>
+                <th className="px-4 py-3 text-right" scope="col">Net</th>
+                <th className="px-4 py-3 text-right" scope="col">USD Value</th>
+                <th className="px-4 py-3 text-right" scope="col">Positions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
@@ -255,11 +255,11 @@ export function FXPositionGrid() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-700">
-                <th className="px-2 py-2">Counterparty</th>
-                <th className="px-2 py-2 text-right">Long</th>
-                <th className="px-2 py-2 text-right">Short</th>
-                <th className="px-2 py-2 text-right">Net</th>
-                <th className="px-2 py-2">Maturity</th>
+                <th className="px-2 py-2" scope="col">Counterparty</th>
+                <th className="px-2 py-2 text-right" scope="col">Long</th>
+                <th className="px-2 py-2 text-right" scope="col">Short</th>
+                <th className="px-2 py-2 text-right" scope="col">Net</th>
+                <th className="px-2 py-2" scope="col">Maturity</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">

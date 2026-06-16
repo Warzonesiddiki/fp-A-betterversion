@@ -129,10 +129,10 @@ export function ScenarioComparisonGrid({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--border-subtle)] dark:border-gray-700">
-                <th className="py-2 pr-4 text-left font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)]">
+                <th className="py-2 pr-4 text-left font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)]" scope="col">
                   Metric
                 </th>
-                <th className="py-2 px-3 text-right font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)]">
+                <th className="py-2 px-3 text-right font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)]" scope="col">
                   Base
                 </th>
                 {rankedScenarios.map((s) => (
@@ -140,7 +140,7 @@ export function ScenarioComparisonGrid({
                     key={s.id}
                     className="py-2 px-3 text-right font-medium"
                     style={{ color: s.color }}
-                  >
+                   scope="col">
                     {s.name}
                   </th>
                 ))}
@@ -148,7 +148,7 @@ export function ScenarioComparisonGrid({
                   <th
                     key={`var-${s.id}`}
                     className="py-2 px-3 text-right font-medium text-[var(--text-muted)] text-xs"
-                  >
+                   scope="col">
                     Δ vs Base
                   </th>
                 ))}

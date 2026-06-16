@@ -299,7 +299,7 @@ export default function TemplateGalleryPage() {
                       <tr className="border-b bg-muted">
                         <th scope="col" className="text-left p-2">Item</th>
                         {selectedTemplate.columns.slice(1).map((col) => (
-                          <th key={col.key} className="text-right p-2">
+                          <th key={col.key} className="text-right p-2" scope="col">
                             {col.label}
                           </th>
                         ))}

@@ -377,16 +377,16 @@ export default function RollingForecastPage() {
                 <table className="w-full text-sm" role="grid" aria-label="Forecast summary">
                   <thead>
                     <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                      <th className="px-4 py-2" role="columnheader">
+                      <th className="px-4 py-2" role="columnheader" scope="col">
                         Period
                       </th>
-                      <th className="px-4 py-2 text-right" role="columnheader">
+                      <th className="px-4 py-2 text-right" role="columnheader" scope="col">
                         Actual
                       </th>
-                      <th className="px-4 py-2 text-right" role="columnheader">
+                      <th className="px-4 py-2 text-right" role="columnheader" scope="col">
                         Forecast
                       </th>
-                      <th className="px-4 py-2 text-right" role="columnheader">
+                      <th className="px-4 py-2 text-right" role="columnheader" scope="col">
                         Variance
                       </th>
                     </tr>

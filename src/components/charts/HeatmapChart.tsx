@@ -62,13 +62,13 @@ export function HeatmapChart({
       <table className="border-collapse">
         <thead>
           <tr>
-            <th className="p-1"></th>
+            <th className="p-1" scope="col"></th>
             {xLabels.map((x) => (
               <th
                 key={x}
                 className="p-1 text-xs text-center font-medium"
                 style={{ width: cellSize }}
-              >
+               scope="col">
                 {x}
               </th>
             ))}

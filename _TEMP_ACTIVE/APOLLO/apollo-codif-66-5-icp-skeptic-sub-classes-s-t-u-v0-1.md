@@ -1,4 +1,4 @@
-# CODIF 66 V0.1 (SUB-CLASSES P, Q, R) — NEVER-AGAIN RULES: 5-ICP-SKEPTIC DEFENSE-IN-DEPTH
+# CODIF 66 V0.1 (SUB-CLASSES S, T, U) — NEVER-AGAIN RULES: 5-ICP-SKEPTIC DEFENSE-IN-DEPTH
 
 **Status:** v0.1 DRAFT (D-002 3-witness PENDING — T+1d 2026-06-23/24)
 **Author:** Apollo (TypeScript Foundation + Pure-Function Engines Muse, slot 019ecbef-7a87-7cb2-8a03-0e6610b63a7e)

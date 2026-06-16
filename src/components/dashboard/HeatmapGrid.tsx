@@ -135,14 +135,14 @@ export const HeatmapGrid = memo(function HeatmapGrid({
       <table className="w-full border-collapse text-xs">
         <thead>
           <tr>
-            <th className="text-left p-2 font-medium text-[var(--text-muted)] border-b border-[var(--border-subtle)]">
+            <th className="text-left p-2 font-medium text-[var(--text-muted)] border-b border-[var(--border-subtle)]" scope="col">
               Account
             </th>
             {columns.map((col) => (
               <th
                 key={col}
                 className="text-right p-2 font-medium text-[var(--text-muted)] border-b border-[var(--border-subtle)] whitespace-nowrap"
-              >
+               scope="col">
                 {col}
               </th>
             ))}

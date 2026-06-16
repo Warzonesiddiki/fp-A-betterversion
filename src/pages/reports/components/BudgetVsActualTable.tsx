@@ -38,22 +38,22 @@ export const BudgetVsActualTable = memo(function BudgetVsActualTable({
             className="text-left text-slate-400 text-xs uppercase border-b border-[var(--border-subtle)]"
             role="row"
           >
-            <th className="px-6 py-3" role="columnheader">
+            <th className="px-6 py-3" role="columnheader" scope="col">
               Account
             </th>
-            <th className="px-6 py-3 text-right" role="columnheader">
+            <th className="px-6 py-3 text-right" role="columnheader" scope="col">
               Budget
             </th>
-            <th className="px-6 py-3 text-right" role="columnheader">
+            <th className="px-6 py-3 text-right" role="columnheader" scope="col">
               Actual
             </th>
-            <th className="px-6 py-3 text-right" role="columnheader">
+            <th className="px-6 py-3 text-right" role="columnheader" scope="col">
               Variance
             </th>
-            <th className="px-6 py-3 text-right" role="columnheader">
+            <th className="px-6 py-3 text-right" role="columnheader" scope="col">
               % Var
             </th>
-            <th className="px-6 py-3 text-center" role="columnheader">
+            <th className="px-6 py-3 text-center" role="columnheader" scope="col">
               Status
             </th>
           </tr>
