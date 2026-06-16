@@ -342,7 +342,12 @@ export default function REITDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={reitPerformance} />
+          <DataTable
+            columns={columns}
+            data={reitPerformance}
+            caption="REIT portfolio performance metrics"
+            ariaLabel="REIT performance table"
+          />
         </CardContent>
       </Card>
     </div>

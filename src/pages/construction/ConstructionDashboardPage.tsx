@@ -299,7 +299,12 @@ export default function ConstructionDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={projectStatus} />
+          <DataTable
+            columns={columns}
+            data={projectStatus}
+            caption="Construction project status overview"
+            ariaLabel="Construction project status table"
+          />
         </CardContent>
       </Card>
     </div>

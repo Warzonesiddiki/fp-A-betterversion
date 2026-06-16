@@ -319,7 +319,12 @@ export default function HealthcareDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={departmentPerformance} />
+          <DataTable
+            columns={columns}
+            data={departmentPerformance}
+            caption="Healthcare department performance metrics"
+            ariaLabel="Department performance table"
+          />
         </CardContent>
       </Card>
     </div>
