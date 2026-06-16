@@ -46,4 +46,35 @@ timeout 240 npx vitest run \
 # Gate 4 — Vite production build (catches build-time-only failures, e.g. tsx-typing in build context)
 timeout 240 npm run build || { echo "❌ Build failed (or timed out at 240s). Push blocked."; exit 1; }
 
+# Gate 5 — NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK)
+# FOUNDER DIRECTIVE 2026-06-16 — closes CATCH #187 (Tyche P0 SHA-MISATTRIBUTION in 81d9cd27).
+# Procedure: extract all 7+ char hex SHAs from unpushed commit messages, verify each
+# one exists in `git log --all`. If any GHOST SHA found, ABORT push and reconcile.
+# Co-sign: Atlas (infra) + Hephaestus (security) + Mnemosyne (testing).
+# Documentation: docs/codif/RULE_55.md (when codif lands) — see also RULE #53 GHOST-SHA-DETECTION
+# (Leader-side 5th-ICP SHA verification) which is the corresponding pre-ceremony gate.
+# Note: uses `git rev-parse --verify` (works for both short and full SHAs, branches, and tags).
+unpushed_shas=$(git log @{u}..HEAD --format='%B' 2>/dev/null | grep -oE '\b[0-9a-f]{7,40}\b' | sort -u)
+if [ -n "$unpushed_shas" ]; then
+  ghost_count=0
+  for sha in $unpushed_shas; do
+    # Skip our own HEAD SHAs (always valid by definition)
+    head_short=$(git rev-parse --short HEAD 2>/dev/null)
+    head_full=$(git rev-parse HEAD 2>/dev/null)
+    case "$sha" in
+      "$head_short"|"$head_full") continue ;;
+    esac
+    if ! git rev-parse --verify "$sha^{commit}" >/dev/null 2>&1; then
+      echo "⚠️  GHOST SHA detected: $sha (cited in commit message but not in git history)"
+      ghost_count=$((ghost_count + 1))
+    fi
+  done
+  if [ $ghost_count -gt 0 ]; then
+    echo "❌ NEVER-AGAIN RULE #55 violation: $ghost_count GHOST SHA(s) in commit messages."
+    echo "   Procedure: verify the cited SHA, fix the commit message, then re-push."
+    echo "   Reference: docs/codif/RULE_55.md (NEVER-AGAIN RULE #55)"
+    exit 1
+  fi
+fi
+
 echo "✅ All pre-push checks passed."
