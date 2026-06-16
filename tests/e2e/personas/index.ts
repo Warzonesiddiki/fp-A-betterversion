@@ -1,8 +1,9 @@
 /**
  * PERSONA TEST ALIASES — BARREL INDEX
- * Owner: Sentinel (slot 019ecc6f-1c06-79c0-953c-91c537b63c39)
- * Source: docs/ratification/RATIFICATION_GATE_PRECHECK_PERSONA_UX.md v0.1 §Dim 5
- * Coverage: 10 personas × {main alias + sub-aliases} = 18 test files
+ * Owner: Sentinel (slot 019ecc6f-1c06-79c0-953c-91c537b63c39) + Iris (slot 019ecc6f-1bcc-7d73-9cd8-e1deb114d270) co-author
+ * Source: docs/ratification/RATIFICATION_GATE_PRECHECK_PERSONA_UX.md v0.1.2 §Dim 5
+ * Coverage: 12 personas × {main alias + sub-aliases} = 22 test files
+ * v0.1.2 amendment (PICK M, 2026-06-17): +2 sectors (Real Estate RE-001 + Telecom TEL-001) per Vesta SECTOR_ENGINE_AUDIT v0.6 (5fae34d26)
  * Purpose: Persona-named lookup over feature-named journey specs in `journeys/`
  * See: tests/e2e/USER_JOURNEY_TEST_COVERAGE.md v0.3 §3 (Persona Mapping Matrix)
  *
@@ -28,4 +29,10 @@ export const PERSONA_ALIAS_MAP = {
   'sector-nonprofit':         { journeys: ['06-backup-restore', '10-temporal-e2e-cross-check'], tests: 2 },
   'sector-nonprofit-form990': { journeys: ['10-temporal-e2e-cross-check'], tests: 1 },
   'sector-healthcare':        { journeys: ['08-temporal-edge-cases', '09-cross-muse-integration'], tests: 2 },
+  'sector-real-estate':       { journeys: ['02-multi-scenario', '04-variance-analysis', '06-backup-restore'], tests: 3 },
+  'sector-real-estate-irr':   { journeys: ['04-variance-analysis'], tests: 1 },
+  'sector-telecom':           { journeys: ['02-multi-scenario', '04-variance-analysis', '07-plugin-sandbox'], tests: 3 },
+  'sector-telecom-churn':     { journeys: ['04-variance-analysis'], tests: 1 },
 } as const;
+
+export type PersonaAliasKey = keyof typeof PERSONA_ALIAS_MAP;
