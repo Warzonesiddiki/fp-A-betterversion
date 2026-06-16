@@ -231,7 +231,7 @@ async function sha256Hex(s: string): Promise<string> {
   const bytes = new Uint8Array(buf);
   let out = '';
   for (let i = 0; i < bytes.length; i++) {
-    out += bytes[i].toString(16).padStart(2, '0');
+    out += bytes[i]!.toString(16).padStart(2, '0');
   }
   return out;
 }
@@ -252,7 +252,7 @@ async function hmacSha256Hex(key: Uint8Array, message: string): Promise<string> 
   const bytes = new Uint8Array(sig);
   let out = '';
   for (let i = 0; i < bytes.length; i++) {
-    out += bytes[i].toString(16).padStart(2, '0');
+    out += bytes[i]!.toString(16).padStart(2, '0');
   }
   return out;
 }
@@ -262,7 +262,7 @@ function randomHex(byteLength: number): string {
   crypto.getRandomValues(bytes);
   let out = '';
   for (let i = 0; i < bytes.length; i++) {
-    out += bytes[i].toString(16).padStart(2, '0');
+    out += bytes[i]!.toString(16).padStart(2, '0');
   }
   return out;
 }
@@ -444,7 +444,7 @@ export class PIIRedactor {
 
   getEventById(idx: number): PIIRedactionAuditEvent | null {
     if (idx < 0 || idx >= this.events.length) return null;
-    return this.events[idx];
+    return this.events[idx]!;
   }
 
   getEvents(): PIIRedactionAuditEvent[] {
@@ -454,7 +454,7 @@ export class PIIRedactor {
   async verifyChain(): Promise<{ valid: boolean; firstFailure: number; reason: string | null; inspected: number; chainHead: string }> {
     let prev = PII_REDACTION_CONSTANTS.SCHEMA_VERSION.toString();
     for (let i = 0; i < this.events.length; i++) {
-      const e = this.events[i];
+      const e = this.events[i]!;
       if (e.prevChainHash !== prev) {
         return { valid: false, firstFailure: i, reason: 'prevChainHash mismatch', inspected: i + 1, chainHead: this.chainHead };
       }

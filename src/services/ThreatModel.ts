@@ -661,7 +661,7 @@ export class ThreatModel {
       if (!riskByAsset[t.asset]) {
         riskByAsset[t.asset] = { count: 0, meanDread: 0, maxDread: 0 };
       }
-      const a = riskByAsset[t.asset];
+      const a = riskByAsset[t.asset]!;
       a.count += 1;
       a.meanDread += t.dreadMean;
       if (t.dreadMean > a.maxDread) {
@@ -669,8 +669,8 @@ export class ThreatModel {
       }
     }
     for (const asset of Object.keys(riskByAsset)) {
-      if (riskByAsset[asset].count > 0) {
-        riskByAsset[asset].meanDread = riskByAsset[asset].meanDread / riskByAsset[asset].count;
+      if (riskByAsset[asset]!.count > 0) {
+        riskByAsset[asset]!.meanDread = riskByAsset[asset]!.meanDread / riskByAsset[asset]!.count;
       }
     }
 
