@@ -43,6 +43,10 @@ import { RealtimeChannel } from './realtime/RealtimeChannel';
 /**
  * Translate the SDK's public `AuthConfig` (discriminated union) into the
  * internal `ConnectorAuthConfig` shape that `RestApiClient` expects.
+ *
+ * Note: the internal config uses snake_case enum values (`'api_key'`,
+ * not `'apiKey'`) and splits OAuth2 flow config from runtime tokens.
+ * The SDK collapses the two into a single `AuthConfig` value.
  */
 function toConnectorAuth(auth: AuthConfig): ConnectorAuthConfig {
   switch (auth.type) {
@@ -50,19 +54,24 @@ function toConnectorAuth(auth: AuthConfig): ConnectorAuthConfig {
       return {
         type: 'oauth2',
         oauth2: {
-          accessToken: auth.accessToken,
-          ...(auth.refreshToken !== undefined ? { refreshToken: auth.refreshToken } : {}),
-          ...(auth.clientId !== undefined ? { clientId: auth.clientId } : {}),
-          ...(auth.clientSecret !== undefined ? { clientSecret: auth.clientSecret } : {}),
-          ...(auth.expiresAt !== undefined ? { expiresAt: auth.expiresAt } : {}),
+          clientId: auth.client.clientId,
+          clientSecret: auth.client.clientSecret,
+          tokenUrl: auth.client.tokenUrl,
+          // Internal OAuth2Config requires all six fields. Public type marks
+          // authorizationUrl / redirectUri / scopes as optional; fall back to
+          // safe defaults so the constructor signature is satisfied.
+          authorizationUrl: auth.client.authorizationUrl ?? auth.client.tokenUrl,
+          redirectUri: auth.client.redirectUri ?? '',
+          scopes: auth.client.scopes ? [...auth.client.scopes] : [],
         },
       };
     case 'apiKey':
       return {
-        type: 'apiKey',
+        type: 'api_key',
         apiKey: {
-          apiKey: auth.apiKey,
-          ...(auth.headerName !== undefined ? { headerName: auth.headerName } : {}),
+          // Internal ApiKeyConfig requires `headerName`; default to `X-API-Key`.
+          headerName: auth.headerName ?? 'X-API-Key',
+          key: auth.apiKey,
         },
       };
     case 'bearer':
@@ -70,6 +79,22 @@ function toConnectorAuth(auth: AuthConfig): ConnectorAuthConfig {
     case 'basic':
       return { type: 'basic', basic: { username: auth.username, password: auth.password } };
   }
+}
+
+/**
+ * Seed OAuth2 runtime tokens on the underlying `RestApiClient`. The
+ * constructor only accepts the OAuth2 *flow* config; runtime tokens are
+ * passed separately via `setOAuthTokens`.
+ */
+function seedOAuthTokens(rest: RestApiClient, auth: Extract<AuthConfig, { type: 'oauth2' }>): void {
+  const tokens = {
+    accessToken: auth.tokens.accessToken,
+    refreshToken: auth.tokens.refreshToken,
+    expiresAt: auth.tokens.expiresAt,
+    tokenType: auth.tokens.tokenType ?? 'Bearer',
+    ...(auth.tokens.scope !== undefined ? { scope: auth.tokens.scope } : {}),
+  };
+  rest.setOAuthTokens(tokens);
 }
 
 /** Derive the WebSocket URL from the REST base URL when not explicitly set. */
@@ -86,7 +111,7 @@ function toRealtimeUrl(baseUrl: string, override?: string): string {
 function extractWsToken(auth: AuthConfig): string {
   switch (auth.type) {
     case 'oauth2':
-      return auth.accessToken;
+      return auth.tokens.accessToken;
     case 'bearer':
       return auth.token;
     case 'apiKey':
@@ -332,6 +357,11 @@ export class FpaClient {
       retryCount: config.retryCount ?? DEFAULT_RETRY_COUNT,
       headers: { ...this.staticHeaders },
     });
+
+    // Seed OAuth2 runtime tokens (the constructor only accepts flow config).
+    if (config.auth.type === 'oauth2') {
+      seedOAuthTokens(this.rest, config.auth);
+    }
 
     this.qbo = new QboNamespace(this);
     this.xero = new XeroNamespace(this);

@@ -575,27 +575,62 @@ api.ui.showNotification({
 
 ---
 
-## 6. SDK Quick-Start (PICK C preview)
+## 6. SDK Quick-Start
+
+> ✅ **SHIPPED in CYCLE 6 PICK C** (commit `c9b7feb6`, `src/sdk/`). For full
+> install / quick-start / API surface, see `src/sdk/README.md`. The example
+> below mirrors the shipped SDK.
 
 ```ts
-// future: src/sdk/FpaClient.ts (PICK C)
-import { FpaClient } from '@fpa/sdk';
+// src/sdk/* — committed in c9b7feb6
+import { FpaClient } from './src/sdk';
 
 const fpa = new FpaClient({
   baseUrl: 'https://api.fpa.example.com',
-  auth: { type: 'bearer', bearer: { token: USER_TOKEN } },
+  auth: { type: 'bearer', token: USER_TOKEN },
 });
 
-const accounts = await fpa.accounts.list({ page: 1, pageSize: 50 });
-const invoice = await fpa.invoices.create({
-  customerId: 'cus_123',
-  lines: [{ itemId: 'item_1', quantity: 1, unitPrice: 100.00 }],
+// Connector-namespaced CRUD
+const accounts = await fpa.qbo.accounts.list({ page: 1, pageSize: 50 });
+const invoice = await fpa.qbo.invoices.create({
+  // See §1.5 for the full QBO invoice shape; SDK passes through `unknown` body.
+  CustomerRef: { value: 'cus_123' },
+  Line: [{ DetailType: 'SalesItemLineDetail', Amount: 100, SalesItemLineDetail: { ItemRef: { value: 'item_1' } } }],
 });
 
-// Real-time subscription
-const channel = fpa.realtime.connect({ token: USER_TOKEN });
-channel.on('scenario:change', (e) => console.log(e));
+// Real-time subscription (typed 10-event taxonomy)
+const channel = fpa.realtime.connect();
+channel.subscribe('cell:edit', (e) => console.log(`${e.payload.cell} → ${e.payload.value}`));
+channel.onState((state) => console.log('realtime →', state));
+
+// Result-style helpers (never throw)
+const r = await fpa.getResult<{ balance: number }>('/api/balance');
+if (r.ok) console.log(r.value.balance);
+else console.error(r.error.code, r.error.message);
 ```
+
+For OAuth2, the public `AuthConfig` is richer (flow config + runtime tokens):
+
+```ts
+const fpa = new FpaClient({
+  auth: {
+    type: 'oauth2',
+    client: {
+      clientId: process.env.OAUTH_CLIENT_ID!,
+      clientSecret: process.env.OAUTH_CLIENT_SECRET!,
+      tokenUrl: 'https://oauth.provider.com/token',
+      scopes: ['read', 'write'],
+    },
+    tokens: {
+      accessToken: USER_TOKEN,
+      refreshToken: USER_REFRESH,
+      expiresAt: Date.now() + 3600_000,
+    },
+  },
+});
+```
+
+For the full surface, see `src/sdk/README.md` and the typed barrel export in `src/sdk/index.ts`.
 
 ---
 

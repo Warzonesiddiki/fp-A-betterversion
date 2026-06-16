@@ -5,28 +5,77 @@
  * generic and stable: breaking changes here are tracked via the `SdkVersion`
  * export and versioned per the rules in `docs/parts/API_REFERENCE.md` §11.
  *
+ * The shape is a thin, ergonomic wrapper over the internal `ConnectorAuthConfig`
+ * (see `src/services/api-integration/types.ts`). Where the internal config
+ * uses snake_case enum values (`'api_key'`) and separates OAuth2 flow config
+ * from runtime tokens, the SDK combines them so a single `AuthConfig` value
+ * is enough to construct a working `FpaClient`.
+ *
  * @module sdk/types
  */
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 /**
+ * OAuth2 client configuration (the OAuth2 *flow* config, not the runtime
+ * tokens). Required when `AuthConfig.type === 'oauth2'` so the underlying
+ * `RestApiClient` can refresh expired access tokens.
+ */
+export interface OAuth2ClientConfig {
+  /** OAuth2 client identifier (registered with the auth provider). */
+  readonly clientId: string;
+  /** OAuth2 client secret. NEVER log this. */
+  readonly clientSecret: string;
+  /** Token endpoint URL (e.g. `https://oauth.platform.example.com/token`). */
+  readonly tokenUrl: string;
+  /** Authorization endpoint URL (for code-flow bootstrapping). */
+  readonly authorizationUrl?: string;
+  /** Redirect URI registered with the auth provider. */
+  readonly redirectUri?: string;
+  /** OAuth2 scopes to request. */
+  readonly scopes?: readonly string[];
+}
+
+/**
+ * OAuth2 runtime tokens. Stored on the underlying `RestApiClient` after
+ * the SDK is constructed; the SDK calls `setOAuthTokens` for the user.
+ *
+ * NOTE: `refreshToken`, `expiresAt`, and `tokenType` are all **required**
+ * because the internal `OAuth2Tokens` type declares them required. If you
+ * do not yet have a refresh token, pass an empty string — refresh is a
+ * no-op in that case. `expiresAt` should be the epoch-ms when the access
+ * token expires; pass `0` if unknown and the client will not preemptively
+ * refresh.
+ */
+export interface OAuth2TokenState {
+  /** Current access token. */
+  readonly accessToken: string;
+  /** Refresh token. Required by the internal API — pass `''` if unknown. */
+  readonly refreshToken: string;
+  /** Epoch-ms when the access token expires. `0` disables preemptive refresh. */
+  readonly expiresAt: number;
+  /** OAuth2 scope granted by the auth provider. */
+  readonly scope?: string;
+  /** Token type (defaults to `'Bearer'` if omitted). */
+  readonly tokenType?: string;
+}
+
+/**
  * Auth strategy discriminated union.
  *
- * - `oauth2`: OAuth2 access token, optionally with refresh-token rotation.
+ * - `oauth2`: full OAuth2 — client config + runtime tokens. The SDK wires
+ *   the client config into `RestApiClient` (so it can refresh) and seeds
+ *   the runtime tokens via `setOAuthTokens`.
  * - `apiKey`:  Custom header (default `X-API-Key`).
  * - `bearer`:  Static bearer token (no refresh).
- * - `basic`:   HTTP Basic credentials.
+ * - `basic`:   HTTP Basic credentials. **HTTPS only** (the underlying
+ *   client warns if `baseUrl` is `http:`).
  */
 export type AuthConfig =
   | {
       readonly type: 'oauth2';
-      readonly accessToken: string;
-      readonly refreshToken?: string;
-      readonly clientId?: string;
-      readonly clientSecret?: string;
-      /** Epoch-ms when the access token expires. */
-      readonly expiresAt?: number;
+      readonly client: OAuth2ClientConfig;
+      readonly tokens: OAuth2TokenState;
     }
   | { readonly type: 'apiKey'; readonly apiKey: string; readonly headerName?: string }
   | { readonly type: 'bearer'; readonly token: string }

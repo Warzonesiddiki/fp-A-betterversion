@@ -14,7 +14,7 @@
  * @module sdk/realtime/RealtimeChannel
  */
 
-import { WebSocketManager } from '../../../services/WebSocketManager';
+import { WebSocketManager } from '../../services/WebSocketManager';
 import type {
   ConnectionState,
   ConnectionStateListener,
