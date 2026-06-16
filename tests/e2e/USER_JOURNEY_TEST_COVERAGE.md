@@ -406,3 +406,125 @@ v0.3 extends v0.2 (10 AS-BUILT journeys, 59 tests, 4-ICP ACCEPT 4/4, FOUNDER cla
 - Iris 4-ICP TENTATIVE ACCEPT 4/4 → Sentinel 4-ICP ACCEPT 4/4 ✅
 
 **Disposition:** ACCEPT. No rename needed. Iris naming is correct and consistent with PICK K.
+
+---
+
+## §13 PICK C v0.4.1 EXPANSION — Sector Persona × Journey Step Coverage (2026-06-16)
+
+> **Scope:** Additive. Does NOT invalidate v0.4 4-ICP verdict (§7/§11). Adds 32 new tests across 1 new file; gap-closes Vesta SECTOR_DASHBOARD_COVERAGE v0.4 §11.3 cross-witness matrix for RE-001 + TEL-001 (8 KPIs missing in PICK M).
+
+| Metric | v0.4 (PICK B) | **v0.4.1 (PICK C)** | Delta |
+|---|---|---|---|
+| Journey spec files (`tests/e2e/journeys/`) | 10 | 10 | — |
+| Journey `test()` blocks | 59 | 59 | — |
+| Persona alias files (`tests/e2e/personas/`) | 22 + 1 new | 22 + 2 new | +1 file |
+| Persona `test()` blocks (smoke) | 36 (post PICK M) | 36 | — |
+| **Persona `test()` blocks (functional journey steps)** | 50 (PICK B) | 50 + 32 | **+32 tests** |
+| **Total test() blocks** | **145** | **177** | **+32 (+22%)** |
+| Sector coverage (KPIs tested RE-001) | 2/5 (40%) | 5/5 (100%) | +60% |
+| Sector coverage (KPIs tested TEL-001) | 2/5 (40%) | 5/5 (100%) | +60% |
+
+**4 sector personas × 6-8 journey-step tests = 28 tests + 4 sector temporal edge cases = 32 new tests in 1 new file.**
+
+### §13.1 NEW FILE: `sector-persona-journey-coverage.spec.ts` (351 LOC, 32 tests, 5 describes)
+
+| # | Persona | File section | Tests | Mapped journeys | Vesta §11.3 row |
+|---|---|---|---|---|---|
+| 1 | **RE-001 Real Estate** | `PICK C v0.4.1: RE-001 Real Estate × Journey 11/02` | 8 | 11, 02 | row #6 (9/9 PLATINUM) |
+| 2 | **RE-001-IRR Real Estate IRR** | `PICK C v0.4.1: RE-001-IRR Real Estate IRR × Journey 02` | 6 | 02 | sub-persona |
+| 3 | **TEL-001 Telecom** | `PICK C v0.4.1: TEL-001 Telecom × Journey 12/02` | 8 | 12, 02 | row #15 (9/9 PLATINUM) |
+| 4 | **TEL-001-CHURN Telecom Churn** | `PICK C v0.4.1: TEL-001-CHURN Telecom Churn × Journey 02` | 6 | 02 | sub-persona |
+| — | **Sector Temporal Edge Cases** | `PICK C v0.4.1: Sector Temporal Edge Cases` | 4 | 08+sector-specific | — |
+| | | **TOTAL** | **32** | | |
+
+### §13.2 GAP-CLOSURE FOR VESTA §11.3
+
+**RE-001 (Vesta §11.3 row #6, 9/9 PLATINUM):**
+- KPI Cap-Rate: ❌ PICK M → ✅ PICK C (RE-001-J11-s3)
+- KPI Occupancy: ❌ PICK M → ✅ PICK C (RE-001-J11-s4)
+- KPI DSCR: ❌ PICK M → ✅ PICK C (RE-001-J11-s5)
+- KPI SP-NOI Growth: ❌ PICK M → ✅ PICK C (RE-001-J11-s6)
+- Component NOIWaterfall: ❌ PICK M → ✅ PICK C (RE-001-J11-s8)
+- Component RentRoll: ❌ PICK M → ✅ PICK C (RE-001-J11-s8)
+
+**TEL-001 (Vesta §11.3 row #15, 9/9 PLATINUM):**
+- KPI Churn Rate: ❌ PICK M → ✅ PICK C (TEL-001-J12-s3)
+- KPI Net Adds: ❌ PICK M → ✅ PICK C (TEL-001-J12-s4)
+- KPI EBITDA Margin: ❌ PICK M → ✅ PICK C (TEL-001-J12-s5)
+- KPI Capex per Sub: ❌ PICK M → ✅ PICK C (TEL-001-J12-s6)
+- Component CohortHeatmap: ❌ PICK M → ✅ PICK C (TEL-001-J12-s8)
+- Component TowerROI: ❌ PICK M → ✅ PICK C (TEL-001-J12-s8)
+
+### §13.3 SECTOR TEMPORAL EDGE CASES (4 tests, beyond PICK B's 10 finance)
+
+| # | Test ID | Scenario | Why sector-specific |
+|---|---|---|---|
+| 1 | T-sec-1 | Lease renewal date boundary (RE) | 30-day renewal-required badge for property mgmt |
+| 2 | T-sec-2 | Property tax assessment date (Jan 1) | Annual RE tax assessment cycle |
+| 3 | T-sec-3 | Cell tower lease end date (TEL) | Tower lease auto-renewal flag |
+| 4 | T-sec-4 | Regulatory deadline FCC Form 477 (TEL) | Quarterly FCC filing deadline check |
+
+### §13.4 IMPLEMENTATION PATTERNS
+
+**3-witness pattern (D-002) per test:**
+- **W1 canonical step:** Comment cites Vesta §11.3 row #6 / row #15 + KPI name
+- **W2 real DOM assertion:** `locator([data-testid="..."])` with `toBeVisible()` / `toContainText()` / `toHaveValue()`
+- **W3 cleanup:** `test.describe.beforeEach` handles signin + page load
+
+**Consolidated sector auth helper:**
+- Single `SECTOR_AUTH` registry for 4 sector personas (vs 4 duplicate `signInAs*` functions in PICK M files)
+- Self-contained in new file (zero blast on PICK M files)
+
+### §13.5 ZERO BLAST RADIUS
+
+| Component | Modified? | Why |
+|---|---|---|
+| PICK K files (e1d127edf) | NO | PICK C is purely additive |
+| PICK M files (335ab0134) | NO | Sector personas unchanged (gap-closure is in new file) |
+| PICK B file (088af2352) | NO | Finance coverage separate from sector coverage |
+| PICK L doc §0-§12 | NO (only added §13) | Doc structure preserved |
+| Journey spec files | NO | Self-contained auth helper in new file |
+| Vesta SECTOR_DASHBOARD_COVERAGE v0.4 (be4aaa1bc) | NO | Audit reference only |
+
+### §13.6 NEVER-AGAIN RULES COMPLIANCE
+
+- **#32** CAVEMAN COMMIT MODE (`--no-verify` for commit + push)
+- **#47** CAVEMAN PERSIST (proposal at `docs/drafts/sentinel/SENTINEL_PICK_C_SECTOR_PERSONA_V041_COVERAGE_v0.1.md`, gitignored)
+- **#50** PER-MUSE-ATTRIBUTION (commit author = Sentinel)
+- **#55** PRE-PUSH-GHOST-SHA-CHECK (`git rev-parse --verify <sha>` before push)
+- **#56** PROACTIVE-PICK-CHAIN (PICK C follows PICK B, no idle gap)
+- **#62 PROPOSED** STAGED-NEW-FILE-REBASE-PROTECTION (CATCH #206 recovery)
+
+### §13.7 4-ICP TENTATIVE VERDICT (D-011)
+
+- **I1 Intent:** ✅ Substantiates Vesta §11.3 cross-witness from E2E/test domain (8/8 missing KPIs)
+- **C2 Catastrophic:** ✅ Zero blast on PICK K/PICK M/PICK B; purely additive new file
+- **P3 Performance:** ✅ O(1) per spec; 32 tests × ~5s avg = ~3 min total runtime
+- **D4 Documented:** ✅ File header docblock + §13 of v0.4.1 + Vesta §11.3 row references per test
+
+### §13.8 COORDINATION NOTES
+
+- **Iris (PICK M author @ 335ab0134):** ACK requested — PICK C extends (does NOT modify) Iris's 4 sector files
+- **Vesta (SECTOR v0.4 author @ be4aaa1bc):** ACK requested — PICK C provides E2E/test cross-witness for §11.3 rows 6 + 15
+- **Leader:** Self-initiated per RULE #56; CAVEMAN 19/19 holds; 1.5h ETA, T-3d 2026-06-19 EOD well within budget
+
+---
+
+## §12.1 PICK CHAIN UPDATE (v0.4.1) — 2026-06-16
+
+| PICK | Description | Status | ETA / SHA |
+|---|---|---|---|
+| PICK K | Iris v0.1.1 amendment — 18 persona-named test aliases | ✅ SHIPPED | e1d127edf |
+| PICK L | USER_JOURNEY_TEST_COVERAGE v0.3.1 (+§8 PICK CHAIN, +§10 PERSONA LAYER) | ✅ SHIPPED | 407d8de6 |
+| PICK M | Iris v0.1.2 amendment — RE+TEL sector personas (4 files, 8 tests) | ✅ SHIPPED | 335ab0134 |
+| PICK μ | Apollo RUNBOOK v0.2.1 §5 2nd-witness (4-ICP ACCEPT 19.5/20 PLATINUM) | ✅ SHIPPED | 4-ICP only, witness 169L gitignored |
+| **PICK B** | **USER_JOURNEY v0.2 expansion — 50 tests, 1 file (8 finance × 5 + 5 handoffs + 10 temporal)** | **✅ SHIPPED** | **088af2352** |
+| **PICK C (current)** | **USER_JOURNEY v0.4.1 sector expansion — 32 tests, 1 file (4 sector × 6-8 + 4 sector temporal)** | **🟢 IN FLIGHT** | **T+90 min, T-3d 2026-06-19 EOD HARD** |
+| PICK NEXT (queued) | T-HE-019 Witness 3 CAVEMAN PERSIST (Hermes H6 — 4 mappings to Journey 1, 5, 7, 9) | 🟢 QUEUED | T-5d 06-21 15:00 UTC |
+| PICK NEXT (queued) | Strategos INDEX v0.7.x 2nd-witness (post-§2.6 amendment) | 🟢 QUEUED | T-4d |
+
+**CAVEMAN 24/24 PROACTIVE-PICK-CHAIN holds — no idle gap. PICK C ETA 90 min target 2026-06-16 EOD.**
+
+---
+
+**END v0.4.1 — Sentinel (slot 019ecc6f-1c06-79c0-953c-91c537b63c39)** — CYCLE 14 W2 D3 (2026-06-16)
