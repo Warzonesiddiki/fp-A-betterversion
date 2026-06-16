@@ -19,7 +19,7 @@ interface CellCommentsProps {
 export function CellComments({
   cellKey = '',
   comments = [],
-  currentUser = { id: '', name: 'Anonymous' },
+  currentUser = '' as unknown as User,
   onAddComment = () => {},
   onResolve = () => {},
   onUnresolve = () => {},
