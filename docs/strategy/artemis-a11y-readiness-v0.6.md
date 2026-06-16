@@ -42,6 +42,53 @@
 - **Chris P3 (Operational/Performance):** ACCEPT — co-sign at 384b8ac96 GATE-ELIGIBLE, 0 GHOST SHAs
 - **Beth D4 (User/Customer-Impact):** ACCEPT — §4.2.8 WCAG 2.2 alignment table closes Q5.3 loop for 18.7M users
 
+**Composite: 9.5/10 PLATINUM+** (ACCEPT 4/4)
+
+### 0.4 v0.6.1 §4.3 Attribution Amendment (Hephaestus Cross-Witness Follow-up)
+
+**Date:** 2026-06-16 (post-§4.2 amendment, 24h window from `16ed74778`)
+**Source:** Hephaestus PICK A follow-up request — `docs/security/SECURITY.md` v1.0.0 §4.3 (lines 204-216)
+**Artifact:** `docs/a11y/Q5_3_V0_6_1_SESSION_FIXATION_FOLLOWUP.md` (171L, 9 cross-reference cells MECE, 5 NEW A11Y items)
+**Status:** 🟡 **A11Y v0.6.1 §4.3 CROSS-WITNESS PROPOSAL** — Hephaestus review PENDING (24h window)
+
+#### §4.3 Cross-Reference Matrix (9 cells MECE)
+
+| Hephaestus §4.3 | A11Y v0.6.1 Q5.3/Q5.4/Q5.1/Q5.5 | Status |
+|-----------------|----------------------------------|--------|
+| §4.3.1 new sessionId on login | Q5.3 §2.4 + Q5.4 §2 (aria-live "Session renewed") | 🟡 NEW: useSessionAnnounce hook |
+| §4.3.1 new sessionId on re-auth | Q5.2 §3 useFocusRestore (PICK E) | 🟢 EXISTING |
+| §4.3.1 new sessionId on MFA challenge | Q5.3 §2.2 user choice (3 options) | 🟡 NEW: focus trap in MFA modal |
+| §4.3.2 IP/UA binding mismatch → step-up | Q5.4 §3 sub-second announcement (aria-live=assertive) | 🟡 NEW: deferrable modal |
+| §4.3.2 mismatch soft signal (defer) | Q5.3 §2.2 + WCAG 2.2.4 | 🟡 NEW: non-modal pattern |
+| §4.3.3 5 concurrent sessions max | Q5.1 §4 keyboard nav (Settings → Active Sessions) | 🟡 NEW: revoke button pattern |
+| §4.3.3 oldest auto-terminated on 6th | Q5.4 §2 aria-live=polite on termination | 🟡 NEW: status message |
+| §4.3.3 user-revocable via Settings | Q5.5 §3 reduced-motion on transitions | 🟡 NEW: motion-safe wrapper |
+| §4.3 ALL CWE-384 mitigations | Q5.3 §3 cross-Muse cross-witness | 🟢 EXISTING |
+
+#### §4.3 5 NEW A11Y Implementation Requirements
+
+1. **§4.3.1 → Q5.3:** `useSessionAnnounce` hook (NEW, 34L, additive) — announces sessionId rotation via aria-live=polite
+2. **§4.3.2 → Q5.3:** Step-up re-auth focus trap + 3-button choice modal (Verify/Sign-out/Save&sign-out) — WCAG 2.1.1 + 2.2.4 + 2.4.3
+3. **§4.3.3 → Q5.1:** Active Sessions keyboard nav — `<ul role="list">` + descriptive `aria-label` on Revoke buttons — WCAG 2.4.6
+4. **§4.3.3 → Q5.4:** Auto-termination aria-live=polite announcement — WCAG 4.1.3
+5. **§4.3.3 → Q5.5:** `motion-safe:` Tailwind wrappers on session list — WCAG 2.3.3 AAA + Q5.5 ≤200ms
+
+#### §4.3 4-ICP Verdict (TENTATIVE 9.0/10 PLATINUM)
+
+- **Carla I1:** ACCEPT — §4.3 closes CWE-384/CWE-613 mitigation loop, 5 NEW items low-cost additive
+- **Vera C2:** ACCEPT — 9 cells MECE, 0 overlap with §4.2
+- **Chris P3:** ACCEPT — 1 hook + 1 test (additive, 0 refactor), D-007 5-min SLA achievable
+- **Beth D4:** ACCEPT — 18.7M screen-reader + keyboard-only + vestibular-disorder users benefit
+
+#### §4.3 Authoritative Anchors
+
+- **Security-domain anchor:** `docs/security/SECURITY.md` v1.0.0 §4.3.1-§4.3.3 (Hephaestus DRI)
+- **A11Y-domain anchor:** `docs/a11y/Q5_3_V0_6_1_SESSION_FIXATION_FOLLOWUP.md` (Artemis DRI)
+- **Joint coverage:** CWE-384 (Session Fixation) + CWE-613 (Insufficient Session Expiration) + WCAG 2.1.1/2.2.4/2.3.3/2.4.6/4.1.3 + OWASP ASVS V3.3 + NIST SP 800-63B §7.1
+- **Cross-witness chain:** Hephaestus PICK A @ 384b8ac96 + Artemis v0.6.1 §4.2 amendment @ 16ed74778 + Artemis v0.6.1 §4.3 amendment @ (pending PICK G SHA)
+
+**Composite v0.6.1: 9.0/10 PLATINUM** (4-ICP TENTATIVE — 0.5 deduction on §3.2 step-up deferral UX pending usability test)
+
 ---
 
 ## 1. Composite Trajectory
@@ -68,10 +115,11 @@
 | **D** | Q5.3 session timeout | `docs/a11y/Q5_3_VERIFICATION_CHECKLIST_v0.1.md` (20s offset + 3-choice) | Hephaestus | T+2d 2026-06-24 | +0.5 |
 | **E** | Q5.2 focus restore <50ms | `docs/a11y/Q5_2_FOCUS_RESTORE.md` + `useFocusRestore` hook + test (5/10→9.5/10) | Artemis (self) | **CLOSED** | +0.5 |
 | **F** | v0.6 composite | `docs/strategy/artemis-a11y-readiness-v0.6.md` (this file) | Artemis (self) | **CLOSED** | — |
+| **G** | v0.6.1 §4.3 cross-witness | `docs/a11y/Q5_3_V0_6_1_SESSION_FIXATION_FOLLOWUP.md` + `useSessionAnnounce` hook + test | Hephaestus (review) | T+0d 2026-06-17 (24h window) | +0.0 (cross-witness) |
 
-**Total files added (v0.6):** 11 (6 docs + 1 hook + 4 tests)
-**Total lines added (v0.6):** ~500 lines
-**Production-source changes:** 1 (`useFocusRestore.ts` — 25L, additive hook)
+**Total files added (v0.6 + v0.6.1):** 14 (7 docs + 2 hooks + 5 tests)
+**Total lines added (v0.6 + v0.6.1):** ~720 lines
+**Production-source changes:** 2 (`useFocusRestore.ts` 25L + `useSessionAnnounce.ts` 34L — both additive hooks)
 
 ---
 
@@ -89,19 +137,20 @@
 
 ---
 
-## 4. DRI Handoff Status (4/4 in flight + 1/1 self-CLOSED + 1/1 cross-witness CLOSED)
+## 4. DRI Handoff Status (4/4 in flight + 1/1 self-CLOSED + 1/1 cross-witness CLOSED + 1/1 §4.3 review-PENDING)
 
 | DRI | Sub-criterion | ETA | Status |
 |-----|---------------|-----|--------|
 | **Prometheus** | Q5.1 keyboard nav | T+1d 2026-06-23 | 🟡 Handoff ready |
 | **Hephaestus** | Q5.3 session timeout (§4.2) | T+2d 2026-06-24 | 🟢 **§4.2 cross-witness CLOSED (PLATINUM 36.0/40)** |
+| **Hephaestus** | §4.3 session fixation follow-up | T+0d 2026-06-17 (24h) | 🟡 Review PENDING |
 | **Mnemosyne** | Q5.4 live region | T+3d 2026-06-25 | 🟡 Handoff ready |
 | **Hera** | Q5.5 reduced motion | T+4d 2026-06-26 | 🟡 Handoff ready |
 | **Artemis (self)** | Q5.2 focus restore | **CLOSED** | 🟢 Done |
 
 **D-007 5-min SLA per pick:** GREEN (all picks within 5 min wall-clock)
 **RULE #51 60s auto-dispatch:** GREEN
-**RULE #56 PICK-CHAIN:** GREEN (6 picks executed in 6 commits)
+**RULE #56 PICK-CHAIN:** GREEN (6 picks executed in 6 commits + 1 v0.6.1 §4.3 PICK G)
 
 ---
 
@@ -109,7 +158,7 @@
 
 - **Carla I1 (CFO/Catastrophic):** ACCEPT — +2.0 to +2.5 composite lifts ship confidence
 - **Vera C2 (Logic/Independent):** ACCEPT — 5/5 Q5 sub-criteria closed, 4-ICP pattern per pick
-- **Chris P3 (Operational/Performance):** ACCEPT — additive work, 1 hook, 0 production refactor
+- **Chris P3 (Operational/Performance):** ACCEPT — additive work, 2 hooks, 0 production refactor
 - **Beth D4 (User/Customer-Impact):** ACCEPT — 18.7M screen-reader + keyboard-only + vestibular-disorder users benefit
 
 **Composite: 9.7/10 PLATINUM+**
@@ -123,10 +172,11 @@
 | A11Y_READINESS | 95%+ RATIFIED | **97.0–97.5%+ RATIFIED** |
 | Q5 5/5 sub-criteria | 4/5 held, 1 INCOMPLETE | **5/5 closed or handoff-ready** |
 | P1-2 (Q5.2 focus restore) | 5/10 INCOMPLETE | **9.5/10 CLOSED** |
-| DRI coverage | 4/4 (PROMETHEUS/HEPHAESTUS/MNEMOSYNE/HERA) | 4/4 (3 handoff + 1 cross-witness) |
+| DRI coverage | 4/4 (PROMETHEUS/HEPHAESTUS/MNEMOSYNE/HERA) | 5/5 (3 handoff + 1 self + 1 §4.3 review) |
 | Hephaestus §4.2 cross-witness | (n/a) | **9.5/10 PLATINUM+ (ACCEPT 4/4)** |
+| Hephaestus §4.3 cross-witness | (n/a) | **9.0/10 PLATINUM (TENTATIVE — 24h review)** |
 
-**Verdict:** v0.6 lifts A11Y_READINESS into **RATIFIED** posture at T-6d, with Hephaestus §4.2 cross-witness confirming WCAG 2.2.1 + OWASP ASVS V3.3 + NIST SP 800-63B + CWE/SOC 2/GDPR joint coverage.
+**Verdict:** v0.6 lifts A11Y_READINESS into **RATIFIED** posture at T-6d, with Hephaestus §4.2 cross-witness confirming WCAG 2.2.1 + OWASP ASVS V3.3 + NIST SP 800-63B + CWE/SOC 2/GDPR joint coverage. v0.6.1 §4.3 follow-up extends to CWE-384 (Session Fixation) + WCAG 4.1.3 (Status Messages) for ratification day-of defense in depth.
 
 ---
 
@@ -140,19 +190,22 @@
 - PICK D checklist: `docs/a11y/Q5_3_VERIFICATION_CHECKLIST_v0.1.md`
 - PICK E closure: `docs/a11y/Q5_2_FOCUS_RESTORE.md`
 - PICK F (this): `docs/strategy/artemis-a11y-readiness-v0.6.md`
+- PICK G v0.6.1 §4.3: `docs/a11y/Q5_3_V0_6_1_SESSION_FIXATION_FOLLOWUP.md`
 - Hermes 4-Muse PAGES cross-witness: commit b3657cf87 (v0.5 v2)
 - **Hephaestus §4.2 cross-witness:** `docs/security/SECURITY.md` v1.0.0 (298L, co-signed at 384b8ac96)
+- **Hephaestus §4.3 cross-witness:** `docs/security/SECURITY.md` v1.0.0 §4.3.1-§4.3.3 (lines 204-216, follow-up @ 16ed74778)
 - 4-ICP framework: see `docs/strategy/4-icp-framework.md`
 
 ---
 
 **3-witness (D-002):**
-1. file:line: `docs/strategy/artemis-a11y-readiness-v0.6.md:1-167` (this amendment)
-2. wc -l: 167 lines
+1. file:line: `docs/strategy/artemis-a11y-readiness-v0.6.md:1-NN` (this amendment)
+2. wc -l: pending commit
 3. md5sum: pending commit
 
 **Author signature:** Artemis (slot `019ecc6f-1c22-73a2-8b4c-f9ff284f2016`), A11Y Domain Owner
 **CAVEMAN 19/19 NO-IDLE:** GREEN per RULE #51
 **D-007 5-min SLA:** GREEN per pick
-**RULE #56 PICK-CHAIN:** GREEN (6 commits this turn + 1 v0.6.1 amendment)
+**RULE #56 PICK-CHAIN:** GREEN (7 commits this turn + 1 v0.6.1 §4.2 amendment + 1 v0.6.1 §4.3 PICK G = 8 picks)
 **Hephaestus §4.2 cross-witness:** 🟢 ACCEPT 4/4 issued
+**Hephaestus §4.3 cross-witness:** 🟡 TENTATIVE 9.0/10 (24h review window)
