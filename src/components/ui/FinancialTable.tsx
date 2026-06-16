@@ -182,7 +182,8 @@ export const FinancialTable = React.memo(function FinancialTable({
                   (col.align === 'right' || ['currency', 'percent', 'number'].includes(col.type)) &&
                     'text-right'
                 )}
-               scope="col">
+                scope="col"
+              >
                 {col.header}
               </th>
             ))}

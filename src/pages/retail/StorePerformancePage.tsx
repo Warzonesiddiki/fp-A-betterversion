@@ -317,7 +317,12 @@ export default function StorePerformancePage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={storeRankings} caption="Store ranking and productivity table" ariaLabel="Store ranking and productivity data table for retail performance" />
+          <DataTable
+            columns={columns}
+            data={storeRankings}
+            caption="Store ranking and productivity table"
+            ariaLabel="Store ranking and productivity data table for retail performance"
+          />
         </CardContent>
       </Card>
     </div>

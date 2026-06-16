@@ -330,22 +330,42 @@ export default function ChurnAnalysisPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="SaaS churn analysis">
-              <caption className="sr-only">Detailed saas churn analysis</caption>
+                <caption className="sr-only">Detailed saas churn analysis</caption>
                 <thead>
                   <tr className="border-b border-slate-700">
-                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 px-3 text-slate-400 font-medium"
+                      scope="col"
+                    >
                       Customer
                     </th>
-                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 px-3 text-slate-400 font-medium"
+                      scope="col"
+                    >
                       Segment
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-slate-400 font-medium"
+                      scope="col"
+                    >
                       MRR
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-slate-400 font-medium"
+                      scope="col"
+                    >
                       Risk Score
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-slate-400 font-medium"
+                      scope="col"
+                    >
                       Last Login
                     </th>
                   </tr>

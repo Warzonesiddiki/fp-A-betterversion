@@ -164,7 +164,13 @@ export function ChartOfAccountsPage() {
         </CardHeader>
         <CardContent aria-labelledby="account-details-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Chart of accounts table" ariaLabel="Chart of accounts" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Chart of accounts table"
+              ariaLabel="Chart of accounts"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

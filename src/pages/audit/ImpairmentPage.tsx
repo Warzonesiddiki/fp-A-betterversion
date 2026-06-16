@@ -127,25 +127,43 @@ export default function ImpairmentPage() {
         </CardHeader>
         <CardContent>
           <table className="w-full text-sm" aria-label="Impairment testing results">
-              <caption className="sr-only">Detailed breakdown of impairment testing results</caption>
+            <caption className="sr-only">Detailed breakdown of impairment testing results</caption>
             <thead>
               <tr className="border-b border-[var(--border-subtle)]">
-                <th scope="col" className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th
+                  scope="col"
+                  className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                >
                   Asset
                 </th>
-                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th
+                  scope="col"
+                  className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                >
                   Carrying Amt
                 </th>
-                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th
+                  scope="col"
+                  className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                >
                   Recoverable
                 </th>
-                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th
+                  scope="col"
+                  className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                >
                   Impairment
                 </th>
-                <th scope="col" className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th
+                  scope="col"
+                  className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                >
                   Status
                 </th>
-                <th scope="col" className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th
+                  scope="col"
+                  className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                >
                   Test Date
                 </th>
               </tr>

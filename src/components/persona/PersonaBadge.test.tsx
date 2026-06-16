@@ -34,7 +34,29 @@ describe('PersonaBadge', () => {
   });
 
   it('supports all 19 persona variants without crashing', () => {
-    const variants: Array<{ v: 'cfo' | 'controller' | 'analyst' | 'auditor' | 'compliance' | 'treasurer' | 'cxo' | 'board' | 'tax' | 'fp_a' | 'revenue' | 'cost' | 'capex' | 'hr' | 'it' | 'legal' | 'procurement' | 'sales' | 'compliance_officer'; l: string }> = [
+    const variants: Array<{
+      v:
+        | 'cfo'
+        | 'controller'
+        | 'analyst'
+        | 'auditor'
+        | 'compliance'
+        | 'treasurer'
+        | 'cxo'
+        | 'board'
+        | 'tax'
+        | 'fp_a'
+        | 'revenue'
+        | 'cost'
+        | 'capex'
+        | 'hr'
+        | 'it'
+        | 'legal'
+        | 'procurement'
+        | 'sales'
+        | 'compliance_officer';
+      l: string;
+    }> = [
       { v: 'cfo', l: 'CFO' },
       { v: 'controller', l: 'Controller' },
       { v: 'analyst', l: 'Analyst' },

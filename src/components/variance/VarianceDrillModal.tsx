@@ -216,16 +216,28 @@ export function VarianceDrillModal({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-[var(--bg-elevated)] text-left">
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
                       Department
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right"
+                      scope="col"
+                    >
                       Entries
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right"
+                      scope="col"
+                    >
                       Total Amount
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right"
+                      scope="col"
+                    >
                       Action
                     </th>
                   </tr>
@@ -280,11 +292,22 @@ export function VarianceDrillModal({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-[var(--bg-elevated)] text-left">
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]" scope="col">Date</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
+                      Date
+                    </th>
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
                       Description
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right"
+                      scope="col"
+                    >
                       Amount
                     </th>
                   </tr>
@@ -325,14 +348,28 @@ export function VarianceDrillModal({
               <table className="w-full text-sm">
                 <thead className="sticky top-0 bg-[var(--bg-elevated)] z-10">
                   <tr className="bg-[var(--bg-elevated)] text-left">
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]" scope="col">Date</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
+                      Date
+                    </th>
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
                       Account
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
                       Description
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right" scope="col">
+                    <th
+                      className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right"
+                      scope="col"
+                    >
                       Amount
                     </th>
                   </tr>

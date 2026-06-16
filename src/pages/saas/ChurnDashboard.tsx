@@ -220,14 +220,26 @@ export default function ChurnDashboard() {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="SaaS churn metrics by cohort">
-              <caption className="sr-only">Churn metrics by cohort showing customer count, churned count, and churn rate</caption>
+              <caption className="sr-only">
+                Churn metrics by cohort showing customer count, churned count, and churn rate
+              </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Customer</th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Segment</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">MRR</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Risk Score</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Last Login</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    Customer
+                  </th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    Segment
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    MRR
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Risk Score
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Last Login
+                  </th>
                 </tr>
               </thead>
               <tbody>

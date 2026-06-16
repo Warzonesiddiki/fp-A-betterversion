@@ -346,7 +346,12 @@ export default function CollaborationPage() {
             </CardContent>
           </Card>
           {commentRows.length > 0 ? (
-            <DataTable data={commentRows} columns={commentColumns} caption="Collaboration comments table" ariaLabel="Collaboration comments" />
+            <DataTable
+              data={commentRows}
+              columns={commentColumns}
+              caption="Collaboration comments table"
+              ariaLabel="Collaboration comments"
+            />
           ) : (
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">
@@ -385,7 +390,12 @@ export default function CollaborationPage() {
             </Card>
           )}
           {taskRows.length > 0 ? (
-            <DataTable data={taskRows} columns={taskColumns} caption="Collaboration tasks table" ariaLabel="Collaboration tasks" />
+            <DataTable
+              data={taskRows}
+              columns={taskColumns}
+              caption="Collaboration tasks table"
+              ariaLabel="Collaboration tasks"
+            />
           ) : (
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">
@@ -400,7 +410,12 @@ export default function CollaborationPage() {
       {activeTab === 'activity' && (
         <div>
           {activityRows.length > 0 ? (
-            <DataTable data={activityRows} columns={activityColumns} caption="Collaboration activity feed table" ariaLabel="Collaboration activity feed" />
+            <DataTable
+              data={activityRows}
+              columns={activityColumns}
+              caption="Collaboration activity feed table"
+              ariaLabel="Collaboration activity feed"
+            />
           ) : (
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">

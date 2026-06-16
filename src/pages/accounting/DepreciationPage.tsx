@@ -190,19 +190,33 @@ export default function DepreciationPage() {
           </CardHeader>
           <CardContent>
             <table className="w-full text-sm" aria-label="Depreciation schedule by asset">
-              <caption className="sr-only">Detailed breakdown of depreciation schedule by asset</caption>
+              <caption className="sr-only">
+                Detailed breakdown of depreciation schedule by asset
+              </caption>
               <thead>
                 <tr className="border-b border-[var(--border-subtle)]">
-                  <th scope="col" className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                  <th
+                    scope="col"
+                    className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                  >
                     Asset
                   </th>
-                  <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                  <th
+                    scope="col"
+                    className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                  >
                     Cost
                   </th>
-                  <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                  <th
+                    scope="col"
+                    className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                  >
                     NBV
                   </th>
-                  <th scope="col" className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                  <th
+                    scope="col"
+                    className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+                  >
                     Method
                   </th>
                 </tr>

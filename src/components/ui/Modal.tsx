@@ -97,7 +97,11 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             )}
             {...props}
           >
-            {title && <h2 id={titleId} className="text-lg font-medium mb-4 pr-8">{title}</h2>}
+            {title && (
+              <h2 id={titleId} className="text-lg font-medium mb-4 pr-8">
+                {title}
+              </h2>
+            )}
             <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
               <button
                 type="button"

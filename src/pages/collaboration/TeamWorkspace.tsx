@@ -167,7 +167,13 @@ export function TeamWorkspace() {
         </CardHeader>
         <CardContent aria-labelledby="account-overview-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Team workspace members table" ariaLabel="Team workspace members" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Team workspace members table"
+              ariaLabel="Team workspace members"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

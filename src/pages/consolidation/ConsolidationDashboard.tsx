@@ -228,17 +228,37 @@ export default function ConsolidationDashboard() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm" aria-label="Legal entities for consolidation">
-              <caption className="sr-only">Legal entities with name, code, currency, country, parent entity, ownership percentage, and actions</caption>
+              <table
+                className="w-full text-left text-sm"
+                aria-label="Legal entities for consolidation"
+              >
+                <caption className="sr-only">
+                  Legal entities with name, code, currency, country, parent entity, ownership
+                  percentage, and actions
+                </caption>
                 <thead className="border-b border-[var(--border-subtle)] text-[var(--text-secondary)] font-medium">
                   <tr>
-                    <th scope="col" className="py-3 px-4">Name</th>
-                    <th scope="col" className="py-3 px-4">Code</th>
-                    <th scope="col" className="py-3 px-4">Currency</th>
-                    <th scope="col" className="py-3 px-4">Country</th>
-                    <th scope="col" className="py-3 px-4">Parent Entity</th>
-                    <th scope="col" className="py-3 px-4">Ownership %</th>
-                    <th scope="col" className="py-3 px-4 text-right">Actions</th>
+                    <th scope="col" className="py-3 px-4">
+                      Name
+                    </th>
+                    <th scope="col" className="py-3 px-4">
+                      Code
+                    </th>
+                    <th scope="col" className="py-3 px-4">
+                      Currency
+                    </th>
+                    <th scope="col" className="py-3 px-4">
+                      Country
+                    </th>
+                    <th scope="col" className="py-3 px-4">
+                      Parent Entity
+                    </th>
+                    <th scope="col" className="py-3 px-4">
+                      Ownership %
+                    </th>
+                    <th scope="col" className="py-3 px-4 text-right">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-subtle)] text-[var(--text-primary)]">
@@ -300,14 +320,20 @@ export default function ConsolidationDashboard() {
                 <table className="w-full text-left text-sm tabular-nums">
                   <thead className="border-b border-[var(--border-subtle)] text-[var(--text-secondary)]">
                     <tr>
-                      <th scope="col" className="py-3 px-4">Account</th>
+                      <th scope="col" className="py-3 px-4">
+                        Account
+                      </th>
                       {entities.map((e) => (
                         <th key={e.id} className="py-3 px-4 text-right" scope="col">
                           {e.name}
                         </th>
                       ))}
-                      <th scope="col" className="py-3 px-4 text-right">Eliminations</th>
-                      <th scope="col" className="py-3 px-4 text-right font-bold text-blue-400">Consolidated</th>
+                      <th scope="col" className="py-3 px-4 text-right">
+                        Eliminations
+                      </th>
+                      <th scope="col" className="py-3 px-4 text-right font-bold text-blue-400">
+                        Consolidated
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--border-subtle)] text-[var(--text-primary)]">

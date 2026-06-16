@@ -342,7 +342,12 @@ export default function RetailDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={storePerformance} caption="Store performance summary table" ariaLabel="Store performance summary data table for retail dashboard" />
+          <DataTable
+            columns={columns}
+            data={storePerformance}
+            caption="Store performance summary table"
+            ariaLabel="Store performance summary data table for retail dashboard"
+          />
         </CardContent>
       </Card>
     </div>

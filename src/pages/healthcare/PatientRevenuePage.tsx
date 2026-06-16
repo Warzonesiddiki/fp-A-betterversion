@@ -264,7 +264,12 @@ export default function PatientRevenuePage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={denialAnalytics} caption="Denial root cause analysis table" ariaLabel="Denial root cause analysis data table for patient revenue" />
+          <DataTable
+            columns={columns}
+            data={denialAnalytics}
+            caption="Denial root cause analysis table"
+            ariaLabel="Denial root cause analysis data table for patient revenue"
+          />
         </CardContent>
       </Card>
     </div>

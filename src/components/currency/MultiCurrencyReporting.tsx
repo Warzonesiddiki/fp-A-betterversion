@@ -184,13 +184,27 @@ export function MultiCurrencyReporting() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                <th className="px-4 py-3" scope="col">Entity</th>
-                <th className="px-4 py-3" scope="col">Currency</th>
-                <th className="px-4 py-3 text-right" scope="col">Rate</th>
-                <th className="px-4 py-3 text-right" scope="col">Revenue</th>
-                <th className="px-4 py-3 text-right" scope="col">Expenses</th>
-                <th className="px-4 py-3 text-right" scope="col">Net Income</th>
-                <th className="px-4 py-3 text-right" scope="col">Assets</th>
+                <th className="px-4 py-3" scope="col">
+                  Entity
+                </th>
+                <th className="px-4 py-3" scope="col">
+                  Currency
+                </th>
+                <th className="px-4 py-3 text-right" scope="col">
+                  Rate
+                </th>
+                <th className="px-4 py-3 text-right" scope="col">
+                  Revenue
+                </th>
+                <th className="px-4 py-3 text-right" scope="col">
+                  Expenses
+                </th>
+                <th className="px-4 py-3 text-right" scope="col">
+                  Net Income
+                </th>
+                <th className="px-4 py-3 text-right" scope="col">
+                  Assets
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">

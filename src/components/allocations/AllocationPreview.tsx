@@ -220,16 +220,28 @@ export function AllocationPreview({
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
-                <th className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase" scope="col">
+                <th
+                  className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase"
+                  scope="col"
+                >
                   Target
                 </th>
-                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase" scope="col">
+                <th
+                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+                  scope="col"
+                >
                   Percentage
                 </th>
-                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase" scope="col">
+                <th
+                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+                  scope="col"
+                >
                   Amount
                 </th>
-                <th className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase" scope="col">
+                <th
+                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+                  scope="col"
+                >
                   Distribution
                 </th>
               </tr>

@@ -405,10 +405,16 @@ export function NLQChatPage() {
                             <table className="w-full text-xs">
                               <thead>
                                 <tr className="border-b border-slate-700/50">
-                                  <th className="text-left py-1.5 px-2 text-slate-400 font-medium" scope="col">
+                                  <th
+                                    className="text-left py-1.5 px-2 text-slate-400 font-medium"
+                                    scope="col"
+                                  >
                                     {msg.result.query.entities.dimensions[0] || 'Category'}
                                   </th>
-                                  <th className="text-right py-1.5 px-2 text-slate-400 font-medium" scope="col">
+                                  <th
+                                    className="text-right py-1.5 px-2 text-slate-400 font-medium"
+                                    scope="col"
+                                  >
                                     Value
                                   </th>
                                 </tr>

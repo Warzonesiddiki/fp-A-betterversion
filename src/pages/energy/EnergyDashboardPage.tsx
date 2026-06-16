@@ -363,7 +363,12 @@ export default function EnergyDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={assetPerformance} caption="Energy asset performance table" ariaLabel="Energy asset performance" />
+          <DataTable
+            columns={columns}
+            data={assetPerformance}
+            caption="Energy asset performance table"
+            ariaLabel="Energy asset performance"
+          />
         </CardContent>
       </Card>
     </div>

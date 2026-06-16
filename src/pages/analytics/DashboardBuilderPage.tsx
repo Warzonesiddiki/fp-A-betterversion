@@ -116,7 +116,9 @@ export default function DashboardBuilderPage() {
       const moved = next.splice(idx, 1)[0];
       if (!moved) return prev;
       next.splice(newIdx, 0, moved);
-      setAnnouncement(`Widget ${moved.title} moved ${direction}. Now at position ${newIdx + 1} of ${next.length}`);
+      setAnnouncement(
+        `Widget ${moved.title} moved ${direction}. Now at position ${newIdx + 1} of ${next.length}`
+      );
       return next;
     });
   }, []);

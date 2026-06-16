@@ -168,7 +168,13 @@ export default function TelecomPage() {
         </CardHeader>
         <CardContent aria-labelledby="account-breakdown-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Account breakdown table" ariaLabel="Account breakdown data table for telecom sector" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Account breakdown table"
+              ariaLabel="Account breakdown data table for telecom sector"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

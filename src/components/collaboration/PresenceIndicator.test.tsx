@@ -66,7 +66,9 @@ describe('PresenceIndicator (collaboration)', () => {
     // Two status roles: the main indicator (aria-label="N users viewing this resource")
     // and the sr-only live region. Filter for the one with the count label.
     const statuses = screen.getAllByRole('status');
-    const indicatorStatus = statuses.find((el) => el.getAttribute('aria-label')?.includes('viewing this resource'));
+    const indicatorStatus = statuses.find((el) =>
+      el.getAttribute('aria-label')?.includes('viewing this resource')
+    );
     expect(indicatorStatus).toBeDefined();
     expect(indicatorStatus).toHaveAttribute('aria-label', '2 users viewing this resource');
   });

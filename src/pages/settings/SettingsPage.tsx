@@ -227,13 +227,23 @@ export default function SettingsPage() {
               </div>
               <div className="bg-slate-950/50 border border-slate-800 rounded overflow-hidden">
                 <table className="w-full text-sm" aria-label="User roles and permissions">
-              <caption className="sr-only">User roles and permissions showing role name, description, and member count</caption>
+                  <caption className="sr-only">
+                    User roles and permissions showing role name, description, and member count
+                  </caption>
                   <thead className="bg-slate-900 text-slate-400">
                     <tr>
-                      <th scope="col" className="px-4 py-2 text-left">Name</th>
-                      <th scope="col" className="px-4 py-2 text-left">Email</th>
-                      <th scope="col" className="px-4 py-2 text-left">Role</th>
-                      <th scope="col" className="px-4 py-2 text-right">Actions</th>
+                      <th scope="col" className="px-4 py-2 text-left">
+                        Name
+                      </th>
+                      <th scope="col" className="px-4 py-2 text-left">
+                        Email
+                      </th>
+                      <th scope="col" className="px-4 py-2 text-left">
+                        Role
+                      </th>
+                      <th scope="col" className="px-4 py-2 text-right">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">

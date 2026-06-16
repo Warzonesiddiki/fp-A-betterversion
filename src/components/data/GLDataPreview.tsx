@@ -84,13 +84,17 @@ export function GLDataPreview({
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-900 text-slate-400 font-bold text-xs uppercase">
             <tr>
-              <th className="px-4 py-3" scope="col">Row</th>
+              <th className="px-4 py-3" scope="col">
+                Row
+              </th>
               {Object.keys(mappings).map((k) => (
                 <th key={k} className="px-4 py-3" scope="col">
                   {k}
                 </th>
               ))}
-              <th className="px-4 py-3" scope="col">Status</th>
+              <th className="px-4 py-3" scope="col">
+                Status
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">

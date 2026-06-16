@@ -173,15 +173,27 @@ export default function GLReportingPage() {
               <h3 className="font-semibold mb-3">Account Type Breakdown</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" aria-label="GL reporting">
-              <caption className="sr-only">Detailed GL gl reporting</caption>
+                  <caption className="sr-only">Detailed GL gl reporting</caption>
                   <thead>
                     <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                      <th scope="col" className="pb-3 pr-4">Account Type</th>
-                      <th scope="col" className="pb-3 pr-4 text-right">Accounts</th>
-                      <th scope="col" className="pb-3 pr-4 text-right">Total Debits</th>
-                      <th scope="col" className="pb-3 pr-4 text-right">Total Credits</th>
-                      <th scope="col" className="pb-3 pr-4 text-right">Net</th>
-                      <th scope="col" className="pb-3 pr-4 text-right">Transactions</th>
+                      <th scope="col" className="pb-3 pr-4">
+                        Account Type
+                      </th>
+                      <th scope="col" className="pb-3 pr-4 text-right">
+                        Accounts
+                      </th>
+                      <th scope="col" className="pb-3 pr-4 text-right">
+                        Total Debits
+                      </th>
+                      <th scope="col" className="pb-3 pr-4 text-right">
+                        Total Credits
+                      </th>
+                      <th scope="col" className="pb-3 pr-4 text-right">
+                        Net
+                      </th>
+                      <th scope="col" className="pb-3 pr-4 text-right">
+                        Transactions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">

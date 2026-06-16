@@ -77,11 +77,21 @@ export default function GLExplorerPage() {
               <caption className="sr-only">Detailed GL general ledger explorer</caption>
               <thead className="sticky top-0 bg-slate-900">
                 <tr className="text-left text-slate-400 text-xs uppercase">
-                  <th scope="col" className="px-4 py-3">Date</th>
-                  <th scope="col" className="px-4 py-3">Account</th>
-                  <th scope="col" className="px-4 py-3">Description</th>
-                  <th scope="col" className="px-4 py-3 text-right">Debit</th>
-                  <th scope="col" className="px-4 py-3 text-right">Credit</th>
+                  <th scope="col" className="px-4 py-3">
+                    Date
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Account
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Description
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right">
+                    Debit
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right">
+                    Credit
+                  </th>
                 </tr>
               </thead>
               <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>

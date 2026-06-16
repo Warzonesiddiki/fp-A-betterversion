@@ -149,13 +149,22 @@ const HistoryRow: React.FC<{
             <table className="w-full">
               <thead>
                 <tr className="bg-[var(--bg-surface)]">
-                  <th className="px-2 py-1.5 text-left text-[10px] font-medium text-slate-500" scope="col">
+                  <th
+                    className="px-2 py-1.5 text-left text-[10px] font-medium text-slate-500"
+                    scope="col"
+                  >
                     Target
                   </th>
-                  <th className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500" scope="col">
+                  <th
+                    className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500"
+                    scope="col"
+                  >
                     Amount
                   </th>
-                  <th className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500" scope="col">
+                  <th
+                    className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500"
+                    scope="col"
+                  >
                     %
                   </th>
                 </tr>

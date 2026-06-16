@@ -254,13 +254,22 @@ export function ScenarioMerge({ scenarios = [], onMerge }: ScenarioMergeProps) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border-subtle)]">
-                    <th className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]" scope="col">
+                    <th
+                      className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
                       Metric
                     </th>
-                    <th className="pb-3 px-3 text-right font-medium text-[var(--text-secondary)]" scope="col">
+                    <th
+                      className="pb-3 px-3 text-right font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
                       Merged Value
                     </th>
-                    <th className="pb-3 px-3 text-left font-medium text-[var(--text-secondary)]" scope="col">
+                    <th
+                      className="pb-3 px-3 text-left font-medium text-[var(--text-secondary)]"
+                      scope="col"
+                    >
                       Source
                     </th>
                   </tr>

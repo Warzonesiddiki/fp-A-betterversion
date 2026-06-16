@@ -168,7 +168,13 @@ export function ActivityFeed() {
         </CardHeader>
         <CardContent aria-labelledby="account-overview-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Activity feed table" ariaLabel="Activity feed" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Activity feed table"
+              ariaLabel="Activity feed"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

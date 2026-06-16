@@ -89,7 +89,11 @@ export function EducationDashboardPage() {
   );
 
   return (
-    <main className="p-6 space-y-6 animate-in fade-in duration-500" role="main" aria-label="Education Sector Dashboard">
+    <main
+      className="p-6 space-y-6 animate-in fade-in duration-500"
+      role="main"
+      aria-label="Education Sector Dashboard"
+    >
       <div>
         <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
           Education Dashboard
@@ -199,19 +203,31 @@ export function EducationDashboardPage() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="Education sector metrics">
-              <caption className="sr-only">Detailed education sector metrics</caption>
+                <caption className="sr-only">Detailed education sector metrics</caption>
                 <thead>
                   <tr className="border-b border-[var(--border-color)]">
-                    <th scope="col" className="text-left py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Semester
                     </th>
-                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Undergrad
                     </th>
-                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Graduate
                     </th>
-                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Total
                     </th>
                   </tr>
@@ -248,16 +264,28 @@ export function EducationDashboardPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border-color)]">
-                    <th scope="col" className="text-left py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Category
                     </th>
-                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Budget
                     </th>
-                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Actual
                     </th>
-                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 text-[var(--text-secondary)] font-medium"
+                    >
                       Variance
                     </th>
                   </tr>

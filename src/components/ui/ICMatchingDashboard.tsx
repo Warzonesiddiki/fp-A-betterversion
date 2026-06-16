@@ -264,16 +264,36 @@ export function ICMatchingDashboard({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left">
-                  <th className="p-2" scope="col">Status</th>
-                  <th className="p-2" scope="col">Source Entity</th>
-                  <th className="p-2" scope="col">Target Entity</th>
-                  <th className="p-2" scope="col">Account</th>
-                  <th className="p-2 text-right" scope="col">Source Amt</th>
-                  <th className="p-2 text-right" scope="col">Target Amt</th>
-                  <th className="p-2 text-right" scope="col">Difference</th>
-                  <th className="p-2 text-right" scope="col">Confidence</th>
-                  <th className="p-2" scope="col">Method</th>
-                  <th className="p-2" scope="col">Actions</th>
+                  <th className="p-2" scope="col">
+                    Status
+                  </th>
+                  <th className="p-2" scope="col">
+                    Source Entity
+                  </th>
+                  <th className="p-2" scope="col">
+                    Target Entity
+                  </th>
+                  <th className="p-2" scope="col">
+                    Account
+                  </th>
+                  <th className="p-2 text-right" scope="col">
+                    Source Amt
+                  </th>
+                  <th className="p-2 text-right" scope="col">
+                    Target Amt
+                  </th>
+                  <th className="p-2 text-right" scope="col">
+                    Difference
+                  </th>
+                  <th className="p-2 text-right" scope="col">
+                    Confidence
+                  </th>
+                  <th className="p-2" scope="col">
+                    Method
+                  </th>
+                  <th className="p-2" scope="col">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -417,10 +437,18 @@ function UnmatchedPanel({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left">
-                <th className="p-2" scope="col">Entity</th>
-                <th className="p-2" scope="col">Account</th>
-                <th className="p-2 text-right" scope="col">Amount</th>
-                <th className="p-2" scope="col">Date</th>
+                <th className="p-2" scope="col">
+                  Entity
+                </th>
+                <th className="p-2" scope="col">
+                  Account
+                </th>
+                <th className="p-2 text-right" scope="col">
+                  Amount
+                </th>
+                <th className="p-2" scope="col">
+                  Date
+                </th>
               </tr>
             </thead>
             <tbody>

@@ -162,7 +162,13 @@ export function ESGPage() {
         </CardHeader>
         <CardContent aria-labelledby="account-overview-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="ESG metrics table" ariaLabel="ESG metrics" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="ESG metrics table"
+              ariaLabel="ESG metrics"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

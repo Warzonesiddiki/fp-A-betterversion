@@ -294,10 +294,12 @@ export default function TemplateGalleryPage() {
                 </h4>
                 <div className="max-h-48 overflow-auto border rounded">
                   <table className="w-full text-sm" aria-label="Template gallery items">
-              <caption className="sr-only">Detailed template gallery items</caption>
+                    <caption className="sr-only">Detailed template gallery items</caption>
                     <thead>
                       <tr className="border-b bg-muted">
-                        <th scope="col" className="text-left p-2">Item</th>
+                        <th scope="col" className="text-left p-2">
+                          Item
+                        </th>
                         {selectedTemplate.columns.slice(1).map((col) => (
                           <th key={col.key} className="text-right p-2" scope="col">
                             {col.label}

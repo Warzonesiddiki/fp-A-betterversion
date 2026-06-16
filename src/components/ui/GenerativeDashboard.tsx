@@ -154,7 +154,8 @@ function DashboardTable({
                 <th
                   key={col.key}
                   className="text-left px-3 py-2 text-xs font-medium text-slate-400 dark:text-slate-300"
-                 scope="col">
+                  scope="col"
+                >
                   {col.label}
                 </th>
               ))}

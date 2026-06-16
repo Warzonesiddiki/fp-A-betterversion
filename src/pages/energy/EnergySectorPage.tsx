@@ -166,7 +166,13 @@ export function EnergySectorPage() {
         </CardHeader>
         <CardContent aria-labelledby="account-overview-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Energy sector accounts table" ariaLabel="Energy sector accounts" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Energy sector accounts table"
+              ariaLabel="Energy sector accounts"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

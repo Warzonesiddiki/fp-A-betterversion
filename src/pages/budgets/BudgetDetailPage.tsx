@@ -281,16 +281,20 @@ export default function BudgetDetailPage() {
       <Card>
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-sm" aria-label="Budget detail line items">
-              <caption className="sr-only">Detailed breakdown of budget detail line items</caption>
+            <caption className="sr-only">Detailed breakdown of budget detail line items</caption>
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                <th scope="col" className="px-4 py-3 w-24 sticky left-0 bg-slate-900 z-10">Account</th>
+                <th scope="col" className="px-4 py-3 w-24 sticky left-0 bg-slate-900 z-10">
+                  Account
+                </th>
                 {months.map((m) => (
                   <th key={m} className="px-2 py-3 text-right w-24" scope="col">
                     {m}
                   </th>
                 ))}
-                <th scope="col" className="px-4 py-3 text-right w-28">Total</th>
+                <th scope="col" className="px-4 py-3 text-right w-28">
+                  Total
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">

@@ -285,15 +285,29 @@ export default function InvestmentPage() {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="Investment portfolio by instrument">
-              <caption className="sr-only">Detailed breakdown of investment portfolio by instrument</caption>
+              <caption className="sr-only">
+                Detailed breakdown of investment portfolio by instrument
+              </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Instrument</th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Issuer</th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Maturity</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Yield</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Value</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Rating</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    Instrument
+                  </th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    Issuer
+                  </th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    Maturity
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Yield
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Value
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Rating
+                  </th>
                 </tr>
               </thead>
               <tbody>

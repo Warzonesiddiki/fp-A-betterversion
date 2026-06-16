@@ -168,7 +168,13 @@ export default function LogisticsPage() {
         </CardHeader>
         <CardContent aria-labelledby="account-breakdown-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Account overview table" ariaLabel="Account overview data table for logistics sector" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Account overview table"
+              ariaLabel="Account overview data table for logistics sector"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

@@ -326,10 +326,7 @@ export const DataTable = memo<DataTableProps>(
                       >
                         <span>{column.header}</span>
                         {isSortable && (
-                          <div
-                            className="flex flex-col"
-                            aria-hidden="true"
-                          >
+                          <div className="flex flex-col" aria-hidden="true">
                             <ChevronUp
                               className={cn(
                                 'h-3 w-3 -mb-1',
@@ -357,7 +354,10 @@ export const DataTable = memo<DataTableProps>(
                           role="presentation"
                         >
                           <div className="relative">
-                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)]" aria-hidden="true" />
+                            <Search
+                              className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)]"
+                              aria-hidden="true"
+                            />
                             <input
                               type="text"
                               className="w-full pl-7 pr-2 py-1 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] rounded text-xs outline-none focus:ring-1 focus:ring-blue-500 font-normal dark:text-white"

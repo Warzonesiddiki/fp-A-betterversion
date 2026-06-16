@@ -144,7 +144,9 @@ export function ICReconciliationReport({
                   >
                     Entity A {sortField === 'entity' && (sortDir === 'asc' ? '↑' : '↓')}
                   </th>
-                  <th className="p-2 text-left" scope="col">Entity B</th>
+                  <th className="p-2 text-left" scope="col">
+                    Entity B
+                  </th>
                   <th
                     className="cursor-pointer p-2 text-left hover:text-foreground"
                     scope="col"
@@ -155,8 +157,12 @@ export function ICReconciliationReport({
                   >
                     Account {sortField === 'account' && (sortDir === 'asc' ? '↑' : '↓')}
                   </th>
-                  <th className="p-2 text-right" scope="col">Balance A</th>
-                  <th className="p-2 text-right" scope="col">Balance B</th>
+                  <th className="p-2 text-right" scope="col">
+                    Balance A
+                  </th>
+                  <th className="p-2 text-right" scope="col">
+                    Balance B
+                  </th>
                   <th
                     className="cursor-pointer p-2 text-right hover:text-foreground"
                     scope="col"
@@ -167,9 +173,15 @@ export function ICReconciliationReport({
                   >
                     Difference {sortField === 'difference' && (sortDir === 'asc' ? '↑' : '↓')}
                   </th>
-                  <th className="p-2 text-right" scope="col">Diff %</th>
-                  <th className="p-2 text-center" scope="col">Status</th>
-                  <th className="p-2 text-center" scope="col">Tolerance</th>
+                  <th className="p-2 text-right" scope="col">
+                    Diff %
+                  </th>
+                  <th className="p-2 text-center" scope="col">
+                    Status
+                  </th>
+                  <th className="p-2 text-center" scope="col">
+                    Tolerance
+                  </th>
                 </tr>
               </thead>
               <tbody>

@@ -44,7 +44,9 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
         <table className="w-full text-xs">
           <thead>
             <tr className="bg-slate-900/50 text-left text-slate-400 uppercase">
-              <th className="px-3 py-2 text-slate-500 font-mono" scope="col">#</th>
+              <th className="px-3 py-2 text-slate-500 font-mono" scope="col">
+                #
+              </th>
               {sheet.headers.map((h) => (
                 <th key={h} className="px-3 py-2 whitespace-nowrap" scope="col">
                   {h}

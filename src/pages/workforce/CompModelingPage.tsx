@@ -181,15 +181,29 @@ export default function CompModelingPage() {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="Compensation modeling scenarios">
-              <caption className="sr-only">Detailed breakdown of compensation modeling scenarios</caption>
+              <caption className="sr-only">
+                Detailed breakdown of compensation modeling scenarios
+              </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Level</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">HC</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Band</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Current Cost</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">New Cost</th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Increase</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    Level
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    HC
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Band
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Current Cost
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    New Cost
+                  </th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    Increase
+                  </th>
                 </tr>
               </thead>
               <tbody>

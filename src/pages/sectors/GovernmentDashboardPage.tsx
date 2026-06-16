@@ -230,13 +230,24 @@ export function GovernmentDashboardPage() {
           </CardHeader>
           <CardContent>
             <table className="w-full text-sm" aria-label="Government department budget allocation">
-              <caption className="sr-only">Government department budget allocation showing department, allocated amount, spent amount, and remaining balance</caption>
+              <caption className="sr-only">
+                Government department budget allocation showing department, allocated amount, spent
+                amount, and remaining balance
+              </caption>
               <thead>
                 <tr style={{ color: 'var(--text-secondary)' }}>
-                  <th scope="col" className="text-left pb-2 font-medium">Department</th>
-                  <th scope="col" className="text-right pb-2 font-medium">Allocated</th>
-                  <th scope="col" className="text-right pb-2 font-medium">Spent</th>
-                  <th scope="col" className="text-right pb-2 font-medium">Utilization</th>
+                  <th scope="col" className="text-left pb-2 font-medium">
+                    Department
+                  </th>
+                  <th scope="col" className="text-right pb-2 font-medium">
+                    Allocated
+                  </th>
+                  <th scope="col" className="text-right pb-2 font-medium">
+                    Spent
+                  </th>
+                  <th scope="col" className="text-right pb-2 font-medium">
+                    Utilization
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -290,10 +301,18 @@ export function GovernmentDashboardPage() {
               <caption className="sr-only">Detailed government sector metrics</caption>
               <thead>
                 <tr style={{ color: 'var(--text-secondary)' }}>
-                  <th scope="col" className="text-left pb-2 font-medium">Metric</th>
-                  <th scope="col" className="text-right pb-2 font-medium">FY 2024</th>
-                  <th scope="col" className="text-right pb-2 font-medium">FY 2025</th>
-                  <th scope="col" className="text-right pb-2 font-medium">YoY Change</th>
+                  <th scope="col" className="text-left pb-2 font-medium">
+                    Metric
+                  </th>
+                  <th scope="col" className="text-right pb-2 font-medium">
+                    FY 2024
+                  </th>
+                  <th scope="col" className="text-right pb-2 font-medium">
+                    FY 2025
+                  </th>
+                  <th scope="col" className="text-right pb-2 font-medium">
+                    YoY Change
+                  </th>
                 </tr>
               </thead>
               <tbody>

@@ -207,14 +207,28 @@ export default function TranslationResultPage() {
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
-            <table className="w-full text-sm" aria-label="Translation results by entity and currency">
-              <caption className="sr-only">Currency translation results showing entity, source currency, target currency, exchange rate, and translated amount</caption>
+            <table
+              className="w-full text-sm"
+              aria-label="Translation results by entity and currency"
+            >
+              <caption className="sr-only">
+                Currency translation results showing entity, source currency, target currency,
+                exchange rate, and translated amount
+              </caption>
               <thead className="sticky top-0 bg-slate-900 z-10">
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th scope="col" className="px-4 py-3">Account</th>
-                  <th scope="col" className="px-4 py-3 text-right">Original ({sourceCurrency})</th>
-                  <th scope="col" className="px-4 py-3 text-right">Translated ({targetCurrency})</th>
-                  <th scope="col" className="px-4 py-3 text-right">Gain/Loss</th>
+                  <th scope="col" className="px-4 py-3">
+                    Account
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right">
+                    Original ({sourceCurrency})
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right">
+                    Translated ({targetCurrency})
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right">
+                    Gain/Loss
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">

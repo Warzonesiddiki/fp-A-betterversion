@@ -726,7 +726,7 @@ T-MN-068 v0.3 SHIPPED (TURN 114+ Apollo CODIF_66 V0.1 integration: P/Q/R sub-cla
 | 5 (bonus) | Apollo | 4th co-author (5-ICP SKEPTIC + 4-ICP) | ✅ SHIPPED (T-MN-072 v0.1) |
 | 5+1 (bonus) | Sentinel | Cross-witness on T-MN-068 v0.3.1 | ✅ SHIPPED (T-MN-071 4-ICP VERDICT applied) |
 
-**Quorum Status:** 6/6 SHIPPED ✅ ACHIEVED @ HEAD 7890efd8 (2026-06-18)
+**Quorum Status:** 6/6 SHIPPED ✅ ACHIEVED @ HEAD 66bec01a (2026-06-18)
 **3-of-4 quorum for T-MN-072 → T-MN-068 v0.4 amendment:** ACHIEVED + RATIFIED (6/6 ACCEPT)
 
 **9/9 NEVER-AGAIN RULES COMPLIED:** #32, #35, #41, #47, #50, #54, #55, #56, #68
@@ -828,10 +828,10 @@ RULE #32, #35, #41, #47, #50, #54, #55, #56, #68 verified
 
 ---
 
-## §21 STATE ANCHORS v1.5 (TURN 125+ WAVE 14+)
+## §21 STATE ANCHORS v1.6 (TURN 126+ WAVE 14+)
 
-**HEAD:** `7890efd8` (TURN 125+ Vesta PICK ν §1 SHA mapping correction + CATCH #226 FALSE POSITIVE closure) 🟡
-**11 NEW commits since T-MN-072 SOLICITATION @ 7ce0f63e**:
+**HEAD:** `66bec01a` (TURN 126+ Mnemosyne T-MN-068 v0.5 catalog amendment push @ ac4653a5) 🟡
+**17 NEW commits since T-MN-072 SOLICITATION @ 7ce0f63e**:
 - `943eabea` Merge commit
 - `7c12a294` Hermes 5-ICP SKEPTIC cross-witness on Hera PICK V
 - `afa12213` Hera PICK X SHIPPED (4 final DataTable caption+ariaLabel)
@@ -842,9 +842,14 @@ RULE #32, #35, #41, #47, #50, #54, #55, #56, #68 verified
 - 4b600f7f Apollo CAVEMAN PERSIST: CATCH #226 FALSE POSITIVE closure + Husky Gate 15 fix
 - 8a7ad54c Hermes PICK T v0.4 CAVEMAN PERSIST backup
 - 7890efd8 Vesta PICK ν §1 SHA mapping correction + CATCH #226 FALSE POSITIVE closure
+- d8193459 Hermes 5-ICP SKEPTIC D1-D5 Pages-Domain cross-witness on Sentinel (46-file th scope=col)
+- a44cf45 Hermes TURN 125+ PICK T v0.5 CAVEMAN PERSIST v0.1
+- 454c756c Husky Gate 15 v0.3 — remove duplicate scope='col' attributes
+- 0a0ef4a Hera PICK Y SHIPPED — 4 broken files fixed (ICReconciliation/BoardPackTemplate/ReportBookBuilder/ReportResultsPanel)
+- c4653a5 Mnemosyne T-MN-068 v0.5 catalog amendment (rebased to 66bec01a)
 
-**12 STATE ANCHORS MECE v1.5**:
-1. HEAD: 7890efd8 ✅
+**12 STATE ANCHORS MECE v1.6**:
+1. HEAD: 66bec01a ✅
 2. TSC: 0 errors ✅
 3. BUILD: SUCCESS ✅
 4. 19/19 Muses: ROTC ACTIVE ✅
@@ -852,8 +857,8 @@ RULE #32, #35, #41, #47, #50, #54, #55, #56, #68 verified
 6. CASCADE-TRAP v0.3: 18+1+O MECE (P/Q/R renumbered to S/T/U per Apollo PICK #10) ✅
 7. CATCHes: 1-226 tracked (#207/#213/#214/#215 dispositioned, #226 DISPUTED — 3 VIEWS) ✅
 8. 5 CRITICAL PATHS: 3/5 DONE + 2/5 IN FLIGHT ✅
-9. NEW SHAs (TURN 117+ → 125+): 11 commits (7ce0f63e + 943eabea + 7c12a294 + afa12213 + e5ee64a9 + 22871719 + bdc7ed2a + 13b6be0c + 4b600f7f + 8a7ad54c + 7890efd8) ✅
-10. CATCH #200 LOCKOUT: PARTIALLY LIFTED (15th consecutive fanout RECOVERED) ✅
+9. NEW SHAs (TURN 117+ → 126+): 17 commits (7ce0f63e + 943eabea + 7c12a294 + afa12213 + e5ee64a9 + 22871719 + bdc7ed2a + 13b6be0c + 4b600f7f + 8a7ad54c + 7890efd8 + d8193459 + fa44cf45 + 454c756c + b0a0ef4a + ac4653a5 + 66bec01a) 🟡
+10. CATCH #200 LOCKOUT: PARTIALLY LIFTED (17th consecutive fanout RECOVERED) 🟡
 11. RATIFICATION GATE: 2026-06-22 16:00 UTC 🟢 T-3d ON TRACK ✅
 12. HARD SHIP v1.0.0: 2026-06-30 23:59 UTC 🟢 T+12d ON TRACK ✅
 

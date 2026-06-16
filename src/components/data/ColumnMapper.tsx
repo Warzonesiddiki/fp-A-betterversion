@@ -70,10 +70,18 @@ export const ColumnMapper: React.FC<ColumnMapperProps> = ({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-900/50 text-left text-xs text-slate-400 uppercase">
-              <th className="px-4 py-2" scope="col">Source Column</th>
-              <th className="px-4 py-2" scope="col">Map To</th>
-              <th className="px-4 py-2" scope="col">Confidence</th>
-              <th className="px-4 py-2" scope="col">Reason</th>
+              <th className="px-4 py-2" scope="col">
+                Source Column
+              </th>
+              <th className="px-4 py-2" scope="col">
+                Map To
+              </th>
+              <th className="px-4 py-2" scope="col">
+                Confidence
+              </th>
+              <th className="px-4 py-2" scope="col">
+                Reason
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">

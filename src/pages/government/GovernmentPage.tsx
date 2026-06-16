@@ -175,7 +175,13 @@ export default function GovernmentPage() {
         </CardHeader>
         <CardContent aria-labelledby="budget-overview-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Government accounts table" ariaLabel="Government accounts" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Government accounts table"
+              ariaLabel="Government accounts"
+            />
           ) : (
             <p className="text-slate-400">No budget data available.</p>
           )}

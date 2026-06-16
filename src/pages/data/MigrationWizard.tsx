@@ -185,13 +185,21 @@ export function MigrationWizard({
             <h4 className="text-sm font-medium mb-2">Column Mappings</h4>
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="Data migration preview">
-              <caption className="sr-only">Detailed data migration preview</caption>
+                <caption className="sr-only">Detailed data migration preview</caption>
                 <thead>
                   <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                    <th scope="col" className="pb-2 pr-4">Source Column</th>
-                    <th scope="col" className="pb-2 pr-4">Target Field</th>
-                    <th scope="col" className="pb-2 pr-4">Confidence</th>
-                    <th scope="col" className="pb-2">Match Type</th>
+                    <th scope="col" className="pb-2 pr-4">
+                      Source Column
+                    </th>
+                    <th scope="col" className="pb-2 pr-4">
+                      Target Field
+                    </th>
+                    <th scope="col" className="pb-2 pr-4">
+                      Confidence
+                    </th>
+                    <th scope="col" className="pb-2">
+                      Match Type
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">

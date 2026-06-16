@@ -38,8 +38,12 @@ export function PresenceIndicator({
   const [announcement, setAnnouncement] = useState<string>('');
   usePresenceEvents((change: PresenceChange) => {
     // [Hera] TURN 105+ PUSH-BLOCKER: PresenceChange carries resource via user.activeResource*
-    if (change.user.activeResourceType === resourceType && change.user.activeResourceId === resourceId) {
-      const verb = change.type === 'join' ? 'joined' : change.type === 'leave' ? 'left' : 'updated status';
+    if (
+      change.user.activeResourceType === resourceType &&
+      change.user.activeResourceId === resourceId
+    ) {
+      const verb =
+        change.type === 'join' ? 'joined' : change.type === 'leave' ? 'left' : 'updated status';
       setAnnouncement(`${change.user.userName} ${verb} ${resourceType}`);
     }
   });

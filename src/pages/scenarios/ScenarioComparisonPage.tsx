@@ -166,17 +166,21 @@ export function ScenarioComparisonPage() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="Scenario comparison metrics">
-              <caption className="sr-only">Detailed scenario comparison metrics</caption>
+                <caption className="sr-only">Detailed scenario comparison metrics</caption>
                 <thead>
                   <tr className="border-b border-[var(--border-subtle)]">
-                    <th scope="col" className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]">
+                    <th
+                      scope="col"
+                      className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]"
+                    >
                       Metric
                     </th>
                     {selectedScenarios.map((s) => (
                       <th
                         key={s.id}
                         className="pb-3 px-3 text-right font-medium text-[var(--text-secondary)]"
-                       scope="col">
+                        scope="col"
+                      >
                         {s.name}
                         {s.id === baseScenario.id && (
                           <span className="ml-1 text-xs text-blue-500">(base)</span>

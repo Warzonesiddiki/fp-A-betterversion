@@ -122,7 +122,9 @@ export default function ForecastBuilderPage() {
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h1 id="forecast-builder-heading" className="text-2xl font-bold">Forecast Builder</h1>
+          <h1 id="forecast-builder-heading" className="text-2xl font-bold">
+            Forecast Builder
+          </h1>
           <p className="text-sm text-slate-400 mt-1">
             Driver-based forecasting with confidence intervals
           </p>
@@ -197,36 +199,39 @@ export default function ForecastBuilderPage() {
           <CardTitle>Revenue Forecast with Confidence Bands</CardTitle>
         </CardHeader>
         <CardContent>
-          <div role="img" aria-label="Revenue forecast area chart from January to December. Actual values shown for Jan to Jun. Forecast with high and low confidence bands shown for Jul to Dec.">
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={historicalData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="month" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(1)}M`} />
-              <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                formatter={(v: any) => formatCurrency(v)}
-              />
-              <Legend />
-              <Area dataKey="high" fill="#3b82f6" fillOpacity={0.1} stroke="none" name="High" />
-              <Area dataKey="low" fill="#3b82f6" fillOpacity={0.1} stroke="none" name="Low" />
-              <Line
-                dataKey="actual"
-                stroke="#10b981"
-                strokeWidth={2}
-                dot={{ fill: '#10b981' }}
-                name="Actual"
-              />
-              <Line
-                dataKey="forecast"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={{ fill: '#3b82f6' }}
-                name="Forecast"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div
+            role="img"
+            aria-label="Revenue forecast area chart from January to December. Actual values shown for Jan to Jun. Forecast with high and low confidence bands shown for Jul to Dec."
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={historicalData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="month" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(1)}M`} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                  formatter={(v: any) => formatCurrency(v)}
+                />
+                <Legend />
+                <Area dataKey="high" fill="#3b82f6" fillOpacity={0.1} stroke="none" name="High" />
+                <Area dataKey="low" fill="#3b82f6" fillOpacity={0.1} stroke="none" name="Low" />
+                <Line
+                  dataKey="actual"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  dot={{ fill: '#10b981' }}
+                  name="Actual"
+                />
+                <Line
+                  dataKey="forecast"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={{ fill: '#3b82f6' }}
+                  name="Forecast"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>

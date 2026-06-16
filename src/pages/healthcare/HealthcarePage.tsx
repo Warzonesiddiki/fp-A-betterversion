@@ -163,7 +163,13 @@ export function HealthcarePage() {
         </CardHeader>
         <CardContent aria-labelledby="account-overview-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Account overview table" ariaLabel="Account overview data table for healthcare sector" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Account overview table"
+              ariaLabel="Account overview data table for healthcare sector"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

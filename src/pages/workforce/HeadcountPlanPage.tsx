@@ -277,7 +277,12 @@ export default function HeadcountPlanPage() {
               />
             </CardContent>
           </Card>
-          <DataTable columns={columns} data={data.deptData} caption="Headcount allocation table" ariaLabel="Headcount allocation data table for headcount plan" />
+          <DataTable
+            columns={columns}
+            data={data.deptData}
+            caption="Headcount allocation table"
+            ariaLabel="Headcount allocation data table for headcount plan"
+          />
         </>
       )}
     </div>

@@ -174,9 +174,15 @@ export default function CohortAnalysisPage() {
               <caption className="sr-only">Detailed breakdown of saas cohort analysis</caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Cohort</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    Cohort
+                  </th>
                   {Array.from({ length: 6 }, (_, i) => (
-                    <th key={i} className="text-center py-2 px-3 text-slate-400 font-medium" scope="col">
+                    <th
+                      key={i}
+                      className="text-center py-2 px-3 text-slate-400 font-medium"
+                      scope="col"
+                    >
                       M{i}
                     </th>
                   ))}

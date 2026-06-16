@@ -68,7 +68,8 @@ export function HeatmapChart({
                 key={x}
                 className="p-1 text-xs text-center font-medium"
                 style={{ width: cellSize }}
-               scope="col">
+                scope="col"
+              >
                 {x}
               </th>
             ))}

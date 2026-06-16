@@ -266,14 +266,24 @@ export default function GLAccountAnalysisPage() {
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" aria-label="GL account analysis">
-              <caption className="sr-only">Detailed GL gl account analysis</caption>
+                  <caption className="sr-only">Detailed GL gl account analysis</caption>
                   <thead>
                     <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                      <th scope="col" className="px-4 py-3">Month</th>
-                      <th scope="col" className="px-4 py-3 text-right">Debits</th>
-                      <th scope="col" className="px-4 py-3 text-right">Credits</th>
-                      <th scope="col" className="px-4 py-3 text-right">Net</th>
-                      <th scope="col" className="px-4 py-3 text-right">Transactions</th>
+                      <th scope="col" className="px-4 py-3">
+                        Month
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-right">
+                        Debits
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-right">
+                        Credits
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-right">
+                        Net
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-right">
+                        Transactions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">

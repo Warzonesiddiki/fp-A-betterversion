@@ -144,11 +144,21 @@ export function FXRateManager() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th className="px-4 py-3" scope="col">Pair</th>
-                  <th className="px-4 py-3 text-right" scope="col">Rate</th>
-                  <th className="px-4 py-3 text-right" scope="col">Change</th>
-                  <th className="px-4 py-3 text-right" scope="col">Entries</th>
-                  <th className="px-4 py-3 text-right" scope="col">Actions</th>
+                  <th className="px-4 py-3" scope="col">
+                    Pair
+                  </th>
+                  <th className="px-4 py-3 text-right" scope="col">
+                    Rate
+                  </th>
+                  <th className="px-4 py-3 text-right" scope="col">
+                    Change
+                  </th>
+                  <th className="px-4 py-3 text-right" scope="col">
+                    Entries
+                  </th>
+                  <th className="px-4 py-3 text-right" scope="col">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">

@@ -59,7 +59,8 @@ export class GridErrorBoundary extends Component<Props, State> {
                       <th
                         key={col}
                         className="px-3 py-2 text-left font-medium text-[var(--text-secondary)] border-b"
-                       scope="col">
+                        scope="col"
+                      >
                         {col}
                       </th>
                     ))}

@@ -235,7 +235,9 @@ export default function ScenarioBuilderPage() {
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h1 id="scenario-builder-heading" className="text-2xl font-bold">Scenario Builder</h1>
+          <h1 id="scenario-builder-heading" className="text-2xl font-bold">
+            Scenario Builder
+          </h1>
           <p className="text-sm text-slate-400 mt-1">Model assumptions and compare outcomes</p>
         </div>
         <div className="flex gap-2" role="group" aria-label="Scenario actions">
@@ -339,13 +341,12 @@ export default function ScenarioBuilderPage() {
               return (
                 <div key={label}>
                   <div className="flex justify-between text-sm mb-1">
-                    <label htmlFor={valueId} className="text-slate-300">{label}</label>
-                    <span
-                      id={valueId}
-                      className="text-white font-mono"
-                      aria-live="polite"
-                    >
-                      {value}{suffix}
+                    <label htmlFor={valueId} className="text-slate-300">
+                      {label}
+                    </label>
+                    <span id={valueId} className="text-white font-mono" aria-live="polite">
+                      {value}
+                      {suffix}
                     </span>
                   </div>
                   <input
@@ -369,21 +370,24 @@ export default function ScenarioBuilderPage() {
             <CardTitle>Base vs Scenario</CardTitle>
           </CardHeader>
           <CardContent>
-            <div role="img" aria-label="Base versus scenario monthly comparison bar chart from January to June. Each month shows two bars: base case (gray) and scenario case (blue) in US dollars.">
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={comparisonData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="month" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(1)}M`} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => formatCurrency(v)}
-                />
-                <Legend />
-                <Bar dataKey="base" fill="#64748b" name="Base" />
-                <Bar dataKey="scenario" fill="#3b82f6" name="Scenario" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div
+              role="img"
+              aria-label="Base versus scenario monthly comparison bar chart from January to June. Each month shows two bars: base case (gray) and scenario case (blue) in US dollars."
+            >
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={comparisonData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="month" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(1)}M`} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                    formatter={(v: any) => formatCurrency(v)}
+                  />
+                  <Legend />
+                  <Bar dataKey="base" fill="#64748b" name="Base" />
+                  <Bar dataKey="scenario" fill="#3b82f6" name="Scenario" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>

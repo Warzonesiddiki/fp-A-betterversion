@@ -302,16 +302,32 @@ export default function ChartOfAccountsPage() {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="Chart of accounts hierarchy">
-              <caption className="sr-only">Detailed breakdown of chart of accounts hierarchy</caption>
+              <caption className="sr-only">
+                Detailed breakdown of chart of accounts hierarchy
+              </caption>
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th scope="col" className="px-4 py-3 w-24">Code</th>
-                  <th scope="col" className="px-4 py-3">Name</th>
-                  <th scope="col" className="px-4 py-3 w-20">Type</th>
-                  <th scope="col" className="px-4 py-3 w-28">Category</th>
-                  <th scope="col" className="px-4 py-3 text-right w-28">Normal Balance</th>
-                  <th scope="col" className="px-4 py-3 w-20">Status</th>
-                  <th scope="col" className="px-4 py-3 w-28 text-right">Actions</th>
+                  <th scope="col" className="px-4 py-3 w-24">
+                    Code
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Name
+                  </th>
+                  <th scope="col" className="px-4 py-3 w-20">
+                    Type
+                  </th>
+                  <th scope="col" className="px-4 py-3 w-28">
+                    Category
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">
+                    Normal Balance
+                  </th>
+                  <th scope="col" className="px-4 py-3 w-20">
+                    Status
+                  </th>
+                  <th scope="col" className="px-4 py-3 w-28 text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>

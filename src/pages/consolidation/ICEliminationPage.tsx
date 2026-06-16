@@ -143,15 +143,27 @@ export default function ICEliminationPage() {
             <table className="w-full text-left text-sm tabular-nums">
               <thead className="border-b border-[var(--border-subtle)] text-[var(--text-secondary)] font-medium">
                 <tr>
-                  <th className="py-3 px-4" scope="col">From Entity</th>
+                  <th className="py-3 px-4" scope="col">
+                    From Entity
+                  </th>
                   <th className="py-3 px-4 text-center" scope="col">
                     <GitCompare className="h-4 w-4 mx-auto opacity-40" />
                   </th>
-                  <th className="py-3 px-4" scope="col">To Entity</th>
-                  <th className="py-3 px-4" scope="col">Account</th>
-                  <th className="py-3 px-4 text-right" scope="col">Amount</th>
-                  <th className="py-3 px-4 text-center" scope="col">Status</th>
-                  <th className="py-3 px-4 text-right" scope="col">Action</th>
+                  <th className="py-3 px-4" scope="col">
+                    To Entity
+                  </th>
+                  <th className="py-3 px-4" scope="col">
+                    Account
+                  </th>
+                  <th className="py-3 px-4 text-right" scope="col">
+                    Amount
+                  </th>
+                  <th className="py-3 px-4 text-center" scope="col">
+                    Status
+                  </th>
+                  <th className="py-3 px-4 text-right" scope="col">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)] text-[var(--text-primary)]">

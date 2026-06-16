@@ -185,11 +185,21 @@ export const DependencyGraph: React.FC = () => {
               <table className="w-full text-sm text-left">
                 <thead className="bg-gray-50 dark:bg-gray-800 dark:bg-slate-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
                   <tr>
-                    <th className="px-4 py-2" scope="col">Ref</th>
-                    <th className="px-4 py-2" scope="col">Formula / Value</th>
-                    <th className="px-4 py-2" scope="col">Dependencies</th>
-                    <th className="px-4 py-2" scope="col">Dependents</th>
-                    <th className="px-4 py-2" scope="col">Status</th>
+                    <th className="px-4 py-2" scope="col">
+                      Ref
+                    </th>
+                    <th className="px-4 py-2" scope="col">
+                      Formula / Value
+                    </th>
+                    <th className="px-4 py-2" scope="col">
+                      Dependencies
+                    </th>
+                    <th className="px-4 py-2" scope="col">
+                      Dependents
+                    </th>
+                    <th className="px-4 py-2" scope="col">
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-slate-700">

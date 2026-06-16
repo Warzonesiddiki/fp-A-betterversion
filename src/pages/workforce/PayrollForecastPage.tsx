@@ -398,7 +398,13 @@ export default function PayrollForecastPage() {
           <CardTitle>Department Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable data={mockDepartments} columns={deptColumns} pageSize={8} caption="Department breakdown table" ariaLabel="Department breakdown data table for payroll forecast" />
+          <DataTable
+            data={mockDepartments}
+            columns={deptColumns}
+            pageSize={8}
+            caption="Department breakdown table"
+            ariaLabel="Department breakdown data table for payroll forecast"
+          />
         </CardContent>
       </Card>
     </div>

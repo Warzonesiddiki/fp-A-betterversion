@@ -251,7 +251,13 @@ export default function SectorPage() {
         </CardHeader>
         <CardContent aria-labelledby="sector-breakdown-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable caption="Account breakdown table" ariaLabel="Account breakdown data table for selected sector" />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Account breakdown table"
+              ariaLabel="Account breakdown data table for selected sector"
+            />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}
