@@ -194,7 +194,7 @@ export default function AuditTrailPage() {
                       key={e.id || i}
                       className="hover:bg-slate-900/50"
                       aria-rowindex={i + 2}
-                      aria-label={`Audit row ${i + 1} of ${Math.min(500, filtered.length)}: ${e.userName} ${e.action} on ${e.accountName || e.accountId} at ${e.timestamp}`}
+                      aria-label={`Audit row ${i + 1} of ${Math.min(500, filtered.length)}: ${e.userName} ${e.operation} on ${e.accountName || e.accountId} at ${e.timestamp}`}
                     >
                       <td
                         className="px-4 py-2 text-xs text-slate-400 whitespace-nowrap"
