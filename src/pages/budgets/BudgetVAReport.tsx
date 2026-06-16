@@ -394,7 +394,7 @@ export default function BudgetVAReport() {
               <CardTitle className="text-sm font-medium">Detailed Performance Breakdown</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable columns={columns} data={reportData} pageSize={15} />
+              <DataTable columns={columns} data={reportData} pageSize={15} caption="Department breakdown table" ariaLabel="Department breakdown data table for budget vs actual report" />
             </CardContent>
           </Card>
         </>
