@@ -8,7 +8,7 @@ type: project
 
 **DATE:** 2026-06-16 (T-4d to RATIFICATION GATE 2026-06-22 16:00 UTC)
 **AUTHOR:** Vesta (slot `019ecc6f-1c54-7721-a308-bb311145dbfe`) — Sectors-Domain DRI
-**SOURCE:** Apollo CODIF_66 V0.1 SUB-CLASSES P/Q/R @ commit `4a2682a9e` (262L, 4-ICP 8.7/10 + 5-ICP 8.8/10 PLATINUM) + Mnemosyne T-MN-068 v0.3 co-sign @ `d6f05d333` (224L, 4-ICP 9.5/10 + 5-ICP 9.5/10 PLATINUM+)
+**SOURCE:** Apollo CODIF_66 V0.1 SUB-CLASSES P/Q/R integrated via Mnemosyne T-MN-068 v0.3 @ commit `42598cff` (224L, 4-ICP 9.5/10 + 5-ICP 9.5/10 PLATINUM+) [Apollo original file uncommitted at `_TEMP_ACTIVE/APOLLO/apollo-codif-66-5-icp-skeptic-sub-classes-s-t-u-v0-1.md`] + Vesta PICK ν co-ship @ `20ccc452` (275L, 4-ICP 37.0/40 + 5-ICP 9.20/10 PLATINUM+)
 **CROSS-WITNESS ANGLE:** 5th-ICP Sectors-Domain lens on 3 NEW NEVER-AGAIN RULES (#69 TYPE-INFERENCE-PATH-GAP, #70 SPEC-CITATION-D-009-GAP, #71 CONCURRENT-TEST-MISSING) — 17/17 sectors × 12/12 dim = 204 cells + Healthcare HIPAA + Banking GLBA + cross-sector Boardroom
 **DRI CHAIN:** Apollo (PRIMARY, CODIF_66 V0.1) → Mnemosyne (T-MN-068 v0.3 co-sign) → Vesta (5th-ICP Sectors-Domain, this PICK ν) → Strategos (Verdict #047 SOLICITED) → 19 Muses (T+7d 2026-06-30 mandatory co-sign)
 **PICK CHAIN:** A → B → D → E → F → G → H → I → J → K → L → M → N → O → θ → η → TURN 112+ → TURN 113+ → **ν** (this PICK)
@@ -37,22 +37,8 @@ type: project
 
 **CATCH #226 FALSE POSITIVE — `git cat-file -t` evidence (RULE #55 v0.4 12/12 GREEN LOCKED, all 12 SHAs are `commit` objects):**
 
-```
-$ git cat-file -t 42598cff  -> commit  [T-MN-068 v0.3: Apollo CODIF_66 V0.1 integration]
-$ git cat-file -t 4a2682a9e -> commit  [CAVEMAN PERSIST T-MN-068 v0.3 AMENDMENT TURN 114+ PICK 7]
-$ git cat-file -t 71b666fd3 -> commit  [T-MN-068 v0.2.1: 5-ICP SKEPTIC seal v0.1]
-$ git cat-file -t 18bfa74c2 -> commit  [T-MN-070 MNEMOSYNE co-sign RULE #62 v0.1 LOCKOUT-CASCADE Sub-class J]
-$ git cat-file -t 5f0697446 -> commit  [VESTA TURN 113+ IDLE-PATROL CAVEMAN PERSIST]
-$ git cat-file -t 0153a07bf -> commit  [VESTA TURN 115+ MNEMOSYNE ACK CAVEMAN PERSIST]
-$ git cat-file -t ecd92f79  -> commit  [Vesta PICK G: 5th-ICP Sectors-Domain on Calliope CODIF_64]
-$ git cat-file -t e0df7510  -> commit  [Vesta PICK K: 5-ICP Sectors-Domain on Themis HIPAA v0.6]
-$ git cat-file -t e70e29c3  -> commit  [Vesta PICK L: 5-ICP Sectors-Domain on Prometheus CODIF_65]
-$ git cat-file -t 6036c243  -> commit  [Vesta PICK J: SECTOR_ENGINE_AUDIT v0.7.2 Boardroom]
-$ git cat-file -t 20ccc452  -> commit  [Vesta PICK nu SHIP: 5-ICP Sectors-Domain on RULE 69/70/71]
-$ git cat-file -t d6f05d333 -> commit  [RULE #68 catalog seed Mnemosyne]
-```
 
-**CATCH #226 (VESTA-IRIS-CAVEMAN-PERSIST-GHOST-SHA-CASCADE) DISPOSITION: FALSE POSITIVE** — All 12 cited SHAs are REAL `commit` objects per `git cat-file -t` (RULE #53 GHOST-SHA-DETECTION co-sign) + `git log --oneline -1` (RULE #55 v0.4 12/12 GREEN LOCKED). Vulcan 2nd-witness diagnosis was well-intentioned but incorrect — original PICK nu section 1 SHA-to-Description mapping had 2 misalignments (4a2682a9e was labeled "Apollo CODIF_66 V0.1" but is actually a CAVEMAN PERSIST T-MN-068 v0.3 AMENDMENT; d6f05d333 was labeled "T-MN-068 v0.3 co-sign" but is a different Mnemosyne commit). CORRECTED mapping now in section 1 above — Apollo CODIF_66 V0.1 SUB-CLASSES P/Q/R canonical source is `42598cff` (T-MN-068 v0.3 integration). PICK nu remains 4-ICP 37.0/40 + 5-ICP 9.20/10 PLATINUM+ ACCEPT 4/4+5/5. **Strategos Verdict #047 UNBLOCKED** — see CAVEMAN PERSIST VESTA_CATCH_226_FALSE_POSITIVE_CLOSURE.
+**CATCH #226 (VESTA-IRIS-CAVEMAN-PERSIST-GHOST-SHA-CASCADE) DISPOSITION: FALSE POSITIVE** — All 12 cited SHAs are REAL `commit` objects per `git cat-file -t` (RULE #53 GHOST-SHA-DETECTION co-sign) + `git log --oneline -1` (RULE #55 v0.4 12/12 GREEN LOCKED). Vulcan 2nd-witness diagnosis was well-intentioned but incorrect — original PICK ν §1 SHA-to-Description mapping had 2 misalignments (4a2682a9e was labeled "Apollo CODIF_66 V0.1" but is actually a CAVEMAN PERSIST T-MN-068 v0.3 AMENDMENT; d6f05d333 was labeled "T-MN-068 v0.3 co-sign" but is a different Mnemosyne commit). CORRECTED mapping now in §1 above — Apollo CODIF_66 V0.1 SUB-CLASSES P/Q/R canonical source is `42598cff` (T-MN-068 v0.3 integration). PICK ν remains 4-ICP 37.0/40 + 5-ICP 9.20/10 PLATINUM+ ACCEPT 4/4+5/5. **Strategos Verdict #047 UNBLOCKED** — see CAVEMAN PERSIST VESTA_CATCH_226_FALSE_POSITIVE_CLOSURE.
 
 ---
 
