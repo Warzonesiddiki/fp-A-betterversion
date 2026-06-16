@@ -223,34 +223,60 @@ export default function ScenarioBuilderPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <main className="p-6 space-y-6" aria-labelledby="scenario-builder-heading">
       {saveError && (
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
+        <div
+          className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400"
+          role="alert"
+          aria-live="assertive"
+        >
           {saveError}
         </div>
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Scenario Builder</h1>
+          <h1 id="scenario-builder-heading" className="text-2xl font-bold">Scenario Builder</h1>
           <p className="text-sm text-slate-400 mt-1">Model assumptions and compare outcomes</p>
         </div>
-        <div className="flex gap-2">
-          <Button size="sm" onClick={handleSave}>
-            <Save className="h-3.5 w-3.5 mr-1.5" />
+        <div className="flex gap-2" role="group" aria-label="Scenario actions">
+          <Button
+            size="sm"
+            onClick={handleSave}
+            aria-label="Save scenario"
+            data-testid="save-scenario"
+          >
+            <Save className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             Save Scenario
           </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportPDF}>
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleExportPDF}
+            aria-label="Export scenario as PDF"
+            data-testid="export-scenario-pdf"
+          >
+            <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             PDF
           </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel}>
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleExportExcel}
+            aria-label="Export scenario as Excel"
+            data-testid="export-scenario-excel"
+          >
+            <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             Excel
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div
+        className="grid grid-cols-4 gap-4"
+        role="region"
+        aria-label="Scenario impact key performance indicators"
+        data-testid="scenario-kpis"
+      >
         <KPIValue
           label="Revenue Impact"
           value={formatCurrency(scenarioImpact.revenueImpact)}
@@ -308,26 +334,34 @@ export default function ScenarioBuilderPage() {
                 max: 20,
                 suffix: '%',
               },
-            ].map(({ label, value, set, min, max, suffix }) => (
-              <div key={label}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-300">{label}</span>
-                  <span className="text-white font-mono">
-                    {value}
-                    {suffix}
-                  </span>
+            ].map(({ label, value, set, min, max, suffix }) => {
+              const valueId = `slider-value-${label.toLowerCase().replace(/\s+/g, '-')}`;
+              return (
+                <div key={label}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <label htmlFor={valueId} className="text-slate-300">{label}</label>
+                    <span
+                      id={valueId}
+                      className="text-white font-mono"
+                      aria-live="polite"
+                    >
+                      {value}{suffix}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    value={value}
+                    onChange={(e) => set(Number(e.target.value))}
+                    className="w-full accent-blue-500"
+                    aria-label={label}
+                    aria-valuetext={`${value} ${suffix || 'units'} (range ${min} to ${max})`}
+                    data-testid={`slider-${label.toLowerCase().replace(/\s+/g, '-')}`}
+                  />
                 </div>
-                <input
-                  type="range"
-                  min={min}
-                  max={max}
-                  value={value}
-                  onChange={(e) => set(Number(e.target.value))}
-                  className="w-full accent-blue-500"
-                  aria-label={label}
-                />
-              </div>
-            ))}
+              );
+            })}
           </CardContent>
         </Card>
         <Card>
@@ -335,6 +369,7 @@ export default function ScenarioBuilderPage() {
             <CardTitle>Base vs Scenario</CardTitle>
           </CardHeader>
           <CardContent>
+            <div role="img" aria-label="Base versus scenario monthly comparison bar chart from January to June. Each month shows two bars: base case (gray) and scenario case (blue) in US dollars.">
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={comparisonData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -349,6 +384,7 @@ export default function ScenarioBuilderPage() {
                 <Bar dataKey="scenario" fill="#3b82f6" name="Scenario" />
               </BarChart>
             </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -387,6 +423,6 @@ export default function ScenarioBuilderPage() {
           />
         </CardContent>
       </Card>
-    </div>
+    </main>
   );
 }
