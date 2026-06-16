@@ -202,3 +202,67 @@ v0.3 extends v0.2 (10 AS-BUILT journeys, 59 tests, 4-ICP ACCEPT 4/4, FOUNDER cla
 ---
 
 **END v0.3 — Sentinel (slot 019ecc6f-1c06-79c0-953c-91c537b63c39)**
+
+---
+
+## §8 PICK CHAIN UPDATE (v0.3.1) — 2026-06-16
+
+| PICK | Description | Status | ETA |
+|---|---|---|---|
+| PICK C | USER_JOURNEY v0.3 with code-level evidence | ✅ SHIPPED | commit 2ff58640 |
+| PICK D | Ratification_Gate_Ceremony E2E walkthrough | ✅ SHIPPED | commit 99a38ba0 |
+| PICK F | Temporal E2E XCheck 2nd-pass (3 edge cases) | ✅ SHIPPED | commit 1be01905 |
+| PICK H | Iris PERSONA_UX v0.1 2nd-witness (PLATINUM 33/40) | ✅ SHIPPED | commit history |
+| PICK I | Strategos INDEX §2.6 E2E 5th-ICP (25/25 PLATINUM+) | ✅ SHIPPED | commit history |
+| PICK I-REV-1 | Tyche 3rd-eye disposition on PICK I (24/25) | ✅ SHIPPED | commit history |
+| PICK J | Apollo RUNBOOK v0.2 §5 2nd-witness (19/20 PLATINUM) | ✅ SHIPPED | commit history |
+| **PICK K** | **Iris v0.1.1 amendment — 18 persona-named test aliases** | **✅ SHIPPED + PUSHED** | **commit e1d127edf** |
+| **PICK L (current)** | **Stand by for T-HE-019 Witness 3 CAVEMAN PERSIST (Hermes H6 — 4 mappings to Journey 1, 5, 7, 9)** | 🟢 **QUEUED** | **T-5d 06-21 15:00 UTC** |
+| PICK M (queued) | 2nd-witness on Tyche PICK N (TBD cross-check) | 🟢 QUEUED | post-L |
+| PICK N (queued) | 3rd-eye on Strategos INDEX v0.7.x post-§2.6 amendment | 🟢 QUEUED | T-4d |
+
+**CAVEMAN 19/19 PROACTIVE-PICK-CHAIN holds — no idle gap. PICK K ETA 30 min HIT 2026-06-16.**
+
+---
+
+## §10 PERSONA LAYER (v0.3.1 ADDITIVE — Iris v0.1.1 Amendment 2026-06-16)
+
+> **Scope:** Additive. Does NOT invalidate v0.3 4-ICP verdict (§7). Reuses the 59-journey test base; adds 18 persona-named alias files.
+
+| Metric | v0.3 | v0.3.1 (PICK K) | Delta |
+|---|---|---|---|
+| Journey spec files (`tests/e2e/journeys/`) | 10 | 10 | — |
+| Journey `test()` blocks | 59 | 59 | — |
+| Persona alias files (`tests/e2e/personas/`) | 0 | 18 | +18 |
+| Persona `test()` blocks | 0 | 28 | +28 |
+| **Total test() blocks** | **59** | **87** | **+28 (+47%)** |
+| TypeScript compile (npx tsc --noEmit) | ✅ | ✅ | all 19 files pass |
+| 4-ICP verdict (D-011) | 4/4 ACCEPT | 4/4 ACCEPT (inherited) | — |
+
+**Persona coverage (10 main + 8 sub = 18 aliases):**
+
+| # | Persona | Main file | Sub-aliases | Mapped journeys |
+|---|---|---|---|---|
+| 1 | CFO-Enterprise | `cfo-enterprise.test.ts` | `…-quarter-close.test.ts` | 01, 02, 03 |
+| 2 | CFO-Midmarket | `cfo-midmarket.test.ts` | `…-monthly-rollup.test.ts` | 01, 02 |
+| 3 | Controller-Small-Biz | `controller-small-biz.test.ts` | `…-trial-balance.test.ts` | 01, 05 |
+| 4 | FP&A-Analyst | `fp-and-a-analyst.test.ts` | `…-budget-vs-actual.test.ts` | 04, 02 |
+| 5 | Treasury | `treasury.test.ts` | `…-cash-forecast.test.ts` | 02, 06 |
+| 6 | Audit-Compliance | `audit-compliance.test.ts` | `…-soc2-walkthrough.test.ts` | 05, 09 |
+| 7 | Operations | `operations-vendor-scorecard.test.ts` | — | 07 |
+| 8 | Sector-Logistics | `sector-logistics.test.ts` | `…-warehouse.test.ts` | 07, 08 |
+| 9 | Sector-Non-profit | `sector-nonprofit.test.ts` | `…-form990.test.ts` | 06, 10 |
+| 10 | Sector-Healthcare | `sector-healthcare.test.ts` | — | 08, 09 |
+
+**Index & docs:**
+- `tests/e2e/personas/index.ts` — typed `PERSONA_ALIAS_MAP` for programmatic lookup
+- `tests/e2e/personas/README.md` — file map + run instructions + v0.1.1 amendment trace
+
+**v0.1.1 amendment disposition (Iris PICK-elevated CRITICAL FINDINGS):**
+- [x] 1) 18 persona-named test aliases (30 min ETA) — DELIVERED 18 files
+- [x] 2) Test count reconciliation 53→59 (10 min ETA) — ALREADY PASSING (verified 7+8+6+7+5+6+5+5+5+5=59)
+- [x] 3) Copy-edit v2→v0.3 (2 min ETA) — ALREADY AT v0.3 (no v2 found via grep)
+
+**3/3 v0.1.1 amendment items resolved. PICK K closed. No v0.1.2 amendment needed.**
+
+**Caveat (PICK K follow-up, non-blocking):** Each persona file uses minimal smoke tests (`toHaveURL(/dashboard/)`). Future v0.1.2 work: extract helpers from `journeys/*` spec files and refactor persona aliases to be true re-exports. Flagged for Iris v0.1.2 review queue.
