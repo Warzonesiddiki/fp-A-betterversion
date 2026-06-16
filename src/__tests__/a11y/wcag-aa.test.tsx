@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Automated accessibility (a11y) regression tests for FinPlan Pro.
  *
  * This file is intentionally created by the Hera audit so the build can wire
@@ -17,6 +17,9 @@ import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { axe } from 'vitest-axe';
 import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider } from '../../context/ThemeContext';
+import { I18nextProvider } from 'react-i18next';
+import i18n from 'i18next';
 
 import LoginPage from '../../pages/auth/LoginPage';
 import RegisterPage from '../../pages/auth/RegisterPage';
@@ -39,6 +42,14 @@ import { ContextMenu } from '../../components/ui/ContextMenu';
 
 const withRouter = (ui: React.ReactNode) => (
   <MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>
+);
+
+const withAllProviders = (ui: React.ReactNode) => (
+  <I18nextProvider i18n={i18n}>
+    <ThemeProvider>
+      <MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>
+    </ThemeProvider>
+  </I18nextProvider>
 );
 
 describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
@@ -155,6 +166,8 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
       const items = [{ label: 'Cut', onClick: () => {} }];
       const { container } = render(<ContextMenu x={0} y={0} items={items} onClose={() => {}} />);
       const results = await axe(container);
+      expect(results.violations).toEqual([]);
+    });
   });
 
   // A11Y-P0-1 BLOCKER (Artemis + Hera co-own): WCAG 2.4.11 Focus Not Obscured
@@ -181,7 +194,7 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     it('AppLayout focusable elements are not obscured by sticky/fixed author content', async () => {
       const AppLayoutMod = await import('../../components/layout/AppLayout');
       const AppLayout = AppLayoutMod.default;
-      const { container } = render(<AppLayout><button>test</button></AppLayout>);
+      const { container } = render(withAllProviders(<AppLayout><button>test</button></AppLayout>));
       const focusables = container.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
       );
