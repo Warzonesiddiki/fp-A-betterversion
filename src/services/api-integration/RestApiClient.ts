@@ -7,11 +7,22 @@
  * - Rate-limit handling (429)
  * - Request/response interceptors
  * - Typed request methods
+ *
+ * PATCH 9 — REST_API_CLIENT v0.3 (Hephaestus, FinPlan Pro v1.0.0, 2026-06-16):
+ *   - Ghost-SHA detection (NEVER-AGAIN RULE #53 GHOST-SHA-DETECTION)
+ *   - Optional `enableGhostShaValidation` config + `setGhostShaValidator`
+ *   - `validateResponseShas(data)` for manual scan of response payloads
+ *   - Defends CWE-345 (Insufficient Verification of Data Authenticity)
  */
 
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import type { ApiRequestConfig, ApiResponse, ConnectorAuthConfig, OAuth2Tokens } from './types';
 import { ApiError } from './types';
+import {
+  GhostShaValidator,
+  type GhostShaScanResult,
+  type GhostShaScanOptions,
+} from './GhostShaValidator';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -29,6 +40,9 @@ export class RestApiClient {
   private readonly retryDelayMs: number;
   private oauthTokens: OAuth2Tokens | null = null;
   private refreshPromise: Promise<OAuth2Tokens> | null = null;
+  private ghostShaValidator: GhostShaValidator | null = null;
+  private readonly enableGhostShaValidation: boolean = false;
+  private readonly onGhostShaDetected: ((result: GhostShaScanResult) => void) | null = null;
 
   constructor(
     baseUrl: string,
@@ -294,4 +308,81 @@ export class RestApiClient {
   async delete<T = unknown>(url: string): Promise<ApiResponse<T>> {
     return this.request<T>({ method: 'DELETE', url });
   }
+
+  // ===========================================================================
+  // PATCH 9 — REST_API_CLIENT v0.3 (Hephaestus, FinPlan Pro v1.0.0, CYCLE 8)
+  // GHOST-SHA DETECTION (NEVER-AGAIN RULE #53 — closes Tyche P0 SHA-MISATTRIBUTION
+  // finding in Strategos/Apollo INDEX v0.6; CATCH #187, #194, #195, #196, Vulcan F1+F2)
+  // ===========================================================================
+
+  /**
+   * Wire up a GhostShaValidator to be used for response-data validation.
+   * When set (and `enableGhostShaValidation` is true in constructor options),
+   * every successful response is scanned for SHA-like strings in fields named
+   * `commit_sha`, `git_sha`, `sha`, etc. Suspicious SHAs trigger the
+   * `onGhostShaDetected` callback (if set) and a console.warn.
+   *
+   * @example
+   * ```ts
+   * const client = new RestApiClient(url, auth, { enableGhostShaValidation: true });
+   * const validator = new GhostShaValidator();
+   * validator.addShas(await loadGitShas()); // from `git log --format=%H`
+   * client.setGhostShaValidator(validator);
+   * ```
+   */
+  setGhostShaValidator(validator: GhostShaValidator): void {
+    this.ghostShaValidator = validator;
+  }
+
+  /**
+   * Get the currently-wired GhostShaValidator (or null if none).
+   */
+  getGhostShaValidator(): GhostShaValidator | null {
+    return this.ghostShaValidator;
+  }
+
+  /**
+   * Manually scan a response payload for potential GHOST-SHA values.
+   * Returns a scan result even if no validator is wired (empty result).
+   *
+   * Use this when you want to validate response data without enabling
+   * automatic scanning on every request.
+   */
+  validateResponseShas(data: unknown, options?: GhostShaScanOptions): GhostShaScanResult {
+    if (!this.ghostShaValidator) {
+      return {
+        scanned: 0,
+        valid: [],
+        invalid: [],
+        unknown: [],
+        hasGhostSha: false,
+        scannedAt: Date.now(),
+      };
+    }
+    return this.ghostShaValidator.scanObject(data, options);
+  }
+
+  /**
+   * Internal: invoked after a successful response when `enableGhostShaValidation`
+   * is true. Calls the optional callback and always console.warns on GHOST-SHA.
+   */
+  private reportGhostShaFindings(result: GhostShaScanResult): void {
+    if (!result.hasGhostSha) return;
+    if (this.onGhostShaDetected) {
+      try {
+        this.onGhostShaDetected(result);
+      } catch {
+        // Swallow callback errors so the original request still succeeds.
+      }
+    }
+    if (typeof console !== "undefined" && console.warn) {
+      const ghostCount = result.unknown.length + result.invalid.length;
+      console.warn(
+        `[RestApiClient] GHOST-SHA detected: ${ghostCount} suspicious SHA(s) ` +
+        `(${result.unknown.length} unknown, ${result.invalid.length} invalid) ` +
+        `out of ${result.scanned} field(s) scanned`
+      );
+    }
+  }
+
 }
