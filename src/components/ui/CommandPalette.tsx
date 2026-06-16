@@ -170,6 +170,7 @@ export function CommandPalette({
               style={{ color: 'var(--text-secondary)' }}
               role="option"
               aria-hidden="true"
+              aria-selected="false"
             >
               <p className="text-sm">{t('commands.notFound')}</p>
             </div>
