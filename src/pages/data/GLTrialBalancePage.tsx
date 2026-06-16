@@ -134,17 +134,18 @@ export default function GLTrialBalancePage() {
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="GL trial balance">
+              <caption className="sr-only">Detailed gl trial balance</caption>
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th className="px-4 py-3 w-20">Code</th>
-                  <th className="px-4 py-3">Account Name</th>
-                  <th className="px-4 py-3 w-16">Type</th>
-                  <th className="px-4 py-3 text-right w-28">Beginning Balance</th>
-                  <th className="px-4 py-3 text-right w-28">Debits</th>
-                  <th className="px-4 py-3 text-right w-28">Credits</th>
-                  <th className="px-4 py-3 text-right w-28">Net Change</th>
-                  <th className="px-4 py-3 text-right w-28">Ending Balance</th>
+                  <th scope="col" className="px-4 py-3 w-20">Code</th>
+                  <th scope="col" className="px-4 py-3">Account Name</th>
+                  <th scope="col" className="px-4 py-3 w-16">Type</th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">Beginning Balance</th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">Debits</th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">Credits</th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">Net Change</th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">Ending Balance</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">

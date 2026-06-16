@@ -642,15 +642,16 @@ export default function GLUploadPage() {
               <p className="text-slate-400 text-center py-4">No imports yet</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm" aria-label="GL upload preview">
+              <caption className="sr-only">Detailed gl upload preview</caption>
                   <thead>
                     <tr className="text-left text-slate-400 text-xs uppercase">
-                      <th className="pb-3 pr-4">File Name</th>
-                      <th className="pb-3 pr-4 text-right">Rows</th>
-                      <th className="pb-3 pr-4 text-right">Errors</th>
-                      <th className="pb-3 pr-4">Status</th>
-                      <th className="pb-3 pr-4">Date</th>
-                      <th className="pb-3">Actions</th>
+                      <th scope="col" className="pb-3 pr-4">File Name</th>
+                      <th scope="col" className="pb-3 pr-4 text-right">Rows</th>
+                      <th scope="col" className="pb-3 pr-4 text-right">Errors</th>
+                      <th scope="col" className="pb-3 pr-4">Status</th>
+                      <th scope="col" className="pb-3 pr-4">Date</th>
+                      <th scope="col" className="pb-3">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">

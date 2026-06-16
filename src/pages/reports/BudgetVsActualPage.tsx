@@ -691,13 +691,14 @@ export default function BudgetVsActualPage() {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm" aria-label="Budget vs actual">
+              <caption className="sr-only">Detailed budget vs actual</caption>
                     <thead>
                       <tr className="text-left text-slate-400 text-xs uppercase border-b border-[var(--border-subtle)]">
-                        <th className="px-4 py-2">Account</th>
-                        <th className="px-4 py-2 text-right">Price Var</th>
-                        <th className="px-4 py-2 text-right">Volume Var</th>
-                        <th className="px-4 py-2 text-right">Total Var</th>
+                        <th scope="col" className="px-4 py-2">Account</th>
+                        <th scope="col" className="px-4 py-2 text-right">Price Var</th>
+                        <th scope="col" className="px-4 py-2 text-right">Volume Var</th>
+                        <th scope="col" className="px-4 py-2 text-right">Total Var</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--border-subtle)]">
