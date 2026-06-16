@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useCallback, useState } from 'react';
+import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import {
   AllCommunityModule,
@@ -63,6 +63,19 @@ export const DataGrid: React.FC<DataGridProps> = ({
   const gridRef = useRef<AgGridReact>(null);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  /* row count announcement (WCAG 4.1.3 Status Messages) */
+  const [rowCountAnnouncement, setRowCountAnnouncement] = useState<string>('');
+
+  useEffect(() => {
+    if (loading) {
+      setRowCountAnnouncement('Loading data...');
+    } else if (rows.length === 0) {
+      setRowCountAnnouncement('No rows to display');
+    } else {
+      setRowCountAnnouncement(`Table updated: ${rows.length} row${rows.length === 1 ? '' : 's'} displayed`);
+    }
+  }, [rows.length, loading]);
 
   const { selectionStats, updateSelectionStats } = useSelectionStats(gridRef, columns);
   const {
@@ -541,6 +554,15 @@ export const DataGrid: React.FC<DataGridProps> = ({
           </span>
         </div>
       )}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-testid="row-count-announcement"
+        className="sr-only"
+      >
+        {rowCountAnnouncement}
+      </div>
     </div>
   );
 };

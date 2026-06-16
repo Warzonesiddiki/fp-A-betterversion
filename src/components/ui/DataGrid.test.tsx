@@ -9,7 +9,7 @@ import React from 'react';
 // The component has a bug where useCallback references updateSelectionStats before its const declaration
 // This works in Vite production builds but throws in Vitest's React dev mode
 vi.mock('./DataGrid', async () => {
-  const { forwardRef, useState, useCallback } = await import('react');
+  const { forwardRef, useState, useCallback, useEffect } = await import('react');
 
   // Re-implement a testable version of DataGrid that matches the public API
   const DataGrid = forwardRef(function DataGridMock(
@@ -56,6 +56,7 @@ vi.mock('./DataGrid', async () => {
     const [replaceText, setReplaceText] = useState('');
     const [showColumnMenu, setShowColumnMenu] = useState(false);
     const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
+    const [rowCountAnnouncement, setRowCountAnnouncement] = useState<string>('');
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent) => {
@@ -79,6 +80,13 @@ vi.mock('./DataGrid', async () => {
     );
 
     const visibleColumns = columns.filter((c) => !hiddenColumns.has(c.field));
+
+    // Row count announcement effect (mirrors real DataGrid)
+    useEffect(() => {
+      if (loading) setRowCountAnnouncement('Loading data...');
+      else if (rows.length === 0) setRowCountAnnouncement('No rows to display');
+      else setRowCountAnnouncement(`Table updated: ${rows.length} row${rows.length === 1 ? '' : 's'} displayed`);
+    }, [rows.length, loading]);
 
     return (
       <div
@@ -208,6 +216,15 @@ vi.mock('./DataGrid', async () => {
           ))}
         </div>
 
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          data-testid="row-count-announcement"
+          className="sr-only"
+        >
+          {rowCountAnnouncement}
+        </div>
         {loading && (
           <div role="status" aria-live="polite">
             <span>Loading Grid...</span>
@@ -306,6 +323,31 @@ describe('DataGrid', () => {
     it('loading overlay has aria-live', () => {
       render(<DataGrid rows={mockRows} columns={mockColumns} loading />);
       expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('row count announcement region is present with aria-live polite', () => {
+      render(<DataGrid rows={mockRows} columns={mockColumns} />);
+      const region = screen.getByTestId('row-count-announcement');
+      expect(region).toBeInTheDocument();
+      expect(region).toHaveAttribute('aria-live', 'polite');
+      expect(region).toHaveAttribute('role', 'status');
+      expect(region).toHaveAttribute('aria-atomic', 'true');
+    });
+
+    it('row count announcement includes the row count', () => {
+      render(<DataGrid rows={mockRows} columns={mockColumns} />);
+      const region = screen.getByTestId('row-count-announcement');
+      expect(region).toHaveTextContent(/3 rows displayed/);
+    });
+
+    it('row count announcement changes when rows prop changes', () => {
+      const { rerender } = render(<DataGrid rows={mockRows} columns={mockColumns} />);
+      const region = screen.getByTestId('row-count-announcement');
+      expect(region).toHaveTextContent(/3 rows displayed/);
+
+      const moreRows = [...mockRows, { name: 'New', amount: 5000, growth: 1.0 }];
+      rerender(<DataGrid rows={moreRows} columns={mockColumns} />);
+      expect(region).toHaveTextContent(/4 rows displayed/);
     });
   });
 
