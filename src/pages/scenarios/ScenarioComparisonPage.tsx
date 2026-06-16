@@ -165,10 +165,11 @@ export function ScenarioComparisonPage() {
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" aria-label="Scenario comparison metrics">
+              <caption className="sr-only">Detailed scenario comparison metrics</caption>
                 <thead>
                   <tr className="border-b border-[var(--border-subtle)]">
-                    <th className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]">
+                    <th scope="col" className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]">
                       Metric
                     </th>
                     {selectedScenarios.map((s) => (

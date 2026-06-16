@@ -286,7 +286,8 @@ export function GovernmentDashboardPage() {
             <CardTitle>Fiscal Year Comparison</CardTitle>
           </CardHeader>
           <CardContent>
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Government sector metrics">
+              <caption className="sr-only">Detailed government sector metrics</caption>
               <thead>
                 <tr style={{ color: 'var(--text-secondary)' }}>
                   <th scope="col" className="text-left pb-2 font-medium">Metric</th>

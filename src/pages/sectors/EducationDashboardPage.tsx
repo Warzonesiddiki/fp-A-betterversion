@@ -198,19 +198,20 @@ export function EducationDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" aria-label="Education sector metrics">
+              <caption className="sr-only">Detailed education sector metrics</caption>
                 <thead>
                   <tr className="border-b border-[var(--border-color)]">
-                    <th className="text-left py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-left py-2 text-[var(--text-secondary)] font-medium">
                       Semester
                     </th>
-                    <th className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
                       Undergrad
                     </th>
-                    <th className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
                       Graduate
                     </th>
-                    <th className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
                       Total
                     </th>
                   </tr>
@@ -247,16 +248,16 @@ export function EducationDashboardPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border-color)]">
-                    <th className="text-left py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-left py-2 text-[var(--text-secondary)] font-medium">
                       Category
                     </th>
-                    <th className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
                       Budget
                     </th>
-                    <th className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
                       Actual
                     </th>
-                    <th className="text-right py-2 text-[var(--text-secondary)] font-medium">
+                    <th scope="col" className="text-right py-2 text-[var(--text-secondary)] font-medium">
                       Variance
                     </th>
                   </tr>
