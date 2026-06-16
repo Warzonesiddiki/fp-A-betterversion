@@ -93,7 +93,9 @@ export default function AuditTrailPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 id="audit-trail-heading" className="text-2xl font-bold">Audit Trail</h1>
+          <h1 id="audit-trail-heading" className="text-2xl font-bold">
+            Audit Trail
+          </h1>
           <p className="text-sm text-slate-400 mt-1">{entries.length} total entries</p>
         </div>
         <div className="flex gap-2">
@@ -173,12 +175,24 @@ export default function AuditTrailPage() {
             >
               <thead className="sticky top-0 bg-slate-900 z-10">
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th className="px-4 py-3 w-32" scope="col">Timestamp</th>
-                  <th className="px-4 py-3 w-24" scope="col">User</th>
-                  <th className="px-4 py-3 w-24" scope="col">Account</th>
-                  <th className="px-4 py-3 text-right w-24" scope="col">Old Value</th>
-                  <th className="px-4 py-3 text-right w-24" scope="col">New Value</th>
-                  <th className="px-4 py-3" scope="col">Reason</th>
+                  <th className="px-4 py-3 w-32" scope="col">
+                    Timestamp
+                  </th>
+                  <th className="px-4 py-3 w-24" scope="col">
+                    User
+                  </th>
+                  <th className="px-4 py-3 w-24" scope="col">
+                    Account
+                  </th>
+                  <th className="px-4 py-3 text-right w-24" scope="col">
+                    Old Value
+                  </th>
+                  <th className="px-4 py-3 text-right w-24" scope="col">
+                    New Value
+                  </th>
+                  <th className="px-4 py-3" scope="col">
+                    Reason
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">

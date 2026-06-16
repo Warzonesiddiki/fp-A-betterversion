@@ -181,30 +181,52 @@ export function DashboardTemplate({
   const cfoTabRef = useRef<HTMLButtonElement>(null);
   const controllerTabRef = useRef<HTMLButtonElement>(null);
   const analystTabRef = useRef<HTMLButtonElement>(null);
-  const PERSONAS: ReadonlyArray<{ id: DashboardType; label: string; tabId: string; panelId: string; ref: React.RefObject<HTMLButtonElement | null> }> = [
+  const PERSONAS: ReadonlyArray<{
+    id: DashboardType;
+    label: string;
+    tabId: string;
+    panelId: string;
+    ref: React.RefObject<HTMLButtonElement | null>;
+  }> = [
     { id: 'cfo', label: 'CFO View', tabId: 'tab-cfo', panelId: 'panel-cfo', ref: cfoTabRef },
-    { id: 'controller', label: 'Controller View', tabId: 'tab-controller', panelId: 'panel-controller', ref: controllerTabRef },
-    { id: 'analyst', label: 'Analyst View', tabId: 'tab-analyst', panelId: 'panel-analyst', ref: analystTabRef },
+    {
+      id: 'controller',
+      label: 'Controller View',
+      tabId: 'tab-controller',
+      panelId: 'panel-controller',
+      ref: controllerTabRef,
+    },
+    {
+      id: 'analyst',
+      label: 'Analyst View',
+      tabId: 'tab-analyst',
+      panelId: 'panel-analyst',
+      ref: analystTabRef,
+    },
   ];
   const handleLayoutChange = useCallback((next: DashboardType) => {
     setActiveLayout(next);
     const persona = PERSONAS.find((p) => p.id === next);
     if (persona) setLayoutAnnouncement(`Switched to ${persona.label}`);
   }, []);
-  const onTabKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End') return;
-    e.preventDefault();
-    let nextIdx = idx;
-    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % PERSONAS.length;
-    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + PERSONAS.length) % PERSONAS.length;
-    else if (e.key === 'Home') nextIdx = 0;
-    else if (e.key === 'End') nextIdx = PERSONAS.length - 1;
-    const next = PERSONAS[nextIdx];
-    if (next) {
-      handleLayoutChange(next.id);
-      next.ref.current?.focus();
-    }
-  }, [handleLayoutChange]);
+  const onTabKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End')
+        return;
+      e.preventDefault();
+      let nextIdx = idx;
+      if (e.key === 'ArrowRight') nextIdx = (idx + 1) % PERSONAS.length;
+      else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + PERSONAS.length) % PERSONAS.length;
+      else if (e.key === 'Home') nextIdx = 0;
+      else if (e.key === 'End') nextIdx = PERSONAS.length - 1;
+      const next = PERSONAS[nextIdx];
+      if (next) {
+        handleLayoutChange(next.id);
+        next.ref.current?.focus();
+      }
+    },
+    [handleLayoutChange]
+  );
 
   const dashboardKPIs = kpis ?? mockKPIs;
   const dashboardTraffic = trafficItems ?? mockTrafficItems;
@@ -215,11 +237,7 @@ export function DashboardTemplate({
 
   return (
     <div className={cn('space-y-6', className)}>
-      <div
-        className="flex items-center gap-2"
-        role="tablist"
-        aria-label="Dashboard persona views"
-      >
+      <div className="flex items-center gap-2" role="tablist" aria-label="Dashboard persona views">
         {PERSONAS.map((p, idx) => {
           const isActive = activeLayout === p.id;
           return (
@@ -308,7 +326,12 @@ export function DashboardTemplate({
       )}
 
       {activeLayout === 'controller' && (
-        <section role="tabpanel" id="panel-controller" aria-labelledby="tab-controller" className="space-y-6">
+        <section
+          role="tabpanel"
+          id="panel-controller"
+          aria-labelledby="tab-controller"
+          className="space-y-6"
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {dashboardKPIs.slice(0, 4).map((kpi, idx) => (
               <KPICardEnhanced
@@ -379,7 +402,12 @@ export function DashboardTemplate({
       )}
 
       {activeLayout === 'analyst' && (
-        <section role="tabpanel" id="panel-analyst" aria-labelledby="tab-analyst" className="space-y-6">
+        <section
+          role="tabpanel"
+          id="panel-analyst"
+          aria-labelledby="tab-analyst"
+          className="space-y-6"
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {dashboardKPIs.map((kpi, idx) => (
               <KPICardEnhanced key={idx} {...kpi} onDrillDown={() => onKPIClick?.(idx)} />

@@ -52,13 +52,7 @@ export const SECRET_ROTATION_CONSTANTS = {
   REASON_EXPIRED: 'expired',
 } as const;
 
-export type SecretType =
-  | 'jwt'
-  | 'hmac'
-  | 'api-key'
-  | 'session'
-  | 'encryption'
-  | 'csrf';
+export type SecretType = 'jwt' | 'hmac' | 'api-key' | 'session' | 'encryption' | 'csrf';
 
 export type SecretStatus = 'active' | 'rotating' | 'revoked' | 'expired';
 
@@ -200,7 +194,10 @@ export interface SecretRotationConfig {
 }
 
 export class SecretRotationError extends Error {
-  constructor(message: string, public readonly code: string) {
+  constructor(
+    message: string,
+    public readonly code: string
+  ) {
     super(message);
     this.name = 'SecretRotationError';
   }
@@ -264,15 +261,12 @@ export class SecretRotation {
   private readonly secrets: Map<string, SecretRecord> = new Map();
   private readonly defaultGracePeriodSeconds: number;
   private readonly defaultTtlSeconds: number;
-  private readonly onAudit:
-    | ((e: SecretRotationAuditEvent) => void | Promise<void>)
-    | null;
+  private readonly onAudit: ((e: SecretRotationAuditEvent) => void | Promise<void>) | null;
   private readonly defaultActor: string;
 
   private constructor(config: SecretRotationConfig = {}) {
     this.defaultGracePeriodSeconds =
-      config.defaultGracePeriodSeconds ??
-      SECRET_ROTATION_CONSTANTS.DEFAULT_GRACE_PERIOD_SECONDS;
+      config.defaultGracePeriodSeconds ?? SECRET_ROTATION_CONSTANTS.DEFAULT_GRACE_PERIOD_SECONDS;
     this.defaultTtlSeconds =
       config.defaultTtlSeconds ?? SECRET_ROTATION_CONSTANTS.DEFAULT_TTL_SECONDS;
     this.onAudit = config.onAudit ?? null;
@@ -298,10 +292,7 @@ export class SecretRotation {
    * Create a new active secret.
    * Returns the new secret id. The secret material is held only in memory.
    */
-  async createSecret(
-    options: CreateSecretOptions,
-    actor?: string
-  ): Promise<string> {
+  async createSecret(options: CreateSecretOptions, actor?: string): Promise<string> {
     if (!options || typeof options !== 'object') {
       throw new SecretRotationError('options required', 'INVALID_OPTIONS');
     }
@@ -316,10 +307,7 @@ export class SecretRotation {
       options.type !== 'encryption' &&
       options.type !== 'csrf'
     ) {
-      throw new SecretRotationError(
-        `unknown secret type: ${options.type}`,
-        'INVALID_TYPE'
-      );
+      throw new SecretRotationError(`unknown secret type: ${options.type}`, 'INVALID_TYPE');
     }
     let material: Uint8Array;
     if (options.material) {
@@ -335,8 +323,7 @@ export class SecretRotation {
       }
       material = new Uint8Array(options.material);
     } else {
-      const bytes =
-        options.bytes ?? SECRET_ROTATION_CONSTANTS.DEFAULT_SECRET_BYTES;
+      const bytes = options.bytes ?? SECRET_ROTATION_CONSTANTS.DEFAULT_SECRET_BYTES;
       if (
         bytes < SECRET_ROTATION_CONSTANTS.MIN_SECRET_BYTES ||
         bytes > SECRET_ROTATION_CONSTANTS.MAX_SECRET_BYTES
@@ -349,12 +336,8 @@ export class SecretRotation {
       material = randomBytes(bytes);
     }
 
-    const ttl =
-      options.ttlSeconds ?? this.defaultTtlSeconds;
-    if (
-      ttl < 1 ||
-      ttl > SECRET_ROTATION_CONSTANTS.MAX_TTL_SECONDS
-    ) {
+    const ttl = options.ttlSeconds ?? this.defaultTtlSeconds;
+    if (ttl < 1 || ttl > SECRET_ROTATION_CONSTANTS.MAX_TTL_SECONDS) {
       throw new SecretRotationError(
         `ttlSeconds must be 1..${SECRET_ROTATION_CONSTANTS.MAX_TTL_SECONDS}`,
         'INVALID_TTL'
@@ -411,29 +394,16 @@ export class SecretRotation {
   ): Promise<RotateSecretResult> {
     const existing = this.secrets.get(secretId);
     if (!existing) {
-      throw new SecretRotationError(
-        `unknown secret id: ${secretId}`,
-        'UNKNOWN_SECRET'
-      );
+      throw new SecretRotationError(`unknown secret id: ${secretId}`, 'UNKNOWN_SECRET');
     }
     if (existing.status === 'revoked') {
-      throw new SecretRotationError(
-        `cannot rotate revoked secret: ${secretId}`,
-        'ALREADY_REVOKED'
-      );
+      throw new SecretRotationError(`cannot rotate revoked secret: ${secretId}`, 'ALREADY_REVOKED');
     }
     if (existing.status === 'expired') {
-      throw new SecretRotationError(
-        `cannot rotate expired secret: ${secretId}`,
-        'ALREADY_EXPIRED'
-      );
+      throw new SecretRotationError(`cannot rotate expired secret: ${secretId}`, 'ALREADY_EXPIRED');
     }
-    const grace =
-      options.gracePeriodSeconds ?? this.defaultGracePeriodSeconds;
-    if (
-      grace < 0 ||
-      grace > SECRET_ROTATION_CONSTANTS.MAX_GRACE_PERIOD_SECONDS
-    ) {
+    const grace = options.gracePeriodSeconds ?? this.defaultGracePeriodSeconds;
+    if (grace < 0 || grace > SECRET_ROTATION_CONSTANTS.MAX_GRACE_PERIOD_SECONDS) {
       throw new SecretRotationError(
         `gracePeriodSeconds must be 0..${SECRET_ROTATION_CONSTANTS.MAX_GRACE_PERIOD_SECONDS}`,
         'INVALID_GRACE'
@@ -441,10 +411,7 @@ export class SecretRotation {
     }
 
     const now = Date.now();
-    const ttl = Math.max(
-      1,
-      Math.round((existing.expiresAt - existing.createdAt) / 1000)
-    );
+    const ttl = Math.max(1, Math.round((existing.expiresAt - existing.createdAt) / 1000));
     const newBytes =
       options.bytes ??
       (options.newMaterial ? options.newMaterial.byteLength : existing.material.byteLength);
@@ -460,10 +427,7 @@ export class SecretRotation {
     const newMaterial = options.newMaterial
       ? new Uint8Array(options.newMaterial)
       : randomBytes(newBytes);
-    if (
-      !(newMaterial instanceof Uint8Array) ||
-      newMaterial.byteLength !== newBytes
-    ) {
+    if (!(newMaterial instanceof Uint8Array) || newMaterial.byteLength !== newBytes) {
       throw new SecretRotationError('newMaterial size mismatch', 'INVALID_BYTES');
     }
 
@@ -539,10 +503,7 @@ export class SecretRotation {
    * If the secret is in 'rotating' state and the candidate matches the
    * previous material within the grace window, verification succeeds.
    */
-  async verifySecret(
-    secretId: string,
-    candidate: Uint8Array
-  ): Promise<VerifySecretResult> {
+  async verifySecret(secretId: string, candidate: Uint8Array): Promise<VerifySecretResult> {
     if (typeof secretId !== 'string' || secretId.length === 0) {
       throw new SecretRotationError('secretId required', 'INVALID_ID');
     }
@@ -622,17 +583,10 @@ export class SecretRotation {
    * Immediately revoke a secret. Verification will fail for any material
    * after this point, regardless of grace window.
    */
-  async revokeSecret(
-    secretId: string,
-    reason?: string,
-    actor?: string
-  ): Promise<void> {
+  async revokeSecret(secretId: string, reason?: string, actor?: string): Promise<void> {
     const record = this.secrets.get(secretId);
     if (!record) {
-      throw new SecretRotationError(
-        `unknown secret id: ${secretId}`,
-        'UNKNOWN_SECRET'
-      );
+      throw new SecretRotationError(`unknown secret id: ${secretId}`, 'UNKNOWN_SECRET');
     }
     if (record.status === 'revoked') {
       return; // idempotent

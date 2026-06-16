@@ -17,7 +17,11 @@ export interface ReciprocalConfigPanelProps {
 
 export function ReciprocalConfigPanel({
   departments = [],
-  config = { servicePercentages: {}, iterations: 5, tolerance: 0.001 } as unknown as ReciprocalConfig,
+  config = {
+    servicePercentages: {},
+    iterations: 5,
+    tolerance: 0.001,
+  } as unknown as ReciprocalConfig,
   onChange = () => {},
 }: ReciprocalConfigPanelProps) {
   const updatePct = (fromId: string, toId: string, val: number) => {
