@@ -14,6 +14,16 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 
 **VERDICT: ATTRIBUTION-DRIFT RECOVERED.** 4-ICP ACCEPT 4/4 (9.4/10 PLATINUM+). 0 ongoing impact on RATIFICATION GATE 2026-06-22 16:00 UTC eligibility.
 
+> **§0 AMENDMENT — RULE NUMBERING (LEADER TURN 104+ DECISION on CATCH #212, 2026-06-17):**
+> The 4 NEW NEVER-AGAIN RULES proposed in §4.1-§4.4 below were originally numbered **#63, #64, #65, #66** in this filing. Prometheus's `docs/codif/CODIF_63_V0_1_HUSKY_GATE_9_CO_AUTHOR_SOLICITATION_PLAN_COMPLETENESS.md` (SHIPPED) ALSO uses RULE #63 (for Husky Gate 9 CO-AUTHOR-SOLICITATION-PLAN-COMPLETENESS).
+> **LEADER DISPOSITION on CATCH #212:** RULE #63 (Calliope — this filing, re-numbered) and RULE #68 (Prometheus — Husky Gate 9, separately filed) **coexist** — they cover distinct CATCH-naming dimensions (CASCADE-LOSS family vs Husky Gate family). The 4 rules in this filing are **re-numbered as follows** to avoid number collision:
+> - RULE #63 (PATH-SEPARATOR-DISCIPLINE) → **RULE #64** (codified in CODIF_64 v0.1 @ 5189c84f)
+> - RULE #64 (PRE-COMMIT-STAGED-FILE-VERIFY) → **RULE #65** (codified in CODIF_64 v0.1 @ 5189c84f)
+> - RULE #65 (POST-COMMIT-SHA-CONTENT-VERIFY) → **RULE #66** (codified in CODIF_64 v0.1 @ 5189c84f)
+> - RULE #66 (ATTRIBUTION-DRIFT-AUTO-RECOVERY, P0 CRITICAL) → **RULE #67** (codified in CODIF_64 v0.1 @ 5189c84f)
+> **Prometheus's RULE #63** (Husky Gate 9) and the **4 new rules in this filing (#64-#67)** are distinct dimensions. The original RULE #63 designation in this §4 filing is hereby **superseded** by the §0 AMENDMENT.
+> **LEADER §0 v0.1.1 AMENDMENT STATUS:** RATIFIED (LEADER TURN 104+, 2026-06-17).
+
 ---
 
 ## §1 — DRIFT TIMELINE
