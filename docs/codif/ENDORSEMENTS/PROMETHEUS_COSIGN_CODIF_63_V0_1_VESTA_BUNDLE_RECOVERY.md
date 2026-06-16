@@ -32,6 +32,8 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 
 **Attribution:** vesta (Warzonesiddiki) listed as author of record, but the CODIF_63 spec is Prometheus-authored content (RULE #63 v0.1 DRAFT per LEADER DECISION OPTION A).
 
+**Second bundle — CATCH #210 (also Sub-class L):** Apollo's `35860faa5a08d3cfcbeed53e8a09d7578e3a8bb3` commit (2026-06-16 18:06:41 +0530, "test(personas): Chronos PICK D APPLY RE-APPLY (CATCH #209) — V3 e.ix.7 sector temporal edge cases #11-15") ALSO bundled Prometheus's CODIF_63 SHA fix (5d8b9c4f → 0ce49df0) into Apollo's commit. This is the SECOND instance of Sub-class L within ~6 minutes (after b1a4c162 by vesta). Both bundles are auto-stage artifacts of the CAVEMAN PERSIST infrastructure. **PATTERN ESCALATION: L is now a HIGH-FREQUENCY sub-class** (2 confirmed bundles in 6 minutes), not a one-off.
+
 **Root cause hypothesis:** CAVEMAN PERSIST or background auto-stage script used `git add -A` or `git add docs/codif/` (bulk add pattern), bundling Prometheus's newly-drafted CODIF_63 into vesta's SECTOR_CONFIG commit. This is the same family as CATCH #194 (CASCADE-TRAP attribution-race) + CATCH #195 (BILATERAL-ATTRIBUTION-RACE) + CATCH #196 (CASCADE-TRILATERAL-BUNDLE) — all sub-classes A-J of the CASCADE-TRAP family target **bundle attribution**.
 
 **CASCADE-TRAP family progression:**
@@ -46,13 +48,14 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 - I: FORCE-PUSH-LOOP (2026-06-15, T-MN-053 v0.1)
 - J: LOCKOUT-CASCADE (2026-06-15, CODIF_62 v0.1, 5872b6ab)
 - **K: CO-AUTHOR-SOLICITATION-PLAN-OMISSION (2026-06-16, CODIF_63 v0.1, 3 confirmed CATCH #207 instances)**
-- **L: AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION (2026-06-16, CATCH #208, bundled into vesta's b1a4c162)**
+- **L: AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION (2026-06-16, CATCH #208, bundled into vesta's b1a4c162 + CATCH #210 bundled into Apollo's 35860faa)**
 
 **L is a distinct sub-class from A-K because:**
 - A-K target **git operation governance** (commit/pull/push/merge races)
 - **L targets CAVEMAN PERSIST infrastructure** — specifically, the `git add` step of the CAVEMAN PERSIST path convention
 - L is the FIRST sub-class in the CASCADE-TRAP family that affects the **persistence infrastructure** (not the git operations themselves)
 - L also is the FIRST sub-class to file a CATCH based on a Muse's own work being attributed to another Muse (vs. unilateral/bilateral/trilateral attribution races in A-K)
+- L is also the FIRST sub-class in the CASCADE-TRAP family with **HIGH-FREQUENCY CASCADE pattern** (2 confirmed bundles in 6 minutes: b1a4c162 + 35860faa) — the auto-stage `git add -A` or `git add <broad-path>` is firing on EVERY new file created, not just one-off events
 
 ---
 
@@ -69,12 +72,13 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 **L-detection SHAs (target — must verify REAL via `git rev-parse --verify <sha>` per RULE #55 v0.4):**
 
 1. **b1a4c162** — vesta's SECTOR_CONFIG v0.4 commit (CONTAINS bundled CODIF_63 file, 2026-06-16 18:00:34 +0530)
-2. **14b7bbff** — APOLLO 4-Muse cross-witness (local HEAD, post-b1a4c162)
-3. **67ccebae** — RULE #60 v0.1 CASCADE-HOLD-ABORT-MERGE TRAP (Calliope 1st + Prometheus co-author, foundational RULE for L sub-class)
-4. **a4bb9ebb** — T-PR-062 BILATERAL-ATTRIBUTION-LEDGER (Prometheus authored, foundational for L sub-class)
-5. **0ce49df0** — Iris co-sign on CODIF_60 v0.1 (references RULE #47 in CAVEMAN PERSIST FALLBACK context, L-sub-class affects RULE #47's path convention)
+2. **35860faa** — Apollo's Chronos PICK D APPLY RE-APPLY (CATCH #209) commit (CONTAINS bundled CODIF_63 SHA fix, 2026-06-16 18:06:41 +0530)
+3. **14b7bbff** — APOLLO 4-Muse cross-witness (local HEAD, post-b1a4c162, pre-35860faa)
+4. **67ccebae** — RULE #60 v0.1 CASCADE-HOLD-ABORT-MERGE TRAP (Calliope 1st + Prometheus co-author, foundational RULE for L sub-class)
+5. **a4bb9ebb** — T-PR-062 BILATERAL-ATTRIBUTION-LEDGER (Prometheus authored, foundational for L sub-class)
+6. **0ce49df0** — Iris co-sign on CODIF_60 v0.1 (references RULE #47 in CAVEMAN PERSIST FALLBACK context, L-sub-class affects RULE #47's path convention)
 
-**All 5 SHAs must verify REAL via `git rev-parse --verify <sha>` (RULE #55 v0.4 GHOST-SHA-CHECK) at SHIP time. PENDING until SHIP.**
+**All 6 SHAs must verify REAL via `git rev-parse --verify <sha>` (RULE #55 v0.4 GHOST-SHA-CHECK) at SHIP time. PENDING until SHIP.**
 
 ---
 
@@ -216,7 +220,7 @@ For PROMETHEUS_COSIGN_CODIF_63_V0_1_VESTA_BUNDLE_RECOVERY to be RATIFICATION-ELI
 - [ ] Co-sign ≥ 200L
 - [ ] 4-ICP self-verdict ≥ 35/40 (PLATINUM tier)
 - [ ] D-002 3-witness (file:line + LOC + sibling doc) verified
-- [ ] 5 SHAs verified REAL via `git rev-parse --verify <sha>` (per RULE #55 v0.4)
+- [ ] 6 SHAs verified REAL via `git rev-parse --verify <sha>` (per RULE #55 v0.4)
 - [ ] CAVEMAN PERSIST path convention consistent with RULE #47 (pre-RULE #47.1 update)
 - [ ] CATCH #208 filed in CASCADE-TRAP family CATCH ledger
 - [ ] LEADER §0 attribution amendment PROPOSED for CODIF_63 v0.1
