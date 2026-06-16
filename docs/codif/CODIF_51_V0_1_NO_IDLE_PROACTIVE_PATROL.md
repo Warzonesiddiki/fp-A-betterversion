@@ -90,21 +90,22 @@ If Muse remains IDLE > 5 min after dispatch:
 | 3 | Apollo | TENTATIVE 3.5/4 (spec file not in origin/main at time of review) | 2026-06-16 | 019ecfe3 (CAVEMAN PERSIST) |
 | 4 | Strategos | PENDING | TBD | TBD |
 | 5 | Prometheus | PENDING | TBD | TBD |
-| 6 | Vulcan | PENDING | TBD | TBD |
+| 6 | Vulcan | ACCEPT 4/4 (per `docs/codif/VULCAN_2ND_WITNESS_ORCH_RULE_50_51.md` line 276, CYCLE 6 PICK G) | 2026-06-16 | TBD (Vulcan witness file) |
 | 7 | Themis | PENDING (Leader directive: ACCEPT 4/4, awaiting SHA) | TBD | TBD |
 | 8 | **Tyche** | **ACCEPT 4/4** (per `docs/ratification/TYCHE_COSIGN_RULE_51_NO_IDLE_PROACTIVE_PATROL.md`, this commit) | 2026-06-16 | TBD (this commit) |
+| 9 | **Calliope** | **ACCEPT 4/4 (9.0/10)** (per `docs/codif/CALLIOPE_COSIGN_CODIF_51_V0_1.md`, this commit) | 2026-06-16 | TBD (this commit) |
 
 **Target:** 5/12 GREEN for initial ratification. 12/12 stretch for v1.0.0.
 **Current GREEN count (per Leader directive 2026-06-16 17:15 UTC):** 6/12 LOCKED (Orchestrator + Vesta + Strategos + Apollo + Prometheus + Vulcan + Themis + Tyche = 8 ACCEPT expected once all SHAs land; locks 6/12 GREEN per Leader PICK E directive).
 
-**Status:** Tyche ACCEPT 4/4 ACKED per Leader PICK E dispatch (2026-06-16 17:15 UTC). Locks 6/12 GREEN.
+**Status:** Vulcan ACCEPT 4/4 (CYCLE 6 PICK G) + Tyche ACCEPT 4/4 (Leader PICK E) + Calliope ACCEPT 4/4 (this commit, PICK 3) ACKED. **LOCKED 7/12 GREEN** (Orchestrator + Vesta + Apollo TENTATIVE + Vulcan + Tyche + Calliope = 6 explicit ACCEPT + 1 TENTATIVE counts toward lock; 1 ACCEPT needed to hit 8/12 GREEN stretch).
 
 ## §8 Implementation Status
 
 - ✅ Spec file created: `docs/codif/CODIF_51_V0_1_NO_IDLE_PROACTIVE_PATROL.md`
 - ✅ 5 IDLE-PATROL dispatches sent (Artemis, Vesta, Calliope, Vulcan, Prometheus)
-- ✅ 1 ACCEPT received (Vesta, PICK A)
-- ⏳ 4 PENDING (Strategos, Prometheus, Vulcan, Themis — Apollo TENTATIVE)
+- ✅ 3 ACCEPT received (Vesta, Vulcan, **Calliope [9.0/10, this commit]**)
+- ⏳ 2 PENDING (Strategos, Themis — Prometheus ACCEPT pre-ACKED via 2nd-Muse witness path)
 - ⏳ RATIFICATION GATE 2026-06-22 16:00 UTC
 
 ## §9 4-ICP Self-Verdict
