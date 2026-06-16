@@ -49,6 +49,7 @@ vi.mock('lucide-react', () => {
   };
   return {
     LayoutDashboard: makeIcon(),
+    LayoutGrid: makeIcon(),
     Plus: makeIcon(),
     Save: makeIcon(),
     Trash2: makeIcon(),
