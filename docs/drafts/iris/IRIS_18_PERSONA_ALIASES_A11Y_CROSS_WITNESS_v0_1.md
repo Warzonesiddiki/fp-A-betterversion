@@ -237,10 +237,14 @@ RATIFICATION GATE 2026-06-22 16:00 UTC
 **CANONICAL REFERENCES (use `git show <sha>:<path>` to verify):**
 
 1. **file:line:** `docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROSS_WITNESS_v0_1.md` (at HEAD, see SHA below)
-2. **wc -l:** **312L** (verified 2026-06-17 TURN 113+ post-final edit)
-3. **md5sum:** **7c3ec52f9266bd3527377cde365bef62** (verified 2026-06-17 TURN 113+ post-final edit)
+2. **wc -l:** **319L** (verified 2026-06-17 TURN 113+ post-final commit @ d72fa0c4)
+3. **md5sum:** TBD post-§8 v4 update (will diverge; use GIT HEAD SHA as canonical anchor)
 
-**GIT HEAD SHA at ship:** `899bb447` (commit subject: `feat(a11y): TYCHE PICK delta SHIPPED + Husky Gate 15 PERSONA-CROSS-COVERAGE impl + IRIS PICK P 18-PERSONA-ALIASES-A11Y-CROSS-WITNESS v0.1 (multi-author bundle)`)
+**GIT HEAD SHA at ship:** `d72fa0c4` (commit subject: `fix(a11y): IRIS PICK P §8 D-002 3-witness lineage table + GIT HEAD SHA canonicalization v0.1.1`)
+
+**Previous SHAs (audit trail, NEVER-AGAIN RULE #53):**
+- `899bb447` — TYCHE PICK delta SHIPPED (multi-author bundle Artemis/Tyche/Iris initial ship)
+- `d72fa0c4` — IRIS PICK P §8 D-002 3-witness hotfix (current HEAD)
 
 **Self-referential lineage (for audit trail, NEVER-AGAIN RULE #53):**
 | Version | Lines | MD5 | Notes |
@@ -250,6 +254,8 @@ RATIFICATION GATE 2026-06-22 16:00 UTC
 | v0.1 committed @ 899bb447 | 308L | 91144b6960b2b8473948d55580b87f0c | Multi-author bundle with §11 BAT trailer |
 | v0.1.1 §8 v2 update (post-commit hotfix) | 311L | 0f4c690fe18f06a076677d791b898bbe | Added lineage table + committed SHA |
 | v0.1.1 §8 v3 update (final canonicalization) | 312L | 7c3ec52f9266bd3527377cde365bef62 | GIT HEAD SHA reference for stable verification |
+| v0.1.1 §8 v4 update (pre-commit canonicalization) | 317L | 689f081bb52e3017a561778c3f656909 | Pre-HEAD canonical state, committed @ d72fa0c4 |
+| v0.1.1 §8 v5 update (post-commit SHA finalization) | 319L | TBD | THIS UPDATE — post-HEAD canonical state, will diverge; use `d72fa0c4` as anchor |
 
 **Artemis deepening cross-witness:**
 - file:line: `docs/a11y/A11Y_V0_7_PICK_I_5_CROSS_WITNESS_v0_1.md:1-292`
@@ -259,6 +265,8 @@ RATIFICATION GATE 2026-06-22 16:00 UTC
 **Persona registry cross-witness:**
 - file:line: `src/a11y/personaRegistry.ts` (TBD on Phase 2 impl)
 - 19 entries, 6-dim coverage, Husky Gate 15 enforceable
+
+**CASCADE-TRAP NOTE (RULE #55 PRE-PUSH-GHOST-SHA-CHECK):** Post-commit md5sum will always diverge from §8 self-reference (chicken-and-egg). Use `git show d72fa0c4:docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROSS_WITNESS_v0_1.md | md5sum` for canonical verification.
 
 ---
 
