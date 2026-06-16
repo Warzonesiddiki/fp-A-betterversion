@@ -164,8 +164,39 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 
 ---
 
+## 7. Multi-Muse Attribution (PICK H addition per CATCH #207 #4)
+
+**Bundle commit:** `d4cd6bbe` (Vesta CYCLE 13 BATCH 3 PICK D — SECTOR_HERMES_INTEGRATION_TEST v0.1)
+
+**Attribution pattern:** Vesta CASCADE-HOLD bundled 4/5 files = 75% Artemis A11Y v0.6.1 §4.3 PICK G work. Operationally valid (no data loss, files pushed to origin/main), but commit message `[vesta]` does not mention Artemis/A11Y contribution.
+
+**CATCH #207 BILATERAL-ATTRIBUTION-CASCADE — Instance #4 filed:** `docs/strategy/catch-families/CATCH_207_VESTA_CASCADE_HOLD_v0.1.md` (105L)
+
+**Author + Co-author chain:**
+
+| Role | Muse | Slot | Contribution |
+|------|------|------|--------------|
+| **Primary author** | Artemis | `019ecc6f-1c22-73a2-8b4c-f9ff284f2016` | A11Y v0.6.1 §4.3 cross-witness spec (this file), useSessionAnnounce hook, q5-3-session-fixation test, v0.6 §0.4 amendment |
+| **CASCADE-HOLD bundler** | Vesta | `019ecc6f-1c54-7721-a308-bb311145dbfe` | SECTOR_HERMES_INTEGRATION_TEST v0.1 (own DRI) + CASCADE-HOLD bundled 4/5 files in `d4cd6bbe` |
+| **Security-domain anchor** | Hephaestus | `019ecbef-8cb9-7cb3-bd19-b5561b383985` | SECURITY.md v1.0.0 §4.3.1-§4.3.3 spec (24h review of this proposal pending) |
+| **A11Y domain cross-witness** | Hermes | (a11y-integration in SECTOR_HERMES bundle) | PART_124 v0.2 integration @ 211c7c72 |
+| **6-EYE chain** | Iris + Strategos | (CYCLE 13 BATCH 3 cross-witness) | 5-ICP 5/5 PLATINUM on SECTOR_HERMES bundle |
+
+**Pattern context (CATCH #207 series):**
+- #1 Prometheus-Apollo LOCKOUT (RESOLVED)
+- #2 Calliope-Prometheus CODIF_INTEGRATION (RESOLVED, Husky Gate 9 PROPOSED)
+- #3 Prometheus-Calliope CATCH_202 (RESOLVED)
+- **#4 Vesta-Artemis SECTOR_HERMES (THIS — IN-FLIGHT, PICK H)**
+
+**Mitigation Tier 1 (PICK H):** This §7 Multi-Muse Attribution section + v0.6 §0.4.1 CASCADE-HOLD Attribution Note.
+**Mitigation Tier 2:** Vesta/Artemis 6-EYE cross-co-attribution chain (Vesta 5th-EYE on A11Y PICK G + Artemis 5th-EYE on SECTOR_HERMES closure).
+**Mitigation Tier 3:** Husky Gate 10 CASCADE-HOLD attribution auto-detection (Atlas + Hephaestus, T-1d 2026-06-21 EOD).
+
+---
+
 **Author signature:** Artemis (slot `019ecc6f-1c22-73a2-8b4c-f9ff284f2016`), A11Y Domain Owner
 **CAVEMAN 19/19 NO-IDLE:** GREEN per RULE #51
 **D-007 5-min SLA:** GREEN
-**RULE #56 PICK-CHAIN:** GREEN (PICK G — 8th pick in CYCLE 14 W2 D2)
+**RULE #56 PICK-CHAIN:** GREEN (PICK G — 8th pick in CYCLE 14 W2 D2 + PICK H — 9th pick attribution amendment)
 **Hephaestus §4.3 review request:** 24h window from `16ed74778` (open)
+**CATCH #207 #4:** IN-FLIGHT, PICK H attribution amendment in this commit

@@ -85,9 +85,21 @@
 - **Security-domain anchor:** `docs/security/SECURITY.md` v1.0.0 §4.3.1-§4.3.3 (Hephaestus DRI)
 - **A11Y-domain anchor:** `docs/a11y/Q5_3_V0_6_1_SESSION_FIXATION_FOLLOWUP.md` (Artemis DRI)
 - **Joint coverage:** CWE-384 (Session Fixation) + CWE-613 (Insufficient Session Expiration) + WCAG 2.1.1/2.2.4/2.3.3/2.4.6/4.1.3 + OWASP ASVS V3.3 + NIST SP 800-63B §7.1
-- **Cross-witness chain:** Hephaestus PICK A @ 384b8ac96 + Artemis v0.6.1 §4.2 amendment @ 16ed74778 + Artemis v0.6.1 §4.3 amendment @ (pending PICK G SHA)
+- **Cross-witness chain:** Hephaestus PICK A @ 384b8ac96 + Artemis v0.6.1 §4.2 amendment @ 16ed74778 + Artemis v0.6.1 §4.3 amendment @ `d4cd6bbe` (Vesta CASCADE-HOLD bundle)
 
 **Composite v0.6.1: 9.0/10 PLATINUM** (4-ICP TENTATIVE — 0.5 deduction on §3.2 step-up deferral UX pending usability test)
+
+#### §0.4.1 CASCADE-HOLD Attribution Note (PICK H addition per CATCH #207 #4)
+
+**Bundle commit:** `d4cd6bbe` (Vesta CYCLE 13 BATCH 3 PICK D — SECTOR_HERMES_INTEGRATION_TEST v0.1)
+
+**Attribution pattern:** Vesta CASCADE-HOLD bundled 4/5 files = 75% Artemis A11Y v0.6.1 §4.3 PICK G work. Operationally valid (no data loss, files pushed to origin/main), but commit message `[vesta]` does not mention Artemis/A11Y contribution.
+
+**CATCH #207 BILATERAL-ATTRIBUTION-CASCADE — Instance #4 filed:** `docs/strategy/catch-families/CATCH_207_VESTA_CASCADE_HOLD_v0.1.md` (105L)
+
+**PICK H Tier 1 mitigation:** This §0.4.1 + Q5_3 §4.3 §7 Multi-Muse Attribution footer (RULE #49 POST-COMMIT-MULTI-MUSE-ATTRIBUTION).
+
+**LEADER DECISION REQUESTED (3rd time, pattern crystallizing):** Husky Gate 10 implementation (Atlas + Hephaestus, T-1d 2026-06-21 EOD) — auto-detect CASCADE-HOLD bundling of staged-but-uncommitted files from another Muse and generate attribution warning pre-commit.
 
 ---
 
