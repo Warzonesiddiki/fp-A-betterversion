@@ -107,14 +107,15 @@ export default function FXRatesPage() {
 
       <Card>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" aria-label="FX rates by currency pair">
+              <caption className="sr-only">Detailed breakdown of fx rates by currency pair</caption>
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                <th className="px-4 py-3">From</th>
-                <th className="px-4 py-3">To</th>
-                <th className="px-4 py-3 text-right">Rate</th>
-                <th className="px-4 py-3">Effective Date</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th scope="col" className="px-4 py-3">From</th>
+                <th scope="col" className="px-4 py-3">To</th>
+                <th scope="col" className="px-4 py-3 text-right">Rate</th>
+                <th scope="col" className="px-4 py-3">Effective Date</th>
+                <th scope="col" className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
