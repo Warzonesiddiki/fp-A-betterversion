@@ -279,8 +279,8 @@ describe('DataGrid', () => {
 
     it('renders loading overlay when loading', () => {
       render(<DataGrid rows={mockRows} columns={mockColumns} loading />);
-      expect(screen.getByRole('status')).toBeInTheDocument();
       expect(screen.getByText('Loading Grid...')).toBeInTheDocument();
+      expect(screen.getAllByRole('status').length).toBeGreaterThanOrEqual(1);
     });
 
     it('does not render loading overlay when not loading', () => {
@@ -322,7 +322,10 @@ describe('DataGrid', () => {
 
     it('loading overlay has aria-live', () => {
       render(<DataGrid rows={mockRows} columns={mockColumns} loading />);
-      expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite');
+      const statusElements = screen.getAllByRole('status');
+      const loadingStatus = statusElements.find((el) => el.textContent && el.textContent.includes('Loading Grid'));
+      expect(loadingStatus).toBeDefined();
+      expect(loadingStatus).toHaveAttribute('aria-live', 'polite');
     });
 
     it('row count announcement region is present with aria-live polite', () => {
