@@ -420,6 +420,7 @@ function SortHeader({
     <th
       className={cn('cursor-pointer p-2 text-left hover:text-foreground', className)}
       onClick={() => onSort(field)}
+      scope="col"
     >
       {label} {active && (dir === 'asc' ? '\u2191' : '\u2193')}
     </th>

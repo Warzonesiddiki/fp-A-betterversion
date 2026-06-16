@@ -23,6 +23,7 @@ function ReportTable({ report }: ReportTableProps) {
                 className={`py-1.5 px-2 text-[var(--text-muted)] font-medium ${
                   i > 0 ? 'text-right' : 'text-left'
                 }`}
+                scope="col"
               >
                 {h}
               </th>
