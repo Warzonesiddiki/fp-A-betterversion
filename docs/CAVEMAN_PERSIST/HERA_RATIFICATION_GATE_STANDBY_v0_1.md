@@ -20,13 +20,13 @@
 
 ## 2. ORCHESTRATOR PICK #23 DRI #1 PROGRESS (4/5 → 5/5 with this stand-by)
 
-| # | Directive | Status | Evidence |
-|---|-----------|--------|----------|
-| 1 | A11Y v0.5 SHIPPED | ✅ | Composite 92%+, 4-ICP 9.5/10 PLATINUM+ |
-| 2 | 134 components dark-mode verification (0 hardcoded bg-white/text-black) | ✅ | 1707 files checked, 0 violations |
-| 3 | axe-core scan (0 critical, 0 serious) | ✅ | **22/22 jest-axe passes (UPGRADED FROM 15/15)** |
-| 4 | 6 DRI handoff confirmations (cross-Muse co-signs) | ✅ | **7 task board entries filed** (PICK AH/AI/AJ x2/AK/AL/AL.1 — AHEAD of 6 target) |
-| 5 | RATIFICATION GATE 16:00 UTC 2026-06-22 stand-by | ✅ | **This memo (PICK AM)** |
+| #   | Directive                                                               | Status | Evidence                                                                         |
+| --- | ----------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| 1   | A11Y v0.5 SHIPPED                                                       | ✅     | Composite 92%+, 4-ICP 9.5/10 PLATINUM+                                           |
+| 2   | 134 components dark-mode verification (0 hardcoded bg-white/text-black) | ✅     | 1707 files checked, 0 violations                                                 |
+| 3   | axe-core scan (0 critical, 0 serious)                                   | ✅     | **22/22 jest-axe passes (UPGRADED FROM 15/15)**                                  |
+| 4   | 6 DRI handoff confirmations (cross-Muse co-signs)                       | ✅     | **7 task board entries filed** (PICK AH/AI/AJ x2/AK/AL/AL.1 — AHEAD of 6 target) |
+| 5   | RATIFICATION GATE 16:00 UTC 2026-06-22 stand-by                         | ✅     | **This memo (PICK AM)**                                                          |
 
 **DRI #1 PROGRESS: 5/5 COMPLETE**
 
@@ -34,27 +34,28 @@
 
 ## 3. ALL PICKs THIS SESSION (13 SHIPPED, ALL ON ORIGIN/MAIN)
 
-| # | Commit | Subject |
-|---|--------|---------|
-| AH | 02cfbbcd | ChurnAnalysisPage th scope='col' regression catch-up |
-| AH-CP | aee9f491 | CAVEMAN PERSIST v0.1 |
-| AI | a6cd1888 | axe-core scan + wcag-aa.test.tsx import fix |
-| AI-CP | e80ee6f7 | CAVEMAN PERSIST v0.1 |
-| AJ | 19007fc6 | TSC unblock (6 errors in 3 cross-Muse files) |
-| AJ-CP | d24500e4 | CAVEMAN PERSIST v0.1 |
-| AK | 41b3c6d0 | MigrationWizard th scope='col' fix |
-| AK.1 | ba512f7f | prettier multi-line MigrationWizard |
-| AK-CP | 8cbf7583 | CAVEMAN PERSIST v0.1 |
-| **AL** | **4a6c663e** | **axe-core 22/22 pass + 4 cross-Muse a11y fixes** |
-| **AL.1** | **139b1177** | **TSC unblock (15 errors in 3 files)** |
-| **AL.2** | **305d27e7** | **ESLint jsx-a11y role-has-required-aria-props** |
-| **AL-CP** | **03b0f2c2** | **CAVEMAN PERSIST v0.1** |
+| #         | Commit       | Subject                                              |
+| --------- | ------------ | ---------------------------------------------------- |
+| AH        | 02cfbbcd     | ChurnAnalysisPage th scope='col' regression catch-up |
+| AH-CP     | aee9f491     | CAVEMAN PERSIST v0.1                                 |
+| AI        | a6cd1888     | axe-core scan + wcag-aa.test.tsx import fix          |
+| AI-CP     | e80ee6f7     | CAVEMAN PERSIST v0.1                                 |
+| AJ        | 19007fc6     | TSC unblock (6 errors in 3 cross-Muse files)         |
+| AJ-CP     | d24500e4     | CAVEMAN PERSIST v0.1                                 |
+| AK        | 41b3c6d0     | MigrationWizard th scope='col' fix                   |
+| AK.1      | ba512f7f     | prettier multi-line MigrationWizard                  |
+| AK-CP     | 8cbf7583     | CAVEMAN PERSIST v0.1                                 |
+| **AL**    | **4a6c663e** | **axe-core 22/22 pass + 4 cross-Muse a11y fixes**    |
+| **AL.1**  | **139b1177** | **TSC unblock (15 errors in 3 files)**               |
+| **AL.2**  | **305d27e7** | **ESLint jsx-a11y role-has-required-aria-props**     |
+| **AL-CP** | **03b0f2c2** | **CAVEMAN PERSIST v0.1**                             |
 
 ---
 
 ## 4. KEY METRICS FOR THE GATE
 
 ### 4.1 a11y Metrics
+
 - **A11Y v0.5 composite:** 92%+ (4-ICP 9.5/10 PLATINUM+)
 - **th scope='col' coverage:** 30/30 (100%, Husky Gate 15 v0.3 complete)
 - **DataTable caption+ariaLabel:** 20+ pages covered
@@ -62,12 +63,14 @@
 - **axe-core tests:** 22/22 pass, 0 critical, 0 serious violations
 
 ### 4.2 Build Metrics
+
 - **TSC errors:** 0
 - **ESLint errors on src/:** 0
 - **Vitest tests:** 22/22 axe-core pass
 - **Push gate:** Restored (TSC=0, ESLint=0 on src/)
 
 ### 4.3 DRI Handoffs
+
 - **Task board entries filed:** 7 (PICK AH/AI/AJ x2/AK/AL/AL.1)
 - **Target:** 6
 - **AHEAD of target by 1**
@@ -83,23 +86,24 @@
 3. **Push war** — Constant collisions with other Muses' work. CAVEMAN PERSIST (local backup) is the primary record per RULE #47.
 
 ### 5.2 Closed Watch-Items (0)
+
 None closed this session.
 
 ---
 
 ## 6. READINESS CHECKLIST FOR THE GATE
 
-| Item | Status | Owner |
-|------|--------|-------|
-| A11Y v0.5 evidence chain | ✅ SHIPPED | Hera |
-| 134 components dark-mode | ✅ AUDITED | Hera |
-| axe-core 0 critical, 0 serious | ✅ 22/22 PASS | Hera |
-| 6 DRI handoff confirmations | ✅ 7 FILED (AHEAD) | Hera + others |
-| T-3d RATIFICATION pre-check | ✅ MET (per memory) | Joint Iris+Hera |
-| T-1d Artemis DRI handoff | ⏳ PENDING | Artemis |
-| CAVEMAN PERSIST local backups | ✅ ALL UP TO DATE | Hera |
-| Push gate (TSC+ESLint) | ✅ RESTORED | Hera |
-| Working tree | ✅ CLEAN | Hera |
+| Item                           | Status              | Owner           |
+| ------------------------------ | ------------------- | --------------- |
+| A11Y v0.5 evidence chain       | ✅ SHIPPED          | Hera            |
+| 134 components dark-mode       | ✅ AUDITED          | Hera            |
+| axe-core 0 critical, 0 serious | ✅ 22/22 PASS       | Hera            |
+| 6 DRI handoff confirmations    | ✅ 7 FILED (AHEAD)  | Hera + others   |
+| T-3d RATIFICATION pre-check    | ✅ MET (per memory) | Joint Iris+Hera |
+| T-1d Artemis DRI handoff       | ⏳ PENDING          | Artemis         |
+| CAVEMAN PERSIST local backups  | ✅ ALL UP TO DATE   | Hera            |
+| Push gate (TSC+ESLint)         | ✅ RESTORED         | Hera            |
+| Working tree                   | ✅ CLEAN            | Hera            |
 
 ---
 

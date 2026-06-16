@@ -4,31 +4,38 @@
  */
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useFocusRestore } from './useFocusRestore';
 
 describe('useFocusRestore', () => {
-  it('should save and restore focus', () => {
-    const button = document.createElement('button');
-    document.body.appendChild(button);
-    button.focus();
+  it('should capture focus on mount and restore on unmount', async () => {
+    const buttonA = document.createElement('button');
+    const buttonB = document.createElement('button');
+    document.body.appendChild(buttonA);
+    document.body.appendChild(buttonB);
+    buttonA.focus();
+    expect(document.activeElement).toBe(buttonA);
 
-    const { result } = renderHook(() => useFocusRestore());
-    result.current.saveFocus();
-    document.body.focus();
+    const { unmount } = renderHook(() => useFocusRestore());
 
-    act(() => {
-      result.current.restoreFocus();
-    });
-    expect(document.activeElement).toBe(button);
-    document.body.removeChild(button);
+    // Move focus to buttonB (works in JSDOM unlike document.body.focus())
+    buttonB.focus();
+    expect(document.activeElement).toBe(buttonB);
+
+    // Unmount triggers the cleanup → RAF → focus restore
+    unmount();
+    // Wait for the RAF callback to fire
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    expect(document.activeElement).toBe(buttonA);
+
+    document.body.removeChild(buttonA);
+    document.body.removeChild(buttonB);
   });
 
-  it('should handle restore when no element was saved', () => {
-    const { result } = renderHook(() => useFocusRestore());
+  it('should handle unmount gracefully when no element was focused', () => {
+    // No button focused before mount
+    const { unmount } = renderHook(() => useFocusRestore());
     // Should not throw
-    act(() => {
-      result.current.restoreFocus();
-    });
+    expect(() => unmount()).not.toThrow();
   });
 });
