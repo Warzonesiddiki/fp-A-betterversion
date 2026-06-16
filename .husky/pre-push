@@ -13,8 +13,8 @@
 
 echo "Running pre-push checks (240s ceiling per gate)..."
 
-# Gate 1 — TypeScript
-timeout 240 npx tsc --noEmit || { echo "❌ TypeScript check failed (or timed out at 240s). Push blocked."; exit 1; }
+# Gate 1 — TypeScript (use direct node call to avoid mingw tsc wrapper issue)
+timeout 240 node ./node_modules/typescript/bin/tsc --noEmit || { echo "❌ TypeScript check failed (or timed out at 240s). Push blocked."; exit 1; }
 
 # Gate 2 — ESLint (zero-warnings, matches CI)
 timeout 240 npx eslint src --max-warnings 0 || { echo "❌ ESLint check failed (or timed out at 240s). Push blocked."; exit 1; }
