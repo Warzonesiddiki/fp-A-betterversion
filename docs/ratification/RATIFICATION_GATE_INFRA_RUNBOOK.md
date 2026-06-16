@@ -29,7 +29,7 @@
 - HEAD is in sync with origin/main (878ee7cb4 = Strategos INDEX v0.7.2, 0/0 ahead/behind).
 - Working tree has 1 modified file (Artemis A11Y, NOT Atlas — do not touch).
 - Atlas slice is CLEAN — all infra files committed (bundle-check.js @ e37a8b9d, build.yml @ 815fa5d1, vitest.bench.config.ts @ 113ae7cc).
-- NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) is codified at 6d96ab134 and active in `.husky/pre-push` Gate 5.
+- NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) is codified at 6d96ab134 and active in `.husky/pre-push` Gate 5. **v0.2 strict-regex upgrade** shipped at f39d202b2 — requires SHA to be preceded by marker (`(commit|SHA)[ :]+` | `@` | `: `) to reduce false-positives on UUIDs and bare hex. Co-sign: Atlas (infra) + Hephaestus (security) + Mnemosyne (testing) + Tyche (RULE #53 GHOST-SHA-DETECTION).
 
 ---
 
@@ -239,19 +239,30 @@ If a new dependency is added between RATIFICATION (2026-06-22) and HARD SHIP (20
 
 **G20 is enforced by 3 layers:**
 1. **Pre-commit:** Husky Gate 1-4 (lint, typecheck, format, test:unit).
-2. **Pre-push:** Husky Gate 5 (NEVER-AGAIN RULE #55 PRE-PUSH-GHOST-SHA-CHECK) — codifed at 6d96ab134.
+2. **Pre-push:** Husky Gate 5 (NEVER-AGAIN RULE #55 PRE-PUSH-GHOST-SHA-CHECK) — v0.1 codified at 6d96ab134, v0.2 strict-regex upgrade at f39d202b2.
 3. **CI:** `.github/workflows/build.yml` — runs after push, enforces G1-G3 + G19.
 
-**Gate 5 behavior (RULE #55):**
+**Gate 5 v0.1 behavior (RULE #55 first codification, 6d96ab134):**
 - Scans unpushed commit messages for SHA-like strings (`\b[0-9a-f]{7,40}\b`).
 - For each SHA, runs `git rev-parse --verify $sha^{commit}`.
 - If a SHA is NOT a real commit, blocks push with: `❌ NEVER-AGAIN RULE #55 violation: <N> GHOST SHA(s)`.
+- **Known limitation:** produces false-positives on UUID fragments (e.g., `019ecbef` from slot IDs) and bare hex codes in identifiers.
 
-**Why this matters:** CATCH #188/194/195/196 (CASCADE-TRAP family) all stem from GHOST SHAs in commit messages. Gate 5 prevents new GHOST SHAs from being pushed.
+**Gate 5 v0.2 behavior (RULE #55 strict-regex upgrade, f39d202b2):**
+- Scans with strict regex: `'((commit|SHA)[ :]+|@|: )[0-9a-f]{7,40}\b'` (case-insensitive marker match).
+- Only matches SHAs preceded by `commit `, `SHA: `, `@`, or `: ` markers.
+- Eliminates UUID false-positives and bare hex noise.
+- **Trade-off (precision over recall):** bare SHAs and "post-XXX" references are not checked. New convention: prefix SHA citations with `commit `, `SHA: `, `@`, or `: ` to opt into verification.
+- 4-Muse consensus: Atlas (infra) + Hephaestus (security) + Mnemosyne (testing) + Tyche (RULE #53 GHOST-SHA-DETECTION).
+- Leader ACCEPT 4/4 (T-6d 2026-06-16 17:15 UTC FOUNDER DIRECTIVE).
 
-**Atlas's role:** When Gate 5 blocks, fix the commit message (replace GHOST SHA with real SHA from `git log --oneline | head -20`), then re-push. Do NOT bypass with `--no-verify` (RULE #32 — bypass only for cascade-hold recovery, NEVER for GHOST SHA bypass).
+**Why this matters:** CATCH #187 (Tyche P0 SHA-MISATTRIBUTION in 81d9cd27) + CATCH #194/195/196 (CASCADE-TRAP family) all stem from GHOST SHAs in commit messages. Gate 5 prevents new GHOST SHAs from being pushed; v0.2 reduces false-positive noise that degraded v0.1 utility.
+
+**Atlas's role:** When Gate 5 blocks, fix the commit message (replace GHOST SHA with real SHA from `git log --oneline | head -20`, prefixed with `commit `), then re-push. Do NOT bypass with `--no-verify` (RULE #32 — bypass only for cascade-hold recovery, NEVER for GHOST SHA bypass).
 
 **If a GHOST SHA is detected in a committed message (already pushed):** See PRECHECK v1.1 §8 (CASCADE-TRAP family) — Strategos/Apollo own the fix (replace GHOST SHA with `[GHOST - audit-trail]` marker + cite real SHA in §2.9 of INDEX).
+
+**Iris 2nd-Muse cross-witness (in flight, T-1d 2026-06-21 EOD ETA):** see §11 (forthcoming in v0.2).
 
 ---
 
@@ -264,7 +275,7 @@ If a new dependency is added between RATIFICATION (2026-06-22) and HARD SHIP (20
 | `docs/ratification/RATIFICATION_GATE_PRECHECK_INDEX.md` v0.7.2 | Strategos | Consolidation lead (12-dim matrix consolidation) | INDEX §N |
 | `scripts/bundle-check.js` | Atlas | CI bundle verifier (G3 main/total + G19 6-vendor) | file:line |
 | `.github/workflows/build.yml` | Atlas | CI workflow (post-815fa5d1, single bundle-check call) | lines 55-74 |
-| `.husky/pre-push` | Atlas | Gate 5 GHOST-SHA check (NEVER-AGAIN RULE #55, post-6d96ab134) | file |
+| `.husky/pre-push` | Atlas | Gate 5 GHOST-SHA check (NEVER-AGAIN RULE #55, v0.1 post-6d96ab134, v0.2 strict-regex post-f39d202b2) | file |
 | `vite.config.ts` | Atlas | Manual chunks + vendor split + onwarn handler | lines 191-206, 208-262 |
 | `docs/parts/VISION_TO_REALITY_MASTER_REPORT.md` v1.2 | Apollo | Executive context (Section 8 references PRECHECK v1.1) | §8 |
 

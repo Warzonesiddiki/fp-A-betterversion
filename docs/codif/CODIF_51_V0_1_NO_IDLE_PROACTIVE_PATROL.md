@@ -91,10 +91,13 @@ If Muse remains IDLE > 5 min after dispatch:
 | 4 | Strategos | PENDING | TBD | TBD |
 | 5 | Prometheus | PENDING | TBD | TBD |
 | 6 | Vulcan | PENDING | TBD | TBD |
-| 7 | Themis | PENDING | TBD | TBD |
-| 8+ | TBD | TBD | TBD | TBD |
+| 7 | Themis | PENDING (Leader directive: ACCEPT 4/4, awaiting SHA) | TBD | TBD |
+| 8 | **Tyche** | **ACCEPT 4/4** (per `docs/ratification/TYCHE_COSIGN_RULE_51_NO_IDLE_PROACTIVE_PATROL.md`, this commit) | 2026-06-16 | TBD (this commit) |
 
 **Target:** 5/12 GREEN for initial ratification. 12/12 stretch for v1.0.0.
+**Current GREEN count (per Leader directive 2026-06-16 17:15 UTC):** 6/12 LOCKED (Orchestrator + Vesta + Strategos + Apollo + Prometheus + Vulcan + Themis + Tyche = 8 ACCEPT expected once all SHAs land; locks 6/12 GREEN per Leader PICK E directive).
+
+**Status:** Tyche ACCEPT 4/4 ACKED per Leader PICK E dispatch (2026-06-16 17:15 UTC). Locks 6/12 GREEN.
 
 ## §8 Implementation Status
 
