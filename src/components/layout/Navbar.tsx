@@ -44,7 +44,7 @@ export const Navbar = memo(function Navbar() {
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Hamburger menu for mobile */}
         <button
-          className="md:hidden p-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          className="md:hidden p-2 min-h-[44px] min-w-[44px] rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-muted)' }}
           onClick={openMobileSidebar}
           aria-label="Open navigation menu"
@@ -109,7 +109,7 @@ export const Navbar = memo(function Navbar() {
 
       <div className="flex items-center gap-1 sm:gap-2">
         <button
-          className="p-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          className="p-2 min-h-[44px] min-w-[44px] rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-muted)' }}
           onClick={() => navigate('/help')}
           aria-label="Search"
@@ -119,7 +119,7 @@ export const Navbar = memo(function Navbar() {
 
         <div className="relative">
           <button
-            className="p-2 rounded-md transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+            className="p-2 min-h-[44px] min-w-[44px] rounded-md transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-muted)' }}
             onClick={() => setShowCreateMenu(!showCreateMenu)}
             aria-label="Create new"
@@ -169,7 +169,7 @@ export const Navbar = memo(function Navbar() {
 
         <div className="relative">
           <button
-            className="p-2 rounded-md transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+            className="p-2 min-h-[44px] min-w-[44px] rounded-md transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-muted)' }}
             onClick={() => setShowNotifMenu(!showNotifMenu)}
             aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
@@ -222,7 +222,7 @@ export const Navbar = memo(function Navbar() {
 
         <div className="relative">
           <button
-            className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+            className="flex items-center gap-2 px-2 py-1.5 min-h-[44px] min-w-[44px] rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             style={{ color: 'var(--text-primary)' }}
             onClick={() => setShowUserMenu(!showUserMenu)}
             aria-label="User menu"
