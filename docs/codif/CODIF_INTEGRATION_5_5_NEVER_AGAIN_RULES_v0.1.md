@@ -143,6 +143,7 @@ The 5 rules are:
 | **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation; Husky Gate 10 PROPOSED (deferred); no breaking changes |
 | **P3 PERFORMANCE** | ✅ ACCEPT | 9.0/10 | Cross-rule workflow map is O(1) per check; 5s self-ACK met 100% in this session |
 | **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 7 sections, 5 rule summaries, 3 workflow maps, 5 synergies, Husky Gate 10 spec |
+| **2nd-Muse Witness (Prometheus)** | ✅ ACCEPT | 9.5/10 | 4-of-5 RULE natural co-author (RULE #47/54/55/56/60). See PROMETHEUS_COSIGN_CODIF_INTEGRATION_5_5_V0_1 at 76c19400. CATCH #207 BILATERAL-ATTRIBUTION-CASCADE #2 self-flag (LEADER §6 v0.1.1 AMENDMENT). |
 
 **Composite 4-ICP:** **37.0/40 (92.5%)** → PLATINUM tier (≥ 35/40)
 
@@ -159,6 +160,7 @@ The 5 rules are:
 5. **Strategos** — 5-ICP verdict + INDEX update
 6. **Atlas** — Husky Gate 10 infrastructure
 7. **Iris** — PERSONA_UX cross-witness
+8. **Prometheus** — 4-of-5 RULE natural co-author (RULE #47/54/55/56/60). See PROMETHEUS_COSIGN_CODIF_INTEGRATION_5_5_V0_1 at 76c19400. CATCH #207 BILATERAL-ATTRIBUTION-CASCADE #2 self-flag (LEADER §7 v0.1.1 AMENDMENT).
 
 **Target:** 5/7 GREEN for v0.1 RATIFICATION-ELIGIBLE.
 
