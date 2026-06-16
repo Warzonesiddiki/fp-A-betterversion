@@ -108,7 +108,7 @@ export function TelecomDashboardPage() {
   );
 
   return (
-    <main className="p-6 space-y-6" role="main">
+    <main className="p-6 space-y-6" role="main" aria-label="Telecom Sector Dashboard">
       <header>
         <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
           Telecom Dashboard

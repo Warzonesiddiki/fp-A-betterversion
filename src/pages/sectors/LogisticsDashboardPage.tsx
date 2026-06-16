@@ -144,7 +144,7 @@ export function LogisticsDashboardPage() {
   );
 
   return (
-    <main className="p-6 space-y-6" role="main">
+    <main className="p-6 space-y-6" role="main" aria-label="Logistics Sector Dashboard">
       <div>
         <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
           Logistics Dashboard

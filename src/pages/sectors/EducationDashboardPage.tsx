@@ -89,7 +89,7 @@ export function EducationDashboardPage() {
   );
 
   return (
-    <main className="p-6 space-y-6 animate-in fade-in duration-500" role="main">
+    <main className="p-6 space-y-6 animate-in fade-in duration-500" role="main" aria-label="Education Sector Dashboard">
       <div>
         <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
           Education Dashboard
