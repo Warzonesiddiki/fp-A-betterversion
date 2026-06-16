@@ -164,7 +164,7 @@ export function ConsolidationPage() {
         </CardHeader>
         <CardContent aria-labelledby="consolidated-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable />
+            <DataTable columns={columns} data={tableData} sortable caption="Consolidation accounts table" ariaLabel="Consolidation accounts" />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}

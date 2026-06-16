@@ -236,7 +236,7 @@ export function CapexTracker() {
         </CardHeader>
         <CardContent>
           {projectData.length > 0 ? (
-            <DataTable columns={projectColumns} data={projectData} sortable />
+            <DataTable columns={projectColumns} data={projectData} sortable caption="Capital projects tracker table" ariaLabel="Capital projects tracker" />
           ) : (
             <p className="text-sm text-slate-500 text-center py-4">
               No capital projects yet. Add a project to start tracking.
@@ -256,7 +256,7 @@ export function CapexTracker() {
         </CardHeader>
         <CardContent>
           {assetData.length > 0 ? (
-            <DataTable columns={assetColumns} data={assetData} sortable />
+            <DataTable columns={assetColumns} data={assetData} sortable caption="Fixed assets table" ariaLabel="Fixed assets" />
           ) : (
             <p className="text-sm text-slate-500 text-center py-4">No fixed assets recorded.</p>
           )}
@@ -269,7 +269,7 @@ export function CapexTracker() {
             <CardTitle>Depreciation Schedule</CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable columns={depColumns} data={depData} sortable />
+            <DataTable columns={depColumns} data={depData} sortable caption="Depreciation schedule table" ariaLabel="Depreciation schedule" />
           </CardContent>
         </Card>
       )}

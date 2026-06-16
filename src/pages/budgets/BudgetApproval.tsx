@@ -164,7 +164,7 @@ export function BudgetApproval() {
         </CardHeader>
         <CardContent aria-labelledby="approval-details-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable />
+            <DataTable columns={columns} data={tableData} sortable caption="Budget approval items table" ariaLabel="Budget approval items" />
           ) : (
             <p className="text-slate-400">No approval data available.</p>
           )}

@@ -395,7 +395,7 @@ export default function CapExDashboard() {
           <CardTitle>All Projects</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable data={mockProjects} columns={projectColumns} pageSize={8} />
+          <DataTable data={mockProjects} columns={projectColumns} pageSize={8} caption="Capital expenditure projects table" ariaLabel="Capital expenditure projects" />
         </CardContent>
       </Card>
     </div>
