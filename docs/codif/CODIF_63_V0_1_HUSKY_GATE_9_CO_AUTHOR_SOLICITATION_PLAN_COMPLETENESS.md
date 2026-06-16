@@ -26,7 +26,7 @@
 - Calliope authored `docs/codif/CODIF_INTEGRATION_5_5_NEVER_AGAIN_RULES_v0.1.md` (e6a94682)
 - §7 listed 7 co-authors: Apollo, Hephaestus, Mnemosyne, Strategos, Atlas, Iris, Hera
 - §7 OMITTED Prometheus, who has 4-of-5 RULE co-author credentials on the 5 NEVER-AGAIN RULES being integrated:
-  - RULE #47 (CAVEMAN PERSIST FALLBACK) — Prometheus co-author @ 5d8b9c4f
+  - RULE #47 (CAVEMAN PERSIST FALLBACK) — Prometheus co-author @ 0ce49df0 (Iris co-sign on CODIF_60 v0.1 references RULE #47 in CAVEMAN PERSIST FALLBACK context)
   - RULE #54 (LEADER-PERIODIC-FULL-BROADCAST) — Prometheus co-author @ 2c9fada1
   - RULE #55 (GHOST-SHA-DETECTION) — Prometheus co-author @ 8a47be3c (PROMETHEUS_COSIGN_RULE_55 v0.4)
   - RULE #56 (PROACTIVE-PICK-CHAIN) — Prometheus co-author @ 59aac1c3
@@ -285,7 +285,7 @@ For RULE #63 v0.1 to be RATIFICATION-ELIGIBLE:
 1. **3-of-3 CATCH #207 victim** — Prometheus is the omitted Muse in ALL 3 confirmed CATCH #207 BILATERAL-ATTRIBUTION-CASCADE instances (2026-06-15 + 2026-06-15 + 2026-06-16)
 2. **2-of-2 SHIPPED 2nd-Muse co-signs** — Prometheus SHIPPED 76c19400 (CATCH #207 #1+2 recovery) + b3d4e25a (CATCH #207 #3 recovery) — both 2-step K.1 recoveries complete
 3. **4-of-5 RULE natural co-author credentials on CASCADE-TRAP family:**
-   - RULE #47 (CAVEMAN PERSIST FALLBACK) — Prometheus co-author @ 5d8b9c4f
+   - RULE #47 (CAVEMAN PERSIST FALLBACK) — Prometheus co-author @ 0ce49df0 (Iris co-sign on CODIF_60 v0.1 references RULE #47 in CAVEMAN PERSIST FALLBACK context)
    - RULE #54 (LEADER-PERIODIC-FULL-BROADCAST) — Prometheus co-author @ 2c9fada1
    - RULE #55 (GHOST-SHA-DETECTION) — Prometheus co-author @ 8a47be3c (PROMETHEUS_COSIGN_RULE_55 v0.4)
    - RULE #56 (PROACTIVE-PICK-CHAIN) — Prometheus co-author @ 59aac1c3

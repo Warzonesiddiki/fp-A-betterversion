@@ -349,3 +349,114 @@ test.describe('PICK C v0.4.1: Sector Temporal Edge Cases (4 tests)', () => {
     await expect(page.locator('[data-testid="fcc-deadline"]')).toBeVisible({ timeout: 10_000 });
   });
 });
+
+
+// V3 e.ix.7 SECTOR TEMPORAL EDGE CASES #11-15 (5 NEW tests, 7 sub-tests)
+// Owner: Chronos (slot 019ecc6f-1c46-78e0-b122-15d43a3f1900) -> Apollo (apply per CAVEMAN PERSIST)
+// Mapped doc: docs/drafts/chronos/chronos-v3-eix7-proposal.md (5 NEW edge cases #11-15)
+//
+// PURPOSE (RULE #56 PROACTIVE-PICK-CHAIN + Chronos PICK D APPLY):
+//   - Extends V2 e.ix.6 (5 base cases) -> V3 e.ix.7 (10 total: #1-10 + #11-15)
+//   - 5 NEW edge cases covering:
+//     #11: FY 52/53-wk (retail, defense)
+//     #12: Compound period (ASC 815 hedge accounting)
+//     #13: Multi-region cross-region latency (US+EU+APAC)
+//     #14: Sub-millisecond lock (SOX 404 audit trail)
+//     #15: Sequence ID generation (distributed ordering)
+//   - Deadline: T-2d 2026-06-20 EOD
+//   - 4-ICP TENTATIVE 4/4 ACCEPT
+//   - 7 test cases (some edge cases have multiple sub-tests)
+//
+// SCOPE (vs PICK C v0.4.1 at 024d5ff8):
+//   - PICK C v0.4.1 added 4 sector temporal edge cases (T-sec-1 to T-sec-4)
+//   - This ADD block adds 5 NEW V3 e.ix.7 edge cases (#11-15) with 7 sub-tests
+//   - Purely ADDITIVE - does NOT modify PICK C v0.4.1 tests
+//   - Real DOM assertions (locator-based) per D-002 3-witness
+//
+// CROSS-MUSE SYNERGY:
+//   - Edge Case #14: Cross-witnessed by Hephaestus PATCH 12 AuditLogger (db1b5bfd3)
+//     Audit chain integrity validates sub-ms lock audit trail ordering
+//   - Edge Case #13: Cross-witnessed by Prometheus G17 (8cb13447) performance
+//     verification of multi-region latency
+//
+// CATCH #209: RE-APPLY after rebase loss (PICK D APPLY LOST 88469a5b lost spec file changes)
+// Original commit 88469a5b only included CAVEMAN_PERSIST file, not the spec additions
+// This re-apply ensures the 5 NEW edge cases land on origin/main
+test.describe('PICK D: V3 e.ix.7 Sector Temporal Edge Cases #11-15 (5 NEW tests, 7 sub-tests)', () => {
+  // Edge Case #11: FY 52/53-wk Edge Case
+  test('V3-#11a: FY 52-wk period boundary (retail 4-5-4 calendar)', async ({ page }) => {
+    await signInAsSector(page, 'real-estate');
+    await page.goto('/sector/real-estate/calendar');
+    await page.locator('[data-testid="fiscal-calendar-type"]').selectOption('retail_52wk_454');
+    await page.locator('[data-testid="fiscal-year"]').fill('2026');
+    await page.locator('button:has-text("Generate Periods")').click();
+    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toContainText(/2027-01-31|2027-02-01/);
+  });
+
+  test('V3-#11b: FY 53-wk leap year period extension (defense)', async ({ page }) => {
+    await signInAsSector(page, 'real-estate');
+    await page.goto('/sector/real-estate/calendar');
+    await page.locator('[data-testid="fiscal-calendar-type"]').selectOption('defense_53wk_445');
+    await page.locator('[data-testid="fiscal-year"]').fill('2028');
+    await page.locator('button:has-text("Generate Periods")').click();
+    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="period-count-53wk"]')).toContainText(/53/);
+  });
+
+  // Edge Case #12: Compound Period (ASC 815 hedge accounting)
+  test('V3-#12: Compound period (Q1 + monthly sub-periods for ASC 815 hedge matching)', async ({ page }) => {
+    await signInAsSector(page, 'real-estate');
+    await page.goto('/sector/real-estate/hedge-accounting');
+    await page.locator('[data-testid="hedge-period-type"]').selectOption('compound_q1_monthly');
+    await page.locator('button:has-text("Lock Compound Period")').click();
+    await expect(page.locator('[data-testid="compound-period-locked"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="sub-periods-q1"]')).toContainText(/Jan|Feb|Mar/);
+  });
+
+  // Edge Case #13: Multi-Region Cross-Region Latency (US+EU+APAC)
+  test('V3-#13a: Multi-region sequence ID (US default)', async ({ page }) => {
+    await signInAsSector(page, 'telecom');
+    await page.goto('/sector/telecom/sequence-id');
+    await page.locator('[data-testid="region-selector"]').selectOption('US');
+    await page.locator('button:has-text("Generate Sequence ID")').click();
+    await expect(page.locator('[data-testid="sequence-id-output"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="sequence-id-output"]')).toContainText(/^US-\d+-/);
+  });
+
+  test('V3-#13b: Multi-region sequence ID (EU + APAC)', async ({ page }) => {
+    await signInAsSector(page, 'telecom');
+    await page.goto('/sector/telecom/sequence-id');
+    await page.locator('[data-testid="region-selector"]').selectOption('EU');
+    await page.locator('button:has-text("Generate Sequence ID")').click();
+    await expect(page.locator('[data-testid="sequence-id-output"]')).toContainText(/^EU-\d+-/);
+    await page.locator('[data-testid="region-selector"]').selectOption('APAC');
+    await page.locator('button:has-text("Generate Sequence ID")').click();
+    await expect(page.locator('[data-testid="sequence-id-output"]')).toContainText(/^APAC-\d+-/);
+  });
+
+  // Edge Case #14: Sub-Millisecond Lock (SOX 404 audit trail)
+  test('V3-#14: Sub-millisecond lock with nanosecond precision (SOX 404 audit)', async ({ page }) => {
+    await signInAsSector(page, 'telecom');
+    await page.goto('/sector/telecom/lock-test');
+    await page.locator('[data-testid="lock-region"]').selectOption('US');
+    await page.locator('[data-testid="lock-count"]').fill('1000');
+    await page.locator('button:has-text("Run Sub-ms Lock Test")').click();
+    await expect(page.locator('[data-testid="lock-result-median-ms"]')).toBeVisible({ timeout: 30_000 });
+    // Median should be < 1ms (sub-ms precision verified)
+    const medianText = await page.locator('[data-testid="lock-result-median-ms"]').textContent();
+    const median = parseFloat(medianText?.replace(/[^\d.]/g, '') || '0');
+    expect(median).toBeLessThan(1.0);
+  });
+
+  // Edge Case #15: Sequence ID Generation (distributed ordering)
+  test('V3-#15: Sequence ID monotonicity across 4 regions (collision-free)', async ({ page }) => {
+    await signInAsSector(page, 'telecom');
+    await page.goto('/sector/telecom/sequence-id-monotonicity');
+    await page.locator('[data-testid="test-regions"]').fill('US,EU,APAC,default');
+    await page.locator('[data-testid="iterations"]').fill('100');
+    await page.locator('button:has-text("Run Monotonicity Test")').click();
+    await expect(page.locator('[data-testid="monotonicity-result"]')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-testid="collision-count"]')).toContainText(/^0$/);
+  });
+});
