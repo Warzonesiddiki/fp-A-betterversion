@@ -125,3 +125,10 @@ memory/
 /.openclaude-backup-*/
 /mnemosyne_ship/
 
+
+# NEVER-AGAIN RULE #59 — SCRATCH-FILE-LIFECYCLE (T-MN-051, 2026-06-16)
+# Per FOUNDER WORKSPACE HYGIENE DIRECTIVE 2026-06-16 + LEADER PICK A APPROVED
+# Closes 3 gaps in Apollo DECISION 1 .gitignore: *.out files + g5_results.json + *.bak* backups
+/_*.out
+/g5_results.json
+/tools/*.bak*
