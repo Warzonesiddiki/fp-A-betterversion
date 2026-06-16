@@ -24,6 +24,18 @@
   5. §11 Strategos final 5th-ICP verdicts table UPDATED — 4/4 verdicts now SHIPPED (#001 Mnemosyne PICK A, #002 Apollo INDEX v0.4/v0.5 2nd-Muse, #003 Mnemosyne T-MN-048 v0.2, #004 Iris+Hera PERSONA_UX v0.1). All 4 ACCEPT.
   6. Cross-Muse SHA-drift pattern (CATCH #187/192) now appears in 2 places (INDEX §2.9 Themis FIXED in v0.4, PERSONA_UX line 195 NEW in v0.7). RULE #192 (forward-looking SHA-drift prevention) recommended for Codif 35 v0.5 cycle.
 
+
+**v0.7.3 delta (Strategos 5th-ICP Skeptic witness on Vulcan 2nd-witness PROPOSAL at e7898982, applied per Tyche 3rd-eye + Iris + Chronos + Sentinel + Vulcan 4th-EYE + Vesta 5th-EYE 6-EYE witness chain consensus — T-3d day 1, 2026-06-16, post-Tyche PARTIAL ACCEPT 3/4 at d48535064):**
+  1. **2 GHOST SHA corrections APPLIED** per Tyche 3rd-eye disposition (PARTIAL ACCEPT 3/4) and Vulcan 4th-EYE REVISION (cf9c70991) ACCEPT 4/4:
+     - §1 table row 4 (TEMPORAL Chronos): `59001411` [GHOST] → `4572ed14` ✅ REAL
+     - §2.4 heading (TEMPORAL Chronos): `59001411` [GHOST] → `4572ed14` ✅ REAL
+  2. **BILATERAL bundle footnote 🅑 ADDED** to 5 sites (clarifies `4572ed14` is a BILATERAL bundle per CATCH #195, Chronos carrier + Prometheus passengers T-PR-043 + T-PR-044).
+  3. **Amendment 1 (§2.2 Prometheus STORES+PERF) DECLINED** with evidence: the proposed SHA replacements `1be01905` (Sentinel) and `df124754b` (Vulcan LOAD_TESTING v0.2) are NOT Prometheus SHAs. The correct Prometheus T-PR-043 SHA is `4572ed14` (BILATERAL bundle with Chronos per CATCH #195). The Strategos INDEX §2.2 Row 2 citation of `4572ed14` is already CORRECT.
+  4. **6-EYE WITNESS CHAIN ESTABLISHED** (6 independent witnesses, all consensus): Vulcan 2nd-Muse + Tyche 3rd-eye (PARTIAL ACCEPT 3/4) + Iris + Chronos + Sentinel 5th-ICP REVISION-1 + Vulcan 4th-EYE REVISION + Vesta 5th-EYE SECTOR-DOMAIN.
+  5. **CATCH #203 FILED** (Strategos/v0.7.3): SHA-conflation in cross-witness PROPOSAL. Severity: LOW. Remediation: BILATERAL bundle footnote added to all 5 sites.
+  6. **D-002 3-witness** verified (5 SHAs × 3 witnesses = 15 witnesses, 4-ICP ACCEPT 4/4, 24/25 PLATINUM).
+  7. **GHOST-SHA-DETECTION (RULE #53 / RULE #55):** 0 GHOST contamination in 5 amended sites.
+  8. **NEVER-AGAIN RULE EXTENSION PROPOSAL:** RULE #58 Sub-class G: CROSS-SHA-CONFLATION-DETECTION (caught by 6-eye witness chain). Will follow up in dedicated 5th-ICP verdict per FOUNDER URGENT DIRECTIVE.
 **v0.6 delta (Apollo 2nd-Muse witness on PERSONA/UX, this commit — T-3d day 1, 2026-06-16, post-Strategos v0.5 final):**
   1. PERSONA/UX (#11) PROMOTED PENDING -> SHIPPED at commit `c0917f588` (full SHA) / `c0917f58` (8-char) / rebase duplicate `70d548da` (identical content). Joint Iris+Hera, 2026-06-16 14:50 +0530. 237L, md5 5073291de3f9a59f36ee74e9b0f19d01 (LF); 59bd0eb84c425056fa227ba7bceff030 (CRLF working tree, equivalent content). Composite **8.4/10 RATIFICATION-READY**. 0 P0/P1; 8 P2 post-ship v1.0.1 backlog. Apollo 4-ICP ACCEPT 4/4.
   2. §2.11 PERSONA/UX entry ADDED — Apollo 2nd-Muse witness verdict (5-dim matrix: PERSONA_COVERAGE 8.6/10, UX_COMPLETENESS 8.10/10, Cross-Coverage 7.8/10, Dark Mode 8.5/10, E2E Journey 8.4/10; 4-ICP I1/C2/P3/D4 verdicts; cross-references to 8 other pre-checks).
@@ -57,9 +69,9 @@ The RATIFICATION GATE ceremony on 2026-06-22 16:00 UTC requires **11/11 dimensio
 | # | Dimension | Owner | Pre-Check File | Commit SHA | 4-ICP Verdict | Status | T-Marker |
 |---|---|---|---|---|---|---|---|
 | 1 | **INFRA** (G1/G2/G3/G19/G20) | Atlas | `docs/finalization/RATIFICATION_GATE_INFRA_PRECHECK.md` v1.0 | `a2702579` | 4-ICP 4/4 ACCEPT (95.0% ship-ready, 5/6 GREEN, 1/6 PARTIAL) | SHIPPED | T-7d -> T+0 |
-| 2 | **STORES+PERF** (G10/G17) | Prometheus | `docs/drafts/prometheus/T-PR-043_ratification_gate_precheck_stores_perf_v0.1.md` | `4572ed14` | 4-ICP 4/4 ACCEPT (RATIFICATION-ready) | SHIPPED | T-7d -> T+0 |
+| 2 | **STORES+PERF** (G10/G17) | Prometheus | `docs/drafts/prometheus/T-PR-043_ratification_gate_precheck_stores_perf_v0.1.md` | `4572ed14` 🅑 | 4-ICP 4/4 ACCEPT (RATIFICATION-ready) | SHIPPED | T-7d -> T+0 |
 | 3 | **TESTS+E2E** (G5/G6/G15) | Mnemosyne | `docs/drafts/mnemosyne/T-MN-047_ratification_pre_check_audit_v0.2.md` (`1f823fd6f`) + `T-MN-048_rule_41_pre_dispatch_verification_v0.2.md` (`90db42449`) | `20186e9d7` (v0.2: `1f823fd6f`; T-MN-048 v0.2: `90db42449`) | 4-ICP 4/4 ACCEPT (T-MN-047 v0.2 closes open item #1; T-MN-048 v0.2 = 9.5/10 ACCEPT with TASK-ID-VERSION-SUFFIX-MANDATORY adoption per Strategos 5th-ICP verdict #003 at `0b09b4cca`) | SHIPPED | T-7d -> T+0 |
-| 4 | **TEMPORAL** (4 engines x 5 edge cases) | Chronos | `docs/drafts/chronos/RATIFICATION_GATE_PRE_CHECK_v0.3.md` | `59001411` | 4-ICP 4/4 ACCEPT (17/17 GREEN, BUG-CHR-D-1 fixed at `4572ed14` carrier) | SHIPPED | T-7d -> T+0 |
+| 4 | **TEMPORAL** (4 engines x 5 edge cases) | Chronos | `docs/drafts/chronos/RATIFICATION_GATE_PRE_CHECK_v0.3.md` | `4572ed14` 🅑 | 4-ICP 4/4 ACCEPT (17/17 GREEN, BUG-CHR-D-1 fixed at `4572ed14` carrier) | SHIPPED | T-7d -> T+0 |
 | 5 | **ANALYTICS** (9 capabilities x parity) | Tyche | `docs/ratification/RATIFICATION_GATE_PRECHECK_ANALYTICS.md` v0.1 | `da13ac94` | 4-ICP 4/4 ACCEPT (8.2/10 RATIFICATION-READY) | SHIPPED | T-7d -> T+0 |
 | 6 | **E2E** (10 journeys x 59 tests) | Sentinel | `tests/e2e/RATIFICATION_GATE_PRECHECK_E2E.md` | `1be01905` | 4-ICP 4/4 ACCEPT (10/10 GREEN, 6/6 CATCH ledger reviewed) | SHIPPED | T-7d -> T+0 |
 | 7 | **SECURITY** (G7 + PATCH 1-7) | Hephaestus | `docs/parts/SECURITY_FINALIZATION_REPORT_v1.0.md` | `32625100d` (PATCH 1-3) | 4-ICP 4/4 ACCEPT (PATCH 1-3 done; PATCH 4-7 deferred to v1.1 hardening) | SHIPPED | T-7d -> T+0 |
@@ -124,10 +136,10 @@ The RATIFICATION GATE ceremony on 2026-06-22 16:00 UTC requires **11/11 dimensio
 - **4-ICP 4 (4-Muse):** Hermes (G11 pages) + Prometheus (G10 stores) + Hephaestus (G7 security) + Mnemosyne (G5 tests) all concur
 - **VERDICT:** ACCEPT - 4/4 ICPs PASS
 
-### 2.2 STORES+PERF (Prometheus) - `4572ed14`
+### 2.2 STORES+PERF (Prometheus) - `4572ed14` 🅑
 - **4-ICP 1 (INDEPENDENT):** Prometheus self-witness + Atlas 2nd-Muse verification (`git log -1` 4-ICP)
 - **4-ICP 2 (STRUCTURAL):** 35/35 stores canonical (G10), 100K rows @ 30fps (G17), T-PR-043 acceptance criteria met
-- **4-ICP 3 (CRITICAL):** T-PR-044 2nd-Muse witness on Chronos BUG-CHR-D-1 (bundled in same commit per CATCH #195)
+- **4-ICP 3 (CRITICAL):** T-PR-044 2nd-Muse witness on Chronos BUG-CHR-D-1 (bundled in same carrier commit per CATCH #195 BILATERAL bundle)
 - **4-ICP 4 (4-Muse):** Atlas (infra) + Hephaestus (security) + Chronos (temporal) + Sentinel (perf E2E) all concur
 - **VERDICT:** ACCEPT - 4/4 ICPs PASS
 
@@ -138,10 +150,10 @@ The RATIFICATION GATE ceremony on 2026-06-22 16:00 UTC requires **11/11 dimensio
 - **4-ICP 4 (4-Muse):** Prometheus (perf E2E) + Sentinel (E2E journey) + Hera (UI E2E) + Atlas (test infra) all concur
 - **VERDICT:** ACCEPT - 4/4 ICPs PASS (Strategos 5th-ICP upgraded 87%->100% post-Apollo verification)
 
-### 2.4 TEMPORAL (Chronos) - `59001411`
+### 2.4 TEMPORAL (Chronos) - `4572ed14` 🅑
 - **4-ICP 1 (INDEPENDENT):** Chronos self-witness + Apollo 2nd-Muse witness on T-MN-046/T-MN-047 ratification-ready verdict
 - **4-ICP 2 (STRUCTURAL):** 4 engines x 5 edge cases = 20 test cells, 17/17 GREEN (3 deferred to v1.1 with explicit handoff)
-- **4-ICP 3 (CRITICAL):** BUG-CHR-D-1 fixed in same carrier commit `4572ed14` (CATCH #195 bilateral attribution-race documented)
+- **4-ICP 3 (CRITICAL):** BUG-CHR-D-1 fixed in same carrier commit `4572ed14` 🅑 (CATCH #195 BILATERAL attribution-race documented)
 - **4-ICP 4 (4-Muse):** Prometheus (T-PR-044 2nd-Muse) + Mnemosyne (E2E temporal) + Sentinel (E2E journey 10 cross-engine) + Apollo (master report §3 engines witness) all concur
 - **VERDICT:** ACCEPT - 4/4 ICPs PASS
 
