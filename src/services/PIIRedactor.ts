@@ -1,4 +1,4 @@
-// PIIRedactor — Multi-strategy redaction of personally identifiable information
+﻿// PIIRedactor — Multi-strategy redaction of personally identifiable information
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 13 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:
@@ -418,6 +418,53 @@ export class PIIRedactor {
   rehydrate(token: string): string | null {
     if (typeof token !== 'string') return null;
     return this.tokenMap[token] ?? null;
+  }
+
+  /**
+   * Redact a free-text identifier (e.g. a secret name, account label, vault
+   * entry) so it can safely appear in audit logs. Uses the configured default
+   * strategy ('mask' by default) and emits a pii.redacted audit event.
+   *
+   * Returns a deterministic, non-reversible token for the identifier.
+   */
+  redactIdentifier(identifier: string, actor?: string): string {
+    if (typeof identifier !== 'string') {
+      throw new PIIRedactionError('identifier must be a string', 'INVALID_INPUT');
+    }
+    const masked = maskValue(identifier, 'name');
+    const auditEvent: PIIRedactionAuditEvent = {
+      type: 'pii.redacted',
+      actor: actor ?? this.defaultActor,
+      timestamp: Date.now(),
+      path: 'identifier',
+      category: 'name',
+      strategy: this.defaultStrategy,
+      redactedCount: 1,
+      categoryCounts: { name: 1 },
+      ok: true,
+      source: this.source,
+      prevChainHash: this.chainHead,
+    };
+    const hash = computeEventHashSync(auditEvent, this.chainHead);
+    auditEvent.hash = hash;
+    this.chainHead = hash;
+    this.events.push(auditEvent);
+    if (this.events.length > this.maxEvents) {
+      this.events.shift();
+    }
+    if (this.onAudit) {
+      try {
+        const result = this.onAudit(auditEvent);
+        if (result && typeof (result as Promise<void>).then === 'function') {
+          (result as Promise<void>).catch(() => {
+            // Swallow — best-effort audit emission.
+          });
+        }
+      } catch {
+        // Swallow — best-effort audit emission.
+      }
+    }
+    return masked;
   }
 
   /** Export the current token map (for trusted internal use only). */

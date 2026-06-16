@@ -173,8 +173,8 @@ export const applyDragFill = (
   const result: Record<string, SheetCell> = {};
   const sourceMatch = sourceRef.match(/^([A-Z]+)(\d+)$/);
   if (!sourceMatch) return result;
-  const sourceColLetters = sourceMatch[1];
-  const sourceRow = parseInt(sourceMatch[2], 10);
+  const sourceColLetters = sourceMatch[1] ?? '';
+  const sourceRow = parseInt(sourceMatch[2] ?? '0', 10);
 
   // Parse column to index
   const colToIndex = (letters: string) => {
@@ -282,10 +282,10 @@ export const applyAutoSum = (start: string, end: string): { formula: string; ref
   const startMatch = start.match(/^([A-Z]+)(\d+)$/);
   const endMatch = end.match(/^([A-Z]+)(\d+)$/);
   if (!startMatch || !endMatch) return { formula: '', refs };
-  const startCol = startMatch[1];
-  const startRow = parseInt(startMatch[2], 10);
-  const endCol = endMatch[1];
-  const endRow = parseInt(endMatch[2], 10);
+  const startCol = startMatch[1] ?? '';
+  const startRow = parseInt(startMatch[2] ?? '0', 10);
+  const endCol = endMatch[1] ?? '';
+  const endRow = parseInt(endMatch[2] ?? '0', 10);
 
   const colToIndex = (letters: string) => {
     let n = 0;

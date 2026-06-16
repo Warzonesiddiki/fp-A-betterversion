@@ -1,4 +1,4 @@
-// AuditLogger — Tamper-evident, hash-chained audit log
+﻿// AuditLogger — Tamper-evident, hash-chained audit log
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 12 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:
@@ -84,6 +84,7 @@ export type AuditCategory =
   | 'data-export'
   | 'config-change'
   | 'secret-rotation'
+  | 'credential-management'
   | 'system'
   | 'security-incident'
   | 'compliance'
@@ -162,6 +163,7 @@ export interface AuditChainVerificationResult {
 export interface AuditLoggerConfig {
   /** Source label written into every event by default. */
   source?: string;
+  category?: AuditCategory;
   /** Initial chain head. Defaults to SHA-256(GENESIS_PREIMAGE). */
   genesisChainHead?: string;
   /** Maximum events to retain. Defaults to MAX_EVENTS. */
@@ -228,6 +230,7 @@ export class AuditLogger {
   private events: AuditEvent[] = [];
   private chainHead: string;
   private source: string;
+  private category: AuditCategory;
   private maxEvents: number;
   private nextSequence: number = 0;
   /** Cache of the SHA-256 of GENESIS_PREIMAGE used to bootstrap the chain. */
@@ -235,6 +238,7 @@ export class AuditLogger {
 
   private constructor(config: AuditLoggerConfig = {}) {
     this.source = config.source ?? 'finplan-pro';
+    this.category = config.category ?? 'security-event';
     this.maxEvents =
       config.maxEvents ?? AUDIT_LOGGER_CONSTANTS.MAX_EVENTS;
     this.genesisChainHead =
@@ -282,6 +286,29 @@ export class AuditLogger {
   }
 
   /** Append an event to the log. Computes hash, updates chain head. */
+  async log(input: {
+    action: string;
+    target: string;
+    result: 'ok' | 'denied' | 'error' | 'scheduled' | 'backend-error' | 'forbidden';
+    severity?: 'debug' | 'info' | 'warn' | 'error' | 'critical';
+    metadata?: Record<string, unknown>;
+  }): Promise<AuditEvent> {
+    const severity = input.severity ?? 'info';
+    const payload: Record<string, unknown> = {
+      ...(input.metadata ?? {}),
+      target: input.target,
+      result: input.result,
+    };
+    return this.addEvent({
+      actor: this.source ?? 'system',
+      eventType: input.action,
+      category: this.category ?? 'security-event',
+      severity,
+      payload,
+      source: this.source ?? 'hephaestus',
+    });
+  }
+
   async addEvent(input: AddEventInput): Promise<AuditEvent> {
     if (!input || typeof input !== 'object') {
       throw new AuditLoggerError('input required', 'INVALID_INPUT');
@@ -534,6 +561,7 @@ function isValidCategory(c: unknown): c is AuditCategory {
     'data-export',
     'config-change',
     'secret-rotation',
+    'credential-management',
     'system',
     'security-incident',
     'compliance',
