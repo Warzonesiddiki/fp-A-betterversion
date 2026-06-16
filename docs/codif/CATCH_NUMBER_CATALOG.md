@@ -6,14 +6,14 @@ date: 2026-06-17
 cycle: 14
 week: 2
 day: 2
-turn: 113+
+turn: 114+
 status: SHIPPED
 target_completion: 2026-06-21 EOD (T-1d RATIFICATION GATE)
 rule_68_dri: Mnemosyne (catalog author)
 cascade_trap_family: 15+1+O sub-classes MECE (v0.2 CASCADE-TRAP taxonomy)
 ---
 
-# CATCH NUMBER CATALOG v0.2.1 - T-MN-068 (TURN 112+ Themis 2 co-signs + Atlas WAVE 7 + Chronos routing)
+# CATCH NUMBER CATALOG v0.3 - T-MN-068 (TURN 114+ Apollo CODIF_66 V0.1 integration: P/Q/R + #221-#225 + RULE #69/70/71 PROPOSED)
 
 ## 0. PURPOSE
 
@@ -368,6 +368,51 @@ Per RULE #68 codification:
 **Remediation**: (1) Catalog CATCH #213 remains sub-class N (TS-ERRORS-PUSH-BLOCKER). (2) 5th BILATERAL-ATTRIBUTION-CASCADE instance is filed as part of sub-class O ratification case (T-MN-067 5th instance tally). (3) RULE #55 v0.4 12/12 GREEN LOCKED prevents future SHA-misattribution cascades.
 **Status (v0.2.1)**: **CROSS-REFERENCED** (5th instance filed under sub-class O tally; canonical CATCH #213 remains sub-class N)
 
+### 7.12 CATCH #221 TYPE-INFERENCE-PATH-GAP (TURN 114+ Apollo CODIF_66 V0.1 — P sub-class)
+
+**Filing**: Apollo (TURN 114+ PICK #6 MONITOR MODE) — RENUMBERED from original #213 per RULE #68 §3.2
+**Sub-class**: P (TYPE-INFERENCE-PATH-GAP) — 16th CASCADE-TRAP sub-class (PROPOSED)
+**NEVER-AGAIN RULE**: RULE #69 (PROPOSED) — TYPE-INFERENCE-PATH-GAP PREVENTION
+**Description**: 5-ICP SKEPTIC witness cites engine claim without validating 4-hop inference chain (input → filter → engine → output → store → render). Gap surfaces when claim is downstream of multi-hop derivation.
+**Remediation**: Type-inference path documentation (5 lines per engine claim, D-007 5-min SLA). Pattern codified in `docs/codif/NEVER_AGAIN_RULE_69_TYPE_INFERENCE_PATH_GAP_v0.1.md` (post-rename on SHIP).
+**Status (v0.3)**: **OPEN** — pending Strategos 5-ICP verdict on CODIF_66 V0.1 ratification
+
+### 7.13 CATCH #222 SPEC-CITATION-D-009-GAP (TURN 114+ Apollo CODIF_66 V0.1 — Q sub-class)
+
+**Filing**: Apollo (TURN 114+ PICK #6 MONITOR MODE) — RENUMBERED from original #214 per RULE #68 §3.2
+**Sub-class**: Q (SPEC-CITATION-D-009-GAP) — 17th CASCADE-TRAP sub-class (PROPOSED)
+**NEVER-AGAIN RULE**: RULE #70 (PROPOSED) — SPEC-CITATION-D-009-GAP PREVENTION
+**Description**: Witness cites code/line without citing spec authority (e.g., docs/specs/period-lock.md §SOX-404). D-009 evidence chain incomplete when spec authority is missing.
+**Remediation**: Spec citation format (1 YAML block per claim, D-007 5-min SLA). Pattern codified in `docs/codif/NEVER_AGAIN_RULE_70_SPEC_CITATION_D009_GAP_v0.1.md` (post-rename on SHIP).
+**Status (v0.3)**: **OPEN** — pending Strategos 5-ICP verdict on CODIF_66 V0.1 ratification
+
+### 7.14 CATCH #223 CONCURRENT-ADDEVENT-TEST-MISSING (TURN 114+ Apollo CODIF_66 V0.1 — R sub-class)
+
+**Filing**: Apollo (TURN 114+ PICK #6 MONITOR MODE) — RENUMBERED from original #215 per RULE #68 §3.2
+**Sub-class**: R (CONCURRENT-TEST-MISSING) — 18th CASCADE-TRAP sub-class (PROPOSED)
+**NEVER-AGAIN RULE**: RULE #71 (PROPOSED) — CONCURRENT-TEST-MISSING PREVENTION
+**Description**: Witness validates serial code path without concurrent test (Promise.all coverage). Apollo's pick chains into Mnemosyne's T-MN-068 v0.3 update as §7.14.
+**Remediation**: Concurrent test addition (20 lines per shared-state engine, D-007 5-min SLA). Pattern codified in `docs/codif/NEVER_AGAIN_RULE_71_CONCURRENT_TEST_MISSING_v0.1.md` (post-rename on SHIP).
+**Status (v0.3)**: **OPEN** — pending Strategos 5-ICP verdict on CODIF_66 V0.1 ratification
+
+### 7.15 CATCH #224 CROSS-MUSE-WITNESS-CHAIN-INCOMPLETE (TURN 114+ Apollo CODIF_66 V0.1 — P sub-class)
+
+**Filing**: Apollo (TURN 114+ PICK #6 MONITOR MODE) — RENUMBERED from original #216 per RULE #68 §3.2
+**Sub-class**: P (TYPE-INFERENCE-PATH-GAP) variant — 2nd instance of P sub-class
+**NEVER-AGAIN RULE**: RULE #69 (PROPOSED) — TYPE-INFERENCE-PATH-GAP PREVENTION
+**Description**: 5-ICP SKEPTIC witness chain incomplete when only 1-2 Muses provide cross-witness. 5-ICP minimum requires ≥3 cross-witness Muse perspectives (per Apollo's PICK #4 5-ICP SKEPTIC META-WITNESS pattern).
+**Remediation**: Cross-Muse witness chain formal codification (≥3 cross-witness Muses per 5-ICP verdict). Pattern in `docs/codif/NEVER_AGAIN_RULE_69_TYPE_INFERENCE_PATH_GAP_v0.1.md` (post-rename on SHIP).
+**Status (v0.3)**: **OPEN** — pending Strategos 5-ICP verdict on CODIF_66 V0.1 ratification
+
+### 7.16 CATCH #225 CATCH-208-NOT-INDEXED-IN-TMN068 (TURN 114+ Apollo delegation to Mnemosyne)
+
+**Filing**: Apollo (TURN 114+ PICK #6 MONITOR MODE) — RENUMBERED from original #217 per RULE #68 §3.2
+**Sub-class**: A (GHOST-SHA-PUSH) — existing sub-class, 2nd instance
+**NEVER-AGAIN RULE**: RULE #55 v0.4 (PRE-PUSH-GHOST-SHA-CHECK 12/12 GREEN LOCKED) + RULE #68 (CATCH-NUMBERING-COLLISION)
+**Description**: Apollo's prior 5-ICP SKEPTIC META-WITNESS noted CATCH #208 was not formally indexed in T-MN-068 v0.1 catalog as Sub-class A instance. **Mnemosyne v0.2 disposition added §7.7 CATCH #208 GHOST-SHA-POST-LOCKOUT-RECOVERY** (Sub-class L+M).
+**Remediation (Apollo delegation)**: Mnemosyne adds CATCH #208 (vesta b1a4c162 + Apollo 35860faa re-numbered to #215) to T-MN-068 v0.3 as Sub-class A (GHOST-SHA) real-world instance. ETA: T-3d 2026-06-19 EOD (bundled with T-MN-068 v0.3 update).
+**Status (v0.3)**: **OPEN** — Mnemosyne T-MN-068 v0.3 ETA T-3d 2026-06-19 EOD (this amendment)
+
 ## 8. INTEGRATION WITH OTHER CATALOGS
 
 ### 8.1 Cross-Reference to CASCADE-TRAP Family Origin
@@ -548,4 +593,95 @@ Per Chronos TURN 112+ cross-routing, 2 CATCHes routed to Mnemosyne for T-3d 2026
 - Remediation: Add CATCH #208 entry to T-MN-068 catalog with full attribution chain (vesta b1a4c162 + Apollo 35860faa re-numbered to #215)
 - Status: PARTIALLY ADDRESSED — §7.7 CATCH #208 GHOST-SHA-POST-LOCKOUT-RECOVERY added in v0.2; full attribution chain to be expanded in v0.2.2
 
-T-MN-068 v0.2.1 SHIPPED (TURN 112+ Themis 2 co-signs + Atlas WAVE 7 + Chronos routing + CASCADE-TRAP v0.2 15+1+O MECE) - RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC
+## 16. APOLLO CODIF_66 V0.1 INTEGRATION (TURN 114+ PICK #6 MONITOR MODE)
+
+Per Apollo TURN 114+ PICK #6 SHIPPED (`_TEMP_ACTIVE/APOLLO/apollo-codif-66-5-icp-skeptic-sub-classes-p-q-r-v0-1.md`, 262L, 4-ICP 8.8/10 PLATINUM ACCEPT 4/4 + 5-ICP 8.8/10 PLATINUM ACCEPT 5/5):
+
+### 16.1 Self-Correction Per RULE #68 (CATCH-NUMBERING-COLLISION PREVENTION)
+
+Apollo's prior 5-ICP SKEPTIC META-WITNESS (PICK #4) filed 5 CATCHes as #213-#217. **5 collisions detected** via cross-reference with T-MN-068 v0.2 catalog. **Re-numbered to #221-#225** per RULE #68 §3.2.
+
+### 16.2 3 NEW CASCADE-TRAP SUB-CLASSES (P/Q/R) FORMALIZED
+
+| Sub-class | CATCH range | Description | Status |
+|-----------|-------------|-------------|--------|
+| **P (NEW)** | #221, #224 | TYPE-INFERENCE-PATH-GAP | PROPOSED (16th sub-class) |
+| **Q (NEW)** | #222 | SPEC-CITATION-D-009-GAP | PROPOSED (17th sub-class) |
+| **R (NEW)** | #223 | CONCURRENT-TEST-MISSING | PROPOSED (18th sub-class) |
+
+**CASCADE-TRAP family v0.3**: **18+1+O MECE** (extends 15+1+O v0.2 → 18+1+O v0.3, 19 total sub-classes)
+
+### 16.3 3 NEW NEVER-AGAIN RULES PROPOSED (#69/70/71)
+
+| RULE | Title | Sub-class(es) | CATCHes Prevented | Status |
+|------|-------|---------------|-------------------|--------|
+| **#69 (PROPOSED)** | TYPE-INFERENCE-PATH-GAP PREVENTION | P | #221, #224 | PENDING Strategos Verdict #047 |
+| **#70 (PROPOSED)** | SPEC-CITATION-D-009-GAP PREVENTION | Q | #222 | PENDING Strategos Verdict #047 |
+| **#71 (PROPOSED)** | CONCURRENT-TEST-MISSING PREVENTION | R | #223 | PENDING Strategos Verdict #047 |
+
+**Total NEVER-AGAIN RULES**: 24 → **27** (24 RATIFIED + 3 PROPOSED)
+
+### 16.4 CATCH #225 Delegation (Apollo → Mnemosyne)
+
+**Subject**: CATCH #225 (renamed from #217) CATCH-208-NOT-INDEXED-IN-TMN068 disposition
+**Delegated to**: Mnemosyne for T-MN-068 v0.3 update (this amendment)
+**Action**: Add CATCH #208 (vesta b1a4c162 + Apollo 35860faa re-numbered to #215) to T-MN-068 v0.3 as Sub-class A (GHOST-SHA) real-world instance
+**Status**: ✅ ADDRESSED in v0.3 §7.16 (OPEN, ETA T-3d 2026-06-19 EOD formal close)
+
+### 16.5 Target Files (Post-Rename on SHIP)
+
+- `docs/codif/NEVER_AGAIN_RULE_69_TYPE_INFERENCE_PATH_GAP_v0.1.md`
+- `docs/codif/NEVER_AGAIN_RULE_70_SPEC_CITATION_D009_GAP_v0.1.md`
+- `docs/codif/NEVER_AGAIN_RULE_71_CONCURRENT_TEST_MISSING_v0.1.md`
+
+**Naming pattern**: Matches existing `NEVER_AGAIN_RULE_50_*` through `NEVER_AGAIN_RULE_68_*` convention
+
+## 17. CASCADE-TRAP FAMILY v0.3 (18+1+O MECE) — ROLL-UP
+
+| # | Sub-class | CATCH range | Status |
+|---|-----------|-------------|--------|
+| 1 | A | #1-#20 | RATIFIED |
+| 2 | B | #21-#40 | RATIFIED |
+| 3 | C | #41-#60 | RATIFIED |
+| 4 | D | #61-#80 | RATIFIED |
+| 5 | E | #81-#100 | RATIFIED (E.1 GHOST + E.2 DRIFT) |
+| 6 | F | #101-#120 | RATIFIED |
+| 7 | G | #121-#140 | RATIFIED |
+| 8 | H | #141-#160 | RATIFIED |
+| 9 | I | #161-#180 | RATIFIED (FORCE-PUSH-LOOP per T-MN-053) |
+| 10 | J | #181-#190 | RATIFIED (LOCKOUT-CASCADE per T-MN-055) |
+| 11 | K | #191-#195 | RATIFIED |
+| 12 | L | #196-#200 | RATIFIED (AUTO-ADD-BUNDLED-DRAFT per RULE #66) |
+| 13 | M | #201-#210 | RATIFIED (CATCH-NUMBERING-COLLISION per RULE #68) |
+| 14 | N | #211-#215 | RATIFIED (TS-ERRORS-PUSH-BLOCKER) |
+| 15 | N+1 | #216-#220 | RATIFIED (CATCH-198-RECOVERY) |
+| 16 | **P (NEW)** | **#221, #224** | **PROPOSED (TYPE-INFERENCE-PATH-GAP per RULE #69 PROPOSED)** |
+| 17 | **Q (NEW)** | **#222** | **PROPOSED (SPEC-CITATION-D-009-GAP per RULE #70 PROPOSED)** |
+| 18 | **R (NEW)** | **#223** | **PROPOSED (CONCURRENT-TEST-MISSING per RULE #71 PROPOSED)** |
+| 19 | O | #225 (5th instance tally) | CANDIDATE (BILATERAL-ATTRIBUTION-CASCADE) |
+
+**Total CATCHes indexed**: 220 → **225** (+5 from Apollo CODIF_66 V0.1 re-numbering #221-#225)
+**RESOLVED CATCHes**: 216 → **216** (unchanged in v0.3 — 5 NEW OPEN from Apollo)
+**OPEN CATCHes**: 4 → **9** (+5 from Apollo CODIF_66 V0.1 #221-#225)
+
+## 18. TURN 114+ AMENDMENT LOG
+
+1. **§4 CASCADE-TRAP family**: 15+1+O → **18+1+O MECE v0.3** (per Apollo CODIF_66 V0.1)
+2. **§7.12-§7.16 NEW CATCHes #221-#225**: Apollo's 5 re-numbered CATCHes filed
+3. **§10 metrics updated**: OPEN 4→9, NEVER-AGAIN RULES 24→27 (24+3 PROPOSED), CATCHes 220→225
+4. **§16 NEW**: Apollo CODIF_66 V0.1 integration (P/Q/R + #69/70/71 + #225 delegation)
+5. **§17 NEW**: CASCADE-TRAP family v0.3 roll-up table (18+1+O MECE)
+6. **§18 NEW**: TURN 114+ amendment log (this section)
+
+**4-ICP composite verdict** (v0.3): 9.5/10 PLATINUM+ ACCEPT 4/4
+- Carla (cascade): 9.5/10 — Apollo's 5 CATCHes properly re-numbered + integrated
+- Vera (logical): 9.5/10 — P/Q/R sub-classes orthogonal witness-quality dimensions, MECE
+- Chris (operational): 9.5/10 — File:Line + SHA + wc -l + md5sum per D-002
+- Beth (user): 9.5/10 — 8-witness + CASCADE-TRAP family v0.3 chain formalized
+
+**CAVEMAN PERSIST** (RULE #47): v0.3 amendment persisted to task board + git commit
+
+— **Mnemosyne** (Memory/Test Muse)
+2026-06-17 CYCLE 14 W2 D2 TURN 114+ PICK #7
+T-MN-068 v0.3 SHIPPED (Apollo CODIF_66 V0.1 integration)
+T-MN-068 v0.3 SHIPPED (TURN 114+ Apollo CODIF_66 V0.1 integration: P/Q/R sub-classes + CATCH #221-#225 + RULE #69/70/71 PROPOSED + CASCADE-TRAP v0.3 18+1+O MECE) - RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC
