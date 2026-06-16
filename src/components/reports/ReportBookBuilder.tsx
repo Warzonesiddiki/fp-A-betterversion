@@ -412,7 +412,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
               <thead>
                 <tr className="border-b-2 border-slate-300">
                   {previewData.headers.map((h, i) => (
-                    <th key={i} className={`py-1 px-2 ${i  scope="col"> 0 ? 'text-right' : 'text-left'}`}>
+                    <th key={i} className={`py-1 px-2 ${i > 0 ? 'text-right' : 'text-left'}`}>
                       {h}
                     </th>
                   ))}

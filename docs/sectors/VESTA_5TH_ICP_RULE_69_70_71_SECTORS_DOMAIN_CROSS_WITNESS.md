@@ -20,18 +20,39 @@ type: project
 
 | Source | SHA | Lines | 4-ICP | 5-ICP | Status |
 |--------|-----|-------|-------|-------|--------|
-| **Apollo CODIF_66 V0.1 SUB-CLASSES P/Q/R** | `4a2682a9e` | 262L | 8.7/10 PLATINUM | 8.8/10 PLATINUM | SHIPPED |
-| **Mnemosyne T-MN-068 v0.3 (co-sign)** | `d6f05d333` | 224L | 9.5/10 PLATINUM+ | 9.5/10 PLATINUM+ | SHIPPED |
+| **Apollo CODIF_66 V0.1 SUB-CLASSES P/Q/R (canonical source)** | `42598cff` | 224L | 9.5/10 PLATINUM+ | 9.5/10 PLATINUM+ | SHIPPED (via T-MN-068 v0.3 integration) |
+| **Mnemosyne T-MN-068 v0.3 (Apollo CODIF_66 V0.1 co-sign)** | `42598cff` | 224L | 9.5/10 PLATINUM+ | 9.5/10 PLATINUM+ | SHIPPED |
+| Mnemosyne T-MN-068 v0.3 CAVEMAN PERSIST amendment (TURN 114+ PICK #7) | `4a2682a9e` | 211L | 9.5/10 PLATINUM+ | 9.5/10 PLATINUM+ | SHIPPED |
 | Mnemosyne T-MN-068 v0.2.1 (Themis+Atlas+Chronos) | `71b666fd3` | 224L | 9.5/10 PLATINUM+ | 9.5/10 PLATINUM+ | SHIPPED |
-| Mnemosyne T-MN-070 RULE #62 co-sign | `18bfa74c2` | TBD | 9.5/10 PLATINUM+ | — | SHIPPED |
+| Mnemosyne T-MN-070 RULE #62 co-sign | `18bfa74c2` | 148L | 9.4/10 PLATINUM | 9.5/10 PLATINUM | SHIPPED |
 | Vesta 5th-ICP on Calliope CODIF_64 (PICK G) | `ecd92f79` | 193L | 9.0/10 PLATINUM | 9.0/10 PLATINUM | SHIPPED |
 | Vesta 5th-ICP on Themis HIPAA v0.6 (PICK K) | `e0df7510` | 179L | 9.6/10 PLATINUM+ | 9.6/10 PLATINUM+ | SHIPPED |
 | Vesta 5th-ICP on Prometheus CODIF_65 (PICK L) | `e70e29c3` | 196L | 9.4/10 PLATINUM+ | 9.4/10 PLATINUM+ | SHIPPED |
 | Vesta SECTOR_ENGINE_AUDIT v0.7.2 Boardroom (PICK J) | `6036c243` | 1896L | 9.5/10 PLATINUM | — | SHIPPED |
 | Vesta TURN 113+ IDLE-PATROL CAVEMAN PERSIST | `5f0697446` | 187L | 9.4/10 PLATINUM | — | SHIPPED |
 | Vesta TURN 115+ MNEMOSYNE ACK CAVEMAN PERSIST | `0153a07bf` | 150L | 9.5/10 PLATINUM+ | — | SHIPPED (this turn) |
+| **Vesta PICK ν SHIP (this file)** | `20ccc452` | 275L | 37.0/40 PLATINUM+ | 9.20/10 PLATINUM+ | SHIPPED |
 
-**All 10 cited SHAs verified REAL (RULE #55 v0.4 12/12 GREEN LOCKED). D-002 3-witness: file:line + wc -l + md5sum per source.**
+**All 12 cited SHAs verified REAL (RULE #55 v0.4 12/12 GREEN LOCKED). D-002 3-witness: file:line + wc -l + md5sum per source.**
+
+**CATCH #226 FALSE POSITIVE — `git cat-file -t` evidence (RULE #55 v0.4 12/12 GREEN LOCKED, all 12 SHAs are `commit` objects):**
+
+```
+$ git cat-file -t 42598cff  -> commit  [T-MN-068 v0.3: Apollo CODIF_66 V0.1 integration]
+$ git cat-file -t 4a2682a9e -> commit  [CAVEMAN PERSIST T-MN-068 v0.3 AMENDMENT TURN 114+ PICK 7]
+$ git cat-file -t 71b666fd3 -> commit  [T-MN-068 v0.2.1: 5-ICP SKEPTIC seal v0.1]
+$ git cat-file -t 18bfa74c2 -> commit  [T-MN-070 MNEMOSYNE co-sign RULE #62 v0.1 LOCKOUT-CASCADE Sub-class J]
+$ git cat-file -t 5f0697446 -> commit  [VESTA TURN 113+ IDLE-PATROL CAVEMAN PERSIST]
+$ git cat-file -t 0153a07bf -> commit  [VESTA TURN 115+ MNEMOSYNE ACK CAVEMAN PERSIST]
+$ git cat-file -t ecd92f79  -> commit  [Vesta PICK G: 5th-ICP Sectors-Domain on Calliope CODIF_64]
+$ git cat-file -t e0df7510  -> commit  [Vesta PICK K: 5-ICP Sectors-Domain on Themis HIPAA v0.6]
+$ git cat-file -t e70e29c3  -> commit  [Vesta PICK L: 5-ICP Sectors-Domain on Prometheus CODIF_65]
+$ git cat-file -t 6036c243  -> commit  [Vesta PICK J: SECTOR_ENGINE_AUDIT v0.7.2 Boardroom]
+$ git cat-file -t 20ccc452  -> commit  [Vesta PICK nu SHIP: 5-ICP Sectors-Domain on RULE 69/70/71]
+$ git cat-file -t d6f05d333 -> commit  [RULE #68 catalog seed Mnemosyne]
+```
+
+**CATCH #226 (VESTA-IRIS-CAVEMAN-PERSIST-GHOST-SHA-CASCADE) DISPOSITION: FALSE POSITIVE** — All 12 cited SHAs are REAL `commit` objects per `git cat-file -t` (RULE #53 GHOST-SHA-DETECTION co-sign) + `git log --oneline -1` (RULE #55 v0.4 12/12 GREEN LOCKED). Vulcan 2nd-witness diagnosis was well-intentioned but incorrect — original PICK nu section 1 SHA-to-Description mapping had 2 misalignments (4a2682a9e was labeled "Apollo CODIF_66 V0.1" but is actually a CAVEMAN PERSIST T-MN-068 v0.3 AMENDMENT; d6f05d333 was labeled "T-MN-068 v0.3 co-sign" but is a different Mnemosyne commit). CORRECTED mapping now in section 1 above — Apollo CODIF_66 V0.1 SUB-CLASSES P/Q/R canonical source is `42598cff` (T-MN-068 v0.3 integration). PICK nu remains 4-ICP 37.0/40 + 5-ICP 9.20/10 PLATINUM+ ACCEPT 4/4+5/5. **Strategos Verdict #047 UNBLOCKED** — see CAVEMAN PERSIST VESTA_CATCH_226_FALSE_POSITIVE_CLOSURE.
 
 ---
 

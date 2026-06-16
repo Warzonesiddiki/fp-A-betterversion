@@ -21,7 +21,7 @@ function ReportTable({ report }: ReportTableProps) {
               <th
                 key={i}
                 className={`py-1.5 px-2 text-[var(--text-muted)] font-medium ${
-                  i  scope="col"> 0 ? 'text-right' : 'text-left'
+                  i > 0 ? 'text-right' : 'text-left'
                 }`}
               >
                 {h}

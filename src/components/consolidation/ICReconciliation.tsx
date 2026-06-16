@@ -419,7 +419,7 @@ function SortHeader({
   return (
     <th
       className={cn('cursor-pointer p-2 text-left hover:text-foreground', className)}
-      onClick={() = scope="col"> onSort(field)}
+      onClick={() => onSort(field)}
     >
       {label} {active && (dir === 'asc' ? '\u2191' : '\u2193')}
     </th>

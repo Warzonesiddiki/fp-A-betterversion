@@ -100,7 +100,7 @@ function TableSection({ section }: { section: TemplateSection }) {
           <thead>
             <tr className="bg-gray-800 text-white">
               {headers.map((h, i) => (
-                <th key={i} className={`px-3 py-2 text-left ${i  scope="col"> 0 ? 'text-right' : ''}`}>
+                <th key={i} className={`px-3 py-2 text-left ${i > 0 ? 'text-right' : ''}`}>
                   {h}
                 </th>
               ))}
