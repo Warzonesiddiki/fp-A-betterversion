@@ -55,7 +55,7 @@ function mockChange(kpi: SectorKPI): { change: number; trend: 'up' | 'down' | 'n
  * Pass `values` for real data; omit to use targets as placeholders.
  */
 export const SectorKPIs = memo(function SectorKPIs({
-  config = { id: 'placeholder', label: 'Placeholder', defaultKPIs: [] } as SectorConfig,
+  config = { id: 'placeholder', label: 'Placeholder', defaultKPIs: [] } as unknown as SectorConfig,
   values,
   sparklines,
   loading = false,
