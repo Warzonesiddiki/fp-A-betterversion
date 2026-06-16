@@ -2,6 +2,10 @@ import { useState, useCallback } from 'react';
 import { Reply, CheckCircle2, Circle, Trash2, Send } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { CellComment } from '@/engines/CellCommentEngine';
+// CHRONOS 2026-06-15: replaced local formatRelativeTime (BUG-CHR-D-1) with
+// canonical import. CommentThread uses default 7-day cap. Previously had
+// unbounded "Xd ago" — now shows calendar date after 7 days.
+import { formatRelativeTimeLegacy as formatRelativeTime } from '@/engines/temporal';
 
 export interface CommentThreadProps {
   comment: CellComment;
@@ -12,19 +16,6 @@ export interface CommentThreadProps {
   onResolve: (commentId: string) => void;
   onUnresolve: (commentId: string) => void;
   onDelete: (commentId: string) => void;
-}
-
-function formatRelativeTime(isoDate: string): string {
-  const now = Date.now();
-  const then = new Date(isoDate).getTime();
-  const diffMs = now - then;
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return 'just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}d ago`;
 }
 
 export function CommentThread({

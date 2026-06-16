@@ -5,18 +5,12 @@ import { CellAuditTrailEngine } from '@/engines/CellAuditTrailEngine';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ScrollText, Download, RefreshCw } from 'lucide-react';
+// CHRONOS 2026-06-15: replaced local formatRelativeTime (BUG-CHR-D-1) with
+// canonical import from src/engines/temporal. Audit-trail page now uses 30-day
+// cap (was 24h jumps to date) for better SOX auditor UX.
+import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
 
 const auditEngine = new CellAuditTrailEngine();
-
-function formatRelativeTime(timestamp: string): string {
-  const diff = Date.now() - new Date(timestamp).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return mins + 'm ago';
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return hours + 'h ago';
-  return new Date(timestamp).toLocaleDateString();
-}
 
 export default function AuditTrailPage() {
   useEffect(() => {

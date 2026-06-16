@@ -32,4 +32,12 @@ export type {
   FiscalCalendarConfig,
   FiscalPeriod,
   FiscalQuarter,
-} from './fiscalCalendar';
+} from "./fiscalCalendar";
+
+export {
+  formatRelativeTime,
+  formatRelativeTimeBudget,
+  formatRelativeTimeLegacy,
+} from './relativeTime';
+
+export type { FormatRelativeTimeOptions } from './relativeTime';
