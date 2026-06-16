@@ -342,7 +342,12 @@ export default function TaxProvisionPage() {
           />
         </CardContent>
       </Card>
-      <DataTable columns={columns} data={data.jurisdictions} />
+      <DataTable
+        columns={columns}
+        data={data.jurisdictions}
+        caption="Tax provision by jurisdiction: federal, state, and international tax components"
+        ariaLabel="Tax provision by jurisdiction table"
+      />
     </div>
   );
 }
