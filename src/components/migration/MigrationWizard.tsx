@@ -280,10 +280,10 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="p-2 text-left">Source Column</th>
-                    <th className="p-2 text-left">Maps To</th>
-                    <th className="p-2 text-left">Confidence</th>
-                    <th className="p-2 text-left">Match Type</th>
+                    <th scope="col" className="p-2 text-left">Source Column</th>
+                    <th scope="col" className="p-2 text-left">Maps To</th>
+                    <th scope="col" className="p-2 text-left">Confidence</th>
+                    <th scope="col" className="p-2 text-left">Match Type</th>
                   </tr>
                 </thead>
                 <tbody>
