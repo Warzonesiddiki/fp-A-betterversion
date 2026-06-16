@@ -23,8 +23,7 @@ import {
 } from './PIIRedactor';
 
 const HAS_CRYPTO =
-  typeof globalThis.crypto !== 'undefined' &&
-  typeof globalThis.crypto.subtle !== 'undefined';
+  typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.subtle !== 'undefined';
 const skipIf = (cond: boolean) => (cond ? it.skip : it);
 
 // ── 1. Constants ─────────────────────────────────────────────────────────────
@@ -238,9 +237,7 @@ describe('5. Strategies', () => {
   it('5.1 mask strategy replaces with [REDACTED] for emails', () => {
     const r = PIIRedactor.createForTest({ defaultStrategy: 'mask' });
     const { output } = r.redact({ email: 'a@b.com' });
-    expect((output as Record<string, string>).email).toBe(
-      PII_REDACTION_CONSTANTS.MASK_PLACEHOLDER
-    );
+    expect((output as Record<string, string>).email).toBe(PII_REDACTION_CONSTANTS.MASK_PLACEHOLDER);
   });
 
   it('5.2 mask strategy shows last 4 for credit cards', () => {
@@ -286,9 +283,7 @@ describe('5. Strategies', () => {
   it('5.7 drop strategy replaces with [REDACTED]', () => {
     const r = PIIRedactor.createForTest({ defaultStrategy: 'drop' });
     const { output } = r.redact({ ssn: '123-45-6789' });
-    expect((output as Record<string, string>).ssn).toBe(
-      PII_REDACTION_CONSTANTS.MASK_PLACEHOLDER
-    );
+    expect((output as Record<string, string>).ssn).toBe(PII_REDACTION_CONSTANTS.MASK_PLACEHOLDER);
   });
 
   it('5.8 strategy override at call time', () => {
@@ -355,10 +350,7 @@ describe('7. Recursive redaction & safe fields', () => {
 
   it('7.2 redacts arrays of objects', () => {
     const { output, redactedCount } = r.redact({
-      users: [
-        { email: 'a@b.com' },
-        { email: 'c@d.com' },
-      ],
+      users: [{ email: 'a@b.com' }, { email: 'c@d.com' }],
     });
     expect(redactedCount).toBe(2);
     const arr = (output as Record<string, Array<Record<string, string>>>).users;
@@ -532,7 +524,7 @@ describe('9. Rehydration', () => {
 
   it('9.4 loadTokenMap replaces the map', () => {
     const r = PIIRedactor.createForTest();
-    r.loadTokenMap({ 'tkn_abc': 'orig' });
+    r.loadTokenMap({ tkn_abc: 'orig' });
     expect(r.rehydrate('tkn_abc')).toBe('orig');
   });
 
@@ -551,16 +543,12 @@ describe('10. Error handling', () => {
 
   it('10.1 rejects invalid strategy', () => {
     const r = PIIRedactor.createForTest();
-    expect(() =>
-      r.redact({ x: 1 }, { strategy: 'nope' as never })
-    ).toThrow(PIIRedactionError);
+    expect(() => r.redact({ x: 1 }, { strategy: 'nope' as never })).toThrow(PIIRedactionError);
   });
 
   it('10.2 rejects invalid mode', () => {
     const r = PIIRedactor.createForTest();
-    expect(() =>
-      r.redact({ x: 1 }, { mode: 'nope' as never })
-    ).toThrow(PIIRedactionError);
+    expect(() => r.redact({ x: 1 }, { mode: 'nope' as never })).toThrow(PIIRedactionError);
   });
 
   it('10.3 audit callback failure does not break redact', async () => {

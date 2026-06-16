@@ -62,7 +62,9 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(csvFixture);
     // After upload, file name should appear in UI
-    await expect(page.locator('[data-testid="uploaded-filename"]')).toContainText(/sample-accounts\.csv/i);
+    await expect(page.locator('[data-testid="uploaded-filename"]')).toContainText(
+      /sample-accounts\.csv/i
+    );
   });
 
   test('step 4: map columns to account fields', async ({ page }) => {
@@ -84,8 +86,12 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
     await page.waitForLoadState('networkidle');
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
-    await page.locator('[data-testid="column-mapper"] select[name="col_0"]').selectOption('account_code');
-    await page.locator('[data-testid="column-mapper"] select[name="col_1"]').selectOption('account_name');
+    await page
+      .locator('[data-testid="column-mapper"] select[name="col_0"]')
+      .selectOption('account_code');
+    await page
+      .locator('[data-testid="column-mapper"] select[name="col_1"]')
+      .selectOption('account_name');
     // Click "Preview" button
     await page.locator('button:has-text("Preview")').click();
     // Preview table must show at least one row
@@ -99,8 +105,12 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
     await page.waitForLoadState('networkidle');
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
-    await page.locator('[data-testid="column-mapper"] select[name="col_0"]').selectOption('account_code');
-    await page.locator('[data-testid="column-mapper"] select[name="col_1"]').selectOption('account_name');
+    await page
+      .locator('[data-testid="column-mapper"] select[name="col_0"]')
+      .selectOption('account_code');
+    await page
+      .locator('[data-testid="column-mapper"] select[name="col_1"]')
+      .selectOption('account_name');
     await page.locator('button:has-text("Preview")').click();
     await expect(page.locator('[data-testid="import-preview"]')).toBeVisible();
     // Confirm button
@@ -108,7 +118,9 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
     await expect(confirmButton).toBeVisible();
     await confirmButton.click();
     // Import success message
-    await expect(page.locator('[data-testid="import-status"]')).toContainText(/success|imported/i, { timeout: 30_000 });
+    await expect(page.locator('[data-testid="import-status"]')).toContainText(/success|imported/i, {
+      timeout: 30_000,
+    });
   });
 
   test('step 7: verify data in Chart of Accounts', async ({ page }) => {
@@ -117,11 +129,17 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
     await page.waitForLoadState('networkidle');
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
-    await page.locator('[data-testid="column-mapper"] select[name="col_0"]').selectOption('account_code');
-    await page.locator('[data-testid="column-mapper"] select[name="col_1"]').selectOption('account_name');
+    await page
+      .locator('[data-testid="column-mapper"] select[name="col_0"]')
+      .selectOption('account_code');
+    await page
+      .locator('[data-testid="column-mapper"] select[name="col_1"]')
+      .selectOption('account_name');
     await page.locator('button:has-text("Preview")').click();
     await page.locator('button:has-text("Confirm Import")').click();
-    await expect(page.locator('[data-testid="import-status"]')).toContainText(/success|imported/i, { timeout: 30_000 });
+    await expect(page.locator('[data-testid="import-status"]')).toContainText(/success|imported/i, {
+      timeout: 30_000,
+    });
     // Navigate to Chart of Accounts
     await page.goto('/data/chart-of-accounts');
     await page.waitForLoadState('networkidle');

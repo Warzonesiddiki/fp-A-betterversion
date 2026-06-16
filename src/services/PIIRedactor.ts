@@ -1,4 +1,4 @@
-﻿// PIIRedactor — Multi-strategy redaction of personally identifiable information
+// PIIRedactor — Multi-strategy redaction of personally identifiable information
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 13 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:
@@ -58,7 +58,8 @@ export const PII_REDACTION_CONSTANTS = {
     cvv: /^(cvv|cvc|card_?security_?code)$/i,
     bankAccount: /^(account(_?number)?|bank_?account(_?number)?|iban|routing_?number|aba)$/i,
     name: /^(full_?name|first_?name|last_?name|given_?name|family_?name|surname|user_?name|display_?name)$/i,
-    address: /^(address(_?line)?[12]?|street(_?address)?|city|zip(_?code)?|postal_?code|country(_?code)?)$/i,
+    address:
+      /^(address(_?line)?[12]?|street(_?address)?|city|zip(_?code)?|postal_?code|country(_?code)?)$/i,
     dob: /^(dob|date_?of_?birth|birth_?date|birthday)$/i,
     passport: /^(passport(_?number)?|passport_?id|drivers_?license)$/i,
     ip: /^(ip(_?address)?|remote_?ip|client_?ip|source_?ip)$/i,
@@ -144,11 +145,7 @@ export type PIIFieldCategory =
   | 'userId'
   | 'password';
 
-export type RedactionStrategy =
-  | 'mask'
-  | 'hash'
-  | 'tokenize'
-  | 'drop';
+export type RedactionStrategy = 'mask' | 'hash' | 'tokenize' | 'drop';
 
 export type RedactionMode = 'strict' | 'permissive' | 'audit-only';
 
@@ -216,7 +213,10 @@ export type PIIRedactionAuditEvent = {
 };
 
 export class PIIRedactionError extends Error {
-  constructor(message: string, public readonly code: string) {
+  constructor(
+    message: string,
+    public readonly code: string
+  ) {
     super(message);
     this.name = 'PIIRedactionError';
   }
@@ -291,9 +291,7 @@ export class PIIRedactor {
   private skipFields: ReadonlySet<string>;
   private hmacKey: Uint8Array | null;
   private source: string;
-  private onAudit:
-    | ((e: PIIRedactionAuditEvent) => void | Promise<void>)
-    | null;
+  private onAudit: ((e: PIIRedactionAuditEvent) => void | Promise<void>) | null;
 
   /** In-memory tokenization map (token -> original). Cleared on demand. */
   private tokenMap: RehydrationMap = {};
@@ -317,21 +315,11 @@ export class PIIRedactor {
     this.defaultStrategy = config.defaultStrategy ?? 'mask';
     this.defaultMode = config.defaultMode ?? 'strict';
     this.extraPIIFields = new Set(config.extraPIIFields ?? []);
-    this.extraSafeFields = new Set(
-      (config.extraSafeFields ?? []).map((f) => f.toLowerCase())
-    );
-    this.skipFields = new Set(
-      (config.skipFields ?? []).map((f) => f.toLowerCase())
-    );
+    this.extraSafeFields = new Set((config.extraSafeFields ?? []).map((f) => f.toLowerCase()));
+    this.skipFields = new Set((config.skipFields ?? []).map((f) => f.toLowerCase()));
     if (config.hmacKey) {
-      if (
-        !(config.hmacKey instanceof Uint8Array) ||
-        config.hmacKey.byteLength < 16
-      ) {
-        throw new PIIRedactionError(
-          'hmacKey must be a Uint8Array of >= 16 bytes',
-          'INVALID_KEY'
-        );
+      if (!(config.hmacKey instanceof Uint8Array) || config.hmacKey.byteLength < 16) {
+        throw new PIIRedactionError('hmacKey must be a Uint8Array of >= 16 bytes', 'INVALID_KEY');
       }
       this.hmacKey = new Uint8Array(config.hmacKey);
     } else {
@@ -364,8 +352,7 @@ export class PIIRedactor {
     if (PIIRedactor.instance) {
       PIIRedactor.instance.events = [];
       PIIRedactor.instance.tokenMap = {};
-      PIIRedactor.instance.chainHead =
-        PII_REDACTION_CONSTANTS.SCHEMA_VERSION.toString();
+      PIIRedactor.instance.chainHead = PII_REDACTION_CONSTANTS.SCHEMA_VERSION.toString();
     }
     PIIRedactor.instance = null;
   }
@@ -395,14 +382,7 @@ export class PIIRedactor {
       throw new PIIRedactionError(`unknown mode: ${mode}`, 'INVALID_MODE');
     }
     const ctx: RedactionContext[] = [];
-    const output = this.redactValue(
-      value,
-      '',
-      strategy,
-      mode,
-      ctx,
-      0
-    ) as T;
+    const output = this.redactValue(value, '', strategy, mode, ctx, 0) as T;
     // Capture the redaction outcome via an async emit. We don't await it
     // because redact() is synchronous (purely value-transforming). The
     // audit emission is best-effort and runs as a microtask via Promise.
@@ -427,7 +407,7 @@ export class PIIRedactor {
    *
    * Returns a deterministic, non-reversible token for the identifier.
    */
-  redactIdentifier(identifier: string, actor?: string): string {
+  async redactIdentifier(identifier: string, actor?: string): Promise<string> {
     if (typeof identifier !== 'string') {
       throw new PIIRedactionError('identifier must be a string', 'INVALID_INPUT');
     }
@@ -435,19 +415,17 @@ export class PIIRedactor {
     const auditEvent: PIIRedactionAuditEvent = {
       type: 'pii.redacted',
       actor: actor ?? this.defaultActor,
-      timestamp: Date.now(),
-      path: 'identifier',
-      category: 'name',
-      strategy: this.defaultStrategy,
-      redactedCount: 1,
-      categoryCounts: { name: 1 },
-      ok: true,
       source: this.source,
+      redactedCount: 1,
+      byCategory: { name: 1 },
+      success: true,
+      at: Date.now(),
       prevChainHash: this.chainHead,
+      eventHash: '',
+      nonce: randomHex(16),
     };
-    const hash = computeEventHashSync(auditEvent, this.chainHead);
-    auditEvent.hash = hash;
-    this.chainHead = hash;
+    auditEvent.eventHash = await computeAuditHash(auditEvent);
+    this.chainHead = auditEvent.eventHash;
     this.events.push(auditEvent);
     if (this.events.length > this.maxEvents) {
       this.events.shift();
@@ -498,23 +476,53 @@ export class PIIRedactor {
     return this.events.slice();
   }
 
-  async verifyChain(): Promise<{ valid: boolean; firstFailure: number; reason: string | null; inspected: number; chainHead: string }> {
+  async verifyChain(): Promise<{
+    valid: boolean;
+    firstFailure: number;
+    reason: string | null;
+    inspected: number;
+    chainHead: string;
+  }> {
     let prev = PII_REDACTION_CONSTANTS.SCHEMA_VERSION.toString();
     for (let i = 0; i < this.events.length; i++) {
       const e = this.events[i]!;
       if (e.prevChainHash !== prev) {
-        return { valid: false, firstFailure: i, reason: 'prevChainHash mismatch', inspected: i + 1, chainHead: this.chainHead };
+        return {
+          valid: false,
+          firstFailure: i,
+          reason: 'prevChainHash mismatch',
+          inspected: i + 1,
+          chainHead: this.chainHead,
+        };
       }
       const expected = await computeAuditHash(e);
       if (expected !== e.eventHash) {
-        return { valid: false, firstFailure: i, reason: 'eventHash mismatch', inspected: i + 1, chainHead: this.chainHead };
+        return {
+          valid: false,
+          firstFailure: i,
+          reason: 'eventHash mismatch',
+          inspected: i + 1,
+          chainHead: this.chainHead,
+        };
       }
       prev = e.eventHash;
     }
     if (prev !== this.chainHead) {
-      return { valid: false, firstFailure: -1, reason: 'chainHead drift', inspected: this.events.length, chainHead: this.chainHead };
+      return {
+        valid: false,
+        firstFailure: -1,
+        reason: 'chainHead drift',
+        inspected: this.events.length,
+        chainHead: this.chainHead,
+      };
     }
-    return { valid: true, firstFailure: -1, reason: null, inspected: this.events.length, chainHead: this.chainHead };
+    return {
+      valid: true,
+      firstFailure: -1,
+      reason: null,
+      inspected: this.events.length,
+      chainHead: this.chainHead,
+    };
   }
 
   export(format: 'json' | 'jsonl' = 'json'): string {
@@ -573,14 +581,7 @@ export class PIIRedactor {
         }
         const fieldCategory = this.detectFieldCategory(lower);
         if (fieldCategory) {
-          out[key] = this.redactFieldValue(
-            obj[key],
-            childPath,
-            fieldCategory,
-            strategy,
-            mode,
-            ctx
-          );
+          out[key] = this.redactFieldValue(obj[key], childPath, fieldCategory, strategy, mode, ctx);
           continue;
         }
         // Not a PII field by name; recurse into the value.
@@ -594,14 +595,7 @@ export class PIIRedactor {
     if (typeof value === 'string' && mode !== 'permissive') {
       const valueCategory = this.detectValueCategory(value);
       if (valueCategory) {
-        return this.redactFieldValue(
-          value,
-          path || '(root)',
-          valueCategory,
-          strategy,
-          mode,
-          ctx
-        );
+        return this.redactFieldValue(value, path || '(root)', valueCategory, strategy, mode, ctx);
       }
     }
     return value;
@@ -626,14 +620,7 @@ export class PIIRedactor {
     }
     if (typeof value !== 'string' && typeof value !== 'number') {
       // For non-primitive values (arrays, objects), recursively redact.
-      const redacted = this.redactValue(
-        value,
-        path,
-        strategy,
-        mode,
-        ctx,
-        1
-      );
+      const redacted = this.redactValue(value, path, strategy, mode, ctx, 1);
       ctx.push({ path, category, strategy, redacted: true });
       return redacted;
     }
@@ -722,38 +709,40 @@ export class PIIRedactor {
     const nonce = randomHex(16);
     // Serialize emissions to keep the hash chain consistent. Each emission
     // appends to the existing chain so prevChainHash reads happen in order.
-    this.auditChain = this.auditChain.then(async () => {
-      const prevChainHash = this.chainHead;
-      const event: PIIRedactionAuditEvent = {
-        type: 'pii.redacted',
-        actor,
-        source: this.source,
-        redactedCount,
-        byCategory,
-        success: true,
-        at: now,
-        prevChainHash,
-        eventHash: '',
-        nonce,
-      };
-      event.eventHash = await computeAuditHash(event);
-      this.chainHead = event.eventHash;
-      this.events.push(event);
-      if (this.events.length > this.maxEvents) {
-        const overflow = this.events.length - this.maxEvents;
-        this.events.splice(0, overflow);
-      }
-      if (this.onAudit) {
-        try {
-          await this.onAudit(event);
-        } catch {
-          // swallow audit failures; do not throw
+    this.auditChain = this.auditChain
+      .then(async () => {
+        const prevChainHash = this.chainHead;
+        const event: PIIRedactionAuditEvent = {
+          type: 'pii.redacted',
+          actor,
+          source: this.source,
+          redactedCount,
+          byCategory,
+          success: true,
+          at: now,
+          prevChainHash,
+          eventHash: '',
+          nonce,
+        };
+        event.eventHash = await computeAuditHash(event);
+        this.chainHead = event.eventHash;
+        this.events.push(event);
+        if (this.events.length > this.maxEvents) {
+          const overflow = this.events.length - this.maxEvents;
+          this.events.splice(0, overflow);
         }
-      }
-    }).catch(() => {
-      // Continue the chain even on failure so a single bad emit doesn't
-      // stall subsequent emissions.
-    });
+        if (this.onAudit) {
+          try {
+            await this.onAudit(event);
+          } catch {
+            // swallow audit failures; do not throw
+          }
+        }
+      })
+      .catch(() => {
+        // Continue the chain even on failure so a single bad emit doesn't
+        // stall subsequent emissions.
+      });
     return this.auditChain;
   }
 }
@@ -769,7 +758,12 @@ function isValidMode(m: unknown): m is RedactionMode {
 function maskValue(original: string, category: PIIFieldCategory): string {
   if (!original) return PII_REDACTION_CONSTANTS.MASK_PLACEHOLDER;
   // For phone/credit-card show last 4; everything else full mask.
-  if (category === 'phone' || category === 'creditCard' || category === 'ssn' || category === 'bankAccount') {
+  if (
+    category === 'phone' ||
+    category === 'creditCard' ||
+    category === 'ssn' ||
+    category === 'bankAccount'
+  ) {
     const digits = original.replace(/\D/g, '');
     if (digits.length >= 4) {
       return `${PII_REDACTION_CONSTANTS.PARTIAL_LAST4}${digits.slice(-4)}`;

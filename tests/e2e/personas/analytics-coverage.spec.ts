@@ -53,10 +53,10 @@ const WHAT_IF_URL = '/app/scenarios/what-if';
 
 const PERF_BUDGET = {
   cfoDashboard: { p50: 1500, p95: 3000, p99: 5000 },
-  icReport:     { p50: 4000, p95: 8000, p99: 12000 },
-  drillDown:    { p50: 200,  p95: 500,  p99: 1000 },
-  realTime:     { p50: 100,  p95: 250,  p99: 500 },
-  whatIf:       { p50: 6000, p95: 10000, p99: 15000 },
+  icReport: { p50: 4000, p95: 8000, p99: 12000 },
+  drillDown: { p50: 200, p95: 500, p99: 1000 },
+  realTime: { p50: 100, p95: 250, p99: 500 },
+  whatIf: { p50: 6000, p95: 10000, p99: 15000 },
 } as const;
 
 async function loginAsCFO(page: Page) {
@@ -119,7 +119,9 @@ test.describe('Analytics: IC report generation (RATIFICATION-READY)', () => {
     await page.getByTestId('report-period-select').click();
     await page.getByTestId('period-option-12mo-yoy').click();
     await page.getByTestId('report-generate-btn').click();
-    await page.waitForSelector('[data-testid="report-pdf-ready"]', { timeout: PERF_BUDGET.icReport.p99 });
+    await page.waitForSelector('[data-testid="report-pdf-ready"]', {
+      timeout: PERF_BUDGET.icReport.p99,
+    });
     const elapsed = Date.now() - start;
     expect(elapsed).toBeLessThan(PERF_BUDGET.icReport.p95);
   });
@@ -132,7 +134,9 @@ test.describe('Analytics: IC report generation (RATIFICATION-READY)', () => {
     await page.getByTestId('report-period-select').click();
     await page.getByTestId('period-option-24mo').click();
     await page.getByTestId('report-generate-btn').click();
-    await page.waitForSelector('[data-testid="report-pdf-ready"]', { timeout: PERF_BUDGET.icReport.p99 });
+    await page.waitForSelector('[data-testid="report-pdf-ready"]', {
+      timeout: PERF_BUDGET.icReport.p99,
+    });
     const elapsed = Date.now() - start;
     expect(elapsed).toBeLessThan(PERF_BUDGET.icReport.p99);
   });
@@ -157,7 +161,9 @@ test.describe('Analytics: Drill-down latency (sub-second UX-critical)', () => {
     expect(elapsed).toBeLessThan(PERF_BUDGET.drillDown.p95);
   });
 
-  test('Drill-down 5-hop cascade (revenue → region → product → customer → invoice)', async ({ page }) => {
+  test('Drill-down 5-hop cascade (revenue → region → product → customer → invoice)', async ({
+    page,
+  }) => {
     // Full cascade — total ≤ 5x p99 = 5s
     await loginAsCFO(page);
     await page.goto(CFO_DASHBOARD_URL);
@@ -193,14 +199,16 @@ test.describe('Analytics: Real-time aggregation (5s sliding window)', () => {
     // Trigger a data tick by writing to the store
     await page.evaluate(() => {
       // Mirrors Prometheus G10 real-time store write
-      // @ts-ignore
-      window.__realtimeTestBus?.emit('tick', { ts: Date.now() });
+      // @ts-expect-error - intentional type access\r\n      window.__realtimeTestBus?.emit('tick', { ts: Date.now() });
     });
-    await page.waitForFunction((prevTick) => {
-      const el = document.querySelector('[data-testid="last-tick-ts"]');
-      const tick = el?.getAttribute('data-tick');
-      return tick && tick !== prevTick;
-    }, await page.getAttribute('[data-testid="last-tick-ts"]', 'data-tick'));
+    await page.waitForFunction(
+      (prevTick) => {
+        const el = document.querySelector('[data-testid="last-tick-ts"]');
+        const tick = el?.getAttribute('data-tick');
+        return tick && tick !== prevTick;
+      },
+      await page.getAttribute('[data-testid="last-tick-ts"]', 'data-tick')
+    );
     const elapsed = Date.now() - start;
     expect(elapsed).toBeLessThan(PERF_BUDGET.realTime.p95);
   });
@@ -212,10 +220,11 @@ test.describe('Analytics: Real-time aggregation (5s sliding window)', () => {
     await page.waitForSelector('[data-testid="realtime-chart"]');
     const start = Date.now();
     await page.evaluate(() => {
-      // @ts-ignore
-      window.__realtimeTestBus?.emit('burst', { count: 10000, durationMs: 1000 });
+      // @ts-expect-error - intentional type access\r\n      window.__realtimeTestBus?.emit('burst', { count: 10000, durationMs: 1000 });
     });
-    await page.waitForSelector('[data-testid="burst-processed"]', { timeout: PERF_BUDGET.realTime.p99 });
+    await page.waitForSelector('[data-testid="burst-processed"]', {
+      timeout: PERF_BUDGET.realTime.p99,
+    });
     const elapsed = Date.now() - start;
     expect(elapsed).toBeLessThan(PERF_BUDGET.realTime.p99);
   });
@@ -244,7 +253,9 @@ test.describe('Analytics: What-if scenario (Monte Carlo engine)', () => {
     await page.getByTestId('trials-input').fill('1000');
     const start = Date.now();
     await page.getByTestId('run-scenario-btn').click();
-    await page.waitForSelector('[data-testid="scenario-results-chart"]', { timeout: PERF_BUDGET.whatIf.p99 });
+    await page.waitForSelector('[data-testid="scenario-results-chart"]', {
+      timeout: PERF_BUDGET.whatIf.p99,
+    });
     const elapsed = Date.now() - start;
     expect(elapsed).toBeLessThan(PERF_BUDGET.whatIf.p95);
   });
@@ -264,7 +275,9 @@ test.describe('Analytics: What-if scenario (Monte Carlo engine)', () => {
     await page.getByTestId('trials-input').fill('10000');
     const start = Date.now();
     await page.getByTestId('run-scenario-btn').click();
-    await page.waitForSelector('[data-testid="scenario-results-chart"]', { timeout: PERF_BUDGET.whatIf.p99 });
+    await page.waitForSelector('[data-testid="scenario-results-chart"]', {
+      timeout: PERF_BUDGET.whatIf.p99,
+    });
     const elapsed = Date.now() - start;
     expect(elapsed).toBeLessThan(PERF_BUDGET.whatIf.p99);
   });

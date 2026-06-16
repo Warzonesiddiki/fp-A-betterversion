@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Automated accessibility (a11y) regression tests for FinPlan Pro.
  *
  * This file is intentionally created by the Hera audit so the build can wire
@@ -208,7 +208,13 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
       });
       const AppLayoutMod = await import('../../components/layout/AppLayout');
       const AppLayout = AppLayoutMod.default;
-      const { container } = render(withAllProviders(<AppLayout><button>test</button></AppLayout>));
+      const { container } = render(
+        withAllProviders(
+          <AppLayout>
+            <button>test</button>
+          </AppLayout>
+        )
+      );
       const focusables = container.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
       );
@@ -216,10 +222,18 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
       const obscured: string[] = [];
       focusables.forEach((el) => {
         if (isAuthorObscured(el, container)) {
-          obscured.push(el.tagName + (el.id ? '#' + el.id : '') + (el.className ? '.' + String(el.className).split(' ').join('.') : ''));
+          obscured.push(
+            el.tagName +
+              (el.id ? '#' + el.id : '') +
+              (el.className ? '.' + String(el.className).split(' ').join('.') : '')
+          );
         }
       });
-      expect(obscured, 'WCAG 2.4.11 violation - author-created content obscures focused element(s): ' + obscured.join(', ')).toEqual([]);
+      expect(
+        obscured,
+        'WCAG 2.4.11 violation - author-created content obscures focused element(s): ' +
+          obscured.join(', ')
+      ).toEqual([]);
     });
 
     it('Modal backdrop does not obscure focusable content within the dialog', async () => {
@@ -238,15 +252,18 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
           obscured.push(el.id || el.tagName);
         }
       });
-      expect(obscured, 'WCAG 2.4.11 violation - Modal backdrop obscures focused element(s): ' + obscured.join(', ')).toEqual([]);
+      expect(
+        obscured,
+        'WCAG 2.4.11 violation - Modal backdrop obscures focused element(s): ' + obscured.join(', ')
+      ).toEqual([]);
     });
   });
 
   // A11Y-P1-10 (Hera T-HE-021 + Artemis co-own): Q5.2 focus restore <50ms
   describe('Q5.2 Focus Restore <50ms (Temporal A11y)', () => {
     it('Modal close restores focus to trigger element (focus restore verified structurally)', () => {
-      const modalSource = require('fs').readFileSync(
-        require('path').join(__dirname, '../../components/ui/Modal.tsx'),
+      const modalSource = readFileSync.readFileSync(
+        join.join(__dirname, '../../components/ui/Modal.tsx'),
         'utf-8'
       );
       expect(modalSource).toMatch(/previousFocusRef\.current\??\.focus\(\)/);
@@ -255,8 +272,8 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     });
 
     it('Modal focus-trap: Tab cycles within dialog (Q5.2 supporting requirement)', () => {
-      const modalSource = require('fs').readFileSync(
-        require('path').join(__dirname, '../../components/ui/Modal.tsx'),
+      const modalSource = readFileSync.readFileSync(
+        join.join(__dirname, '../../components/ui/Modal.tsx'),
         'utf-8'
       );
       expect(modalSource).toMatch(/keydown/);

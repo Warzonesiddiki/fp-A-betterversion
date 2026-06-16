@@ -87,7 +87,13 @@ export interface CsrfToken {
 /** Token validation result */
 export interface CsrfValidationResult {
   valid: boolean;
-  reason?: 'MISSING_COOKIE' | 'MISSING_HEADER' | 'MISMATCH' | 'EXPIRED' | 'MALFORMED' | 'INVALID_SIGNATURE';
+  reason?:
+    | 'MISSING_COOKIE'
+    | 'MISSING_HEADER'
+    | 'MISMATCH'
+    | 'EXPIRED'
+    | 'MALFORMED'
+    | 'INVALID_SIGNATURE';
   expiresAt?: string;
 }
 
@@ -140,13 +146,28 @@ export class CsrfProtection {
   /** Cached derived HMAC key (Uint8Array) */
   private cachedKey: Uint8Array | null = null;
 
-  private constructor(secretKey: string, tokenLifetimeSeconds: number, cookieName: string, headerName: string) {
+  private constructor(
+    secretKey: string,
+    tokenLifetimeSeconds: number,
+    cookieName: string,
+    headerName: string
+  ) {
     if (!secretKey || secretKey.length < 32) {
-      throw new CsrfProtectionError('INVALID_SECRET', 'CSRF secret key must be at least 32 characters', { secretLength: secretKey?.length ?? 0 });
+      throw new CsrfProtectionError(
+        'INVALID_SECRET',
+        'CSRF secret key must be at least 32 characters',
+        { secretLength: secretKey?.length ?? 0 }
+      );
     }
-    if (tokenLifetimeSeconds < CSRF_PROTECTION_CONSTANTS.MIN_TOKEN_LIFETIME_SECONDS ||
-        tokenLifetimeSeconds > CSRF_PROTECTION_CONSTANTS.MAX_TOKEN_LIFETIME_SECONDS) {
-      throw new CsrfProtectionError('INVALID_LIFETIME', `Token lifetime must be ${CSRF_PROTECTION_CONSTANTS.MIN_TOKEN_LIFETIME_SECONDS}-${CSRF_PROTECTION_CONSTANTS.MAX_TOKEN_LIFETIME_SECONDS} seconds`, { tokenLifetimeSeconds });
+    if (
+      tokenLifetimeSeconds < CSRF_PROTECTION_CONSTANTS.MIN_TOKEN_LIFETIME_SECONDS ||
+      tokenLifetimeSeconds > CSRF_PROTECTION_CONSTANTS.MAX_TOKEN_LIFETIME_SECONDS
+    ) {
+      throw new CsrfProtectionError(
+        'INVALID_LIFETIME',
+        `Token lifetime must be ${CSRF_PROTECTION_CONSTANTS.MIN_TOKEN_LIFETIME_SECONDS}-${CSRF_PROTECTION_CONSTANTS.MAX_TOKEN_LIFETIME_SECONDS} seconds`,
+        { tokenLifetimeSeconds }
+      );
     }
     this.secretKey = secretKey;
     this.tokenLifetimeSeconds = tokenLifetimeSeconds;
@@ -193,7 +214,12 @@ export class CsrfProtection {
     );
     const salt = enc.encode('fpa-csrf-v1'); // Fixed domain-separated salt
     const derivedBits = await crypto.subtle.deriveBits(
-      { name: 'PBKDF2', salt, iterations: CSRF_PROTECTION_CONSTANTS.PBKDF2_ITERATIONS, hash: 'SHA-256' },
+      {
+        name: 'PBKDF2',
+        salt,
+        iterations: CSRF_PROTECTION_CONSTANTS.PBKDF2_ITERATIONS,
+        hash: 'SHA-256',
+      },
       baseKey,
       256
     );
@@ -222,7 +248,13 @@ export class CsrfProtection {
     // Sign with HMAC-SHA256
     const keyBytes = await this.getKey();
     const enc = new TextEncoder();
-    const hmacKey = await crypto.subtle.importKey('raw', keyBytes as BufferSource, { name: 'HMAC', hash: 'SHA-256' as const }, false, ['sign']);
+    const hmacKey = await crypto.subtle.importKey(
+      'raw',
+      keyBytes as BufferSource,
+      { name: 'HMAC', hash: 'SHA-256' as const },
+      false,
+      ['sign']
+    );
     const sigBuffer = await crypto.subtle.sign('HMAC', hmacKey, enc.encode(payload));
     const sig = bufferToBase64(sigBuffer);
 
@@ -250,7 +282,11 @@ export class CsrfProtection {
    * Verify a CSRF token from cookie + header.
    * Returns validation result.
    */
-  public async verify(cookieValue: string | null, headerValue: string | null, _options: VerifyOptions = {}): Promise<CsrfValidationResult> {
+  public async verify(
+    cookieValue: string | null,
+    headerValue: string | null,
+    _options: VerifyOptions = {}
+  ): Promise<CsrfValidationResult> {
     if (!cookieValue) {
       return { valid: false, reason: 'MISSING_COOKIE' };
     }
@@ -276,14 +312,28 @@ export class CsrfProtection {
 
     const now = Math.floor(Date.now() / 1000);
     if (now > expiresAt) {
-      return { valid: false, reason: 'EXPIRED', expiresAt: new Date(expiresAt * 1000).toISOString() };
+      return {
+        valid: false,
+        reason: 'EXPIRED',
+        expiresAt: new Date(expiresAt * 1000).toISOString(),
+      };
     }
 
     // Verify HMAC signature
     const keyBytes = await this.getKey();
     const enc = new TextEncoder();
-    const hmacKey = await crypto.subtle.importKey('raw', keyBytes as BufferSource, { name: 'HMAC', hash: 'SHA-256' as const }, false, ['sign']);
-    const expectedSigBuffer = await crypto.subtle.sign('HMAC', hmacKey, enc.encode(`${expiresAtStr!}.${nonce!}`));
+    const hmacKey = await crypto.subtle.importKey(
+      'raw',
+      keyBytes as BufferSource,
+      { name: 'HMAC', hash: 'SHA-256' as const },
+      false,
+      ['sign']
+    );
+    const expectedSigBuffer = await crypto.subtle.sign(
+      'HMAC',
+      hmacKey,
+      enc.encode(`${expiresAtStr!}.${nonce!}`)
+    );
     const expectedSig = bufferToBase64(expectedSigBuffer);
 
     if (!constantTimeCompare(sig!, expectedSig!)) {

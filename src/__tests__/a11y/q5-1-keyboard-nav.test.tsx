@@ -6,15 +6,7 @@
 import { describe, test, expect } from 'vitest';
 import { performance } from 'node:perf_hooks';
 
-const PATTERNS = [
-  'Tab',
-  'Shift+Tab',
-  'Enter',
-  'Space',
-  'ArrowDown',
-  'Escape',
-  'SkipLink',
-] as const;
+const PATTERNS = ['Tab', 'Shift+Tab', 'Enter', 'Space', 'ArrowDown', 'Escape', 'SkipLink'] as const;
 
 const ITERATIONS = 20;
 const BUDGET_MS = 100;

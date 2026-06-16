@@ -64,7 +64,9 @@ test.describe('Q5.4 Sub-Second Announcement (assertive + polite, <1s)', () => {
     // Expected: PARTIAL — depends on LiveRegion consumer implementation
   });
 
-  test('All auto-updating pages have announcement latency <1s (cross-page test)', async ({ page }) => {
+  test('All auto-updating pages have announcement latency <1s (cross-page test)', async ({
+    page,
+  }) => {
     // TODO: Iterate through all auto-updating pages
     // - Hermes PAGES_APP_SURFACE_MAPPING v0.1 has the auto-updating pages list
     // - For each page: measure announcement latency

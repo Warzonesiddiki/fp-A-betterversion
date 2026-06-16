@@ -216,7 +216,15 @@ export function addMonths(ms: number, months: number): number {
   // Clamp day to last day of target month.
   const lastDayOfTarget = new Date(Date.UTC(targetYear, normalizedMonth + 1, 0)).getUTCDate();
   const day = Math.min(d.getUTCDate(), lastDayOfTarget);
-  return Date.UTC(targetYear, normalizedMonth, day, d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(), d.getUTCMilliseconds());
+  return Date.UTC(
+    targetYear,
+    normalizedMonth,
+    day,
+    d.getUTCHours(),
+    d.getUTCMinutes(),
+    d.getUTCSeconds(),
+    d.getUTCMilliseconds()
+  );
 }
 
 /**

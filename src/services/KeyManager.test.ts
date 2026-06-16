@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { KeyManager, generateSalt, assertKeyVersionSupported, type KeyManagerAuditEvent } from './KeyManager';
+import {
+  KeyManager,
+  generateSalt,
+  assertKeyVersionSupported,
+  type KeyManagerAuditEvent,
+} from './KeyManager';
 
 const hasCryptoSubtle =
   typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.subtle !== 'undefined';
@@ -97,9 +102,9 @@ describeIfCrypto('KeyManager — getKey()', () => {
 
   it('rejects non-Uint8Array salt', async () => {
     const km = KeyManager.getInstance();
-    await expect(km.getKey('user:1', TEST_PASSWORD, [1, 2, 3] as unknown as Uint8Array)).rejects.toThrow(
-      /salt/
-    );
+    await expect(
+      km.getKey('user:1', TEST_PASSWORD, [1, 2, 3] as unknown as Uint8Array)
+    ).rejects.toThrow(/salt/);
   });
 
   it('evicts expired entries on the next getKey call (TTL=0)', async () => {
@@ -132,7 +137,11 @@ describeIfCrypto('KeyManager — audit events', () => {
   });
 
   it('audit callback that throws does not break cryptographic path', async () => {
-    const km = KeyManager.getInstance({ onAudit: () => { throw new Error('boom'); } });
+    const km = KeyManager.getInstance({
+      onAudit: () => {
+        throw new Error('boom');
+      },
+    });
     const salt = generateSalt();
     await expect(km.getKey('user:1', TEST_PASSWORD, salt)).resolves.toBeDefined();
   });

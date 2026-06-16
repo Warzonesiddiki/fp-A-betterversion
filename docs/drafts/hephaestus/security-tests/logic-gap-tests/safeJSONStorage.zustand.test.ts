@@ -51,10 +51,10 @@ describe('safeJSONStorage — zustand integration (ADR-007, ADR-012)', () => {
 
     // First store: write 42
     const useStore1 = create<State>()(
-      persist(
-        (set) => ({ count: 0, setCount: (n) => set({ count: n }) }),
-        { name: 'test-key-1', storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>) }
-      )
+      persist((set) => ({ count: 0, setCount: (n) => set({ count: n }) }), {
+        name: 'test-key-1',
+        storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>),
+      })
     );
     useStore1.getState().setCount(42);
     // Wait one tick for the persist middleware to flush
@@ -62,10 +62,10 @@ describe('safeJSONStorage — zustand integration (ADR-007, ADR-012)', () => {
 
     // Second store: should rehydrate to 42
     const useStore2 = create<State>()(
-      persist(
-        (set) => ({ count: 0, setCount: (n) => set({ count: n }) }),
-        { name: 'test-key-1', storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>) }
-      )
+      persist((set) => ({ count: 0, setCount: (n) => set({ count: n }) }), {
+        name: 'test-key-1',
+        storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>),
+      })
     );
     // Wait for rehydration
     await new Promise((r) => setTimeout(r, 10));
@@ -77,10 +77,10 @@ describe('safeJSONStorage — zustand integration (ADR-007, ADR-012)', () => {
   it('a fresh storage (no prior writes) leaves the store with the default initial state', async () => {
     const wrapped = safeJSONStorage<number>(memoryStorage as unknown as AnyPersistStorage);
     const useStore = create<State>()(
-      persist(
-        (set) => ({ count: 0, setCount: (n) => set({ count: n }) }),
-        { name: 'test-key-2', storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>) }
-      )
+      persist((set) => ({ count: 0, setCount: (n) => set({ count: n }) }), {
+        name: 'test-key-2',
+        storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>),
+      })
     );
     await new Promise((r) => setTimeout(r, 10));
     expect(useStore.getState().count).toBe(0);
@@ -93,10 +93,10 @@ describe('safeJSONStorage — zustand integration (ADR-007, ADR-012)', () => {
 
     const wrapped = safeJSONStorage<number>(memoryStorage as unknown as AnyPersistStorage);
     const useStore = create<State>()(
-      persist(
-        (set) => ({ count: 0, setCount: (n) => set({ count: n }) }),
-        { name: 'test-key-3', storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>) }
-      )
+      persist((set) => ({ count: 0, setCount: (n) => set({ count: n }) }), {
+        name: 'test-key-3',
+        storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>),
+      })
     );
     await new Promise((r) => setTimeout(r, 10));
     // Initial state preserved, not the corrupt string
@@ -116,10 +116,10 @@ describe('safeJSONStorage — zustand integration (ADR-007, ADR-012)', () => {
 
     const wrapped = safeJSONStorage<number>(memoryStorage as unknown as AnyPersistStorage);
     const useStore = create<State>()(
-      persist(
-        (set) => ({ count: 0, setCount: (n) => set({ count: n }) }),
-        { name: 'test-key-4', storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>) }
-      )
+      persist((set) => ({ count: 0, setCount: (n) => set({ count: n }) }), {
+        name: 'test-key-4',
+        storage: createJSONStorage(() => wrapped as unknown as PersistStorage<number, unknown>),
+      })
     );
 
     // This should NOT crash the store, even though setItem throws
@@ -136,7 +136,10 @@ describe('safeJSONStorage — zustand integration (ADR-007, ADR-012)', () => {
   it('the wrapped storage satisfies the PersistStorage type contract', () => {
     const wrapped = safeJSONStorage<number>(memoryStorage as unknown as AnyPersistStorage);
     // Type-level assertion (no runtime check)
-    const asPersistStorage: PersistStorage<number, unknown> = wrapped as unknown as PersistStorage<number, unknown>;
+    const asPersistStorage: PersistStorage<number, unknown> = wrapped as unknown as PersistStorage<
+      number,
+      unknown
+    >;
     expect(asPersistStorage).toBeDefined();
   });
 });

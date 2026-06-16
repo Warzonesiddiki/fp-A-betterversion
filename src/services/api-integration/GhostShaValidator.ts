@@ -60,13 +60,7 @@ export const GHOST_SHA_VALIDATOR_CONSTANTS = {
   /** Combined: 7-40 hex chars */
   ANY_PLAUSIBLE_SHA_PATTERN: /^[0-9a-f]{7,40}$/i,
   /** Default field names searched by scanObject */
-  DEFAULT_SHA_FIELD_NAMES: [
-    'commit_sha',
-    'git_sha',
-    'commitSha',
-    'gitSha',
-    'sha',
-  ] as const,
+  DEFAULT_SHA_FIELD_NAMES: ['commit_sha', 'git_sha', 'commitSha', 'gitSha', 'sha'] as const,
   /** Maximum recursion depth (defends against circular references) */
   MAX_SCAN_DEPTH: 20,
   /** Maximum fields scanned per call (defends against pathological responses) */
@@ -212,7 +206,7 @@ export class GhostShaValidator {
         }
       } else {
         // Soft-warn for batch operations; not all inputs are expected to be SHAs
-        // eslint-disable-next-line no-console
+
         if (typeof console !== 'undefined' && console.warn) {
           console.warn(`GhostShaValidator.addShas: skipped non-plausible SHA: "${sha}"`);
         }
@@ -300,10 +294,13 @@ export class GhostShaValidator {
     }
 
     // 2. Normalize to short form
-    const shortForm = trimmed.toLowerCase().slice(0, GHOST_SHA_VALIDATOR_CONSTANTS.MIN_SHORT_SHA_LENGTH);
-    const fullForm = trimmed.length === GHOST_SHA_VALIDATOR_CONSTANTS.FULL_SHA_LENGTH
-      ? trimmed.toLowerCase()
-      : null;
+    const shortForm = trimmed
+      .toLowerCase()
+      .slice(0, GHOST_SHA_VALIDATOR_CONSTANTS.MIN_SHORT_SHA_LENGTH);
+    const fullForm =
+      trimmed.length === GHOST_SHA_VALIDATOR_CONSTANTS.FULL_SHA_LENGTH
+        ? trimmed.toLowerCase()
+        : null;
 
     // 3. Look up
     const exists = this.knownShas.has(shortForm);
@@ -431,7 +428,6 @@ export class GhostShaValidator {
     visit(data, 0);
 
     if (truncated) {
-      // eslint-disable-next-line no-console
       if (typeof console !== 'undefined' && console.warn) {
         console.warn(
           `GhostShaValidator.scanObject: truncated at maxFields=${maxFields}; partial result returned`

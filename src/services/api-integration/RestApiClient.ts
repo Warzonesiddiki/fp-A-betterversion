@@ -150,9 +150,7 @@ export class RestApiClient {
       // auth header or POST body, NOT query params (which leak via server logs,
       // browser history, and proxy caches). HIGH finding from the Phase 7
       // services security audit (cycle 13, Hephaestus).
-      const credentials = btoa(
-        `${this.auth.oauth2.clientId}:${this.auth.oauth2.clientSecret}`
-      );
+      const credentials = btoa(`${this.auth.oauth2.clientId}:${this.auth.oauth2.clientSecret}`);
       const response = await axios.post(this.auth.oauth2.tokenUrl, null, {
         headers: {
           Authorization: `Basic ${credentials}`,
@@ -375,14 +373,13 @@ export class RestApiClient {
         // Swallow callback errors so the original request still succeeds.
       }
     }
-    if (typeof console !== "undefined" && console.warn) {
+    if (typeof console !== 'undefined' && console.warn) {
       const ghostCount = result.unknown.length + result.invalid.length;
       console.warn(
         `[RestApiClient] GHOST-SHA detected: ${ghostCount} suspicious SHA(s) ` +
-        `(${result.unknown.length} unknown, ${result.invalid.length} invalid) ` +
-        `out of ${result.scanned} field(s) scanned`
+          `(${result.unknown.length} unknown, ${result.invalid.length} invalid) ` +
+          `out of ${result.scanned} field(s) scanned`
       );
     }
   }
-
 }

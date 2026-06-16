@@ -21,10 +21,10 @@ export function StepDownConfigPanel({
   serviceDepts = [],
   productionDepts = [],
   config = {
-    method: 'sequential',
+    serviceDepartments: [],
+    productionDepartments: [],
+    serviceCosts: {},
     servicePercentages: {},
-    allocationBase: 'direct',
-    precision: 2,
   },
   onChange = () => {},
 }: StepDownConfigPanelProps) {

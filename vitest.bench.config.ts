@@ -25,19 +25,9 @@ export default defineConfig({
   // OVERRIDE the test block entirely — do NOT merge.
   test: {
     // ONLY bench files. Both `.bench.test.ts` and `.benchmark.test.ts`.
-    include: [
-      'src/**/*.bench.test.ts',
-      'src/**/*.benchmark.test.ts',
-    ],
+    include: ['src/**/*.bench.test.ts', 'src/**/*.benchmark.test.ts'],
     // Standard excludes for build artifacts / node_modules / e2e
-    exclude: [
-      'node_modules/**',
-      'dist/**',
-      '.idea/**',
-      '.git/**',
-      '.cache/**',
-      'tests/e2e/**',
-    ],
+    exclude: ['node_modules/**', 'dist/**', '.idea/**', '.git/**', '.cache/**', 'tests/e2e/**'],
     // Bench runs are slow; allow generous per-test timeout
     testTimeout: 60_000,
     hookTimeout: 60_000,

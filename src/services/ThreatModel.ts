@@ -61,9 +61,9 @@ export const THREAT_MODEL_CONSTANTS = {
   /** DREAD risk score thresholds (mean of 5 dimensions) */
   DREAD_THRESHOLDS: {
     CRITICAL: 8.0, // >= 8.0
-    HIGH: 6.0,     // >= 6.0
-    MEDIUM: 4.0,   // >= 4.0
-    LOW: 0.0,      // < 4.0
+    HIGH: 6.0, // >= 6.0
+    MEDIUM: 4.0, // >= 4.0
+    LOW: 0.0, // < 4.0
   } as const,
   /** Default FinPlan Pro asset taxonomy */
   DEFAULT_ASSETS: [
@@ -236,7 +236,12 @@ export interface ExportResult {
  * @returns Mean (0-10) and risk level
  */
 export function computeDreadMean(score: DreadScore): { mean: number; riskLevel: RiskLevel } {
-  const sum = score.damage + score.reproducibility + score.exploitability + score.affectedUsers + score.discoverability;
+  const sum =
+    score.damage +
+    score.reproducibility +
+    score.exploitability +
+    score.affectedUsers +
+    score.discoverability;
   const mean = sum / 5;
   let riskLevel: RiskLevel;
   if (mean >= THREAT_MODEL_CONSTANTS.DREAD_THRESHOLDS.CRITICAL) {
@@ -255,7 +260,13 @@ export function computeDreadMean(score: DreadScore): { mean: number; riskLevel: 
  * Validate a DREAD score — all dimensions 1-10 integers.
  */
 export function isValidDreadScore(score: DreadScore): boolean {
-  const dims: (keyof DreadScore)[] = ['damage', 'reproducibility', 'exploitability', 'affectedUsers', 'discoverability'];
+  const dims: (keyof DreadScore)[] = [
+    'damage',
+    'reproducibility',
+    'exploitability',
+    'affectedUsers',
+    'discoverability',
+  ];
   for (const dim of dims) {
     const v = score[dim];
     if (typeof v !== 'number' || !Number.isFinite(v) || !Number.isInteger(v) || v < 1 || v > 10) {
@@ -404,10 +415,17 @@ export class ThreatModel {
    */
   public addThreat(input: CreateThreatInput): Threat {
     if (this.threats.size >= THREAT_MODEL_CONSTANTS.MAX_THREATS) {
-      throw new ThreatModelError('MAX_THREATS_EXCEEDED', `Max threats (${THREAT_MODEL_CONSTANTS.MAX_THREATS}) exceeded`);
+      throw new ThreatModelError(
+        'MAX_THREATS_EXCEEDED',
+        `Max threats (${THREAT_MODEL_CONSTANTS.MAX_THREATS}) exceeded`
+      );
     }
     if (!isValidDreadScore(input.dreadScore)) {
-      throw new ThreatModelError('INVALID_DREAD_SCORE', 'DREAD score must have all 5 dimensions as integers 1-10', { dreadScore: input.dreadScore });
+      throw new ThreatModelError(
+        'INVALID_DREAD_SCORE',
+        'DREAD score must have all 5 dimensions as integers 1-10',
+        { dreadScore: input.dreadScore }
+      );
     }
     const id = input.id ?? generateThreatId();
     if (this.threats.has(id)) {
@@ -511,7 +529,10 @@ export class ThreatModel {
    */
   public addControl(input: CreateControlInput): Control {
     if (this.controls.size >= THREAT_MODEL_CONSTANTS.MAX_CONTROLS) {
-      throw new ThreatModelError('MAX_CONTROLS_EXCEEDED', `Max controls (${THREAT_MODEL_CONSTANTS.MAX_CONTROLS}) exceeded`);
+      throw new ThreatModelError(
+        'MAX_CONTROLS_EXCEEDED',
+        `Max controls (${THREAT_MODEL_CONSTANTS.MAX_CONTROLS}) exceeded`
+      );
     }
     if (!['PREVENTIVE', 'DETECTIVE', 'CORRECTIVE'].includes(input.type)) {
       throw new ThreatModelError('INVALID_CONTROL_TYPE', `Invalid control type: ${input.type}`);
@@ -582,10 +603,16 @@ export class ThreatModel {
       return; // idempotent
     }
     if (control.mitigates.length >= THREAT_MODEL_CONSTANTS.MAX_MITIGATIONS_PER_CONTROL) {
-      throw new ThreatModelError('MAX_MITIGATIONS_EXCEEDED', `Control ${controlId} already mitigates ${THREAT_MODEL_CONSTANTS.MAX_MITIGATIONS_PER_CONTROL} threats`);
+      throw new ThreatModelError(
+        'MAX_MITIGATIONS_EXCEEDED',
+        `Control ${controlId} already mitigates ${THREAT_MODEL_CONSTANTS.MAX_MITIGATIONS_PER_CONTROL} threats`
+      );
     }
     if (threat.mitigatedBy.length >= THREAT_MODEL_CONSTANTS.MAX_CONTROLS_PER_THREAT) {
-      throw new ThreatModelError('MAX_CONTROLS_PER_THREAT_EXCEEDED', `Threat ${threatId} already mitigated by ${THREAT_MODEL_CONSTANTS.MAX_CONTROLS_PER_THREAT} controls`);
+      throw new ThreatModelError(
+        'MAX_CONTROLS_PER_THREAT_EXCEEDED',
+        `Threat ${threatId} already mitigated by ${THREAT_MODEL_CONSTANTS.MAX_CONTROLS_PER_THREAT} controls`
+      );
     }
     control.mitigates.push(threatId);
     threat.mitigatedBy.push(controlId);
@@ -675,9 +702,10 @@ export class ThreatModel {
     }
 
     // Mean residual risk
-    const meanResidualRisk = allThreats.length > 0
-      ? allThreats.reduce((sum, t) => sum + t.dreadMean, 0) / allThreats.length
-      : 0;
+    const meanResidualRisk =
+      allThreats.length > 0
+        ? allThreats.reduce((sum, t) => sum + t.dreadMean, 0) / allThreats.length
+        : 0;
 
     const totalMitigated = allThreats.filter((t) => t.mitigatedBy.length > 0).length;
     const coverage = allThreats.length > 0 ? totalMitigated / allThreats.length : 1.0;
@@ -703,7 +731,10 @@ export class ThreatModel {
    */
   public export(options: ExportOptions): ExportResult {
     if (!options || (!options.includeJson && !options.includeMarkdown)) {
-      throw new ThreatModelError('INVALID_EXPORT_OPTIONS', 'At least one of includeJson or includeMarkdown must be true');
+      throw new ThreatModelError(
+        'INVALID_EXPORT_OPTIONS',
+        'At least one of includeJson or includeMarkdown must be true'
+      );
     }
     const result: ExportResult = {};
     if (options.includeJson) {
@@ -765,7 +796,9 @@ export class ThreatModel {
     lines.push('| ID | Title | Category | Asset | DREAD | Risk | Status | Mitigated By |');
     lines.push('|---|---|---|---|---|---|---|---|');
     for (const t of allThreats) {
-      lines.push(`| ${t.id} | ${t.title} | ${t.category} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[t.category]}) | ${t.asset} | ${t.dreadMean.toFixed(2)} | ${t.riskLevel} | ${t.status} | ${t.mitigatedBy.join(', ') || '—'} |`);
+      lines.push(
+        `| ${t.id} | ${t.title} | ${t.category} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[t.category]}) | ${t.asset} | ${t.dreadMean.toFixed(2)} | ${t.riskLevel} | ${t.status} | ${t.mitigatedBy.join(', ') || '—'} |`
+      );
     }
     lines.push('');
 
@@ -776,7 +809,9 @@ export class ThreatModel {
       lines.push('|---|---|---|---|---|---|---|');
       for (const t of allThreats) {
         const s = t.dreadScore;
-        lines.push(`| ${t.id} | ${s.damage} | ${s.reproducibility} | ${s.exploitability} | ${s.affectedUsers} | ${s.discoverability} | ${t.dreadMean.toFixed(2)} |`);
+        lines.push(
+          `| ${t.id} | ${s.damage} | ${s.reproducibility} | ${s.exploitability} | ${s.affectedUsers} | ${s.discoverability} | ${t.dreadMean.toFixed(2)} |`
+        );
       }
       lines.push('');
     }
@@ -787,7 +822,9 @@ export class ThreatModel {
     lines.push('| ID | Name | Type | Description | Mitigates |');
     lines.push('|---|---|---|---|---|');
     for (const c of this.listControls()) {
-      lines.push(`| ${c.id} | ${c.name} | ${c.type} | ${c.description} | ${c.mitigates.join(', ') || '—'} |`);
+      lines.push(
+        `| ${c.id} | ${c.name} | ${c.type} | ${c.description} | ${c.mitigates.join(', ') || '—'} |`
+      );
     }
     lines.push('');
 
@@ -827,7 +864,9 @@ export class ThreatModel {
         lines.push('_None_');
       } else {
         for (const t of gap.singleDefenseThreats) {
-          lines.push(`- **${t.id}** (${t.riskLevel}, DREAD ${t.dreadMean.toFixed(2)}): mitigated only by ${t.mitigatedBy[0]}`);
+          lines.push(
+            `- **${t.id}** (${t.riskLevel}, DREAD ${t.dreadMean.toFixed(2)}): mitigated only by ${t.mitigatedBy[0]}`
+          );
         }
       }
       lines.push('');
@@ -837,7 +876,9 @@ export class ThreatModel {
       lines.push('|---|---|---|---|');
       for (const cat of ['S', 'T', 'R', 'I', 'D', 'E'] as ThreatCategory[]) {
         const r = gap.riskByCategory[cat];
-        lines.push(`| ${cat} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[cat]}) | ${r.count} | ${r.meanDread.toFixed(2)} | ${r.maxDread.toFixed(2)} |`);
+        lines.push(
+          `| ${cat} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[cat]}) | ${r.count} | ${r.meanDread.toFixed(2)} | ${r.maxDread.toFixed(2)} |`
+        );
       }
       lines.push('');
     }

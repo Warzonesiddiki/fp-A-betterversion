@@ -54,9 +54,9 @@ describeIfCrypto('SecureStorage — namespace & key validation', () => {
 
 describeIfCrypto('SecureStorage — password strength', () => {
   it('throws on weak password in constructor', () => {
-    expect(() => new SecureStorage({ adapter: new SecureStorageMemoryAdapter(), password: 'short' })).toThrow(
-      /at least/
-    );
+    expect(
+      () => new SecureStorage({ adapter: new SecureStorageMemoryAdapter(), password: 'short' })
+    ).toThrow(/at least/);
   });
 
   it('accepts strong password in constructor', () => {
@@ -289,13 +289,19 @@ describeIfCrypto('SecureStorage — singleton helpers', () => {
   afterEach(() => resetDefaultSecureStorage());
 
   it('getDefaultSecureStorage returns the same instance', () => {
-    const a = getDefaultSecureStorage({ adapter: new SecureStorageMemoryAdapter(), password: PASSWORD });
+    const a = getDefaultSecureStorage({
+      adapter: new SecureStorageMemoryAdapter(),
+      password: PASSWORD,
+    });
     const b = getDefaultSecureStorage();
     expect(a).toBe(b);
   });
 
   it('resetDefaultSecureStorage clears the singleton', () => {
-    const a = getDefaultSecureStorage({ adapter: new SecureStorageMemoryAdapter(), password: PASSWORD });
+    const a = getDefaultSecureStorage({
+      adapter: new SecureStorageMemoryAdapter(),
+      password: PASSWORD,
+    });
     resetDefaultSecureStorage();
     const b = getDefaultSecureStorage();
     expect(a).not.toBe(b);

@@ -47,11 +47,35 @@ async function seedTemporalFixtures(page: Page, now: Date): Promise<void> {
   const t3hAgo = new Date(now.getTime() - 3 * 60 * 60_000).toISOString();
   const t2dAgo = new Date(now.getTime() - 2 * 24 * 60 * 60_000).toISOString();
   const activityLog = [
-    { id: 'a1', type: 'edit', userName: 'CFO', action: 'updated', resourceName: 'Q4 Budget', timestamp: t5mAgo },
-    { id: 'a2', type: 'approve', userName: 'CEO', action: 'approved', resourceName: 'Forecast', timestamp: t3hAgo },
-    { id: 'a3', type: 'import', userName: 'CFO', action: 'imported', resourceName: 'Actuals', timestamp: t2dAgo },
+    {
+      id: 'a1',
+      type: 'edit',
+      userName: 'CFO',
+      action: 'updated',
+      resourceName: 'Q4 Budget',
+      timestamp: t5mAgo,
+    },
+    {
+      id: 'a2',
+      type: 'approve',
+      userName: 'CEO',
+      action: 'approved',
+      resourceName: 'Forecast',
+      timestamp: t3hAgo,
+    },
+    {
+      id: 'a3',
+      type: 'import',
+      userName: 'CFO',
+      action: 'imported',
+      resourceName: 'Actuals',
+      timestamp: t2dAgo,
+    },
   ];
-  await page.evaluate((log) => localStorage.setItem('finplan-activity-log', JSON.stringify(log)), activityLog);
+  await page.evaluate(
+    (log) => localStorage.setItem('finplan-activity-log', JSON.stringify(log)),
+    activityLog
+  );
 }
 
 test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)', () => {
@@ -69,7 +93,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
    *   W3: cleanup assertion in afterEach (no console errors, no page errors)
    */
 
-  test('cross-check 1: formatRelativeTime consistent across 5 pages (BUG-CHR-D-1 regression guard)', async ({ page }) => {
+  test('cross-check 1: formatRelativeTime consistent across 5 pages (BUG-CHR-D-1 regression guard)', async ({
+    page,
+  }) => {
     // After seeding, ActivityFeed (on dashboard) should show "5m ago" / "3h ago" / "2d ago"
     // per formatRelativeTimeLegacy default (7-day cap, "X{m,h,d} ago" format)
     await page.goto('/dashboard');
@@ -94,7 +120,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
       if (await lastUpdated.isVisible()) {
         // Must use the canonical "X{m,h,d} ago" format, not "X minutes ago" / "X min ago" / etc.
         const text = (await lastUpdated.textContent()) || '';
-        expect(text, 'ForecastListPage relative-time format').toMatch(/(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i);
+        expect(text, 'ForecastListPage relative-time format').toMatch(
+          /(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i
+        );
       }
     }
     // Cross-page consistency: CommentThread (spreadsheet comments) also uses formatRelativeTimeLegacy
@@ -105,7 +133,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
       const commentTs = commentThread.locator('[data-testid="comment-timestamp"]').first();
       if (await commentTs.isVisible()) {
         const text = (await commentTs.textContent()) || '';
-        expect(text, 'CommentThread relative-time format').toMatch(/(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i);
+        expect(text, 'CommentThread relative-time format').toMatch(
+          /(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i
+        );
       }
     }
     // Cross-page consistency: BudgetListPage uses formatRelativeTimeBudget (30-day cap)
@@ -116,7 +146,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
       const budgetTs = budgetList.locator('[data-testid="budget-updated-at"]').first();
       if (await budgetTs.isVisible()) {
         const text = (await budgetTs.textContent()) || '';
-        expect(text, 'BudgetListPage relative-time format').toMatch(/(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i);
+        expect(text, 'BudgetListPage relative-time format').toMatch(
+          /(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i
+        );
       }
     }
     // Cross-page consistency: AuditTrailPage uses formatRelativeTimeBudget (30-day cap)
@@ -127,11 +159,15 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
     const auditTs = auditLog.locator('[data-testid="audit-entry-timestamp"]').first();
     if (await auditTs.isVisible()) {
       const text = (await auditTs.textContent()) || '';
-      expect(text, 'AuditTrailPage relative-time format').toMatch(/(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i);
+      expect(text, 'AuditTrailPage relative-time format').toMatch(
+        /(just now|(\d+)\s*(m|h|d|w|mo|y)\s*ago)/i
+      );
     }
   });
 
-  test('cross-check 2: fiscal year boundary (US-Federal Oct 1; UK Apr 6; calendar)', async ({ page }) => {
+  test('cross-check 2: fiscal year boundary (US-Federal Oct 1; UK Apr 6; calendar)', async ({
+    page,
+  }) => {
     // US-Federal fiscal year starts Oct 1 — so Jan 15 2026 is in FY2026; Sep 30 2025 is FY2025;
     // Oct 1 2025 is FY2026 (boundary). All 3 must be labeled correctly on the period selector.
     await page.goto('/periods');
@@ -160,7 +196,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
     await expect(qLabel).toContainText(/Q4.*FY[- ]?2026/i);
   });
 
-  test('cross-check 3: leap year Feb 29 across 4 years (2024 valid, 2028 valid, 2025/2027 invalid)', async ({ page }) => {
+  test('cross-check 3: leap year Feb 29 across 4 years (2024 valid, 2028 valid, 2025/2027 invalid)', async ({
+    page,
+  }) => {
     // Periods page allows end-of-period date input — leap year validation is server-side
     // via the temporal engine. Verify Feb 29 in leap years is accepted; in non-leap years
     // a validation error is shown.
@@ -189,7 +227,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
     await expect(validationMsg).toContainText(/valid|ok|accepted/i);
   });
 
-  test('cross-check 4: audit trail chronological order + non-negative relative times', async ({ page }) => {
+  test('cross-check 4: audit trail chronological order + non-negative relative times', async ({
+    page,
+  }) => {
     // Seed 4 audit entries with deterministic timestamps; verify they render in chronological
     // order (oldest first or newest first, but consistent), all relative times >= 0,
     // and no "in the future" or "-1m ago" entries.
@@ -207,7 +247,10 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
     // OR monotonically non-increasing (either is valid; just no random reorder)
     const timestamps: number[] = [];
     for (let i = 0; i < entryCount; i++) {
-      const tsText = await entries.nth(i).locator('[data-testid="audit-entry-timestamp"]').textContent();
+      const tsText = await entries
+        .nth(i)
+        .locator('[data-testid="audit-entry-timestamp"]')
+        .textContent();
       if (tsText) {
         // Verify NO future-dated entries ("in 5m" / "-3m ago" / "tomorrow" etc.)
         expect(tsText, `entry ${i} timestamp`).not.toMatch(/-/);
@@ -220,7 +263,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
     // Order must be monotonic (oldest first) OR reverse-chronological (newest first)
     const isAscending = timestamps.every((t, i) => i === 0 || t >= timestamps[i - 1]!);
     const isDescending = timestamps.every((t, i) => i === 0 || t <= timestamps[i - 1]!);
-    expect(isAscending || isDescending, `audit log order: ${JSON.stringify(timestamps)}`).toBe(true);
+    expect(isAscending || isDescending, `audit log order: ${JSON.stringify(timestamps)}`).toBe(
+      true
+    );
   });
 
   test('cross-check 5: quarter close (cross-year Q4 FY2025 → Q1 FY2026)', async ({ page }) => {
@@ -240,7 +285,10 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
     const runButton = page.locator('button:has-text("Run Consolidation")');
     if (await runButton.isVisible()) {
       await runButton.click();
-      await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(/complete|success/i, { timeout: 30_000 });
+      await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(
+        /complete|success/i,
+        { timeout: 30_000 }
+      );
     }
     // Lock the period
     const lockButton = page.locator('button:has-text("Lock Period")');
@@ -265,7 +313,9 @@ test.describe('Journey 10: Temporal E2E Cross-Check (Engine × Page Integration)
     // Cross-year report must show 2 distinct FYs with separate totals
     await page.goto('/reports');
     await page.waitForLoadState('networkidle');
-    await page.locator('[data-testid="report-type"]').selectOption({ label: /Q4.*2025.*2026|cross.year.*Q4/i });
+    await page
+      .locator('[data-testid="report-type"]')
+      .selectOption({ label: /Q4.*2025.*2026|cross.year.*Q4/i });
     await page.locator('button:has-text("Generate")').click();
     await expect(page.locator('[data-testid="report-content"]')).toBeVisible({ timeout: 15_000 });
     const reportContent = page.locator('[data-testid="report-content"]');

@@ -35,7 +35,12 @@ export type KeyManagerAuditEvent =
   | { type: 'key.derived'; namespace: string; fingerprint: string; cacheHit: boolean }
   | { type: 'key.rotated'; namespace: string; oldFingerprint: string; newFingerprint: string }
   | { type: 'key.revoked'; namespace: string; fingerprint: string; reason: string }
-  | { type: 'key.cache.evicted'; namespace: string; fingerprint: string; reason: 'ttl' | 'lru' | 'revoke' };
+  | {
+      type: 'key.cache.evicted';
+      namespace: string;
+      fingerprint: string;
+      reason: 'ttl' | 'lru' | 'revoke';
+    };
 
 interface CacheEntry {
   key: CryptoKey;
@@ -198,7 +203,11 @@ export class KeyManager {
     this.cache.clear();
   }
 
-  private async fingerprint(namespace: string, password: string, salt: Uint8Array): Promise<string> {
+  private async fingerprint(
+    namespace: string,
+    password: string,
+    salt: Uint8Array
+  ): Promise<string> {
     // SECURITY (PATCH 6): the namespace is included in the cache fingerprint
     // so that two namespaces using the same (password, salt) get DIFFERENT
     // cache entries. The underlying CryptoKey is still derived deterministically

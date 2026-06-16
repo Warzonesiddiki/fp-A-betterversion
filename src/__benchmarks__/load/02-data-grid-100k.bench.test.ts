@@ -65,14 +65,19 @@ function generateRow(i: number): FinancialRow {
     description: `Transaction #${i} for FinPlan Pro load test`,
     debit: i % 3 === 0 ? Math.round(Math.random() * 100000) / 100 : 0,
     credit: i % 3 !== 0 ? Math.round(Math.random() * 100000) / 100 : 0,
-    balance: Math.round((Math.random() * 1000000) * 100) / 100,
+    balance: Math.round(Math.random() * 1000000 * 100) / 100,
     currency: CURRENCIES[i % CURRENCIES.length],
     status: STATUSES[i % STATUSES.length],
     tags,
   };
 }
 
-function virtualizeWindow(rows: FinancialRow[], scrollTop: number, rowHeight: number, viewportHeight: number) {
+function virtualizeWindow(
+  rows: FinancialRow[],
+  scrollTop: number,
+  rowHeight: number,
+  viewportHeight: number
+) {
   const startIdx = Math.max(0, Math.floor(scrollTop / rowHeight) - 5);
   const endIdx = Math.min(rows.length, Math.ceil((scrollTop + viewportHeight) / rowHeight) + 5);
   return rows.slice(startIdx, endIdx);
@@ -112,10 +117,13 @@ describe('Vulcan — AG Grid 100K rows load test', () => {
       target: 'data-prep <5000ms (cold)',
       engineFile: 'src/components/ui/DataGrid.tsx',
       engineLineRef: 'See DataGrid.tsx:188-237 (useMemo row data, filter, sort)',
-      notes: 'Data prep: deterministic O(N) construction. Real AG Grid data prop pass adds ~10-20% in browser.',
+      notes:
+        'Data prep: deterministic O(N) construction. Real AG Grid data prop pass adds ~10-20% in browser.',
     });
 
-    console.log(`[VULCAN] AG-Grid-100K COLD data prep: ${elapsed.toFixed(2)}ms, mem delta: ${memMB.toFixed(2)}MB`);
+    console.log(
+      `[VULCAN] AG-Grid-100K COLD data prep: ${elapsed.toFixed(2)}ms, mem delta: ${memMB.toFixed(2)}MB`
+    );
   }, 30_000);
 
   it('WARM: re-generate 100K rows (3 reps, take avg)', () => {
@@ -139,7 +147,7 @@ describe('Vulcan — AG Grid 100K rows load test', () => {
       lastRec.warmPrepMs = Math.round(avg * 100) / 100;
     }
 
-    console.log(`[VULCAN] AG-Grid-100K WARM runs: ${times.map(t => t.toFixed(2)).join(', ')}ms`);
+    console.log(`[VULCAN] AG-Grid-100K WARM runs: ${times.map((t) => t.toFixed(2)).join(', ')}ms`);
     console.log(`[VULCAN] AG-Grid-100K WARM avg: ${avg.toFixed(2)}ms`);
   }, 30_000);
 
@@ -173,8 +181,12 @@ describe('Vulcan — AG Grid 100K rows load test', () => {
       lastRec.cellRenderAvgMs = Math.round(avgPerSlice * 100) / 100;
     }
 
-    console.log(`[VULCAN] AG-Grid-100K virtualization: ${elapsed.toFixed(2)}ms / ${scrollPositions} scrolls`);
-    console.log(`[VULCAN] AG-Grid-100K avg slice: ${avgPerSlice.toFixed(2)}ms (~${fpsEstimate.toFixed(0)} slice-fps)`);
+    console.log(
+      `[VULCAN] AG-Grid-100K virtualization: ${elapsed.toFixed(2)}ms / ${scrollPositions} scrolls`
+    );
+    console.log(
+      `[VULCAN] AG-Grid-100K avg slice: ${avgPerSlice.toFixed(2)}ms (~${fpsEstimate.toFixed(0)} slice-fps)`
+    );
     console.log(`[VULCAN] AG-Grid-100K total cells sliced: ${totalCellsRendered}`);
   }, 30_000);
 
@@ -182,7 +194,18 @@ describe('Vulcan — AG Grid 100K rows load test', () => {
     const rows: FinancialRow[] = new Array(100_000);
     for (let i = 0; i < 100_000; i++) rows[i] = generateRow(i);
 
-    const cols: (keyof FinancialRow)[] = ['id', 'date', 'account', 'category', 'description', 'debit', 'credit', 'balance', 'currency', 'status'];
+    const cols: (keyof FinancialRow)[] = [
+      'id',
+      'date',
+      'account',
+      'category',
+      'description',
+      'debit',
+      'credit',
+      'balance',
+      'currency',
+      'status',
+    ];
     const start = performance.now();
     let sink = 0;
     for (let i = 0; i < rows.length; i++) {
@@ -198,10 +221,7 @@ describe('Vulcan — AG Grid 100K rows load test', () => {
   afterAll(() => {
     const outDir = path.resolve(__dirname, '../../../tests/load');
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(outDir, '.raw-data-grid.json'),
-      JSON.stringify(records, null, 2)
-    );
+    fs.writeFileSync(path.join(outDir, '.raw-data-grid.json'), JSON.stringify(records, null, 2));
     console.log(`[VULCAN] Wrote ${records.length} AG Grid records to .raw-data-grid.json`);
   });
 });

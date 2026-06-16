@@ -203,30 +203,41 @@ describe('6. SecurityHeaders.generate', () => {
   });
 
   it('6.2 HSTS header string format is correct', () => {
-    const sh = SecurityHeaders.create({
-      hsts: { enabled: true, maxAge: 31536000, includeSubDomains: true, preload: false },
-    }, 'production');
+    const sh = SecurityHeaders.create(
+      {
+        hsts: { enabled: true, maxAge: 31536000, includeSubDomains: true, preload: false },
+      },
+      'production'
+    );
     const headers = sh.generate();
     expect(headers['Strict-Transport-Security']).toBe('max-age=31536000; includeSubDomains');
   });
 
   it('6.3 HSTS with preload', () => {
-    const sh = SecurityHeaders.create({
-      hsts: { enabled: true, maxAge: 63072000, includeSubDomains: true, preload: true },
-    }, 'production');
+    const sh = SecurityHeaders.create(
+      {
+        hsts: { enabled: true, maxAge: 63072000, includeSubDomains: true, preload: true },
+      },
+      'production'
+    );
     const headers = sh.generate();
-    expect(headers['Strict-Transport-Security']).toBe('max-age=63072000; includeSubDomains; preload');
+    expect(headers['Strict-Transport-Security']).toBe(
+      'max-age=63072000; includeSubDomains; preload'
+    );
   });
 
   it('6.4 CSP string format', () => {
-    const sh = SecurityHeaders.create({
-      csp: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        objectSrc: ["'none'"],
-        upgradeInsecureRequests: true,
+    const sh = SecurityHeaders.create(
+      {
+        csp: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          upgradeInsecureRequests: true,
+        },
       },
-    }, 'production');
+      'production'
+    );
     const headers = sh.generate();
     expect(headers['Content-Security-Policy']).toContain("default-src 'self'");
     expect(headers['Content-Security-Policy']).toContain("script-src 'self'");
@@ -235,18 +246,24 @@ describe('6. SecurityHeaders.generate', () => {
   });
 
   it('6.5 Permissions-Policy empty list = deny', () => {
-    const sh = SecurityHeaders.create({
-      permissionsPolicy: { camera: [], microphone: [] },
-    }, 'production');
+    const sh = SecurityHeaders.create(
+      {
+        permissionsPolicy: { camera: [], microphone: [] },
+      },
+      'production'
+    );
     const headers = sh.generate();
     expect(headers['Permissions-Policy']).toContain('camera=()');
     expect(headers['Permissions-Policy']).toContain('microphone=()');
   });
 
   it('6.6 Permissions-Policy allow list', () => {
-    const sh = SecurityHeaders.create({
-      permissionsPolicy: { fullscreen: ['self'], clipboardRead: ['self'] },
-    }, 'production');
+    const sh = SecurityHeaders.create(
+      {
+        permissionsPolicy: { fullscreen: ['self'], clipboardRead: ['self'] },
+      },
+      'production'
+    );
     const headers = sh.generate();
     expect(headers['Permissions-Policy']).toContain('fullscreen=("self")');
   });
@@ -256,33 +273,58 @@ describe('6. SecurityHeaders.generate', () => {
 
 describe('7. SecurityHeaders.validatePolicy', () => {
   it('7.1 rejects invalid CSP source', () => {
-    expect(() => SecurityHeaders.create({
-      csp: { scriptSrc: ['javascript:evil()'] as never },
-    }, 'production')).toThrow(/Invalid CSP source/);
+    expect(() =>
+      SecurityHeaders.create(
+        {
+          csp: { scriptSrc: ['javascript:evil()'] as never },
+        },
+        'production'
+      )
+    ).toThrow(/Invalid CSP source/);
   });
 
   it('7.2 rejects HSTS max-age > 2 years', () => {
-    expect(() => SecurityHeaders.create({
-      hsts: { enabled: true, maxAge: 99999999, includeSubDomains: true, preload: false },
-    }, 'production')).toThrow(/max-age/);
+    expect(() =>
+      SecurityHeaders.create(
+        {
+          hsts: { enabled: true, maxAge: 99999999, includeSubDomains: true, preload: false },
+        },
+        'production'
+      )
+    ).toThrow(/max-age/);
   });
 
   it('7.3 rejects invalid permissions policy value', () => {
-    expect(() => SecurityHeaders.create({
-      permissionsPolicy: { camera: ['evil' as never] },
-    }, 'production')).toThrow(/permissions policy/);
+    expect(() =>
+      SecurityHeaders.create(
+        {
+          permissionsPolicy: { camera: ['evil' as never] },
+        },
+        'production'
+      )
+    ).toThrow(/permissions policy/);
   });
 
   it('7.4 rejects invalid header name in customHeaders', () => {
-    expect(() => SecurityHeaders.create({
-      customHeaders: { 'Bad Name With Spaces': 'value' },
-    }, 'production')).toThrow(/header name/);
+    expect(() =>
+      SecurityHeaders.create(
+        {
+          customHeaders: { 'Bad Name With Spaces': 'value' },
+        },
+        'production'
+      )
+    ).toThrow(/header name/);
   });
 
   it('7.5 rejects header injection in customHeaders value', () => {
-    expect(() => SecurityHeaders.create({
-      customHeaders: { 'X-Custom': 'value\r\nX-Injected: 1' },
-    }, 'production')).toThrow(/header value/);
+    expect(() =>
+      SecurityHeaders.create(
+        {
+          customHeaders: { 'X-Custom': 'value\r\nX-Injected: 1' },
+        },
+        'production'
+      )
+    ).toThrow(/header value/);
   });
 });
 
@@ -327,15 +369,23 @@ describe('9. CsrfProtection.create', () => {
   });
 
   it('9.3 rejects lifetime < 60 seconds', () => {
-    expect(() => CsrfProtection.create({ secretKey: 'a'.repeat(32), tokenLifetimeSeconds: 10 })).toThrow(/lifetime/);
+    expect(() =>
+      CsrfProtection.create({ secretKey: 'a'.repeat(32), tokenLifetimeSeconds: 10 })
+    ).toThrow(/lifetime/);
   });
 
   it('9.4 rejects lifetime > 24 hours', () => {
-    expect(() => CsrfProtection.create({ secretKey: 'a'.repeat(32), tokenLifetimeSeconds: 99999 })).toThrow(/lifetime/);
+    expect(() =>
+      CsrfProtection.create({ secretKey: 'a'.repeat(32), tokenLifetimeSeconds: 99999 })
+    ).toThrow(/lifetime/);
   });
 
   it('9.5 custom cookie and header names', () => {
-    const csrf = CsrfProtection.create({ secretKey: 'a'.repeat(32), cookieName: 'my_csrf', headerName: 'X-My-Token' });
+    const csrf = CsrfProtection.create({
+      secretKey: 'a'.repeat(32),
+      cookieName: 'my_csrf',
+      headerName: 'X-My-Token',
+    });
     expect(csrf.getCookieName()).toBe('my_csrf');
     expect(csrf.getHeaderName()).toBe('X-My-Token');
   });
@@ -474,13 +524,16 @@ describe('13. Integration scenarios', () => {
 
   it('13.2 CSP nonce integration: generate + include in CSP', () => {
     const nonce = generateCspNonce();
-    const sh = SecurityHeaders.create({
-      csp: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [`'nonce-${nonce}'`],
-        styleSrc: [`'nonce-${nonce}'`],
+    const sh = SecurityHeaders.create(
+      {
+        csp: {
+          defaultSrc: ["'self'"],
+          scriptSrc: [`'nonce-${nonce}'`],
+          styleSrc: [`'nonce-${nonce}'`],
+        },
       },
-    }, 'production');
+      'production'
+    );
     const headers = sh.generate();
     expect(headers['Content-Security-Policy']).toContain(`'nonce-${nonce}'`);
   });

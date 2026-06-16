@@ -88,13 +88,14 @@ function isApprover(currentStep: WorkflowStep | undefined, user: string): boolea
 export function ApprovalWorkflow({
   request = {
     id: 'preview',
+    workflowId: 'preview-workflow',
+    changeRequests: [],
     title: 'Preview Request',
     description: '',
     amount: 0,
-    state: 'pending',
-    requester: { id: 'u1', name: 'Preview User', email: 'preview@example.com' },
-    steps: [],
-    currentStepId: null,
+    state: 'draft',
+    requester: 'u1',
+    currentStepIndex: 0,
     history: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -171,7 +172,10 @@ export function ApprovalWorkflow({
                       isActive && !isRejected && 'border-current scale-110',
                       isPast && 'border-green-500 bg-green-500 text-white',
                       isRejected && 'border-red-500 bg-red-500 text-white',
-                      !isActive && !isPast && !isRejected && 'border-[var(--border-subtle)] text-[var(--text-muted)]'
+                      !isActive &&
+                        !isPast &&
+                        !isRejected &&
+                        'border-[var(--border-subtle)] text-[var(--text-muted)]'
                     )}
                   >
                     {isPast ? '\u2713' : idx + 1}
@@ -202,7 +206,7 @@ export function ApprovalWorkflow({
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
             <span className="text-[var(--text-muted)]">Requester</span>
-            <p className="font-medium">{request.requester?.name || 'Unknown'}</p>
+            <p className="font-medium">{request.requester || 'Unknown'}</p>
           </div>
           <div>
             <span className="text-[var(--text-muted)]">Submitted</span>

@@ -37,10 +37,16 @@ const __dirname = path.dirname(__filename);
 type SectorPersona = 'real-estate' | 'real-estate-irr' | 'telecom' | 'telecom-churn';
 
 const SECTOR_AUTH: Record<SectorPersona, { email: string; password: string }> = {
-  'real-estate':       { email: 'sector-real-estate@finplan-test.local',       password: 'TestRE!2026' },
-  'real-estate-irr':   { email: 'sector-real-estate-irr@finplan-test.local',   password: 'TestRE-IRR!2026' },
-  'telecom':           { email: 'sector-telecom@finplan-test.local',           password: 'TestTel!2026' },
-  'telecom-churn':     { email: 'sector-telecom-churn@finplan-test.local',     password: 'TestTel-Churn!2026' },
+  'real-estate': { email: 'sector-real-estate@finplan-test.local', password: 'TestRE!2026' },
+  'real-estate-irr': {
+    email: 'sector-real-estate-irr@finplan-test.local',
+    password: 'TestRE-IRR!2026',
+  },
+  telecom: { email: 'sector-telecom@finplan-test.local', password: 'TestTel!2026' },
+  'telecom-churn': {
+    email: 'sector-telecom-churn@finplan-test.local',
+    password: 'TestTel-Churn!2026',
+  },
 };
 
 async function signInAsSector(page: Page, persona: SectorPersona): Promise<void> {
@@ -56,14 +62,18 @@ async function signInAsSector(page: Page, persona: SectorPersona): Promise<void>
 // SECTOR 1: RE-001 Real Estate (Vesta §11.3 row #6, 9/9 PLATINUM)
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('PICK C v0.4.1: RE-001 Real Estate × Journey 11/02 (8 steps)', () => {
-  test.beforeEach(async ({ page }) => { await signInAsSector(page, 'real-estate'); });
+  test.beforeEach(async ({ page }) => {
+    await signInAsSector(page, 'real-estate');
+  });
 
   test('RE-001-J11-s1: navigate /sector/real-estate (Vesta §11.3 row 6)', async ({ page }) => {
     await page.goto('/sector/real-estate');
     await expect(page.locator('h1').first()).toContainText(/real estate/i);
   });
 
-  test('RE-001-J11-s2: NOI KPI panel — 5 KPIs (NOI/Cap-Rate/Occupancy/DSCR/SP-NOI)', async ({ page }) => {
+  test('RE-001-J11-s2: NOI KPI panel — 5 KPIs (NOI/Cap-Rate/Occupancy/DSCR/SP-NOI)', async ({
+    page,
+  }) => {
     await page.goto('/sector/real-estate');
     const kpi = page.locator('[data-testid="re-kpi-panel"]');
     await expect(kpi).toBeVisible();
@@ -79,7 +89,9 @@ test.describe('PICK C v0.4.1: RE-001 Real Estate × Journey 11/02 (8 steps)', ()
     await page.locator('[data-testid="property-noi"]').fill('500000');
     await page.locator('[data-testid="property-value"]').fill('7500000');
     await page.locator('button:has-text("Calculate")').click();
-    await expect(page.locator('[data-testid="cap-rate-result"]')).toContainText(/6\.67%|0\.0667/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="cap-rate-result"]')).toContainText(/6\.67%|0\.0667/i, {
+      timeout: 10_000,
+    });
   });
 
   test('RE-001-J11-s4: Occupancy % test (Vesta §11.3 row 6)', async ({ page }) => {
@@ -95,14 +107,18 @@ test.describe('PICK C v0.4.1: RE-001 Real Estate × Journey 11/02 (8 steps)', ()
     await page.locator('[data-testid="property-noi"]').fill('500000');
     await page.locator('[data-testid="annual-debt-service"]').fill('400000');
     await page.locator('button:has-text("Calculate DSCR")').click();
-    await expect(page.locator('[data-testid="dscr-result"]')).toContainText(/1\.25/, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="dscr-result"]')).toContainText(/1\.25/, {
+      timeout: 10_000,
+    });
   });
 
   test('RE-001-J11-s6: Same-Property NOI Growth test (Vesta §11.3 row 6)', async ({ page }) => {
     await page.goto('/sector/real-estate/portfolio');
     await page.locator('[data-testid="comparison-period"]').selectOption('yoy');
     await page.locator('button:has-text("Compare")').click();
-    await expect(page.locator('[data-testid="sp-noi-growth-result"]')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-testid="sp-noi-growth-result"]')).toBeVisible({
+      timeout: 15_000,
+    });
     await expect(page.locator('[data-testid="sp-noi-growth-result"]')).toContainText(/%/);
   });
 
@@ -115,10 +131,14 @@ test.describe('PICK C v0.4.1: RE-001 Real Estate × Journey 11/02 (8 steps)', ()
     await page.locator('input[name="interest_rate"]').fill('0.055');
     await page.locator('input[name="loan_term_years"]').fill('30');
     await page.locator('button:has-text("Create")').click();
-    await expect(page.locator('[data-testid="property-status"]')).toContainText(/created|saved/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="property-status"]')).toContainText(/created|saved/i, {
+      timeout: 10_000,
+    });
   });
 
-  test('RE-001-J11-s8: NOIWaterfall + RentRoll components visible (Vesta §11.3 col 4)', async ({ page }) => {
+  test('RE-001-J11-s8: NOIWaterfall + RentRoll components visible (Vesta §11.3 col 4)', async ({
+    page,
+  }) => {
     await page.goto('/sector/real-estate');
     await expect(page.locator('[data-testid="noi-waterfall"]')).toBeVisible();
     await expect(page.locator('[data-testid="rent-roll"]')).toBeVisible();
@@ -129,7 +149,9 @@ test.describe('PICK C v0.4.1: RE-001 Real Estate × Journey 11/02 (8 steps)', ()
 // SECTOR 2: RE-001-IRR Real Estate IRR
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('PICK C v0.4.1: RE-001-IRR Real Estate IRR × Journey 02 (6 steps)', () => {
-  test.beforeEach(async ({ page }) => { await signInAsSector(page, 'real-estate-irr'); });
+  test.beforeEach(async ({ page }) => {
+    await signInAsSector(page, 'real-estate-irr');
+  });
 
   test('IRR-001: IRR calculation test (sub-persona Journey 02)', async ({ page }) => {
     await page.goto('/sector/real-estate/irr');
@@ -156,7 +178,9 @@ test.describe('PICK C v0.4.1: RE-001-IRR Real Estate IRR × Journey 02 (6 steps)
     await page.locator('[data-testid="annual-noi"]').fill('500000');
     await page.locator('[data-testid="target-cap-rate"]').fill('0.065');
     await page.locator('button:has-text("Valuate")').click();
-    await expect(page.locator('[data-testid="valuation-result"]')).toContainText(/7,?692,?30[78]/, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="valuation-result"]')).toContainText(/7,?692,?30[78]/, {
+      timeout: 10_000,
+    });
   });
 
   test('IRR-004: Cash flow projection (5-year hold)', async ({ page }) => {
@@ -184,7 +208,9 @@ test.describe('PICK C v0.4.1: RE-001-IRR Real Estate IRR × Journey 02 (6 steps)
     await page.locator('[data-testid="discount-rate-max"]').fill('0.12');
     await page.locator('[data-testid="discount-rate-step"]').fill('0.01');
     await page.locator('button:has-text("Run Sensitivity")').click();
-    await expect(page.locator('[data-testid="sensitivity-chart"]')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-testid="sensitivity-chart"]')).toBeVisible({
+      timeout: 15_000,
+    });
   });
 });
 
@@ -192,14 +218,18 @@ test.describe('PICK C v0.4.1: RE-001-IRR Real Estate IRR × Journey 02 (6 steps)
 // SECTOR 3: TEL-001 Telecom (Vesta §11.3 row #15, 9/9 PLATINUM)
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('PICK C v0.4.1: TEL-001 Telecom × Journey 12/02 (8 steps)', () => {
-  test.beforeEach(async ({ page }) => { await signInAsSector(page, 'telecom'); });
+  test.beforeEach(async ({ page }) => {
+    await signInAsSector(page, 'telecom');
+  });
 
   test('TEL-001-J12-s1: navigate /sector/telecom (Vesta §11.3 row 15)', async ({ page }) => {
     await page.goto('/sector/telecom');
     await expect(page.locator('h1').first()).toContainText(/telecom/i);
   });
 
-  test('TEL-001-J12-s2: ARPU KPI panel — 5 KPIs (ARPU/Churn/NetAdds/EBITDA/Capex)', async ({ page }) => {
+  test('TEL-001-J12-s2: ARPU KPI panel — 5 KPIs (ARPU/Churn/NetAdds/EBITDA/Capex)', async ({
+    page,
+  }) => {
     await page.goto('/sector/telecom');
     const kpi = page.locator('[data-testid="tel-kpi-panel"]');
     await expect(kpi).toBeVisible();
@@ -214,7 +244,9 @@ test.describe('PICK C v0.4.1: TEL-001 Telecom × Journey 12/02 (8 steps)', () =>
     await page.goto('/sector/telecom/churn');
     await page.locator('[data-testid="period"]').selectOption({ label: /2026-Q1/i });
     await page.locator('button:has-text("Calculate")').click();
-    await expect(page.locator('[data-testid="churn-rate-result"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="churn-rate-result"]')).toBeVisible({
+      timeout: 10_000,
+    });
     await expect(page.locator('[data-testid="churn-rate-result"]')).toContainText(/%/);
   });
 
@@ -232,7 +264,9 @@ test.describe('PICK C v0.4.1: TEL-001 Telecom × Journey 12/02 (8 steps)', () =>
     await page.locator('[data-testid="operating-expenses"]').fill('70000000');
     await page.locator('[data-testid="depreciation"]').fill('5000000');
     await page.locator('button:has-text("Calculate")').click();
-    await expect(page.locator('[data-testid="ebitda-result"]')).toContainText(/30,?000,?000/, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="ebitda-result"]')).toContainText(/30,?000,?000/, {
+      timeout: 10_000,
+    });
     await expect(page.locator('[data-testid="ebitda-margin-result"]')).toContainText(/30%/);
   });
 
@@ -241,7 +275,9 @@ test.describe('PICK C v0.4.1: TEL-001 Telecom × Journey 12/02 (8 steps)', () =>
     await page.locator('[data-testid="total-capex"]').fill('50000000');
     await page.locator('[data-testid="total-subscribers"]').fill('1000000');
     await page.locator('button:has-text("Calculate")').click();
-    await expect(page.locator('[data-testid="capex-per-sub-result"]')).toContainText(/\$50/, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="capex-per-sub-result"]')).toContainText(/\$50/, {
+      timeout: 10_000,
+    });
   });
 
   test('TEL-001-J02-s7: create segment + ARPU (Journey 02 scenario)', async ({ page }) => {
@@ -251,10 +287,14 @@ test.describe('PICK C v0.4.1: TEL-001 Telecom × Journey 12/02 (8 steps)', () =>
     await page.locator('input[name="monthly_revenue"]').fill('75000000');
     await page.locator('input[name="subscriber_count"]').fill('500000');
     await page.locator('button:has-text("Create")').click();
-    await expect(page.locator('[data-testid="segment-status"]')).toContainText(/created|saved/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="segment-status"]')).toContainText(/created|saved/i, {
+      timeout: 10_000,
+    });
   });
 
-  test('TEL-001-J12-s8: CohortHeatmap + TowerROI components visible (Vesta §11.3 col 4)', async ({ page }) => {
+  test('TEL-001-J12-s8: CohortHeatmap + TowerROI components visible (Vesta §11.3 col 4)', async ({
+    page,
+  }) => {
     await page.goto('/sector/telecom');
     await expect(page.locator('[data-testid="cohort-heatmap"]')).toBeVisible();
     await expect(page.locator('[data-testid="tower-roi"]')).toBeVisible();
@@ -265,7 +305,9 @@ test.describe('PICK C v0.4.1: TEL-001 Telecom × Journey 12/02 (8 steps)', () =>
 // SECTOR 4: TEL-001-CHURN Telecom Churn
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('PICK C v0.4.1: TEL-001-CHURN Telecom Churn × Journey 02 (6 steps)', () => {
-  test.beforeEach(async ({ page }) => { await signInAsSector(page, 'telecom-churn'); });
+  test.beforeEach(async ({ page }) => {
+    await signInAsSector(page, 'telecom-churn');
+  });
 
   test('CHURN-001: Churn rate calc (sub-persona Journey 02)', async ({ page }) => {
     await page.goto('/sector/telecom/churn/calculate');
@@ -273,7 +315,9 @@ test.describe('PICK C v0.4.1: TEL-001-CHURN Telecom Churn × Journey 02 (6 steps
     await page.locator('[data-testid="end-subscribers"]').fill('975000');
     await page.locator('[data-testid="new-adds"]').fill('15000');
     await page.locator('button:has-text("Calculate Churn")').click();
-    await expect(page.locator('[data-testid="churn-calc-result"]')).toContainText(/4%/, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="churn-calc-result"]')).toContainText(/4%/, {
+      timeout: 10_000,
+    });
   });
 
   test('CHURN-002: Cohort analysis (monthly retention)', async ({ page }) => {
@@ -301,7 +345,9 @@ test.describe('PICK C v0.4.1: TEL-001-CHURN Telecom Churn × Journey 02 (6 steps
     await page.goto('/sector/telecom/churn/prevention');
     await page.locator('[data-testid="prevention-strategy"]').selectOption('loyalty_discount');
     await page.locator('button:has-text("Simulate")').click();
-    await expect(page.locator('[data-testid="prevention-impact"]')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-testid="prevention-impact"]')).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test('CHURN-006: 30-day vs 90-day churn comparison', async ({ page }) => {
@@ -330,7 +376,10 @@ test.describe('PICK C v0.4.1: Sector Temporal Edge Cases (4 tests)', () => {
     await page.goto('/sector/real-estate/tax');
     await page.locator('[data-testid="assessment-date"]').fill('2026-01-01');
     await page.locator('button:has-text("Generate Assessment")').click();
-    await expect(page.locator('[data-testid="assessment-result"]')).toContainText(/assessed value/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="assessment-result"]')).toContainText(
+      /assessed value/i,
+      { timeout: 10_000 }
+    );
   });
 
   test('T-sec-3: cell tower lease end date (TEL)', async ({ page }) => {
@@ -349,7 +398,6 @@ test.describe('PICK C v0.4.1: Sector Temporal Edge Cases (4 tests)', () => {
     await expect(page.locator('[data-testid="fcc-deadline"]')).toBeVisible({ timeout: 10_000 });
   });
 });
-
 
 // V3 e.ix.7 SECTOR TEMPORAL EDGE CASES #11-15 (5 NEW tests, 7 sub-tests)
 // Owner: Chronos (slot 019ecc6f-1c46-78e0-b122-15d43a3f1900) -> Apollo (apply per CAVEMAN PERSIST)
@@ -390,8 +438,12 @@ test.describe('PICK D: V3 e.ix.7 Sector Temporal Edge Cases #11-15 (5 NEW tests,
     await page.locator('[data-testid="fiscal-calendar-type"]').selectOption('retail_52wk_454');
     await page.locator('[data-testid="fiscal-year"]').fill('2026');
     await page.locator('button:has-text("Generate Periods")').click();
-    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toBeVisible({ timeout: 10_000 });
-    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toContainText(/2027-01-31|2027-02-01/);
+    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toContainText(
+      /2027-01-31|2027-02-01/
+    );
   });
 
   test('V3-#11b: FY 53-wk leap year period extension (defense)', async ({ page }) => {
@@ -400,17 +452,23 @@ test.describe('PICK D: V3 e.ix.7 Sector Temporal Edge Cases #11-15 (5 NEW tests,
     await page.locator('[data-testid="fiscal-calendar-type"]').selectOption('defense_53wk_445');
     await page.locator('[data-testid="fiscal-year"]').fill('2028');
     await page.locator('button:has-text("Generate Periods")').click();
-    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="period-boundary-q4-end"]')).toBeVisible({
+      timeout: 10_000,
+    });
     await expect(page.locator('[data-testid="period-count-53wk"]')).toContainText(/53/);
   });
 
   // Edge Case #12: Compound Period (ASC 815 hedge accounting)
-  test('V3-#12: Compound period (Q1 + monthly sub-periods for ASC 815 hedge matching)', async ({ page }) => {
+  test('V3-#12: Compound period (Q1 + monthly sub-periods for ASC 815 hedge matching)', async ({
+    page,
+  }) => {
     await signInAsSector(page, 'real-estate');
     await page.goto('/sector/real-estate/hedge-accounting');
     await page.locator('[data-testid="hedge-period-type"]').selectOption('compound_q1_monthly');
     await page.locator('button:has-text("Lock Compound Period")').click();
-    await expect(page.locator('[data-testid="compound-period-locked"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="compound-period-locked"]')).toBeVisible({
+      timeout: 10_000,
+    });
     await expect(page.locator('[data-testid="sub-periods-q1"]')).toContainText(/Jan|Feb|Mar/);
   });
 
@@ -420,7 +478,9 @@ test.describe('PICK D: V3 e.ix.7 Sector Temporal Edge Cases #11-15 (5 NEW tests,
     await page.goto('/sector/telecom/sequence-id');
     await page.locator('[data-testid="region-selector"]').selectOption('US');
     await page.locator('button:has-text("Generate Sequence ID")').click();
-    await expect(page.locator('[data-testid="sequence-id-output"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="sequence-id-output"]')).toBeVisible({
+      timeout: 5_000,
+    });
     await expect(page.locator('[data-testid="sequence-id-output"]')).toContainText(/^US-\d+-/);
   });
 
@@ -436,13 +496,17 @@ test.describe('PICK D: V3 e.ix.7 Sector Temporal Edge Cases #11-15 (5 NEW tests,
   });
 
   // Edge Case #14: Sub-Millisecond Lock (SOX 404 audit trail)
-  test('V3-#14: Sub-millisecond lock with nanosecond precision (SOX 404 audit)', async ({ page }) => {
+  test('V3-#14: Sub-millisecond lock with nanosecond precision (SOX 404 audit)', async ({
+    page,
+  }) => {
     await signInAsSector(page, 'telecom');
     await page.goto('/sector/telecom/lock-test');
     await page.locator('[data-testid="lock-region"]').selectOption('US');
     await page.locator('[data-testid="lock-count"]').fill('1000');
     await page.locator('button:has-text("Run Sub-ms Lock Test")').click();
-    await expect(page.locator('[data-testid="lock-result-median-ms"]')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-testid="lock-result-median-ms"]')).toBeVisible({
+      timeout: 30_000,
+    });
     // Median should be < 1ms (sub-ms precision verified)
     const medianText = await page.locator('[data-testid="lock-result-median-ms"]').textContent();
     const median = parseFloat(medianText?.replace(/[^\d.]/g, '') || '0');
@@ -456,7 +520,9 @@ test.describe('PICK D: V3 e.ix.7 Sector Temporal Edge Cases #11-15 (5 NEW tests,
     await page.locator('[data-testid="test-regions"]').fill('US,EU,APAC,default');
     await page.locator('[data-testid="iterations"]').fill('100');
     await page.locator('button:has-text("Run Monotonicity Test")').click();
-    await expect(page.locator('[data-testid="monotonicity-result"]')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-testid="monotonicity-result"]')).toBeVisible({
+      timeout: 15_000,
+    });
     await expect(page.locator('[data-testid="collision-count"]')).toContainText(/^0$/);
   });
 });

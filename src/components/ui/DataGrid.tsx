@@ -73,7 +73,9 @@ export const DataGrid: React.FC<DataGridProps> = ({
     } else if (rows.length === 0) {
       setRowCountAnnouncement('No rows to display');
     } else {
-      setRowCountAnnouncement(`Table updated: ${rows.length} row${rows.length === 1 ? '' : 's'} displayed`);
+      setRowCountAnnouncement(
+        `Table updated: ${rows.length} row${rows.length === 1 ? '' : 's'} displayed`
+      );
     }
   }, [rows.length, loading]);
 

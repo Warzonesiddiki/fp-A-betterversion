@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // VULCAN — CHAOS TEST 07: Network partition recovery (2s)
 // =============================================================================
 // Chaos: simulate 2s network partition (heartbeat timeout); verify
@@ -75,14 +75,20 @@ class NetworkPartitionDetector {
     }
   }
 
-  isPartitioned(): boolean { return !this.isOnline; }
-  getDetectionLatencyMs(): number { return this.detectionEndAt - this.detectionStartAt; }
-  getOfflineModeEntryMs(): number { return this.offlineEnteredAt - this.detectionStartAt; }
+  isPartitioned(): boolean {
+    return !this.isOnline;
+  }
+  getDetectionLatencyMs(): number {
+    return this.detectionEndAt - this.detectionStartAt;
+  }
+  getOfflineModeEntryMs(): number {
+    return this.offlineEnteredAt - this.detectionStartAt;
+  }
 }
 
 describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
   const HEARTBEAT_INTERVAL = 100; // 100ms (faster than production for test)
-  const HEARTBEAT_TIMEOUT = 200;  // 200ms (production is 10s but scaled down for test)
+  const HEARTBEAT_TIMEOUT = 200; // 200ms (production is 10s but scaled down for test)
   const PARTITION_DURATION = 2000; // 2s
 
   it('SCENARIO A: 2s partition — detection + offline + queue + drain + replay', async () => {
@@ -91,7 +97,7 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
 
     // Phase 1: ONLINE, heartbeat every 100ms
     const heartbeatInterval = setInterval(() => detector.receiveHeartbeat(), HEARTBEAT_INTERVAL);
-    await new Promise(r => setTimeout(r, 200)); // online for 200ms
+    await new Promise((r) => setTimeout(r, 200)); // online for 200ms
     expect(detector.isPartitioned()).toBe(false);
 
     // Phase 2: SIMULATE PARTITION (stop receiving heartbeats)
@@ -102,7 +108,7 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
     const editStart = Date.now();
     for (let i = 0; i < 5; i++) {
       queue.push({ id: i, ts: Date.now() });
-      await new Promise(r => setTimeout(r, 50)); // space edits 50ms apart
+      await new Promise((r) => setTimeout(r, 50)); // space edits 50ms apart
     }
     const editEnd = Date.now();
 
@@ -116,7 +122,7 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
     // Phase 5: Wait until partition "heals" (PARTITION_DURATION total)
     const elapsedPartition = Date.now() - partitionStart;
     if (elapsedPartition < PARTITION_DURATION) {
-      await new Promise(r => setTimeout(r, PARTITION_DURATION - elapsedPartition));
+      await new Promise((r) => setTimeout(r, PARTITION_DURATION - elapsedPartition));
     }
 
     // Phase 6: PARTITION HEALED — heartbeat resumes
@@ -133,7 +139,7 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
 
     // Verify
     expect(replayed.length).toBe(5);
-    expect(replayed.map(e => e.id)).toEqual([0, 1, 2, 3, 4]); // ORDER preserved
+    expect(replayed.map((e) => e.id)).toEqual([0, 1, 2, 3, 4]); // ORDER preserved
     expect(queue.length).toBe(0); // fully drained
 
     const record: ChaosNetPartitionRecord = {
@@ -148,15 +154,19 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
       drainTimeMs: drainEnd - drainStart,
       editsReplayed: replayed.length,
       dataLoss: false,
-      pass: replayed.length === 5 && replayed.map(e => e.id).join(',') === '0,1,2,3,4',
+      pass: replayed.length === 5 && replayed.map((e) => e.id).join(',') === '0,1,2,3,4',
       target: '2s partition → 5 edits queued → 5 edits replayed in order, 0 loss',
       serviceFile: 'src/services/WebSocketManager.ts',
       serviceLineRef: 'See WebSocketManager.ts:180-260 (heartbeat + offline mode)',
     };
     records.push(record);
 
-    console.log(`[VULCAN] Chaos07-A: partition 2s, queued 5 edits, replayed ${replayed.length}/${replayed.length} in order`);
-    console.log(`[VULCAN] Chaos07-A: detection=${record.detectionLatencyMs}ms, offline-entry=${record.offlineModeEntryMs}ms, reconnect=${record.reconnectTimeMs}ms, drain=${record.drainTimeMs}ms`);
+    console.log(
+      `[VULCAN] Chaos07-A: partition 2s, queued 5 edits, replayed ${replayed.length}/${replayed.length} in order`
+    );
+    console.log(
+      `[VULCAN] Chaos07-A: detection=${record.detectionLatencyMs}ms, offline-entry=${record.offlineModeEntryMs}ms, reconnect=${record.reconnectTimeMs}ms, drain=${record.drainTimeMs}ms`
+    );
   }, 10_000);
 
   it('SCENARIO B: 5s partition — 50 rapid edits queued — all survive', async () => {
@@ -165,11 +175,11 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
 
     // ONLINE for 200ms
     const hb = setInterval(() => detector.receiveHeartbeat(), HEARTBEAT_INTERVAL);
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 200));
     clearInterval(hb);
 
     // Wait for partition to be DETECTABLE (HEARTBEAT_TIMEOUT + buffer)
-    await new Promise(r => setTimeout(r, HEARTBEAT_TIMEOUT + 50));
+    await new Promise((r) => setTimeout(r, HEARTBEAT_TIMEOUT + 50));
 
     // PARTITION: 50 rapid edits
     const PARTITION_MS = 5000;
@@ -185,7 +195,7 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
 
     // Wait full partition
     const elapsed = Date.now() - start;
-    if (elapsed < PARTITION_MS) await new Promise(r => setTimeout(r, PARTITION_MS - elapsed));
+    if (elapsed < PARTITION_MS) await new Promise((r) => setTimeout(r, PARTITION_MS - elapsed));
 
     // Heal + drain
     const reconnectStart = Date.now();
@@ -198,7 +208,9 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
     const drainEnd = Date.now();
 
     expect(replayed.length).toBe(50);
-    expect(replayed.map(e => e.id).join(',') === Array.from({ length: 50 }, (_, i) => i).join(',')).toBe(true);
+    expect(
+      replayed.map((e) => e.id).join(',') === Array.from({ length: 50 }, (_, i) => i).join(',')
+    ).toBe(true);
 
     const record: ChaosNetPartitionRecord = {
       scenario: 'chaos-net-partition-5s-50-edits',
@@ -219,7 +231,9 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
     };
     records.push(record);
 
-    console.log(`[VULCAN] Chaos07-B: partition 5s, queue 50 edits in ${queueTime}ms, drain in ${drainEnd - drainStart}ms`);
+    console.log(
+      `[VULCAN] Chaos07-B: partition 5s, queue 50 edits in ${queueTime}ms, drain in ${drainEnd - drainStart}ms`
+    );
   }, 15_000);
 
   it('SCENARIO C: flaky network (3 partitions in 10s) — all 3 survive', async () => {
@@ -236,7 +250,7 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
       clearInterval(hb);
 
       // Wait for detection
-      await new Promise(r => setTimeout(r, HEARTBEAT_TIMEOUT + 50));
+      await new Promise((r) => setTimeout(r, HEARTBEAT_TIMEOUT + 50));
       detector.tick();
       expect(detector.isPartitioned()).toBe(true);
 
@@ -246,7 +260,7 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
       }
 
       // Wait full partition
-      await new Promise(r => setTimeout(r, partitionDurationMs));
+      await new Promise((r) => setTimeout(r, partitionDurationMs));
 
       // Heal
       detector.receiveHeartbeat();
@@ -279,7 +293,9 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
     };
     records.push(record);
 
-    console.log(`[VULCAN] Chaos07-C: 3 flaky partitions, ${replayed.length} edits queued + replayed in order`);
+    console.log(
+      `[VULCAN] Chaos07-C: 3 flaky partitions, ${replayed.length} edits queued + replayed in order`
+    );
   }, 30_000);
 
   afterAll(() => {
@@ -289,6 +305,8 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
       path.join(outDir, '.raw-chaos-network-partition.json'),
       JSON.stringify(records, null, 2)
     );
-    console.log(`[VULCAN] Wrote ${records.length} network-partition records to .raw-chaos-network-partition.json`);
+    console.log(
+      `[VULCAN] Wrote ${records.length} network-partition records to .raw-chaos-network-partition.json`
+    );
   });
 });

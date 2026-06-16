@@ -14,7 +14,10 @@ export type AuditAction =
   | 'view'
   | 'comment';
 
-export interface ChainHashEntry { prevHash: string; entryHash: string }
+export interface ChainHashEntry {
+  prevHash: string;
+  entryHash: string;
+}
 
 export interface AuditEntry {
   id: string;
@@ -55,7 +58,10 @@ export class AuditLogEngine {
   log(entry: Omit<AuditEntry, 'id' | 'timestamp'>): AuditEntry {
     const auditEntry: AuditEntry = {
       ...entry,
-      id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `audit-${Date.now()}-${this.fallbackRandomHex(12)}`,
+      id:
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : `audit-${Date.now()}-${this.fallbackRandomHex(12)}`,
       timestamp: new Date().toISOString(),
     };
     this.entries.push(auditEntry);
@@ -114,11 +120,38 @@ export class AuditLogEngine {
 
   exportCSV(): string {
     // SECURITY (Phase 7 audit, Hephaestus PATCH 4): escape CWE-1236 formula-injection vectors (=, +, -, @, tab, CR) by prefixing single quote. RFC 4180 quote for comma/quote/newline.
-    const headers = this.escapeCsvRow(['id', 'timestamp', 'userId', 'userName', 'action', 'resource', 'resourceId', 'oldValue', 'newValue', 'ipAddress', 'sessionId', 'details', 'metadata']);
+    const headers = this.escapeCsvRow([
+      'id',
+      'timestamp',
+      'userId',
+      'userName',
+      'action',
+      'resource',
+      'resourceId',
+      'oldValue',
+      'newValue',
+      'ipAddress',
+      'sessionId',
+      'details',
+      'metadata',
+    ]);
     const rows = this.entries
-      .map(
-        (e) =>
-          this.escapeCsvRow([e.id, e.timestamp, e.userId, e.userName, e.action, e.resource, e.resourceId, e.oldValue == null ? null : String(e.oldValue), e.newValue == null ? null : String(e.newValue), e.ipAddress, e.sessionId, e.details, e.metadata ? JSON.stringify(e.metadata) : null])
+      .map((e) =>
+        this.escapeCsvRow([
+          e.id,
+          e.timestamp,
+          e.userId,
+          e.userName,
+          e.action,
+          e.resource,
+          e.resourceId,
+          e.oldValue == null ? null : String(e.oldValue),
+          e.newValue == null ? null : String(e.newValue),
+          e.ipAddress,
+          e.sessionId,
+          e.details,
+          e.metadata ? JSON.stringify(e.metadata) : null,
+        ])
       )
       .join('\n');
     return headers + '\n' + rows;
@@ -154,7 +187,14 @@ export class AuditLogEngine {
     const s = String(value);
     if (s.length === 0) return '';
     const first = s.charAt(0);
-    if (first === '=' || first === '+' || first === '-' || first === '@' || first === '\t' || first === '\r') {
+    if (
+      first === '=' ||
+      first === '+' ||
+      first === '-' ||
+      first === '@' ||
+      first === '\t' ||
+      first === '\r'
+    ) {
       return `'${s}`;
     }
     if (s.includes(',') || s.includes('"') || s.includes('\n')) {
@@ -175,7 +215,9 @@ export class AuditLogEngine {
     } else {
       for (let i = 0; i < byteLen; i++) bytes[i] = Math.floor(Math.random() * 256);
     }
-    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('').slice(0, hexChars);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0'))
+      .join('')
+      .slice(0, hexChars);
   }
 
   // ===========================================================================
@@ -190,7 +232,11 @@ export class AuditLogEngine {
   private _lastChainHash: string = '0'.repeat(64);
   private _signingKey: CryptoKey | null = null;
   private _queue: AuditEntry[] = [];
-  private _queueConfig: { maxBatchSize: number; maxBatchDelayMs: number; onFlush?: (entries: AuditEntry[]) => void | Promise<void> } = {
+  private _queueConfig: {
+    maxBatchSize: number;
+    maxBatchDelayMs: number;
+    onFlush?: (entries: AuditEntry[]) => void | Promise<void>;
+  } = {
     maxBatchSize: 50,
     maxBatchDelayMs: 250,
   };
@@ -232,7 +278,9 @@ export class AuditLogEngine {
   }
 
   /** PATCH 8.1: Log a new entry AND extend the SHA-256 hash chain. */
-  async logChain(entry: Omit<AuditEntry, 'id' | 'timestamp'>): Promise<AuditEntry & { prevHash: string; entryHash: string }> {
+  async logChain(
+    entry: Omit<AuditEntry, 'id' | 'timestamp'>
+  ): Promise<AuditEntry & { prevHash: string; entryHash: string }> {
     const base = this.log(entry);
     const prevHash = this._lastChainHash;
     const entryHash = await this._hashEntry(base, prevHash);
@@ -252,7 +300,12 @@ export class AuditLogEngine {
     actualHash?: string;
   }> {
     if (this.entries.length === 0) {
-      return { ok: true, totalEntries: 0, checkedAt: new Date().toISOString(), reason: 'EMPTY_CHAIN' };
+      return {
+        ok: true,
+        totalEntries: 0,
+        checkedAt: new Date().toISOString(),
+        reason: 'EMPTY_CHAIN',
+      };
     }
     let prevHash = '0'.repeat(64);
     for (let i = 0; i < this.entries.length; i++) {
@@ -397,7 +450,11 @@ export class AuditLogEngine {
   // -- PATCH 8.4: Retention policy --------------------------------------------
 
   /** PATCH 8.4: Install a new retention policy and start the auto-prune timer. */
-  setRetentionPolicy(policy: { maxEntries?: number; maxAgeDays?: number; autoPruneIntervalMs?: number }): void {
+  setRetentionPolicy(policy: {
+    maxEntries?: number;
+    maxAgeDays?: number;
+    autoPruneIntervalMs?: number;
+  }): void {
     if (typeof policy.maxEntries === 'number' && policy.maxEntries > 0) {
       this._retention.maxEntries = policy.maxEntries;
       this.maxEntries = policy.maxEntries;
@@ -450,7 +507,4 @@ export class AuditLogEngine {
     this._chainedHashes.clear();
     this._signingKey = null;
   }
-
 }
-
-

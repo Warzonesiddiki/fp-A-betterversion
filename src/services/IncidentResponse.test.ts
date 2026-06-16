@@ -117,30 +117,36 @@ describe('IncidentResponse', () => {
     });
 
     it('throws on empty title', () => {
-      expect(() => ir.createIncident({
-        title: '',
-        description: 'desc',
-        severity: 'HIGH',
-        reporter: 'r@example.com',
-      })).toThrow(IncidentError);
+      expect(() =>
+        ir.createIncident({
+          title: '',
+          description: 'desc',
+          severity: 'HIGH',
+          reporter: 'r@example.com',
+        })
+      ).toThrow(IncidentError);
     });
 
     it('throws on empty description', () => {
-      expect(() => ir.createIncident({
-        title: 'title',
-        description: '   ',
-        severity: 'HIGH',
-        reporter: 'r@example.com',
-      })).toThrow(IncidentError);
+      expect(() =>
+        ir.createIncident({
+          title: 'title',
+          description: '   ',
+          severity: 'HIGH',
+          reporter: 'r@example.com',
+        })
+      ).toThrow(IncidentError);
     });
 
     it('throws on empty reporter', () => {
-      expect(() => ir.createIncident({
-        title: 'title',
-        description: 'desc',
-        severity: 'HIGH',
-        reporter: '',
-      })).toThrow(IncidentError);
+      expect(() =>
+        ir.createIncident({
+          title: 'title',
+          description: 'desc',
+          severity: 'HIGH',
+          reporter: '',
+        })
+      ).toThrow(IncidentError);
     });
 
     it('persists the incident to the adapter', () => {
@@ -195,10 +201,14 @@ describe('IncidentResponse', () => {
     });
 
     it('updates title and description', () => {
-      const updated = ir.updateIncident(incident.id, {
-        title: 'New title',
-        description: 'New desc',
-      }, 'r@example.com');
+      const updated = ir.updateIncident(
+        incident.id,
+        {
+          title: 'New title',
+          description: 'New desc',
+        },
+        'r@example.com'
+      );
       expect(updated.title).toBe('New title');
       expect(updated.description).toBe('New desc');
     });
@@ -235,7 +245,12 @@ describe('IncidentResponse', () => {
 
   describe('assignIncident', () => {
     it('assigns to a user', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       const updated = ir.assignIncident(inc.id, 'lead@e.com', 'r@e.com');
       expect(updated.assignee).toBe('lead@e.com');
       const evt = updated.timeline.find((e) => e.type === 'assigned');
@@ -245,14 +260,24 @@ describe('IncidentResponse', () => {
 
   describe('closeIncident', () => {
     it('closes an incident', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       const closed = ir.closeIncident(inc.id, 'r@e.com', 'fixed');
       expect(closed.status).toBe('closed');
       expect(closed.closedAt).toBeDefined();
     });
 
     it('emits incident_closed audit event', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       auditEvents.length = 0;
       ir.closeIncident(inc.id, 'r@e.com');
       const closeEvent = auditEvents.find((e) => e.type === 'incident_closed');
@@ -262,7 +287,12 @@ describe('IncidentResponse', () => {
 
   describe('reopenIncident', () => {
     it('reopens a closed incident', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       ir.closeIncident(inc.id, 'r@e.com');
       const reopened = ir.reopenIncident(inc.id, 'r@e.com', 'Recurrence');
       expect(reopened.status).toBe('investigating');
@@ -270,7 +300,12 @@ describe('IncidentResponse', () => {
     });
 
     it('throws on empty reason', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       ir.closeIncident(inc.id, 'r@e.com');
       expect(() => ir.reopenIncident(inc.id, 'r@e.com', '')).toThrow(IncidentError);
     });
@@ -280,7 +315,12 @@ describe('IncidentResponse', () => {
 
   describe('addTimelineEvent', () => {
     it('adds a timeline event', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       const updated = ir.addTimelineEvent(inc.id, {
         type: 'timeline_event',
         actor: 'lead@e.com',
@@ -293,21 +333,35 @@ describe('IncidentResponse', () => {
     });
 
     it('throws on empty actor', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
-      expect(() => ir.addTimelineEvent(inc.id, {
-        type: 'timeline_event',
-        actor: '',
-        message: 'msg',
-      })).toThrow(IncidentError);
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
+      expect(() =>
+        ir.addTimelineEvent(inc.id, {
+          type: 'timeline_event',
+          actor: '',
+          message: 'msg',
+        })
+      ).toThrow(IncidentError);
     });
 
     it('throws on empty message', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
-      expect(() => ir.addTimelineEvent(inc.id, {
-        type: 'timeline_event',
-        actor: 'r@e.com',
-        message: '   ',
-      })).toThrow(IncidentError);
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
+      expect(() =>
+        ir.addTimelineEvent(inc.id, {
+          type: 'timeline_event',
+          actor: 'r@e.com',
+          message: '   ',
+        })
+      ).toThrow(IncidentError);
     });
   });
 
@@ -315,7 +369,12 @@ describe('IncidentResponse', () => {
 
   describe('artifacts', () => {
     it('attaches an artifact', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       const updated = ir.attachArtifact(inc.id, {
         type: 'log',
         name: 'auth.log',
@@ -327,20 +386,37 @@ describe('IncidentResponse', () => {
     });
 
     it('removes an artifact', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       const withArt = ir.attachArtifact(inc.id, { type: 'log', name: 'x', attachedBy: 'r@e.com' });
       const withoutArt = ir.removeArtifact(inc.id, withArt.artifacts[0].id, 'r@e.com');
       expect(withoutArt.artifacts.length).toBe(0);
     });
 
     it('throws on unknown artifact id', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       expect(() => ir.removeArtifact(inc.id, 'art-nope', 'r@e.com')).toThrow(IncidentError);
     });
 
     it('throws on empty name', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
-      expect(() => ir.attachArtifact(inc.id, { type: 'log', name: '', attachedBy: 'r@e.com' })).toThrow(IncidentError);
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
+      expect(() =>
+        ir.attachArtifact(inc.id, { type: 'log', name: '', attachedBy: 'r@e.com' })
+      ).toThrow(IncidentError);
     });
   });
 
@@ -348,7 +424,12 @@ describe('IncidentResponse', () => {
 
   describe('postmortem', () => {
     it('writes a postmortem on a resolved incident', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       ir.updateIncident(inc.id, { status: 'resolved' }, 'r@e.com');
       const withPM = ir.writePostmortem(inc.id, {
         rootCause: 'Bug in auth middleware',
@@ -362,7 +443,12 @@ describe('IncidentResponse', () => {
     });
 
     it('signs off a postmortem', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       ir.updateIncident(inc.id, { status: 'resolved' }, 'r@e.com');
       const withPM = ir.writePostmortem(inc.id, {
         rootCause: 'X',
@@ -375,18 +461,30 @@ describe('IncidentResponse', () => {
     });
 
     it('throws on missing postmortem at sign-off', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       expect(() => ir.signOffPostmortem(inc.id, 'd@e.com')).toThrow(IncidentError);
     });
 
     it('throws when writing postmortem on open incident', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
-      expect(() => ir.writePostmortem(inc.id, {
-        rootCause: 'X',
-        lessonsLearned: 'Y',
-        actionItems: [],
-        writtenBy: 'r@e.com',
-      })).toThrow(IncidentError);
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
+      expect(() =>
+        ir.writePostmortem(inc.id, {
+          rootCause: 'X',
+          lessonsLearned: 'Y',
+          actionItems: [],
+          writtenBy: 'r@e.com',
+        })
+      ).toThrow(IncidentError);
     });
   });
 
@@ -394,7 +492,12 @@ describe('IncidentResponse', () => {
 
   describe('SLA tracking', () => {
     it('getSlaStatus returns limits and elapsed time', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'CRITICAL', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'CRITICAL',
+        reporter: 'r@e.com',
+      });
       const sla = ir.getSlaStatus(inc.id);
       expect(sla).not.toBeNull();
       expect(sla?.responseSla.limit).toBe(15);
@@ -463,7 +566,12 @@ describe('IncidentResponse', () => {
 
   describe('deleteIncident', () => {
     it('deletes an incident', () => {
-      const inc = ir.createIncident({ title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com' });
+      const inc = ir.createIncident({
+        title: 'A',
+        description: 'a',
+        severity: 'HIGH',
+        reporter: 'r@e.com',
+      });
       expect(ir.deleteIncident(inc.id)).toBe(true);
       expect(ir.getIncident(inc.id)).toBeNull();
     });
@@ -485,22 +593,48 @@ describe('IncidentResponse', () => {
     it('throws when localStorage is unavailable on set', () => {
       if (typeof localStorage === 'undefined') return;
       const adapter = new LocalStorageIncidentAdapter();
-      expect(() => adapter.save({
-        schemaVersion: 1, id: 'a', title: 't', description: 'd', severity: 'HIGH',
-        status: 'open', createdAt: 0, updatedAt: 0, reporter: 'r', affectedSystems: [],
-        affectedUsers: 0, tags: [], timeline: [], artifacts: [],
-        responseSlaMinutes: 60, resolutionSlaMinutes: 1440,
-      })).not.toThrow();
+      expect(() =>
+        adapter.save({
+          schemaVersion: 1,
+          id: 'a',
+          title: 't',
+          description: 'd',
+          severity: 'HIGH',
+          status: 'open',
+          createdAt: 0,
+          updatedAt: 0,
+          reporter: 'r',
+          affectedSystems: [],
+          affectedUsers: 0,
+          tags: [],
+          timeline: [],
+          artifacts: [],
+          responseSlaMinutes: 60,
+          resolutionSlaMinutes: 1440,
+        })
+      ).not.toThrow();
     });
 
     it('round-trips data via localStorage', () => {
       if (typeof localStorage === 'undefined') return;
       const adapter = new LocalStorageIncidentAdapter('test-incidents');
       const incident: Incident = {
-        schemaVersion: 1, id: 'i1', title: 't', description: 'd', severity: 'HIGH',
-        status: 'open', createdAt: 0, updatedAt: 0, reporter: 'r', affectedSystems: [],
-        affectedUsers: 0, tags: [], timeline: [], artifacts: [],
-        responseSlaMinutes: 60, resolutionSlaMinutes: 1440,
+        schemaVersion: 1,
+        id: 'i1',
+        title: 't',
+        description: 'd',
+        severity: 'HIGH',
+        status: 'open',
+        createdAt: 0,
+        updatedAt: 0,
+        reporter: 'r',
+        affectedSystems: [],
+        affectedUsers: 0,
+        tags: [],
+        timeline: [],
+        artifacts: [],
+        responseSlaMinutes: 60,
+        resolutionSlaMinutes: 1440,
       };
       adapter.save(incident);
       const retrieved = adapter.get('i1');
@@ -512,11 +646,18 @@ describe('IncidentResponse', () => {
 
   describe('audit integration', () => {
     it('does not throw when audit emitter throws', () => {
-      const badEmitter: AuditEmitter = () => { throw new Error('audit fail'); };
+      const badEmitter: AuditEmitter = () => {
+        throw new Error('audit fail');
+      };
       const ir2 = IncidentResponse.create(new InMemoryIncidentAdapter(), badEmitter);
-      expect(() => ir2.createIncident({
-        title: 'A', description: 'a', severity: 'HIGH', reporter: 'r@e.com',
-      })).not.toThrow();
+      expect(() =>
+        ir2.createIncident({
+          title: 'A',
+          description: 'a',
+          severity: 'HIGH',
+          reporter: 'r@e.com',
+        })
+      ).not.toThrow();
     });
   });
 });

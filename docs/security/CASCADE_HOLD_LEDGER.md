@@ -15,18 +15,19 @@
 
 ## Pre-Populated Entries (4 known CATCH #207 instances)
 
-| CHB ID | Short SHA | Full SHA | Date | Bundled Muses | T-IDs | Co-Authors | CATCH Ref | Resolution |
-|--------|-----------|----------|------|---------------|-------|------------|-----------|------------|
-| CHB-001 | 8548ff4a | 8548ff4a | 2026-06-15 | Hephaestus + Prometheus | T-HEP-060, T-PR-039 | Hephaestus, Prometheus | CATCH #189 (CASCADE-HOLD-RACE-CONDITION 3rd) | T-HEP-060 + T-PR-039 acknowledged in commit message |
-| CHB-002 | b3d4e25a | b3d4e25a | 2026-06-16 | Prometheus + Hermes | T-PR-051, T-HE-019 | Prometheus, Hermes | CATCH-202 LOCKOUT-CASCADE-CASE-STUDY | Sub-class H AUTHOR + J co-author |
-| CHB-003 | 35860faa | 35860faa | 2026-06-16 | Vesta 4/5 + Artemis 1/5 | T-VS-007, T-AR-005 | Vesta, Artemis | CATCH #207 #4 (Vesta CASCADE-HOLD-BUNDLE) | A11Y §4.3 attribution |
-| CHB-004 | d4cd6bbe | d4cd6bbe | 2026-06-16 | Vesta 4/5 + Artemis 1/5 | T-VS-008, T-AR-006 | Vesta, Artemis | CATCH #207 #4 | SECTOR_HERMES_INTEGRATION_TEST v0.1 + A11Y §4.3 |
+| CHB ID  | Short SHA | Full SHA | Date       | Bundled Muses           | T-IDs               | Co-Authors             | CATCH Ref                                    | Resolution                                          |
+| ------- | --------- | -------- | ---------- | ----------------------- | ------------------- | ---------------------- | -------------------------------------------- | --------------------------------------------------- |
+| CHB-001 | 8548ff4a  | 8548ff4a | 2026-06-15 | Hephaestus + Prometheus | T-HEP-060, T-PR-039 | Hephaestus, Prometheus | CATCH #189 (CASCADE-HOLD-RACE-CONDITION 3rd) | T-HEP-060 + T-PR-039 acknowledged in commit message |
+| CHB-002 | b3d4e25a  | b3d4e25a | 2026-06-16 | Prometheus + Hermes     | T-PR-051, T-HE-019  | Prometheus, Hermes     | CATCH-202 LOCKOUT-CASCADE-CASE-STUDY         | Sub-class H AUTHOR + J co-author                    |
+| CHB-003 | 35860faa  | 35860faa | 2026-06-16 | Vesta 4/5 + Artemis 1/5 | T-VS-007, T-AR-005  | Vesta, Artemis         | CATCH #207 #4 (Vesta CASCADE-HOLD-BUNDLE)    | A11Y §4.3 attribution                               |
+| CHB-004 | d4cd6bbe  | d4cd6bbe | 2026-06-16 | Vesta 4/5 + Artemis 1/5 | T-VS-008, T-AR-006  | Vesta, Artemis         | CATCH #207 #4                                | SECTOR_HERMES_INTEGRATION_TEST v0.1 + A11Y §4.3     |
 
 ## Active Entries (CYCLE 15 PICK A in flight)
 
-| CHB ID | Short SHA | Full SHA | Date | Bundled Muses | T-IDs | Co-Authors | CATCH Ref | Resolution |
-|--------|-----------|----------|------|---------------|-------|------------|-----------|------------|
-| CHB-005 | e9d3c70d | e9d3c70dc | 2026-06-17 | Apollo + Chronos + Iris | T-AP-029, T-CH-018, T-IR-009 | Apollo, Chronos | CATCH #207 #2 §7 OMISSION flag (PATTERN CONFIRMED 3rd instance) | Apollo T29 PICK CHAIN 5/5 SHIPPED — 3-Muse witness chain CLOSED |
+| CHB ID  | Short SHA | Full SHA                                 | Date       | Bundled Muses           | T-IDs                        | Co-Authors                       | CATCH Ref                                                                 | Resolution                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------- | --------- | ---------------------------------------- | ---------- | ----------------------- | ---------------------------- | -------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CHB-005 | e9d3c70d  | e9d3c70dc                                | 2026-06-17 | Apollo + Chronos + Iris | T-AP-029, T-CH-018, T-IR-009 | Apollo, Chronos                  | CATCH #207 #2 §7 OMISSION flag (PATTERN CONFIRMED 3rd instance)           | Apollo T29 PICK CHAIN 5/5 SHIPPED — 3-Muse witness chain CLOSED                                                                                                                                                                                                                                                                                                                                                               |
+| CHB-006 | 38fb20e0  | 38fb20e02ea0dbe2666fe8e43f048d151ed0b784 | 2026-06-17 | Tyche + Artemis         | T-TY-061, T-AR-007           | Carla, Vera, Chris, Beth (4-ICP) | CATCH #207 #5 BILATERAL-ATTRIBUTION-CASCADE (16th CASCADE-TRAP sub-class) | TURN 110+ PICK G retry — RATIFICATION_COVERAGE_ANALYTICS v0.1 + Q5_9_REAL_TIME_COLLAB_A11Y_SCOPING cross-Muse bundle acknowledged. TURN 105+ PUSH-BLOCKER (TSC=0 fixed at Vulcan d6c8ffd6) unblocked, CLEAN re-commit 4e5248dc orphaned as fallback. Rule #67 BORDERLINE (50% drift) accepted for RATIFICATION GATE 2026-06-22 16:00 UTC — Artemis Q5_9 SCOPING carried to T+1d 2026-06-23/24 joint 5th-ICP × 6th-ICP review. |
 
 ## Procedure for Adding a New Entry
 

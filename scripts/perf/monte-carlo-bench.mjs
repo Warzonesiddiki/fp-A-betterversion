@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable */
+ 
 /**
  * scripts/perf/monte-carlo-bench.mjs
  *

@@ -52,7 +52,9 @@ describe('PluginSandbox.execute — runtime behavior (ADR-011)', () => {
 
   // 4. Async user code is awaited
   it('async user code is awaited (return await Promise.resolve(7))', async () => {
-    const result = await Promise.resolve(executeSandboxed('return await Promise.resolve(7);', mockApi));
+    const result = await Promise.resolve(
+      executeSandboxed('return await Promise.resolve(7);', mockApi)
+    );
     expect(result).toEqual({ success: true, value: 7 });
   });
 

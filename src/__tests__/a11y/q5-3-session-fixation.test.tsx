@@ -20,7 +20,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useSessionAnnounce } from '../../hooks/useSessionAnnounce';
 
 // Test wrapper component
-function SessionAnnounceHarness({ event }: { event: 'login' | 'reauth' | 'mfa' | 'logout' | 'rotated' }) {
+function SessionAnnounceHarness({
+  event,
+}: {
+  event: 'login' | 'reauth' | 'mfa' | 'logout' | 'rotated';
+}) {
   useSessionAnnounce(event);
   return (
     <>
@@ -44,7 +48,11 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
   // ===== Pattern 1: §4.3.1 useSessionAnnounce (5 events × 10 iter = 50 measurements conceptually) =====
   describe('Pattern 1: §4.3.1 sessionId rotation aria-live (5 events)', () => {
     const events: Array<'login' | 'reauth' | 'mfa' | 'logout' | 'rotated'> = [
-      'login', 'reauth', 'mfa', 'logout', 'rotated',
+      'login',
+      'reauth',
+      'mfa',
+      'logout',
+      'rotated',
     ];
     const expectedMessages: Record<string, string> = {
       login: 'Signed in. Session is active.',
@@ -56,9 +64,12 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
 
     test.each(events)('event "%s" announces within 1 second', async (event) => {
       render(<SessionAnnounceHarness event={event} />);
-      await waitFor(() => {
-        expect(announcer?.textContent).toBe(expectedMessages[event]);
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(announcer?.textContent).toBe(expectedMessages[event]);
+        },
+        { timeout: 1000 }
+      );
     });
 
     test('announcer has aria-live=polite (WCAG 4.1.3)', () => {
@@ -72,7 +83,10 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
       const onRotate = vi.fn();
       render(<SessionAnnounceHarness event="rotated" />);
       // Simulate §4.3.1: new sessionId issued
-      fireEvent(document, new CustomEvent('sessionid-rotated', { detail: { sessionId: 'sess_NEW' } }));
+      fireEvent(
+        document,
+        new CustomEvent('sessionid-rotated', { detail: { sessionId: 'sess_NEW' } })
+      );
       // Announcer should now reflect rotated state
       expect(announcer?.textContent).toContain('Session renewed');
     });
@@ -135,7 +149,9 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
       const SessionsList = () => (
         <section aria-labelledby="sessions-title">
           <h2 id="sessions-title">Active Sessions</h2>
-          <ul role="list">
+          {}
+          {}
+          <ul>
             <li>
               <span>Chrome 125, 192.0.2.1, 5 min ago</span>
               <button aria-label="Revoke session on Chrome 125">Revoke</button>
@@ -159,7 +175,7 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
 
     test('Revoke buttons have descriptive aria-label (WCAG 2.4.6)', () => {
       const SessionsList = () => (
-        <ul role="list">
+        <ul>
           <li>
             <button aria-label="Revoke session on Chrome 125, IP 192.0.2.1, last active 5 minutes ago">
               Revoke
@@ -177,8 +193,8 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
     test('auto-termination of 6th login announces via aria-live=polite', () => {
       const AutoTerminateBanner = () => (
         <div role="status" aria-live="polite">
-          Your oldest session was signed out to allow this new sign-in.
-          Review active sessions in Settings.
+          Your oldest session was signed out to allow this new sign-in. Review active sessions in
+          Settings.
         </div>
       );
       render(<AutoTerminateBanner />);

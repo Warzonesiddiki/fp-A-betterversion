@@ -65,7 +65,9 @@ test.describe('Q5.3 Time Extension for Session Timeout (≥20s warning)', () => 
     // Expected: FAIL until SECURITY.md policy documented + UI implemented
   });
 
-  test('Session timeout is enforced even with turn-off disabled (security baseline)', async ({ page }) => {
+  test('Session timeout is enforced even with turn-off disabled (security baseline)', async ({
+    page,
+  }) => {
     // TODO: Test security baseline
     // - Login as test user
     // - Disable turn-off (admin policy)

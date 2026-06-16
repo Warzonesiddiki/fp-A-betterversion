@@ -58,9 +58,15 @@ class WorkerCrashRecovery<TState, TResult> {
     throw lastErr;
   }
 
-  getState(): TState { return this.state; }
-  getCrashCount(): number { return this.crashCount; }
-  isUserNotified(): boolean { return this.userNotified; }
+  getState(): TState {
+    return this.state;
+  }
+  getCrashCount(): number {
+    return this.crashCount;
+  }
+  isUserNotified(): boolean {
+    return this.userNotified;
+  }
 }
 
 interface MCSimState {
@@ -107,7 +113,9 @@ describe('Vulcan — Chaos 03: Worker crash recovery', () => {
       serviceFile: 'src/workers/monte-carlo.worker.ts',
       serviceLineRef: 'See workerManager.ts pattern (crash recovery wrapper)',
     });
-    console.log(`[VULCAN] Chaos03-A: crash @ 50% injected, recovery completed in ${elapsed.toFixed(2)}ms, result=${result}`);
+    console.log(
+      `[VULCAN] Chaos03-A: crash @ 50% injected, recovery completed in ${elapsed.toFixed(2)}ms, result=${result}`
+    );
   });
 
   it('SCENARIO B: Storage worker crashes during 5MB stringify', async () => {
@@ -147,7 +155,9 @@ describe('Vulcan — Chaos 03: Worker crash recovery', () => {
       serviceFile: 'src/workers/storage.worker.ts',
       serviceLineRef: 'See storage.worker.ts:21-66 (onmessage error path)',
     });
-    console.log(`[VULCAN] Chaos03-B: storage crash @ 2.5MB, recovery in ${elapsed.toFixed(2)}ms, final=${result}B`);
+    console.log(
+      `[VULCAN] Chaos03-B: storage crash @ 2.5MB, recovery in ${elapsed.toFixed(2)}ms, final=${result}B`
+    );
   });
 
   it('SCENARIO C: 5 sequential crashes — all recovered, no permanent failure', async () => {
@@ -184,16 +194,15 @@ describe('Vulcan — Chaos 03: Worker crash recovery', () => {
       serviceFile: 'src/workers/workerManager.ts',
       serviceLineRef: 'See workerManager.ts (max-retry circuit breaker pattern)',
     });
-    console.log(`[VULCAN] Chaos03-C: ${crashes} sequential crashes, all recovered in ${elapsed.toFixed(2)}ms, final=${result}`);
+    console.log(
+      `[VULCAN] Chaos03-C: ${crashes} sequential crashes, all recovered in ${elapsed.toFixed(2)}ms, final=${result}`
+    );
   });
 
   afterAll(() => {
     const outDir = path.resolve(__dirname, '../../../tests/load');
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(outDir, '.raw-chaos-worker.json'),
-      JSON.stringify(records, null, 2)
-    );
+    fs.writeFileSync(path.join(outDir, '.raw-chaos-worker.json'), JSON.stringify(records, null, 2));
     console.log(`[VULCAN] Wrote ${records.length} chaos-worker records to .raw-chaos-worker.json`);
   });
 });

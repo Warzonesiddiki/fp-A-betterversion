@@ -29,7 +29,7 @@ export function ICReconciliation({
     entityPairs: [],
     period: '',
     summary: { matchedCount: 0, unmatchedCount: 0, totalDifference: 0 },
-  } as ReconciliationReport,
+  } as unknown as ReconciliationReport,
   tolerance: externalTolerance,
   onExport = () => {},
   onAdjustTolerance,

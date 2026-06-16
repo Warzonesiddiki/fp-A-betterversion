@@ -49,15 +49,15 @@ export const ApprovalQueue = memo(function ApprovalQueue({
       return true;
     });
 
-  // Virtualizer: only render visible rows + overscan (variable-height: approval
-  // rows expand for history + comments; measureElement auto-detects per-row height).
-  const parentRef = useRef<HTMLDivElement>(null);
-  const virtualizer = useVirtualizer({
-    count: filtered.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 152, // header + actions + history toggle, baseline collapsed
-    overscan: 5,
-  });
+    // Virtualizer: only render visible rows + overscan (variable-height: approval
+    // rows expand for history + comments; measureElement auto-detects per-row height).
+    const parentRef = useRef<HTMLDivElement>(null);
+    const virtualizer = useVirtualizer({
+      count: filtered.length,
+      getScrollElement: () => parentRef.current,
+      estimateSize: () => 152, // header + actions + history toggle, baseline collapsed
+      overscan: 5,
+    });
   }, [requests, filterState, filterDate, filterRequester]);
 
   const toggleSelect = useCallback((id: string) => {
@@ -145,132 +145,143 @@ export const ApprovalQueue = memo(function ApprovalQueue({
         )}
 
         {/* Request List */}
-          {filtered.length === 0 ? (
-            <div className="text-center py-8 text-[var(--text-muted)]">
-              <p>No requests match your filters.</p>
-            </div>
-          ) : (
+        {filtered.length === 0 ? (
+          <div className="text-center py-8 text-[var(--text-muted)]">
+            <p>No requests match your filters.</p>
+          </div>
+        ) : (
+          <div
+            ref={parentRef}
+            className="max-h-96 overflow-y-auto"
+            role="feed"
+            aria-busy={virtualizer.isScrolling ? 'true' : 'false'}
+            aria-label={`Approval queue (${filtered.length} requests)`}
+          >
             <div
-              ref={parentRef}
-              className="max-h-96 overflow-y-auto"
-              role="feed"
-              aria-busy={virtualizer.isScrolling ? 'true' : 'false'}
-              aria-label={`Approval queue (${filtered.length} requests)`}
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
             >
-              <div
-                style={{
-                  height: `${virtualizer.getTotalSize()}px`,
-                  width: '100%',
-                  position: 'relative',
-                }}
-              >
-                {virtualizer.getVirtualItems().map((virtualRow) => {
-                  const req = filtered[virtualRow.index];
-                  return (
-                    <div
-                      key={req.id}
-                      data-index={virtualRow.index}
-                      ref={virtualizer.measureElement}
-                      className="absolute left-0 top-0 w-full pb-2"
-                      style={{ transform: `translateY(${virtualRow.start}px)` }}
-                    >
-                      <div key={req.id} className="border rounded-lg p-3 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            {['submitted', 'in_review'].includes(req.state) && (
-                              <input
-                                type="checkbox"
-                                checked={selected.has(req.id)}
-                                onChange={() => toggleSelect(req.id)}
-                                aria-label={`Select request ${req.title}`}
-                              />
-                            )}
-                            <span className="font-medium">{req.title}</span>
-                            <span className={cn('text-xs px-2 py-0.5 rounded-full', STATE_BADGES[req.state])}>
-                              {req.state.replace('_', ' ')}
-                            </span>
-                          </div>
-                          <div className="flex gap-1 text-xs text-[var(--text-muted)]">
-                            <span>{req.requester}</span>
-                            <span>&middot;</span>
-                            <span>{new Date(req.createdAt).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-
-                        {req.description && (
-                          <p className="text-sm text-[var(--text-secondary)]">{req.description}</p>
-                        )}
-
-                        {req.amount !== undefined && (
-                          <p className="text-sm font-medium">Amount: ${req.amount.toLocaleString()}</p>
-                        )}
-
-                        {/* Actions for pending */}
-                        {['submitted', 'in_review'].includes(req.state) && (
-                          <div className="flex items-center gap-2">
-                            <Input
-                              size={200}
-                              value={commentMap[req.id] ?? ''}
-                              onChange={(e) => setCommentMap({ ...commentMap, [req.id]: e.target.value })}
-                              placeholder="Comment (optional)"
-                              className="flex-1"
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const req = filtered[virtualRow.index];
+                return (
+                  <div
+                    key={req.id}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    className="absolute left-0 top-0 w-full pb-2"
+                    style={{ transform: `translateY(${virtualRow.start}px)` }}
+                  >
+                    <div key={req.id} className="border rounded-lg p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {['submitted', 'in_review'].includes(req.state) && (
+                            <input
+                              type="checkbox"
+                              checked={selected.has(req.id)}
+                              onChange={() => toggleSelect(req.id)}
+                              aria-label={`Select request ${req.title}`}
                             />
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                onApprove(req.id, commentMap[req.id]);
-                                setCommentMap({ ...commentMap, [req.id]: '' });
-                              }}
-                            >
-                              Approve
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                onReject(req.id, commentMap[req.id]);
-                                setCommentMap({ ...commentMap, [req.id]: '' });
-                              }}
-                            >
-                              Reject
-                            </Button>
-                          </div>
-                        )}
-
-                        {/* History Toggle */}
-                        <button
-                          onClick={() => setShowHistory(showHistory === req.id ? null : req.id)}
-                          className="text-xs text-blue-500 hover:text-blue-700"
-                        >
-                          {showHistory === req.id ? 'Hide' : 'Show'} History ({req.history.length} events)
-                        </button>
-
-                        {showHistory === req.id && (
-                          <div className="pl-4 border-l-2 border-[var(--border-subtle)] space-y-1">
-                            {req.history.map((evt: ApprovalEvent) => (
-                              <div key={evt.id} className="text-xs text-[var(--text-secondary)]">
-                                <span className="font-medium">{evt.actor}</span>
-                                <span className="mx-1">&middot;</span>
-                                <span>{evt.action}</span>
-                                {evt.comment && (
-                                  <span className="ml-1 text-[var(--text-muted)]">- {evt.comment}</span>
-                                )}
-                                <span className="ml-1 text-[var(--text-muted)]">
-                                  {new Date(evt.timestamp).toLocaleString()}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                          )}
+                          <span className="font-medium">{req.title}</span>
+                          <span
+                            className={cn(
+                              'text-xs px-2 py-0.5 rounded-full',
+                              STATE_BADGES[req.state]
+                            )}
+                          >
+                            {req.state.replace('_', ' ')}
+                          </span>
+                        </div>
+                        <div className="flex gap-1 text-xs text-[var(--text-muted)]">
+                          <span>{req.requester}</span>
+                          <span>&middot;</span>
+                          <span>{new Date(req.createdAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
+
+                      {req.description && (
+                        <p className="text-sm text-[var(--text-secondary)]">{req.description}</p>
+                      )}
+
+                      {req.amount !== undefined && (
+                        <p className="text-sm font-medium">
+                          Amount: ${req.amount.toLocaleString()}
+                        </p>
+                      )}
+
+                      {/* Actions for pending */}
+                      {['submitted', 'in_review'].includes(req.state) && (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            size={200}
+                            value={commentMap[req.id] ?? ''}
+                            onChange={(e) =>
+                              setCommentMap({ ...commentMap, [req.id]: e.target.value })
+                            }
+                            placeholder="Comment (optional)"
+                            className="flex-1"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              onApprove(req.id, commentMap[req.id]);
+                              setCommentMap({ ...commentMap, [req.id]: '' });
+                            }}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              onReject(req.id, commentMap[req.id]);
+                              setCommentMap({ ...commentMap, [req.id]: '' });
+                            }}
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* History Toggle */}
+                      <button
+                        onClick={() => setShowHistory(showHistory === req.id ? null : req.id)}
+                        className="text-xs text-blue-500 hover:text-blue-700"
+                      >
+                        {showHistory === req.id ? 'Hide' : 'Show'} History ({req.history.length}{' '}
+                        events)
+                      </button>
+
+                      {showHistory === req.id && (
+                        <div className="pl-4 border-l-2 border-[var(--border-subtle)] space-y-1">
+                          {req.history.map((evt: ApprovalEvent) => (
+                            <div key={evt.id} className="text-xs text-[var(--text-secondary)]">
+                              <span className="font-medium">{evt.actor}</span>
+                              <span className="mx-1">&middot;</span>
+                              <span>{evt.action}</span>
+                              {evt.comment && (
+                                <span className="ml-1 text-[var(--text-muted)]">
+                                  - {evt.comment}
+                                </span>
+                              )}
+                              <span className="ml-1 text-[var(--text-muted)]">
+                                {new Date(evt.timestamp).toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 });
-

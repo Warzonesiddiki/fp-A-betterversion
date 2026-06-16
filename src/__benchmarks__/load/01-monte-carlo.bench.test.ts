@@ -7,7 +7,12 @@
 // =============================================================================
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { MonteCarloEngine, type MonteCarloConfig, type DistributionConfig } from '../../engines/MonteCarloEngine';
+import { cpus, totalmem } from 'node:os';
+import {
+  MonteCarloEngine,
+  type MonteCarloConfig,
+  type DistributionConfig,
+} from '../../engines/MonteCarloEngine';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -29,10 +34,10 @@ interface LoadTestRecord {
 const records: LoadTestRecord[] = [];
 
 function detectHardware() {
-  const cpus = require('os').cpus();
-  const totalMemMB = Math.round(require('os').totalmem() / 1024 / 1024);
+  const cpuList = cpus();
+  const totalMemMB = Math.round(totalmem() / 1024 / 1024);
   return {
-    cpu: cpus[0]?.model ?? 'unknown',
+    cpu: cpuList[0]?.model ?? 'unknown',
     ram: `${totalMemMB}MB`,
     os: `${process.platform} ${process.arch}`,
     node: process.version,
@@ -66,7 +71,7 @@ describe('Vulcan — Monte Carlo Load Test (10K iterations)', () => {
     const result = MonteCarloEngine.simulate(config);
     const elapsed = performance.now() - start;
     const memAfter = process.memoryUsage().heapUsed;
-    const memPeakMB = Math.round((memAfter - memBefore) / 1024 / 1024 * 100) / 100;
+    const memPeakMB = Math.round(((memAfter - memBefore) / 1024 / 1024) * 100) / 100;
 
     expect(result).toBeDefined();
     expect(result.values.length).toBe(10_000);
@@ -124,10 +129,10 @@ describe('Vulcan — Monte Carlo Load Test (10K iterations)', () => {
     if (lastRec && lastRec.benchmark === 'monte-carlo-10k') {
       lastRec.warmMs = Math.round(times[0] * 100) / 100;
       lastRec.warmAvgMs = Math.round(avgMs * 100) / 100;
-      lastRec.memoryPeakMB = Math.round(peakDelta / 1024 / 1024 * 100) / 100;
+      lastRec.memoryPeakMB = Math.round((peakDelta / 1024 / 1024) * 100) / 100;
     }
 
-    console.log(`[VULCAN] MC-10K WARM runs: ${times.map(t => t.toFixed(2)).join(', ')}ms`);
+    console.log(`[VULCAN] MC-10K WARM runs: ${times.map((t) => t.toFixed(2)).join(', ')}ms`);
     console.log(`[VULCAN] MC-10K WARM avg: ${avgMs.toFixed(2)}ms`);
 
     // Statistical convergence: stddev should be < 5% of mean across runs
@@ -141,10 +146,7 @@ describe('Vulcan — Monte Carlo Load Test (10K iterations)', () => {
   afterAll(() => {
     const outDir = path.resolve(__dirname, '../../../tests/load');
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(outDir, '.raw-monte-carlo.json'),
-      JSON.stringify(records, null, 2)
-    );
+    fs.writeFileSync(path.join(outDir, '.raw-monte-carlo.json'), JSON.stringify(records, null, 2));
     console.log(`[VULCAN] Wrote ${records.length} Monte Carlo records to .raw-monte-carlo.json`);
   });
 });

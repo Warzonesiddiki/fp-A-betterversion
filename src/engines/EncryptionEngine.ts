@@ -183,11 +183,7 @@ export class EncryptionEngine {
     const key = await this.deriveKey(password, salt, this.ITERATIONS);
     const encryptParams: AesGcmParams = { name: this.ALGORITHM, iv };
     if (aadBytes) encryptParams.additionalData = aadBytes;
-    const encrypted = await crypto.subtle.encrypt(
-      encryptParams,
-      key,
-      encoder.encode(plaintext)
-    );
+    const encrypted = await crypto.subtle.encrypt(encryptParams, key, encoder.encode(plaintext));
     return {
       ciphertext: this.bufferToBase64(encrypted),
       iv: this.bufferToBase64(iv.buffer),
@@ -272,7 +268,9 @@ export class EncryptionEngine {
     // error and protects against silent context swaps.
     if (options?.aadContext !== undefined) {
       if (typeof parsed.aadContext !== 'string') {
-        throw new Error('EncryptionEngine: ciphertext is not AAD-bound but aadContext was supplied');
+        throw new Error(
+          'EncryptionEngine: ciphertext is not AAD-bound but aadContext was supplied'
+        );
       }
       if (!this.constantTimeEqual(parsed.aadContext, options.aadContext)) {
         throw new Error('EncryptionEngine: aadContext mismatch');

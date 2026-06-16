@@ -38,7 +38,9 @@ test.describe('Journey 05: Audit Trail (SOX)', () => {
     await firstBudgetInput.fill('9999');
     await page.locator('button:has-text("Save")').first().click();
     // Save success indicator
-    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, {
+      timeout: 10_000,
+    });
   });
 
   test('step 2: verify audit entry was created for the change', async ({ page }) => {

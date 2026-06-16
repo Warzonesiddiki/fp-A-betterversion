@@ -60,7 +60,9 @@ test.describe('Q5.2 Focus Restore After Modal/Dialog Close (<50ms)', () => {
     // Expected: FAIL until focus-trap library installed + wired
   });
 
-  test('All modals/dialogs across 192 pages have focus restore <50ms (cross-page test)', async ({ page }) => {
+  test('All modals/dialogs across 192 pages have focus restore <50ms (cross-page test)', async ({
+    page,
+  }) => {
     // TODO: Iterate through all modals/dialogs and measure focus restore latency
     // - Hermes PAGES_APP_SURFACE_MAPPING v0.1 has the modal/dialog list
     // - For each modal: measure focus restore latency

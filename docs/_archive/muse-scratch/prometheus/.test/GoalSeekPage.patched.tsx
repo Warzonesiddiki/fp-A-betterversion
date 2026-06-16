@@ -61,7 +61,7 @@ export default function GoalSeekPage() {
     setLoading(true);
     try {
       const baseRevenue = actuals?.revenue ?? 0;
-      const baseCosts = (baseRevenue * (variableCostPct / 100)) + fixedCost;
+      const baseCosts = baseRevenue * (variableCostPct / 100) + fixedCost;
       const req: MonteCarloRequest = {
         iterations,
         seed: Date.now(),

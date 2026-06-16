@@ -477,9 +477,9 @@ describeIfCrypto('EncryptionEngine — PATCH 5 AAD binding (CWE-326)', () => {
     const enc = await EncryptionEngine.encryptField({ x: 1 }, password, {
       aadContext: 'user:42',
     });
-    await expect(
-      EncryptionEngine.decryptField(enc, password)
-    ).rejects.toThrow(/AAD-bound but no aadContext/);
+    await expect(EncryptionEngine.decryptField(enc, password)).rejects.toThrow(
+      /AAD-bound but no aadContext/
+    );
   });
 
   it('rejects decryptField when caller supplies aadContext but ciphertext is not AAD-bound', async () => {
@@ -518,9 +518,7 @@ describeIfCrypto('EncryptionEngine — PATCH 5 deriveKey salt validation (CWE-75
   const password = 'ValidP@ssw0rd-2024';
 
   it('rejects non-Uint8Array salt', async () => {
-    await expect(
-      EncryptionEngine.deriveKey(password, [1, 2, 3])
-    ).rejects.toThrow(/Uint8Array/);
+    await expect(EncryptionEngine.deriveKey(password, [1, 2, 3])).rejects.toThrow(/Uint8Array/);
   });
 
   it('rejects wrong-length salt', async () => {

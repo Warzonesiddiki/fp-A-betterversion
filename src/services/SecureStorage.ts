@@ -23,7 +23,11 @@
 //   - KeyManager (PATCH 6: key caching, rotation, revocation)
 //   - Web Crypto API
 
-import { EncryptionEngine, ENCRYPTION_CONSTANTS, type EncryptedData } from '../engines/EncryptionEngine';
+import {
+  EncryptionEngine,
+  ENCRYPTION_CONSTANTS,
+  type EncryptedData,
+} from '../engines/EncryptionEngine';
 import { KeyManager, generateSalt } from './KeyManager';
 
 export interface SecureStorageAdapter {
@@ -54,7 +58,7 @@ interface Envelope {
   ns: string;
   salt: string; // base64
   ciphertext: string; // base64 of JSON.stringify(EncryptedData) — kept as a string
-                      // to keep the envelope size predictable.
+  // to keep the envelope size predictable.
   /** Optional expiry timestamp (ms since epoch). 0 = no expiry. */
   expiresAt: number;
   createdAt: number;
@@ -86,23 +90,35 @@ class MemoryAdapter implements SecureStorageAdapter {
  */
 class LocalStorageAdapter implements SecureStorageAdapter {
   getItem(key: string): string | null {
-    if (typeof globalThis !== 'undefined' && (globalThis as { localStorage?: Storage }).localStorage) {
+    if (
+      typeof globalThis !== 'undefined' &&
+      (globalThis as { localStorage?: Storage }).localStorage
+    ) {
       return (globalThis as { localStorage: Storage }).localStorage.getItem(key);
     }
     return null;
   }
   setItem(key: string, value: string): void {
-    if (typeof globalThis !== 'undefined' && (globalThis as { localStorage?: Storage }).localStorage) {
+    if (
+      typeof globalThis !== 'undefined' &&
+      (globalThis as { localStorage?: Storage }).localStorage
+    ) {
       (globalThis as { localStorage: Storage }).localStorage.setItem(key, value);
     }
   }
   removeItem(key: string): void {
-    if (typeof globalThis !== 'undefined' && (globalThis as { localStorage?: Storage }).localStorage) {
+    if (
+      typeof globalThis !== 'undefined' &&
+      (globalThis as { localStorage?: Storage }).localStorage
+    ) {
       (globalThis as { localStorage: Storage }).localStorage.removeItem(key);
     }
   }
   keys(): string[] {
-    if (typeof globalThis !== 'undefined' && (globalThis as { localStorage?: Storage }).localStorage) {
+    if (
+      typeof globalThis !== 'undefined' &&
+      (globalThis as { localStorage?: Storage }).localStorage
+    ) {
       const out: string[] = [];
       for (let i = 0; i < (globalThis as { localStorage: Storage }).localStorage.length; i++) {
         const k = (globalThis as { localStorage: Storage }).localStorage.key(i);
@@ -151,7 +167,12 @@ export class SecureStorage {
    * fresh salt (and therefore a fresh derived key) and binds the ciphertext
    * to the namespace via AAD.
    */
-  async setItem<T>(namespace: string, key: string, value: T, options?: { ttlMs?: number }): Promise<void> {
+  async setItem<T>(
+    namespace: string,
+    key: string,
+    value: T,
+    options?: { ttlMs?: number }
+  ): Promise<void> {
     this.assertNamespace(namespace);
     this.assertKey(key);
     const ttl = options?.ttlMs ?? this.defaultTtlMs;
@@ -407,4 +428,7 @@ export function resetDefaultSecureStorage(): void {
   _default = null;
 }
 
-export { MemoryAdapter as SecureStorageMemoryAdapter, LocalStorageAdapter as SecureStorageLocalStorageAdapter };
+export {
+  MemoryAdapter as SecureStorageMemoryAdapter,
+  LocalStorageAdapter as SecureStorageLocalStorageAdapter,
+};

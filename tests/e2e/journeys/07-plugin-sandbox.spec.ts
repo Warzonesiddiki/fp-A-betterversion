@@ -58,7 +58,10 @@ test.describe('Journey 07: Plugin Sandbox (Security Isolation)', () => {
     await expect(installButton).toBeVisible();
     await installButton.click();
     // Verify install success
-    await expect(page.locator('[data-testid="install-status"]')).toContainText(/installed|success/i, { timeout: 15_000 });
+    await expect(page.locator('[data-testid="install-status"]')).toContainText(
+      /installed|success/i,
+      { timeout: 15_000 }
+    );
     // Plugin appears in installed list
     const installedList = page.locator('[data-testid="installed-plugins"]');
     await expect(installedList).toContainText(/sentinel test plugin/i);
@@ -71,9 +74,14 @@ test.describe('Journey 07: Plugin Sandbox (Security Isolation)', () => {
     const manifestPath = path.join(__dirname, '..', 'fixtures', 'test-sentinel-plugin.json');
     await page.locator('input[type="file"]').setInputFiles(manifestPath);
     await page.locator('button:has-text("Install")').click();
-    await expect(page.locator('[data-testid="install-status"]')).toContainText(/installed|success/i);
+    await expect(page.locator('[data-testid="install-status"]')).toContainText(
+      /installed|success/i
+    );
     // Click "Load" on the installed plugin
-    const pluginRow = page.locator('[data-testid="installed-plugins"]').filter({ hasText: /sentinel test plugin/i }).first();
+    const pluginRow = page
+      .locator('[data-testid="installed-plugins"]')
+      .filter({ hasText: /sentinel test plugin/i })
+      .first();
     await expect(pluginRow).toBeVisible();
     const loadButton = pluginRow.locator('button:has-text("Load")');
     await expect(loadButton).toBeVisible();
@@ -89,8 +97,13 @@ test.describe('Journey 07: Plugin Sandbox (Security Isolation)', () => {
     const manifestPath = path.join(__dirname, '..', 'fixtures', 'test-sentinel-plugin.json');
     await page.locator('input[type="file"]').setInputFiles(manifestPath);
     await page.locator('button:has-text("Install")').click();
-    await expect(page.locator('[data-testid="install-status"]')).toContainText(/installed|success/i);
-    const pluginRow = page.locator('[data-testid="installed-plugins"]').filter({ hasText: /sentinel test plugin/i }).first();
+    await expect(page.locator('[data-testid="install-status"]')).toContainText(
+      /installed|success/i
+    );
+    const pluginRow = page
+      .locator('[data-testid="installed-plugins"]')
+      .filter({ hasText: /sentinel test plugin/i })
+      .first();
     await pluginRow.locator('button:has-text("Load")').click();
     await expect(pluginRow).toContainText(/loaded|active/i);
     // Execute the "add" action (benign)
@@ -121,8 +134,13 @@ test.describe('Journey 07: Plugin Sandbox (Security Isolation)', () => {
     const manifestPath = path.join(__dirname, '..', 'fixtures', 'test-sentinel-plugin.json');
     await page.locator('input[type="file"]').setInputFiles(manifestPath);
     await page.locator('button:has-text("Install")').click();
-    await expect(page.locator('[data-testid="install-status"]')).toContainText(/installed|success/i);
-    const pluginRow = page.locator('[data-testid="installed-plugins"]').filter({ hasText: /sentinel test plugin/i }).first();
+    await expect(page.locator('[data-testid="install-status"]')).toContainText(
+      /installed|success/i
+    );
+    const pluginRow = page
+      .locator('[data-testid="installed-plugins"]')
+      .filter({ hasText: /sentinel test plugin/i })
+      .first();
     await pluginRow.locator('button:has-text("Load")').click();
     await expect(pluginRow).toContainText(/loaded|active/i);
     // Attempt to execute code that would escape sandbox
@@ -141,10 +159,15 @@ test.describe('Journey 07: Plugin Sandbox (Security Isolation)', () => {
       // Must be REJECTED by sandbox (not silently allowed)
       const result = page.locator('[data-testid="execute-result"]');
       await expect(result).toBeVisible();
-      await expect(result).toContainText(/blocked|denied|forbidden|sandbox violation|error/i, { timeout: 10_000 });
+      await expect(result).toContainText(/blocked|denied|forbidden|sandbox violation|error/i, {
+        timeout: 10_000,
+      });
     } else {
       // If raw-code mode not available, skip with explicit log
-      test.skip(true, 'Raw code execution mode not available — isolation test requires admin-mode execution');
+      test.skip(
+        true,
+        'Raw code execution mode not available — isolation test requires admin-mode execution'
+      );
     }
   });
 
@@ -155,8 +178,13 @@ test.describe('Journey 07: Plugin Sandbox (Security Isolation)', () => {
     const manifestPath = path.join(__dirname, '..', 'fixtures', 'test-sentinel-plugin.json');
     await page.locator('input[type="file"]').setInputFiles(manifestPath);
     await page.locator('button:has-text("Install")').click();
-    await expect(page.locator('[data-testid="install-status"]')).toContainText(/installed|success/i);
-    const pluginRow = page.locator('[data-testid="installed-plugins"]').filter({ hasText: /sentinel test plugin/i }).first();
+    await expect(page.locator('[data-testid="install-status"]')).toContainText(
+      /installed|success/i
+    );
+    const pluginRow = page
+      .locator('[data-testid="installed-plugins"]')
+      .filter({ hasText: /sentinel test plugin/i })
+      .first();
     await pluginRow.locator('button:has-text("Load")').click();
     await expect(pluginRow).toContainText(/loaded|active/i);
     // Uninstall

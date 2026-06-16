@@ -85,7 +85,10 @@ vi.mock('./DataGrid', async () => {
     useEffect(() => {
       if (loading) setRowCountAnnouncement('Loading data...');
       else if (rows.length === 0) setRowCountAnnouncement('No rows to display');
-      else setRowCountAnnouncement(`Table updated: ${rows.length} row${rows.length === 1 ? '' : 's'} displayed`);
+      else
+        setRowCountAnnouncement(
+          `Table updated: ${rows.length} row${rows.length === 1 ? '' : 's'} displayed`
+        );
     }, [rows.length, loading]);
 
     return (
@@ -323,7 +326,9 @@ describe('DataGrid', () => {
     it('loading overlay has aria-live', () => {
       render(<DataGrid rows={mockRows} columns={mockColumns} loading />);
       const statusElements = screen.getAllByRole('status');
-      const loadingStatus = statusElements.find((el) => el.textContent && el.textContent.includes('Loading Grid'));
+      const loadingStatus = statusElements.find(
+        (el) => el.textContent && el.textContent.includes('Loading Grid')
+      );
       expect(loadingStatus).toBeDefined();
       expect(loadingStatus).toHaveAttribute('aria-live', 'polite');
     });

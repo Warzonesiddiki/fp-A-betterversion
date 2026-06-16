@@ -6,7 +6,9 @@ export function GLAccountDrillDown() {
     <div className="space-y-6">
       <div className="flex items-center justify-between bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--border-default)]">
         <div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">61000 - Professional Services</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            61000 - Professional Services
+          </h2>
           <p className="text-sm text-[var(--text-secondary)]">
             Operating Expenses / Outside Services
           </p>

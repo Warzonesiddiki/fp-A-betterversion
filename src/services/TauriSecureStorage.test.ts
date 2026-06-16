@@ -74,15 +74,19 @@ class MockTauri {
     }
     if (cmd === 'plugin:stronghold|exists') {
       const key = `${args?.service}:${args?.account}`;
-      return (this.store.has(key)) as unknown as T;
+      return this.store.has(key) as unknown as T;
     }
     if (cmd === 'plugin:stronghold|list') {
-      return Array.from(this.store.keys()).map(k => k.split(':')[1]) as unknown as T;
+      return Array.from(this.store.keys()).map((k) => k.split(':')[1]) as unknown as T;
     }
     throw new Error(`Mock: unknown command ${cmd}`);
   };
 
-  __seed = (account: string, secret: string, service = TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME): void => {
+  __seed = (
+    account: string,
+    secret: string,
+    service = TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME
+  ): void => {
     this.store.set(`${service}:${account}`, secret);
   };
 }

@@ -31,7 +31,11 @@
  */
 
 import { RestApiClient } from '../services/api-integration/RestApiClient';
-import type { ApiRequestConfig, ApiResponse, ConnectorAuthConfig } from '../services/api-integration/types';
+import type {
+  ApiRequestConfig,
+  ApiResponse,
+  ConnectorAuthConfig,
+} from '../services/api-integration/types';
 import { ApiError } from '../services/api-integration/types';
 
 import {
@@ -168,14 +172,17 @@ export class ResourceCollection<T> {
   public constructor(
     private readonly client: FpaClient,
     path: string,
-    connector: ConnectorId,
+    connector: ConnectorId
   ) {
     this.path = path;
     this.connector = connector;
   }
 
   /** `GET /<connector>/<path>?…` */
-  public async list(params?: Readonly<Record<string, string | number | boolean>>, options?: ConnectorOptions): Promise<T[]> {
+  public async list(
+    params?: Readonly<Record<string, string | number | boolean>>,
+    options?: ConnectorOptions
+  ): Promise<T[]> {
     const res = await this.client.request<T[]>({
       method: 'GET',
       url: this.connectorPath(options),
@@ -292,7 +299,10 @@ export class XeroNamespace {
 export class CustomNamespace {
   public constructor(private readonly client: FpaClient) {}
 
-  public async get<T>(path: string, params?: Readonly<Record<string, string | number | boolean>>): Promise<T> {
+  public async get<T>(
+    path: string,
+    params?: Readonly<Record<string, string | number | boolean>>
+  ): Promise<T> {
     const res = await this.client.request<T>({
       method: 'GET',
       url: path,
@@ -439,10 +449,10 @@ export class FpaClient {
   /** `GET` that never throws — returns `{ ok, value | error }`. */
   public getResult<T = unknown>(
     path: string,
-    params?: Readonly<Record<string, string | number | boolean>>,
+    params?: Readonly<Record<string, string | number | boolean>>
   ): Promise<SdkResult<T>> {
     return this.wrap<T>(() =>
-      this.rest.get<T>(path, params ? { ...params } : undefined).then((r) => r.data),
+      this.rest.get<T>(path, params ? { ...params } : undefined).then((r) => r.data)
     );
   }
 
@@ -471,7 +481,7 @@ export class FpaClient {
   /** Throwing `GET` — returns the unwrapped body. */
   public async get<T = unknown>(
     path: string,
-    params?: Readonly<Record<string, string | number | boolean>>,
+    params?: Readonly<Record<string, string | number | boolean>>
   ): Promise<T> {
     const r = await this.rest.get<T>(path, params ? { ...params } : undefined);
     return r.data;

@@ -52,7 +52,9 @@ test.describe('Journey 08: Temporal Edge Cases (Finance Calendar)', () => {
     await page.locator('input[name="transaction_date"]').fill('2025-12-31');
     await page.locator('input[name="amount"]').fill('1000');
     await page.locator('button:has-text("Save")').click();
-    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, {
+      timeout: 10_000,
+    });
     // Verify it lands in FY-2025 (not FY-2026)
     const fy2025Total = page.locator('[data-testid="fy-2025-total"]');
     await expect(fy2025Total).toContainText(/1000/);
@@ -91,7 +93,10 @@ test.describe('Journey 08: Temporal Edge Cases (Finance Calendar)', () => {
     await page.locator('[data-testid="period-selector"]').selectOption({ label: /Q1.*2026/i });
     // Run consolidation
     await page.locator('button:has-text("Run Consolidation")').click();
-    await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(/complete|success/i, { timeout: 30_000 });
+    await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(
+      /complete|success/i,
+      { timeout: 30_000 }
+    );
     // Lock the period
     await page.locator('button:has-text("Lock Period")').click();
     await expect(page.locator('[data-testid="period-status"]')).toContainText(/locked/i);
@@ -104,11 +109,17 @@ test.describe('Journey 08: Temporal Edge Cases (Finance Calendar)', () => {
     await page.goto('/transactions');
     await page.waitForLoadState('networkidle');
     await page.locator('[data-testid="period-selector"]').selectOption({ label: /Q1.*2026/i });
-    const editButton = page.locator('[data-testid="transaction-row"]').first().locator('button:has-text("Edit")');
+    const editButton = page
+      .locator('[data-testid="transaction-row"]')
+      .first()
+      .locator('button:has-text("Edit")');
     if (await editButton.isVisible()) {
       await editButton.click();
       // Must show "period locked" error
-      await expect(page.locator('[data-testid="edit-error"]')).toContainText(/locked|cannot|forbidden/i, { timeout: 5_000 });
+      await expect(page.locator('[data-testid="edit-error"]')).toContainText(
+        /locked|cannot|forbidden/i,
+        { timeout: 5_000 }
+      );
     }
   });
 
@@ -120,7 +131,9 @@ test.describe('Journey 08: Temporal Edge Cases (Finance Calendar)', () => {
     await expect(budgetInput).toBeVisible();
     await budgetInput.fill('50000');
     await page.locator('button:has-text("Save")').click();
-    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, {
+      timeout: 10_000,
+    });
     // Capture initial value
     const initialValue = await page.locator('[data-testid="budget-input"]').first().inputValue();
     expect(initialValue).toBe('50000');

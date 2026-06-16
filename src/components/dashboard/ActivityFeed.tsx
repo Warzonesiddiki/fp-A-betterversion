@@ -54,9 +54,13 @@ export const ActivityFeed = memo(function ActivityFeed({ maxItems = 10 }: Activi
             }
           />
           <div className="text-sm flex-1 min-w-0">
-            <span className="font-medium text-[var(--text-primary)]">{item.userName || 'System'}</span>
+            <span className="font-medium text-[var(--text-primary)]">
+              {item.userName || 'System'}
+            </span>
             <span className="text-[var(--text-muted)]"> {item.action || 'performed'} </span>
-            <span className="font-medium text-[var(--text-primary)]">{item.resourceName || 'an action'}</span>
+            <span className="font-medium text-[var(--text-primary)]">
+              {item.resourceName || 'an action'}
+            </span>
             <div className="text-xs text-[var(--text-secondary)] mt-0.5">
               {item.timestamp ? formatRelativeTime(item.timestamp) : ''}
             </div>
@@ -66,4 +70,3 @@ export const ActivityFeed = memo(function ActivityFeed({ maxItems = 10 }: Activi
     </div>
   );
 });
-
