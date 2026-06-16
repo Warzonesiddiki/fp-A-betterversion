@@ -253,8 +253,8 @@ export function ImpactAnalysis({
                         ))}
                       </tr>
                       <tr className="border-b border-[var(--border-subtle)]">
-                        <th />
-                        <th />
+                        <th scope="col" />
+                        <th scope="col" />
                         {compareScenarios.map((s) => (
                           <Fragment key={`h-${s.id}`}>
                             <th className="pb-2 px-3 text-right text-xs font-normal text-[var(--text-tertiary)]" scope="col">
