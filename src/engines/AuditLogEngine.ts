@@ -53,7 +53,7 @@ export class AuditLogEngine {
   log(entry: Omit<AuditEntry, 'id' | 'timestamp'>): AuditEntry {
     const auditEntry: AuditEntry = {
       ...entry,
-      id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `audit-${Date.now()}-${this.fallbackRandomHex(12)}`,
       timestamp: new Date().toISOString(),
     };
     this.entries.push(auditEntry);
@@ -111,14 +111,15 @@ export class AuditLogEngine {
   }
 
   exportCSV(): string {
-    const headers = 'id,timestamp,userId,userName,action,resource,resourceId,details\n';
+    // SECURITY (Phase 7 audit, Hephaestus PATCH 4): escape CWE-1236 formula-injection vectors (=, +, -, @, tab, CR) by prefixing single quote. RFC 4180 quote for comma/quote/newline.
+    const headers = this.escapeCsvRow(['id', 'timestamp', 'userId', 'userName', 'action', 'resource', 'resourceId', 'oldValue', 'newValue', 'ipAddress', 'sessionId', 'details', 'metadata']);
     const rows = this.entries
       .map(
         (e) =>
-          `"${e.id}","${e.timestamp}","${e.userId}","${e.userName}","${e.action}","${e.resource}","${e.resourceId}","${e.details ?? ''}"`
+          this.escapeCsvRow([e.id, e.timestamp, e.userId, e.userName, e.action, e.resource, e.resourceId, e.oldValue == null ? null : String(e.oldValue), e.newValue == null ? null : String(e.newValue), e.ipAddress, e.sessionId, e.details, e.metadata ? JSON.stringify(e.metadata) : null])
       )
       .join('\n');
-    return headers + rows;
+    return headers + '\n' + rows;
   }
 
   prune(): number {
@@ -144,5 +145,35 @@ export class AuditLogEngine {
 
   deserialize(json: string): void {
     this.entries = JSON.parse(json);
+  }
+
+  private escapeCsvValue(value: string | number | boolean | null | undefined): string {
+    if (value === null || value === undefined) return '';
+    const s = String(value);
+    if (s.length === 0) return '';
+    const first = s.charAt(0);
+    if (first === '=' || first === '+' || first === '-' || first === '@' || first === '\t' || first === '\r') {
+      return `'${s}`;
+    }
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+      return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
+  }
+
+  private escapeCsvRow(values: (string | number | boolean | null | undefined)[]): string {
+    return values.map((v) => this.escapeCsvValue(v)).join(',');
+  }
+
+  private fallbackRandomHex(hexChars: number): string {
+    const byteLen = Math.ceil(hexChars / 2);
+    const bytes = new Uint8Array(byteLen);
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < byteLen; i++) bytes[i] = Math.floor(Math.random() * 256);
+    }
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('').slice(0, hexChars);
+
   }
 }
