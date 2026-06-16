@@ -124,7 +124,7 @@ function bufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = '';
   for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
+    binary += String.fromCharCode(bytes[i]!);
   }
   return btoa(binary);
 }
@@ -222,7 +222,7 @@ export class CsrfProtection {
     // Sign with HMAC-SHA256
     const keyBytes = await this.getKey();
     const enc = new TextEncoder();
-    const hmacKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const hmacKey = await crypto.subtle.importKey('raw', keyBytes as BufferSource, { name: 'HMAC', hash: 'SHA-256' as const }, false, ['sign']);
     const sigBuffer = await crypto.subtle.sign('HMAC', hmacKey, enc.encode(payload));
     const sig = bufferToBase64(sigBuffer);
 
@@ -269,7 +269,7 @@ export class CsrfProtection {
       return { valid: false, reason: 'MALFORMED' };
     }
     const [expiresAtStr, nonce, sig] = parts;
-    const expiresAt = parseInt(expiresAtStr, 10);
+    const expiresAt = parseInt(expiresAtStr!, 10);
     if (!Number.isFinite(expiresAt)) {
       return { valid: false, reason: 'MALFORMED' };
     }
@@ -282,11 +282,11 @@ export class CsrfProtection {
     // Verify HMAC signature
     const keyBytes = await this.getKey();
     const enc = new TextEncoder();
-    const hmacKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-    const expectedSigBuffer = await crypto.subtle.sign('HMAC', hmacKey, enc.encode(`${expiresAtStr}.${nonce}`));
+    const hmacKey = await crypto.subtle.importKey('raw', keyBytes as BufferSource, { name: 'HMAC', hash: 'SHA-256' as const }, false, ['sign']);
+    const expectedSigBuffer = await crypto.subtle.sign('HMAC', hmacKey, enc.encode(`${expiresAtStr!}.${nonce!}`));
     const expectedSig = bufferToBase64(expectedSigBuffer);
 
-    if (!constantTimeCompare(sig, expectedSig)) {
+    if (!constantTimeCompare(sig!, expectedSig!)) {
       return { valid: false, reason: 'INVALID_SIGNATURE' };
     }
 

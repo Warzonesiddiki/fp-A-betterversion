@@ -237,7 +237,7 @@ async function sha256Hex(data: Uint8Array): Promise<string> {
   const bytes = new Uint8Array(buf);
   let out = '';
   for (let i = 0; i < bytes.length; i++) {
-    out += bytes[i].toString(16).padStart(2, '0');
+    out += bytes[i]!.toString(16).padStart(2, '0');
   }
   return out;
 }
@@ -247,7 +247,7 @@ function generateSecretId(): string {
   crypto.getRandomValues(bytes);
   let id = '';
   for (let i = 0; i < bytes.length; i++) {
-    id += ALPHABET[bytes[i] % ALPHABET.length];
+    id += ALPHABET[bytes[i]! % ALPHABET.length];
   }
   return `${SECRET_ROTATION_CONSTANTS.SECRET_ID_PREFIX}${id}`;
 }
