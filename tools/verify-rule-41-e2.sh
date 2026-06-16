@@ -30,12 +30,23 @@
 #      per NEVER-AGAIN RULE #55 v0.3 design — the strict-regex in v0.2
 #      is the hard blocker; v0.3 is advisory.
 #
-# Test fixture (known DRIFT-REAL case from CATCH #197):
-#   - 70d548da (Iris §11+§12 stale version)
-#   - c0917f588 (Iris §11+§12 canonical version)
+# Test fixture (TRUE E.2 DRIFT-REAL case from Atlas INFRA_RUNBOOK history):
+#   - 401d68003 (INFRA_RUNBOOK v0.1, CYCLE 10 PICK A)
+#   - f080e05fc (INFRA_RUNBOOK v0.1.1, CYCLE 12 PICK A hotfix)
 #   - Both pass `git rev-parse --verify` (E.1 GHOST-clean)
-#   - 70d548da is DRIFT-REAL because c0917f588 is the current HEAD of
-#     the persona-coverage file
+#   - BOTH modify docs/ratification/RATIFICATION_GATE_INFRA_RUNBOOK.md
+#   - 401d68003 is DRIFT-REAL because f080e05fc is the current HEAD of
+#     the INFRA_RUNBOOK file (401d68003 is an ancestor of f080e05fc)
+#
+# Vulcan 2nd-witness clarification (commit 43cb18154 review, 2026-06-16):
+#   - The 70d548da/c0917f588 case (Iris §11+§12) is NOT a true E.2 DRIFT-REAL
+#     case. 70d548da modified RATIFICATION_GATE_PRECHECK_PERSONA_UX.md but
+#     c0917f588 modified TYCHE_INDEX_2ND_WITNESS.md (DIFFERENT files, same
+#     commit subject). That is CATCH #197 CASCADE-TRAP-COMMIT-MESSAGE-REUSE,
+#     a separate 4th CASCADE-TRAP variant, NOT an E.2 sub-class.
+#   - CATCH #197 detection requires Gate 5c v0.4 (future work): verify
+#     commit subject matches the file it actually modified. Out of scope
+#     for v0.3 which only detects E.2 DRIFT-REAL.
 #
 # Time budget: 0.1s per cited SHA per file. Total <1s for realistic
 # commit messages (1-3 cited SHAs, 1-3 files per commit).
@@ -66,7 +77,7 @@ for arg in "$@"; do
     --help|-h)
       cat <<EOF
 Usage: $0 [--test] [--verbose]
-  --test: run the 70d548da vs c0917f588 DRIFT-REAL fixture
+  --test: run the 401d68003 vs f080e05fc DRIFT-REAL fixture (TRUE E.2 case)
   --verbose: print debug info
 
 Exit codes:
@@ -87,11 +98,11 @@ log() {
 
 # --- Test mode ---
 if [ "$TEST_MODE" = "1" ]; then
-  echo "=== Test mode: 70d548da vs c0917f588 (CATCH #197 fixture) ==="
-  # 70d548da is the stale (DRIFT-REAL) version
-  # c0917f588 is the canonical (current HEAD) version
-  STALE_SHA="70d548da"
-  CANONICAL_SHA="c0917f588"
+  echo "=== Test mode: 401d68003 vs f080e05fc (TRUE E.2 DRIFT-REAL fixture) ==="
+  # 401d68003 is the stale (DRIFT-REAL) version (INFRA_RUNBOOK v0.1)
+  # f080e05fc is the canonical (current HEAD) version (INFRA_RUNBOOK v0.1.1)
+  STALE_SHA="401d68003"
+  CANONICAL_SHA="f080e05fc"
 
   # Verify E.1 (GHOST-MISSING) is clean for both
   for sha in "$STALE_SHA" "$CANONICAL_SHA"; do
@@ -102,13 +113,13 @@ if [ "$TEST_MODE" = "1" ]; then
     echo "OK E.1: $sha exists in git history"
   done
 
-  # Find what files 70d548da touched
+  # Find what files 401d68003 touched
   STALE_FILES=$($GIT_CMD show --name-only --format="" "$STALE_SHA" 2>/dev/null)
   if [ -z "$STALE_FILES" ]; then
-    echo "FAIL: 70d548da touched no files (fixture broken)"
+    echo "FAIL: $STALE_SHA touched no files (fixture broken)"
     exit 1
   fi
-  echo "Files touched by 70d548da (stale):"
+  echo "Files touched by $STALE_SHA (stale):"
   echo "$STALE_FILES" | sed 's/^/  /'
 
   # For each file, find the current HEAD
