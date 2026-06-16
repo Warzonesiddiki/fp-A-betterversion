@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { EncryptionEngine, type EncryptedData } from './EncryptionEngine';
+import { EncryptionEngine, ENCRYPTION_CONSTANTS, type EncryptedData } from './EncryptionEngine';
 
 // =============================================================================
 // EncryptionEngine Tests
@@ -148,8 +148,9 @@ describeIfCrypto('EncryptionEngine — encrypt/decrypt round-trip', () => {
     });
 
     it('should fail with wrong password', async () => {
-      const encrypted = await EncryptionEngine.encryptField('data', 'pass1');
-      await expect(EncryptionEngine.decryptField(encrypted, 'pass2')).rejects.toThrow();
+      // PATCH 5: passwords must be ≥8 chars (MIN_PASSWORD_LENGTH=8).
+      const encrypted = await EncryptionEngine.encryptField('data', 'correct-password-1');
+      await expect(EncryptionEngine.decryptField(encrypted, 'wrong-password-1')).rejects.toThrow();
     });
   });
 
@@ -293,5 +294,237 @@ describe('EncryptionEngine — without crypto.subtle', () => {
   it('isEncrypted should work without crypto', () => {
     expect(EncryptionEngine.isEncrypted('enc:test')).toBe(true);
     expect(EncryptionEngine.isEncrypted('plain')).toBe(false);
+  });
+});
+
+// =============================================================================
+// EncryptionEngine — PATCH 5 security hardening (Hephaestus, FinPlan Pro v1.0.0)
+// CWE-916 (PBKDF2 iterations), CWE-20 (input validation), CWE-326 (AAD),
+// CWE-200 (key version), CWE-1188 (size cap), CWE-208 (constant-time compare).
+// =============================================================================
+
+describe('EncryptionEngine — PATCH 5 constants & static helpers', () => {
+  it('PBKDF2_ITERATIONS is at least 600,000 (OWASP 2023)', () => {
+    expect(ENCRYPTION_CONSTANTS.PBKDF2_ITERATIONS).toBeGreaterThanOrEqual(600000);
+  });
+
+  it('MAX_PLAINTEXT_LENGTH is a positive finite number', () => {
+    expect(ENCRYPTION_CONSTANTS.MAX_PLAINTEXT_LENGTH).toBeGreaterThan(0);
+    expect(Number.isFinite(ENCRYPTION_CONSTANTS.MAX_PLAINTEXT_LENGTH)).toBe(true);
+  });
+
+  it('MIN_PASSWORD_LENGTH is at least 8', () => {
+    expect(ENCRYPTION_CONSTANTS.MIN_PASSWORD_LENGTH).toBeGreaterThanOrEqual(8);
+  });
+
+  it('CURRENT_KEY_VERSION is a positive integer', () => {
+    expect(Number.isInteger(ENCRYPTION_CONSTANTS.CURRENT_KEY_VERSION)).toBe(true);
+    expect(ENCRYPTION_CONSTANTS.CURRENT_KEY_VERSION).toBeGreaterThan(0);
+  });
+});
+
+describe('EncryptionEngine — PATCH 5 constantTimeEqual (CWE-208)', () => {
+  it('returns true for identical strings', () => {
+    expect(EncryptionEngine.constantTimeEqual('abc', 'abc')).toBe(true);
+  });
+
+  it('returns false for differing strings of equal length', () => {
+    expect(EncryptionEngine.constantTimeEqual('abc', 'abd')).toBe(false);
+  });
+
+  it('returns false for strings of differing length', () => {
+    expect(EncryptionEngine.constantTimeEqual('abc', 'abcd')).toBe(false);
+  });
+
+  it('returns false for non-string inputs', () => {
+    expect(EncryptionEngine.constantTimeEqual(null, 'x')).toBe(false);
+    expect(EncryptionEngine.constantTimeEqual('x', undefined)).toBe(false);
+  });
+
+  it('returns true for two empty strings', () => {
+    expect(EncryptionEngine.constantTimeEqual('', '')).toBe(true);
+  });
+});
+
+describe('EncryptionEngine — PATCH 5 zeroize (best-effort)', () => {
+  it('overwrites a Uint8Array with zeros', () => {
+    const buf = new Uint8Array([1, 2, 3, 4, 5]);
+    EncryptionEngine.zeroize(buf);
+    for (let i = 0; i < buf.length; i++) {
+      expect(buf[i]).toBe(0);
+    }
+  });
+
+  it('handles null and undefined without throwing', () => {
+    expect(() => EncryptionEngine.zeroize(null)).not.toThrow();
+    expect(() => EncryptionEngine.zeroize(undefined)).not.toThrow();
+  });
+});
+
+describe('EncryptionEngine — PATCH 5 assertStrongPassword', () => {
+  it('rejects non-string password', () => {
+    expect(() => EncryptionEngine.assertStrongPassword(123)).toThrow();
+    expect(() => EncryptionEngine.assertStrongPassword(null)).toThrow();
+    expect(() => EncryptionEngine.assertStrongPassword(undefined)).toThrow();
+  });
+
+  it('rejects empty password', () => {
+    expect(() => EncryptionEngine.assertStrongPassword('')).toThrow(/must not be empty/);
+  });
+
+  it('rejects password shorter than MIN_PASSWORD_LENGTH', () => {
+    expect(() => EncryptionEngine.assertStrongPassword('short')).toThrow(/at least/);
+  });
+
+  it('rejects password longer than MAX_PASSWORD_LENGTH', () => {
+    const huge = 'x'.repeat(ENCRYPTION_CONSTANTS.MAX_PASSWORD_LENGTH + 1);
+    expect(() => EncryptionEngine.assertStrongPassword(huge)).toThrow(/exceeds/);
+  });
+
+  it('accepts a valid password', () => {
+    expect(() => EncryptionEngine.assertStrongPassword('ValidP@ssw0rd-2024')).not.toThrow();
+  });
+});
+
+describe('EncryptionEngine — PATCH 5 assertPlaintextSize', () => {
+  it('rejects non-string plaintext', () => {
+    expect(() => EncryptionEngine.assertPlaintextSize(42)).toThrow();
+  });
+
+  it('rejects plaintext above MAX_PLAINTEXT_LENGTH', () => {
+    const huge = 'x'.repeat(ENCRYPTION_CONSTANTS.MAX_PLAINTEXT_LENGTH + 1);
+    expect(() => EncryptionEngine.assertPlaintextSize(huge)).toThrow(/exceeds/);
+  });
+
+  it('accepts plaintext at the boundary', () => {
+    const ok = 'x'.repeat(ENCRYPTION_CONSTANTS.MAX_PLAINTEXT_LENGTH);
+    expect(() => EncryptionEngine.assertPlaintextSize(ok)).not.toThrow();
+  });
+});
+
+describeIfCrypto('EncryptionEngine — PATCH 5 input validation in encrypt/decrypt', () => {
+  const password = 'ValidP@ssw0rd-2024';
+
+  it('encrypt rejects empty password', async () => {
+    await expect(EncryptionEngine.encrypt('hello', '')).rejects.toThrow(/must not be empty/);
+  });
+
+  it('encrypt rejects short password', async () => {
+    await expect(EncryptionEngine.encrypt('hello', 'short')).rejects.toThrow(/at least/);
+  });
+
+  it('encrypt rejects non-string plaintext', async () => {
+    await expect(EncryptionEngine.encrypt(123, password)).rejects.toThrow();
+  });
+
+  it('encrypt rejects empty aadContext', async () => {
+    await expect(EncryptionEngine.encrypt('hi', password, { aadContext: '' })).rejects.toThrow();
+  });
+
+  it('decrypt rejects unsupported algorithm', async () => {
+    const enc = await EncryptionEngine.encrypt('hi', password);
+    await expect(
+      EncryptionEngine.decrypt(Object.assign({}, enc, { algorithm: 'AES-CBC' }), password)
+    ).rejects.toThrow(/unsupported algorithm/);
+  });
+
+  it('decrypt rejects future keyVersion', async () => {
+    const enc = await EncryptionEngine.encrypt('hi', password);
+    await expect(
+      EncryptionEngine.decrypt(Object.assign({}, enc, { keyVersion: 9999 }), password)
+    ).rejects.toThrow(/newer than supported/);
+  });
+
+  it('decrypt rejects invalid salt length (base64 with wrong byte count)', async () => {
+    const enc = await EncryptionEngine.encrypt('hi', password);
+    const shortSalt = btoa(String.fromCharCode(1, 2, 3, 4, 5, 6, 7, 8));
+    await expect(
+      EncryptionEngine.decrypt(Object.assign({}, enc, { salt: shortSalt }), password)
+    ).rejects.toThrow(/salt must be exactly 16 bytes/);
+  });
+
+  it('decrypt rejects invalid iv length', async () => {
+    const enc = await EncryptionEngine.encrypt('hi', password);
+    const shortIv = btoa(String.fromCharCode(1, 2, 3, 4));
+    await expect(
+      EncryptionEngine.decrypt(Object.assign({}, enc, { iv: shortIv }), password)
+    ).rejects.toThrow(/iv must be exactly 12 bytes/);
+  });
+});
+
+describeIfCrypto('EncryptionEngine — PATCH 5 AAD binding (CWE-326)', () => {
+  const password = 'ValidP@ssw0rd-2024';
+
+  it('round-trips plaintext with aadContext', async () => {
+    const enc = await EncryptionEngine.encrypt('user-42:api-key', password, {
+      aadContext: 'user:42',
+    });
+    expect(enc.aadContext).toBe('user:42');
+    const out = await EncryptionEngine.decrypt(enc, password);
+    expect(out).toBe('user-42:api-key');
+  });
+
+  it('rejects decryption when wrong aadContext is supplied to decryptField', async () => {
+    const enc = await EncryptionEngine.encryptField({ x: 1 }, password, {
+      aadContext: 'user:42',
+    });
+    await expect(
+      EncryptionEngine.decryptField(enc, password, { aadContext: 'user:99' })
+    ).rejects.toThrow(/aadContext mismatch/);
+  });
+
+  it('rejects decryptField when ciphertext is AAD-bound but caller omits aadContext', async () => {
+    const enc = await EncryptionEngine.encryptField({ x: 1 }, password, {
+      aadContext: 'user:42',
+    });
+    await expect(
+      EncryptionEngine.decryptField(enc, password)
+    ).rejects.toThrow(/AAD-bound but no aadContext/);
+  });
+
+  it('rejects decryptField when caller supplies aadContext but ciphertext is not AAD-bound', async () => {
+    const enc = await EncryptionEngine.encryptField({ x: 1 }, password);
+    await expect(
+      EncryptionEngine.decryptField(enc, password, { aadContext: 'user:42' })
+    ).rejects.toThrow(/not AAD-bound/);
+  });
+
+  it('rejects encryptField malformed payload', async () => {
+    await expect(EncryptionEngine.decryptField('enc:not-base64!@#', password)).rejects.toThrow(
+      /malformed/
+    );
+  });
+});
+
+describeIfCrypto('EncryptionEngine — PATCH 5 keyVersion stamp (CWE-200)', () => {
+  const password = 'ValidP@ssw0rd-2024';
+
+  it('stamps current keyVersion on every encrypt', async () => {
+    const enc = await EncryptionEngine.encrypt('x', password);
+    expect(enc.keyVersion).toBe(ENCRYPTION_CONSTANTS.CURRENT_KEY_VERSION);
+  });
+
+  it('stamps current keyVersion on encryptField', async () => {
+    const enc = await EncryptionEngine.encryptField('x', password);
+    const json = new TextDecoder().decode(
+      Uint8Array.from(atob(enc.slice(4)), (c) => c.charCodeAt(0))
+    );
+    const parsed = JSON.parse(json);
+    expect(parsed.keyVersion).toBe(ENCRYPTION_CONSTANTS.CURRENT_KEY_VERSION);
+  });
+});
+
+describeIfCrypto('EncryptionEngine — PATCH 5 deriveKey salt validation (CWE-759)', () => {
+  const password = 'ValidP@ssw0rd-2024';
+
+  it('rejects non-Uint8Array salt', async () => {
+    await expect(
+      EncryptionEngine.deriveKey(password, [1, 2, 3])
+    ).rejects.toThrow(/Uint8Array/);
+  });
+
+  it('rejects wrong-length salt', async () => {
+    const wrong = new Uint8Array(8);
+    await expect(EncryptionEngine.deriveKey(password, wrong)).rejects.toThrow(/16 bytes/);
   });
 });
