@@ -66,7 +66,7 @@ export default function DrillDownWindowPage() {
           </div>
         </div>
         <div className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900">
-          <DataTable data={filteredEntries} columns={columns} pageSize={15} />
+          <DataTable data={filteredEntries} columns={columns} pageSize={15} caption="Detail data table" ariaLabel="Drill-down detail data table" />
         </div>
       </div>
     </div>
