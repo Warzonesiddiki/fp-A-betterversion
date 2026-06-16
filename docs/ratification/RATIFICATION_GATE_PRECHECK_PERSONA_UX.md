@@ -192,9 +192,9 @@
 - **Vesta 531aca2c** — 2-muse cross-witness on Hermes PART_124 v0.1 (sector coverage angle, 4 amendments)
 - **Hermes PART_124 v0.2 d5294c1b** — supersedes v0.1, incorporates F3+F4 from Vesta
 - **Strategos INDEX v0.2 8dfd44e1** — 9/11 → 10/11 pre-checks consolidated; this pre-check is **11/11**
-- **Apollo INDEX v0.2 d984569a** — Dimension #9 COMPLIANCE SHIPPED (Themis 1f353d08); this pre-check is Dimension #11
+- **Apollo INDEX v0.2 d984569a** — Dimension #9 COMPLIANCE SHIPPED (Themis 657d10524); this pre-check is Dimension #11
 - **Artemis c8726c65d** — A11Y_READINESS v0.1 cross-witness for Dim 2 (D3 A11y sub-dim)
-- **Themis 1f353d08 + f6c58374** — COMPLIANCE pre-check v0.1+v0.2; this pre-check is independent (not regulated)
+- **Themis 657d10524 + f4efa3628** — COMPLIANCE pre-check v0.1+v0.2; this pre-check is independent (not regulated)
 - **Sentinel be7033e7** — RATIFICATION_GATE_PRECHECK_E2E v1.0; Dim 5 cross-witness
 - **Mnemosyne 20186e9d7 + 38c11e24** — T-MN-047 RATIFICATION pre-check + USER_DOCS_AUDIT v0.2; Dim 2 D7 Help cross-witness
 
