@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   GripVertical,
   Plus,
@@ -11,6 +11,7 @@ import {
   Layers,
   Columns,
   Rows,
+  Contrast,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
@@ -83,6 +84,32 @@ export function ReportBuilder({
   const [previewMode, setPreviewMode] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
   const [selectedColIndex, setSelectedColIndex] = useState<number | null>(null);
+  const [highContrast, setHighContrast] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return window.localStorage.getItem('reportBuilder.highContrast') === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.documentElement.setAttribute('data-high-contrast', String(highContrast));
+    try {
+      if (highContrast) {
+        window.localStorage.setItem('reportBuilder.highContrast', '1');
+      } else {
+        window.localStorage.removeItem('reportBuilder.highContrast');
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [highContrast]);
+
+  const toggleHighContrast = useCallback(() => {
+    setHighContrast((prev) => !prev);
+  }, []);
 
   /* ── undo / redo ── */
   const pushHistory = useCallback(
@@ -247,6 +274,7 @@ export function ReportBuilder({
       className={cn('flex flex-col h-full', className)}
       role="region"
       aria-label="Report Builder"
+      data-high-contrast={highContrast}
     >
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
@@ -289,12 +317,25 @@ export function ReportBuilder({
             variant="ghost"
             onClick={() => setPreviewMode(!previewMode)}
             aria-label={previewMode ? 'Switch to edit mode' : 'Switch to preview mode'}
+            aria-pressed={previewMode}
           >
-            <Eye className="h-4 w-4 mr-1.5" />
+            <Eye className="h-4 w-4 mr-1.5" aria-hidden="true" />
             {previewMode ? 'Edit' : 'Preview'}
           </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={toggleHighContrast}
+            aria-label={highContrast ? 'Disable high contrast mode' : 'Enable high contrast mode'}
+            aria-pressed={highContrast}
+            data-testid="high-contrast-toggle"
+            title={highContrast ? 'High contrast: ON (WCAG AAA)' : 'High contrast: OFF'}
+          >
+            <Contrast className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            {highContrast ? 'HC: On' : 'HC: Off'}
+          </Button>
           <Button size="sm" onClick={handleSave}>
-            <Save className="h-4 w-4 mr-1.5" />
+            <Save className="h-4 w-4 mr-1.5" aria-hidden="true" />
             Save
           </Button>
         </div>
