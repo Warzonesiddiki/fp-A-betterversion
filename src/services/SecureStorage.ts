@@ -23,11 +23,7 @@
 //   - KeyManager (PATCH 6: key caching, rotation, revocation)
 //   - Web Crypto API
 
-import {
-  EncryptionEngine,
-  _ENCRYPTION_CONSTANTS,
-  type _EncryptedData,
-} from '../engines/EncryptionEngine';
+import { EncryptionEngine } from '../engines/EncryptionEngine';
 import { KeyManager, generateSalt } from './KeyManager';
 
 export interface SecureStorageAdapter {

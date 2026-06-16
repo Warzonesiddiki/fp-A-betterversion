@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { LiveRegion } from '@/components/ui/LiveRegion';
 import { KPICardEnhanced, type KPICardEnhancedProps } from './KPICardEnhanced';
 import { TrafficLightBatch } from './TrafficLightIndicator';
