@@ -69,7 +69,13 @@ export function DrillDownModal({
           {accountPrefix && <span>Filtering by Account: {accountPrefix}*</span>}
         </div>
         <div className="border border-slate-800 rounded-lg overflow-hidden">
-          <DataTable data={filteredEntries} columns={columns} pageSize={10} />
+          <DataTable
+            data={filteredEntries}
+            columns={columns}
+            pageSize={10}
+            caption={`General ledger drill-down transactions${accountPrefix ? ' filtered by account prefix ' + accountPrefix : ''}: ${filteredEntries.length} entries`}
+            ariaLabel="Drill-down transactions table"
+          />
         </div>
       </div>
     </Modal>
