@@ -1,4 +1,4 @@
-import { forwardRef, HTMLAttributes, useCallback, useEffect, useRef } from 'react';
+import { forwardRef, HTMLAttributes, useCallback, useEffect, useId, useRef } from 'react';
 import { cn } from '../../utils/cn';
 import { X } from 'lucide-react';
 
@@ -16,6 +16,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
   ({ className, isOpen, onClose, children, title, ...props }, ref) => {
     const dialogRef = useRef<HTMLDivElement>(null);
     const previousFocusRef = useRef<HTMLElement | null>(null);
+    const titleId = useId();
 
     const handleKeyDown = useCallback(
       (e: KeyboardEvent) => {
@@ -89,13 +90,14 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             }}
             role="dialog"
             aria-modal="true"
-            aria-label={title}
+            aria-labelledby={title ? titleId : undefined}
             className={cn(
               'inline-block transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all motion-reduce:transition-none motion-reduce:transform-none sm:my-8 sm:w-full sm:max-w-lg sm:align-middle',
               className
             )}
             {...props}
           >
+            {title && <h2 id={titleId} className="text-lg font-medium mb-4 pr-8">{title}</h2>}
             <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
               <button
                 type="button"

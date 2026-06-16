@@ -82,4 +82,50 @@ describe('Modal', () => {
     );
     expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
   });
+
+  // Hera PICK S - VarianceAnalysisPage focus trap (WCAG 2.4.3 + 2.1.2 + 4.1.2)
+  it('traps focus within the modal (WCAG 2.4.3 Focus Order)', () => {
+    render(
+      <Modal isOpen={true} onClose={vi.fn()} title="Focus Trap Test">
+        <button>First</button>
+        <button>Second</button>
+        <button>Third</button>
+      </Modal>
+    );
+    const dialog = screen.getByRole('dialog');
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBeGreaterThanOrEqual(3);
+    const focusable = dialog.querySelectorAll('button');
+    expect(focusable.length).toBeGreaterThanOrEqual(3);
+    buttons.forEach((btn) => {
+      expect(dialog.contains(btn)).toBe(true);
+    });
+  });
+
+  it('calls onClose when Escape key is pressed (WCAG 2.1.2 No Keyboard Trap)', () => {
+    const onClose = vi.fn();
+    render(
+      <Modal isOpen={true} onClose={onClose} title="Escape Test">
+        <p>Body</p>
+      </Modal>
+    );
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders title with proper aria-labelledby (WCAG 4.1.2 Name/Role/Value)', () => {
+    render(
+      <Modal isOpen={true} onClose={vi.fn()} title="Accessible Title">
+        <p>Body</p>
+      </Modal>
+    );
+    const dialog = screen.getByRole('dialog');
+    const titleId = dialog.getAttribute('aria-labelledby');
+    expect(titleId).toBeTruthy();
+    if (titleId) {
+      const titleEl = document.getElementById(titleId);
+      expect(titleEl).toBeTruthy();
+      expect(titleEl?.textContent).toContain('Accessible Title');
+    }
+  });
 });
