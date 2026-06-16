@@ -280,6 +280,7 @@ export class CascadeCalculationEngine {
   } {
     if (steps.length === 0) return { totalElim: 0, totalNCI: 0, totalFX: 0 };
     const last = steps[steps.length - 1];
+    if (!last) return { totalElim: 0, totalNCI: 0, totalFX: 0 };
     return {
       totalElim: last.cumulativeElimination,
       totalNCI: last.cumulativeNCI,

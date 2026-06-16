@@ -276,3 +276,5 @@ const BenchmarksPage: React.FC = () => {
     </div>
   );
 };
+
+export default BenchmarksPage;
