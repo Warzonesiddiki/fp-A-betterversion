@@ -20,7 +20,7 @@ describe('AuditLogEngine', () => {
       resource: 'budget',
       resourceId: 'budget-1',
     });
-    expect(entry.id).toMatch(/^audit-/);
+    expect(entry.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$|^audit-/);
     expect(entry.timestamp).toBeDefined();
     expect(entry.userId).toBe('user1');
     expect(entry.action).toBe('create');

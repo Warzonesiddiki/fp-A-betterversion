@@ -176,8 +176,8 @@ export class AuditLogEngine {
       for (let i = 0; i < byteLen; i++) bytes[i] = Math.floor(Math.random() * 256);
     }
     return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('').slice(0, hexChars);
+  }
 
-  
   // ===========================================================================
   // PATCH 8 — Hephaestus, FinPlan Pro v1.0.0 (CYCLE 7)
   // Hash chain integrity (CWE-345), HMAC signing (CWE-345), async flush queue,
