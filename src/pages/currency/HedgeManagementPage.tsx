@@ -173,16 +173,17 @@ export default function HedgeManagementPage() {
 
       <Card>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" aria-label="Currency hedge positions">
+              <caption className="sr-only">Hedge positions showing instrument, notional, strike rate, and mark-to-market value</caption>
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                <th className="px-4 py-3">Instrument</th>
-                <th className="px-4 py-3">Currency</th>
-                <th className="px-4 py-3 text-right">Notional</th>
-                <th className="px-4 py-3 text-right">Rate</th>
-                <th className="px-4 py-3">Maturity</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th scope="col" className="px-4 py-3">Instrument</th>
+                <th scope="col" className="px-4 py-3">Currency</th>
+                <th scope="col" className="px-4 py-3 text-right">Notional</th>
+                <th scope="col" className="px-4 py-3 text-right">Rate</th>
+                <th scope="col" className="px-4 py-3">Maturity</th>
+                <th scope="col" className="px-4 py-3">Status</th>
+                <th scope="col" className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
