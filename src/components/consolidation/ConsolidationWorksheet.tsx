@@ -168,11 +168,11 @@ function SummaryView({ r }: { r: ConsolidatedResult }) {
           <CardTitle className="text-sm">Consolidation Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <table className="w-full text-sm" role="table">
+          <table className="w-full text-sm" role="table" aria-label="Consolidation worksheet: account balances and intercompany eliminations">
             <thead>
               <tr className="border-b text-left text-[var(--text-secondary)]">
-                <th className="p-2">Item</th>
-                <th className="p-2 text-right">Amount</th>
+                <th scope="col" className="p-2">Item</th>
+                <th scope="col" className="p-2 text-right">Amount</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -228,13 +228,13 @@ function EliminationsView({ entries }: { entries: EliminationEntry[] }) {
             <table className="w-full text-sm" role="table">
               <thead>
                 <tr className="border-b text-left text-[var(--text-secondary)]">
-                  <th className="p-2">Type</th>
-                  <th className="p-2">From</th>
-                  <th className="p-2">To</th>
-                  <th className="p-2">Account</th>
-                  <th className="p-2 text-right">Debit</th>
-                  <th className="p-2 text-right">Credit</th>
-                  <th className="p-2">Description</th>
+                  <th scope="col" className="p-2">Type</th>
+                  <th scope="col" className="p-2">From</th>
+                  <th scope="col" className="p-2">To</th>
+                  <th scope="col" className="p-2">Account</th>
+                  <th scope="col" className="p-2 text-right">Debit</th>
+                  <th scope="col" className="p-2 text-right">Credit</th>
+                  <th scope="col" className="p-2">Description</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -292,13 +292,13 @@ function NCIView({ details }: { details: MinorityInterestDetail[] }) {
             <table className="w-full text-sm" role="table">
               <thead>
                 <tr className="border-b text-left text-[var(--text-secondary)]">
-                  <th className="p-2">Entity</th>
-                  <th className="p-2 text-right">Own %</th>
-                  <th className="p-2 text-right">NCI %</th>
-                  <th className="p-2 text-right">Beginning</th>
-                  <th className="p-2 text-right">Net Income</th>
-                  <th className="p-2 text-right">Dividends</th>
-                  <th className="p-2 text-right font-bold">Ending</th>
+                  <th scope="col" className="p-2">Entity</th>
+                  <th scope="col" className="p-2 text-right">Own %</th>
+                  <th scope="col" className="p-2 text-right">NCI %</th>
+                  <th scope="col" className="p-2 text-right">Beginning</th>
+                  <th scope="col" className="p-2 text-right">Net Income</th>
+                  <th scope="col" className="p-2 text-right">Dividends</th>
+                  <th scope="col" className="p-2 text-right font-bold">Ending</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -402,15 +402,15 @@ function WorksheetView({ ws }: { ws: WS }) {
           {expanded === s.key && (
             <CardContent>
               <div className="max-h-64 overflow-y-auto">
-                <table className="w-full text-xs" role="table">
+                <table className="w-full text-xs" role="table" aria-label="Consolidation worksheet: detailed journal entries">
                   <thead className="sticky top-0 bg-[var(--bg-surface)]">
                     <tr className="border-b text-left text-[var(--text-secondary)]">
-                      <th className="p-1.5">Code</th>
-                      <th className="p-1.5">Name</th>
-                      <th className="p-1.5">Entity</th>
-                      <th className="p-1.5 text-right">Debit</th>
-                      <th className="p-1.5 text-right">Credit</th>
-                      <th className="p-1.5 text-right">Amount</th>
+                      <th scope="col" className="p-1.5">Code</th>
+                      <th scope="col" className="p-1.5">Name</th>
+                      <th scope="col" className="p-1.5">Entity</th>
+                      <th scope="col" className="p-1.5 text-right">Debit</th>
+                      <th scope="col" className="p-1.5 text-right">Credit</th>
+                      <th scope="col" className="p-1.5 text-right">Amount</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--border-subtle)]">
