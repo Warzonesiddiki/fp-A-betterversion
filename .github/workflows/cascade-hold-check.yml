@@ -1,0 +1,91 @@
+# .github/workflows/cascade-hold-check.yml
+# Husky Gate 10 CI integration — runs ledger validation on every push and PR
+# Atlas + Hephaestus joint DRI, 2026-06-17
+# Closes CATCH #207 #4 (Vesta CASCADE-HOLD-BUNDLE 4/5)
+
+name: Cascade-Hold Ledger Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cascade-hold-check:
+    name: Validate Cascade-Hold Ledger
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate Cascade-Hold Ledger
+        run: |
+          echo "=== Cascade-Hold Ledger Validation (Husky Gate 10) ==="
+          if [ -f docs/security/CASCADE_HOLD_LEDGER.md ]; then
+            # Extract all CHB-XXX entries
+            entries=$(grep -oE 'CHB-[0-9]+' docs/security/CASCADE_HOLD_LEDGER.md | sort -u)
+            entry_count=$(echo "$entries" | grep -c . || echo "0")
+            echo "Found $entry_count CHB entries in ledger"
+            
+            if [ "$entry_count" -eq 0 ]; then
+              echo "⚠️  No CHB entries yet — Husky Gate 10 ledger is fresh"
+              exit 0
+            fi
+            
+            # Verify each entry's SHA exists in git history
+            invalid=0
+            valid=0
+            for chb in $entries; do
+              # Get the SHA from the row containing this CHB
+              sha=$(grep -A 1 "$chb" docs/security/CASCADE_HOLD_LEDGER.md | grep -oE '[0-9a-f]{7,40}' | head -1)
+              if [ -n "$sha" ]; then
+                if git rev-parse --verify "$sha^{commit}" >/dev/null 2>&1; then
+                  echo "  ✅ $chb references valid SHA: $sha"
+                  valid=$((valid + 1))
+                else
+                  echo "  ❌ $chb references GHOST SHA: $sha"
+                  invalid=$((invalid + 1))
+                fi
+              fi
+            done
+            
+            echo ""
+            echo "=== Summary ==="
+            echo "Valid CHB entries: $valid"
+            echo "Invalid CHB entries: $invalid"
+            
+            if [ $invalid -gt 0 ]; then
+              echo "❌ $invalid CHB entries reference GHOST SHAs"
+              exit 1
+            fi
+            echo "✅ All CHB entries reference valid SHAs"
+          else
+            echo "⚠️  CASCADE_HOLD_LEDGER.md not found — Husky Gate 10 not yet active"
+            exit 0
+          fi
+
+      - name: Verify Husky Gate 10 Spec Exists
+        run: |
+          if [ -f docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md ]; then
+            echo "✅ HUSKY_GATE_10 spec exists"
+          else
+            echo "❌ HUSKY_GATE_10 spec missing"
+            exit 1
+          fi
+
+      - name: Verify Husky Gate 10 Hook Implementation
+        run: |
+          if [ -f .husky/pre-push ]; then
+            if grep -q "Gate 10" .husky/pre-push; then
+              echo "✅ .husky/pre-push references Gate 10"
+            else
+              echo "❌ .husky/pre-push missing Gate 10 reference"
+              exit 1
+            fi
+          else
+            echo "❌ .husky/pre-push missing"
+            exit 1
+          fi

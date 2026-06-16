@@ -1,5 +1,5 @@
 #!/bin/sh
-# <!-- SHIPPED v0.2 — Atlas 2026-06-16 — Gate 5 strict-regex upgrade (NEVER-AGAIN RULE #56 PROACTIVE-PICK-CHAIN) -->
+# <!-- SHIPPED v0.3 — Atlas 2026-06-17 — Gate 10 CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68 CATCH-NUMBERING-COLLISION PREVENTION) -->
 # =============================================================================
 # FinPlan Pro — pre-push hook
 # See docs/drafts/atlas/husky-timeout-fix.md for the IC-1 root cause + the
@@ -116,5 +116,33 @@ fi
 # Co-sign: Atlas (infra, RULE #55 coder) - binding commitment from ATLAS_COSIGN_CODIF_41_V0_1.md
 # (1b54c7a8d), Sub-class A 3-witness. Ship target: T-3d 2026-06-19 EOD (Leader PICK URGENT CYCLE 15).
 timeout 240 sh tools/verify-rule-41-e2.sh --verbose || { echo "E.2/F/G verifier failed (or timed out at 240s). Push blocked."; exit 1; }
+
+# Gate 10 - NEVER-AGAIN RULE #68 CATCH-NUMBERING-COLLISION PREVENTION + CASCADE-HOLD-BUNDLE Auto-Detection
+# Atlas + Hephaestus joint DRI, 2026-06-17 (CYCLE 15 PICK A)
+# Closes CATCH #207 #4 (Vesta CASCADE-HOLD-BUNDLE 4/5)
+# 3 detection criteria (OR-logic): multi-T-IDs (A), multi-Co-Authored-By (B), cross-Muse path span (C)
+# Auto-checks docs/security/CASCADE_HOLD_LEDGER.md for CHB-XXX entry
+# BLOCKS push if no ledger entry found (advisory mode in CYCLE 15, hard block from 2026-06-21 EOD)
+unpushed_shas_gate10=$(git log @{u}..HEAD --format='%H' 2>/dev/null || git log --format='%H' -10)
+cascade_hold_detected=0
+for sha in $unpushed_shas_gate10; do
+  short_sha=$(git rev-parse --short $sha 2>/dev/null)
+  if [ -z "$short_sha" ]; then continue; fi
+  t_ids=$(git log -1 --format='%B' $sha 2>/dev/null | grep -oE 'T-([A-Z]{2,4})-([0-9]{3})' | sort -u || true)
+  t_id_count=$(echo "$t_ids" | grep -c . 2>/dev/null || echo "0")
+  co_authors=$(git log -1 --format='%B' $sha 2>/dev/null | grep -ciE '^Co-Authored-By:' || echo "0")
+  cross_muse_paths=$(git show --name-only --format='' $sha 2>/dev/null | grep -oE 'docs/(atlas|hephaestus|iris|hermes|mnemosyne|chronos|vesta|tyche|hera|artemis|apollo|themis|strategos|calliope|orchestrator|athena|prometheus|vulcan|sentinel)/' | sort -u | wc -l 2>/dev/null || echo "0")
+  if [ "$t_id_count" -ge 2 ] || [ "$co_authors" -ge 2 ] || [ "$cross_muse_paths" -ge 2 ]; then
+    if [ -f "docs/security/CASCADE_HOLD_LEDGER.md" ] && ! grep -q "CHB.*$short_sha" docs/security/CASCADE_HOLD_LEDGER.md 2>/dev/null; then
+      echo "Gate 10 advisory: $short_sha T-IDs=$t_id_count Co-Authors=$co_authors CrossMuse=$cross_muse_paths; no CHB entry"
+      cascade_hold_detected=$((cascade_hold_detected + 1))
+    fi
+  fi
+done
+if [ $cascade_hold_detected -gt 0 ]; then
+  echo "Gate 10: $cascade_hold_detected candidate(s) without ledger entry (advisory only in CYCLE 15 PICK A, hard block from 2026-06-21 EOD)"
+  echo "   Reference: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md"
+  echo "   Procedure: add CHB-XXX entry to docs/security/CASCADE_HOLD_LEDGER.md"
+fi
 
 echo "✅ All pre-push checks passed."
