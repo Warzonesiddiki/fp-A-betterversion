@@ -80,7 +80,9 @@ export function SectorSelector({
             <span className="text-sm font-semibold leading-tight text-[var(--text-primary)]">
               {sector.name}
             </span>
-            <span className="text-xs text-[var(--text-muted)] line-clamp-2">{sector.description}</span>
+            <span className="text-xs text-[var(--text-muted)] line-clamp-2">
+              {sector.description}
+            </span>
             <Badge variant={isActive ? 'default' : 'secondary'} className="mt-auto">
               {sector.defaultKPIs.length} KPIs
             </Badge>

@@ -84,7 +84,7 @@ describe('formatRelativeTime — maxDays customization', () => {
 
   it('maxDays = 30 keeps "30d ago" within range', () => {
     const TWENTY_NINE_DAYS_AGO = NOW - 29 * 86_400_000;
-  expect(formatRelativeTime(TWENTY_NINE_DAYS_AGO, { now: NOW, maxDays: 30 })).toBe('29d ago');
+    expect(formatRelativeTime(TWENTY_NINE_DAYS_AGO, { now: NOW, maxDays: 30 })).toBe('29d ago');
   });
 
   it('maxDays = 30 makes 31 days show as calendar date', () => {

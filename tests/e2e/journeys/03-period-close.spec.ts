@@ -54,7 +54,10 @@ test.describe('Journey 03: Period Close (SOX)', () => {
     await expect(runButton).toBeVisible();
     await runButton.click();
     // Consolidation may take time; wait for status indicator
-    await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(/complete|success/i, { timeout: 30_000 });
+    await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(
+      /complete|success/i,
+      { timeout: 30_000 }
+    );
   });
 
   test('step 4: lock the period', async ({ page }) => {

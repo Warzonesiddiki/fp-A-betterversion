@@ -175,9 +175,7 @@ export class RateLimiter {
       throw new Error('RateLimiter not initialized');
     }
     if (this.policies.size >= RATE_LIMITER_CONSTANTS.MAX_POLICIES) {
-      throw new Error(
-        `Maximum policies (${RATE_LIMITER_CONSTANTS.MAX_POLICIES}) reached`
-      );
+      throw new Error(`Maximum policies (${RATE_LIMITER_CONSTANTS.MAX_POLICIES}) reached`);
     }
     const capacity = options.capacity ?? RATE_LIMITER_CONSTANTS.DEFAULT_CAPACITY;
     const refillPerSecond =
@@ -186,8 +184,7 @@ export class RateLimiter {
       options.longWindowSeconds ?? RATE_LIMITER_CONSTANTS.DEFAULT_LONG_WINDOW_SECONDS;
     const sustainedDenyThreshold =
       options.sustainedDenyThreshold ?? RATE_LIMITER_CONSTANTS.DEFAULT_SUSTAINED_DENY_THRESHOLD;
-    const maxConcurrent =
-      options.maxConcurrent ?? RATE_LIMITER_CONSTANTS.DEFAULT_MAX_CONCURRENT;
+    const maxConcurrent = options.maxConcurrent ?? RATE_LIMITER_CONSTANTS.DEFAULT_MAX_CONCURRENT;
     const defaultCost = options.defaultCost ?? 1;
 
     if (capacity < RATE_LIMITER_CONSTANTS.MIN_CAPACITY) {
@@ -200,9 +197,7 @@ export class RateLimiter {
       throw new Error('refillPerSecond must be > 0');
     }
     if (refillPerSecond > RATE_LIMITER_CONSTANTS.MAX_REFILL_PER_SECOND) {
-      throw new Error(
-        `refillPerSecond must be <= ${RATE_LIMITER_CONSTANTS.MAX_REFILL_PER_SECOND}`
-      );
+      throw new Error(`refillPerSecond must be <= ${RATE_LIMITER_CONSTANTS.MAX_REFILL_PER_SECOND}`);
     }
     if (longWindowSeconds <= 0) {
       throw new Error('longWindowSeconds must be > 0');
@@ -224,9 +219,7 @@ export class RateLimiter {
       throw new Error('maxConcurrent must be >= 0');
     }
     if (maxConcurrent > RATE_LIMITER_CONSTANTS.MAX_MAX_CONCURRENT) {
-      throw new Error(
-        `maxConcurrent must be <= ${RATE_LIMITER_CONSTANTS.MAX_MAX_CONCURRENT}`
-      );
+      throw new Error(`maxConcurrent must be <= ${RATE_LIMITER_CONSTANTS.MAX_MAX_CONCURRENT}`);
     }
     if (defaultCost < 1) {
       throw new Error('defaultCost must be >= 1');
@@ -266,7 +259,7 @@ export class RateLimiter {
   }
 
   listPolicies(): RateLimitPolicy[] {
-    return Array.from(this.policies.values()).map(s => s.policy);
+    return Array.from(this.policies.values()).map((s) => s.policy);
   }
 
   disablePolicy(policyId: string): void {
@@ -318,8 +311,16 @@ export class RateLimiter {
 
     if (!state.policy.enabled) {
       return this.buildResult(
-        state, request.identity, 'deny-policy-disabled', 0, 0,
-        state.policy.capacity, 0, false, now, cost
+        state,
+        request.identity,
+        'deny-policy-disabled',
+        0,
+        0,
+        state.policy.capacity,
+        0,
+        false,
+        now,
+        cost
       );
     }
 
@@ -335,8 +336,16 @@ export class RateLimiter {
         this.recordDeny(state, bucket, now);
         const retryAfter = Math.max(0, Math.ceil((bucket.quarantineEndsAt - now) / 1000));
         return this.buildResult(
-          state, request.identity, 'deny-identity-quarantined', 0, 0,
-          state.policy.capacity, retryAfter, false, now, cost
+          state,
+          request.identity,
+          'deny-identity-quarantined',
+          0,
+          0,
+          state.policy.capacity,
+          retryAfter,
+          false,
+          now,
+          cost
         );
       }
     }
@@ -344,16 +353,32 @@ export class RateLimiter {
     if (this.globalMaxConcurrent > 0 && this.globalInFlight.value >= this.globalMaxConcurrent) {
       this.recordDeny(state, bucket, now);
       return this.buildResult(
-        state, request.identity, 'deny-global-concurrent-cap',
-        bucket.tokens, 0, state.policy.capacity, 1, false, now, cost
+        state,
+        request.identity,
+        'deny-global-concurrent-cap',
+        bucket.tokens,
+        0,
+        state.policy.capacity,
+        1,
+        false,
+        now,
+        cost
       );
     }
 
     if (state.policy.maxConcurrent > 0 && state.inFlight >= state.policy.maxConcurrent) {
       this.recordDeny(state, bucket, now);
       return this.buildResult(
-        state, request.identity, 'backpressure',
-        bucket.tokens, 0, state.policy.capacity, 1, false, now, cost
+        state,
+        request.identity,
+        'backpressure',
+        bucket.tokens,
+        0,
+        state.policy.capacity,
+        1,
+        false,
+        now,
+        cost
       );
     }
 
@@ -362,11 +387,17 @@ export class RateLimiter {
       const tokensNeeded = cost - bucket.tokens;
       const retryAfter = Math.max(1, Math.ceil(tokensNeeded / state.policy.refillPerSecond));
       return this.buildResult(
-        state, request.identity, 'deny-bucket-empty',
-        bucket.tokens, 0, state.policy.capacity, retryAfter,
+        state,
+        request.identity,
+        'deny-bucket-empty',
+        bucket.tokens,
+        0,
+        state.policy.capacity,
+        retryAfter,
         bucket.denyCountWindow >= state.policy.sustainedDenyThreshold &&
           state.policy.sustainedDenyThreshold > 0,
-        now, cost
+        now,
+        cost
       );
     }
 
@@ -375,8 +406,16 @@ export class RateLimiter {
     if (this.globalMaxConcurrent > 0) this.globalInFlight.value += 1;
     state.totalAllowed += 1;
     return this.buildResult(
-      state, request.identity, 'allow',
-      bucket.tokens, 0, state.policy.capacity, 0, false, now, cost
+      state,
+      request.identity,
+      'allow',
+      bucket.tokens,
+      0,
+      state.policy.capacity,
+      0,
+      false,
+      now,
+      cost
     );
   }
 

@@ -28,11 +28,7 @@ export {
   quarterOf,
 } from './fiscalCalendar';
 
-export type {
-  FiscalCalendarConfig,
-  FiscalPeriod,
-  FiscalQuarter,
-} from "./fiscalCalendar";
+export type { FiscalCalendarConfig, FiscalPeriod, FiscalQuarter } from './fiscalCalendar';
 
 export {
   formatRelativeTime,

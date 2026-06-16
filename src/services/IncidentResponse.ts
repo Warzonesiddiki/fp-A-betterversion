@@ -42,16 +42,16 @@ export const INCIDENT_RESPONSE_CONSTANTS = {
     CRITICAL: 15,
     HIGH: 60,
     MEDIUM: 240, // 4 hours
-    LOW: 1440,   // 24 hours
+    LOW: 1440, // 24 hours
     INFO: 10080, // 7 days
   } as const,
   /** Default resolution SLA in minutes */
   DEFAULT_RESOLUTION_SLA_MINUTES: {
-    CRITICAL: 240,    // 4 hours
-    HIGH: 1440,       // 24 hours
-    MEDIUM: 4320,     // 3 days
-    LOW: 10080,       // 7 days
-    INFO: 43200,      // 30 days
+    CRITICAL: 240, // 4 hours
+    HIGH: 1440, // 24 hours
+    MEDIUM: 4320, // 3 days
+    LOW: 10080, // 7 days
+    INFO: 43200, // 30 days
   } as const,
   /** Numeric CVSS score per severity */
   SEVERITY_SCORE: {
@@ -76,12 +76,12 @@ export const INCIDENT_RESPONSE_CONSTANTS = {
 export type IncidentSeverity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
 
 export type IncidentStatus =
-  | 'open'            // newly created, not yet acknowledged
-  | 'investigating'   // actively being worked
-  | 'contained'       // impact contained, monitoring
-  | 'resolved'        // fixed, awaiting postmortem
-  | 'postmortem'      // postmortem in progress
-  | 'closed';         // fully closed
+  | 'open' // newly created, not yet acknowledged
+  | 'investigating' // actively being worked
+  | 'contained' // impact contained, monitoring
+  | 'resolved' // fixed, awaiting postmortem
+  | 'postmortem' // postmortem in progress
+  | 'closed'; // fully closed
 
 export type IncidentEventType =
   | 'created'
@@ -102,11 +102,11 @@ export interface IncidentArtifact {
   id: string;
   type: 'log' | 'screenshot' | 'file' | 'metric' | 'config' | 'other';
   name: string;
-  content?: string;        // inline for small artifacts
-  url?: string;            // external link for large artifacts
-  contentType?: string;    // mime type
-  size?: number;           // bytes
-  hash?: string;           // sha256 of content
+  content?: string; // inline for small artifacts
+  url?: string; // external link for large artifacts
+  contentType?: string; // mime type
+  size?: number; // bytes
+  hash?: string; // sha256 of content
   attachedAt: number;
   attachedBy: string;
 }
@@ -294,7 +294,10 @@ export type AuditEmitter = (event: IncidentAuditEvent) => void;
 // ── Errors ───────────────────────────────────────────────────────────────────
 
 export class IncidentError extends Error {
-  constructor(message: string, public readonly code: string) {
+  constructor(
+    message: string,
+    public readonly code: string
+  ) {
     super(message);
     this.name = 'IncidentError';
   }
@@ -610,7 +613,12 @@ export class IncidentResponse {
    */
   addTimelineEvent(
     id: string,
-    event: { type: IncidentEventType; actor: string; message: string; metadata?: Record<string, unknown> }
+    event: {
+      type: IncidentEventType;
+      actor: string;
+      message: string;
+      metadata?: Record<string, unknown>;
+    }
   ): Incident {
     if (!event.actor || event.actor.trim().length === 0) {
       throw new IncidentError('Actor is required for timeline event', 'INVALID_INPUT');
@@ -675,7 +683,10 @@ export class IncidentResponse {
       metadata: { artifactId: newArtifact.id, type: newArtifact.type },
     });
     this.adapter.save(updated);
-    this.emitAudit('artifact_attached', updated, { artifactId: newArtifact.id, type: newArtifact.type });
+    this.emitAudit('artifact_attached', updated, {
+      artifactId: newArtifact.id,
+      type: newArtifact.type,
+    });
     return updated;
   }
 
@@ -714,7 +725,12 @@ export class IncidentResponse {
    */
   writePostmortem(
     id: string,
-    postmortem: { rootCause: string; lessonsLearned: string; actionItems: IncidentPostmortem['actionItems']; writtenBy: string }
+    postmortem: {
+      rootCause: string;
+      lessonsLearned: string;
+      actionItems: IncidentPostmortem['actionItems'];
+      writtenBy: string;
+    }
   ): Incident {
     if (!postmortem.rootCause || postmortem.rootCause.trim().length === 0) {
       throw new IncidentError('Root cause is required', 'INVALID_INPUT');
@@ -726,7 +742,11 @@ export class IncidentResponse {
     if (!incident) {
       throw new IncidentError(`Incident not found: ${id}`, 'NOT_FOUND');
     }
-    if (incident.status !== 'resolved' && incident.status !== 'postmortem' && incident.status !== 'closed') {
+    if (
+      incident.status !== 'resolved' &&
+      incident.status !== 'postmortem' &&
+      incident.status !== 'closed'
+    ) {
       throw new IncidentError(
         `Cannot write postmortem in status ${incident.status}; must be resolved, postmortem, or closed`,
         'INVALID_STATE'
@@ -801,22 +821,42 @@ export class IncidentResponse {
     const elapsedMinutes = Math.floor((now - incident.createdAt) / 60_000);
 
     const responseLimit = incident.responseSlaMinutes;
-    const responseMet = incident.responseSlaMet !== undefined
-      ? incident.responseSlaMet
-      : (incident.assignee !== undefined ? true : undefined);
-    const responseBreached = responseMet === false || elapsedMinutes > responseLimit + INCIDENT_RESPONSE_CONSTANTS.AUTO_ESCALATION_BUFFER_MINUTES;
+    const responseMet =
+      incident.responseSlaMet !== undefined
+        ? incident.responseSlaMet
+        : incident.assignee !== undefined
+          ? true
+          : undefined;
+    const responseBreached =
+      responseMet === false ||
+      elapsedMinutes > responseLimit + INCIDENT_RESPONSE_CONSTANTS.AUTO_ESCALATION_BUFFER_MINUTES;
 
     const resolutionLimit = incident.resolutionSlaMinutes;
-    const resolutionMet = incident.resolutionSlaMet !== undefined
-      ? incident.resolutionSlaMet
-      : (incident.resolvedAt !== undefined ? true : undefined);
-    const resolutionBreached = resolutionMet === false || (
-      !incident.resolvedAt && elapsedMinutes > resolutionLimit + INCIDENT_RESPONSE_CONSTANTS.AUTO_ESCALATION_BUFFER_MINUTES
-    );
+    const resolutionMet =
+      incident.resolutionSlaMet !== undefined
+        ? incident.resolutionSlaMet
+        : incident.resolvedAt !== undefined
+          ? true
+          : undefined;
+    const resolutionBreached =
+      resolutionMet === false ||
+      (!incident.resolvedAt &&
+        elapsedMinutes >
+          resolutionLimit + INCIDENT_RESPONSE_CONSTANTS.AUTO_ESCALATION_BUFFER_MINUTES);
 
     return {
-      responseSla: { limit: responseLimit, elapsed: elapsedMinutes, met: responseMet, breached: responseBreached },
-      resolutionSla: { limit: resolutionLimit, elapsed: elapsedMinutes, met: resolutionMet, breached: resolutionBreached },
+      responseSla: {
+        limit: responseLimit,
+        elapsed: elapsedMinutes,
+        met: responseMet,
+        breached: responseBreached,
+      },
+      resolutionSla: {
+        limit: resolutionLimit,
+        elapsed: elapsedMinutes,
+        met: resolutionMet,
+        breached: resolutionBreached,
+      },
     };
   }
 
@@ -836,7 +876,10 @@ export class IncidentResponse {
           type: 'escalated',
           actor,
           message: `Auto-escalated: response SLA ${sla.responseSla.breached ? 'breached' : 'OK'}, resolution SLA ${sla.resolutionSla.breached ? 'breached' : 'OK'}`,
-          metadata: { responseBreached: sla.responseSla.breached, resolutionBreached: sla.resolutionSla.breached },
+          metadata: {
+            responseBreached: sla.responseSla.breached,
+            resolutionBreached: sla.resolutionSla.breached,
+          },
         });
         this.adapter.save(updated);
         this.emitAudit('incident_escalated', updated, { sla: sla });
@@ -885,7 +928,9 @@ export class IncidentResponse {
     lines.push(`# Incident: ${incident.title}`);
     lines.push('');
     lines.push(`**ID:** \`${incident.id}\`  `);
-    lines.push(`**Severity:** ${incident.severity} (${this.getSeverityScore(incident.severity)})  `);
+    lines.push(
+      `**Severity:** ${incident.severity} (${this.getSeverityScore(incident.severity)})  `
+    );
     lines.push(`**Status:** ${incident.status}  `);
     lines.push(`**Created:** ${new Date(incident.createdAt).toISOString()}  `);
     lines.push(`**Reporter:** ${incident.reporter}  `);
@@ -895,7 +940,9 @@ export class IncidentResponse {
     lines.push(incident.description);
     lines.push('');
     lines.push('## Impact');
-    lines.push(`- Affected systems: ${incident.affectedSystems.length > 0 ? incident.affectedSystems.join(', ') : 'none'}`);
+    lines.push(
+      `- Affected systems: ${incident.affectedSystems.length > 0 ? incident.affectedSystems.join(', ') : 'none'}`
+    );
     lines.push(`- Affected users: ${incident.affectedUsers}`);
     lines.push(`- Tags: ${incident.tags.length > 0 ? incident.tags.join(', ') : 'none'}`);
     lines.push('');
@@ -903,7 +950,9 @@ export class IncidentResponse {
     if (options.includeTimeline !== false && incident.timeline.length > 0) {
       lines.push('## Timeline');
       for (const evt of incident.timeline) {
-        lines.push(`- **${new Date(evt.timestamp).toISOString()}** [${evt.type}] ${evt.actor}: ${evt.message}`);
+        lines.push(
+          `- **${new Date(evt.timestamp).toISOString()}** [${evt.type}] ${evt.actor}: ${evt.message}`
+        );
       }
       lines.push('');
     }
@@ -911,7 +960,9 @@ export class IncidentResponse {
     if (options.includeArtifacts !== false && incident.artifacts.length > 0) {
       lines.push('## Artifacts');
       for (const art of incident.artifacts) {
-        lines.push(`- \`${art.id}\` (${art.type}) ${art.name}${art.hash ? ` — sha256:${art.hash.slice(0, 12)}` : ''}`);
+        lines.push(
+          `- \`${art.id}\` (${art.type}) ${art.name}${art.hash ? ` — sha256:${art.hash.slice(0, 12)}` : ''}`
+        );
       }
       lines.push('');
     }
@@ -927,12 +978,16 @@ export class IncidentResponse {
       if (incident.postmortem.actionItems.length > 0) {
         lines.push('### Action items');
         for (const item of incident.postmortem.actionItems) {
-          lines.push(`- [${item.status}] ${item.description} (owner: ${item.owner}${item.dueDate ? `, due: ${new Date(item.dueDate).toISOString()}` : ''})`);
+          lines.push(
+            `- [${item.status}] ${item.description} (owner: ${item.owner}${item.dueDate ? `, due: ${new Date(item.dueDate).toISOString()}` : ''})`
+          );
         }
         lines.push('');
       }
       if (incident.postmortem.signedOffBy) {
-        lines.push(`*Signed off by ${incident.postmortem.signedOffBy} on ${new Date(incident.postmortem.signedOffAt!).toISOString()}*`);
+        lines.push(
+          `*Signed off by ${incident.postmortem.signedOffBy} on ${new Date(incident.postmortem.signedOffAt!).toISOString()}*`
+        );
         lines.push('');
       }
     }
@@ -956,7 +1011,12 @@ export class IncidentResponse {
 
   private appendTimeline(
     incident: Incident,
-    event: { type: IncidentEventType; actor: string; message: string; metadata?: Record<string, unknown> }
+    event: {
+      type: IncidentEventType;
+      actor: string;
+      message: string;
+      metadata?: Record<string, unknown>;
+    }
   ): void {
     if (incident.timeline.length >= INCIDENT_RESPONSE_CONSTANTS.MAX_TIMELINE_EVENTS) return;
     incident.timeline.push({
@@ -974,9 +1034,21 @@ export class IncidentResponse {
     return elapsed <= incident.resolutionSlaMinutes;
   }
 
-  private diffFields(before: Incident, after: Incident): Record<string, { from: unknown; to: unknown }> {
+  private diffFields(
+    before: Incident,
+    after: Incident
+  ): Record<string, { from: unknown; to: unknown }> {
     const diff: Record<string, { from: unknown; to: unknown }> = {};
-    const keys: (keyof Incident)[] = ['title', 'description', 'severity', 'status', 'assignee', 'affectedUsers', 'tags', 'affectedSystems'];
+    const keys: (keyof Incident)[] = [
+      'title',
+      'description',
+      'severity',
+      'status',
+      'assignee',
+      'affectedUsers',
+      'tags',
+      'affectedSystems',
+    ];
     for (const k of keys) {
       if (JSON.stringify(before[k]) !== JSON.stringify(after[k])) {
         diff[k] = { from: before[k], to: after[k] };
@@ -985,11 +1057,7 @@ export class IncidentResponse {
     return diff;
   }
 
-  private emitAudit(
-    type: string,
-    incident: Incident,
-    payload: Record<string, unknown>
-  ): void {
+  private emitAudit(type: string, incident: Incident, payload: Record<string, unknown>): void {
     if (this.auditEmitter) {
       try {
         this.auditEmitter({

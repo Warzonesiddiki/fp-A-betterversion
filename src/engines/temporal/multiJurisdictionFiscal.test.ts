@@ -21,12 +21,7 @@
 // =============================================================================
 
 import { describe, it, expect } from 'vitest';
-import {
-  fiscalYearOf,
-  fiscalYearStart,
-  periodOf,
-  quarterOf,
-} from './index';
+import { fiscalYearOf, fiscalYearStart, periodOf, quarterOf } from './index';
 import type { FiscalCalendarConfig } from './fiscalCalendar';
 
 // -----------------------------------------------------------------------------

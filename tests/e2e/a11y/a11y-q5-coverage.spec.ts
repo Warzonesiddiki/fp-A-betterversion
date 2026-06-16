@@ -50,7 +50,9 @@ test.describe('A11Y Q5.1: Keyboard Navigation (≤100ms response)', () => {
   test('Q5.1-K3: Escape key closes open modal', async ({ page }) => {
     await page.goto('/');
     // Try to find and open a modal
-    const modalTrigger = page.locator('[data-testid*="open-modal"], button:has-text("Open")').first();
+    const modalTrigger = page
+      .locator('[data-testid*="open-modal"], button:has-text("Open")')
+      .first();
     if (await modalTrigger.isVisible().catch(() => false)) {
       await modalTrigger.click();
       await page.waitForTimeout(100);
@@ -106,7 +108,7 @@ test.describe('A11Y Q5.2: Focus Restore on Modal Close (useFocusRestore hook)', 
   test('Q5.2-F2: FOCUSABLE selector excludes disabled elements', async ({ page }) => {
     await page.goto('/');
     const disabledBtn = page.locator('button[disabled]').first();
-    if (await disabledBtn.count() > 0) {
+    if ((await disabledBtn.count()) > 0) {
       // Disabled buttons should not be in tab order
       await page.keyboard.press('Tab');
       const focused = page.locator(':focus');
@@ -143,7 +145,9 @@ test.describe('A11Y Q5.3: Session Timeout (verification checklist v0.1)', () => 
     await page.goto('/');
     // Simulate near-timeout state
     await page.evaluate(() => {
-      window.dispatchEvent(new CustomEvent('session-near-timeout', { detail: { remainingSeconds: 30 } }));
+      window.dispatchEvent(
+        new CustomEvent('session-near-timeout', { detail: { remainingSeconds: 30 } })
+      );
     });
     await page.waitForTimeout(100);
     // Warning may be visible in test environment
@@ -180,7 +184,7 @@ test.describe('A11Y Q5.4: Live Region Announcements (WCAG 4.1.3)', () => {
   test('Q5.4-L2: polite live region does not interrupt', async ({ page }) => {
     await page.goto('/');
     const politeRegion = page.locator('[aria-live="polite"]').first();
-    if (await politeRegion.count() > 0) {
+    if ((await politeRegion.count()) > 0) {
       const ariaLive = await politeRegion.getAttribute('aria-live');
       expect(ariaLive).toBe('polite');
     }
@@ -189,7 +193,7 @@ test.describe('A11Y Q5.4: Live Region Announcements (WCAG 4.1.3)', () => {
   test('Q5.4-L3: assertive live region announces errors', async ({ page }) => {
     await page.goto('/');
     const assertiveRegion = page.locator('[aria-live="assertive"], [role="alert"]').first();
-    if (await assertiveRegion.count() > 0) {
+    if ((await assertiveRegion.count()) > 0) {
       const role = await assertiveRegion.getAttribute('role');
       const ariaLive = await assertiveRegion.getAttribute('aria-live');
       expect(role === 'alert' || ariaLive === 'assertive').toBeTruthy();
@@ -199,7 +203,7 @@ test.describe('A11Y Q5.4: Live Region Announcements (WCAG 4.1.3)', () => {
   test('Q5.4-L4: Live region content is text (not visual-only)', async ({ page }) => {
     await page.goto('/');
     const liveRegion = page.locator('[aria-live], [role="status"], [role="alert"]').first();
-    if (await liveRegion.count() > 0) {
+    if ((await liveRegion.count()) > 0) {
       const textContent = await liveRegion.textContent();
       // Live regions should have text content for screen readers
     }
@@ -224,13 +228,17 @@ test.describe('A11Y Q5.5: Motion Preferences (WCAG 2.3.3, prefers-reduced-motion
     await context.close();
   });
 
-  test('Q5.5-M2: TourOverlay provides motion disable (1 fix needed per Q5.5 audit)', async ({ page }) => {
+  test('Q5.5-M2: TourOverlay provides motion disable (1 fix needed per Q5.5 audit)', async ({
+    page,
+  }) => {
     await page.goto('/');
     const tour = page.locator('[data-testid*="tour"], [class*="tour"]').first();
     // Tour may not be visible — placeholder
   });
 
-  test('Q5.5-M3: Motion patterns defense-in-depth (40+ files per MOTION_PATTERNS.md)', async ({ page }) => {
+  test('Q5.5-M3: Motion patterns defense-in-depth (40+ files per MOTION_PATTERNS.md)', async ({
+    page,
+  }) => {
     await page.goto('/');
     // Verify no infinite animations or auto-playing video
     const videoCount = await page.locator('video[autoplay]').count();

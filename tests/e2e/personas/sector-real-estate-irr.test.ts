@@ -11,7 +11,10 @@ import { test, expect, type Page } from '@playwright/test';
 
 async function signInAsRealEstateIRR(page: Page): Promise<void> {
   await page.goto('/');
-  await page.locator('input[type="email"]').first().fill('sector-real-estate-irr@finplan-test.local');
+  await page
+    .locator('input[type="email"]')
+    .first()
+    .fill('sector-real-estate-irr@finplan-test.local');
   await page.locator('input[type="password"]').first().fill('TestRE-IRR!2026');
   await page.locator('button[type="submit"]').first().click();
   await page.waitForLoadState('networkidle');

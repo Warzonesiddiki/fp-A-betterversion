@@ -34,7 +34,9 @@ test.describe('Q5.5 Animation Duration + prefers-reduced-motion (≤200ms)', () 
     // Expected: PARTIAL — Tailwind motion-safe: prefix exists; audit needed
   });
 
-  test('CommandPalette animation disabled when prefers-reduced-motion: reduce', async ({ page }) => {
+  test('CommandPalette animation disabled when prefers-reduced-motion: reduce', async ({
+    page,
+  }) => {
     // TODO: Test reduced-motion override
     // - Emulate prefers-reduced-motion: reduce
     // - Open CommandPalette

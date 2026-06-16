@@ -216,12 +216,18 @@ export function VarianceDrillModal({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-[var(--bg-elevated)] text-left">
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Department</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Entries</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">
+                      Department
+                    </th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">
+                      Entries
+                    </th>
                     <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">
                       Total Amount
                     </th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Action</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
@@ -262,8 +268,8 @@ export function VarianceDrillModal({
           <div className="space-y-2">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm text-[var(--text-secondary)]">
-                <span className="font-medium text-[var(--text-primary)]">{selectedDepartment}</span> &middot;{' '}
-                {selectedEntries.length} entries
+                <span className="font-medium text-[var(--text-primary)]">{selectedDepartment}</span>{' '}
+                &middot; {selectedEntries.length} entries
               </p>
               <Button size="sm" variant="ghost" onClick={handleDrillToTransaction}>
                 <FileText className="h-3.5 w-3.5 mr-1" />
@@ -275,8 +281,12 @@ export function VarianceDrillModal({
                 <thead>
                   <tr className="bg-[var(--bg-elevated)] text-left">
                     <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Date</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Description</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Amount</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">
+                      Description
+                    </th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">
+                      Amount
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
@@ -316,9 +326,15 @@ export function VarianceDrillModal({
                 <thead className="sticky top-0 bg-[var(--bg-elevated)] z-10">
                   <tr className="bg-[var(--bg-elevated)] text-left">
                     <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Date</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Account</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">Description</th>
-                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">Amount</th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">
+                      Account
+                    </th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)]">
+                      Description
+                    </th>
+                    <th className="px-4 py-2.5 font-medium text-[var(--text-secondary)] text-right">
+                      Amount
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">

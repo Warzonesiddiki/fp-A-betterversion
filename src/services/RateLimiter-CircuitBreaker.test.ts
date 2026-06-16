@@ -98,9 +98,7 @@ describe('2. RateLimiter init / singleton', () => {
   });
   test('2.3 check() before init throws', () => {
     const rl = new RateLimiter();
-    expect(() =>
-      rl.check({ policyId: 'p', identity: 'i' })
-    ).toThrow(/not initialized/);
+    expect(() => rl.check({ policyId: 'p', identity: 'i' })).toThrow(/not initialized/);
   });
 });
 
@@ -136,9 +134,7 @@ describe('3. RateLimiter policy registration', () => {
   });
   test('3.6 defaultCost > capacity throws', () => {
     const rl = RateLimiter.createForTest();
-    expect(() =>
-      rl.registerPolicy({ label: 'x', capacity: 5, defaultCost: 10 })
-    ).toThrow();
+    expect(() => rl.registerPolicy({ label: 'x', capacity: 5, defaultCost: 10 })).toThrow();
   });
 });
 
@@ -317,7 +313,12 @@ describe('11. RateLimiter policy concurrent cap (backpressure)', () => {
 describe('12. RateLimiter release()', () => {
   test('12.1 release decrements in-flight', () => {
     const rl = RateLimiter.createForTest(clock);
-    const p = rl.registerPolicy({ label: 'x', capacity: 10, maxConcurrent: 1, refillPerSecond: 0.001 });
+    const p = rl.registerPolicy({
+      label: 'x',
+      capacity: 10,
+      maxConcurrent: 1,
+      refillPerSecond: 0.001,
+    });
     rl.check({ policyId: p.id, identity: 'a' });
     rl.check({ policyId: p.id, identity: 'b' }); // backpressure
     rl.release(p.id, 'a');
@@ -443,7 +444,12 @@ describe('19. CircuitBreaker half-open after cooldown', () => {
 describe('20. CircuitBreaker recovers on half-open successes', () => {
   test('20.1 2 successes in half-open closes the breaker', () => {
     const cb = CircuitBreaker.createForTest(clock);
-    const p = cb.registerPolicy({ label: 'x', failureThreshold: 2, cooldownMs: 1000, successThreshold: 2 });
+    const p = cb.registerPolicy({
+      label: 'x',
+      failureThreshold: 2,
+      cooldownMs: 1000,
+      successThreshold: 2,
+    });
     cb.recordOutcome(p.id, 'failure');
     cb.recordOutcome(p.id, 'failure');
     advance(1001);
@@ -530,7 +536,11 @@ describe('25. CircuitBreaker execute() helper', () => {
   test('25.2 failed call throws', async () => {
     const cb = CircuitBreaker.createForTest(clock);
     const p = cb.registerPolicy({ label: 'x' });
-    await expect(cb.execute(p.id, async () => { throw new Error('boom'); })).rejects.toThrow('boom');
+    await expect(
+      cb.execute(p.id, async () => {
+        throw new Error('boom');
+      })
+    ).rejects.toThrow('boom');
   });
   test('25.3 open circuit throws CircuitOpenError', async () => {
     const cb = CircuitBreaker.createForTest(clock);
@@ -558,7 +568,11 @@ describe('26. RateLimiter + CircuitBreaker integration', () => {
     const cb = CircuitBreaker.createForTest(clock);
     const rl = RateLimiter.createForTest(clock);
     const cbPolicy = cb.registerPolicy({ label: 'downstream.api', failureThreshold: 3 });
-    const rlPolicy = rl.registerPolicy({ label: 'downstream.api', capacity: 100, refillPerSecond: 10 });
+    const rlPolicy = rl.registerPolicy({
+      label: 'downstream.api',
+      capacity: 100,
+      refillPerSecond: 10,
+    });
     // Fail 3 times to open the circuit.
     cb.recordOutcome(cbPolicy.id, 'failure');
     cb.recordOutcome(cbPolicy.id, 'failure');
@@ -572,7 +586,12 @@ describe('26. RateLimiter + CircuitBreaker integration', () => {
   });
   test('26.2 in backpressure state, release() after handler completes', () => {
     const rl = RateLimiter.createForTest(clock);
-    const p = rl.registerPolicy({ label: 'x', capacity: 10, maxConcurrent: 1, refillPerSecond: 0.001 });
+    const p = rl.registerPolicy({
+      label: 'x',
+      capacity: 10,
+      maxConcurrent: 1,
+      refillPerSecond: 0.001,
+    });
     expect(rl.check({ policyId: p.id, identity: 'a' }).decision).toBe('allow');
     expect(rl.check({ policyId: p.id, identity: 'b' }).decision).toBe('backpressure');
     rl.release(p.id, 'a');

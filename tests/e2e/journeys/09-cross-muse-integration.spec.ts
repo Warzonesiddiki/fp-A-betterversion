@@ -52,7 +52,9 @@ test.describe('Journey 09: Cross-Muse Integration (Multi-Muse Data Flow)', () =>
     // Formula: 50000 * 1.1 (Apollo FormulaEngine)
     await page.locator('input[name="formula"]').first().fill('50000 * 1.1');
     await page.locator('button:has-text("Save")').click();
-    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, {
+      timeout: 10_000,
+    });
     // Prometheus: verify budgetStore received the value
     await page.goto('/budgets');
     await page.waitForLoadState('networkidle');
@@ -70,7 +72,9 @@ test.describe('Journey 09: Cross-Muse Integration (Multi-Muse Data Flow)', () =>
     await expect(auditLog).toContainText(/formula/i);
   });
 
-  test('integration 2: report → VarianceAttributionEngine → scenarioStore → CSV export', async ({ page }) => {
+  test('integration 2: report → VarianceAttributionEngine → scenarioStore → CSV export', async ({
+    page,
+  }) => {
     // Hermes page: /reports/variance
     await page.goto('/reports/variance');
     await page.waitForLoadState('networkidle');
@@ -79,7 +83,10 @@ test.describe('Journey 09: Cross-Muse Integration (Multi-Muse Data Flow)', () =>
     // Prometheus: switch to a scenario
     await page.goto('/scenarios');
     await page.waitForLoadState('networkidle');
-    const bestCaseRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /best case/i }).first();
+    const bestCaseRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /best case/i })
+      .first();
     if (await bestCaseRow.isVisible()) {
       await bestCaseRow.locator('input[type="checkbox"]').check();
       await page.locator('button:has-text("Set Active")').click();
@@ -102,7 +109,9 @@ test.describe('Journey 09: Cross-Muse Integration (Multi-Muse Data Flow)', () =>
     await expect(formatSelector).not.toContainText(/xlsx/i);
   });
 
-  test('integration 3: period close → PeriodLockEngine → periodStore → security check', async ({ page }) => {
+  test('integration 3: period close → PeriodLockEngine → periodStore → security check', async ({
+    page,
+  }) => {
     // Hermes page: /period-close
     await page.goto('/period-close');
     await page.waitForLoadState('networkidle');
@@ -110,7 +119,10 @@ test.describe('Journey 09: Cross-Muse Integration (Multi-Muse Data Flow)', () =>
     await page.locator('[data-testid="period-selector"]').selectOption({ label: /Q1.*2026/i });
     // Apollo PeriodLockEngine: run consolidation
     await page.locator('button:has-text("Run Consolidation")').click();
-    await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(/complete|success/i, { timeout: 30_000 });
+    await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(
+      /complete|success/i,
+      { timeout: 30_000 }
+    );
     // Lock the period (Prometheus periodStore write)
     await page.locator('button:has-text("Lock Period")').click();
     await expect(page.locator('[data-testid="period-status"]')).toContainText(/locked/i);
@@ -135,14 +147,20 @@ test.describe('Journey 09: Cross-Muse Integration (Multi-Muse Data Flow)', () =>
       await page.locator('button:has-text("Create")').click();
     }
     // Apollo worker: run Monte Carlo
-    const scenarioRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /cross-muse test/i }).first();
+    const scenarioRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /cross-muse test/i })
+      .first();
     await expect(scenarioRow).toBeVisible();
     await scenarioRow.locator('button:has-text("Run Monte Carlo")').click();
     const runCountInput = page.locator('input[name="run_count"]');
     await runCountInput.fill('1000'); // Smaller for test speed
     await page.locator('button:has-text("Start")').click();
     // Prometheus: verify Monte Carlo result stored
-    await expect(page.locator('[data-testid="monte-carlo-status"]')).toContainText(/complete|done/i, { timeout: 60_000 });
+    await expect(page.locator('[data-testid="monte-carlo-status"]')).toContainText(
+      /complete|done/i,
+      { timeout: 60_000 }
+    );
     // Lock the scenario (G12 feature)
     await scenarioRow.locator('button:has-text("Lock")').click();
     await page.locator('button:has-text("Confirm")').click();
@@ -171,16 +189,24 @@ test.describe('Journey 09: Cross-Muse Integration (Multi-Muse Data Flow)', () =>
     const manifestPath = 'tests/e2e/fixtures/test-sentinel-plugin.json';
     await page.locator('input[type="file"]').setInputFiles(manifestPath);
     await page.locator('button:has-text("Install")').click();
-    await expect(page.locator('[data-testid="install-status"]')).toContainText(/installed|success/i, { timeout: 15_000 });
+    await expect(page.locator('[data-testid="install-status"]')).toContainText(
+      /installed|success/i,
+      { timeout: 15_000 }
+    );
     // Load
-    const pluginRow = page.locator('[data-testid="installed-plugins"]').filter({ hasText: /sentinel test plugin/i }).first();
+    const pluginRow = page
+      .locator('[data-testid="installed-plugins"]')
+      .filter({ hasText: /sentinel test plugin/i })
+      .first();
     await pluginRow.locator('button:has-text("Load")').click();
     await expect(pluginRow).toContainText(/loaded|active/i, { timeout: 10_000 });
     // Execute (Hephaestus sandbox)
     await pluginRow.locator('button:has-text("Execute")').click();
     await page.locator('[data-testid="execute-action"]').selectOption({ label: /hello/i });
     await page.locator('button:has-text("Run")').click();
-    await expect(page.locator('[data-testid="execute-result"]')).toContainText(/hello from sentinel/i);
+    await expect(page.locator('[data-testid="execute-result"]')).toContainText(
+      /hello from sentinel/i
+    );
     // Audit: verify all actions recorded (Hephaestus audit trail)
     await page.goto('/audit');
     await page.waitForLoadState('networkidle');

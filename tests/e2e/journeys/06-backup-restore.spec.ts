@@ -50,7 +50,9 @@ test.describe('Journey 06: Backup/Restore (Disaster Recovery)', () => {
     await expect(backupButton).toBeVisible();
     await backupButton.click();
     // Wait for backup completion (could take 30s+ for full backup)
-    await expect(page.locator('[data-testid="backup-status"]')).toContainText(/complete|success/i, { timeout: 60_000 });
+    await expect(page.locator('[data-testid="backup-status"]')).toContainText(/complete|success/i, {
+      timeout: 60_000,
+    });
   });
 
   test('step 3: verify backup file generated', async ({ page }) => {
@@ -60,7 +62,10 @@ test.describe('Journey 06: Backup/Restore (Disaster Recovery)', () => {
     const backupButton = page.locator('button:has-text("Start Backup")');
     if (await backupButton.isVisible()) {
       await backupButton.click();
-      await expect(page.locator('[data-testid="backup-status"]')).toContainText(/complete|success/i, { timeout: 60_000 });
+      await expect(page.locator('[data-testid="backup-status"]')).toContainText(
+        /complete|success/i,
+        { timeout: 60_000 }
+      );
     }
     // List of available backups
     const backupList = page.locator('[data-testid="backup-list"]');
@@ -82,7 +87,9 @@ test.describe('Journey 06: Backup/Restore (Disaster Recovery)', () => {
     // Confirm
     await page.locator('button:has-text("Confirm")').click();
     // Status
-    await expect(page.locator('[data-testid="clear-status"]')).toContainText(/cleared|success/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="clear-status"]')).toContainText(/cleared|success/i, {
+      timeout: 10_000,
+    });
   });
 
   test('step 5: restore from backup', async ({ page }) => {
@@ -92,7 +99,10 @@ test.describe('Journey 06: Backup/Restore (Disaster Recovery)', () => {
     const backupButton = page.locator('button:has-text("Start Backup")');
     if (await backupButton.isVisible()) {
       await backupButton.click();
-      await expect(page.locator('[data-testid="backup-status"]')).toContainText(/complete|success/i, { timeout: 60_000 });
+      await expect(page.locator('[data-testid="backup-status"]')).toContainText(
+        /complete|success/i,
+        { timeout: 60_000 }
+      );
     }
     // Pick the most recent backup
     const firstBackup = page.locator('[data-testid="backup-list"] li').first();
@@ -102,7 +112,10 @@ test.describe('Journey 06: Backup/Restore (Disaster Recovery)', () => {
     // Confirm
     await page.locator('button:has-text("Confirm Restore")').click();
     // Restore status
-    await expect(page.locator('[data-testid="restore-status"]')).toContainText(/complete|success/i, { timeout: 60_000 });
+    await expect(page.locator('[data-testid="restore-status"]')).toContainText(
+      /complete|success/i,
+      { timeout: 60_000 }
+    );
   });
 
   test('step 6: verify data integrity post-restore', async ({ page }) => {

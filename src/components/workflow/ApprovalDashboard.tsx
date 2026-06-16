@@ -25,8 +25,7 @@ interface ApprovalDashboardProps {
 }
 
 const STATE_BADGE: Record<ApprovalState, string> = {
-  draft:
-    'bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
+  draft: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
   submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
   in_review: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
   approved: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',

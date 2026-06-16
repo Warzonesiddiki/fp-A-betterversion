@@ -12,6 +12,7 @@
 // =============================================================================
 
 import { describe, it, expect, afterAll } from 'vitest';
+import { cpus, totalmem } from 'node:os';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -38,10 +39,10 @@ interface PDFLoadRecord {
 const records: PDFLoadRecord[] = [];
 
 function detectHardware() {
-  const cpus = require('os').cpus();
-  const totalMemMB = Math.round(require('os').totalmem() / 1024 / 1024);
+  const cpuList = cpus();
+  const totalMemMB = Math.round(totalmem() / 1024 / 1024);
   return {
-    cpu: cpus[0]?.model ?? 'unknown',
+    cpu: cpuList[0]?.model ?? 'unknown',
     ram: `${totalMemMB}MB`,
     os: `${process.platform} ${process.arch}`,
     node: process.version,
@@ -59,7 +60,17 @@ interface FinancialRow {
 
 function generateFinancialRows(count: number): FinancialRow[] {
   const rows: FinancialRow[] = [];
-  const accounts = ['1000-Cash', '1100-AR', '1200-Inventory', '1500-PPE', '2000-AP', '3000-Equity', '4000-Revenue', '5000-COGS', '6000-OPEX'];
+  const accounts = [
+    '1000-Cash',
+    '1100-AR',
+    '1200-Inventory',
+    '1500-PPE',
+    '2000-AP',
+    '3000-Equity',
+    '4000-Revenue',
+    '5000-COGS',
+    '6000-OPEX',
+  ];
   for (let i = 0; i < count; i++) {
     const debit = i % 3 === 0 ? Math.round(Math.random() * 50000 * 100) / 100 : 0;
     const credit = i % 3 !== 0 ? Math.round(Math.random() * 50000 * 100) / 100 : 0;
@@ -91,7 +102,7 @@ function generatePDF(rows: FinancialRow[]): { bytes: number; pages: number } {
 
   // TABLE via autoTable
   const headers = [['Date', 'Account', 'Description', 'Debit', 'Credit', 'Balance']];
-  const data = rows.map(r => [
+  const data = rows.map((r) => [
     r.date,
     r.account,
     r.description,
@@ -123,12 +134,15 @@ function generatePDF(rows: FinancialRow[]): { bytes: number; pages: number } {
       doc.setFontSize(8);
       doc.setTextColor(150);
       doc.text('FinPlan Pro Confidential', 40, pageH - 20);
-      doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, pageW - 40, pageH - 20, { align: 'right' });
+      doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, pageW - 40, pageH - 20, {
+        align: 'right',
+      });
     },
   });
 
   // FOOTER summary
-  const finalY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? 100;
+  const finalY =
+    (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? 100;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.text('TOTALS', 40, finalY + 30);
@@ -180,7 +194,9 @@ describe('Vulcan — PDF report load test (500 rows)', () => {
       engineLineRef: 'See ExportEngine.ts:57-200 + AdvancedPDFEngine.ts:39-200',
     });
 
-    console.log(`[VULCAN] PDF-500 COLD: ${elapsed.toFixed(2)}ms, ${pages} pages, ${(bytes / 1024).toFixed(1)}KB`);
+    console.log(
+      `[VULCAN] PDF-500 COLD: ${elapsed.toFixed(2)}ms, ${pages} pages, ${(bytes / 1024).toFixed(1)}KB`
+    );
   }, 30_000);
 
   it('WARM: 500-row PDF (3 reps, take avg)', () => {
@@ -203,10 +219,10 @@ describe('Vulcan — PDF report load test (500 rows)', () => {
     if (lastRec && lastRec.benchmark === 'pdf-500-cold') {
       lastRec.warmMs = Math.round(times[0] * 100) / 100;
       lastRec.warmAvgMs = Math.round(avg * 100) / 100;
-      lastRec.memoryPeakMB = Math.round(peakDelta / 1024 / 1024 * 100) / 100;
+      lastRec.memoryPeakMB = Math.round((peakDelta / 1024 / 1024) * 100) / 100;
     }
 
-    console.log(`[VULCAN] PDF-500 WARM runs: ${times.map(t => t.toFixed(2)).join(', ')}ms`);
+    console.log(`[VULCAN] PDF-500 WARM runs: ${times.map((t) => t.toFixed(2)).join(', ')}ms`);
     console.log(`[VULCAN] PDF-500 WARM avg: ${avg.toFixed(2)}ms`);
     expect(avg).toBeLessThan(3_000);
   }, 30_000);
@@ -222,7 +238,9 @@ describe('Vulcan — PDF report load test (500 rows)', () => {
       const { bytes, pages } = generatePDF(rows);
       const elapsed = performance.now() - start;
       scaleResults.push({ rows: n, ms: Math.round(elapsed * 100) / 100, pages, bytes });
-      console.log(`[VULCAN] PDF-${n}: ${elapsed.toFixed(2)}ms, ${pages} pages, ${(bytes / 1024).toFixed(1)}KB`);
+      console.log(
+        `[VULCAN] PDF-${n}: ${elapsed.toFixed(2)}ms, ${pages} pages, ${(bytes / 1024).toFixed(1)}KB`
+      );
     }
 
     const outDir = path.resolve(__dirname, '../../../tests/load');
@@ -236,10 +254,7 @@ describe('Vulcan — PDF report load test (500 rows)', () => {
   afterAll(() => {
     const outDir = path.resolve(__dirname, '../../../tests/load');
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(outDir, '.raw-pdf.json'),
-      JSON.stringify(records, null, 2)
-    );
+    fs.writeFileSync(path.join(outDir, '.raw-pdf.json'), JSON.stringify(records, null, 2));
     console.log(`[VULCAN] Wrote ${records.length} PDF records to .raw-pdf.json`);
   });
 });

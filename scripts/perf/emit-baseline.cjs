@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 /**
  * scripts/perf/emit-baseline.cjs
  *

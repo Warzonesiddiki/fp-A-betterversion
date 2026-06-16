@@ -227,21 +227,48 @@ export interface CellEditPayload {
 /** All realtime event types. Mirrors `API_REFERENCE.md` §3.3 (10-event taxonomy). */
 export type RealtimeEvent =
   | { readonly type: 'cell:edit'; readonly payload: CellEditPayload }
-  | { readonly type: 'sheet:created'; readonly payload: { readonly sheetId: string; readonly userId: string } }
-  | { readonly type: 'cell:formatted'; readonly payload: { readonly range: string; readonly style: unknown } }
-  | { readonly type: 'cursor:moved'; readonly payload: { readonly userId: string; readonly cell: string } }
-  | { readonly type: 'comment:added'; readonly payload: { readonly cell: string; readonly author: string; readonly text: string } }
-  | { readonly type: 'selection:changed'; readonly payload: { readonly userId: string; readonly range: string } }
-  | { readonly type: 'presence:joined'; readonly payload: { readonly userId: string; readonly name: string } }
+  | {
+      readonly type: 'sheet:created';
+      readonly payload: { readonly sheetId: string; readonly userId: string };
+    }
+  | {
+      readonly type: 'cell:formatted';
+      readonly payload: { readonly range: string; readonly style: unknown };
+    }
+  | {
+      readonly type: 'cursor:moved';
+      readonly payload: { readonly userId: string; readonly cell: string };
+    }
+  | {
+      readonly type: 'comment:added';
+      readonly payload: { readonly cell: string; readonly author: string; readonly text: string };
+    }
+  | {
+      readonly type: 'selection:changed';
+      readonly payload: { readonly userId: string; readonly range: string };
+    }
+  | {
+      readonly type: 'presence:joined';
+      readonly payload: { readonly userId: string; readonly name: string };
+    }
   | { readonly type: 'presence:left'; readonly payload: { readonly userId: string } }
-  | { readonly type: 'data:imported'; readonly payload: { readonly source: string; readonly rows: number } }
-  | { readonly type: 'formula:recalculated'; readonly payload: { readonly sheetId: string; readonly durationMs: number } };
+  | {
+      readonly type: 'data:imported';
+      readonly payload: { readonly source: string; readonly rows: number };
+    }
+  | {
+      readonly type: 'formula:recalculated';
+      readonly payload: { readonly sheetId: string; readonly durationMs: number };
+    };
 
 /** Event handler — sync or async. Errors are caught and logged via `console.warn`. */
 export type RealtimeEventHandler = (event: RealtimeEvent) => void | Promise<void>;
 
 /** Connection-state observer. */
-export type ConnectionStateListener = (state: ConnectionState, info?: { readonly code?: number; readonly reason?: string }) => void;
+export type ConnectionStateListener = (
+  state: ConnectionState,
+  info?: { readonly code?: number; readonly reason?: string }
+) => void;
 
 // ─── Result helpers ──────────────────────────────────────────────────────────
 

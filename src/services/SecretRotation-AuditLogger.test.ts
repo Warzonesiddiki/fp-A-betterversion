@@ -26,8 +26,7 @@ import {
 
 // crypto.subtle is available in Node 20+ globalThis. Guard tests if not.
 const HAS_CRYPTO =
-  typeof globalThis.crypto !== 'undefined' &&
-  typeof globalThis.crypto.subtle !== 'undefined';
+  typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.subtle !== 'undefined';
 
 const skipIf = (cond: boolean) => (cond ? it.skip : it);
 
@@ -115,21 +114,17 @@ describe('2. SecretRotation — creation', () => {
   });
 
   it('2.5 rejects unknown secret type', async () => {
-    await expect(
-      sr.createSecret({ type: 'nope' as never, label: 'x' })
-    ).rejects.toThrow(/unknown secret type/);
+    await expect(sr.createSecret({ type: 'nope' as never, label: 'x' })).rejects.toThrow(
+      /unknown secret type/
+    );
   });
 
   it('2.6 rejects empty label', async () => {
-    await expect(
-      sr.createSecret({ type: 'jwt', label: '' })
-    ).rejects.toThrow(/non-empty/);
+    await expect(sr.createSecret({ type: 'jwt', label: '' })).rejects.toThrow(/non-empty/);
   });
 
   it('2.7 rejects ttlSeconds out of range', async () => {
-    await expect(
-      sr.createSecret({ type: 'jwt', label: 'x', ttlSeconds: 0 })
-    ).rejects.toThrow();
+    await expect(sr.createSecret({ type: 'jwt', label: 'x', ttlSeconds: 0 })).rejects.toThrow();
   });
 
   it('2.8 returns unique ids', async () => {
@@ -181,45 +176,40 @@ describe('3. SecretRotation — verify (active)', () => {
   it('3.4 invalid candidate type throws', async () => {
     const sr = SecretRotation.getInstance();
     const id = await sr.createSecret({ type: 'jwt', label: 'p' });
-    await expect(
-      sr.verifySecret(id, 'not-a-bytestring' as never)
-    ).rejects.toThrow();
+    await expect(sr.verifySecret(id, 'not-a-bytestring' as never)).rejects.toThrow();
   });
 });
 
 // ── 4. SecretRotation — rotate + grace period ────────────────────────────────
 
 describe('4. SecretRotation — rotate + grace period', () => {
-  skipIf(!HAS_CRYPTO)(
-    '4.1 rotates a secret; old still verifies during grace',
-    async () => {
-      const sr = SecretRotation.getInstance();
-      const oldMat = new Uint8Array(32);
-      crypto.getRandomValues(oldMat);
-      const id = await sr.createSecret({
-        type: 'jwt',
-        label: 'p',
-        material: oldMat,
-      });
-      const result = await sr.rotateSecret(id, {
-        gracePeriodSeconds: 60,
-        reason: 'scheduled',
-      });
-      expect(result.newSecretId).toMatch(/^sec_/);
-      expect(result.oldSecretId).toBe(id);
-      expect(result.graceEndsAt).toBeGreaterThan(Date.now());
+  skipIf(!HAS_CRYPTO)('4.1 rotates a secret; old still verifies during grace', async () => {
+    const sr = SecretRotation.getInstance();
+    const oldMat = new Uint8Array(32);
+    crypto.getRandomValues(oldMat);
+    const id = await sr.createSecret({
+      type: 'jwt',
+      label: 'p',
+      material: oldMat,
+    });
+    const result = await sr.rotateSecret(id, {
+      gracePeriodSeconds: 60,
+      reason: 'scheduled',
+    });
+    expect(result.newSecretId).toMatch(/^sec_/);
+    expect(result.oldSecretId).toBe(id);
+    expect(result.graceEndsAt).toBeGreaterThan(Date.now());
 
-      // Old material should still verify against the old id.
-      const oldResult = await sr.verifySecret(id, oldMat);
-      expect(oldResult.valid).toBe(true);
-      expect(oldResult.status).toBe('rotating');
+    // Old material should still verify against the old id.
+    const oldResult = await sr.verifySecret(id, oldMat);
+    expect(oldResult.valid).toBe(true);
+    expect(oldResult.status).toBe('rotating');
 
-      // Old material should NOT verify against the new id.
-      const newId = result.newSecretId;
-      const newMeta = sr.getSecretMetadata(newId);
-      expect(newMeta).not.toBeNull();
-    }
-  );
+    // Old material should NOT verify against the new id.
+    const newId = result.newSecretId;
+    const newMeta = sr.getSecretMetadata(newId);
+    expect(newMeta).not.toBeNull();
+  });
 
   it('4.2 rotation with zero grace immediately invalidates old', async () => {
     const sr = SecretRotation.getInstance();
@@ -533,22 +523,19 @@ describe('11. AuditLogger — verifyChain', () => {
     expect(v.inspected).toBe(5);
   });
 
-  skipIf(!HAS_CRYPTO)(
-    '11.2 tampering with payload breaks the chain',
-    async () => {
-      await al.addEvent({
-        actor: 't',
-        eventType: 'e1',
-        category: 'system',
-        source: 's',
-      });
-      const evs = al.getEvents();
-      evs[0].payload = { tampered: true };
-      const v = await al.verifyChain();
-      expect(v.valid).toBe(false);
-      expect(v.firstFailure).toBe(0);
-    }
-  );
+  skipIf(!HAS_CRYPTO)('11.2 tampering with payload breaks the chain', async () => {
+    await al.addEvent({
+      actor: 't',
+      eventType: 'e1',
+      category: 'system',
+      source: 's',
+    });
+    const evs = al.getEvents();
+    evs[0].payload = { tampered: true };
+    const v = await al.verifyChain();
+    expect(v.valid).toBe(false);
+    expect(v.firstFailure).toBe(0);
+  });
 
   it('11.3 empty chain is valid', async () => {
     const v = await al.verifyChain();
@@ -582,9 +569,27 @@ describe('12. AuditLogger — query', () => {
   });
 
   skipIf(!HAS_CRYPTO)('12.3 filters by time range', async () => {
-    await al.addEvent({ actor: 'a', eventType: 'e1', category: 'system', source: 's', timestamp: 1000 });
-    await al.addEvent({ actor: 'a', eventType: 'e2', category: 'system', source: 's', timestamp: 2000 });
-    await al.addEvent({ actor: 'a', eventType: 'e3', category: 'system', source: 's', timestamp: 3000 });
+    await al.addEvent({
+      actor: 'a',
+      eventType: 'e1',
+      category: 'system',
+      source: 's',
+      timestamp: 1000,
+    });
+    await al.addEvent({
+      actor: 'a',
+      eventType: 'e2',
+      category: 'system',
+      source: 's',
+      timestamp: 2000,
+    });
+    await al.addEvent({
+      actor: 'a',
+      eventType: 'e3',
+      category: 'system',
+      source: 's',
+      timestamp: 3000,
+    });
     const r = al.query({ sinceMs: 1500, untilMs: 2500 });
     expect(r.length).toBe(1);
     expect(r[0].eventType).toBe('e2');
@@ -645,9 +650,7 @@ describe('13. AuditLogger — export & restore', () => {
     await al.addEvent({ actor: 'a', eventType: 'e1', category: 'system', source: 's' });
     const evs = al.getEvents();
     evs[0].payload = { tampered: true };
-    await expect(
-      al.restore({ chainHead: al.getChainHead(), events: evs })
-    ).rejects.toThrow();
+    await expect(al.restore({ chainHead: al.getChainHead(), events: evs })).rejects.toThrow();
   });
 });
 

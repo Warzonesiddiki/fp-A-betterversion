@@ -67,8 +67,9 @@ describe('mock-auth — runtime gate (ADR-006, ADR-008)', () => {
     vi.stubEnv('VITE_USE_MOCK_AUTH', '');
     vi.resetModules();
     const { useAuthStore } = await import('../../../src/store/authStore');
-    await expect(useAuthStore.getState().loginMock('test@example.com', 'password'))
-      .rejects.toThrow(/Mock authentication is disabled/);
+    await expect(useAuthStore.getState().loginMock('test@example.com', 'password')).rejects.toThrow(
+      /Mock authentication is disabled/
+    );
     // And NOT the PROD message
     try {
       await useAuthStore.getState().loginMock('test@example.com', 'password');
@@ -102,8 +103,9 @@ describe('mock-auth — runtime gate (ADR-006, ADR-008)', () => {
     }
 
     // The 6th should throw the lockout message
-    await expect(auth.loginMock('test@example.com', 'wrong-password'))
-      .rejects.toThrow(/locked|too many|brute/i);
+    await expect(auth.loginMock('test@example.com', 'wrong-password')).rejects.toThrow(
+      /locked|too many|brute/i
+    );
 
     vi.unstubAllEnvs();
   });

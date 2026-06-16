@@ -133,7 +133,11 @@ describe('AuthConfig — discriminated union', () => {
   it('discriminator narrows correctly — 4 distinct shapes', () => {
     // Type-level test: each variant must be assignable to AuthConfig.
     const variants: AuthConfig[] = [
-      { type: 'oauth2', client: { clientId: '', clientSecret: '', tokenUrl: '' }, tokens: { accessToken: '', refreshToken: '', expiresAt: 0 } },
+      {
+        type: 'oauth2',
+        client: { clientId: '', clientSecret: '', tokenUrl: '' },
+        tokens: { accessToken: '', refreshToken: '', expiresAt: 0 },
+      },
       { type: 'apiKey', apiKey: '' },
       { type: 'bearer', token: '' },
       { type: 'basic', username: '', password: '' },
@@ -239,7 +243,12 @@ describe('Realtime event taxonomy (10 types)', () => {
 describe('ConnectionState', () => {
   it('has 6 valid states', () => {
     const states: ConnectionState[] = [
-      'idle', 'connecting', 'connected', 'reconnecting', 'closed', 'error',
+      'idle',
+      'connecting',
+      'connected',
+      'reconnecting',
+      'closed',
+      'error',
     ];
     expect(states).toHaveLength(6);
   });

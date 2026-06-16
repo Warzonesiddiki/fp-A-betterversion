@@ -16,11 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { RealtimeChannel } from './RealtimeChannel';
-import type {
-  CellEditPayload,
-  ConnectionState,
-  RealtimeEvent,
-} from '../types';
+import type { CellEditPayload, ConnectionState, RealtimeEvent } from '../types';
 
 // ─── Mock WebSocket (same pattern as WebSocketManager.test.ts) ────────────────
 
@@ -66,7 +62,9 @@ class MockWebSocket {
 
 const channels: RealtimeChannel[] = [];
 
-function makeChannel(opts?: Partial<ConstructorParameters<typeof RealtimeChannel>[0]>): RealtimeChannel {
+function makeChannel(
+  opts?: Partial<ConstructorParameters<typeof RealtimeChannel>[0]>
+): RealtimeChannel {
   const ch = new RealtimeChannel({
     url: 'wss://test.example.com/r',
     token: 'test-token',
@@ -92,7 +90,11 @@ describe('RealtimeChannel', () => {
     globalThis.WebSocket = originalWebSocket;
     while (channels.length) {
       const ch = channels.pop();
-      try { ch?.disconnect(); } catch { /* noop */ }
+      try {
+        ch?.disconnect();
+      } catch {
+        /* noop */
+      }
     }
   });
 
@@ -165,7 +167,13 @@ describe('RealtimeChannel', () => {
     // We use the public send() then echo back via the MockWebSocket.
     // For dispatch testing, we can construct a fake raw event.
     // The simplest approach: send an outbound and verify the manager's send was called.
-    const payload: CellEditPayload = { sheetId: 's', cell: 'A1', value: 42, userId: 'u', ts: Date.now() };
+    const payload: CellEditPayload = {
+      sheetId: 's',
+      cell: 'A1',
+      value: 42,
+      userId: 'u',
+      ts: Date.now(),
+    };
     ch.send({ type: 'cell:edit', payload });
     // Outbound verification (handler isn't called on outbound — only inbound).
     // Inbound: simulate via the global mock (we don't have direct access to the manager).
@@ -202,7 +210,9 @@ describe('RealtimeChannel', () => {
   it('onState() listener that throws is caught and logged', () => {
     const ch = makeChannel();
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-    ch.onState(() => { throw new Error('boom'); });
+    ch.onState(() => {
+      throw new Error('boom');
+    });
     // The initial emit catches the throw; the warn should fire.
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();

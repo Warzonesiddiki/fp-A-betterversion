@@ -81,7 +81,9 @@ describe('ScenarioLocking — behavioral (ADR-011)', () => {
   // 2. The opened window's document is built via createElement (not document.write)
   it('the opened window uses createElement (NOT document.write) to build the print DOM', () => {
     const mock = buildMockPrintWindow();
-    const writeSpy = vi.spyOn(mock.doc as unknown as { write: () => void }, 'write').mockImplementation(() => {});
+    const writeSpy = vi
+      .spyOn(mock.doc as unknown as { write: () => void }, 'write')
+      .mockImplementation(() => {});
     vi.spyOn(window, 'open').mockReturnValue(mock.window as unknown as Window);
 
     render(
@@ -163,7 +165,7 @@ describe('ScenarioLocking — behavioral (ADR-011)', () => {
     const mock = buildMockPrintWindow();
     vi.spyOn(window, 'open').mockReturnValue(mock.window as unknown as Window);
 
-    const xssName = "<script>window.__pwned = true;</script>";
+    const xssName = '<script>window.__pwned = true;</script>';
     render(
       <ScenarioLocking
         scenarioId="s-6"
@@ -199,7 +201,9 @@ describe('ScenarioLocking — behavioral (ADR-011)', () => {
     fireEvent.click(screen.getByRole('button', { name: /lock|unlock|edit/i }));
 
     // The component should have created at least one element with the revenue
-    const revenueEl = mock.elements.find((e) => e.text?.includes('1,000,000') || e.text?.includes('1000000'));
+    const revenueEl = mock.elements.find(
+      (e) => e.text?.includes('1,000,000') || e.text?.includes('1000000')
+    );
     expect(revenueEl).toBeDefined();
   });
 });

@@ -221,10 +221,15 @@ export function ScenarioComparison({
                 className="w-full text-sm"
                 aria-label="Scenario comparison: key metrics across scenarios"
               >
-                <caption className="sr-only">Scenario comparison: key metrics across scenarios</caption>
+                <caption className="sr-only">
+                  Scenario comparison: key metrics across scenarios
+                </caption>
                 <thead>
                   <tr className="border-b border-[var(--border-subtle)]">
-                    <th scope="col" className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]">
+                    <th
+                      scope="col"
+                      className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]"
+                    >
                       <button
                         type="button"
                         onClick={() => toggleSort('name')}

@@ -151,20 +151,16 @@ export class CircuitBreaker {
   registerPolicy(options: CircuitBreakerPolicyOptions): CircuitBreakerPolicy {
     if (!this.initialized) throw new Error('CircuitBreaker not initialized');
     if (this.breakers.size >= CIRCUIT_BREAKER_CONSTANTS.MAX_BREAKERS) {
-      throw new Error(
-        `Maximum breakers (${CIRCUIT_BREAKER_CONSTANTS.MAX_BREAKERS}) reached`
-      );
+      throw new Error(`Maximum breakers (${CIRCUIT_BREAKER_CONSTANTS.MAX_BREAKERS}) reached`);
     }
     const failureThreshold =
       options.failureThreshold ?? CIRCUIT_BREAKER_CONSTANTS.DEFAULT_FAILURE_THRESHOLD;
-    const cooldownMs =
-      options.cooldownMs ?? CIRCUIT_BREAKER_CONSTANTS.DEFAULT_COOLDOWN_MS;
+    const cooldownMs = options.cooldownMs ?? CIRCUIT_BREAKER_CONSTANTS.DEFAULT_COOLDOWN_MS;
     const successThreshold =
       options.successThreshold ?? CIRCUIT_BREAKER_CONSTANTS.DEFAULT_SUCCESS_THRESHOLD;
     const failureRatePercent =
       options.failureRatePercent ?? CIRCUIT_BREAKER_CONSTANTS.DEFAULT_FAILURE_RATE_PERCENT;
-    const windowMs =
-      options.windowMs ?? CIRCUIT_BREAKER_CONSTANTS.DEFAULT_WINDOW_MS;
+    const windowMs = options.windowMs ?? CIRCUIT_BREAKER_CONSTANTS.DEFAULT_WINDOW_MS;
 
     if (failureThreshold < 1) throw new Error('failureThreshold must be >= 1');
     if (failureThreshold > CIRCUIT_BREAKER_CONSTANTS.MAX_FAILURE_THRESHOLD) {
@@ -174,9 +170,7 @@ export class CircuitBreaker {
     }
     if (cooldownMs < 1) throw new Error('cooldownMs must be >= 1');
     if (cooldownMs > CIRCUIT_BREAKER_CONSTANTS.MAX_COOLDOWN_MS) {
-      throw new Error(
-        `cooldownMs must be <= ${CIRCUIT_BREAKER_CONSTANTS.MAX_COOLDOWN_MS}`
-      );
+      throw new Error(`cooldownMs must be <= ${CIRCUIT_BREAKER_CONSTANTS.MAX_COOLDOWN_MS}`);
     }
     if (successThreshold < 1) throw new Error('successThreshold must be >= 1');
     if (successThreshold > CIRCUIT_BREAKER_CONSTANTS.MAX_SUCCESS_THRESHOLD) {
@@ -189,9 +183,7 @@ export class CircuitBreaker {
     }
     if (windowMs < 1) throw new Error('windowMs must be >= 1');
     if (windowMs > CIRCUIT_BREAKER_CONSTANTS.MAX_WINDOW_MS) {
-      throw new Error(
-        `windowMs must be <= ${CIRCUIT_BREAKER_CONSTANTS.MAX_WINDOW_MS}`
-      );
+      throw new Error(`windowMs must be <= ${CIRCUIT_BREAKER_CONSTANTS.MAX_WINDOW_MS}`);
     }
 
     const id = `${CIRCUIT_BREAKER_CONSTANTS.BREAKER_ID_PREFIX}${this.shortRandomId()}`;
@@ -232,7 +224,7 @@ export class CircuitBreaker {
   }
 
   listPolicies(): CircuitBreakerPolicy[] {
-    return Array.from(this.breakers.values()).map(s => s.policy);
+    return Array.from(this.breakers.values()).map((s) => s.policy);
   }
 
   getState(policyId: string): CircuitState | null {
@@ -247,7 +239,15 @@ export class CircuitBreaker {
     const now = request.now ?? this.now();
 
     if (!state.policy.enabled) {
-      return this.buildResult(state, false, false, 0, now, 'call-rejected', CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_REJECTED);
+      return this.buildResult(
+        state,
+        false,
+        false,
+        0,
+        now,
+        'call-rejected',
+        CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_REJECTED
+      );
     }
 
     if (now - state.windowStart >= state.policy.windowMs) {
@@ -259,7 +259,15 @@ export class CircuitBreaker {
     switch (state.state) {
       case 'closed': {
         state.totalAllowed += 1;
-        return this.buildResult(state, true, false, 0, now, 'call-allowed', CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_SUCCEEDED);
+        return this.buildResult(
+          state,
+          true,
+          false,
+          0,
+          now,
+          'call-allowed',
+          CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_SUCCEEDED
+        );
       }
       case 'open': {
         if (now >= state.openUntil) {
@@ -269,20 +277,52 @@ export class CircuitBreaker {
           state.isProbe = true;
           state.totalProbes += 1;
           state.totalAllowed += 1;
-          return this.buildResult(state, true, true, 0, now, 'state-transition', CIRCUIT_BREAKER_CONSTANTS.REASON_HALF_OPEN_PROBE);
+          return this.buildResult(
+            state,
+            true,
+            true,
+            0,
+            now,
+            'state-transition',
+            CIRCUIT_BREAKER_CONSTANTS.REASON_HALF_OPEN_PROBE
+          );
         }
         state.totalRejected += 1;
-        return this.buildResult(state, false, false, state.openUntil, now, 'call-rejected', CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_REJECTED);
+        return this.buildResult(
+          state,
+          false,
+          false,
+          state.openUntil,
+          now,
+          'call-rejected',
+          CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_REJECTED
+        );
       }
       case 'half-open': {
         if (state.isProbe) {
           state.totalRejected += 1;
-          return this.buildResult(state, false, false, 0, now, 'call-rejected', CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_REJECTED);
+          return this.buildResult(
+            state,
+            false,
+            false,
+            0,
+            now,
+            'call-rejected',
+            CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_REJECTED
+          );
         }
         state.isProbe = true;
         state.totalProbes += 1;
         state.totalAllowed += 1;
-        return this.buildResult(state, true, true, 0, now, 'call-allowed', CIRCUIT_BREAKER_CONSTANTS.REASON_HALF_OPEN_PROBE);
+        return this.buildResult(
+          state,
+          true,
+          true,
+          0,
+          now,
+          'call-allowed',
+          CIRCUIT_BREAKER_CONSTANTS.REASON_HALF_OPEN_PROBE
+        );
       }
     }
   }
@@ -307,10 +347,26 @@ export class CircuitBreaker {
           state.consecutiveFailures = 0;
           state.windowSuccesses = 0;
           state.windowFailures = 0;
-          return this.buildResult(state, true, false, 0, t, 'state-transition', CIRCUIT_BREAKER_CONSTANTS.REASON_RECOVERED).auditEvent;
+          return this.buildResult(
+            state,
+            true,
+            false,
+            0,
+            t,
+            'state-transition',
+            CIRCUIT_BREAKER_CONSTANTS.REASON_RECOVERED
+          ).auditEvent;
         }
       }
-      return this.buildResult(state, true, false, 0, t, 'call-succeeded', CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_SUCCEEDED).auditEvent;
+      return this.buildResult(
+        state,
+        true,
+        false,
+        0,
+        t,
+        'call-succeeded',
+        CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_SUCCEEDED
+      ).auditEvent;
     }
 
     state.totalFailed += 1;
@@ -322,14 +378,30 @@ export class CircuitBreaker {
       this.transitionState(state, 'half-open', 'open', t);
       state.openUntil = t + state.policy.cooldownMs;
       state.consecutiveFailures = 0;
-      return this.buildResult(state, true, false, 0, t, 'state-transition', CIRCUIT_BREAKER_CONSTANTS.REASON_TRIPPED_THRESHOLD).auditEvent;
+      return this.buildResult(
+        state,
+        true,
+        false,
+        0,
+        t,
+        'state-transition',
+        CIRCUIT_BREAKER_CONSTANTS.REASON_TRIPPED_THRESHOLD
+      ).auditEvent;
     }
 
     if (state.state === 'closed') {
       if (state.consecutiveFailures >= state.policy.failureThreshold) {
         this.transitionState(state, 'closed', 'open', t);
         state.openUntil = t + state.policy.cooldownMs;
-        return this.buildResult(state, true, false, 0, t, 'state-transition', CIRCUIT_BREAKER_CONSTANTS.REASON_TRIPPED_THRESHOLD).auditEvent;
+        return this.buildResult(
+          state,
+          true,
+          false,
+          0,
+          t,
+          'state-transition',
+          CIRCUIT_BREAKER_CONSTANTS.REASON_TRIPPED_THRESHOLD
+        ).auditEvent;
       }
       const total = state.windowSuccesses + state.windowFailures;
       if (total >= state.policy.failureThreshold) {
@@ -337,11 +409,27 @@ export class CircuitBreaker {
         if (rate >= state.policy.failureRatePercent) {
           this.transitionState(state, 'closed', 'open', t);
           state.openUntil = t + state.policy.cooldownMs;
-          return this.buildResult(state, true, false, 0, t, 'state-transition', CIRCUIT_BREAKER_CONSTANTS.REASON_TRIPPED_RATE).auditEvent;
+          return this.buildResult(
+            state,
+            true,
+            false,
+            0,
+            t,
+            'state-transition',
+            CIRCUIT_BREAKER_CONSTANTS.REASON_TRIPPED_RATE
+          ).auditEvent;
         }
       }
     }
-    return this.buildResult(state, true, false, 0, t, 'call-failed', CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_FAILED).auditEvent;
+    return this.buildResult(
+      state,
+      true,
+      false,
+      0,
+      t,
+      'call-failed',
+      CIRCUIT_BREAKER_CONSTANTS.REASON_CALL_FAILED
+    ).auditEvent;
   }
 
   manualOpen(policyId: string, now?: number): void {
@@ -416,10 +504,7 @@ export class CircuitBreaker {
   async execute<T>(policyId: string, fn: () => Promise<T>, now?: number): Promise<T> {
     const before = this.beforeCall({ policyId, now });
     if (!before.allowed) {
-      throw new CircuitOpenError(
-        `Circuit '${policyId}' is open (${before.state})`,
-        before
-      );
+      throw new CircuitOpenError(`Circuit '${policyId}' is open (${before.state})`, before);
     }
     try {
       const result = await fn();
@@ -437,7 +522,12 @@ export class CircuitBreaker {
     return cb;
   }
 
-  private transitionState(state: BreakerState, from: CircuitState, to: CircuitState, now: number): void {
+  private transitionState(
+    state: BreakerState,
+    from: CircuitState,
+    to: CircuitState,
+    now: number
+  ): void {
     if (from === to) return;
     state.state = to;
     state.stateSince = now;

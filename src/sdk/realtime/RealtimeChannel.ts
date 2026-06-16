@@ -53,7 +53,9 @@ const VALID_EVENT_TYPES: ReadonlySet<RealtimeEvent['type']> = new Set<RealtimeEv
  * The internal manager exposes 'disconnected' on idle, which we surface
  * as 'closed' to match the SDK's "intentionally closed" semantic.
  */
-function translateState(internal: 'connecting' | 'connected' | 'disconnected' | 'reconnecting'): ConnectionState {
+function translateState(
+  internal: 'connecting' | 'connected' | 'disconnected' | 'reconnecting'
+): ConnectionState {
   switch (internal) {
     case 'connecting':
       return 'connecting';
@@ -105,7 +107,9 @@ export class RealtimeChannel {
       token: config.token,
       ...(config.maxRetries !== undefined ? { maxRetries: config.maxRetries } : {}),
       ...(config.baseRetryDelay !== undefined ? { baseRetryDelay: config.baseRetryDelay } : {}),
-      ...(config.heartbeatInterval !== undefined ? { heartbeatInterval: config.heartbeatInterval } : {}),
+      ...(config.heartbeatInterval !== undefined
+        ? { heartbeatInterval: config.heartbeatInterval }
+        : {}),
     });
 
     // Forward every message to the typed dispatcher.

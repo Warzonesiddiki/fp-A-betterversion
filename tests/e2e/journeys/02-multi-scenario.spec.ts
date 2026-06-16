@@ -53,7 +53,10 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
     await page.goto('/scenarios');
     await page.waitForLoadState('networkidle');
     // Click "Duplicate" on the base scenario
-    const baseRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /base case/i }).first();
+    const baseRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /base case/i })
+      .first();
     await expect(baseRow).toBeVisible();
     await baseRow.locator('button:has-text("Duplicate")').click();
     // Name dialog
@@ -68,7 +71,10 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
   test('step 3: duplicate base as "Worst Case"', async ({ page }) => {
     await page.goto('/scenarios');
     await page.waitForLoadState('networkidle');
-    const baseRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /base case/i }).first();
+    const baseRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /base case/i })
+      .first();
     await expect(baseRow).toBeVisible();
     await baseRow.locator('button:has-text("Duplicate")').click();
     const nameInput = page.locator('input[name="scenario_name"]');
@@ -82,7 +88,10 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
     await page.goto('/scenarios');
     await page.waitForLoadState('networkidle');
     // Open best case
-    const bestCaseRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /best case/i }).first();
+    const bestCaseRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /best case/i })
+      .first();
     await expect(bestCaseRow).toBeVisible();
     await bestCaseRow.locator('button:has-text("Open")').click();
     await page.waitForLoadState('networkidle');
@@ -91,7 +100,9 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
     await expect(revenueInput).toBeVisible();
     await revenueInput.fill('200000');
     await page.locator('button:has-text("Save")').click();
-    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, { timeout: 10_000 });
+    await expect(page.locator('[data-testid="save-status"]')).toContainText(/saved|success/i, {
+      timeout: 10_000,
+    });
   });
 
   test('step 5: compare scenarios side-by-side', async ({ page }) => {
@@ -113,7 +124,10 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
   test('step 6: run Monte Carlo (10K runs) on a scenario', async ({ page }) => {
     await page.goto('/scenarios');
     await page.waitForLoadState('networkidle');
-    const baseRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /base case/i }).first();
+    const baseRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /base case/i })
+      .first();
     await expect(baseRow).toBeVisible();
     await baseRow.locator('button:has-text("Run Monte Carlo")').click();
     // Monte Carlo dialog
@@ -122,14 +136,20 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
     await runCountInput.fill('10000');
     await page.locator('button:has-text("Start")').click();
     // Wait for completion (Monte Carlo can take up to 30s per Prometheus G17)
-    await expect(page.locator('[data-testid="monte-carlo-status"]')).toContainText(/complete|done/i, { timeout: 60_000 });
+    await expect(page.locator('[data-testid="monte-carlo-status"]')).toContainText(
+      /complete|done/i,
+      { timeout: 60_000 }
+    );
   });
 
   test('step 7: lock a scenario (G12 feature)', async ({ page }) => {
     await page.goto('/scenarios');
     await page.waitForLoadState('networkidle');
     // Click "Lock" on the base scenario
-    const baseRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /base case/i }).first();
+    const baseRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /base case/i })
+      .first();
     await expect(baseRow).toBeVisible();
     await baseRow.locator('button:has-text("Lock")').click();
     // Confirm lock
@@ -142,8 +162,14 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
     await page.goto('/scenarios');
     await page.waitForLoadState('networkidle');
     // Multi-select best + worst, then merge
-    const bestRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /best case/i }).first();
-    const worstRow = page.locator('[data-testid="scenario-row"]').filter({ hasText: /worst case/i }).first();
+    const bestRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /best case/i })
+      .first();
+    const worstRow = page
+      .locator('[data-testid="scenario-row"]')
+      .filter({ hasText: /worst case/i })
+      .first();
     await bestRow.locator('input[type="checkbox"]').check();
     await worstRow.locator('input[type="checkbox"]').check();
     // Click merge button
@@ -154,7 +180,9 @@ test.describe('Journey 02: Multi-Scenario Management (G12)', () => {
     await mergeNameInput.fill('Merged Best+Worst 2026');
     await page.locator('button:has-text("Merge")').click();
     // Merged scenario appears
-    await expect(page.locator('[data-testid="scenario-list"]')).toContainText(/merged best\+worst 2026/i);
+    await expect(page.locator('[data-testid="scenario-list"]')).toContainText(
+      /merged best\+worst 2026/i
+    );
   });
 
   test.afterEach(async ({ page }) => {

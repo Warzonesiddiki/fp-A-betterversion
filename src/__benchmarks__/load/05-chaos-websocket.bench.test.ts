@@ -97,7 +97,7 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
 
     // Verify
     expect(replayed.length).toBe(5);
-    expect(replayed.map(r => r.id)).toEqual(queuedIds); // ORDER preserved
+    expect(replayed.map((r) => r.id)).toEqual(queuedIds); // ORDER preserved
     expect(queue.pending()).toBe(0);
 
     const record: ChaosWSRecord = {
@@ -105,16 +105,18 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
       editsBeforeDisconnect: 3,
       editsDuringDisconnect: 5,
       editsReplayedOnReconnect: replayed.length,
-      editOrderPreserved: replayed.map(r => r.id).join(',') === queuedIds.join(','),
+      editOrderPreserved: replayed.map((r) => r.id).join(',') === queuedIds.join(','),
       reconnectTimeMs: Math.round(reconnectTimeMs * 100) / 100,
       dataLoss: false,
-      passed: replayed.length === 5 && replayed.map(r => r.id).join(',') === queuedIds.join(','),
+      passed: replayed.length === 5 && replayed.map((r) => r.id).join(',') === queuedIds.join(','),
       target: '5 queued edits replayed in order, 0 data loss',
       serviceFile: 'src/services/WebSocketManager.ts',
       serviceLineRef: 'See WebSocketManager.ts:200-330 (offline queue + replay)',
     };
     records.push(record);
-    console.log(`[VULCAN] Chaos02-A: queued=${queuedIds.join(',')}, replayed=${replayed.map(r => r.id).join(',')}, reconnectMs=${reconnectTimeMs.toFixed(2)}`);
+    console.log(
+      `[VULCAN] Chaos02-A: queued=${queuedIds.join(',')}, replayed=${replayed.map((r) => r.id).join(',')}, reconnectMs=${reconnectTimeMs.toFixed(2)}`
+    );
   });
 
   it('SCENARIO B: 100 rapid edits during disconnect — all survive', () => {
@@ -143,7 +145,9 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
       serviceFile: 'src/services/WebSocketManager.ts',
       serviceLineRef: 'See WebSocketManager.ts:280-310 (rapid edit enqueue path)',
     });
-    console.log(`[VULCAN] Chaos02-B: 100 edits queued in ${queueTime.toFixed(2)}ms, replayed in order: ${orderOk}`);
+    console.log(
+      `[VULCAN] Chaos02-B: 100 edits queued in ${queueTime.toFixed(2)}ms, replayed in order: ${orderOk}`
+    );
   });
 
   it('SCENARIO C: reconnect fails 3 times, queue persists across attempts', () => {
@@ -159,7 +163,7 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
       expect(replayed.length).toBe(10); // all 10 still in queue
       // Server rejected — set offline first, THEN put back so they go back to queue
       queue.setOnline(false);
-      replayed.forEach(e => queue.enqueue(e));
+      replayed.forEach((e) => queue.enqueue(e));
       expect(queue.pending()).toBe(10); // still 10 queued
     }
 
@@ -167,14 +171,14 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
     queue.setOnline(true);
     const final = queue.drain();
     expect(final.length).toBe(10);
-    expect(final.map(e => e.id)).toEqual([0,1,2,3,4,5,6,7,8,9]);
+    expect(final.map((e) => e.id)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
     records.push({
       scenario: 'chaos-ws-flaky-network-3-retries',
       editsBeforeDisconnect: 0,
       editsDuringDisconnect: 10,
       editsReplayedOnReconnect: final.length,
-      editOrderPreserved: final.map(e => e.id).join(',') === '0,1,2,3,4,5,6,7,8,9',
+      editOrderPreserved: final.map((e) => e.id).join(',') === '0,1,2,3,4,5,6,7,8,9',
       reconnectTimeMs: 0,
       dataLoss: false,
       passed: final.length === 10,
@@ -192,6 +196,8 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
       path.join(outDir, '.raw-chaos-websocket.json'),
       JSON.stringify(records, null, 2)
     );
-    console.log(`[VULCAN] Wrote ${records.length} chaos-websocket records to .raw-chaos-websocket.json`);
+    console.log(
+      `[VULCAN] Wrote ${records.length} chaos-websocket records to .raw-chaos-websocket.json`
+    );
   });
 });
