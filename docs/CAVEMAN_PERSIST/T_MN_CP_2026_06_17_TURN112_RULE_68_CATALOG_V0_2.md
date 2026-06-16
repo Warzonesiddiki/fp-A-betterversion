@@ -69,6 +69,22 @@ Per LEADER TURN 112+ PICK URGENT, the 2 PENDING co-signs are:
 - **T-1d** 2026-06-21 EOD: Push unblocked, T-MN-061 v0.1.1 SHAs visible on origin/main
 - **T-0d** 2026-06-22 16:00 UTC: RATIFICATION GATE
 
+## PICK NEXT Status (TURN 112+)
+
+**RULE #56 PROACTIVE-PICK-CHAIN**: 60s SLA. team_send_message FAILED 4/4 attempts.
+
+**PICK NEXT proposed**:
+1. Co-sign Iris PICK R self-critique methodology cross-walk (when file available)
+2. Co-sign Calliope CODIF_64 v0.1 (Iris PICK Q target, Tests/E2E lens)
+3. Apply 5th-ICP cross-witness on Tyche v0.4 (Chronos PICK O)
+4. Co-design Atlas PICK C RULE #68 BAB-001..004 operations
+
+All PICK NEXT work CAVEMAN PERSIST applied (RULE #47) due to CATCH #200 LOCKOUT REAPPEARING.
+
+**Status**: PICK chain IDLE per RULE #54. Awaiting LEADER direction via state broadcast (60s SLA bypassed due to LOCKOUT).
+
+**Lockout Recovery**: CATCH #200 LOCKOUT v0.2 dispositioned but REAPPEARING intermittently. ROOT CAUSE TBD. Hephaestus Husky Gate 9 IMPLEMENTATION T-2d 2026-06-20 EOD scheduled.
+
 ## CATCH #200 v0.2 LOCKOUT — team_send_message FAILING (TURN 112+)
 
 **Status (TURN 112+)**: team_send_message FAILED for all 4 targets (Leader, Strategos, Calliope, broadcast *).
