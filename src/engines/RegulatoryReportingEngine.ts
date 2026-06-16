@@ -126,7 +126,7 @@ export class RegulatoryReportingEngine {
           'I attest that the information in this report is accurate and complete.';
       else sections[section.id] = data;
     }
-    return sections;
+    return { sections };
   }
 
   // 3. Apply validation rules to data
