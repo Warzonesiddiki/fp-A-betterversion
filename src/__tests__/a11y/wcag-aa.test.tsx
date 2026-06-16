@@ -55,18 +55,29 @@ const withAllProviders = (ui: React.ReactNode) => (
   </I18nextProvider>
 );
 
+// Orchestrator PICK #23 DRI #1 item #3 directive: "axe-core scan — 0 critical,
+// 0 serious violations". This helper filters out moderate/minor impact violations
+// to align the assertion with the directive (landmark-unique at moderate level
+// is allowed, per Orchestrator).
+const expectNoCriticalOrSerious = (results: { violations: Array<{ impact?: string }> }) => {
+  const blocking = results.violations.filter(
+    (v) => v.impact === 'critical' || v.impact === 'serious'
+  );
+  expect(blocking).toEqual([]);
+};
+
 describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
   describe('Authentication pages', () => {
     it('LoginPage has no detectable a11y violations', async () => {
-      const { container } = render(<LoginPage />);
+      const { container } = render(withRouter(<LoginPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('RegisterPage has no detectable a11y violations', async () => {
-      const { container } = render(<RegisterPage />);
+      const { container } = render(withRouter(<RegisterPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
   });
 
@@ -74,25 +85,25 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     it('DashboardPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<DashboardPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('DataImportPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<DataImportPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('ChartOfAccountsPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<ChartOfAccountsPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('SettingsPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<SettingsPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
   });
 
@@ -100,19 +111,19 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     it('BudgetVsActualPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<BudgetVsActualPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('ProfitLossPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<ProfitLossPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('CashFlowPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<CashFlowPage />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
   });
 
@@ -120,7 +131,7 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     it('Button has no detectable a11y violations', async () => {
       const { container } = render(<Button>Click me</Button>);
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('Modal has no detectable a11y violations', async () => {
@@ -130,31 +141,31 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
         </Modal>
       );
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('Input has no detectable a11y violations', async () => {
       const { container } = render(<Input label="Username" />);
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('Card has no detectable a11y violations', async () => {
       const { container } = render(<Card>Card content</Card>);
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('ToastContainer has no detectable a11y violations', async () => {
       const { container } = render(<ToastContainer />);
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('CommandPalette has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<CommandPalette isOpen onClose={() => {}} />));
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('DataTable has no detectable a11y violations', async () => {
@@ -162,14 +173,14 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
       const rows = [{ name: 'Alpha' }, { name: 'Beta' }];
       const { container } = render(<DataTable columns={columns} rows={rows} rowKey="name" />);
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
 
     it('ContextMenu has no detectable a11y violations', async () => {
       const items = [{ label: 'Cut', onClick: () => {} }];
       const { container } = render(<ContextMenu x={0} y={0} items={items} onClose={() => {}} />);
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+      expectNoCriticalOrSerious(results);
     });
   });
 

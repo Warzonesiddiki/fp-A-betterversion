@@ -67,7 +67,7 @@ export const DataTable = memo<DataTableProps>(
 
     // Handle sorting
     const sortedData = useMemo(() => {
-      const items = [...data];
+      const items = [...(data ?? [])];
       if (sortConfig !== null) {
         items.sort((a, b) => {
           const aValue = String(a[sortConfig.key] ?? '');

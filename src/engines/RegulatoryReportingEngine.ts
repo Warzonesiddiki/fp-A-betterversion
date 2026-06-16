@@ -117,16 +117,31 @@ export class RegulatoryReportingEngine {
   static renderReport(
     template: ReportTemplate,
     data: ReportData
-  ): { sections: Record<string, ReportData | string> } {
+  ): {
+    header: string;
+    attest: string;
+    body: ReportData;
+    sections: Record<string, ReportData | string>;
+  } {
     const sections: Record<string, ReportData | string> = {};
+    let header = '';
+    let attest = '';
+    let body: ReportData = data;
     for (const section of template.sections) {
-      if (section.type === 'header') sections[section.id] = template.id + ' v' + template.version;
-      else if (section.type === 'attestation')
-        sections[section.id] =
-          'I attest that the information in this report is accurate and complete.';
-      else sections[section.id] = data;
+      if (section.type === 'header') {
+        const value = template.id + ' v' + template.version;
+        sections[section.id] = value;
+        header = value;
+      } else if (section.type === 'attestation') {
+        const value = 'I attest that the information in this report is accurate and complete.';
+        sections[section.id] = value;
+        attest = value;
+      } else {
+        sections[section.id] = data;
+        body = data;
+      }
     }
-    return { sections };
+    return { header, attest, body, sections };
   }
 
   // 3. Apply validation rules to data

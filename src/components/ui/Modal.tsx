@@ -9,11 +9,12 @@ interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  ariaLabel?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const Modal = forwardRef<HTMLDivElement, ModalProps>(
-  ({ className, isOpen, onClose, children, title, ...props }, ref) => {
+  ({ className, isOpen, onClose, children, title, ariaLabel, ...props }, ref) => {
     const dialogRef = useRef<HTMLDivElement>(null);
     const previousFocusRef = useRef<HTMLElement | null>(null);
     const titleId = useId();
@@ -90,7 +91,8 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             }}
             role="dialog"
             aria-modal="true"
-            aria-labelledby={title ? titleId : undefined}
+            aria-label={ariaLabel ?? (title ? undefined : 'Dialog')}
+            aria-labelledby={!ariaLabel && title ? titleId : undefined}
             className={cn(
               'inline-block transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all motion-reduce:transition-none motion-reduce:transform-none sm:my-8 sm:w-full sm:max-w-lg sm:align-middle',
               className

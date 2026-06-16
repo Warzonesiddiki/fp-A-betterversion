@@ -120,9 +120,11 @@ export function formatRelativeTimeLegacy(
 
 /**
  * Backward-compat alias matching BudgetListPage.tsx default: 30-day cap.
+ * Accepts an optional options object to support `now` injection for deterministic tests.
  */
 export function formatRelativeTimeBudget(
-  timestamp: string | number | Date | null | undefined
+  timestamp: string | number | Date | null | undefined,
+  options?: { now?: number | string | Date }
 ): string {
-  return formatRelativeTime(timestamp, { maxDays: 30 });
+  return formatRelativeTime(timestamp, { maxDays: 30, ...options });
 }
