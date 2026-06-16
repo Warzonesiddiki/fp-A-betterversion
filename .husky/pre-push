@@ -1,5 +1,5 @@
 #!/bin/sh
-# <!-- DRAFT v0.1 — awaiting review — Atlas 2026-06-13 -->
+# <!-- SHIPPED v0.2 — Atlas 2026-06-16 — Gate 5 strict-regex upgrade (NEVER-AGAIN RULE #56 PROACTIVE-PICK-CHAIN) -->
 # =============================================================================
 # FinPlan Pro — pre-push hook
 # See docs/drafts/atlas/husky-timeout-fix.md for the IC-1 root cause + the
@@ -46,15 +46,30 @@ timeout 240 npx vitest run \
 # Gate 4 — Vite production build (catches build-time-only failures, e.g. tsx-typing in build context)
 timeout 240 npm run build || { echo "❌ Build failed (or timed out at 240s). Push blocked."; exit 1; }
 
-# Gate 5 — NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK)
+# Gate 5 — NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) — v0.2 (strict-regex)
 # FOUNDER DIRECTIVE 2026-06-16 — closes CATCH #187 (Tyche P0 SHA-MISATTRIBUTION in 81d9cd27).
-# Procedure: extract all 7+ char hex SHAs from unpushed commit messages, verify each
-# one exists in `git log --all`. If any GHOST SHA found, ABORT push and reconcile.
-# Co-sign: Atlas (infra) + Hephaestus (security) + Mnemosyne (testing).
+# v0.2 UPGRADE (Atlas PICK D, 2026-06-16):
+#   - Strict-regex: SHA must be preceded by marker — `(commit|SHA)[ :]+` or `@` or `: `
+#   - Case-insensitive marker match (git rev-parse accepts both cases)
+#   - Same 7-40 char hex range as v0.1
+# v0.2 TRADE-OFF (precision over recall):
+#   ✅ MATCHES:  "commit 401d68003"  "SHA: 1f353d08"  "@f6c58374"  ": 917630df"
+#   ❌ IGNORED:  "post-815fa5d1"  "slot 019ecbef-..."  bare "d984569a"
+#   Convention: use a marker prefix when citing SHAs in commit messages
+#   to opt into GHOST-SHA verification. Bare 7-char SHAs and UUID fragments
+#   are now ignored to eliminate false positives.
+# Procedure: extract marked SHAs from unpushed commit messages, verify each
+# one exists in `git log --all` via `git rev-parse --verify $sha^{commit}`.
+# If any GHOST SHA found, ABORT push and reconcile.
+# Co-sign: Atlas (infra) + Hephaestus (security) + Mnemosyne (testing) — 3-Muse d0cff090d.
+# 4-Muse consensus (Tyche RULE #53 codification 5efb7e6e) ratified by Leader ACCEPT 4/4.
 # Documentation: docs/codif/RULE_55.md (when codif lands) — see also RULE #53 GHOST-SHA-DETECTION
 # (Leader-side 5th-ICP SHA verification) which is the corresponding pre-ceremony gate.
-# Note: uses `git rev-parse --verify` (works for both short and full SHAs, branches, and tags).
-unpushed_shas=$(git log @{u}..HEAD --format='%B' 2>/dev/null | grep -oE '\b[0-9a-f]{7,40}\b' | sort -u)
+# Note: HEAD-skip retained for own commit SHA (HEAD_short and HEAD_full).
+unpushed_shas=$(git log @{u}..HEAD --format='%B' 2>/dev/null \
+  | grep -oiE '((commit|SHA)[ :]+|@|: )[0-9a-f]{7,40}\b' \
+  | grep -oE '[0-9a-f]{7,40}\b' \
+  | sort -u)
 if [ -n "$unpushed_shas" ]; then
   ghost_count=0
   for sha in $unpushed_shas; do
@@ -72,6 +87,7 @@ if [ -n "$unpushed_shas" ]; then
   if [ $ghost_count -gt 0 ]; then
     echo "❌ NEVER-AGAIN RULE #55 violation: $ghost_count GHOST SHA(s) in commit messages."
     echo "   Procedure: verify the cited SHA, fix the commit message, then re-push."
+    echo "   Note: v0.2 strict-regex only checks SHAs preceded by (commit|SHA)[: ]+ | @ | : ."
     echo "   Reference: docs/codif/RULE_55.md (NEVER-AGAIN RULE #55)"
     exit 1
   fi
