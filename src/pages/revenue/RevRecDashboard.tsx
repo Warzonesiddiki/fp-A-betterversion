@@ -349,7 +349,12 @@ export default function RevRecDashboard() {
           </CardContent>
         </Card>
       </div>
-      <DataTable columns={columns} data={data.contracts} />
+      <DataTable
+        columns={columns}
+        data={data.contracts}
+        caption="Revenue recognition contracts with performance obligations and deferred revenue"
+        ariaLabel="Revenue recognition contracts table"
+      />
     </div>
   );
 }
