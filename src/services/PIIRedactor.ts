@@ -435,7 +435,7 @@ export class PIIRedactor {
     const auditEvent: PIIRedactionAuditEvent = {
       type: 'pii.redacted',
       actor: actor ?? this.defaultActor,
-      timestamp: Date.now(),
+      at: Date.now(),
       path: 'identifier',
       category: 'name',
       strategy: this.defaultStrategy,
