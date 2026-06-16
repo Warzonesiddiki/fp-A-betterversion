@@ -124,7 +124,7 @@ export function formatRelativeTimeLegacy(
  */
 export function formatRelativeTimeBudget(
   timestamp: string | number | Date | null | undefined,
-  options?: { now?: number | string | Date }
+  options?: FormatRelativeTimeOptions
 ): string {
   return formatRelativeTime(timestamp, { maxDays: 30, ...options });
 }

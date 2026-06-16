@@ -328,11 +328,11 @@ export class SecurityHeaders {
     }
 
     const baseCsp: CspDirectives = {
-      defaultSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      baseUri: ["'self'"],
-      formAction: ["'self'"],
-      frameAncestors: ["'none'"],
+      defaultSrc: ['self'],
+      objectSrc: ['none'],
+      baseUri: ['self'],
+      formAction: ['self'],
+      frameAncestors: ['none'],
       upgradeInsecureRequests: true,
     };
 
@@ -368,9 +368,9 @@ export class SecurityHeaders {
       return {
         csp: {
           ...baseCsp,
-          scriptSrc: ["'self'", "'unsafe-inline'"], // NOTE: nonce preferred; review for v1.1
-          styleSrc: ["'self'", "'unsafe-inline'"],
-          imgSrc: ["'self'", 'data:', 'https:'],
+          scriptSrc: ['self', 'unsafe-inline'], // NOTE: nonce preferred; review for v1.1
+          styleSrc: ['self', 'unsafe-inline'],
+          imgSrc: ['self', 'data:', 'https:'],
           fontSrc: ['self', 'data:'],
           connectSrc: ['self', 'wss:'],
           workerSrc: ['self'],
@@ -395,8 +395,8 @@ export class SecurityHeaders {
     return {
       csp: {
         ...baseCsp,
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ['self', 'unsafe-inline', 'unsafe-eval'],
+        styleSrc: ['self', 'unsafe-inline'],
         imgSrc: ['self', 'data:', 'https:', 'http:'],
         connectSrc: ['self', 'wss:', 'ws:', 'http:', 'https:'],
         workerSrc: ['self', 'blob:'],
