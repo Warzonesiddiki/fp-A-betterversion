@@ -217,10 +217,14 @@ export function ScenarioComparison({
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table
+                className="w-full text-sm"
+                aria-label="Scenario comparison: key metrics across scenarios"
+              >
+                <caption className="sr-only">Scenario comparison: key metrics across scenarios</caption>
                 <thead>
                   <tr className="border-b border-[var(--border-subtle)]">
-                    <th className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]">
+                    <th scope="col" className="pb-3 pr-4 text-left font-medium text-[var(--text-secondary)]">
                       <button
                         type="button"
                         onClick={() => toggleSort('name')}
@@ -238,6 +242,7 @@ export function ScenarioComparison({
                     {sorted.map((s) => (
                       <th
                         key={s.id}
+                        scope="col"
                         className="pb-3 px-3 text-right font-medium text-[var(--text-secondary)]"
                       >
                         <div className="flex items-center justify-end gap-1">
