@@ -209,10 +209,10 @@ export interface ExportOptions {
  * Default: InMemoryAdapter. LocalStorageAdapter available for browser.
  */
 export interface IncidentStorageAdapter {
-  save(incident: Incident): Promise<void> | void;
-  get(id: string): Promise<Incident | null> | Incident | null;
-  list(): Promise<Incident[]> | Incident[];
-  delete(id: string): Promise<boolean> | boolean;
+  save(incident: Incident): void;
+  get(id: string): Incident | null;
+  list(): Incident[];
+  delete(id: string): boolean;
 }
 
 export class InMemoryIncidentAdapter implements IncidentStorageAdapter {

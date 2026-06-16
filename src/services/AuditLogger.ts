@@ -180,7 +180,7 @@ async function sha256Hex(s: string): Promise<string> {
   const bytes = new Uint8Array(buf);
   let out = '';
   for (let i = 0; i < bytes.length; i++) {
-    out += bytes[i].toString(16).padStart(2, '0');
+    out += bytes[i]!.toString(16).padStart(2, '0');
   }
   return out;
 }
@@ -190,7 +190,7 @@ function randomHex(byteLength: number): string {
   crypto.getRandomValues(bytes);
   let out = '';
   for (let i = 0; i < bytes.length; i++) {
-    out += bytes[i].toString(16).padStart(2, '0');
+    out += bytes[i]!.toString(16).padStart(2, '0');
   }
   return out;
 }
@@ -216,7 +216,7 @@ function canonicalize(value: unknown): string {
     const obj = value as Record<string, unknown>;
     const keys = Object.keys(obj).sort();
     return `o:{${keys
-      .map((k) => `${JSON.stringify(k)}:${canonicalize(obj[k])}`)
+      .map((k) => `${JSON.stringify(k)}:${canonicalize(obj[k]!)}`)
       .join(',')}}`;
   }
   return 'null';
@@ -387,7 +387,7 @@ export class AuditLogger {
   async verifyChain(): Promise<AuditChainVerificationResult> {
     let prevChainHash = this.genesisChainHead;
     for (let i = 0; i < this.events.length; i++) {
-      const e = this.events[i];
+      const e = this.events[i]!;
       if (e.prevChainHash !== prevChainHash) {
         return {
           valid: false,
@@ -492,7 +492,7 @@ export class AuditLogger {
     // Validate chain inside the snapshot.
     let prev = this.genesisChainHead;
     for (let i = 0; i < snapshot.events.length; i++) {
-      const e = snapshot.events[i];
+      const e = snapshot.events[i]!;
       if (e.prevChainHash !== prev) {
         throw new AuditLoggerError(
           `chain broken at index ${i}`,
