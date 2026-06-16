@@ -171,7 +171,10 @@ export interface AuditLoggerConfig {
 }
 
 export class AuditLoggerError extends Error {
-  constructor(message: string, public readonly code: string) {
+  constructor(
+    message: string,
+    public readonly code: string
+  ) {
     super(message);
     this.name = 'AuditLoggerError';
   }
@@ -217,9 +220,7 @@ function canonicalize(value: unknown): string {
   if (typeof value === 'object') {
     const obj = value as Record<string, unknown>;
     const keys = Object.keys(obj).sort();
-    return `o:{${keys
-      .map((k) => `${JSON.stringify(k)}:${canonicalize(obj[k]!)}`)
-      .join(',')}}`;
+    return `o:{${keys.map((k) => `${JSON.stringify(k)}:${canonicalize(obj[k]!)}`).join(',')}}`;
   }
   return 'null';
 }
@@ -239,8 +240,7 @@ export class AuditLogger {
   private constructor(config: AuditLoggerConfig = {}) {
     this.source = config.source ?? 'finplan-pro';
     this.category = (config.category ?? 'security-event') as AuditCategory;
-    this.maxEvents =
-      config.maxEvents ?? AUDIT_LOGGER_CONSTANTS.MAX_EVENTS;
+    this.maxEvents = config.maxEvents ?? AUDIT_LOGGER_CONSTANTS.MAX_EVENTS;
     this.genesisChainHead =
       config.genesisChainHead ??
       // Compute lazily — caller may override for snapshot restoration.
@@ -303,7 +303,7 @@ export class AuditLogger {
       actor: this.source ?? 'system',
       eventType: input.action,
       category: this.category ?? 'security-event',
-      severity,
+      severity: severity as AuditSeverity,
       payload,
       source: this.source ?? 'hephaestus',
     });
@@ -323,26 +323,18 @@ export class AuditLogger {
       throw new AuditLoggerError('source required', 'INVALID_SOURCE');
     }
     if (!isValidCategory(input.category)) {
-      throw new AuditLoggerError(
-        `unknown category: ${input.category}`,
-        'INVALID_CATEGORY'
-      );
+      throw new AuditLoggerError(`unknown category: ${input.category}`, 'INVALID_CATEGORY');
     }
     const severity: AuditSeverity = input.severity ?? 'info';
     if (!isValidSeverity(severity)) {
-      throw new AuditLoggerError(
-        `unknown severity: ${severity}`,
-        'INVALID_SEVERITY'
-      );
+      throw new AuditLoggerError(`unknown severity: ${severity}`, 'INVALID_SEVERITY');
     }
     const payload = input.payload ?? {};
     if (typeof payload !== 'object' || Array.isArray(payload)) {
       throw new AuditLoggerError('payload must be an object', 'INVALID_PAYLOAD');
     }
     const serialized = JSON.stringify(payload);
-    if (
-      serialized.length > AUDIT_LOGGER_CONSTANTS.MAX_PAYLOAD_BYTES
-    ) {
+    if (serialized.length > AUDIT_LOGGER_CONSTANTS.MAX_PAYLOAD_BYTES) {
       throw new AuditLoggerError(
         `payload too large: ${serialized.length} > ${AUDIT_LOGGER_CONSTANTS.MAX_PAYLOAD_BYTES}`,
         'PAYLOAD_TOO_LARGE'
@@ -362,7 +354,7 @@ export class AuditLogger {
       actor: input.actor,
       eventType: input.eventType,
       category: input.category,
-      severity,
+      severity: severity as AuditSeverity,
       payload: { ...payload },
       source: input.source,
       correlationId,
@@ -503,10 +495,7 @@ export class AuditLogger {
    * Replace the in-memory log with an export. Validates the chain head
    * before accepting. Throws on mismatch.
    */
-  async restore(snapshot: {
-    chainHead: string;
-    events: AuditEvent[];
-  }): Promise<void> {
+  async restore(snapshot: { chainHead: string; events: AuditEvent[] }): Promise<void> {
     if (!snapshot || typeof snapshot !== 'object') {
       throw new AuditLoggerError('snapshot required', 'INVALID_SNAPSHOT');
     }
@@ -521,17 +510,11 @@ export class AuditLogger {
     for (let i = 0; i < snapshot.events.length; i++) {
       const e = snapshot.events[i]!;
       if (e.prevChainHash !== prev) {
-        throw new AuditLoggerError(
-          `chain broken at index ${i}`,
-          'CHAIN_BROKEN'
-        );
+        throw new AuditLoggerError(`chain broken at index ${i}`, 'CHAIN_BROKEN');
       }
       const expected = await computeEventHash(e);
       if (expected !== e.eventHash) {
-        throw new AuditLoggerError(
-          `event ${i} hash mismatch`,
-          'CHAIN_BROKEN'
-        );
+        throw new AuditLoggerError(`event ${i} hash mismatch`, 'CHAIN_BROKEN');
       }
       prev = e.eventHash;
     }
@@ -574,16 +557,7 @@ function isValidCategory(c: unknown): c is AuditCategory {
 
 function isValidSeverity(s: unknown): s is AuditSeverity {
   if (typeof s !== 'string') return false;
-  const valid = [
-    'debug',
-    'info',
-    'notice',
-    'warning',
-    'error',
-    'critical',
-    'alert',
-    'emergency',
-  ];
+  const valid = ['debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'];
   return valid.indexOf(s) !== -1;
 }
 
