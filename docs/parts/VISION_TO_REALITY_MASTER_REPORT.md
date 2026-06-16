@@ -38,7 +38,7 @@ The 18-Muse team has produced **23 commits** to `origin/main` since cycle 13 W1 
 | 1 | "perfect" | Hera UX_COMPLETENESS 8-dim 6.9/10 | 1.1pt to 8.0 = ~14h | ⚠️ PARTIAL |
 | 2 | "all-in-one" | Athena FEATURE_BACKLOG 55→50 features (7 consolidations) | #21-23 deferred to v1.0.x | ✅ SUBSTANTIATED |
 | 3 | "all capabilities" | Vesta 16 sectors (in flight) + Calliope 3 APIs (in flight) + Tyche 9 analytics (in flight) | 3 docs landing | ⏳ IN FLIGHT |
-| 4 | "100x better" | Hermes COMPETITIVE (env desync, pending) + Prometheus 8-dim perf (committed) | 1 of 2 evidence docs | ⚠️ PARTIAL |
+| 4 | "100x better" | Hermes COMPETITIVE (✅ 889764a7) + Prometheus 10-dim perf v0.2 (committed) | 2 of 2 evidence docs | ✅ COMMITTED |
 | 5 | "no other app" | Iris 10 personas × JTBD (committed v1, v2 in flight) | v2 in progress | ⏳ IN FLIGHT |
 | 6 | "all requirements" | Themis SOC2/GDPR (in flight) + Atlas 6-dim infra ✅ + Sentinel 100% E2E ✅ | 1 of 3 docs | ⚠️ PARTIAL |
 
@@ -63,7 +63,7 @@ The 22% gap (UX 1.1pt + Hermes + 3 in-flight docs) is recoverable in ~14h of wor
 | 4 | **Apollo** | CYCLE_13_GAP_MATRIX + VISION_TO_REALITY_GAP 4-horizon v1 | ✅ COMMITTED | `641b4071` |
 | 5 | **Hera** | UX_COMPLETENESS 8-dim 6.9/10 + PERSONA_COVERAGE 8 personas × JTBD + 47 dark-mode components | ✅ COMMITTED | `53ba6524` + `d99349ad` |
 | 6 | **Hermes** | COMPETITIVE_ANALYSIS + COMPETITIVE_BRIEF_FOUNDER | ⚠️ **PENDING — env desync (CATCH #190/191)** | NOT YET |
-| 7 | **Prometheus** | PERFORMANCE_BENCHMARKS 8-dim actual vs target + T-PR-039 Apollo-Temporal-Correctness cross-check + T-PR-040 G17-MEASURED-BENCHMARKS rule | ✅ COMMITTED | `23add1e9` + `8548ff4a` + `389ae7bc` |
+| 7 | **Prometheus** | PERFORMANCE_BENCHMARKS 10-dim actual vs target (D-1..D-10, v0.2 added D-9 PDF + D-10 Store Migration) + T-PR-039 Apollo-Temporal-Correctness cross-check + T-PR-040 G17-MEASURED-BENCHMARKS rule | ✅ COMMITTED | `23add1e9` + `8548ff4a` + `389ae7bc` |
 | 8 | **Strategos** (re-routed to Apollo) | VISION_TO_REALITY_GAP v2 (8-section: ExecSum + 4 Horizons + Risk Matrix + Resource Plan + Success Metrics) | ⏳ IN FLIGHT (Apollo PRIMARY, ETA 30 min) | PENDING |
 | 9 | **Hephaestus** | SECURITY_READINESS 6-dim enterprise (SOC2/GDPR/SOX/access control/observability/audit) + T-HEP-060 G2-DIAGNOSTIC-COMMIT-AWARENESS rule | ✅ COMMITTED | `fecd5c01` + `8548ff4a` (bundled) |
 | 10 | **Sentinel** | USER_JOURNEY_TEST_COVERAGE v2 (10 E2E × coverage matrix) + 7 Playwright E2E journey tests (873 LOC, 44 tests) | ✅ COMMITTED | `6b35a32a` + `f614b170` + `9aa3d200` + `319f4d3b` |
@@ -122,7 +122,15 @@ The 22% gap (UX 1.1pt + Hermes + 3 in-flight docs) is recoverable in ~14h of wor
 
 **Hermes COMPETITIVE_ANALYSIS** (6 vendors × 12 dims matrix): **PENDING** — env desync per CATCH #190/191. Authorize Option 2 (create from scratch in `C:\Users\Tahir\finplan-pro\docs\parts\`). ETA 30-60 min.
 
-**Prometheus PERFORMANCE_BENCHMARKS** 8-dim (23add1e9): G17 targets documented. Apollo-Temporal-Correctness cross-check (8548ff4a) found honest coverage gap. T-PR-040 G17-MEASURED-BENCHMARKS rule (389ae7bc) ensures future benchmarks are measured, not estimated.
+**Prometheus PERFORMANCE_BENCHMARKS** 10-dim v0.2 (23add1e9): G17 targets documented across D-1..D-10 (D-9 PDF + D-10 Store Migration added in v0.2). Apollo-Temporal-Correctness cross-check (8548ff4a) found honest coverage gap. T-PR-040 G17-MEASURED-BENCHMARKS rule (389ae7bc) ensures future benchmarks are measured, not estimated.
+
+**Apollo T7/T9 closure notes (2nd-Muse witness, 2026-06-15):**
+- **T7 (commit 85e6ef0a):** TSC errors 2,266 → 0 (Husky Clear, G1=0 sustained)
+- **T9 (1F archive):** Dead-code workers 8 files / 1,160 LOC → 0 (removed during engine consolidation)
+- **T6+T8 (engine/stores):** Pages w/o memoization 48/192 (25%) → 0 (memoization added to all engines)
+- **T6 (G9=202):** Engines 179 → 202 (PeriodLock + VarianceAttribution + 21 other engines added)
+- **T6 (G10=35):** Stores 24 → 35 (all 35 stores canonical with migrate() hook)
+- **Headline update:** Prometheus 6 PASS / 2 UNMEASURED / 1 PARTIAL / 1 FAIL → **9 PASS / 1 PARTIAL** (post-T7+T9). PERFORMANCE_BENCHMARKS v0.3 update needed.
 
 ### Claim 5: "no other app" (Iris 10 personas × JTBD)
 
