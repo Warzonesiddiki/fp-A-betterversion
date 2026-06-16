@@ -212,9 +212,19 @@ export function isValidCspSource(source: string): boolean {
   if (!source || source.length === 0 || source.length > 256) {
     return false;
   }
-  // Allowed keyword sources
-  const keywords = ['self', 'none', 'unsafe-inline', 'unsafe-eval', 'strict-dynamic'];
-  if (keywords.includes(source)) {
+  // Allowed keyword sources (CSP3 spec — keywords may be unquoted or single-quoted)
+  const keywords = [
+    'self',
+    'none',
+    'unsafe-inline',
+    'unsafe-eval',
+    'strict-dynamic',
+    'report-sample',
+    'wasm-unsafe-eval',
+  ];
+  // Strip surrounding single quotes for comparison (e.g. "'self'" -> "self")
+  const stripped = source.replace(/^'(.*)'$/, '$1');
+  if (keywords.includes(stripped) || keywords.includes(source)) {
     return true;
   }
   // URI schemes
@@ -318,11 +328,11 @@ export class SecurityHeaders {
     }
 
     const baseCsp: CspDirectives = {
-      defaultSrc: ['self'],
-      objectSrc: ['none'],
-      baseUri: ['self'],
-      formAction: ['self'],
-      frameAncestors: ['none'],
+      defaultSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"],
       upgradeInsecureRequests: true,
     };
 
@@ -358,9 +368,9 @@ export class SecurityHeaders {
       return {
         csp: {
           ...baseCsp,
-          scriptSrc: ['self', 'unsafe-inline'], // NOTE: nonce preferred; review for v1.1
-          styleSrc: ['self', 'unsafe-inline'],
-          imgSrc: ['self', 'data:', 'https:'],
+          scriptSrc: ["'self'", "'unsafe-inline'"], // NOTE: nonce preferred; review for v1.1
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
           fontSrc: ['self', 'data:'],
           connectSrc: ['self', 'wss:'],
           workerSrc: ['self'],
@@ -385,8 +395,8 @@ export class SecurityHeaders {
     return {
       csp: {
         ...baseCsp,
-        scriptSrc: ['self', 'unsafe-inline', 'unsafe-eval'],
-        styleSrc: ['self', 'unsafe-inline'],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ['self', 'data:', 'https:', 'http:'],
         connectSrc: ['self', 'wss:', 'ws:', 'http:', 'https:'],
         workerSrc: ['self', 'blob:'],

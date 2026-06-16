@@ -109,7 +109,7 @@ export class RestApiClient {
         // warning so dev/test using http://localhost does not crash, but
         // production misconfigurations are visible in the console.
         if (
-          this.client.defaults.baseURL &&
+          this.client.defaults?.baseURL &&
           !String(this.client.defaults.baseURL).startsWith('https://')
         ) {
           console.warn(

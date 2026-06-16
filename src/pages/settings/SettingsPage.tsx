@@ -126,8 +126,14 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-300">Base Currency</label>
+                    <label
+                      htmlFor="settings-base-currency"
+                      className="text-sm font-bold text-slate-300"
+                    >
+                      Base Currency
+                    </label>
                     <select
+                      id="settings-base-currency"
                       aria-describedby="settings-base-currency-help"
                       value={organization.baseCurrency}
                       onChange={(e) => updateOrganization({ baseCurrency: e.target.value })}
@@ -143,10 +149,14 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-300">
+                    <label
+                      htmlFor="settings-fiscal-year-start"
+                      className="text-sm font-bold text-slate-300"
+                    >
                       Fiscal Year Start Month
                     </label>
                     <select
+                      id="settings-fiscal-year-start"
                       aria-describedby="settings-fiscal-year-start-help"
                       value={organization.fiscalYearStart.split('-')[1]}
                       className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
@@ -161,8 +171,14 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-300">Calendar Type</label>
+                    <label
+                      htmlFor="settings-calendar-type"
+                      className="text-sm font-bold text-slate-300"
+                    >
+                      Calendar Type
+                    </label>
                     <select
+                      id="settings-calendar-type"
                       value={organization.calendarType}
                       className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
                     >

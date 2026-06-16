@@ -118,9 +118,9 @@ export function CommandPalette({
       onKeyDown={(e) => {
         if (e.key === 'Escape') onClose();
       }}
-      role="button"
-      tabIndex={0}
-      aria-label="Close command palette"
+      role="presentation"
+      tabIndex={-1}
+      aria-hidden="true"
     >
       <div
         className="w-full max-w-lg rounded-lg shadow-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] overflow-hidden animate-scale-in"
@@ -165,7 +165,12 @@ export function CommandPalette({
           className="max-h-80 overflow-y-auto p-2"
         >
           {filteredItems.length === 0 ? (
-            <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+            <div
+              className="text-center py-8"
+              style={{ color: 'var(--text-secondary)' }}
+              role="option"
+              aria-hidden="true"
+            >
               <p className="text-sm">{t('commands.notFound')}</p>
             </div>
           ) : (
