@@ -35,10 +35,10 @@ function SessionAnnounceHarness({
 }
 
 describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack', () => {
-  let announcer: HTMLElement | null;
-
   beforeEach(() => {
-    announcer = document.getElementById('a11y-session-announcer');
+    // The announcer element is created by SessionAnnounceHarness inside each test
+    // when it renders. We deliberately do NOT look it up in beforeEach (it would
+    // be null since the harness hasn't mounted yet). Each test re-queries after render.
   });
 
   afterEach(() => {
@@ -64,9 +64,11 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
 
     test.each(events)('event "%s" announces within 1 second', async (event) => {
       render(<SessionAnnounceHarness event={event} />);
+      // Re-look up the announcer after render (it didn't exist in beforeEach)
+      const announcerEl = document.getElementById('a11y-session-announcer');
       await waitFor(
         () => {
-          expect(announcer?.textContent).toBe(expectedMessages[event]);
+          expect(announcerEl?.textContent).toBe(expectedMessages[event]);
         },
         { timeout: 1000 }
       );
@@ -87,8 +89,9 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
         document,
         new CustomEvent('sessionid-rotated', { detail: { sessionId: 'sess_NEW' } })
       );
-      // Announcer should now reflect rotated state
-      expect(announcer?.textContent).toContain('Session renewed');
+      // Announcer should now reflect rotated state (re-look up after render)
+      const announcerEl = document.getElementById('a11y-session-announcer');
+      expect(announcerEl?.textContent).toContain('Session renewed');
     });
   });
 
