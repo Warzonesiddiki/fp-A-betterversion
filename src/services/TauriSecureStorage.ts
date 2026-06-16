@@ -75,12 +75,7 @@ export const TAURI_SECURE_STORAGE_CONSTANTS = {
   /** Audit event category. */
   AUDIT_CATEGORY: 'data-modification' as const,
   /** Reserved account names (cannot be used as user accounts). */
-  RESERVED_ACCOUNTS: [
-    '__lockout__',
-    '__attempts__',
-    '__metadata__',
-    '__version__',
-  ] as const,
+  RESERVED_ACCOUNTS: ['__lockout__', '__attempts__', '__metadata__', '__version__'] as const,
 } as const;
 
 export type SecureStorageReason =
@@ -93,7 +88,14 @@ export type SecureStorageReason =
   | 'backend-error'
   | 'concurrent-modification';
 
-export type SecureStorageOperation = 'store' | 'retrieve' | 'delete' | 'exists' | 'list' | 'lock' | 'unlock';
+export type SecureStorageOperation =
+  | 'store'
+  | 'retrieve'
+  | 'delete'
+  | 'exists'
+  | 'list'
+  | 'lock'
+  | 'unlock';
 
 export interface SecureStorageResult<T> {
   ok: boolean;
@@ -139,7 +141,7 @@ export function validateAccount(account: string): { ok: boolean; reason: SecureS
   for (let i = 0; i < account.length; i += 1) {
     const c = account.charCodeAt(i);
     const valid =
-      (c >= 0x21 && c <= 0x7e) || c === 0x5f /* _ */ || c === 0x2d /* - */ || c === 0x2e /* . */;
+      (c >= 0x21 && c <= 0x7e) || c === 0x5f /* _ */ || c === 0x2d /* - */ || c === 0x2e; /* . */
     if (!valid) {
       return { ok: false, reason: 'invalid-format' };
     }
@@ -190,7 +192,10 @@ export class TauriSecureStorage {
     }
     if (this.attempts >= TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS) {
       // Check if lockout has expired.
-      if (this.unlockedAt + TAURI_SECURE_STORAGE_CONSTANTS.LOCKOUT_DURATION_SECONDS * 1000 > this.now()) {
+      if (
+        this.unlockedAt + TAURI_SECURE_STORAGE_CONSTANTS.LOCKOUT_DURATION_SECONDS * 1000 >
+        this.now()
+      ) {
         return this.buildResult('unlock', '__unlock__', false, 'lockout', 0, 0);
       }
       this.attempts = 0;
@@ -206,10 +211,13 @@ export class TauriSecureStorage {
       if (this.attempts >= TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS) {
         this.unlockedAt = this.now();
       }
-      const remaining = Math.max(0, TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS - this.attempts);
+      const remaining = Math.max(
+        0,
+        TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS - this.attempts
+      );
       const event = this.buildResult('unlock', '__unlock__', false, 'backend-error', 0, 0);
       event.auditEvent.attemptsRemaining = remaining;
-      return event as unknown as TauriSecureStorageResult<true>;
+      return event as unknown as SecureStorageResult<true>;
     }
   }
 
@@ -244,7 +252,10 @@ export class TauriSecureStorage {
     if (bytes.byteLength > TAURI_SECURE_STORAGE_CONSTANTS.MAX_SECRET_BYTES) {
       return this.buildResult('store', account, false, 'quota-exceeded', 0, bytes.byteLength);
     }
-    if (this.accounts.size >= TAURI_SECURE_STORAGE_CONSTANTS.MAX_ACCOUNTS && !this.accounts.has(account)) {
+    if (
+      this.accounts.size >= TAURI_SECURE_STORAGE_CONSTANTS.MAX_ACCOUNTS &&
+      !this.accounts.has(account)
+    ) {
       return this.buildResult('store', account, false, 'quota-exceeded', 0, bytes.byteLength);
     }
     const secretB64 = bytesToBase64(bytes);
@@ -335,9 +346,11 @@ export class TauriSecureStorage {
       const accounts = await this.tauri.invoke<string[]>('plugin:stronghold|list', {
         service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
       });
-      const filtered = accounts.filter(a => !(TAURI_SECURE_STORAGE_CONSTANTS.RESERVED_ACCOUNTS as readonly string[]).includes(a));
+      const filtered = accounts.filter(
+        (a) => !(TAURI_SECURE_STORAGE_CONSTANTS.RESERVED_ACCOUNTS as readonly string[]).includes(a)
+      );
       this.accounts.clear();
-      filtered.forEach(a => this.accounts.add(a));
+      filtered.forEach((a) => this.accounts.add(a));
       return this.buildResult('list', '__list__', true, 'ok', 0, 0, filtered);
     } catch (err) {
       return this.buildResult('list', '__list__', false, 'backend-error', 0, 0);
@@ -381,9 +394,10 @@ export class TauriSecureStorage {
         timestamp: this.now(),
         correlationId,
         bytesAffected,
-        attemptsRemaining: attemptsRemainingOffset > 0
-          ? attemptsRemainingOffset
-          : Math.max(0, TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS - this.attempts),
+        attemptsRemaining:
+          attemptsRemainingOffset > 0
+            ? attemptsRemainingOffset
+            : Math.max(0, TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS - this.attempts),
       },
     };
   }
@@ -428,7 +442,7 @@ function base64ToBytes(b64: string): Uint8Array {
 
 function isNotFoundError(err: unknown): boolean {
   if (!err) return false;
-  const msg = typeof err === 'string' ? err : (err instanceof Error ? err.message : String(err));
+  const msg = typeof err === 'string' ? err : err instanceof Error ? err.message : String(err);
   return /not[_-]?found|no[_-]?entry/i.test(msg);
 }
 
