@@ -40,6 +40,8 @@ import { ToastContainer } from '../../components/ui/ToastContainer';
 import { CommandPalette } from '../../components/ui/CommandPalette';
 import { DataTable } from '../../components/ui/DataTable';
 import { ContextMenu } from '../../components/ui/ContextMenu';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const withRouter = (ui: React.ReactNode) => (
   <MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>
@@ -262,8 +264,8 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
   // A11Y-P1-10 (Hera T-HE-021 + Artemis co-own): Q5.2 focus restore <50ms
   describe('Q5.2 Focus Restore <50ms (Temporal A11y)', () => {
     it('Modal close restores focus to trigger element (focus restore verified structurally)', () => {
-      const modalSource = readFileSync.readFileSync(
-        join.join(__dirname, '../../components/ui/Modal.tsx'),
+      const modalSource = readFileSync(
+        join(__dirname, '../../components/ui/Modal.tsx'),
         'utf-8'
       );
       expect(modalSource).toMatch(/previousFocusRef\.current\??\.focus\(\)/);
@@ -272,8 +274,8 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     });
 
     it('Modal focus-trap: Tab cycles within dialog (Q5.2 supporting requirement)', () => {
-      const modalSource = readFileSync.readFileSync(
-        join.join(__dirname, '../../components/ui/Modal.tsx'),
+      const modalSource = readFileSync(
+        join(__dirname, '../../components/ui/Modal.tsx'),
         'utf-8'
       );
       expect(modalSource).toMatch(/keydown/);
