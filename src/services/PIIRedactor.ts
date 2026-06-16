@@ -1,4 +1,4 @@
-﻿// PIIRedactor — Multi-strategy redaction of personally identifiable information
+// PIIRedactor — Multi-strategy redaction of personally identifiable information
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 13 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:
@@ -446,7 +446,7 @@ export class PIIRedactor {
       prevChainHash: this.chainHead,
     };
     const hash = computeEventHashSync(auditEvent, this.chainHead);
-    auditEvent.hash = hash;
+    auditEvent.eventHash = hash;
     this.chainHead = hash;
     this.events.push(auditEvent);
     if (this.events.length > this.maxEvents) {

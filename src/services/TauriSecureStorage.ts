@@ -336,7 +336,8 @@ export class TauriSecureStorage {
         service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
       });
       const filtered = accounts.filter(a => !(TAURI_SECURE_STORAGE_CONSTANTS.RESERVED_ACCOUNTS as readonly string[]).includes(a));
-      this.accounts = new Set(filtered);
+      this.accounts.clear();
+      filtered.forEach(a => this.accounts.add(a));
       return this.buildResult('list', '__list__', true, 'ok', 0, 0, filtered);
     } catch (err) {
       return this.buildResult('list', '__list__', false, 'backend-error', 0, 0);
