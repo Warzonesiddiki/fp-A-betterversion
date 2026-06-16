@@ -429,13 +429,14 @@ export default function DataImportPage() {
               <div>
                 <h4 className="text-sm font-medium mb-2">Column Mappings</h4>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm" aria-label="Data import preview">
+              <caption className="sr-only">Detailed GL data import preview</caption>
                     <thead>
                       <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                        <th className="pb-2 pr-4">Source Column</th>
-                        <th className="pb-2 pr-4">Target Field</th>
-                        <th className="pb-2 pr-4">Confidence</th>
-                        <th className="pb-2">Match Type</th>
+                        <th scope="col" className="pb-2 pr-4">Source Column</th>
+                        <th scope="col" className="pb-2 pr-4">Target Field</th>
+                        <th scope="col" className="pb-2 pr-4">Confidence</th>
+                        <th scope="col" className="pb-2">Match Type</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800">
@@ -750,19 +751,19 @@ export default function DataImportPage() {
                     className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
                     role="row"
                   >
-                    <th className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
                       Account Key
                     </th>
-                    <th className="pb-3 pr-4 text-right" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">
                       Expected (GL)
                     </th>
-                    <th className="pb-3 pr-4 text-right" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">
                       Actual (File)
                     </th>
-                    <th className="pb-3 pr-4 text-right" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">
                       Difference
                     </th>
-                    <th className="pb-3" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3" role="columnheader" scope="col">
                       Status
                     </th>
                   </tr>
@@ -866,19 +867,19 @@ export default function DataImportPage() {
                     className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
                     role="row"
                   >
-                    <th className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
                       File
                     </th>
-                    <th className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
                       Type
                     </th>
-                    <th className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
                       Rows
                     </th>
-                    <th className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
                       Status
                     </th>
-                    <th className="pb-3" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3" role="columnheader" scope="col">
                       Started
                     </th>
                   </tr>

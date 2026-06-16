@@ -189,15 +189,16 @@ export default function GLJournalsPage() {
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="GL journal entries">
+              <caption className="sr-only">Detailed GL gl journal entries</caption>
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th className="px-4 py-3 w-24">Date</th>
-                  <th className="px-4 py-3 w-20">Account</th>
-                  <th className="px-4 py-3">Description</th>
-                  <th className="px-4 py-3 text-right w-28">Debit</th>
-                  <th className="px-4 py-3 text-right w-28">Credit</th>
-                  <th className="px-4 py-3 w-24">Reference</th>
+                  <th scope="col" className="px-4 py-3 w-24">Date</th>
+                  <th scope="col" className="px-4 py-3 w-20">Account</th>
+                  <th scope="col" className="px-4 py-3">Description</th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">Debit</th>
+                  <th scope="col" className="px-4 py-3 text-right w-28">Credit</th>
+                  <th scope="col" className="px-4 py-3 w-24">Reference</th>
                 </tr>
               </thead>
               <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
