@@ -8,6 +8,7 @@ import { SankeyDiagram, type SankeyNode, type SankeyLink } from './SankeyDiagram
 import { ActivityFeed } from './ActivityFeed';
 import { ComboChart, type ComboChartDataPoint } from './ComboChart';
 import { DashboardGauge } from './GaugeChart';
+import { PersonaBadge } from '../persona/PersonaBadge';
 import { cn } from '@/utils/cn';
 
 export type DashboardType = 'cfo' | 'controller' | 'analyst';
@@ -246,6 +247,14 @@ export function DashboardTemplate({
           );
         })}
         <LiveRegion message={layoutAnnouncement} politeness="polite" />
+      </div>
+
+      <div className="px-1 pb-2">
+        <PersonaBadge
+          variant={activeLayout as any}
+          label={PERSONAS.find((p) => p.id === activeLayout)?.label || activeLayout}
+          size="sm"
+        />
       </div>
 
       {activeLayout === 'cfo' && (
