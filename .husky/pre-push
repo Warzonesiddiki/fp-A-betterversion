@@ -93,18 +93,28 @@ if [ -n "$unpushed_shas" ]; then
   fi
 fi
 
-# Gate 5b - NEVER-AGAIN RULE #55 v0.3 (E.2 DRIFT-REAL check) - Atlas 2026-06-16
-# Closes CATCH #197 (Stale-SHA-Drift, 4th CASCADE-TRAP variant codified in T-MN-048 v0.4 FINAL @ 2302c0f34).
-# A SHA is DRIFT-REAL if it exists in git history (passes Gate 5 v0.2 E.1 GHOST check)
-# but is no longer the canonical/HEAD version of the file it was supposed to reference.
-# Procedure: extract marked SHAs from unpushed commit messages, then for each SHA:
+# Gate 5b - NEVER-AGAIN RULE #55 v0.3 (E.2 DRIFT-REAL + F STALE-NUMBERING-DRIFT + G TASK-ID-UNIQUENESS check) - Atlas 2026-06-16
+# Closes 3 CATCH entries:
+#   CATCH #197 (Stale-SHA-Drift, 4th CASCADE-TRAP variant) -> Sub-class E.2
+#   CATCH #199 (Stale-Numbering-Drift)                    -> Sub-class F (numeric consistency)
+#   CATCH #198 (TASK-ID-COLLISION)                          -> Sub-class G (T-<Muse>-<N> uniqueness)
+# Taxonomy per T-MN-048 v0.5 RATIFIED @ 3547f51e.
+#
+# Sub-class E.2: a SHA is DRIFT-REAL if it exists in git history (passes Gate 5 v0.2 E.1 GHOST check)
+#                but is no longer the canonical/HEAD version of the file it was supposed to reference.
+# Sub-class F:   a .md file makes numerically inconsistent claims about the same metric
+#                (e.g., "0 PARTIAL" in headline but "PARTIAL stays" in body).
+# Sub-class G:   the same T-<MuseCode>-<NUMBER> prefix is used for files describing DIFFERENT topics.
+#
+# Procedure: extract marked SHAs from unpushed commit messages (E.2), then for each SHA:
 #   1. Find the files it touched (git show --name-only)
 #   2. Find the current HEAD of each file (git log -1 --format=%H -- <file>)
 #   3. If the cited SHA is an ancestor of the current HEAD but not the current HEAD itself, it is DRIFT-REAL.
+#   4. For each .md file in the diff, extract numeric claims (F) and check T-ID uniqueness (G).
 # v0.3 is ADVISORY (warn-only, not a hard push blocker) - v0.2 GHOST is the hard gate.
 # The verifier script is self-contained and exits 0 in both PASS and WARN cases.
 # Co-sign: Atlas (infra, RULE #55 coder) - binding commitment from ATLAS_COSIGN_CODIF_41_V0_1.md
-# (1b54c7a8d), Sub-class A 3-witness. Roadmap: T+3d 2026-06-19 EOD ship target.
-timeout 240 sh tools/verify-rule-41-e2.sh --verbose || { echo "E.2 verifier failed (or timed out at 240s). Push blocked."; exit 1; }
+# (1b54c7a8d), Sub-class A 3-witness. Ship target: T-3d 2026-06-19 EOD (Leader PICK URGENT CYCLE 15).
+timeout 240 sh tools/verify-rule-41-e2.sh --verbose || { echo "E.2/F/G verifier failed (or timed out at 240s). Push blocked."; exit 1; }
 
 echo "✅ All pre-push checks passed."
