@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Automated accessibility (a11y) regression tests for FinPlan Pro.
  *
  * This file is intentionally created by the Hera audit so the build can wire
@@ -13,10 +13,14 @@
  *
  * @see https://github.com/chaabi-dev/vitest-axe
  */
+import React from 'react';
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { axe } from 'vitest-axe';
 import { MemoryRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import i18n from 'i18next';
+import { ThemeProvider } from '../../context/ThemeContext';
 
 import LoginPage from '../../pages/auth/LoginPage';
 import RegisterPage from '../../pages/auth/RegisterPage';
@@ -39,6 +43,14 @@ import { ContextMenu } from '../../components/ui/ContextMenu';
 
 const withRouter = (ui: React.ReactNode) => (
   <MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>
+);
+
+const withAllProviders = (ui: React.ReactNode) => (
+  <I18nextProvider i18n={i18n}>
+    <ThemeProvider>
+      <MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>
+    </ThemeProvider>
+  </I18nextProvider>
 );
 
 describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
@@ -155,6 +167,8 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
       const items = [{ label: 'Cut', onClick: () => {} }];
       const { container } = render(<ContextMenu x={0} y={0} items={items} onClose={() => {}} />);
       const results = await axe(container);
+      expect(results.violations).toEqual([]);
+    });
   });
 
   // A11Y-P0-1 BLOCKER (Artemis + Hera co-own): WCAG 2.4.11 Focus Not Obscured
@@ -179,9 +193,22 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     }
 
     it('AppLayout focusable elements are not obscured by sticky/fixed author content', async () => {
+      Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        value: (query: string) => ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => true,
+        }),
+      });
       const AppLayoutMod = await import('../../components/layout/AppLayout');
       const AppLayout = AppLayoutMod.default;
-      const { container } = render(<AppLayout><button>test</button></AppLayout>);
+      const { container } = render(withAllProviders(<AppLayout><button>test</button></AppLayout>));
       const focusables = container.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
       );
@@ -215,18 +242,16 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     });
   });
 
-  // A11Y-P1-10 (Hera, A11Y-P0-1 co-own): Q5.2 Focus restore <50ms after modal/overlay close
-  describe('Q5.2 Temporal a11y -- focus restore <50ms after modal close', () => {
+  // A11Y-P1-10 (Hera T-HE-021 + Artemis co-own): Q5.2 focus restore <50ms
+  describe('Q5.2 Focus Restore <50ms (Temporal A11y)', () => {
     it('Modal close restores focus to trigger element (focus restore verified structurally)', () => {
-      // Q5.2 spec: <50ms. The Modal useEffect cleanup calls previousFocusRef.current?.focus()
-      // synchronously when isOpen transitions from true --> false.
       const modalSource = require('fs').readFileSync(
         require('path').join(__dirname, '../../components/ui/Modal.tsx'),
         'utf-8'
       );
-      expect(modalSource).toMatch(/previousFocusRef.current..focus..\)/);
-      expect(modalSource).toMatch(/previousFocusRef.current.s*=.s*document.activeElement/);
-      expect(modalSource).toMatch(/requestAnimationFrame.\(/);
+      expect(modalSource).toMatch(/previousFocusRef\.current\??\.focus\(\)/);
+      expect(modalSource).toMatch(/previousFocusRef\.current\s*=\s*document\.activeElement/);
+      expect(modalSource).toMatch(/requestAnimationFrame\(/);
     });
 
     it('Modal focus-trap: Tab cycles within dialog (Q5.2 supporting requirement)', () => {
