@@ -3,6 +3,22 @@
 // Provides AI-powered financial analysis via NVIDIA NIM API (OpenAI-compatible)
 // =============================================================================
 
+// SECURITY (Phase 7 audit finding, Hephaestus PATCH 2): NIM API keys MUST NOT
+// be embedded in production client bundles. In production builds, force the
+// use of a server-side proxy (e.g., /api/nim/*) — direct browser-to-NIM calls
+// leak the key to anyone who inspects the bundle. See SECURITY_READINESS.md
+// G7 v1.1 follow-up.
+if (
+  import.meta.env.PROD &&
+  (import.meta.env.VITE_NIM_API_KEY_1 || import.meta.env.VITE_NIM_API_KEY_2)
+) {
+  throw new Error(
+    '[SECURITY] NIM API keys are embedded in the production bundle. ' +
+      'Move NIM integration behind a server-side proxy. ' +
+      'See SECURITY_READINESS.md G7 v1.1 follow-up.'
+  );
+}
+
 const NIM_BASE_URL = import.meta.env.VITE_NIM_BASE_URL || 'https://integrate.api.nvidia.com/v1';
 const NIM_API_KEY_1 = import.meta.env.VITE_NIM_API_KEY_1 || '';
 const NIM_API_KEY_2 = import.meta.env.VITE_NIM_API_KEY_2 || '';
