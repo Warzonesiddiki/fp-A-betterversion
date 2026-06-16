@@ -261,6 +261,8 @@ export default function CSRDReportPage() {
             columns={columns}
             data={activeData as unknown as Record<string, unknown>[]}
             pageSize={10}
+            caption="ESRS metrics table"
+            ariaLabel="ESRS metrics data table for CSRD sustainability report"
           />
         </CardContent>
       </Card>

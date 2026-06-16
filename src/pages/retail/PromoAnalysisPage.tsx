@@ -369,6 +369,8 @@ export default function PromoAnalysisPage() {
             columns={columns}
             data={mockPromos as unknown as Record<string, unknown>[]}
             pageSize={10}
+            caption="Promotion performance table"
+            ariaLabel="Promotion performance data table for retail promo analysis"
           />
         </CardContent>
       </Card>

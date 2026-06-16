@@ -304,6 +304,8 @@ export default function FXExposurePage() {
             columns={columns}
             data={mockExposures as unknown as Record<string, unknown>[]}
             pageSize={10}
+            caption="Currency exposure detail table"
+            ariaLabel="Currency exposure detail data table for FX exposure"
           />
         </CardContent>
       </Card>

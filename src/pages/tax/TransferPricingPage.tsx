@@ -293,6 +293,8 @@ export default function TransferPricingPage() {
             columns={columns}
             data={filtered as unknown as Record<string, unknown>[]}
             pageSize={10}
+            caption="Intercompany transactions table"
+            ariaLabel="Intercompany transactions data table for transfer pricing"
           />
         </CardContent>
       </Card>
