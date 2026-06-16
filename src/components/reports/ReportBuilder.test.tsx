@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ReportBuilder } from './ReportBuilder';
 
@@ -253,5 +253,57 @@ describe('ReportBuilder', () => {
   it('renders add column button', () => {
     render(<ReportBuilder />);
     expect(screen.getByRole('button', { name: /add column/i })).toBeInTheDocument();
+  });
+
+  // [Hera] a11y: high-contrast mode toggle (PICK D)
+  describe('high-contrast mode', () => {
+    beforeEach(() => {
+      window.localStorage.removeItem('reportBuilder.highContrast');
+      delete document.documentElement.dataset.highContrast;
+    });
+
+    it('renders a high-contrast toggle button with aria-pressed=false initially', () => {
+      render(<ReportBuilder />);
+      const toggle = screen.getByTestId('high-contrast-toggle');
+      expect(toggle).toBeInTheDocument();
+      expect(toggle).toHaveAttribute('aria-pressed', 'false');
+      expect(toggle).toHaveAttribute('aria-label', 'Enable high contrast mode');
+    });
+
+    it('clicking the toggle flips aria-pressed and enables high-contrast', async () => {
+      const userMod = await import('@testing-library/user-event');
+      const u = userMod.default.setup();
+      render(<ReportBuilder />);
+      const toggle = screen.getByTestId('high-contrast-toggle');
+      await u.click(toggle);
+      expect(toggle).toHaveAttribute('aria-pressed', 'true');
+      expect(toggle).toHaveAttribute('aria-label', 'Disable high contrast mode');
+      expect(document.documentElement.dataset.highContrast).toBe('true');
+    });
+
+    it('high-contrast state is persisted in localStorage', async () => {
+      const userMod = await import('@testing-library/user-event');
+      const u = userMod.default.setup();
+      render(<ReportBuilder />);
+      const toggle = screen.getByTestId('high-contrast-toggle');
+      await u.click(toggle);
+      expect(window.localStorage.getItem('reportBuilder.highContrast')).toBe('1');
+      await u.click(toggle);
+      expect(window.localStorage.getItem('reportBuilder.highContrast')).toBeNull();
+    });
+
+    it('restores high-contrast state from localStorage on mount', () => {
+      window.localStorage.setItem('reportBuilder.highContrast', '1');
+      render(<ReportBuilder />);
+      const toggle = screen.getByTestId('high-contrast-toggle');
+      expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('toggle button is keyboard accessible (focusable)', () => {
+      render(<ReportBuilder />);
+      const toggle = screen.getByTestId('high-contrast-toggle');
+      toggle.focus();
+      expect(toggle).toHaveFocus();
+    });
   });
 });
