@@ -133,7 +133,7 @@ The full 55-feature inventory is in `FEATURE_BACKLOG.md` §2 (P0: 28 / P1: 18 / 
 | 6 | Data Export (PDF/PPT) | 3 | Mosaic (2) | Native Tauri shell; no server roundtrip |
 | 7 | Offline-first Desktop | 4 | None (3) | FinPlan Pro only offline-first competitor |
 | 8 | TCO (50% of Anaplan) | 4 | None | $80/user/mo vs Anaplan $300+/user/mo |
-| 9 | Sector Templates (15) | 3 | Adaptive (3) | Tied; faster setup (2-4w vs 12w) |
+| 9 | Sector Templates (16 in scope: 15 in registry + 1 spec-only Non-profit) | 3 | Adaptive (3) | Tied; faster setup (2-4w vs 12w). See `docs/sectors/SECTOR_DASHBOARD_COVERAGE.md` v0.2 (commit `427c9e2c0`) and Non-profit spec `docs/sectors/FORM_990_EXPORT.md` (commit `7d9c77d0f`) |
 | 10 | Real-time Co-edit (when shipped) | 3 | Cube, Pigment (3) | Tied; <50ms vs Cube 60ms vs Pigment 80ms |
 
 ## 8. Top 10 GAPS (competitors ahead)
@@ -195,7 +195,7 @@ The full 55-feature inventory is in `FEATURE_BACKLOG.md` §2 (P0: 28 / P1: 18 / 
 
 | Sprint | Theme | Stories | Effort (eng-d) | Owner |
 |---|---|---|---:|---|
-| Sprint 1 (W1-2) | P0 build + polish — Accounting | 8 stories | 28 + 26 = 54 | Apollo + Hermes + Hephaestus |
+| Sprint 1 (W1-2) | P0 build + polish — Accounting + Sector polish (16 → 100% coverage) | 8 stories | 28 + 26 = 54 | Apollo + Hermes + Hephaestus + Vesta |
 | Sprint 2 (W3-4) | P0 close + P1 Workflows | 8 stories | 28 + 23 = 51 | Apollo + Athena + Hephaestus |
 | Sprint 3 (W5-6) | P1 AR/AP + Inventory | 8 stories | 4 + 4 + 3 + 3 = 14 | Hera + Prometheus + Mnemosyne |
 | Sprint 4 (W7-8) | P1 Banking + Polish | 6 stories | 5 + 4 = 9 | Hephaestus + Hera |
@@ -279,11 +279,14 @@ The full 55-feature inventory is in `FEATURE_BACKLOG.md` §2 (P0: 28 / P1: 18 / 
 
 ## 14. NEVER-AGAIN rules applied
 
-- **CATCH #191 (PER-MUSE-COMMIT-MESSAGE):** This commit is single-Muse (Hermes). No bundling.
+- **CATCH #191 (PER-MUSE-COMMIT-MESSAGE):** Each commit is single-Muse (Hermes). No bundling.
 - **CATCH #193 (STALE-WORKING-TREE-AFTER-CASCADE):** 3-witness + 4-witness (git log + show --stat + wc -l + status) used to verify file state pre-commit.
 - **CATCH #189 (PRE-DISPATCH-FILE-EXISTENCE-CHECK):** Verified PART_124 didn't exist before creating (findstr returned empty).
+- **CATCH #194 (CASCADE-HOLD-ATTRIBUTION-RACE):** Cross-checked `git show --name-only HEAD` post-commit to confirm Hermes attribution. Will continue to audit.
+- **CATCH #195 (CASCADE-HOLD-BILATERAL-ATTRIBUTION-RACE):** Same audit applied to bilateral bundles; Hermes files must have Hermes-attributed commit subject.
 - **D-002 (verify before commit):** Every parity score cited to source file (FEATURE_BACKLOG / COMPETITIVE_ANALYSIS).
 - **D-009 (verify file existence):** Confirmed files exist in working tree before commit.
+- **D-011 (don't claim work that isn't done):** 2-Witness check that v0.1 was at 9c074a608 before v0.2 started.
 
 ## 15. Maintenance
 
@@ -296,4 +299,8 @@ The full 55-feature matrix is in `FEATURE_BACKLOG.md`; this Part is the engineer
 
 ## 16. Changelog
 
-- v0.1 (2026-06-15, Hermes FINAL LAP): Initial 30×6 parity matrix, 10 wins, 10 gaps, 4-sprint plan, 5 build-ready specs. 4-ICP pre-build sign-off pending.
+- v0.1 (2026-06-15, Hermes FINAL LAP): Initial 30×6 parity matrix, 10 wins, 10 gaps, 4-sprint plan, 5 build-ready specs. Commit 9c074a608. Pushed to origin/main.
+- v0.2 (2026-06-15, Hermes FINAL LAP+): Incorporated Vesta cross-witness amendments 531aca2c (F3 LOW + F4 MEDIUM):
+  - §7 row #9 — "Sector Templates (15)" → "(16 in scope: 15 in registry + 1 spec-only Non-profit)" with cross-ref to SECTOR_DASHBOARD_COVERAGE.md v0.2 (427c9e2c0) and FORM_990_EXPORT.md (7d9c77d0f).
+  - §10 Sprint 1 owner column — added "Vesta" for sector-template polish (16 → 100% coverage).
+  - §14 — added CATCH #194, #195, D-011 to NEVER-AGAIN rules.
