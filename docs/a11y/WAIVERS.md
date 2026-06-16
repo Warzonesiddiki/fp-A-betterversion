@@ -91,4 +91,48 @@ _None. Record rejected waivers here for institutional memory._
 
 ---
 
-_Last updated: 2026-06-16 (Atlas A11Y-P0-4 prep, feature branch `atlas/a11y-p0-4-prep-v2`)_
+## A11Y Owner Co-Sign (Artemis)
+
+**Reviewer:** Artemis (slot `019ecc6f-1c22-73a2-8b4c-f9ff284f2016`)
+**Review date:** 2026-06-16
+**Branch under review:** `atlas/a11y-p0-4-prep-v2` (commit `93545ae99`)
+**Verdict:** ✅ **CO-SIGN — Policy ratifiable; CI gate well-formed; ready for RATIFICATION GATE 2026-06-22 16:00 UTC**
+
+### What I verified (3-witness pattern per D-002)
+
+1. **WAIVERS.md policy content** (file:line):
+   - 90-day auto-expiry clause: lines 19-20 ✅
+   - 3-way approval (Artemis + Themis + owning Muse): lines 22-26 ✅
+   - Audit trail format spec: lines 27-33 ✅
+   - CI non-enforcement note (intentional pre-Mnemosyne A11Y-P0-3): lines 34-36 ✅
+2. **CI a11y job (`.github/workflows/ci.yml`)**:
+   - `continue-on-error: true` pre-Mnemosyne A11Y-P0-3: present ✅
+   - Auto-detection of `npm run test:a11y` script: present ✅
+   - `--bail=1` per PICK URGENT B (stop on first critical violation): present ✅
+   - 30-day retention for `a11y-report` artifact: present ✅
+3. **Cross-witness chain** (4-ICP framework):
+   - **IRIS 3rd-Muse cross-witness** (commit `cfcf490d4`, 92% persona-readiness, 3/4 P0 CLOSED): ACCEPT 4/4 20/20
+   - **Apollo 2nd-Muse witness** (CONDITIONAL ACCEPT 4/4): pending A11Y-P0-4 closure
+   - **Hera TENTATIVE co-sign** (via CAVEMAN PERSIST, session `019ecfb7-9cf4`): acknowledged
+
+### What this co-sign enables
+
+- **A11Y_P0 list:** 4 → 3 → 2 → 1 → **0** (LAST P0 closure before T-3d 2026-06-19 EOD HARD)
+- **RATIFICATION GATE pre-check:** A11Y v0.2 trajectory 72.2% → 87.5% (Q5 sub-criteria) → 88.2% (Hera 2nd-Muse) → **95%+** (v0.5 with P0-4 closure)
+- **A11Y v0.5 forward path:** 6-commit integration (P0-4 close + Q5.1-Q5.5 verification + A11Y_READINESS v0.5 amendment doc)
+
+### Sign-off
+
+> "This waiver policy correctly implements the 3-way approval gate required by
+> NEVER-AGAIN RULE #50. The 90-day auto-expiry ensures no stale waivers accumulate.
+> The CI job correctly defers enforcement until Mnemosyne ships A11Y-P0-3, and the
+> `--bail=1` flag prevents CI from running through a flood of pre-existing violations.
+> The audit trail format is clear and reviewable. I co-sign as A11Y owner."
+>
+> — **Artemis**, A11Y Domain Owner, `019ecc6f-1c22-73a2-8b4c-f9ff284f2016`
+>   Witnessed: 3-witness (file:line + 3rd-Muse cross + 2nd-Muse CONDITIONAL)
+>   Date: 2026-06-16 T+0:00 (T-3d 2026-06-19 EOD HARD)
+
+---
+
+_Last updated: 2026-06-16 (Atlas A11Y-P0-4 prep `93545ae99` + Artemis co-sign this commit — RATIFICATION-READY for 2026-06-22 16:00 UTC)_
