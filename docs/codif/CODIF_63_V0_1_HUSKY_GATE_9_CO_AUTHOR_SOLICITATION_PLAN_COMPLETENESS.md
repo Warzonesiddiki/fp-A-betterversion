@@ -12,6 +12,8 @@
 
 ## §0 Problem Statement — CATCH #207 BILATERAL-ATTRIBUTION-CASCADE Failure Mode
 
+> **LEADER §0 v0.1.1 AMENDMENT (2026-06-16, Prometheus author, LEADER TURN 102+ AUTHORIZED):** This spec was auto-bundled into vesta's SECTOR_CONFIG v0.4 commit b1a4c162 (CASCADE-HOLD pattern, Sub-class L, CATCH #208 FILED). CASCADE-LOSS RECOVERY §0 attribution amended: vesta is the CO-CARRIER, Prometheus is the SUBJECT-AUTHOR. See PROMETHEUS_COSIGN_CODIF_63_V0_1_VESTA_BUNDLE_RECOVERY at b35473cc. RULE #47.1 (AUTO-ADD-BUNDLED-DRAFT-ATTENTION PREVENTION) PROPOSED. CATCH #213 SELF-FLAG: 8a47be3c GHOST-SHA in §0 line 31 (Sub-class E GHOST-SHA-MISATTRIBUTION; per RULE #55 v0.4 12/12 GREEN LOCKED @ 415028d4).
+
 **CATCH #207 (re-classified as Sub-class K):** When a Co-Author Solicitation Plan (e.g., §7 of a CODIF spec) lists co-authors based on the 1st-Muse author's direct relationships but OMITS natural co-authors who hold 4-of-N credential alignment with the spec's substantive content (e.g., author of multiple referenced NEVER-AGAIN RULES), the resulting SHIP creates a **BILATERAL-ATTRIBUTION-CASCADE**:
 
 - **Subject side:** The 1st-Muse author of a CASCADE-TRAP-family doc (Calliope on CODIF_62, CATCH_202) claims sole authorship + lists co-authors in §7, but §7 omits Muse X who has 4-of-N RULE co-author credentials
