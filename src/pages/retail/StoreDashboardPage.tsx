@@ -235,7 +235,7 @@ export default function StoreDashboardPage() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-          <DataTable columns={columns} data={data.storeData} />
+          <DataTable columns={columns} data={data.storeData} caption="Revenue by store table" ariaLabel="Revenue by store data table for retail dashboard" />
         </>
       )}
     </div>

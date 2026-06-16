@@ -294,7 +294,7 @@ export default function FacilityManagementPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={facilityOpEx} />
+          <DataTable columns={columns} data={facilityOpEx} caption="Site operational ledger table" ariaLabel="Site operational ledger data table for facility management" />
         </CardContent>
       </Card>
     </div>

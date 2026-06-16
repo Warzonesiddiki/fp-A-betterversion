@@ -382,7 +382,7 @@ export default function InventoryPage() {
           <CardTitle>Inventory Items</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable data={mockInventory} columns={itemColumns} pageSize={8} />
+          <DataTable data={mockInventory} columns={itemColumns} pageSize={8} caption="Inventory items table" ariaLabel="Inventory items data table for manufacturing inventory" />
         </CardContent>
       </Card>
     </div>

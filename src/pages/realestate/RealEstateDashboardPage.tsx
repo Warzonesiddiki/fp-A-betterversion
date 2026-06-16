@@ -342,7 +342,7 @@ export default function RealEstateDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={topAssets} />
+          <DataTable columns={columns} data={topAssets} caption="Top performing assets table" ariaLabel="Top performing assets data table for real estate dashboard" />
         </CardContent>
       </Card>
     </div>

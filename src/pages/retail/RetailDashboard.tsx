@@ -243,7 +243,7 @@ export default function RetailDashboard() {
         </CardHeader>
         <CardContent>
           <div aria-label="Store performance table">
-            <DataTable columns={columns} data={storeStats} />
+            <DataTable columns={columns} data={storeStats} caption="Store performance rankings table" ariaLabel="Store performance rankings data table for retail dashboard" />
           </div>
         </CardContent>
       </Card>
