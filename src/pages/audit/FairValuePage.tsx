@@ -235,25 +235,26 @@ export default function FairValuePage() {
           <CardTitle className="text-sm">Fair Value Schedule</CardTitle>
         </CardHeader>
         <CardContent>
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" aria-label="Fair value measurements by level">
+              <caption className="sr-only">Fair value measurements showing asset classification, fair value hierarchy level, book value, and unrealized gain or loss</caption>
             <thead>
               <tr className="border-b border-[var(--border-subtle)]">
-                <th className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Asset
                 </th>
-                <th className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Level
                 </th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Book Value
                 </th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Fair Value
                 </th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Gain/Loss
                 </th>
-                <th className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-center px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Method
                 </th>
               </tr>

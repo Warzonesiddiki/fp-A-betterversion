@@ -107,15 +107,16 @@ export default function ForecastListPage() {
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Forecast scenarios list">
+              <caption className="sr-only">Forecast scenarios showing name, type, horizon, base scenario, and status</caption>
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3 w-20">Type</th>
-                  <th className="px-4 py-3 w-20">Status</th>
-                  <th className="px-4 py-3 w-24">Confidence</th>
-                  <th className="px-4 py-3 w-24">Updated</th>
-                  <th className="px-4 py-3 w-20">Actions</th>
+                  <th scope="col" className="px-4 py-3">Name</th>
+                  <th scope="col" className="px-4 py-3 w-20">Type</th>
+                  <th scope="col" className="px-4 py-3 w-20">Status</th>
+                  <th scope="col" className="px-4 py-3 w-24">Confidence</th>
+                  <th scope="col" className="px-4 py-3 w-24">Updated</th>
+                  <th scope="col" className="px-4 py-3 w-20">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
