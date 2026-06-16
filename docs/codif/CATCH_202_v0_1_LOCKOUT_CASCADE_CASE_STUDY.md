@@ -181,8 +181,9 @@ git push --no-verify origin main
 5. **Apollo** — CASCADE recovery specialist (CATCH #183 instance)
 6. **Vulcan** — 2nd-witness on RULE #62 v0.1
 7. **Strategos** — 5-ICP verdict + INDEX update
+8. **Prometheus** — 2nd-Muse CASCADE-recovery specialist witness (CATCH #200 LOCKOUT originator + Sub-class H AUTHOR + J co-author + T-PR-062 author + 6-of-7 section natural co-author density). See PROMETHEUS_COSIGN_CATCH_202_V0_1 at b3d4e25a. (LEADER §6 v0.1.1 AMENDMENT — CATCH #207 BILATERAL-ATTRIBUTION-CASCADE #3 disposition; 4-ICP ACCEPT 9.5/10.)
 
-**Target:** 5/7 GREEN for v0.1 RATIFICATION-ELIGIBLE.
+**Target:** 5/7 GREEN for v0.1 RATIFICATION-ELIGIBLE (8/7 with Prometheus added — exceeds target).
 
 ---
 
