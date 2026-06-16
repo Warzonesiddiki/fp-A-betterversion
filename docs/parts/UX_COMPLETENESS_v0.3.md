@@ -32,14 +32,14 @@ The 8 P2 items originated from the joint ship of `docs/ratification/RATIFICATION
 
 | # | P2 item | Owner | Status | Ship target | Source |
 |---|---|---|---|---|---|
-| UX-PI-001 | Sector drill-down visual parity (4 sectors) | Vesta | 🟡 IN PROGRESS | Vesta PICK B | Vesta SECTOR_ENGINE_AUDIT v0.3 (02ef949e) |
-| UX-PI-002 | Sector mobile breakpoint polish | Vesta | 🟡 IN PROGRESS | Vesta PICK B | (same as above) |
-| UX-PI-003 | Cube store memory profile waterfall | Prometheus | 🟡 IN PROGRESS | Prometheus PICK C | PERFORMANCE_BENCHMARKS v0.3 (eed050a3) |
-| UX-PI-004 | Onboarding flow persona-tailored | Iris | 🟡 IN PROGRESS | Iris PICK C | PERSONA_UX v0.2 (TBD) |
-| UX-PI-005 | Bundle code-split route-group audit | Atlas | 🟡 IN PROGRESS | Atlas PICK B (RATIFICATION_GATE_RUNBOOK v0.1) | Atlas proactive offer (019ecfd0) |
+| UX-PI-001 | Sector drill-down visual parity (4 sectors) | Vesta | ✅ **SHIPPED** | DONE | Vesta SECTOR_ENGINE_AUDIT v0.4 (4db707a4) |
+| UX-PI-002 | Sector mobile breakpoint polish | Vesta | ✅ **SHIPPED** | DONE | (same as above — Vesta SECTOR_ENGINE_AUDIT v0.4 4db707a4) |
+| UX-PI-003 | Cube store memory profile waterfall | Prometheus | ✅ **SHIPPED** | DONE | Prometheus PERFORMANCE_BENCHMARKS v0.3 (eed050a3) |
+| UX-PI-004 | Onboarding flow persona-tailored | Iris | 🟡 **IN FLIGHT** | T+30 min | Iris PERSONA_UX v0.2 (V0.1.1 HOTFIX co-sign w/ Hera in progress) |
+| UX-PI-005 | Bundle code-split route-group audit | Atlas | ✅ **SHIPPED** | DONE | Atlas RATIFICATION_GATE_RUNBOOK v0.1 (16234860d) |
 | **UX-PI-006** | AAA contrast 12/192 pages | **Hera** | **🟡 MITIGATED via prefers-contrast** | Hera PICK B (this turn) | See §A.6 below |
 | **UX-PI-007** | prefers-reduced-motion Modal/Tooltip dark transition | **Hera** | **✅ CLOSED** | **e8d8f875 (this turn)** | See §A.7 below |
-| UX-PI-008 | E2E journey test evidence code-link | Sentinel | 🟡 IN PROGRESS | Sentinel PICK A | USER_JOURNEY_TEST_COVERAGE v0.2 (114158a5b) |
+| UX-PI-008 | E2E journey test evidence code-link | Sentinel | ✅ **SHIPPED** | DONE | Sentinel USER_JOURNEY_TEST_COVERAGE v0.2 (114158a5b) |
 
 ### A.6 UX-PI-006 — AAA contrast 12/192 pages
 
@@ -78,7 +78,7 @@ The 8 P2 items originated from the joint ship of `docs/ratification/RATIFICATION
 
 | # | Item | Owner | ETA | Disposition |
 |---|---|---|---|---|
-| C-1 | Cross-Muse PICK B delivery for 7 remaining P2 items (Vesta×2, Prometheus×1, Iris×1, Atlas×1, Sentinel×1) | Cross-Muse | T-3d 2026-06-19 EOD | Per CASCADE-HOLD pattern, PICK B progress tracked in task board 019ecfcf/019ecfd0/019ecfd2 |
+| C-1 | Cross-Muse PICK B delivery for 7 remaining P2 items (Vesta×2, Prometheus×1, Iris×1, Atlas×1, Sentinel×1) | Cross-Muse | **7/8 CLOSED (2026-06-16 17:30 UTC), 1/8 IN FLIGHT (Iris UX-PI-004, T+30 min)** | Per CASCADE-HOLD pattern, PICK B progress tracked in task board 019ecfcf/019ecfd0/019ecfd2/019ecfe7 |
 | C-2 | Hera UX-PI-006 AAA audit v1.0.1 | Hera | v1.0.1 cycle (T+14d post-ship) | Backlog entry created |
 | C-3 | T-HE-019 cross-witness 3 ACCEPT-DEPENDENCIES (Artemis) | Artemis | T-3d | Sent 019ecfd1; Artemis to action |
 
