@@ -110,32 +110,53 @@ export default function ForecastBuilderPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <main className="p-6 space-y-6" aria-labelledby="forecast-builder-heading">
       {exportError && (
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
+        <div
+          className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400"
+          role="alert"
+          aria-live="assertive"
+        >
           {exportError}
         </div>
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Forecast Builder</h1>
+          <h1 id="forecast-builder-heading" className="text-2xl font-bold">Forecast Builder</h1>
           <p className="text-sm text-slate-400 mt-1">
             Driver-based forecasting with confidence intervals
           </p>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF}>
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleExportPDF}
+            aria-label="Export forecast as PDF"
+            data-testid="export-pdf"
+          >
+            <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             PDF
           </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel}>
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleExportExcel}
+            aria-label="Export forecast as Excel"
+            data-testid="export-excel"
+          >
+            <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             Excel
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div
+        className="grid grid-cols-4 gap-4"
+        role="region"
+        aria-label="Forecast key performance indicators"
+        data-testid="forecast-kpis"
+      >
         <KPIValue label="Forecast Total" value={formatCurrency(totalForecast)} />
         <KPIValue label="Confidence" value={`${avgConfidence}%`} trend="up" />
         <KPIValue
@@ -160,8 +181,11 @@ export default function ForecastBuilderPage() {
             size="sm"
             variant={method === key ? 'default' : 'ghost'}
             onClick={() => setMethod(key as typeof method)}
+            aria-pressed={method === key}
+            aria-label={`${label} forecast method${method === key ? ' (selected)' : ''}`}
+            data-testid={`method-${key}`}
           >
-            <Icon className="h-3.5 w-3.5 mr-1.5" />
+            <Icon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             {label}
           </Button>
         ))}
@@ -173,6 +197,7 @@ export default function ForecastBuilderPage() {
           <CardTitle>Revenue Forecast with Confidence Bands</CardTitle>
         </CardHeader>
         <CardContent>
+          <div role="img" aria-label="Revenue forecast area chart from January to December. Actual values shown for Jan to Jun. Forecast with high and low confidence bands shown for Jul to Dec.">
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={historicalData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -202,6 +227,7 @@ export default function ForecastBuilderPage() {
               />
             </AreaChart>
           </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
@@ -211,20 +237,27 @@ export default function ForecastBuilderPage() {
             <CardTitle>Forecast Accuracy</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <dl
+              className="space-y-3"
+              aria-label="Forecast accuracy metrics"
+              data-testid="accuracy-metrics"
+            >
               {accuracyMetrics.map((m) => (
                 <div
                   key={m.metric}
                   className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"
                 >
                   <div>
-                    <span className="font-semibold text-sm">{m.metric}</span>
-                    <p className="text-xs text-slate-400">{m.description}</p>
+                    <dt className="font-semibold text-sm">{m.metric}</dt>
+                    <dd className="text-xs text-slate-400 m-0">{m.description}</dd>
                   </div>
-                  <span className="text-lg font-bold">{m.value}</span>
+                  <dd className="text-lg font-bold m-0">
+                    <span className="sr-only">{m.metric}: </span>
+                    {m.value}
+                  </dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </CardContent>
         </Card>
         <Card>
@@ -232,7 +265,11 @@ export default function ForecastBuilderPage() {
             <CardTitle>Driver Sensitivity</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <dl
+              className="space-y-3"
+              aria-label="Driver sensitivity analysis"
+              data-testid="driver-sensitivity"
+            >
               {[
                 { driver: 'Headcount Growth', impact: '+$2.4M', sensitivity: 'High' },
                 { driver: 'Pricing Power', impact: '+$1.8M', sensitivity: 'Medium' },
@@ -245,20 +282,21 @@ export default function ForecastBuilderPage() {
                   className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"
                 >
                   <div>
-                    <span className="font-semibold text-sm">{d.driver}</span>
-                    <p className="text-xs text-slate-400">Sensitivity: {d.sensitivity}</p>
+                    <dt className="font-semibold text-sm">{d.driver}</dt>
+                    <dd className="text-xs text-slate-400 m-0">Sensitivity: {d.sensitivity}</dd>
                   </div>
-                  <span
-                    className={`font-mono text-sm ${d.impact.startsWith('-') ? 'text-red-400' : 'text-green-400'}`}
+                  <dd
+                    className={`font-mono text-sm m-0 ${d.impact.startsWith('-') ? 'text-red-400' : 'text-green-400'}`}
                   >
+                    <span className="sr-only">Impact: </span>
                     {d.impact}
-                  </span>
+                  </dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }
