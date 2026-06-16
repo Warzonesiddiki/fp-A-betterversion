@@ -23,7 +23,7 @@
 //   )
 // =============================================================================
 
-import type { PersistOptions, StateStorage } from 'zustand/middleware';
+import type { PersistOptions, PersistStorage } from 'zustand/middleware';
 import { masterStorage } from '@/utils/masterStorage';
 
 /**
@@ -46,7 +46,7 @@ export interface PersistConfigOptions<T> extends Omit<
    * Most stores use `masterStorage` directly; `dataStore` uses
    * `safeJSONStorage<T>(masterStorage)` for binary safety.
    */
-  storage?: StateStorage;
+  storage?: PersistStorage<T, unknown>;
   /**
    * Override the schema version.  Default `1` (initial v1 release).
    * Bump this when the store shape changes and provide a `migrate`
