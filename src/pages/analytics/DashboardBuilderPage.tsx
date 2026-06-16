@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LayoutGrid, Plus, Save, Download, Trash2, GripVertical } from 'lucide-react';
@@ -67,6 +67,28 @@ const DEFAULT_WIDGETS: Widget[] = [
 export default function DashboardBuilderPage() {
   const [widgets, setWidgets] = useState<Widget[]>(DEFAULT_WIDGETS);
   const [isEditing, setIsEditing] = useState(false);
+  // [Hera] PICK J a11y: live region for widget add/remove/move announcements
+  const [announcement, setAnnouncement] = useState<string>('');
+  const lastWidgetCount = useRef<number>(widgets.length);
+  const announceRef = useRef<HTMLDivElement | null>(null);
+
+  // [Hera] PICK J a11y: announce widget count on mount
+  useEffect(() => {
+    setAnnouncement(`Dashboard loaded with ${DEFAULT_WIDGETS.length} widgets`);
+  }, []);
+
+  // [Hera] PICK J a11y: announce widget count changes
+  useEffect(() => {
+    if (widgets.length !== lastWidgetCount.current) {
+      const delta = widgets.length - lastWidgetCount.current;
+      if (delta > 0) {
+        setAnnouncement(`Widget added. Dashboard now has ${widgets.length} widgets`);
+      } else {
+        setAnnouncement(`Widget removed. Dashboard now has ${widgets.length} widgets`);
+      }
+      lastWidgetCount.current = widgets.length;
+    }
+  }, [widgets.length]);
 
   const handleAddWidget = (type: Widget['type']) => {
     const newWidget: Widget = {
@@ -83,16 +105,46 @@ export default function DashboardBuilderPage() {
     setWidgets(widgets.filter((w) => w.id !== id));
   };
 
+  // [Hera] PICK J a11y: keyboard-accessible widget reordering (up/down)
+  const handleMoveWidget = useCallback((id: string, direction: 'up' | 'down') => {
+    setWidgets((prev) => {
+      const idx = prev.findIndex((w) => w.id === id);
+      if (idx === -1) return prev;
+      const newIdx = direction === 'up' ? idx - 1 : idx + 1;
+      if (newIdx < 0 || newIdx >= prev.length) return prev;
+      const next = [...prev];
+      const moved = next.splice(idx, 1)[0];
+      if (!moved) return prev;
+      next.splice(newIdx, 0, moved);
+      setAnnouncement(`Widget ${moved.title} moved ${direction}. Now at position ${newIdx + 1} of ${next.length}`);
+      return next;
+    });
+  }, []);
+
   const handleSave = () => {
     localStorage.setItem('custom-dashboard', JSON.stringify(widgets));
     setIsEditing(false);
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <main className="p-6 space-y-6" aria-labelledby="db-builder-heading">
+      {/* [Hera] PICK J a11y: live region for screen reader announcements */}
+      <div
+        ref={announceRef}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        data-testid="widget-announcer"
+      >
+        {announcement}
+      </div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard Builder</h1>
+          <h1 id="db-builder-heading" className="text-2xl font-bold">
+            Dashboard Builder
+            {isEditing && <span className="sr-only"> (edit mode active)</span>}
+          </h1>
           <p className="text-muted-foreground">
             Create custom dashboards with drag-and-drop widgets
           </p>
@@ -100,16 +152,33 @@ export default function DashboardBuilderPage() {
         <div className="flex gap-2">
           {isEditing ? (
             <>
-              <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditing(false)}
+                aria-label="Cancel and exit edit mode"
+                data-testid="cancel-edit"
+              >
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                <Save className="h-4 w-4 mr-1" /> Save
+              <Button
+                size="sm"
+                onClick={handleSave}
+                aria-label="Save dashboard and exit edit mode"
+                data-testid="save-dashboard"
+              >
+                <Save className="h-4 w-4 mr-1" aria-hidden="true" /> Save
               </Button>
             </>
           ) : (
-            <Button size="sm" onClick={() => setIsEditing(true)}>
-              <LayoutGrid className="h-4 w-4 mr-1" /> Customize
+            <Button
+              size="sm"
+              onClick={() => setIsEditing(true)}
+              aria-pressed={isEditing}
+              aria-label={isEditing ? 'Exit customize mode' : 'Customize dashboard'}
+              data-testid="customize-toggle"
+            >
+              <LayoutGrid className="h-4 w-4 mr-1" aria-hidden="true" /> Customize
             </Button>
           )}
         </div>
@@ -119,43 +188,82 @@ export default function DashboardBuilderPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => handleAddWidget('kpi')}>
-                <Plus className="h-4 w-4 mr-1" /> KPI Card
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleAddWidget('kpi')}
+                data-testid="add-widget-kpi"
+                aria-label="Add KPI widget"
+              >
+                <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> KPI Card
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleAddWidget('chart')}>
-                <Plus className="h-4 w-4 mr-1" /> Chart
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleAddWidget('chart')}
+                data-testid="add-widget-chart"
+                aria-label="Add chart widget"
+              >
+                <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> Chart
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleAddWidget('table')}>
-                <Plus className="h-4 w-4 mr-1" /> Table
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleAddWidget('table')}
+                data-testid="add-widget-table"
+                aria-label="Add table widget"
+              >
+                <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> Table
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleAddWidget('text')}>
-                <Plus className="h-4 w-4 mr-1" /> Text Block
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleAddWidget('text')}
+                data-testid="add-widget-text"
+                aria-label="Add text block widget"
+              >
+                <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> Text Block
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <div className="grid grid-cols-12 gap-4">
+      <div
+        className="grid grid-cols-12 gap-4"
+        role="region"
+        aria-label={`Dashboard widget grid with ${widgets.length} widgets`}
+        data-testid="widget-grid"
+      >
         {widgets.map((widget) => (
           <div key={widget.id} className={`col-span-${Math.min(widget.position.w, 12)}`}>
             <Card className="relative group">
               {isEditing && (
-                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div
+                  className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity"
+                  role="group"
+                  aria-label={`Reorder controls for ${widget.title}`}
+                >
                   <button
                     className="p-1 rounded hover:bg-[var(--bg-hover)]"
-                    title="Drag to reorder"
-                    aria-label="Drag to reorder"
+                    onClick={() => handleMoveWidget(widget.id, 'up')}
+                    title={`Move ${widget.title} up`}
+                    aria-label={`Move ${widget.title} up`}
+                    disabled={widgets.indexOf(widget) === 0}
+                    data-testid={`move-up-${widget.id}`}
                   >
-                    <GripVertical className="h-4 w-4 text-[var(--text-muted)]" />
+                    <GripVertical className="h-4 w-4 text-[var(--text-muted)]" aria-hidden="true" />
+                    <span className="sr-only">Move up</span>
                   </button>
                   <button
                     className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900"
                     onClick={() => handleRemoveWidget(widget.id)}
-                    title="Remove widget"
-                    aria-label="Remove widget"
+                    title={`Remove ${widget.title}`}
+                    aria-label={`Remove ${widget.title}`}
+                    data-testid={`remove-${widget.id}`}
                   >
-                    <Trash2 className="h-4 w-4 text-red-500" />
+                    <Trash2 className="h-4 w-4 text-red-500" aria-hidden="true" />
+                    <span className="sr-only">Remove</span>
                   </button>
                 </div>
               )}
@@ -184,6 +292,6 @@ export default function DashboardBuilderPage() {
           </div>
         ))}
       </div>
-    </div>
+    </main>
   );
 }
