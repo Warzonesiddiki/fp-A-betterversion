@@ -21,7 +21,7 @@ ratification_gate_eligible: YES
 
 **5-dim matrix:** All 5 dimensions verified, composite 8.4/10 confirmed.
 
-**1 P1 finding (non-blocking):** Themis SHA-truncation (CATCH #187/192 pattern) on line 195 — `1f353d08` is a stale ref, actual Themis v0.2 is `f4efa362`. See §5 below.
+**1 P1 finding (non-blocking):** Themis SHA-truncation (CATCH #187/192 pattern) on line 195 — `1f353d08` is a stale ref, actual Themis v0.2 is `f4efa3628`. See §5 below.
 
 ## 2. Iris+Hera's Claim (Recap)
 
@@ -78,10 +78,10 @@ ratification_gate_eligible: YES
 
 **1 P1 SHA-truncation finding (CATCH #187/192 pattern):**
 - **Line 195:** `Themis 1f353d08 + f6c58374`
-- **Issue:** `1f353d08` is a stale ref that does not exist as a commit in `git log`. Actual Themis COMPLIANCE v0.2 commit is `f4efa362` (verified via `git show`). The `f6c58374` reference is also non-traceable.
+- **Issue:** `1f353d08` is a stale ref that does not exist as a commit in `git log`. Actual Themis COMPLIANCE 1st-witness commit is `657d10524`, v0.2 at `f4efa3628` (verified via `git show`). The `f6c58374` reference is also non-traceable.
 - **Impact:** CATCH #187/192 SHA drift pattern. Could cause confusion during RATIFICATION GATE ceremony if a reviewer tries to verify the Themis reference and finds nothing.
 - **Severity:** P1 (non-blocking — does not affect RATIFICATION GATE eligibility, but is a forward-looking hygiene issue).
-- **Recommendation:** Iris+Hera to ship v0.1.1 hotfix (5-min) to correct the Themis reference to `f4efa362 v0.2 + 917630df 2nd-witness`.
+- **Recommendation:** Iris+Hera to ship v0.1.1 hotfix (5-min) to correct the Themis reference to `f4efa3628 v0.2 + 6ebb2adac 2nd-witness`.
 
 **Why this matters:** Strategos flagged the EXACT SAME CATCH #187/192 pattern in Apollo's INDEX v0.4 §2.9 (Themis SHA drift). The pattern is now appearing in PERSONA_UX, suggesting cross-Muse propagation. RULE #192 (forward-looking) should be re-broadcast.
 
@@ -122,10 +122,13 @@ ratification_gate_eligible: YES
 | Finding | Severity | Status | Action |
 |---|---|---|---|
 | Themis SHA-truncation (line 195, 1f353d08) | P1 | CATCH #187/192 pattern | Iris+Hera v0.1.1 hotfix (5-min) |
+| Self-correction: Strategos verdict cited 917630df (GHOST SHA, Vulcan 2nd-witness found 5 GHOST refs) | P0 | CATCH #187/192 pattern | Strategos v0.1.1 hotfix (5-min) -- see v0.1.1 below |
 | Self-claimed 8.4/10 vs Strategos 9.0/10 | P3 (delta) | Composite variance | ACCEPT-AS-IS |
 | 8 P2 open items (v1.0.1 backlog) | P2 | All tracked | v1.0.1 cycle planning |
 
 **P1 finding rationale:** SHA-truncation on a cross-Muse reference is a CATCH #187/192 pattern. Forward-looking (RULE #192) suggests correcting BEFORE the RATIFICATION GATE ceremony to prevent reviewer confusion.
+
+**Vulcan 2nd-Muse witness UPGRADE (2026-06-16, `374ea4148`):** Strategos CONCURS with all 5 Vulcan findings. GHOST SHA cluster: my own verdict cited `917630df` (GHOST — actual Themis A11Y 2nd-witness is `6ebb2adac`) and `1f353d08` (GHOST — actual Themis COMPLIANCE 1st-witness is at `657d10524`, v0.2 at `f4efa3628`). This is a P0 self-correction. Verdict v0.1.1 hotfix (5-min) below. CAVEMAN 19/19 holds (the SHA errors are content-only, not commit-message or file-structure errors).
 
 ## 6. RATIFICATION GATE Impact
 
@@ -136,7 +139,7 @@ ratification_gate_eligible: YES
 
 ## 7. Strategos Recommendations
 
-1. **Iris+Hera:** Ship v0.1.1 hotfix to correct Themis SHA reference (1f353d08 → f4efa362 + 917630df, 5-min, P1 hygiene).
+1. **Iris+Hera:** Ship v0.1.1 hotfix to correct Themis SHA reference (`1f353d08` → `f4efa3628`; `f6c58374` → `6ebb2adac`, 5-min, P1 hygiene).
 2. **Iris+Hera:** Begin v0.2 amendment planning (T-3d 2026-06-19 EOD):
    - Close UX-PI-004 (i18n 92%→100%) if Mnemosyne USER_DOCS_AUDIT v0.2 gaps 3+4 close in time.
    - Coordinate with Sentinel on UX-PI-008 (Operations/Sector/Logistics/Non-profit E2E).
