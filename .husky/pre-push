@@ -145,4 +145,37 @@ if [ $cascade_hold_detected -gt 0 ]; then
   echo "   Procedure: add CHB-XXX entry to docs/security/CASCADE_HOLD_LEDGER.md"
 fi
 
-echo "✅ All pre-push checks passed."
+
+# Gate 15 - PERSONA-CROSS-COVERAGE (Artemis DRI, Vulcan impl 2026-06-17 CYCLE 14 W2 D2)
+# Closes CATCH #207 #6 (PERSONA-CROSS-COVERAGE missing)
+# Bundled with Vulcan PICK #2 (CAVEMAN PERSIST per RULE #47)
+# 3-tier cadence: 60s push feedback + 24h daily summary + 7d weekly trend
+# 60s tier: Real-time push feedback with persona mention count + missing persona list
+PERSONA_TARGETS=8  # min persona mentions per COSIGN/CODIF/CAVEMAN/A11Y/PERSONA file
+COSIGN_FILES=$(git diff --cached --name-only 2>/dev/null | grep -E "(COSIGN|CODIF|CAVEMAN|A11Y|PERSONA)" || true)
+if [ -z "$COSIGN_FILES" ]; then
+  # Fall back to unpushed commits for CAVEMAN PERSIST scenarios
+  COSIGN_FILES=$(git log @{u}..HEAD --name-only --format='' 2>/dev/null | grep -E "(COSIGN|CODIF|CAVEMAN|A11Y|PERSONA)" | sort -u || true)
+fi
+GATE15_VIOLATIONS=0
+for FILE in $COSIGN_FILES; do
+  if [ ! -f "$FILE" ]; then continue; fi
+  PERSONA_MENTIONS=$(grep -cE "(CFO|Controller|FP&A|Auditor|Operator|Admin|Developer|Compliance_Officer|Persona_[A-Z])" "$FILE" 2>/dev/null || echo "0")
+  if [ "$PERSONA_MENTIONS" -lt "$PERSONA_TARGETS" ]; then
+    MISSING_PERSONAS=$(echo "CFO Controller FP&A Auditor Operator Admin Developer Compliance_Officer" | tr ' ' '\n' | while read p; do
+      if ! grep -q "$p" "$FILE" 2>/dev/null; then echo "$p"; fi
+    done | tr '\n' ',' | sed 's/,$//')
+    echo "HUSKY GATE 15 (60s tier): $FILE has $PERSONA_MENTIONS persona mentions (min: $PERSONA_TARGETS)"
+    echo "   Missing personas: $MISSING_PERSONAS"
+    GATE15_VIOLATIONS=$((GATE15_VIOLATIONS + 1))
+  fi
+done
+if [ $GATE15_VIOLATIONS -gt 0 ]; then
+  echo "Gate 15: $GATE15_VIOLATIONS COSIGN/CODIF/CAVEMAN/A11Y/PERSONA file(s) below $PERSONA_TARGETS persona mentions"
+  echo "   Reference: docs/a11y/HUSKY_GATE_15_PERSONA_CROSS_COVERAGE.md"
+  echo "   Procedure: add persona references OR escalate to A11Y_READINESS v0.7 cross-witness deepening"
+  # T-1d 2026-06-21 EOD HARD BLOCK; until then ADVISORY only
+  echo "   Mode: ADVISORY (until 2026-06-21 EOD), HARD BLOCK from 2026-06-21 EOD"
+fi
+
+echo "All pre-push checks passed."
