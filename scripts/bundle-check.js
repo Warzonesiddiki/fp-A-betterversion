@@ -58,10 +58,10 @@ const MUSE_DOMAINS = [
   { muse: 'Hermes', paths: ['src/pages/', 'App.tsx'] },
   { muse: 'Mnemosyne', paths: ['src/test/', 'tests/', '_docs.ts'] },
   { muse: 'Sentinel', paths: ['tests/e2e/'] },
-  { muse: 'Vulcan', paths: ['scripts/perf/', 'tests/perf/'] },
-  { muse: 'Strategos', paths: ['docs/strategos/', 'docs/strategy/', 'docs/vision-pivot/VISION_TO_REALITY_GAP', 'docs/leader/'] },
+  { muse: 'Vulcan', paths: ['scripts/perf/', 'tests/perf/', 'tests/load/'] }, // tests/load = load testing raw data per CATCH #196 (5 chaos JSONs)
+  { muse: 'Strategos', paths: ['docs/strategos/', 'docs/vision-pivot/VISION_TO_REALITY_GAP', 'docs/leader/'] },
   { muse: 'Orchestrator', paths: ['docs/codif/', 'docs/orchestrator/', 'docs/leader/CYCLE_'] },
-  { muse: 'Themis', paths: ['docs/compliance/', 'docs/ratification/'] },
+  { muse: 'Themis', paths: ['docs/compliance/'] },
   { muse: 'Tyche', paths: ['docs/analytics/'] },
   { muse: 'Vesta', paths: ['docs/sectors/', 'docs/sector-dashboards/'] },
   { muse: 'Chronos', paths: ['src/engines/temporal', 'src/engines/periodLock', 'src/engines/varianceAttribution'] },
@@ -70,48 +70,9 @@ const MUSE_DOMAINS = [
   { muse: 'Artemis', paths: ['src/__tests__/a11y/', 'docs/a11y/'] },
 ];
 
-// Per-Muse draft whitelist — handles docs/drafts/{muse_name}/ paths which are NOT
-// in MUSE_DOMAINS (each Muse has a personal draft directory, not a shared tree).
-// The 4th segment is the Muse's lowercase name; we normalize to TitleCase for the
-// attribution report. Mirrors the 19-Muse roster in AGENTS.md §0.5.
-const MUSE_DRAFT_WHITELIST = new Set([
-  'apollo', 'athena', 'atlas', 'artemis', 'calliope', 'chronos', 'hephaestus',
-  'hera', 'hermes', 'iris', 'mnemosyne', 'orchestrator', 'prometheus',
-  'sentinel', 'strategos', 'themis', 'tyche', 'vesta', 'vulcan',
-]);
-
-/**
- * Classify a file path to its owning Muse.
- * Uses LONGEST-PREFIX-MATCH to prevent narrow prefixes (e.g. src/engines/temporal/
- * owned by Chronos) from being shadowed by broader prefixes (src/engines/ owned
- * by Apollo). Falls back to docs/drafts/{muse_name}/ whitelist for personal
- * draft directories.
- *
- * @param {string} file - Repo-relative file path (from `git show --name-only`)
- * @returns {string|null} Muse name in TitleCase, or null if unclassified
- */
-function classifyFile(file) {
-  let bestMatch = null;
-  let bestLen = 0;
-  for (const { muse, paths } of MUSE_DOMAINS) {
-    for (const p of paths) {
-      if (file.startsWith(p) && p.length > bestLen) {
-        bestMatch = muse;
-        bestLen = p.length;
-      }
-    }
-  }
-  if (bestMatch) return bestMatch;
-
-  // docs/drafts/{muse_name}/ — personal draft directory
-  if (file.startsWith('docs/drafts/')) {
-    const seg = file.split('/')[2]; // ['docs', 'drafts', '{muse}', ...]
-    if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) {
-      return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase();
-    }
-  }
-  return null;
-}
+// Per-Muse draft whitelist
+const MUSE_DRAFT_WHITELIST = new Set(['apollo', 'athena', 'atlas', 'hephaestus', 'prometheus', 'hera', 'hermes', 'mnemosyne', 'sentinel', 'vulcan', 'strategos', 'orchestrator', 'themis', 'tyche', 'vesta', 'chronos', 'iris', 'calliope', 'artemis']);
+function classifyFile(file) { for (const { muse, paths } of MUSE_DOMAINS) { if (paths.some((p) => file.startsWith(p))) return muse; } if (file.startsWith('docs/drafts/')) { const seg = file.split('/')[2]; if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) { return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase(); } } return null; }
 
 function formatKB(bytes) {
   return Math.round((bytes / 1024) * 100) / 100;
@@ -212,6 +173,10 @@ async function main() {
     'ai-vendor',
     'chart-vendor',
   ];
+
+// Per-Muse draft whitelist
+const MUSE_DRAFT_WHITELIST = new Set(['apollo', 'athena', 'atlas', 'hephaestus', 'prometheus', 'hera', 'hermes', 'mnemosyne', 'sentinel', 'vulcan', 'strategos', 'orchestrator', 'themis', 'tyche', 'vesta', 'chronos', 'iris', 'calliope', 'artemis']);
+function classifyFile(file) { for (const { muse, paths } of MUSE_DOMAINS) { if (paths.some((p) => file.startsWith(p))) return muse; } if (file.startsWith('docs/drafts/')) { const seg = file.split('/')[2]; if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) { return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase(); } } return null; }
   for (const vendor of lazyVendors) {
     const match = chunkStats.find((c) => c.file.startsWith(vendor + '-'));
     if (match) {
@@ -305,10 +270,12 @@ function detectMultiMuseBundle() {
     const musesInCommit = new Set();
     const fileToMuse = new Map();
     for (const file of fileList) {
-      const muse = classifyFile(file);
-      if (muse) {
-        musesInCommit.add(muse);
-        fileToMuse.set(file, muse);
+      for (const { muse, paths } of MUSE_DOMAINS) {
+        if (paths.some((p) => file.startsWith(p))) {
+          musesInCommit.add(muse);
+          fileToMuse.set(file, muse);
+          break;
+        }
       }
     }
 
