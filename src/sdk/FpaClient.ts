@@ -15,6 +15,19 @@
  *    prefer not to use try/catch — mirrors `API_REFERENCE.md` §10.
  *
  * @module sdk/FpaClient
+ * @since 0.1.0
+ * @version 0.1.0
+ *
+ * @example
+ * ```ts
+ * // ESM (TypeScript / bundlers / Node >= 14 with "type": "module")
+ * import { FpaClient } from '@finplanpro/sdk';
+ * // or, from within the monorepo:
+ * import { FpaClient } from './src/sdk';
+ *
+ * // CommonJS (Node 12 / 14 / 16 default, Jest, older toolchains)
+ * const { FpaClient } = require('@finplanpro/sdk');
+ * ```
  */
 
 import { RestApiClient } from '../services/api-integration/RestApiClient';

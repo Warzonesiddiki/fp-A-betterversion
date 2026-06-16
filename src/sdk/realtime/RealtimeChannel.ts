@@ -12,6 +12,16 @@
  *    so the SDK inherits the same hardening without duplicating logic.
  *
  * @module sdk/realtime/RealtimeChannel
+ * @since 0.1.0
+ * @version 0.1.0
+ *
+ * @example
+ * ```ts
+ * // ESM
+ * import { RealtimeFactory } from '@finplanpro/sdk';
+ * // CommonJS
+ * const { RealtimeFactory } = require('@finplanpro/sdk');
+ * ```
  */
 
 import { WebSocketManager } from '../../services/WebSocketManager';

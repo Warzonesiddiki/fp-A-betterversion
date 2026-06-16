@@ -12,6 +12,16 @@
  * is enough to construct a working `FpaClient`.
  *
  * @module sdk/types
+ * @since 0.1.0
+ * @version 0.1.0
+ *
+ * @example
+ * ```ts
+ * // ESM
+ * import type { AuthConfig, FpaClientConfig } from '@finplanpro/sdk';
+ * // CommonJS
+ * const { AuthConfig, FpaClientConfig } = require('@finplanpro/sdk');
+ * ```
  */
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
