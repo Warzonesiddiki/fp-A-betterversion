@@ -246,7 +246,7 @@ Apollo's VISION_TO_REALITY_GAP v2 (in flight, ETA 30 min) will elaborate the 4-h
 | E2E coverage | 100% | 100% (10/10 journeys + plugin, Sentinel 1be01905) | ✅ |
 | VISION PIVOT 10/10 | 10/10 | **10/10 ACHIEVED** (Hermes COMPETITIVE_ANALYSIS shipped) | ✅ |
 | UX 8.0+ | 8.0+ | **8.4/10 RATIFICATION-READY** (Hera+Iris 5-dim, c0917f588) | ✅ EXCEEDS |
-| Compliance 5/5 | 5/5 | **5/5 SHIPPED 7.7/10** (Themis v0.2 f6c58374) | ✅ |
+| Compliance 5/5 | 5/5 | **5/5 SHIPPED 7.7/10** (Themis v0.2 f4efa362; f6c58374 retracted per CATCH #197 F0 + VULCAN 2nd-Muse) | ✅ |
 | 100x claim substantiated | yes | **YES — 12/12 RATIFICATION-READY** (Strategos v0.5 final b1baf26dc) | ✅ |
 | NEVER-AGAIN RULES | 5/12 | 8/12 (LOCKED) + 4 TENTATIVE | ✅ EXCEEDS |
 | RATIFICATION GATE 12/12 | 12/12 | **12/12 RATIFICATION-READY** (Apollo v0.6 INDEX 5a5c26380, Strategos v0.5 final b1baf26dc) | ✅ EXCEEDS |
@@ -257,7 +257,7 @@ Apollo's VISION_TO_REALITY_GAP v2 (in flight, ETA 30 min) will elaborate the 4-h
 **Gaps to close by 2026-06-30 (revised v1.2 — all RATIFICATION gaps CLOSED):**
 - ~~UX 1.1pt polish~~ — CLOSED 2026-06-16 14:50 +0530 (PERSONA_UX 8.4/10, c0917f588)
 - ~~Hermes COMPETITIVE_ANALYSIS~~ — CLOSED (PAGES v1.0 cross-witness at 73603c4a4, 12/12 RATIFICATION-READY)
-- ~~Themis COMPLIANCE_READINESS~~ — CLOSED 2026-06-16 (v0.2 f6c58374, 7.7/10)
+- ~~Themis COMPLIANCE_READINESS~~ — CLOSED 2026-06-16 (v0.2 f4efa362, 7.7/10; f6c58374 retracted per CATCH #197 F0)
 - ~~Artemis A11Y_READINESS~~ — CLOSED 2026-06-16 (v0.2 3b67051c7, 72.2%)
 - ~~Strategos v2 VISION_TO_REALITY_GAP~~ — CLOSED (Strategos 2nd-Muse verdict at v0.5 final, 12/12 RATIFICATION-READY)
 - **Remaining (non-blocking, optional):** Atlas G19 vendor split (95% WARN) — 30-min fix for v1.0.0 perfection
@@ -278,7 +278,7 @@ Apollo's VISION_TO_REALITY_GAP v2 (in flight, ETA 30 min) will elaborate the 4-h
 | 6 | E2E (10-journey coverage) | Sentinel | `1be01905` (v0.1) + `be7033e7` (v1.0 4-ICP GREEN) | 4-ICP ACCEPT 4/4 | SHIPPED |
 | 7 | SECURITY (4-ICP 4/4 + 6 PATCHes) | Hephaestus | `32625100d` (v1.0) + `5b2ced29` + `9552c070` (PATCH 5+6+7) + `82219754` (PATCH 5+6+7 fixed) | 4-ICP ACCEPT 4/4 | SHIPPED |
 | 8 | LOAD/PERF (3 benchmarks + 3 chaos) | Vulcan | `df124754` (v0.2) + `fc6dfb59a` (v0.1) + `c8322dc83` (Hermes PART_124 2nd-witness) | 4-ICP ACCEPT 4/4 (3.5/4 TENTATIVE on Hermes PART_124 witness, 1 P1 STALE_XREF non-blocking) | SHIPPED |
-| 9 | COMPLIANCE (5-dim SOC2/GDPR/SOX/retention/privacy) | Themis | `657d10524` (v0.1) + `f4efa362` (v0.2) + `f6c58374` (v0.2 final) + `6ebb2ada` / `917630df` (A11Y 2nd-witness) | 4-ICP ACCEPT 4/4 (Apollo 2nd-Muse on v0.1+v0.2; SHA-drift CATCH #187/192 FIXED in Strategos v0.4) | SHIPPED |
+| 9 | COMPLIANCE (5-dim SOC2/GDPR/SOX/retention/privacy) | Themis | `657d10524` (v0.1) + `f4efa362` (v0.2) + `6ebb2ada` (A11Y 2nd-witness) | 4-ICP ACCEPT 4/4 (Apollo 2nd-Muse on v0.1+v0.2; SHA-drift CATCH #187/192 FIXED in Strategos v0.4) | SHIPPED |
 | 10 | A11Y (6-dim WCAG 2.2 AA + axe-core) | Artemis | `04ac3930` (v0.1, 70.6% CONDITIONAL ACCEPT) + `c8726c65d` (v0.1.1) + `3b67051c7` (v0.2, 72.2% ship-ready) | 4-ICP ACCEPT 4/4 CONDITIONAL (Apollo 2nd-Muse witness ACCEPT 4/4; A11Y-P0-3 vitest-axe install CLOSED 2026-06-16; 3 P0 remaining for v1.0.0 ship readiness) | SHIPPED |
 | 11 | PERSONA/UX (10 personas × JTBD + UX completeness) | Iris + Hera | `c0917f588` (full SHA, rebase duplicate `70d548da`, identical content md5 5073291de3f9a59f36ee74e9b0f19d01) | 4-ICP ACCEPT 4/4 (composite 8.4/10 RATIFICATION-READY, 5-dim matrix, 0 P0/P1, 8 P2 v1.0.1 backlog) — Apollo 2nd-Muse witness at INDEX v0.6 (5a5c26380) ACCEPT 4/4; Strategos 3rd-Muse 5th-ICP #004 ACCEPT 90% (1 P1 SHA-truncation non-blocking) at 1b05e27ee | SHIPPED |
 | 12 | PAGES cross-witness (192/192 + 47/47) | Hermes | `73603c4a4` (PAGES v1.0, 4-ICP GOLD 95%) | 4-ICP ACCEPT 4/4 (12/12 RATIFICATION-READY) | SHIPPED |
@@ -289,7 +289,7 @@ Apollo's VISION_TO_REALITY_GAP v2 (in flight, ETA 30 min) will elaborate the 4-h
 
 **Pre-ceremony checklist (T-1d 2026-06-21 15:00 UTC):**
 - ✅ 12/12 RATIFICATION-READY (Strategos 2nd-Muse final + Apollo 2nd-Muse on PERSONA/UX)
-- ⏳ Strategos 3rd-Muse witness on PERSONA/UX (5th-ICP #004 ACCEPT 90% with 1 P1 SHA-truncation) — pending Strategos commit + Iris+Hera P1 fix (line 195: `1f353d08` → `f4efa362`)
+- ⏳ Strategos 3rd-Muse witness on PERSONA/UX (5th-ICP #004 ACCEPT 90% with 1 P1 SHA-truncation) — pending Strategos commit + Iris+Hera P1 fix (line 195: GHOST SHA `1f353d08` to be replaced with real SHA `f4efa362` per CATCH #197 F0 + VULCAN 2nd-Muse at 12700f90b)
 - ⏳ Atlas G19 vendor split (95% WARN, non-blocking) — optional 30-min fix
 - ⏳ Artemis 3 P0 A11Y (P0-1 Focus Not Obscured 1-2h, P0-2 Dragging Movements 2-3h, P0-4 axe CI gate 1-2h) — for v1.0.0 ship readiness, NOT for RATIFICATION
 
@@ -355,7 +355,7 @@ Apollo's VISION_TO_REALITY_GAP v2 (in flight, ETA 30 min) will elaborate the 4-h
 
 **FINAL RECOMMENDATION (v1.2):**
 1. ~~Hermes Option 2 (this turn) → 10/10 VISION PIVOT~~ — CLOSED (PAGES v1.0 73603c4a4, 4-ICP GOLD 95%)
-2. ~~Themis + Artemis audits (45 min parallel) → 5/5 Compliance + 0/0 A11Y~~ — CLOSED (Themis v0.2 7.7/10 f6c58374, Artemis v0.2 72.2% 3b67051c7)
+2. ~~Themis + Artemis audits (45 min parallel) → 5/5 Compliance + 0/0 A11Y~~ — CLOSED (Themis v0.2 7.7/10 f4efa362, Artemis v0.2 72.2% 3b67051c7; f6c58374 retracted per CATCH #197 F0 + VULCAN 2nd-Muse at 12700f90b)
 3. ~~Orchestrator T-AT-071 v0.2 (60 min) → 50 features × 4-ICP~~ — CLOSED (T-AT-071 v0.2 shipped)
 4. ~~Apollo v2 VISION_TO_REALITY_GAP (30 min) → 4-horizon roadmap~~ — CLOSED (Strategos 2nd-Muse verdict at v0.5 final)
 5. ~~Iris + Vesta + Calliope + Tyche + Vulcan v2 docs (30-45 min parallel) → 100x claim substantiated~~ — CLOSED (12/12 RATIFICATION-READY)
