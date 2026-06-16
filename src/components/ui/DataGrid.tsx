@@ -274,6 +274,19 @@ export const DataGrid: React.FC<DataGridProps> = ({
       suppressAnimationFrame: false,
       suppressBrowserResizeObserver: false,
       groupDisplayType: 'groupRows',
+      // ===== WCAG 2.2 AA 2.5.7 Dragging Movements =====
+      // AG Grid v35.3.0 community defaults: enableFillHandle = false.
+      // DataGrid does NOT set cellSelection.handle (would enable fill handle in v32.2+).
+      // Therefore, no dragging movement exists. Criterion 2.5.7 is N/A (waiver).
+      // Keyboard alternatives for cell data operations (see handleKeyDown above):
+      //   - Ctrl+C: copy selection to clipboard (case 'copy')
+      //   - Ctrl+V: paste from clipboard (case 'paste')
+      //   - Ctrl+Z: undo (case 'undo')
+      //   - Ctrl+Shift+Z / Ctrl+Y: redo (case 'redo')
+      //   - Arrow keys: navigate cells (case 'move')
+      //   - Enter / F2: start editing (case 'edit')
+      // See: A11Y_READINESS v0.1 §3.5 (Dim 5 — Operable, criterion 2.5.7) — Prometheus T-PR-046
+      // ==========================================================================
       onCellClicked: (params) => {
         if (params.rowIndex !== null) {
           const colIndex = columns.findIndex((c) => c.field === params.column.getColId());
