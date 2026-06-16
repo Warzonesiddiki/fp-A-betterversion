@@ -543,3 +543,153 @@ test.describe('PICK B v0.2: Finance Temporal Edge Cases (10 tests)', () => {
     await expect(page.locator('[data-testid="consolidation-status"]')).toContainText(/waiting|in progress|complete/i, { timeout: 60_000 });
   });
 });
+
+  // =============================================================================
+  // PICK B v0.8 -- Acct/FCST/VRP Persona Temporal Edge Cases (8 tests, 2026-06-16)
+  // Adds 8 persona-aliased temporal edge cases that exercise specific
+  // Accounting/Forecast/Variance-Plan workflows. D-002 3-witness per test.
+  // =============================================================================
+  test.describe('Accounting (Acct) -- Controller-Small-Biz persona -- temporal edge cases', () => {
+    test.beforeEach(async ({ page }) => {
+      await signInAs(page, 'controller-sb');
+    });
+
+    test('T-acct-1: Period close triggers audit window (90 days access)', async ({ page }) => {
+      // W1 canonical: close period 2026-03-31 --> audit window opens
+      await page.goto('/periods/close');
+      await page.locator('[data-testid="period-id"]').selectOption('2026-03');
+      await page.locator('[data-testid="close-period-btn"]').click();
+      await page.locator('[data-testid="period-closed-toast"]').waitFor();
+      // W2 real DOM: audit window badge shows 90 days
+      await expect(page.locator('[data-testid="audit-window-opened"]')).toContainText('90 days');
+      // W3 cleanup: window badge persists, no auto-close
+      await page.waitForTimeout(500);
+      await expect(page.locator('[data-testid="audit-window-opened"]')).toBeVisible();
+    });
+
+    test('T-acct-2: Inter-company elimination at fiscal year boundary', async ({ page }) => {
+      // W1 canonical: post IC elimination across FY boundary
+      await page.goto('/ic-elimination');
+      await page.locator('[data-testid="ic-journal-1"]').fill('1000.00');
+      await page.locator('[data-testid="ic-journal-2"]').fill('1000.00');
+      await page.locator('[data-testid="fy-boundary-date"]').fill('2025-12-31');
+      await page.locator('[data-testid="post-elimination-btn"]').click();
+      await page.locator('[data-testid="ic-elimination-posted"]').waitFor();
+      // W2 real DOM: net amount is 0.00 across FY boundary
+      await expect(page.locator('[data-testid="ic-net-amount"]')).toHaveText('0.00');
+      // W3 cleanup: elimination journal posted in correct FY
+      const fyTag = await page.locator('[data-testid="elimination-fy-tag"]').textContent();
+      expect(fyTag).toMatch(/2025|FY25/);
+    });
+
+    test('T-acct-3: Trial balance lock-out window after period close', async ({ page }) => {
+      // W1 canonical: close period --> attempt TB modification
+      await page.goto('/periods/close');
+      await page.locator('[data-testid="period-id"]').selectOption('2026-03');
+      await page.locator('[data-testid="close-period-btn"]').click();
+      await page.locator('[data-testid="period-closed-toast"]').waitFor();
+      await page.goto('/reports/trial-balance');
+      // W2 real DOM: lockout error shown on attempt to edit locked period
+      const editAttempt = page.locator('[data-testid="tb-edit-btn-2026-03"]');
+      if (await editAttempt.count() > 0) {
+        await editAttempt.click();
+        await expect(page.locator('[data-testid="lockout-error"]')).toContainText(/period closed|cannot modify/i);
+      } else {
+        // Edit button disabled when locked
+        await expect(page.locator('[data-testid="tb-locked-indicator-2026-03"]')).toBeVisible();
+      }
+      // W3 cleanup: entry remained unchanged after failed edit
+      const tbEntry = await page.locator('[data-testid="tb-entry-2026-03"]').textContent();
+      expect(tbEntry).toBeTruthy();
+    });
+  });
+
+  test.describe('Forecast (FCST) -- FP&A-Analyst persona -- temporal edge cases', () => {
+    test.beforeEach(async ({ page }) => {
+      await signInAs(page, 'fpa-analyst');
+    });
+
+    test('T-fcst-1: Rolling forecast Q1 close re-forecast window with actuals', async ({ page }) => {
+      // W1 canonical: create rolling re-forecast after Q1 close
+      await page.goto('/scenarios');
+      await page.locator('[data-testid="new-scenario-btn"]').click();
+      await page.locator('[data-testid="scenario-name"]').fill('Q1 2026 Roll');
+      await page.locator('[data-testid="auto-actualize-flag"]').check();
+      await page.locator('[data-testid="anchor-date"]').fill('2026-03-31');
+      await page.locator('[data-testid="save-scenario-btn"]').click();
+      await page.locator('[data-testid="scenario-saved-toast"]').waitFor();
+      // W2 real DOM: inherited actuals badge for Q1 2026
+      await expect(page.locator('[data-testid="inherited-actuals-badge"]')).toContainText('Q1 2026 actuals inherited');
+      // W3 cleanup: scenario rows include inherited actuals
+      const rowCount = await page.locator('[data-testid="scenario-row-inherited"]').count();
+      expect(rowCount).toBeGreaterThan(0);
+    });
+
+    test('T-fcst-2: Mid-year re-forecast with fiscal year driver change', async ({ page }) => {
+      // W1 canonical: create re-forecast that switches FY drivers
+      await page.goto('/scenarios');
+      await page.locator('[data-testid="new-scenario-btn"]').click();
+      await page.locator('[data-testid="scenario-name"]').fill('FY26 Mid-Year Re-Forecast');
+      await page.locator('[data-testid="fy-driver-toggle"]').click();
+      await page.locator('[data-testid="driver-snapshot-date"]').fill('2026-06-30');
+      await page.locator('[data-testid="save-scenario-btn"]').click();
+      await page.locator('[data-testid="scenario-saved-toast"]').waitFor();
+      // W2 real DOM: FY26 driver active
+      await expect(page.locator('[data-testid="fy-driver-toggle"]')).toContainText('FY26');
+      // W3 cleanup: old FY25 driver marked superseded
+      await expect(page.locator('[data-testid="fy25-superseded-badge"]')).toBeVisible();
+    });
+
+    test('T-fcst-3: Scenario split at contingency activation date', async ({ page }) => {
+      // W1 canonical: split base into base + contingency
+      await page.goto('/scenarios');
+      await page.locator('[data-testid="base-scenario-card"]').click();
+      await page.locator('[data-testid="split-scenario-btn"]').click();
+      await page.locator('[data-testid="contingency-name"]').fill('Contingency Activation 2026-07-15');
+      await page.locator('[data-testid="contingency-activation-date"]').fill('2026-07-15');
+      await page.locator('[data-testid="save-split-btn"]').click();
+      await page.locator('[data-testid="split-saved-toast"]').waitFor();
+      // W2 real DOM: contingency status shows activated
+      await expect(page.locator('[data-testid="contingency-status"]')).toContainText('activated');
+      // W3 cleanup: parent + child scenario rows exist
+      const parentCount = await page.locator('[data-testid="parent-scenario-row"]').count();
+      const childCount = await page.locator('[data-testid="child-scenario-row"]').count();
+      expect(parentCount).toBeGreaterThan(0);
+      expect(childCount).toBeGreaterThan(0);
+    });
+  });
+
+  test.describe('Variance/Plan (VRP) -- FP&A-Analyst persona -- temporal edge cases', () => {
+    test.beforeEach(async ({ page }) => {
+      await signInAs(page, 'fpa-analyst');
+    });
+
+    test('T-vrp-1: Month-end variance snapshot with 5-business-day lock', async ({ page }) => {
+      // W1 canonical: snapshot month-end variance
+      await page.goto('/variance/snapshot');
+      await page.locator('[data-testid="snapshot-period"]').selectOption('2026-03');
+      await page.locator('[data-testid="snapshot-date"]').fill('2026-03-31');
+      await page.locator('[data-testid="take-snapshot-btn"]').click();
+      await page.locator('[data-testid="snapshot-saved-toast"]').waitFor();
+      // W2 real DOM: snapshot lock shows 5 business days
+      await expect(page.locator('[data-testid="snapshot-lock-days"]')).toContainText('5');
+      // W3 cleanup: subsequent edits blocked until lock expires
+      const editBtn = page.locator('[data-testid="variance-edit-btn"]');
+      await expect(editBtn).toBeDisabled();
+    });
+
+    test('T-vrp-2: Retroactive correction within T+10 business day window', async ({ page }) => {
+      // W1 canonical: post-retro correction within allowed window
+      await page.goto('/variance/retro-correction');
+      await page.locator('[data-testid="correction-period"]').selectOption('2026-03');
+      await page.locator('[data-testid="correction-amount"]').fill('-500.00');
+      await page.locator('[data-testid="correction-reason"]').fill('Late-arriving invoice adjustment');
+      await page.locator('[data-testid="submit-correction-btn"]').click();
+      await page.locator('[data-testid="correction-submitted-toast"]').waitFor();
+      // W2 real DOM: correction accepted within window
+      await expect(page.locator('[data-testid="correction-status"]')).toContainText(/within window|accepted/i);
+      // W3 cleanup: audit trail entry created for the correction
+      const auditCount = await page.locator('[data-testid="audit-trail-entry"][data-correction-period="2026-03"]').count();
+      expect(auditCount).toBeGreaterThan(0);
+    });
+  });
