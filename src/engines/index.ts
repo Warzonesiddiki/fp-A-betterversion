@@ -130,7 +130,8 @@ export { FormulaAutoCompleteEngine } from './FormulaAutoCompleteEngine';
 // StateMachine — removed from barrel to preserve EngineRegistry dynamic import splitting.
 // Import directly: import { StateMachine } from '@/engines/StateMachine';
 export { GlobalSearchEngine } from './GlobalSearchEngine';
-export { GoalSeekEngine } from './GoalSeekEngine'; // RE-ENABLED 2026-06-15
+// GoalSeekEngine — removed from barrel to preserve EngineRegistry dynamic import splitting.
+// Import directly: import { GoalSeekEngine } from '@/engines/GoalSeekEngine';
 export { GridOfflineEngine } from './GridOfflineEngine';
 export { GroupOutlineEngine } from './GroupOutlineEngine';
 export { HealthcareEngine } from './HealthcareEngine';
@@ -220,7 +221,8 @@ export { SaaSMetricsEngine } from './SaaSMetricsEngine';
 export { SafeMathParser } from './SafeMathParser';
 // export { ScenarioEngine } from './ScenarioEngine'; // barrel-export disabled for dynamic import splitting
 export { SegmentReportingEngine } from './SegmentReportingEngine';
-export { SensitivityEngine } from './SensitivityEngine'; // RE-ENABLED 2026-06-15
+// SensitivityEngine — removed from barrel to preserve EngineRegistry dynamic import splitting.
+// Import directly: import { SensitivityEngine } from '@/engines/SensitivityEngine';
 export { SensitivityTableEngine } from './SensitivityTableEngine';
 export { SessionEngine } from './SessionEngine';
 // export { SignConventionEngine } from './SignConventionEngine'; // barrel-export disabled for dynamic import splitting

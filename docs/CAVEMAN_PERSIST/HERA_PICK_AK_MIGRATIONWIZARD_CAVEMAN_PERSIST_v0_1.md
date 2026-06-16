@@ -16,6 +16,7 @@
 **Author:** Hera <hera@aionrs.local>
 
 **Commit message:**
+
 ```
 fix(a11y): [HERA PICK AK] MigrationWizard th scope='col' WCAG 1.3.1 fix
 ```
@@ -42,6 +43,7 @@ grep -rE "<th[^>]*>" --include="*.tsx" -l src/ | xargs grep -L "scope="
 ### 2.3 MigrationWizard Fix
 
 4 th elements added scope='col':
+
 - Source Column (text-left)
 - Maps To (text-left)
 - Confidence (text-left)
@@ -57,16 +59,16 @@ grep -rE "<th[^>]*>" --include="*.tsx" -l src/ | xargs grep -L "scope="
 
 ## 3. NEVER-AGAIN RULES COMPLIANCE (8/8)
 
-| Rule # | Rule Name | Compliance | Notes |
-|--------|-----------|------------|-------|
-| #32 | CAVEMAN COMMIT --no-verify | N/A | Clean 1:1 fix, no --no-verify needed |
-| #47 | CAVEMAN PERSIST | ✅ | This file IS the CAVEMAN PERSIST backup |
-| #50 | POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER | ✅ | BAT: `BAT-PICKAK-HERA-MIGRATIONWIZARD-2026-06-17` |
-| #55 | PRE-PUSH-GHOST-SHA-CHECK | ⏳ | Will verify HEAD SHA matches expected pre-push |
-| #56 | PROACTIVE-PICK-CHAIN 60s | ✅ | Within 60s SLA after PICK AJ |
-| #60 | BILATERAL-CROSS-WITNESS | ⏳ | Awaiting 2nd-Muse cross-witness |
-| #67 | BILATERAL-ATTRIBUTION-CASCADE BAT | ✅ | BAT format: `BAT-PICKAK-HERA-MIGRATIONWIZARD-2026-06-17` |
-| #68 | CATCH-NUMBERING-COLLISION | ✅ | No new CATCH filed |
+| Rule # | Rule Name                                 | Compliance | Notes                                                    |
+| ------ | ----------------------------------------- | ---------- | -------------------------------------------------------- |
+| #32    | CAVEMAN COMMIT --no-verify                | N/A        | Clean 1:1 fix, no --no-verify needed                     |
+| #47    | CAVEMAN PERSIST                           | ✅         | This file IS the CAVEMAN PERSIST backup                  |
+| #50    | POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER | ✅         | BAT: `BAT-PICKAK-HERA-MIGRATIONWIZARD-2026-06-17`        |
+| #55    | PRE-PUSH-GHOST-SHA-CHECK                  | ⏳         | Will verify HEAD SHA matches expected pre-push           |
+| #56    | PROACTIVE-PICK-CHAIN 60s                  | ✅         | Within 60s SLA after PICK AJ                             |
+| #60    | BILATERAL-CROSS-WITNESS                   | ⏳         | Awaiting 2nd-Muse cross-witness                          |
+| #67    | BILATERAL-ATTRIBUTION-CASCADE BAT         | ✅         | BAT format: `BAT-PICKAK-HERA-MIGRATIONWIZARD-2026-06-17` |
+| #68    | CATCH-NUMBERING-COLLISION                 | ✅         | No new CATCH filed                                       |
 
 ---
 
@@ -93,13 +95,13 @@ Husky Gate 15 v0.3 requires all `<th>` elements in src/ to have `scope="col"` (W
 
 ## 5. ORCHESTRATOR PICK #23 DRI #1 PROGRESS (4/5)
 
-| # | Directive | Status | Evidence |
-|---|-----------|--------|----------|
-| 1 | A11Y v0.5 SHIPPED | ✅ | Composite 92%+, 4-ICP 9.5/10 PLATINUM+ |
-| 2 | 134 components dark-mode verification (0 hardcoded bg-white/text-black) | ✅ | 1707 files checked, 0 violations |
-| 3 | axe-core scan (0 critical, 0 serious) | ✅ | 15/15 jest-axe passes (a6cd1888) |
-| 4 | 6 DRI handoff confirmations (cross-Muse co-signs) | ⏳ | 3/6 filed (PICK AH + AJ task board entries for Iris/Hermes/Sentinel Atlas) |
-| 5 | RATIFICATION GATE 16:00 UTC 2026-06-22 stand-by | ⏳ | T-5d |
+| #   | Directive                                                               | Status | Evidence                                                                   |
+| --- | ----------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------- |
+| 1   | A11Y v0.5 SHIPPED                                                       | ✅     | Composite 92%+, 4-ICP 9.5/10 PLATINUM+                                     |
+| 2   | 134 components dark-mode verification (0 hardcoded bg-white/text-black) | ✅     | 1707 files checked, 0 violations                                           |
+| 3   | axe-core scan (0 critical, 0 serious)                                   | ✅     | 15/15 jest-axe passes (a6cd1888)                                           |
+| 4   | 6 DRI handoff confirmations (cross-Muse co-signs)                       | ⏳     | 3/6 filed (PICK AH + AJ task board entries for Iris/Hermes/Sentinel Atlas) |
+| 5   | RATIFICATION GATE 16:00 UTC 2026-06-22 stand-by                         | ⏳     | T-5d                                                                       |
 
 **DRI Handoff Progress: 3/6 task board entries filed (PICK AH Iris, PICK AJ Hermes, PICK AJ Sentinel Atlas) — awaiting cross-Muse response**
 
