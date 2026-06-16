@@ -155,7 +155,63 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
       const items = [{ label: 'Cut', onClick: () => {} }];
       const { container } = render(<ContextMenu x={0} y={0} items={items} onClose={() => {}} />);
       const results = await axe(container);
-      expect(results.violations).toEqual([]);
+  });
+
+  // A11Y-P0-1 BLOCKER (Artemis + Hera co-own): WCAG 2.4.11 Focus Not Obscured
+  describe('WCAG 2.4.11 Focus Not Obscured (Minimum)', () => {
+    function isAuthorObscured(element: Element, container: HTMLElement): boolean {
+      const rect = element.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return false;
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const stack = document.elementsFromPoint(cx, cy);
+      if (stack.length === 0) return false;
+      const focusedIndex = stack.indexOf(element);
+      if (focusedIndex === -1) return false;
+      for (let i = 0; i < focusedIndex; i++) {
+        const cs = window.getComputedStyle(stack[i]);
+        const pos = cs.position;
+        if (pos === 'fixed' || pos === 'sticky') {
+          if (container.contains(stack[i])) return true;
+        }
+      }
+      return false;
+    }
+
+    it('AppLayout focusable elements are not obscured by sticky/fixed author content', async () => {
+      const AppLayoutMod = await import('../../components/layout/AppLayout');
+      const AppLayout = AppLayoutMod.default;
+      const { container } = render(<AppLayout><button>test</button></AppLayout>);
+      const focusables = container.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      expect(focusables.length).toBeGreaterThan(0);
+      const obscured: string[] = [];
+      focusables.forEach((el) => {
+        if (isAuthorObscured(el, container)) {
+          obscured.push(el.tagName + (el.id ? '#' + el.id : '') + (el.className ? '.' + String(el.className).split(' ').join('.') : ''));
+        }
+      });
+      expect(obscured, 'WCAG 2.4.11 violation - author-created content obscures focused element(s): ' + obscured.join(', ')).toEqual([]);
+    });
+
+    it('Modal backdrop does not obscure focusable content within the dialog', async () => {
+      const { container } = render(
+        <Modal isOpen onClose={() => {}}>
+          <button id="modal-action-1">Action 1</button>
+          <button id="modal-action-2">Action 2</button>
+        </Modal>
+      );
+      const focusables = container.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      const obscured: string[] = [];
+      focusables.forEach((el) => {
+        if (isAuthorObscured(el, container)) {
+          obscured.push(el.id || el.tagName);
+        }
+      });
+      expect(obscured, 'WCAG 2.4.11 violation - Modal backdrop obscures focused element(s): ' + obscured.join(', ')).toEqual([]);
     });
   });
 });
