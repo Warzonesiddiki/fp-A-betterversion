@@ -141,6 +141,19 @@ export class RealtimeChannel {
   /**
    * Subscribe to a typed realtime event.
    * @returns An unsubscribe function. Idempotent.
+   *
+   * @example
+   * ```ts
+   * const channel = client.realtime.channel('workbook:42');
+   * await channel.connect();
+   * const off = channel.subscribe('cell:edit', (event) => {
+   *   if (event.type === 'cell:edit') {
+   *     console.log('cell updated:', event.payload.cell, '=', event.payload.value);
+   *   }
+   * });
+   * // Detach the handler later:
+   * off();
+   * ```
    */
   public subscribe(type: RealtimeEvent['type'], handler: RealtimeEventHandler): () => void {
     if (!VALID_EVENT_TYPES.has(type)) {
@@ -159,7 +172,19 @@ export class RealtimeChannel {
     };
   }
 
-  /** Register a state-change observer. */
+  /**
+   * Register a state-change observer.
+   *
+   * The listener fires once immediately with the current state (so late
+   * subscribers can synchronise) and again on every subsequent change.
+   *
+   * @example
+   * ```ts
+   * const off = channel.onState((state) => {
+   *   console.log('connection state:', state); // 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'closed' | 'error'
+   * });
+   * ```
+   */
   public onState(listener: ConnectionStateListener): () => void {
     this.stateListeners.add(listener);
     // Emit current state immediately for late subscribers.
@@ -178,6 +203,20 @@ export class RealtimeChannel {
   /**
    * Send a `cell:edit` (or other write event) to the server.
    * The server is responsible for broadcasting it to other clients.
+   *
+   * @example
+   * ```ts
+   * channel.send({
+   *   type: 'cell:edit',
+   *   payload: {
+   *     sheetId: 'sheet-1',
+   *     cell: 'A1',
+   *     value: 42,
+   *     userId: 'u-7',
+   *     ts: Date.now(),
+   *   },
+   * });
+   * ```
    */
   public send(event: RealtimeEvent): void {
     this.manager.send({

@@ -214,7 +214,19 @@ export class ResourceCollection<T> {
   }
 }
 
-/** QuickBooks Online namespace. */
+/**
+ * QuickBooks Online namespace — typed CRUD over the QBO connector.
+ *
+ * @example
+ * ```ts
+ * const accounts = await client.qbo.accounts.list({ active: true });
+ * const invoice = await client.qbo.invoices.get('inv-42');
+ * const created = await client.qbo.invoices.create({
+ *   customerRef: 'cust-1',
+ *   totalAmt: 100,
+ * });
+ * ```
+ */
 export class QboNamespace {
   public readonly accounts: ResourceCollection<unknown>;
   public readonly invoices: ResourceCollection<unknown>;
@@ -230,7 +242,16 @@ export class QboNamespace {
   }
 }
 
-/** Xero namespace. */
+/**
+ * Xero namespace — typed CRUD over the Xero connector.
+ *
+ * @example
+ * ```ts
+ * const contacts = await client.xero.contacts.list();
+ * const tenants = await client.xero.tenants.list();
+ * const updated = await client.xero.invoices.update('inv-7', { status: 'PAID' });
+ * ```
+ */
 export class XeroNamespace {
   public readonly accounts: ResourceCollection<unknown>;
   public readonly invoices: ResourceCollection<unknown>;
@@ -244,7 +265,17 @@ export class XeroNamespace {
   }
 }
 
-/** Custom REST namespace — generic CRUD against `/api/*`. */
+/**
+ * Custom REST namespace — generic CRUD against `/api/*` for endpoints
+ * that don't have a typed connector namespace (rare, escape hatch).
+ *
+ * @example
+ * ```ts
+ * const settings = await client.custom.get<{ theme: string }>('/api/user/settings');
+ * const saved = await client.custom.post('/api/notes', { body: 'hello' });
+ * await client.custom.delete('/api/cache/org-42');
+ * ```
+ */
 export class CustomNamespace {
   public constructor(private readonly client: FpaClient) {}
 

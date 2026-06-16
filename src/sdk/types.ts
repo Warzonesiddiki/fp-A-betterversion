@@ -70,6 +70,35 @@ export interface OAuth2TokenState {
  * - `bearer`:  Static bearer token (no refresh).
  * - `basic`:   HTTP Basic credentials. **HTTPS only** (the underlying
  *   client warns if `baseUrl` is `http:`).
+ *
+ * @example
+ * ```ts
+ * // OAuth2 (recommended for production) — client config + runtime tokens
+ * const oauth: AuthConfig = {
+ *   type: 'oauth2',
+ *   client: {
+ *     clientId: 'abc',
+ *     clientSecret: 'xyz',
+ *     tokenUrl: 'https://oauth.platform.example.com/token',
+ *     redirectUri: 'https://app.example.com/cb',
+ *     scopes: ['workbook.read', 'workbook.write'],
+ *   },
+ *   tokens: {
+ *     accessToken: 'ey...',
+ *     refreshToken: 'rt...',
+ *     expiresAt: Date.now() + 3_600_000,
+ *   },
+ * };
+ *
+ * // Bearer token (server-to-server, no refresh)
+ * const bearer: AuthConfig = { type: 'bearer', token: 'ey...' };
+ *
+ * // API key (custom connectors)
+ * const apiKey: AuthConfig = { type: 'apiKey', apiKey: 'sk_...', headerName: 'X-API-Key' };
+ *
+ * // Basic auth (legacy, HTTPS-only)
+ * const basic: AuthConfig = { type: 'basic', username: 'u', password: 'p' };
+ * ```
  */
 export type AuthConfig =
   | {
@@ -95,7 +124,26 @@ export const DEFAULT_TIMEOUT_MS = 30_000 as const;
 /** Default retry count for transient failures. */
 export const DEFAULT_RETRY_COUNT = 3 as const;
 
-/** FpaClient construction config. */
+/**
+ * FpaClient construction config.
+ *
+ * @example
+ * ```ts
+ * const client = new FpaClient({
+ *   baseUrl: 'https://api.finplanpro.dev/v1',
+ *   auth: { type: 'bearer', token: process.env.FPA_TOKEN! },
+ *   timeoutMs: 15_000,
+ *   retryCount: 3,
+ *   connector: 'qbo',
+ *   headers: { 'X-Org-Id': 'org-42' },
+ *   realtimeUrl: 'wss://ws.finplanpro.dev/realtime',
+ *   onAuthRefresh: async (auth) => {
+ *     await persistTokens(auth);
+ *     return auth;
+ *   },
+ * });
+ * ```
+ */
 export interface FpaClientConfig {
   /** REST base URL. Defaults to `DEFAULT_BASE_URL`. */
   readonly baseUrl?: string;
@@ -124,7 +172,18 @@ export interface FpaClientConfig {
 /** Supported accounting-connector identifiers. */
 export type ConnectorId = 'qbo' | 'xero' | 'sage' | 'netsuite' | 'dynamics' | 'custom';
 
-/** Connector-specific request options (forwarded as headers). */
+/**
+ * Connector-specific request options (forwarded as headers).
+ *
+ * @example
+ * ```ts
+ * const opts: ConnectorOptions = {
+ *   tenantId: 'realm-123',
+ *   minorVersion: '65',
+ *   sandbox: true,
+ * };
+ * ```
+ */
 export interface ConnectorOptions {
   /** Tenant / realm / organisation identifier. */
   readonly tenantId?: string;
