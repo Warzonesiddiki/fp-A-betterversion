@@ -274,9 +274,27 @@ src/sdk/
 
 ## Testing
 
-Vitest spec for the SDK is a queued follow-on (PICK 2 in the
-PROACTIVE-PICK-CHAIN). In the meantime, examples in
-`docs/parts/API_EXAMPLES.md §6` serve as the executable spec.
+Run the SDK test suite with:
+
+```bash
+npx vitest run src/sdk/
+```
+
+Coverage (57 tests, ~3s wall clock):
+
+| Spec | File | Tests | What it covers |
+|---|---|---|---|
+| `types.test.ts` | `src/sdk/types.test.ts` | 20 | AuthConfig 4-way union, OAuth2 client/tokens split, FpaClientConfig defaults, ConnectorOptions, SdkResult, SDK_VERSION, realtime event taxonomy (10 types), ConnectionState (6 states) |
+| `RealtimeChannel.test.ts` | `src/sdk/realtime/RealtimeChannel.test.ts` | 15 | state machine (idle->connecting->connected->closed), subscribe() idempotent unsubscribe, onState() immediate + change emit, send() routing to WebSocketManager, 3-witness pattern drops malformed events |
+| `FpaClient.test.ts` | `src/sdk/FpaClient.test.ts` | 22 | construction with all 4 auth variants, namespace shape (qbo 5 / xero 4 / custom), RealtimeFactory.connect() singleton, getResult/postResult/putResult/patchResult/deleteResult SdkResult shape, setAuth() + onAuthRefresh hook |
+
+Tests use a `MockWebSocket` (same pattern as `WebSocketManager.test.ts`) -- no
+network calls, no real timers (fake setTimeout for state-machine transitions).
+Test files are excluded from `tsc --noEmit` (per `tsconfig.json`'s
+`**/*.test.*` exclude) so they don't bloat the production build.
+
+For executable end-to-end examples, see
+`docs/parts/API_EXAMPLES.md §6`.
 
 ---
 
