@@ -293,7 +293,7 @@ export class AuditLogger {
     severity?: 'debug' | 'info' | 'warn' | 'error' | 'critical';
     metadata?: Record<string, unknown>;
   }): Promise<AuditEvent> {
-    const severity = input.severity ?? 'info';
+    const severity: AuditSeverity = input.severity === 'warn' ? 'warning' : input.severity ?? 'info';
     const payload: Record<string, unknown> = {
       ...(input.metadata ?? {}),
       target: input.target,
@@ -303,7 +303,7 @@ export class AuditLogger {
       actor: this.source ?? 'system',
       eventType: input.action,
       category: this.category ?? 'security-event',
-      severity: severity as AuditSeverity,
+      severity,
       payload,
       source: this.source ?? 'hephaestus',
     });
@@ -354,7 +354,7 @@ export class AuditLogger {
       actor: input.actor,
       eventType: input.eventType,
       category: input.category,
-      severity: severity as AuditSeverity,
+      severity,
       payload: { ...payload },
       source: input.source,
       correlationId,
@@ -577,3 +577,5 @@ async function computeEventHash(e: AuditEvent): Promise<string> {
   ].join('|');
   return sha256Hex(preimage);
 }
+
+
