@@ -285,7 +285,12 @@ export default function ValueBasedCarePage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={programPerformance} />
+          <DataTable
+            columns={columns}
+            data={programPerformance}
+            caption="Value-based care program performance: program name, attribution, quality score, and savings rate"
+            ariaLabel="Value-based care performance table"
+          />
         </CardContent>
       </Card>
     </div>

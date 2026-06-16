@@ -243,7 +243,13 @@ export default function UserManagementPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <DataTable data={filteredUsers} columns={userColumns} pageSize={8} />
+              <DataTable
+                data={filteredUsers}
+                columns={userColumns}
+                pageSize={8}
+                caption="User accounts: name, email, role, and last activity for each user"
+                ariaLabel="User management table"
+              />
             </CardContent>
           </Card>
         </div>

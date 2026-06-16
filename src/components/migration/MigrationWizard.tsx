@@ -367,6 +367,8 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
                   header: key,
                   width: '150px',
                 }))}
+                caption="Data migration preview: imported rows with their original column headers"
+                ariaLabel="Data migration preview"
               />
             ) : (
               <div className="text-center text-muted-foreground p-8">No preview data available</div>

@@ -306,7 +306,12 @@ export default function ProjectCostingPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={projectCostLedger} />
+          <DataTable
+            columns={columns}
+            data={projectCostLedger}
+            caption="Project cost ledger by activity"
+            ariaLabel="Project cost ledger table"
+          />
         </CardContent>
       </Card>
     </div>

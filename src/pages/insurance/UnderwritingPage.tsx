@@ -291,7 +291,12 @@ export default function UnderwritingPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={rateFilings} />
+          <DataTable
+            columns={columns}
+            data={rateFilings}
+            caption="Insurance rate filings: line of business, effective date, rate change percentage, and approval status"
+            ariaLabel="Insurance rate filings table"
+          />
         </CardContent>
       </Card>
     </div>

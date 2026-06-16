@@ -200,6 +200,7 @@ export const applyDragFill = (
   for (const targetRef of targetRefs) {
     const targetMatch = targetRef.match(/^([A-Z]+)(\d+)$/);
     if (!targetMatch) continue;
+    // F2 Pattern A: non-null assertion (regex match guarantees captures exist; noUncheckedIndexedAccess)
     const targetColIdx = colToIndex(targetMatch[1]!);
     const targetRow = parseInt(targetMatch[2]!, 10);
     const rowDelta = targetRow - sourceRow;
@@ -408,10 +409,11 @@ const expandRange = (start: string, end: string): string[] => {
     }
     return s;
   };
+  // F2 Pattern A: non-null assertion (regex match guarantees captures exist; noUncheckedIndexedAccess)
   const r1 = parseInt(startMatch[2]!, 10);
   const r2 = parseInt(endMatch[2]!, 10);
   const c1 = colToIndex(startMatch[1]!);
-  const c2 = colToIndex(endMatch[1] ?? '');
+  const c2 = colToIndex(endMatch[1]!);
   const refs: string[] = [];
   for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++) {
     for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) {

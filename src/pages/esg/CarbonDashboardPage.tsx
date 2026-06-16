@@ -214,13 +214,14 @@ export default function CarbonDashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Carbon emissions by source and scope">
+              <caption className="sr-only">Carbon emissions summary showing source, scope, tCO2e, and percentage of total emissions</caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th className="text-left py-2 px-3 text-slate-400 font-medium">Source</th>
-                  <th className="text-center py-2 px-3 text-slate-400 font-medium">Scope</th>
-                  <th className="text-right py-2 px-3 text-slate-400 font-medium">tCO₂e</th>
-                  <th className="text-right py-2 px-3 text-slate-400 font-medium">% of Total</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Source</th>
+                  <th scope="col" className="text-center py-2 px-3 text-slate-400 font-medium">Scope</th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">tCO₂e</th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">% of Total</th>
                 </tr>
               </thead>
               <tbody>

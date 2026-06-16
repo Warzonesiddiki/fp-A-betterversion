@@ -260,6 +260,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                         { key: 'account', header: t('forms.account') },
                         { key: 'amount', header: t('forms.amount') },
                       ]}
+                      caption="Imported data preview: date, account, and amount of each imported transaction"
+                      ariaLabel="Imported data preview"
                     />
                   </div>
                 ) : (

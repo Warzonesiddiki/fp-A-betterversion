@@ -409,7 +409,12 @@ export default function BondPortfolioPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={bondColumns} data={enrichedBonds} />
+          <DataTable
+            columns={bondColumns}
+            data={enrichedBonds}
+            caption="Bond portfolio holdings: issuer, coupon, maturity, face value, and market value for each bond"
+            ariaLabel="Bond portfolio holdings table"
+          />
         </CardContent>
       </Card>
     </div>

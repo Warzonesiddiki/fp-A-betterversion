@@ -164,7 +164,13 @@ export function BankReconciliation() {
         </CardHeader>
         <CardContent aria-labelledby="reconciliation-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable />
+            <DataTable
+              columns={columns}
+              data={tableData}
+              sortable
+              caption="Bank reconciliation matched and unmatched items: book and bank balances with differences"
+              ariaLabel="Bank reconciliation table"
+            />
           ) : (
             <p className="text-slate-400">No reconciliation data available.</p>
           )}

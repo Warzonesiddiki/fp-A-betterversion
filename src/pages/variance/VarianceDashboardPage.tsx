@@ -333,7 +333,12 @@ export default function VarianceDashboardPage() {
         />
       </div>
 
-      <DataTable columns={columns} data={data.rows} />
+      <DataTable
+        columns={columns}
+        data={data.rows}
+        caption="Variance analysis: budget vs actual values by account and period"
+        ariaLabel="Variance analysis table"
+      />
     </div>
   );
 }

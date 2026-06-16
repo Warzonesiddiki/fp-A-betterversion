@@ -311,7 +311,12 @@ export default function EnergyRiskPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={hedgePositions} />
+          <DataTable
+            columns={columns}
+            data={hedgePositions}
+            caption="Energy hedge positions and exposure"
+            ariaLabel="Energy hedge positions table"
+          />
         </CardContent>
       </Card>
     </div>

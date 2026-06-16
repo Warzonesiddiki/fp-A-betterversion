@@ -263,7 +263,12 @@ export default function CashForecastPage() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
-      <DataTable columns={catColumns} data={data.categories} />
+      <DataTable
+        columns={catColumns}
+        data={data.categories}
+        caption="Cash forecast category breakdown by period"
+        ariaLabel="Cash forecast categories table"
+      />
     </div>
   );
 }

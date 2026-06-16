@@ -443,7 +443,12 @@ export default function CreditRiskPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={creditColumns} data={creditData} />
+          <DataTable
+            columns={creditColumns}
+            data={creditData}
+            caption="Credit risk exposures: counterparty, notional, credit rating, and probability of default"
+            ariaLabel="Credit risk exposures table"
+          />
         </CardContent>
       </Card>
     </main>

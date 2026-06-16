@@ -320,7 +320,12 @@ export default function ClaimsAnalyticsPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={claimDetails} />
+          <DataTable
+            columns={columns}
+            data={claimDetails}
+            caption="Insurance claims analytics: claim ID, type, amount, status, and settlement date"
+            ariaLabel="Claims analytics table"
+          />
         </CardContent>
       </Card>
     </div>

@@ -316,7 +316,13 @@ export function LeaseAccountingPage() {
             </CardHeader>
             <CardContent>
               {tableData.length > 0 ? (
-                <DataTable columns={columns} data={tableData} sortable />
+                <DataTable
+                  columns={columns}
+                  data={tableData}
+                  sortable
+                  caption="Lease accounting: lease ID, type, commencement, term, and ROU asset value"
+                  ariaLabel="Lease accounting table"
+                />
               ) : (
                 <p className="text-sm text-slate-500 text-center py-4">
                   No lease account data available.

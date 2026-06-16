@@ -345,7 +345,12 @@ export default function RenewableEnergyPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={renewableAssets} />
+          <DataTable
+            columns={columns}
+            data={renewableAssets}
+            caption="Renewable energy asset portfolio"
+            ariaLabel="Renewable assets table"
+          />
         </CardContent>
       </Card>
     </div>

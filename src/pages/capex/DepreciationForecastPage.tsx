@@ -240,16 +240,17 @@ export default function DepreciationForecastPage() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Depreciation forecast by asset">
+              <caption className="sr-only">Depreciation schedule showing cost basis, useful life, method, and annual depreciation per asset</caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th className="text-left py-2 px-3 text-slate-400 font-medium">Asset</th>
-                  <th className="text-left py-2 px-3 text-slate-400 font-medium">Category</th>
-                  <th className="text-right py-2 px-3 text-slate-400 font-medium">Cost</th>
-                  <th className="text-right py-2 px-3 text-slate-400 font-medium">Life (Yr)</th>
-                  <th className="text-left py-2 px-3 text-slate-400 font-medium">Method</th>
-                  <th className="text-right py-2 px-3 text-slate-400 font-medium">NBV</th>
-                  <th className="text-right py-2 px-3 text-slate-400 font-medium">Annual Dep</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Asset</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Category</th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Cost</th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Life (Yr)</th>
+                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">Method</th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">NBV</th>
+                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">Annual Dep</th>
                 </tr>
               </thead>
               <tbody>

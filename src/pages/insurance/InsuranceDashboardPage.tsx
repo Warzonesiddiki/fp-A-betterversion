@@ -328,7 +328,12 @@ export default function InsuranceDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={underwritingResults} />
+          <DataTable
+            columns={columns}
+            data={underwritingResults}
+            caption="Insurance underwriting results"
+            ariaLabel="Underwriting results table"
+          />
         </CardContent>
       </Card>
     </div>

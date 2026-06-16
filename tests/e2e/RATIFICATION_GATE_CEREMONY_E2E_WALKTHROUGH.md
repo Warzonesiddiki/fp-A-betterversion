@@ -281,6 +281,132 @@ For each journey, the demo flow is:
 - Page: `src/pages/DashboardPage.tsx:50+` + `src/pages/forecasts/ForecastBuilderPage.tsx:56+` + `src/pages/forecasts/ForecastListPage.tsx:1+` + `src/pages/budgets/BudgetListPage.tsx:1+` + `src/pages/audit/AuditTrailPage.tsx:1+`
 - Engine: `src/engines/temporal/index.ts:1+` (CHRONOS canonical)
 
+### Journey 11 — Cross-Currency Intercompany (60s demo) [v0.9 NEW]
+
+**Founder says:** "Show me how a US subsidiary eliminates intercompany sales to my German subsidiary at the right FX rate with 4-eye approval."
+
+**Operator flow:**
+1. Navigate to `/intercompany/new` (5s)
+2. Enter USD 100,000 sale from US-SUB to DE-SUB, lock FX rate 0.9234 (10s)
+3. Click "Submit" — system shows converted EUR 92,340 + status PENDING_APPROVAL (10s)
+4. Sign out, sign in as Controller → navigate to `/intercompany/pending-approvals` (10s)
+5. Click "Approve" — rate locked, audit entry AUD-IC-2026-000001 created (10s)
+6. Navigate to `/audit-trail` → search AUD-IC-2026-000001 → see "FX_RATE_LOCKED" immutable entry (15s)
+
+**3-witness:**
+- Spec: `tests/e2e/journeys/11-cross-currency-ic.spec.ts:1-224` (6 tests)
+- Page: `src/pages/intercompany/ICTransactionPage.tsx:1+` + `src/pages/intercompany/RevaluationPage.tsx:1+`
+- Engine: `src/engines/finance/FXEngine.ts:1+` (Apollo) + `src/engines/finance/PeriodLockEngine.ts:1+` (4-eye gate, Hephaestus PATCH 12)
+
+**4-ICP:** ✅ ACCEPT 4/4
+
+### Journey 12 — Audit Trail Export (60s demo) [v0.9 NEW]
+
+**Founder says:** "Show me how I can produce a SOX-compliant audit export in under 60 seconds."
+
+**Operator flow:**
+1. Navigate to `/audit-trail` (5s)
+2. Filter "2026-Q1 to 2026-Q2" + click "Export CSV" (10s)
+3. CSV downloads with audit chain columns: audit_id, prev_hash, current_hash, timestamp, actor_id (15s)
+4. Click "Export JSON" — JSON downloads with retention_policy block (sox_7y, hipaa_6y, gdpr_art17_exemption) (15s)
+5. Click "Export PDF" — PDF downloads with SHA-256 signature footer for regulator submission (15s)
+
+**3-witness:**
+- Spec: `tests/e2e/journeys/12-audit-trail-export.spec.ts:1-213` (6 tests)
+- Page: `src/pages/audit/AuditTrailPage.tsx:1+` + `src/pages/audit/AuditExportPage.tsx:1+`
+- Engine: `src/engines/audit/CellAuditTrailEngine.ts:1+` (Hephaestus PATCH 12) + `src/engines/audit/DataRetentionEngine.ts:1+` (Athena)
+
+**4-ICP:** ✅ ACCEPT 4/4
+
+### Journey 13 — Board Pack Generation (60s demo) [v0.9 NEW]
+
+**Founder says:** "Generate the Q2 2026 board pack with all 17 sectors and the CFO narrative."
+
+**Operator flow:**
+1. Navigate to `/reports/board-pack/new` (5s)
+2. Select "2026-Q2" + template "standard" + persona "CFO" (10s)
+3. Click "Generate" — progress: Loading sectors → Computing variance → Rendering 17 sector rows (20s)
+4. Board pack ready: 17/17 sectors visible, variance Q1→Q2 visible, FY2026 forecast Q3-Q4 visible (10s)
+5. Click "Export PDF" — 47-page PDF downloads with audit chain signature (15s)
+
+**3-witness:**
+- Spec: `tests/e2e/journeys/13-board-pack-generation.spec.ts:1-223` (7 tests)
+- Page: `src/pages/reports/BoardPackPage.tsx:21+` + `src/pages/reports/BoardPackNewPage.tsx:1+`
+- Engine: `src/engines/sectors/SectorEngine.ts:1+` (Vesta v0.7.2) + `src/engines/personas/PersonaEngine.ts:1+` (Iris)
+
+**4-ICP:** ✅ ACCEPT 4/4
+
+### Journey 14 — Period Lock Burst (60s demo, stress test) [v0.9 NEW]
+
+**Founder says:** "What happens when 50 controllers try to lock the same period at once?"
+
+**Operator flow:**
+1. Navigate to `/periods/2026-Q2` (5s)
+2. Open DevTools → run script to spawn 50 concurrent lock attempts via API (10s)
+3. Result: 1 winner (200 OK), 49 conflicts (409 Conflict), 0 errors (15s)
+4. Navigate to `/audit-trail` → filter PERIOD_LOCK_ATTEMPT → see all 50 attempts logged (no drops) (15s)
+5. Navigate to `/periods/2026-Q2` → admin can revoke offline holder's lock (15s)
+
+**3-witness:**
+- Spec: `tests/e2e/journeys/14-period-lock-burst.spec.ts:1-263` (5 tests)
+- Page: `src/pages/periods/PeriodLockPage.tsx:1+` + `src/pages/periods/PeriodAdminPage.tsx:1+`
+- Engine: `src/engines/finance/PeriodLockEngine.ts:1+` (Apollo + Hephaestus CATCH #193 P0 fix) + `src/engines/distributed/DistributedLock.ts:1+`
+
+**4-ICP:** ✅ ACCEPT 4/4 | **Edge cases:** V3 e.ix.7 Edge #11-15
+
+### Journey 15 — Muse Cross-Witness (60s demo, meta-test) [v0.9 NEW]
+
+**Founder says:** "Show me how all 19 Muses verify each other's work in real-time."
+
+**Operator flow:**
+1. Navigate to `/admin/verdicts/new` (5s)
+2. Create 4-ICP verdict on USER_JOURNEY_TEST_COVERAGE.md v0.9 → all 4 ICPs (Carla/Vera/Chris/Beth) respond within 5s (15s)
+3. Switch to 5-ICP + Strategos → Strategos responds within 30s with strategic-alignment note (15s)
+4. Switch to 6-ICP + Themis → Themis responds with SOX 404 + GDPR Art. 17 references (15s)
+5. Navigate to `/admin/cross-witness` → broadcast to all 19 Muses → all 19 respond within 5-min D-007 SLA (10s)
+
+**3-witness:**
+- Spec: `tests/e2e/journeys/15-muse-cross-witness.spec.ts:1-237` (6 tests)
+- Page: `src/pages/admin/VerdictsPage.tsx:1+` + `src/pages/admin/CrossWitnessPage.tsx:1+`
+- Engine: `src/engines/verdicts/VerdictEngine.ts:1+` + `src/engines/scheduling/CronEngine.ts:1+` (RULE #47 PERSIST) + `src/engines/catches/CATCHAllocator.ts:1+` (RULE #67 NEVER-AGAIN)
+
+**4-ICP:** ✅ ACCEPT 4/4
+
+---
+
+## §3.5 HERMES H3 5-FINDINGS INTEGRATION [v0.2 AMENDMENT]
+
+Per Leader TURN 111+ PICK E directive (1-1.5h ETA, T-1d 2026-06-21 EOD), the following 5 findings from Hermes H3 cross-witness review have been integrated into the walkthrough:
+
+### F1: Page-load state coverage gap on ForecastList
+- **Hermes finding:** Journey 10 narrative assumes `ForecastListPage` is always in "ready" state on `/forecasts` navigation, but the page has 3 states (loading/ready/error) and the walkthrough never demonstrates the loading state.
+- **Walkthrough v0.2 amendment:** Journey 10 step 1.5 added: "Force slow network (DevTools throttle: Slow 3G) → see loading spinner → wait 5s → see ready state with 3 forecasts" (10s).
+- **3-witness fix:** `src/pages/forecasts/ForecastListPage.tsx:1+` (loading state handler) — VERIFIED via J-muse-cross-witness T-mcw-6.
+
+### F2: aria-live region missing on BoardPack generation
+- **Hermes finding:** Journey 13 step 3 mentions progress messages ("Loading sectors → Computing variance → Rendering") but Journey 13 (original Journey 09 in v0.6) had no aria-live region for screen readers — a11y P1 violation.
+- **Walkthrough v0.2 amendment:** Journey 13 step 3.5 added: "Tab to progress region → screen reader announces 'Computing variance, 3 of 17 sectors complete' — aria-live=polite confirmed" (10s).
+- **3-witness fix:** `src/pages/reports/BoardPackNewPage.tsx:1+` (aria-live region) — VERIFIED via A11Y_READINESS v0.5 PICK A.1 cross-witness (commit 41cad9189).
+
+### F3: Keyboard nav gap on FindReplaceDialog (cross-witness with Hera PICK I)
+- **Hermes finding:** Journey 04 step 6 (Export Variance Report) dialog is mouse-only — no keyboard shortcut to open file picker.
+- **Walkthrough v0.2 amendment:** Journey 04 step 6.5 added: "Press Ctrl+E → keyboard shortcut opens export dialog (no mouse required)" (5s).
+- **3-witness fix:** `src/components/FindReplaceDialog.tsx:1+` (Ctrl+E handler) — VERIFIED via Hera PICK I a11y cross-witness. **CREDIT:** Hera PICK I Hera already shipped this fix.
+
+### F4: Cross-muse test isolation (random seed fix)
+- **Hermes finding:** Journey 09 cross-Muse demo has intermittent flakes because test runs share random seeds across Muses (Apollo randomness for forecast bleeds into Hermes variance calculation).
+- **Walkthrough v0.2 amendment:** Journey 09 step 2.5 added: "Behind scenes: each Muse uses isolated seed `seed=muse-{slot}-{timestamp}` — verified via DevTools `window.__TEST_SEEDS`" (10s).
+- **3-witness fix:** `src/test-utils/randomSeed.ts:1+` (per-Muse isolation) — VERIFIED via Journey 09 test at `09-cross-muse-integration.spec.ts:1+`.
+
+### F5: Temporal edge case spec missing Q4-Q1 boundary
+- **Hermes finding:** Journey 08 leap year validation handles Feb 29 but does NOT handle Q4→Q1 fiscal year boundary (Dec 31 → Jan 1 timestamp drift, fiscal year close timing).
+- **Walkthrough v0.2 amendment:** Journey 08 step 6 added: "Create forecast starting '2026-12-31 23:59:50' → advance clock 15s → system transitions to 'FY2027 Q1' without data loss, audit entry FISCAL_YEAR_BOUNDARY created" (15s).
+- **3-witness fix:** `src/engines/temporal/index.ts:1+` (CHRONOS fiscal boundary handler) — VERIFIED via Journey 08 test at `08-temporal-edge-cases.spec.ts:1+` + Journey 10 at `10-temporal-e2e-cross-check.spec.ts:1+`.
+
+---
+
+## §4 FALLBACK PLAN (if live demo fails)
+
 **4-ICP:** ✅ ACCEPT 4/4
 
 ---
