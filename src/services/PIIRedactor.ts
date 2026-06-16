@@ -1,4 +1,4 @@
-// PIIRedactor — Multi-strategy redaction of personally identifiable information
+﻿// PIIRedactor — Multi-strategy redaction of personally identifiable information
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 13 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:
@@ -427,7 +427,7 @@ export class PIIRedactor {
    *
    * Returns a deterministic, non-reversible token for the identifier.
    */
-  redactIdentifier(identifier: string, actor?: string): string {
+  async redactIdentifier(identifier: string, actor?: string): Promise<string> {
     if (typeof identifier !== 'string') {
       throw new PIIRedactionError('identifier must be a string', 'INVALID_INPUT');
     }
@@ -435,19 +435,17 @@ export class PIIRedactor {
     const auditEvent: PIIRedactionAuditEvent = {
       type: 'pii.redacted',
       actor: actor ?? this.defaultActor,
-      at: Date.now(),
-      path: 'identifier',
-      category: 'name',
-      strategy: this.defaultStrategy,
-      redactedCount: 1,
-      categoryCounts: { name: 1 },
-      ok: true,
       source: this.source,
+      redactedCount: 1,
+      byCategory: { name: 1 },
+      success: true,
+      at: Date.now(),
       prevChainHash: this.chainHead,
+      eventHash: '',
+      nonce: randomHex(16),
     };
-    const hash = computeEventHashSync(auditEvent, this.chainHead);
-    auditEvent.eventHash = hash;
-    this.chainHead = hash;
+    auditEvent.eventHash = await computeAuditHash(auditEvent);
+    this.chainHead = auditEvent.eventHash;
     this.events.push(auditEvent);
     if (this.events.length > this.maxEvents) {
       this.events.shift();
@@ -812,3 +810,6 @@ async function computeAuditHash(e: PIIRedactionAuditEvent): Promise<string> {
   ].join('|');
   return sha256Hex(preimage);
 }
+
+
+
