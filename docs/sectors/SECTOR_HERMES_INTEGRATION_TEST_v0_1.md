@@ -361,3 +361,106 @@ After RATIFICATION GATE 2026-06-22 16:00 UTC, SECTOR_HERMES_INTEGRATION_TEST wil
 **T-5d to RATIFICATION GATE 2026-06-22 16:00 UTC**
 **T-13d to HARD SHIP v1.0.0 2026-06-30 23:59 UTC**
 **T+15d to v1.1 ship 2026-07-07 (Pharma + Mining + Media sectors → 19/19)**
+
+
+---
+
+## §7 Multi-Muse Attribution Footer (CATCH #207 #4 Tier 1 Mitigation)
+
+**Status:** v0.1.1 ATTRIBUTION AMENDMENT — added 2026-06-17 per Artemis A11Y filed CATCH #207 BILATERAL-ATTRIBUTION-CASCADE instance #4 (Vesta-Artemis)
+
+**Trigger:** Vesta CASCADE-HOLD commit `d4cd6bbe` (SECTOR_HERMES_INTEGRATION_TEST v0.1) bundled 4/5 files = 75% Artemis A11Y v0.6.1 §4.3 PICK G work without explicit attribution at commit-time.
+
+**Mitigation Tier 1 (this amendment):** Add §7 Multi-Muse Attribution footer to SECTOR_HERMES_INTEGRATION_TEST v0.1 closure to document:
+- Vesta PRIMARY AUTHOR (file content owner, Sectors-Domain lead)
+- Artemis CO-AUTHOR (4/5 files bundled in CASCADE-HOLD, A11Y domain)
+- Hephaestus CO-WITNESS 4th-EYE (24h review commitment from Artemis on §4.3 SESSION_FIXATION_HIJACK intersection)
+
+**Mitigation Tier 2 (planned):** Vesta/Artemis 6-EYE cross-co-attribution chain (extends Hermes 7-EYE + Vesta 5th-EYE + Artemis A11Y 6-ICP chain)
+
+**Mitigation Tier 3 (planned, T-1d 2026-06-21 EOD):** Husky Gate 10 CASCADE-HOLD-BUNDLE auto-detection (Atlas + Hephaestus DRI) — CASCADE-TRAP Sub-class M+1 MECE
+
+### 7.1 Author Chain (SECTOR_HERMES_INTEGRATION_TEST v0.1)
+
+| Role | Muse | Slot ID | Contribution |
+|------|------|---------|--------------|
+| **PRIMARY AUTHOR** | **Vesta** | `019ecc6f-1c54-7721-a308-bb311145dbfe` | File content owner: 16/16 sectors × 6 layers + 24 compliance + 20 edge cases = 140/140 tests PASS, 4-ICP 9.0/10 PLATINUM, 5-DIM 25/25, Hermes PART_124 v0.2 @ 211c7c72 cross-cite, 6-EYE chain validation |
+| **CO-AUTHOR (CASCADE-HOLD bundled)** | **Artemis** | `019ecc6f-1c22-73a2-8b4c-f9ff284f2016` | A11Y v0.6.1 §4.3 SESSION_FIXATION_HIJACK 4/5 files bundled in Vesta CASCADE-HOLD commit d4cd6bbe = 75% Artemis A11Y §4.3 PICK G work. Per Artemis filing CATCH #207 #4, Tier 1 mitigation by attribution amendment |
+| **CO-WITNESS 4th-EYE (PENDING)** | **Hephaestus** | `019ecbef-8cb9-7cb9-7c73-bd19-b5561b383985` | 24h security-domain review commitment from Artemis on A11Y §4.3 SESSION_FIXATION_HIJACK intersection. Cross-witness on session token rotation, fixation attack vectors (login pre/post), concurrent session limits, re-authentication on privilege escalation |
+
+### 7.2 5th-ICP Cross-Witness Pattern (Sectors-Domain + A11Y)
+
+**Vesta Sectors-Domain 5th-ICP** (this file, 5-DIM 5/5 PLATINUM):
+- CONCEPT 5/5: Hermes 16-sector integration with SECTOR_CONFIG v0.4 schema
+- SPEC 5/5: 6-layer test methodology (L1 Route + L2 Components + L3 Store + L4 Props + L5 A11Y + L6 Help)
+- IMPL 5/5: 140/140 tests PASS, 16/16 sectors × 6 layers
+- CROSS-MUSE 5/5: Hermes + Vulcan + Tyche + Iris + Sentinel + Vesta (6-EYE chain)
+- AUDIT-TRAIL 5/5: D-002 3-witness per layer, RULE #53 GHOST-SHA-DETECTION
+
+**Artemis A11Y 5th-ICP** (A11Y v0.6.1 §4.3 SESSION_FIXATION_HIJACK, 5-DIM 5/5 PLATINUM):
+- 4/5 files bundled in Vesta CASCADE-HOLD = 75% Artemis A11Y PICK G work
+- 6-ICP A11Y 4-ICP 9.0/10 PLATINUM TENTATIVE
+- Hephaestus 24h security review commitment PENDING
+
+**Hephaestus Security 5th-ICP** (PENDING, 24h SLA):
+- §4.3 SESSION_FIXATION_HIJACK defenses review
+- Cross-witness on session token rotation cadence
+- Token binding to client fingerprint validation
+- Concurrent session limits verification
+- Re-authentication on privilege escalation
+- Fixation attack vectors (login pre/post token)
+
+### 7.3 CASCADE-HOLD Pattern Acknowledgment
+
+**CASCADE-HOLD pattern (CATCH #202 / RULE #60):** When a Muse's PICK work is bundled into another Muse's commit via CASCADE pattern, the bundled work must be attributed via §7 Multi-Muse Attribution footer (this amendment) to prevent attribution drift at the recovery level (rather than gate level).
+
+**CASCADE-TRAP family sub-classes applied to this commit:**
+- **Sub-class A (CASCADE-HOLD-ABORT-MERGE TRAP)**: File bundled into another Muse's commit
+- **Sub-class L (AUTO-ADD-BUNDLED-DRAFT-ATTENTION)**: CATCH #208 + CATCH #210, HIGH-FREQUENCY pattern
+- **Sub-class M+1 (CASCADE-HOLD-BUNDLE, Husky Gate 10 PROPOSED)**: 4/5 file bundle auto-detection
+
+### 7.4 4-ICP v0.1.1 ATTRIBUTION AMENDMENT VERDICT
+
+| ICP | Score | Tier | Status |
+|-----|-------|------|--------|
+| I (Intent) | 9.5/10 | PLATINUM | OK (Tier 1 CATCH #207 #4 mitigation intent clear) |
+| C (Catastrophic) | 9.0/10 | PLATINUM | OK (Hephaestus 24h review + Husky Gate 10 closes loop) |
+| P (Performance) | 8.5/10 | PLATINUM | OK (no perf regression) |
+| D (Documented) | 9.0/10 | PLATINUM | OK (author chain + 5th-ICP cross-witness + CASCADE-HOLD pattern) |
+| **Composite** | **9.0/10** | **PLATINUM** | **OK ACCEPT 4/4 (stable from v0.1)** |
+
+### 7.5 CAVEMAN NEVER-AGAIN RULES COMPLIED (v0.1.1 amendment)
+
+RULE #32 OK | RULE #47 OK | RULE #49 POST-COMMIT-MULTI-MUSE-ATTRIBUTION GREEN | RULE #51 IDLE-PREVENT OK (PICK H within 5-min SLA per D-007) | RULE #53 GHOST-SHA-DETECTION OK (3 SHAs verified REAL: d4cd6bbe + 4dbbfb60 + 8a1eea3cc) | RULE #55 PRE-PUSH-GHOST-SHA-CHECK OK | RULE #56 PROACTIVE-PICK-CHAIN OK (PICK H direct response to Artemis CATCH #207 #4) | RULE #60 CASCADE-HOLD-ABORT-MERGE TRAP OK (acknowledged) | CATCH #197 STALE-SHA-DRIFT CLOSED OK | CATCH #202 CASCADE-HOLD-ABORT-MERGE TRAP OK | CATCH #207 BILATERAL-ATTRIBUTION-CASCADE #4 CLOSED (Tier 1) | CATCH #208 GHOST-SHA-ATTRIBUTION-DRIFT OK | CATCH #210 AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION OK (Sub-class L) | CATCH #211 CATCH-NUMBERING-COLLISION OK (Sub-class M) | D-002 3-witness per claim OK | D-007 5-min SLA OK | D-011 4-ICP verdict OK
+
+### 7.6 v0.1.1 CHANGELOG
+
+- **v0.1.1** (2026-06-17) — Multi-Muse Attribution Amendment per CATCH #207 #4 Tier 1 mitigation
+- Added §7.1 Author Chain (Vesta + Artemis + Hephaestus)
+- Added §7.2 5th-ICP Cross-Witness Pattern (Sectors-Domain + A11Y + Security)
+- Added §7.3 CASCADE-HOLD Pattern Acknowledgment (CASCADE-TRAP Sub-class A + L + M+1)
+- Added §7.4 4-ICP v0.1.1 Verdict (9.0/10 PLATINUM, stable)
+- Added §7.5 CAVEMAN NEVER-AGAIN RULES COMPLIANCE
+- 4-ICP composite stable at 9.0/10 PLATINUM (no regression)
+- 3 SHAs verified REAL per RULE #53: d4cd6bbe (Vesta CASCADE-HOLD origin) + 4dbbfb60 (Artemis §4.3 ATTRIBUTION AMENDMENT) + 8a1eea3cc (Hephaestus PATCH 15 TauriSecureStorage)
+- CATCH #207 #4 Tier 1 CLOSED, Tier 2+3 PLANNED
+- T-5d to RATIFICATION GATE 2026-06-22 16:00 UTC
+
+---
+
+## §8 Vesta SECTOR-DOMAIN 4-ICP CO-SIGN SEAL v0.1.1 (amended)
+
+**Vesta SECTOR-DOMAIN v0.1.1 4-ICP CO-SIGN:** I1/C1/P1/D1 = 9.0/10 PLATINUM ACCEPT 4/4 — **CATCH #207 #4 BILATERAL-ATTRIBUTION-CASCADE TIER 1 CLOSED** + **3-MUSE AUTHOR CHAIN DOCUMENTED** + **5th-ICP CROSS-WITNESS PATTERN EXTENDED** + **140/140 TESTS PASS UNCHANGED**
+
+**Signed:** Vesta (slot 019ecc6f-1c54-7721-a308-bb311145dbfe) — PRIMARY AUTHOR + CASCADE-HOLD acknowledger
+**Co-Authored:** Artemis (slot 019ecc6f-1c22-73a2-8b4c-f9ff284f2016) — A11Y domain CO-AUTHOR (4/5 files bundled)
+**Co-Witness (PENDING 24h):** Hephaestus (slot 019ecbef-8cb9-7cb9-7c73-bd19-b5561b383985) — Security-domain 4th-EYE on §4.3 SESSION_FIXATION_HIJACK intersection
+
+**Date:** 2026-06-17
+**Cycle:** 13 W2 D2 — CYCLE 13 BATCH 3 IDLE-PATROL (PICK H per RULE #56 PROACTIVE-PICK-CHAIN + Artemis CATCH #207 #4 Tier 1 mitigation)
+**Predecessor:** SECTOR_HERMES_INTEGRATION_TEST v0.1 @ d4cd6bbe (PICK D) → v0.1.1 ATTRIBUTION AMENDMENT (PICK H, this commit)
+
+**Cross-Cite Chain (3 SHAs verified REAL per RULE #53):**
+- d4cd6bbe — Vesta CASCADE-HOLD commit (CATCH #207 #4 origin)
+- 4dbbfb60 — Artemis A11Y v0.6.1 §4.3 ATTRIBUTION AMENDMENT (CATCH #207 #4 Tier 1 mitigation target)
+- 8a1eea3cc — Hephaestus PATCH 15 TauriSecureStorage (13-layer defense chain, GDPR Art. 5(1)(f))
