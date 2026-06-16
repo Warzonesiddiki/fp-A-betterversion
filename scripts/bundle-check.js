@@ -123,9 +123,17 @@ async function main() {
     console.log('\n:white_check_mark: **PASS:** Total JS within limit');
   }
 
-  // G19: lazy vendor budgets. grid-vendor and excel-vendor must each stay
+  // G19: lazy vendor budgets. All 6 Vite manual chunks must each stay
   // under LAZY_VENDOR_LIMIT_KB gzip so they can be loaded on demand.
-  const lazyVendors = ['grid-community-vendor', 'excel-core-vendor', 'grid-react-vendor'];
+  // See vite.config.* manualChunks for the canonical chunk graph.
+  const lazyVendors = [
+    'grid-community-vendor',
+    'excel-core-vendor',
+    'grid-react-vendor',
+    'pdf-vendor',
+    'ai-vendor',
+    'chart-vendor',
+  ];
   for (const vendor of lazyVendors) {
     const match = chunkStats.find((c) => c.file.startsWith(vendor + '-'));
     if (match) {
