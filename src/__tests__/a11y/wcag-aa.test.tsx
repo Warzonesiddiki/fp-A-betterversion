@@ -264,20 +264,14 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
   // A11Y-P1-10 (Hera T-HE-021 + Artemis co-own): Q5.2 focus restore <50ms
   describe('Q5.2 Focus Restore <50ms (Temporal A11y)', () => {
     it('Modal close restores focus to trigger element (focus restore verified structurally)', () => {
-      const modalSource = readFileSync(
-        join(__dirname, '../../components/ui/Modal.tsx'),
-        'utf-8'
-      );
+      const modalSource = readFileSync(join(__dirname, '../../components/ui/Modal.tsx'), 'utf-8');
       expect(modalSource).toMatch(/previousFocusRef\.current\??\.focus\(\)/);
       expect(modalSource).toMatch(/previousFocusRef\.current\s*=\s*document\.activeElement/);
       expect(modalSource).toMatch(/requestAnimationFrame\(/);
     });
 
     it('Modal focus-trap: Tab cycles within dialog (Q5.2 supporting requirement)', () => {
-      const modalSource = readFileSync(
-        join(__dirname, '../../components/ui/Modal.tsx'),
-        'utf-8'
-      );
+      const modalSource = readFileSync(join(__dirname, '../../components/ui/Modal.tsx'), 'utf-8');
       expect(modalSource).toMatch(/keydown/);
       expect(modalSource).toMatch(/FOCUSABLE/);
     });
