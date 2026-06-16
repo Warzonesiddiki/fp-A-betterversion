@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { LiveRegion } from '@/components/ui/LiveRegion';
 import { KPICardEnhanced, type KPICardEnhancedProps } from './KPICardEnhanced';
 import { TrafficLightBatch } from './TrafficLightIndicator';
 import { TornadoChart, type TornadoVariable } from './TornadoChart';
@@ -175,6 +176,35 @@ export function DashboardTemplate({
   onCellClick,
 }: DashboardTemplateProps) {
   const [activeLayout, setActiveLayout] = useState<DashboardType>(type);
+  // [Hera] a11y: tab refs + keyboard nav + screen reader announcement
+  const [layoutAnnouncement, setLayoutAnnouncement] = useState<string>('');
+  const cfoTabRef = useRef<HTMLButtonElement>(null);
+  const controllerTabRef = useRef<HTMLButtonElement>(null);
+  const analystTabRef = useRef<HTMLButtonElement>(null);
+  const PERSONAS: ReadonlyArray<{ id: DashboardType; label: string; tabId: string; panelId: string; ref: React.RefObject<HTMLButtonElement> }> = [
+    { id: 'cfo', label: 'CFO View', tabId: 'tab-cfo', panelId: 'panel-cfo', ref: cfoTabRef },
+    { id: 'controller', label: 'Controller View', tabId: 'tab-controller', panelId: 'panel-controller', ref: controllerTabRef },
+    { id: 'analyst', label: 'Analyst View', tabId: 'tab-analyst', panelId: 'panel-analyst', ref: analystTabRef },
+  ];
+  const handleLayoutChange = useCallback((next: DashboardType) => {
+    setActiveLayout(next);
+    const persona = PERSONAS.find((p) => p.id === next);
+    if (persona) setLayoutAnnouncement(`Switched to ${persona.label}`);
+  }, []);
+  const onTabKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End') return;
+    e.preventDefault();
+    let nextIdx = idx;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % PERSONAS.length;
+    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + PERSONAS.length) % PERSONAS.length;
+    else if (e.key === 'Home') nextIdx = 0;
+    else if (e.key === 'End') nextIdx = PERSONAS.length - 1;
+    const next = PERSONAS[nextIdx];
+    if (next) {
+      handleLayoutChange(next.id);
+      next.ref.current?.focus();
+    }
+  }, [handleLayoutChange]);
 
   const dashboardKPIs = kpis ?? mockKPIs;
   const dashboardTraffic = trafficItems ?? mockTrafficItems;
@@ -185,25 +215,41 @@ export function DashboardTemplate({
 
   return (
     <div className={cn('space-y-6', className)}>
-      <div className="flex items-center gap-2">
-        {(['cfo', 'controller', 'analyst'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setActiveLayout(t)}
-            className={cn(
-              'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
-              activeLayout === t
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] border border-[var(--border-subtle)]'
-            )}
-          >
-            {t === 'cfo' ? 'CFO View' : t === 'controller' ? 'Controller View' : 'Analyst View'}
-          </button>
-        ))}
+      <div
+        className="flex items-center gap-2"
+        role="tablist"
+        aria-label="Dashboard persona views"
+      >
+        {PERSONAS.map((p, idx) => {
+          const isActive = activeLayout === p.id;
+          return (
+            <button
+              key={p.id}
+              ref={p.ref}
+              id={p.tabId}
+              role="tab"
+              type="button"
+              aria-selected={isActive}
+              aria-controls={p.panelId}
+              tabIndex={isActive ? 0 : -1}
+              onClick={() => handleLayoutChange(p.id)}
+              onKeyDown={(e) => onTabKeyDown(e, idx)}
+              className={cn(
+                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                isActive
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] border border-[var(--border-subtle)]'
+              )}
+            >
+              {p.label}
+            </button>
+          );
+        })}
+        <LiveRegion message={layoutAnnouncement} politeness="polite" />
       </div>
 
       {activeLayout === 'cfo' && (
-        <>
+        <section role="tabpanel" id="panel-cfo" aria-labelledby="tab-cfo" className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {dashboardKPIs.map((kpi, idx) => (
               <KPICardEnhanced key={idx} {...kpi} onDrillDown={() => onKPIClick?.(idx)} />
@@ -258,11 +304,11 @@ export function DashboardTemplate({
               direction="higher-is-better"
             />
           </div>
-        </>
+        </section>
       )}
 
       {activeLayout === 'controller' && (
-        <>
+        <section role="tabpanel" id="panel-controller" aria-labelledby="tab-controller" className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {dashboardKPIs.slice(0, 4).map((kpi, idx) => (
               <KPICardEnhanced
@@ -329,11 +375,11 @@ export function DashboardTemplate({
               direction="higher-is-better"
             />
           </div>
-        </>
+        </section>
       )}
 
       {activeLayout === 'analyst' && (
-        <>
+        <section role="tabpanel" id="panel-analyst" aria-labelledby="tab-analyst" className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {dashboardKPIs.map((kpi, idx) => (
               <KPICardEnhanced key={idx} {...kpi} onDrillDown={() => onKPIClick?.(idx)} />
@@ -376,7 +422,7 @@ export function DashboardTemplate({
             />
           </div>
           <ActivityFeed maxItems={dashboardActivities.length} />
-        </>
+        </section>
       )}
     </div>
   );
