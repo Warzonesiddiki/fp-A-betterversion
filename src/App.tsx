@@ -232,12 +232,19 @@ const SectorRetailDashboardPage = lazy(() => import('./pages/sector/RetailDashbo
 const SectorDashboardPage = lazy(() => import('./pages/sector/SectorPage'));
 const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDashboardPage'));
 const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
-const SectorsEducationDashboardPage = lazy(() => import('./pages/sectors/EducationDashboardPage'));
-const SectorsGovernmentDashboardPage = lazy(
-  () => import('./pages/sectors/GovernmentDashboardPage')
+// Vesta Sectors-Domain: Sectors-Engine v0.7.1 — use .then() adapter for named-export pages (TS2322 fix)
+const SectorsEducationDashboardPage = lazy(() =>
+  import('./pages/sectors/EducationDashboardPage').then((m) => ({ default: m.EducationDashboardPage }))
 );
-const SectorsLogisticsDashboardPage = lazy(() => import('./pages/sectors/LogisticsDashboardPage'));
-const SectorsTelecomDashboardPage = lazy(() => import('./pages/sectors/TelecomDashboardPage'));
+const SectorsGovernmentDashboardPage = lazy(() =>
+  import('./pages/sectors/GovernmentDashboardPage').then((m) => ({ default: m.GovernmentDashboardPage }))
+);
+const SectorsLogisticsDashboardPage = lazy(() =>
+  import('./pages/sectors/LogisticsDashboardPage').then((m) => ({ default: m.LogisticsDashboardPage }))
+);
+const SectorsTelecomDashboardPage = lazy(() =>
+  import('./pages/sectors/TelecomDashboardPage').then((m) => ({ default: m.TelecomDashboardPage }))
+);
 const EducationPage = lazy(() => import('./pages/sector/EducationDashboardPage'));
 const GovernmentPage = lazy(() => import('./pages/sector/GovernmentDashboardPage'));
 const LogisticsPage = lazy(() => import('./pages/sector/LogisticsDashboardPage'));
