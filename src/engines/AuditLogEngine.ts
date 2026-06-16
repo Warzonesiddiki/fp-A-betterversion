@@ -14,6 +14,8 @@ export type AuditAction =
   | 'view'
   | 'comment';
 
+export interface ChainHashEntry { prevHash: string; entryHash: string }
+
 export interface AuditEntry {
   id: string;
   timestamp: string;
@@ -184,7 +186,7 @@ export class AuditLogEngine {
   // ===========================================================================
 
   /** Hash chain entry — extends AuditEntry with prevHash + entryHash. */
-  private _chainedHashes: Map<string, { prevHash: string; entryHash: string }> = new Map();
+  private _chainedHashes: Map<string, ChainHashEntry> = new Map();
   private _lastChainHash: string = '0'.repeat(64);
   private _signingKey: CryptoKey | null = null;
   private _queue: AuditEntry[] = [];
