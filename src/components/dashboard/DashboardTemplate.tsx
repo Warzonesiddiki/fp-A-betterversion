@@ -181,7 +181,7 @@ export function DashboardTemplate({
   const cfoTabRef = useRef<HTMLButtonElement>(null);
   const controllerTabRef = useRef<HTMLButtonElement>(null);
   const analystTabRef = useRef<HTMLButtonElement>(null);
-  const PERSONAS: ReadonlyArray<{ id: DashboardType; label: string; tabId: string; panelId: string; ref: React.RefObject<HTMLButtonElement> }> = [
+  const PERSONAS: ReadonlyArray<{ id: DashboardType; label: string; tabId: string; panelId: string; ref: React.RefObject<HTMLButtonElement | null> }> = [
     { id: 'cfo', label: 'CFO View', tabId: 'tab-cfo', panelId: 'panel-cfo', ref: cfoTabRef },
     { id: 'controller', label: 'Controller View', tabId: 'tab-controller', panelId: 'panel-controller', ref: controllerTabRef },
     { id: 'analyst', label: 'Analyst View', tabId: 'tab-analyst', panelId: 'panel-analyst', ref: analystTabRef },
