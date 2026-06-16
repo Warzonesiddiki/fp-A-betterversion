@@ -4,7 +4,7 @@ description: Mnemosyne 5th-ICP ratification seal on Iris PERSONA_COVERAGE v0.2 S
 type: project
 ---
 
-# T-MN-049 v1 (5ICP_SEAL at <pending>) — Iris PERSONA_COVERAGE v0.2 5th-ICP Seal
+# T-MN-049 v1 (5ICP_SEAL at 41b4578) — Iris PERSONA_COVERAGE v0.2 5th-ICP Seal
 
 **TASK-ID-VERSION-SUFFIX-MANDATORY** (T-MN-046 v0.2): `T-MN-049 v1 (5ICP_SEAL at <commit-SHA>)`
 
@@ -182,7 +182,7 @@ Verified against draft content:
 ### Step 3: Mnemosyne issues binding seal (1h post-Iris commit)
 - Re-run RULE-41 Sub-class A/B/C on the committed v0.2
 - Bind seal to actual commit SHA
-- Append this seal document with the final commit SHA replacing `<pending>`
+- Append this seal document with the final commit SHA replacing `41b4578`
 - Re-verify all 15+ self-cited SHAs (NEVER-AGAIN RULE #55)
 
 ### Step 4: Strategos integrates into INDEX v0.7+ (T-2d to T-1d)
@@ -218,7 +218,7 @@ Verified against draft content:
 - ✅ Single file per commit (this seal document is the only file for the seal commit)
 - ✅ `--no-verify` per RULE #32 (will be applied at commit)
 - ✅ 3-witness per claim (D-002) — see Cross-References table
-- ✅ TASK-ID-VERSION-SUFFIX-MANDATORY (T-MN-046 v0.2) — `T-MN-049 v1 (5ICP_SEAL at <pending>)`
+- ✅ TASK-ID-VERSION-SUFFIX-MANDATORY (T-MN-046 v0.2) — `T-MN-049 v1 (5ICP_SEAL at 41b4578)`
 - ✅ 4-ICP verdict with explicit Carla/Vera/Chris/Beth perspectives
 - ✅ 5-min SLA (D-007) — Iris PICK E acknowledged within 5 min
 - ✅ CAVEMAN PERSIST FALLBACK (RULE #47) — Iris dispatch received via task board after team_send_message failures
