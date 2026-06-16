@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+﻿import { useCallback, useMemo, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -88,6 +88,8 @@ function isApprover(currentStep: WorkflowStep | undefined, user: string): boolea
 export function ApprovalWorkflow({
   request = {
     id: 'preview',
+    workflowId: 'preview-workflow',
+    changeRequests: [],
     title: 'Preview Request',
     description: '',
     amount: 0,
@@ -305,3 +307,5 @@ export function ApprovalWorkflow({
     </Card>
   );
 }
+
+

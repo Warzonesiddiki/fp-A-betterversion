@@ -411,7 +411,7 @@ const expandRange = (start: string, end: string): string[] => {
   const r1 = parseInt(startMatch[2], 10);
   const r2 = parseInt(endMatch[2], 10);
   const c1 = colToIndex(startMatch[1]);
-  const c2 = colToIndex(endMatch[1]);
+  const c2 = colToIndex(endMatch[1] ?? '');
   const refs: string[] = [];
   for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++) {
     for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) {

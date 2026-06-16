@@ -59,7 +59,7 @@ export function ImpactAnalysis({
     name: 'Base',
     assumptions: [],
     calculatedMetrics: {} as ScenarioMetrics,
-  } as Scenario,
+  } as unknown as Scenario,
   compareScenarios = [],
   onHighlightMetric,
 }: ImpactAnalysisProps) {

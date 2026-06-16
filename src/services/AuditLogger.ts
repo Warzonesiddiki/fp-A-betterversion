@@ -238,7 +238,7 @@ export class AuditLogger {
 
   private constructor(config: AuditLoggerConfig = {}) {
     this.source = config.source ?? 'finplan-pro';
-    this.category = config.category ?? 'security-event';
+    this.category = (config.category ?? 'security-event') as AuditCategory;
     this.maxEvents =
       config.maxEvents ?? AUDIT_LOGGER_CONSTANTS.MAX_EVENTS;
     this.genesisChainHead =

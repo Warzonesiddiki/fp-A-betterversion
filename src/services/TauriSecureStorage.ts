@@ -209,7 +209,7 @@ export class TauriSecureStorage {
       const remaining = Math.max(0, TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS - this.attempts);
       const event = this.buildResult('unlock', '__unlock__', false, 'backend-error', 0, 0);
       event.auditEvent.attemptsRemaining = remaining;
-      return event;
+      return event as unknown as TauriSecureStorageResult<true>;
     }
   }
 
