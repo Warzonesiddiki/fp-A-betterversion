@@ -80,7 +80,7 @@ describe('Q5.3 × §4.3 A11Y v0.6.1 Cross-Witness — Session Fixation & Hijack'
     });
 
     test('rotated event triggers on sessionId regeneration (CWE-384 fix)', () => {
-      const onRotate = vi.fn();
+      const _onRotate = vi.fn();
       render(<SessionAnnounceHarness event="rotated" />);
       // Simulate §4.3.1: new sessionId issued
       fireEvent(

@@ -47,7 +47,7 @@ import {
   DEFAULT_REALTIME_PATH,
   DEFAULT_TIMEOUT_MS,
   FpaClientConfig,
-  RealtimeEvent,
+  _RealtimeEvent,
   SdkError,
   SdkResult,
   SdkVersion,

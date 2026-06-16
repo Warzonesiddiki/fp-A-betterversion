@@ -4,7 +4,7 @@
  * Tests for incident lifecycle, postmortems, artifacts, SLA tracking, export.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, _vi } from 'vitest';
 import {
   IncidentResponse,
   InMemoryIncidentAdapter,
@@ -450,7 +450,7 @@ describe('IncidentResponse', () => {
         reporter: 'r@e.com',
       });
       ir.updateIncident(inc.id, { status: 'resolved' }, 'r@e.com');
-      const withPM = ir.writePostmortem(inc.id, {
+      const _withPM = ir.writePostmortem(inc.id, {
         rootCause: 'X',
         lessonsLearned: 'Y',
         actionItems: [],

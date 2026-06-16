@@ -11,7 +11,7 @@ const PATTERNS = ['Tab', 'Shift+Tab', 'Enter', 'Space', 'ArrowDown', 'Escape', '
 const ITERATIONS = 20;
 const BUDGET_MS = 100;
 
-function measurePattern(pattern: string): number {
+function measurePattern(_pattern: string): number {
   // Simulate keyboard event handling latency in JSDOM
   const t0 = performance.now();
   // Synthetic work: focus traversal + ARIA attribute update

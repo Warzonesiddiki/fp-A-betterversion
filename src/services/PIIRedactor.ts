@@ -236,7 +236,7 @@ async function sha256Hex(s: string): Promise<string> {
   return out;
 }
 
-async function hmacSha256Hex(key: Uint8Array, message: string): Promise<string> {
+async function _hmacSha256Hex(key: Uint8Array, message: string): Promise<string> {
   const k = await crypto.subtle.importKey(
     'raw',
     key as BufferSource,

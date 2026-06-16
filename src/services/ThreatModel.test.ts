@@ -754,7 +754,7 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
       const t1 = tm.addThreat({ ...sampleThreat, title: 'T1' });
       const t2 = tm.addThreat({ ...sampleThreat, title: 'T2', category: 'T' });
       const c1 = tm.addControl(sampleControl);
-      const c2 = tm.addControl({ ...sampleControl, name: 'C2' });
+      const _c2 = tm.addControl({ ...sampleControl, name: 'C2' });
       tm.linkControl(c1.id, t1.id);
       // t2 is unmitigated
       const result = tm.export({

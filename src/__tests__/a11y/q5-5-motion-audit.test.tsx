@@ -4,7 +4,7 @@
 // Reference: docs/a11y/Q5_5_MOTION_AUDIT_v0.1.md
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, _act } from '@testing-library/react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 describe('Q5.5 useReducedMotion hook', () => {

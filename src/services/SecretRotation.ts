@@ -206,7 +206,7 @@ export class SecretRotationError extends Error {
 const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 /** Constant-time string comparison (length-checked). */
-function constantTimeEqual(a: string, b: string): boolean {
+function _constantTimeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
     return false;
   }

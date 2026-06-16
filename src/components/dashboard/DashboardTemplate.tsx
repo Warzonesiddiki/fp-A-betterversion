@@ -182,34 +182,45 @@ export function DashboardTemplate({
   const cfoTabRef = useRef<HTMLButtonElement>(null);
   const controllerTabRef = useRef<HTMLButtonElement>(null);
   const analystTabRef = useRef<HTMLButtonElement>(null);
+  const personaRefs = useMemo<Record<DashboardType, React.RefObject<HTMLButtonElement | null>>>(
+    () => ({
+      cfo: cfoTabRef,
+      controller: controllerTabRef,
+      analyst: analystTabRef,
+    }),
+    []
+  );
   const PERSONAS: ReadonlyArray<{
     id: DashboardType;
     label: string;
     tabId: string;
     panelId: string;
-    ref: React.RefObject<HTMLButtonElement | null>;
-  }> = [
-    { id: 'cfo', label: 'CFO View', tabId: 'tab-cfo', panelId: 'panel-cfo', ref: cfoTabRef },
-    {
-      id: 'controller',
-      label: 'Controller View',
-      tabId: 'tab-controller',
-      panelId: 'panel-controller',
-      ref: controllerTabRef,
+  }> = useMemo(
+    () => [
+      { id: 'cfo', label: 'CFO View', tabId: 'tab-cfo', panelId: 'panel-cfo' },
+      {
+        id: 'controller',
+        label: 'Controller View',
+        tabId: 'tab-controller',
+        panelId: 'panel-controller',
+      },
+      {
+        id: 'analyst',
+        label: 'Analyst View',
+        tabId: 'tab-analyst',
+        panelId: 'panel-analyst',
+      },
+    ],
+    []
+  );
+  const handleLayoutChange = useCallback(
+    (next: DashboardType) => {
+      setActiveLayout(next);
+      const persona = PERSONAS.find((p) => p.id === next);
+      if (persona) setLayoutAnnouncement(`Switched to ${persona.label}`);
     },
-    {
-      id: 'analyst',
-      label: 'Analyst View',
-      tabId: 'tab-analyst',
-      panelId: 'panel-analyst',
-      ref: analystTabRef,
-    },
-  ];
-  const handleLayoutChange = useCallback((next: DashboardType) => {
-    setActiveLayout(next);
-    const persona = PERSONAS.find((p) => p.id === next);
-    if (persona) setLayoutAnnouncement(`Switched to ${persona.label}`);
-  }, []);
+    [PERSONAS]
+  );
   const onTabKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
       if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End')
@@ -223,10 +234,10 @@ export function DashboardTemplate({
       const next = PERSONAS[nextIdx];
       if (next) {
         handleLayoutChange(next.id);
-        next.ref.current?.focus();
+        personaRefs[next.id].current?.focus();
       }
     },
-    [handleLayoutChange]
+    [handleLayoutChange, PERSONAS, personaRefs]
   );
 
   const dashboardKPIs = kpis ?? mockKPIs;
@@ -235,6 +246,10 @@ export function DashboardTemplate({
   const dashboardHeatmap = heatmapData ?? mockHeatmap;
   const dashboardSankey = sankeyData ?? mockSankey;
   const dashboardActivities = activities ?? mockActivities;
+  const activePersonaLabel = useMemo(
+    () => PERSONAS.find((p) => p.id === activeLayout)?.label ?? activeLayout,
+    [activeLayout, PERSONAS]
+  );
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -244,7 +259,7 @@ export function DashboardTemplate({
           return (
             <button
               key={p.id}
-              ref={p.ref}
+              ref={personaRefs[p.id]}
               id={p.tabId}
               role="tab"
               type="button"
@@ -268,11 +283,7 @@ export function DashboardTemplate({
       </div>
 
       <div className="px-1 pb-2">
-        <PersonaBadge
-          variant={activeLayout as any}
-          label={PERSONAS.find((p) => p.id === activeLayout)?.label || activeLayout}
-          size="sm"
-        />
+        <PersonaBadge variant={activeLayout} label={activePersonaLabel} size="sm" />
       </div>
 
       {activeLayout === 'cfo' && (

@@ -132,7 +132,7 @@ export function periodOf(
 ): FiscalPeriod {
   const fyStart = fiscalYearStart(ms, config);
   const monthsPerPeriod = 12 / config.periodsPerYear;
-  const monthsElapsed = Math.floor(daysBetween(fyStart, ms) / 30.4375); // approx avg month
+  const _monthsElapsed = Math.floor(daysBetween(fyStart, ms) / 30.4375); // approx avg month
   // Compute exact period by adding months to fyStart and checking containment.
   for (let p = 0; p < config.periodsPerYear; p++) {
     const pStart = addMonths(fyStart, p * monthsPerPeriod);
@@ -154,7 +154,7 @@ export function periodOf(
 /**
  * Internal: extract the fiscal year number from a fiscal-year-start epoch ms.
  */
-function fyOf(fyStartMs: number, config: FiscalCalendarConfig): number {
+function fyOf(fyStartMs: number, _config: FiscalCalendarConfig): number {
   return new Date(fyStartMs).getUTCFullYear();
 }
 

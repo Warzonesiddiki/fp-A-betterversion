@@ -6,7 +6,7 @@
 // Witness: 3 sources — (a) test file, (b) measured value, (c) engine file:line
 // =============================================================================
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, _beforeAll, afterAll } from 'vitest';
 import { cpus, totalmem } from 'node:os';
 import {
   MonteCarloEngine,

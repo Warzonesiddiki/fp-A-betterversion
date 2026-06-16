@@ -9,20 +9,20 @@
 import { describe, it, expect } from 'vitest';
 import {
   SecurityHeaders,
-  SecurityHeadersError,
+  _SecurityHeadersError,
   SECURITY_HEADERS_CONSTANTS,
   generateCspNonce,
   isValidCspSource,
   isValidHeaderName,
   isValidHeaderValue,
-  type CspDirectives,
-  type SecurityHeadersPolicy,
+  type _CspDirectives,
+  type _SecurityHeadersPolicy,
 } from './SecurityHeaders';
 import {
   CsrfProtection,
   CsrfProtectionError,
   CSRF_PROTECTION_CONSTANTS,
-  type CsrfToken,
+  type _CsrfToken,
 } from './CsrfProtection';
 
 // ── 1. SECURITY_HEADERS_CONSTANTS ───────────────────────────────────────────

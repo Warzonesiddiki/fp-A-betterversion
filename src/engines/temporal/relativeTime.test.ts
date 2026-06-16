@@ -28,7 +28,7 @@ const ONE_MIN_AGO = NOW - 60_000;
 const ONE_HOUR_AGO = NOW - 3_600_000;
 const ONE_DAY_AGO = NOW - 86_400_000;
 const SEVEN_DAYS_AGO = NOW - 7 * 86_400_000;
-const THIRTY_DAYS_AGO = NOW - 30 * 86_400_000;
+const _THIRTY_DAYS_AGO = NOW - 30 * 86_400_000;
 const ONE_YEAR_AGO = NOW - 365 * 86_400_000;
 
 describe('formatRelativeTime — bucket boundaries', () => {

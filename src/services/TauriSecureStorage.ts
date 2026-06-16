@@ -206,7 +206,7 @@ export class TauriSecureStorage {
       this.unlockedAt = this.now();
       this.attempts = 0;
       return this.buildResult('unlock', '__unlock__', true, 'ok', 0, 0);
-    } catch (err) {
+    } catch (_err) {
       this.attempts += 1;
       if (this.attempts >= TAURI_SECURE_STORAGE_CONSTANTS.MAX_UNLOCK_ATTEMPTS) {
         this.unlockedAt = this.now();
@@ -230,7 +230,7 @@ export class TauriSecureStorage {
       this.locked = true;
       this.accounts.clear();
       return this.buildResult('lock', '__lock__', true, 'ok', 0, 0);
-    } catch (err) {
+    } catch (_err) {
       return this.buildResult('lock', '__lock__', false, 'backend-error', 0, 0);
     }
   }
@@ -267,7 +267,7 @@ export class TauriSecureStorage {
       });
       this.accounts.add(account);
       return this.buildResult('store', account, true, 'ok', 0, bytes.byteLength);
-    } catch (err) {
+    } catch (_err) {
       return this.buildResult('store', account, false, 'backend-error', 0, bytes.byteLength);
     }
   }
@@ -330,7 +330,7 @@ export class TauriSecureStorage {
         account,
       });
       return this.buildResult('exists', account, true, 'ok', 0, 0, exists);
-    } catch (err) {
+    } catch (_err) {
       return this.buildResult('exists', account, false, 'backend-error', 0, 0);
     }
   }
@@ -352,7 +352,7 @@ export class TauriSecureStorage {
       this.accounts.clear();
       filtered.forEach((a) => this.accounts.add(a));
       return this.buildResult('list', '__list__', true, 'ok', 0, 0, filtered);
-    } catch (err) {
+    } catch (_err) {
       return this.buildResult('list', '__list__', false, 'backend-error', 0, 0);
     }
   }

@@ -5,7 +5,7 @@
 // Target: graceful QuotaExceededError handling, user notification, no crash
 // =============================================================================
 
-import { describe, it, expect, afterAll, beforeAll } from 'vitest';
+import { describe, it, _expect, afterAll, beforeAll } from 'vitest';
 import { cpus, totalmem } from 'node:os';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -56,7 +56,6 @@ describe('Vulcan — Chaos 01: LocalStorage Quota Exhaustion', () => {
     let written = 0;
     const start = performance.now();
     let firstFailure: string | null = null;
-    let failurePoint = 0;
 
     try {
       for (let i = 0; i < 10_000; i++) {
@@ -65,7 +64,6 @@ describe('Vulcan — Chaos 01: LocalStorage Quota Exhaustion', () => {
       }
     } catch (e) {
       firstFailure = e instanceof Error ? e.name : String(e);
-      failurePoint = written;
     }
     const elapsed = performance.now() - start;
 
@@ -149,7 +147,7 @@ describe('Vulcan — Chaos 01: LocalStorage Quota Exhaustion', () => {
         };
         const start = performance.now();
         const json = JSON.stringify(data);
-        const parsed = JSON.parse(json);
+        const _parsed = JSON.parse(json);
         const elapsed = performance.now() - start;
         results.push({ bytes: json.length, ms: Math.round(elapsed * 100) / 100 });
         console.log(

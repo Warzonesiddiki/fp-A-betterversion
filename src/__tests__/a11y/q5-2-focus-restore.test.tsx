@@ -4,7 +4,7 @@
 // Reference: docs/a11y/Q5_2_FOCUS_RESTORE.md
 
 import { describe, test, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, _screen, _fireEvent } from '@testing-library/react';
 import { useRef } from 'react';
 import { useFocusRestore } from '../../hooks/useFocusRestore';
 

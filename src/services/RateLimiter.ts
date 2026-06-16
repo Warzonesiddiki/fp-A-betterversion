@@ -419,7 +419,7 @@ export class RateLimiter {
     );
   }
 
-  release(policyId: string, identity: string): void {
+  release(policyId: string, _identity: string): void {
     const state = this.policies.get(policyId);
     if (!state) throw new Error(`Unknown policy: ${policyId}`);
     if (state.inFlight > 0) state.inFlight -= 1;

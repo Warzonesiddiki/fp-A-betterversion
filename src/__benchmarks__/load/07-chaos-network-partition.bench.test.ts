@@ -9,7 +9,7 @@
 //        - No data loss
 // =============================================================================
 
-import { describe, it, expect, afterAll, beforeAll } from 'vitest';
+import { describe, it, expect, afterAll, _beforeAll } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -105,17 +105,17 @@ describe('Vulcan — Chaos 07: Network partition recovery (2s)', () => {
     const partitionStart = Date.now();
 
     // Phase 3: 5 edits queued during partition
-    const editStart = Date.now();
+    const _editStart = Date.now();
     for (let i = 0; i < 5; i++) {
       queue.push({ id: i, ts: Date.now() });
       await new Promise((r) => setTimeout(r, 50)); // space edits 50ms apart
     }
-    const editEnd = Date.now();
+    const _editEnd = Date.now();
 
     // Phase 4: Detection tick (no heartbeat received) → partition detected
-    const detectionStart = Date.now();
+    const _detectionStart = Date.now();
     const detected = detector.tick();
-    const detectionEnd = Date.now();
+    const _detectionEnd = Date.now();
     expect(detected).toBe(true);
     expect(detector.isPartitioned()).toBe(true);
 

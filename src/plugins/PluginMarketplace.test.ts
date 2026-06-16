@@ -27,7 +27,7 @@ function makeMarketplacePlugin(overrides: Partial<MarketplacePlugin> = {}): Mark
 describe('PluginMarketplace', () => {
   beforeEach(() => {
     // Clear module-level installed set between tests
-    for (const p of PluginMarketplace.getInstalled()) {
+    for (const _p of PluginMarketplace.getInstalled()) {
       // synchronously attempt uninstall (test-only cleanup)
     }
   });

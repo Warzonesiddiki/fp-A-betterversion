@@ -14,7 +14,7 @@
  *   - Error handling
  */
 
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, _afterAll } from 'vitest';
 import {
   PIIRedactor,
   PIIRedactionError,

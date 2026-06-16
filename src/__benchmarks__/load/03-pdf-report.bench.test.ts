@@ -127,7 +127,7 @@ function generatePDF(rows: FinancialRow[]): { bytes: number; pages: number } {
       4: { cellWidth: 80, halign: 'right' },
       5: { cellWidth: 90, halign: 'right' },
     },
-    didDrawPage: (data) => {
+    didDrawPage: (_data) => {
       // Footer
       const pageH = doc.internal.pageSize.getHeight();
       const pageW = doc.internal.pageSize.getWidth();

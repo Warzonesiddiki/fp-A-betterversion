@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, _vi } from 'vitest';
 import {
   KeyManager,
   generateSalt,
@@ -64,8 +64,8 @@ describeIfCrypto('KeyManager — getKey()', () => {
   it('treats different namespaces as separate cache buckets (PATCH 6: namespace is part of the cache key)', async () => {
     const km = KeyManager.getInstance();
     const salt = generateSalt();
-    const a = await km.getKey('user:1', TEST_PASSWORD, salt);
-    const b = await km.getKey('user:2', TEST_PASSWORD, salt);
+    const _a = await km.getKey('user:1', TEST_PASSWORD, salt);
+    const _b = await km.getKey('user:2', TEST_PASSWORD, salt);
     // PATCH 6 fix: the namespace is part of the cache fingerprint, so two
     // namespaces with the same (password, salt) get DIFFERENT cache entries
     // (and therefore two different CryptoKey JS objects, even though they

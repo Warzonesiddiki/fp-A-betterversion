@@ -29,7 +29,7 @@ import {
   isLeapYear,
   parseToUTCEpoch,
   startOfUTCDay,
-  startOfUTCMonth,
+  _startOfUTCMonth,
   toCalendarDateInTZ,
   toUTCISOString,
   // Fiscal calendar

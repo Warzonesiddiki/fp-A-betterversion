@@ -759,34 +759,19 @@ export default function DataImportPage() {
                     className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
                     role="row"
                   >
-                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader">
                       Account Key
                     </th>
-                    <th
-                      scope="col"
-                      className="pb-3 pr-4 text-right"
-                      role="columnheader"
-                      scope="col"
-                    >
+                    <th scope="col" className="pb-3 pr-4 text-right" role="columnheader">
                       Expected (GL)
                     </th>
-                    <th
-                      scope="col"
-                      className="pb-3 pr-4 text-right"
-                      role="columnheader"
-                      scope="col"
-                    >
+                    <th scope="col" className="pb-3 pr-4 text-right" role="columnheader">
                       Actual (File)
                     </th>
-                    <th
-                      scope="col"
-                      className="pb-3 pr-4 text-right"
-                      role="columnheader"
-                      scope="col"
-                    >
+                    <th scope="col" className="pb-3 pr-4 text-right" role="columnheader">
                       Difference
                     </th>
-                    <th scope="col" className="pb-3" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3" role="columnheader">
                       Status
                     </th>
                   </tr>
@@ -890,19 +875,19 @@ export default function DataImportPage() {
                     className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
                     role="row"
                   >
-                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader">
                       File
                     </th>
-                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader">
                       Type
                     </th>
-                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader">
                       Rows
                     </th>
-                    <th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3 pr-4" role="columnheader">
                       Status
                     </th>
-                    <th scope="col" className="pb-3" role="columnheader" scope="col">
+                    <th scope="col" className="pb-3" role="columnheader">
                       Started
                     </th>
                   </tr>

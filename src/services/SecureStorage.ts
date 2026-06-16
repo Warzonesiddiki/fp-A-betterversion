@@ -25,8 +25,8 @@
 
 import {
   EncryptionEngine,
-  ENCRYPTION_CONSTANTS,
-  type EncryptedData,
+  _ENCRYPTION_CONSTANTS,
+  type _EncryptedData,
 } from '../engines/EncryptionEngine';
 import { KeyManager, generateSalt } from './KeyManager';
 

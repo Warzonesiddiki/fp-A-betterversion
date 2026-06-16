@@ -9,7 +9,7 @@
  *   - Cross-service: secret.rotated flows into audit log.
  */
 
-import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
+import { describe, it, expect, beforeEach, _afterAll, _vi } from 'vitest';
 import {
   SecretRotation,
   SecretRotationError,
@@ -18,9 +18,9 @@ import {
 } from './SecretRotation';
 import {
   AuditLogger,
-  AuditLoggerError,
+  _AuditLoggerError,
   AUDIT_LOGGER_CONSTANTS,
-  type AuditEvent,
+  type _AuditEvent,
   type AuditChainVerificationResult,
 } from './AuditLogger';
 

@@ -123,7 +123,7 @@ describe('Vulcan — Chaos 03: Worker crash recovery', () => {
     const start = performance.now();
     let crashInjected = false;
 
-    const result = await recovery.runOperation(async (state) => {
+    const result = await recovery.runOperation(async (_state) => {
       // Simulate building 5MB string
       const target = 5 * 1024 * 1024;
       let s = '';

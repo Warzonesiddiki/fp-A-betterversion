@@ -63,7 +63,7 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
 
   it('SCENARIO A: 3 edits sent online, disconnect, 5 edits queued, reconnect, 5 replays in order', () => {
     const queue = new OfflineEditQueue<{ id: number; cell: string; value: number; ts: number }>();
-    const start = performance.now();
+    const _start = performance.now();
 
     // Phase 1: online, 3 edits sent
     const sentIds: number[] = [];
@@ -90,7 +90,7 @@ describe('Vulcan — Chaos 02: WebSocket disconnect mid-edit', () => {
     expect(queue.pending()).toBe(5);
 
     // Phase 4: SIMULATE RECONNECT
-    const reconnectAt = performance.now();
+    const _reconnectAt = performance.now();
     queue.setOnline(true);
     const replayed = queue.drain();
     const reconnectTimeMs = performance.now() - disconnectAt;
