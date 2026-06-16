@@ -166,7 +166,7 @@ export const ApprovalQueue = memo(function ApprovalQueue({
                 <p className="text-sm font-medium">Amount: ${req.amount.toLocaleString()}</p>
               )}
 
-              {/* Actions for pending */}
+              {/* Actions for pending (HERA v0.4 Hermes H3 HIGH #1: Approve LAST — irreversible action) */}
               {['submitted', 'in_review'].includes(req.state) && (
                 <div className="flex items-center gap-2">
                   <Input
@@ -175,16 +175,8 @@ export const ApprovalQueue = memo(function ApprovalQueue({
                     onChange={(e) => setCommentMap({ ...commentMap, [req.id]: e.target.value })}
                     placeholder="Comment (optional)"
                     className="flex-1"
+                    aria-label={`Comment for ${req.title}`}
                   />
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      onApprove(req.id, commentMap[req.id]);
-                      setCommentMap({ ...commentMap, [req.id]: '' });
-                    }}
-                  >
-                    Approve
-                  </Button>
                   <Button
                     size="sm"
                     variant="outline"
@@ -192,8 +184,19 @@ export const ApprovalQueue = memo(function ApprovalQueue({
                       onReject(req.id, commentMap[req.id]);
                       setCommentMap({ ...commentMap, [req.id]: '' });
                     }}
+                    aria-label={`Reject ${req.title}`}
                   >
                     Reject
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      onApprove(req.id, commentMap[req.id]);
+                      setCommentMap({ ...commentMap, [req.id]: '' });
+                    }}
+                    aria-label={`Approve ${req.title} (irreversible)`}
+                  >
+                    Approve
                   </Button>
                 </div>
               )}
