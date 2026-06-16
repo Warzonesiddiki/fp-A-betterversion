@@ -88,6 +88,22 @@ export class RestApiClient {
       }
       case 'basic': {
         if (!this.auth.basic) return {};
+        // SECURITY (Phase 7 audit finding, Hephaestus PATCH 3): basic auth
+        // credentials MUST be sent over HTTPS. base64-encoding the password
+        // does NOT encrypt it — anyone with the encoded string can decode it
+        // (btoa is a reversible encoding, not a cipher). Defense-in-depth
+        // warning so dev/test using http://localhost does not crash, but
+        // production misconfigurations are visible in the console.
+        if (
+          this.client.defaults.baseURL &&
+          !String(this.client.defaults.baseURL).startsWith('https://')
+        ) {
+          console.warn(
+            '[SECURITY] RestApiClient: basic auth over non-HTTPS endpoint — ' +
+              'credentials will be sent in cleartext (base64 is not encryption). ' +
+              'Use HTTPS in production. See SECURITY_READINESS.md G7 v1.1 follow-up.'
+          );
+        }
         const encoded = btoa(`${this.auth.basic.username}:${this.auth.basic.password}`);
         return { Authorization: `Basic ${encoded}` };
       }
