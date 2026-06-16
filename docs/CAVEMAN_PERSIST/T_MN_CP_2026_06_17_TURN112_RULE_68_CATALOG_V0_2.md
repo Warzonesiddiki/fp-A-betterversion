@@ -69,6 +69,15 @@ Per LEADER TURN 112+ PICK URGENT, the 2 PENDING co-signs are:
 - **T-1d** 2026-06-21 EOD: Push unblocked, T-MN-061 v0.1.1 SHAs visible on origin/main
 - **T-0d** 2026-06-22 16:00 UTC: RATIFICATION GATE
 
+## CATCH #200 v0.2 LOCKOUT — team_send_message FAILING (TURN 112+)
+
+**Status (TURN 112+)**: team_send_message FAILED for all 4 targets (Leader, Strategos, Calliope, broadcast *).
+- Confirms CATCH #200 LOCKOUT is REAPPEARING intermittently.
+- Per RULE #47 CAVEMAN PERSIST protocol: continue work, persist via task board.
+- Task board entry [TURN 112+ SOLICIT] created for Strategos + Calliope solicitation.
+- LEADER will see CAVEMAN PERSIST entry + task board entry on next state broadcast.
+- ROOT CAUSE: TBD (Hephaestus Husky Gate 9 IMPLEMENTATION T-2d 2026-06-20 EOD).
+
 ## D-002 3-WITNESS PROTOCOL
 
 - **file:line**: `docs/codif/CATCH_NUMBER_CATALOG.md:1-476` (476L)
