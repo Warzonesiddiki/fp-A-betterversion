@@ -188,28 +188,28 @@ export default function SetupWizardPage() {
                     Save changes automatically every 30 seconds
                   </p>
                 </div>
-                <input type="checkbox" defaultChecked className="h-4 w-4" />
+                <input type="checkbox" defaultChecked className="h-4 w-4" aria-label="Enable Auto-save" />
               </div>
               <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                 <div>
                   <p className="text-sm font-medium">Dark Mode</p>
                   <p className="text-xs text-slate-400">Use dark theme (currently default)</p>
                 </div>
-                <input type="checkbox" defaultChecked className="h-4 w-4" />
+                <input type="checkbox" defaultChecked className="h-4 w-4" aria-label="Enable Dark Mode" />
               </div>
               <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                 <div>
                   <p className="text-sm font-medium">Keyboard Shortcuts</p>
                   <p className="text-xs text-slate-400">Enable Ctrl+S, Ctrl+Z, Ctrl+K shortcuts</p>
                 </div>
-                <input type="checkbox" defaultChecked className="h-4 w-4" />
+                <input type="checkbox" defaultChecked className="h-4 w-4" aria-label="Enable Keyboard Shortcuts" />
               </div>
               <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                 <div>
                   <p className="text-sm font-medium">Guided Tours</p>
                   <p className="text-xs text-slate-400">Show interactive tours for new features</p>
                 </div>
-                <input type="checkbox" defaultChecked className="h-4 w-4" />
+                <input type="checkbox" defaultChecked className="h-4 w-4" aria-label="Enable Guided Tours" />
               </div>
             </div>
             <div className="flex gap-3 pt-2">
