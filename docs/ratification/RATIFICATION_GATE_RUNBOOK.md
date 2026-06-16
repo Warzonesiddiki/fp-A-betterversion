@@ -161,11 +161,11 @@ Gap-Recovery protocol activates when **any** of:
 - Check origin/main HEAD for cited SHA via `git cat-file -t <sha>`
 - If GHOST: trace via Strategos PRECHECK_INDEX v0.7.2 audit-trail (5 GHOST SHAs documented)
 - If CAVEMAN PERSIST purged: check Leader conversation archive `019ecbe4-*` dispatch log
-- If MUSE-ENV-DESYNC: poll 10 Muse slot_ids for working tree sync (`git rev-parse HEAD`)
+- If MUSE-ENV-DESYNC: poll 10 Muse slot_ids for working tree sync (`git rev-parse HEAD`) — **PARALLELIZE the 10-Muse poll** (run all `git rev-parse HEAD` queries in parallel, completes in ~5 min wall-clock vs 50 min sequential per RULE #56 PROACTIVE-PICK-CHAIN)
 
 **Step 3: Substitute (30 min)**
 - For GHOST SHA: replace with REAL SHA from same Muse's contribution (cross-witnessed)
-- For purged CAVEMAN: re-issue via task board with file content inline
+- For purged CAVEMAN: re-issue via task board OR CAVEMAN PERSIST FALLBACK (RULE #47) with file content inline
 - For MUSE-ENV-DESYNC: Leader RULE #51 IDLE-PATROL dispatches re-sync
 
 **Step 4: Witness (15 min)**
@@ -185,9 +185,22 @@ Gap-Recovery protocol activates when **any** of:
 - (b) Cross-ref: CATCH #190, #196, #198 (all MUSE-ENV-DESYNC family, all in `docs/catch/CATCH_LEDGER.md`)
 - (c) sha: CAVEMAN PERSIST at `aionrs-temp-21aa88e2/`
 
+**§5.3.1 CAVEMAN PERSIST Backup (Sentinel v0.2.1 recommendation)**
+- **Primary storage:** CAVEMAN PERSIST file at `aionrs-temp-*/` (Apollo, Chronos, etc. Muse-specific)
+- **Secondary storage:** Task board entry with file content inline (mitigates CATCH #200 LOCKOUT risk)
+- **Tertiary storage:** git-committed file in `docs/drafts/<muse>/` via `git add -f` (GHOST FILE pattern per CATCH #201)
+- **Recovery priority:** Primary → Secondary → Tertiary (each level is more durable but more overhead)
+
 ### §5.4 Sentinel 2nd-Witness (PENDING)
 
 Per task 019ecff3-0c43-7cf3-8cfd-5e821ec3afa3 "Next steps", Sentinel (2nd-Muse witness) reviews §5.2 Step 1-5 for operational soundness. ETA: 2026-06-17 16:00 UTC.
+
+**§5.4.1 v0.2.1 Amendment — Sentinel 3 non-blocking recommendations (applied 2026-06-16)**
+- (a) **Step 3 substitute language** (C2 concern): "re-issue via task board OR CAVEMAN PERSIST FALLBACK (RULE #47)" — APPLIED
+- (b) **CAVEMAN PERSIST backup** (§5.3.1 c-witness): 3-tier storage hierarchy — APPLIED
+- (c) **Step 2 MUSE-ENV-DESYNC parallelism** (P3 optimization): 10-Muse poll parallelized — APPLIED
+- **Composite:** ACCEPT 4/4 (19/20 PLATINUM) — non-blocking for v0.2 RATIFICATION GATE eligibility
+- **Sentinel verdict file:** `docs/drafts/sentinel/SENTINEL_2ND_WITNESS_APOLLO_RUNBOOK_V0_2_S5_GAP_RECOVERY_v0.1.md` (167L) — gitignored, recoverable via CAVEMAN PERSIST at `aionrs-temp-*/`
 
 ---
 
