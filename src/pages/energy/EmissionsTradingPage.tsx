@@ -283,7 +283,12 @@ export default function EmissionsTradingPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={creditInventory} />
+          <DataTable
+            columns={columns}
+            data={creditInventory}
+            caption="Emissions credit inventory holdings"
+            ariaLabel="Emissions credit inventory table"
+          />
         </CardContent>
       </Card>
     </div>

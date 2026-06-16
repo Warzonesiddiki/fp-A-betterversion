@@ -309,7 +309,12 @@ export default function WorkingCapitalPage() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
-      <DataTable columns={columns} data={data.components} />
+      <DataTable
+        columns={columns}
+        data={data.components}
+        caption="Working capital components over time"
+        ariaLabel="Working capital components table"
+      />
     </div>
   );
 }

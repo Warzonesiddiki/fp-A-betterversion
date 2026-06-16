@@ -324,6 +324,8 @@ export default function DebtSchedulePage() {
             columns={columns}
             data={mockDebt as unknown as Record<string, unknown>[]}
             pageSize={10}
+            caption="Debt instruments amortization schedule"
+            ariaLabel="Debt instruments schedule table"
           />
         </CardContent>
       </Card>

@@ -285,7 +285,12 @@ export default function ProductionDashboardPage() {
               </CardContent>
             </Card>
           </div>
-          <DataTable columns={columns} data={data.lines} />
+          <DataTable
+            columns={columns}
+            data={data.lines}
+            caption="Production line output and variance"
+            ariaLabel="Production line output table"
+          />
         </>
       )}
     </div>
