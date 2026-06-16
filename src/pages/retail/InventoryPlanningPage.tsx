@@ -290,7 +290,12 @@ export default function InventoryPlanningPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={inventoryItems} />
+          <DataTable
+            columns={columns}
+            data={inventoryItems}
+            caption="Inventory planning items: SKU, stock level, reorder point, and forecast demand"
+            ariaLabel="Inventory planning table"
+          />
         </CardContent>
       </Card>
     </div>
