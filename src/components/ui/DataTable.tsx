@@ -29,6 +29,12 @@ export interface DataTableProps {
   loading?: boolean;
   error?: string;
   className?: string;
+  /** [Hera] PICK M a11y: caption shown above the table (visually hidden via sr-only by default) */
+  caption?: string;
+  /** [Hera] PICK M a11y: accessible name for the table (announced by screen readers) */
+  ariaLabel?: string;
+  /** [Hera] PICK M a11y: if true, the caption is visible (default false = sr-only) */
+  captionVisible?: boolean;
 }
 
 const VIRTUAL_THRESHOLD = 100;
@@ -46,6 +52,10 @@ export const DataTable = memo<DataTableProps>(
     loading = false,
     error,
     className,
+    // [Hera] PICK M a11y: optional caption + accessible name
+    caption,
+    ariaLabel,
+    captionVisible = false,
   }) => {
     const data = rawData as Record<string, unknown>[];
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(
@@ -126,7 +136,7 @@ export const DataTable = memo<DataTableProps>(
           role="region"
           aria-label="DataTable"
         >
-          <AlertCircle className="h-10 w-10 mb-2" />
+          <AlertCircle className="h-10 w-10 mb-2" aria-hidden="true" />
           <h3 className="font-semibold text-lg">Error loading data</h3>
           <p className="text-sm opacity-90">{error}</p>
           <button
@@ -149,6 +159,7 @@ export const DataTable = memo<DataTableProps>(
           onRowClick && 'cursor-pointer'
         )}
         onClick={() => onRowClick?.(row)}
+        aria-rowindex={rowIdx + 1}
       >
         {columns.map((column) => (
           <td
@@ -192,6 +203,7 @@ export const DataTable = memo<DataTableProps>(
                 )}
                 onClick={() => onRowClick?.(row!)}
                 data-index={virtualRow.index}
+                aria-rowindex={virtualRow.index + 1}
               >
                 {columns.map((column) => (
                   <td
@@ -239,7 +251,7 @@ export const DataTable = memo<DataTableProps>(
               className="px-4 py-12 text-center text-[var(--text-secondary)]"
             >
               <div className="flex flex-col items-center">
-                <Search className="h-10 w-10 mb-2 opacity-20" />
+                <Search className="h-10 w-10 mb-2 opacity-20" aria-hidden="true" />
                 <p>{emptyMessage}</p>
               </div>
             </td>
@@ -269,7 +281,16 @@ export const DataTable = memo<DataTableProps>(
             role="grid"
             aria-rowcount={filteredData.length}
             aria-colcount={columns.length}
+            aria-label={ariaLabel || caption}
           >
+            {caption && (
+              <caption
+                className={captionVisible ? 'text-left text-sm font-medium mb-2' : 'sr-only'}
+                data-testid="data-table-caption"
+              >
+                {caption}
+              </caption>
+            )}
             <thead className="bg-gray-50 dark:bg-gray-800/80 border-b border-[var(--border-subtle)] sticky top-0 z-10">
               <tr>
                 {columns.map((column) => {
@@ -305,7 +326,10 @@ export const DataTable = memo<DataTableProps>(
                       >
                         <span>{column.header}</span>
                         {isSortable && (
-                          <div className="flex flex-col">
+                          <div
+                            className="flex flex-col"
+                            aria-hidden="true"
+                          >
                             <ChevronUp
                               className={cn(
                                 'h-3 w-3 -mb-1',
@@ -333,7 +357,7 @@ export const DataTable = memo<DataTableProps>(
                           role="presentation"
                         >
                           <div className="relative">
-                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)]" />
+                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)]" aria-hidden="true" />
                             <input
                               type="text"
                               className="w-full pl-7 pr-2 py-1 bg-white dark:bg-gray-800 border border-[var(--border-subtle)] rounded text-xs outline-none focus:ring-1 focus:ring-blue-500 font-normal dark:text-white"
@@ -362,7 +386,7 @@ export const DataTable = memo<DataTableProps>(
 
         {!loading && !useVirtual && filteredData.length > pageSize && (
           <div className="mt-4 flex items-center justify-between text-xs text-[var(--text-secondary)]">
-            <span>
+            <span aria-live="polite" aria-atomic="true">
               Showing {Math.min(filteredData.length, (currentPage - 1) * pageSize + 1)} to{' '}
               {Math.min(filteredData.length, currentPage * pageSize)} of {filteredData.length}{' '}
               entries
