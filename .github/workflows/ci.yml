@@ -211,10 +211,71 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
+  a11y:
+    # A11Y-P0-4: NEVER-AGAIN RULE #50 (A11Y-CI-ENFORCEMENT, proposed by Artemis)
+    # Critical a11y violations MUST fail CI. The actual a11y runner is
+    # Mnemosyne-owned (A11Y-P0-3: install @axe-core/playwright or equivalent
+    # and define `test:a11y` in package.json).
+    #
+    # Gates:
+    # - Skipped if `npm run test:a11y` is not defined (pre-A11Y-P0-3 state)
+    #   so this PR can merge without blocking on the runner install.
+    # - Once Mnemosyne ships A11Y-P0-3 (defines test:a11y), this job
+    #   auto-activates and enforces.
+    # - Waivers: documented in docs/a11y/WAIVERS.md (90-day auto-expiry).
+    #   CI does NOT auto-apply waivers; PRs must cite the waiver ID.
+    name: A11Y (axe-core)
+    needs: [build]
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Pre-Mnemosyne A11Y-P0-3: allow merge
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Detect A11Y runner
+        id: detect
+        run: |
+          if npm run | grep -q "test:a11y"; then
+            echo "runner=present" >> $GITHUB_OUTPUT
+          else
+            echo "runner=absent" >> $GITHUB_OUTPUT
+            echo "::notice::A11Y runner not defined (Mnemosyne A11Y-P0-3 pending). Skipping enforcement."
+          fi
+
+      - name: Run A11Y tests
+        if: steps.detect.outputs.runner == 'present'
+        run: npm run test:a11y -- --bail=1
+        # --bail=1 per Artemis PICK URGENT B (stop on first critical violation)
+        # Exits non-zero on critical a11y violations (NEVER-AGAIN RULE #50)
+
+      - name: Upload A11Y report
+        if: always() && steps.detect.outputs.runner == 'present'
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-report
+          path: |
+            a11y-report/
+            coverage/a11y/
+          retention-days: 30  # Longer retention for a11y audit trail
+
   summary:
     name: CI Summary
     if: always()
-    needs: [typecheck, lint, test, build, e2e]
+    needs: [typecheck, lint, test, build, e2e, a11y]
     runs-on: ubuntu-latest
     steps:
       - name: Check results
@@ -228,6 +289,7 @@ jobs:
           echo "| Unit Tests | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped (A11Y-P0-3 pending)' || ':warning: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ needs.typecheck.result }}" != "success" ] || \
              [ "${{ needs.lint.result }}" != "success" ] || \
