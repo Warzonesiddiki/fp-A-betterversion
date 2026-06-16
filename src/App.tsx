@@ -12,236 +12,236 @@ import {
 import { useFirstRun } from './hooks/useFirstRun';
 
 // Core (not route-dependent)
-const OnboardingWizard = lazy(() => import('./components/ui/OnboardingWizard' as unknown as Promise<{ default: any }>));
+const OnboardingWizard = lazy(() => import('./components/ui/OnboardingWizard') as any)
 
 // Auth
-const LoginPage = lazy(() => import('./pages/auth/LoginPage' as unknown as Promise<{ default: any }>));
-const RegisterPage = lazy(() => import('./pages/auth/RegisterPage' as unknown as Promise<{ default: any }>));
-const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage' as unknown as Promise<{ default: any }>));
-const OnboardingWizardWrapper = lazy(() => import('./pages/auth/OnboardingWizard' as unknown as Promise<{ default: any }>));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage') as any)
+const RegisterPage = lazy(() => import('./pages/auth/RegisterPage') as any)
+const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage') as any)
+const OnboardingWizardWrapper = lazy(() => import('./pages/auth/OnboardingWizard') as any)
 
 // Core
-const DashboardPage = lazy(() => import('./pages/DashboardPage' as unknown as Promise<{ default: any }>));
-const BudgetListPage = lazy(() => import('./pages/budgets/BudgetListPage' as unknown as Promise<{ default: any }>));
-const BudgetCreatePage = lazy(() => import('./pages/budgets/BudgetCreatePage' as unknown as Promise<{ default: any }>));
-const BudgetDetailPage = lazy(() => import('./pages/budgets/BudgetDetailPage' as unknown as Promise<{ default: any }>));
-const BudgetVAReport = lazy(() => import('./pages/budgets/BudgetVAReport' as unknown as Promise<{ default: any }>));
-const ForecastListPage = lazy(() => import('./pages/forecasts/ForecastListPage' as unknown as Promise<{ default: any }>));
-const ForecastBuilderPage = lazy(() => import('./pages/forecasts/ForecastBuilderPage' as unknown as Promise<{ default: any }>));
-const WhatIfPage = lazy(() => import('./pages/forecasts/WhatIfPage' as unknown as Promise<{ default: any }>));
-const ReportsListPage = lazy(() => import('./pages/reports/ReportsListPage' as unknown as Promise<{ default: any }>));
-const VarianceDashboardPage = lazy(() => import('./pages/variance/VarianceDashboardPage' as unknown as Promise<{ default: any }>));
-const ScenarioListPage = lazy(() => import('./pages/scenarios/ScenarioListPage' as unknown as Promise<{ default: any }>));
-const ScenarioBuilderPage = lazy(() => import('./pages/scenarios/ScenarioBuilderPage' as unknown as Promise<{ default: any }>));
-const AnalyticsPage = lazy(() => import('./pages/analytics/AnalyticsPage' as unknown as Promise<{ default: any }>));
-const BenchmarkingPage = lazy(() => import('./pages/analytics/BenchmarkingPage' as unknown as Promise<{ default: any }>));
-const GoalSeekPage = lazy(() => import('./pages/analytics/GoalSeekPage' as unknown as Promise<{ default: any }>));
-const AIIntelligencePage = lazy(() => import('./pages/ai/AIIntelligencePage' as unknown as Promise<{ default: any }>));
+const DashboardPage = lazy(() => import('./pages/DashboardPage') as any)
+const BudgetListPage = lazy(() => import('./pages/budgets/BudgetListPage') as any)
+const BudgetCreatePage = lazy(() => import('./pages/budgets/BudgetCreatePage') as any)
+const BudgetDetailPage = lazy(() => import('./pages/budgets/BudgetDetailPage') as any)
+const BudgetVAReport = lazy(() => import('./pages/budgets/BudgetVAReport') as any)
+const ForecastListPage = lazy(() => import('./pages/forecasts/ForecastListPage') as any)
+const ForecastBuilderPage = lazy(() => import('./pages/forecasts/ForecastBuilderPage') as any)
+const WhatIfPage = lazy(() => import('./pages/forecasts/WhatIfPage') as any)
+const ReportsListPage = lazy(() => import('./pages/reports/ReportsListPage') as any)
+const VarianceDashboardPage = lazy(() => import('./pages/variance/VarianceDashboardPage') as any)
+const ScenarioListPage = lazy(() => import('./pages/scenarios/ScenarioListPage') as any)
+const ScenarioBuilderPage = lazy(() => import('./pages/scenarios/ScenarioBuilderPage') as any)
+const AnalyticsPage = lazy(() => import('./pages/analytics/AnalyticsPage') as any)
+const BenchmarkingPage = lazy(() => import('./pages/analytics/BenchmarkingPage') as any)
+const GoalSeekPage = lazy(() => import('./pages/analytics/GoalSeekPage') as any)
+const AIIntelligencePage = lazy(() => import('./pages/ai/AIIntelligencePage') as any)
 
 // Data & GL
-const GLUploadPage = lazy(() => import('./pages/data/GLUploadPage' as unknown as Promise<{ default: any }>));
-const GLExplorerPage = lazy(() => import('./pages/data/GLExplorerPage' as unknown as Promise<{ default: any }>));
-const GLTrialBalancePage = lazy(() => import('./pages/data/GLTrialBalancePage' as unknown as Promise<{ default: any }>));
-const GLJournalsPage = lazy(() => import('./pages/data/GLJournalsPage' as unknown as Promise<{ default: any }>));
-const GLAccountAnalysisPage = lazy(() => import('./pages/data/GLAccountAnalysisPage' as unknown as Promise<{ default: any }>));
-const GLReportingPage = lazy(() => import('./pages/data/GLReportingPage' as unknown as Promise<{ default: any }>));
-const DataImportPage = lazy(() => import('./pages/data/DataImportPage' as unknown as Promise<{ default: any }>));
-const MigrationPage = lazy(() => import('./pages/data/MigrationPage' as unknown as Promise<{ default: any }>));
-const ChartOfAccountsPage = lazy(() => import('./pages/data/ChartOfAccountsPage' as unknown as Promise<{ default: any }>));
-const AuditTrailPage = lazy(() => import('./pages/audit/AuditTrailPage' as unknown as Promise<{ default: any }>));
+const GLUploadPage = lazy(() => import('./pages/data/GLUploadPage') as any)
+const GLExplorerPage = lazy(() => import('./pages/data/GLExplorerPage') as any)
+const GLTrialBalancePage = lazy(() => import('./pages/data/GLTrialBalancePage') as any)
+const GLJournalsPage = lazy(() => import('./pages/data/GLJournalsPage') as any)
+const GLAccountAnalysisPage = lazy(() => import('./pages/data/GLAccountAnalysisPage') as any)
+const GLReportingPage = lazy(() => import('./pages/data/GLReportingPage') as any)
+const DataImportPage = lazy(() => import('./pages/data/DataImportPage') as any)
+const MigrationPage = lazy(() => import('./pages/data/MigrationPage') as any)
+const ChartOfAccountsPage = lazy(() => import('./pages/data/ChartOfAccountsPage') as any)
+const AuditTrailPage = lazy(() => import('./pages/audit/AuditTrailPage') as any)
 
 // Financial Ops
-const ConsolidationDashboard = lazy(() => import('./pages/consolidation/ConsolidationDashboard' as unknown as Promise<{ default: any }>));
-const ICEliminationPage = lazy(() => import('./pages/consolidation/ICEliminationPage' as unknown as Promise<{ default: any }>));
-const OwnershipTreePage = lazy(() => import('./pages/consolidation/OwnershipTreePage' as unknown as Promise<{ default: any }>));
-const FXRatesPage = lazy(() => import('./pages/currency/FXRatesPage' as unknown as Promise<{ default: any }>));
-const TranslationResultPage = lazy(() => import('./pages/currency/TranslationResultPage' as unknown as Promise<{ default: any }>));
-const HedgeManagementPage = lazy(() => import('./pages/currency/HedgeManagementPage' as unknown as Promise<{ default: any }>));
-const RevRecDashboard = lazy(() => import('./pages/revenue/RevRecDashboard' as unknown as Promise<{ default: any }>));
-const DeferredSchedulePage = lazy(() => import('./pages/revenue/DeferredSchedulePage' as unknown as Promise<{ default: any }>));
-const LeaseDashboard = lazy(() => import('./pages/lease/LeaseDashboard' as unknown as Promise<{ default: any }>));
-const LeaseDetailPage = lazy(() => import('./pages/lease/LeaseDetailPage' as unknown as Promise<{ default: any }>));
-const TaxProvisionPage = lazy(() => import('./pages/tax/TaxProvisionPage' as unknown as Promise<{ default: any }>));
-const TransferPricingPage = lazy(() => import('./pages/tax/TransferPricingPage' as unknown as Promise<{ default: any }>));
-const CapExDashboard = lazy(() => import('./pages/capex/CapExDashboard' as unknown as Promise<{ default: any }>));
-const DepreciationForecastPage = lazy(() => import('./pages/capex/DepreciationForecastPage' as unknown as Promise<{ default: any }>));
-const DepreciationPage = lazy(() => import('./pages/accounting/DepreciationPage' as unknown as Promise<{ default: any }>));
-const MultiBookPage = lazy(() => import('./pages/accounting/MultiBookPage' as unknown as Promise<{ default: any }>));
-const FairValuePage = lazy(() => import('./pages/audit/FairValuePage' as unknown as Promise<{ default: any }>));
-const ImpairmentPage = lazy(() => import('./pages/audit/ImpairmentPage' as unknown as Promise<{ default: any }>));
-const SegmentReportingPage = lazy(() => import('./pages/reports/SegmentReportingPage' as unknown as Promise<{ default: any }>));
-const DashboardBuilderPage = lazy(() => import('./pages/analytics/DashboardBuilderPage' as unknown as Promise<{ default: any }>));
-const DebugPage = lazy(() => import('./pages/admin/DebugPage' as unknown as Promise<{ default: any }>));
-const PluginMarketplacePage = lazy(() => import('./pages/plugins/PluginMarketplacePage' as unknown as Promise<{ default: any }>));
+const ConsolidationDashboard = lazy(() => import('./pages/consolidation/ConsolidationDashboard') as any)
+const ICEliminationPage = lazy(() => import('./pages/consolidation/ICEliminationPage') as any)
+const OwnershipTreePage = lazy(() => import('./pages/consolidation/OwnershipTreePage') as any)
+const FXRatesPage = lazy(() => import('./pages/currency/FXRatesPage') as any)
+const TranslationResultPage = lazy(() => import('./pages/currency/TranslationResultPage') as any)
+const HedgeManagementPage = lazy(() => import('./pages/currency/HedgeManagementPage') as any)
+const RevRecDashboard = lazy(() => import('./pages/revenue/RevRecDashboard') as any)
+const DeferredSchedulePage = lazy(() => import('./pages/revenue/DeferredSchedulePage') as any)
+const LeaseDashboard = lazy(() => import('./pages/lease/LeaseDashboard') as any)
+const LeaseDetailPage = lazy(() => import('./pages/lease/LeaseDetailPage') as any)
+const TaxProvisionPage = lazy(() => import('./pages/tax/TaxProvisionPage') as any)
+const TransferPricingPage = lazy(() => import('./pages/tax/TransferPricingPage') as any)
+const CapExDashboard = lazy(() => import('./pages/capex/CapExDashboard') as any)
+const DepreciationForecastPage = lazy(() => import('./pages/capex/DepreciationForecastPage') as any)
+const DepreciationPage = lazy(() => import('./pages/accounting/DepreciationPage') as any)
+const MultiBookPage = lazy(() => import('./pages/accounting/MultiBookPage') as any)
+const FairValuePage = lazy(() => import('./pages/audit/FairValuePage') as any)
+const ImpairmentPage = lazy(() => import('./pages/audit/ImpairmentPage') as any)
+const SegmentReportingPage = lazy(() => import('./pages/reports/SegmentReportingPage') as any)
+const DashboardBuilderPage = lazy(() => import('./pages/analytics/DashboardBuilderPage') as any)
+const DebugPage = lazy(() => import('./pages/admin/DebugPage') as any)
+const PluginMarketplacePage = lazy(() => import('./pages/plugins/PluginMarketplacePage') as any)
 
 // Cash & Treasury
-const CashForecastPage = lazy(() => import('./pages/cash/CashForecastPage' as unknown as Promise<{ default: any }>));
-const DebtSchedulePage = lazy(() => import('./pages/cash/DebtSchedulePage' as unknown as Promise<{ default: any }>));
-const WorkingCapitalPage = lazy(() => import('./pages/cash/WorkingCapitalPage' as unknown as Promise<{ default: any }>));
-const InvestmentPage = lazy(() => import('./pages/treasury/InvestmentPage' as unknown as Promise<{ default: any }>));
-const FXExposurePage = lazy(() => import('./pages/treasury/FXExposurePage' as unknown as Promise<{ default: any }>));
+const CashForecastPage = lazy(() => import('./pages/cash/CashForecastPage') as any)
+const DebtSchedulePage = lazy(() => import('./pages/cash/DebtSchedulePage') as any)
+const WorkingCapitalPage = lazy(() => import('./pages/cash/WorkingCapitalPage') as any)
+const InvestmentPage = lazy(() => import('./pages/treasury/InvestmentPage') as any)
+const FXExposurePage = lazy(() => import('./pages/treasury/FXExposurePage') as any)
 
 // Workforce
-const HeadcountPlanPage = lazy(() => import('./pages/workforce/HeadcountPlanPage' as unknown as Promise<{ default: any }>));
-const CompModelingPage = lazy(() => import('./pages/workforce/CompModelingPage' as unknown as Promise<{ default: any }>));
-const PayrollForecastPage = lazy(() => import('./pages/workforce/PayrollForecastPage' as unknown as Promise<{ default: any }>));
+const HeadcountPlanPage = lazy(() => import('./pages/workforce/HeadcountPlanPage') as any)
+const CompModelingPage = lazy(() => import('./pages/workforce/CompModelingPage') as any)
+const PayrollForecastPage = lazy(() => import('./pages/workforce/PayrollForecastPage') as any)
 
 // Reports
-const ProfitLossPage = lazy(() => import('./pages/reports/ProfitLossPage' as unknown as Promise<{ default: any }>));
+const ProfitLossPage = lazy(() => import('./pages/reports/ProfitLossPage') as any)
 const ThreeStatementDashboardPage = lazy(
   () => import('./pages/reports/ThreeStatementDashboardPage')
 );
-const BalanceSheetPage = lazy(() => import('./pages/reports/BalanceSheetPage' as unknown as Promise<{ default: any }>));
-const CashFlowPage = lazy(() => import('./pages/reports/CashFlowPage' as unknown as Promise<{ default: any }>));
-const BudgetVsActualPage = lazy(() => import('./pages/reports/BudgetVsActualPage' as unknown as Promise<{ default: any }>));
-const BoardPackPage = lazy(() => import('./pages/reports/BoardPackPage' as unknown as Promise<{ default: any }>));
-const ReportDesignerPage = lazy(() => import('./pages/reports/ReportDesignerPage' as unknown as Promise<{ default: any }>));
-const TemplateGalleryPage = lazy(() => import('./pages/templates/TemplateGalleryPage' as unknown as Promise<{ default: any }>));
+const BalanceSheetPage = lazy(() => import('./pages/reports/BalanceSheetPage') as any)
+const CashFlowPage = lazy(() => import('./pages/reports/CashFlowPage') as any)
+const BudgetVsActualPage = lazy(() => import('./pages/reports/BudgetVsActualPage') as any)
+const BoardPackPage = lazy(() => import('./pages/reports/BoardPackPage') as any)
+const ReportDesignerPage = lazy(() => import('./pages/reports/ReportDesignerPage') as any)
+const TemplateGalleryPage = lazy(() => import('./pages/templates/TemplateGalleryPage') as any)
 
 // Industry: SaaS
-const ARRDashboard = lazy(() => import('./pages/saas/ARRDashboard' as unknown as Promise<{ default: any }>));
-const CohortAnalysisPage = lazy(() => import('./pages/saas/CohortAnalysisPage' as unknown as Promise<{ default: any }>));
-const ChurnDashboard = lazy(() => import('./pages/saas/ChurnDashboard' as unknown as Promise<{ default: any }>));
+const ARRDashboard = lazy(() => import('./pages/saas/ARRDashboard') as any)
+const CohortAnalysisPage = lazy(() => import('./pages/saas/CohortAnalysisPage') as any)
+const ChurnDashboard = lazy(() => import('./pages/saas/ChurnDashboard') as any)
 
 // Industry: Manufacturing
-const ProductionDashboardPage = lazy(() => import('./pages/manufacturing/ProductionDashboardPage' as unknown as Promise<{ default: any }>));
-const COGSVariancePage = lazy(() => import('./pages/manufacturing/COGSVariancePage' as unknown as Promise<{ default: any }>));
-const InventoryPage = lazy(() => import('./pages/manufacturing/InventoryPage' as unknown as Promise<{ default: any }>));
+const ProductionDashboardPage = lazy(() => import('./pages/manufacturing/ProductionDashboardPage') as any)
+const COGSVariancePage = lazy(() => import('./pages/manufacturing/COGSVariancePage') as any)
+const InventoryPage = lazy(() => import('./pages/manufacturing/InventoryPage') as any)
 
 // Industry: Retail
-const StoreDashboardPage = lazy(() => import('./pages/retail/StoreDashboardPage' as unknown as Promise<{ default: any }>));
-const PromoAnalysisPage = lazy(() => import('./pages/retail/PromoAnalysisPage' as unknown as Promise<{ default: any }>));
+const StoreDashboardPage = lazy(() => import('./pages/retail/StoreDashboardPage') as any)
+const PromoAnalysisPage = lazy(() => import('./pages/retail/PromoAnalysisPage') as any)
 
 // Industry: Banking
-const NIMDashboardPage = lazy(() => import('./pages/banking/NIMDashboardPage' as unknown as Promise<{ default: any }>));
-const CapitalAdequacyPage = lazy(() => import('./pages/banking/CapitalAdequacyPage' as unknown as Promise<{ default: any }>));
-const LoanLossPage = lazy(() => import('./pages/banking/LoanLossPage' as unknown as Promise<{ default: any }>));
+const NIMDashboardPage = lazy(() => import('./pages/banking/NIMDashboardPage') as any)
+const CapitalAdequacyPage = lazy(() => import('./pages/banking/CapitalAdequacyPage') as any)
+const LoanLossPage = lazy(() => import('./pages/banking/LoanLossPage') as any)
 
 // Industry: Healthcare
-const HealthcareDashboardPage = lazy(() => import('./pages/healthcare/HealthcareDashboardPage' as unknown as Promise<{ default: any }>));
-const PatientRevenuePage = lazy(() => import('./pages/healthcare/PatientRevenuePage' as unknown as Promise<{ default: any }>));
-const ClinicalTrialCostPage = lazy(() => import('./pages/healthcare/ClinicalTrialCostPage' as unknown as Promise<{ default: any }>));
+const HealthcareDashboardPage = lazy(() => import('./pages/healthcare/HealthcareDashboardPage') as any)
+const PatientRevenuePage = lazy(() => import('./pages/healthcare/PatientRevenuePage') as any)
+const ClinicalTrialCostPage = lazy(() => import('./pages/healthcare/ClinicalTrialCostPage') as any)
 
 // Industry: Energy & ESG
-const EnergyDashboardPage = lazy(() => import('./pages/energy/EnergyDashboardPage' as unknown as Promise<{ default: any }>));
-const EnergyProductionDashboard = lazy(() => import('./pages/energy/EnergyProductionDashboard' as unknown as Promise<{ default: any }>));
-const EnergyRiskPage = lazy(() => import('./pages/energy/EnergyRiskPage' as unknown as Promise<{ default: any }>));
-const RenewableEnergyPage = lazy(() => import('./pages/energy/RenewableEnergyPage' as unknown as Promise<{ default: any }>));
-const EmissionsTradingPage = lazy(() => import('./pages/energy/EmissionsTradingPage' as unknown as Promise<{ default: any }>));
-const CarbonDashboardPage = lazy(() => import('./pages/esg/CarbonDashboardPage' as unknown as Promise<{ default: any }>));
-const CSRDReportPage = lazy(() => import('./pages/esg/CSRDReportPage' as unknown as Promise<{ default: any }>));
+const EnergyDashboardPage = lazy(() => import('./pages/energy/EnergyDashboardPage') as any)
+const EnergyProductionDashboard = lazy(() => import('./pages/energy/EnergyProductionDashboard') as any)
+const EnergyRiskPage = lazy(() => import('./pages/energy/EnergyRiskPage') as any)
+const RenewableEnergyPage = lazy(() => import('./pages/energy/RenewableEnergyPage') as any)
+const EmissionsTradingPage = lazy(() => import('./pages/energy/EmissionsTradingPage') as any)
+const CarbonDashboardPage = lazy(() => import('./pages/esg/CarbonDashboardPage') as any)
+const CSRDReportPage = lazy(() => import('./pages/esg/CSRDReportPage') as any)
 
 // Utility
-const CollaborationPage = lazy(() => import('./pages/collaboration/CollaborationPage' as unknown as Promise<{ default: any }>));
-const ApprovalQueuePage = lazy(() => import('./pages/collaboration/ApprovalQueuePage' as unknown as Promise<{ default: any }>));
-const SettingsPage = lazy(() => import('./pages/settings/SettingsPage' as unknown as Promise<{ default: any }>));
-const UserManagementPage = lazy(() => import('./pages/settings/UserManagementPage' as unknown as Promise<{ default: any }>));
-const ProfilePage = lazy(() => import('./pages/ProfilePage' as unknown as Promise<{ default: any }>));
-const HelpPage = lazy(() => import('./pages/HelpPage' as unknown as Promise<{ default: any }>));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage' as unknown as Promise<{ default: any }>));
-const DrillDownWindowPage = lazy(() => import('./pages/DrillDownWindowPage' as unknown as Promise<{ default: any }>));
+const CollaborationPage = lazy(() => import('./pages/collaboration/CollaborationPage') as any)
+const ApprovalQueuePage = lazy(() => import('./pages/collaboration/ApprovalQueuePage') as any)
+const SettingsPage = lazy(() => import('./pages/settings/SettingsPage') as any)
+const UserManagementPage = lazy(() => import('./pages/settings/UserManagementPage') as any)
+const ProfilePage = lazy(() => import('./pages/ProfilePage') as any)
+const HelpPage = lazy(() => import('./pages/HelpPage') as any)
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage') as any)
+const DrillDownWindowPage = lazy(() => import('./pages/DrillDownWindowPage') as any)
 
 // Phase 4 G11 - additional pages (re-import batch)
-const BudgetApproval = lazy(() => import('./pages/budgets/BudgetApproval' as unknown as Promise<{ default: any }>));
-const DriverPlanningPage = lazy(() => import('./pages/forecasts/DriverPlanningPage' as unknown as Promise<{ default: any }>));
-const RollingForecastPage = lazy(() => import('./pages/forecasts/RollingForecastPage' as unknown as Promise<{ default: any }>));
-const ScenarioComparisonPage = lazy(() => import('./pages/scenarios/ScenarioComparisonPage' as unknown as Promise<{ default: any }>));
-const DataLineagePage = lazy(() => import('./pages/analytics/DataLineagePage' as unknown as Promise<{ default: any }>));
-const NLQChatPage = lazy(() => import('./pages/ai/NLQChatPage' as unknown as Promise<{ default: any }>));
-const DataFlowMapPage = lazy(() => import('./pages/data/DataFlowMapPage' as unknown as Promise<{ default: any }>));
-const DataSummaryCard = lazy(() => import('./pages/data/DataSummaryCard' as unknown as Promise<{ default: any }>));
-const MigrationWizard = lazy(() => import('./pages/data/MigrationWizard' as unknown as Promise<{ default: any }>));
-const ReconciliationPanel = lazy(() => import('./pages/data/ReconciliationPanel' as unknown as Promise<{ default: any }>));
-const ReconciliationResults = lazy(() => import('./pages/data/ReconciliationResults' as unknown as Promise<{ default: any }>));
-const ImportJobHistory = lazy(() => import('./pages/data/ImportJobHistory' as unknown as Promise<{ default: any }>));
-const VersionDiffPage = lazy(() => import('./pages/data/VersionDiffPage' as unknown as Promise<{ default: any }>));
-const SOXCompliancePage = lazy(() => import('./pages/audit/SOXCompliancePage' as unknown as Promise<{ default: any }>));
-const ConsolidationPage = lazy(() => import('./pages/consolidation/ConsolidationPage' as unknown as Promise<{ default: any }>));
-const LeaseAccountingPage = lazy(() => import('./pages/lease/LeaseAccountingPage' as unknown as Promise<{ default: any }>));
-const CapexTracker = lazy(() => import('./pages/capex/CapexTracker' as unknown as Promise<{ default: any }>));
-const BenchmarksPage = lazy(() => import('./pages/admin/BenchmarksPage' as unknown as Promise<{ default: any }>));
-const BankingDashboard = lazy(() => import('./pages/banking/BankingDashboard' as unknown as Promise<{ default: any }>));
-const BankReconciliation = lazy(() => import('./pages/banking/BankReconciliation' as unknown as Promise<{ default: any }>));
-const BankStatements = lazy(() => import('./pages/banking/BankStatements' as unknown as Promise<{ default: any }>));
-const BondPortfolioPage = lazy(() => import('./pages/bonds/BondPortfolioPage' as unknown as Promise<{ default: any }>));
-const YieldCurvePage = lazy(() => import('./pages/bonds/YieldCurvePage' as unknown as Promise<{ default: any }>));
-const CreditRiskPage = lazy(() => import('./pages/credit/CreditRiskPage' as unknown as Promise<{ default: any }>));
+const BudgetApproval = lazy(() => import('./pages/budgets/BudgetApproval') as any)
+const DriverPlanningPage = lazy(() => import('./pages/forecasts/DriverPlanningPage') as any)
+const RollingForecastPage = lazy(() => import('./pages/forecasts/RollingForecastPage') as any)
+const ScenarioComparisonPage = lazy(() => import('./pages/scenarios/ScenarioComparisonPage') as any)
+const DataLineagePage = lazy(() => import('./pages/analytics/DataLineagePage') as any)
+const NLQChatPage = lazy(() => import('./pages/ai/NLQChatPage') as any)
+const DataFlowMapPage = lazy(() => import('./pages/data/DataFlowMapPage') as any)
+const DataSummaryCard = lazy(() => import('./pages/data/DataSummaryCard') as any)
+const MigrationWizard = lazy(() => import('./pages/data/MigrationWizard') as any)
+const ReconciliationPanel = lazy(() => import('./pages/data/ReconciliationPanel') as any)
+const ReconciliationResults = lazy(() => import('./pages/data/ReconciliationResults') as any)
+const ImportJobHistory = lazy(() => import('./pages/data/ImportJobHistory') as any)
+const VersionDiffPage = lazy(() => import('./pages/data/VersionDiffPage') as any)
+const SOXCompliancePage = lazy(() => import('./pages/audit/SOXCompliancePage') as any)
+const ConsolidationPage = lazy(() => import('./pages/consolidation/ConsolidationPage') as any)
+const LeaseAccountingPage = lazy(() => import('./pages/lease/LeaseAccountingPage') as any)
+const CapexTracker = lazy(() => import('./pages/capex/CapexTracker') as any)
+const BenchmarksPage = lazy(() => import('./pages/admin/BenchmarksPage') as any)
+const BankingDashboard = lazy(() => import('./pages/banking/BankingDashboard') as any)
+const BankReconciliation = lazy(() => import('./pages/banking/BankReconciliation') as any)
+const BankStatements = lazy(() => import('./pages/banking/BankStatements') as any)
+const BondPortfolioPage = lazy(() => import('./pages/bonds/BondPortfolioPage') as any)
+const YieldCurvePage = lazy(() => import('./pages/bonds/YieldCurvePage') as any)
+const CreditRiskPage = lazy(() => import('./pages/credit/CreditRiskPage') as any)
 const ConstructionDashboardPage = lazy(
   () => import('./pages/construction/ConstructionDashboardPage')
 );
-const EquipmentManagementPage = lazy(() => import('./pages/construction/EquipmentManagementPage' as unknown as Promise<{ default: any }>));
-const ProjectCostingPage = lazy(() => import('./pages/construction/ProjectCostingPage' as unknown as Promise<{ default: any }>));
-const RealEstateDashboardPage = lazy(() => import('./pages/realestate/RealEstateDashboardPage' as unknown as Promise<{ default: any }>));
-const FacilityManagementPage = lazy(() => import('./pages/realestate/FacilityManagementPage' as unknown as Promise<{ default: any }>));
-const PropertyPortfolioPage = lazy(() => import('./pages/realestate/PropertyPortfolioPage' as unknown as Promise<{ default: any }>));
-const REITDashboardPage = lazy(() => import('./pages/realestate/REITDashboardPage' as unknown as Promise<{ default: any }>));
-const ValuationPage = lazy(() => import('./pages/realestate/ValuationPage' as unknown as Promise<{ default: any }>));
-const ClaimsAnalyticsPage = lazy(() => import('./pages/insurance/ClaimsAnalyticsPage' as unknown as Promise<{ default: any }>));
-const InsuranceDashboardPage = lazy(() => import('./pages/insurance/InsuranceDashboardPage' as unknown as Promise<{ default: any }>));
-const InsurancePage = lazy(() => import('./pages/insurance/InsurancePage' as unknown as Promise<{ default: any }>));
-const UnderwritingPage = lazy(() => import('./pages/insurance/UnderwritingPage' as unknown as Promise<{ default: any }>));
-const HealthcarePage = lazy(() => import('./pages/healthcare/HealthcarePage' as unknown as Promise<{ default: any }>));
-const ValueBasedCarePage = lazy(() => import('./pages/healthcare/ValueBasedCarePage' as unknown as Promise<{ default: any }>));
-const EnergySectorPage = lazy(() => import('./pages/energy/EnergySectorPage' as unknown as Promise<{ default: any }>));
-const ESGPage = lazy(() => import('./pages/esg/ESGPage' as unknown as Promise<{ default: any }>));
-const ManufacturingPage = lazy(() => import('./pages/manufacturing/ManufacturingPage' as unknown as Promise<{ default: any }>));
-const RetailDashboard = lazy(() => import('./pages/retail/RetailDashboard' as unknown as Promise<{ default: any }>));
-const RetailDashboardPage = lazy(() => import('./pages/retail/RetailDashboardPage' as unknown as Promise<{ default: any }>));
-const InventoryDashboard = lazy(() => import('./pages/retail/InventoryDashboard' as unknown as Promise<{ default: any }>));
-const InventoryPlanningPage = lazy(() => import('./pages/retail/InventoryPlanningPage' as unknown as Promise<{ default: any }>));
-const StorePerformancePage = lazy(() => import('./pages/retail/StorePerformancePage' as unknown as Promise<{ default: any }>));
-const ChurnAnalysisPage = lazy(() => import('./pages/saas/ChurnAnalysisPage' as unknown as Promise<{ default: any }>));
-const SaaSPage = lazy(() => import('./pages/saas/SaaSPage' as unknown as Promise<{ default: any }>));
-const ReportScheduler = lazy(() => import('./pages/reports/ReportScheduler' as unknown as Promise<{ default: any }>));
-const ReportTemplateLibraryPage = lazy(() => import('./pages/reports/ReportTemplateLibraryPage' as unknown as Promise<{ default: any }>));
-const ReportBookBuilder = lazy(() => import('./pages/reports/ReportBookBuilder' as unknown as Promise<{ default: any }>));
+const EquipmentManagementPage = lazy(() => import('./pages/construction/EquipmentManagementPage') as any)
+const ProjectCostingPage = lazy(() => import('./pages/construction/ProjectCostingPage') as any)
+const RealEstateDashboardPage = lazy(() => import('./pages/realestate/RealEstateDashboardPage') as any)
+const FacilityManagementPage = lazy(() => import('./pages/realestate/FacilityManagementPage') as any)
+const PropertyPortfolioPage = lazy(() => import('./pages/realestate/PropertyPortfolioPage') as any)
+const REITDashboardPage = lazy(() => import('./pages/realestate/REITDashboardPage') as any)
+const ValuationPage = lazy(() => import('./pages/realestate/ValuationPage') as any)
+const ClaimsAnalyticsPage = lazy(() => import('./pages/insurance/ClaimsAnalyticsPage') as any)
+const InsuranceDashboardPage = lazy(() => import('./pages/insurance/InsuranceDashboardPage') as any)
+const InsurancePage = lazy(() => import('./pages/insurance/InsurancePage') as any)
+const UnderwritingPage = lazy(() => import('./pages/insurance/UnderwritingPage') as any)
+const HealthcarePage = lazy(() => import('./pages/healthcare/HealthcarePage') as any)
+const ValueBasedCarePage = lazy(() => import('./pages/healthcare/ValueBasedCarePage') as any)
+const EnergySectorPage = lazy(() => import('./pages/energy/EnergySectorPage') as any)
+const ESGPage = lazy(() => import('./pages/esg/ESGPage') as any)
+const ManufacturingPage = lazy(() => import('./pages/manufacturing/ManufacturingPage') as any)
+const RetailDashboard = lazy(() => import('./pages/retail/RetailDashboard') as any)
+const RetailDashboardPage = lazy(() => import('./pages/retail/RetailDashboardPage') as any)
+const InventoryDashboard = lazy(() => import('./pages/retail/InventoryDashboard') as any)
+const InventoryPlanningPage = lazy(() => import('./pages/retail/InventoryPlanningPage') as any)
+const StorePerformancePage = lazy(() => import('./pages/retail/StorePerformancePage') as any)
+const ChurnAnalysisPage = lazy(() => import('./pages/saas/ChurnAnalysisPage') as any)
+const SaaSPage = lazy(() => import('./pages/saas/SaaSPage') as any)
+const ReportScheduler = lazy(() => import('./pages/reports/ReportScheduler') as any)
+const ReportTemplateLibraryPage = lazy(() => import('./pages/reports/ReportTemplateLibraryPage') as any)
+const ReportBookBuilder = lazy(() => import('./pages/reports/ReportBookBuilder') as any)
 const FinancialStatementTemplates = lazy(
   () => import('./pages/reports/FinancialStatementTemplates')
 );
-const TemplatePreviewPage = lazy(() => import('./pages/templates/TemplatePreviewPage' as unknown as Promise<{ default: any }>));
-const ChartShowcasePage = lazy(() => import('./pages/charts/ChartShowcasePage' as unknown as Promise<{ default: any }>));
-const ChartOfAccountsPageCharts = lazy(() => import('./pages/charts/ChartOfAccountsPage' as unknown as Promise<{ default: any }>));
-const ActivityFeed = lazy(() => import('./pages/collaboration/ActivityFeed' as unknown as Promise<{ default: any }>));
-const SharedReports = lazy(() => import('./pages/collaboration/SharedReports' as unknown as Promise<{ default: any }>));
-const TeamWorkspace = lazy(() => import('./pages/collaboration/TeamWorkspace' as unknown as Promise<{ default: any }>));
-const BackupRestorePage = lazy(() => import('./pages/settings/BackupRestorePage' as unknown as Promise<{ default: any }>));
-const ConnectorSettingsPage = lazy(() => import('./pages/settings/ConnectorSettingsPage' as unknown as Promise<{ default: any }>));
-const IntegrationSettingsPage = lazy(() => import('./pages/settings/IntegrationSettingsPage' as unknown as Promise<{ default: any }>));
-const SecuritySettingsPage = lazy(() => import('./pages/settings/SecuritySettingsPage' as unknown as Promise<{ default: any }>));
+const TemplatePreviewPage = lazy(() => import('./pages/templates/TemplatePreviewPage') as any)
+const ChartShowcasePage = lazy(() => import('./pages/charts/ChartShowcasePage') as any)
+const ChartOfAccountsPageCharts = lazy(() => import('./pages/charts/ChartOfAccountsPage') as any)
+const ActivityFeed = lazy(() => import('./pages/collaboration/ActivityFeed') as any)
+const SharedReports = lazy(() => import('./pages/collaboration/SharedReports') as any)
+const TeamWorkspace = lazy(() => import('./pages/collaboration/TeamWorkspace') as any)
+const BackupRestorePage = lazy(() => import('./pages/settings/BackupRestorePage') as any)
+const ConnectorSettingsPage = lazy(() => import('./pages/settings/ConnectorSettingsPage') as any)
+const IntegrationSettingsPage = lazy(() => import('./pages/settings/IntegrationSettingsPage') as any)
+const SecuritySettingsPage = lazy(() => import('./pages/settings/SecuritySettingsPage') as any)
 
 // Phase 4 G11 - Sector dashboards (18 sector/* + 4 sectors/* + 4 legacy aliases)
-const AgricultureDashboardPage = lazy(() => import('./pages/sector/AgricultureDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorBankingDashboardPage = lazy(() => import('./pages/sector/BankingDashboardPage' as unknown as Promise<{ default: any }>));
+const AgricultureDashboardPage = lazy(() => import('./pages/sector/AgricultureDashboardPage') as any)
+const SectorBankingDashboardPage = lazy(() => import('./pages/sector/BankingDashboardPage') as any)
 const SectorConstructionDashboardPage = lazy(
   () => import('./pages/sector/ConstructionDashboardPage')
 );
-const SectorEducationDashboardPage = lazy(() => import('./pages/sector/EducationDashboardPage' as unknown as Promise<{ default: any }>));
-const EmissionsDashboardPage = lazy(() => import('./pages/sector/EmissionsTradingPage' as unknown as Promise<{ default: any }>));
-const SectorEnergyDashboardPage = lazy(() => import('./pages/sector/EnergyDashboardPage' as unknown as Promise<{ default: any }>));
-const EquipmentDashboardPage = lazy(() => import('./pages/sector/EquipmentManagementPage' as unknown as Promise<{ default: any }>));
-const SectorGovernmentDashboardPage = lazy(() => import('./pages/sector/GovernmentDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorHealthcareDashboardPage = lazy(() => import('./pages/sector/HealthcareDashboardPage' as unknown as Promise<{ default: any }>));
-const HospitalityDashboardPage = lazy(() => import('./pages/sector/HospitalityDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorInsuranceDashboardPage = lazy(() => import('./pages/sector/InsuranceDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorLogisticsDashboardPage = lazy(() => import('./pages/sector/LogisticsDashboardPage' as unknown as Promise<{ default: any }>));
+const SectorEducationDashboardPage = lazy(() => import('./pages/sector/EducationDashboardPage') as any)
+const EmissionsDashboardPage = lazy(() => import('./pages/sector/EmissionsTradingPage') as any)
+const SectorEnergyDashboardPage = lazy(() => import('./pages/sector/EnergyDashboardPage') as any)
+const EquipmentDashboardPage = lazy(() => import('./pages/sector/EquipmentManagementPage') as any)
+const SectorGovernmentDashboardPage = lazy(() => import('./pages/sector/GovernmentDashboardPage') as any)
+const SectorHealthcareDashboardPage = lazy(() => import('./pages/sector/HealthcareDashboardPage') as any)
+const HospitalityDashboardPage = lazy(() => import('./pages/sector/HospitalityDashboardPage') as any)
+const SectorInsuranceDashboardPage = lazy(() => import('./pages/sector/InsuranceDashboardPage') as any)
+const SectorLogisticsDashboardPage = lazy(() => import('./pages/sector/LogisticsDashboardPage') as any)
 const SectorManufacturingDashboardPage = lazy(
   () => import('./pages/sector/ManufacturingDashboardPage')
 );
-const SectorRealEstateDashboardPage = lazy(() => import('./pages/sector/RealEstateDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorRetailDashboardPage = lazy(() => import('./pages/sector/RetailDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorDashboardPage = lazy(() => import('./pages/sector/SectorPage' as unknown as Promise<{ default: any }>));
-const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDashboardPage' as unknown as Promise<{ default: any }>));
-const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorsEducationDashboardPage = lazy(() => import('./pages/sectors/EducationDashboardPage' as unknown as Promise<{ default: any }>));
+const SectorRealEstateDashboardPage = lazy(() => import('./pages/sector/RealEstateDashboardPage') as any)
+const SectorRetailDashboardPage = lazy(() => import('./pages/sector/RetailDashboardPage') as any)
+const SectorDashboardPage = lazy(() => import('./pages/sector/SectorPage') as any)
+const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDashboardPage') as any)
+const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage') as any)
+const SectorsEducationDashboardPage = lazy(() => import('./pages/sectors/EducationDashboardPage') as any)
 const SectorsGovernmentDashboardPage = lazy(
   () => import('./pages/sectors/GovernmentDashboardPage')
 );
-const SectorsLogisticsDashboardPage = lazy(() => import('./pages/sectors/LogisticsDashboardPage' as unknown as Promise<{ default: any }>));
-const SectorsTelecomDashboardPage = lazy(() => import('./pages/sectors/TelecomDashboardPage' as unknown as Promise<{ default: any }>));
-const EducationPage = lazy(() => import('./pages/sector/EducationDashboardPage' as unknown as Promise<{ default: any }>));
-const GovernmentPage = lazy(() => import('./pages/sector/GovernmentDashboardPage' as unknown as Promise<{ default: any }>));
-const LogisticsPage = lazy(() => import('./pages/sector/LogisticsDashboardPage' as unknown as Promise<{ default: any }>));
-const TelecomPage = lazy(() => import('./pages/sector/TelecomDashboardPage' as unknown as Promise<{ default: any }>));
+const SectorsLogisticsDashboardPage = lazy(() => import('./pages/sectors/LogisticsDashboardPage') as any)
+const SectorsTelecomDashboardPage = lazy(() => import('./pages/sectors/TelecomDashboardPage') as any)
+const EducationPage = lazy(() => import('./pages/sector/EducationDashboardPage') as any)
+const GovernmentPage = lazy(() => import('./pages/sector/GovernmentDashboardPage') as any)
+const LogisticsPage = lazy(() => import('./pages/sector/LogisticsDashboardPage') as any)
+const TelecomPage = lazy(() => import('./pages/sector/TelecomDashboardPage') as any)
 /**
  * RouteGroupWrapper provides a shared ErrorBoundary and Suspense context
  * for logical groups of routes, using domain-aware error boundaries
