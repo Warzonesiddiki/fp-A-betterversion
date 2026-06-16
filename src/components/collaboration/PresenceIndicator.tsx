@@ -3,8 +3,11 @@
 // Shows avatars of users currently viewing/editing a resource
 // =============================================================================
 
-import { useResourcePresence } from '@/hooks/usePresence';
-import type { UserPresence } from '@/services/RealtimeCollaborationManager';
+import { useState } from 'react';
+
+import { useResourcePresence, usePresenceEvents } from '@/hooks/usePresence';
+import { LiveRegion } from '@/components/ui/LiveRegion';
+import type { UserPresence, PresenceChange } from '@/services/RealtimeCollaborationManager';
 
 interface PresenceIndicatorProps {
   /** The resource type being viewed (e.g., 'budget', 'forecast') */
@@ -31,6 +34,14 @@ export function PresenceIndicator({
   className = '',
 }: PresenceIndicatorProps) {
   const viewers = useResourcePresence(resourceType, resourceId);
+  // Hermes H3 MEDIUM #3: announce presence changes via LiveRegion (aria-live)
+  const [announcement, setAnnouncement] = useState<string>('');
+  usePresenceEvents((change: PresenceChange) => {
+    if (change.resourceType === resourceType && change.resourceId === resourceId) {
+      const verb = change.type === 'join' ? 'joined' : change.type === 'leave' ? 'left' : 'updated status';
+      setAnnouncement(`${change.user.userName} ${verb} ${resourceType}`);
+    }
+  });
 
   if (viewers.length === 0) return null;
 
@@ -44,6 +55,7 @@ export function PresenceIndicator({
       aria-label={`${viewers.length} user${viewers.length > 1 ? 's' : ''} viewing this resource`}
       aria-live="polite"
     >
+      <LiveRegion message={announcement} politeness="polite" />
       <div className="flex -space-x-2">
         {visible.map((user) => (
           <AvatarBubble key={user.userId} user={user} size={size} />
@@ -177,6 +189,8 @@ export function CellPresenceOverlay({
       <span
         className="absolute -top-5 left-0 text-[10px] px-1 py-0.5 rounded text-white"
         style={{ backgroundColor: color }}
+        aria-live="polite"
+        aria-label={`${editor.userName} is editing this cell`}
       >
         {editor.userInitials}
       </span>
