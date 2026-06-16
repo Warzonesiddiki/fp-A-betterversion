@@ -1,4 +1,4 @@
-﻿/**
+/**
  * G12 — 7 Competitive Gaps
  *
  * Implements the competitive feature set that distinguishes FinPlan Pro from competitors
@@ -479,6 +479,3 @@ export const isScenarioLocked = (
 export const mergeScenarioNames = (a: string, b: string) => `Merge: ${a} ⊕ ${b}`;
 
 export { cellKey };
-
-
-

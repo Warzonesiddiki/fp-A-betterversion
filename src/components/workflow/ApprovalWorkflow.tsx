@@ -1,4 +1,4 @@
-﻿import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -172,7 +172,10 @@ export function ApprovalWorkflow({
                       isActive && !isRejected && 'border-current scale-110',
                       isPast && 'border-green-500 bg-green-500 text-white',
                       isRejected && 'border-red-500 bg-red-500 text-white',
-                      !isActive && !isPast && !isRejected && 'border-[var(--border-subtle)] text-[var(--text-muted)]'
+                      !isActive &&
+                        !isPast &&
+                        !isRejected &&
+                        'border-[var(--border-subtle)] text-[var(--text-muted)]'
                     )}
                   >
                     {isPast ? '\u2713' : idx + 1}
@@ -307,5 +310,3 @@ export function ApprovalWorkflow({
     </Card>
   );
 }
-
-

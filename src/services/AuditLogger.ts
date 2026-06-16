@@ -1,4 +1,4 @@
-﻿// AuditLogger — Tamper-evident, hash-chained audit log
+// AuditLogger — Tamper-evident, hash-chained audit log
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 12 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:
@@ -293,7 +293,8 @@ export class AuditLogger {
     severity?: 'debug' | 'info' | 'warn' | 'error' | 'critical';
     metadata?: Record<string, unknown>;
   }): Promise<AuditEvent> {
-    const severity: AuditSeverity = input.severity === 'warn' ? 'warning' : input.severity ?? 'info';
+    const severity: AuditSeverity =
+      input.severity === 'warn' ? 'warning' : (input.severity ?? 'info');
     const payload: Record<string, unknown> = {
       ...(input.metadata ?? {}),
       target: input.target,
@@ -577,5 +578,3 @@ async function computeEventHash(e: AuditEvent): Promise<string> {
   ].join('|');
   return sha256Hex(preimage);
 }
-
-
