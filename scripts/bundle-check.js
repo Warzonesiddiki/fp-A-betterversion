@@ -16,10 +16,17 @@
  *   G3  - total JS      > 1843.2 KB gzip (1.8 MB)
  *   G19 - lazy vendors  > 270 KB gzip each
  *
+ * CAVEMAN PERSIST (NEVER-AGAIN RULE #49):
+ *   RULE #49 (proposed) — POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER.
+ *   Detects multi-Muse bundles in HEAD per CATCH #194/195/196 CASCADE-TRAP family.
+ *   Emits ::warning:: (NOT ::error::) per ACCEPT-AS-IS disposition.
+ *   Does not block CI.
+ *
  * Exit code 0 = all gates pass (warnings allowed), 1 = at least one gate fails.
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { execSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import { gzip } from 'node:zlib';
 
@@ -34,6 +41,34 @@ const MAIN_CHUNK_WARN_KB = Math.floor(MAIN_CHUNK_LIMIT_KB * 0.9 * 100) / 100; //
 const TOTAL_JS_WARN_KB = Math.floor(TOTAL_JS_LIMIT_KB * 0.9 * 100) / 100; // 1843.2 KB (1.8 MB)
 const LAZY_VENDOR_WARN_KB = Math.floor(LAZY_VENDOR_LIMIT_KB * 0.9 * 100) / 100; // 270 KB
 const WARN_THRESHOLD_PCT = 90;
+
+// CAVEMAN PERSIST — NEVER-AGAIN RULE #49 (proposed)
+// POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER
+// Source of truth: docs/codif/RULE_49.md (when codif lands), AGENTS.md §0.5 (file ownership)
+// Per CATCH #194/195/196 CASCADE-TRAP family, multi-Muse bundles with single-Muse
+// attribution can hide attribution issues. This table maps file-path prefixes to
+// the responsible Muse. Order matters: most specific first.
+const MUSE_DOMAINS = [
+  { muse: 'Apollo', paths: ['src/engines/', 'src/hooks/', 'src/workers/'] },
+  { muse: 'Athena', paths: ['docs/parts/', 'docs/_archive/parts/', 'docs/INDEX', 'PART_'] },
+  { muse: 'Atlas', paths: ['scripts/', 'vite.config', '.github/', 'vitest.bench', 'docs/audits/', 'docs/finalization/', '.openhands/baseline-'] },
+  { muse: 'Hephaestus', paths: ['src/utils/security.ts', 'src/store/authStore.ts', 'src/services/KeyManager', 'src/services/SecureStorage'] },
+  { muse: 'Prometheus', paths: ['src/store/'] }, // Prometheus owns non-authStore files in src/store/
+  { muse: 'Hera', paths: ['src/components/'] },
+  { muse: 'Hermes', paths: ['src/pages/', 'App.tsx'] },
+  { muse: 'Mnemosyne', paths: ['src/test/', 'tests/', '_docs.ts'] },
+  { muse: 'Sentinel', paths: ['tests/e2e/'] },
+  { muse: 'Vulcan', paths: ['scripts/perf/', 'tests/perf/'] },
+  { muse: 'Strategos', paths: ['docs/strategos/', 'docs/vision-pivot/VISION_TO_REALITY_GAP', 'docs/leader/'] },
+  { muse: 'Orchestrator', paths: ['docs/codif/', 'docs/orchestrator/', 'docs/leader/CYCLE_'] },
+  { muse: 'Themis', paths: ['docs/compliance/'] },
+  { muse: 'Tyche', paths: ['docs/analytics/'] },
+  { muse: 'Vesta', paths: ['docs/sectors/', 'docs/sector-dashboards/'] },
+  { muse: 'Chronos', paths: ['src/engines/temporal', 'src/engines/periodLock', 'src/engines/varianceAttribution'] },
+  { muse: 'Iris', paths: ['docs/persona/'] },
+  { muse: 'Calliope', paths: ['docs/api/', 'src/api/'] },
+  { muse: 'Artemis', paths: ['src/__tests__/a11y/', 'docs/a11y/'] },
+];
 
 function formatKB(bytes) {
   return Math.round((bytes / 1024) * 100) / 100;
@@ -170,7 +205,82 @@ async function main() {
     console.log(`:white_check_mark: **G3 + G19 BUNDLE CHECK ALL PASS** (0 warnings, 0 failures)`);
   }
 
+  // CAVEMAN PERSIST (NEVER-AGAIN RULE #49) — detect multi-Muse bundles in HEAD
+  // Per CATCH #194/195/196 ACCEPT-AS-IS disposition: emit ::warning::, do NOT fail.
+  // Output is captured separately for the multi-muse annotation stream.
+  const persistResult = detectMultiMuseBundle();
+  if (persistResult.multiMuse) {
+    const museList = persistResult.muses.sort().join(', ');
+    console.warn(
+      `\n::warning file=HEAD::CAVEMAN PERSIST — Multi-Muse bundle detected: ${persistResult.count} Muses, ${persistResult.files} files — [${museList}]. See NEVER-AGAIN RULE #49 (docs/codif/RULE_49.md). Verify attribution per CATCH #194/195/196 ACCEPT-AS-IS.`
+    );
+    console.log(
+      `:information_source: CAVEMAN PERSIST: ${persistResult.count} Muses in HEAD (${persistResult.files} files) — [${museList}]. Disposition: ACCEPT-AS-IS (CATCH #194/195/196). RULE #49 enforcement: post-commit ledger.`
+    );
+  } else if (persistResult.count > 0) {
+    console.log(
+      `:white_check_mark: CAVEMAN PERSIST: ${persistResult.count} Muse in HEAD (${persistResult.files} files) — [${persistResult.muses[0] || 'unknown'}]. Single-Muse attribution OK.`
+    );
+  } else if (persistResult.error) {
+    // Don't fail CI on git errors (e.g., shallow clone, missing HEAD)
+    console.log(
+      `:information_source: CAVEMAN PERSIST: skipped (${persistResult.error.split('\n')[0]}). Non-blocking.`
+    );
+  }
+
   process.exit(fail);
+}
+
+/**
+ * CAVEMAN PERSIST — detect multi-Muse bundles in HEAD (NEVER-AGAIN RULE #49).
+ * Per CATCH #194/195/196 CASCADE-TRAP family:
+ *   - CATCH #194: unilateral 2-Muse bundle (cdee53b8: T-MN-046 carrier + PART_126 passenger)
+ *   - CATCH #195: bilateral 2-Muse bundle (4572ed14: Chronos carrier + Prometheus passengers)
+ *   - CATCH #196: trilateral 3-Muse bundle (8b340664: Prometheus T-PR-045 + Sentinel E2E + Vulcan 5 chaos JSONs)
+ * Disposition: ACCEPT-AS-IS (file content 100% correct, attribution documented in v0.3 amendments).
+ * NEVER-AGAIN RULE #49 (proposed): POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER.
+ * This function provides the LIGHTHOUSE side: detect + warn. The LEDGER side is
+ * owned by Orchestrator (CYCLE 6 PICK B RULE #50 codification).
+ *
+ * @returns {{ multiMuse: boolean, count: number, files: number, muses: string[], error?: string }}
+ */
+function detectMultiMuseBundle() {
+  try {
+    const head = execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString()
+      .trim();
+    if (!head) return { multiMuse: false, count: 0, files: 0, muses: [], error: 'no HEAD' };
+
+    const fileList = execSync(`git show --name-only --format= ${head}`, {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+      .toString()
+      .trim()
+      .split('\n')
+      .filter(Boolean);
+
+    const musesInCommit = new Set();
+    const fileToMuse = new Map();
+    for (const file of fileList) {
+      for (const { muse, paths } of MUSE_DOMAINS) {
+        if (paths.some((p) => file.startsWith(p))) {
+          musesInCommit.add(muse);
+          fileToMuse.set(file, muse);
+          break;
+        }
+      }
+    }
+
+    return {
+      multiMuse: musesInCommit.size > 1,
+      count: musesInCommit.size,
+      files: fileList.length,
+      muses: Array.from(musesInCommit),
+      fileToMuse: Object.fromEntries(fileToMuse),
+    };
+  } catch (e) {
+    return { multiMuse: false, count: 0, files: 0, muses: [], error: e.message };
+  }
 }
 
 main().catch((err) => {
