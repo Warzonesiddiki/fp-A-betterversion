@@ -373,7 +373,7 @@ export default function ValuationPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={valuationColumns} data={valuationData} />
+          <DataTable columns={valuationColumns} data={valuationData} caption="Property valuation detail table" ariaLabel="Property valuation detail data table for real estate valuation" />
         </CardContent>
       </Card>
     </div>
