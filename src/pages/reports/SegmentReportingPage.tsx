@@ -172,22 +172,23 @@ export default function SegmentReportingPage() {
           <CardTitle className="text-sm">Segment P&L</CardTitle>
         </CardHeader>
         <CardContent>
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" aria-label="Segment reporting breakdown">
+              <caption className="sr-only">Detailed breakdown of segment reporting breakdown</caption>
             <thead>
               <tr className="border-b border-[var(--border-subtle)]">
-                <th className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-left px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Segment
                 </th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Revenue
                 </th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Expenses
                 </th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Net Income
                 </th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
+                <th scope="col" className="text-right px-3 py-2 text-xs font-medium text-[var(--text-muted)]">
                   Margin
                 </th>
               </tr>

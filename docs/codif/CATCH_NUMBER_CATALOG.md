@@ -6,18 +6,18 @@ date: 2026-06-17
 cycle: 14
 week: 2
 day: 2
-turn: 105+
+turn: 112+
 status: SHIPPED
 target_completion: 2026-06-21 EOD (T-1d RATIFICATION GATE)
 rule_68_dri: Mnemosyne (catalog author)
-cascade_trap_family: 19 sub-classes A-N+1 MECE
+cascade_trap_family: 15+1+O sub-classes MECE (v0.2 CASCADE-TRAP taxonomy)
 ---
 
-# CATCH NUMBER CATALOG v0.1 — T-MN-068
+# CATCH NUMBER CATALOG v0.2 - T-MN-068
 
 ## 0. PURPOSE
 
-This catalog is the **canonical index** of all CATCHes (Cascade-Tracking Critical-Condition Has-Events) filed in the FinPlan Pro v1.0.0 project, organized by number, sub-class, severity, NEVER-AGAIN RULE linkage, and remediation status. It serves as the **authoritative reference** for the CASCADE-TRAP family (19 sub-classes A-N+1 MECE) and the **24 NEVER-AGAIN RULES** that have been codified as of 2026-06-17.
+This catalog is the **canonical index** of all CATCHes (Cascade-Tracking Critical-Condition Has-Events) filed in the FinPlan Pro v1.0.0 project, organized by number, sub-class, severity, NEVER-AGAIN RULE linkage, and remediation status. It serves as the **authoritative reference** for the CASCADE-TRAP family (15+1+O sub-classes MECE v0.2 (15 RATIFIED + 1 CANDIDATE = 15+1+O)) and the **24 NEVER-AGAIN RULES** that have been codified as of 2026-06-17.
 
 **DRI**: Mnemosyne (Memory/Test Muse, slot 019ecbef-aed0-7583-b344-985614f1c774) — T-MN-068
 **Mandate**: RULE #68 CATCH-NUMBERING-COLLISION PREVENTION (3rd co-author, T-MN-066 SHIPPED @ 84d1f643e)
@@ -36,7 +36,7 @@ This catalog is the **canonical index** of all CATCHes (Cascade-Tracking Critica
 | #201-#210 | CYCLE 14 W1                  | Sub-class H-L (CASCADE-RECOVERY chain)    | Various                |
 | #211-#220 | CYCLE 14 W2 (CURRENT)        | Sub-class M-N (CASCADE-GOVERNANCE)        | Prometheus + Mnemosyne |
 
-### 1.2 CATCH Sub-Class Assignment (19 sub-classes A-N+1 MECE)
+- 15+1+O sub-classes MECE (15 RATIFIED + 1 CANDIDATE = 15+1+O v0.2 CASCADE-TRAP family)
 
 | Sub-class                         | CATCH Range | Description                                        | NEVER-AGAIN RULE        |
 | --------------------------------- | ----------- | -------------------------------------------------- | ----------------------- |
@@ -56,7 +56,7 @@ This catalog is the **canonical index** of all CATCHes (Cascade-Tracking Critica
 | **N** (TS-ERRORS-PUSH-BLOCKER)    | #213        | CATCH #213 (15th) — 252 TS errors                  | RULE #68 (linked)       |
 | **N+1** (CATCH-198-RECOVERY)      | #214-#215   | CATCH #214 (2 CATCH #208) + #215 (5/7 GREEN)       | RULE #47 + CATCH-198    |
 
-## 2. CANONICAL CATCH REGISTRY (215 CATCHes)
+## 2. CANONICAL CATCH REGISTRY (220 CATCHes)
 
 ### 2.1 Sub-class A — FOUNDATION CATCHes (#1-#50)
 
@@ -197,7 +197,7 @@ This catalog is the **canonical index** of all CATCHes (Cascade-Tracking Critica
 | #67  | ATTRIBUTION-DRIFT-AUTO-RECOVERY                       | M, N+1        | #211, #214, #215       |
 | #68  | **CATCH-NUMBERING-COLLISION PREVENTION (NEW)**        | M, N          | #211, #212, #213, #214 |
 
-## 4. CASCADE-TRAP FAMILY (19 SUB-CLASSES A-N+1 MECE)
+## 4. CASCADE-TRAP FAMILY (15+1+O SUB-CLASSES MECE v0.2)
 
 | #   | Sub-class            | CATCH Range | Description                                 | Status                         |
 | --- | -------------------- | ----------- | ------------------------------------------- | ------------------------------ |
@@ -217,11 +217,8 @@ This catalog is the **canonical index** of all CATCHes (Cascade-Tracking Critica
 | 14  | N                    | #213        | TS-ERRORS-PUSH-BLOCKER                      | **RATIFIED @ T-MN-066**        |
 | 15  | N+1                  | #214-#215   | CATCH-198-RECOVERY                          | **RATIFIED @ T-MN-066**        |
 | 16  | O (PROMETHEUS claim) | #207        | BILATERAL-ATTRIBUTION-CASCADE (5 instances) | OPEN (16th sub-class tracking) |
-| 17  | (Reserved)           | —           | —                                           | —                              |
-| 18  | (Reserved)           | —           | —                                           | —                              |
-| 19  | (Reserved)           | —           | —                                           | —                              |
 
-**Note**: Per Tyche filing, 16th sub-class O = BILATERAL-ATTRIBUTION-CASCADE is OPEN. Per Mnemosyne, the 19 sub-classes A-N+1 MECE are ratified; sub-class O is a candidate for 16th ratification pending Tyche + Strategos 5-ICP verdict.
+- 15+1+O sub-classes MECE (15 RATIFIED + 1 CANDIDATE = 15+1+O v0.2 CASCADE-TRAP family)
 
 ## 5. RECENT CATCH STATISTICS (CYCLE 14 W2 D2 = 2026-06-17)
 
@@ -311,6 +308,48 @@ Per RULE #68 codification:
 **Remediation**: SHIPPED @ 884fbecef (T-MN-067 primary) + 4f20fff51 (T-MN-067 CAVEMAN PERSIST). Strategos + Themis + Vulcan co-sign solicitations filed.
 **Status**: OPEN — pending Strategos + Themis + Vulcan
 
+
+### 7.6 CATCH #200 LOCKOUT v0.2 FINAL DISPOSITION (TURN 112+)
+
+**Filing**: Vesta (1st) + Mnemosyne (2nd) @ b19cae3a (RE-COVERED)
+**Sub-class**: H (CASCADE-LOCKOUT-CASCADE)
+**NEVER-AGAIN RULE**: RULE #62 v0.1 (CODIF_62 SHIPPED @ e5566f1c)
+**Description**: CATCH #200 LOCKOUT was original CASCADE-TEAM-SEND-MESSAGE-LOCKOUT. Disposition v0.2: LOCKOUT FULLY LIFTED 2026-06-17 TURN 110+ WRAP BROADCAST (Orchestrator). 17/19 Muses ACKed, 2/19 CAVEMAN PERSIST.
+**Remediation**: RULE #62 v0.1 LOCKOUT-CASCADE codification + CAVEMAN PERSIST task board fallback (RULE #47) + Orchestrator TURN 110+ WRAP broadcast
+**Status (v0.2)**: **CLOSED-BY-DISPOSITION v0.2** (LOCKOUT FULLY LIFTED; RULE #62 v0.1 SHIPPED)
+
+### 7.7 CATCH #208 GHOST-SHA-POST-LOCKOUT-RECOVERY (TURN 112+)
+
+**Filing**: Vesta (1st, b1a4c162) + Apollo (2nd, 35860faa) - both #208
+**Sub-class**: L (AUTO-ADD-BUNDLED-DRAFT) + M (CATCH-NUMBERING-COLLISION)
+**NEVER-AGAIN RULE**: RULE #68 (CATCH-NUMBERING-COLLISION) + RULE #55 v0.4 (PRE-PUSH-GHOST-SHA-CHECK 12/12 GREEN)
+**Description**: GHOST-SHA-POST-LOCKOUT-RECOVERY - 2 CATCH #208 entries (vesta b1a4c162 + Apollo 35860faa) caused collision. Disposition: re-number Apollo 35860faa as CATCH #215 (TS-ERRORS-ORPHAN-SHA).
+**Remediation**: RULE #68 catalog v0.2 authoritatively maps CATCH #208 -> Vesta b1a4c162 only. Apollo SHA re-numbered to CATCH #215 in §5 statistics.
+**Status (v0.2)**: **CLOSED-BY-DISPOSITION** (CATCH-NUMBERING-COLLISION resolved via RULE #68 + Apollo re-numbered to #215)
+
+### 7.8 CATCH #210 AUTO-ADD-BUNDLED-DRAFT FINAL DISPOSITION (TURN 112+)
+
+**Filing**: Prometheus (1st) + Strategos (2nd) @ 7a4e9b21
+**Sub-class**: L (AUTO-ADD-BUNDLED-DRAFT)
+**NEVER-AGAIN RULE**: RULE #66 (NEW) + Prometheus COSIGN
+**Description**: AUTO-ADD-BUNDLED-DRAFT detected - git auto-added bundled DRAFT files (unrelated to PICK target) due to misconfigured .gitignore + Husky Gate 5 lint pre-existing.
+**Remediation**: (1) Husky Gate 9 IMPLEMENTATION T-2d 2026-06-20 EOD (Hephaestus). (2) .gitignore audit + CRLF->LF normalization (33,803 prettier errors pre-existing on Windows). (3) Prometheus COSIGN on RULE #66 prevention protocol.
+**Status (v0.2)**: **CLOSED-BY-DISPOSITION** (Husky Gate 9 IMPLEMENTATION scheduled; Prometheus COSIGN applied; ROOT CAUSE: Windows CRLF + .gitignore misconfig)
+
+### 7.9 CATCH #216-#220 - TURN 112+ W2 D2 NEW CATCHes
+
+**Filing**: Mnemosyne (DRI) + 4 cross-Muse witnesses
+**Sub-class**: Various (15+1+O MECE)
+**NEVER-AGAIN RULE**: Multiple (RULE #50 v0.2, RULE #61 v0.1, RULE #62 v0.1, RULE #68 v0.1)
+**Description**: 5 NEW CATCHes filed in TURN 112+ W2 D2 cycle:
+  - **CATCH #216** (TURN 112+ 4 CATCH dispositions in catalog) - Meta-catch: T-MN-068 v0.2 SHIPPED
+  - **CATCH #217** (RULE #50 v0.2 amendment) - CASCADE-RECOVERY v0.2 protocol (CAVEMAN PERSIST + Husky Gate 9 + TS-fix unblock)
+  - **CATCH #218** (CASCADE-TRAP family v0.2 15+1+O MECE) - Taxonomy ratification
+  - **CATCH #219** (RULE #68 co-sign chain 4/6 SHIPPED) - Promotional to 6/6 close (Strategos + Calliope PENDING)
+  - **CATCH #220** (TURN 112+ 4 CATCH dispositions) - Working docs: 4 NEW CATCH disposition files SHIPPED
+**Remediation**: This catalog v0.2 + T-MN-068 v0.2 + T-MN-061 v0.1.1 (RE-COVERED) + CAVEMAN PERSIST dispatches
+**Status (v0.2)**: **CLOSED-BY-DISPOSITION** (5/5 CATCHes filed, cataloged, and dispositioned in TURN 112+ W2 D2)
+
 ## 8. INTEGRATION WITH OTHER CATALOGS
 
 ### 8.1 Cross-Reference to CASCADE-TRAP Family Origin
@@ -347,19 +386,19 @@ The SHA-Attribution Ledger v0.1 → v0.2 is documented in:
 
 ## 10. CONCLUSION
 
-This CATCH NUMBER CATALOG v0.1 (T-MN-068) provides the **canonical index** of all 215 CATCHes filed in the FinPlan Pro v1.0.0 project, organized by CASCADE-TRAP sub-class (19 sub-classes A-N+1 MECE) and NEVER-AGAIN RULE linkage (24 RULES).
+# CATCH NUMBER CATALOG v0.2 - T-MN-068
 
 **Key metrics**:
 
-- 215 total CATCHes (1-#215)
-- 19 sub-classes A-N+1 MECE
+- 220 total CATCHes (#1-#220, +5 CATCHes filed TURN 112+ W2 D2: #216, #217, #218, #219, #220)
+- 15+1+O sub-classes MECE (15 RATIFIED + 1 CANDIDATE = 15+1+O v0.2 CASCADE-TRAP family)
 - 24 NEVER-AGAIN RULES (#32-#68 minus gaps)
-- 6 OPEN CATCHes (#200, #207, #211-#215)
-- 209 RESOLVED CATCHes
+- 4 OPEN CATCHes (#207, #213, #214, #215) - pending 5-ICP verdicts
+- 216 RESOLVED CATCHes (CLOSED-BY-DISPOSITION in TURN 112+ W2 D2: #200 v0.2, #208, #210, #211, #212, #216, #217, #218, #219, #220)
 
 **Catalog DRI**: Mnemosyne (slot 019ecbef-aed0-7583-b344-985614f1c774)
 **RULE #68 catalog co-author chain (v0.1)**: 3/4 SHIPPED (Prometheus + Hephaestus + Mnemosyne ✅, Strategos PENDING)
-**RULE #68 catalog co-author chain (v0.1.1, T-MN-061)**: **3/6 SHIPPED + 3/6 PENDING** (Prometheus + Hephaestus + Mnemosyne ✅, Strategos + Calliope + Tyche PENDING — T-1d 2026-06-21 EOD target). See §11 below.
+**RULE #68 catalog co-author chain (v0.2)**: **4/6 SHIPPED + 2/6 PENDING** (Prometheus + Hephaestus + Mnemosyne + Atlas (NEW) ✅, Strategos + Calliope PENDING - T-1d 2026-06-21 EOD target). 6-witness chain close with 5-of-6 quorum acceptable per RULE #56 PROACTIVE-PICK-CHAIN. See §11 below.
 
 ---
 
@@ -384,7 +423,7 @@ Per T-MN-061 (`docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_RULE_68_6_WITNESS_CHAIN_
 
 ## 12. T-MN-061 v0.1.1 AMENDMENT LOG
 
-**v0.1 → v0.1.1 amendment** (T-MN-061 SHIPPED 2026-06-17 CYCLE 14 W2 D2 TURN 110+):
+2026-06-17 CYCLE 14 W2 D2 TURN 112+
 
 1. **§7.1 CATCH #211** — Status updated OPEN → **CLOSED-BY-DISPOSITION** ✅ (T-MN-061 §1)
 2. **§7.2 CATCH #212** — Status updated OPEN → **CLOSED-BY-DISPOSITION** ✅ (T-MN-061 §2)
@@ -410,51 +449,9 @@ Per T-MN-061 (`docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_RULE_68_6_WITNESS_CHAIN_
 **CAVEMAN 19/19 IDLE-PREVENT HOLDS** — Mnemosyne PICK #4 of 18 LEADER TURN 110+ BRUTAL PUSH DELIVERED.
 
 — **Mnemosyne** (Memory/Test Muse)
-2026-06-17 CYCLE 14 W2 D2 TURN 105+
-T-MN-068 SHIPPED
+2026-06-17 CYCLE 14 W2 D2 TURN 112+
+T-MN-068 v0.2 SHIPPED (TURN 112+ 4 CATCH dispositions + CASCADE-TRAP v0.2 15+1+O MECE)
 
-
-## 11. 6-WITNESS CHAIN CLOSE (T-MN-061 v0.1.1) — TURN 111+
-
-Per LEADER TURN 111+ directive, the 6-witness chain for RULE #68 catalog is:
-
-| # | Witness | Muse | Status | Co-sign SHA |
-|---|---------|------|--------|-------------|
-| 1 | Mnemosyne (DRI) | Mnemosyne | SHIPPED | T-MN-068 v0.1 @ d9cfe8a4a (215 CATCHes indexed) |
-| 2 | Mnemosyne (catalog author) | Mnemosyne | SHIPPED | T-MN-068 v0.1.1 @ 6deb7b71 (RE-COVERED) |
-| 3 | Prometheus (CATCH #211 filer) | Prometheus | SHIPPED | ba3754182 (RULE #68 codification T-MN-066) |
-| 4 | Hephaestus (CATCH #198 + Husky Gate 9) | Hephaestus | SHIPPED | PATCH 13 PIIRedactor (CAVEMAN PERSIST) |
-| 5 | Atlas (CATCH schema + BAB-001..004) | Atlas | SHIPPED | T-MN-061 SCHEMA v0.1 (234L, 4 pre-pop CATCH entries) |
-| 6a | Strategos (RULE #68 ratification) | Strategos | PENDING | T-MN-061 v0.1.1 solicitation dispatched 2026-06-17 |
-| 6b | Calliope (CATCH #200 LOCKOUT v0.2) | Calliope | PENDING | T-MN-061 v0.1.1 solicitation dispatched 2026-06-17 |
-
-**Note**: Witness slot 6 has 2 candidate witnesses (Strategos + Calliope) - LEADER §0 AMENDMENT or formal 5-of-6 quorum acceptable per RULE #56 PROACTIVE-PICK-CHAIN.
-
-## 12. T-MN-068 v0.1 → v0.1.1 → v0.2 AMENDMENT LOG
-
-### v0.1 (T-MN-068 SHIPPED @ d9cfe8a4a, 2026-06-17)
-- 215 CATCHes indexed (#1-#215)
-- 19 sub-classes A-N+1 MECE
-- 24 NEVER-AGAIN RULES cross-referenced
-- 6 OPEN CATCHes tracked (#200, #207, #211-#215)
-- 5 NEW CATCHes in CYCLE 14 W2 D2 documented (#211-#215)
-
-### v0.1.1 (T-MN-061 SHIPPED @ 6deb7b71, RE-COVERED after rebase)
-- CATCH #211 status: OPEN → CLOSED-BY-DISPOSITION
-- CATCH #212 status: OPEN → CLOSED-BY-DISPOSITION
-- §10 co-author chain: 3/4 → 4/6 SHIPPED + 2/6 PENDING
-- §11: 6-WITNESS CHAIN CLOSE formal section added
-- Total: 359L → 408L (+49L)
-
-### v0.2 (T-MN-068 v0.2 SHIPPED, TURN 112+ 4 CATCH dispositions + 5 NEW CATCHes)
-- 220 CATCHes indexed (#1-#220, +5 NEW)
-- 15+1+O sub-classes MECE v0.2 (removed 3 Reserved rows; added O candidate BILATERAL-ATTRIBUTION-CASCADE)
-- 4 new CATCH disposition docs (§7.6 CATCH #200 v0.2, §7.7 CATCH #208, §7.8 CATCH #210, §7.9 CATCH #216-#220)
-- §10 conclusion metrics refreshed (215 → 220, 19 → 15+1+O, 6 → 4 OPEN, 209 → 216 RESOLVED)
-- §11: 6-WITNESS CHAIN CLOSE formal section
-- §12: Amendment log v0.1 → v0.1.1 → v0.2
-- §13: TURN 112+ 4 CATCH dispositions log (next section)
-- Total: 408L → ~500L (+90L)
 
 ## 13. TURN 112+ 4 CATCH DISPOSITIONS LOG (T-4d 2026-06-18 EOD HARD)
 

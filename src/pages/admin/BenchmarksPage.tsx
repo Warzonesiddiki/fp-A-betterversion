@@ -240,12 +240,13 @@ const BenchmarksPage: React.FC = () => {
       <Card className="p-6">
         <h2 className="text-lg font-semibold mb-4">Raw Performance Data</h2>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-left text-sm" aria-label="Admin benchmarks history">
+            <caption className="sr-only">Raw performance data showing timestamp, operation, and latency for the last 10 entries</caption>
             <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               <tr>
-                <th className="p-2">Timestamp</th>
-                <th className="p-2">Operation</th>
-                <th className="p-2 text-right">Latency</th>
+                <th scope="col" className="p-2">Timestamp</th>
+                <th scope="col" className="p-2">Operation</th>
+                <th scope="col" className="p-2 text-right">Latency</th>
               </tr>
             </thead>
             <tbody>
