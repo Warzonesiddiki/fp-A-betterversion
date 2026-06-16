@@ -8,10 +8,10 @@
 **SHIP target:** 2026-06-30 23:59 UTC (T-14d from this index; T-8d from gate)
 **Hard intermediate deadline:** 2026-06-19 EOD (T-3d from this index) - **CLOSED 2026-06-16 14:50 +0530** (PERSONA/UX SHIPPED at `c0917f588` 24h ahead of deadline)
 **Parent doc:** `docs/parts/VISION_TO_REALITY_MASTER_REPORT.md` v1.1 (commit `ec01e8cd9`, 2026-06-15)
-**v0.2 delta:** Dimension #9 COMPLIANCE promoted PENDING -> SHIPPED at commit `1f353d08` (Themis, 2026-06-16 14:34 +0530). 8/11 -> 9/11. Apollo 2nd-Muse witness ACCEPT 4/4 (see §2.9).
+**v0.2 delta:** Dimension #9 COMPLIANCE promoted PENDING -> SHIPPED at commit `1f353d08` [GHOST — audit-trail reference, actual v0.1 SHIP at `657d10524`] (Themis, 2026-06-16 14:34 +0530). 8/11 -> 9/11. Apollo 2nd-Muse witness ACCEPT 4/4 (see §2.9).
 **v0.3 delta:** Dimension #10 A11Y promoted PENDING -> SHIPPED at commit `04ac3930` (Artemis, 2026-06-16 14:40 +0530). 9/11 -> 10/11. Apollo 2nd-Muse witness ACCEPT 4/4 (see §2.10). Also: Themis COMPLIANCE v0.2 at `f4efa362` (gap closure, 7.4 -> 7.7/10, 3 P1 closed).
 **v0.4 delta (Strategos 2nd-Muse witness, this commit):**
-  1. Themis SHA drift CORRECTED in Row 9 + §2.9: `1f353d08` (8-char stale reference in v0.2) -> `657d10524` (v0.1 actual) / `f4efa362` (v0.2 actual) - CATCH #187/192 SHA-drift pattern FIXED
+  1. Themis SHA drift CORRECTED in Row 9 + §2.9: `1f353d08` [GHOST - audit-trail] (8-char stale reference in v0.2) -> `657d10524` (v0.1 actual) / `f4efa362` (v0.2 actual) - CATCH #187/192 SHA-drift pattern FIXED
   2. Strategos 5th-ICP verdict #001 UPGRADED: 87% TENTATIVE -> 100% ACCEPT (per Apollo 2026-06-16 verification of `38c11e240`) - reflected in §2.3 + §11 sign-off
   3. Tyche 2nd-witness 4 amendments INCORPORATED: F1 (A11Y now in matrix), F2 (Themis SHA drift fixed), F3 (6-dim breadth + 9-capabilities depth clarified), F4 (variance attribution misattribution -> Trend/Forecast 3/5 gap clarified in §2.5)
   4. 4-PICK-URGENT unblock plan ADDED (§10) - Iris+Hera PERSONA/UX + Sentinel witness + Tyche amendments + Apollo master report hand-off
@@ -105,7 +105,7 @@ The RATIFICATION GATE ceremony on 2026-06-22 16:00 UTC requires **11/11 dimensio
 
 ---
 
-## 2.9 COMPLIANCE (Themis) - `1f353d08` / v0.2 at `f4efa362` (updated in v0.3)
+## 2.9 COMPLIANCE (Themis) - v0.1 at `657d10524` / v0.2 at `f4efa362` (updated in v0.4)
 
 - **4-ICP 1 (INDEPENDENT):** Themis self-witness + Apollo 2nd-Muse verification (v0.1: 280L, md5 dabb73afa8ba64deed907c65ccce4ebd; v0.2: enhanced, 3 P1 closed)
 - **4-ICP 2 (STRUCTURAL):** 5/5 dimensions READY (SOC2 9/13 TSC, GDPR 6/8 articles, SOX 5/7 controls, Retention 4/5 regions, Privacy 6/8 controls). v0.2 score 7.7/10 (up from 7.4/10) RATIFICATION-READY
@@ -169,7 +169,7 @@ The RATIFICATION GATE ceremony on 2026-06-22 16:00 UTC requires **11/11 dimensio
 ### 2.8 LOAD/PERF (Vulcan) - `fc6dfb59` (v0.2: `df124754`)
 - **4-ICP 1 (INDEPENDENT):** Vulcan self-witness + Prometheus 2nd-Muse T-PR-045 cross-witness
 - **4-ICP 2 (STRUCTURAL):** 3 benchmarks (100K rows, 1M cells, 5-tab switching) + 3 chaos tests (cold start, OOM recovery, corrupted state) all measured
-- **4-ICP 3 (CRITICAL):** CATCH #196 trilateral bundle (8b340664) properly attributed. v0.2 closed 3 P1 items (5/6 P1 closed; 1 deferred)
+- **4-ICP 3 (CRITICAL):** CATCH #196 trilateral bundle (8b340664 [GHOST - audit-trail reference]) properly attributed. v0.2 closed 3 P1 items (5/6 P1 closed; 1 deferred)
 - **4-ICP 4 (4-Muse):** Prometheus (perf benchmarks) + Atlas (infra capacity) + Mnemosyne (perf test coverage) + Sentinel (E2E perf journeys) all concur
 - **VERDICT:** ACCEPT - 4/4 ICPs PASS (v0.2 upgraded)
 
@@ -212,7 +212,7 @@ The RATIFICATION GATE ceremony on 2026-06-22 16:00 UTC requires **11/11 dimensio
 As RATIFICATION GATE lead, Apollo (this slot) owns:
 1. **Master INDEX doc** (this file) - single source of truth for 11 pre-checks
 2. **2nd-Muse witness** on every pre-check that ships after 2026-06-16 (verify commit SHA + 4-ICP verdict):
-   - 1f353d08 (Themis COMPLIANCE) WITNESSED 2026-06-16
+   - 1f353d08 [GHOST - audit-trail] (Themis COMPLIANCE) WITNESSED 2026-06-16
    - 38c11e240 (Mnemosyne T-MN-047 v0.2) WITNESSED 2026-06-16
    - 04ac3930 (Artemis A11Y v0.1) WITNESSED 2026-06-16
    - f4efa362 (Themis COMPLIANCE v0.2) WITNESSED 2026-06-16
@@ -402,7 +402,7 @@ Per Leader CYCLE 6 directive ("NO MUSE IDLE"), the following 4 PICK URGENTs were
 6. **E2E** (`1be01905` Sentinel): 305L, 10-journey — ✅ VERIFIED
 7. **SECURITY** (`32625100d` Hephaestus): 252L, 4-ICP 4/4 — ✅ VERIFIED
 8. **LOAD** (`df124754` Vulcan v0.2 / `fc6dfb59a` v0.1): 3 benchmarks + 3 chaos — ✅ VERIFIED
-9. **COMPLIANCE** (`657d10524` Themis v0.1 / `f4efa362` v0.2): 5-dim SOC2/GDPR — ✅ VERIFIED (SHA drift from v0.2's `1f353d08` 8-char stale reference CORRECTED in v0.4)
+9. **COMPLIANCE** (`657d10524` Themis v0.1 / `f4efa362` v0.2): 5-dim SOC2/GDPR — ✅ VERIFIED (SHA drift from v0.2's `1f353d08` [GHOST SHA - audit-trail only] 8-char stale reference CORRECTED in v0.4)
 10. **A11Y** (`04ac3930` Artemis): 250L, 71.8% — ✅ VERIFIED
 11. **PERSONA/UX** (`c0917f588` Iris+Hera / rebase duplicate `70d548da`): 237L, 5-dim matrix, composite 8.4/10 — ✅ VERIFIED by Apollo 2nd-Muse at v0.6 §2.11
 
@@ -419,13 +419,13 @@ Per Leader CYCLE 6 directive ("NO MUSE IDLE"), the following 4 PICK URGENTs were
 ### 11.2 4-ICP Verdicts
 
 - **I1 (INDEPENDENT):** Strategos independent witness — verified all 10 SHAs via `git log` + `wc -l` + `md5sum` (3-witness per D-002). ✅ ACCEPT
-- **C2 (CATASTROPHIC):** No blocking defects. Themis SHA drift (`1f353d08` stale 8-char) CORRECTED in v0.4 (now `657d10524` / `f4efa362`). CATCH #187/192 pattern FIXED forward-looking per RULE #192 TASK-DELIVERY-VERIFICATION. ✅ ACCEPT
+- **C2 (CATASTROPHIC):** No blocking defects. Themis SHA drift (`1f353d08` [GHOST SHA] stale 8-char) CORRECTED in v0.4 (now `657d10524` / `f4efa362`). CATCH #187/192 pattern FIXED forward-looking per RULE #192 TASK-DELIVERY-VERIFICATION. ✅ ACCEPT
 - **P3 (PERFORMANCE):** INDEX reads in <500ms; SHA lookups O(log n) via `git log`; minimal LOC added (v0.3 → v0.4: +50 lines for §10 + §11). ✅ ACCEPT
 - **D4 (DOCUMENTED):** All 11 pre-checks have 3-witness (commit SHA + `wc -l` + 4-ICP verdict). 4 NEVER-AGAIN RULES cited (RULE #35, #47, #49, #191, #192, PRE-DISPATCH-VERIFICATION). 4 Tyche amendments cited. ✅ ACCEPT
 
 ### 11.3 4 Minor Amendments (already applied to v0.4)
 
-1. **Themis SHA drift** (CATCH #187/192): Row 9 + §2.9 now show `657d10524` (v0.1) / `f4efa362` (v0.2) — `1f353d08` was a stale 8-char reference from the v0.2 dispatch message. ✅ FIXED
+1. **Themis SHA drift** (CATCH #187/192): Row 9 + §2.9 now show `657d10524` (v0.1) / `f4efa362` (v0.2) — `1f353d08` [GHOST - audit-trail] was a stale 8-char reference from the v0.2 dispatch message. ✅ FIXED
 2. **Strategos 5th-ICP upgrade** (Apollo trigger): §2.3 + §9 now reflect 100% ACCEPT (upgraded from 87% TENTATIVE per Apollo's `38c11e240` verification). ✅ FIXED
 3. **Tyche F1** (A11Y missing from 9/11 count): §2.10 + Row 10 added in v0.3; v0.4 cross-references Tyche 2nd-witness `63f6a54f5`. ✅ FIXED
 4. **Tyche F3+F4** (6-dim vs 9-capabilities; variance attribution misattribution): §2.5 clarified — 6-dim breadth (6 readiness categories) + 9-capabilities depth (9 specific analytics capabilities), Trend/Forecast 3/5 gap distinct from variance attribution 7.5/10 score. ✅ FIXED
