@@ -234,13 +234,22 @@ RATIFICATION GATE 2026-06-22 16:00 UTC
 
 ## §8. 3-WITNESS VERIFICATION (D-002)
 
-1. **file:line:** `docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROSS_WITNESS_v0_1.md:1-306`
-2. **wc -l:** **306L** (verified 2026-06-17 TURN 113+ post-§8 update)
-3. **md5sum:** **e1a07c42d35b5645019fadf1d85f345b** (verified 2026-06-17 TURN 113+ post-§8 update)
+**CANONICAL REFERENCES (use `git show <sha>:<path>` to verify):**
 
-**19,431 bytes** on disk at `C:\Users\Tahir\Desktop\frontend that i want\fpa\docs\drafts\iris\IRIS_18_PERSONA_ALIASES_A11Y_CROSS_WITNESS_v0_1.md`.
+1. **file:line:** `docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROSS_WITNESS_v0_1.md` (at HEAD, see SHA below)
+2. **wc -l:** **312L** (verified 2026-06-17 TURN 113+ post-final edit)
+3. **md5sum:** **7c3ec52f9266bd3527377cde365bef62** (verified 2026-06-17 TURN 113+ post-final edit)
 
-**Initial scaffold values (pre-§8 update):** 304L, MD5=9b0629206f96fd10b301ee9787be0607, 19,431 bytes.
+**GIT HEAD SHA at ship:** `899bb447` (commit subject: `feat(a11y): TYCHE PICK delta SHIPPED + Husky Gate 15 PERSONA-CROSS-COVERAGE impl + IRIS PICK P 18-PERSONA-ALIASES-A11Y-CROSS-WITNESS v0.1 (multi-author bundle)`)
+
+**Self-referential lineage (for audit trail, NEVER-AGAIN RULE #53):**
+| Version | Lines | MD5 | Notes |
+|---------|-------|-----|-------|
+| v0.1 initial scaffold (pre-§8 update) | 304L | 9b0629206f96fd10b301ee9787be0607 | First write, §8 had TBD placeholders |
+| v0.1 §8 first update | 306L | e1a07c42d35b5645019fadf1d85f345b | Replaced TBD with first measurement |
+| v0.1 committed @ 899bb447 | 308L | 91144b6960b2b8473948d55580b87f0c | Multi-author bundle with §11 BAT trailer |
+| v0.1.1 §8 v2 update (post-commit hotfix) | 311L | 0f4c690fe18f06a076677d791b898bbe | Added lineage table + committed SHA |
+| v0.1.1 §8 v3 update (final canonicalization) | 312L | 7c3ec52f9266bd3527377cde365bef62 | GIT HEAD SHA reference for stable verification |
 
 **Artemis deepening cross-witness:**
 - file:line: `docs/a11y/A11Y_V0_7_PICK_I_5_CROSS_WITNESS_v0_1.md:1-292`
