@@ -56,7 +56,7 @@ export function roundToTotal(
   if (Math.abs(diff) < 1e-10) return rounded;
   const higherFactor = 10 ** (decimals + 6);
   const adjusted = [...rounded];
-  adjusted[0] = Math.round((rounded[0] + diff) * higherFactor) / higherFactor;
+  adjusted[0] = Math.round((rounded[0]! + diff) * higherFactor) / higherFactor;
   return adjusted;
 }
 

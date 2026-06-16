@@ -227,7 +227,7 @@ function constantTimeBytesEqual(a: Uint8Array, b: Uint8Array): boolean {
   }
   let diff = 0;
   for (let i = 0; i < a.length; i++) {
-    diff |= a[i] ^ b[i];
+    diff |= a[i]! ^ b[i]!;
   }
   return diff === 0;
 }
