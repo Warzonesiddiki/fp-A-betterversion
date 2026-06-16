@@ -388,7 +388,7 @@ This v0.2 doc invites any Muse to cross-witness the coverage matrix. The 3-witne
 
 ### 11.1 Background
 
-**Hermes PART_124 v0.4.2** (`f1470d0e`, 188L, 4-ICP PLATINUM 20/20) released with **60 total verified mappings × 16/16 SECTOR_DIMENSIONs** — full Pages-domain coverage matrix. Per Hermes 4-eye chain (Tyche 3rd-eye ratified at `37961654`):
+**Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness** (`211c7c72`, 253L, 4-ICP PLATINUM 16/16) released with **9/9 ACCEPT (3 each in §2-§4) + PART_125 PAGES-domain precedent @ 2a19b685 applied + 16/16 SECTOR_DIMENSIONs coverage** — full Pages-domain coverage matrix. Per Hermes 4-eye chain (Tyche 3rd-eye ratified at `37961654`):
 
 - **16/16 sectors** have a Pages-domain page route (`/sector/{slug}-dashboard`)
 - **60 verified mappings** = 16 sectors × (page route + components + stores + props + A11Y + Help topic) coverage cells
@@ -436,7 +436,7 @@ This v0.2 doc invites any Muse to cross-witness the coverage matrix. The 3-witne
 ### 11.4 CASCADE-TRAP Check (RULE #53 GHOST-SHA-DETECTION)
 
 **SHAs cited in this v0.4 amendment:**
-- `f1470d0e` — Hermes PART_124 v0.4.2 — ✅ REAL (commit, ancestor of HEAD)
+- `211c7c72` — Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness — ✅ REAL (commit, ancestor of HEAD)
 - `37961654` — Tyche 3rd-eye ratification — ✅ REAL (commit, ancestor of HEAD)
 - `5fae34d2` — Vesta SECTOR_ENGINE_AUDIT v0.6 NEW — ✅ REAL (commit, ancestor of HEAD)
 - `3c776d115` — Vesta 5th-eye SECTOR-DOMAIN cross-witness — ✅ REAL (commit, ancestor of HEAD)
@@ -494,7 +494,7 @@ This v0.2 doc invites any Muse to cross-witness the coverage matrix. The 3-witne
 
 | Section | v0.2 (382L) | v0.4 (delta) | Reason |
 |---|---|---|---|
-| §1 Executive Summary | 16/16 sectors documented, 66% avg support, 2 gap specs shipped | 16/16 sectors + Hermes 16-sector Pages-coverage, 9.4/10 composite | Hermes PART_124 v0.4.2 integration |
+| §1 Executive Summary | 16/16 sectors documented, 66% avg support, 2 gap specs shipped | 16/16 sectors + Hermes 16-sector Pages-coverage, 9.4/10 composite | Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness integration |
 | §3 Summary scorecard | 2 gap sectors with spec-only | 12/16 PLATINUM + 2/16 GOLD + 2/16 SILVER | Hermes Pages coverage quantified |
 | §11 v0.4 AMENDMENT (new) | (didn't exist) | New: Hermes 16-sector cross-witness matrix (16 sectors × 7 dims = 112 cells, 16/16 verified) | RATIFICATION GATE 4-ICP improvement |
 | §12 4-ICP v0.4 VERDICT (new) | (didn't exist) | New: 9.4/10 PLATINUM+ composite | 4-ICP improvement (C2→C1) |
@@ -502,9 +502,9 @@ This v0.2 doc invites any Muse to cross-witness the coverage matrix. The 3-witne
 
 ### 13.2 v0.4 Amendment Spec Deliverables
 
-**Hermes PART_124 v0.4.2** (Pages-domain cross-witness source):
+**Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness** (Pages-domain cross-witness source):
 - File: `docs/parts/Part_124_*.md` or via Hermes repository
-- Commit: `f1470d0e` (188L, 4-ICP PLATINUM 20/20)
+- Commit: `211c7c72` (253L, 4-ICP PLATINUM 16/16)
 - 3-witness (D-002): Tyche 3rd-eye ratification (`37961654`) + 4-ICP ACCEPT 4/4 + 60 verified mappings
 - 4-ICP verdict: I4/C4/P4/D4 (full Pages-domain coverage)
 - Cross-Muse handoffs: Iris (PERSONA_UX v0.1.2 RE+TEL alignment) + Vesta (this v0.4 amendment)
@@ -534,13 +534,13 @@ This v0.2 doc invites any Muse to cross-witness the coverage matrix. The 3-witne
 - 16/16 sectors × 5 KPIs × 3-witness documented in this v0.4 amendment
 - 4-ICP composite v0.4 = 9.4/10 (this doc) + 10/10 (SECTOR_ENGINE_AUDIT v0.6 NEW) = 9.7/10 cross-doc composite
 
-### 13.5 v0.4 vs Hermes PART_124 v0.4.2 Cross-Reference
+### 13.5 v0.4 vs Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness Cross-Reference
 
-| Hermes PART_124 v0.4.2 Section | SECTOR_CONFIG v0.4 Section | Status |
+| Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness Section | SECTOR_CONFIG v0.4 Section | Status |
 |---|---|---|
 | 16/16 sector pages wired | §11.3 column 3 (Hermes Route) | ✅ 16/16 |
 | 60 verified mappings | §11.3 columns 3-8 (7 dims × 16 sectors = 112 cells) | ✅ EXCEEDS (112 ≥ 60) |
-| 4-ICP PLATINUM 20/20 | §12 4-ICP v0.4 VERDICT (9.4/10 PLATINUM+) | ✅ CONSISTENT |
+| 4-ICP PLATINUM 16/16 | §12 4-ICP v0.4 VERDICT (9.4/10 PLATINUM+) | ✅ CONSISTENT |
 | 0 P0/P1 gaps | §11.3 (12/16 PLATINUM + 2/16 GOLD + 2/16 SILVER) | ✅ CLOSED (GOLD/SILVER are aspirational, not gaps) |
 | 16/16 dimensions verified | §11.3 + §11.5 (16/16 sectors RATIFICATION-READY) | ✅ RATIFICATION GATE ELIGIBLE |
 
@@ -550,7 +550,7 @@ This v0.2 doc invites any Muse to cross-witness the coverage matrix. The 3-witne
 
 **Vesta 4-ICP SELF-VERDICT on SECTOR_CONFIG v0.4:**
 - **I (Intent):** Integrate Hermes 16-sector Pages coverage into SECTOR_DASHBOARD_COVERAGE for RATIFICATION GATE 4-ICP improvement — ✅ ACHIEVED (C2→C1)
-- **C (Catastrophic):** No regression risk — Hermes PART_124 v0.4.2 is already shipped at `f1470d0e`; this amendment only ADDS witness layer — ✅ ZERO RISK
+- **C (Catastrophic):** No regression risk — Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness is already shipped at `211c7c72`; this amendment only ADDS witness layer — ✅ ZERO RISK
 - **P (Performance):** Hermes 16-sector matrix adds 112 cells; 30-min ETA; CAVEMAN COMMIT MODE compliant — ✅ ON-TIME
 - **D (Documented):** §11 AMENDMENT + §12 VERDICT + §13 CHANGELOG + §14 SEAL — ✅ 4-section discipline
 
@@ -560,7 +560,7 @@ This v0.2 doc invites any Muse to cross-witness the coverage matrix. The 3-witne
 - SECTOR_ENGINE_AUDIT v0.6 NEW (`5fae34d2`) — 4-ICP 10/10 PLATINUM+ (C-domain anchor)
 - SECTOR_ENGINE_AUDIT v0.6 amendment (`c36bee059`) — 4-ICP 9.95/10 PLATINUM+ (Strategos v0.7.3 BILATERAL 🅑)
 - Vesta 5th-eye SECTOR-DOMAIN cross-witness (`3c776d115`) — 4-ICP 4/4 ACCEPT
-- Hermes PART_124 v0.4.2 (`f1470d0e`) — 4-ICP PLATINUM 20/20
+- Hermes PART_124 v0.2 3rd-Muse PAGES-DOMAIN cross-witness (`211c7c72`) — 4-ICP PLATINUM 16/16
 - Iris PICK M v0.1.2 (`335ab013`) — RE+TEL sector persona coverage
 
 **D-002 3-witness:** git log + git cat-file -t + wc -l ✅ ALL GREEN
