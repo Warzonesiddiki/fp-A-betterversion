@@ -333,11 +333,21 @@ export default function ChurnAnalysisPage() {
                 <caption className="sr-only">Detailed saas churn analysis</caption>
                 <thead>
                   <tr className="border-b border-slate-700">
-                    <th className="text-left py-2 px-3 text-slate-400 font-medium">Customer</th>
-                    <th className="text-left py-2 px-3 text-slate-400 font-medium">Segment</th>
-                    <th className="text-right py-2 px-3 text-slate-400 font-medium">MRR</th>
-                    <th className="text-right py-2 px-3 text-slate-400 font-medium">Risk Score</th>
-                    <th className="text-right py-2 px-3 text-slate-400 font-medium">Last Login</th>
+                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                      Customer
+                    </th>
+                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                      Segment
+                    </th>
+                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                      MRR
+                    </th>
+                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                      Risk Score
+                    </th>
+                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                      Last Login
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
