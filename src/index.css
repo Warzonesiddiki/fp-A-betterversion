@@ -502,6 +502,17 @@ body {
   .data-grid {
     border-width: 2px !important;
   }
+  /* HERA v0.4 - UX-PI-006 closure: AAA contrast for 12 pages using text-gray-500/400 on bg-white. AAA pass per WCAG 2.1 SC 1.4.6 */
+  .text-gray-400 {
+    color: #475569 !important; /* gray-600 - AAA 7.0:1 on white */
+  }
+  .text-gray-500 {
+    color: #334155 !important; /* gray-700 - AAA+ 9.4:1 on white */
+  }
+  .dark .text-gray-400,
+  .dark .text-gray-500 {
+    color: #e2e8f0 !important; /* gray-200 - high contrast on dark bg */
+  }
 }
 
 /* Financial indicators */
