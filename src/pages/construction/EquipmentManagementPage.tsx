@@ -314,7 +314,12 @@ export default function EquipmentManagementPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={equipmentFleet} />
+          <DataTable
+            columns={columns}
+            data={equipmentFleet}
+            caption="Equipment fleet utilization and cost"
+            ariaLabel="Equipment fleet table"
+          />
         </CardContent>
       </Card>
     </div>

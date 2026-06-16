@@ -346,7 +346,12 @@ export default function ClinicalTrialCostPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={trialInventory} />
+          <DataTable
+            columns={columns}
+            data={trialInventory}
+            caption="Clinical trial cost and enrollment"
+            ariaLabel="Clinical trial inventory table"
+          />
         </CardContent>
       </Card>
     </div>

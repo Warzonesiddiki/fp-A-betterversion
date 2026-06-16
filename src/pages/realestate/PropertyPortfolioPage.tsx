@@ -316,7 +316,12 @@ export default function PropertyPortfolioPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={portfolioInventory} />
+          <DataTable
+            columns={columns}
+            data={portfolioInventory}
+            caption="Property portfolio inventory details"
+            ariaLabel="Property portfolio inventory table"
+          />
         </CardContent>
       </Card>
     </div>
