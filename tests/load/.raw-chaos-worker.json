@@ -2,7 +2,7 @@
   {
     "scenario": "chaos-worker-crash-monte-carlo-50pct",
     "crashDuringOperation": "Monte Carlo at 5000/10000 iterations",
-    "respawnTimeMs": 0.57,
+    "respawnTimeMs": 0.4,
     "statePreserved": true,
     "operationResumed": true,
     "userNotified": true,
@@ -15,7 +15,7 @@
   {
     "scenario": "chaos-worker-crash-storage-5mb",
     "crashDuringOperation": "Storage stringify at 2.5MB / 5MB",
-    "respawnTimeMs": 0.19,
+    "respawnTimeMs": 0.07,
     "statePreserved": true,
     "operationResumed": true,
     "userNotified": true,
@@ -28,7 +28,7 @@
   {
     "scenario": "chaos-worker-crash-5-sequential",
     "crashDuringOperation": "4 sequential crashes",
-    "respawnTimeMs": 0.18,
+    "respawnTimeMs": 0.08,
     "statePreserved": true,
     "operationResumed": true,
     "userNotified": true,
