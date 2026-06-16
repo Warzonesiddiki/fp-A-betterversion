@@ -189,6 +189,112 @@ describe('DashboardTemplate', () => {
       expect(onCellClick).toHaveBeenCalledWith('row', 'col', 1);
     });
 
+  // [Hera] a11y: tablist + tabpanel + keyboard nav + ARIA semantics (PICK C)
+  describe('screen reader semantics', () => {
+    it('renders a tablist with an accessible label', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const tablist = screen.getByRole('tablist', { name: 'Dashboard persona views' });
+      expect(tablist).toBeInTheDocument();
+    });
+
+    it('renders three tabs with role=tab and aria-selected', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(3);
+      expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+      expect(tabs[1]).toHaveAttribute('aria-selected', 'false');
+      expect(tabs[2]).toHaveAttribute('aria-selected', 'false');
+    });
+
+    it('each tab has aria-controls pointing to a tabpanel', () => {
+      render(<DashboardTemplate type="controller" />);
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs[0]).toHaveAttribute('aria-controls', 'panel-cfo');
+      expect(tabs[1]).toHaveAttribute('aria-controls', 'panel-controller');
+      expect(tabs[2]).toHaveAttribute('aria-controls', 'panel-analyst');
+    });
+
+    it('renders the active tabpanel with matching id and aria-labelledby', () => {
+      render(<DashboardTemplate type="analyst" />);
+      const tabpanel = screen.getByRole('tabpanel');
+      expect(tabpanel).toHaveAttribute('id', 'panel-analyst');
+      expect(tabpanel).toHaveAttribute('aria-labelledby', 'tab-analyst');
+    });
+
+    it('renders the correct tabpanel when type=cfo', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const tabpanel = screen.getByRole('tabpanel');
+      expect(tabpanel).toHaveAttribute('id', 'panel-cfo');
+      expect(tabpanel).toHaveAttribute('aria-labelledby', 'tab-cfo');
+    });
+
+    it('renders the correct tabpanel when type=controller', () => {
+      render(<DashboardTemplate type="controller" />);
+      const tabpanel = screen.getByRole('tabpanel');
+      expect(tabpanel).toHaveAttribute('id', 'panel-controller');
+      expect(tabpanel).toHaveAttribute('aria-labelledby', 'tab-controller');
+    });
+
+    it('announces view changes to screen readers via LiveRegion', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const controllerTab = screen.getAllByRole('tab')[1];
+      fireEvent.click(controllerTab);
+      // LiveRegion renders a polite live region with sr-only styling
+      const liveRegion = document.querySelector('[aria-live="polite"]');
+      expect(liveRegion).toBeInTheDocument();
+      expect(liveRegion?.textContent).toContain('Controller View');
+    });
+
+    it('uses roving tabindex: only the active tab has tabIndex=0', () => {
+      render(<DashboardTemplate type="controller" />);
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs[0]).toHaveAttribute('tabindex', '-1');
+      expect(tabs[1]).toHaveAttribute('tabindex', '0');
+      expect(tabs[2]).toHaveAttribute('tabindex', '-1');
+    });
+
+    it('ArrowRight moves focus to the next tab and updates selection', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+      fireEvent.keyDown(tabs[0], { key: 'ArrowRight' });
+      expect(screen.getAllByRole('tab')[1]).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('ArrowLeft wraps from first tab to last', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+      fireEvent.keyDown(tabs[0], { key: 'ArrowLeft' });
+      expect(screen.getAllByRole('tab')[2]).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('Home key moves to the first tab', () => {
+      render(<DashboardTemplate type="analyst" />);
+      const tabs = screen.getAllByRole('tab');
+      tabs[2].focus();
+      fireEvent.keyDown(tabs[2], { key: 'Home' });
+      expect(screen.getAllByRole('tab')[0]).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('End key moves to the last tab', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const tabs = screen.getAllByRole('tab');
+      tabs[0].focus();
+      fireEvent.keyDown(tabs[0], { key: 'End' });
+      expect(screen.getAllByRole('tab')[2]).toHaveAttribute('aria-selected', 'true');
+    });
+
+    it('clicking a tab updates aria-selected', () => {
+      render(<DashboardTemplate type="cfo" />);
+      const controllerTab = screen.getAllByRole('tab')[1];
+      fireEvent.click(controllerTab);
+      expect(screen.getAllByRole('tab')[1]).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getAllByRole('tab')[0]).toHaveAttribute('aria-selected', 'false');
+    });
+
+  });
+
     it('uses custom activities when provided', () => {
       const customActivities = [
         { id: '1', user: 'Custom User', action: 'Custom Action', timestamp: 'now' },
