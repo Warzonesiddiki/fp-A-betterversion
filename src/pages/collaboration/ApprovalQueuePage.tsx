@@ -221,7 +221,7 @@ export default function ApprovalQueuePage() {
           </Button>
         ))}
       </div>
-      <DataTable columns={columns} data={filtered} />
+      <DataTable columns={columns} data={filtered} caption="Approval queue table" ariaLabel="Approval queue" />
     </div>
   );
 }

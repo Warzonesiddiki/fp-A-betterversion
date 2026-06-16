@@ -160,7 +160,7 @@ export default function EducationPage() {
         </CardHeader>
         <CardContent aria-labelledby="enrollment-overview-title">
           {tableData.length > 0 ? (
-            <DataTable columns={columns} data={tableData} sortable />
+            <DataTable columns={columns} data={tableData} sortable caption="Education sector data table" ariaLabel="Education sector data" />
           ) : (
             <p className="text-slate-400">No account data available.</p>
           )}
