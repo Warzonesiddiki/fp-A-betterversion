@@ -251,6 +251,7 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
       ref={dialogRef}
       className="fixed top-4 right-4 z-50 w-[420px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg shadow-xl"
       role="dialog"
+      aria-modal="true"
       aria-label="Find and Replace"
     >
       {/* Header */}
