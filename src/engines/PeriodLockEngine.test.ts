@@ -119,30 +119,29 @@ describe('PeriodLockEngine', () => {
   });
 });
 
-  // 16. P7-O3 sub-ms lock: multi-region ordering preserved (Chronos V3 e.ix.7)
-  it('16. P7-O3 multi-region lock preserves region field across all 4 regions', () => {
-    const regions: Array<'US' | 'EU' | 'APAC' | 'default'> = ['US', 'EU', 'APAC', 'default'];
-    for (const region of regions) {
-      const period = makePeriod({ state: 'hard-closed' });
-      const r = PeriodLockEngine.lock(period, 'cfo1', 'cfo', `region=${region}`, region);
-      expect(r.success).toBe(true);
-      expect(r.transitions[0]!.region).toBe(region);
-      expect(r.transitions[0]!.timestampNs).toBeGreaterThan(0n);
-      expect(r.transitions[0]!.transactionId).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-      );
-    }
-  });
+// 16. P7-O3 sub-ms lock: multi-region ordering preserved (Chronos V3 e.ix.7)
+it('16. P7-O3 multi-region lock preserves region field across all 4 regions', () => {
+  const regions: Array<'US' | 'EU' | 'APAC' | 'default'> = ['US', 'EU', 'APAC', 'default'];
+  for (const region of regions) {
+    const period = makePeriod({ state: 'hard-closed' });
+    const r = PeriodLockEngine.lock(period, 'cfo1', 'cfo', `region=${region}`, region);
+    expect(r.success).toBe(true);
+    expect(r.transitions[0]!.region).toBe(region);
+    expect(r.transitions[0]!.timestampNs).toBeGreaterThan(0n);
+    expect(r.transitions[0]!.transactionId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    );
+  }
+});
 
-  // 17. P7-O3 sub-ms lock: comparePeriods tiebreaker determinism (Chronos V3 e.ix.7)
-  it('17. comparePeriods returns deterministic ordering by (timestampNs, lamportClock, transactionId)', async () => {
-    const { comparePeriods } = await import('./PeriodLockEngine');
-    const period1 = makePeriod();
-    const period2 = makePeriod();
-    const a = PeriodLockEngine.softClose(period1, 'u1', 'preparer', 'a', 'US', 'tx-1', 1);
-    const b = PeriodLockEngine.softClose(period2, 'u2', 'preparer', 'b', 'EU', 'tx-2', 2);
-    expect(comparePeriods(a.transitions[0]!, b.transitions[0]!)).toBeLessThanOrEqual(0);
-    expect(comparePeriods(b.transitions[0]!, a.transitions[0]!)).toBeGreaterThanOrEqual(0);
-    expect(comparePeriods(a.transitions[0]!, a.transitions[0]!)).toBe(0);
-  });
+// 17. P7-O3 sub-ms lock: comparePeriods tiebreaker determinism (Chronos V3 e.ix.7)
+it('17. comparePeriods returns deterministic ordering by (timestampNs, lamportClock, transactionId)', async () => {
+  const { comparePeriods } = await import('./PeriodLockEngine');
+  const period1 = makePeriod();
+  const period2 = makePeriod();
+  const a = PeriodLockEngine.softClose(period1, 'u1', 'preparer', 'a', 'US', 'tx-1', 1);
+  const b = PeriodLockEngine.softClose(period2, 'u2', 'preparer', 'b', 'EU', 'tx-2', 2);
+  expect(comparePeriods(a.transitions[0]!, b.transitions[0]!)).toBeLessThanOrEqual(0);
+  expect(comparePeriods(b.transitions[0]!, a.transitions[0]!)).toBeGreaterThanOrEqual(0);
+  expect(comparePeriods(a.transitions[0]!, a.transitions[0]!)).toBe(0);
 });
