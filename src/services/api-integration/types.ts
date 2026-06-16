@@ -200,3 +200,42 @@ export interface ExternalBudgetEntry {
   amount: number;
   period: string;
 }
+
+// ─── Public API Aliases & Event Types (Re-export shim for index.ts) ────────
+// Added 2026-06-17 (Calliope) to fix 6 TS2305 errors per LEADER TURN 105+
+// push-blocker swarm. Aliases preserve the public API surface declared in
+// ./index.ts while keeping the canonical names in this file.
+
+/** Alias for {@link ConnectorAuthConfig} — public SDK surface name. */
+export type AuthConfig = ConnectorAuthConfig;
+
+/** Alias for {@link BearerTokenConfig} — public SDK surface name. */
+export type BearerAuthConfig = BearerTokenConfig;
+
+/** Alias for {@link ApiRequestConfig} — public SDK surface name. */
+export type RequestOptions = ApiRequestConfig;
+
+/** RestApiClient constructor options. */
+export interface RestApiClientOptions {
+  timeout?: number;
+  retryCount?: number;
+  retryDelayMs?: number;
+  headers?: Record<string, string>;
+}
+
+/** Real-time event taxonomy for RestApiClient (string-literal union). */
+export type RestApiEvent =
+  | 'request:start'
+  | 'request:success'
+  | 'request:error'
+  | 'request:retry'
+  | 'response:success'
+  | 'response:error'
+  | 'auth:refresh:start'
+  | 'auth:refresh:success'
+  | 'auth:refresh:error'
+  | 'ratelimit:hit'
+  | 'ghost:sha:detected';
+
+/** Event listener callback for {@link RestApiEvent}. */
+export type RestApiEventListener = (event: RestApiEvent, payload?: unknown) => void;
