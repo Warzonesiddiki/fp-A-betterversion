@@ -412,6 +412,8 @@ export default function ScenarioBuilderPage() {
         </CardHeader>
         <CardContent>
           <DataTable
+            caption="Scenario sensitivity analysis: low, base, and high case impact percentages for each parameter"
+            ariaLabel="Scenario sensitivity analysis table"
             columns={[
               { key: 'parameter', header: 'Parameter' },
               { key: 'low', header: 'Low Case', align: 'right', render: (v) => `${v}%` },
