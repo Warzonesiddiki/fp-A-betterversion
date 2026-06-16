@@ -1,4 +1,4 @@
-/**
+﻿/**
  * G12 — 7 Competitive Gaps
  *
  * Implements the competitive feature set that distinguishes FinPlan Pro from competitors
@@ -200,8 +200,8 @@ export const applyDragFill = (
   for (const targetRef of targetRefs) {
     const targetMatch = targetRef.match(/^([A-Z]+)(\d+)$/);
     if (!targetMatch) continue;
-    const targetColIdx = colToIndex(targetMatch[1]);
-    const targetRow = parseInt(targetMatch[2], 10);
+    const targetColIdx = colToIndex(targetMatch[1]!);
+    const targetRow = parseInt(targetMatch[2]!, 10);
     const rowDelta = targetRow - sourceRow;
     const colDelta = targetColIdx - sourceColIdx;
 
@@ -408,9 +408,9 @@ const expandRange = (start: string, end: string): string[] => {
     }
     return s;
   };
-  const r1 = parseInt(startMatch[2], 10);
-  const r2 = parseInt(endMatch[2], 10);
-  const c1 = colToIndex(startMatch[1]);
+  const r1 = parseInt(startMatch[2]!, 10);
+  const r2 = parseInt(endMatch[2]!, 10);
+  const c1 = colToIndex(startMatch[1]!);
   const c2 = colToIndex(endMatch[1] ?? '');
   const refs: string[] = [];
   for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++) {
@@ -479,3 +479,6 @@ export const isScenarioLocked = (
 export const mergeScenarioNames = (a: string, b: string) => `Merge: ${a} ⊕ ${b}`;
 
 export { cellKey };
+
+
+
