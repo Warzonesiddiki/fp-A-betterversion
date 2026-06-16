@@ -116,12 +116,20 @@ export class RestApiClient {
         throw new ApiError('OAuth2 config required for token refresh', 401, 'Unauthorized');
       }
 
+      // OAuth 2.0 BCP (RFC 8252 §8.1): client credentials MUST use HTTP Basic
+      // auth header or POST body, NOT query params (which leak via server logs,
+      // browser history, and proxy caches). HIGH finding from the Phase 7
+      // services security audit (cycle 13, Hephaestus).
+      const credentials = btoa(
+        `${this.auth.oauth2.clientId}:${this.auth.oauth2.clientSecret}`
+      );
       const response = await axios.post(this.auth.oauth2.tokenUrl, null, {
+        headers: {
+          Authorization: `Basic ${credentials}`,
+        },
         params: {
           grant_type: 'refresh_token',
           refresh_token: this.oauthTokens.refreshToken,
-          client_id: this.auth.oauth2.clientId,
-          client_secret: this.auth.oauth2.clientSecret,
         },
       });
 
