@@ -56,9 +56,28 @@ export const SECURITY_HEADERS_CONSTANTS = {
   /** Maximum header value length (DoS prevention) */
   MAX_HEADER_LENGTH: 8192,
   /** Allowed sources for CSP directive */
-  ALLOWED_SOURCES: ["self", "none", "unsafe-inline", "unsafe-eval", "strict-dynamic", 'data:', 'blob:', 'https:', 'wss:'] as const,
+  ALLOWED_SOURCES: [
+    'self',
+    'none',
+    'unsafe-inline',
+    'unsafe-eval',
+    'strict-dynamic',
+    'data:',
+    'blob:',
+    'https:',
+    'wss:',
+  ] as const,
   /** Default deny list for Permissions Policy */
-  PERMISSIONS_POLICY_DENY: ['camera', 'microphone', 'geolocation', 'payment', 'usb', 'magnetometer', 'gyroscope', 'accelerometer'] as const,
+  PERMISSIONS_POLICY_DENY: [
+    'camera',
+    'microphone',
+    'geolocation',
+    'payment',
+    'usb',
+    'magnetometer',
+    'gyroscope',
+    'accelerometer',
+  ] as const,
   /** Permitted features for Permissions Policy */
   PERMISSIONS_POLICY_ALLOW: ['fullscreen', 'clipboard-read', 'clipboard-write'] as const,
 } as const;
@@ -127,7 +146,14 @@ export interface SecurityHeadersPolicy {
   };
   frameOptions?: 'DENY' | 'SAMEORIGIN';
   contentTypeOptions?: boolean;
-  referrerPolicy?: 'no-referrer' | 'no-referrer-when-downgrade' | 'origin' | 'origin-when-cross-origin' | 'same-origin' | 'strict-origin' | 'strict-origin-when-cross-origin';
+  referrerPolicy?:
+    | 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin'
+    | 'strict-origin'
+    | 'strict-origin-when-cross-origin';
   crossOriginOpenerPolicy?: 'same-origin' | 'same-origin-allow-popups' | 'unsafe-none';
   crossOriginEmbedderPolicy?: 'require-corp' | 'credentialless' | 'unsafe-none';
   crossOriginResourcePolicy?: 'same-origin' | 'same-site' | 'cross-origin';
@@ -187,7 +213,7 @@ export function isValidCspSource(source: string): boolean {
     return false;
   }
   // Allowed keyword sources
-  const keywords = ["self", "none", "unsafe-inline", "unsafe-eval", "strict-dynamic"];
+  const keywords = ['self', 'none', 'unsafe-inline', 'unsafe-eval', 'strict-dynamic'];
   if (keywords.includes(source)) {
     return true;
   }
@@ -253,7 +279,10 @@ export class SecurityHeaders {
   /**
    * Create a SecurityHeaders instance from a custom policy.
    */
-  public static create(policy: SecurityHeadersPolicy, env: Environment = 'production'): SecurityHeaders {
+  public static create(
+    policy: SecurityHeadersPolicy,
+    env: Environment = 'production'
+  ): SecurityHeaders {
     SecurityHeaders.validatePolicy(policy);
     return new SecurityHeaders(policy, env);
   }
@@ -276,18 +305,24 @@ export class SecurityHeaders {
    */
   public static presetPolicy(preset: PresetPolicy, env: Environment): SecurityHeadersPolicy {
     if (preset === 'custom') {
-      throw new SecurityHeadersError('POLICY_VALIDATION_FAILED', 'custom preset requires create() with explicit policy');
+      throw new SecurityHeadersError(
+        'POLICY_VALIDATION_FAILED',
+        'custom preset requires create() with explicit policy'
+      );
     }
     if (preset === 'permissive' && env === 'production') {
-      throw new SecurityHeadersError('CONFLICTING_POLICIES', 'permissive preset is not allowed in production');
+      throw new SecurityHeadersError(
+        'CONFLICTING_POLICIES',
+        'permissive preset is not allowed in production'
+      );
     }
 
     const baseCsp: CspDirectives = {
-      defaultSrc: ["self"],
-      objectSrc: ["none"],
-      baseUri: ["self"],
-      formAction: ["self"],
-      frameAncestors: ["none"],
+      defaultSrc: ['self'],
+      objectSrc: ['none'],
+      baseUri: ['self'],
+      formAction: ['self'],
+      frameAncestors: ['none'],
       upgradeInsecureRequests: true,
     };
 
@@ -295,15 +330,20 @@ export class SecurityHeaders {
       return {
         csp: {
           ...baseCsp,
-          scriptSrc: ["self"],
-          styleSrc: ["self"],
-          imgSrc: ["self", 'data:', 'https:'],
-          fontSrc: ["self"],
-          connectSrc: ["self", 'wss:'],
-          workerSrc: ["self"],
-          manifestSrc: ["self"],
+          scriptSrc: ['self'],
+          styleSrc: ['self'],
+          imgSrc: ['self', 'data:', 'https:'],
+          fontSrc: ['self'],
+          connectSrc: ['self', 'wss:'],
+          workerSrc: ['self'],
+          manifestSrc: ['self'],
         },
-        hsts: { enabled: true, maxAge: SECURITY_HEADERS_CONSTANTS.HSTS_MAX_AGE_PRELOAD, includeSubDomains: true, preload: true },
+        hsts: {
+          enabled: true,
+          maxAge: SECURITY_HEADERS_CONSTANTS.HSTS_MAX_AGE_PRELOAD,
+          includeSubDomains: true,
+          preload: true,
+        },
         frameOptions: 'DENY',
         contentTypeOptions: true,
         referrerPolicy: 'strict-origin-when-cross-origin',
@@ -318,14 +358,19 @@ export class SecurityHeaders {
       return {
         csp: {
           ...baseCsp,
-          scriptSrc: ["self", "unsafe-inline"], // NOTE: nonce preferred; review for v1.1
-          styleSrc: ["self", "unsafe-inline"],
-          imgSrc: ["self", 'data:', 'https:'],
-          fontSrc: ["self", 'data:'],
-          connectSrc: ["self", 'wss:'],
-          workerSrc: ["self"],
+          scriptSrc: ['self', 'unsafe-inline'], // NOTE: nonce preferred; review for v1.1
+          styleSrc: ['self', 'unsafe-inline'],
+          imgSrc: ['self', 'data:', 'https:'],
+          fontSrc: ['self', 'data:'],
+          connectSrc: ['self', 'wss:'],
+          workerSrc: ['self'],
         },
-        hsts: { enabled: true, maxAge: SECURITY_HEADERS_CONSTANTS.HSTS_MAX_AGE, includeSubDomains: true, preload: false },
+        hsts: {
+          enabled: true,
+          maxAge: SECURITY_HEADERS_CONSTANTS.HSTS_MAX_AGE,
+          includeSubDomains: true,
+          preload: false,
+        },
         frameOptions: 'SAMEORIGIN',
         contentTypeOptions: true,
         referrerPolicy: 'strict-origin-when-cross-origin',
@@ -340,11 +385,11 @@ export class SecurityHeaders {
     return {
       csp: {
         ...baseCsp,
-        scriptSrc: ["self", "unsafe-inline", "unsafe-eval"],
-        styleSrc: ["self", "unsafe-inline"],
-        imgSrc: ["self", 'data:', 'https:', 'http:'],
-        connectSrc: ["self", 'wss:', 'ws:', 'http:', 'https:'],
-        workerSrc: ["self", 'blob:'],
+        scriptSrc: ['self', 'unsafe-inline', 'unsafe-eval'],
+        styleSrc: ['self', 'unsafe-inline'],
+        imgSrc: ['self', 'data:', 'https:', 'http:'],
+        connectSrc: ['self', 'wss:', 'ws:', 'http:', 'https:'],
+        workerSrc: ['self', 'blob:'],
       },
       hsts: { enabled: false, maxAge: 0, includeSubDomains: false, preload: false },
       frameOptions: 'SAMEORIGIN',
@@ -379,14 +424,20 @@ export class SecurityHeaders {
     }
     if (policy.hsts && policy.hsts.enabled) {
       if (policy.hsts.maxAge < 0 || policy.hsts.maxAge > 63072000) {
-        throw new SecurityHeadersError('INVALID_HSTS_VALUE', `HSTS max-age must be 0-63072000 (2 years), got ${policy.hsts.maxAge}`);
+        throw new SecurityHeadersError(
+          'INVALID_HSTS_VALUE',
+          `HSTS max-age must be 0-63072000 (2 years), got ${policy.hsts.maxAge}`
+        );
       }
     }
     if (policy.permissionsPolicy) {
       for (const [feature, allowList] of Object.entries(policy.permissionsPolicy)) {
         for (const value of allowList) {
           if (!['self', 'src', '*'].includes(value)) {
-            throw new SecurityHeadersError('POLICY_VALIDATION_FAILED', `Invalid permissions policy value: ${feature}=${value}`);
+            throw new SecurityHeadersError(
+              'POLICY_VALIDATION_FAILED',
+              `Invalid permissions policy value: ${feature}=${value}`
+            );
           }
         }
       }
@@ -397,7 +448,10 @@ export class SecurityHeaders {
           throw new SecurityHeadersError('INVALID_HEADER_NAME', `Invalid header name: ${name}`);
         }
         if (!isValidHeaderValue(value)) {
-          throw new SecurityHeadersError('INVALID_HEADER_VALUE', `Invalid header value for ${name}`);
+          throw new SecurityHeadersError(
+            'INVALID_HEADER_VALUE',
+            `Invalid header value for ${name}`
+          );
         }
       }
     }
@@ -408,15 +462,26 @@ export class SecurityHeaders {
    */
   public static validateCsp(csp: CspDirectives): void {
     for (const [directive, sources] of Object.entries(csp)) {
-      if (directive === 'upgradeInsecureRequests' || directive === 'blockAllMixedContent' || directive === 'reportUri' || directive === 'reportTo') {
+      if (
+        directive === 'upgradeInsecureRequests' ||
+        directive === 'blockAllMixedContent' ||
+        directive === 'reportUri' ||
+        directive === 'reportTo'
+      ) {
         continue;
       }
       if (!Array.isArray(sources)) {
-        throw new SecurityHeadersError('INVALID_DIRECTIVE', `CSP directive ${directive} must be an array`);
+        throw new SecurityHeadersError(
+          'INVALID_DIRECTIVE',
+          `CSP directive ${directive} must be an array`
+        );
       }
       for (const source of sources) {
         if (!isValidCspSource(source)) {
-          throw new SecurityHeadersError('INVALID_SOURCE', `Invalid CSP source for ${directive}: ${source}`);
+          throw new SecurityHeadersError(
+            'INVALID_SOURCE',
+            `Invalid CSP source for ${directive}: ${source}`
+          );
         }
       }
     }
@@ -511,13 +576,15 @@ export class SecurityHeaders {
   /**
    * Build Permissions-Policy header string.
    */
-  public buildPermissionsPolicyString(pp: NonNullable<SecurityHeadersPolicy['permissionsPolicy']>): string {
+  public buildPermissionsPolicyString(
+    pp: NonNullable<SecurityHeadersPolicy['permissionsPolicy']>
+  ): string {
     const parts: string[] = [];
     for (const [feature, allowList] of Object.entries(pp)) {
       if (allowList.length === 0) {
         parts.push(`${feature}=()`);
       } else {
-        parts.push(`${feature}=(${allowList.map((v) => v === '*' ? '*' : `"${v}"`).join(' ')})`);
+        parts.push(`${feature}=(${allowList.map((v) => (v === '*' ? '*' : `"${v}"`)).join(' ')})`);
       }
     }
     return parts.join(', ');

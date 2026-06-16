@@ -138,17 +138,35 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
     });
 
     it('2.4 boundary: exactly 8.0 → CRITICAL', () => {
-      const score: DreadScore = { damage: 8, reproducibility: 8, exploitability: 8, affectedUsers: 8, discoverability: 8 };
+      const score: DreadScore = {
+        damage: 8,
+        reproducibility: 8,
+        exploitability: 8,
+        affectedUsers: 8,
+        discoverability: 8,
+      };
       expect(computeDreadMean(score).riskLevel).toBe('CRITICAL');
     });
 
     it('2.5 boundary: exactly 6.0 → HIGH', () => {
-      const score: DreadScore = { damage: 6, reproducibility: 6, exploitability: 6, affectedUsers: 6, discoverability: 6 };
+      const score: DreadScore = {
+        damage: 6,
+        reproducibility: 6,
+        exploitability: 6,
+        affectedUsers: 6,
+        discoverability: 6,
+      };
       expect(computeDreadMean(score).riskLevel).toBe('HIGH');
     });
 
     it('2.6 boundary: exactly 4.0 → MEDIUM', () => {
-      const score: DreadScore = { damage: 4, reproducibility: 4, exploitability: 4, affectedUsers: 4, discoverability: 4 };
+      const score: DreadScore = {
+        damage: 4,
+        reproducibility: 4,
+        exploitability: 4,
+        affectedUsers: 4,
+        discoverability: 4,
+      };
       expect(computeDreadMean(score).riskLevel).toBe('MEDIUM');
     });
   });
@@ -179,7 +197,12 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
     });
 
     it('3.6 invalid: missing dimension', () => {
-      const partial = { damage: 5, reproducibility: 5, exploitability: 5, affectedUsers: 5 } as unknown as DreadScore;
+      const partial = {
+        damage: 5,
+        reproducibility: 5,
+        exploitability: 5,
+        affectedUsers: 5,
+      } as unknown as DreadScore;
       expect(isValidDreadScore(partial)).toBe(false);
     });
   });
@@ -271,12 +294,16 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
 
     it('5.7 throws on invalid DREAD score', () => {
       const tm = ThreatModel.create();
-      expect(() => tm.addThreat({ ...sampleThreat, dreadScore: { ...sampleDreadHigh, damage: 15 } })).toThrow(/DREAD/);
+      expect(() =>
+        tm.addThreat({ ...sampleThreat, dreadScore: { ...sampleDreadHigh, damage: 15 } })
+      ).toThrow(/DREAD/);
     });
 
     it('5.8 throws on invalid category', () => {
       const tm = ThreatModel.create();
-      expect(() => tm.addThreat({ ...sampleThreat, category: 'X' as unknown as 'S' })).toThrow(/category/i);
+      expect(() => tm.addThreat({ ...sampleThreat, category: 'X' as unknown as 'S' })).toThrow(
+        /category/i
+      );
     });
   });
 
@@ -383,7 +410,9 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
 
     it('8.4 throws on invalid control type', () => {
       const tm = ThreatModel.create();
-      expect(() => tm.addControl({ ...sampleControl, type: 'INVALID' as unknown as 'PREVENTIVE' })).toThrow(/type/i);
+      expect(() =>
+        tm.addControl({ ...sampleControl, type: 'INVALID' as unknown as 'PREVENTIVE' })
+      ).toThrow(/type/i);
     });
 
     it('8.5 listControls returns sorted by ID', () => {
@@ -608,7 +637,12 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
     it('11.5 export with includeJson only', () => {
       const tm = ThreatModel.create();
       tm.addThreat(sampleThreat);
-      const result = tm.export({ includeJson: true, includeMarkdown: false, includeGapAnalysis: false, includeDreadBreakdown: false });
+      const result = tm.export({
+        includeJson: true,
+        includeMarkdown: false,
+        includeGapAnalysis: false,
+        includeDreadBreakdown: false,
+      });
       expect(result.json).toBeDefined();
       expect(result.markdown).toBeUndefined();
     });
@@ -616,7 +650,12 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
     it('11.6 export with includeMarkdown only', () => {
       const tm = ThreatModel.create();
       tm.addThreat(sampleThreat);
-      const result = tm.export({ includeJson: false, includeMarkdown: true, includeGapAnalysis: false, includeDreadBreakdown: false });
+      const result = tm.export({
+        includeJson: false,
+        includeMarkdown: true,
+        includeGapAnalysis: false,
+        includeDreadBreakdown: false,
+      });
       expect(result.json).toBeUndefined();
       expect(result.markdown).toBeDefined();
     });
@@ -624,14 +663,26 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
     it('11.7 export with both', () => {
       const tm = ThreatModel.create();
       tm.addThreat(sampleThreat);
-      const result = tm.export({ includeJson: true, includeMarkdown: true, includeGapAnalysis: true, includeDreadBreakdown: true });
+      const result = tm.export({
+        includeJson: true,
+        includeMarkdown: true,
+        includeGapAnalysis: true,
+        includeDreadBreakdown: true,
+      });
       expect(result.json).toBeDefined();
       expect(result.markdown).toBeDefined();
     });
 
     it('11.8 export with neither throws', () => {
       const tm = ThreatModel.create();
-      expect(() => tm.export({ includeJson: false, includeMarkdown: false, includeGapAnalysis: false, includeDreadBreakdown: false })).toThrow(/include/);
+      expect(() =>
+        tm.export({
+          includeJson: false,
+          includeMarkdown: false,
+          includeGapAnalysis: false,
+          includeDreadBreakdown: false,
+        })
+      ).toThrow(/include/);
     });
 
     it('11.9 toJSON includes model metadata', () => {
@@ -706,7 +757,12 @@ describe('ThreatModel — PATCH 10 (Hephaestus 2026-06-16)', () => {
       const c2 = tm.addControl({ ...sampleControl, name: 'C2' });
       tm.linkControl(c1.id, t1.id);
       // t2 is unmitigated
-      const result = tm.export({ includeJson: true, includeMarkdown: true, includeGapAnalysis: true, includeDreadBreakdown: true });
+      const result = tm.export({
+        includeJson: true,
+        includeMarkdown: true,
+        includeGapAnalysis: true,
+        includeDreadBreakdown: true,
+      });
       expect(result.json).toBeDefined();
       const md = result.markdown!;
       expect(md).toContain('## Threats');

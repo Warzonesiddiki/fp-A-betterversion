@@ -1,5 +1,17 @@
 export { RestApiClient } from './RestApiClient';
-export type { RestApiClientOptions, AuthConfig, OAuth2Config, ApiKeyConfig, BasicAuthConfig, BearerAuthConfig, ApiResponse, RequestOptions, OAuth2Tokens, RestApiEvent, RestApiEventListener } from './types';
+export type {
+  RestApiClientOptions,
+  AuthConfig,
+  OAuth2Config,
+  ApiKeyConfig,
+  BasicAuthConfig,
+  BearerAuthConfig,
+  ApiResponse,
+  RequestOptions,
+  OAuth2Tokens,
+  RestApiEvent,
+  RestApiEventListener,
+} from './types';
 export { ApiError } from './types';
 
 // PATCH 9 — REST_API_CLIENT v0.3 (Hephaestus, 2026-06-16)
