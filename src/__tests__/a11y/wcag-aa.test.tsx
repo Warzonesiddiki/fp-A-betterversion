@@ -26,7 +26,7 @@ import LoginPage from '../../pages/auth/LoginPage';
 import RegisterPage from '../../pages/auth/RegisterPage';
 import DashboardPage from '../../pages/DashboardPage';
 import DataImportPage from '../../pages/data/DataImportPage';
-import ChartOfAccountsPage from '../../pages/charts/ChartOfAccountsPage';
+import { ChartOfAccountsPage } from '../../pages/charts/ChartOfAccountsPage';
 import SettingsPage from '../../pages/settings/SettingsPage';
 import BudgetVsActualPage from '../../pages/reports/BudgetVsActualPage';
 import ProfitLossPage from '../../pages/reports/ProfitLossPage';
