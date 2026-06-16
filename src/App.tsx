@@ -234,7 +234,7 @@ const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDash
 const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage') as any)
 const SectorsEducationDashboardPage = lazy(() => import('./pages/sectors/EducationDashboardPage') as any)
 const SectorsGovernmentDashboardPage = lazy(
-  () => import('./pages/sectors/GovernmentDashboardPage')
+  () => import('./pages/sectors/GovernmentDashboardPage') as any
 );
 const SectorsLogisticsDashboardPage = lazy(() => import('./pages/sectors/LogisticsDashboardPage') as any)
 const SectorsTelecomDashboardPage = lazy(() => import('./pages/sectors/TelecomDashboardPage') as any)
