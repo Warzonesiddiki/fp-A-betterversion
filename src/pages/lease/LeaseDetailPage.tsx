@@ -354,7 +354,13 @@ export default function LeaseDetailPage() {
           <CardTitle>Amortization Schedule</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable data={amortization} columns={amortColumns} pageSize={6} />
+          <DataTable
+            data={amortization}
+            columns={amortColumns}
+            pageSize={6}
+            caption="Lease amortization schedule: opening balance, interest, payment, and closing balance for each period"
+            ariaLabel="Lease amortization schedule"
+          />
         </CardContent>
       </Card>
 
