@@ -36,6 +36,24 @@ describe('Modal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('has prefers-reduced-motion safe transition classes (UX-PI-007)', () => {
+    // WCAG 2.2 SC 2.3.3 (Animation from Interactions): motion-reduce override
+    const { container } = render(
+      <Modal isOpen={true} onClose={vi.fn()} title="Reduced Motion Test">
+        <p>Body</p>
+      </Modal>
+    );
+    const backdrop = container.querySelector('[aria-hidden="true"]');
+    const dialog = container.querySelector('[role="dialog"]');
+    expect(backdrop).toBeTruthy();
+    expect(dialog).toBeTruthy();
+    // Backdrop must include motion-reduce override
+    expect(backdrop?.className).toMatch(/motion-reduce:transition-none/);
+    // Dialog must include BOTH motion-reduce overrides (transition + transform)
+    expect(dialog?.className).toMatch(/motion-reduce:transition-none/);
+    expect(dialog?.className).toMatch(/motion-reduce:transform-none/);
+  });
+
   it('renders title and children', () => {
     render(
       <Modal isOpen={true} onClose={vi.fn()}>

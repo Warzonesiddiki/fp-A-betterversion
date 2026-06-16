@@ -67,7 +67,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity motion-reduce:transition-none"
             aria-hidden="true"
             onClick={onClose}
             onKeyDown={(e) => {
@@ -91,7 +91,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             aria-modal="true"
             aria-label={title}
             className={cn(
-              'inline-block transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle',
+              'inline-block transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all motion-reduce:transition-none motion-reduce:transform-none sm:my-8 sm:w-full sm:max-w-lg sm:align-middle',
               className
             )}
             {...props}
