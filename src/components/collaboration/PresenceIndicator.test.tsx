@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 vi.mock('@/hooks/usePresence', () => ({
   useResourcePresence: vi.fn(() => []),
+  usePresenceEvents: vi.fn(() => () => {}),
 }));
 
 import { PresenceIndicator } from '@/components/collaboration/PresenceIndicator';
@@ -62,8 +63,12 @@ describe('PresenceIndicator (collaboration)', () => {
   it('renders role=status with correct aria-label', () => {
     mockUseResourcePresence.mockReturnValue(mockViewers);
     render(<PresenceIndicator resourceType="budget" resourceId="b1" />);
-    const status = screen.getByRole('status');
-    expect(status).toHaveAttribute('aria-label', '2 users viewing this resource');
+    // Two status roles: the main indicator (aria-label="N users viewing this resource")
+    // and the sr-only live region. Filter for the one with the count label.
+    const statuses = screen.getAllByRole('status');
+    const indicatorStatus = statuses.find((el) => el.getAttribute('aria-label')?.includes('viewing this resource'));
+    expect(indicatorStatus).toBeDefined();
+    expect(indicatorStatus).toHaveAttribute('aria-label', '2 users viewing this resource');
   });
 
   it('shows overflow count when viewers exceed maxVisible', () => {
