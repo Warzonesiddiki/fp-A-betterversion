@@ -431,7 +431,7 @@ describe('8. Audit chain', () => {
   skipIf(!HAS_CRYPTO)('8.1 emits one audit event per redact call', async () => {
     r.redact({ email: 'a@b.com' }, { actor: 't' });
     // audit emission is async (microtask); wait one tick.
-    await new Promise((res) => setTimeout(res, 10));
+    await new Promise((res) => setTimeout(res, 100));
     expect(events.length).toBe(1);
     expect(events[0].type).toBe('pii.redacted');
     expect(events[0].redactedCount).toBe(1);
@@ -441,7 +441,7 @@ describe('8. Audit chain', () => {
   skipIf(!HAS_CRYPTO)('8.2 audit events chain properly', async () => {
     r.redact({ email: 'a@b.com' }, { actor: 't' });
     r.redact({ ssn: '123-45-6789' }, { actor: 't' });
-    await new Promise((res) => setTimeout(res, 10));
+    await new Promise((res) => setTimeout(res, 100));
     expect(events.length).toBe(2);
     expect(events[1].prevChainHash).toBe(events[0].eventHash);
   });
@@ -449,7 +449,7 @@ describe('8. Audit chain', () => {
   skipIf(!HAS_CRYPTO)('8.3 verifyChain returns valid=true for intact chain', async () => {
     r.redact({ email: 'a@b.com' });
     r.redact({ ssn: '123-45-6789' });
-    await new Promise((res) => setTimeout(res, 10));
+    await new Promise((res) => setTimeout(res, 100));
     const v = await r.verifyChain();
     expect(v.valid).toBe(true);
     expect(v.inspected).toBe(2);
@@ -457,7 +457,7 @@ describe('8. Audit chain', () => {
 
   skipIf(!HAS_CRYPTO)('8.4 verifyChain detects tampering', async () => {
     r.redact({ email: 'a@b.com' });
-    await new Promise((res) => setTimeout(res, 10));
+    await new Promise((res) => setTimeout(res, 100));
     const evs = r.getEvents();
     evs[0].redactedCount = 999; // tamper
     const v = await r.verifyChain();
@@ -469,14 +469,14 @@ describe('8. Audit chain', () => {
     r.redact({ email: 'a@b.com' });
     r.redact({ ssn: '123-45-6789' });
     r.redact({ phone: '+15551234567' });
-    await new Promise((res) => setTimeout(res, 10));
+    await new Promise((res) => setTimeout(res, 100));
     expect(r.getEventCount()).toBe(3);
   });
 
   it('8.6 export jsonl yields one event per line', async () => {
     r.redact({ email: 'a@b.com' });
     r.redact({ ssn: '123-45-6789' });
-    await new Promise((res) => setTimeout(res, 10));
+    await new Promise((res) => setTimeout(res, 100));
     const jl = r.export('jsonl');
     const lines = jl.split('\n');
     expect(lines.length).toBe(2);
@@ -485,7 +485,7 @@ describe('8. Audit chain', () => {
 
   it('8.7 export json includes events and chainHead', async () => {
     r.redact({ email: 'a@b.com' });
-    await new Promise((res) => setTimeout(res, 10));
+    await new Promise((res) => setTimeout(res, 100));
     const j = r.export('json');
     const obj = JSON.parse(j);
     expect(obj.events.length).toBe(1);

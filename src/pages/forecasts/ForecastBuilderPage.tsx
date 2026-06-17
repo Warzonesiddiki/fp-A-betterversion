@@ -242,7 +242,7 @@ export default function ForecastBuilderPage() {
             <CardTitle>Forecast Accuracy</CardTitle>
           </CardHeader>
           <CardContent>
-            <dl
+            <div
               className="space-y-3"
               aria-label="Forecast accuracy metrics"
               data-testid="accuracy-metrics"
@@ -253,16 +253,16 @@ export default function ForecastBuilderPage() {
                   className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"
                 >
                   <div>
-                    <dt className="font-semibold text-sm">{m.metric}</dt>
-                    <dd className="text-xs text-slate-400 m-0">{m.description}</dd>
+                    <div className="font-semibold text-sm">{m.metric}</div>
+                    <div className="text-xs text-slate-400">{m.description}</div>
                   </div>
-                  <dd className="text-lg font-bold m-0">
+                  <div className="text-lg font-bold">
                     <span className="sr-only">{m.metric}: </span>
                     {m.value}
-                  </dd>
+                  </div>
                 </div>
               ))}
-            </dl>
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -270,7 +270,7 @@ export default function ForecastBuilderPage() {
             <CardTitle>Driver Sensitivity</CardTitle>
           </CardHeader>
           <CardContent>
-            <dl
+            <div
               className="space-y-3"
               aria-label="Driver sensitivity analysis"
               data-testid="driver-sensitivity"
@@ -287,18 +287,18 @@ export default function ForecastBuilderPage() {
                   className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"
                 >
                   <div>
-                    <dt className="font-semibold text-sm">{d.driver}</dt>
-                    <dd className="text-xs text-slate-400 m-0">Sensitivity: {d.sensitivity}</dd>
+                    <div className="font-semibold text-sm">{d.driver}</div>
+                    <div className="text-xs text-slate-400">Sensitivity: {d.sensitivity}</div>
                   </div>
-                  <dd
-                    className={`font-mono text-sm m-0 ${d.impact.startsWith('-') ? 'text-red-400' : 'text-green-400'}`}
+                  <div
+                    className={`font-mono text-sm ${d.impact.startsWith('-') ? 'text-red-400' : 'text-green-400'}`}
                   >
                     <span className="sr-only">Impact: </span>
                     {d.impact}
-                  </dd>
+                  </div>
                 </div>
               ))}
-            </dl>
+            </div>
           </CardContent>
         </Card>
       </div>
