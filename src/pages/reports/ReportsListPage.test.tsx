@@ -38,6 +38,7 @@ vi.mock('lucide-react', () => {
     Layers: makeIcon(),
     Search: makeIcon(),
     Download: makeIcon(),
+    Scale: makeIcon(),
   };
 });
 
