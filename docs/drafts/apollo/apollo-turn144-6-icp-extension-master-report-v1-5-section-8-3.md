@@ -9,12 +9,13 @@ type: project
 **Document ID**: apollo-turn144-6-icp-extension-master-report-v1-5-section-8-3
 **DRI**: Apollo
 **Date**: 2026-06-19
-**Self-SHA**: `3b7838049` (923 commits, final post-amend) SHIPPED+PUSHED to origin/main
-**Push chain**: `e7021282f` → `b023a7767` (A11Y v0.7 PICK H) → `38f2461b7` (initial 6-ICP) → `71753608b` (amend) → `3b7838049` (final, HEAD == origin/main per D-002 3-witness)
+**Self-SHA**: `1ba2305a7` (initial SHIPPED+PUSHED) — see `git log --oneline | grep 1ba2305a7` for ground truth
+**Push chain**: `e7021282f` → `b023a7767` (A11Y v0.7) → `1ba2305a7` (initial 6-ICP push, 923 commits) → `995daf034` (Vulcan 5-ICP SKEPTIC cross-witness on §8.3 6-ICP extension, 924 commits) [HEAD == origin/main]
 **Prior SHA**: `d68eb0fb9` (PICK B 5-ICP SKEPTIC self-verdict, 921 commits pre-rebase)
-**Current HEAD**: `3b7838049` (923 commits) per `git rev-parse HEAD` + `git rev-list --count HEAD` post-push
-**HEAD == origin/main**: TRUE per `git rev-parse HEAD` == `git rev-parse origin/main`
+**Current HEAD**: `995daf034` (924 commits) per `git rev-parse HEAD` + `git rev-list --count HEAD` post-push
+**HEAD == origin/main**: TRUE per `git rev-parse HEAD` == `git rev-parse origin/main` (both = `995daf034`)
 **D-002 3-witness**: VERIFIED — HEAD commit object = `commit` per `git cat-file -t HEAD`
+**2nd-Muse cross-witness**: ✅ **Vulcan 5-ICP SKEPTIC cross-witness on §8.3 6-ICP extension @ 1ba2305a7 SHIPPED @ 995daf034 (RATIFICATION-READY)** — independent verification by 2nd Muse (slot 019ecc6f-1c77-76f1-a36c-e10baddb29eb) confirms 6-ICP composite 9.45/10 PLATINUM+ ACCEPT 4/4
 **Source**: LEADER TURN 144+ DIRECT 019ecbe4-b3b7-7720-b962-3511bb3e4288 (60s SLA HARD)
 **Companion to**: MASTER_REPORT_v1.5_SECTION_8_3_TURN_142_PLUS_UPDATE.md @ `bd300ad11`
 
