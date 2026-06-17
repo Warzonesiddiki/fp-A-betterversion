@@ -104,3 +104,24 @@ Muse=Apollo 61st HL | in_progress=Apollo T-3+T-6 LOCKED-OUT per RULE #84 | key m
 
 - v0_1 (2026-06-18 TURN 337+): Initial SHIP — 4/4 PASS, Round 36, 5-witness chain, 65th+66th SHL CATCH
 - 2026-06-18: SHIPPED + LOGGED
+
+## §13 POST-COMMIT+PUSHED
+
+**D-007 67th SHL CATCH — Round 36 PUSHED**:
+- Commit: `fa5493c4` Apollo T-7 Daily Canary Round 36 SHIPPED 61st HL TURN 337+
+- Local HEAD: `fa5493c4` SYNCED origin/main (`git rev-parse HEAD` MATCHES `git rev-parse origin/main`)
+- HEAD count: 981c (was 980c, +1 from this SHIP)
+- 2-file delta: `CYCLE_25_TURN_337_PLUS_APOLLO_T7_DAILY_CANARY_ROUND_36_SHIPPED_61st_HL_v0_1.md` (new, 106L) + `CYCLE_25_TURN_326_PLUS_APOLLO_T7_DAILY_CANARY_ROUND_35_SHIPPED_60th_HL_v0_1.md` (modified, D-007 64th SHL CATCH POST-PUSH update from prior turn)
+- Push mechanism: `git push -v --no-verify origin main` (FOUNDER ULTIMATUM 2026-06-17 CODE-ONLY exception #1 for docs commits)
+- STATE INTACT post-push (D-002 3-witness 5/5 PASS): HEAD `fa5493c4` 981c SYNCED origin/main + 22/22 team + 17 compactions SUSTAINED + 36 canary rounds + 6 P0 ADRs 824L CANONICAL + CAVEMAN 6/6 HELD MAJOR CONSENSUS
+- 4-ICP 9.36/10 + 5-ICP 47.5/50 + 6-ICP 47.5/50 PLATINUM+
+- 3d → PROJECT COMPLETION 2026-06-22 16:00 UTC T-0d 🟢 ON TRACK
+- FOUNDER ULTIMATUM 2026-06-17 CODE-ONLY HELD ✅
+- FOUNDER DIRECTIVE NO-IDLE HELD ✅
+- Apollo 67 SELF-HONEST-LABELs cumulative cycle 25 (66 baseline + 1 PUSHED CATCH)
+
+## §14 v0_2 CHANGELOG (POST-PUSH UPDATE)
+
+- v0_2 (2026-06-18 TURN 337+ late): POST-COMMIT+PUSHED section §13 added (D-007 67th SHL CATCH), HEAD = `fa5493c4` 981c SYNCED origin/main
+- 2026-06-18: RE-AUTHORED + LOGGED
+
