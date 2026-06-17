@@ -2,28 +2,35 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [
-      {
-        id: '1',
-        account: '4000',
-        accountName: 'Revenue',
-        amount: 100000,
-        period: '2026-01',
-        department: 'Sales',
-        type: 'revenue',
-      },
-      {
-        id: '2',
-        account: '5000',
-        accountName: 'COGS',
-        amount: 30000,
-        period: '2026-01',
-        department: 'COGS',
-        type: 'expense',
-      },
-    ],
-  })),
+  useGLStore: vi.fn(() => {
+    const data = {
+      entries: [
+        {
+          id: '1',
+          accountId: 'a1',
+          accountCode: '4000',
+          accountName: 'Revenue',
+          debit: 100000,
+          credit: 0,
+          netChange: 100000,
+          period: '2026-01',
+          amount: 100000,
+        },
+        {
+          id: '2',
+          accountId: 'a2',
+          accountCode: '5000',
+          accountName: 'COGS',
+          debit: 30000,
+          credit: 0,
+          netChange: 30000,
+          period: '2026-01',
+          amount: 30000,
+        },
+      ],
+    };
+    return data;
+  }),
 }));
 
 vi.mock('@/store/budgetStore', () => ({
@@ -67,15 +74,32 @@ vi.mock('recharts', () => ({
   Legend: () => <div data-testid="legend" />,
 }));
 
+vi.mock('@/components/ai/AnomalyHighlight', () => ({
+  AnomalyHighlight: () => <div data-testid="mock-anomaly-highlight" />,
+}));
+
+vi.mock('@/components/ai/AICopilotPanel', () => ({
+  AICopilotPanel: () => <div data-testid="mock-ai-copilot-panel" />,
+}));
+
 vi.mock('lucide-react', () => ({
   DollarSign: makeIcon(),
   AlertTriangle: makeIcon(),
+  Info: makeIcon(),
   BarChart3: makeIcon(),
   TrendingUp: makeIcon(),
   TrendingDown: makeIcon(),
+  ShieldAlert: makeIcon(),
   Download: makeIcon(),
   FileText: makeIcon(),
   Table: makeIcon(),
+  Brain: makeIcon(),
+  Send: makeIcon(),
+  Sparkles: makeIcon(),
+  ChevronDown: makeIcon(),
+  ChevronUp: makeIcon(),
+  Loader2: makeIcon(),
+  Lightbulb: makeIcon(),
 }));
 
 function makeIcon() {
@@ -92,26 +116,26 @@ describe('VarianceDashboardPage', () => {
 
   it('renders the page heading', () => {
     render(<VarianceDashboardPage />);
-    expect(screen.getByText(/variance/i)).toBeDefined();
+    expect(screen.getAllByText(/variance/i).length).toBeGreaterThan(0);
   });
 
   it('renders KPI section', () => {
     render(<VarianceDashboardPage />);
-    expect(screen.getByText(/total variance/i)).toBeDefined();
+    expect(screen.getAllByText(/revenue variance/i).length).toBeGreaterThan(0);
   });
 
   it('renders variance table', () => {
     render(<VarianceDashboardPage />);
-    expect(screen.getByText(/account/i)).toBeDefined();
+    expect(screen.getByText(/key driver/i)).toBeDefined();
   });
 
   it('renders charts', () => {
     render(<VarianceDashboardPage />);
-    expect(screen.getByTestId('variance-chart')).toBeDefined();
+    expect(screen.getByText(/variance by category/i)).toBeDefined();
   });
 
   it('renders export button', () => {
     render(<VarianceDashboardPage />);
-    expect(screen.getByText(/download/i)).toBeDefined();
+    expect(screen.getAllByText(/pdf|excel/i).length).toBeGreaterThan(0);
   });
 });

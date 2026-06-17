@@ -50,6 +50,6 @@ describe('SegmentReportingPage', () => {
 
   it('renders the segment reporting page', () => {
     render(<SegmentReportingPage />);
-    expect(screen.getByText(/Segment Reporting/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/segment reporting/i).length).toBeGreaterThan(0);
   });
 });

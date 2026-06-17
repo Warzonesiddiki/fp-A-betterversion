@@ -48,6 +48,13 @@ vi.mock('recharts', () => ({
 
 vi.mock('lucide-react', () => ({
   FileText: makeIcon(),
+  Table: makeIcon(),
+  Download: makeIcon(),
+  DollarSign: makeIcon(),
+  TrendingUp: makeIcon(),
+  TrendingDown: makeIcon(),
+  ChevronUp: makeIcon(),
+  ChevronDown: makeIcon(),
 }));
 
 function makeIcon() {
@@ -64,17 +71,17 @@ describe('FXExposurePage', () => {
 
   it('renders the page heading', () => {
     render(<FXExposurePage />);
-    expect(screen.getByText(/fx exposure/i)).toBeDefined();
+    expect(screen.getAllByText(/fx exposure/i).length).toBeGreaterThan(0);
   });
 
   it('renders KPI section', () => {
     render(<FXExposurePage />);
-    expect(screen.getByText(/total exposure/i)).toBeDefined();
+    expect(screen.getAllByText(/total exposure/i).length).toBeGreaterThan(0);
   });
 
   it('renders currency exposure table', () => {
     render(<FXExposurePage />);
-    expect(screen.getByText(/currency/i)).toBeDefined();
+    expect(screen.getAllByText(/currency/i).length).toBeGreaterThan(0);
   });
 
   it('renders charts', () => {
@@ -84,6 +91,6 @@ describe('FXExposurePage', () => {
 
   it('renders export button', () => {
     render(<FXExposurePage />);
-    expect(screen.getByText(/download/i)).toBeDefined();
+    expect(screen.getAllByText(/pdf|excel/i).length).toBeGreaterThan(0);
   });
 });

@@ -46,22 +46,27 @@ vi.mock('@/components/charts/WaterfallChart', () => ({
   WaterfallChart: (props: any) => <div data-testid="waterfall-chart" />,
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
+vi.mock(import('lucide-react'), async (importOriginal) => {
+  const actual = await importOriginal();
+  const Icon = (props: any) => <span data-testid="mock-icon" {...props} />;
+  Icon.displayName = 'MockIcon';
   return {
-    Landmark: makeIcon(),
-    Download: makeIcon(),
-    FileText: makeIcon(),
-    Table: makeIcon(),
-    Percent: makeIcon(),
-    DollarSign: makeIcon(),
-    TrendingUp: makeIcon(),
+    ...actual,
+    default: Icon,
+    Landmark: Icon,
+    Download: Icon,
+    FileText: Icon,
+    Table: Icon,
+    Percent: Icon,
+    DollarSign: Icon,
+    TrendingUp: Icon,
+    ChevronUp: Icon,
+    ChevronDown: Icon,
+    Receipt: Icon,
+    Calculator: Icon,
+    Info: Icon,
+    TrendingDown: Icon,
+    FileSpreadsheet: Icon,
   };
 });
 
@@ -74,6 +79,6 @@ describe('TaxProvisionPage', () => {
 
   it('renders heading', () => {
     render(<TaxProvisionPage />);
-    expect(screen.getByText(/Tax Provision/i)).toBeTruthy();
+    expect(screen.getAllByText(/tax provision/i).length).toBeGreaterThan(0);
   });
 });

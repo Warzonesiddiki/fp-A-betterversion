@@ -61,6 +61,8 @@ vi.mock('lucide-react', () => ({
   Users: makeIcon(),
   DollarSign: makeIcon(),
   TrendingDown: makeIcon(),
+  ChevronUp: makeIcon(),
+  ChevronDown: makeIcon(),
 }));
 
 function makeIcon() {
@@ -77,17 +79,17 @@ describe('HeadcountPlanPage', () => {
 
   it('renders the page heading', () => {
     render(<HeadcountPlanPage />);
-    expect(screen.getByText(/headcount plan/i)).toBeDefined();
+    expect(screen.getAllByText(/headcount plan/i).length).toBeGreaterThan(0);
   });
 
   it('renders KPI section', () => {
     render(<HeadcountPlanPage />);
-    expect(screen.getByText(/total headcount/i)).toBeDefined();
+    expect(screen.getAllByText(/total headcount/i).length).toBeGreaterThan(0);
   });
 
   it('renders department table', () => {
     render(<HeadcountPlanPage />);
-    expect(screen.getByText(/department/i)).toBeDefined();
+    expect(screen.getAllByText(/department/i).length).toBeGreaterThan(0);
   });
 
   it('renders charts section', () => {
@@ -102,6 +104,7 @@ describe('HeadcountPlanPage', () => {
 
   it('renders export button', () => {
     render(<HeadcountPlanPage />);
-    expect(screen.getByText(/download/i)).toBeDefined();
+    expect(screen.getByLabelText(/export pdf/i)).toBeDefined();
+    expect(screen.getByLabelText(/export excel/i)).toBeDefined();
   });
 });

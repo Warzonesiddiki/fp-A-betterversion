@@ -43,6 +43,6 @@ describe('BackupRestorePage', () => {
 
   it('renders heading', () => {
     render(<BackupRestorePage />);
-    expect(screen.getByText(/Backup/i)).toBeTruthy();
+    expect(screen.getAllByText(/backup/i).length).toBeGreaterThan(0);
   });
 });

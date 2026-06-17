@@ -309,7 +309,7 @@ describe('Smoke: uncovered pages render without crashing', () => {
   for (const page of pages) {
     it(`renders ${page.name} without crashing`, async () => {
       const mod = await page.loader();
-      const Component = mod.default;
+      const Component = mod.default ?? mod[page.name];
       const { container } = render(
         <MemoryRouter>
           <Component />

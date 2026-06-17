@@ -14,23 +14,23 @@ vi.mock('@/engines/SessionEngine', () => ({
   SessionEngine: {},
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
+vi.mock(import('lucide-react'), async (importOriginal) => {
+  const actual = await importOriginal();
+  const Icon = (props: any) => <span data-testid="mock-icon" {...props} />;
+  Icon.displayName = 'MockIcon';
   return {
-    Users: makeIcon(),
-    UserPlus: makeIcon(),
-    Shield: makeIcon(),
-    Mail: makeIcon(),
-    Clock: makeIcon(),
-    Trash2: makeIcon(),
-    Edit2: makeIcon(),
-    X: makeIcon(),
+    ...actual,
+    default: Icon,
+    Users: Icon,
+    UserPlus: Icon,
+    Shield: Icon,
+    Mail: Icon,
+    Clock: Icon,
+    Trash2: Icon,
+    Edit2: Icon,
+    X: Icon,
+    ChevronUp: Icon,
+    ChevronDown: Icon,
   };
 });
 
@@ -43,6 +43,6 @@ describe('UserManagementPage', () => {
 
   it('renders heading', () => {
     render(<UserManagementPage />);
-    expect(screen.getByText(/User/i)).toBeTruthy();
+    expect(screen.getAllByText(/user/i).length).toBeGreaterThan(0);
   });
 });

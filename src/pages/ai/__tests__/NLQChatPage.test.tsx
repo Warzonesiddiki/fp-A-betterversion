@@ -38,6 +38,18 @@ vi.mock('lucide-react', () => {
     MessageSquare: makeIcon(),
     Send: makeIcon(),
     Sparkles: makeIcon(),
+    BarChart3: makeIcon(),
+    TrendingUp: makeIcon(),
+    Table: makeIcon(),
+    Trash2: makeIcon(),
+    Bot: makeIcon(),
+    User: makeIcon(),
+    Copy: makeIcon(),
+    Check: makeIcon(),
+    Download: makeIcon(),
+    History: makeIcon(),
+    FileJson: makeIcon(),
+    FileSpreadsheet: makeIcon(),
   };
 });
 

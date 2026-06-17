@@ -244,13 +244,23 @@ describe('Reports pages smoke tests', () => {
       expect(container).toBeTruthy();
     });
     it('renders table headers', () => {
+      const sampleData = [
+        {
+          account: 'Revenue',
+          budget: '$100',
+          actual: '$110',
+          variance: '$10',
+          percentVar: '10%',
+          isFavorable: true,
+        },
+      ];
       render(
         <MemoryRouter>
-          <BudgetVsActualTable data={[]} />
+          <BudgetVsActualTable data={sampleData} />
         </MemoryRouter>
       );
-      expect(screen.getByText(/Account/i)).toBeTruthy();
-      expect(screen.getByText(/Budget/i)).toBeTruthy();
+      expect(screen.getAllByText(/Account/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Budget/i).length).toBeGreaterThan(0);
     });
   });
 

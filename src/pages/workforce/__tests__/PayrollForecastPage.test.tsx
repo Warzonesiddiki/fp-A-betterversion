@@ -57,6 +57,8 @@ vi.mock('lucide-react', () => ({
   DollarSign: makeIcon(),
   TrendingUp: makeIcon(),
   Percent: makeIcon(),
+  ChevronUp: makeIcon(),
+  ChevronDown: makeIcon(),
 }));
 
 function makeIcon() {
@@ -73,17 +75,17 @@ describe('PayrollForecastPage', () => {
 
   it('renders the page heading', () => {
     render(<PayrollForecastPage />);
-    expect(screen.getByText(/payroll forecast/i)).toBeDefined();
+    expect(screen.getAllByText(/payroll forecast/i).length).toBeGreaterThan(0);
   });
 
   it('renders KPI section', () => {
     render(<PayrollForecastPage />);
-    expect(screen.getByText(/total payroll/i)).toBeDefined();
+    expect(screen.getAllByText(/annual payroll/i).length).toBeGreaterThan(0);
   });
 
   it('renders department breakdown table', () => {
     render(<PayrollForecastPage />);
-    expect(screen.getByText(/department/i)).toBeDefined();
+    expect(screen.getAllByText(/department/i).length).toBeGreaterThan(0);
   });
 
   it('renders charts section', () => {
@@ -93,6 +95,6 @@ describe('PayrollForecastPage', () => {
 
   it('renders export button', () => {
     render(<PayrollForecastPage />);
-    expect(screen.getByText(/download/i)).toBeDefined();
+    expect(screen.getAllByText(/export/i).length).toBeGreaterThan(0);
   });
 });

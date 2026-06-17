@@ -95,6 +95,8 @@ vi.mock('lucide-react', () => {
     ChevronUp: makeIcon(),
     ChevronDown: makeIcon(),
     Search: makeIcon(),
+    Info: makeIcon(),
+    AlertTriangle: makeIcon(),
     Landmark: makeIcon(),
     Download: makeIcon(),
     FileText: makeIcon(),
@@ -112,6 +114,7 @@ vi.mock('lucide-react', () => {
     Activity: makeIcon(),
     BarChart3: makeIcon(),
     Shield: makeIcon(),
+    ShieldAlert: makeIcon(),
     Headphones: makeIcon(),
   };
 });

@@ -38,6 +38,6 @@ describe('ConnectorSettingsPage', () => {
 
   it('renders heading', () => {
     render(<ConnectorSettingsPage />);
-    expect(screen.getByText(/Connector/i)).toBeTruthy();
+    expect(screen.getAllByText(/connector/i).length).toBeGreaterThan(0);
   });
 });

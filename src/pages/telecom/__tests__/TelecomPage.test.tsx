@@ -30,19 +30,19 @@ vi.mock('@/store/telecomStore', () => ({
   useTelecomStore: vi.fn(() => ({})),
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
+vi.mock(import('lucide-react'), async (importOriginal) => {
+  const actual = await importOriginal();
+  const Icon = (props: any) => <span data-testid="mock-icon" {...props} />;
+  Icon.displayName = 'MockIcon';
   return {
-    Wifi: makeIcon(),
-    DollarSign: makeIcon(),
-    Users: makeIcon(),
-    Activity: makeIcon(),
+    ...actual,
+    default: Icon,
+    Wifi: Icon,
+    DollarSign: Icon,
+    Users: Icon,
+    Activity: Icon,
+    ChevronUp: Icon,
+    ChevronDown: Icon,
   };
 });
 
@@ -55,6 +55,6 @@ describe('TelecomPage', () => {
 
   it('renders heading', () => {
     render(<TelecomPage />);
-    expect(screen.getByText(/Telecom/i)).toBeTruthy();
+    expect(screen.getAllByText(/telecom/i).length).toBeGreaterThan(0);
   });
 });

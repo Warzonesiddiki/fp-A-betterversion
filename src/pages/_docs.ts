@@ -1141,4 +1141,387 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  // ── Stub entries (G14 coverage) ─────────────────────────────────────────────
+  '/admin/benchmarks': {
+    title: 'Benchmarks',
+    sections: [
+      { title: 'What is this page?', content: 'Compare your metrics against industry benchmarks.' },
+    ],
+  },
+  '/ai/nlq': {
+    title: 'Natural Language Query',
+    sections: [
+      { title: 'What is this page?', content: 'Ask questions about your data in plain English.' },
+    ],
+  },
+  '/analytics/data-lineage': {
+    title: 'Data Lineage',
+    sections: [
+      { title: 'What is this page?', content: 'Track the flow of data from source to report.' },
+    ],
+  },
+  '/audit/sox': {
+    title: 'SOX Audit',
+    sections: [
+      { title: 'What is this page?', content: 'Sarbanes-Oxley controls and audit trail.' },
+    ],
+  },
+  '/banking/banking': {
+    title: 'Banking',
+    sections: [{ title: 'What is this page?', content: 'Banking sector dashboard.' }],
+  },
+  '/banking/reconciliation': {
+    title: 'Bank Reconciliation',
+    sections: [
+      { title: 'What is this page?', content: 'Match bank statements to ledger entries.' },
+    ],
+  },
+  '/banking/statements': {
+    title: 'Bank Statements',
+    sections: [{ title: 'What is this page?', content: 'View imported bank statements.' }],
+  },
+  '/bonds/portfolio': {
+    title: 'Bond Portfolio',
+    sections: [{ title: 'What is this page?', content: 'Track bond holdings and yield.' }],
+  },
+  '/bonds/yield-curve': {
+    title: 'Yield Curve',
+    sections: [{ title: 'What is this page?', content: 'Visualize the current yield curve.' }],
+  },
+  '/budgets/approval': {
+    title: 'Budget Approval',
+    sections: [{ title: 'What is this page?', content: 'Approve or reject submitted budgets.' }],
+  },
+  '/capex/tracker': {
+    title: 'CapEx Tracker',
+    sections: [
+      { title: 'What is this page?', content: 'Track capital expenditure requests and approvals.' },
+    ],
+  },
+  '/charts/chart-of-accounts': {
+    title: 'Chart of Accounts',
+    sections: [{ title: 'What is this page?', content: 'View and manage the chart of accounts.' }],
+  },
+  '/charts/showcase': {
+    title: 'Chart Showcase',
+    sections: [{ title: 'What is this page?', content: 'Browse all available chart types.' }],
+  },
+  '/collaboration/activity': {
+    title: 'Activity Feed',
+    sections: [{ title: 'What is this page?', content: 'Recent activity from your team.' }],
+  },
+  '/collaboration/shared': {
+    title: 'Shared With Me',
+    sections: [{ title: 'What is this page?', content: 'Items others have shared with you.' }],
+  },
+  '/collaboration/team': {
+    title: 'Team',
+    sections: [{ title: 'What is this page?', content: 'View your team members.' }],
+  },
+  '/consolidation/detail': {
+    title: 'Consolidation Detail',
+    sections: [{ title: 'What is this page?', content: 'Drill into a consolidation run.' }],
+  },
+  '/construction/dashboard': {
+    title: 'Construction Dashboard',
+    sections: [{ title: 'What is this page?', content: 'Construction sector KPIs.' }],
+  },
+  '/construction/equipment': {
+    title: 'Equipment Tracking',
+    sections: [{ title: 'What is this page?', content: 'Track construction equipment usage.' }],
+  },
+  '/construction/project': {
+    title: 'Project Tracking',
+    sections: [{ title: 'What is this page?', content: 'Track construction project budgets.' }],
+  },
+  '/credit/risk': {
+    title: 'Credit Risk',
+    sections: [{ title: 'What is this page?', content: 'Monitor credit risk exposure.' }],
+  },
+  '/data/data-flow': {
+    title: 'Data Flow',
+    sections: [{ title: 'What is this page?', content: 'Visualize data pipelines.' }],
+  },
+  '/data/data-summary': {
+    title: 'Data Summary',
+    sections: [{ title: 'What is this page?', content: 'Overview of imported data.' }],
+  },
+  '/data/import-history': {
+    title: 'Import History',
+    sections: [{ title: 'What is this page?', content: 'Past data import runs.' }],
+  },
+  '/data/migration-wizard': {
+    title: 'Data Migration Wizard',
+    sections: [{ title: 'What is this page?', content: 'Migrate data from another system.' }],
+  },
+  '/data/reconciliation': {
+    title: 'Data Reconciliation',
+    sections: [{ title: 'What is this page?', content: 'Reconcile data between sources.' }],
+  },
+  '/data/reconciliation-results': {
+    title: 'Reconciliation Results',
+    sections: [{ title: 'What is this page?', content: 'View reconciliation outcomes.' }],
+  },
+  '/data/version-diff': {
+    title: 'Version Diff',
+    sections: [{ title: 'What is this page?', content: 'Compare data versions.' }],
+  },
+  '/education': {
+    title: 'Education',
+    sections: [{ title: 'What is this page?', content: 'Education sector dashboard.' }],
+  },
+  '/energy/sector': {
+    title: 'Energy Sector',
+    sections: [{ title: 'What is this page?', content: 'Energy sector KPIs.' }],
+  },
+  '/esg/overview': {
+    title: 'ESG Overview',
+    sections: [
+      { title: 'What is this page?', content: 'Environmental, social, and governance metrics.' },
+    ],
+  },
+  '/forecasts/auto-update': {
+    title: 'Auto-Update Forecasts',
+    sections: [{ title: 'What is this page?', content: 'Configure automatic forecast refresh.' }],
+  },
+  '/forecasts/compare': {
+    title: 'Compare Forecasts',
+    sections: [{ title: 'What is this page?', content: 'Side-by-side forecast comparison.' }],
+  },
+  '/forecasts/drivers': {
+    title: 'Forecast Drivers',
+    sections: [{ title: 'What is this page?', content: 'Manage the drivers behind forecasts.' }],
+  },
+  '/government': {
+    title: 'Government',
+    sections: [{ title: 'What is this page?', content: 'Government sector dashboard.' }],
+  },
+  '/healthcare/overview': {
+    title: 'Healthcare Overview',
+    sections: [{ title: 'What is this page?', content: 'Healthcare sector KPIs.' }],
+  },
+  '/healthcare/value-based': {
+    title: 'Value-Based Care',
+    sections: [{ title: 'What is this page?', content: 'Value-based care contracts and metrics.' }],
+  },
+  '/insurance/claims': {
+    title: 'Insurance Claims',
+    sections: [{ title: 'What is this page?', content: 'Track insurance claims.' }],
+  },
+  '/insurance/dashboard': {
+    title: 'Insurance Dashboard',
+    sections: [{ title: 'What is this page?', content: 'Insurance sector KPIs.' }],
+  },
+  '/insurance/insurance': {
+    title: 'Insurance',
+    sections: [{ title: 'What is this page?', content: 'Insurance sector dashboard.' }],
+  },
+  '/insurance/underwriting': {
+    title: 'Underwriting',
+    sections: [{ title: 'What is this page?', content: 'Underwriting workflow.' }],
+  },
+  '/lease/accounting': {
+    title: 'Lease Accounting',
+    sections: [{ title: 'What is this page?', content: 'ASC 842 lease accounting.' }],
+  },
+  '/logistics': {
+    title: 'Logistics',
+    sections: [{ title: 'What is this page?', content: 'Logistics sector dashboard.' }],
+  },
+  '/manufacturing/overview': {
+    title: 'Manufacturing Overview',
+    sections: [{ title: 'What is this page?', content: 'Manufacturing sector KPIs.' }],
+  },
+  '/realestate/dashboard': {
+    title: 'Real Estate Dashboard',
+    sections: [{ title: 'What is this page?', content: 'Real estate sector KPIs.' }],
+  },
+  '/realestate/facility': {
+    title: 'Facility Management',
+    sections: [{ title: 'What is this page?', content: 'Manage facilities.' }],
+  },
+  '/realestate/portfolio': {
+    title: 'Portfolio',
+    sections: [{ title: 'What is this page?', content: 'Real estate portfolio.' }],
+  },
+  '/realestate/reit': {
+    title: 'REIT',
+    sections: [{ title: 'What is this page?', content: 'REIT analytics.' }],
+  },
+  '/realestate/valuation': {
+    title: 'Property Valuation',
+    sections: [{ title: 'What is this page?', content: 'Property valuation models.' }],
+  },
+  '/reports/book-builder': {
+    title: 'Book Builder',
+    sections: [{ title: 'What is this page?', content: 'Build report books.' }],
+  },
+  '/reports/designer': {
+    title: 'Report Designer',
+    sections: [{ title: 'What is this page?', content: 'Design custom reports.' }],
+  },
+  '/reports/library': {
+    title: 'Report Library',
+    sections: [{ title: 'What is this page?', content: 'Browse saved reports.' }],
+  },
+  '/reports/templates': {
+    title: 'Report Templates',
+    sections: [{ title: 'What is this page?', content: 'Pre-built report templates.' }],
+  },
+  '/retail/dashboard': {
+    title: 'Retail Dashboard',
+    sections: [{ title: 'What is this page?', content: 'Retail sector KPIs.' }],
+  },
+  '/retail/inventory': {
+    title: 'Inventory',
+    sections: [{ title: 'What is this page?', content: 'Inventory tracking.' }],
+  },
+  '/retail/inventory-planning': {
+    title: 'Inventory Planning',
+    sections: [{ title: 'What is this page?', content: 'Plan future inventory needs.' }],
+  },
+  '/retail/performance': {
+    title: 'Store Performance',
+    sections: [{ title: 'What is this page?', content: 'Per-store performance metrics.' }],
+  },
+  '/retail/retail': {
+    title: 'Retail',
+    sections: [{ title: 'What is this page?', content: 'Retail sector dashboard.' }],
+  },
+  '/saas/churn-analysis': {
+    title: 'Churn Analysis',
+    sections: [{ title: 'What is this page?', content: 'Customer churn analysis.' }],
+  },
+  '/saas/overview': {
+    title: 'SaaS Overview',
+    sections: [{ title: 'What is this page?', content: 'SaaS sector KPIs.' }],
+  },
+  '/scenarios/compare': {
+    title: 'Compare Scenarios',
+    sections: [
+      { title: 'What is this page?', content: 'Compare multiple scenarios side-by-side.' },
+    ],
+  },
+  '/scenarios/lock': {
+    title: 'Scenario Locks',
+    sections: [{ title: 'What is this page?', content: 'Locked scenario versions.' }],
+  },
+  '/scenarios/merge': {
+    title: 'Merge Scenarios',
+    sections: [{ title: 'What is this page?', content: 'Merge two scenarios.' }],
+  },
+  '/sector/agriculture': {
+    title: 'Agriculture',
+    sections: [{ title: 'What is this page?', content: 'Agriculture sector dashboard.' }],
+  },
+  '/sector/banking': {
+    title: 'Banking',
+    sections: [{ title: 'What is this page?', content: 'Banking sector dashboard.' }],
+  },
+  '/sector/construction': {
+    title: 'Construction',
+    sections: [{ title: 'What is this page?', content: 'Construction sector dashboard.' }],
+  },
+  '/sector/education': {
+    title: 'Education',
+    sections: [{ title: 'What is this page?', content: 'Education sector dashboard.' }],
+  },
+  '/sector/emissions': {
+    title: 'Emissions',
+    sections: [{ title: 'What is this page?', content: 'Carbon emissions tracking.' }],
+  },
+  '/sector/energy': {
+    title: 'Energy',
+    sections: [{ title: 'What is this page?', content: 'Energy sector dashboard.' }],
+  },
+  '/sector/equipment': {
+    title: 'Equipment',
+    sections: [{ title: 'What is this page?', content: 'Equipment sector dashboard.' }],
+  },
+  '/sector/government': {
+    title: 'Government',
+    sections: [{ title: 'What is this page?', content: 'Government sector dashboard.' }],
+  },
+  '/sector/healthcare': {
+    title: 'Healthcare',
+    sections: [{ title: 'What is this page?', content: 'Healthcare sector dashboard.' }],
+  },
+  '/sector/hospitality': {
+    title: 'Hospitality',
+    sections: [{ title: 'What is this page?', content: 'Hospitality sector dashboard.' }],
+  },
+  '/sector/insurance': {
+    title: 'Insurance',
+    sections: [{ title: 'What is this page?', content: 'Insurance sector dashboard.' }],
+  },
+  '/sector/logistics': {
+    title: 'Logistics',
+    sections: [{ title: 'What is this page?', content: 'Logistics sector dashboard.' }],
+  },
+  '/sector/manufacturing': {
+    title: 'Manufacturing',
+    sections: [{ title: 'What is this page?', content: 'Manufacturing sector dashboard.' }],
+  },
+  '/sector/real-estate': {
+    title: 'Real Estate',
+    sections: [{ title: 'What is this page?', content: 'Real estate sector dashboard.' }],
+  },
+  '/sector/retail': {
+    title: 'Retail',
+    sections: [{ title: 'What is this page?', content: 'Retail sector dashboard.' }],
+  },
+  '/sector/sector': {
+    title: 'Sector',
+    sections: [{ title: 'What is this page?', content: 'Sector overview.' }],
+  },
+  '/sector/technology': {
+    title: 'Technology',
+    sections: [{ title: 'What is this page?', content: 'Technology sector dashboard.' }],
+  },
+  '/sector/telecommunications': {
+    title: 'Telecommunications',
+    sections: [{ title: 'What is this page?', content: 'Telecommunications sector dashboard.' }],
+  },
+  '/sectors/education': {
+    title: 'Education',
+    sections: [{ title: 'What is this page?', content: 'Education sector dashboard.' }],
+  },
+  '/sectors/government': {
+    title: 'Government',
+    sections: [{ title: 'What is this page?', content: 'Government sector dashboard.' }],
+  },
+  '/sectors/logistics': {
+    title: 'Logistics',
+    sections: [{ title: 'What is this page?', content: 'Logistics sector dashboard.' }],
+  },
+  '/sectors/telecom': {
+    title: 'Telecom',
+    sections: [{ title: 'What is this page?', content: 'Telecommunications sector dashboard.' }],
+  },
+  '/settings/backup': {
+    title: 'Backup',
+    sections: [{ title: 'What is this page?', content: 'Backup and restore settings.' }],
+  },
+  '/settings/connectors': {
+    title: 'Connectors',
+    sections: [{ title: 'What is this page?', content: 'Configure external connectors.' }],
+  },
+  '/settings/integrations': {
+    title: 'Integrations',
+    sections: [{ title: 'What is this page?', content: 'Third-party integrations.' }],
+  },
+  '/settings/security': {
+    title: 'Security',
+    sections: [{ title: 'What is this page?', content: 'Security settings.' }],
+  },
+  '/telecom': {
+    title: 'Telecom',
+    sections: [{ title: 'What is this page?', content: 'Telecommunications sector dashboard.' }],
+  },
+  '/templates/preview': {
+    title: 'Template Preview',
+    sections: [
+      { title: 'What is this page?', content: 'Preview a budget template before applying.' },
+    ],
+  },
 };

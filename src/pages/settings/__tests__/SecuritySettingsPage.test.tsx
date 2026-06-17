@@ -40,6 +40,6 @@ describe('SecuritySettingsPage', () => {
 
   it('renders heading', () => {
     render(<SecuritySettingsPage />);
-    expect(screen.getByText(/Security/i)).toBeTruthy();
+    expect(screen.getAllByText(/security/i).length).toBeGreaterThan(0);
   });
 });

@@ -175,36 +175,38 @@ export default function VarianceDashboardPage() {
       key: 'budget',
       header: 'Budget',
       align: 'right',
-      render: (r) => formatCurrency(r.budget),
+      render: (_value, row) => formatCurrency(row.budget),
       sortable: true,
     },
     {
       key: 'actual',
       header: 'Actual',
       align: 'right',
-      render: (r) => formatCurrency(r.actual),
+      render: (_value, row) => formatCurrency(row.actual),
       sortable: true,
     },
     {
       key: 'variance',
       header: 'Variance',
       align: 'right',
-      render: (r) => (
-        <span className={r.variance >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {formatCurrency(r.variance)}
-        </span>
-      ),
+      render: (_value, row) => {
+        const v = Number(row.variance ?? 0);
+        return (
+          <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{formatCurrency(v)}</span>
+        );
+      },
       sortable: true,
     },
     {
       key: 'variancePct',
       header: 'Variance %',
       align: 'right',
-      render: (r) => (
-        <span className={r.variancePct >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {r.variancePct.toFixed(1)}%
-        </span>
-      ),
+      render: (_value, row) => {
+        const pct = Number(row.variancePct ?? 0);
+        return (
+          <span className={pct >= 0 ? 'text-green-400' : 'text-red-400'}>{pct.toFixed(1)}%</span>
+        );
+      },
       sortable: true,
     },
     { key: 'driver', header: 'Key Driver', sortable: true },

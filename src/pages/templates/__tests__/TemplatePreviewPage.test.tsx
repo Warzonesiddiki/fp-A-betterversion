@@ -20,9 +20,15 @@ vi.mock('@/config/templates', () => ({
       industry: 'general',
       description: 'Annual budget template for FP&A',
       kpis: [
-        { name: 'Revenue', category: 'income', formula: 'sum' },
-        { name: 'Expenses', category: 'cost', formula: 'sum' },
+        { label: 'Revenue', category: 'income' },
+        { label: 'Expenses', category: 'cost' },
       ],
+      columns: [
+        { label: 'Account', type: 'text' },
+        { label: 'Jan', type: 'number' },
+      ],
+      rows: [{ name: 'Revenue', values: [100000, 100000, 100000] }],
+      sections: ['Overview', 'Details'],
     },
     {
       id: 'forecast-quarterly',
@@ -30,7 +36,10 @@ vi.mock('@/config/templates', () => ({
       category: 'forecast',
       industry: 'general',
       description: 'Quarterly forecast template',
-      kpis: [{ name: 'Revenue', category: 'income', formula: 'sum' }],
+      kpis: [{ label: 'Revenue', category: 'income' }],
+      columns: [{ label: 'Account', type: 'text' }],
+      rows: [],
+      sections: [],
     },
   ],
   industryLabels: { general: 'General' },
@@ -60,27 +69,27 @@ describe('TemplatePreviewPage', () => {
 
   it('renders template name', () => {
     render(<TemplatePreviewPage />);
-    expect(screen.getByText(/annual budget template/i)).toBeDefined();
+    expect(screen.getAllByText(/annual budget template/i).length).toBeGreaterThan(0);
   });
 
   it('renders template description', () => {
     render(<TemplatePreviewPage />);
-    expect(screen.getByText(/annual budget template for fp&a/i)).toBeDefined();
+    expect(screen.getAllByText(/annual budget template for fp&a/i).length).toBeGreaterThan(0);
   });
 
   it('renders KPI list', () => {
     render(<TemplatePreviewPage />);
-    expect(screen.getByText(/revenue/i)).toBeDefined();
-    expect(screen.getByText(/expenses/i)).toBeDefined();
+    expect(screen.getAllByText(/revenue/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/expenses/i).length).toBeGreaterThan(0);
   });
 
   it('renders apply button', () => {
     render(<TemplatePreviewPage />);
-    expect(screen.getByText(/apply/i)).toBeDefined();
+    expect(screen.getAllByText(/apply template/i).length).toBeGreaterThan(0);
   });
 
-  it('renders back button', () => {
+  it('renders back button with aria-label', () => {
     render(<TemplatePreviewPage />);
-    expect(screen.getByText(/back/i)).toBeDefined();
+    expect(screen.getByLabelText(/back to templates/i)).toBeDefined();
   });
 });

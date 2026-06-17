@@ -84,6 +84,6 @@ describe('ForecastBuilderPage smoke test', () => {
   });
   it('displays heading', () => {
     renderPage();
-    expect(screen.getByText(/Forecast Builder/i)).toBeTruthy();
+    expect(screen.getAllByText(/Forecast Builder/i).length).toBeGreaterThan(0);
   });
 });
