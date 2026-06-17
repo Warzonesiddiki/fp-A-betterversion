@@ -76,6 +76,7 @@ export function GaugeChart({
       role={onClick ? 'button' : 'img'}
       tabIndex={onClick ? 0 : undefined}
       aria-label={`${label}: ${value}`}
+      data-testid="gauge-chart"
       onKeyDown={
         onClick
           ? (e) => {

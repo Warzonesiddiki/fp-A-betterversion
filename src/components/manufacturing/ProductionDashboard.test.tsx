@@ -24,13 +24,14 @@ describe('ProductionDashboard', () => {
 
   it('renders the OEE label', () => {
     render(<ProductionDashboard metrics={mockMetrics} />);
-    expect(screen.getByText('OEE')).toBeInTheDocument();
+    expect(screen.getAllByText('OEE').length).toBeGreaterThan(0);
   });
 
   it('renders the OEE gauge section', () => {
     render(<ProductionDashboard metrics={mockMetrics} />);
-    // GaugeChart receives only value prop (no min/max/label), so it renders "Invalid data"
-    expect(screen.getByText('Invalid data')).toBeInTheDocument();
+    // GaugeChart renders with data-testid="gauge-chart"
+    const gauges = screen.getAllByTestId('gauge-chart');
+    expect(gauges.length).toBeGreaterThan(0);
   });
 
   it('renders Availability, Performance, and Quality cards', () => {

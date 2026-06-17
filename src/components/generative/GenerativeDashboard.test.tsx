@@ -1,7 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import { GenerativeDashboard } from './GenerativeDashboard';
+
+vi.mock(import('@json-render/core'), async (importOriginal) => {
+  const actual = await importOriginal();
+  const passthrough = () => ({});
+  return {
+    ...actual,
+    defineRegistry: passthrough,
+    defineRenderers: passthrough,
+    defineCatalog: passthrough,
+  };
+});
 
 describe('GenerativeDashboard', () => {
   it('renders without crashing', () => {

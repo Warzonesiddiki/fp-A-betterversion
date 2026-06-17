@@ -2,8 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
 import AppLayout from '../AppLayout';
 
-vi.mock('../Sidebar', () => ({ default: () => <div data-testid="sidebar" /> }));
-vi.mock('../Navbar', () => ({ default: () => <div data-testid="navbar" /> }));
+vi.mock('../Sidebar', () => {
+  const SidebarMock = () => <div data-testid="sidebar" />;
+  return { default: SidebarMock, Sidebar: SidebarMock };
+});
+vi.mock('../Navbar', () => {
+  const NavbarMock = () => <div data-testid="navbar" />;
+  return { default: NavbarMock, Navbar: NavbarMock };
+});
 vi.mock('@/components/ui/ToastContainer', () => ({
   ToastContainer: () => <div data-testid="toast-container" />,
 }));

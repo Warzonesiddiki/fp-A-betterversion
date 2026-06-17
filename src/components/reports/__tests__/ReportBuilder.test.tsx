@@ -3,9 +3,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
 import { ReportBuilder } from '../ReportBuilder';
 
-vi.mock('lucide-react', () => {
+vi.mock(import('lucide-react'), async (importOriginal) => {
+  const actual = await importOriginal();
   const makeIcon = (n: string) => (p: any) => <span data-testid={`icon-${n}`} {...p} />;
   return {
+    ...actual,
     GripVertical: makeIcon('GripVertical'),
     Plus: makeIcon('Plus'),
     Trash2: makeIcon('Trash2'),
@@ -17,6 +19,7 @@ vi.mock('lucide-react', () => {
     Layers: makeIcon('Layers'),
     Columns: makeIcon('Columns'),
     Rows: makeIcon('Rows'),
+    Contrast: makeIcon('Contrast'),
   };
 });
 vi.mock('../ReportGrid', () => ({ ReportGrid: () => <div data-testid="report-grid" /> }));

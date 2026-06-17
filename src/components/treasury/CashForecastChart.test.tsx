@@ -9,12 +9,12 @@ vi.mock('@/components/ui/WaterfallChart', () => ({
   WaterfallChart: ({
     data,
   }: {
-    data: Array<{ name: string; value: number; isTotal?: boolean }>;
+    data: Array<{ label: string; value: number; isTotal?: boolean }>;
   }) => (
     <div data-testid="waterfall-chart">
       {data.map((item, i) => (
         <div key={i} data-testid={`waterfall-item-${i}`}>
-          {item.name}: {item.value}
+          {item.label}: {item.value}
           {item.isTotal ? ' (total)' : ''}
         </div>
       ))}

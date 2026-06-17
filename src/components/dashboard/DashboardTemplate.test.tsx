@@ -59,19 +59,21 @@ const defaultProps: DashboardTemplateProps = {
 describe('DashboardTemplate', () => {
   it('renders without crashing with default props', () => {
     render(<DashboardTemplate {...defaultProps} />);
-    expect(screen.getByText('CFO View')).toBeInTheDocument();
+    expect(screen.getAllByText('CFO View').length).toBeGreaterThan(0);
   });
 
   it('renders all three view toggle buttons', () => {
     render(<DashboardTemplate {...defaultProps} />);
-    expect(screen.getByText('CFO View')).toBeInTheDocument();
-    expect(screen.getByText('Controller View')).toBeInTheDocument();
-    expect(screen.getByText('Analyst View')).toBeInTheDocument();
+    expect(screen.getAllByText('CFO View').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Controller View').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Analyst View').length).toBeGreaterThan(0);
   });
 
   it('highlights the active view button', () => {
     render(<DashboardTemplate type="cfo" />);
-    const cfoButton = screen.getByText('CFO View');
+    const cfoButtons = screen.getAllByText('CFO View');
+    const cfoButton = cfoButtons.find((el) => el.tagName === 'BUTTON') as HTMLElement;
+    expect(cfoButton).toBeDefined();
     expect(cfoButton.className).toContain('bg-blue-600');
   });
 

@@ -3,13 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
 import { Sidebar } from '../Sidebar';
 
-vi.mock('lucide-react', () => {
+vi.mock(import('lucide-react'), async (importOriginal) => {
+  const actual = await importOriginal();
   const makeIcon = (name: string) => {
     const Icon = (props: any) => <span data-testid={`icon-${name}`} {...props} />;
     Icon.displayName = name;
     return Icon;
   };
   return {
+    ...actual,
     LayoutDashboard: makeIcon('LayoutDashboard'),
     FileBarChart: makeIcon('FileBarChart'),
     TrendingUp: makeIcon('TrendingUp'),

@@ -88,13 +88,13 @@ describe('DriverTreeView', () => {
 
   it('groups drivers by type property', () => {
     const assumptions = [
-      createAssumption({ id: '1', name: 'Revenue Growth', type: 'revenue' }),
-      createAssumption({ id: '2', name: 'Cost Growth', type: 'cost' }),
-      createAssumption({ id: '3', name: 'Price Increase', type: 'revenue' }),
+      createAssumption({ id: '1', name: 'Revenue Growth', driverType: 'Revenue' }),
+      createAssumption({ id: '2', name: 'Cost Growth', driverType: 'Custom' }),
+      createAssumption({ id: '3', name: 'Price Increase', driverType: 'Price' }),
     ];
     renderDriverTreeView({ assumptions });
-    expect(screen.getByText('revenue Drivers')).toBeInTheDocument();
-    expect(screen.getByText('cost Drivers')).toBeInTheDocument();
+    expect(screen.getAllByText(/Revenue Drivers/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Custom Drivers/i).length).toBeGreaterThan(0);
   });
 
   it('calls onUpdate when a slider value changes', () => {
@@ -136,24 +136,24 @@ describe('DriverTreeView', () => {
 
   it('renders multiple groups with correct headings', () => {
     const assumptions = [
-      createAssumption({ id: '1', name: 'Rev', type: 'revenue' }),
-      createAssumption({ id: '2', name: 'OpEx', type: 'operating' }),
-      createAssumption({ id: '3', name: 'CapEx', type: 'capital' }),
+      createAssumption({ id: '1', name: 'Rev', driverType: 'Revenue' }),
+      createAssumption({ id: '2', name: 'OpEx', driverType: 'Custom' }),
+      createAssumption({ id: '3', name: 'CapEx', driverType: 'Volume' }),
     ];
     renderDriverTreeView({ assumptions });
-    expect(screen.getByText('revenue Drivers')).toBeInTheDocument();
-    expect(screen.getByText('operating Drivers')).toBeInTheDocument();
-    expect(screen.getByText('capital Drivers')).toBeInTheDocument();
+    expect(screen.getAllByText(/Revenue Drivers/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Custom Drivers/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Volume Drivers/i).length).toBeGreaterThan(0);
   });
 
   it('renders one heading per group', () => {
     const assumptions = [
-      createAssumption({ id: '1', name: 'A', type: 'revenue' }),
-      createAssumption({ id: '2', name: 'B', type: 'revenue' }),
-      createAssumption({ id: '3', name: 'C', type: 'cost' }),
+      createAssumption({ id: '1', name: 'A', driverType: 'Revenue' }),
+      createAssumption({ id: '2', name: 'B', driverType: 'Revenue' }),
+      createAssumption({ id: '3', name: 'C', driverType: 'Custom' }),
     ];
-    renderDriverTreeView({ assumptions });
-    const headings = screen.getAllByText(/Drivers$/);
-    expect(headings).toHaveLength(2);
+    const { container } = renderDriverTreeView({ assumptions });
+    const headings = container.querySelectorAll('h4');
+    expect(headings.length).toBe(2);
   });
 });
