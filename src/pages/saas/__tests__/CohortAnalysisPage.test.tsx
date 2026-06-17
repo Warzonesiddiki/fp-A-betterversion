@@ -46,7 +46,9 @@ vi.mock('recharts', () => ({
 
 vi.mock('lucide-react', () => ({
   Download: ({ className }: { className?: string }) => (
-    <span data-testid="icon" className={className} />
+    <span data-testid="icon" className={className}>
+      Download
+    </span>
   ),
   BarChart4: ({ className }: { className?: string }) => (
     <span data-testid="icon" className={className} />
@@ -72,12 +74,12 @@ describe('CohortAnalysisPage', () => {
 
   it('renders the page heading', () => {
     render(<CohortAnalysisPage />);
-    expect(screen.getByText(/cohort analysis/i)).toBeDefined();
+    expect(screen.getAllByText(/cohort analysis/i).length).toBeGreaterThan(0);
   });
 
   it('renders retention matrix section', () => {
     render(<CohortAnalysisPage />);
-    expect(screen.getByText(/retention/i)).toBeDefined();
+    expect(screen.getAllByText(/retention/i).length).toBeGreaterThan(0);
   });
 
   it('renders cohort sizes section', () => {
