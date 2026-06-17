@@ -368,12 +368,12 @@ export class SecurityHeaders {
       return {
         csp: {
           ...baseCsp,
-          scriptSrc: ['self', 'unsafe-inline'], // NOTE: nonce preferred; review for v1.1
-          styleSrc: ['self', 'unsafe-inline'],
-          imgSrc: ['self', 'data:', 'https:'],
-          fontSrc: ['self', 'data:'],
-          connectSrc: ['self', 'wss:'],
-          workerSrc: ['self'],
+          scriptSrc: ["'self'", "'unsafe-inline'"], // NOTE: nonce preferred; review for v1.1
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          fontSrc: ["'self'", 'data:'],
+          connectSrc: ["'self'", 'wss:'],
+          workerSrc: ["'self'"],
         },
         hsts: {
           enabled: true,
@@ -395,11 +395,11 @@ export class SecurityHeaders {
     return {
       csp: {
         ...baseCsp,
-        scriptSrc: ['self', 'unsafe-inline', 'unsafe-eval'],
-        styleSrc: ['self', 'unsafe-inline'],
-        imgSrc: ['self', 'data:', 'https:', 'http:'],
-        connectSrc: ['self', 'wss:', 'ws:', 'http:', 'https:'],
-        workerSrc: ['self', 'blob:'],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:', 'http:'],
+        connectSrc: ["'self'", 'wss:', 'ws:', 'http:', 'https:'],
+        workerSrc: ["'self'", 'blob:'],
       },
       hsts: { enabled: false, maxAge: 0, includeSubDomains: false, preload: false },
       frameOptions: 'SAMEORIGIN',
@@ -547,9 +547,19 @@ export class SecurityHeaders {
    */
   public buildCspString(csp: CspDirectives): string {
     const parts: string[] = [];
+    const quoteIfKeyword = (v: string): string => {
+      // CSP3 keywords that must be quoted: 'self', 'none', 'unsafe-inline',
+      // 'unsafe-eval', 'strict-dynamic', 'report-sample', 'wasm-unsafe-eval',
+      // 'inline-speculation-rules', plus scheme-source 'https:' / 'data:' / etc.
+      if (/^[a-z-]+$/i.test(v) || /^[a-z]+:$/i.test(v)) {
+        return `'${v}'`;
+      }
+      return v;
+    };
     const pushDirective = (name: string, values: string[]): void => {
       if (values && values.length > 0) {
-        parts.push(`${name} ${values.join(' ')}`);
+        const formatted = values.map(quoteIfKeyword).join(' ');
+        parts.push(`${name} ${formatted}`);
       }
     };
     pushDirective('default-src', csp.defaultSrc ?? []);
