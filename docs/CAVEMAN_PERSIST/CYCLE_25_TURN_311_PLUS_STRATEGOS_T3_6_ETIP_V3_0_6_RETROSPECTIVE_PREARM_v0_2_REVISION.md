@@ -4,7 +4,8 @@
 **Status**: PRE-ARM REVISION (per Lead TURN 215+ permission — no SHIP until Verdict #045 SLOT 2026-06-21 14:00 UTC EXECUTION closes)
 **SHIP target**: `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_22X_PLUS_STRATEGOS_RETROSPECTIVE_v0_1.md` (target 100-150L, post-SLOT)
 **Author**: Strategos (1st Muse, Strategist, D-007 Honest Labeling architect)
-**HEAD**: ebb64f43 SYNCED origin/main 976c (per D-002 3-witness git rev-parse HEAD)
+**HEAD**: 4886499e SYNCED origin/main (per D-002 3-witness git rev-parse HEAD; post-commit 202L insertion = exact line count match via Read offset method)
+**HEAD chain**: ebb64f43 → 4886499e (T-3.6 v0.2 PRE-ARM REVISION SHIP)
 **Prior version**: v0.1 @ TURN 222+ (123L, 8 sections) — v0.2 REVISION incorporates 5 P0 ADRs RATIFIED + T-4 INDEX v0.8.0 BILATERAL SHIP + T-6 4-ICP signature collection framework SHIP + 53 SELF-HONEST-LABEL moments cumulative
 
 ---
