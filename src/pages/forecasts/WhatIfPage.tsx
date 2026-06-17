@@ -466,19 +466,35 @@ export default function WhatIfPage() {
                   </div>
                 )}
 
-                <div className="space-y-1 max-h-40 overflow-y-auto">
-                  {comparison.differences.slice(0, 15).map((d, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between text-sm py-1 border-b last:border-0"
-                    >
-                      <span className="truncate">{d.coords.key ?? d.measure}</span>
-                      <span className={d.delta >= 0 ? 'text-green-600' : 'text-red-600'}>
-                        {formatCurrency(d.delta)} ({formatPercent(d.percentChange)})
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <table className="w-full text-sm" aria-label="Scenario comparison differences">
+                  <caption className="sr-only">
+                    Top differences between the active scenario and the selected comparison target
+                  </caption>
+                  <thead>
+                    <tr className="border-b border-slate-700">
+                      <th scope="col" className="text-left font-medium text-slate-300 py-1">
+                        Item
+                      </th>
+                      <th scope="col" className="text-right font-medium text-slate-300 py-1">
+                        Delta
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {comparison.differences.slice(0, 15).map((d, i) => (
+                      <tr key={i} className="border-b border-slate-800 last:border-0">
+                        <th scope="row" className="font-normal py-1 text-left truncate">
+                          {d.coords.key ?? d.measure}
+                        </th>
+                        <td
+                          className={`py-1 text-right ${d.delta >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                        >
+                          {formatCurrency(d.delta)} ({formatPercent(d.percentChange)})
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </CardContent>

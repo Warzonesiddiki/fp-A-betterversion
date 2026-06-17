@@ -161,16 +161,36 @@ export default function HelpPage() {
       <Card>
         <CardContent className="p-4">
           <h2 className="font-semibold mb-3">Keyboard Shortcuts</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-sm">
-            {shortcuts.map((s) => (
-              <div key={s.key} className="flex items-center gap-2 py-0.5">
-                <kbd className="px-2 py-0.5 bg-slate-800 rounded text-xs text-slate-200 min-w-[80px] text-center">
-                  {s.key}
-                </kbd>
-                <span className="text-slate-400">{s.desc}</span>
-              </div>
-            ))}
-          </div>
+          <table className="w-full text-sm" aria-label="Keyboard shortcuts reference">
+            <caption className="sr-only">
+              List of keyboard shortcuts available in FinPlan Pro
+            </caption>
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                  className="text-left font-medium text-slate-300 py-1 pr-2 w-[120px]"
+                >
+                  Shortcut
+                </th>
+                <th scope="col" className="text-left font-medium text-slate-300 py-1">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {shortcuts.map((s) => (
+                <tr key={s.key} className="border-b border-slate-800 last:border-0">
+                  <th scope="row" className="font-normal py-0.5 pr-2 align-top">
+                    <kbd className="px-2 py-0.5 bg-slate-800 rounded text-xs text-slate-200 min-w-[80px] text-center inline-block">
+                      {s.key}
+                    </kbd>
+                  </th>
+                  <td className="py-0.5 text-slate-400 align-top">{s.desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </CardContent>
       </Card>
 

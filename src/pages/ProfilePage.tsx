@@ -182,22 +182,37 @@ export default function ProfilePage() {
           <CardTitle>Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {activityLog.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between py-2 border-b border-slate-800 last:border-0"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-2 h-2 rounded-full ${item.type === 'edit' ? 'bg-blue-400' : item.type === 'export' ? 'bg-green-400' : item.type === 'import' ? 'bg-yellow-400' : item.type === 'create' ? 'bg-purple-400' : 'bg-cyan-400'}`}
-                  />
-                  <span className="text-sm">{item.action}</span>
-                </div>
-                <span className="text-xs text-slate-400">{item.time}</span>
-              </div>
-            ))}
-          </div>
+          <table className="w-full text-sm" aria-label="Recent user activity log">
+            <caption className="sr-only">
+              Recent activity entries with action, time, and type
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col" className="text-left font-medium text-slate-300 py-1">
+                  Action
+                </th>
+                <th scope="col" className="text-right font-medium text-slate-300 py-1 w-[120px]">
+                  Time
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {activityLog.map((item, i) => (
+                <tr key={i} className="border-b border-slate-800 last:border-0">
+                  <th scope="row" className="font-normal py-2 text-left">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-2 h-2 rounded-full ${item.type === 'edit' ? 'bg-blue-400' : item.type === 'export' ? 'bg-green-400' : item.type === 'import' ? 'bg-yellow-400' : item.type === 'create' ? 'bg-purple-400' : 'bg-cyan-400'}`}
+                        aria-hidden="true"
+                      />
+                      <span>{item.action}</span>
+                    </div>
+                  </th>
+                  <td className="py-2 text-xs text-slate-400 text-right">{item.time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </CardContent>
       </Card>
 
