@@ -2,6 +2,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { wrapChunkedStorage, type StorageMetadata } from './chunkedStorage';
 
+// Mock the worker pool so tests don't depend on a real worker.
+vi.mock('../workers/worker-pool', () => ({
+  createStoragePool: () => ({
+    run: vi.fn(async (request: { type: string; payload: unknown }) => {
+      if (request.type === 'parse') {
+        const chunks = request.payload as Array<{ value: string }>;
+        const joined = chunks.map((c) => c.value).join('');
+        return { payload: JSON.parse(joined) };
+      }
+      if (request.type === 'stringify') {
+        return { payload: JSON.stringify(request.payload) };
+      }
+      if (request.type === 'chunk') {
+        // payload: [data, chunkSize]
+        const [data, chunkSize] = request.payload as [unknown, number];
+        const str = JSON.stringify(data);
+        const chunks: Array<{ value: string; isLast: boolean }> = [];
+        for (let i = 0; i < str.length; i += chunkSize) {
+          chunks.push({ value: str.slice(i, i + chunkSize), isLast: i + chunkSize >= str.length });
+        }
+        return { payload: chunks, totalSize: str.length, chunkCount: chunks.length };
+      }
+      return { payload: request.payload };
+    }),
+  }),
+}));
+
 function createMockStorage() {
   const store = new Map<string, unknown>();
   return {

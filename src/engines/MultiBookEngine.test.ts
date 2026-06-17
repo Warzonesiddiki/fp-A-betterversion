@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { MultiBookEngine } from './MultiBookEngine';
 import type { AccountingBook, BookEntry } from './MultiBookEngine';
 
@@ -28,6 +28,12 @@ function postTestEntry(
 }
 
 describe('MultiBookEngine', () => {
+  beforeEach(() => {
+    // Reset static state between tests
+    (MultiBookEngine as unknown as { books: Map<string, unknown> }).books?.clear();
+    (MultiBookEngine as unknown as { entries: Map<string, unknown> }).entries?.clear();
+  });
+
   describe('createBook', () => {
     it('creates a new accounting book', () => {
       const book = createTestBook();
