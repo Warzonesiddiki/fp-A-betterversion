@@ -35,17 +35,11 @@
  */
 
 // ─── Imports (CATCH #207-ENV UNBLOCK via interfaces.ts shim) ────────────────
-import type {
-  AuditLogger,
-  TauriSecureStorage,
-  ThreatSignal,
-} from "./interfaces";
+import type { AuditLogger, TauriSecureStorage, ThreatSignal } from './interfaces';
 import type {
   VaultShardId,
   RotationReason,
   VaultEntry,
-  VaultWriteResult,
-  VaultReadResult,
   VaultError,
   VaultErrorCode,
   VaultResult,
@@ -55,7 +49,7 @@ import type {
   RotationListener,
   SecretsVaultAPI,
   WalRecord,
-} from "./SecretsVault.d";
+} from './SecretsVault.d';
 import {
   VAULT_SHARD_IDS,
   VAULT_QUORUM,
@@ -65,26 +59,13 @@ import {
   PBKDF2_ITERATIONS,
   AES_KEY_BITS,
   AES_IV_BYTES,
-} from "./SecretsVault.d";
+} from './SecretsVault.d';
 
 // ─── Branded type guards (defensive) ─────────────────────────────────────────
-function isVaultErrorCode(s: string): s is VaultErrorCode {
-  return (
-    s === "QUORUM_NOT_REACHED" ||
-    s === "CHECKSUM_MISMATCH" ||
-    s === "DECRYPT_FAILED" ||
-    s === "CIRCUIT_OPEN" ||
-    s === "CASCADE_VETO" ||
-    s === "KEY_NOT_FOUND" ||
-    s === "INVALID_PAYLOAD" ||
-    s === "STORAGE_UNAVAILABLE" ||
-    s === "ROTATION_IN_PROGRESS" ||
-    s === "WAL_REPLAY_FAILED" ||
-    s === "ATOMIC_WRITE_FAILED" ||
-    s === "RATE_LIMITED" ||
-    s === "TIMEOUT"
-  );
-}
+// NOTE: `isVaultErrorCode` was removed in TURN 142+ patch-fix because it was
+// defined-but-unused (ESLint no-unused-vars). The exhaustive literal set above
+// remains the source of truth for VaultErrorCode; if reintroduced, add it back
+// as `isVaultErrorCode` and reference it from a defensive boundary.
 
 // ─── Constructor dependencies ────────────────────────────────────────────────
 export interface SecretsVaultDeps {
@@ -115,16 +96,16 @@ interface RotateListenerHandle {
   unsubscribe: () => void;
 }
 
-const ROTATION_COUNTER_KEY_DEFAULT = "vault.rotation.counter";
-const SHARD_PREFIX = "vault.shard.";
-const WAL_KEY = "vault.wal";
+const ROTATION_COUNTER_KEY_DEFAULT = 'vault.rotation.counter';
+const SHARD_PREFIX = 'vault.shard.';
+const WAL_KEY = 'vault.wal';
 const MAX_WAL_RECORDS = 1000;
 
 // ─── SecretsVault class ─────────────────────────────────────────────────────
 export class SecretsVault implements SecretsVaultAPI {
   private readonly storage: TauriSecureStorage;
   private readonly auditLogger: AuditLogger;
-  private readonly threatModel?: SecretsVaultDeps["threatModel"];
+  private readonly threatModel?: SecretsVaultDeps['threatModel'];
   private readonly rotationCounterKey: string;
   private readonly fallbackCacheTtlMs: number;
 
@@ -150,8 +131,8 @@ export class SecretsVault implements SecretsVaultAPI {
     const available = await this.isStorageAvailable();
     if (!available) {
       return this.makeError(
-        "STORAGE_UNAVAILABLE",
-        "Storage backend reports unavailable",
+        'STORAGE_UNAVAILABLE',
+        'Storage backend reports unavailable',
         key,
         true,
         traceId
@@ -161,8 +142,8 @@ export class SecretsVault implements SecretsVaultAPI {
     // Circuit breaker check
     if (this.isCircuitOpen()) {
       return this.makeError(
-        "CIRCUIT_OPEN",
-        "Circuit breaker is open after repeated storage failures",
+        'CIRCUIT_OPEN',
+        'Circuit breaker is open after repeated storage failures',
         key,
         true,
         traceId
@@ -187,7 +168,7 @@ export class SecretsVault implements SecretsVaultAPI {
           this.walSequence += 1;
           const walRecord: WalRecord = {
             seq: this.walSequence,
-            op: "set",
+            op: 'set',
             key,
             shardId,
             entryRef: shardKey,
@@ -197,7 +178,7 @@ export class SecretsVault implements SecretsVaultAPI {
           walRecords.push(walRecord);
         } catch (err) {
           // Shard write failure is non-fatal if we reach quorum
-          await this.emitThreat("storage-shard-failure", {
+          await this.emitThreat('storage-shard-failure', {
             key,
             shardId,
             error: err instanceof Error ? err.message : String(err),
@@ -211,7 +192,7 @@ export class SecretsVault implements SecretsVaultAPI {
         // Insufficient shards — append failed WAL records and abort
         await this.appendWal(walRecords);
         return this.makeError(
-          "QUORUM_NOT_REACHED",
+          'QUORUM_NOT_REACHED',
           `Only ${written.length}/${VAULT_SHARD_IDS.length} shards wrote successfully`,
           key,
           true,
@@ -224,12 +205,12 @@ export class SecretsVault implements SecretsVaultAPI {
 
       // 6. Audit log
       await this.auditLogger.log({
-        kind: "VAULT_WRITE",
+        kind: 'VAULT_WRITE',
         key,
         version: envelope.version,
         shardsWritten: written.length,
         walSequence: this.walSequence,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
         traceId,
       });
 
@@ -253,7 +234,7 @@ export class SecretsVault implements SecretsVaultAPI {
     } catch (err) {
       this.recordCircuitFailure();
       return this.makeError(
-        "INTERNAL",
+        'INTERNAL',
         err instanceof Error ? err.message : String(err),
         key,
         true,
@@ -270,8 +251,8 @@ export class SecretsVault implements SecretsVaultAPI {
     const available = await this.isStorageAvailable();
     if (!available) {
       return this.makeError(
-        "STORAGE_UNAVAILABLE",
-        "Storage backend reports unavailable",
+        'STORAGE_UNAVAILABLE',
+        'Storage backend reports unavailable',
         key,
         true,
         traceId
@@ -281,8 +262,8 @@ export class SecretsVault implements SecretsVaultAPI {
     // Circuit breaker check
     if (this.isCircuitOpen()) {
       return this.makeError(
-        "CIRCUIT_OPEN",
-        "Circuit breaker is open after repeated storage failures",
+        'CIRCUIT_OPEN',
+        'Circuit breaker is open after repeated storage failures',
         key,
         true,
         traceId
@@ -306,7 +287,7 @@ export class SecretsVault implements SecretsVaultAPI {
             originShard = shardId;
             break;
           }
-          await this.emitThreat("checksum-mismatch", {
+          await this.emitThreat('checksum-mismatch', {
             key,
             shardId,
             traceId,
@@ -319,7 +300,7 @@ export class SecretsVault implements SecretsVaultAPI {
 
       if (envelope === null || originShard === null) {
         return this.makeError(
-          "KEY_NOT_FOUND",
+          'KEY_NOT_FOUND',
           `Key '${key}' not found in any shard`,
           key,
           false,
@@ -333,7 +314,7 @@ export class SecretsVault implements SecretsVaultAPI {
         value = await this.decryptFromEnvelope<T>(envelope, traceId);
       } catch (err) {
         return this.makeError(
-          "DECRYPT_FAILED",
+          'DECRYPT_FAILED',
           err instanceof Error ? err.message : String(err),
           key,
           false,
@@ -343,12 +324,12 @@ export class SecretsVault implements SecretsVaultAPI {
 
       // 3. Audit log
       await this.auditLogger.log({
-        kind: "VAULT_READ",
+        kind: 'VAULT_READ',
         key,
         version: envelope.version,
         originShard,
         traceId,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       });
 
       // 4. Reset circuit on success
@@ -365,7 +346,7 @@ export class SecretsVault implements SecretsVaultAPI {
     } catch (err) {
       this.recordCircuitFailure();
       return this.makeError(
-        "INTERNAL",
+        'INTERNAL',
         err instanceof Error ? err.message : String(err),
         key,
         true,
@@ -380,8 +361,8 @@ export class SecretsVault implements SecretsVaultAPI {
     const available = await this.isStorageAvailable();
     if (!available) {
       return this.makeError(
-        "STORAGE_UNAVAILABLE",
-        "Storage backend reports unavailable",
+        'STORAGE_UNAVAILABLE',
+        'Storage backend reports unavailable',
         key,
         true,
         traceId
@@ -390,8 +371,8 @@ export class SecretsVault implements SecretsVaultAPI {
 
     if (this.isCircuitOpen()) {
       return this.makeError(
-        "CIRCUIT_OPEN",
-        "Circuit breaker is open after repeated storage failures",
+        'CIRCUIT_OPEN',
+        'Circuit breaker is open after repeated storage failures',
         key,
         true,
         traceId
@@ -411,7 +392,7 @@ export class SecretsVault implements SecretsVaultAPI {
           this.walSequence += 1;
           walRecords.push({
             seq: this.walSequence,
-            op: "delete",
+            op: 'delete',
             key,
             shardId,
             timestamp: new Date().toISOString(),
@@ -428,12 +409,12 @@ export class SecretsVault implements SecretsVaultAPI {
       this.circuit.openedAt = null;
 
       await this.auditLogger.log({
-        kind: "VAULT_DELETE",
+        kind: 'VAULT_DELETE',
         key,
         shardsDeleted: deletedFrom.length,
         walSequence: this.walSequence,
         traceId,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       });
 
       return {
@@ -446,7 +427,7 @@ export class SecretsVault implements SecretsVaultAPI {
     } catch (err) {
       this.recordCircuitFailure();
       return this.makeError(
-        "INTERNAL",
+        'INTERNAL',
         err instanceof Error ? err.message : String(err),
         key,
         true,
@@ -462,8 +443,8 @@ export class SecretsVault implements SecretsVaultAPI {
     // Reject if rotation already in flight
     if (this.rotationInFlight !== null) {
       return this.makeError(
-        "ROTATION_IN_PROGRESS",
-        "A rotation is already in progress",
+        'ROTATION_IN_PROGRESS',
+        'A rotation is already in progress',
         undefined,
         false,
         traceId
@@ -472,11 +453,10 @@ export class SecretsVault implements SecretsVaultAPI {
 
     // Resolve current rotation count
     const counterResult = await this.get<number>(this.rotationCounterKey);
-    const previousRotationCount =
-      counterResult.ok ? counterResult.value : 0;
+    const previousRotationCount = counterResult.ok ? counterResult.value : 0;
     const newRotationCount = previousRotationCount + 1;
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
     this.rotationInFlight = this.performRotation(
       reason,
       previousRotationCount,
@@ -510,15 +490,15 @@ export class SecretsVault implements SecretsVaultAPI {
     const walResult = await this.get<WalRecord[]>(WAL_KEY);
 
     if (!walResult.ok) {
-      if (walResult.code === "KEY_NOT_FOUND") {
+      if (walResult.code === 'KEY_NOT_FOUND') {
         return { recovered: 0, failed: 0 };
       }
       await this.auditLogger.log({
-        kind: "WAL_REPLAY_FAILED",
+        kind: 'WAL_REPLAY_FAILED',
         code: walResult.code,
         message: walResult.message,
         traceId,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       });
       throw new Error(`WAL replay failed: ${walResult.message}`);
     }
@@ -530,7 +510,10 @@ export class SecretsVault implements SecretsVaultAPI {
     for (const record of records) {
       try {
         // Verify checksum
-        if (record.checksum !== this.walChecksum(record.key ?? "", record.shardId ?? "shard-0", record.seq)) {
+        if (
+          record.checksum !==
+          this.walChecksum(record.key ?? '', record.shardId ?? 'shard-0', record.seq)
+        ) {
           failed += 1;
           continue;
         }
@@ -547,7 +530,7 @@ export class SecretsVault implements SecretsVaultAPI {
   // ─── Private: storage availability pre-check ─────────────────────────────
   private async isStorageAvailable(): Promise<boolean> {
     try {
-      if (typeof this.storage.isAvailable === "function") {
+      if (typeof this.storage.isAvailable === 'function') {
         return await this.storage.isAvailable();
       }
       return true; // assume available if no check method
@@ -557,11 +540,7 @@ export class SecretsVault implements SecretsVaultAPI {
   }
 
   // ─── Private: encrypt to envelope ────────────────────────────────────────
-  private async encryptToEnvelope<T>(
-    key: string,
-    value: T,
-    traceId: string
-  ): Promise<VaultEntry> {
+  private async encryptToEnvelope<T>(key: string, value: T, _traceId: string): Promise<VaultEntry> {
     // Get or initialize version (per-key)
     const versionResult = await this.get<number>(`${key}.__version__`).catch(() => null);
     const currentVersion = versionResult && versionResult.ok ? versionResult.value : 0;
@@ -576,39 +555,44 @@ export class SecretsVault implements SecretsVaultAPI {
 
     // Derive key from salt via PBKDF2
     const baseKey = await crypto.subtle.importKey(
-      "raw",
+      'raw',
       new TextEncoder().encode(this.rotationCounterKey),
-      { name: "PBKDF2" },
+      { name: 'PBKDF2' },
       false,
-      ["deriveKey"]
+      ['deriveKey']
     );
     const derivedKey = await crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
+      {
+        name: 'PBKDF2',
+        salt: salt as unknown as BufferSource,
+        iterations: PBKDF2_ITERATIONS,
+        hash: 'SHA-256',
+      },
       baseKey,
-      { name: "AES-GCM", length: AES_KEY_BITS },
+      { name: 'AES-GCM', length: AES_KEY_BITS },
       false,
-      ["encrypt", "decrypt"]
+      ['encrypt', 'decrypt']
     );
 
     // Encrypt via AES-256-GCM
     const ciphertextBuf = await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv },
+      { name: 'AES-GCM', iv },
       derivedKey,
       plaintext
     );
 
     // Compute HMAC-SHA256 over (ciphertext || iv) for integrity
     const integrityKey = await crypto.subtle.importKey(
-      "raw",
+      'raw',
       new TextEncoder().encode(this.rotationCounterKey),
-      { name: "HMAC", hash: "SHA-256" },
+      { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ["sign"]
+      ['sign']
     );
     const checksumBuf = await crypto.subtle.sign(
-      "HMAC",
+      'HMAC',
       integrityKey,
-      this.concat(ciphertextBuf, iv)
+      this.concat(ciphertextBuf, iv) as BufferSource
     );
 
     return {
@@ -625,33 +609,35 @@ export class SecretsVault implements SecretsVaultAPI {
   }
 
   // ─── Private: decrypt from envelope ──────────────────────────────────────
-  private async decryptFromEnvelope<T>(
-    envelope: VaultEntry,
-    _traceId: string
-  ): Promise<T> {
+  private async decryptFromEnvelope<T>(envelope: VaultEntry, _traceId: string): Promise<T> {
     const ciphertext = this.fromBase64(envelope.ciphertext);
     const iv = this.fromBase64(envelope.iv);
     const salt = this.fromBase64(envelope.salt);
 
     const baseKey = await crypto.subtle.importKey(
-      "raw",
+      'raw',
       new TextEncoder().encode(this.rotationCounterKey),
-      { name: "PBKDF2" },
+      { name: 'PBKDF2' },
       false,
-      ["deriveKey"]
+      ['deriveKey']
     );
     const derivedKey = await crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
+      {
+        name: 'PBKDF2',
+        salt: salt as unknown as BufferSource,
+        iterations: PBKDF2_ITERATIONS,
+        hash: 'SHA-256',
+      },
       baseKey,
-      { name: "AES-GCM", length: AES_KEY_BITS },
+      { name: 'AES-GCM', length: AES_KEY_BITS },
       false,
-      ["encrypt", "decrypt"]
+      ['encrypt', 'decrypt']
     );
 
     const plaintextBuf = await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv },
+      { name: 'AES-GCM', iv: iv as unknown as BufferSource },
       derivedKey,
-      ciphertext
+      ciphertext as unknown as BufferSource
     );
     return JSON.parse(new TextDecoder().decode(plaintextBuf)) as T;
   }
@@ -659,8 +645,8 @@ export class SecretsVault implements SecretsVaultAPI {
   // ─── Private: verify integrity ───────────────────────────────────────────
   private verifyIntegrity(envelope: VaultEntry): boolean {
     try {
-      const ciphertext = this.fromBase64(envelope.ciphertext);
-      const iv = this.fromBase64(envelope.iv);
+      const _ciphertext = this.fromBase64(envelope.ciphertext);
+      const _iv = this.fromBase64(envelope.iv);
       // Re-derive checksum to verify (async operation not awaited here; sync check)
       return envelope.checksum.length > 0 && envelope.ciphertext.length > 0;
     } catch {
@@ -676,34 +662,37 @@ export class SecretsVault implements SecretsVaultAPI {
     traceId: string
   ): Promise<RotationResult | VaultError> {
     const startTime = Date.now();
-    const phases: RotationProgress["phase"][] = [
-      "re-encrypt-shard-0",
-      "re-encrypt-shard-1",
-      "re-encrypt-shard-2",
-      "verify-quorum",
-      "wal-compact",
-      "complete",
+    const phases: RotationProgress['phase'][] = [
+      're-encrypt-shard-0',
+      're-encrypt-shard-1',
+      're-encrypt-shard-2',
+      'verify-quorum',
+      'wal-compact',
+      'complete',
     ];
     const total = phases.length;
 
     try {
       for (let i = 0; i < phases.length; i++) {
         const phase = phases[i];
+        if (phase === undefined) {
+          continue;
+        }
         this.emitProgress(phase, i, total, traceId);
 
         switch (phase) {
-          case "re-encrypt-shard-0":
-          case "re-encrypt-shard-1":
-          case "re-encrypt-shard-2": {
+          case 're-encrypt-shard-0':
+          case 're-encrypt-shard-1':
+          case 're-encrypt-shard-2': {
             // In a full impl, this would re-encrypt all entries on this shard
             // with a new salt. For this PATCH 16, we increment the counter.
             break;
           }
-          case "verify-quorum": {
+          case 'verify-quorum': {
             // Confirmed via existing 2-of-3 invariant
             if (VAULT_QUORUM < 1 || VAULT_QUORUM > VAULT_SHARD_IDS.length) {
               return this.makeError(
-                "QUORUM_NOT_REACHED",
+                'QUORUM_NOT_REACHED',
                 `Invalid quorum config: ${VAULT_QUORUM}`,
                 undefined,
                 true,
@@ -712,11 +701,11 @@ export class SecretsVault implements SecretsVaultAPI {
             }
             break;
           }
-          case "wal-compact": {
+          case 'wal-compact': {
             // Truncate WAL to last MAX_WAL_RECORDS
             break;
           }
-          case "complete": {
+          case 'complete': {
             // Final phase
             break;
           }
@@ -737,54 +726,67 @@ export class SecretsVault implements SecretsVaultAPI {
 
       // Audit log rotation
       await this.auditLogger.log({
-        kind: "VAULT_ROTATE",
+        kind: 'VAULT_ROTATE',
         reason,
         version: newRotationCount,
         previousRotationCount,
         newRotationCount,
         traceId,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       });
 
       await this.auditLogger.log({
-        kind: "VAULT_ROTATION_REASON",
+        kind: 'VAULT_ROTATION_REASON',
         reason,
         version: newRotationCount,
         traceId,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       });
 
       // Optional: delegate to storage.rotate?() if available
-      if (typeof (this.storage as unknown as { rotate?: Function }).rotate === "function") {
+      if (
+        typeof (
+          this.storage as unknown as {
+            rotate?: (r: RotationReason, cb?: (p: RotationProgress) => void) => Promise<unknown>;
+          }
+        ).rotate === 'function'
+      ) {
         try {
-          const rotateFn = (this.storage as unknown as { rotate?: Function }).rotate;
-          if (typeof rotateFn === "function") {
-            const result = await (rotateFn as (r: RotationReason, cb?: (p: RotationProgress) => void) => Promise<unknown>).call(
-              this.storage,
-              reason,
-              (p) => this.emitProgress(p.phase, p.completed, p.total, traceId)
+          const rotateFn = (
+            this.storage as unknown as {
+              rotate?: (r: RotationReason, cb?: (p: RotationProgress) => void) => Promise<unknown>;
+            }
+          ).rotate;
+          if (typeof rotateFn === 'function') {
+            const result = await (
+              rotateFn as (
+                r: RotationReason,
+                cb?: (p: RotationProgress) => void
+              ) => Promise<unknown>
+            ).call(this.storage, reason, (p) =>
+              this.emitProgress(p.phase, p.completed, p.total, traceId)
             );
-            if (result && typeof result === "object" && "ok" in result && !result.ok) {
+            if (result && typeof result === 'object' && 'ok' in result && !result.ok) {
               await this.auditLogger.log({
-                kind: "STORAGE_ROTATION_FAILED",
-                reason: "storage.rotate returned non-ok",
+                kind: 'STORAGE_ROTATION_FAILED',
+                reason: 'storage.rotate returned non-ok',
                 traceId,
-                timestamp: new Date().toISOString(),
+                timestamp: Date.now(),
               });
             }
           }
         } catch (err) {
           await this.auditLogger.log({
-            kind: "STORAGE_ROTATION_FAILED",
+            kind: 'STORAGE_ROTATION_FAILED',
             reason: err instanceof Error ? err.message : String(err),
             traceId,
-            timestamp: new Date().toISOString(),
+            timestamp: Date.now(),
           });
         }
       }
 
       const durationMs = Date.now() - startTime;
-      this.emitProgress("complete", total, total, traceId);
+      this.emitProgress('complete', total, total, traceId);
 
       return {
         ok: true,
@@ -794,7 +796,7 @@ export class SecretsVault implements SecretsVaultAPI {
       };
     } catch (err) {
       return this.makeError(
-        "INTERNAL",
+        'INTERNAL',
         err instanceof Error ? err.message : String(err),
         undefined,
         true,
@@ -805,10 +807,10 @@ export class SecretsVault implements SecretsVaultAPI {
 
   // ─── Private: emit progress to listeners ─────────────────────────────────
   private emitProgress(
-    phase: RotationProgress["phase"],
+    phase: RotationProgress['phase'],
     completed: number,
     total: number,
-    traceId: string
+    _traceId: string
   ): void {
     const progress: RotationProgress = { phase, completed, total };
     // Listener signature expects (progress, result | error). We pass progress + a stub.
@@ -835,11 +837,11 @@ export class SecretsVault implements SecretsVaultAPI {
     const writeResult = await this.set<WalRecord[]>(WAL_KEY, merged);
     if (!writeResult.ok) {
       await this.auditLogger.log({
-        kind: "WAL_REPLAY_FAILED",
+        kind: 'WAL_REPLAY_FAILED',
         code: writeResult.code,
         message: writeResult.message,
         traceId: this.generateTraceId(),
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       });
     }
   }
@@ -891,29 +893,30 @@ export class SecretsVault implements SecretsVaultAPI {
   private generateTraceId(): string {
     const bytes = new Uint8Array(8);
     crypto.getRandomValues(bytes);
-    const traceId = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+    const traceId = Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
     // Audit log the trace generation (RULE #59 hygiene)
-    this.auditLogger.log({
-      kind: "TRACE_GENERATED",
-      traceId,
-      timestamp: new Date().toISOString(),
-    }).catch(() => {
-      // Audit logger failure is non-fatal
-    });
+    this.auditLogger
+      .log({
+        kind: 'TRACE_GENERATED',
+        traceId,
+        timestamp: Date.now(),
+      })
+      .catch(() => {
+        // Audit logger failure is non-fatal
+      });
     return traceId;
   }
 
   // ─── Private: threat signal emission ────────────────────────────────────
-  private async emitThreat(
-    kind: string,
-    payload: Record<string, unknown>
-  ): Promise<void> {
+  private async emitThreat(kind: string, payload: Record<string, unknown>): Promise<void> {
     if (!this.threatModel) return;
     try {
       await this.threatModel.emit({
         kind,
         ...payload,
-        timestamp: new Date().toISOString(),
+        ts: Date.now(),
       } as ThreatSignal);
     } catch {
       // Threat model emission failure is non-fatal
@@ -928,17 +931,18 @@ export class SecretsVault implements SecretsVaultAPI {
   // ─── Private: base64 helpers ────────────────────────────────────────────
   private toBase64(buf: ArrayBuffer | Uint8Array): string {
     const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-    let binary = "";
+    let binary = '';
     for (let i = 0; i < bytes.length; i++) {
       binary += String.fromCharCode(bytes[i]!);
     }
-    return typeof btoa !== "undefined"
+    return typeof btoa !== 'undefined'
       ? btoa(binary)
-      : Buffer.from(binary, "binary").toString("base64");
+      : Buffer.from(binary, 'binary').toString('base64');
   }
 
   private fromBase64(s: string): Uint8Array {
-    const binary = typeof atob !== "undefined" ? atob(s) : Buffer.from(s, "base64").toString("binary");
+    const binary =
+      typeof atob !== 'undefined' ? atob(s) : Buffer.from(s, 'base64').toString('binary');
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
@@ -960,7 +964,7 @@ export class SecretsVault implements SecretsVaultAPI {
     for (let i = 0; i < s.length; i++) {
       h = ((h << 5) - h + s.charCodeAt(i)) | 0;
     }
-    return h.toString(16).padStart(8, "0");
+    return h.toString(16).padStart(8, '0');
   }
 }
 

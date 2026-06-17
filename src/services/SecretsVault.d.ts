@@ -22,14 +22,14 @@ export interface TauriSecureStorage {
 }
 
 // ─── Branded ID types (C2 type-safety) ──────────────────────────────────────
-export type VaultShardId = "shard-0" | "shard-1" | "shard-2";
+export type VaultShardId = 'shard-0' | 'shard-1' | 'shard-2';
 export type RotationReason =
-  | "scheduled"
-  | "incident"
-  | "compromise-suspected"
-  | "policy-update"
-  | "manual"
-  | "boot-recovery";
+  | 'scheduled'
+  | 'incident'
+  | 'compromise-suspected'
+  | 'policy-update'
+  | 'manual'
+  | 'boot-recovery';
 
 // ─── Vault value envelope ───────────────────────────────────────────────────
 export interface VaultEntry<T = unknown> {
@@ -74,12 +74,12 @@ export interface VaultReadResult<T = unknown> {
 
 export interface RotationProgress {
   readonly phase:
-    | "re-encrypt-shard-0"
-    | "re-encrypt-shard-1"
-    | "re-encrypt-shard-2"
-    | "verify-quorum"
-    | "wal-compact"
-    | "complete";
+    | 're-encrypt-shard-0'
+    | 're-encrypt-shard-1'
+    | 're-encrypt-shard-2'
+    | 'verify-quorum'
+    | 'wal-compact'
+    | 'complete';
   readonly completed: number;
   readonly total: number;
 }
@@ -93,19 +93,20 @@ export interface RotationResult {
 
 // ─── Vault error taxonomy (I1 cascade-safety) ───────────────────────────────
 export type VaultErrorCode =
-  | "QUORUM_NOT_REACHED"
-  | "CHECKSUM_MISMATCH"
-  | "DECRYPT_FAILED"
-  | "CIRCUIT_OPEN"
-  | "CASCADE_VETO"
-  | "KEY_NOT_FOUND"
-  | "INVALID_PAYLOAD"
-  | "STORAGE_UNAVAILABLE"
-  | "ROTATION_IN_PROGRESS"
-  | "WAL_REPLAY_FAILED"
-  | "ATOMIC_WRITE_FAILED"
-  | "RATE_LIMITED"
-  | "TIMEOUT";
+  | 'QUORUM_NOT_REACHED'
+  | 'CHECKSUM_MISMATCH'
+  | 'DECRYPT_FAILED'
+  | 'CIRCUIT_OPEN'
+  | 'CASCADE_VETO'
+  | 'KEY_NOT_FOUND'
+  | 'INVALID_PAYLOAD'
+  | 'STORAGE_UNAVAILABLE'
+  | 'ROTATION_IN_PROGRESS'
+  | 'WAL_REPLAY_FAILED'
+  | 'ATOMIC_WRITE_FAILED'
+  | 'RATE_LIMITED'
+  | 'TIMEOUT'
+  | 'INTERNAL';
 
 export interface VaultError {
   readonly ok: false;
@@ -139,7 +140,7 @@ export interface SecretsVaultAPI {
 // ─── Internal — not exported ────────────────────────────────────────────────
 export interface WalRecord {
   readonly seq: number;
-  readonly op: "set" | "delete" | "rotate";
+  readonly op: 'set' | 'delete' | 'rotate';
   readonly key?: string;
   readonly shardId?: VaultShardId;
   readonly entryRef?: string;
@@ -148,16 +149,12 @@ export interface WalRecord {
 }
 
 // ─── Constants (visible for tests) ──────────────────────────────────────────
-export const VAULT_SHARD_IDS: readonly VaultShardId[] = [
-  "shard-0",
-  "shard-1",
-  "shard-2"
-] as const;
+export const VAULT_SHARD_IDS: readonly VaultShardId[] = ['shard-0', 'shard-1', 'shard-2'] as const;
 
 export const VAULT_QUORUM: number = 2; // 2-of-3
 export const CIRCUIT_BREAKER_THRESHOLD: number = 3;
 export const CIRCUIT_BREAKER_COOLDOWN_MS: number = 30_000;
 export const FALLBACK_CACHE_TTL_MS: number = 5 * 60 * 1000;
 export const PBKDF2_ITERATIONS: number = 600_000;
-export const AES_KEY_BITS: 256 = 256;
-export const AES_IV_BYTES: 12 = 12;
+export const AES_KEY_BITS = 256 as const;
+export const AES_IV_BYTES = 12 as const;

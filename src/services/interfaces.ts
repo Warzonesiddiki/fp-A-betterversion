@@ -81,6 +81,7 @@ export interface TauriSecureStorage {
  */
 export type AuditEventKind =
   | 'VAULT_WRITE'
+  | 'VAULT_READ'
   | 'VAULT_DELETE'
   | 'VAULT_ROTATE'
   | 'VAULT_ROTATION_REASON'
@@ -88,6 +89,9 @@ export type AuditEventKind =
   | 'CIRCUIT_BREAKER_TRIP'
   | 'CIRCUIT_BREAKER_RESET'
   | 'WAL_REPLAY'
+  | 'WAL_REPLAY_FAILED'
+  | 'STORAGE_ROTATION_FAILED'
+  | 'TRACE_GENERATED'
   | 'INTERNAL';
 
 /**
@@ -109,9 +113,11 @@ export interface AuditLogger {
    */
   log(event: AuditEvent): Promise<string>;
   /** Optional: query recent events for read-side correlation or debugging. */
-  recent?(
-    filter?: { kind?: AuditEventKind; sinceMs?: number; limit?: number }
-  ): Promise<readonly AuditEvent[]>;
+  recent?(filter?: {
+    kind?: AuditEventKind;
+    sinceMs?: number;
+    limit?: number;
+  }): Promise<readonly AuditEvent[]>;
 }
 
 // ============================================================================
@@ -215,14 +221,3 @@ export interface RotationResult {
 
 // (All types above are already `export`-ed individually; this block is a
 //  CAVEMAN-PERSIST audit anchor confirming the public surface.)
-export type {
-  TauriSecureStorage,
-  AuditEvent,
-  AuditEventKind,
-  AuditLogger,
-  ThreatKind,
-  ThreatSignal,
-  RotationReason,
-  RotationProgress,
-  RotationResult,
-};
