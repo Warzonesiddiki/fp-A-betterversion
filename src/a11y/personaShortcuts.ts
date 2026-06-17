@@ -47,6 +47,8 @@ export type KeyboardShortcut =
   | 'F1'
   | 'Shift+F1'
   | 'Ctrl+F1'
+  | 'Ctrl+Shift+T'
+  | 'Ctrl+Shift+M'
   | '?'
   | 'Esc'
   | '/';
