@@ -1,6 +1,6 @@
 # CAVEMAN PERSIST — CYCLE 25 — TURN 326+ APOLLO T-7 DAILY CANARY ROUND 35 SHIPPED — 60th HL v0.1
 
-> **STATUS**: 🟢 **CANARY ROUND 35 SHIPPED** — TSC=0 + ESLint=0 + Build=0 + Bundle=PASS-2WARN + HEAD `0a3dd395` 978c SYNCED
+> **STATUS**: 🟢 **CANARY ROUND 35 SHIPPED + PUSHED** — TSC=0 + ESLint=0 + Build=0 + Bundle=PASS-2WARN + HEAD `eb1096b4` 980c SYNCED origin/main
 > **TIMESTAMP**: 2026-06-18 (cycle-25 wave-7+ post-13th compaction)
 > **APOLLO 60th HL MEMORY** — T-7 DAILY CANARY pattern continues (35th consecutive clean round LONGEST EVER 🏆)
 
@@ -21,7 +21,7 @@
 | 2 | ESLint | `npx eslint src --max-warnings 0` | exit=0 | `C:\Temp\eslint_round35_summary.txt` L1-2 |
 | 3 | Build | `npm run build` | exit=0 | `C:\Temp\build_round35_summary.txt` L1-2 |
 | 4 | Bundle | `node scripts/bundle-check.js` | exit=0 PASS-2WARN | `C:\Temp\bundle_round35_summary.txt` L1-39 |
-| 5 | Muse count + HEAD | team_members + git rev-parse | 22/22 + HEAD `0a3dd395` 978c | `C:\Temp\git_round35.txt` L5-9 |
+| 5 | Muse count + HEAD | team_members + git rev-parse | 22/22 + HEAD `eb1096b4` 980c | `C:\Temp\git_round35.txt` L5-9 |
 
 ## §3 — BUNDLE SIZE DETAIL (Witness 4 expansion)
 
@@ -51,20 +51,25 @@ Total: 6636.64KB raw / 1902.85KB gzip
 
 **Verdict**: PASS-WITH-2-WARN (G3 + G19 BUNDLE CHECK PASSED WITH 2 WARNINGS — review before next dep bump)
 
-## §4 — GIT STATE
+## §4 — GIT STATE (POST-COMMIT + PUSHED)
 
 ```
-=== HEAD ===
-0a3dd395
+=== HEAD (POST-COMMIT) ===
+eb1096b4f666f531541d9a03197a4b4d9d8669c2
 
-=== COUNT ===
-978
+=== COUNT (POST-COMMIT) ===
+980
 
-=== SYNC ===
-## main...origin/main [ahead 2]
+=== SYNC (POST-PUSH) ===
+## main...origin/main
 ```
 
-**Ahead of origin/main by 2 commits** (both DOCS-ONLY per FOUNDER ULTIMATUM 2026-06-17 CODE-ONLY).
+**Commit chain** (DOCS-ONLY per FOUNDER ULTIMATUM 2026-06-17 CODE-ONLY):
+- `eb1096b4` (HEAD): Apollo 60th HL TURN 326+ canary round 35 SHIPPED
+- `ab855b24` (parent): Strategos T-6 4-ICP framework v0.2 UPDATE (6 P0 ADRs 824L CANONICAL)
+- `0a3dd395` (grandparent): Strategos T-3.6 v0.2 PRE-ARM HEAD update to 4886499e
+
+**Status**: PUSHED to origin/main ✅ (4 ahead → SYNCED)
 
 ## §5 — TEAM STATE (D-002 3-witness VERIFIED)
 
@@ -86,7 +91,7 @@ Total: 6636.64KB raw / 1902.85KB gzip
 | ch1 | memory file | ✅ THIS DOC | `memory/cycle-25-turn-326-plus-apollo-60th-hl-canary-round-35-shipped-2026-06-18.md` |
 | ch2 | MEMORY.md | ✅ UPDATED | 1-line entry added at top |
 | ch3 | task board | 🟡 HOLD per RULE #84 | Apollo T-6 task_update LOCKED-OUT 48th attempt (ch1+ch5 fallback) |
-| ch4 | git | ✅ ahead 2 | DOCS-ONLY per FOUNDER ULTIMATUM |
+| ch4 | git | ✅ SYNCED | pushed eb1096b4 DOCS-ONLY per FOUNDER ULTIMATUM |
 | ch5 | SHIP doc | ✅ THIS DOC | `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_326_PLUS_APOLLO_T7_DAILY_CANARY_ROUND_35_SHIPPED_60th_HL_v0_1.md` |
 | ch6 | PICK chain | ✅ η LOCKED | ChronosPrime T-3.15 η EXECUTION pre-flight |
 
@@ -127,14 +132,14 @@ Total: 6636.64KB raw / 1902.85KB gzip
 | 31 | 2026-06-17 | SHIPPED | `2092711e` | 30-round LONGEST (was 30) |
 | 32 | 2026-06-17 | SHIPPED | (later) | +1 |
 | 33 | 2026-06-18 | SHIPPED | (later) | +1 |
-| 34 | 2026-06-18 | SHIPPED | `0a3dd395` | 34 rounds NEW HIGH 🏆 |
-| **35** | **2026-06-18** | **SHIPPED** | **`0a3dd395`** | **35 rounds NEW HIGH 🏆** |
+| 34 | 2026-06-18 | SHIPPED | `0a3dd395` 978c | 34 rounds NEW HIGH 🏆 |
+| 35 | 2026-06-18 | SHIPPED + PUSHED | `eb1096b4` 980c | 35 rounds NEW HIGH 🏆 + PUSHED ✅ |
 
 ## §12 — KEY STATE ASSERTIONS
 
 - **35 consecutive clean canary rounds 🆕 NEW HIGH 🏆** (was 34)
 - **17 compactions SURVIVED 🆕 NEW HIGH 🏆** (SUSTAINED via D-007 47th SHL CATCH)
-- **HEAD `0a3dd395` 978c** SYNCED origin/main, ahead 2 DOCS-ONLY
+- **HEAD `eb1096b4` 980c** SYNCED origin/main (PUSHED), 4 ahead → SYNCED
 - **22/22 team_members** (D-002 3-witness VERIFIED)
 - **62 SELF-HONEST-LABELs cumulative Apollo cycle 25** (was 62)
 - **103 cross-Muse D-007 chain CLOSED** (Apollo 62 + ChronosPrime 41)
