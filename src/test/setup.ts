@@ -198,3 +198,13 @@ if (typeof localStorage === 'undefined' || localStorage === null) {
 afterEach(() => {
   cleanup();
 });
+
+// JSDOM does not implement scrollIntoView. Many components (CommandPalette,
+// virtualized lists, ag-grid wrappers) call it on mount/update. Provide a
+// no-op globally so these tests render instead of throwing
+// "selectedEl?.scrollIntoView is not a function".
+if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {
+    /* no-op for jsdom */
+  };
+}
