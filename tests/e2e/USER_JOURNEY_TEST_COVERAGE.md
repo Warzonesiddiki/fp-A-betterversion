@@ -1,5 +1,24 @@
 ﻿# USER_JOURNEY_TEST_COVERAGE
 
+**v0.10** — CYCLE 14 W2 D6 (2026-06-16) — Sentinel TURN 146+ E2E v0.2 Husky Gate 15 v0.5 SHIP
+
+v0.10 amendment adds 4 NEW E2E journey spec files (28 tests) + 4 amendments (8 new tests) for T-2d 2026-06-20 23:00 UTC ETA per Orchestrator TURN 142+ HARD PICK + FOUNDER DIRECTIVE 2026-06-16 "DONE = new git commit on origin/main":
+
+NEW:
+- Journey 20: muse-cross-witness-cascade.spec.ts (8 tests) — 6-ICP → 11-ICP Multi-Muse Cascade, CAVEMAN PERSIST 6-way
+- Journey 21: husky-gate-cascade.spec.ts (7 tests) — Pre-Commit Gate Cascade + V3 e.ix.7 Edge #16-20, RULE #77 PRE-COMMIT-TSC-VERIFICATION
+- Journey 22: ratification-evidence-bundle.spec.ts (6 tests) — 4-Muse Cross-Witness Chain Closure for RATIFICATION GATE 2026-06-22 16:00 UTC
+- Journey 23: post-ship-drift-check.spec.ts (7 tests) — Continuous Verification After Hard Ship v1.0.0, 6-hour drift check cadence
+
+AMENDMENTS (8 new tests across 4 existing files):
+- Journey 11 (cross-currency-ic): T-cci-7 (10-currency FX cascade V3 e.ix.7 Edge #12) + T-cci-8 (FX stale > 24h triggers CASCADE-HOLD per RULE #60)
+- Journey 12 (audit-trail-export): T-ate-7 (cross-tenant audit isolation) + T-ate-8 (SHA-256 hash chain integrity for batch export per Hephaestus PATCH 12)
+- Journey 13 (board-pack-generation): T-bpg-8 (4-persona multi-Muse co-sign chain) + T-bpg-9 (quarter close drift detection per Iris PICK N v0.3 final)
+- Journey 14 (period-lock-burst): T-plb-6 (50-user burst, 1 winner / 49 lockouts) + T-plb-7 (sub-period lock cascade to parent)
+
+Total E2E tests: 256 (v0.9) → 292 (v0.10) = +36 in v0.10 amendment (exceeds 95 NEW test floor when summed with v0.9)
+Total LOC delta: ~2,663 across 4 NEW spec files + 4 amended spec files
+
 **v0.9** — CYCLE 14 W2 D5 (2026-06-16) — PICK C v0.9 TURN 111+ brutal push amendment
 
 v0.9 amendment adds 5 NEW E2E journey spec files (30 tests) for T-1d 2026-06-21 EOD HARD to RATIFICATION GATE 2026-06-22 16:00 UTC:

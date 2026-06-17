@@ -260,4 +260,68 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
     });
     expect(newLockResp.status()).toBe(200);
   });
+
+  /**
+   * T-plb-6 (J19 amendment v0.10): 50-user burst on period lock — 1 winner, 49 lockouts
+   * Tests RULE #60 CASCADE-HOLD-ABORT-MERGE under extreme concurrency
+   */
+  test('T-plb-6: 50-user burst on period lock — 1 winner, 49 lockouts (CAVEMAN PERSIST)', async ({ page, browser }) => {
+    const userCount = 50;
+    const contexts: import('@playwright/test').BrowserContext[] = [];
+
+    // W1: Setup — 50 users navigate to period lock page
+    for (let i = 0; i < userCount; i++) {
+      const ctx = await browser.newContext();
+      contexts.push(ctx);
+      const p = await ctx.newPage();
+      await p.goto('/periods/2026-Q2/lock');
+      await p.waitForLoadState('networkidle');
+    }
+
+    // W2: Burst — 50 concurrent lock attempts
+    const lockPromises = contexts.map(async (ctx) => {
+      const p = await ctx.newPage();
+      await p.goto('/periods/2026-Q2/lock');
+      await p.locator('[data-testid="period-lock-btn"]').click();
+      return p.waitForResponse(r => r.url().includes('/api/periods/2026-Q2/lock'), { timeout: 30000 });
+    });
+
+    const responses = await Promise.all(lockPromises);
+    const statusCodes = responses.map(r => r.status()).sort();
+
+    // W3: Exactly 1 LOCK_OK (200), 49 LOCKOUT (409) — RULE #60 CASCADE-HOLD
+    const lockOkCount = statusCodes.filter(s => s === 200).length;
+    const lockoutCount = statusCodes.filter(s => s === 409).length;
+    expect(lockOkCount).toBe(1);
+    expect(lockoutCount).toBe(49);
+
+    // Cleanup
+    for (const ctx of contexts) {
+      await ctx.close();
+    }
+  });
+
+  /**
+   * T-plb-7 (J19 amendment v0.10): Period lock cascade — sub-period lock propagates to parent
+   * Tests consolidation lock propagation: locking Q2 sub-period locks parent Q2
+   */
+  test('T-plb-7: Period lock cascade — sub-period lock propagates to parent', async ({ page }) => {
+    await page.goto('/periods/2026-Q2-Apr/lock');
+    await page.waitForLoadState('networkidle');
+
+    // W1: Lock sub-period April
+    await page.locator('[data-testid="period-lock-btn"]').click();
+    await expect(page.locator('[data-testid="lock-success"]')).toBeVisible();
+
+    // W2: Navigate to parent Q2 — should show cascade-locked
+    await page.goto('/periods/2026-Q2');
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('[data-testid="period-cascade-locked-badge"]')).toBeVisible();
+    await expect(page.locator('[data-testid="period-cascade-locked-badge"]')).toContainText('locked by sub-period');
+
+    // W3: Parent lock attempt is blocked
+    await page.locator('[data-testid="parent-period-lock-btn"]').click();
+    await expect(page.locator('[data-testid="lock-blocked-toast"]')).toBeVisible();
+    await expect(page.locator('[data-testid="lock-blocked-toast"]')).toContainText('sub-period already locked');
+  });
 });

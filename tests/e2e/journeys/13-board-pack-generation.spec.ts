@@ -220,4 +220,65 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
     await expect(page.locator('[data-testid="cron-job-board-pack-quarterly"]')).toBeVisible();
     await expect(page.locator('[data-testid="cron-job-board-pack-quarterly"]')).toContainText('0 9 * * 3#3'); // last Thursday of March (Q1)
   });
+
+  /**
+   * T-bpg-8 (J18 amendment v0.10): Board pack multi-Muse co-sign chain
+   * Tests Iris PERSONA_UX cross-witness on board pack for 4 personas (CFO/Controller/FP&A/Auditor)
+   */
+  test('T-bpg-8: Board pack multi-Muse co-sign chain — 4 personas cross-witnessed', async ({ page }) => {
+    await page.goto('/reports/board-pack/new');
+    await page.waitForLoadState('networkidle');
+
+    // W1: Generate board pack for Q2 2026
+    await page.locator('[data-testid="board-pack-quarter-select"]').selectOption('2026-Q2');
+    await page.locator('[data-testid="board-pack-generate-btn"]').click();
+    await page.waitForSelector('[data-testid="board-pack-ready"]', { timeout: 30000 });
+
+    // W2: 4 personas available with persona-specific narrative
+    const personas = ['CFO', 'Controller', 'FP&A', 'Auditor'];
+    for (const persona of personas) {
+      await page.locator('[data-testid="board-pack-persona-select"]').selectOption(persona);
+      await page.locator('[data-testid="board-pack-regenerate-btn"]').click();
+      await page.waitForSelector('[data-testid="board-pack-narrative-updated"]', { timeout: 30000 });
+      const narrative = await page.locator('[data-testid="board-pack-narrative"]').textContent();
+      expect(narrative?.length).toBeGreaterThan(100);
+    }
+
+    // W3: Multi-Muse co-sign chain visible
+    await expect(page.locator('[data-testid="board-pack-cosign-strategos"]')).toBeVisible();
+    await expect(page.locator('[data-testid="board-pack-cosign-vulcan"]')).toBeVisible();
+    await expect(page.locator('[data-testid="board-pack-cosign-iris"]')).toBeVisible();
+    await expect(page.locator('[data-testid="board-pack-cosign-chronos"]')).toBeVisible();
+  });
+
+  /**
+   * T-bpg-9 (J18 amendment v0.10): Board pack drift detection — regen required when quarter closes
+   * Tests Iris PICK N v0.3 final amendment for drift detection
+   */
+  test('T-bpg-9: Board pack drift detection — quarter close triggers regen', async ({ page }) => {
+    await page.goto('/reports/board-pack/new');
+    await page.waitForLoadState('networkidle');
+
+    // W1: Generate Q2 2026 board pack
+    await page.locator('[data-testid="board-pack-quarter-select"]').selectOption('2026-Q2');
+    await page.locator('[data-testid="board-pack-generate-btn"]').click();
+    await page.waitForSelector('[data-testid="board-pack-ready"]', { timeout: 30000 });
+    const initialHash = await page.locator('[data-testid="board-pack-hash"]').textContent();
+
+    // W2: Simulate Q2 close (add a new transaction)
+    await page.evaluate(() => {
+      localStorage.setItem('board-pack-q2-closed', 'true');
+    });
+
+    // W3: Drift detected — regen required banner visible
+    await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toBeVisible();
+    await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toContainText('Q2 closed');
+    await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toContainText('regen required');
+
+    // Regen and verify hash changed
+    await page.locator('[data-testid="board-pack-regen-btn"]').click();
+    await page.waitForSelector('[data-testid="board-pack-hash-changed"]', { timeout: 30000 });
+    const newHash = await page.locator('[data-testid="board-pack-hash"]').textContent();
+    expect(newHash).not.toBe(initialHash);
+  });
 });

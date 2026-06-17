@@ -210,4 +210,61 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
     const hipaaRetention = await page.locator('[data-testid="retention-warning"]').first().textContent();
     expect(hipaaRetention).not.toContain('SOX 7-year');
   });
+
+  /**
+   * T-ate-7 (J17 amendment v0.10): Cross-tenant audit isolation — tenant A cannot view tenant B entries
+   * Tests Sentinel multi-tenant audit isolation
+   */
+  test('T-ate-7: Cross-tenant audit isolation — Tenant A cannot see Tenant B entries', async ({ page }) => {
+    await page.goto('/audit-trail');
+    await page.waitForLoadState('networkidle');
+
+    // W1: Tenant A context — view Tenant A audit entries
+    await page.locator('[data-testid="tenant-switcher"]').selectOption('tenant-A-001');
+    await page.waitForLoadState('networkidle');
+    const tenantARows = await page.locator('[data-testid^="audit-row-"]').count();
+    expect(tenantARows).toBeGreaterThan(0);
+
+    // W2: Switch to Tenant B context
+    await page.locator('[data-testid="tenant-switcher"]').selectOption('tenant-B-002');
+    await page.waitForLoadState('networkidle');
+    const tenantBRows = await page.locator('[data-testid^="audit-row-"]').count();
+    expect(tenantBRows).toBeGreaterThan(0);
+
+    // W3: Audit IDs must be disjoint (no cross-tenant leakage)
+    const tenantAIds = await page.locator('[data-testid^="audit-row-"]').evaluateAll(els =>
+      els.map(el => el.getAttribute('data-testid')).filter((id): id is string => !!id),
+    );
+    await page.locator('[data-testid="tenant-switcher"]').selectOption('tenant-A-001');
+    await page.waitForLoadState('networkidle');
+    const tenantAIds2 = await page.locator('[data-testid^="audit-row-"]').evaluateAll(els =>
+      els.map(el => el.getAttribute('data-testid')).filter((id): id is string => !!id),
+    );
+
+    const intersection = tenantAIds.filter(id => tenantAIds2.includes(id));
+    expect(intersection.length).toBe(0);
+  });
+
+  /**
+   * T-ate-8 (J17 amendment v0.10): Audit chain integrity via SHA-256 hash chain
+   * Tests Hephaestus PATCH 12 AuditLogger C-2 verification with batch export
+   */
+  test('T-ate-8: Audit chain SHA-256 hash integrity for batch export', async ({ page }) => {
+    await page.goto('/audit-trail');
+    await page.waitForLoadState('networkidle');
+
+    // W1: Filter to Q1 2026 entries
+    await page.locator('[data-testid="audit-filter-start"]').fill('2026-01-01');
+    await page.locator('[data-testid="audit-filter-end"]').fill('2026-03-31');
+    await page.locator('[data-testid="audit-apply-filter"]').click();
+    await page.waitForLoadState('networkidle');
+
+    // W2: Verify chain hash display in UI
+    const chainHash = await page.locator('[data-testid="audit-chain-hash"]').textContent();
+    expect(chainHash).toMatch(/^[0-9a-f]{64}$/);
+
+    // W3: Verify chain verification badge
+    await expect(page.locator('[data-testid="audit-chain-verified-badge"]')).toBeVisible();
+    await expect(page.locator('[data-testid="audit-chain-verified-badge"]')).toContainText('CHAIN VERIFIED');
+  });
 });

@@ -221,4 +221,69 @@ test.describe('Journey 11: Cross-Currency Intercompany (FX + 4-Eye + Temporal Dr
     // W3: Cleanup assertion — audit entry is immutable (edit button disabled)
     await expect(page.locator(`[data-testid="audit-edit-${auditId}"]`)).toBeDisabled();
   });
+
+  /**
+   * T-cci-7 (J16 amendment v0.10): Multi-currency FX rate cascade with 10 currencies
+   * Cross-currency IC transaction spanning USD/EUR/GBP/JPY/CAD/AUD/CHF/SEK/NOK/DKK
+   * Tests Apollo V3 e.ix.7 Edge #12 (FX cascade)
+   */
+  test('T-cci-7: Multi-currency FX cascade across 10 currencies (V3 e.ix.7 Edge #12)', async ({ page }) => {
+    await page.goto('/intercompany/new');
+    await page.waitForLoadState('networkidle');
+
+    // W1: 10-currency FX rate table populated
+    const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SEK', 'NOK', 'DKK'];
+    for (const currency of currencies) {
+      const rateCell = await page.locator(`[data-testid="fx-rate-${currency}"]`).textContent();
+      expect(rateCell).toMatch(/^\d+\.\d{4,6}$/);
+    }
+
+    // W2: Cross-currency triangulation consistency check
+    // USD→EUR→JPY rate should equal USD→JPY rate within 0.01% tolerance
+    const usdEur = parseFloat((await page.locator('[data-testid="fx-rate-EUR"]').textContent()) || '0');
+    const eurJpy = parseFloat((await page.locator('[data-testid="fx-rate-JPY-base-EUR"]').textContent()) || '0');
+    const usdJpy = parseFloat((await page.locator('[data-testid="fx-rate-JPY"]').textContent()) || '0');
+    const triangulated = usdEur * eurJpy;
+    const deviationPct = Math.abs(triangulated - usdJpy) / usdJpy;
+    expect(deviationPct).toBeLessThan(0.0001); // 0.01% tolerance
+
+    // W3: 10-currency board pack aggregates all currencies
+    await page.goto('/reports/board-pack');
+    await page.locator('[data-testid="board-pack-currency-select"]').selectOption('USD');
+    await page.locator('[data-testid="board-pack-quarter-select"]').selectOption('2026-Q2');
+    await page.locator('[data-testid="board-pack-generate-btn"]').click();
+    await page.waitForSelector('[data-testid="board-pack-ready"]');
+    for (const currency of currencies) {
+      await expect(page.locator(`[data-testid="board-pack-row-${currency}-SUB"]`)).toBeVisible();
+    }
+  });
+
+  /**
+   * T-cci-8 (J16 amendment v0.10): FX rate temporal drift > 24h triggers CASCADE-HOLD
+   * Tests RULE #60 CASCADE-HOLD-ABORT-MERGE when FX rate is stale
+   */
+  test('T-cci-8: FX rate stale > 24h triggers CASCADE-HOLD (RULE #60)', async ({ page }) => {
+    await page.goto('/intercompany/new');
+    await page.waitForLoadState('networkidle');
+
+    // W1: Inject 25h-old FX rate (stale)
+    await page.evaluate(() => {
+      localStorage.setItem('fx-inject-stale', '25h');
+    });
+
+    await page.locator('[data-testid="ic-amount-input"]').fill('50000');
+    await page.locator('[data-testid="ic-from-currency"]').selectOption('USD');
+    await page.locator('[data-testid="ic-to-currency"]').selectOption('GBP');
+    await page.locator('[data-testid="ic-submit-btn"]').click();
+
+    // W2: CASCADE-HOLD alert visible
+    await expect(page.locator('[data-testid="cascade-hold-alert"]')).toBeVisible();
+    await expect(page.locator('[data-testid="cascade-hold-alert"]')).toContainText('FX rate 25 hours old');
+    await expect(page.locator('[data-testid="cascade-hold-alert"]')).toContainText('MERGE BLOCKED');
+
+    // W3: Submit is disabled until manual override
+    await expect(page.locator('[data-testid="ic-submit-btn"]')).toBeDisabled();
+    await page.locator('[data-testid="fx-drift-override-checkbox"]').check();
+    await expect(page.locator('[data-testid="ic-submit-btn"]')).toBeEnabled();
+  });
 });
