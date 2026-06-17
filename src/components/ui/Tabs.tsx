@@ -132,6 +132,9 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
       <div
         ref={ref}
         role="tablist"
+        // tablist itself is focusable so it can receive keyboard events when the
+        // active tab is the only thing in the tab order; WAI-ARIA Tabs Pattern.
+        tabIndex={-1}
         className={cn(
           'inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground dark:bg-gray-800 dark:text-gray-400',
           className
@@ -197,17 +200,20 @@ const TabsContent = forwardRef<HTMLDivElement, TabsContentProps>(
     const { activeTab, baseId } = useTabsContext();
     const tabId = `${baseId}-tab-${value}`;
     const panelId = `${baseId}-panel-${value}`;
+    const isActive = activeTab === value;
 
-    if (activeTab !== value) return null;
-
+    // Always render the panel so aria-controls round-trips to a real DOM node,
+    // but mark it hidden when inactive. This is the WAI-ARIA Tabs Pattern:
+    // the panel MUST exist in the DOM for the trigger's aria-controls to resolve.
     return (
       <div
         ref={ref}
         role="tabpanel"
         id={panelId}
         aria-labelledby={tabId}
-        data-state={activeTab === value ? 'active' : 'inactive'}
+        data-state={isActive ? 'active' : 'inactive'}
         tabIndex={0}
+        hidden={!isActive}
         className={cn(
           'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           className

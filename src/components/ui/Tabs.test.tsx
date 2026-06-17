@@ -36,16 +36,19 @@ describe('Tabs', () => {
 
   it('does not render inactive tab content', () => {
     renderTabs();
-    expect(screen.queryByText('Details content')).not.toBeInTheDocument();
-    expect(screen.queryByText('Settings content')).not.toBeInTheDocument();
+    // Per WAI-ARIA Tabs Pattern, all panels are in the DOM with `hidden` when inactive.
+    // The DOM may contain them, but they are not visible to the user.
+    expect(screen.getByText('Details content')).not.toBeVisible();
+    expect(screen.getByText('Settings content')).not.toBeVisible();
   });
 
   // Tab switching
   it('switches tab when trigger is clicked', () => {
     renderTabs();
     fireEvent.click(screen.getByText('Details'));
-    expect(screen.getByText('Details content')).toBeInTheDocument();
-    expect(screen.queryByText('Overview content')).not.toBeInTheDocument();
+    expect(screen.getByText('Details content')).toBeVisible();
+    // The previously-active panel is still in the DOM but hidden.
+    expect(screen.getByText('Overview content')).not.toBeVisible();
   });
 
   it('switches between multiple tabs', () => {
@@ -84,8 +87,10 @@ describe('Tabs', () => {
         <TabsContent value="tab2">Second content</TabsContent>
       </Tabs>
     );
-    expect(screen.getByText('Second content')).toBeInTheDocument();
-    expect(screen.queryByText('First content')).not.toBeInTheDocument();
+    expect(screen.getByText('Second content')).toBeVisible();
+    // Per WAI-ARIA Tabs Pattern, all panels stay in the DOM with `hidden` so
+    // each trigger's `aria-controls` resolves to a real element.
+    expect(screen.getByText('First content')).not.toBeVisible();
   });
 
   // TabsList
