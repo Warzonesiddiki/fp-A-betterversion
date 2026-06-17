@@ -130,10 +130,15 @@ Husky Gate 15 enforces: every entry in `PERSONA_REGISTRY` MUST have a correspond
 ## 9. LEADER TURN 146+ Format Response
 
 ```
-Artemis | TURN 146+ | A11Y v0.7 PICK I.5 SHIPPED | ETA 16:00 UTC 2026-06-17 | DONE: <commit-hash>
+Artemis | TURN 146+ | A11Y v0.7 PICK I.5 SHIPPED | ETA 16:00 UTC 2026-06-17 | DONE: 53f800910
 ```
 
-(Commit hash to be filled in after `git commit`.)
+**Commit**: `53f800910` — [ARTEMIS TURN 146+] A11Y v0.7 PICK I.5 — 19 Persona Aliases A11Y Implementation v0.1 SHIP
+**Pushed**: 2026-06-17 to `origin/main` (commit `8fda0b3b6..53f800910`)
+**Verification**:
+- `npx tsc --noEmit`: PASS (exit 0, 0 errors)
+- `npx vitest run src/__tests__/a11y/q5-11-19-persona-aliases.test.tsx`: PASS (365/365 tests)
+- `npx vitest run src/__tests__/a11y/`: PASS (419 tests + 1 skipped)
 
 ---
 
