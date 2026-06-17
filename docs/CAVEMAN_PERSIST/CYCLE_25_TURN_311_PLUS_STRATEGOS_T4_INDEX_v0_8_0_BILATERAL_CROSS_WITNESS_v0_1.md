@@ -232,7 +232,7 @@ Per **RULE #108 v0.3 MERGE EDITION** (Chronos 97th SL CO-SIGNED TURN 307+):
 
 | Channel | Status | Detail |
 |---------|--------|--------|
-| ch1 memory (witness doc) | ✅ SHIPPED | `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_311_PLUS_STRATEGOS_T4_INDEX_v0_8_0_BILATERAL_CROSS_WITNESS_v0_1.md` (**298L Read offset ACTUAL** per D-002 3-witness — Read offset 293 + limit 5 = L297 NOT IDLE + L298 caveman) |
+| ch1 memory (witness doc) | ✅ SHIPPED | `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_311_PLUS_STRATEGOS_T4_INDEX_v0_8_0_BILATERAL_CROSS_WITNESS_v0_1.md` (**300L Read offset ACTUAL** per D-002 3-witness — Read offset 298 + limit 5 = L300 caveman wenyan-ultra) |
 | ch2 MEMORY.md | ⏳ TBD | Update pending (will add Strategos T-4 entry TURN 311+) |
 | ch3 task board | ⏳ TBD | team_task_update for `019ed74b-a743-7071-8be0-4d1c0c98c261` (may still fail per CATCH #200 LOCKOUT) |
 | ch4 git | ⏸️ DEFERRED | FOUNDER ULTIMATUM 2026-06-17 CODE-ONLY HELD |
@@ -249,6 +249,7 @@ Per **RULE #108 v0.3 MERGE EDITION** (Chronos 97th SL CO-SIGNED TURN 307+):
 - **49th (MINOR)**: 289→290L fix (ch1 line count re-verify after 2nd Edit cycle)
 - **50th (MINOR)**: HEAD reference updated 7a5d1fb6 → 3065b3b6 (post memory backup commit)
 - **51st (MINOR)**: ch1 line count 290L → ACTUAL 298L after 3 Edit cycles (HEAD update + §6 fix + 50th SHL)
+- **52nd (MINOR)**: ch1 line count 298L → ACTUAL 300L after final 2 Edit cycles (D-007 rigorous verification)
 
 **Cross-Muse cumulative**:
 - Strategos: 47
@@ -289,5 +290,5 @@ Per **RULE #108 v0.3 MERGE EDITION** (Chronos 97th SL CO-SIGNED TURN 307+):
 
 — Strategos (slot 019ed5ae-9a3f-76e2-bcfe-1dd5d41651a8)
 1st Muse | Strategist | D-007 Honest Labeling architect | INDEX v0.8.0 BILATERAL SECTOR_CONFIG v0.6 + 5 P0 ADRs 739L
-2026-06-18 | Cycle 25 TURN 311+ | 49 SELF-HONEST-LABEL moments cumulative (47 Read offset + 48 ~330L→289L + 49 289→290L)
+2026-06-18 | Cycle 25 TURN 311+ | 52 SELF-HONEST-LABEL moments cumulative (47 Read offset + 48 ~330L→289L + 49 289→290L + 50 HEAD update + 51 290L→298L + 52 298L→300L)
 caveman wenyan-ultra: 三證俱 pass / BILATERAL 5-ICP 47.1↔44.9 / 5 P0 ADRs 739L CANONICAL / SECTOR_CONFIG v0.6 413/420 / v0.8.0 SHIP-READY / RATIFICATION T-0d 🟢 / NOT IDLE ✅
