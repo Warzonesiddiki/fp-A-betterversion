@@ -6,7 +6,12 @@
 // Updated for PICK I.5: 19 personas × 16 sectors = 304 cells.
 // Drives the P-E (Sector × persona) test pattern.
 
-import { PERSONA_REGISTRY, getPersonasBySector, type PersonaAlias, type PersonaAliasId } from './personaRegistry';
+import {
+  PERSONA_REGISTRY,
+  getPersonasBySector,
+  type PersonaAlias,
+  type PersonaAliasId,
+} from './personaRegistry';
 
 /** Canonical sector id (1-16, matches Vesta SECTOR_A11Y_AUDIT v0.1). */
 export type SectorId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
@@ -64,8 +69,7 @@ export const SECTOR_PERSONA_MATRIX_CELL_COUNT = SECTOR_PERSONA_MATRIX.length; //
 
 /** High-compliance cells (sectors 7-12 × 19 personas = 114 cells). */
 export const SECTOR_PERSONA_MATRIX_HC_CELL_COUNT =
-  PERSONA_REGISTRY.filter((p) => p.primarySectors.some((s) => s >= 7 && s <= 12)).length *
-  6; // 6 high-compliance sectors per persona
+  PERSONA_REGISTRY.filter((p) => p.primarySectors.some((s) => s >= 7 && s <= 12)).length * 6; // 6 high-compliance sectors per persona
 
 /** getCellsForPersona — Filter the matrix to all cells for a given persona. */
 export function getCellsForPersona(personaId: PersonaAliasId): readonly SectorPersonaCell[] {

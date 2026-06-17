@@ -27,7 +27,6 @@ import {
   PERSONA_REGISTRY_COUNT,
   getPersonaById,
   getPersonasByTier,
-  getPersonasBySector,
   getAllPersonaIds,
   // A11Y attribute helpers
   A11Y_DIMENSIONS,
@@ -53,7 +52,6 @@ import {
   getAllBindingsFlat,
   validatePersonaShortcuts,
   // Sector matrix
-  SECTOR_PERSONA_MATRIX,
   SECTOR_PERSONA_MATRIX_CELL_COUNT,
   SECTOR_PERSONA_MATRIX_HC_CELL_COUNT,
   SECTOR_NAMES,
@@ -62,7 +60,7 @@ import {
   getHighComplianceCells,
   validateSectorPersonaMatrix,
 } from '../../a11y';
-import type { PersonaAlias, PersonaAliasId } from '../../a11y';
+import type { PersonaAliasId } from '../../a11y';
 
 describe('Q5.11 — 19 Persona Aliases A11Y (PICK I.5)', () => {
   // ============================================================
@@ -296,15 +294,19 @@ describe('Q5.11 — 19 Persona Aliases A11Y (PICK I.5)', () => {
 
     it('all 16 sectors are defined in SECTOR_NAMES', () => {
       for (let s = 1; s <= 16; s++) {
-        expect(SECTOR_NAMES[s as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16]).toBeDefined();
+        expect(
+          SECTOR_NAMES[s as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16]
+        ).toBeDefined();
       }
     });
 
     it('every high-compliance sector (7-12) is covered by the compliance_officer persona', () => {
       for (let s = 7; s <= 12; s++) {
         const cells = getCellsForSector(s as 1);
-        expect(cells.some((c) => c.persona === 'compliance_officer'),
-          `sector ${s} must include compliance_officer`).toBe(true);
+        expect(
+          cells.some((c) => c.persona === 'compliance_officer'),
+          `sector ${s} must include compliance_officer`
+        ).toBe(true);
       }
     });
 
@@ -324,8 +326,14 @@ describe('Q5.11 — 19 Persona Aliases A11Y (PICK I.5)', () => {
 
       // Every persona must appear in the help map.
       for (const id of personaIds) {
-        expect(PERSONA_HELP_MAP.some((m) => m.personaId === id), `${id} help`).toBe(true);
-        expect(PERSONA_SHORTCUTS.some((s) => s.personaId === id), `${id} shortcuts`).toBe(true);
+        expect(
+          PERSONA_HELP_MAP.some((m) => m.personaId === id),
+          `${id} help`
+        ).toBe(true);
+        expect(
+          PERSONA_SHORTCUTS.some((s) => s.personaId === id),
+          `${id} shortcuts`
+        ).toBe(true);
         expect(getCellsForPersona(id).length, `${id} cells`).toBeGreaterThan(0);
       }
     });
@@ -391,7 +399,9 @@ describe('Q5.11 — 19 Persona Aliases A11Y (PICK I.5)', () => {
       expect(reg.length).toBe(1);
       const co = reg[0];
       const shortcuts = getShortcutsForPersona(co.id);
-      expect(shortcuts!.workflow.some((b) => b.action.toLowerCase().includes('evidence'))).toBe(true);
+      expect(shortcuts!.workflow.some((b) => b.action.toLowerCase().includes('evidence'))).toBe(
+        true
+      );
     });
   });
 
@@ -410,8 +420,10 @@ describe('Q5.11 — 19 Persona Aliases A11Y (PICK I.5)', () => {
       const coCount = co!.iso27001Controls.length;
       for (const persona of PERSONA_REGISTRY) {
         if (persona.id === 'compliance_officer') continue;
-        expect(persona.iso27001Controls.length, `${persona.id} should have <= ${coCount} controls`)
-          .toBeLessThanOrEqual(coCount);
+        expect(
+          persona.iso27001Controls.length,
+          `${persona.id} should have <= ${coCount} controls`
+        ).toBeLessThanOrEqual(coCount);
       }
     });
   });

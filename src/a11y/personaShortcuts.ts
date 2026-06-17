@@ -83,14 +83,29 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+1', action: 'Go to Dashboard', longSession: false, globalConflict: false },
       { shortcut: 'Ctrl+2', action: 'Go to Forecasts', longSession: false, globalConflict: false },
       { shortcut: 'Ctrl+3', action: 'Go to Scenarios', longSession: false, globalConflict: false },
-      { shortcut: 'Ctrl+9', action: 'Go to Investor Deck', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Ctrl+9',
+        action: 'Go to Investor Deck',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
     workflow: [
       { shortcut: 'Ctrl+K', action: 'Command palette', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+B', action: 'Open board pack', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+B',
+        action: 'Open board pack',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
       { shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false },
     ],
   },
@@ -99,30 +114,63 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
     navigation: [
       { shortcut: 'Ctrl+1', action: 'Go to Dashboard', longSession: false, globalConflict: false },
       { shortcut: 'Ctrl+4', action: 'Go to Audit Trail', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+5', action: 'Go to Consolidation', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+5',
+        action: 'Go to Consolidation',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     workflow: [
-      { shortcut: 'Ctrl+S', action: 'Save close-period snapshot', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+S', action: 'Open SOX control matrix', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+G', action: 'Jump to intercompany row', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+S',
+        action: 'Save close-period snapshot',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+S',
+        action: 'Open SOX control matrix',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to intercompany row',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
     personaId: 'cxo',
     navigation: [
       { shortcut: 'Ctrl+1', action: 'Go to Dashboard', longSession: false, globalConflict: false },
-      { shortcut: 'Ctrl+9', action: 'Go to Investor Deck', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Ctrl+9',
+        action: 'Go to Investor Deck',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
     workflow: [
       { shortcut: 'Ctrl+K', action: 'Command palette', longSession: false, globalConflict: false },
     ],
-    a11y: [
-      { shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false },
-    ],
+    a11y: [{ shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false }],
   },
   {
     personaId: 'board_chair',
@@ -130,12 +178,32 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+9', action: 'Go to Board Pack', longSession: true, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+B', action: 'Open board pack', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+H', action: 'Open governance history', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+B',
+        action: 'Open board pack',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+H',
+        action: 'Open governance history',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -144,40 +212,93 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+9', action: 'Go to Board Pack', longSession: true, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+B', action: 'Open board pack', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+B',
+        action: 'Open board pack',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
     personaId: 'audit_committee_chair',
     navigation: [
       { shortcut: 'Ctrl+4', action: 'Go to Audit Trail', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+5', action: 'Go to Consolidation', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+5',
+        action: 'Go to Consolidation',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+S', action: 'Open SOX control matrix', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+F', action: 'Open ISO 27001 evidence', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+G', action: 'Jump to risk-register row', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+S',
+        action: 'Open SOX control matrix',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+F',
+        action: 'Open ISO 27001 evidence',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to risk-register row',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
     personaId: 'investor_relations',
     navigation: [
-      { shortcut: 'Ctrl+9', action: 'Go to Investor Deck', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Ctrl+9',
+        action: 'Go to Investor Deck',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+B', action: 'Build investor deck', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Enter', action: 'Insert release-note reference', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+B',
+        action: 'Build investor deck',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Enter',
+        action: 'Insert release-note reference',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
-    a11y: [
-      { shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false },
-    ],
+    a11y: [{ shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false }],
   },
   {
     personaId: 'treasurer',
@@ -185,12 +306,32 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+6', action: 'Go to Treasury', longSession: true, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+T', action: 'Open FX hedging', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+S', action: 'Save cash snapshot', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+T',
+        action: 'Open FX hedging',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+S',
+        action: 'Save cash snapshot',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
 
@@ -203,12 +344,27 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
     ],
     workflow: [
       { shortcut: 'Ctrl+K', action: 'Command palette', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+M', action: 'Open Monte Carlo', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+M',
+        action: 'Open Monte Carlo',
+        longSession: true,
+        globalConflict: false,
+      },
       { shortcut: 'Ctrl+S', action: 'Save scenario', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Enter', action: 'Run variance analysis', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Enter',
+        action: 'Run variance analysis',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
       { shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false },
     ],
   },
@@ -218,14 +374,44 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+4', action: 'Go to Audit Trail', longSession: true, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+S', action: 'Open SOX control matrix', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+F', action: 'Open ISO 27001 evidence', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+G', action: 'Jump to evidence row', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+Enter', action: 'Mark evidence reviewed', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+S',
+        action: 'Open SOX control matrix',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+F',
+        action: 'Open ISO 27001 evidence',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to evidence row',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+Enter',
+        action: 'Mark evidence reviewed',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -234,11 +420,26 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+7', action: 'Go to Tax', longSession: true, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+S', action: 'Save tax provision', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+G', action: 'Jump to deferred-tax row', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+S',
+        action: 'Save tax provision',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to deferred-tax row',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -249,11 +450,26 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
     ],
     workflow: [
       { shortcut: 'Ctrl+K', action: 'Command palette', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+M', action: 'Open Monte Carlo', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Enter', action: 'Run rolling forecast', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+M',
+        action: 'Open Monte Carlo',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Enter',
+        action: 'Run rolling forecast',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -262,11 +478,26 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+3', action: 'Go to Scenarios', longSession: false, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+G', action: 'Jump to contract row', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+S', action: 'Save revenue recognition', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to contract row',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+S',
+        action: 'Save revenue recognition',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -275,11 +506,26 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+3', action: 'Go to Scenarios', longSession: false, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+G', action: 'Jump to cost-allocation row', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+S', action: 'Save cost allocation', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to cost-allocation row',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+S',
+        action: 'Save cost allocation',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -289,10 +535,20 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
     ],
     workflow: [
       { shortcut: 'Ctrl+G', action: 'Jump to asset row', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+S', action: 'Save capex snapshot', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+S',
+        action: 'Save capex snapshot',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -301,11 +557,14 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+8', action: 'Go to Headcount', longSession: false, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Enter', action: 'Submit comp plan', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Enter',
+        action: 'Submit comp plan',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
-    a11y: [
-      { shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false },
-    ],
+    a11y: [{ shortcut: 'F1', action: 'Open Help', longSession: false, globalConflict: false }],
   },
   {
     personaId: 'it',
@@ -313,11 +572,26 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+4', action: 'Go to Audit Trail', longSession: true, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+F', action: 'Open security overview', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+S', action: 'Open SSO/SAML config', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+F',
+        action: 'Open security overview',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+S',
+        action: 'Open SSO/SAML config',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
   {
@@ -326,12 +600,32 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
       { shortcut: 'Ctrl+4', action: 'Go to Audit Trail', longSession: true, globalConflict: false },
     ],
     workflow: [
-      { shortcut: 'Ctrl+G', action: 'Jump to risk-register row', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+H', action: 'Open GDPR data handling', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to risk-register row',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+H',
+        action: 'Open GDPR data handling',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
 
@@ -340,30 +634,88 @@ export const PERSONA_SHORTCUTS: readonly PersonaShortcuts[] = [
     personaId: 'compliance_officer',
     navigation: [
       { shortcut: 'Ctrl+4', action: 'Go to Audit Trail', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+5', action: 'Go to Consolidation', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+5',
+        action: 'Go to Consolidation',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     workflow: [
-      { shortcut: 'Ctrl+Shift+S', action: 'Open SOX control matrix', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+F', action: 'Open ISO 27001 evidence', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+G', action: 'Jump to evidence row', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+Enter', action: 'Mark evidence reviewed', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+H', action: 'Open HIPAA controls', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+H', action: 'Open GDPR data handling', longSession: true, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+G', action: 'Open SOC2 evidence', longSession: true, globalConflict: false },
+      {
+        shortcut: 'Ctrl+Shift+S',
+        action: 'Open SOX control matrix',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+F',
+        action: 'Open ISO 27001 evidence',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+G',
+        action: 'Jump to evidence row',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+Enter',
+        action: 'Mark evidence reviewed',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+H',
+        action: 'Open HIPAA controls',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+H',
+        action: 'Open GDPR data handling',
+        longSession: true,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+G',
+        action: 'Open SOC2 evidence',
+        longSession: true,
+        globalConflict: false,
+      },
     ],
     a11y: [
-      { shortcut: 'Shift+F1', action: 'A11Y preference panel', longSession: false, globalConflict: false },
-      { shortcut: '?', action: 'Show keyboard shortcuts', longSession: false, globalConflict: false },
-      { shortcut: 'Ctrl+/', action: 'Toggle high-contrast', longSession: false, globalConflict: false },
-      { shortcut: 'Ctrl+Shift+/', action: 'Toggle screen-reader optimized mode', longSession: false, globalConflict: false },
+      {
+        shortcut: 'Shift+F1',
+        action: 'A11Y preference panel',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: '?',
+        action: 'Show keyboard shortcuts',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+/',
+        action: 'Toggle high-contrast',
+        longSession: false,
+        globalConflict: false,
+      },
+      {
+        shortcut: 'Ctrl+Shift+/',
+        action: 'Toggle screen-reader optimized mode',
+        longSession: false,
+        globalConflict: false,
+      },
     ],
   },
 ];
 
 /** getShortcutsForPersona — Look up the keyboard shortcut bindings for a persona alias. */
-export function getShortcutsForPersona(
-  personaId: PersonaAliasId
-): PersonaShortcuts | undefined {
+export function getShortcutsForPersona(personaId: PersonaAliasId): PersonaShortcuts | undefined {
   return PERSONA_SHORTCUTS.find((s) => s.personaId === personaId);
 }
 
@@ -396,12 +748,17 @@ export function validatePersonaShortcuts(persona: PersonaAlias): readonly string
       `${persona.id}: keyboard-only persona must have ≥4 shortcut bindings (has ${total})`
     );
   }
-  if (persona.tier === 'regulatory' && !map.workflow.some((b) => b.action.toLowerCase().includes('evidence'))) {
+  if (
+    persona.tier === 'regulatory' &&
+    !map.workflow.some((b) => b.action.toLowerCase().includes('evidence'))
+  ) {
     errors.push(`${persona.id}: regulatory tier must have an evidence-review shortcut`);
   }
   for (const b of [...map.navigation, ...map.workflow, ...map.a11y]) {
     if (b.globalConflict) {
-      errors.push(`${persona.id}: shortcut ${b.shortcut} flagged as global-conflict (Husky Gate 5b)`);
+      errors.push(
+        `${persona.id}: shortcut ${b.shortcut} flagged as global-conflict (Husky Gate 5b)`
+      );
     }
   }
   return errors;

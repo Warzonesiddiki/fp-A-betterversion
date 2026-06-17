@@ -127,7 +127,8 @@ export const PERSONA_REGISTRY: readonly PersonaAlias[] = [
     displayName: 'CFO — Chief Financial Officer',
     shortName: 'CFO',
     tier: 'executive',
-    description: 'Executive leader responsible for financial strategy, capital allocation, and investor reporting.',
+    description:
+      'Executive leader responsible for financial strategy, capital allocation, and investor reporting.',
     screenReader: 'voiceover-safari',
     wcagLevel: 'AA',
     weight: 'critical',
@@ -157,7 +158,8 @@ export const PERSONA_REGISTRY: readonly PersonaAlias[] = [
     displayName: 'Controller — Financial Controls',
     shortName: 'Controller',
     tier: 'executive',
-    description: 'Owns financial close, controls framework, and audit-readiness across the organization.',
+    description:
+      'Owns financial close, controls framework, and audit-readiness across the organization.',
     screenReader: 'nvda-firefox',
     wcagLevel: 'AA',
     weight: 'critical',
@@ -187,7 +189,8 @@ export const PERSONA_REGISTRY: readonly PersonaAlias[] = [
     displayName: 'CXO Suite — Cross-Functional Executive',
     shortName: 'CXO',
     tier: 'executive',
-    description: 'C-suite executive (COO, CMO, CRO) consuming boardroom-grade rollups and KPI summaries.',
+    description:
+      'C-suite executive (COO, CMO, CRO) consuming boardroom-grade rollups and KPI summaries.',
     screenReader: 'voiceover-safari',
     wcagLevel: 'AA',
     weight: 'high',
@@ -277,7 +280,8 @@ export const PERSONA_REGISTRY: readonly PersonaAlias[] = [
     displayName: 'Audit Committee Chair',
     shortName: 'Audit Committee Chair',
     tier: 'executive',
-    description: 'Chairs audit committee, owns sign-off on controls and external audit coordination.',
+    description:
+      'Chairs audit committee, owns sign-off on controls and external audit coordination.',
     screenReader: 'nvda-firefox',
     wcagLevel: 'AA',
     weight: 'critical',

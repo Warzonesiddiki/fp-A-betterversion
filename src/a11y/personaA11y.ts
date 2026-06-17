@@ -68,17 +68,7 @@ export type A11yDimensionName = (typeof A11Y_DIMENSIONS)[number];
 /** WCAG 2.1/2.2 SC mapping per A11Y_READINESS dimension. */
 export const DIMENSION_WCAG_SC: Readonly<Record<A11yDimensionName, readonly string[]>> = {
   perceivable: ['1.1.1', '1.3.1', '1.4.1', '1.4.3', '1.4.10', '1.4.11'],
-  operable: [
-    '2.1.1',
-    '2.1.2',
-    '2.4.1',
-    '2.4.3',
-    '2.4.6',
-    '2.4.7',
-    '2.5.1',
-    '2.5.3',
-    '2.5.4',
-  ],
+  operable: ['2.1.1', '2.1.2', '2.4.1', '2.4.3', '2.4.6', '2.4.7', '2.5.1', '2.5.3', '2.5.4'],
   understandable: ['3.1.1', '3.1.2', '3.2.1', '3.2.2', '3.2.3', '3.3.1', '3.3.2'],
   robust: ['4.1.1', '4.1.2', '4.1.3'],
   cognitive: ['2.2.1', '2.2.2'],
@@ -132,9 +122,7 @@ export function getOperableAttributes(p: PersonaA11yProfile): PersonaDimensionA1
  * getUnderstandableAttributes — Dim 3: readable, predictable, input assistance.
  * Maps to SC 3.1.1 / 3.1.2 / 3.2.1 / 3.2.2 / 3.2.3 / 3.3.1 / 3.3.2.
  */
-export function getUnderstandableAttributes(
-  p: PersonaA11yProfile
-): PersonaDimensionA11yAttributes {
+export function getUnderstandableAttributes(p: PersonaA11yProfile): PersonaDimensionA11yAttributes {
   return {
     lang: p.languageCode,
     'aria-description': p.simplifiedReadingLevel ? 'simplified-reading-level' : undefined,
@@ -200,9 +188,7 @@ export function getPersonaA11yAttributes(persona: PersonaAlias): PersonaA11yAttr
  * Returns an array of validation errors for a persona's A11Y profile.
  * An empty array means the profile is internally consistent and meets WCAG 2.1/2.2 AA.
  */
-export function validatePersonaA11yProfile(
-  persona: PersonaAlias
-): readonly string[] {
+export function validatePersonaA11yProfile(persona: PersonaAlias): readonly string[] {
   const errors: string[] = [];
   const a = persona.a11y;
 

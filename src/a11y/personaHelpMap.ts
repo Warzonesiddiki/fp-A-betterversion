@@ -215,9 +215,7 @@ export const PERSONA_HELP_MAP: readonly PersonaHelpTopics[] = [
 ];
 
 /** getHelpTopicsForPersona — Look up the Help topic mapping for a persona alias. */
-export function getHelpTopicsForPersona(
-  personaId: PersonaAliasId
-): PersonaHelpTopics | undefined {
+export function getHelpTopicsForPersona(personaId: PersonaAliasId): PersonaHelpTopics | undefined {
   return PERSONA_HELP_MAP.find((m) => m.personaId === personaId);
 }
 
