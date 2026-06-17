@@ -16,7 +16,9 @@ vi.mock('@/engines/SessionEngine', () => ({
 
 vi.mock(import('lucide-react'), async (importOriginal) => {
   const actual = await importOriginal();
-  const Icon = (props: any) => <span data-testid="mock-icon" {...props} />;
+  const Icon = (props: { className?: string; [key: string]: unknown }) => (
+    <span data-testid="mock-icon" {...props} />
+  );
   Icon.displayName = 'MockIcon';
   return {
     ...actual,

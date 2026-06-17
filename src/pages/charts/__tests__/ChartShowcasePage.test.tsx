@@ -37,17 +37,12 @@ vi.mock('recharts', () => ({
 
 vi.mock(import('lucide-react'), async (importOriginal) => {
   const actual = await importOriginal();
-  const Icon = (props: any) => <span data-testid="icon" {...props} />;
+  const Icon = (props: { className?: string; [key: string]: unknown }) => (
+    <span data-testid="icon" {...props} />
+  );
   Icon.displayName = 'Icon';
-  const proxy = new Proxy(Icon, {
-    get: (_target, prop) => {
-      if (prop === '__esModule' || prop === 'default' || prop === 'displayName') {
-        return prop === '__esModule' ? true : prop === 'default' ? Icon : 'Icon';
-      }
-      // For namespace imports, also return the proxy
-      return (..._args: unknown[]) => Icon;
-    },
-  });
+  // Suppress unused warning while preserving the reference for clarity
+  void Icon;
   return {
     ...actual,
     default: Icon,
