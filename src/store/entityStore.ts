@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { Entity } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { cacheSet, cacheGet, cacheClearStore, isOnline, markSynced } from '../utils/offlineCache';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 // =============================================================================
 // ENTITY STORE — Multi-entity management with offline caching
@@ -53,13 +54,13 @@ export const useEntityStore = create<EntityState>()(
 
         // --- CRUD ---
 
-        setEntities: (entities) => {
+        setEntities: enforce(Permissions.ENTITY_UPDATE, 'setEntities', (entities) => {
           set((state) => {
             state.entities = entities;
           });
-        },
+        }),
 
-        addEntity: (entity) => {
+        addEntity: enforce(Permissions.ENTITY_CREATE, 'addEntity', (entity) => {
           const newId = `ent-${Date.now()}`;
           const newEntity: Entity = {
             ...entity,
@@ -69,18 +70,22 @@ export const useEntityStore = create<EntityState>()(
             state.entities.push(newEntity);
           });
           return newId;
-        },
+        }),
 
-        updateEntity: (id, updates) => {
-          set((state) => {
-            const idx = state.entities.findIndex((e) => e.id === id);
-            if (idx !== -1) {
-              Object.assign(state.entities[idx]!, updates);
-            }
-          });
-        },
+        updateEntity: enforce(
+          Permissions.ENTITY_UPDATE,
+          'updateEntity',
+          (id, updates) => {
+            set((state) => {
+              const idx = state.entities.findIndex((e) => e.id === id);
+              if (idx !== -1) {
+                Object.assign(state.entities[idx]!, updates);
+              }
+            });
+          }
+        ),
 
-        deleteEntity: (id) => {
+        deleteEntity: enforce(Permissions.ENTITY_DELETE, 'deleteEntity', (id) => {
           set((state) => {
             // Remove the entity and all its descendants
             const idsToRemove = new Set<string>();
@@ -97,15 +102,15 @@ export const useEntityStore = create<EntityState>()(
               state.selectedEntityId = null;
             }
           });
-        },
+        }),
 
         // --- Selection ---
 
-        setSelectedEntity: (id) => {
+        setSelectedEntity: enforce(Permissions.UI_UPDATE, 'setSelectedEntity', (id) => {
           set((state) => {
             state.selectedEntityId = id;
           });
-        },
+        }),
 
         getSelectedEntity: () => {
           const { entities, selectedEntityId } = get();
@@ -151,7 +156,7 @@ export const useEntityStore = create<EntityState>()(
 
         // --- Offline Cache ---
 
-        syncToCache: async () => {
+        syncToCache: enforce(Permissions.ENTITY_UPDATE, 'syncToCache', async () => {
           const { entities } = get();
           try {
             await cacheClearStore('entities');
@@ -162,7 +167,7 @@ export const useEntityStore = create<EntityState>()(
           }
         },
 
-        loadFromCache: async () => {
+        loadFromCache: enforce(Permissions.ENTITY_READ, 'loadFromCache', async () => {
           try {
             const cached = await cacheGet<Entity[]>('entities', 'all');
             if (cached && cached.length > 0) {
@@ -177,7 +182,7 @@ export const useEntityStore = create<EntityState>()(
           }
         },
 
-        clearCache: async () => {
+        clearCache: enforce(Permissions.ENTITY_DELETE, 'clearCache', async () => {
           try {
             await cacheClearStore('entities');
           } catch {

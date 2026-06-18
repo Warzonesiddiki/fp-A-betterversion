@@ -4,6 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { Forecast, ForecastDriver, ForecastState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 interface ForecastSnapshot {
   forecasts: Forecast[];
@@ -32,7 +33,7 @@ export const useForecastStore = create<ForecastState>()(
         isLoading: false,
         error: null as string | null,
 
-        undo: () => {
+        undo: enforce(Permissions.UI_UPDATE, 'undo', () => {
           const snapshot = undoEngine.undo();
           if (snapshot !== null) {
             set({
@@ -41,9 +42,9 @@ export const useForecastStore = create<ForecastState>()(
               selectedForecastId: snapshot.selectedForecastId,
             });
           }
-        },
+        }),
 
-        redo: () => {
+        redo: enforce(Permissions.UI_UPDATE, 'redo', () => {
           const snapshot = undoEngine.redo();
           if (snapshot !== null) {
             set({
@@ -52,24 +53,28 @@ export const useForecastStore = create<ForecastState>()(
               selectedForecastId: snapshot.selectedForecastId,
             });
           }
-        },
+        }),
 
         canUndo: () => undoEngine.canUndo(),
         canRedo: () => undoEngine.canRedo(),
         getHistoryLength: () => undoEngine.getHistoryLength(),
 
-        setForecasts: (forecasts) => {
+        setForecasts: enforce(Permissions.FORECAST_UPDATE, 'setForecasts', (forecasts) => {
           captureForecastSnapshot(get);
           set({ forecasts });
-        },
+        }),
 
-        setSelectedForecast: (id) => {
-          const forecast = get().forecasts.find((f) => f.id === id);
-          if (!forecast) return;
-          set({ selectedForecastId: id });
-        },
+        setSelectedForecast: enforce(
+          Permissions.UI_UPDATE,
+          'setSelectedForecast',
+          (id) => {
+            const forecast = get().forecasts.find((f) => f.id === id);
+            if (!forecast) return;
+            set({ selectedForecastId: id });
+          }
+        ),
 
-        createForecast: (forecast) => {
+        createForecast: enforce(Permissions.FORECAST_CREATE, 'createForecast', (forecast) => {
           // Input validation
           if (!forecast || typeof forecast !== 'object') {
             throw new Error('forecast must be an object');
@@ -95,40 +100,52 @@ export const useForecastStore = create<ForecastState>()(
             state.forecasts.push(newForecast);
           });
           return newForecast.id;
-        },
+        }),
 
-        updateForecast: (id, updates) => {
-          captureForecastSnapshot(get);
-          set((state) => {
-            const forecast = state.forecasts.find((f) => f.id === id);
-            if (forecast) {
-              Object.assign(forecast, updates);
-              forecast.lastUpdated = new Date().toISOString();
-            }
-          });
-        },
+        updateForecast: enforce(
+          Permissions.FORECAST_UPDATE,
+          'updateForecast',
+          (id, updates) => {
+            captureForecastSnapshot(get);
+            set((state) => {
+              const forecast = state.forecasts.find((f) => f.id === id);
+              if (forecast) {
+                Object.assign(forecast, updates);
+                forecast.lastUpdated = new Date().toISOString();
+              }
+            });
+          }
+        ),
 
-        deleteForecast: (id) => {
-          captureForecastSnapshot(get);
-          set((state) => {
-            const idx = state.forecasts.findIndex((f) => f.id === id);
-            if (idx !== -1) state.forecasts.splice(idx, 1);
-            if (state.selectedForecastId === id) state.selectedForecastId = null;
-          });
-        },
+        deleteForecast: enforce(
+          Permissions.FORECAST_DELETE,
+          'deleteForecast',
+          (id) => {
+            captureForecastSnapshot(get);
+            set((state) => {
+              const idx = state.forecasts.findIndex((f) => f.id === id);
+              if (idx !== -1) state.forecasts.splice(idx, 1);
+              if (state.selectedForecastId === id) state.selectedForecastId = null;
+            });
+          }
+        ),
 
-        setDrivers: (drivers) => {
+        setDrivers: enforce(Permissions.FORECAST_UPDATE, 'setDrivers', (drivers) => {
           captureForecastSnapshot(get);
           set({ drivers });
-        },
+        }),
 
-        updateDriver: (id, updates) => {
-          captureForecastSnapshot(get);
-          set((state) => {
-            const driver = state.drivers.find((d) => d.id === id);
-            if (driver) Object.assign(driver, updates);
-          });
-        },
+        updateDriver: enforce(
+          Permissions.FORECAST_UPDATE,
+          'updateDriver',
+          (id, updates) => {
+            captureForecastSnapshot(get);
+            set((state) => {
+              const driver = state.drivers.find((d) => d.id === id);
+              if (driver) Object.assign(driver, updates);
+            });
+          }
+        ),
 
         setError: (error) => {
           set({ error });

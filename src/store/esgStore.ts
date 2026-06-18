@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface ESGMetric {
   id: string;
@@ -50,31 +51,36 @@ export const useESGStore = create<ESGState>()(
         isLoading: false,
         error: null,
 
-        setMetrics: (metrics) =>
+        setMetrics: enforce(Permissions.ANALYTICS_VIEW, 'setMetrics', (metrics) =>
           set((state) => {
             state.metrics = metrics;
-          }),
+          })
+        ),
 
-        addMetric: (metric) =>
+        addMetric: enforce(Permissions.ANALYTICS_RUN, 'addMetric', (metric) =>
           set((state) => {
             state.metrics.push(metric);
-          }),
+          })
+        ),
 
-        updateMetric: (id, updates) =>
+        updateMetric: enforce(Permissions.ANALYTICS_RUN, 'updateMetric', (id, updates) =>
           set((state) => {
             const idx = state.metrics.findIndex((m) => m.id === id);
             if (idx !== -1) Object.assign(state.metrics[idx]!, updates);
           }),
+        ),
 
-        removeMetric: (id) =>
+        removeMetric: enforce(Permissions.ANALYTICS_RUN, 'removeMetric', (id) =>
           set((state) => {
             state.metrics = state.metrics.filter((m) => m.id !== id);
-          }),
+          })
+        ),
 
-        setInitiatives: (initiatives) =>
+        setInitiatives: enforce(Permissions.ANALYTICS_RUN, 'setInitiatives', (initiatives) =>
           set((state) => {
             state.initiatives = initiatives;
-          }),
+          })
+        ),
 
         setLoading: (isLoading) =>
           set((state) => {

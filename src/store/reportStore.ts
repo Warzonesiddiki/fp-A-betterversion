@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { FinanceReport, ScheduledReport, ReportState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export const useReportStore = create<ReportState>()(
   subscribeWithSelector(
@@ -28,55 +29,74 @@ export const useReportStore = create<ReportState>()(
             state.isLoading = loading;
           }),
 
-        setReports: (reports) =>
+        setReports: enforce(Permissions.REPORT_UPDATE, 'setReports', (reports) =>
           set((state) => {
             state.reports = reports;
-          }),
+          })
+        ),
 
-        setActiveReport: (id) =>
+        setActiveReport: enforce(Permissions.UI_UPDATE, 'setActiveReport', (id) =>
           set((state) => {
             state.activeReportId = id;
-          }),
+          })
+        ),
 
-        createReport: (report) => {
+        createReport: enforce(Permissions.REPORT_CREATE, 'createReport', (report) => {
           const id = `rpt-${Date.now()}`;
           set((state) => {
             state.reports.push({ ...report, id } as FinanceReport);
           });
           return id;
-        },
+        }),
 
-        deleteReport: (id) =>
+        deleteReport: enforce(Permissions.REPORT_DELETE, 'deleteReport', (id) =>
           set((state) => {
             state.reports = state.reports.filter((r) => r.id !== id);
             if (state.activeReportId === id) state.activeReportId = null;
-          }),
+          })
+        ),
 
-        setScheduledReports: (scheduled) =>
-          set((state) => {
-            state.scheduledReports = scheduled;
-          }),
+        setScheduledReports: enforce(
+          Permissions.REPORT_SCHEDULE,
+          'setScheduledReports',
+          (scheduled) =>
+            set((state) => {
+              state.scheduledReports = scheduled;
+            })
+        ),
 
-        addScheduledReport: (scheduled) => {
-          const id = `sch-${Date.now()}`;
-          set((state) => {
-            state.scheduledReports.push({ ...scheduled, id } as ScheduledReport);
-          });
-          return id;
-        },
+        addScheduledReport: enforce(
+          Permissions.REPORT_SCHEDULE,
+          'addScheduledReport',
+          (scheduled) => {
+            const id = `sch-${Date.now()}`;
+            set((state) => {
+              state.scheduledReports.push({ ...scheduled, id } as ScheduledReport);
+            });
+            return id;
+          }
+        ),
 
-        deleteScheduledReport: (id) =>
-          set((state) => {
-            state.scheduledReports = state.scheduledReports.filter((s) => s.id !== id);
-          }),
+        deleteScheduledReport: enforce(
+          Permissions.REPORT_SCHEDULE,
+          'deleteScheduledReport',
+          (id) =>
+            set((state) => {
+              state.scheduledReports = state.scheduledReports.filter((s) => s.id !== id);
+            })
+        ),
 
-        toggleScheduledReport: (id) =>
-          set((state) => {
-            const idx = state.scheduledReports.findIndex((s) => s.id === id);
-            if (idx !== -1) {
-              state.scheduledReports[idx]!.isActive = !state.scheduledReports[idx]!.isActive;
-            }
-          }),
+        toggleScheduledReport: enforce(
+          Permissions.REPORT_SCHEDULE,
+          'toggleScheduledReport',
+          (id) =>
+            set((state) => {
+              const idx = state.scheduledReports.findIndex((s) => s.id === id);
+              if (idx !== -1) {
+                state.scheduledReports[idx]!.isActive = !state.scheduledReports[idx]!.isActive;
+              }
+            })
+        ),
       })),
       {
         name: 'report-store',

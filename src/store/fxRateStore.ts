@@ -3,6 +3,7 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { ExchangeRate } from '@/types';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 interface FxRateState {
   rates: ExchangeRate[];
@@ -18,14 +19,15 @@ export const useFxRateStore = create<FxRateState>()(
       immer((set) => ({
         rates: [],
 
-        setRates: (rates) => set({ rates }),
+        setRates: enforce(Permissions.FORECAST_UPDATE, 'setRates', (rates) => set({ rates })),
 
-        addRate: (rate) => set((state) => ({ rates: [...state.rates, rate] })),
+        addRate: enforce(Permissions.FORECAST_CREATE, 'addRate', (rate) => set((state) => ({ rates: [...state.rates, rate] })),
 
-        updateRate: (id, updates) =>
+        updateRate: enforce(Permissions.FORECAST_UPDATE, 'updateRate', (id, updates) =>
           set((state) => ({
             rates: state.rates.map((r) => (r.id === id ? { ...r, ...updates } : r)),
           })),
+        ),
 
         deleteRate: (id) => set((state) => ({ rates: state.rates.filter((r) => r.id !== id) })),
       })),

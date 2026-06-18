@@ -1,6 +1,7 @@
 // src/store/auditTrailStore.ts
-// Clio (Audit Muse) — Part 141 P0A-17 Audit Trail UI v0.2.1 REBUILD
-// Date: 2026-06-18 — D-007 5th SHL: previous v0.2 lost during 15-NEW-AGENT wave
+// Clio (Audit Muse) — Part 141 P0A-17 Audit Trail UI v0.2.2 SECURITY HARDENING
+// Date: 2026-06-18 — Sentinel-SecurityAuditor BRUTAL v2.0 audit fixes
+// D-007 8th SHL CASCADE — F-CLIO-2/3/6/7 P0 fixes applied per FOUNDER TURN 380+ "If they flag a violation, FIX it"
 // Lane: P0A-17 Audit Trail UI + 6 Data tasks (OLAP/Lineage/Quality/MDM/Schema/Backup)
 
 import { create } from 'zustand';
@@ -8,11 +9,9 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import type { CellAddress } from '@/types/cell';
-import type {
-  CellAuditEntry,
-  ExtendedAuditEntry,
-  AuditFilters,
-} from '@/types/audit';
+import type { CellAuditEntry, ExtendedAuditEntry, AuditFilters, AuditSource } from '@/types/audit';
+
+export type { ExtendedAuditEntry, AuditSource };
 
 // ---------------------------------------------------------------------------
 // Types
@@ -21,6 +20,23 @@ import type {
 export type AuditOperation = 'write' | 'update' | 'delete' | 'bulk';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'auto';
 export type DataType = 'number' | 'string' | 'boolean' | 'date' | 'object' | 'array';
+
+/** Hera T-4.30 RBAC roles — only ADMIN/COMPLIANCE/DPO can view GDPR audit entries */
+export type AuditRole =
+  | 'admin'
+  | 'compliance'
+  | 'data-protection-officer'
+  | 'auditor'
+  | 'manager'
+  | 'analyst'
+  | 'viewer';
+
+/** Roles allowed to view GDPR-source audit entries (F-CLIO-2/7 RBAC gating) */
+export const GDPR_AUDIT_VIEW_ROLES: readonly AuditRole[] = [
+  'admin',
+  'compliance',
+  'data-protection-officer',
+] as const;
 
 export interface RecordInput {
   cellId: CellAddress;
@@ -45,6 +61,8 @@ interface State {
   sortDir: 'asc' | 'desc';
   selectedEntryId: string | null;
   loading: boolean;
+  /** F-CLIO-2/7 RBAC gating — current user's role (Hera T-4.30 RBAC coupling) */
+  currentUserRole: AuditRole;
 }
 
 interface Actions {
@@ -63,21 +81,68 @@ interface Actions {
   refreshEntries: () => void;
   exportToCSV: () => string;
   exportToJSON: () => string;
+  /** F-CLIO-2/7 RBAC gating — sets current user role for GDPR audit visibility check */
+  setCurrentUserRole: (role: AuditRole) => void;
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-const uid = (): string =>
-  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+/**
+ * F-CLIO-6 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — CWE-338 WEAK PRNG):
+ * Use crypto.randomUUID() (CSPRNG) instead of Math.random() for security-critical
+ * audit entry IDs. Falls back to Math.random() only in environments where
+ * crypto.randomUUID is unavailable (e.g., legacy browsers without crypto API).
+ */
+const uid = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  // Fallback: combine high-resolution timestamp + Math.random (not ideal, but functional)
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+};
 
 const now = (): number => Date.now();
 
-const makeEntry = (
-  operation: AuditOperation,
-  input: RecordInput,
-): ExtendedAuditEntry => ({
+/**
+ * F-CLIO-3 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — GDPR Art. 5(1)(c) + Art. 32 + CWE-359):
+ * PIIRedactor redacts PII fields before export to prevent leakage of email addresses
+ * (e.g., userId = "alice@finplan.io"). Pattern per Hades T-15 PIIRedactor.
+ *
+ * Rules:
+ * - Email addresses (userId, approvalUserId) → first 3 chars + "***" + domain
+ * - Version/Consent/Breach/RBAC IDs → unchanged (not PII, system identifiers)
+ * - Cell address → unchanged (sector/scenario/period/lineItem not PII)
+ * - Metadata → recursively redact string fields matching PII patterns
+ */
+const PII_EMAIL_PATTERN = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+const redactEmail = (email: string): string => {
+  const match = email.match(PII_EMAIL_PATTERN);
+  if (!match) return email;
+  const [localPart, domain] = email.split('@');
+  if (!domain) return email;
+  const prefix = localPart ? localPart.slice(0, 3) : '';
+  return `${prefix}***@${domain}`;
+};
+
+const redactPII = (entry: ExtendedAuditEntry): ExtendedAuditEntry => ({
+  ...entry,
+  userId: redactEmail(entry.userId),
+  approvalUserId: entry.approvalUserId ? redactEmail(entry.approvalUserId) : undefined,
+  // Recursively redact metadata string fields
+  metadata: entry.metadata
+    ? Object.fromEntries(
+        Object.entries(entry.metadata).map(([k, v]) => [
+          k,
+          typeof v === 'string' && PII_EMAIL_PATTERN.test(v) ? redactEmail(v) : v,
+        ])
+      )
+    : undefined,
+});
+
+const makeEntry = (operation: AuditOperation, input: RecordInput): ExtendedAuditEntry => ({
   id: uid(),
   cellId: input.cellId,
   userId: input.userId,
@@ -136,6 +201,8 @@ export const useAuditTrailStore = create<State & Actions>()(
       sortDir: 'desc',
       selectedEntryId: null,
       loading: false,
+      // F-CLIO-2/7 RBAC gating — default to 'viewer' (no GDPR audit access)
+      currentUserRole: 'viewer' as AuditRole,
 
       seedDemoData: () => {
         const entries: ExtendedAuditEntry[] = [];
@@ -153,7 +220,9 @@ export const useAuditTrailStore = create<State & Actions>()(
             dataType: 'number',
             previousValue: i % 3 === 0 ? null : Math.round(Math.random() * 100000) / 100,
             newValue: Math.round(Math.random() * 100000) / 100,
-            approvalStatus: (['approved', 'auto', 'pending', 'approved'] as ApprovalStatus[])[i % 4]!,
+            approvalStatus: (['approved', 'auto', 'pending', 'approved'] as ApprovalStatus[])[
+              i % 4
+            ]!,
             approvalUserId: i % 2 === 0 ? 'manager@finplan.io' : undefined,
             approvalTimestamp: i % 2 === 0 ? now() - i * 60_000 : undefined,
             source: (['manual', 'import', 'api', 'plugin'] as const)[i % 4]!,
@@ -286,6 +355,8 @@ export const useAuditTrailStore = create<State & Actions>()(
 
       exportToCSV: () => {
         const { entries } = get();
+        // F-CLIO-3 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — GDPR Art. 5(1)(c) + Art. 32 + CWE-359):
+        // Apply PIIRedactor before CSV export to redact email addresses.
         const header = [
           'id',
           'timestamp',
@@ -299,54 +370,96 @@ export const useAuditTrailStore = create<State & Actions>()(
           'source',
           'transactionId',
         ].join(',');
-        const rows = entries.map((e) =>
-          [
-            e.id,
-            new Date(e.timestamp).toISOString(),
-            `${e.cellId.sectorId}/${e.cellId.scenarioId}/${e.cellId.periodId}/${e.cellId.lineItemId}`,
-            e.userId,
-            e.operation,
-            e.dataType,
-            JSON.stringify(e.previousValue ?? ''),
-            JSON.stringify(e.newValue),
-            e.approvalStatus,
-            e.source,
-            e.transactionId ?? '',
+        const rows = entries.map((e) => {
+          const redacted = redactPII(e);
+          return [
+            redacted.id,
+            new Date(redacted.timestamp).toISOString(),
+            `${redacted.cellId.sectorId}/${redacted.cellId.scenarioId}/${redacted.cellId.periodId}/${redacted.cellId.lineItemId}`,
+            redacted.userId,
+            redacted.operation,
+            redacted.dataType,
+            JSON.stringify(redacted.previousValue ?? ''),
+            JSON.stringify(redacted.newValue),
+            redacted.approvalStatus,
+            redacted.source,
+            redacted.transactionId ?? '',
           ]
             .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
-            .join(','),
-        );
+            .join(',');
+        });
         return [header, ...rows].join('\n');
       },
 
       exportToJSON: () => {
         const { entries } = get();
-        return JSON.stringify(entries, null, 2);
+        // F-CLIO-3 FIX: Apply PIIRedactor before JSON export
+        return JSON.stringify(entries.map(redactPII), null, 2);
       },
-    })),
-  ),
+
+      // F-CLIO-2/7 RBAC gating — set current user role for GDPR audit visibility check
+      setCurrentUserRole: (role: AuditRole) => {
+        set((state) => {
+          state.currentUserRole = role;
+        });
+      },
+    }))
+  )
 );
 
 // ---------------------------------------------------------------------------
 // Selectors (memoized helpers)
 // ---------------------------------------------------------------------------
 
+/**
+ * F-CLIO-2/7 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — CWE-862 Missing Authorization + SOC2 CC6.1 + GDPR Art. 30 ROPA):
+ * Selector that checks whether the current user role can view GDPR-source audit entries.
+ * Only admin / compliance / data-protection-officer roles are permitted.
+ */
+export const selectCanViewGdprAudit = (state: State & Actions): boolean =>
+  GDPR_AUDIT_VIEW_ROLES.includes(state.currentUserRole);
+
+/**
+ * F-CLIO-2/7 FIX: Helper that filters GDPR-source entries from the entries array
+ * for non-RBAC-permitted users. Used by selectFilteredEntries.
+ */
+const filterByGdprAccess = (
+  entries: ExtendedAuditEntry[],
+  canViewGdpr: boolean
+): ExtendedAuditEntry[] => (canViewGdpr ? entries : entries.filter((e) => e.source !== 'gdpr'));
+
 export const selectFilteredEntries = (state: State & Actions): ExtendedAuditEntry[] => {
   const { entries, filters, sortField, sortDir } = state;
-  const filtered = entries.filter((e) => {
+  // F-CLIO-2/7 FIX: Pre-filter GDPR-source entries for non-RBAC users
+  const accessibleEntries = filterByGdprAccess(entries, selectCanViewGdprAudit(state));
+  const filtered = accessibleEntries.filter((e) => {
     if (filters.cellId) {
       const cellKey = `${e.cellId.sectorId}/${e.cellId.scenarioId}/${e.cellId.periodId}/${e.cellId.lineItemId}`;
       if (!cellKey.toLowerCase().includes(filters.cellId.toLowerCase())) return false;
     }
     if (filters.userId && e.userId !== filters.userId) return false;
-    if (filters.operation && filters.operation.length > 0 && !filters.operation.includes(e.operation)) return false;
-    if (filters.dataType && filters.dataType.length > 0 && !filters.dataType.includes(e.dataType)) return false;
+    if (
+      filters.operation &&
+      filters.operation.length > 0 &&
+      !filters.operation.includes(e.operation)
+    )
+      return false;
+    if (filters.dataType && filters.dataType.length > 0 && !filters.dataType.includes(e.dataType))
+      return false;
     if (
       filters.approvalStatus &&
       filters.approvalStatus.length > 0 &&
       !filters.approvalStatus.includes(e.approvalStatus)
-    ) return false;
-    if (filters.source && e.source !== filters.source) return false;
+    )
+      return false;
+    // F-CLIO-2 FIX: GDPR source filter only available to RBAC-permitted users
+    if (filters.source) {
+      if (filters.source === 'gdpr' && !selectCanViewGdprAudit(state)) return false;
+      if (e.source !== filters.source) return false;
+    }
+    // F-CLIO-7 FIX: hasConsent filter only available to RBAC-permitted users
+    if (filters.hasConsent && !selectCanViewGdprAudit(state)) return false;
+    if (filters.hasConsent && !e.consentId) return false;
     if (filters.transactionId && e.transactionId !== filters.transactionId) return false;
     if (filters.dateRange) {
       const [from, to] = filters.dateRange;
@@ -358,7 +471,8 @@ export const selectFilteredEntries = (state: State & Actions): ExtendedAuditEntr
     }
     if (filters.fullTextSearch) {
       const q = filters.fullTextSearch.toLowerCase();
-      const haystack = `${e.id} ${e.userId} ${e.cellId.lineItemId} ${JSON.stringify(e.metadata ?? '')}`.toLowerCase();
+      const haystack =
+        `${e.id} ${e.userId} ${e.cellId.lineItemId} ${JSON.stringify(e.metadata ?? '')}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     if (filters.hasVersion && !e.versionId) return false;
@@ -370,7 +484,8 @@ export const selectFilteredEntries = (state: State & Actions): ExtendedAuditEntr
     if (sortField === 'timestamp') return (a.timestamp - b.timestamp) * dir;
     if (sortField === 'userId') return a.userId.localeCompare(b.userId) * dir;
     if (sortField === 'operation') return a.operation.localeCompare(b.operation) * dir;
-    if (sortField === 'approvalStatus') return a.approvalStatus.localeCompare(b.approvalStatus) * dir;
+    if (sortField === 'approvalStatus')
+      return a.approvalStatus.localeCompare(b.approvalStatus) * dir;
     if (sortField === 'cellId') return a.cellId.lineItemId.localeCompare(b.cellId.lineItemId) * dir;
     return 0;
   });
@@ -392,7 +507,9 @@ export const selectTotalPages = (state: State & Actions): number => {
 export const selectStats = (state: State & Actions) => {
   const { entries } = state;
   const uniqueUsers = new Set(entries.map((e) => e.userId));
-  const uniqueCells = new Set(entries.map((e) => `${e.cellId.sectorId}/${e.cellId.periodId}/${e.cellId.lineItemId}`));
+  const uniqueCells = new Set(
+    entries.map((e) => `${e.cellId.sectorId}/${e.cellId.periodId}/${e.cellId.lineItemId}`)
+  );
   const operationCounts: Record<AuditOperation, number> = {
     write: 0,
     update: 0,

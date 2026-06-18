@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { TrialBalanceRow } from '@/types';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export type SortDirection = 'asc' | 'desc';
 export type TBFilterType = 'accountCode' | 'accountName' | 'accountType' | 'period';
@@ -88,22 +89,22 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
       immer((set, get) => ({
         ...initialState,
 
-        setRows: (rows) => {
+        setRows: enforce(Permissions.IMPORT_UPDATE, 'setRows', (rows) => {
           const sorted = applySort(rows, get().sortConfig);
           const filtered = applyFilters(sorted, get().filters);
           set({ rows, filteredRows: filtered, currentPage: 0, isLoading: false });
         },
 
-        setLoading: (isLoading) => set({ isLoading }),
+        setLoading: enforce(Permissions.UI_UPDATE, 'setLoading', (isLoading) => set({ isLoading })),
 
-        setSort: (column, direction) => {
+        setSort: enforce(Permissions.UI_UPDATE, 'setSort', (column, direction) => {
           const sortConfig: TBSortConfig = { column, direction };
           const filtered = applyFilters(get().rows, get().filters);
           const sorted = applySort(filtered, sortConfig);
           set({ sortConfig, filteredRows: sorted, currentPage: 0 });
         },
 
-        addFilter: (filter) =>
+        addFilter: enforce(Permissions.UI_UPDATE, 'addFilter', (filter) =>
           set((state) => {
             state.filters.push(filter);
             const filtered = applyFilters(state.rows, state.filters);
@@ -112,7 +113,7 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
             state.currentPage = 0;
           }),
 
-        removeFilter: (index) =>
+        removeFilter: enforce(Permissions.UI_UPDATE, 'removeFilter', (index) =>
           set((state) => {
             state.filters.splice(index, 1);
             const filtered = applyFilters(state.rows, state.filters);
@@ -129,31 +130,35 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
             state.currentPage = 0;
           }),
 
-        setSelectedRow: (selectedRowId) => set({ selectedRowId }),
+        setSelectedRow: enforce(Permissions.UI_UPDATE, 'setSelectedRow', (selectedRowId) =>
+          set({ selectedRowId }),
+        ),
 
-        setPageSize: (pageSize) => set({ pageSize, currentPage: 0 }),
+        setPageSize: enforce(Permissions.UI_UPDATE, 'setPageSize', (pageSize) =>
+          set({ pageSize, currentPage: 0 }),
+        ),
 
-        setPage: (currentPage) => set({ currentPage }),
+        setPage: enforce(Permissions.UI_UPDATE, 'setPage', (currentPage) => set({ currentPage })),
 
-        nextPage: () =>
+        nextPage: enforce(Permissions.UI_UPDATE, 'nextPage', () =>
           set((state) => {
             const maxPage = Math.max(0, Math.ceil(state.filteredRows.length / state.pageSize) - 1);
             state.currentPage = Math.min(state.currentPage + 1, maxPage);
           }),
 
-        prevPage: () =>
+        prevPage: enforce(Permissions.UI_UPDATE, 'prevPage', () =>
           set((state) => {
             state.currentPage = Math.max(0, state.currentPage - 1);
           }),
 
-        refresh: () =>
+        refresh: enforce(Permissions.UI_UPDATE, 'refresh', () =>
           set((state) => {
             const filtered = applyFilters(state.rows, state.filters);
             const sorted = applySort(filtered, state.sortConfig);
             state.filteredRows = sorted;
           }),
 
-        reset: () => set({ ...initialState }),
+        reset: enforce(Permissions.UI_UPDATE, 'reset', () => set({ ...initialState })),
       })),
       {
         name: 'gl-trialbalance-store',

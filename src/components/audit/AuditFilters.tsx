@@ -1,9 +1,10 @@
 // src/components/audit/AuditFilters.tsx
 // Clio (Audit Muse) — Part 141 P0A-17 — 12 filter types with chips + dropdowns + date pickers
+// v0.2.2 SECURITY HARDENING 2026-06-18 — Sentinel BRUTAL v2.0 P0 fixes F-CLIO-2/7 RBAC gating
 
-import { useCallback } from 'react';
+import { useCallback, type JSX } from 'react';
 import { Search, X } from 'lucide-react';
-import { useAuditTrailStore } from '@/store/auditTrailStore';
+import { useAuditTrailStore, selectCanViewGdprAudit } from '@/store/auditTrailStore';
 import type {
   AuditOperation,
   ApprovalStatus,
@@ -17,10 +18,26 @@ import { Button } from '@/components/ui/Button';
 // ---------------------------------------------------------------------------
 
 const OPERATIONS: { value: AuditOperation; label: string; color: string }[] = [
-  { value: 'write', label: 'Write', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200' },
-  { value: 'update', label: 'Update', color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200' },
-  { value: 'delete', label: 'Delete', color: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200' },
-  { value: 'bulk', label: 'Bulk', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200' },
+  {
+    value: 'write',
+    label: 'Write',
+    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200',
+  },
+  {
+    value: 'update',
+    label: 'Update',
+    color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
+  },
+  {
+    value: 'delete',
+    label: 'Delete',
+    color: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
+  },
+  {
+    value: 'bulk',
+    label: 'Bulk',
+    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200',
+  },
 ];
 
 const DATA_TYPES: { value: DataType; label: string }[] = [
@@ -33,13 +50,29 @@ const DATA_TYPES: { value: DataType; label: string }[] = [
 ];
 
 const APPROVAL_STATUSES: { value: ApprovalStatus; label: string; color: string }[] = [
-  { value: 'pending', label: 'Pending', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200' },
-  { value: 'approved', label: 'Approved', color: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200' },
-  { value: 'rejected', label: 'Rejected', color: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200' },
-  { value: 'auto', label: 'Auto', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200' },
+  {
+    value: 'pending',
+    label: 'Pending',
+    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200',
+  },
+  {
+    value: 'approved',
+    label: 'Approved',
+    color: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
+  },
+  {
+    value: 'rejected',
+    label: 'Rejected',
+    color: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
+  },
+  {
+    value: 'auto',
+    label: 'Auto',
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200',
+  },
 ];
 
-const SOURCES: AuditSource[] = ['manual', 'import', 'api', 'plugin', 'automation', 'gdpr'];
+const ALL_SOURCES: AuditSource[] = ['manual', 'import', 'api', 'plugin', 'automation', 'gdpr'];
 
 // ---------------------------------------------------------------------------
 // Component
@@ -50,14 +83,19 @@ export function AuditFilters(): JSX.Element {
   const setFilter = useAuditTrailStore((s) => s.setFilter);
   const clearFilters = useAuditTrailStore((s) => s.clearFilters);
   const entries = useAuditTrailStore((s) => s.entries);
+  // F-CLIO-2/7 FIX: RBAC gating for GDPR-source filter and hasConsent checkbox
+  const canViewGdprAudit = useAuditTrailStore(selectCanViewGdprAudit);
+  const visibleSources = canViewGdprAudit ? ALL_SOURCES : ALL_SOURCES.filter((s) => s !== 'gdpr');
 
   const toggleArrayFilter = useCallback(
     <T extends string>(key: 'operation' | 'dataType' | 'approvalStatus', value: T) => {
       const current = (filters[key] as T[] | undefined) ?? [];
-      const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
+      const next = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
       setFilter(key, next.length > 0 ? (next as never) : undefined);
     },
-    [filters, setFilter],
+    [filters, setFilter]
   );
 
   const uniqueUsers = Array.from(new Set(entries.map((e) => e.userId))).sort();
@@ -107,7 +145,9 @@ export function AuditFilters(): JSX.Element {
 
       {/* 2. User dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">User</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          User
+        </label>
         <select
           value={filters.userId ?? ''}
           onChange={(e) => setFilter('userId', e.target.value || undefined)}
@@ -202,15 +242,24 @@ export function AuditFilters(): JSX.Element {
 
       {/* 6. Source dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Source</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Source
+          {!canViewGdprAudit && (
+            <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+              (GDPR restricted — admin/compliance/DPO only)
+            </span>
+          )}
+        </label>
         <select
           value={filters.source ?? ''}
-          onChange={(e) => setFilter('source', (e.target.value || undefined) as AuditSource | undefined)}
+          onChange={(e) =>
+            setFilter('source', (e.target.value || undefined) as AuditSource | undefined)
+          }
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           aria-label="Filter by source"
         >
           <option value="">All sources</option>
-          {SOURCES.map((s) => (
+          {visibleSources.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
@@ -235,21 +284,21 @@ export function AuditFilters(): JSX.Element {
 
       {/* 8. Date range */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Range</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Date Range
+        </label>
         <div className="flex gap-2">
           <input
             type="date"
             value={
-              filters.dateRange
-                ? new Date(filters.dateRange[0]).toISOString().slice(0, 10)
-                : ''
+              filters.dateRange ? new Date(filters.dateRange[0]).toISOString().slice(0, 10) : ''
             }
             onChange={(e) => {
               const from = e.target.value ? new Date(e.target.value).getTime() : undefined;
               const to = filters.dateRange?.[1];
               setFilter(
                 'dateRange',
-                from && to ? [from, to] : from ? [from, Date.now()] : undefined,
+                from && to ? [from, to] : from ? [from, Date.now()] : undefined
               );
             }}
             className="flex-1 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -258,16 +307,18 @@ export function AuditFilters(): JSX.Element {
           <input
             type="date"
             value={
-              filters.dateRange
-                ? new Date(filters.dateRange[1]).toISOString().slice(0, 10)
-                : ''
+              filters.dateRange ? new Date(filters.dateRange[1]).toISOString().slice(0, 10) : ''
             }
             onChange={(e) => {
               const to = e.target.value ? new Date(e.target.value).getTime() : undefined;
               const from = filters.dateRange?.[0];
               setFilter(
                 'dateRange',
-                from && to ? [from, to] : to ? [Date.now() - 30 * 24 * 60 * 60 * 1000, to] : undefined,
+                from && to
+                  ? [from, to]
+                  : to
+                    ? [Date.now() - 30 * 24 * 60 * 60 * 1000, to]
+                    : undefined
               );
             }}
             className="flex-1 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -294,7 +345,7 @@ export function AuditFilters(): JSX.Element {
         </div>
       </div>
 
-      {/* 11 + 12. Has version + Has GDPR consent */}
+      {/* 11 + 12. Has version + Has GDPR consent (GDPR gate F-CLIO-7) */}
       <div className="space-y-2">
         <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           <input
@@ -306,16 +357,18 @@ export function AuditFilters(): JSX.Element {
           />
           Has version (Part 140 Cell Versioning)
         </label>
-        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
-            type="checkbox"
-            checked={filters.hasConsent ?? false}
-            onChange={(e) => setFilter('hasConsent', e.target.checked || undefined)}
-            className="h-4 w-4 rounded border-gray-300"
-            aria-label="Has GDPR consent"
-          />
-          Has GDPR consent (Hades consentRegistry)
-        </label>
+        {canViewGdprAudit && (
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <input
+              type="checkbox"
+              checked={filters.hasConsent ?? false}
+              onChange={(e) => setFilter('hasConsent', e.target.checked || undefined)}
+              className="h-4 w-4 rounded border-gray-300"
+              aria-label="Has GDPR consent"
+            />
+            Has GDPR consent (Hades consentRegistry)
+          </label>
+        )}
       </div>
     </div>
   );

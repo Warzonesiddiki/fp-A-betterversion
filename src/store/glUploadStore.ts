@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { ColumnMapping } from '@/types';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export type UploadStep = 'select' | 'mapping' | 'preview' | 'importing' | 'complete' | 'error';
 export type ImportFormat = 'csv' | 'xlsx' | 'xls' | 'unknown';
@@ -84,7 +85,7 @@ export const useGLUploadStore = create<GLUploadState>()(
       immer((set) => ({
         ...initialState,
 
-        setFile: (fileInfo, csvColumns) => {
+        setFile: enforce(Permissions.IMPORT_CREATE, 'setFile', (fileInfo, csvColumns) => {
           set({
             fileInfo,
             csvColumns,
@@ -96,22 +97,22 @@ export const useGLUploadStore = create<GLUploadState>()(
           });
         },
 
-        setStep: (step) => set({ step }),
+        setStep: enforce(Permissions.UI_UPDATE, 'setStep', (step) => set({ step })),
 
-        setMappings: (mappings) => set({ mappings }),
+        setMappings: enforce(Permissions.IMPORT_UPDATE, 'setMappings', (mappings) => set({ mappings })),
 
-        setPreview: (preview, validationErrors) => {
+        setPreview: enforce(Permissions.IMPORT_UPDATE, 'setPreview', (preview, validationErrors) => {
           set({ preview, validationErrors, step: preview.length > 0 ? 'preview' : 'error' });
         },
 
-        setProgress: (progress) =>
+        setProgress: enforce(Permissions.UI_UPDATE, 'setProgress', (progress) =>
           set((state) => {
             state.progress = { ...state.progress, ...progress };
           }),
 
-        setAutoMapping: (isAutoMapping) => set({ isAutoMapping }),
+        setAutoMapping: enforce(Permissions.IMPORT_UPDATE, 'setAutoMapping', (isAutoMapping) => set({ isAutoMapping })),
 
-        completeSession: (session) =>
+        completeSession: enforce(Permissions.IMPORT_CREATE, 'completeSession', (session) =>
           set((state) => {
             state.session = session;
             state.sessionHistory.unshift(session);
@@ -124,9 +125,9 @@ export const useGLUploadStore = create<GLUploadState>()(
             };
           }),
 
-        reset: () => set({ ...initialState }),
+        reset: enforce(Permissions.UI_UPDATE, 'reset', () => set({ ...initialState })),
 
-        clearHistory: () => set({ sessionHistory: [] }),
+        clearHistory: enforce(Permissions.IMPORT_DELETE, 'clearHistory', () => set({ sessionHistory: [] })),
       })),
       {
         name: 'gl-upload-store',

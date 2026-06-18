@@ -6,6 +6,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { Budget, BudgetState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export const useBudgetStore = create<BudgetState>()(
   subscribeWithSelector(
@@ -70,7 +71,7 @@ export const useBudgetStore = create<BudgetState>()(
           });
         },
 
-        createBudget: (budget) => {
+        createBudget: enforce(Permissions.BUDGET_CREATE, 'createBudget', (budget) => {
           try {
             // Input validation
             if (!budget || typeof budget !== 'object') {
@@ -112,7 +113,7 @@ export const useBudgetStore = create<BudgetState>()(
           }
         },
 
-        deleteBudget: (id) => {
+        deleteBudget: enforce(Permissions.BUDGET_DELETE, 'deleteBudget', (id) => {
           const budget = get().budgets.find((b) => b.id === id);
           set((state) => {
             const idx = state.budgets.findIndex((b) => b.id === id);
@@ -128,7 +129,7 @@ export const useBudgetStore = create<BudgetState>()(
           }
         },
 
-        duplicateBudget: (id) => {
+        duplicateBudget: enforce(Permissions.BUDGET_CREATE, 'duplicateBudget', (id) => {
           const budget = get().budgets.find((b) => b.id === id);
           if (budget) {
             const newId = `bgt-${Date.now()}`;
@@ -157,7 +158,7 @@ export const useBudgetStore = create<BudgetState>()(
           return '';
         },
 
-        submitBudget: async (id) => {
+        submitBudget: enforce(Permissions.BUDGET_UPDATE, 'submitBudget', async (id) => {
           try {
             set((state) => {
               state.isSubmitting = true;
@@ -187,7 +188,7 @@ export const useBudgetStore = create<BudgetState>()(
           }
         },
 
-        approveBudget: (id) => {
+        approveBudget: enforce(Permissions.BUDGET_UPDATE, 'approveBudget', (id) => {
           set((state) => {
             const budget = state.budgets.find((b) => b.id === id);
             if (budget) {
@@ -201,7 +202,7 @@ export const useBudgetStore = create<BudgetState>()(
           });
         },
 
-        rejectBudget: (id) => {
+        rejectBudget: enforce(Permissions.BUDGET_UPDATE, 'rejectBudget', (id) => {
           set((state) => {
             const budget = state.budgets.find((b) => b.id === id);
             if (budget) {
@@ -215,7 +216,7 @@ export const useBudgetStore = create<BudgetState>()(
           });
         },
 
-        updateBudget: (id: string, updates: Partial<Budget>) => {
+        updateBudget: enforce(Permissions.BUDGET_UPDATE, 'updateBudget', (id: string, updates: Partial<Budget>) => {
           set((state) => {
             const budget = state.budgets.find((b) => b.id === id);
             if (budget) {
@@ -245,11 +246,11 @@ export const useBudgetStore = create<BudgetState>()(
           }
         },
 
-        setSelectedCell: (id) => {
+        setSelectedCell: enforce(Permissions.UI_UPDATE, 'setSelectedCell', (id) => {
           set((state) => {
             state.selectedCellId = id;
           });
-        },
+        }),
       })),
       {
         name: 'budget-store',

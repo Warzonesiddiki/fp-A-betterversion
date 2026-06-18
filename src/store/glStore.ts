@@ -15,6 +15,7 @@ import { masterStorage } from '../utils/masterStorage';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 function extractTimeCode(dateStr: string): string {
   const d = new Date(dateStr);
@@ -70,7 +71,7 @@ export const useGLStore = create<GLState>()(
         lastImportEntryIds: [],
 
         // --- Undo/Redo Actions ---
-        undo: () => {
+        undo: enforce(Permissions.UI_UPDATE, 'undo', () => {
           const snapshot = undoEngine.undo();
           if (snapshot !== null) {
             set({
@@ -80,9 +81,9 @@ export const useGLStore = create<GLState>()(
               accountAnalysis: snapshot.accountAnalysis,
             });
           }
-        },
+        }),
 
-        redo: () => {
+        redo: enforce(Permissions.UI_UPDATE, 'redo', () => {
           const snapshot = undoEngine.redo();
           if (snapshot !== null) {
             set({
@@ -92,7 +93,7 @@ export const useGLStore = create<GLState>()(
               accountAnalysis: snapshot.accountAnalysis,
             });
           }
-        },
+        }),
 
         canUndo: () => undoEngine.canUndo(),
         canRedo: () => undoEngine.canRedo(),
@@ -100,7 +101,7 @@ export const useGLStore = create<GLState>()(
 
         // --- Mutation Actions (with undo capture) ---
 
-        setEntries: (entries) => {
+        setEntries: enforce(Permissions.IMPORT_CREATE, 'setEntries', (entries) => {
           captureGLSnapshot(get);
           const ids = entries.map((e) => e.id);
           set({
@@ -114,9 +115,9 @@ export const useGLStore = create<GLState>()(
             title: 'GL Entries Set',
             message: `Successfully loaded ${entries.length} general ledger entries`,
           });
-        },
+        }),
 
-        addEntry: (entry) => {
+        addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
           captureGLSnapshot(get);
           const entries = Array.isArray(entry) ? entry : [entry];
           set((state) => {
@@ -128,12 +129,12 @@ export const useGLStore = create<GLState>()(
             title: 'Entries Added',
             message: `Successfully added ${entries.length} new entries to general ledger`,
           });
-        },
+        }),
 
-        setAccounts: (accounts) => {
+        setAccounts: enforce(Permissions.IMPORT_UPDATE, 'setAccounts', (accounts) => {
           captureGLSnapshot(get);
           set({ accounts });
-        },
+        }),
 
         generateTrialBalance: () => {
           set({ isLoading: true });
@@ -211,23 +212,27 @@ export const useGLStore = create<GLState>()(
           });
         },
 
-        filterByDate: (start, end) => {
+        filterByDate: enforce(Permissions.UI_UPDATE, 'filterByDate', (start, end) => {
           set({ dateFilter: { start, end } });
-        },
+        }),
 
-        filterByAccount: (accountIds) => {
+        filterByAccount: enforce(Permissions.UI_UPDATE, 'filterByAccount', (accountIds) => {
           set({ accountFilter: accountIds });
-        },
+        }),
 
-        clearFilters: () => {
+        clearFilters: enforce(Permissions.UI_UPDATE, 'clearFilters', () => {
           set({ dateFilter: null, accountFilter: [] });
-        },
+        }),
 
-        updateColumnMapping: (mapping) => {
-          set({ columnMapping: mapping });
-        },
+        updateColumnMapping: enforce(
+          Permissions.IMPORT_UPDATE,
+          'updateColumnMapping',
+          (mapping) => {
+            set({ columnMapping: mapping });
+          }
+        ),
 
-        clearData: () => {
+        clearData: enforce(Permissions.IMPORT_DELETE, 'clearData', () => {
           captureGLSnapshot(get);
           set({
             entries: [],
@@ -241,20 +246,28 @@ export const useGLStore = create<GLState>()(
             title: 'GL Data Cleared',
             message: 'General ledger data has been reset',
           });
-        },
+        }),
 
-        setImportProgress: (progress) =>
-          set({ importProgress: Math.max(0, Math.min(100, progress)) }),
+        setImportProgress: enforce(
+          Permissions.UI_UPDATE,
+          'setImportProgress',
+          (progress) => set({ importProgress: Math.max(0, Math.min(100, progress)) })
+        ),
 
-        setImportStatus: (status) =>
+        setImportStatus: enforce(Permissions.UI_UPDATE, 'setImportStatus', (status) =>
           set({
             importStatus: status,
             importError: status === 'error' ? get().importError : null,
-          }),
+          })
+        ),
 
-        setImportError: (error) => set({ importError: error, importStatus: 'error' }),
+        setImportError: enforce(
+          Permissions.UI_UPDATE,
+          'setImportError',
+          (error) => set({ importError: error, importStatus: 'error' })
+        ),
 
-        recordImport: (result) =>
+        recordImport: enforce(Permissions.IMPORT_CREATE, 'recordImport', (result) =>
           set((state) => {
             state.importHistory.unshift({
               id: `import-${Date.now()}`,
@@ -270,9 +283,10 @@ export const useGLStore = create<GLState>()(
               title: 'Import Completed',
               message: `Processed ${result.rowCount} rows. Success: ${result.successCount}, Errors: ${result.errorCount}`,
             });
-          }),
+          })
+        ),
 
-        undoLastImport: () =>
+        undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', () =>
           set((state) => {
             const count = state.lastImportEntryIds.length;
             const ids = new Set(state.lastImportEntryIds);
@@ -285,7 +299,8 @@ export const useGLStore = create<GLState>()(
               title: 'Import Undone',
               message: `Successfully removed ${count} entries from the last import`,
             });
-          }),
+          })
+        ),
 
         checkDuplicates: (entries) => {
           const state = get();
@@ -308,7 +323,7 @@ export const useGLStore = create<GLState>()(
 
         // --- CubeEngine integration ---
 
-        syncToCube: () => {
+        syncToCube: enforce(Permissions.CUBE_WRITE, 'syncToCube', () => {
           const { entries, accounts } = get();
           const cubeStore = useCubeStore.getState();
           if (!cubeStore.isInitialized) {
@@ -381,7 +396,7 @@ export const useGLStore = create<GLState>()(
           });
         },
 
-        syncFromCube: () => {
+        syncFromCube: enforce(Permissions.CUBE_READ, 'syncFromCube', () => {
           const cubeStore = useCubeStore.getState();
           if (!cubeStore.isInitialized) {
             useUIStore.getState().addToast({
