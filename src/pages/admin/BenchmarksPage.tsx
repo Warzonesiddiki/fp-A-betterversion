@@ -204,7 +204,7 @@ const BenchmarksPage: React.FC = () => {
 
         <Card className="p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Database className="w-5 h-5 text-emerald-500" />
+            <Database className="w-5 h-5 text-emerald-700" />
             Storage Performance (ms)
           </h2>
           <div className="h-[300px]">

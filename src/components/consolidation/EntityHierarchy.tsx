@@ -114,7 +114,7 @@ function NodeRow({
             isRoot
               ? 'bg-blue-500/10 text-blue-600'
               : hasKids
-                ? 'bg-emerald-500/10 text-emerald-500'
+                ? 'bg-emerald-500/10 text-emerald-700'
                 : 'bg-orange-500/10 text-orange-500'
           )}
         >
@@ -185,7 +185,7 @@ function NodeRow({
               <button
                 type="button"
                 onClick={savePct}
-                className="p-0.5 text-emerald-500 hover:bg-emerald-500/10 rounded focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                className="p-0.5 text-emerald-700 hover:bg-emerald-500/10 rounded focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 aria-label="Save"
               >
                 <Check className="h-3 w-3" />

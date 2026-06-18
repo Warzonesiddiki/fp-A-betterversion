@@ -289,7 +289,7 @@ export default function ValuationPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-emerald-500" />
+              <TrendingUp className="h-5 w-5 text-emerald-700" />
               <CardTitle>Valuation Summary</CardTitle>
             </div>
             <CardDescription>Portfolio-level valuation metrics</CardDescription>

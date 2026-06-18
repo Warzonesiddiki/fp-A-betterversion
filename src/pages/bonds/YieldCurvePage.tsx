@@ -268,7 +268,7 @@ export default function YieldCurvePage() {
         <Card aria-label="Rate calculator">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-emerald-500" aria-hidden="true" />
+              <Calculator className="h-5 w-5 text-emerald-700" aria-hidden="true" />
               <CardTitle>Rate Calculator</CardTitle>
             </div>
             <CardDescription>Compute spot, par, and forward rates from the curve</CardDescription>

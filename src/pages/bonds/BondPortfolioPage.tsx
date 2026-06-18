@@ -337,7 +337,7 @@ export default function BondPortfolioPage() {
         <Card aria-label="Portfolio risk metrics">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-emerald-500" aria-hidden="true" />
+              <Shield className="h-5 w-5 text-emerald-700" aria-hidden="true" />
               <CardTitle>Risk Metrics</CardTitle>
             </div>
             <CardDescription>Portfolio-level risk analytics</CardDescription>

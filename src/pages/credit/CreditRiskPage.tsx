@@ -433,7 +433,7 @@ export default function CreditRiskPage() {
       <Card aria-label="Counterparty credit detail table">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-emerald-500" aria-hidden="true" />
+            <Activity className="h-5 w-5 text-emerald-700" aria-hidden="true" />
             <div>
               <CardTitle>Counterparty Credit Detail</CardTitle>
               <CardDescription>
