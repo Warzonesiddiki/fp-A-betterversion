@@ -1,3 +1,13 @@
+/**
+ * @fileoverview Credit Risk Engine — PD (probability of default), LGD (loss given default), EAD (exposure at default), expected loss, credit scoring
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category Risk Management
+ * @sector 16 (all)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 8th engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 // Credit Risk Engine — PD, LGD, EAD, expected loss, credit scoring
 
 export interface CreditScore {
@@ -51,11 +61,12 @@ export class CreditRiskEngine {
 
   static creditMigration(
     currentRating: string,
-    transitionMatrix: Record<string, Record<string, number>>
+    transitionMatrix: Record<string, Record<string, number>>,
+    rng: () => number = Math.random
   ): string {
     const transitions = transitionMatrix[currentRating];
     if (!transitions) return currentRating;
-    const rand = Math.random();
+    const rand = rng();
     let cumulative = 0;
     for (const [rating, prob] of Object.entries(transitions)) {
       cumulative += prob;

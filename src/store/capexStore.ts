@@ -73,33 +73,42 @@ export const useCapExStore = create<CapExState>()(
         setProjects: enforce(Permissions.CAPEX_UPDATE, 'setProjects', (projects) =>
           set((state) => {
             state.projects = projects;
-          })),
+          })
+        ),
 
         addProject: enforce(Permissions.CAPEX_CREATE, 'addProject', (project) =>
           set((state) => {
             state.projects.push(project);
-          })),
+          })
+        ),
 
         updateProject: enforce(Permissions.CAPEX_UPDATE, 'updateProject', (id, updates) =>
           set((state) => {
             const idx = state.projects.findIndex((p) => p.id === id);
             if (idx !== -1) Object.assign(state.projects[idx]!, updates);
-          })),
+          })
+        ),
 
         removeProject: enforce(Permissions.CAPEX_DELETE, 'removeProject', (id) =>
           set((state) => {
             state.projects = state.projects.filter((p) => p.id !== id);
-          })),
+          })
+        ),
 
         setAssets: enforce(Permissions.CAPEX_UPDATE, 'setAssets', (assets) =>
           set((state) => {
             state.assets = assets;
-          })),
+          })
+        ),
 
-        setDepreciationSchedule: enforce(Permissions.CAPEX_UPDATE, 'setDepreciationSchedule', (entries) =>
-          set((state) => {
-            state.depreciationSchedule = entries;
-          })),
+        setDepreciationSchedule: enforce(
+          Permissions.CAPEX_UPDATE,
+          'setDepreciationSchedule',
+          (entries) =>
+            set((state) => {
+              state.depreciationSchedule = entries;
+            })
+        ),
 
         setLoading: (loading) =>
           set((state) => {
@@ -118,7 +127,8 @@ export const useCapExStore = create<CapExState>()(
             state.depreciationSchedule = [];
             state.isLoading = false;
             state.error = null;
-          })),
+          })
+        ),
 
         getProjectsByStatus: (status) => get().projects.filter((p) => p.status === status),
 

@@ -193,7 +193,7 @@ export default defineConfig({
       // Chunk size: the real G19 budget is gzip (grid 285 KB gz,
       // excel 238 KB gz - both < 300 KB).
       // See .openhands/baseline-g3-bundle.log.
-      onwarn(warning: unknown, defaultHandler: (w: unknown) => void) {
+      onwarn(warning, defaultHandler) {
         if (
           warning.code === 'EVAL' &&
           typeof warning.id === 'string' &&

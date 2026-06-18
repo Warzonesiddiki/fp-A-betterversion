@@ -5,10 +5,10 @@ import App from './App';
 import './index.css';
 import './styles/accessibility.css';
 import './styles/print.css';
-import { registerPWA } from './pwa';
+import { registerSW } from './pwa';
 
 // ── PWA service worker (must run before render) ─────────────────────────
-registerPWA();
+registerSW();
 
 // ── Sentry observability (self-hosted per T-ATL-007 Docker + R2 archive) ──
 // Gated on VITE_SENTRY_DSN so dev/staging/CI run without Sentry.
@@ -26,6 +26,14 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     release: import.meta.env.VITE_SENTRY_RELEASE,
   });
 }
+
+// ── F-CLIO-4 (CWE-778 Audit Completeness Gap) P1 — Clio T-FIX-04 v0.2 EXECUTION ──
+// Idempotent GDPR event consumer subscription. Listens to Hades T-15
+// (consentRegistry + rightsWorkflow + breachTimer) emit GDPR events and records
+// them as `source: 'gdpr'` audit entries per GDPR Art. 5(2), 7, 15-17, 20, 21, 33.
+// Dual-channel: window CustomEvent('gdpr', { detail: event }) + globalThis.__gdprEmit.
+import { subscribeToGdprEvents } from '@/store/auditTrailGdprEvents';
+subscribeToGdprEvents();
 
 // ── MOCK_AUTH build-time gate (entry-point defence) ────────────────────
 // Vite inlines `import.meta.env.VITE_USE_MOCK_AUTH` at build time.

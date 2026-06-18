@@ -18,6 +18,7 @@
 import { parse } from 'acorn';
 import type { Node } from 'acorn';
 import type { PluginAPI } from './types';
+import { createLogger } from '@/utils/logger';
 
 /** Globals allowed inside the sandbox */
 const ALLOWED_GLOBALS = new Set([
@@ -262,7 +263,7 @@ export function executeSandboxed<T = unknown>(
     registerExportFormat: api.export?.registerFormat?.bind(api.export),
     registerDataSource: api.import?.registerConnector?.bind(api.import),
     registerDashboardWidget: api.dashboards?.registerWidget?.bind(api.dashboards),
-    log: (msg: string) => console.log(`[Plugin] ${msg}`),
+    log: (msg: string) => createLogger('PluginSandbox').debug(msg),
   });
 
   // AST-based hard gate: must pass the full acorn-based validator (regex

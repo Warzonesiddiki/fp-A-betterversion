@@ -94,28 +94,33 @@ export const useRealEstateStore = create<RealEstateState>()(
         setMaintenanceTrend: enforce(Permissions.DASHBOARD_UPDATE, 'setMaintenanceTrend', (data) =>
           set((state) => {
             state.maintenanceTrend = data;
-          })),
+          })
+        ),
 
         setFacilities: enforce(Permissions.ENTITY_UPDATE, 'setFacilities', (data) =>
           set((state) => {
             state.facilities = data;
-          })),
+          })
+        ),
 
         addFacility: enforce(Permissions.ENTITY_CREATE, 'addFacility', (facility) =>
           set((state) => {
             state.facilities.push(facility);
-          })),
+          })
+        ),
 
         updateFacility: enforce(Permissions.ENTITY_UPDATE, 'updateFacility', (id, updates) =>
           set((state) => {
             const idx = state.facilities.findIndex((f) => f.id === id);
             if (idx !== -1) Object.assign(state.facilities[idx]!, updates);
-          })),
+          })
+        ),
 
         removeFacility: enforce(Permissions.ENTITY_DELETE, 'removeFacility', (id) =>
           set((state) => {
             state.facilities = state.facilities.filter((f) => f.id !== id);
-          })),
+          })
+        ),
       })),
 
       {

@@ -35,11 +35,17 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
    * 3-witness: spec / DOM assertion / audit count
    * Cross-witness: Apollo (PeriodLockEngine), Hephaestus (CATCH #193 P0 fix)
    */
-  test('T-plb-1: 50 concurrent lock attempts — only one wins (V3 Edge #11)', async ({ browser }) => {
+  test('T-plb-1: 50 concurrent lock attempts — only one wins (V3 Edge #11)', async ({
+    browser,
+  }) => {
     const PERIOD_ID = '2026-Q2';
     const CONTEXT_COUNT = 50;
     const contexts: BrowserContext[] = [];
-    const results: { contextId: number; status: 'LOCKED' | 'CONFLICT' | 'ERROR'; durationMs: number }[] = [];
+    const results: {
+      contextId: number;
+      status: 'LOCKED' | 'CONFLICT' | 'ERROR';
+      durationMs: number;
+    }[] = [];
 
     // Spin up 50 contexts in parallel
     const lockPromises = Array.from({ length: CONTEXT_COUNT }, async (_, i) => {
@@ -73,30 +79,35 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
     await Promise.all(lockPromises);
 
     // W2: Assertion — exactly ONE winner, 49 conflicts
-    const winners = results.filter(r => r.status === 'LOCKED');
-    const conflicts = results.filter(r => r.status === 'CONFLICT');
+    const winners = results.filter((r) => r.status === 'LOCKED');
+    const conflicts = results.filter((r) => r.status === 'CONFLICT');
     expect(winners.length).toBe(1);
     expect(conflicts.length).toBe(49);
-    expect(results.filter(r => r.status === 'ERROR').length).toBe(0);
+    expect(results.filter((r) => r.status === 'ERROR').length).toBe(0);
 
     // W3: Cleanup assertion — all 50 attempts logged in audit trail
     await contexts[0]!.newPage().then(async (page) => {
       await page.goto('/audit-trail');
       await page.locator(`[data-testid="audit-search-input"]`).fill(PERIOD_ID);
       await page.locator('[data-testid="audit-search-btn"]').click();
-      const lockAttempts = await page.locator('[data-testid="audit-row-PERIOD_LOCK_ATTEMPT"]').count();
+      const lockAttempts = await page
+        .locator('[data-testid="audit-row-PERIOD_LOCK_ATTEMPT"]')
+        .count();
       expect(lockAttempts).toBe(50); // all 50 attempts logged (no drops)
       await page.close();
     });
 
     // Cleanup all contexts
-    await Promise.all(contexts.map(ctx => ctx.close()));
+    await Promise.all(contexts.map((ctx) => ctx.close()));
   });
 
   /**
    * T-plb-2: Deadlock recovery (cyclic lock dependencies auto-detected after 30s) — Edge #12
    */
-  test('T-plb-2: Deadlock recovery detects cyclic dependencies within 30s (Edge #12)', async ({ page, browser }) => {
+  test('T-plb-2: Deadlock recovery detects cyclic dependencies within 30s (Edge #12)', async ({
+    page,
+    browser,
+  }) => {
     // Setup: Period A held by user-1, tries to lock Period B (held by user-2)
     // user-2 tries to lock Period A → deadlock
     const ctx1 = await browser.newContext();
@@ -151,7 +162,10 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
   /**
    * T-plb-3: Optimistic concurrency (version field prevents stale writes) — Edge #13
    */
-  test('T-plb-3: Optimistic concurrency prevents stale writes (Edge #13)', async ({ page, browser }) => {
+  test('T-plb-3: Optimistic concurrency prevents stale writes (Edge #13)', async ({
+    page,
+    browser,
+  }) => {
     const ctx1 = await browser.newContext();
     const ctx2 = await browser.newContext();
     const page1 = await ctx1.newPage();
@@ -193,7 +207,9 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
   /**
    * T-plb-4: Audit trail under burst — all 50+ attempts logged without drops (Edge #14)
    */
-  test('T-plb-4: Audit trail captures all 50 concurrent attempts without drops (Edge #14)', async ({ browser }) => {
+  test('T-plb-4: Audit trail captures all 50 concurrent attempts without drops (Edge #14)', async ({
+    browser,
+  }) => {
     const CONTEXT_COUNT = 75; // exceeds "50+" floor
     const contexts: BrowserContext[] = [];
     const auditIds: string[] = [];
@@ -222,19 +238,24 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
     const verifyPage = await verifyCtx.newPage();
     await signInAsCfo(verifyPage);
 
-    const auditResp = await verifyPage.request.get('/api/audit-trail?filter=PERIOD_LOCK&period=2026-Q1');
+    const auditResp = await verifyPage.request.get(
+      '/api/audit-trail?filter=PERIOD_LOCK&period=2026-Q1'
+    );
     const auditData = await auditResp.json();
     expect(auditData.entries.length).toBeGreaterThanOrEqual(75);
 
     // W3: Cleanup
     await verifyCtx.close();
-    await Promise.all(contexts.map(ctx => ctx.close()));
+    await Promise.all(contexts.map((ctx) => ctx.close()));
   });
 
   /**
    * T-plb-5: Lock revocation (admin can revoke lock even if holder offline) — Edge #15
    */
-  test('T-plb-5: Admin can revoke lock even if holder offline (Edge #15)', async ({ page, browser }) => {
+  test('T-plb-5: Admin can revoke lock even if holder offline (Edge #15)', async ({
+    page,
+    browser,
+  }) => {
     const ctx = await browser.newContext();
     const userPage = await ctx.newPage();
     await signInAsCfo(userPage);
@@ -265,7 +286,10 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
    * T-plb-6 (J19 amendment v0.10): 50-user burst on period lock — 1 winner, 49 lockouts
    * Tests RULE #60 CASCADE-HOLD-ABORT-MERGE under extreme concurrency
    */
-  test('T-plb-6: 50-user burst on period lock — 1 winner, 49 lockouts (CAVEMAN PERSIST)', async ({ page, browser }) => {
+  test('T-plb-6: 50-user burst on period lock — 1 winner, 49 lockouts (CAVEMAN PERSIST)', async ({
+    page,
+    browser,
+  }) => {
     const userCount = 50;
     const contexts: import('@playwright/test').BrowserContext[] = [];
 
@@ -283,15 +307,17 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
       const p = await ctx.newPage();
       await p.goto('/periods/2026-Q2/lock');
       await p.locator('[data-testid="period-lock-btn"]').click();
-      return p.waitForResponse(r => r.url().includes('/api/periods/2026-Q2/lock'), { timeout: 30000 });
+      return p.waitForResponse((r) => r.url().includes('/api/periods/2026-Q2/lock'), {
+        timeout: 30000,
+      });
     });
 
     const responses = await Promise.all(lockPromises);
-    const statusCodes = responses.map(r => r.status()).sort();
+    const statusCodes = responses.map((r) => r.status()).sort();
 
     // W3: Exactly 1 LOCK_OK (200), 49 LOCKOUT (409) — RULE #60 CASCADE-HOLD
-    const lockOkCount = statusCodes.filter(s => s === 200).length;
-    const lockoutCount = statusCodes.filter(s => s === 409).length;
+    const lockOkCount = statusCodes.filter((s) => s === 200).length;
+    const lockoutCount = statusCodes.filter((s) => s === 409).length;
     expect(lockOkCount).toBe(1);
     expect(lockoutCount).toBe(49);
 
@@ -317,11 +343,15 @@ test.describe('Journey 14: Period Lock Burst (50+ Concurrent Locks + V3 e.ix.7 E
     await page.goto('/periods/2026-Q2');
     await page.waitForLoadState('networkidle');
     await expect(page.locator('[data-testid="period-cascade-locked-badge"]')).toBeVisible();
-    await expect(page.locator('[data-testid="period-cascade-locked-badge"]')).toContainText('locked by sub-period');
+    await expect(page.locator('[data-testid="period-cascade-locked-badge"]')).toContainText(
+      'locked by sub-period'
+    );
 
     // W3: Parent lock attempt is blocked
     await page.locator('[data-testid="parent-period-lock-btn"]').click();
     await expect(page.locator('[data-testid="lock-blocked-toast"]')).toBeVisible();
-    await expect(page.locator('[data-testid="lock-blocked-toast"]')).toContainText('sub-period already locked');
+    await expect(page.locator('[data-testid="lock-blocked-toast"]')).toContainText(
+      'sub-period already locked'
+    );
   });
 });

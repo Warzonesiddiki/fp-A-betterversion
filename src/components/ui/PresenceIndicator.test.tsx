@@ -47,7 +47,7 @@ describe('PresenceIndicator', () => {
   it('applies green color for online', () => {
     render(<PresenceIndicator status="online" />);
     const el = screen.getByLabelText('Status: online');
-    expect(el.className).toContain('bg-green-500');
+    expect(el.className).toContain('bg-green-700');
   });
 
   it('applies gray color for offline', () => {

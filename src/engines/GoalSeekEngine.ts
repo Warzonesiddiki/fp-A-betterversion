@@ -1,3 +1,14 @@
+/**
+ * @fileoverview Goal Seek Engine — Find input value that produces a target output
+ * Pure TypeScript, deterministic, testable (bisection + Newton-Raphson solvers)
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category Solver
+ * @sector 16 (all)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 10th engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 // =============================================================================
 // GOAL SEEK ENGINE — Find input value that produces a target output
 // Pure TypeScript, deterministic, testable

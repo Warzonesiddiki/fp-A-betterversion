@@ -42,6 +42,10 @@
  * @module services/api-integration/GhostShaValidator
  */
 
+import { createLogger } from '@/utils/logger';
+
+const ghostShaValidatorLogger = createLogger('GhostShaValidator');
+
 // ── Constants ────────────────────────────────────────────────────────────────
 
 /**
@@ -206,10 +210,7 @@ export class GhostShaValidator {
         }
       } else {
         // Soft-warn for batch operations; not all inputs are expected to be SHAs
-
-        if (typeof console !== 'undefined' && console.warn) {
-          console.warn(`GhostShaValidator.addShas: skipped non-plausible SHA: "${sha}"`);
-        }
+        ghostShaValidatorLogger.warn(`addShas: skipped non-plausible SHA: "${sha}"`);
       }
     }
     return added;
@@ -428,11 +429,9 @@ export class GhostShaValidator {
     visit(data, 0);
 
     if (truncated) {
-      if (typeof console !== 'undefined' && console.warn) {
-        console.warn(
-          `GhostShaValidator.scanObject: truncated at maxFields=${maxFields}; partial result returned`
-        );
-      }
+      ghostShaValidatorLogger.warn(
+        `scanObject: truncated at maxFields=${maxFields}; partial result returned`
+      );
     }
 
     return {

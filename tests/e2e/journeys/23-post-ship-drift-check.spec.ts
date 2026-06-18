@@ -63,7 +63,7 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
     });
 
     // W3: Verify HEAD convergence
-    const headCheck = driftResults.find(r => r.checkId === 'head-convergence');
+    const headCheck = driftResults.find((r) => r.checkId === 'head-convergence');
     expect(headCheck?.status).toBe('PASS');
     expect(headCheck?.details).toMatch(/^[0-9a-f]{40}$/); // Single SHA
   });
@@ -72,7 +72,9 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
    * T-psdc-2: CAVEMAN PERSIST 6-way operational
    * Tests: all 6 fallbacks (memory + task board + file + git + log + state anchor) are writable
    */
-  test('T-psdc-2: CAVEMAN PERSIST 6-way operational — all 6 fallbacks writable', async ({ page }) => {
+  test('T-psdc-2: CAVEMAN PERSIST 6-way operational — all 6 fallbacks writable', async ({
+    page,
+  }) => {
     await page.goto('/admin/drift-check/run');
     await page.waitForLoadState('networkidle');
 
@@ -86,7 +88,7 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
     });
 
     // W2: Verify all 6 fallbacks are PASS
-    const fallbackChecks = driftResults.filter(r => r.checkId.startsWith('caveman-fallback-'));
+    const fallbackChecks = driftResults.filter((r) => r.checkId.startsWith('caveman-fallback-'));
     expect(fallbackChecks.length).toBe(6);
     for (const check of fallbackChecks) {
       expect(check.status).toBe('PASS');
@@ -111,7 +113,7 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
     });
 
     // W2: Verify all 19 Muses are PASS
-    const museChecks = driftResults.filter(r => r.checkId.startsWith('muse-'));
+    const museChecks = driftResults.filter((r) => r.checkId.startsWith('muse-'));
     expect(museChecks.length).toBe(19);
     for (const check of museChecks) {
       expect(check.status).toBe('PASS');
@@ -136,11 +138,14 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
     });
 
     // W2: Verify GHOST-SHA check
-    const ghostShaCheck = driftResults.find(r => r.checkId === 'ghost-sha-scan');
+    const ghostShaCheck = driftResults.find((r) => r.checkId === 'ghost-sha-scan');
     expect(ghostShaCheck?.status).toBe('PASS');
 
     // W3: Run external API SHA verification on a sample SHA
-    const sampleShas = ['41640372e1db641ba1e495bb07cc004e754925a8', '4c045ddfb2142f065144d52cc183e5e9f02adad3'];
+    const sampleShas = [
+      '41640372e1db641ba1e495bb07cc004e754925a8',
+      '4c045ddfb2142f065144d52cc183e5e9f02adad3',
+    ];
     for (const sha of sampleShas) {
       const verifyResponse = await page.request.get(`/api/git/verify-sha?sha=${sha}`);
       expect(verifyResponse.status()).toBe(200);
@@ -153,7 +158,9 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
    * T-psdc-5: CATCH-NUMBERING-COLLISION free (RULE #68)
    * Tests: every CATCH-### in CATCH_NUMBER_CATALOG.md is globally unique
    */
-  test('T-psdc-5: CATCH-NUMBERING-COLLISION free — RULE #68 all CATCH-### unique', async ({ page }) => {
+  test('T-psdc-5: CATCH-NUMBERING-COLLISION free — RULE #68 all CATCH-### unique', async ({
+    page,
+  }) => {
     await page.goto('/admin/drift-check/run');
     await page.waitForLoadState('networkidle');
 
@@ -167,7 +174,7 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
     });
 
     // W2: Verify CATCH-NUMBERING-COLLISION check
-    const catchCheck = driftResults.find(r => r.checkId === 'catch-numbering-collision');
+    const catchCheck = driftResults.find((r) => r.checkId === 'catch-numbering-collision');
     expect(catchCheck?.status).toBe('PASS');
   });
 
@@ -175,7 +182,9 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
    * T-psdc-6: STATE ANCHOR v5 LOCKED
    * Tests: STATE ANCHOR v5 is the current version, not v4 or earlier
    */
-  test('T-psdc-6: STATE ANCHOR v5 LOCKED — current version, not v4 or earlier', async ({ page }) => {
+  test('T-psdc-6: STATE ANCHOR v5 LOCKED — current version, not v4 or earlier', async ({
+    page,
+  }) => {
     await page.goto('/admin/drift-check/run');
     await page.waitForLoadState('networkidle');
 
@@ -189,7 +198,7 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
     });
 
     // W2: Verify STATE ANCHOR version
-    const stateAnchorCheck = driftResults.find(r => r.checkId === 'state-anchor-version');
+    const stateAnchorCheck = driftResults.find((r) => r.checkId === 'state-anchor-version');
     expect(stateAnchorCheck?.status).toBe('PASS');
     expect(stateAnchorCheck?.details).toContain('v5');
   });
@@ -198,7 +207,9 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
    * T-psdc-7: Drift check persistence — all results persisted to CAVEMAN ledger
    * Tests: per RULE #47, drift check results are written to memory + task board + state anchor
    */
-  test('T-psdc-7: Drift check persistence — CAVEMAN 6-way fallback (RULE #47)', async ({ page }) => {
+  test('T-psdc-7: Drift check persistence — CAVEMAN 6-way fallback (RULE #47)', async ({
+    page,
+  }) => {
     await page.goto('/admin/drift-check/run');
     await page.waitForLoadState('networkidle');
 
@@ -207,7 +218,9 @@ test.describe('Journey 23: Post-Ship Drift Check (Continuous Verification After 
     await page.waitForSelector('[data-testid="drift-complete"]', { timeout: 60_000 });
 
     // W2: Verify persistence
-    const taskBoardResponse = await page.request.get('/api/task-board/list?pick_id=DRIFT-CHECK-2026-06-16');
+    const taskBoardResponse = await page.request.get(
+      '/api/task-board/list?pick_id=DRIFT-CHECK-2026-06-16'
+    );
     expect(taskBoardResponse.status()).toBe(200);
     const taskBoard = await taskBoardResponse.json();
     expect(taskBoard.length).toBeGreaterThan(0);

@@ -1,3 +1,13 @@
+/**
+ * @fileoverview Inventory Engine — Inventory metrics calculation from GL entries (total value, turnover, days on hand, stockouts)
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category Inventory Analytics
+ * @sector 9 (Manufacturing — inventory)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 32nd engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 import type { GLEntry } from '@/types';
 
 export interface InventoryStats {

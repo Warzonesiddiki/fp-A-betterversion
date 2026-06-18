@@ -11,7 +11,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
   className,
 }) => {
   const statusColors = {
-    online: 'bg-green-500',
+    online: 'bg-green-700',
     offline: 'bg-gray-400',
     busy: 'bg-red-500',
     away: 'bg-amber-500',

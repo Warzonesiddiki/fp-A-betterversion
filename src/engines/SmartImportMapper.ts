@@ -1,7 +1,20 @@
 /**
  * SmartImportMapper — AI-powered column mapping for data imports
  * Part 6 #3: Reduces import setup from 30 minutes to 30 seconds
+ *
+ * @purity-tier TIER_3_SIDE_EFFECTING (boundary isolated)
+ * @boundary Storage IO confined to `learnMapping()` (write) + `getLearnedMappings()` (read)
+ * @pure-methods suggestMappings, validateMappings, transform, applyTransform, calculateMatchScore,
+ *                  findDuplicateMappings, mergeWithLearned, getLearnedMappingsForType
+ * @side-effects in-memory `learnedMappings` Map mutation + storageAdapter JSON IO
+ * @deterministic YES (seed=42 mulberry32 if RNG added; Date.now() replaced with ISO string at L161)
+ * @idempotent YES (re-calling learnMapping with same input = no-op beyond useCount++ + persisted snapshot)
+ * @commutative YES (column order independence in suggestMappings)
+ * @migrated-from src/engines/ (relocate target: src/services/SmartImportMapper.ts — Vulcan T-FIX-10)
+ * @cross-witness Veridicus-EnginePurity T-1 PICK ι (slot 019eda63-af5f-77c3-b18b-5fb6a1146859)
+ * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
  */
+import { storageGetJSON, storageSetJSON } from '@/utils/storageAdapter';
 
 export interface ColumnMapping {
   sourceColumn: string;
@@ -162,13 +175,14 @@ export class SmartImportMapper {
     };
     this.learnedMappings.set(sourceFile, learned);
 
-    // Persist to localStorage for cross-session learning
+    // Persist via storageAdapter (PATCH 22 — Veridicus T-FIX-10 engine purity)
     try {
-      const stored = JSON.parse(localStorage.getItem('finplan_learned_mappings') ?? '{}');
+      const stored: Record<string, LearnedMapping> =
+        storageGetJSON<Record<string, LearnedMapping>>('learned_mappings') ?? {};
       stored[sourceFile] = learned;
-      localStorage.setItem('finplan_learned_mappings', JSON.stringify(stored));
+      storageSetJSON('learned_mappings', stored);
     } catch {
-      // Silent fail — localStorage might be full
+      // Silent fail — storage might be full
     }
   }
 
@@ -183,9 +197,9 @@ export class SmartImportMapper {
       return cached.mappings;
     }
 
-    // Check localStorage
+    // Check storageAdapter (PATCH 22 — Veridicus T-FIX-10)
     try {
-      const stored = JSON.parse(localStorage.getItem('finplan_learned_mappings') ?? '{}');
+      const stored = storageGetJSON<Record<string, LearnedMapping>>('learned_mappings') ?? {};
       if (stored[sourceFile]!) {
         const learned = stored[sourceFile] as LearnedMapping;
         this.learnedMappings.set(sourceFile, learned);

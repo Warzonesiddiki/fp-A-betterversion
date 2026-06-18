@@ -13,6 +13,9 @@ import {
   Wallet,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { createLogger } from '@/utils/logger';
+
+const routeGroupErrorBoundaryLogger = createLogger('RouteGroupErrorBoundary');
 
 /** Domain config — icon + messaging per route group */
 const DOMAIN_MAP = {
@@ -76,7 +79,11 @@ export class RouteGroupErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error(`[RouteGroupErrorBoundary:${this.props.domain}]`, error, errorInfo);
+    routeGroupErrorBoundaryLogger.error(`${this.props.domain}`, {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleRetry = (): void => {

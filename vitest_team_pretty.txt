@@ -1,0 +1,613 @@
+﻿node.exe : (node:9076) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` 
+instead.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:9076) [DE...oks()` instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90mC:/Users/Tahir/Desktop/frontend that i want/fpa[39m
+
+(node:32024) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [31m❯[39m src/pages/__tests__/collaboration/TeamWorkspace.test.tsx [2m([22m[2m16 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1104[2mms[22m[39m
+     [32m✓[39m renders without crashing with sample data[32m 126[2mms[22m[39m
+     [32m✓[39m shows the Team Workspace heading[32m 151[2mms[22m[39m
+     [32m✓[39m shows 4 KPI cards in the metrics section[32m 55[2mms[22m[39m
+     [32m✓[39m shows 4 tab triggers (Overview, Members, Tasks, Activity)[32m 48[2mms[22m[39m
+     [32m✓[39m shows the live/real-time badge[32m 51[2mms[22m[39m
+     [32m✓[39m shows the refresh button in the header[32m 51[2mms[22m[39m
+     [32m✓[39m disables the Export CSV button when there is no data[32m 4[2mms[22m[39m
+     [32m✓[39m switches to the Members tab and shows the search input[32m 89[2mms[22m[39m
+     [32m✓[39m switches to the Tasks tab and shows the task count breakdown[32m 94[2mms[22m[39m
+     [32m✓[39m switches to the Activity tab and shows the activity log[32m 78[2mms[22m[39m
+     [32m✓[39m switches back to the Overview tab[32m 56[2mms[22m[39m
+     [32m✓[39m shows the help / About Team Workspace card[32m 40[2mms[22m[39m
+     [32m✓[39m filters team members when search query is updated[32m 49[2mms[22m[39m
+     [32m✓[39m shows the empty state when no entries are loaded[32m 3[2mms[22m[39m
+     [32m✓[39m uses a named export for TeamWorkspace (no default export)[32m 0[2mms[22m[39m
+[31m     [31m×[31m shows the Account Overview data table on the Overview tab[39m[32m 205[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/__tests__/collaboration/TeamWorkspace.test.tsx[2m > [22mTeamWorkspace[2m > 
+[22mshows the Account Overview data table on the Overview tab
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "region" and name 
+"Account Overview"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "Team Workspace Dashboard":
+  [36m<main[39m
+    [33maria-label[39m=[32m"Team Workspace Dashboard"[39m
+    [33mclass[39m=[32m"p-6 space-y-6 animate-fade-in"[39m
+    [33mrole[39m=[32m"main"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Skip to key metrics":
+  [36m<a[39m
+    [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 
+focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded"[39m
+    [33mhref[39m=[32m"#kpi-section"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"flex items-center justify-between flex-wrap gap-3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Team Workspace":
+  [36m<h1[39m
+    [33mclass[39m=[32m"text-2xl font-bold flex items-center gap-2"[39m
+    [33mid[39m=[32m"workspace-heading"[39m
+  [36m/>[39m
+
+  Name "Account Overview":
+  [36m<h3[39m
+    [33mclass[39m=[32m"font-semibold tracking-tight text-2xl"[39m
+    [33mid[39m=[32m"team-account-overview-title"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm text-slate-500 mt-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm text-muted-foreground"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm font-medium text-sky-900 dark:text-sky-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-sky-700 dark:text-sky-300 mt-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Refresh team workspace":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Refresh team workspace"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center text-sm font-medium transition-colors 
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
+disabled:opacity-50 disabled:pointer-events-none border border-[var(--border-default)] bg-white hover:bg-gray-50 
+dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 h-9 px-3 rounded-md"[39m
+  [36m/>[39m
+
+  Name "Export team workspace to CSV":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Export team workspace to CSV"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center text-sm font-medium transition-colors 
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
+disabled:opacity-50 disabled:pointer-events-none border border-[var(--border-default)] bg-white hover:bg-gray-50 
+dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 h-9 px-3 rounded-md"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Team Workspace":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Workspace KPIs"[39m
+    [33maria-labelledby[39m=[32m"workspace-heading"[39m
+    [33mclass[39m=[32m"grid grid-cols-2 md:grid-cols-4 gap-4"[39m
+    [33mid[39m=[32m"kpi-section"[39m
+  [36m/>[39m
+
+  Name "Team Members":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Team Members"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m/>[39m
+
+  Name "Online Now":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Online Now"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m/>[39m
+
+  Name "Open Tasks":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Open Tasks"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m/>[39m
+
+  Name "Activity Log":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Activity Log"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tablist:
+
+  Name "Tab list":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Tab list"[39m
+    [33mclass[39m=[32m"inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground 
+dark:bg-gray-800 dark:text-gray-400"[39m
+    [33mrole[39m=[32m"tablist"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tab:
+
+  Name "Overview tab":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_4g_-panel-overview"[39m
+    [33maria-label[39m=[32m"Overview tab"[39m
+    [33maria-selected[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm 
+font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-background 
+text-foreground shadow-sm dark:bg-gray-700 dark:text-gray-100"[39m
+    [33mdata-state[39m=[32m"active"[39m
+    [33mid[39m=[32m"_r_4g_-tab-overview"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Members tab":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_4g_-panel-members"[39m
+    [33maria-label[39m=[32m"Members tab"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm 
+font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"[39m
+    [33mdata-state[39m=[32m"inactive"[39m
+    [33mid[39m=[32m"_r_4g_-tab-members"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Tasks tab":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_4g_-panel-tasks"[39m
+    [33maria-label[39m=[32m"Tasks tab"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm 
+font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"[39m
+    [33mdata-state[39m=[32m"inactive"[39m
+    [33mid[39m=[32m"_r_4g_-tab-tasks"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Activity tab":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_4g_-panel-activity"[39m
+    [33maria-label[39m=[32m"Activity tab"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm 
+font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"[39m
+    [33mdata-state[39m=[32m"inactive"[39m
+    [33mid[39m=[32m"_r_4g_-tab-activity"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tabpanel:
+
+  Name "Overview tab":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"_r_4g_-tab-overview"[39m
+    [33mclass[39m=[32m"mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-ring focus-visible:ring-offset-2"[39m
+    [33mdata-state[39m=[32m"active"[39m
+    [33mid[39m=[32m"_r_4g_-panel-overview"[39m
+    [33mrole[39m=[32m"tabpanel"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  grid:
+
+  Name "Team workspace accounts":
+  [36m<table[39m
+    [33maria-colcount[39m=[32m"6"[39m
+    [33maria-label[39m=[32m"Team workspace accounts"[39m
+    [33maria-rowcount[39m=[32m"2"[39m
+    [33mclass[39m=[32m"w-full text-sm text-left border-collapse bg-[var(--bg-surface)]"[39m
+    [33mrole[39m=[32m"grid"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  caption:
+
+  Name "Team workspace accounts table":
+  [36m<caption[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mdata-testid[39m=[32m"data-table-caption"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  rowgroup:
+
+  Name "":
+  [36m<thead[39m
+    [33mclass[39m=[32m"bg-gray-50 dark:bg-gray-800/80 border-b border-[var(--border-subtle)] sticky top-0 z-10"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<tbody[39m
+    [33mclass[39m=[32m"divide-y divide-[var(--border-subtle)]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  row:
+
+  Name "Account Code Account Name Debit Credit Net Change Transactions":
+  [36m<tr />[39m
+
+  Name "4000 Revenue $0 $5,000 $5,000 1":
+  [36m<tr[39m
+    [33maria-rowindex[39m=[32m"1"[39m
+    [33mclass[39m=[32m"transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group"[39m
+  [36m/>[39m
+
+  Name "1000 Cash $1,000 $0 $1,000 1":
+  [36m<tr[39m
+    [33maria-rowindex[39m=[32m"2"[39m
+    [33mclass[39m=[32m"transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  columnheader:
+
+  Name "Account Code":
+  [36m<th[39m
+    [33mclass[39m=[32m"px-4 py-3 font-semibold text-[var(--text-secondary)] transition-colors cursor-pointer 
+hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-blue-500 focus-visible:ring-inset"[39m
+    [33mscope[39m=[32m"col"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Account Name":
+  [36m<th[39m
+    [33mclass[39m=[32m"px-4 py-3 font-semibold text-[var(--text-secondary)] transition-colors cursor-pointer 
+hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-blue-500 focus-visible:ring-inset"[39m
+    [33mscope[39m=[32m"col"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Debit":
+  [36m<th[39m
+    [33mclass[39m=[32m"px-4 py-3 font-semibold text-[var(--text-secondary)] transition-colors cursor-pointer 
+hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-blue-500 focus-visible:ring-inset"[39m
+    [33mscope[39m=[32m"col"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Credit":
+  [36m<th[39m
+    [33mclass[39m=[32m"px-4 py-3 font-semibold text-[var(--text-secondary)] transition-colors cursor-pointer 
+hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-blue-500 focus-visible:ring-inset"[39m
+    [33mscope[39m=[32m"col"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Net Change":
+  [36m<th[39m
+    [33mclass[39m=[32m"px-4 py-3 font-semibold text-[var(--text-secondary)] transition-colors cursor-pointer 
+hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-blue-500 focus-visible:ring-inset"[39m
+    [33mscope[39m=[32m"col"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Transactions":
+  [36m<th[39m
+    [33mclass[39m=[32m"px-4 py-3 font-semibold text-[var(--text-secondary)] transition-colors cursor-pointer 
+hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 select-none focus-visible:outline-none focus-visible:ring-2 
+focus-visible:ring-blue-500 focus-visible:ring-inset"[39m
+    [33mscope[39m=[32m"col"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  cell:
+
+  Name "4000":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap"[39m
+  [36m/>[39m
+
+  Name "Revenue":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap"[39m
+  [36m/>[39m
+
+  Name "$0":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  Name "$5,000":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  Name "$5,000":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  Name "1":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  Name "1000":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap"[39m
+  [36m/>[39m
+
+  Name "Cash":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap"[39m
+  [36m/>[39m
+
+  Name "$1,000":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  Name "$0":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  Name "$1,000":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  Name "1":
+  [36m<td[39m
+    [33mclass[39m=[32m"px-4 py-3 text-[var(--text-primary)] whitespace-nowrap text-right"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-label[39m=[32m"Team Workspace Dashboard"[39m
+      [33mclass[39m=[32m"p-6 space-y-6 animate-fade-in"[39m
+      [33mrole[39m=[32m"main"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 
+focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded"[39m
+        [33mhref[39m=[32m"#kpi-section"[39m
+      [36m>[39m
+        [0mSkip to key metrics[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex items-center justify-between flex-wrap gap-3"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-2xl font-bold flex items-center gap-2"[39m
+            [33mid[39m=[32m"workspace-heading"[39m
+          [36m>[39m
+            [36m<svg />[39m
+            [0mTeam Workspace[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-slate-500 mt-1"[39m
+          [36m>[39m
+            [0m2[0m
+            [0m entries imported[0m
+            [0m5[0m
+            [0m team members • [0m
+            [0m3[0m
+            [0m online[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-2 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Real-time indicator"[39m
+            [33mclass[39m=[32m"inline-flex items-center rounded-full text-xs font-semibold transition-colors 
+focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-gray-100 text-gray-800 dark:bg-gray-700 
+dark:text-gray-100 px-3 py-1 gap-1"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-2 w-2 rounded-full bg-green-700 animate-pulse"[39m
+            [36m/>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xs font-medium text-green-700"[39m
+            [36m>[39m
+              [0mLive[0m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Refresh team workspace"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center text-sm font-medium transition-colors 
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
+disabled:opacity-50 disabled:pointer-events-none border border-[var(--border-default)] bg-white hover:bg-gray-50 
+dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 h-9 px-3 rounded-md"[39m
+          [36m>[39m
+            [36m<svg />[39m
+            [0mRefresh[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Export team workspace to CSV"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center text-sm font-medium transition-colors 
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
+disabled:opacity-50 disabled:pointer-events-none border border-[var(--border-default)] bg-white hover:bg-gray-50 
+dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 h-9 px-3 rounded-md"[39m
+          [36m>[39m
+            [36m<svg />[39m
+            [0mExport CSV[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"Workspace KPIs"[39m
+        [33maria-labelledby[39m=[32m"workspace-heading"[39m
+        [33mclass[39m=[32m"grid grid-cols-2 md:grid-cols-4 gap-4"[39m
+        [33mid[39m=[32m"kpi-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Team Members"[39m
+          [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] 
+rounded-xl shadow-sm transition-all hover:shadow-md group"[39m
+          [33mrole[39m=[32m"region"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+              [36m>[39m
+                [36m<svg />[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+              [36m>[39m
+                [0mTeam Members[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all 
+duration-700 translate-y-0 opacity-100"[39m
+          [36m>[39m
+            [0m5[0m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Online Now"[39m
+          [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] 
+rounded-xl shadow-sm transition-all hover:shadow-md group"[39m
+          [33mrole[39m=[32m"region"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+              [36m>[39m
+                [36m<svg />[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+              [36m>[39m
+                [0mOnline Now[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all 
+duration-700 translate-y-0 opacity-100"[39m
+          [36m>[39m
+            [0m3[0m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Open Tasks"[39m
+          [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] 
+rounded-xl shadow-sm transition-all hover:shadow-md group"[39m
+          [33mrole[39m=[32m"region"[39m
+        [36m>[39m
+          [36m<div[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m15 passed[39m[22m[90m (16)[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+          ...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/__tests__/collaboration/TeamWorkspace.test.tsx:[2m186:33[22m[39m
+    [90m184|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'Account 
+Overview'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m185|[39m     [90m// Account Overview card is present[39m
+    [90m186|[39m     const overviewCard = screen.getByRole('region', { name: 'Account O…
+    [90m   |[39m                                 [31m^[39m
+    [90m187|[39m     [34mexpect[39m(overviewCard)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m188|[39m   })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+[2m   Start at [22m 19:00:10
+[2m   Duration [22m 3.23s[2m (transform 343ms, setup 320ms, import 782ms, tests 1.10s, environment 842ms)[22m
+
+

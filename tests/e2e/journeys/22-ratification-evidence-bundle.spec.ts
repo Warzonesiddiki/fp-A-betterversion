@@ -51,7 +51,9 @@ test.describe('Journey 22: Ratification Evidence Bundle (4-Muse Cross-Witness Ch
    * 3-witness: spec / DOM assertion / file system check
    * Cross-witness: Strategos + Vulcan + Iris + Chronos
    */
-  test('T-reb-1: 4-Muse cross-witness chain CLOSED (1/4 → 2/4 → 3/4 → 4/4 LOCK)', async ({ page }) => {
+  test('T-reb-1: 4-Muse cross-witness chain CLOSED (1/4 → 2/4 → 3/4 → 4/4 LOCK)', async ({
+    page,
+  }) => {
     await page.goto('/admin/ratification/evidence/new');
     await page.waitForLoadState('networkidle');
 
@@ -83,7 +85,9 @@ test.describe('Journey 22: Ratification Evidence Bundle (4-Muse Cross-Witness Ch
    * T-reb-2: Evidence bundle includes 4-ICP + 5-ICP verdicts with composites
    * Tests: bundle.verdict4Icp.composite >= 9.0 (PLATINUM) and bundle.verdict5Icp.composite >= 9.0
    */
-  test('T-reb-2: Evidence bundle — 4-ICP + 5-ICP verdicts both >= 9.0 PLATINUM', async ({ page }) => {
+  test('T-reb-2: Evidence bundle — 4-ICP + 5-ICP verdicts both >= 9.0 PLATINUM', async ({
+    page,
+  }) => {
     await page.goto('/admin/ratification/evidence/new');
     await page.waitForLoadState('networkidle');
 
@@ -109,7 +113,9 @@ test.describe('Journey 22: Ratification Evidence Bundle (4-Muse Cross-Witness Ch
    * T-reb-3: Evidence bundle persisted to file system
    * Tests: docs/ratification/EVIDENCE_<pick_id>.md exists with full bundle
    */
-  test('T-reb-3: Evidence bundle persisted to docs/ratification/EVIDENCE_*.md', async ({ page }) => {
+  test('T-reb-3: Evidence bundle persisted to docs/ratification/EVIDENCE_*.md', async ({
+    page,
+  }) => {
     await page.goto('/admin/ratification/evidence/new');
     await page.waitForLoadState('networkidle');
 
@@ -119,13 +125,17 @@ test.describe('Journey 22: Ratification Evidence Bundle (4-Muse Cross-Witness Ch
     await page.waitForSelector('[data-testid="reb-chain-locked"]', { timeout: 60_000 });
 
     // W2: Verify file exists via API
-    const fileResponse = await page.request.get('/api/ratification/evidence-file?pick_id=TEST-RATIFICATION-PERSIST-2026-06-16');
+    const fileResponse = await page.request.get(
+      '/api/ratification/evidence-file?pick_id=TEST-RATIFICATION-PERSIST-2026-06-16'
+    );
     expect(fileResponse.status()).toBe(200);
     const fileData = await fileResponse.json();
     expect(fileData.exists).toBe(true);
 
     // W3: Verify file content includes all 4 sections (via API)
-    const contentResponse = await page.request.get('/api/ratification/evidence-content?pick_id=TEST-RATIFICATION-PERSIST-2026-06-16');
+    const contentResponse = await page.request.get(
+      '/api/ratification/evidence-content?pick_id=TEST-RATIFICATION-PERSIST-2026-06-16'
+    );
     expect(contentResponse.status()).toBe(200);
     const content = await contentResponse.text();
     expect(content).toContain('4-ICP verdict');
@@ -176,7 +186,9 @@ test.describe('Journey 22: Ratification Evidence Bundle (4-Muse Cross-Witness Ch
     // W2: Verify NEVER-AGAIN RULES compliance
     expect(bundle.neverAgainRulesComplied).toBeGreaterThanOrEqual(25);
     expect(bundle.totalNeverAgainRules).toBe(30);
-    expect(bundle.neverAgainRulesComplied / bundle.totalNeverAgainRules).toBeGreaterThanOrEqual(0.85);
+    expect(bundle.neverAgainRulesComplied / bundle.totalNeverAgainRules).toBeGreaterThanOrEqual(
+      0.85
+    );
   });
 
   /**
@@ -199,7 +211,9 @@ test.describe('Journey 22: Ratification Evidence Bundle (4-Muse Cross-Witness Ch
     // W3: Verify all checkboxes
     const checkboxes = await page.locator('[data-testid^="reb-check-"]').count();
     expect(checkboxes).toBeGreaterThanOrEqual(6); // At least 6 checks
-    const checkedCount = await page.locator('[data-testid^="reb-check-"][data-checked="true"]').count();
+    const checkedCount = await page
+      .locator('[data-testid^="reb-check-"][data-checked="true"]')
+      .count();
     expect(checkedCount).toBe(checkboxes);
   });
 });

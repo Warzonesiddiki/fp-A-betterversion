@@ -1,7 +1,7 @@
 // src/components/audit/AuditCompliancePanel.tsx
 // Clio (Audit Muse) — Part 141 P0A-17 — Sticky sidebar with stats + report gen
 
-import { useMemo } from 'react';
+import { useMemo, type JSX } from 'react';
 import { FileText, Users, Hash, ListChecks, Shield, ShieldCheck } from 'lucide-react';
 import {
   useAuditTrailStore,
@@ -10,6 +10,12 @@ import {
   type ApprovalStatus,
 } from '@/store/auditTrailStore';
 import { Button } from '@/components/ui/Button';
+import {
+  auditPanelTokens,
+  auditComplianceStatsTokens,
+  auditComplianceLinkTokens,
+  auditProgressTokens,
+} from './auditTokens';
 
 // ---------------------------------------------------------------------------
 // Component
@@ -77,7 +83,10 @@ export function AuditCompliancePanel(): JSX.Element {
   };
 
   return (
-    <aside className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-4 sticky top-4">
+    <aside
+      className={`${auditPanelTokens.bg} rounded-lg border ${auditPanelTokens.border} p-4 space-y-4 sticky top-4`}
+      aria-label="Audit compliance panel"
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Compliance</h2>
         <FileText className="h-5 w-5 text-gray-400" />
@@ -85,27 +94,23 @@ export function AuditCompliancePanel(): JSX.Element {
 
       {/* Stats cards */}
       <div className="grid grid-cols-3 gap-2">
-        <div className="bg-blue-50 dark:bg-blue-900/30 rounded-md p-3 border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-1 text-xs text-blue-700 dark:text-blue-300 font-medium">
+        <div className={auditComplianceStatsTokens.total.card}>
+          <div className={auditComplianceStatsTokens.total.label}>
             <ListChecks className="h-3 w-3" /> Total
           </div>
-          <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.total}</div>
+          <div className={auditComplianceStatsTokens.total.value}>{stats.total}</div>
         </div>
-        <div className="bg-green-50 dark:bg-green-900/30 rounded-md p-3 border border-green-200 dark:border-green-800">
-          <div className="flex items-center gap-1 text-xs text-green-700 dark:text-green-300 font-medium">
+        <div className={auditComplianceStatsTokens.users.card}>
+          <div className={auditComplianceStatsTokens.users.label}>
             <Users className="h-3 w-3" /> Users
           </div>
-          <div className="text-2xl font-bold text-green-900 dark:text-green-100">
-            {stats.uniqueUsers}
-          </div>
+          <div className={auditComplianceStatsTokens.users.value}>{stats.uniqueUsers}</div>
         </div>
-        <div className="bg-purple-50 dark:bg-purple-900/30 rounded-md p-3 border border-purple-200 dark:border-purple-800">
-          <div className="flex items-center gap-1 text-xs text-purple-700 dark:text-purple-300 font-medium">
+        <div className={auditComplianceStatsTokens.cells.card}>
+          <div className={auditComplianceStatsTokens.cells.label}>
             <Hash className="h-3 w-3" /> Cells
           </div>
-          <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-            {stats.uniqueCells}
-          </div>
+          <div className={auditComplianceStatsTokens.cells.value}>{stats.uniqueCells}</div>
         </div>
       </div>
 
@@ -116,9 +121,9 @@ export function AuditCompliancePanel(): JSX.Element {
           {operationRows.map((r) => (
             <div key={r.op} className="flex items-center gap-2 text-xs">
               <span className="w-16 capitalize text-gray-600 dark:text-gray-400">{r.op}</span>
-              <div className="flex-1 h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div className={auditProgressTokens.track}>
                 <div
-                  className="h-full bg-blue-500"
+                  className={auditProgressTokens.neutral}
                   style={{ width: `${r.pct}%` }}
                   aria-label={`${r.op}: ${r.pct.toFixed(1)}%`}
                 />
@@ -139,19 +144,17 @@ export function AuditCompliancePanel(): JSX.Element {
         <div className="space-y-1.5">
           {approvalRows.map((r) => (
             <div key={r.status} className="flex items-center gap-2 text-xs">
-              <span className="w-16 capitalize text-gray-600 dark:text-gray-400">
-                {r.status}
-              </span>
-              <div className="flex-1 h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <span className="w-16 capitalize text-gray-600 dark:text-gray-400">{r.status}</span>
+              <div className={auditProgressTokens.track}>
                 <div
                   className={
                     r.status === 'approved'
-                      ? 'h-full bg-green-500'
+                      ? auditProgressTokens.success
                       : r.status === 'rejected'
-                        ? 'h-full bg-red-500'
+                        ? auditProgressTokens.danger
                         : r.status === 'pending'
-                          ? 'h-full bg-yellow-500'
-                          : 'h-full bg-gray-400'
+                          ? auditProgressTokens.warning
+                          : auditProgressTokens.muted
                   }
                   style={{ width: `${r.pct}%` }}
                   aria-label={`${r.status}: ${r.pct.toFixed(1)}%`}
@@ -192,7 +195,7 @@ export function AuditCompliancePanel(): JSX.Element {
       {/* Compliance report generator */}
       <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           onClick={generateComplianceReport}
           className="w-full"
@@ -201,12 +204,9 @@ export function AuditCompliancePanel(): JSX.Element {
           <ShieldCheck className="h-4 w-4 mr-1" /> Generate Compliance Report
         </Button>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          SOX Article 802 (7-year retention), GDPR Article 30 (ROPA), Article 17 (erasure),
-          Article 15 (access). Coupled with{' '}
-          <a
-            href="/audit/gdpr-consent"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
+          SOX Article 802 (7-year retention), GDPR Article 30 (ROPA), Article 17 (erasure), Article
+          15 (access). Coupled with{' '}
+          <a href="/audit/gdpr-consent" className={auditComplianceLinkTokens.link}>
             GDPR consent registry
           </a>
           .

@@ -18,17 +18,21 @@ export const useVarianceStore = create<VarianceState>()(
         clearError: () => set({ error: null }),
         setLoading: (loading) => set({ isLoading: loading }),
 
-        setAnalyses: enforce(Permissions.VARIANCE_UPDATE, 'setAnalyses', (analyses) => set({ analyses })),
+        setAnalyses: enforce(Permissions.VARIANCE_UPDATE, 'setAnalyses', (analyses) =>
+          set({ analyses })
+        ),
 
         addAnalysis: enforce(Permissions.VARIANCE_CREATE, 'addAnalysis', (analysis) =>
           set((state) => ({
             analyses: [...state.analyses, { ...analysis, id: `var-${Date.now()}` }],
-          }))),
+          }))
+        ),
 
         deleteAnalysis: enforce(Permissions.VARIANCE_DELETE, 'deleteAnalysis', (id) =>
           set((state) => ({
             analyses: state.analyses.filter((a) => a.id !== id),
-          }))),
+          }))
+        ),
       })),
       {
         name: 'variance-store',

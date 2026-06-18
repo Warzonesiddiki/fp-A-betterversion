@@ -1,3 +1,13 @@
+/**
+ * @fileoverview Lease Engine — ASC 842 / IFRS 16 lease accounting (ROU asset, lease liability, amortization schedule, lease classification)
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category Treasury
+ * @sector 16 (all)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 13th engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 export interface LeaseContract {
   id: string;
   assetDescription: string;

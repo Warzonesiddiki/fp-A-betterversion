@@ -17,6 +17,9 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 
 import { BenchmarkService, BenchmarkResult, BenchmarkReport } from '@/services/BenchmarkService';
+import { createLogger } from '@/utils/logger';
+
+const benchmarksPageLogger = createLogger('BenchmarksPage');
 
 const BenchmarksPage: React.FC = () => {
   const [history, setHistory] = useState<BenchmarkResult[]>([]);
@@ -30,7 +33,9 @@ const BenchmarksPage: React.FC = () => {
       setHistory(data);
     } catch (err) {
       setError('Failed to load benchmark history');
-      console.error(err);
+      benchmarksPageLogger.error('Failed to load benchmark history', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   };
 
@@ -48,7 +53,9 @@ const BenchmarksPage: React.FC = () => {
       await loadHistory();
     } catch (err) {
       setError('Benchmark execution failed. Check console for details.');
-      console.error(err);
+      benchmarksPageLogger.error('Benchmark execution failed', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setIsLoading(false);
     }

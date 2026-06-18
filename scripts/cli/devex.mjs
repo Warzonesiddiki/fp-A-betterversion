@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * @fileoverview FinPlan Pro Devex CLI — entry point for developer experience tooling
  * (P0A-Devex-CLI / T-3.16 PROMETHEUS, per Lead 2-MIN CHECK-IN CYCLE #2 directive).

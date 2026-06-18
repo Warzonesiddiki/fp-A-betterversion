@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
 import { register, unregisterAll, type ShortcutEvent } from '@tauri-apps/plugin-global-shortcut';
 import { useCopilotSidebar } from './useCopilotSidebar';
+import { createLogger } from '@/utils/logger';
+
+const tauriShortcutsLogger = createLogger('TauriGlobalShortcuts');
 
 export function useTauriGlobalShortcuts() {
   const toggleCopilot = useCopilotSidebar((state) => state.toggle);
@@ -33,7 +36,9 @@ export function useTauriGlobalShortcuts() {
           }
         });
       } catch (error) {
-        console.error('Failed to register global shortcuts:', error);
+        tauriShortcutsLogger.error('Failed to register global shortcuts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
 
@@ -42,7 +47,11 @@ export function useTauriGlobalShortcuts() {
     return () => {
       mounted = false;
       if (isTauri) {
-        unregisterAll().catch(console.error);
+        unregisterAll().catch((err) =>
+          tauriShortcutsLogger.error('Failed to unregister global shortcuts', {
+            error: err instanceof Error ? err.message : String(err),
+          })
+        );
       }
     };
   }, [toggleCopilot]);

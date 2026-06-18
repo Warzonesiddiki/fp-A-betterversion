@@ -8,6 +8,9 @@
  */
 
 import { useAuthStore } from '@/store/authStore';
+import { createLogger } from '@/utils/logger';
+
+const tokenRotationLogger = createLogger('TokenRotation');
 
 // Refresh 5 minutes before expiry
 const REFRESH_BUFFER_MS = 5 * 60 * 1000;
@@ -75,7 +78,9 @@ export async function refreshToken(): Promise<boolean> {
     scheduleRefresh();
     return true;
   } catch (error) {
-    console.error('[TokenRotation] Refresh failed:', error);
+    tokenRotationLogger.error('Refresh failed', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     handleTokenExpiry();
     return false;
   } finally {
@@ -102,7 +107,7 @@ export function scheduleRefresh(): void {
   // Schedule refresh 5 minutes before expiry
   const refreshIn = Math.max(msUntilExpiry - REFRESH_BUFFER_MS, 1000);
 
-  console.log(`[TokenRotation] Scheduled refresh in ${Math.round(refreshIn / 1000)}s`);
+  tokenRotationLogger.debug(`Scheduled refresh in ${Math.round(refreshIn / 1000)}s`);
 
   refreshTimer = setTimeout(() => {
     refreshToken();
@@ -112,7 +117,7 @@ export function scheduleRefresh(): void {
 // ─── Handle Token Expiry ──────────────────────────────────────────────────────
 
 export function handleTokenExpiry(): void {
-  console.warn('[TokenRotation] Token expired — logging out');
+  tokenRotationLogger.warn('Token expired — logging out');
   stopRotation();
 
   const store = useAuthStore.getState();
@@ -155,14 +160,14 @@ export function installFetchInterceptor(): void {
   if (originalFetch) return; // Already installed
   originalFetch = globalThis.fetch;
   globalThis.fetch = interceptedFetch;
-  console.log('[TokenRotation] 401 interceptor installed');
+  tokenRotationLogger.info('401 interceptor installed');
 }
 
 export function uninstallFetchInterceptor(): void {
   if (originalFetch) {
     globalThis.fetch = originalFetch;
     originalFetch = null;
-    console.log('[TokenRotation] 401 interceptor removed');
+    tokenRotationLogger.info('401 interceptor removed');
   }
 }
 
@@ -176,7 +181,7 @@ function handleVisibilityChange(): void {
 
     const msUntilExpiry = getTimeUntilExpiry(token);
     if (msUntilExpiry !== null && msUntilExpiry < REFRESH_BUFFER_MS) {
-      console.log('[TokenRotation] App focused, token near expiry — refreshing');
+      tokenRotationLogger.debug('App focused, token near expiry — refreshing');
       refreshToken();
     }
   }
@@ -198,7 +203,7 @@ function periodicCheck(): void {
 // ─── Start / Stop ─────────────────────────────────────────────────────────────
 
 export function startRotation(): void {
-  console.log('[TokenRotation] Starting token rotation');
+  tokenRotationLogger.info('Starting token rotation');
 
   // Schedule initial refresh
   scheduleRefresh();
@@ -215,7 +220,7 @@ export function startRotation(): void {
 }
 
 export function stopRotation(): void {
-  console.log('[TokenRotation] Stopping token rotation');
+  tokenRotationLogger.info('Stopping token rotation');
 
   if (refreshTimer) {
     clearTimeout(refreshTimer);

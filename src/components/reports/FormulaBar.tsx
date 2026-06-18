@@ -226,7 +226,7 @@ export function FormulaBar({
           <div
             className={cn(
               'flex items-center gap-1.5 mt-1.5 text-xs',
-              validationResult.valid ? 'text-green-400' : 'text-red-400'
+              validationResult.valid ? 'text-green-700' : 'text-red-400'
             )}
           >
             {validationResult.valid ? (

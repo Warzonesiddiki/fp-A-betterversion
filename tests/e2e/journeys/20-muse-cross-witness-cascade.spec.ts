@@ -49,7 +49,9 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
    * 3-witness: spec / DOM assertion / memory ledger file
    * Cross-witness: ALL 6+ Muses (6-ICP cascade)
    */
-  test('T-mcwc-1: 6-ICP cascade — upstream triggers downstream within 60s SLA', async ({ page }) => {
+  test('T-mcwc-1: 6-ICP cascade — upstream triggers downstream within 60s SLA', async ({
+    page,
+  }) => {
     await page.goto('/admin/verdicts/cascade/new');
     await page.waitForLoadState('networkidle');
 
@@ -101,7 +103,9 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
     });
 
     await page.locator('[data-testid="cascade-trigger-btn"]').click();
-    await page.locator('[data-testid="cascade-pick-id"]').fill('TEST-CASCADE-DEESCALATE-2026-06-16');
+    await page
+      .locator('[data-testid="cascade-pick-id"]')
+      .fill('TEST-CASCADE-DEESCALATE-2026-06-16');
     await page.locator('[data-testid="cascade-submit"]').click();
 
     await page.waitForSelector('[data-testid="cascade-deescalated"]', { timeout: 30_000 });
@@ -111,18 +115,20 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
     });
 
     // W2: Verify only 8-ICP has REJECT, downstream 9-ICP/10-ICP/11-ICP are NOT triggered
-    const apolloNode = cascadeNodes.find(n => n.muse === 'Apollo');
+    const apolloNode = cascadeNodes.find((n) => n.muse === 'Apollo');
     expect(apolloNode?.verdict).toBe('REJECT');
-    expect(cascadeNodes.find(n => n.muse === 'Hephaestus')).toBeUndefined();
-    expect(cascadeNodes.find(n => n.muse === 'Themis')).toBeUndefined();
-    expect(cascadeNodes.find(n => n.muse === 'Mnemosyne')).toBeUndefined();
+    expect(cascadeNodes.find((n) => n.muse === 'Hephaestus')).toBeUndefined();
+    expect(cascadeNodes.find((n) => n.muse === 'Themis')).toBeUndefined();
+    expect(cascadeNodes.find((n) => n.muse === 'Mnemosyne')).toBeUndefined();
   });
 
   /**
    * T-mcwc-3: CAVEMAN PERSIST 6-way fallback for cascade verdicts
    * Tests: cascade node is persisted to memory ledger, task board, persistent file, git, log, state anchor
    */
-  test('T-mcwc-3: CAVEMAN PERSIST 6-way — cascade node persisted to all 6 fallbacks', async ({ page }) => {
+  test('T-mcwc-3: CAVEMAN PERSIST 6-way — cascade node persisted to all 6 fallbacks', async ({
+    page,
+  }) => {
     await page.goto('/admin/verdicts/cascade/new');
     await page.waitForLoadState('networkidle');
 
@@ -132,25 +138,33 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
     await page.waitForSelector('[data-testid="cascade-complete"]', { timeout: 60_000 });
 
     // W2: Verify 6-way persistence via API
-    const taskBoardResponse = await page.request.get('/api/task-board/list?pick_id=TEST-CASCADE-PERSIST-2026-06-16');
+    const taskBoardResponse = await page.request.get(
+      '/api/task-board/list?pick_id=TEST-CASCADE-PERSIST-2026-06-16'
+    );
     expect(taskBoardResponse.status()).toBe(200);
     const taskBoard = await taskBoardResponse.json();
     expect(taskBoard.length).toBeGreaterThan(0);
 
     // 3. Persistent file (cascade JSON written to conversation dir)
-    const persistentCheck = await page.request.get('/api/cascade/persistent-file?pick_id=TEST-CASCADE-PERSIST-2026-06-16');
+    const persistentCheck = await page.request.get(
+      '/api/cascade/persistent-file?pick_id=TEST-CASCADE-PERSIST-2026-06-16'
+    );
     expect(persistentCheck.status()).toBe(200);
     const persistentData = await persistentCheck.json();
     expect(persistentData.exists).toBe(true);
 
     // 4. Git commit (verify via /api/git/recent-commits)
-    const gitResponse = await page.request.get('/api/git/recent-commits?pick_id=TEST-CASCADE-PERSIST-2026-06-16');
+    const gitResponse = await page.request.get(
+      '/api/git/recent-commits?pick_id=TEST-CASCADE-PERSIST-2026-06-16'
+    );
     expect(gitResponse.status()).toBe(200);
     const commits = await gitResponse.json();
     expect(commits.length).toBeGreaterThan(0);
 
     // 5. CODE_SHIP log (via /api/code-ship/log)
-    const codeShipResponse = await page.request.get('/api/code-ship/log?pick_id=TEST-CASCADE-PERSIST-2026-06-16');
+    const codeShipResponse = await page.request.get(
+      '/api/code-ship/log?pick_id=TEST-CASCADE-PERSIST-2026-06-16'
+    );
     expect(codeShipResponse.status()).toBe(200);
     const codeShip = await codeShipResponse.json();
     expect(codeShip.length).toBeGreaterThan(0);
@@ -194,7 +208,9 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
    * T-mcwc-5: 60s SLA HELD per RULE #51 NIPP protocol
    * Tests: all cascade verdicts arrive within 60s
    */
-  test('T-mcwc-5: 60s SLA HELD per RULE #51 NIPP — all cascade verdicts in 60s', async ({ page }) => {
+  test('T-mcwc-5: 60s SLA HELD per RULE #51 NIPP — all cascade verdicts in 60s', async ({
+    page,
+  }) => {
     await page.goto('/admin/verdicts/cascade/new');
     await page.waitForLoadState('networkidle');
 
@@ -222,7 +238,9 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
    * T-mcwc-6: CATCH-NUMBERING-COLLISION prevention (RULE #68) in cascade
    * Tests: when two cascade nodes try to allocate the same CATCH-###, only one succeeds
    */
-  test('T-mcwc-6: CATCH-NUMBERING-COLLISION prevention (RULE #68) — duplicate CATCH-### rejected', async ({ page }) => {
+  test('T-mcwc-6: CATCH-NUMBERING-COLLISION prevention (RULE #68) — duplicate CATCH-### rejected', async ({
+    page,
+  }) => {
     await page.goto('/admin/verdicts/cascade/new');
     await page.waitForLoadState('networkidle');
 
@@ -232,12 +250,16 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
     });
 
     await page.locator('[data-testid="cascade-trigger-btn"]').click();
-    await page.locator('[data-testid="cascade-pick-id"]').fill('TEST-CASCADE-CATCH-COLLISION-2026-06-16');
+    await page
+      .locator('[data-testid="cascade-pick-id"]')
+      .fill('TEST-CASCADE-CATCH-COLLISION-2026-06-16');
     await page.locator('[data-testid="cascade-submit"]').click();
 
     // W2: Verify collision detected and rejected
     await page.waitForSelector('[data-testid="cascade-collision-detected"]', { timeout: 10_000 });
-    const collisionNotice = await page.locator('[data-testid="cascade-collision-notice"]').textContent();
+    const collisionNotice = await page
+      .locator('[data-testid="cascade-collision-notice"]')
+      .textContent();
     expect(collisionNotice).toContain('CATCH-226');
 
     // W3: Verify new CATCH-### is allocated (not collision)
@@ -272,7 +294,9 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
    * T-mcwc-8: Cascade timeout handling — if a Muse doesn't respond in 60s, escalate
    * Tests: stuck cascade triggers escalation to LEADER
    */
-  test('T-mcwc-8: Cascade timeout escalation — stuck Muse triggers LEADER notification', async ({ page }) => {
+  test('T-mcwc-8: Cascade timeout escalation — stuck Muse triggers LEADER notification', async ({
+    page,
+  }) => {
     await page.goto('/admin/verdicts/cascade/new');
     await page.waitForLoadState('networkidle');
 
@@ -287,7 +311,9 @@ test.describe('Journey 20: Muse Cross-Witness Cascade (6-ICP → 11-ICP Multi-Mu
 
     // W2: Wait 60s for timeout, then verify LEADER notification
     await page.waitForSelector('[data-testid="cascade-leader-escalation"]', { timeout: 75_000 });
-    const escalationMessage = await page.locator('[data-testid="cascade-escalation-message"]').textContent();
+    const escalationMessage = await page
+      .locator('[data-testid="cascade-escalation-message"]')
+      .textContent();
     expect(escalationMessage).toContain('Strategos');
     expect(escalationMessage).toContain('timeout');
   });

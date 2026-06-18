@@ -1,7 +1,7 @@
 // src/components/audit/AuditRow.tsx
 // Clio (Audit Muse) — Part 141 P0A-17 — Row with click-to-expand 3-col detail
 
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 import { ChevronDown, ChevronRight, RotateCcw, Network, FileJson } from 'lucide-react';
 import {
   useAuditTrailStore,
@@ -10,24 +10,12 @@ import {
 } from '@/store/auditTrailStore';
 import { AuditDiff } from './AuditDiff';
 import { Button } from '@/components/ui/Button';
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-const OP_BADGES: Record<AuditOperation, string> = {
-  write: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200',
-  update: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
-  delete: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  bulk: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200',
-};
-
-const APPROVAL_BADGES: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200',
-  approved: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
-  rejected: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  auto: 'bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200',
-};
+import {
+  auditOpBadges,
+  auditApprovalBadges,
+  auditOpAriaLabels,
+  auditApprovalAriaLabels,
+} from './auditTokens';
 
 const formatTimestamp = (ms: number): string => {
   try {
@@ -74,7 +62,8 @@ export function AuditRow({ entry }: AuditRowProps): JSX.Element {
         <div className="flex-1 min-w-0 grid grid-cols-12 gap-3 text-sm">
           <div className="col-span-2">
             <span
-              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${OP_BADGES[entry.operation]}`}
+              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${auditOpBadges[entry.operation]}`}
+              aria-label={auditOpAriaLabels[entry.operation]}
             >
               {entry.operation}
             </span>
@@ -90,7 +79,8 @@ export function AuditRow({ entry }: AuditRowProps): JSX.Element {
           </div>
           <div className="col-span-3">
             <span
-              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${APPROVAL_BADGES[entry.approvalStatus]}`}
+              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${auditApprovalBadges[entry.approvalStatus]}`}
+              aria-label={auditApprovalAriaLabels[entry.approvalStatus]}
             >
               {entry.approvalStatus}
             </span>
@@ -143,15 +133,14 @@ export function AuditRow({ entry }: AuditRowProps): JSX.Element {
 
           {/* Column 2: Approval + Diff */}
           <div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              Approval + Diff
-            </h4>
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Approval + Diff</h4>
             <dl className="space-y-1 text-xs mb-3">
               <div>
                 <dt className="text-gray-500 dark:text-gray-400">Status</dt>
                 <dd>
                   <span
-                    className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${APPROVAL_BADGES[entry.approvalStatus]}`}
+                    className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${auditApprovalBadges[entry.approvalStatus]}`}
+                    aria-label={auditApprovalAriaLabels[entry.approvalStatus]}
                   >
                     {entry.approvalStatus}
                   </span>
@@ -253,9 +242,12 @@ export function AuditRow({ entry }: AuditRowProps): JSX.Element {
                   </span>
                 </div>
               )}
-              {!entry.versionId && !entry.consentId && !entry.breachEventId && !entry.rbacEnforceId && (
-                <div className="text-gray-400 italic">No cross-references</div>
-              )}
+              {!entry.versionId &&
+                !entry.consentId &&
+                !entry.breachEventId &&
+                !entry.rbacEnforceId && (
+                  <div className="text-gray-400 italic">No cross-references</div>
+                )}
             </div>
           </div>
         </div>

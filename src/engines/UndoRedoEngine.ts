@@ -1,6 +1,12 @@
 /**
  * UndoRedoEngine — Cross-store undo/redo with persistence and history
+ *
+ * PATCH 22 — Veridicus T-FIX-10:
+ * - RNG: Date.now + non-seeded random → generateId() with seeded mulberry32 PRNG
+ * - Storage: localStorage → storageAdapter (injectable for testing)
  */
+import { generateId } from '@/utils/deterministicRng';
+import { storageGet, storageSet } from '@/utils/storageAdapter';
 
 interface UndoAction {
   id: string;
@@ -69,8 +75,11 @@ export class UndoRedoEngine<T = unknown> {
    * Push action to undo stack
    */
   static pushAction(storeKey: string, action: string, data: unknown, userId?: string): void {
+    // PATCH 22 — Veridicus T-FIX-10: deterministic RNG via generateId()
+    // (Date.now + Math.random were non-reproducible — SOX/IFRS violation)
+    const monotonicCounter = (UndoRedoEngine.undoStack.length ?? 0) + Date.now();
     const entry: UndoAction = {
-      id: `undo_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      id: generateId('undo', monotonicCounter),
       storeKey,
       action,
       data: JSON.parse(JSON.stringify(data)),
@@ -177,7 +186,7 @@ export class UndoRedoEngine<T = unknown> {
   }
 
   /**
-   * Persist history to localStorage
+   * Persist history via storageAdapter (PATCH 22 — Veridicus T-FIX-10).
    */
   static persistHistory(): void {
     const snapshot: UndoRedoSnapshot = {
@@ -185,13 +194,12 @@ export class UndoRedoEngine<T = unknown> {
       redoStack: this.redoStack,
     };
     try {
-      localStorage.setItem('finplan-undo-redo', JSON.stringify(snapshot));
+      storageSet('undo-redo', JSON.stringify(snapshot));
     } catch {
-      // Storage full — clear old entries
       this.undoStack = this.undoStack.slice(-20);
       this.redoStack = this.redoStack.slice(-20);
-      localStorage.setItem(
-        'finplan-undo-redo',
+      storageSet(
+        'undo-redo',
         JSON.stringify({
           undoStack: this.undoStack,
           redoStack: this.redoStack,
@@ -201,11 +209,11 @@ export class UndoRedoEngine<T = unknown> {
   }
 
   /**
-   * Restore history from localStorage
+   * Restore history via storageAdapter (PATCH 22 — Veridicus T-FIX-10).
    */
   static restoreHistory(): boolean {
     try {
-      const stored = localStorage.getItem('finplan-undo-redo');
+      const stored = storageGet('undo-redo');
       if (!stored) return false;
       const snapshot = JSON.parse(stored) as UndoRedoSnapshot;
       this.undoStack = snapshot.undoStack ?? [];

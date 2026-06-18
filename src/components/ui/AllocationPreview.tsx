@@ -103,7 +103,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
     <div
       className={cn(
         'flex flex-col gap-4 p-4 bg-[var(--bg-surface)] rounded-lg border border-[var(--border-subtle)]',
-        accepted && 'border-green-500/50',
+        accepted && 'border-green-700/50',
         className
       )}
     >
@@ -261,7 +261,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
             <button
               type="button"
               onClick={handleAccept}
-              className="flex items-center gap-1.5 rounded-md bg-green-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-green-700"
+              className="flex items-center gap-1.5 rounded-md bg-green-700 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-green-700"
             >
               <Check className="h-3.5 w-3.5" />
               Accept
@@ -284,7 +284,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
             </button>
           </>
         ) : (
-          <div className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
+          <div className="flex items-center gap-1.5 text-xs text-green-700 font-medium">
             <Check className="h-4 w-4" />
             Accepted
           </div>

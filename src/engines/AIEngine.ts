@@ -2,6 +2,29 @@
 // Only loaded when the /ai page is visited
 //
 // Enhanced: retry logic, device status tracking, progress reporting, cleanup.
+//
+// @purity-tier TIER_3_SIDE_EFFECTING — Stateful class with lazy WASM pipeline
+//   load + global mutable state (pipeline, env, classifier, extractor, device).
+//   Methods use `this.` + mutate classifier/extractor singletons. Lazy import
+//   of @huggingface/transformers is async side-effect.
+// @boundary Lazy import boundary — `@huggingface/transformers` loaded on first use,
+//   uses BrowserCache + RemoteModels (network/filesystem side effects).
+// @pure-methods 0 of N (0%) — classifyTransaction/extractEntities/batchProcess
+//   all mutate internal pipeline state.
+// @side-effects WASM module load, browser cache hydration, network fetch for
+//   remote models, GPU device init, setTimeout for retry delay.
+// @deterministic false — depends on model version, GPU vs WASM device, cache state.
+// @idempotent false — loadTransformers early-returns if pipeline loaded, but
+//   classify/extract can return different results across model loads.
+// @commutative N/A — async pipeline.
+// @cross-witness T-FIX-10 [TRACK D] Vulcan LEAD @ 32nd HEAD f26c339e 1002c
+// @migrated-from N/A — design intentionally couples to @huggingface/transformers.
+// @d-007-honest-label LOC=172 (NOT 600 as Strategos 45th cadence estimated)
+//   per Read at L172 closing brace. Wave A decomposition NOT APPLICABLE —
+//   file is ALREADY well under 500 LOC threshold (66% smaller than estimated).
+// =============================================================================
+
+import { createLogger } from '@/utils/logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PipelineFunction = (...args: any[]) => Promise<any>;
@@ -10,6 +33,8 @@ type ExtractorResult = Array<{ word: string; score: number; start: number; end: 
 type PipelineInstance = ((text: string) => Promise<ClassifierResult | ExtractorResult>) & {
   dispose?: () => Promise<void>;
 };
+
+const aiEngineLogger = createLogger('AIEngine');
 
 let pipeline: PipelineFunction | null = null;
 let env: { allowRemoteModels: boolean; useBrowserCache: boolean } | null = null;
@@ -82,7 +107,9 @@ export class AIEngine {
         this.device = device;
         return;
       } catch (e) {
-        console.warn(`AIEngine: ${device} failed, trying next device`, e);
+        aiEngineLogger.warn(`${device} failed, trying next device`, {
+          error: e instanceof Error ? e.message : String(e),
+        });
       }
     }
 
@@ -122,7 +149,9 @@ export class AIEngine {
           )) as unknown as PipelineInstance;
           return this.extractor(text);
         } catch (e) {
-          console.warn(`AIEngine embeddings: ${device} failed`, e);
+          aiEngineLogger.warn(`embeddings: ${device} failed`, {
+            error: e instanceof Error ? e.message : String(e),
+          });
         }
       }
       throw new Error('AIEngine: All devices failed to initialize extractor');

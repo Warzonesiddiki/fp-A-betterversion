@@ -61,28 +61,37 @@ export const useEducationStore = create<EducationState>()(
         setPrograms: enforce(Permissions.ENTITY_UPDATE, 'setPrograms', (programs) =>
           set((s) => {
             s.programs = programs;
-          })),
+          })
+        ),
         addProgram: enforce(Permissions.ENTITY_CREATE, 'addProgram', (program) =>
           set((s) => {
             s.programs.push(program);
-          })),
+          })
+        ),
         updateProgram: enforce(Permissions.ENTITY_UPDATE, 'updateProgram', (id, updates) =>
           set((s) => {
             const i = s.programs.findIndex((p) => p.id === id);
             if (i !== -1) Object.assign(s.programs[i]!, updates);
-          })),
+          })
+        ),
         removeProgram: enforce(Permissions.ENTITY_DELETE, 'removeProgram', (id) =>
           set((s) => {
             s.programs = s.programs.filter((p) => p.id !== id);
-          })),
-        setEnrollmentTrends: enforce(Permissions.DASHBOARD_UPDATE, 'setEnrollmentTrends', (trends) =>
-          set((s) => {
-            s.enrollmentTrends = trends;
-          })),
+          })
+        ),
+        setEnrollmentTrends: enforce(
+          Permissions.DASHBOARD_UPDATE,
+          'setEnrollmentTrends',
+          (trends) =>
+            set((s) => {
+              s.enrollmentTrends = trends;
+            })
+        ),
         setScholarships: enforce(Permissions.BUDGET_UPDATE, 'setScholarships', (scholarships) =>
           set((s) => {
             s.scholarships = scholarships;
-          })),
+          })
+        ),
         setLoading: (isLoading) =>
           set((s) => {
             s.isLoading = isLoading;
@@ -98,7 +107,8 @@ export const useEducationStore = create<EducationState>()(
             s.scholarships = [];
             s.isLoading = false;
             s.error = null;
-          })),
+          })
+        ),
         getTotalEnrollment: () => get().programs.reduce((sum, p) => sum + p.enrollment, 0),
         getActiveProgramCount: () => get().programs.filter((p) => p.status === 'Active').length,
       })),

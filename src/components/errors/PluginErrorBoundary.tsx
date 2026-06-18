@@ -1,5 +1,8 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { Puzzle, RefreshCw, X } from 'lucide-react';
+import { createLogger } from '@/utils/logger';
+
+const pluginErrorBoundaryLogger = createLogger('PluginErrorBoundary');
 
 interface Props {
   children: ReactNode;
@@ -24,11 +27,11 @@ export class PluginErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error(
-      `[PluginErrorBoundary] ${this.props.pluginName ?? 'Plugin'} error:`,
-      error,
-      errorInfo
-    );
+    pluginErrorBoundaryLogger.error(`${this.props.pluginName ?? 'Plugin'} error`, {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleRetry = (): void => {

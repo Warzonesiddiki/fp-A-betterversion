@@ -11,6 +11,9 @@
  * (object-based, not string-based) — see `masterStorage.ts`.
  */
 import type { PersistStorage, StorageValue } from 'zustand/middleware';
+import { createLogger } from '@/utils/logger';
+
+const safeJsonStorageLogger = createLogger('safeJSONStorage');
 
 type AnyPersistStorage = PersistStorage<unknown, unknown> & { __resetCache?: () => void };
 
@@ -23,7 +26,9 @@ export function safeJSONStorage<S>(storage: AnyPersistStorage): PersistStorage<S
         return v as StorageValue<S>;
       } catch (err) {
         if (import.meta.env.DEV) {
-          console.warn(`[safeJSONStorage] storage.getItem('${name}') failed:`, err);
+          safeJsonStorageLogger.warn(`storage.getItem('${name}') failed`, {
+            error: err instanceof Error ? err.message : String(err),
+          });
         }
         return null;
       }
@@ -33,7 +38,9 @@ export function safeJSONStorage<S>(storage: AnyPersistStorage): PersistStorage<S
         await storage.setItem(name, value as StorageValue<unknown>);
       } catch (err) {
         if (import.meta.env.DEV) {
-          console.warn(`[safeJSONStorage] storage.setItem('${name}') failed:`, err);
+          safeJsonStorageLogger.warn(`storage.setItem('${name}') failed`, {
+            error: err instanceof Error ? err.message : String(err),
+          });
         }
       }
     },
@@ -42,7 +49,9 @@ export function safeJSONStorage<S>(storage: AnyPersistStorage): PersistStorage<S
         await storage.removeItem(name);
       } catch (err) {
         if (import.meta.env.DEV) {
-          console.warn(`[safeJSONStorage] storage.removeItem('${name}') failed:`, err);
+          safeJsonStorageLogger.warn(`storage.removeItem('${name}') failed`, {
+            error: err instanceof Error ? err.message : String(err),
+          });
         }
       }
     },

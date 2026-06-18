@@ -31,6 +31,9 @@ import type {
   RealtimeEvent,
   RealtimeEventHandler,
 } from '../types';
+import { createLogger } from '@/utils/logger';
+
+const realtimeChannelLogger = createLogger('RealtimeChannel');
 
 // ─── Internal state mapping ──────────────────────────────────────────────────
 
@@ -124,7 +127,9 @@ export class RealtimeChannel {
         try {
           listener(this._state);
         } catch (err) {
-          console.warn('[RealtimeChannel] state listener threw', err);
+          realtimeChannelLogger.warn('state listener threw', {
+            error: err instanceof Error ? err.message : String(err),
+          });
         }
       }
     });
@@ -162,7 +167,7 @@ export class RealtimeChannel {
    * await channel.connect();
    * const off = channel.subscribe('cell:edit', (event) => {
    *   if (event.type === 'cell:edit') {
-   *     console.log('cell updated:', event.payload.cell, '=', event.payload.value);
+   *     realtimeChannelLogger.info('cell updated', { cell: event.payload.cell, value: event.payload.value });
    *   }
    * });
    * // Detach the handler later:
@@ -171,7 +176,7 @@ export class RealtimeChannel {
    */
   public subscribe(type: RealtimeEvent['type'], handler: RealtimeEventHandler): () => void {
     if (!VALID_EVENT_TYPES.has(type)) {
-      console.warn(`[RealtimeChannel] subscribe: unknown event type "${type}"`);
+      realtimeChannelLogger.warn(`subscribe: unknown event type "${type}"`);
       return () => undefined;
     }
     let bucket = this.handlerByType.get(type);
@@ -195,7 +200,7 @@ export class RealtimeChannel {
    * @example
    * ```ts
    * const off = channel.onState((state) => {
-   *   console.log('connection state:', state); // 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'closed' | 'error'
+   *   realtimeChannelLogger.info('connection state', { state });
    * });
    * ```
    */
@@ -205,7 +210,9 @@ export class RealtimeChannel {
     try {
       listener(this._state);
     } catch (err) {
-      console.warn('[RealtimeChannel] state listener threw', err);
+      realtimeChannelLogger.warn('state listener threw', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
     return () => {
       this.stateListeners.delete(listener);
@@ -264,10 +271,14 @@ export class RealtimeChannel {
     for (const handler of bucket) {
       try {
         void Promise.resolve(handler(event)).catch((err) => {
-          console.warn(`[RealtimeChannel] handler for "${type}" threw`, err);
+          realtimeChannelLogger.warn(`handler for "${type}" threw`, {
+            error: err instanceof Error ? err.message : String(err),
+          });
         });
       } catch (err) {
-        console.warn(`[RealtimeChannel] handler for "${type}" threw synchronously`, err);
+        realtimeChannelLogger.warn(`handler for "${type}" threw synchronously`, {
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     }
   }

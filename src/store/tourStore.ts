@@ -42,7 +42,9 @@ export const useTourStore = create<TourState>()(
           });
         }),
 
-        stopTour: enforce(Permissions.UI_UPDATE, 'stopTour', () => set({ isActive: false, steps: [], currentStepIndex: 0 })),
+        stopTour: enforce(Permissions.UI_UPDATE, 'stopTour', () =>
+          set({ isActive: false, steps: [], currentStepIndex: 0 })
+        ),
 
         nextStep: () => {
           const { currentStepIndex, steps } = get();

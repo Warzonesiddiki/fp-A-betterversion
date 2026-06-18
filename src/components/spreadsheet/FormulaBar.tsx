@@ -202,7 +202,7 @@ export function FormulaBar({
           <button
             type="button"
             onClick={() => onEvaluate(value)}
-            className="p-1.5 rounded-md hover:bg-green-50 dark:bg-green-900/20 text-green-600 hover:text-green-700 transition-colors"
+            className="p-1.5 rounded-md hover:bg-green-50 dark:bg-green-900/20 text-green-700 hover:text-green-700 transition-colors"
             title="Confirm (Enter)"
             aria-label="Confirm formula"
           >

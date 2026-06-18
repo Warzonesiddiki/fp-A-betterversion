@@ -1,0 +1,60 @@
+﻿node.exe : (node:18368) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` 
+instead.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:18368) [D...oks()` instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90mC:/Users/Tahir/Desktop/frontend that i want/fpa[39m
+
+(node:28912) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [31m❯[39m src/pages/ai/AIIntelligencePage.test.tsx [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 109[2mms[22m[39m
+[31m     [31m×[31m renders without crashing[39m[32m 79[2mms[22m[39m
+[31m     [31m×[31m displays AI Intelligence Center heading[39m[32m 29[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/ai/AIIntelligencePage.test.tsx[2m > [22mAIIntelligencePage smoke test[2m > 
+[22mrenders without crashing
+[41m[1m FAIL [22m[49m src/pages/ai/AIIntelligencePage.test.tsx[2m > [22mAIIntelligencePage smoke test[2m > 
+[22mdisplays AI Intelligence Center heading
+[31m[1mTypeError[22m: AIEngine.getStatus is not a function[39m
+[36m [2m❯[22m src/pages/ai/AIIntelligencePage.tsx:[2m95:30[22m[39m
+    [90m 93|[39m   [90m// Refresh engine status on mount and after init[39m
+    [90m 94|[39m   [34museEffect[39m(() [33m=>[39m {
+    [90m 95|[39m     [35mconst[39m current [33m=[39m 
+[33mAIEngine[39m[33m.[39m[34mgetStatus[39m()[33m;[39m
+    [90m   |[39m                              [31m^[39m
+    [90m 96|[39m     [34msetStatus[39m(current)[33m;[39m
+    [90m 97|[39m     [35mif[39m (current[33m.[39minitialized) {
+[90m [2m❯[22m Object.react_stack_bottom_frame 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m25989:20[22m[39m
+[90m [2m❯[22m runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:[2m874:13[22m[39m
+[90m [2m❯[22m commitHookEffectListMount 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m13249:29[22m[39m
+[90m [2m❯[22m commitHookPassiveMountEffects 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m13336:11[22m[39m
+[90m [2m❯[22m commitPassiveMountOnFiber 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m15484:13[22m[39m
+[90m [2m❯[22m recursivelyTraversePassiveMountEffects 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m15439:11[22m[39m
+[90m [2m❯[22m commitPassiveMountOnFiber 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m15718:11[22m[39m
+[90m [2m❯[22m recursivelyTraversePassiveMountEffects 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m15439:11[22m[39m
+[90m [2m❯[22m commitPassiveMountOnFiber 
+node_modules/react-dom/cjs/react-dom-client.development.js:[2m15718:11[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 18:41:25
+[2m   Duration [22m 1.65s[2m (transform 153ms, setup 220ms, import 213ms, tests 109ms, environment 787ms)[22m
+
+

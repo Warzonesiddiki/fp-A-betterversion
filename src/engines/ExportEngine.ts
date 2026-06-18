@@ -16,6 +16,8 @@ export interface ExportData {
   footers?: string[];
 }
 
+import { downloadBlob } from '@/utils/canvasFactory';
+
 interface JsPDFInstance {
   autoTable: (options: Record<string, unknown>) => void;
   save: (filename: string) => void;
@@ -263,13 +265,8 @@ export class ExportEngine {
     ].join('\r\n');
 
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${(config.title ?? 'export').replace(/\s+/g, '_')}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const filename = `${(config.title ?? 'export').replace(/\s+/g, '_')}.csv`;
+    // PATCH 22 — Veridicus T-FIX-10: download abstracted to canvasFactory.downloadBlob
+    downloadBlob(blob, filename);
   }
 }

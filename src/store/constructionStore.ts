@@ -128,23 +128,27 @@ export const useConstructionStore = create<ConstructionState>()(
         setCostBreakdown: enforce(Permissions.BUDGET_UPDATE, 'setCostBreakdown', (items) =>
           set((state) => {
             state.costBreakdown = items;
-          })),
+          })
+        ),
 
         addChangeOrder: enforce(Permissions.BUDGET_CREATE, 'addChangeOrder', (order) =>
           set((state) => {
             state.changeOrders.push(order);
-          })),
+          })
+        ),
 
         updateChangeOrder: enforce(Permissions.BUDGET_UPDATE, 'updateChangeOrder', (id, updates) =>
           set((state) => {
             const idx = state.changeOrders.findIndex((o) => o.id === id);
             if (idx !== -1) Object.assign(state.changeOrders[idx]!, updates);
-          })),
+          })
+        ),
 
         setCostLedger: enforce(Permissions.ENTITY_UPDATE, 'setCostLedger', (entries) =>
           set((state) => {
             state.costLedger = entries;
-          })),
+          })
+        ),
       })),
 
       {

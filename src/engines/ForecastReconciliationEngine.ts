@@ -1,8 +1,13 @@
-// =============================================================================
-// FORECAST RECONCILIATION ENGINE — Reconcile top-down vs bottom-up forecasts
-// Variance analysis, convergence tracking, merge strategies
-// Pure TypeScript, deterministic, testable
-// =============================================================================
+/**
+ * @fileoverview Forecast Reconciliation Engine — Reconcile top-down vs bottom-up forecasts (variance analysis, convergence tracking, merge strategies)
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category Forecasting
+ * @sector 16 (Cross-sector — forecast reconciliation)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 30th engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 
 export interface ForecastSource {
   name: string;

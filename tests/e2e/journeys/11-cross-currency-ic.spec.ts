@@ -160,7 +160,9 @@ test.describe('Journey 11: Cross-Currency Intercompany (FX + 4-Eye + Temporal Dr
     // W2: DOM assertion — temporal drift warning visible
     await expect(page.locator('[data-testid="fx-drift-warning"]')).toBeVisible();
     await expect(page.locator('[data-testid="fx-drift-warning"]')).toContainText('25 hours old');
-    await expect(page.locator('[data-testid="fx-drift-warning"]')).toContainText('manual override required');
+    await expect(page.locator('[data-testid="fx-drift-warning"]')).toContainText(
+      'manual override required'
+    );
 
     // W3: Cleanup assertion — submit button disabled until manual override
     await expect(page.locator('[data-testid="ic-submit-btn"]')).toBeDisabled();
@@ -216,7 +218,9 @@ test.describe('Journey 11: Cross-Currency Intercompany (FX + 4-Eye + Temporal Dr
 
     // W2: DOM assertion — entry found with FX rate lock detail
     await expect(page.locator(`[data-testid="audit-row-${auditId}"]`)).toBeVisible();
-    await expect(page.locator(`[data-testid="audit-row-${auditId}"]`)).toContainText('FX_RATE_LOCKED');
+    await expect(page.locator(`[data-testid="audit-row-${auditId}"]`)).toContainText(
+      'FX_RATE_LOCKED'
+    );
 
     // W3: Cleanup assertion — audit entry is immutable (edit button disabled)
     await expect(page.locator(`[data-testid="audit-edit-${auditId}"]`)).toBeDisabled();
@@ -227,7 +231,9 @@ test.describe('Journey 11: Cross-Currency Intercompany (FX + 4-Eye + Temporal Dr
    * Cross-currency IC transaction spanning USD/EUR/GBP/JPY/CAD/AUD/CHF/SEK/NOK/DKK
    * Tests Apollo V3 e.ix.7 Edge #12 (FX cascade)
    */
-  test('T-cci-7: Multi-currency FX cascade across 10 currencies (V3 e.ix.7 Edge #12)', async ({ page }) => {
+  test('T-cci-7: Multi-currency FX cascade across 10 currencies (V3 e.ix.7 Edge #12)', async ({
+    page,
+  }) => {
     await page.goto('/intercompany/new');
     await page.waitForLoadState('networkidle');
 
@@ -240,9 +246,15 @@ test.describe('Journey 11: Cross-Currency Intercompany (FX + 4-Eye + Temporal Dr
 
     // W2: Cross-currency triangulation consistency check
     // USD→EUR→JPY rate should equal USD→JPY rate within 0.01% tolerance
-    const usdEur = parseFloat((await page.locator('[data-testid="fx-rate-EUR"]').textContent()) || '0');
-    const eurJpy = parseFloat((await page.locator('[data-testid="fx-rate-JPY-base-EUR"]').textContent()) || '0');
-    const usdJpy = parseFloat((await page.locator('[data-testid="fx-rate-JPY"]').textContent()) || '0');
+    const usdEur = parseFloat(
+      (await page.locator('[data-testid="fx-rate-EUR"]').textContent()) || '0'
+    );
+    const eurJpy = parseFloat(
+      (await page.locator('[data-testid="fx-rate-JPY-base-EUR"]').textContent()) || '0'
+    );
+    const usdJpy = parseFloat(
+      (await page.locator('[data-testid="fx-rate-JPY"]').textContent()) || '0'
+    );
     const triangulated = usdEur * eurJpy;
     const deviationPct = Math.abs(triangulated - usdJpy) / usdJpy;
     expect(deviationPct).toBeLessThan(0.0001); // 0.01% tolerance
@@ -278,7 +290,9 @@ test.describe('Journey 11: Cross-Currency Intercompany (FX + 4-Eye + Temporal Dr
 
     // W2: CASCADE-HOLD alert visible
     await expect(page.locator('[data-testid="cascade-hold-alert"]')).toBeVisible();
-    await expect(page.locator('[data-testid="cascade-hold-alert"]')).toContainText('FX rate 25 hours old');
+    await expect(page.locator('[data-testid="cascade-hold-alert"]')).toContainText(
+      'FX rate 25 hours old'
+    );
     await expect(page.locator('[data-testid="cascade-hold-alert"]')).toContainText('MERGE BLOCKED');
 
     // W3: Submit is disabled until manual override

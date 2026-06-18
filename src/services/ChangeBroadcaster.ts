@@ -5,6 +5,9 @@
 // =============================================================================
 
 import type { WebSocketManager } from './WebSocketManager';
+import { createLogger } from '@/utils/logger';
+
+const changeBroadcasterLogger = createLogger('ChangeBroadcaster');
 
 export type ChangeType = 'create' | 'update' | 'delete';
 export type ResourceType =
@@ -235,9 +238,11 @@ export class ChangeBroadcaster {
       change.resourceId
     );
     if (!hasPermission) {
-      console.warn(
-        `Permission denied: user ${this.currentUserId} cannot modify ${change.resourceType}/${change.resourceId}`
-      );
+      changeBroadcasterLogger.warn('Permission denied', {
+        userId: this.currentUserId,
+        resourceType: change.resourceType,
+        resourceId: change.resourceId,
+      });
       return false;
     }
     return true;

@@ -11,17 +11,14 @@ import { ScrollText, Download, RefreshCw, ChevronUp, ChevronDown, Search } from 
 // MORPHEUS PICK 7 (2026-06-18): added 4-stat header, working sort, operation
 // + dataType filters, date presets, operation badges, diff toggle, detail
 // expansion. Targets SOX 404 compliance auditor workflow.
+// DEMETER v0.2 BUILD (2026-06-18): removed OPERATION_STYLES const (DRY violation
+// against auditOpBadges canonical token), migrated active preset chip to
+// auditFiltersTokens.chipActive/chipInactive. AuditTokens cross-Muse consistency
+// per Clio T-N+1 ↔ Demeter PICK CHAIN.
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
+import { auditOpBadges, auditFiltersTokens } from '@/components/audit/auditTokens';
 
 const auditEngine = new CellAuditTrailEngine();
-
-// Operation badge color mapping (semantic tokens)
-const OPERATION_STYLES: Record<AuditOperation, string> = {
-  write: 'bg-sky-900/40 text-sky-300 border-sky-800',
-  update: 'bg-amber-900/40 text-amber-300 border-amber-800',
-  delete: 'bg-red-900/40 text-red-300 border-red-800',
-  bulk: 'bg-purple-900/40 text-purple-300 border-purple-800',
-};
 
 const OPERATION_OPTIONS: AuditOperation[] = ['write', 'update', 'delete', 'bulk'];
 
@@ -322,8 +319,8 @@ export default function AuditTrailPage() {
                 aria-pressed={activePreset === p}
                 className={`text-xs px-3 py-1 rounded border transition-colors ${
                   activePreset === p
-                    ? 'bg-sky-700 border-sky-600 text-white'
-                    : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                    ? auditFiltersTokens.chipActive
+                    : auditFiltersTokens.chipInactive
                 }`}
               >
                 {PRESET_LABELS[p]}
@@ -531,7 +528,7 @@ export default function AuditTrailPage() {
                           <td className="px-4 py-2">
                             <span
                               className={`inline-block text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded border ${
-                                OPERATION_STYLES[e.operation] ||
+                                auditOpBadges[e.operation] ||
                                 'bg-slate-800 text-slate-300 border-slate-700'
                               }`}
                             >

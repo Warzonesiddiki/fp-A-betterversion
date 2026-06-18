@@ -200,13 +200,17 @@ export const useDriverStore = create<DriverState>()(
           return engine.analyzeImpact(driverId, newValue, readCell);
         },
 
-        batchUpdate: enforce(Permissions.DRIVER_UPDATE, 'batchUpdate', (updates, readCell, writeCell) => {
-          set({ isRecalculating: true });
-          const engine = get().engine;
-          const results = engine.batchUpdateDrivers(updates, readCell, writeCell);
-          set({ isRecalculating: false });
-          return results;
-        }),
+        batchUpdate: enforce(
+          Permissions.DRIVER_UPDATE,
+          'batchUpdate',
+          (updates, readCell, writeCell) => {
+            set({ isRecalculating: true });
+            const engine = get().engine;
+            const results = engine.batchUpdateDrivers(updates, readCell, writeCell);
+            set({ isRecalculating: false });
+            return results;
+          }
+        ),
 
         createSnapshot: () => {
           const engine = get().engine;

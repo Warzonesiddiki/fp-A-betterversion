@@ -18,6 +18,11 @@ import type {
   DashboardWidget,
   WorkflowRule,
 } from '@/types/plugin';
+import { createLogger } from '@/utils/logger';
+
+const pluginEngineLogger = createLogger('PluginEngine');
+
+import { storageGet, storageSet, storageRemove, storageAdapter } from '@/utils/storageAdapter';
 
 const CURRENT_VERSION = '1.0.0';
 const MAX_PLUGIN_STORAGE_MB = 10;
@@ -35,8 +40,8 @@ class PluginStorage {
   }
 
   async get<T>(key: string): Promise<T | null> {
-    const fullKey = this.prefix + key;
-    const stored = localStorage.getItem(fullKey);
+    // PATCH 22 — Veridicus T-FIX-10: localStorage → storageAdapter
+    const stored = storageGet(this.prefix + key);
     if (stored === null) return null;
     try {
       return JSON.parse(stored) as T;
@@ -54,18 +59,21 @@ class PluginStorage {
         `Plugin storage limit exceeded: ${sizeMb.toFixed(1)}MB > ${MAX_PLUGIN_STORAGE_MB}MB`
       );
     }
-    localStorage.setItem(fullKey, serialized);
+    storageSet(fullKey, serialized);
     this.data.set(key, value);
   }
 
   async delete(key: string): Promise<void> {
-    localStorage.removeItem(this.prefix + key);
+    storageRemove(this.prefix + key);
     this.data.delete(key);
   }
 
   async clear(): Promise<void> {
-    const keys = Object.keys(localStorage).filter((k) => k.startsWith(this.prefix));
-    keys.forEach((k) => localStorage.removeItem(k));
+    // PATCH 22 — Veridicus T-FIX-10: use storageAdapter.keys() to find plugin-prefixed keys
+    const pluginPrefix = this.prefix;
+    const allKeys = storageAdapter.keys();
+    const matchingKeys = allKeys.filter((k) => k.startsWith(pluginPrefix));
+    matchingKeys.forEach((k) => storageRemove(k));
     this.data.clear();
   }
 }
@@ -93,7 +101,9 @@ class PluginEventBus {
       try {
         handler(data);
       } catch (err) {
-        console.error(`[PluginEvent] Error in handler for "${event}":`, err);
+        pluginEngineLogger.error(`Error in handler for "${event}"`, {
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     });
   }
@@ -195,7 +205,9 @@ export class PluginEngine {
     try {
       instance.plugin.destroy();
     } catch (err) {
-      console.error(`[PluginEngine] Error destroying plugin ${pluginId}:`, err);
+      pluginEngineLogger.error(`Error destroying plugin ${pluginId}`, {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
 
     // Remove all registrations
@@ -413,12 +425,12 @@ export class PluginEngine {
       },
 
       log: {
-        info: (message: string, ...args: unknown[]) =>
-          console.log(`[Plugin:${pluginId}]`, message, ...args),
-        warn: (message: string, ...args: unknown[]) =>
-          console.warn(`[Plugin:${pluginId}]`, message, ...args),
-        error: (message: string, ...args: unknown[]) =>
-          console.error(`[Plugin:${pluginId}]`, message, ...args),
+        info: (message: string, context?: Record<string, unknown>) =>
+          pluginEngineLogger.info(`[Plugin:${pluginId}] ${message}`, context),
+        warn: (message: string, context?: Record<string, unknown>) =>
+          pluginEngineLogger.warn(`[Plugin:${pluginId}] ${message}`, context),
+        error: (message: string, context?: Record<string, unknown>) =>
+          pluginEngineLogger.error(`[Plugin:${pluginId}] ${message}`, context),
       },
     };
   }

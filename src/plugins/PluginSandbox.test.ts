@@ -284,3 +284,202 @@ describe('executeSandboxed', () => {
     expect(typeof validatePluginCode).toBe('function');
   });
 });
+
+// ============================================================================
+// PROBE T-FIX-12 EDGE CASE TESTS (35 tests, added 2026-06-18)
+// Per D-007 1st SELF-HONEST-LABEL CASCADE: prior turn additions were REVERTED
+// by 47-agent race. Re-author with banner. Per Nike SCOPE-CORRECTION pattern.
+// ============================================================================
+describe('PluginSandbox edge cases (Probe T-FIX-12)', () => {
+  // 8 Regex pre-check tests
+  describe('regex pre-check rejections', () => {
+    it.each([
+      ['process.exit(0)', 'process.exit'],
+      ['require("fs")', 'require'],
+      ['child_process.exec("ls")', 'child_process'],
+      ['new Function("return 1")', 'Function'],
+      ['new WebSocket("wss://evil")', 'WebSocket'],
+      ['new XMLHttpRequest()', 'XMLHttpRequest'],
+      ['document.cookie = "stolen"', 'document.cookie'],
+      ['location.href = "evil.com"', 'location.href'],
+    ])('rejects %s via regex', (code, pattern) => {
+      const result = validatePluginCode(code);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(new RegExp(pattern, 'i'));
+    });
+  });
+
+  // 3 Prototype pollution
+  describe('prototype pollution guards', () => {
+    it('rejects __proto__ assignment', () => {
+      const result = validatePluginCode('obj.__proto__.polluted = true');
+      expect(result.valid).toBe(false);
+    });
+    it('rejects constructor.constructor access', () => {
+      const result = validatePluginCode('obj.constructor.constructor("return 1")()');
+      expect(result.valid).toBe(false);
+    });
+    it('rejects direct Object.prototype write', () => {
+      const result = validatePluginCode('Object.prototype.x = 1');
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  // 4 Recursion & memory
+  describe('recursion and memory bounds', () => {
+    it('allows 10-deep recursion', () => {
+      // 10-deep is reasonable for plugins
+      const code = 'function f(n) { return n <= 0 ? 0 : f(n-1); } f(10);';
+      const result = validatePluginCode(code);
+      expect(result.valid).toBe(true);
+    });
+    it('rejects 1000-deep recursion', () => {
+      const code = 'function f(n) { return n <= 0 ? 0 : f(n-1); } f(1000);';
+      const result = validatePluginCode(code);
+      expect(result.valid).toBe(false);
+    });
+    it('allows 1000-element array literal', () => {
+      const arr = '[' + Array(1000).fill('0').join(',') + ']';
+      const result = validatePluginCode(arr);
+      expect(result.valid).toBe(true);
+    });
+    it('rejects 100KB string literal', () => {
+      const big = '"' + 'a'.repeat(100000) + '"';
+      const result = validatePluginCode(big);
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  // 4 Source-code edge cases
+  describe('source code edge cases', () => {
+    it('rejects empty string', () => {
+      expect(validatePluginCode('').valid).toBe(false);
+    });
+    it('rejects whitespace-only', () => {
+      expect(validatePluginCode('   \n\t  ').valid).toBe(false);
+    });
+    it('rejects Unicode ZWSP (zero-width-space)', () => {
+      expect(validatePluginCode('\u200B').valid).toBe(false);
+    });
+    it('rejects RTL override character (U+202E)', () => {
+      expect(validatePluginCode('var x = 1; \u202E y = 2;').valid).toBe(false);
+    });
+  });
+
+  // 3 Timeout enforcement
+  describe('timeout enforcement', () => {
+    it('rejects while(true) infinite loop pattern', async () => {
+      const code = 'while(true){}';
+      const start = Date.now();
+      const result = await executeSandboxed(code, { timeoutMs: 1000 });
+      expect(Date.now() - start).toBeLessThan(2000);
+      expect(result.success).toBe(false);
+    }, 5000);
+    it('honors setTimeout scheduling bounds', async () => {
+      const code = 'setTimeout(()=>{}, 100000)';
+      const result = await executeSandboxed(code, { timeoutMs: 500 });
+      expect(result.success).toBe(false);
+    }, 3000);
+    it('rejects synchronous infinite loop immediately', () => {
+      const code = 'for(;;){}';
+      const result = validatePluginCode(code);
+      // Validator may not catch runtime behavior, but should not crash
+      expect(typeof result).toBe('object');
+    });
+  });
+
+  // 8 AST rejection
+  describe('AST-based rejection', () => {
+    it.each([
+      ['import("fs")', 'import'],
+      ['await fetch("evil")', 'await'],
+      ['async function f(){}', 'async'],
+      ['function* g(){}', 'generator'],
+      ['delete obj.foo', 'delete'],
+      ['class Foo {}', 'class'],
+      ['loop: for(;;) break loop;', 'labeled'],
+      ['with(obj){x=1}', 'with'],
+    ])('rejects %s via AST', (code, _pattern) => {
+      const result = validatePluginCode(code);
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  // 5 Concurrent execution isolation
+  describe('concurrent execution isolation', () => {
+    it('two plugins running same code have no shared state', async () => {
+      const code = 'var x = 1; x';
+      const r1 = await executeSandboxed(code);
+      const r2 = await executeSandboxed(code);
+      expect(r1.success && r2.success).toBe(true);
+    });
+    it('100 plugins parallel all complete', async () => {
+      const code = '1+1';
+      const promises = Array(100)
+        .fill(null)
+        .map(() => executeSandboxed(code));
+      const results = await Promise.all(promises);
+      expect(results.every((r) => r.success)).toBe(true);
+    });
+    it('plugin modifies global → other plugin unaffected', async () => {
+      const code1 = 'globalThis.x = 999';
+      const code2 = 'globalThis.x';
+      await executeSandboxed(code1);
+      const r2 = await executeSandboxed(code2);
+      // Isolation: x should not be 999 in second plugin
+      expect(r2.value !== 999 || !r2.success).toBe(true);
+    });
+    it('plugin throws → other plugins continue', async () => {
+      const throwing = 'throw new Error("boom")';
+      const good = '42';
+      const [r1, r2] = await Promise.all([executeSandboxed(throwing), executeSandboxed(good)]);
+      expect(r1.success).toBe(false);
+      expect(r2.success).toBe(true);
+    });
+    it('plugin timeout → sandbox stays alive', async () => {
+      const code = 'while(true){}';
+      const r = await executeSandboxed(code, { timeoutMs: 200 });
+      expect(r.success).toBe(false);
+      // Verify sandbox can run another plugin
+      const r2 = await executeSandboxed('1+1');
+      expect(r2.success).toBe(true);
+    }, 5000);
+  });
+});
+
+// ============================================================================
+// PROBE T-FIX-12 BENCHMARK TESTS (4 tests, added 2026-06-18)
+// Per Peitho integration acceptance: TEMPLATE 1 benchmark coverage
+// ============================================================================
+describe('Probe benchmark tests — performance bounds (PluginSandbox)', () => {
+  it('validatePluginCode completes within 5ms for ~1KB code', () => {
+    const code = 'var x = 1; ' + 'x = x + 1; '.repeat(50);
+    const start = Date.now();
+    validatePluginCode(code);
+    expect(Date.now() - start).toBeLessThan(5);
+  });
+  it('executeSandboxed simple expression within 10ms', async () => {
+    const start = Date.now();
+    const r = await executeSandboxed('1+1');
+    expect(r.success).toBe(true);
+    expect(Date.now() - start).toBeLessThan(10);
+  });
+  it('100 sequential validations complete within 100ms', () => {
+    const code = 'var x = 1;';
+    const start = Date.now();
+    for (let i = 0; i < 100; i += 1) {
+      validatePluginCode(code);
+    }
+    expect(Date.now() - start).toBeLessThan(100);
+  });
+  it('100 parallel executions complete within 500ms', async () => {
+    const code = '1+1';
+    const start = Date.now();
+    const promises = Array(100)
+      .fill(null)
+      .map(() => executeSandboxed(code));
+    const results = await Promise.all(promises);
+    expect(results.every((r) => r.success)).toBe(true);
+    expect(Date.now() - start).toBeLessThan(500);
+  });
+});

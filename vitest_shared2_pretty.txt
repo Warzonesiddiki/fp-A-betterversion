@@ -1,0 +1,392 @@
+﻿node.exe : (node:18996) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` 
+instead.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:18996) [D...oks()` instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90mC:/Users/Tahir/Desktop/frontend that i want/fpa[39m
+
+(node:10820) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [31m❯[39m src/pages/__tests__/collaboration/SharedReports.test.tsx [2m([22m[2m15 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1340[2mms[22m[39m
+     [32m✓[39m renders without crashing with sample data[32m 168[2mms[22m[39m
+     [32m✓[39m shows the Shared Reports heading[32m 202[2mms[22m[39m
+[31m     [31m×[31m shows 4 KPI cards in the metrics section[39m[32m 99[2mms[22m[39m
+     [32m✓[39m shows 4 tab triggers (Overview, Accounts, Tasks, Comments)[32m 70[2mms[22m[39m
+     [32m✓[39m shows the live/real-time badge[32m 94[2mms[22m[39m
+     [32m✓[39m shows the refresh button in the header[32m 79[2mms[22m[39m
+     [32m✓[39m disables the Export CSV button when there is no data[32m 5[2mms[22m[39m
+     [32m✓[39m shows the search input[32m 70[2mms[22m[39m
+     [32m✓[39m shows the date range select with default "All time"[32m 63[2mms[22m[39m
+     [32m✓[39m switches to the Accounts tab when clicked[32m 116[2mms[22m[39m
+     [32m✓[39m switches to the Tasks tab and shows the empty state[32m 102[2mms[22m[39m
+     [32m✓[39m switches to the Comments tab and shows the empty state[32m 107[2mms[22m[39m
+     [32m✓[39m shows the help / About Shared Reports card[32m 66[2mms[22m[39m
+     [32m✓[39m filters entries when search query is updated[32m 95[2mms[22m[39m
+     [32m✓[39m uses a named export for SharedReports (no default export)[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/__tests__/collaboration/SharedReports.test.tsx[2m > [22mSharedReports[2m > 
+[22mshows 4 KPI cards in the metrics section
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "region" and name "Shared Reports"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"Report KPIs"[39m
+  [33maria-labelledby[39m=[32m"reports-heading"[39m
+  [33mclass[39m=[32m"grid grid-cols-2 md:grid-cols-4 gap-4"[39m
+  [33mid[39m=[32m"kpi-section"[39m
+[36m>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"Total Entries"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+        [36m>[39m
+          [36m<svg />[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+        [36m>[39m
+          [0mTotal Entries[0m
+        [36m</span>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all duration-700 
+translate-y-0 opacity-100"[39m
+    [36m>[39m
+      [0m3[0m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"Shared Reports"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+        [36m>[39m
+          [36m<svg />[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+        [36m>[39m
+          [0mShared Reports[0m
+        [36m</span>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all duration-700 
+translate-y-0 opacity-100"[39m
+    [36m>[39m
+      [0m0[0m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"Total Debit"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+        [36m>[39m
+          [36m<svg />[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+        [36m>[39m
+          [0mTotal Debit[0m
+        [36m</span>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all duration-700 
+translate-y-0 opacity-100"[39m
+    [36m>[39m
+      [0m3K[0m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33maria-label[39m=[32m"Total Credit"[39m
+    [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+        [36m>[39m
+          [36m<svg />[39m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+        [36m>[39m
+          [0mTotal Credit[0m
+        [36m</span>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all duration-700 
+translate-y-0 opacity-100"[39m
+    [36m>[39m
+      [0m5K[0m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33maria-label[39m=[32m"Shared Reports"[39m
+  [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl 
+shadow-sm transition-all hover:shadow-md group"[39m
+  [33mrole[39m=[32m"region"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex items-center gap-2"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+      [36m>[39m
+        [36m<svg />[39m
+      [36m</span>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-70 
+group-hover:opacity-100 transition-opacity"[39m
+      [36m>[39m
+        [0mShared Reports[0m
+      [36m</span>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all duration-700 
+translate-y-0 opacity-100"[39m
+  [36m>[39m
+    [0m0[0m
+  [36m</div>[39m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or 
+`findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-label[39m=[32m"Shared Reports Dashboard"[39m
+      [33mclass[39m=[32m"p-6 space-y-6 animate-fade-in"[39m
+      [33mrole[39m=[32m"main"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 
+focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded"[39m
+        [33mhref[39m=[32m"#kpi-section"[39m
+      [36m>[39m
+        [0mSkip to key metrics[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex items-center justify-between flex-wrap gap-3"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-2xl font-bold flex items-center gap-2"[39m
+            [33mid[39m=[32m"reports-heading"[39m
+          [36m>[39m
+            [36m<svg />[39m
+            [0mShared Reports[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-slate-500 mt-1"[39m
+          [36m>[39m
+            [0m3[0m
+            [0m entries imported[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-2 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Real-time indicator"[39m
+            [33mclass[39m=[32m"inline-flex items-center rounded-full text-xs font-semibold transition-colors 
+focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-gray-100 text-gray-800 dark:bg-gray-700 
+dark:text-gray-100 px-3 py-1 gap-1"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-2 w-2 rounded-full bg-green-700 animate-pulse"[39m
+            [36m/>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-xs font-medium text-green-700"[39m
+            [36m>[39m
+              [0mLive[0m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Refresh shared reports"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center text-sm font-medium transition-colors 
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
+disabled:opacity-50 disabled:pointer-events-none border border-[var(--border-default)] bg-white hover:bg-gray-50 
+dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 h-9 px-3 rounded-md"[39m
+          [36m>[39m
+            [36m<svg />[39m
+            [0mRefresh[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Export shared reports to CSV"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center text-sm font-medium transition-colors 
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
+disabled:opacity-50 disabled:pointer-events-none border border-[var(--border-default)] bg-white hover:bg-gray-50 
+dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 h-9 px-3 rounded-md"[39m
+          [36m>[39m
+            [36m<svg />[39m
+            [0mExport CSV[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"Report KPIs"[39m
+        [33maria-labelledby[39m=[32m"reports-heading"[39m
+        [33mclass[39m=[32m"grid grid-cols-2 md:grid-cols-4 gap-4"[39m
+        [33mid[39m=[32m"kpi-section"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Total Entries"[39m
+          [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] 
+rounded-xl shadow-sm transition-all hover:shadow-md group"[39m
+          [33mrole[39m=[32m"region"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+              [36m>[39m
+                [36m<svg />[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+              [36m>[39m
+                [0mTotal Entries[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all 
+duration-700 translate-y-0 opacity-100"[39m
+          [36m>[39m
+            [0m3[0m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Shared Reports"[39m
+          [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] 
+rounded-xl shadow-sm transition-all hover:shadow-md group"[39m
+          [33mrole[39m=[32m"region"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[var(--text-secondary)]"[39m
+              [36m>[39m
+                [36m<svg />[39m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] 
+opacity-70 group-hover:opacity-100 transition-opacity"[39m
+              [36m>[39m
+                [0mShared Reports[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text-2xl font-black text-[var(--text-primary)] tabular-nums transition-all 
+duration-700 translate-y-0 opacity-100"[39m
+          [36m>[39m
+            [0m0[0m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Total Debit"[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (15)[39m
+[2m   Start at [22m 18:53:33
+[2m   Duration [22m 4.08s[2m (transform 330ms, setup 344ms, import 842ms, tests 1.34s, environment 1.26s)[22m
+
+          [33mclass[39m=[32m"flex flex-col p-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] 
+rounded-xl shadow-sm transition-all hover:shadow-md group"[39m
+          [33mrole[39m=[32m"region"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+ ...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError 
+node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/__tests__/collaboration/SharedReports.test.tsx:[2m90:19[22m[39m
+    [90m 88|[39m     const kpiSection = screen.getByRole('region', { name: 'Total Entri…
+    [90m 89|[39m     [34mexpect[39m(kpiSection)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 90|[39m     expect(screen.getByRole('region', { name: 'Shared Reports' })).toB…
+    [90m   |[39m                   [31m^[39m
+    [90m 91|[39m     expect(screen.getByRole('region', { name: 'Total Debit' })).toBeIn…
+    [90m 92|[39m     expect(screen.getByRole('region', { name: 'Total Credit' })).toBeI…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+

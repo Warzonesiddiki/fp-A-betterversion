@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * @fileoverview `devex canary` — run Apollo's canary health check (TSC + ESLint
  * + Build per CAVEMAN_PERSIST cycle-25-turn-322 PROMETHEUS 18th HL).

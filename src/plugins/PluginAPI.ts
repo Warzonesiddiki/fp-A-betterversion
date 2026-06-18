@@ -26,6 +26,9 @@ import type {
   MenuItem,
   ToolbarButton,
 } from './types';
+import { createLogger } from '@/utils/logger';
+
+const pluginApiLogger = createLogger('PluginAPI');
 
 // =============================================================================
 // FORMULA API
@@ -134,6 +137,10 @@ class DashboardsAPIImpl implements PluginDashboardsAPI {
     this.widgets.delete(id);
   }
 
+  unregisterWidgetById(id: string): void {
+    this.widgets.delete(id);
+  }
+
   listWidgets(): DashboardWidget[] {
     return Array.from(this.widgets.values());
   }
@@ -190,7 +197,9 @@ class EventsAPIImpl implements PluginEventsAPI {
       try {
         handler(data);
       } catch (e: unknown) {
-        console.error(`Plugin event handler error for "${event}":`, e);
+        pluginApiLogger.error(`Plugin event handler error for "${event}"`, {
+          error: e instanceof Error ? e.message : String(e),
+        });
       }
     });
   }
@@ -254,7 +263,7 @@ class StorageAPIImpl implements PluginStorageAPI {
 class UIAPIImpl implements PluginUIAPI {
   showNotification(message: string, type: 'info' | 'warn' | 'error'): void {
     // Integrate with app notification system
-    console.log(`[Plugin:${type}] ${message}`);
+    pluginApiLogger.info(`[Plugin:${type}] ${message}`);
   }
 
   async showDialog(_options: DialogOptions): Promise<DialogResult> {
@@ -283,15 +292,15 @@ class LogAPIImpl implements PluginLogAPI {
   }
 
   info(message: string, ...args: unknown[]): void {
-    console.log(`${this.prefix} ${message}`, ...args);
+    pluginApiLogger.info(`${this.prefix} ${message}`, { args });
   }
 
   warn(message: string, ...args: unknown[]): void {
-    console.warn(`${this.prefix} ${message}`, ...args);
+    pluginApiLogger.warn(`${this.prefix} ${message}`, { args });
   }
 
   error(message: string, ...args: unknown[]): void {
-    console.error(`${this.prefix} ${message}`, ...args);
+    pluginApiLogger.error(`${this.prefix} ${message}`, { args });
   }
 }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * @fileoverview `devex test` — run Vitest with optional scope.
  *

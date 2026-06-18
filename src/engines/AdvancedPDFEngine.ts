@@ -5,6 +5,7 @@
  */
 
 import jsPDF from 'jspdf';
+import { createCanvas, createImage } from '@/utils/canvasFactory';
 
 interface TOCEntry {
   title: string;
@@ -220,11 +221,12 @@ export class AdvancedPDFEngine {
     if (!svgElement) return;
 
     const svgData = new XMLSerializer().serializeToString(svgElement);
-    const canvas = document.createElement('canvas');
+    // PATCH 22 — Veridicus T-FIX-10: canvas via factory (no direct document access)
+    const canvas = createCanvas();
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const img = new Image();
+    const img = createImage();
     img.onload = () => {
       canvas.width = img.width * 2;
       canvas.height = img.height * 2;

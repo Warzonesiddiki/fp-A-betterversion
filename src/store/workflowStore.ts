@@ -91,40 +91,64 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
           });
         }),
 
-        submitRequest: enforce(Permissions.WORKFLOW_UPDATE, 'submitRequest', (workflowId, title, description, requester, amount, entity, period) => {
-          set((state) => {
-            engine.submitRequest(workflowId, title, description, requester, amount, entity, period);
-            const snap = snapshot(engine);
-            state.requests = snap.requests;
-            state.stats = snap.stats;
-          });
-        }),
+        submitRequest: enforce(
+          Permissions.WORKFLOW_UPDATE,
+          'submitRequest',
+          (workflowId, title, description, requester, amount, entity, period) => {
+            set((state) => {
+              engine.submitRequest(
+                workflowId,
+                title,
+                description,
+                requester,
+                amount,
+                entity,
+                period
+              );
+              const snap = snapshot(engine);
+              state.requests = snap.requests;
+              state.stats = snap.stats;
+            });
+          }
+        ),
 
-        approveRequest: enforce(Permissions.WORKFLOW_APPROVE, 'approveRequest', (requestId, approver, comment) => {
-          set((state) => {
-            engine.approve(requestId, approver, comment);
-            const snap = snapshot(engine);
-            state.requests = snap.requests;
-            state.stats = snap.stats;
-          });
-        }),
+        approveRequest: enforce(
+          Permissions.WORKFLOW_APPROVE,
+          'approveRequest',
+          (requestId, approver, comment) => {
+            set((state) => {
+              engine.approve(requestId, approver, comment);
+              const snap = snapshot(engine);
+              state.requests = snap.requests;
+              state.stats = snap.stats;
+            });
+          }
+        ),
 
-        rejectRequest: enforce(Permissions.WORKFLOW_APPROVE, 'rejectRequest', (requestId, approver, comment) => {
-          set((state) => {
-            engine.reject(requestId, approver, comment);
-            const snap = snapshot(engine);
-            state.requests = snap.requests;
-            state.stats = snap.stats;
-          });
-        }),
+        rejectRequest: enforce(
+          Permissions.WORKFLOW_APPROVE,
+          'rejectRequest',
+          (requestId, approver, comment) => {
+            set((state) => {
+              engine.reject(requestId, approver, comment);
+              const snap = snapshot(engine);
+              state.requests = snap.requests;
+              state.stats = snap.stats;
+            });
+          }
+        ),
 
-        delegateRequest: enforce(Permissions.WORKFLOW_UPDATE, 'delegateRequest', (requestId, fromUser, toUser, comment) => {
-          set((state) => {
-            engine.delegate(requestId, fromUser, toUser, comment);
-            const snap = snapshot(engine);
-            state.requests = snap.requests;
-          });
-        }),
+        delegateRequest: enforce(
+          Permissions.WORKFLOW_UPDATE,
+          'delegateRequest',
+          (requestId, fromUser, toUser, comment) => {
+            set((state) => {
+              engine.delegate(requestId, fromUser, toUser, comment);
+              const snap = snapshot(engine);
+              state.requests = snap.requests;
+            });
+          }
+        ),
 
         lockRequest: enforce(Permissions.WORKFLOW_APPROVE, 'lockRequest', (requestId, actor) => {
           set((state) => {
@@ -135,16 +159,20 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
           });
         }),
 
-        bulkApprove: enforce(Permissions.WORKFLOW_APPROVE, 'bulkApprove', (requestIds, approver) => {
-          set((state) => {
-            for (const id of requestIds) {
-              engine.approve(id, approver, 'Bulk approved');
-            }
-            const snap = snapshot(engine);
-            state.requests = snap.requests;
-            state.stats = snap.stats;
-          });
-        }),
+        bulkApprove: enforce(
+          Permissions.WORKFLOW_APPROVE,
+          'bulkApprove',
+          (requestIds, approver) => {
+            set((state) => {
+              for (const id of requestIds) {
+                engine.approve(id, approver, 'Bulk approved');
+              }
+              const snap = snapshot(engine);
+              state.requests = snap.requests;
+              state.stats = snap.stats;
+            });
+          }
+        ),
 
         addDelegation: enforce(Permissions.WORKFLOW_UPDATE, 'addDelegation', (d) => {
           set((state) => {

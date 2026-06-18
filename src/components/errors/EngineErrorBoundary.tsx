@@ -1,5 +1,8 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { RefreshCw, AlertTriangle } from 'lucide-react';
+import { createLogger } from '@/utils/logger';
+
+const engineErrorBoundaryLogger = createLogger('EngineErrorBoundary');
 
 interface Props {
   children: ReactNode;
@@ -26,11 +29,11 @@ export class EngineErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ errorInfo });
-    console.error(
-      `[EngineErrorBoundary] ${this.props.engineName ?? 'Engine'} error:`,
-      error,
-      errorInfo
-    );
+    engineErrorBoundaryLogger.error(`${this.props.engineName ?? 'Engine'} error`, {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleRetry = (): void => {

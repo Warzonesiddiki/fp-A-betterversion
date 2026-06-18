@@ -112,27 +112,32 @@ export const useEnergyStore = create<EnergyState>()(
         setAssets: enforce(Permissions.ENTITY_UPDATE, 'setAssets', (assets) =>
           set((state) => {
             state.assets = assets;
-          })),
+          })
+        ),
 
         addAsset: enforce(Permissions.ENTITY_CREATE, 'addAsset', (asset) =>
           set((state) => {
             state.assets.push(asset);
-          })),
+          })
+        ),
 
         removeAsset: enforce(Permissions.ENTITY_DELETE, 'removeAsset', (id) =>
           set((state) => {
             state.assets = state.assets.filter((a) => a.id !== id);
-          })),
+          })
+        ),
 
         setGenerationTrend: enforce(Permissions.DASHBOARD_UPDATE, 'setGenerationTrend', (data) =>
           set((state) => {
             state.generationTrend = data;
-          })),
+          })
+        ),
 
         setCapacityMix: enforce(Permissions.DASHBOARD_UPDATE, 'setCapacityMix', (data) =>
           set((state) => {
             state.capacityMix = data;
-          })),
+          })
+        ),
       })),
 
       {

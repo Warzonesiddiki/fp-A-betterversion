@@ -56,7 +56,9 @@ test.describe('Journey 21: Husky Gate Cascade (Pre-Commit Gate Cascade + V3 e.ix
     await page.locator('[data-testid="husky-submit"]').click();
 
     // W2: Wait for all 5 gates to complete (max 60s per gate)
-    await page.waitForSelector('[data-testid="husky-cascade-complete"]', { timeout: HUSKY_GATE_TIMEOUT_MS * 5 });
+    await page.waitForSelector('[data-testid="husky-cascade-complete"]', {
+      timeout: HUSKY_GATE_TIMEOUT_MS * 5,
+    });
 
     const gateResults: GateResult[] = await page.evaluate(() => {
       return JSON.parse(localStorage.getItem('husky-gate-results') || '[]');
@@ -79,7 +81,9 @@ test.describe('Journey 21: Husky Gate Cascade (Pre-Commit Gate Cascade + V3 e.ix
    * T-hgc-2: Gate cascade failure — any gate FAIL aborts merge (RULE #60 CASCADE-HOLD-ABORT-MERGE)
    * Tests: when Gate 2 (ESLint) fails, the entire cascade aborts and merge is blocked
    */
-  test('T-hgc-2: Gate FAIL aborts cascade (RULE #60 CASCADE-HOLD-ABORT-MERGE)', async ({ page }) => {
+  test('T-hgc-2: Gate FAIL aborts cascade (RULE #60 CASCADE-HOLD-ABORT-MERGE)', async ({
+    page,
+  }) => {
     await page.goto('/admin/husky-gates/run');
     await page.waitForLoadState('networkidle');
 
@@ -115,14 +119,18 @@ test.describe('Journey 21: Husky Gate Cascade (Pre-Commit Gate Cascade + V3 e.ix
     await page.waitForLoadState('networkidle');
 
     // W1: Pre-DONE check — verify `npx tsc --noEmit` is required (UI gate)
-    const tscGateRequired = await page.locator('[data-testid="husky-tsc-required-badge"]').isVisible();
+    const tscGateRequired = await page
+      .locator('[data-testid="husky-tsc-required-badge"]')
+      .isVisible();
     expect(tscGateRequired).toBe(true);
 
     // W2: Verify husky gate 1 (TSC) marks PASS in UI
     await page.locator('[data-testid="husky-trigger-btn"]').click();
     await page.locator('[data-testid="husky-commit-msg"]').fill('TEST-RULE-77-2026-06-16');
     await page.locator('[data-testid="husky-submit"]').click();
-    await page.waitForSelector('[data-testid="husky-cascade-complete"]', { timeout: HUSKY_GATE_TIMEOUT_MS * 5 });
+    await page.waitForSelector('[data-testid="husky-cascade-complete"]', {
+      timeout: HUSKY_GATE_TIMEOUT_MS * 5,
+    });
 
     const gateResults: GateResult[] = await page.evaluate(() => {
       return JSON.parse(localStorage.getItem('husky-gate-results') || '[]');
@@ -157,7 +165,9 @@ test.describe('Journey 21: Husky Gate Cascade (Pre-Commit Gate Cascade + V3 e.ix
     }
 
     // W3: Verify commit was created (CAVEMAN COMMIT MODE allowed)
-    const commitResponse = await page.request.get('/api/git/recent-commits?msg=TEST-HUSKY-SKIP-2026-06-16');
+    const commitResponse = await page.request.get(
+      '/api/git/recent-commits?msg=TEST-HUSKY-SKIP-2026-06-16'
+    );
     expect(commitResponse.status()).toBe(200);
     const commits = await commitResponse.json();
     expect(commits.length).toBe(1);
@@ -209,7 +219,9 @@ test.describe('Journey 21: Husky Gate Cascade (Pre-Commit Gate Cascade + V3 e.ix
       localStorage.removeItem('husky-inject-fail');
     });
     await page.locator('[data-testid="husky-retry-btn"]').click();
-    await page.waitForSelector('[data-testid="husky-cascade-complete"]', { timeout: HUSKY_GATE_TIMEOUT_MS * 5 });
+    await page.waitForSelector('[data-testid="husky-cascade-complete"]', {
+      timeout: HUSKY_GATE_TIMEOUT_MS * 5,
+    });
 
     const gateResults: GateResult[] = await page.evaluate(() => {
       return JSON.parse(localStorage.getItem('husky-gate-results') || '[]');
@@ -223,17 +235,23 @@ test.describe('Journey 21: Husky Gate Cascade (Pre-Commit Gate Cascade + V3 e.ix
    * T-hgc-7: Gate cascade persistence — all gate results persisted to CAVEMAN ledger
    * Tests: per RULE #47, gate results are written to memory + task board + persistent file
    */
-  test('T-hgc-7: Gate cascade persistence — CAVEMAN 6-way fallback (RULE #47)', async ({ page }) => {
+  test('T-hgc-7: Gate cascade persistence — CAVEMAN 6-way fallback (RULE #47)', async ({
+    page,
+  }) => {
     await page.goto('/admin/husky-gates/run');
     await page.waitForLoadState('networkidle');
 
     await page.locator('[data-testid="husky-trigger-btn"]').click();
     await page.locator('[data-testid="husky-commit-msg"]').fill('TEST-HUSKY-PERSIST-2026-06-16');
     await page.locator('[data-testid="husky-submit"]').click();
-    await page.waitForSelector('[data-testid="husky-cascade-complete"]', { timeout: HUSKY_GATE_TIMEOUT_MS * 5 });
+    await page.waitForSelector('[data-testid="husky-cascade-complete"]', {
+      timeout: HUSKY_GATE_TIMEOUT_MS * 5,
+    });
 
     // W2: Verify 6-way persistence (memory + task board + file + git + log + state anchor)
-    const taskBoardResponse = await page.request.get('/api/task-board/list?pick_id=TEST-HUSKY-PERSIST-2026-06-16');
+    const taskBoardResponse = await page.request.get(
+      '/api/task-board/list?pick_id=TEST-HUSKY-PERSIST-2026-06-16'
+    );
     expect(taskBoardResponse.status()).toBe(200);
     const taskBoard = await taskBoardResponse.json();
     expect(taskBoard.length).toBeGreaterThan(0);

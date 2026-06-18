@@ -110,7 +110,9 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
    * T-ate-3: PDF export with cryptographic signature (audit-ready for regulators)
    * Tests PDF signing integration with AuditLogger
    */
-  test('T-ate-3: PDF export includes SHA-256 signature for regulator submission', async ({ page }) => {
+  test('T-ate-3: PDF export includes SHA-256 signature for regulator submission', async ({
+    page,
+  }) => {
     await page.goto('/audit-trail');
     await page.waitForLoadState('networkidle');
 
@@ -151,8 +153,12 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
     // W2: DOM assertion — delete button is disabled with retention warning
     const deleteBtn = page.locator('[data-testid="audit-delete-2019-entry"]').first();
     await expect(deleteBtn).toBeDisabled();
-    await expect(page.locator('[data-testid="retention-warning"]').first()).toContainText('SOX 7-year retention');
-    await expect(page.locator('[data-testid="retention-warning"]').first()).toContainText('until 2026-12-31');
+    await expect(page.locator('[data-testid="retention-warning"]').first()).toContainText(
+      'SOX 7-year retention'
+    );
+    await expect(page.locator('[data-testid="retention-warning"]').first()).toContainText(
+      'until 2026-12-31'
+    );
   });
 
   /**
@@ -181,7 +187,9 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
 
     // W3: DOM assertion — erasure logged with new audit entry
     await expect(page.locator('[data-testid="gdpr-erasure-success"]')).toBeVisible();
-    await expect(page.locator('[data-testid="gdpr-erasure-audit-id"]')).toContainText('AUD-GDPR-ERASE');
+    await expect(page.locator('[data-testid="gdpr-erasure-audit-id"]')).toContainText(
+      'AUD-GDPR-ERASE'
+    );
   });
 
   /**
@@ -203,11 +211,18 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
     await page.waitForLoadState('networkidle');
 
     // W2: HIPAA-specific retention indicator visible
-    await expect(page.locator('[data-testid="retention-policy-badge"]').first()).toContainText('HIPAA 6-year');
-    await expect(page.locator('[data-testid="retention-warning"]').first()).toContainText('until 2026-12-31');
+    await expect(page.locator('[data-testid="retention-policy-badge"]').first()).toContainText(
+      'HIPAA 6-year'
+    );
+    await expect(page.locator('[data-testid="retention-warning"]').first()).toContainText(
+      'until 2026-12-31'
+    );
 
     // W3: Different retention period than SOX 7y (cross-tenant policy check)
-    const hipaaRetention = await page.locator('[data-testid="retention-warning"]').first().textContent();
+    const hipaaRetention = await page
+      .locator('[data-testid="retention-warning"]')
+      .first()
+      .textContent();
     expect(hipaaRetention).not.toContain('SOX 7-year');
   });
 
@@ -215,7 +230,9 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
    * T-ate-7 (J17 amendment v0.10): Cross-tenant audit isolation — tenant A cannot view tenant B entries
    * Tests Sentinel multi-tenant audit isolation
    */
-  test('T-ate-7: Cross-tenant audit isolation — Tenant A cannot see Tenant B entries', async ({ page }) => {
+  test('T-ate-7: Cross-tenant audit isolation — Tenant A cannot see Tenant B entries', async ({
+    page,
+  }) => {
     await page.goto('/audit-trail');
     await page.waitForLoadState('networkidle');
 
@@ -232,16 +249,20 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
     expect(tenantBRows).toBeGreaterThan(0);
 
     // W3: Audit IDs must be disjoint (no cross-tenant leakage)
-    const tenantAIds = await page.locator('[data-testid^="audit-row-"]').evaluateAll(els =>
-      els.map(el => el.getAttribute('data-testid')).filter((id): id is string => !!id),
-    );
+    const tenantAIds = await page
+      .locator('[data-testid^="audit-row-"]')
+      .evaluateAll((els) =>
+        els.map((el) => el.getAttribute('data-testid')).filter((id): id is string => !!id)
+      );
     await page.locator('[data-testid="tenant-switcher"]').selectOption('tenant-A-001');
     await page.waitForLoadState('networkidle');
-    const tenantAIds2 = await page.locator('[data-testid^="audit-row-"]').evaluateAll(els =>
-      els.map(el => el.getAttribute('data-testid')).filter((id): id is string => !!id),
-    );
+    const tenantAIds2 = await page
+      .locator('[data-testid^="audit-row-"]')
+      .evaluateAll((els) =>
+        els.map((el) => el.getAttribute('data-testid')).filter((id): id is string => !!id)
+      );
 
-    const intersection = tenantAIds.filter(id => tenantAIds2.includes(id));
+    const intersection = tenantAIds.filter((id) => tenantAIds2.includes(id));
     expect(intersection.length).toBe(0);
   });
 
@@ -265,6 +286,8 @@ test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', ()
 
     // W3: Verify chain verification badge
     await expect(page.locator('[data-testid="audit-chain-verified-badge"]')).toBeVisible();
-    await expect(page.locator('[data-testid="audit-chain-verified-badge"]')).toContainText('CHAIN VERIFIED');
+    await expect(page.locator('[data-testid="audit-chain-verified-badge"]')).toContainText(
+      'CHAIN VERIFIED'
+    );
   });
 });

@@ -28,19 +28,27 @@ test.describe('Critical User Journey 01: Scenario Modeling', () => {
     await expect(page).toHaveURL(/\/scenarios$/);
     await expect(page.getByRole('heading', { name: /scenarios/i })).toBeVisible();
     // Real data-testid from ScenarioComparison.tsx:78-92
-    await expect(page.getByRole('button', { name: /new scenario|create scenario|add scenario/i }).first()).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /new scenario|create scenario|add scenario/i }).first()
+    ).toBeVisible();
   });
 
   test('Sentinel-CUJ-02: create a new scenario via /scenarios/create', async ({ page }) => {
     await page.goto('/scenarios/create');
     await expect(page.getByLabel(/scenario name|name/i).first()).toBeVisible();
-    await page.getByLabel(/scenario name|name/i).first().fill('Downside Q3 2026');
+    await page
+      .getByLabel(/scenario name|name/i)
+      .first()
+      .fill('Downside Q3 2026');
     // Form fields per ScenarioBuilder.tsx
     const assumptions = page.getByLabel(/assumptions|revenue growth|growth rate|driver/i).first();
     if (await assumptions.isVisible().catch(() => false)) {
       await assumptions.fill('-15%');
     }
-    await page.getByRole('button', { name: /save|create|run/i }).first().click();
+    await page
+      .getByRole('button', { name: /save|create|run/i })
+      .first()
+      .click();
     // Wait for navigation back to /scenarios
     await page.waitForURL(/\/scenarios(\?|$)/, { timeout: 10_000 }).catch(() => null);
     await expect(page.getByText(/Downside Q3 2026/i)).toBeVisible({ timeout: 5_000 });
@@ -49,12 +57,17 @@ test.describe('Critical User Journey 01: Scenario Modeling', () => {
   test('Sentinel-CUJ-03: open scenario compare with 2+ scenarios', async ({ page }) => {
     await page.goto('/scenarios/compare');
     // ScenarioComparison.tsx renders a comparison table
-    await expect(page.getByRole('table').or(page.getByRole('region', { name: /comparison/i }))).toBeVisible();
+    await expect(
+      page.getByRole('table').or(page.getByRole('region', { name: /comparison/i }))
+    ).toBeVisible();
   });
 
   test('Sentinel-CUJ-04: view driver tree analysis', async ({ page }) => {
     await page.goto('/scenarios');
-    const firstScenario = page.getByRole('row').or(page.getByText(/baseline|downside|upside/i).first()).first();
+    const firstScenario = page
+      .getByRole('row')
+      .or(page.getByText(/baseline|downside|upside/i).first())
+      .first();
     await firstScenario.click().catch(() => null);
     // DriverTreeView from src/components/scenarios/DriverTreeView.tsx
     const driverLink = page.getByRole('link', { name: /driver|tree|sensitivity/i }).first();

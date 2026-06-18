@@ -1,0 +1,36 @@
+﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('@/store/glStore', () => ({
+  useGLStore: vi.fn(() => ({ entries: [] })),
+}));
+vi.mock('@/store/collaborationStore', () => ({
+  useCollaborationStore: vi.fn(() => ({ comments: [], tasks: [] })),
+}));
+vi.mock('lucide-react', () => ({
+  FileText: () => <span data-testid="mock-icon" />,
+  DollarSign: () => <span data-testid="mock-icon" />,
+  Users: () => <span data-testid="mock-icon" />,
+  TrendingUp: () => <span data-testid="mock-icon" />,
+}));
+
+import { render, screen } from '@/test/testUtils';
+import { SharedReports } from '@/pages/collaboration/SharedReports';
+
+describe('SharedReports', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders without crashing', () => {
+    render(<SharedReports />);
+    expect(screen.getByRole('main')).toBeInTheDocument();
+  });
+
+  it('shows empty state when no entries', () => {
+    render(<SharedReports />);
+    expect(screen.getByText(/No Shared Reports Data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Import GL data to view shared reports/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Import GL data/i })).toBeInTheDocument();
+  });
+});
+

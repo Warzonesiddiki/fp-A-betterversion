@@ -1,5 +1,8 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertCircle, RefreshCw, Copy, ChevronDown, ChevronRight, Home } from 'lucide-react';
+import { createLogger } from '@/utils/logger';
+
+const errorBoundaryLogger = createLogger('ErrorBoundary');
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
@@ -31,7 +34,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     if (this.props.onError) this.props.onError(error, errorInfo);
-    console.error('ErrorBoundary caught:', error, errorInfo);
+    errorBoundaryLogger.error('caught error', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleRetry = () => {

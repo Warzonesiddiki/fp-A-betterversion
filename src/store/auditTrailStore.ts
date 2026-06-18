@@ -17,7 +17,7 @@ export type { ExtendedAuditEntry, AuditSource };
 // Types
 // ---------------------------------------------------------------------------
 
-export type AuditOperation = 'write' | 'update' | 'delete' | 'bulk';
+export type AuditOperation = 'read' | 'write' | 'update' | 'delete' | 'bulk';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'auto';
 export type DataType = 'number' | 'string' | 'boolean' | 'date' | 'object' | 'array';
 
@@ -210,11 +210,17 @@ export const useAuditTrailStore = create<State & Actions>()(
           entries.push({
             id: uid(),
             cellId: {
+              cube: 'demo-cube',
+              coords: {
+                sectorId: DEMO_SECTORS[i % DEMO_SECTORS.length]!,
+                periodId: DEMO_PERIODS[Math.floor(i / 7) % DEMO_PERIODS.length]!,
+              },
+              measure: 'value',
               sectorId: DEMO_SECTORS[i % DEMO_SECTORS.length]!,
               scenarioId: 'base',
               periodId: DEMO_PERIODS[Math.floor(i / 7) % DEMO_PERIODS.length]!,
               lineItemId: `item-${i}`,
-            },
+            } as any,
             userId: DEMO_USERS[i % DEMO_USERS.length]!,
             operation: DEMO_OPERATIONS[i % DEMO_OPERATIONS.length]!,
             dataType: 'number',
@@ -486,7 +492,8 @@ export const selectFilteredEntries = (state: State & Actions): ExtendedAuditEntr
     if (sortField === 'operation') return a.operation.localeCompare(b.operation) * dir;
     if (sortField === 'approvalStatus')
       return a.approvalStatus.localeCompare(b.approvalStatus) * dir;
-    if (sortField === 'cellId') return a.cellId.lineItemId.localeCompare(b.cellId.lineItemId) * dir;
+    if (sortField === 'cellId')
+      return (a.cellId.lineItemId ?? '').localeCompare(b.cellId.lineItemId ?? '') * dir;
     return 0;
   });
 

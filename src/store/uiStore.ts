@@ -12,6 +12,9 @@ import {
   sendNotification,
 } from '@tauri-apps/plugin-notification';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { createLogger } from '@/utils/logger';
+
+const uiStoreLogger = createLogger('UIStore');
 
 export const useUIStore = create<UIState>()(
   subscribeWithSelector(
@@ -71,7 +74,9 @@ export const useUIStore = create<UIState>()(
                   }
                 })
                 .catch((err) => {
-                  console.error('Failed to send native notification:', err);
+                  uiStoreLogger.error('Failed to send native notification', {
+                    error: err instanceof Error ? err.message : String(err),
+                  });
                 });
             }
           }

@@ -1,5 +1,8 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { RefreshCw, Table } from 'lucide-react';
+import { createLogger } from '@/utils/logger';
+
+const gridErrorBoundaryLogger = createLogger('GridErrorBoundary');
 
 interface Props {
   children: ReactNode;
@@ -24,7 +27,11 @@ export class GridErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('[GridErrorBoundary] AG Grid error:', error, errorInfo);
+    gridErrorBoundaryLogger.error('AG Grid error', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleRetry = (): void => {

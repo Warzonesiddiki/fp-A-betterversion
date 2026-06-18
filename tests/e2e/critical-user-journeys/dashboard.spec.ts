@@ -58,7 +58,9 @@ test.describe('Critical User Journey 04: Dashboard', () => {
       // Should reveal drill-down detail
       await page.waitForTimeout(500);
       // Some kind of detail/expanded view
-      await expect(page.locator('[data-testid="kpi-card"]').or(page.getByText(/detail|drill|expand/i).first())).toBeVisible();
+      await expect(
+        page.locator('[data-testid="kpi-card"]').or(page.getByText(/detail|drill|expand/i).first())
+      ).toBeVisible();
     }
   });
 });

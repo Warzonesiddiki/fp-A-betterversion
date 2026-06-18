@@ -204,7 +204,7 @@ export function CircularReferenceWarning({
                       className={`flex-1 min-w-[2px] rounded-t ${
                         isLast
                           ? val <= config.maxChange
-                            ? 'bg-green-500'
+                            ? 'bg-green-700'
                             : 'bg-red-500'
                           : 'bg-current opacity-40'
                       }`}

@@ -34,7 +34,11 @@
  */
 
 import type { StateCreator } from 'zustand';
-import { hasPermission, useAuthStore, type User } from '../store/authStore';
+import { hasPermission, useAuthStore } from '../store/authStore';
+import type { User } from '../types';
+import { createLogger } from '@/utils/logger';
+
+const rbacEnforcerLogger = createLogger('RBAC');
 
 // ============================================================================
 // Types
@@ -98,7 +102,7 @@ export interface EnforceOptions {
  */
 export function getCurrentUser(): User | null {
   try {
-    return useAuthStore.getState().currentUser;
+    return useAuthStore.getState().user;
   } catch {
     return null;
   }
@@ -149,11 +153,11 @@ export function enforce<TArgs extends unknown[], TReturn>(
       if (throwOnDeny) {
         throw new PermissionError(permStr, action, user?.id ?? null);
       } else {
-        console.warn(
-          `[RBAC] Permission denied (silent): '${permStr}' for action '${action}'${
-            user?.id ? ` (user: ${user.id})` : ' (no user)'
-          }`
-        );
+        rbacEnforcerLogger.warn('Permission denied (silent)', {
+          permission: permStr,
+          action,
+          userId: user?.id ?? null,
+        });
         return undefined as TReturn;
       }
     }
@@ -371,7 +375,7 @@ export const Permissions = {
   AUTH_LOGOUT: 'auth:logout',
   AUTH_REFRESH: 'auth:refresh',
   AUTH_MFA_SETUP: 'auth:mfa-setup',
-// Workflow
+  // Workflow
   WORKFLOW_READ: 'workflow:read',
   WORKFLOW_CREATE: 'workflow:create',
   WORKFLOW_UPDATE: 'workflow:update',

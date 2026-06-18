@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * @fileoverview `devex tsc` — run `npx tsc --noEmit` with project defaults
  * (per AGENTS.md §Commands: `npx tsc --noEmit`).

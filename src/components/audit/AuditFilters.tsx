@@ -12,32 +12,24 @@ import type {
   AuditSource,
 } from '@/store/auditTrailStore';
 import { Button } from '@/components/ui/Button';
+import {
+  auditOpBadges,
+  auditApprovalBadges,
+  auditPanelTokens,
+  auditFiltersTokens,
+} from './auditTokens';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
-const OPERATIONS: { value: AuditOperation; label: string; color: string }[] = [
-  {
-    value: 'write',
-    label: 'Write',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200',
-  },
-  {
-    value: 'update',
-    label: 'Update',
-    color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
-  },
-  {
-    value: 'delete',
-    label: 'Delete',
-    color: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  },
-  {
-    value: 'bulk',
-    label: 'Bulk',
-    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200',
-  },
+// v0.2 BUILD 2026-06-18 — Demeter T-4.4: removed dead `color` field; canonical
+// source is `auditOpBadges[op.value]` / `auditApprovalBadges[a.value]`.
+const OPERATIONS: { value: AuditOperation; label: string }[] = [
+  { value: 'write', label: 'Write' },
+  { value: 'update', label: 'Update' },
+  { value: 'delete', label: 'Delete' },
+  { value: 'bulk', label: 'Bulk' },
 ];
 
 const DATA_TYPES: { value: DataType; label: string }[] = [
@@ -49,27 +41,11 @@ const DATA_TYPES: { value: DataType; label: string }[] = [
   { value: 'array', label: 'Array' },
 ];
 
-const APPROVAL_STATUSES: { value: ApprovalStatus; label: string; color: string }[] = [
-  {
-    value: 'pending',
-    label: 'Pending',
-    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200',
-  },
-  {
-    value: 'approved',
-    label: 'Approved',
-    color: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
-  },
-  {
-    value: 'rejected',
-    label: 'Rejected',
-    color: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  },
-  {
-    value: 'auto',
-    label: 'Auto',
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200',
-  },
+const APPROVAL_STATUSES: { value: ApprovalStatus; label: string }[] = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'auto', label: 'Auto' },
 ];
 
 const ALL_SOURCES: AuditSource[] = ['manual', 'import', 'api', 'plugin', 'automation', 'gdpr'];
@@ -115,7 +91,11 @@ export function AuditFilters(): JSX.Element {
     !!filters.hasConsent;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-4">
+    <div
+      className={
+        auditPanelTokens.bg + ' rounded-lg border ' + auditPanelTokens.border + ' p-4 space-y-4'
+      }
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filters</h2>
         {hasAnyFilter && (
@@ -177,7 +157,7 @@ export function AuditFilters(): JSX.Element {
                 type="button"
                 onClick={() => toggleArrayFilter('operation', op.value)}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-opacity ${
-                  op.color
+                  auditOpBadges[op.value]
                 } ${active ? 'opacity-100 ring-2 ring-offset-1 ring-blue-500' : 'opacity-50'}`}
                 aria-pressed={active}
               >
@@ -202,9 +182,7 @@ export function AuditFilters(): JSX.Element {
                 type="button"
                 onClick={() => toggleArrayFilter('dataType', dt.value)}
                 className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                  active
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                  active ? auditFiltersTokens.chipActive : auditFiltersTokens.chipInactive
                 }`}
                 aria-pressed={active}
               >
@@ -229,7 +207,7 @@ export function AuditFilters(): JSX.Element {
                 type="button"
                 onClick={() => toggleArrayFilter('approvalStatus', a.value)}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-opacity ${
-                  a.color
+                  auditApprovalBadges[a.value]
                 } ${active ? 'opacity-100 ring-2 ring-offset-1 ring-blue-500' : 'opacity-50'}`}
                 aria-pressed={active}
               >

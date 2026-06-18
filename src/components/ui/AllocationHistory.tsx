@@ -37,7 +37,7 @@ const METHOD_LABELS: Record<AllocationMethod, string> = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  applied: 'bg-green-500/10 text-green-400 border-green-500/30',
+  applied: 'bg-green-700/10 text-green-700 border-green-700/30',
   rejected: 'bg-red-500/10 text-red-400 border-red-500/30',
   pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
 };

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * @fileoverview Generate 3 distinct PWA icons (192, 512, 512-maskable).
  *

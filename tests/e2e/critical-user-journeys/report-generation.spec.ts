@@ -36,7 +36,9 @@ test.describe('Critical User Journey 02: Report Generation', () => {
     const addCol = page.getByRole('button', { name: /add column|add field|new column/i }).first();
     if (await addCol.isVisible().catch(() => false)) {
       await addCol.click();
-      await expect(page.getByText(/revenue|cost|net|ebit|margin/i).first()).toBeVisible({ timeout: 5_000 });
+      await expect(page.getByText(/revenue|cost|net|ebit|margin/i).first()).toBeVisible({
+        timeout: 5_000,
+      });
     }
   });
 
@@ -56,7 +58,9 @@ test.describe('Critical User Journey 02: Report Generation', () => {
     if (await runBtn.isVisible().catch(() => false)) {
       await runBtn.click();
       // ReportResultsPanel
-      await expect(page.locator('[data-testid="report-grid"]').or(page.getByText(/total|sum|results/i).first())).toBeVisible({ timeout: 10_000 });
+      await expect(
+        page.locator('[data-testid="report-grid"]').or(page.getByText(/total|sum|results/i).first())
+      ).toBeVisible({ timeout: 10_000 });
     }
   });
 });

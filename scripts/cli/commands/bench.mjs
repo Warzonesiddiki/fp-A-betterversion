@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * @fileoverview `devex bench` — run T-PR-082 perf benchmarks.
  *

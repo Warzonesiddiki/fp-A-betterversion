@@ -33,7 +33,8 @@ import { signInAsCfo } from '../_helpers/auth';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const MEMORY_DIR = 'C:\\Users\\Tahir\\AppData\\Roaming\\aionrs\\projects\\C--Users-Tahir-AppData-Roaming-AionUi-aionui-conversations-aionrs-temp-cb508c4a\\memory';
+const MEMORY_DIR =
+  'C:\\Users\\Tahir\\AppData\\Roaming\\aionrs\\projects\\C--Users-Tahir-AppData-Roaming-AionUi-aionui-conversations-aionrs-temp-cb508c4a\\memory';
 
 test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSIST)', () => {
   test.beforeEach(async ({ page }) => {
@@ -44,11 +45,15 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
    * T-mcw-1: 4-ICP verdict on E2E coverage extension is correctly constructed
    * 3-witness: spec / DOM assertion / memory file check (RULE #47)
    */
-  test('T-mcw-1: 4-ICP verdict on coverage extension — all 4 verdicts present', async ({ page }) => {
+  test('T-mcw-1: 4-ICP verdict on coverage extension — all 4 verdicts present', async ({
+    page,
+  }) => {
     await page.goto('/admin/verdicts/new');
     await page.waitForLoadState('networkidle');
 
-    await page.locator('[data-testid="verdict-subject"]').fill('USER_JOURNEY_TEST_COVERAGE.md v0.9 amendment');
+    await page
+      .locator('[data-testid="verdict-subject"]')
+      .fill('USER_JOURNEY_TEST_COVERAGE.md v0.9 amendment');
     await page.locator('[data-testid="verdict-type"]').selectOption('4-ICP');
     await page.locator('[data-testid="verdict-pick-id"]').fill('SENTINEL-PICK-C-v0.9');
     await page.locator('[data-testid="verdict-trigger-btn"]').click();
@@ -65,7 +70,7 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
     expect(verdictId).toBeTruthy();
 
     const memoryFiles = fs.readdirSync(MEMORY_DIR);
-    const sentinelFiles = memoryFiles.filter(f => f.includes('sentinel') && f.includes('v09'));
+    const sentinelFiles = memoryFiles.filter((f) => f.includes('sentinel') && f.includes('v09'));
     expect(sentinelFiles.length).toBeGreaterThan(0);
   });
 
@@ -90,7 +95,9 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
     await expect(page.locator('[data-testid="verdict-icp-strategos"]')).toBeVisible();
 
     // W3: Strategos verdict must reference T-1d 2026-06-21 15:00 UTC seal window
-    const strategosVerdict = await page.locator('[data-testid="verdict-icp-strategos-text"]').textContent();
+    const strategosVerdict = await page
+      .locator('[data-testid="verdict-icp-strategos-text"]')
+      .textContent();
     expect(strategosVerdict).toContain('2026-06-21');
   });
 
@@ -103,7 +110,9 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
 
     await page.locator('[data-testid="verdict-subject"]').fill('RATIFICATION_GATE_PRECHECK');
     await page.locator('[data-testid="verdict-type"]').selectOption('6-ICP');
-    await page.locator('[data-testid="verdict-pick-id"]').fill('RATIFICATION-GATE-2026-06-22-16-00-UTC');
+    await page
+      .locator('[data-testid="verdict-pick-id"]')
+      .fill('RATIFICATION-GATE-2026-06-22-16-00-UTC');
     await page.locator('[data-testid="verdict-trigger-btn"]').click();
     await page.waitForSelector('[data-testid="verdict-completed"]', { timeout: 15000 });
 
@@ -111,7 +120,9 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
     await expect(page.locator('[data-testid="verdict-icp-themis"]')).toBeVisible();
 
     // W3: Themis verdict must include SOX 404, GDPR Art. 17, CCPA §1798.105 references
-    const themisVerdict = await page.locator('[data-testid="verdict-icp-themis-text"]').textContent();
+    const themisVerdict = await page
+      .locator('[data-testid="verdict-icp-themis-text"]')
+      .textContent();
     expect(themisVerdict).toContain('SOX');
     expect(themisVerdict).toContain('GDPR');
   });
@@ -120,7 +131,9 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
    * T-mcw-4: CAVEMAN PERSIST (RULE #47) — 3-way redundancy check
    * Cron job + Task board + Memory file
    */
-  test('T-mcw-4: CAVEMAN PERSIST 3-way redundancy verified for critical alerts', async ({ page }) => {
+  test('T-mcw-4: CAVEMAN PERSIST 3-way redundancy verified for critical alerts', async ({
+    page,
+  }) => {
     const ALERT_ID = `ALERT-MCW-TEST-${Date.now()}`;
 
     // Trigger critical alert via API
@@ -151,7 +164,9 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
 
     // 3c: Memory file exists
     const memoryFiles = fs.readdirSync(MEMORY_DIR);
-    const matchingFiles = memoryFiles.filter(f => f.includes(ALERT_ID.toLowerCase()) || f.includes('mcp-test'));
+    const matchingFiles = memoryFiles.filter(
+      (f) => f.includes(ALERT_ID.toLowerCase()) || f.includes('mcp-test')
+    );
     expect(matchingFiles.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -159,7 +174,9 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
    * T-mcw-5: CATCH #211/212 numbering collision prevention (RULE #67)
    * Tests atomic increment + collision refusal + escalation
    */
-  test('T-mcw-5: CATCH numbering atomic increment prevents collision (RULE #67)', async ({ page }) => {
+  test('T-mcw-5: CATCH numbering atomic increment prevents collision (RULE #67)', async ({
+    page,
+  }) => {
     // Step 1: Get current next CATCH number
     const before = await page.request.get('/api/catches/next-id');
     const beforeData = await before.json();
@@ -187,13 +204,17 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
     await page.goto('/audit-trail');
     await page.locator('[data-testid="audit-search-input"]').fill('CATCH_ID_COLLISION');
     await page.locator('[data-testid="audit-search-btn"]').click();
-    await expect(page.locator('[data-testid="audit-row-CATCH_ID_COLLISION_ESCALATION"]')).toBeVisible();
+    await expect(
+      page.locator('[data-testid="audit-row-CATCH_ID_COLLISION_ESCALATION"]')
+    ).toBeVisible();
   });
 
   /**
    * T-mcw-6: Cross-witness chain integrity — 19/19 Muses respond within 5-min SLA (D-007)
    */
-  test('T-mcw-6: 19/19 Muses respond to cross-witness within 5-min SLA (D-007)', async ({ page }) => {
+  test('T-mcw-6: 19/19 Muses respond to cross-witness within 5-min SLA (D-007)', async ({
+    page,
+  }) => {
     const WITNESS_REQUEST_ID = `WITNESS-${Date.now()}`;
 
     // Broadcast cross-witness request to all 19 Muses
@@ -227,11 +248,11 @@ test.describe('Journey 15: Muse Cross-Witness (4-ICP+5-ICP+6-ICP + CAVEMAN PERSI
     expect(Date.now() - startTime).toBeLessThan(MAX_POLL_MS);
 
     // W3: All 19 verdicts are witnesses (not just acks)
-    const witnesses = responses.filter(r => r.verdict && r.verdict !== 'PENDING');
+    const witnesses = responses.filter((r) => r.verdict && r.verdict !== 'PENDING');
     expect(witnesses.length).toBe(19);
 
     // Check no Muse went stale (each must have responded within their window)
-    const staleMuses = responses.filter(r => r.durationMs > 5 * 60 * 1000);
+    const staleMuses = responses.filter((r) => r.durationMs > 5 * 60 * 1000);
     expect(staleMuses.length).toBe(0);
   });
 });

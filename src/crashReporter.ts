@@ -1,5 +1,8 @@
 const CRASH_LOG_KEY = 'finplan_crash_logs';
 const MAX_LOGS = 50;
+import { createLogger } from '@/utils/logger';
+
+const crashReporterLogger = createLogger('CrashReporter');
 
 interface CrashLog {
   id: string;
@@ -14,11 +17,7 @@ interface CrashLog {
   component?: string;
 }
 
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function getStoredLogs(): CrashLog[] {
+function getLogs(): CrashLog[] {
   try {
     const raw = localStorage.getItem(CRASH_LOG_KEY);
     return raw ? JSON.parse(raw) : [];
@@ -28,36 +27,24 @@ function getStoredLogs(): CrashLog[] {
 }
 
 function storeLog(log: CrashLog): void {
-  const logs = getStoredLogs();
-  logs.push(log);
-  // Keep only the most recent logs
-  while (logs.length > MAX_LOGS) {
-    logs.shift();
-  }
   try {
+    const logs = getLogs();
+    logs.unshift(log);
+    if (logs.length > MAX_LOGS) {
+      logs.length = MAX_LOGS;
+    }
     localStorage.setItem(CRASH_LOG_KEY, JSON.stringify(logs));
   } catch {
-    // Storage full — drop oldest silently
-    while (logs.length > 10) {
-      logs.shift();
-    }
-    try {
-      localStorage.setItem(CRASH_LOG_KEY, JSON.stringify(logs));
-    } catch {
-      // Last resort — give up
-    }
+    // localStorage may be full or unavailable — silently drop
   }
 }
 
 function handleError(event: ErrorEvent): void {
-  // Prevent default browser error handling
-  event.preventDefault();
-
   const log: CrashLog = {
-    id: generateId(),
+    id: crypto.randomUUID(),
     timestamp: new Date().toISOString(),
     type: 'error',
-    message: event.message || String(event.error),
+    message: event.message,
     filename: event.filename,
     lineno: event.lineno,
     colno: event.colno,
@@ -67,7 +54,7 @@ function handleError(event: ErrorEvent): void {
   storeLog(log);
 
   // Log to console for dev tools
-  console.error('[CrashReporter] Captured error:', log.message, log);
+  crashReporterLogger.error('Captured error', { message: log.message, log });
 }
 
 function handleUnhandledRejection(event: PromiseRejectionEvent): void {
@@ -82,7 +69,7 @@ function handleUnhandledRejection(event: PromiseRejectionEvent): void {
         : JSON.stringify(reason);
 
   const log: CrashLog = {
-    id: generateId(),
+    id: crypto.randomUUID(),
     timestamp: new Date().toISOString(),
     type: 'unhandledrejection',
     message,
@@ -91,7 +78,7 @@ function handleUnhandledRejection(event: PromiseRejectionEvent): void {
 
   storeLog(log);
 
-  console.error('[CrashReporter] Captured unhandled rejection:', log.message, log);
+  crashReporterLogger.error('Captured unhandled rejection', { message: log.message, log });
 }
 
 /**
@@ -106,27 +93,24 @@ export function initCrashReporter(): void {
   window.addEventListener('error', handleError);
   window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
-  console.log('[CrashReporter] Initialized. Logging to localStorage.');
+  crashReporterLogger.info('Initialized. Logging to localStorage.');
 }
 
 /**
  * Retrieve stored crash logs.
  * Useful for support/debugging views.
  */
-export function getCrashLogs(): readonly CrashLog[] {
-  return getStoredLogs();
+export function getCrashLogs(): CrashLog[] {
+  return getLogs();
 }
 
 /**
  * Clear all stored crash logs.
  */
 export function clearCrashLogs(): void {
-  localStorage.removeItem(CRASH_LOG_KEY);
-}
-
-/**
- * Export crash logs as a JSON string.
- */
-export function exportCrashLogs(): string {
-  return JSON.stringify(getStoredLogs(), null, 2);
+  try {
+    localStorage.removeItem(CRASH_LOG_KEY);
+  } catch {
+    // Silently ignore
+  }
 }

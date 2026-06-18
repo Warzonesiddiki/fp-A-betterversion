@@ -1,8 +1,10 @@
 // src/components/audit/AuditDiff.tsx
 // Clio (Audit Muse) — Part 141 P0A-17 Audit Trail UI
 // Word-level LCS diff + numeric Δ + boolean toggle + WCAG AA 4.5:1 contrast
+// v0.2 BUILD 2026-06-18 — Demeter T-4.4 designToken migration (auditDiffTokens)
 
-import { memo } from 'react';
+import { memo, type JSX } from 'react';
+import { auditDiffTokens } from './auditTokens';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -94,14 +96,14 @@ function AuditDiffBase({
     const isIncrease = delta > 0;
     return (
       <span className="font-mono text-sm">
-        <span className="text-gray-500 line-through mr-2">{formatNumber(previousValue)}</span>
+        <span className={auditDiffTokens.numericPreviousMuted}>{formatNumber(previousValue)}</span>
         <span
           className={
             isIncrease
-              ? 'text-green-700 font-semibold dark:text-green-300'
+              ? auditDiffTokens.deltaPositiveText
               : delta < 0
-                ? 'text-red-700 font-semibold dark:text-red-300'
-                : 'text-gray-700 dark:text-gray-300'
+                ? auditDiffTokens.deltaNegativeText
+                : auditDiffTokens.deltaNeutralText
           }
         >
           {formatNumber(newValue)}
@@ -109,10 +111,10 @@ function AuditDiffBase({
         <span
           className={
             isIncrease
-              ? 'ml-2 text-xs text-green-600 dark:text-green-400'
+              ? auditDiffTokens.deltaPositiveHint
               : delta < 0
-                ? 'ml-2 text-xs text-red-600 dark:text-red-400'
-                : 'ml-2 text-xs text-gray-500'
+                ? auditDiffTokens.deltaNegativeHint
+                : auditDiffTokens.deltaNeutralHint
           }
         >
           ({sign}
@@ -127,13 +129,9 @@ function AuditDiffBase({
   if (typeof previousValue === 'boolean' || typeof newValue === 'boolean') {
     return (
       <span className="text-sm">
-        <span className="text-gray-500 line-through mr-2">{String(previousValue)}</span>
+        <span className={auditDiffTokens.numericPreviousMuted}>{String(previousValue)}</span>
         <span
-          className={
-            newValue
-              ? 'text-green-700 font-semibold dark:text-green-300'
-              : 'text-red-700 font-semibold dark:text-red-300'
-          }
+          className={newValue ? auditDiffTokens.booleanTrueText : auditDiffTokens.booleanFalseText}
         >
           {String(newValue)}
         </span>
@@ -148,10 +146,10 @@ function AuditDiffBase({
   ) {
     return (
       <span className="font-mono text-sm">
-        <span className="text-gray-500 line-through mr-2">{formatDate(previousValue as number)}</span>
-        <span className="text-blue-700 font-semibold dark:text-blue-300">
-          {formatDate(newValue as number)}
+        <span className={auditDiffTokens.datePreviousMuted}>
+          {formatDate(previousValue as number)}
         </span>
+        <span className={auditDiffTokens.dateNewText}>{formatDate(newValue as number)}</span>
       </span>
     );
   }
@@ -186,16 +184,14 @@ function AuditDiffBase({
   if (prevWords.length === 0) {
     return (
       <span className="text-sm">
-        <span className="bg-green-100 text-green-900 dark:bg-green-900/40 dark:text-green-100 px-0.5 rounded">
-          {newWords.join(' ')}
-        </span>
+        <span className={`${auditDiffTokens.addChip} px-0.5 rounded`}>{newWords.join(' ')}</span>
       </span>
     );
   }
   if (newWords.length === 0) {
     return (
       <span className="text-sm">
-        <span className="bg-red-100 text-red-900 dark:bg-red-900/40 dark:text-red-100 px-0.5 rounded line-through">
+        <span className={`${auditDiffTokens.removeChip} px-0.5 rounded line-through`}>
           {prevWords.join(' ')}
         </span>
       </span>
@@ -216,20 +212,14 @@ function AuditDiffBase({
         }
         if (a && !b) {
           return (
-            <span
-              key={i}
-              className="bg-red-100 text-red-900 dark:bg-red-900/40 dark:text-red-100 px-0.5 rounded line-through"
-            >
+            <span key={i} className={`${auditDiffTokens.removeChip} px-0.5 rounded line-through`}>
               {a}
               {i < lcs.length - 1 ? ' ' : ''}
             </span>
           );
         }
         return (
-          <span
-            key={i}
-            className="bg-green-100 text-green-900 dark:bg-green-900/40 dark:text-green-100 px-0.5 rounded"
-          >
+          <span key={i} className={`${auditDiffTokens.addChip} px-0.5 rounded`}>
             {b}
             {i < lcs.length - 1 ? ' ' : ''}
           </span>

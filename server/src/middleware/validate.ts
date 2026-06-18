@@ -3,6 +3,7 @@ import type { ZodSchema, ZodError } from 'zod';
 
 // Extend Express Request to carry validated data
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       validated?: unknown;

@@ -18,11 +18,14 @@ export const useNotificationStore = create<NotificationState>()(
 
         clearError: () => set({ error: null }),
 
-        setNotifications: enforce(Permissions.NOTIFICATION_UPDATE, 'setNotifications', (notifications) =>
-          set({
-            notifications,
-            unreadCount: notifications.filter((n) => !n.isRead).length,
-          })
+        setNotifications: enforce(
+          Permissions.NOTIFICATION_UPDATE,
+          'setNotifications',
+          (notifications) =>
+            set({
+              notifications,
+              unreadCount: notifications.filter((n) => !n.isRead).length,
+            })
         ),
 
         markAsRead: enforce(Permissions.NOTIFICATION_UPDATE, 'markAsRead', (id) =>
@@ -44,23 +47,28 @@ export const useNotificationStore = create<NotificationState>()(
           }))
         ),
 
-        addNotification: enforce(Permissions.NOTIFICATION_CREATE, 'addNotification', (notification) =>
-          set((state) => {
-            const newNotification: Notification = {
-              ...notification,
-              id: `notif-${Date.now()}`,
-              createdAt: new Date().toISOString(),
-              isRead: false,
-            };
-            const notifications = [newNotification, ...state.notifications];
-            return {
-              notifications,
-              unreadCount: notifications.filter((n) => !n.isRead).length,
-            };
-          })
+        addNotification: enforce(
+          Permissions.NOTIFICATION_CREATE,
+          'addNotification',
+          (notification) =>
+            set((state) => {
+              const newNotification: Notification = {
+                ...notification,
+                id: `notif-${Date.now()}`,
+                createdAt: new Date().toISOString(),
+                isRead: false,
+              };
+              const notifications = [newNotification, ...state.notifications];
+              return {
+                notifications,
+                unreadCount: notifications.filter((n) => !n.isRead).length,
+              };
+            })
         ),
 
-        clearNotifications: enforce(Permissions.NOTIFICATION_DELETE, 'clearNotifications', () => set({ notifications: [], unreadCount: 0 })),
+        clearNotifications: enforce(Permissions.NOTIFICATION_DELETE, 'clearNotifications', () =>
+          set({ notifications: [], unreadCount: 0 })
+        ),
       })),
       {
         name: 'notification-store',

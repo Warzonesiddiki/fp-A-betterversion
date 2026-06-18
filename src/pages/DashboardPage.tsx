@@ -23,6 +23,9 @@ import { FinanceCopilotEngine } from '@/engines/FinanceCopilotEngine';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { NLQChat } from '@/components/ai/NLQChat';
 import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
+import { createLogger } from '@/utils/logger';
+
+const dashboardLogger = createLogger('Dashboard');
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import {
   AreaChart,
@@ -69,7 +72,7 @@ export default function DashboardPage() {
         });
 
         webview.once('tauri://error', function (e) {
-          console.error('Error creating window:', e);
+          dashboardLogger.error('Error creating window', { event: e });
           // Fallback to modal if window creation fails
           setDrillTitle(title);
           setDrillAccount(accountPrefix);
@@ -79,7 +82,9 @@ export default function DashboardPage() {
         throw new Error('Not running in Tauri');
       }
     } catch (err) {
-      console.warn('Tauri WebviewWindow not available, falling back to modal:', err);
+      dashboardLogger.warn('Tauri WebviewWindow not available, falling back to modal', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       setDrillTitle(title);
       setDrillAccount(accountPrefix);
       setDrillOpen(true);

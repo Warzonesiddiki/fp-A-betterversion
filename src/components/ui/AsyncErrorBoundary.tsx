@@ -1,5 +1,8 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { ErrorFallback } from './ErrorFallback';
+import { createLogger } from '@/utils/logger';
+
+const asyncErrorBoundaryLogger = createLogger('AsyncErrorBoundary');
 
 interface AsyncErrorBoundaryProps {
   children: ReactNode;
@@ -24,7 +27,11 @@ export class AsyncErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[AsyncErrorBoundary]', error, errorInfo);
+    asyncErrorBoundaryLogger.error('caught error', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleRetry = () => {

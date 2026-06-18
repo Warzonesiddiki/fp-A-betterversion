@@ -661,3 +661,227 @@ describe('IncidentResponse', () => {
     });
   });
 });
+
+// ============================================================================
+// PROBE T-FIX-12 EDGE CASE TESTS v2 (15 tests, corrected 2026-06-18)
+// Per D-007 2nd SELF-HONEST-LABEL CASCADE: original tests used WRONG API
+// (createIncidentResponse factory, severity P0, .on() method, oncallSchedule).
+// Replaced with valid API: IncidentResponse.create(adapter), severity CRITICAL/HIGH/MEDIUM/LOW/INFO.
+// ============================================================================
+describe('IncidentResponse edge cases v2 (Probe T-FIX-12)', () => {
+  let ir: IncidentResponse;
+
+  beforeEach(() => {
+    ir = IncidentResponse.create(new InMemoryIncidentAdapter());
+  });
+
+  // 5 Severity classification (using VALID API)
+  it('classifies CRITICAL severity with highest CVSS score', () => {
+    const incident = ir.createIncident({
+      title: 'Prod down',
+      description: 'Production completely unavailable',
+      severity: 'CRITICAL',
+      reporter: 'r@example.com',
+    });
+    expect(incident.severity).toBe('CRITICAL');
+    expect(ir.getSeverityScore('CRITICAL')).toBeGreaterThanOrEqual(9.0);
+  });
+  it('classifies HIGH severity with high CVSS score', () => {
+    const incident = ir.createIncident({
+      title: 'Major degradation',
+      description: 'Major feature broken',
+      severity: 'HIGH',
+      reporter: 'r@example.com',
+    });
+    expect(incident.severity).toBe('HIGH');
+    expect(ir.getSeverityScore('HIGH')).toBeGreaterThanOrEqual(7.0);
+  });
+  it('classifies MEDIUM severity with medium CVSS score', () => {
+    const incident = ir.createIncident({
+      title: 'Degradation',
+      description: 'Some users affected',
+      severity: 'MEDIUM',
+      reporter: 'r@example.com',
+    });
+    expect(incident.severity).toBe('MEDIUM');
+    expect(ir.getSeverityScore('MEDIUM')).toBeGreaterThanOrEqual(4.0);
+  });
+  it('classifies LOW severity with low CVSS score', () => {
+    const incident = ir.createIncident({
+      title: 'Minor issue',
+      description: 'Cosmetic glitch',
+      severity: 'LOW',
+      reporter: 'r@example.com',
+    });
+    expect(incident.severity).toBe('LOW');
+    expect(ir.getSeverityScore('LOW')).toBeGreaterThanOrEqual(0.1);
+  });
+  it('classifies INFO severity with zero CVSS', () => {
+    const incident = ir.createIncident({
+      title: 'Log noise',
+      description: 'Informational only',
+      severity: 'INFO',
+      reporter: 'r@example.com',
+    });
+    expect(incident.severity).toBe('INFO');
+    expect(ir.getSeverityScore('INFO')).toBe(0);
+  });
+
+  // 3 SLA tracking
+  it('getResponseSla returns minutes for each severity', () => {
+    expect(typeof ir.getResponseSla('CRITICAL')).toBe('number');
+    expect(typeof ir.getResponseSla('HIGH')).toBe('number');
+    expect(typeof ir.getResponseSla('MEDIUM')).toBe('number');
+    expect(ir.getResponseSla('CRITICAL')).toBeLessThan(ir.getResponseSla('LOW'));
+  });
+  it('getResolutionSla returns minutes for each severity', () => {
+    expect(typeof ir.getResolutionSla('CRITICAL')).toBe('number');
+    expect(ir.getResolutionSla('CRITICAL')).toBeLessThanOrEqual(ir.getResolutionSla('HIGH'));
+  });
+  it('getSlaStatus returns null for unknown incident', () => {
+    expect(ir.getSlaStatus('nonexistent-incident-id')).toBeNull();
+  });
+
+  // 3 Update + Postmortem
+  it('updateIncident with valid actor changes status', () => {
+    const incident = ir.createIncident({
+      title: 'T',
+      description: 'D',
+      severity: 'HIGH',
+      reporter: 'r@example.com',
+    });
+    const updated = ir.updateIncident(
+      incident.id,
+      { status: 'INVESTIGATING' },
+      'admin@example.com'
+    );
+    expect(updated.status).toBe('INVESTIGATING');
+  });
+  it('writePostmortem with all required fields succeeds', () => {
+    const incident = ir.createIncident({
+      title: 'T',
+      description: 'D',
+      severity: 'HIGH',
+      reporter: 'r@example.com',
+    });
+    expect(() =>
+      ir.writePostmortem(incident.id, {
+        rootCause: 'DB connection pool exhausted',
+        lessonsLearned: 'Increase pool size by 2x',
+        actionItems: ['Increase pool', 'Add monitoring'],
+        writtenBy: 'admin@example.com',
+      })
+    ).not.toThrow();
+  });
+  it('writePostmortem rejects missing required fields', () => {
+    const incident = ir.createIncident({
+      title: 'T',
+      description: 'D',
+      severity: 'HIGH',
+      reporter: 'r@example.com',
+    });
+    expect(() =>
+      ir.writePostmortem(incident.id, {
+        rootCause: '',
+        lessonsLearned: '',
+        actionItems: [],
+        writtenBy: '',
+      } as any)
+    ).toThrow();
+  });
+
+  // 2 List + Query
+  it('listIncidents returns array including newly created', () => {
+    const initial = ir.listIncidents();
+    ir.createIncident({
+      title: 'T',
+      description: 'D',
+      severity: 'MEDIUM',
+      reporter: 'r@example.com',
+    });
+    const after = ir.listIncidents();
+    expect(after.length).toBe(initial.length + 1);
+  });
+  it('getIncident returns the created incident', () => {
+    const created = ir.createIncident({
+      title: 'T',
+      description: 'D',
+      severity: 'LOW',
+      reporter: 'r@example.com',
+    });
+    const fetched = ir.getIncident(created.id);
+    expect(fetched).not.toBeNull();
+    expect(fetched?.id).toBe(created.id);
+  });
+
+  // 2 Edge cases
+  it('rejects unknown severity', () => {
+    expect(() =>
+      ir.createIncident({
+        title: 'T',
+        description: 'D',
+        severity: 'UNKNOWN' as any,
+        reporter: 'r@example.com',
+      })
+    ).toThrow();
+  });
+  it('requires reporter on createIncident', () => {
+    expect(() =>
+      ir.createIncident({
+        title: 'T',
+        description: 'D',
+        severity: 'HIGH',
+        reporter: '',
+      })
+    ).toThrow();
+  });
+});
+
+// ============================================================================
+// PROBE T-FIX-12 BENCHMARK TESTS (4 tests, added 2026-06-18)
+// Per Peitho integration acceptance: TEMPLATE 1 benchmark coverage
+// ============================================================================
+describe('Probe benchmark tests — performance bounds (IncidentResponse)', () => {
+  it('createIncident completes within 20ms', () => {
+    const ir2 = IncidentResponse.create(new InMemoryIncidentAdapter());
+    const start = Date.now();
+    ir2.createIncident({
+      title: 'Bench',
+      description: 'd',
+      severity: 'HIGH',
+      reporter: 'r@example.com',
+    });
+    expect(Date.now() - start).toBeLessThan(20);
+  });
+  it('getSeverityScore completes within 5ms for all 5 severities', () => {
+    const ir2 = IncidentResponse.create(new InMemoryIncidentAdapter());
+    const start = Date.now();
+    for (const sev of ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO'] as const) {
+      ir2.getSeverityScore(sev);
+    }
+    expect(Date.now() - start).toBeLessThan(5);
+  });
+  it('listIncidents returns within 10ms after 50 creates', () => {
+    const ir2 = IncidentResponse.create(new InMemoryIncidentAdapter());
+    for (let i = 0; i < 50; i += 1) {
+      ir2.createIncident({
+        title: `T-${i}`,
+        description: 'd',
+        severity: 'MEDIUM',
+        reporter: 'r@example.com',
+      });
+    }
+    const start = Date.now();
+    const list = ir2.listIncidents();
+    expect(Date.now() - start).toBeLessThan(10);
+    expect(list.length).toBeGreaterThanOrEqual(50);
+  });
+  it('getResponseSla completes within 1ms for all severities', () => {
+    const ir2 = IncidentResponse.create(new InMemoryIncidentAdapter());
+    const start = Date.now();
+    for (const sev of ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO'] as const) {
+      ir2.getResponseSla(sev);
+    }
+    expect(Date.now() - start).toBeLessThan(1);
+  });
+});

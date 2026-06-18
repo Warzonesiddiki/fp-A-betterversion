@@ -1,7 +1,10 @@
 /**
  * GridOfflineEngine — Offline data grid operations
  * Handles grid state persistence and sync when offline
+ *
+ * PATCH 22 — Veridicus T-FIX-10: localStorage abstracted to storageAdapter
  */
+import { storageGet, storageSet, storageRemove, storageAdapter } from '@/utils/storageAdapter';
 
 interface GridState {
   columnWidths: Record<string, number>;
@@ -35,7 +38,7 @@ export class GridOfflineEngine {
   static saveGridState(gridId: string, state: GridState): void {
     this.stateCache.set(gridId, state);
     try {
-      localStorage.setItem(`grid-state-${gridId}`, JSON.stringify(state));
+      storageSet(`grid-state-${gridId}`, JSON.stringify(state));
     } catch {
       // Storage full — evict oldest
       this.evictOldStates();
@@ -50,7 +53,7 @@ export class GridOfflineEngine {
     if (cached) return cached;
 
     try {
-      const stored = localStorage.getItem(`grid-state-${gridId}`);
+      const stored = storageGet(`grid-state-${gridId}`);
       if (!stored) return null;
       const state = JSON.parse(stored) as GridState;
       this.stateCache.set(gridId, state);
@@ -132,14 +135,10 @@ export class GridOfflineEngine {
   }
 
   private static evictOldStates(): void {
-    const keys: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith('grid-state-')) keys.push(key);
-    }
-    // Remove oldest half
+    // PATCH 22 — Veridicus T-FIX-10: use storageAdapter.keys() instead of localStorage iteration
+    const keys = storageAdapter.keys().filter((k) => k.startsWith('grid-state-'));
     for (const key of keys.slice(0, Math.ceil(keys.length / 2))) {
-      localStorage.removeItem(key);
+      storageRemove(key);
       this.stateCache.delete(key.replace('grid-state-', ''));
     }
   }

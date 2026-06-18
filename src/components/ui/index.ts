@@ -44,6 +44,8 @@ export { SankeyChart } from './SankeyChart';
 export { ScatterPlot } from './ScatterPlot';
 export { Select } from './Select';
 export { SkipToContent } from './SkipToContent';
+// Demeter T-4.5 Keyboard navigation audit — FocusTrap added TURN 395+
+export { FocusTrap } from './FocusTrap';
 export { Skeleton } from './Skeleton';
 export { Sparkline } from './Sparkline';
 export { SplitPane } from './SplitPane';

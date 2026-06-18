@@ -29,7 +29,9 @@ test.describe('Critical User Journey 03: Consolidation', () => {
     // ConsolidationDashboard.tsx:25 renders heading via CardTitle
     await expect(page.getByRole('heading').first()).toBeVisible();
     // "Add Entity" button (Plus icon + text per ConsolidationDashboard.tsx:42-53)
-    await expect(page.getByRole('button', { name: /add entity|add|new entity/i }).first()).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /add entity|add|new entity/i }).first()
+    ).toBeVisible();
   });
 
   test('Sentinel-CUJ-12: open add entity modal and see form fields', async ({ page }) => {
@@ -46,12 +48,24 @@ test.describe('Critical User Journey 03: Consolidation', () => {
 
   test('Sentinel-CUJ-13: submit new entity form', async ({ page }) => {
     await page.goto('/consolidation');
-    await page.getByRole('button', { name: /add entity|add|new entity/i }).first().click();
+    await page
+      .getByRole('button', { name: /add entity|add|new entity/i })
+      .first()
+      .click();
     await page.getByLabel(/name/i).first().fill('EU Sub Holdings');
     await page.getByLabel(/code/i).first().fill('EU-001');
-    await page.getByLabel(/country/i).first().fill('Netherlands');
-    await page.getByLabel(/ownership/i).first().fill('85');
-    await page.getByRole('button', { name: /save|submit|create|add/i }).first().click();
+    await page
+      .getByLabel(/country/i)
+      .first()
+      .fill('Netherlands');
+    await page
+      .getByLabel(/ownership/i)
+      .first()
+      .fill('85');
+    await page
+      .getByRole('button', { name: /save|submit|create|add/i })
+      .first()
+      .click();
     // Verify the new entity appears in the list
     await expect(page.getByText(/EU Sub Holdings/i)).toBeVisible({ timeout: 5_000 });
   });

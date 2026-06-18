@@ -95,23 +95,27 @@ export const useHealthcareStore = create<HealthcareState>()(
         setQualityMetrics: enforce(Permissions.DASHBOARD_UPDATE, 'setQualityMetrics', (metrics) =>
           set((state) => {
             state.qualityMetrics = metrics;
-          })),
+          })
+        ),
 
         setSavingsData: enforce(Permissions.BUDGET_UPDATE, 'setSavingsData', (data) =>
           set((state) => {
             state.savingsData = data;
-          })),
+          })
+        ),
 
         addProgram: enforce(Permissions.BUDGET_CREATE, 'addProgram', (program) =>
           set((state) => {
             state.programs.push(program);
-          })),
+          })
+        ),
 
         updateProgram: enforce(Permissions.BUDGET_UPDATE, 'updateProgram', (id, updates) =>
           set((state) => {
             const idx = state.programs.findIndex((p) => p.id === id);
             if (idx !== -1) Object.assign(state.programs[idx]!, updates);
-          })),
+          })
+        ),
       })),
 
       {

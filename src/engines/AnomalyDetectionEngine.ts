@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// =============================================================================
-// ANOMALY DETECTION ENGINE — On-device AI anomaly detection
-// Statistical anomaly detection, trend analysis, outlier identification
-// Pure TypeScript, deterministic, no external dependencies
-// =============================================================================
+/**
+ * @fileoverview Anomaly Detection Engine — On-device statistical anomaly detection, trend analysis, outlier identification
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category Anomaly Detection
+ * @sector 16 (Cross-sector — anomaly detection)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 31st engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 
 /**
  * Severity level for detected anomalies.

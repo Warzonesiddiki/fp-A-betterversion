@@ -126,23 +126,27 @@ export const useInsuranceStore = create<InsuranceState>()(
         setRateAdequacy: enforce(Permissions.DASHBOARD_UPDATE, 'setRateAdequacy', (data) =>
           set((state) => {
             state.rateAdequacy = data;
-          })),
+          })
+        ),
 
         setLossPicks: enforce(Permissions.DASHBOARD_UPDATE, 'setLossPicks', (data) =>
           set((state) => {
             state.lossPicks = data;
-          })),
+          })
+        ),
 
         addRateFiling: enforce(Permissions.BUDGET_CREATE, 'addRateFiling', (filing) =>
           set((state) => {
             state.rateFilings.push(filing);
-          })),
+          })
+        ),
 
         updateRateFiling: enforce(Permissions.BUDGET_UPDATE, 'updateRateFiling', (id, updates) =>
           set((state) => {
             const idx = state.rateFilings.findIndex((f) => f.id === id);
             if (idx !== -1) Object.assign(state.rateFilings[idx]!, updates);
-          })),
+          })
+        ),
       })),
 
       {

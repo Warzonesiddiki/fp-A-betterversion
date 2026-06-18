@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// =============================================================================
-// FINANCIAL INSTRUMENTS ENGINE
-// Bond pricing, loan amortization, option pricing, DCF valuation
-// Pure TypeScript, deterministic, testable
-// =============================================================================
+/**
+ * @fileoverview Financial Instruments Engine — Bond pricing, loan amortization, option pricing, DCF valuation
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category Financial Instruments
+ * @sector 7 (Capital Markets / Treasury)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 29th engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 
 export interface BondPricingResult {
   price: number;

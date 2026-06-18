@@ -29,7 +29,7 @@ export const DriverSlider: React.FC<DriverSliderProps> = ({
   const getTrackColor = () => {
     if (percentage < 33) return 'bg-red-500';
     if (percentage < 66) return 'bg-amber-500';
-    return 'bg-green-500';
+    return 'bg-green-700';
   };
 
   return (

@@ -77,21 +77,25 @@ export const useCollaborationStore = create<CollaborationState>()(
 
         setApprovals: (approvals) => set({ approvals }),
 
-        updateApprovalStatus: enforce(Permissions.WORKFLOW_APPROVE, 'updateApprovalStatus', (id, status, comment) => {
-          set((state) => ({
-            approvals: state.approvals.map((a) => {
-              if (a.id === id) {
-                return {
-                  ...a,
-                  status,
-                  reviewedAt: new Date().toISOString(),
-                  ...(comment ? { comments: comment } : {}),
-                };
-              }
-              return a;
-            }),
-          }));
-        }),
+        updateApprovalStatus: enforce(
+          Permissions.WORKFLOW_APPROVE,
+          'updateApprovalStatus',
+          (id, status, comment) => {
+            set((state) => ({
+              approvals: state.approvals.map((a) => {
+                if (a.id === id) {
+                  return {
+                    ...a,
+                    status,
+                    reviewedAt: new Date().toISOString(),
+                    ...(comment ? { comments: comment } : {}),
+                  };
+                }
+                return a;
+              }),
+            }));
+          }
+        ),
 
         setActivityLog: (log) => set({ activityLog: log }),
 

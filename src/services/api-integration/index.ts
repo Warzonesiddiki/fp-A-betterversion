@@ -32,14 +32,19 @@ export type { NetSuiteAuthConfig } from './NetSuiteConnector';
 
 export { QuickBooksConnector } from './QuickBooksConnector';
 
-export { PlaidConnector } from './PlaidConnector';
-export type { PlaidAuthConfig } from './PlaidConnector';
+// PlaidConnector removed — file does not exist (replaced by Stripe per PATCH 22)
+// export { PlaidConnector } from './PlaidConnector';
+// export type { PlaidAuthConfig } from './PlaidConnector';
 
 export { XeroConnector } from './XeroConnector';
 
 // PATCH 22 — SALESFORCE CONNECTOR (Prometheus T-3.16/T-4.5, 2026-06-18)
 // CRM for revenue forecast pipeline integration
 export { SalesforceConnector } from './SalesforceConnector';
+
+// PATCH 23 — SAGE INTACCT CONNECTOR (Prometheus T-3.17/T-4.6, 2026-06-18)
+// ERP for general ledger integration (chart of accounts + GL entries + AP/AR)
+export { SageConnector, type SageAuthConfig } from './SageConnector';
 
 // Connector framework
 export { BaseConnector } from './BaseConnector';

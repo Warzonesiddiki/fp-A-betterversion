@@ -2,6 +2,7 @@
 // Clio (Audit Muse) — Part 141 P0A-17 — CSV + JSON export buttons
 
 import { Download, FileJson } from 'lucide-react';
+import type { JSX } from 'react';
 import { useAuditTrailStore } from '@/store/auditTrailStore';
 import { Button } from '@/components/ui/Button';
 
@@ -41,20 +42,10 @@ export function AuditExportButton(): JSX.Element {
 
   return (
     <div className="flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleCSVExport}
-        aria-label="Export to CSV"
-      >
+      <Button variant="outline" size="sm" onClick={handleCSVExport} aria-label="Export to CSV">
         <Download className="h-4 w-4 mr-1" /> CSV
       </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleJSONExport}
-        aria-label="Export to JSON"
-      >
+      <Button variant="outline" size="sm" onClick={handleJSONExport} aria-label="Export to JSON">
         <FileJson className="h-4 w-4 mr-1" /> JSON
       </Button>
     </div>

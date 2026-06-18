@@ -279,7 +279,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             {step === 4 && (
               <div className="animate-fade-in text-center py-6">
                 <div
-                  className="w-16 h-16 bg-green-500/20 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"
+                  className="w-16 h-16 bg-green-700/20 text-green-700 rounded-full flex items-center justify-center mx-auto mb-6"
                   aria-hidden="true"
                 >
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

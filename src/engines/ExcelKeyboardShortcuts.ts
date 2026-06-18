@@ -1,3 +1,14 @@
+import { storageGet, storageSet } from '@/utils/storageAdapter';
+import { generateId } from '@/utils/deterministicRng';
+
+/**
+ * ExcelKeyboardShortcuts — Excel-like keyboard shortcut registry
+ *
+ * PATCH 22 — Veridicus T-FIX-10:
+ * - uid() now uses deterministic mulberry32 PRNG (was Math.random)
+ * - localStorage replaced with storageAdapter (injectable for testing)
+ */
+
 export interface ShortcutDef {
   id: string;
   key: string;
@@ -27,7 +38,9 @@ export interface ShortcutGroup {
   shortcuts: ShortcutDef[];
 }
 
-const uid = (): string => Math.random().toString(36).slice(2, 9);
+// PATCH 22 — Veridicus T-FIX-10: uid() uses seeded mulberry32 PRNG
+let _uidCounter = 0;
+const uid = (): string => generateId('shortcut', ++_uidCounter);
 
 // ─── Default shortcut registry ───────────────────────────────────────
 
@@ -812,19 +825,19 @@ export class ExcelKeyboardShortcuts {
     return true;
   }
 
-  /** Persist custom shortcuts to localStorage. */
+  /** Persist custom shortcuts via storageAdapter (PATCH 22 — Veridicus T-FIX-10). */
   static saveCustom(): void {
     try {
-      localStorage.setItem('finplan_custom_shortcuts', JSON.stringify(this.customShortcuts));
+      storageSet('custom_shortcuts', JSON.stringify(this.customShortcuts));
     } catch {
       // storage full or unavailable
     }
   }
 
-  /** Load custom shortcuts from localStorage. */
+  /** Load custom shortcuts via storageAdapter (PATCH 22 — Veridicus T-FIX-10). */
   static loadCustom(): void {
     try {
-      const raw = localStorage.getItem('finplan_custom_shortcuts');
+      const raw = storageGet('custom_shortcuts');
       if (raw) {
         this.customShortcuts = JSON.parse(raw) as ShortcutDef[];
         this.notify();

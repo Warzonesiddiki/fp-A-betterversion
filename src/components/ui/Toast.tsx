@@ -19,7 +19,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
 
   const typeConfig = {
     success: {
-      icon: <CheckCircle className="h-5 w-5 text-green-600" />,
+      icon: <CheckCircle className="h-5 w-5 text-green-700" />,
       bg: 'bg-green-50 dark:bg-green-950',
       border: 'border-green-100 dark:border-green-900',
     },

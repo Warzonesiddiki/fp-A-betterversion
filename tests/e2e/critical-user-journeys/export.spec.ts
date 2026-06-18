@@ -27,7 +27,9 @@ const openExportDialog = async (page: Page) => {
   }
   // data-testid from ExportDialog.tsx
   const dialog = page.locator('[data-testid="export-dialog"]').first();
-  await expect(dialog).toBeVisible({ timeout: 5_000 }).catch(() => null);
+  await expect(dialog)
+    .toBeVisible({ timeout: 5_000 })
+    .catch(() => null);
 };
 
 test.describe('Critical User Journey 05: Export', () => {
@@ -47,13 +49,20 @@ test.describe('Critical User Journey 05: Export', () => {
     await openExportDialog(page);
     await page.getByText(/^pdf$/i).first().click();
     // PDFOptions per ExportDialog.tsx:58-62
-    await expect(page.getByLabel(/orientation/i).or(page.getByText(/orientation/i).first())).toBeVisible({ timeout: 5_000 });
-    await expect(page.getByLabel(/page size|size/i).or(page.getByText(/page size/i).first())).toBeVisible({ timeout: 5_000 });
+    await expect(
+      page.getByLabel(/orientation/i).or(page.getByText(/orientation/i).first())
+    ).toBeVisible({ timeout: 5_000 });
+    await expect(
+      page.getByLabel(/page size|size/i).or(page.getByText(/page size/i).first())
+    ).toBeVisible({ timeout: 5_000 });
   });
 
   test('Sentinel-CUJ-23: select Excel format', async ({ page }) => {
     await openExportDialog(page);
-    await page.getByText(/^excel$/i).first().click();
+    await page
+      .getByText(/^excel$/i)
+      .first()
+      .click();
     // Excel options per ExportDialog.tsx (sheet name, formulas, etc.)
     await expect(page.getByText(/excel/i).first()).toBeVisible();
   });

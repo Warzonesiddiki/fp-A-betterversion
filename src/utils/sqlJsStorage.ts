@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PersistStorage, StorageValue } from 'zustand/middleware';
 import initSqlJs, { type Database } from 'sql.js';
+import { createLogger } from '@/utils/logger';
+
+const sqlJsStorageLogger = createLogger('SqlJsStorage');
 
 const STORAGE_KEY = 'finplan-sqljs-db';
 const TABLE_NAME = 'stores';
@@ -40,7 +43,9 @@ function saveToLocalStorage(db: Database): void {
     const binary = Array.from(data, (b) => String.fromCharCode(b)).join('');
     localStorage.setItem(STORAGE_KEY, btoa(binary));
   } catch (err) {
-    console.error('sql.js saveToLocalStorage error:', err);
+    sqlJsStorageLogger.error('saveToLocalStorage error', {
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 }
 
@@ -54,7 +59,9 @@ export const sqlJsStorage: PersistStorage<any> = {
       }
       return null;
     } catch (err) {
-      console.error('sql.js getItem error:', err);
+      sqlJsStorageLogger.error('getItem error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       return null;
     }
   },
@@ -66,7 +73,9 @@ export const sqlJsStorage: PersistStorage<any> = {
       db.run(`INSERT OR REPLACE INTO ${TABLE_NAME} (id, value) VALUES (?, ?)`, [name, stringValue]);
       saveToLocalStorage(db);
     } catch (err) {
-      console.error('sql.js setItem error:', err);
+      sqlJsStorageLogger.error('setItem error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   },
 
@@ -76,7 +85,9 @@ export const sqlJsStorage: PersistStorage<any> = {
       db.run(`DELETE FROM ${TABLE_NAME} WHERE id = ?`, [name]);
       saveToLocalStorage(db);
     } catch (err) {
-      console.error('sql.js removeItem error:', err);
+      sqlJsStorageLogger.error('removeItem error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   },
 };

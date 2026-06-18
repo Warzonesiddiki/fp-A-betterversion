@@ -2,6 +2,17 @@
  * Streaming Import Engine
  * Parses large files row-by-row without loading entire file into memory.
  * Validates per-row, writes to IndexedDB in chunks with progress reporting.
+ *
+ * @purity-tier TIER_3_SIDE_EFFECTING (boundary isolated)
+ * @boundary IndexedDB writes confined to `processChunk()` + persistence layer; row parsing/validation pure
+ * @pure-methods parseCSVRow, parseTSVRow, validateRow, transformRow, chunkArray, getHeaders
+ * @side-effects IndexedDB IO + progress callback mutation + in-memory chunk buffer
+ * @deterministic PARTIAL (same input + same chunk_size = same chunks; progress timing non-deterministic)
+ * @idempotent YES (re-running same import = same end state via dedup keys)
+ * @commutative YES (row order independence per chunk)
+ * @migrated-from src/engines/ (relocate target: src/services/StreamImportEngine.ts — Vulcan T-FIX-10)
+ * @cross-witness Veridicus-EnginePurity T-1 PICK ι (slot 019eda63-af5f-77c3-b18b-5fb6a1146859)
+ * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
  */
 
 export interface ImportRow {

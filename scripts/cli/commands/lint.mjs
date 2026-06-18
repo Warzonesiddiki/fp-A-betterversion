@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
+ 
 /**
  * @fileoverview `devex lint` — run `npx eslint src --max-warnings 0` (the
  * Husky pre-push Gate 2 default per AGENTS.md).

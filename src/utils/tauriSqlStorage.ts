@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PersistStorage } from 'zustand/middleware';
 import Database from '@tauri-apps/plugin-sql';
+import { createLogger } from '@/utils/logger';
+
+const tauriSqlStorageLogger = createLogger('TauriSqlStorage');
 
 let dbInstance: Database | null = null;
 
@@ -21,7 +24,9 @@ export const tauriSqlStorage: PersistStorage<any> = {
       );
       return result.length > 0 ? JSON.parse(result![0]!.value) : null;
     } catch (err) {
-      console.error('Tauri SQL getItem error:', err);
+      tauriSqlStorageLogger.error('getItem error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       return null;
     }
   },
@@ -37,7 +42,9 @@ export const tauriSqlStorage: PersistStorage<any> = {
         [name, stringValue]
       );
     } catch (err) {
-      console.error('Tauri SQL setItem error:', err);
+      tauriSqlStorageLogger.error('setItem error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   },
   removeItem: async (name) => {
@@ -45,7 +52,9 @@ export const tauriSqlStorage: PersistStorage<any> = {
       const db = await getDb();
       await db.execute('DELETE FROM stores WHERE id = $1', [name]);
     } catch (err) {
-      console.error('Tauri SQL removeItem error:', err);
+      tauriSqlStorageLogger.error('removeItem error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   },
 };

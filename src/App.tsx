@@ -12,23 +12,58 @@ import {
 import { useFirstRun } from './hooks/useFirstRun';
 
 // Core (not route-dependent)
-const OnboardingWizard = lazy(() => import('./components/ui/OnboardingWizard') as any);
+const OnboardingWizard = lazy(
+  () => import('./components/ui/OnboardingWizard').then((m) => ({ default: m.default })) as any
+);
 
 // Auth
-const LoginPage = lazy(() => import('./pages/auth/LoginPage') as any);
-const RegisterPage = lazy(() => import('./pages/auth/RegisterPage') as any);
-const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage') as any);
-const OnboardingWizardWrapper = lazy(() => import('./pages/auth/OnboardingWizard') as any);
+const LoginPage = lazy(
+  () => import('./pages/auth/LoginPage').then((m) => ({ default: m.default })) as any
+);
+const RegisterPage = lazy(
+  () => import('./pages/auth/RegisterPage').then((m) => ({ default: m.default })) as any
+);
+const ForgotPasswordPage = lazy(
+  () =>
+    import('./pages/auth/ForgotPasswordPage').then((m) => ({
+      default: m.default,
+    })) as any
+);
+const OnboardingWizardWrapper = lazy(
+  () => import('./pages/auth/OnboardingWizard').then((m) => ({ default: m.default })) as any
+);
 
 // Core
-const DashboardPage = lazy(() => import('./pages/DashboardPage') as any);
-const BudgetListPage = lazy(() => import('./pages/budgets/BudgetListPage') as any);
-const BudgetCreatePage = lazy(() => import('./pages/budgets/BudgetCreatePage') as any);
-const BudgetDetailPage = lazy(() => import('./pages/budgets/BudgetDetailPage') as any);
-const BudgetVAReport = lazy(() => import('./pages/budgets/BudgetVAReport') as any);
-const ForecastListPage = lazy(() => import('./pages/forecasts/ForecastListPage') as any);
-const ForecastBuilderPage = lazy(() => import('./pages/forecasts/ForecastBuilderPage') as any);
-const WhatIfPage = lazy(() => import('./pages/forecasts/WhatIfPage') as any);
+const DashboardPage = lazy(
+  () => import('./pages/DashboardPage').then((m) => ({ default: m.default })) as any
+);
+const BudgetListPage = lazy(
+  () => import('./pages/budgets/BudgetListPage').then((m) => ({ default: m.default })) as any
+);
+const BudgetCreatePage = lazy(
+  () => import('./pages/budgets/BudgetCreatePage').then((m) => ({ default: m.default })) as any
+);
+const BudgetDetailPage = lazy(
+  () => import('./pages/budgets/BudgetDetailPage').then((m) => ({ default: m.default })) as any
+);
+const BudgetVAReport = lazy(
+  () => import('./pages/budgets/BudgetVAReport').then((m) => ({ default: m.default })) as any
+);
+const ForecastListPage = lazy(
+  () =>
+    import('./pages/forecasts/ForecastListPage').then((m) => ({
+      default: m.default,
+    })) as any
+);
+const ForecastBuilderPage = lazy(
+  () =>
+    import('./pages/forecasts/ForecastBuilderPage').then((m) => ({
+      default: m.default,
+    })) as any
+);
+const WhatIfPage = lazy(
+  () => import('./pages/forecasts/WhatIfPage').then((m) => ({ default: m.default })) as any
+);
 const ReportsListPage = lazy(() => import('./pages/reports/ReportsListPage') as any);
 const VarianceDashboardPage = lazy(() => import('./pages/variance/VarianceDashboardPage') as any);
 const ScenarioListPage = lazy(() => import('./pages/scenarios/ScenarioListPage') as any);
@@ -59,16 +94,14 @@ const OwnershipTreePage = lazy(() => import('./pages/consolidation/OwnershipTree
 const FXRatesPage = lazy(() => import('./pages/currency/FXRatesPage') as any);
 const TranslationResultPage = lazy(() => import('./pages/currency/TranslationResultPage') as any);
 const HedgeManagementPage = lazy(() => import('./pages/currency/HedgeManagementPage') as any);
-const RevRecDashboard = lazy(() => import('./pages/revenue/RevRecDashboard') as any);
+const RevRecDashboard = lazy(() => import('./pages/revenue/RevRecDashboard'));
 const DeferredSchedulePage = lazy(() => import('./pages/revenue/DeferredSchedulePage') as any);
 const LeaseDashboard = lazy(() => import('./pages/lease/LeaseDashboard') as any);
 const LeaseDetailPage = lazy(() => import('./pages/lease/LeaseDetailPage') as any);
 const TaxProvisionPage = lazy(() => import('./pages/tax/TaxProvisionPage') as any);
 const TransferPricingPage = lazy(() => import('./pages/tax/TransferPricingPage') as any);
-const CapExDashboard = lazy(() => import('./pages/capex/CapExDashboard') as any);
-const DepreciationForecastPage = lazy(
-  () => import('./pages/capex/DepreciationForecastPage') as any
-);
+const CapExDashboard = lazy(() => import('./pages/capex/CapExDashboard'));
+const DepreciationForecastPage = lazy(() => import('./pages/capex/DepreciationForecastPage'));
 const DepreciationPage = lazy(() => import('./pages/accounting/DepreciationPage') as any);
 const MultiBookPage = lazy(() => import('./pages/accounting/MultiBookPage') as any);
 const FairValuePage = lazy(() => import('./pages/audit/FairValuePage') as any);

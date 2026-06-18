@@ -1,4 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * @purity-tier TIER_1_PURE — All 12 static methods (topoSort, detectCycles,
+ * computeOwnershipChain, computeFXImpact, aggregateIntercompany, computeNCI,
+ * eliminationCascade, computeCTA, consolidatedCashFlow, integratedCascade,
+ * validateOwnershipGraph, summarizeSteps) are deterministic, side-effect-free,
+ * and return new objects without mutating inputs.
+ *
+ * @boundary None — no Math.random(), no Date.now(), no fetch, no global state.
+ * @pure-methods 12 of 12 static methods (100%)
+ * @side-effects None
+ * @deterministic true — same inputs always produce same outputs
+ * @idempotent true — calling twice with same inputs yields identical results
+ * @commutative true for aggregate methods (sum-based)
+ * @cross-witness T-FIX-10 [TRACK D] Vulcan LEAD @ 32nd HEAD f26c339e 1002c
+ * @migrated-from N/A — engine was born-pure per ASC 810/830 design intent
+ * @d-007-honest-label LOC=300 (NOT 500-520 as Strategos 45th cadence estimated)
+ *   per Read at L300 closing brace. Wave A decomposition NOT APPLICABLE —
+ *   file is already pure + already under 500 LOC threshold.
+ */
 // =============================================================================
 // CASCADE CALCULATION ENGINE — ASC 810 Multi-Level Consolidation Cascade
 // Pure TypeScript, deterministic, testable. Computes intercompany elimination
@@ -12,6 +31,17 @@
 //   PERF:       O(n + e) for cascade; O(V+E) for cycle detection.
 //   COMPLIANCE: All amounts are deterministic; no floating-point drift.
 // =============================================================================
+
+/**
+ * @fileoverview ASC 810 multi-level consolidation cascade (ownership chain + NCI + FX/CTA per ASC 830)
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category consolidation
+ * @sector 16 (all)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 24th engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 
 // --- Type Definitions ---
 

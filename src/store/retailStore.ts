@@ -55,28 +55,33 @@ export const useRetailStore = create<RetailState>()(
         setProducts: enforce(Permissions.INVENTORY_UPDATE, 'setProducts', (products) =>
           set((state) => {
             state.products = products;
-          })),
+          })
+        ),
 
         addProduct: enforce(Permissions.INVENTORY_CREATE, 'addProduct', (product) =>
           set((state) => {
             state.products.push(product);
-          })),
+          })
+        ),
 
         updateProduct: enforce(Permissions.INVENTORY_UPDATE, 'updateProduct', (id, updates) =>
           set((state) => {
             const idx = state.products.findIndex((p) => p.id === id);
             if (idx !== -1) Object.assign(state.products[idx]!, updates);
-          })),
+          })
+        ),
 
         removeProduct: enforce(Permissions.INVENTORY_DELETE, 'removeProduct', (id) =>
           set((state) => {
             state.products = state.products.filter((p) => p.id !== id);
-          })),
+          })
+        ),
 
         setStores: enforce(Permissions.ENTITY_UPDATE, 'setStores', (stores) =>
           set((state) => {
             state.stores = stores;
-          })),
+          })
+        ),
 
         setLoading: (isLoading) =>
           set((state) => {
@@ -94,7 +99,8 @@ export const useRetailStore = create<RetailState>()(
             state.stores = [];
             state.isLoading = false;
             state.error = null;
-          })),
+          })
+        ),
 
         getLowStockProducts: () => get().products.filter((p) => p.stock <= p.reorderLevel),
 

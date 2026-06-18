@@ -1,4 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * CUBE ENGINE PERSISTENCE — Dual-backend adapter (IndexedDB + Tauri SQLite)
+ * Every operation is atomic, fully typed, and error-handled.
+ *
+ * @purity-tier TIER_3_SIDE_EFFECTING (boundary isolated)
+ * @boundary Persistence IO confined to adapter layer; cube math/transform pure
+ * @pure-methods serializeCube, deserializeCube, validateCubeStructure, calculateChecksum, diffVersions
+ * @side-effects IndexedDB transactions + Tauri SQLite + WAL writes + in-memory cache + Date.now() for version timestamps
+ * @deterministic PARTIAL (same input + same backend state = same output; Date.now() in version stamps non-deterministic)
+ * @idempotent YES (snapshot saves use unique IDs + version checks for dedup)
+ * @commutative YES (read operations only)
+ * @migrated-from src/engines/ (relocate target: src/services/CubeEnginePersistence.ts — Vulcan T-FIX-10)
+ * @cross-witness Veridicus-EnginePurity T-1 PICK ι (slot 019eda63-af5f-77c3-b18b-5fb6a1146859)
+ * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
+ * @clock-injection TODO: replace Date.now() with injected ISOClock from src/engines/shared/dependencies.ts
+ */
 import type {
   CubeCell,
   CellHistoryEntry,

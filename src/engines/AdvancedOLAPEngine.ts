@@ -2,6 +2,22 @@
 // ADVANCED OLAP ENGINE
 // Writeback, custom hierarchies, calculated members, MDX-like queries
 // Pure TypeScript, deterministic, testable
+//
+// @purity-tier TIER_3_SIDE_EFFECTING — Stateful instance engine with 7 private
+//   mutable fields (members + hierarchies + calculatedMembers + namedSets +
+//   writebackLog + cellSecurity + cellValues). All methods use `this.` and
+//   mutate instance state. NOT a static-method pure engine.
+// @boundary None — no Math.random(), no Date.now(), no fetch, no global state.
+// @pure-methods 0 of N instance methods (0%) — all are stateful mutations.
+// @side-effects cellValues Map mutation, writebackLog append, Map allocations.
+// @deterministic true for given instance state — same inputs + same state = same output.
+// @idempotent false — repeated writeback() calls append to writebackLog each time.
+// @commutative N/A — writeback order matters.
+// @cross-witness T-FIX-10 [TRACK D] Vulcan LEAD @ 32nd HEAD f26c339e 1002c
+// @migrated-from N/A — engine design preserves in-memory cube state by intent.
+// @d-007-honest-label LOC=335 (NOT 700-750 as Strategos 45th cadence estimated)
+//   per Read at L335 closing brace. Wave A decomposition NOT APPLICABLE —
+//   file is ALREADY under 500 LOC threshold + stateful design is intentional.
 // =============================================================================
 
 export interface OLAPMember {

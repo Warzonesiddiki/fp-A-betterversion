@@ -32,7 +32,7 @@ export const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({
       {/* Online Status */}
       <div className="flex items-center space-x-2 px-2 py-1 bg-[var(--bg-surface)] rounded-md border border-[var(--border-subtle)]">
         {isOnline ? (
-          <ShieldCheck className="h-4 w-4 text-green-600" />
+          <ShieldCheck className="h-4 w-4 text-green-700" />
         ) : (
           <ShieldAlert className="h-4 w-4 text-red-600" />
         )}

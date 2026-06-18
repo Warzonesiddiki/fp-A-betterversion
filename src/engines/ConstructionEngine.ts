@@ -1,4 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * @fileoverview Construction sector metrics from GL entries (backlog, WIP, over/under billed)
+ * @purity-tier 1 PURE
+ * @iron-rule C1✓ No I/O | C2✓ No DOM | C3✓ Deterministic | C4✓ No global mutation
+ * @category construction
+ * @sector 14 (Construction)
+ * @since 1.0.0
+ * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 18th engine)
+ * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ */
 import type { GLEntry } from '@/types';
 
 export interface ConstructionStats {

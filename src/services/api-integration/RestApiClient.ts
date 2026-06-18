@@ -23,6 +23,9 @@ import {
   type GhostShaScanResult,
   type GhostShaScanOptions,
 } from './GhostShaValidator';
+import { createLogger } from '@/utils/logger';
+
+const restApiClientLogger = createLogger('RestApiClient');
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -112,8 +115,8 @@ export class RestApiClient {
           this.client.defaults?.baseURL &&
           !String(this.client.defaults.baseURL).startsWith('https://')
         ) {
-          console.warn(
-            '[SECURITY] RestApiClient: basic auth over non-HTTPS endpoint — ' +
+          restApiClientLogger.warn(
+            '[SECURITY] basic auth over non-HTTPS endpoint — ' +
               'credentials will be sent in cleartext (base64 is not encryption). ' +
               'Use HTTPS in production. See SECURITY_READINESS.md G7 v1.1 follow-up.'
           );
@@ -318,7 +321,7 @@ export class RestApiClient {
    * When set (and `enableGhostShaValidation` is true in constructor options),
    * every successful response is scanned for SHA-like strings in fields named
    * `commit_sha`, `git_sha`, `sha`, etc. Suspicious SHAs trigger the
-   * `onGhostShaDetected` callback (if set) and a console.warn.
+   * `onGhostShaDetected` callback (if set) and a logger warning.
    *
    * @example
    * ```ts
@@ -362,7 +365,7 @@ export class RestApiClient {
 
   /**
    * Internal: invoked after a successful response when `enableGhostShaValidation`
-   * is true. Calls the optional callback and always console.warns on GHOST-SHA.
+   * is true. Calls the optional callback and always logs a GHOST-SHA warning.
    */
   private reportGhostShaFindings(result: GhostShaScanResult): void {
     if (!result.hasGhostSha) return;
@@ -373,13 +376,11 @@ export class RestApiClient {
         // Swallow callback errors so the original request still succeeds.
       }
     }
-    if (typeof console !== 'undefined' && console.warn) {
-      const ghostCount = result.unknown.length + result.invalid.length;
-      console.warn(
-        `[RestApiClient] GHOST-SHA detected: ${ghostCount} suspicious SHA(s) ` +
-          `(${result.unknown.length} unknown, ${result.invalid.length} invalid) ` +
-          `out of ${result.scanned} field(s) scanned`
-      );
-    }
+    const ghostCount = result.unknown.length + result.invalid.length;
+    restApiClientLogger.warn(
+      `GHOST-SHA detected: ${ghostCount} suspicious SHA(s) ` +
+        `(${result.unknown.length} unknown, ${result.invalid.length} invalid) ` +
+        `out of ${result.scanned} field(s) scanned`
+    );
   }
 }

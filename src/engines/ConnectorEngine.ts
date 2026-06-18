@@ -1,3 +1,19 @@
+/**
+ * ConnectorEngine — External system connector (NetSuite/QuickBooks/Salesforce/Custom)
+ * Handles auth (OAuth/API key), rate limiting, retry with exponential backoff.
+ *
+ * @purity-tier TIER_3_SIDE_EFFECTING (boundary isolated)
+ * @boundary Network IO confined to `request()` + `authenticate()`; config/token storage in static Maps
+ * @pure-methods buildUrl, signRequest, parseRateLimit, calculateBackoff, validateConfig, sanitizeResponse
+ * @side-effects Network fetch + static Maps (configs + tokens) + Date.now() for rate limit windows
+ * @deterministic NO (network state + Date.now() in rate limit windows; use injected Clock for testability)
+ * @idempotent PARTIAL (GET = YES; POST = NO without idempotency-key; PUT/DELETE = YES)
+ * @commutative NO (order-dependent for token refresh + rate limit windows)
+ * @migrated-from src/engines/ (relocate target: src/services/ConnectorEngine.ts — Vulcan T-FIX-10)
+ * @cross-witness Veridicus-EnginePurity T-1 PICK ι (slot 019eda63-af5f-77c3-b18b-5fb6a1146859)
+ * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
+ * @clock-injection TODO: replace Date.now() with injected ISOClock from src/engines/shared/dependencies.ts
+ */
 export interface ConnectorConfig {
   id: string;
   name: string;

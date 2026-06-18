@@ -27,19 +27,47 @@
 
 import { test, expect, type Page } from '@playwright/test';
 import { signInAsCfo } from '../_helpers/auth';
+import * as fs from 'fs';
 
 const SECTORS_17 = [
-  'Technology', 'Healthcare', 'Financial Services', 'Consumer Goods', 'Industrials',
-  'Energy', 'Materials', 'Real Estate', 'Utilities', 'Telecom',
-  'Media', 'Retail', 'Transportation', 'Hospitality', 'Education',
-  'Government', 'Nonprofit',
+  'Technology',
+  'Healthcare',
+  'Financial Services',
+  'Consumer Goods',
+  'Industrials',
+  'Energy',
+  'Materials',
+  'Real Estate',
+  'Utilities',
+  'Telecom',
+  'Media',
+  'Retail',
+  'Transportation',
+  'Hospitality',
+  'Education',
+  'Government',
+  'Nonprofit',
 ];
 
 const PERSONAS_18 = [
-  'CFO', 'Controller', 'FP&A Manager', 'Financial Analyst', 'Accountant',
-  'Auditor', 'Treasurer', 'Tax Specialist', 'Investor Relations', 'Board Member',
-  'CEO', 'COO', 'VP Finance', 'Director of FP&A', 'Budget Owner',
-  'Department Head', 'External Auditor', 'SEC Filer',
+  'CFO',
+  'Controller',
+  'FP&A Manager',
+  'Financial Analyst',
+  'Accountant',
+  'Auditor',
+  'Treasurer',
+  'Tax Specialist',
+  'Investor Relations',
+  'Board Member',
+  'CEO',
+  'COO',
+  'VP Finance',
+  'Director of FP&A',
+  'Budget Owner',
+  'Department Head',
+  'External Auditor',
+  'SEC Filer',
 ];
 
 test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Personas)', () => {
@@ -64,7 +92,9 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
 
     // W2: DOM assertion — all 17 sectors present
     for (const sector of SECTORS_17) {
-      const sectorRow = page.locator(`[data-testid="board-pack-sector-${sector.toLowerCase().replace(/\s+/g, '-')}"]`);
+      const sectorRow = page.locator(
+        `[data-testid="board-pack-sector-${sector.toLowerCase().replace(/\s+/g, '-')}"]`
+      );
       await expect(sectorRow).toBeVisible();
     }
 
@@ -160,7 +190,9 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
     await page.waitForSelector('[data-testid="board-pack-narrative-updated"]', { timeout: 30000 });
 
     // W3: Controller narrative emphasizes accuracy/controls
-    const controllerNarrative = await page.locator('[data-testid="board-pack-narrative"]').textContent();
+    const controllerNarrative = await page
+      .locator('[data-testid="board-pack-narrative"]')
+      .textContent();
     expect(controllerNarrative?.toLowerCase()).toContain('controls');
     expect(controllerNarrative?.toLowerCase()).toMatch(/accuracy|reconciliation|audit/);
   });
@@ -168,7 +200,9 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
   /**
    * T-bpg-6: Board pack export to PDF with embedded audit chain (regulator-ready)
    */
-  test('T-bpg-6: Board pack PDF export includes audit chain + digital signature', async ({ page }) => {
+  test('T-bpg-6: Board pack PDF export includes audit chain + digital signature', async ({
+    page,
+  }) => {
     await page.goto('/reports/board-pack/new');
     await page.waitForLoadState('networkidle');
 
@@ -187,7 +221,6 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
     await expect(page.locator('[data-testid="board-pack-export-success"]')).toBeVisible();
 
     // W3: PDF must include audit chain reference
-    const fs = require('fs');
     const pdfBuffer = fs.readFileSync(pdfPath);
     const tail = pdfBuffer.subarray(Math.max(0, pdfBuffer.length - 2048)).toString('utf-8');
     expect(tail).toMatch(/Audit Chain:/);
@@ -206,26 +239,36 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
 
     // Enable quarterly board pack schedule
     await page.locator('[data-testid="board-pack-schedule-enabled"]').check();
-    await page.locator('[data-testid="board-pack-schedule-day"]').selectOption('last-day-of-quarter');
+    await page
+      .locator('[data-testid="board-pack-schedule-day"]')
+      .selectOption('last-day-of-quarter');
     await page.locator('[data-testid="board-pack-schedule-time"]').fill('09:00');
-    await page.locator('[data-testid="board-pack-schedule-recipients"]').fill('cfo@finplan-test.local,board@finplan-test.local');
+    await page
+      .locator('[data-testid="board-pack-schedule-recipients"]')
+      .fill('cfo@finplan-test.local,board@finplan-test.local');
     await page.locator('[data-testid="board-pack-schedule-save"]').click();
 
     // W2: Schedule confirmation
     await expect(page.locator('[data-testid="schedule-saved-toast"]')).toBeVisible();
-    await expect(page.locator('[data-testid="schedule-saved-toast"]')).toContainText('Quarterly board pack scheduled');
+    await expect(page.locator('[data-testid="schedule-saved-toast"]')).toContainText(
+      'Quarterly board pack scheduled'
+    );
 
     // W3: Cleanup assertion — schedule visible in cron jobs list
     await page.goto('/settings/cron-jobs');
     await expect(page.locator('[data-testid="cron-job-board-pack-quarterly"]')).toBeVisible();
-    await expect(page.locator('[data-testid="cron-job-board-pack-quarterly"]')).toContainText('0 9 * * 3#3'); // last Thursday of March (Q1)
+    await expect(page.locator('[data-testid="cron-job-board-pack-quarterly"]')).toContainText(
+      '0 9 * * 3#3'
+    ); // last Thursday of March (Q1)
   });
 
   /**
    * T-bpg-8 (J18 amendment v0.10): Board pack multi-Muse co-sign chain
    * Tests Iris PERSONA_UX cross-witness on board pack for 4 personas (CFO/Controller/FP&A/Auditor)
    */
-  test('T-bpg-8: Board pack multi-Muse co-sign chain — 4 personas cross-witnessed', async ({ page }) => {
+  test('T-bpg-8: Board pack multi-Muse co-sign chain — 4 personas cross-witnessed', async ({
+    page,
+  }) => {
     await page.goto('/reports/board-pack/new');
     await page.waitForLoadState('networkidle');
 
@@ -239,7 +282,9 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
     for (const persona of personas) {
       await page.locator('[data-testid="board-pack-persona-select"]').selectOption(persona);
       await page.locator('[data-testid="board-pack-regenerate-btn"]').click();
-      await page.waitForSelector('[data-testid="board-pack-narrative-updated"]', { timeout: 30000 });
+      await page.waitForSelector('[data-testid="board-pack-narrative-updated"]', {
+        timeout: 30000,
+      });
       const narrative = await page.locator('[data-testid="board-pack-narrative"]').textContent();
       expect(narrative?.length).toBeGreaterThan(100);
     }
@@ -272,8 +317,12 @@ test.describe('Journey 13: Board Pack Generation (Q1-Q4 + 17 Sectors + 18 Person
 
     // W3: Drift detected — regen required banner visible
     await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toBeVisible();
-    await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toContainText('Q2 closed');
-    await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toContainText('regen required');
+    await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toContainText(
+      'Q2 closed'
+    );
+    await expect(page.locator('[data-testid="board-pack-drift-banner"]')).toContainText(
+      'regen required'
+    );
 
     // Regen and verify hash changed
     await page.locator('[data-testid="board-pack-regen-btn"]').click();
