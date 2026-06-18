@@ -72,18 +72,14 @@ export const useEntityStore = create<EntityState>()(
           return newId;
         }),
 
-        updateEntity: enforce(
-          Permissions.ENTITY_UPDATE,
-          'updateEntity',
-          (id, updates) => {
-            set((state) => {
-              const idx = state.entities.findIndex((e) => e.id === id);
-              if (idx !== -1) {
-                Object.assign(state.entities[idx]!, updates);
-              }
-            });
-          }
-        ),
+        updateEntity: enforce(Permissions.ENTITY_UPDATE, 'updateEntity', (id, updates) => {
+          set((state) => {
+            const idx = state.entities.findIndex((e) => e.id === id);
+            if (idx !== -1) {
+              Object.assign(state.entities[idx]!, updates);
+            }
+          });
+        }),
 
         deleteEntity: enforce(Permissions.ENTITY_DELETE, 'deleteEntity', (id) => {
           set((state) => {
@@ -165,7 +161,7 @@ export const useEntityStore = create<EntityState>()(
           } catch {
             // Cache sync is best-effort
           }
-        },
+        }),
 
         loadFromCache: enforce(Permissions.ENTITY_READ, 'loadFromCache', async () => {
           try {
@@ -180,7 +176,7 @@ export const useEntityStore = create<EntityState>()(
           } catch {
             return false;
           }
-        },
+        }),
 
         clearCache: enforce(Permissions.ENTITY_DELETE, 'clearCache', async () => {
           try {
@@ -188,7 +184,7 @@ export const useEntityStore = create<EntityState>()(
           } catch {
             // Cache clear is best-effort
           }
-        },
+        }),
 
         // --- State ---
 

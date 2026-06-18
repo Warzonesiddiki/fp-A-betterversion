@@ -111,7 +111,7 @@ export const useBudgetStore = create<BudgetState>()(
             });
             throw error;
           }
-        },
+        }),
 
         deleteBudget: enforce(Permissions.BUDGET_DELETE, 'deleteBudget', (id) => {
           const budget = get().budgets.find((b) => b.id === id);
@@ -127,7 +127,7 @@ export const useBudgetStore = create<BudgetState>()(
               message: `Successfully deleted budget: ${budget.name}`,
             });
           }
-        },
+        }),
 
         duplicateBudget: enforce(Permissions.BUDGET_CREATE, 'duplicateBudget', (id) => {
           const budget = get().budgets.find((b) => b.id === id);
@@ -156,7 +156,7 @@ export const useBudgetStore = create<BudgetState>()(
             message: 'Original budget not found',
           });
           return '';
-        },
+        }),
 
         submitBudget: enforce(Permissions.BUDGET_UPDATE, 'submitBudget', async (id) => {
           try {
@@ -186,7 +186,7 @@ export const useBudgetStore = create<BudgetState>()(
               message: 'Failed to submit budget for review',
             });
           }
-        },
+        }),
 
         approveBudget: enforce(Permissions.BUDGET_UPDATE, 'approveBudget', (id) => {
           set((state) => {
@@ -200,7 +200,7 @@ export const useBudgetStore = create<BudgetState>()(
               });
             }
           });
-        },
+        }),
 
         rejectBudget: enforce(Permissions.BUDGET_UPDATE, 'rejectBudget', (id) => {
           set((state) => {
@@ -214,17 +214,21 @@ export const useBudgetStore = create<BudgetState>()(
               });
             }
           });
-        },
+        }),
 
-        updateBudget: enforce(Permissions.BUDGET_UPDATE, 'updateBudget', (id: string, updates: Partial<Budget>) => {
-          set((state) => {
-            const budget = state.budgets.find((b) => b.id === id);
-            if (budget) {
-              Object.assign(budget, updates);
-              budget.updatedAt = new Date().toISOString();
-            }
-          });
-        },
+        updateBudget: enforce(
+          Permissions.BUDGET_UPDATE,
+          'updateBudget',
+          (id: string, updates: Partial<Budget>) => {
+            set((state) => {
+              const budget = state.budgets.find((b) => b.id === id);
+              if (budget) {
+                Object.assign(budget, updates);
+                budget.updatedAt = new Date().toISOString();
+              }
+            });
+          }
+        ),
 
         undo: () => {
           const { historyIndex, history } = get();

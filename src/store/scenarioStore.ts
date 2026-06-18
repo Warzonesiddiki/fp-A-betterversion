@@ -23,10 +23,8 @@ export const useScenarioStore = create<ScenarioState>()(
           set({ scenarios })
         ),
 
-        setSelectedScenario: enforce(
-          Permissions.UI_UPDATE,
-          'setSelectedScenario',
-          (id) => set({ selectedScenarioId: id })
+        setSelectedScenario: enforce(Permissions.UI_UPDATE, 'setSelectedScenario', (id) =>
+          set({ selectedScenarioId: id })
         ),
 
         createScenario: enforce(Permissions.SCENARIO_CREATE, 'createScenario', (scenario) => {
@@ -41,19 +39,15 @@ export const useScenarioStore = create<ScenarioState>()(
           return newScenario.id;
         }),
 
-        updateScenario: enforce(
-          Permissions.SCENARIO_UPDATE,
-          'updateScenario',
-          (id, updates) => {
-            set((state) => ({
-              scenarios: state.scenarios.map((s) => {
-                if (s.id !== id) return s;
-                if (s.isLocked) return s;
-                return { ...s, ...updates, updatedAt: new Date().toISOString() };
-              }),
-            }));
-          }
-        ),
+        updateScenario: enforce(Permissions.SCENARIO_UPDATE, 'updateScenario', (id, updates) => {
+          set((state) => ({
+            scenarios: state.scenarios.map((s) => {
+              if (s.id !== id) return s;
+              if (s.isLocked) return s;
+              return { ...s, ...updates, updatedAt: new Date().toISOString() };
+            }),
+          }));
+        }),
 
         deleteScenario: enforce(Permissions.SCENARIO_DELETE, 'deleteScenario', (id) => {
           set((state) => ({

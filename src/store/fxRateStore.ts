@@ -21,12 +21,14 @@ export const useFxRateStore = create<FxRateState>()(
 
         setRates: enforce(Permissions.FORECAST_UPDATE, 'setRates', (rates) => set({ rates })),
 
-        addRate: enforce(Permissions.FORECAST_CREATE, 'addRate', (rate) => set((state) => ({ rates: [...state.rates, rate] })),
+        addRate: enforce(Permissions.FORECAST_CREATE, 'addRate', (rate) =>
+          set((state) => ({ rates: [...state.rates, rate] }))
+        ),
 
         updateRate: enforce(Permissions.FORECAST_UPDATE, 'updateRate', (id, updates) =>
           set((state) => ({
             rates: state.rates.map((r) => (r.id === id ? { ...r, ...updates } : r)),
-          })),
+          }))
         ),
 
         deleteRate: (id) => set((state) => ({ rates: state.rates.filter((r) => r.id !== id) })),

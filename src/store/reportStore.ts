@@ -77,25 +77,19 @@ export const useReportStore = create<ReportState>()(
           }
         ),
 
-        deleteScheduledReport: enforce(
-          Permissions.REPORT_SCHEDULE,
-          'deleteScheduledReport',
-          (id) =>
-            set((state) => {
-              state.scheduledReports = state.scheduledReports.filter((s) => s.id !== id);
-            })
+        deleteScheduledReport: enforce(Permissions.REPORT_SCHEDULE, 'deleteScheduledReport', (id) =>
+          set((state) => {
+            state.scheduledReports = state.scheduledReports.filter((s) => s.id !== id);
+          })
         ),
 
-        toggleScheduledReport: enforce(
-          Permissions.REPORT_SCHEDULE,
-          'toggleScheduledReport',
-          (id) =>
-            set((state) => {
-              const idx = state.scheduledReports.findIndex((s) => s.id === id);
-              if (idx !== -1) {
-                state.scheduledReports[idx]!.isActive = !state.scheduledReports[idx]!.isActive;
-              }
-            })
+        toggleScheduledReport: enforce(Permissions.REPORT_SCHEDULE, 'toggleScheduledReport', (id) =>
+          set((state) => {
+            const idx = state.scheduledReports.findIndex((s) => s.id === id);
+            if (idx !== -1) {
+              state.scheduledReports[idx]!.isActive = !state.scheduledReports[idx]!.isActive;
+            }
+          })
         ),
       })),
       {

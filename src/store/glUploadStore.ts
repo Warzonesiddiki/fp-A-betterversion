@@ -95,22 +95,31 @@ export const useGLUploadStore = create<GLUploadState>()(
             validationErrors: [],
             progress: { percent: 0, message: '', rowsProcessed: 0, totalRows: 0 },
           });
-        },
+        }),
 
         setStep: enforce(Permissions.UI_UPDATE, 'setStep', (step) => set({ step })),
 
-        setMappings: enforce(Permissions.IMPORT_UPDATE, 'setMappings', (mappings) => set({ mappings })),
+        setMappings: enforce(Permissions.IMPORT_UPDATE, 'setMappings', (mappings) =>
+          set({ mappings })
+        ),
 
-        setPreview: enforce(Permissions.IMPORT_UPDATE, 'setPreview', (preview, validationErrors) => {
-          set({ preview, validationErrors, step: preview.length > 0 ? 'preview' : 'error' });
-        },
+        setPreview: enforce(
+          Permissions.IMPORT_UPDATE,
+          'setPreview',
+          (preview, validationErrors) => {
+            set({ preview, validationErrors, step: preview.length > 0 ? 'preview' : 'error' });
+          }
+        ),
 
         setProgress: enforce(Permissions.UI_UPDATE, 'setProgress', (progress) =>
           set((state) => {
             state.progress = { ...state.progress, ...progress };
-          }),
+          })
+        ),
 
-        setAutoMapping: enforce(Permissions.IMPORT_UPDATE, 'setAutoMapping', (isAutoMapping) => set({ isAutoMapping })),
+        setAutoMapping: enforce(Permissions.IMPORT_UPDATE, 'setAutoMapping', (isAutoMapping) =>
+          set({ isAutoMapping })
+        ),
 
         completeSession: enforce(Permissions.IMPORT_CREATE, 'completeSession', (session) =>
           set((state) => {
@@ -123,11 +132,14 @@ export const useGLUploadStore = create<GLUploadState>()(
               rowsProcessed: session.rowCount,
               totalRows: session.rowCount,
             };
-          }),
+          })
+        ),
 
         reset: enforce(Permissions.UI_UPDATE, 'reset', () => set({ ...initialState })),
 
-        clearHistory: enforce(Permissions.IMPORT_DELETE, 'clearHistory', () => set({ sessionHistory: [] })),
+        clearHistory: enforce(Permissions.IMPORT_DELETE, 'clearHistory', () =>
+          set({ sessionHistory: [] })
+        ),
       })),
       {
         name: 'gl-upload-store',

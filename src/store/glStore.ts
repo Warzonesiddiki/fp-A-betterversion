@@ -248,10 +248,8 @@ export const useGLStore = create<GLState>()(
           });
         }),
 
-        setImportProgress: enforce(
-          Permissions.UI_UPDATE,
-          'setImportProgress',
-          (progress) => set({ importProgress: Math.max(0, Math.min(100, progress)) })
+        setImportProgress: enforce(Permissions.UI_UPDATE, 'setImportProgress', (progress) =>
+          set({ importProgress: Math.max(0, Math.min(100, progress)) })
         ),
 
         setImportStatus: enforce(Permissions.UI_UPDATE, 'setImportStatus', (status) =>
@@ -261,10 +259,8 @@ export const useGLStore = create<GLState>()(
           })
         ),
 
-        setImportError: enforce(
-          Permissions.UI_UPDATE,
-          'setImportError',
-          (error) => set({ importError: error, importStatus: 'error' })
+        setImportError: enforce(Permissions.UI_UPDATE, 'setImportError', (error) =>
+          set({ importError: error, importStatus: 'error' })
         ),
 
         recordImport: enforce(Permissions.IMPORT_CREATE, 'recordImport', (result) =>
@@ -394,7 +390,7 @@ export const useGLStore = create<GLState>()(
             title: 'Cube Sync Complete',
             message: `Successfully synced ${entries.length} entries to OLAP cube`,
           });
-        },
+        }),
 
         syncFromCube: enforce(Permissions.CUBE_READ, 'syncFromCube', () => {
           const cubeStore = useCubeStore.getState();
@@ -442,7 +438,7 @@ export const useGLStore = create<GLState>()(
             title: 'Cube Data Retrieved',
             message: `Successfully retrieved ${balance.length} rows from OLAP cube`,
           });
-        },
+        }),
 
         getCubeState: () => {
           const cubeStore = useCubeStore.getState();

@@ -51,32 +51,32 @@ export const useESGStore = create<ESGState>()(
         isLoading: false,
         error: null,
 
-        setMetrics: enforce(Permissions.ANALYTICS_VIEW, 'setMetrics', (metrics) =>
+        setMetrics: enforce(Permissions.ANALYTICS_READ, 'setMetrics', (metrics) =>
           set((state) => {
             state.metrics = metrics;
           })
         ),
 
-        addMetric: enforce(Permissions.ANALYTICS_RUN, 'addMetric', (metric) =>
+        addMetric: enforce(Permissions.ANALYTICS_READ, 'addMetric', (metric) =>
           set((state) => {
             state.metrics.push(metric);
           })
         ),
 
-        updateMetric: enforce(Permissions.ANALYTICS_RUN, 'updateMetric', (id, updates) =>
+        updateMetric: enforce(Permissions.ANALYTICS_READ, 'updateMetric', (id, updates) =>
           set((state) => {
             const idx = state.metrics.findIndex((m) => m.id === id);
             if (idx !== -1) Object.assign(state.metrics[idx]!, updates);
-          }),
+          })
         ),
 
-        removeMetric: enforce(Permissions.ANALYTICS_RUN, 'removeMetric', (id) =>
+        removeMetric: enforce(Permissions.ANALYTICS_READ, 'removeMetric', (id) =>
           set((state) => {
             state.metrics = state.metrics.filter((m) => m.id !== id);
           })
         ),
 
-        setInitiatives: enforce(Permissions.ANALYTICS_RUN, 'setInitiatives', (initiatives) =>
+        setInitiatives: enforce(Permissions.ANALYTICS_READ, 'setInitiatives', (initiatives) =>
           set((state) => {
             state.initiatives = initiatives;
           })

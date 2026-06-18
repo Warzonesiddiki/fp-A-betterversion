@@ -64,15 +64,11 @@ export const useForecastStore = create<ForecastState>()(
           set({ forecasts });
         }),
 
-        setSelectedForecast: enforce(
-          Permissions.UI_UPDATE,
-          'setSelectedForecast',
-          (id) => {
-            const forecast = get().forecasts.find((f) => f.id === id);
-            if (!forecast) return;
-            set({ selectedForecastId: id });
-          }
-        ),
+        setSelectedForecast: enforce(Permissions.UI_UPDATE, 'setSelectedForecast', (id) => {
+          const forecast = get().forecasts.find((f) => f.id === id);
+          if (!forecast) return;
+          set({ selectedForecastId: id });
+        }),
 
         createForecast: enforce(Permissions.FORECAST_CREATE, 'createForecast', (forecast) => {
           // Input validation
@@ -102,50 +98,38 @@ export const useForecastStore = create<ForecastState>()(
           return newForecast.id;
         }),
 
-        updateForecast: enforce(
-          Permissions.FORECAST_UPDATE,
-          'updateForecast',
-          (id, updates) => {
-            captureForecastSnapshot(get);
-            set((state) => {
-              const forecast = state.forecasts.find((f) => f.id === id);
-              if (forecast) {
-                Object.assign(forecast, updates);
-                forecast.lastUpdated = new Date().toISOString();
-              }
-            });
-          }
-        ),
+        updateForecast: enforce(Permissions.FORECAST_UPDATE, 'updateForecast', (id, updates) => {
+          captureForecastSnapshot(get);
+          set((state) => {
+            const forecast = state.forecasts.find((f) => f.id === id);
+            if (forecast) {
+              Object.assign(forecast, updates);
+              forecast.lastUpdated = new Date().toISOString();
+            }
+          });
+        }),
 
-        deleteForecast: enforce(
-          Permissions.FORECAST_DELETE,
-          'deleteForecast',
-          (id) => {
-            captureForecastSnapshot(get);
-            set((state) => {
-              const idx = state.forecasts.findIndex((f) => f.id === id);
-              if (idx !== -1) state.forecasts.splice(idx, 1);
-              if (state.selectedForecastId === id) state.selectedForecastId = null;
-            });
-          }
-        ),
+        deleteForecast: enforce(Permissions.FORECAST_DELETE, 'deleteForecast', (id) => {
+          captureForecastSnapshot(get);
+          set((state) => {
+            const idx = state.forecasts.findIndex((f) => f.id === id);
+            if (idx !== -1) state.forecasts.splice(idx, 1);
+            if (state.selectedForecastId === id) state.selectedForecastId = null;
+          });
+        }),
 
         setDrivers: enforce(Permissions.FORECAST_UPDATE, 'setDrivers', (drivers) => {
           captureForecastSnapshot(get);
           set({ drivers });
         }),
 
-        updateDriver: enforce(
-          Permissions.FORECAST_UPDATE,
-          'updateDriver',
-          (id, updates) => {
-            captureForecastSnapshot(get);
-            set((state) => {
-              const driver = state.drivers.find((d) => d.id === id);
-              if (driver) Object.assign(driver, updates);
-            });
-          }
-        ),
+        updateDriver: enforce(Permissions.FORECAST_UPDATE, 'updateDriver', (id, updates) => {
+          captureForecastSnapshot(get);
+          set((state) => {
+            const driver = state.drivers.find((d) => d.id === id);
+            if (driver) Object.assign(driver, updates);
+          });
+        }),
 
         setError: (error) => {
           set({ error });

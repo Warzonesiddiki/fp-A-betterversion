@@ -93,7 +93,7 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
           const sorted = applySort(rows, get().sortConfig);
           const filtered = applyFilters(sorted, get().filters);
           set({ rows, filteredRows: filtered, currentPage: 0, isLoading: false });
-        },
+        }),
 
         setLoading: enforce(Permissions.UI_UPDATE, 'setLoading', (isLoading) => set({ isLoading })),
 
@@ -102,7 +102,7 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
           const filtered = applyFilters(get().rows, get().filters);
           const sorted = applySort(filtered, sortConfig);
           set({ sortConfig, filteredRows: sorted, currentPage: 0 });
-        },
+        }),
 
         addFilter: enforce(Permissions.UI_UPDATE, 'addFilter', (filter) =>
           set((state) => {
@@ -111,7 +111,8 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
             const sorted = applySort(filtered, state.sortConfig);
             state.filteredRows = sorted;
             state.currentPage = 0;
-          }),
+          })
+        ),
 
         removeFilter: enforce(Permissions.UI_UPDATE, 'removeFilter', (index) =>
           set((state) => {
@@ -120,22 +121,24 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
             const sorted = applySort(filtered, state.sortConfig);
             state.filteredRows = sorted;
             state.currentPage = 0;
-          }),
+          })
+        ),
 
-        clearFilters: () =>
+        clearFilters: enforce(Permissions.UI_UPDATE, 'clearFilters', () =>
           set((state) => {
             state.filters = [];
             const sorted = applySort(state.rows, state.sortConfig);
             state.filteredRows = sorted;
             state.currentPage = 0;
-          }),
+          })
+        ),
 
         setSelectedRow: enforce(Permissions.UI_UPDATE, 'setSelectedRow', (selectedRowId) =>
-          set({ selectedRowId }),
+          set({ selectedRowId })
         ),
 
         setPageSize: enforce(Permissions.UI_UPDATE, 'setPageSize', (pageSize) =>
-          set({ pageSize, currentPage: 0 }),
+          set({ pageSize, currentPage: 0 })
         ),
 
         setPage: enforce(Permissions.UI_UPDATE, 'setPage', (currentPage) => set({ currentPage })),
@@ -144,19 +147,22 @@ export const useGLTrialBalanceStore = create<GLTrialBalanceState>()(
           set((state) => {
             const maxPage = Math.max(0, Math.ceil(state.filteredRows.length / state.pageSize) - 1);
             state.currentPage = Math.min(state.currentPage + 1, maxPage);
-          }),
+          })
+        ),
 
         prevPage: enforce(Permissions.UI_UPDATE, 'prevPage', () =>
           set((state) => {
             state.currentPage = Math.max(0, state.currentPage - 1);
-          }),
+          })
+        ),
 
         refresh: enforce(Permissions.UI_UPDATE, 'refresh', () =>
           set((state) => {
             const filtered = applyFilters(state.rows, state.filters);
             const sorted = applySort(filtered, state.sortConfig);
             state.filteredRows = sorted;
-          }),
+          })
+        ),
 
         reset: enforce(Permissions.UI_UPDATE, 'reset', () => set({ ...initialState })),
       })),
