@@ -253,7 +253,7 @@ export function ScenarioComparison({
                         <div className="flex items-center justify-end gap-1">
                           {s.name}
                           {s.id === baseScenario.id && (
-                            <span className="text-xs text-blue-500">(base)</span>
+                            <span className="text-xs text-blue-600">(base)</span>
                           )}
                           {onLock && (
                             <button

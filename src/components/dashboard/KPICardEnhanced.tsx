@@ -191,7 +191,7 @@ export const KPICardEnhanced = memo(function KPICardEnhanced({
       )}
 
       {onDrillDown && (
-        <div className="mt-2 text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="mt-2 text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
           Click to drill down →
         </div>
       )}

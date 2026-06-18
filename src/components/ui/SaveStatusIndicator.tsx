@@ -16,7 +16,7 @@ export function SaveStatusIndicator({ data, onSave, delay = 3000 }: SaveStatusIn
     saving: {
       icon: <Loader2 size={14} className="animate-spin" />,
       text: 'Saving...',
-      className: 'text-blue-500',
+      className: 'text-blue-600',
     },
     saved: { icon: <CheckCircle size={14} />, text: 'Saved', className: 'fin-positive' },
     error: { icon: <AlertCircle size={14} />, text: 'Save failed', className: 'text-red-600' },

@@ -205,7 +205,7 @@ export default function InventoryPlanningPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-blue-500" />
+              <BarChart3 className="h-5 w-5 text-blue-600" />
               <CardTitle>Turnover & Days on Hand</CardTitle>
             </div>
             <CardDescription>Monthly efficiency metrics across the supply chain</CardDescription>

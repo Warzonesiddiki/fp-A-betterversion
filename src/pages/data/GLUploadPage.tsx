@@ -428,7 +428,7 @@ export default function GLUploadPage() {
       <div className="p-12 text-center">
         <div className="max-w-md mx-auto">
           <div className="animate-pulse mb-6">
-            <Database className="h-12 w-12 text-blue-500 mx-auto" />
+            <Database className="h-12 w-12 text-blue-600 mx-auto" />
           </div>
           <h2 className="text-lg font-semibold mb-4">Importing records...</h2>
           <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">

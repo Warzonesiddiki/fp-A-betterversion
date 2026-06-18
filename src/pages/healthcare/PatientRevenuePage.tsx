@@ -197,7 +197,7 @@ export default function PatientRevenuePage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <BarChart2 className="h-5 w-5 text-blue-500" />
+              <BarChart2 className="h-5 w-5 text-blue-600" />
               <CardTitle>Revenue Cycle Waterfall</CardTitle>
             </div>
             <CardDescription>Charge capture to cash collection lifecycle</CardDescription>

@@ -112,7 +112,7 @@ function NodeRow({
           className={cn(
             'p-2 rounded-md',
             isRoot
-              ? 'bg-blue-500/10 text-blue-500'
+              ? 'bg-blue-500/10 text-blue-600'
               : hasKids
                 ? 'bg-emerald-500/10 text-emerald-500'
                 : 'bg-orange-500/10 text-orange-500'

@@ -198,7 +198,7 @@ export default function ValueBasedCarePage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-500" />
+              <Target className="h-5 w-5 text-blue-600" />
               <CardTitle>Clinical Quality Dimensions</CardTitle>
             </div>
             <CardDescription>Current performance vs. National Benchmark (CMS)</CardDescription>

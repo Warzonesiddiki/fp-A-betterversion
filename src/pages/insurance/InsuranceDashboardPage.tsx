@@ -204,7 +204,7 @@ export default function InsuranceDashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-blue-500" />
+              <Activity className="h-5 w-5 text-blue-600" />
               <CardTitle>Combined Ratio Decomposition</CardTitle>
             </div>
             <CardDescription>

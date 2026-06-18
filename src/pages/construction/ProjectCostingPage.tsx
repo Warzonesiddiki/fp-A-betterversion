@@ -216,7 +216,7 @@ export default function ProjectCostingPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-blue-500" />
+              <BarChart3 className="h-5 w-5 text-blue-600" />
               <CardTitle>Budget vs. Actual by Category</CardTitle>
             </div>
             <CardDescription>Major cost drivers and financial variances</CardDescription>
@@ -283,7 +283,7 @@ export default function ProjectCostingPage() {
                 </div>
                 <div className="mt-2 flex justify-between items-center">
                   <span className="text-xs font-black text-slate-700">{order.amount}</span>
-                  <span className="text-[8px] font-bold text-slate-400 group-hover:text-blue-500 flex items-center">
+                  <span className="text-[8px] font-bold text-slate-400 group-hover:text-blue-600 flex items-center">
                     View Details <Scale className="h-2 w-2 ml-1" />
                   </span>
                 </div>

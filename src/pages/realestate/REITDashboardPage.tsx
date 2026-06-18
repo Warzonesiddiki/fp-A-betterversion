@@ -227,7 +227,7 @@ export default function REITDashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-500" />
+              <TrendingUp className="h-5 w-5 text-blue-600" />
               <CardTitle>FFO vs. AFFO Trend</CardTitle>
             </div>
             <CardDescription>

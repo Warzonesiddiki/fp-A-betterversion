@@ -196,7 +196,7 @@ export default function HealthcareDashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Stethoscope className="h-5 w-5 text-blue-500" />
+              <Stethoscope className="h-5 w-5 text-blue-600" />
               <CardTitle>Patient Volume Trend</CardTitle>
             </div>
             <CardDescription>Monthly admissions by department category</CardDescription>

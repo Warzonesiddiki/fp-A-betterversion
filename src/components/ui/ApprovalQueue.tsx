@@ -204,7 +204,7 @@ export const ApprovalQueue = memo(function ApprovalQueue({
               {/* History Toggle */}
               <button
                 onClick={() => setShowHistory(showHistory === req.id ? null : req.id)}
-                className="text-xs text-blue-500 hover:text-blue-700"
+                className="text-xs text-blue-600 hover:text-blue-700"
               >
                 {showHistory === req.id ? 'Hide' : 'Show'} History ({req.history.length} events)
               </button>

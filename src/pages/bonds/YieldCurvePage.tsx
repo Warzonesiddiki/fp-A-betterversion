@@ -214,7 +214,7 @@ export default function YieldCurvePage() {
       >
         <CardHeader>
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-blue-500" aria-hidden="true" />
+            <TrendingUp className="h-5 w-5 text-blue-600" aria-hidden="true" />
             <CardTitle>Spot & Forward Rate Curves</CardTitle>
           </div>
           <CardDescription>

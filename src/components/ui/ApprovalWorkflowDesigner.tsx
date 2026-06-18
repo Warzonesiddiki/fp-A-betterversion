@@ -128,7 +128,7 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
                   </button>
                   <button
                     onClick={() => setEditingStep(editingStep === idx ? null : idx)}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-blue-600 hover:text-blue-700"
                   >
                     Edit
                   </button>

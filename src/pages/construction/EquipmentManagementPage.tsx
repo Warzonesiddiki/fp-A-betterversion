@@ -187,7 +187,7 @@ export default function EquipmentManagementPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Gauge className="h-5 w-5 text-blue-500" />
+              <Gauge className="h-5 w-5 text-blue-600" />
               <CardTitle>Fleet Utilization Trend (%)</CardTitle>
             </div>
             <CardDescription>

@@ -212,7 +212,7 @@ export default function EnergyRiskPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-blue-500" />
+              <Activity className="h-5 w-5 text-blue-600" />
               <CardTitle>Spot vs. Forward Curve</CardTitle>
             </div>
             <CardDescription>

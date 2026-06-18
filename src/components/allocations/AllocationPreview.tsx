@@ -166,7 +166,7 @@ export function AllocationPreview({
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-blue-500" />
+          <FileText className="h-5 w-5 text-blue-600" />
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">Allocation Preview</h3>
         </div>
         <span className="text-[10px] text-slate-500">

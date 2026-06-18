@@ -255,7 +255,7 @@ export function AllocationRuleBuilder({
       aria-label="AllocationRuleBuilder"
     >
       <div className="flex items-center gap-2">
-        <Settings2 className="h-5 w-5 text-blue-500" />
+        <Settings2 className="h-5 w-5 text-blue-600" />
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">
           Allocation Rule Builder
         </h3>

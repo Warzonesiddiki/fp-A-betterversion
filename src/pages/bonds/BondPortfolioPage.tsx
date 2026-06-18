@@ -292,7 +292,7 @@ export default function BondPortfolioPage() {
         >
           <CardHeader>
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <BarChart3 className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Duration vs. Yield</CardTitle>
             </div>
             <CardDescription>

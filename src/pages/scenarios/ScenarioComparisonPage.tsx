@@ -183,7 +183,7 @@ export function ScenarioComparisonPage() {
                       >
                         {s.name}
                         {s.id === baseScenario.id && (
-                          <span className="ml-1 text-xs text-blue-500">(base)</span>
+                          <span className="ml-1 text-xs text-blue-600">(base)</span>
                         )}
                       </th>
                     ))}

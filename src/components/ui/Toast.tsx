@@ -34,7 +34,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
       border: 'border-amber-100 dark:border-amber-900',
     },
     info: {
-      icon: <Info className="h-5 w-5 text-blue-500" />,
+      icon: <Info className="h-5 w-5 text-blue-600" />,
       bg: 'bg-blue-50 dark:bg-blue-950',
       border: 'border-blue-100 dark:border-blue-900',
     },

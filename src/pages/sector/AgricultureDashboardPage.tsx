@@ -76,7 +76,7 @@ export default function AgricultureDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Water Usage</span>
-                <span className="font-mono text-blue-500">4,200 m3</span>
+                <span className="font-mono text-blue-600">4,200 m3</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Equipment Utilization</span>

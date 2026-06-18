@@ -188,7 +188,7 @@ export default function UnderwritingPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-500" />
+              <Target className="h-5 w-5 text-blue-600" />
               <CardTitle>Rate Adequacy Trend</CardTitle>
             </div>
             <CardDescription>
