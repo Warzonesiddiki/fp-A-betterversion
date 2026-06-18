@@ -48,7 +48,7 @@ export class EngineErrorBoundary extends Component<Props, State> {
           role="region"
           aria-label="EngineErrorBoundary"
         >
-          <AlertTriangle className="w-8 h-8 text-red-500 mb-3" />
+          <AlertTriangle className="w-8 h-8 text-red-600 mb-3" />
           <h3 className="text-sm font-semibold text-red-700 dark:text-red-300 mb-1">
             {this.props.engineName ?? 'Engine'} Error
           </h3>

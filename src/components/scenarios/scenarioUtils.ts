@@ -103,7 +103,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   efficiency: 'Efficiency',
 };
 
-export const BAR_COLORS = ['bg-blue-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500'];
+export const BAR_COLORS = ['bg-blue-600', 'bg-emerald-600', 'bg-amber-600', 'bg-purple-600'];
 
 export const TYPE_BADGE: Record<string, string> = {
   Base: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',

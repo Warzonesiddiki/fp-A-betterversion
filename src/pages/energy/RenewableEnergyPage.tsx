@@ -151,7 +151,7 @@ const columns: Column[] = [
     align: 'right',
     render: (v) => (
       <span
-        className={parseFloat(v) > 95 ? 'text-green-600 font-bold' : 'text-amber-600 font-bold'}
+        className={parseFloat(v) > 95 ? 'text-green-700 font-bold' : 'text-amber-700 font-bold'}
       >
         {v}
       </span>

@@ -364,7 +364,7 @@ export function ApprovalDashboard({
                   className="flex items-center justify-between text-sm border-l-2 border-red-500 pl-2"
                 >
                   <span className="font-medium">{req.title}</span>
-                  <span className="text-xs text-red-500">Overdue</span>
+                  <span className="text-xs text-red-600 font-semibold">Overdue</span>
                 </div>
               ))}
             </div>
