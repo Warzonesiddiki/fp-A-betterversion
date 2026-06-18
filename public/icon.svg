@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  FinPlan Pro PWA icon source (vector).
+  Generated 2026-06-18 by Prometheus (T-3.15 Issue #2 + #3 follow-up).
+
+  Renders at 192x192 (regular) + 512x512 (regular) + 512x512 with 16.67% safe-zone
+  padding (maskable). Uses FinPlan Pro brand colors:
+    - Primary blue: #1e40af (theme_color in vite.config.ts)
+    - Background dark: #0f172a (background_color in vite.config.ts)
+    - Accent: #10b981 (emerald green for FP&A / money)
+
+  Design:
+    - Rounded square base (1/8 corner radius)
+    - Letter "F" monogram (FinPlan)
+    - Subtle chart bars at the bottom (forecasting motif)
+
+  SVG → PNG conversion: scripts/generate-pwa-icons.mjs (uses sharp if available,
+  otherwise fallback to a custom PNG encoder).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background: rounded square with primary blue gradient -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Maskable safe zone: full 512x512 must be visible after mask -->
+  <!-- Regular 192x192 / 512x512 will crop to fit, so we keep all content within safe zone -->
+
+  <!-- Rounded background -->
+  <rect x="0" y="0" width="512" height="512" rx="64" ry="64" fill="url(#bgGrad)"/>
+
+  <!-- Letter F monogram -->
+  <g transform="translate(96, 96)">
+    <path
+      d="M 32 0 L 224 0 L 224 64 L 96 64 L 96 128 L 192 128 L 192 192 L 96 192 L 96 288 L 32 288 Z"
+      fill="#ffffff"
+      stroke="none"
+    />
+  </g>
+
+  <!-- Chart bars at bottom (forecasting motif) -->
+  <g transform="translate(96, 384)">
+    <rect x="0" y="48" width="48" height="32" rx="4" fill="#10b981" opacity="0.7"/>
+    <rect x="64" y="32" width="48" height="48" rx="4" fill="#10b981" opacity="0.85"/>
+    <rect x="128" y="16" width="48" height="64" rx="4" fill="#10b981"/>
+    <rect x="192" y="0" width="48" height="80" rx="4" fill="url(#accentGrad)"/>
+  </g>
+</svg>

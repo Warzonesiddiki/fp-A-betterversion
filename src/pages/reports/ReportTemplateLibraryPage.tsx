@@ -59,7 +59,7 @@ export default function ReportTemplateLibraryPage() {
 
   // ── Stats ────────────────────────────────────────────────────────
   const stats = useMemo(() => {
-    const all = reports ?? [];
+    const all = (reports as unknown as ReportDefinition[]) ?? [];
     return {
       total: all.length,
       active: all.filter((r) => !r.isArchived).length,
@@ -224,7 +224,7 @@ export default function ReportTemplateLibraryPage() {
             label="Search reports"
             placeholder="Search by name, description, or tag…"
             value={search}
-            onChange={(v) => setSearch(v)}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
