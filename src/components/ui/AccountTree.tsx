@@ -114,7 +114,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
             isSelected
               ? 'text-white'
               : account.isCalculated
-                ? 'text-amber-500'
+                ? 'text-amber-700'
                 : 'text-[var(--text-muted)]'
           )}
         >

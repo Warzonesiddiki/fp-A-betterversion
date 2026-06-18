@@ -312,7 +312,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                     title={scenario.isLocked ? 'Unlock' : 'Lock'}
                   >
                     {scenario.isLocked ? (
-                      <Lock className="h-3.5 w-3.5 text-amber-500" />
+                      <Lock className="h-3.5 w-3.5 text-amber-700" />
                     ) : (
                       <Unlock className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                     )}

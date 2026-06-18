@@ -140,7 +140,7 @@ export default function ScenarioListPage() {
                       className="p-1 rounded hover:bg-slate-700 text-slate-400"
                     >
                       {s.isLocked ? (
-                        <Lock className="h-3.5 w-3.5 text-amber-500" />
+                        <Lock className="h-3.5 w-3.5 text-amber-700" />
                       ) : (
                         <Unlock className="h-3.5 w-3.5" />
                       )}

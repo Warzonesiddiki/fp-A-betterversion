@@ -27,7 +27,7 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
       role="alert"
       aria-live="assertive"
     >
-      <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
+      <AlertTriangle className="h-12 w-12 text-amber-700 mb-4" />
       <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">{t('errors.generic')}</h2>
       <p className="text-muted-foreground mb-2 max-w-md">
         {t('errors.somethingWentWrong')}. Your data has not been lost.

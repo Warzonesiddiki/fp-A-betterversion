@@ -29,7 +29,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
       border: 'border-red-100 dark:border-red-900',
     },
     warning: {
-      icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
+      icon: <AlertTriangle className="h-5 w-5 text-amber-700" />,
       bg: 'bg-amber-50 dark:bg-amber-950',
       border: 'border-amber-100 dark:border-amber-900',
     },

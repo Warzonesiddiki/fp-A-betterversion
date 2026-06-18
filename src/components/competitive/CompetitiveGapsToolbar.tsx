@@ -167,7 +167,7 @@ export function CompetitiveGapsToolbar({
       {/* (2) Scenario Locking */}
       <div className="flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2">
         {isLocked ? (
-          <Lock className="h-4 w-4 text-amber-500" aria-hidden="true" />
+          <Lock className="h-4 w-4 text-amber-700" aria-hidden="true" />
         ) : (
           <Unlock className="h-4 w-4 text-slate-500" aria-hidden="true" />
         )}

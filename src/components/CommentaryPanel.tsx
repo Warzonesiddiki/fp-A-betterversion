@@ -143,7 +143,7 @@ export function CommentaryPanel({
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   {overrides[idx] !== undefined && (
-                    <span className="inline-block mt-1 text-[10px] text-amber-500/70 italic">
+                    <span className="inline-block mt-1 text-[10px] text-amber-700/70 italic">
                       Edited
                     </span>
                   )}

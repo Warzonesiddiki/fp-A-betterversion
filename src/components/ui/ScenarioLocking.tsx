@@ -144,7 +144,7 @@ export const ScenarioLocking = memo(function ScenarioLocking({
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm font-medium">
             <Shield
-              className={cn('h-4 w-4', isLocked ? 'text-amber-500' : 'text-[var(--text-muted)]')}
+              className={cn('h-4 w-4', isLocked ? 'text-amber-700' : 'text-[var(--text-muted)]')}
             />
             {scenarioName}
           </CardTitle>

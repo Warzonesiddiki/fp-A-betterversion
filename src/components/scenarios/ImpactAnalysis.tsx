@@ -217,7 +217,7 @@ export function ImpactAnalysis({
                 className="flex w-full items-center justify-between"
               >
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-500" />
+                  <Zap className="h-4 w-4 text-amber-700" />
                   {CATEGORY_LABELS[category] ?? category}
                   <span className="text-xs font-normal text-[var(--text-tertiary)]">
                     ({rows.length} metric{rows.length !== 1 ? 's' : ''})

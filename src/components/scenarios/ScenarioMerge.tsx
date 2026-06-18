@@ -238,7 +238,7 @@ export function ScenarioMerge({ scenarios = [], onMerge }: ScenarioMergeProps) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-amber-500" /> Merged Result: {merged.name}
+                <Trophy className="h-4 w-4 text-amber-700" /> Merged Result: {merged.name}
               </CardTitle>
               <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
                 {strategy === 'best'

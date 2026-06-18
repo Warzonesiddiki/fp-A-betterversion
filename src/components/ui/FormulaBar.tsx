@@ -107,7 +107,7 @@ export function FormulaBar({
           />
           {!value && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              <FlaskConical className="h-3.5 w-3.5 text-amber-500" />
+              <FlaskConical className="h-3.5 w-3.5 text-amber-700" />
               <span className="text-[10px] font-medium text-amber-600">Pure Calculation</span>
             </div>
           )}
