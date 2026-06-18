@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { Comment, Task, ActivityLog, CollaborationState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { SyncEngine } from '../engines/SyncEngine';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export const useCollaborationStore = create<CollaborationState>()(
   subscribeWithSelector(
@@ -23,7 +24,7 @@ export const useCollaborationStore = create<CollaborationState>()(
 
         setComments: (comments) => set({ comments }),
 
-        addComment: (comment) => {
+        addComment: enforce(Permissions.COLLAB_UPDATE, 'addComment', (comment) => {
           const id = `cmt-${Date.now()}`;
           set((state) => ({
             comments: [
@@ -43,11 +44,11 @@ export const useCollaborationStore = create<CollaborationState>()(
             data: comment,
             userId: comment.authorId ?? 'unknown',
           });
-        },
+        }),
 
         setTasks: (tasks) => set({ tasks }),
 
-        addTask: (task) => {
+        addTask: enforce(Permissions.COLLAB_UPDATE, 'addTask', (task) => {
           const id = `tsk-${Date.now()}`;
           set((state) => ({
             tasks: [
@@ -66,16 +67,17 @@ export const useCollaborationStore = create<CollaborationState>()(
             data: task,
             userId: task.assigneeId ?? 'unknown',
           });
-        },
+        }),
 
-        updateTaskStatus: (id, status) =>
+        updateTaskStatus: enforce(Permissions.COLLAB_UPDATE, 'updateTaskStatus', (id, status) => {
           set((state) => ({
             tasks: state.tasks.map((t) => (t.id === id ? { ...t, status } : t)),
-          })),
+          }));
+        }),
 
         setApprovals: (approvals) => set({ approvals }),
 
-        updateApprovalStatus: (id, status, comment) =>
+        updateApprovalStatus: enforce(Permissions.WORKFLOW_APPROVE, 'updateApprovalStatus', (id, status, comment) => {
           set((state) => ({
             approvals: state.approvals.map((a) => {
               if (a.id === id) {
@@ -88,11 +90,12 @@ export const useCollaborationStore = create<CollaborationState>()(
               }
               return a;
             }),
-          })),
+          }));
+        }),
 
         setActivityLog: (log) => set({ activityLog: log }),
 
-        addActivity: (activity) =>
+        addActivity: enforce(Permissions.COLLAB_UPDATE, 'addActivity', (activity) => {
           set((state) => ({
             activityLog: [
               {
@@ -102,7 +105,8 @@ export const useCollaborationStore = create<CollaborationState>()(
               } as ActivityLog,
               ...state.activityLog,
             ],
-          })),
+          }));
+        }),
       })),
       {
         name: 'collaboration-store',

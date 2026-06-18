@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface CapExProject {
   id: string;
@@ -69,36 +70,36 @@ export const useCapExStore = create<CapExState>()(
         isLoading: false,
         error: null,
 
-        setProjects: (projects) =>
+        setProjects: enforce(Permissions.CAPEX_UPDATE, 'setProjects', (projects) =>
           set((state) => {
             state.projects = projects;
-          }),
+          })),
 
-        addProject: (project) =>
+        addProject: enforce(Permissions.CAPEX_CREATE, 'addProject', (project) =>
           set((state) => {
             state.projects.push(project);
-          }),
+          })),
 
-        updateProject: (id, updates) =>
+        updateProject: enforce(Permissions.CAPEX_UPDATE, 'updateProject', (id, updates) =>
           set((state) => {
             const idx = state.projects.findIndex((p) => p.id === id);
             if (idx !== -1) Object.assign(state.projects[idx]!, updates);
-          }),
+          })),
 
-        removeProject: (id) =>
+        removeProject: enforce(Permissions.CAPEX_DELETE, 'removeProject', (id) =>
           set((state) => {
             state.projects = state.projects.filter((p) => p.id !== id);
-          }),
+          })),
 
-        setAssets: (assets) =>
+        setAssets: enforce(Permissions.CAPEX_UPDATE, 'setAssets', (assets) =>
           set((state) => {
             state.assets = assets;
-          }),
+          })),
 
-        setDepreciationSchedule: (entries) =>
+        setDepreciationSchedule: enforce(Permissions.CAPEX_UPDATE, 'setDepreciationSchedule', (entries) =>
           set((state) => {
             state.depreciationSchedule = entries;
-          }),
+          })),
 
         setLoading: (loading) =>
           set((state) => {
@@ -110,14 +111,14 @@ export const useCapExStore = create<CapExState>()(
             state.error = error;
           }),
 
-        clearAll: () =>
+        clearAll: enforce(Permissions.CAPEX_DELETE, 'clearAll', () =>
           set((state) => {
             state.projects = [];
             state.assets = [];
             state.depreciationSchedule = [];
             state.isLoading = false;
             state.error = null;
-          }),
+          })),
 
         getProjectsByStatus: (status) => get().projects.filter((p) => p.status === status),
 

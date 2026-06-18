@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface RetailProduct {
   id: string;
@@ -51,31 +52,31 @@ export const useRetailStore = create<RetailState>()(
         isLoading: false,
         error: null,
 
-        setProducts: (products) =>
+        setProducts: enforce(Permissions.INVENTORY_UPDATE, 'setProducts', (products) =>
           set((state) => {
             state.products = products;
-          }),
+          })),
 
-        addProduct: (product) =>
+        addProduct: enforce(Permissions.INVENTORY_CREATE, 'addProduct', (product) =>
           set((state) => {
             state.products.push(product);
-          }),
+          })),
 
-        updateProduct: (id, updates) =>
+        updateProduct: enforce(Permissions.INVENTORY_UPDATE, 'updateProduct', (id, updates) =>
           set((state) => {
             const idx = state.products.findIndex((p) => p.id === id);
             if (idx !== -1) Object.assign(state.products[idx]!, updates);
-          }),
+          })),
 
-        removeProduct: (id) =>
+        removeProduct: enforce(Permissions.INVENTORY_DELETE, 'removeProduct', (id) =>
           set((state) => {
             state.products = state.products.filter((p) => p.id !== id);
-          }),
+          })),
 
-        setStores: (stores) =>
+        setStores: enforce(Permissions.ENTITY_UPDATE, 'setStores', (stores) =>
           set((state) => {
             state.stores = stores;
-          }),
+          })),
 
         setLoading: (isLoading) =>
           set((state) => {
@@ -87,13 +88,13 @@ export const useRetailStore = create<RetailState>()(
             state.error = error;
           }),
 
-        clearAll: () =>
+        clearAll: enforce(Permissions.INVENTORY_DELETE, 'clearAll', () =>
           set((state) => {
             state.products = [];
             state.stores = [];
             state.isLoading = false;
             state.error = null;
-          }),
+          })),
 
         getLowStockProducts: () => get().products.filter((p) => p.stock <= p.reorderLevel),
 

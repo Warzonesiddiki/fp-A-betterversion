@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface Program {
   id: string;
@@ -57,31 +58,31 @@ export const useEducationStore = create<EducationState>()(
         scholarships: [],
         isLoading: false,
         error: null,
-        setPrograms: (programs) =>
+        setPrograms: enforce(Permissions.ENTITY_UPDATE, 'setPrograms', (programs) =>
           set((s) => {
             s.programs = programs;
-          }),
-        addProgram: (program) =>
+          })),
+        addProgram: enforce(Permissions.ENTITY_CREATE, 'addProgram', (program) =>
           set((s) => {
             s.programs.push(program);
-          }),
-        updateProgram: (id, updates) =>
+          })),
+        updateProgram: enforce(Permissions.ENTITY_UPDATE, 'updateProgram', (id, updates) =>
           set((s) => {
             const i = s.programs.findIndex((p) => p.id === id);
             if (i !== -1) Object.assign(s.programs[i]!, updates);
-          }),
-        removeProgram: (id) =>
+          })),
+        removeProgram: enforce(Permissions.ENTITY_DELETE, 'removeProgram', (id) =>
           set((s) => {
             s.programs = s.programs.filter((p) => p.id !== id);
-          }),
-        setEnrollmentTrends: (trends) =>
+          })),
+        setEnrollmentTrends: enforce(Permissions.DASHBOARD_UPDATE, 'setEnrollmentTrends', (trends) =>
           set((s) => {
             s.enrollmentTrends = trends;
-          }),
-        setScholarships: (scholarships) =>
+          })),
+        setScholarships: enforce(Permissions.BUDGET_UPDATE, 'setScholarships', (scholarships) =>
           set((s) => {
             s.scholarships = scholarships;
-          }),
+          })),
         setLoading: (isLoading) =>
           set((s) => {
             s.isLoading = isLoading;
@@ -90,14 +91,14 @@ export const useEducationStore = create<EducationState>()(
           set((s) => {
             s.error = error;
           }),
-        clearAll: () =>
+        clearAll: enforce(Permissions.ENTITY_DELETE, 'clearAll', () =>
           set((s) => {
             s.programs = [];
             s.enrollmentTrends = [];
             s.scholarships = [];
             s.isLoading = false;
             s.error = null;
-          }),
+          })),
         getTotalEnrollment: () => get().programs.reduce((sum, p) => sum + p.enrollment, 0),
         getActiveProgramCount: () => get().programs.filter((p) => p.status === 'Active').length,
       })),

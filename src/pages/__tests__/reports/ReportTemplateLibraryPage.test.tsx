@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 
 vi.mock('lucide-react', () => ({
   FileText: () => <span data-testid="mock-icon" />,
@@ -17,13 +17,18 @@ vi.mock('lucide-react', () => ({
   ChevronUp: () => <span data-testid="mock-icon" />,
   ChevronDown: () => <span data-testid="mock-icon" />,
 }));
+
+// Zustand selector-aware mock (per RULE #108 v0.3 MERGE EDITION Read offset canonical)
+const mockState = {
+  reports: [],
+  createReport: vi.fn(() => 'mock-report-id'),
+  deleteReport: vi.fn(),
+};
+
 vi.mock('@/store/reportStore', () => ({
-  useReportStore: vi.fn(() => ({
-    templates: [],
-    addTemplate: vi.fn(),
-    updateTemplate: vi.fn(),
-    deleteTemplate: vi.fn(),
-  })),
+  useReportStore: vi.fn((selector?: (s: typeof mockState) => unknown) =>
+    selector ? selector(mockState) : mockState
+  ),
 }));
 
 import { render, screen, fireEvent } from '@/test/testUtils';
@@ -34,14 +39,35 @@ describe('ReportTemplateLibraryPage', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the template library', () => {
+  it('renders the page header and stats', () => {
     render(<ReportTemplateLibraryPage />);
-    expect(screen.getByText(/Report Library/i)).toBeInTheDocument();
+    expect(screen.getByText('Report Templates')).toBeInTheDocument();
+    expect(screen.getByText(/Browse, filter, and create/i)).toBeInTheDocument();
+    expect(screen.getByText('Total')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+    expect(screen.getByText('Archived')).toBeInTheDocument();
+    expect(screen.getByText('Tags')).toBeInTheDocument();
   });
 
-  it('renders empty state', () => {
+  it('renders search input and sort dropdown', () => {
     render(<ReportTemplateLibraryPage />);
-    fireEvent.click(screen.getByText(/My Reports/i));
-    expect(screen.getByText(/No saved reports yet/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Search reports')).toBeInTheDocument();
+    expect(screen.getByLabelText('Sort by')).toBeInTheDocument();
+  });
+
+  it('renders view mode toggle with Grid and List buttons', () => {
+    render(<ReportTemplateLibraryPage />);
+    expect(screen.getByRole('button', { name: 'Grid' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'List' })).toBeInTheDocument();
+  });
+
+  it('renders All filter chip with count', () => {
+    render(<ReportTemplateLibraryPage />);
+    expect(screen.getByRole('button', { name: /^All \(/ })).toBeInTheDocument();
+  });
+
+  it('renders + New Custom Report CTA', () => {
+    render(<ReportTemplateLibraryPage />);
+    expect(screen.getByRole('button', { name: /\+ New Custom Report/ })).toBeInTheDocument();
   });
 });

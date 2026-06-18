@@ -16,6 +16,7 @@ import {
   type ImpactAnalysis,
   type DriverSnapshot,
 } from '@/engines/DriverCascadeEngine';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -127,21 +128,21 @@ export const useDriverStore = create<DriverState>()(
         lastCascadeResult: null,
         selectedDriverId: null,
 
-        addDriver: (driver) => {
+        addDriver: enforce(Permissions.DRIVER_CREATE, 'addDriver', (driver) => {
           const engine = get().engine;
           const result = engine.addDriver(driver);
           set({ engine });
           return result;
-        },
+        }),
 
-        updateDriver: (id, updates) => {
+        updateDriver: enforce(Permissions.DRIVER_UPDATE, 'updateDriver', (id, updates) => {
           const engine = get().engine;
           const result = engine.updateDriver(id, updates);
           if (result) set({ engine });
           return result;
-        },
+        }),
 
-        removeDriver: (id) => {
+        removeDriver: enforce(Permissions.DRIVER_DELETE, 'removeDriver', (id) => {
           const engine = get().engine;
           const result = engine.removeDriver(id);
           if (result) {
@@ -151,25 +152,25 @@ export const useDriverStore = create<DriverState>()(
             });
           }
           return result;
-        },
+        }),
 
         selectDriver: (id) => {
           set({ selectedDriverId: id });
         },
 
-        addRule: (rule) => {
+        addRule: enforce(Permissions.DRIVER_CREATE, 'addRule', (rule) => {
           const engine = get().engine;
           const result = engine.addRule(rule);
           set({ engine });
           return result;
-        },
+        }),
 
-        removeRule: (ruleId) => {
+        removeRule: enforce(Permissions.DRIVER_DELETE, 'removeRule', (ruleId) => {
           const engine = get().engine;
           const result = engine.removeRule(ruleId);
           if (result) set({ engine });
           return result;
-        },
+        }),
 
         getRulesForDriver: (driverId) => {
           const engine = get().engine;
@@ -188,37 +189,37 @@ export const useDriverStore = create<DriverState>()(
           return result;
         },
 
-        applyCascade: (result, writeCell) => {
+        applyCascade: enforce(Permissions.DRIVER_UPDATE, 'applyCascade', (result, writeCell) => {
           const engine = get().engine;
           engine.applyCascade(result, writeCell);
           set({ engine, lastCascadeResult: null });
-        },
+        }),
 
         analyzeImpact: (driverId, newValue, readCell) => {
           const engine = get().engine;
           return engine.analyzeImpact(driverId, newValue, readCell);
         },
 
-        batchUpdate: (updates, readCell, writeCell) => {
+        batchUpdate: enforce(Permissions.DRIVER_UPDATE, 'batchUpdate', (updates, readCell, writeCell) => {
           set({ isRecalculating: true });
           const engine = get().engine;
           const results = engine.batchUpdateDrivers(updates, readCell, writeCell);
           set({ isRecalculating: false });
           return results;
-        },
+        }),
 
         createSnapshot: () => {
           const engine = get().engine;
           return engine.createSnapshot();
         },
 
-        restoreSnapshot: (snapshot) => {
+        restoreSnapshot: enforce(Permissions.DRIVER_UPDATE, 'restoreSnapshot', (snapshot) => {
           const engine = get().engine;
           engine.restoreSnapshot(snapshot);
           set({ engine });
-        },
+        }),
 
-        reset: () => {
+        reset: enforce(Permissions.DRIVER_DELETE, 'reset', () => {
           const engine = get().engine;
           engine.reset();
           set({
@@ -228,7 +229,7 @@ export const useDriverStore = create<DriverState>()(
             lastCascadeResult: null,
             selectedDriverId: null,
           });
-        },
+        }),
       })),
       {
         name: 'driver-store',

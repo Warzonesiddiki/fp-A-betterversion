@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface RateAdequacyPoint {
   month: string;
@@ -122,26 +123,26 @@ export const useInsuranceStore = create<InsuranceState>()(
           },
         ],
 
-        setRateAdequacy: (data) =>
+        setRateAdequacy: enforce(Permissions.DASHBOARD_UPDATE, 'setRateAdequacy', (data) =>
           set((state) => {
             state.rateAdequacy = data;
-          }),
+          })),
 
-        setLossPicks: (data) =>
+        setLossPicks: enforce(Permissions.DASHBOARD_UPDATE, 'setLossPicks', (data) =>
           set((state) => {
             state.lossPicks = data;
-          }),
+          })),
 
-        addRateFiling: (filing) =>
+        addRateFiling: enforce(Permissions.BUDGET_CREATE, 'addRateFiling', (filing) =>
           set((state) => {
             state.rateFilings.push(filing);
-          }),
+          })),
 
-        updateRateFiling: (id, updates) =>
+        updateRateFiling: enforce(Permissions.BUDGET_UPDATE, 'updateRateFiling', (id, updates) =>
           set((state) => {
             const idx = state.rateFilings.findIndex((f) => f.id === id);
             if (idx !== -1) Object.assign(state.rateFilings[idx]!, updates);
-          }),
+          })),
       })),
 
       {

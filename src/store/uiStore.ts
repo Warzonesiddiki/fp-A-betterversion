@@ -11,6 +11,7 @@ import {
   requestPermission,
   sendNotification,
 } from '@tauri-apps/plugin-notification';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export const useUIStore = create<UIState>()(
   subscribeWithSelector(
@@ -27,7 +28,7 @@ export const useUIStore = create<UIState>()(
         toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
         openMobileSidebar: () => set({ mobileSidebarOpen: true }),
         closeMobileSidebar: () => set({ mobileSidebarOpen: false }),
-        setTheme: (theme) => {
+        setTheme: enforce(Permissions.UI_UPDATE, 'setTheme', (theme) => {
           const isDark = theme === 'dark';
           document.documentElement.classList.toggle('dark', isDark);
           document.documentElement.classList.toggle('light', !isDark);
@@ -35,9 +36,10 @@ export const useUIStore = create<UIState>()(
           // no direct localStorage write (Athena v2 finding + masterStorage-as-
           // single-source pattern, per ADR-005).
           set({ theme });
-        },
+        }),
+
         toggleCommandPalette: () => set((s) => ({ commandPaletteOpen: !s.commandPaletteOpen })),
-        addToast: (toast) => {
+        addToast: enforce(Permissions.UI_UPDATE, 'addToast', (toast) => {
           const id = `toast-${Date.now()}`;
           set((s) => ({ toasts: [...s.toasts, { ...toast, id }] }));
           setTimeout(
@@ -73,7 +75,8 @@ export const useUIStore = create<UIState>()(
                 });
             }
           }
-        },
+        }),
+
         removeToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
         setOnline: (online) => set({ isOnline: online }),
         setError: (error) => set({ error }),

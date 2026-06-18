@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface MaintenancePoint {
   month: string;
@@ -90,31 +91,31 @@ export const useRealEstateStore = create<RealEstateState>()(
           },
         ],
 
-        setMaintenanceTrend: (data) =>
+        setMaintenanceTrend: enforce(Permissions.DASHBOARD_UPDATE, 'setMaintenanceTrend', (data) =>
           set((state) => {
             state.maintenanceTrend = data;
-          }),
+          })),
 
-        setFacilities: (data) =>
+        setFacilities: enforce(Permissions.ENTITY_UPDATE, 'setFacilities', (data) =>
           set((state) => {
             state.facilities = data;
-          }),
+          })),
 
-        addFacility: (facility) =>
+        addFacility: enforce(Permissions.ENTITY_CREATE, 'addFacility', (facility) =>
           set((state) => {
             state.facilities.push(facility);
-          }),
+          })),
 
-        updateFacility: (id, updates) =>
+        updateFacility: enforce(Permissions.ENTITY_UPDATE, 'updateFacility', (id, updates) =>
           set((state) => {
             const idx = state.facilities.findIndex((f) => f.id === id);
             if (idx !== -1) Object.assign(state.facilities[idx]!, updates);
-          }),
+          })),
 
-        removeFacility: (id) =>
+        removeFacility: enforce(Permissions.ENTITY_DELETE, 'removeFacility', (id) =>
           set((state) => {
             state.facilities = state.facilities.filter((f) => f.id !== id);
-          }),
+          })),
       })),
 
       {

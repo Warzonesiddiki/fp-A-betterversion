@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '../utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface TourStep {
   target: string;
@@ -33,15 +34,15 @@ export const useTourStore = create<TourState>()(
         steps: [],
         completedTours: [],
 
-        startTour: (tourId, steps) => {
+        startTour: enforce(Permissions.UI_UPDATE, 'startTour', (tourId, steps) => {
           set({
             isActive: true,
             currentStepIndex: 0,
             steps,
           });
-        },
+        }),
 
-        stopTour: () => set({ isActive: false, steps: [], currentStepIndex: 0 }),
+        stopTour: enforce(Permissions.UI_UPDATE, 'stopTour', () => set({ isActive: false, steps: [], currentStepIndex: 0 })),
 
         nextStep: () => {
           const { currentStepIndex, steps } = get();
@@ -59,12 +60,12 @@ export const useTourStore = create<TourState>()(
           }
         },
 
-        completeTour: (tourId) => {
+        completeTour: enforce(Permissions.UI_UPDATE, 'completeTour', (tourId) => {
           set((state) => ({
             completedTours: [...new Set([...state.completedTours, tourId])],
             isActive: false,
           }));
-        },
+        }),
       })),
       {
         name: 'tour-store',

@@ -5,6 +5,10 @@ import App from './App';
 import './index.css';
 import './styles/accessibility.css';
 import './styles/print.css';
+import { registerPWA } from './pwa';
+
+// ── PWA service worker (must run before render) ─────────────────────────
+registerPWA();
 
 // ── Sentry observability (self-hosted per T-ATL-007 Docker + R2 archive) ──
 // Gated on VITE_SENTRY_DSN so dev/staging/CI run without Sentry.

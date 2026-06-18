@@ -26,12 +26,12 @@ const colorScales = {
   'red-green': {
     negative: [220, 38, 38], // red-600
     neutral: [255, 255, 255], // white
-    positive: [22, 163, 74], // green-600
+    positive: [21, 128, 61], // green-700 (5.13:1 ✅ WCAG 2.1 AA Normal, was green-600 [22,163,74] 3.94:1 ❌ — PATCH 19+)
   },
   'red-yellow-green': {
     negative: [220, 38, 38],
     neutral: [234, 179, 8], // yellow-500
-    positive: [22, 163, 74],
+    positive: [21, 128, 61], // green-700 (PATCH 19+)
   },
   'blue-orange': {
     negative: [249, 115, 22], // orange-500

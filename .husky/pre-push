@@ -178,4 +178,22 @@ if [ $GATE15_VIOLATIONS -gt 0 ]; then
   echo "   Mode: ADVISORY (until 2026-06-21 EOD), HARD BLOCK from 2026-06-21 EOD"
 fi
 
+# Gate 17 - PRE-COMMIT-TSC-VERIFICATION (NEVER-AGAIN RULE #78)
+# Hephaestus T-2 CYCLE 25, Vulcan (lead) + Hephaestus (impl) 2026-06-17
+# CASCADE-TRAP class V (TSC-FALSIFIED-CLAIM) prevention
+# Delegates to scripts/husky/pre-push-17.sh (canonical TSC + claim verification)
+if [ -f scripts/husky/pre-push-17.sh ]; then
+  echo "→ Gate 17"
+  sh scripts/husky/pre-push-17.sh
+fi
+
+# Gate 18 - DESIGNTOKEN ENFORCEMENT (NEVER-AGAIN RULE #118)
+# Hephaestus T-18 PATCH 19+ COMPLETION, 2026-06-18 (CYCLE 25)
+# CASCADE-TRAP class VI (hex-literal WCAG regression) prevention
+# Delegates to scripts/husky/pre-push-18.sh (canonical hex-literal grep)
+if [ -f scripts/husky/pre-push-18.sh ]; then
+  echo "→ Gate 18"
+  sh scripts/husky/pre-push-18.sh
+fi
+
 echo "All pre-push checks passed."

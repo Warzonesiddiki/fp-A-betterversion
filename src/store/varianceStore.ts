@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { VarianceState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export const useVarianceStore = create<VarianceState>()(
   subscribeWithSelector(
@@ -17,17 +18,17 @@ export const useVarianceStore = create<VarianceState>()(
         clearError: () => set({ error: null }),
         setLoading: (loading) => set({ isLoading: loading }),
 
-        setAnalyses: (analyses) => set({ analyses }),
+        setAnalyses: enforce(Permissions.VARIANCE_UPDATE, 'setAnalyses', (analyses) => set({ analyses })),
 
-        addAnalysis: (analysis) =>
+        addAnalysis: enforce(Permissions.VARIANCE_CREATE, 'addAnalysis', (analysis) =>
           set((state) => ({
             analyses: [...state.analyses, { ...analysis, id: `var-${Date.now()}` }],
-          })),
+          }))),
 
-        deleteAnalysis: (id) =>
+        deleteAnalysis: enforce(Permissions.VARIANCE_DELETE, 'deleteAnalysis', (id) =>
           set((state) => ({
             analyses: state.analyses.filter((a) => a.id !== id),
-          })),
+          }))),
       })),
       {
         name: 'variance-store',

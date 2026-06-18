@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface RenewableAsset {
   id: string;
@@ -108,30 +109,30 @@ export const useEnergyStore = create<EnergyState>()(
           { name: 'Battery Storage', value: 500, color: '#8b5cf6' },
         ],
 
-        setAssets: (assets) =>
+        setAssets: enforce(Permissions.ENTITY_UPDATE, 'setAssets', (assets) =>
           set((state) => {
             state.assets = assets;
-          }),
+          })),
 
-        addAsset: (asset) =>
+        addAsset: enforce(Permissions.ENTITY_CREATE, 'addAsset', (asset) =>
           set((state) => {
             state.assets.push(asset);
-          }),
+          })),
 
-        removeAsset: (id) =>
+        removeAsset: enforce(Permissions.ENTITY_DELETE, 'removeAsset', (id) =>
           set((state) => {
             state.assets = state.assets.filter((a) => a.id !== id);
-          }),
+          })),
 
-        setGenerationTrend: (data) =>
+        setGenerationTrend: enforce(Permissions.DASHBOARD_UPDATE, 'setGenerationTrend', (data) =>
           set((state) => {
             state.generationTrend = data;
-          }),
+          })),
 
-        setCapacityMix: (data) =>
+        setCapacityMix: enforce(Permissions.DASHBOARD_UPDATE, 'setCapacityMix', (data) =>
           set((state) => {
             state.capacityMix = data;
-          }),
+          })),
       })),
 
       {

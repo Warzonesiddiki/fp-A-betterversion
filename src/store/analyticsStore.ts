@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { AnalyticsFilter, AnalyticsState } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 const defaultFilter: AnalyticsFilter = {
   accountTypes: ['Revenue', 'COGS', 'OpEx'],
@@ -31,7 +32,7 @@ export const useAnalyticsStore = create<AnalyticsState>()(
         clearError: () => set({ error: null }),
         setLoading: (isLoading) => set({ isLoading }),
 
-        addChart: (chart) => {
+        addChart: enforce(Permissions.DASHBOARD_CREATE, 'addChart', (chart) => {
           const id = `chart-${Date.now()}`;
           set((state) => ({ charts: [...state.charts, { ...chart, id }] }));
           useUIStore.getState().addToast({
@@ -39,15 +40,15 @@ export const useAnalyticsStore = create<AnalyticsState>()(
             title: 'Chart Added',
             message: `Successfully created chart: ${chart.name}`,
           });
-        },
+        }),
 
-        updateChart: (id, updates) => {
+        updateChart: enforce(Permissions.DASHBOARD_UPDATE, 'updateChart', (id, updates) => {
           set((state) => ({
             charts: state.charts.map((c) => (c.id === id ? { ...c, ...updates } : c)),
           }));
-        },
+        }),
 
-        removeChart: (id) => {
+        removeChart: enforce(Permissions.DASHBOARD_DELETE, 'removeChart', (id) => {
           set((state) => {
             const chart = state.charts.find((c) => c.id === id);
             if (chart) {
@@ -62,7 +63,7 @@ export const useAnalyticsStore = create<AnalyticsState>()(
               selectedChartId: state.selectedChartId === id ? null : state.selectedChartId,
             };
           });
-        },
+        }),
 
         setSelectedChart: (id) => set({ selectedChartId: id }),
 

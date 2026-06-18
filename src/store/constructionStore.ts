@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface CostBreakdownItem {
   name: string;
@@ -124,26 +125,26 @@ export const useConstructionStore = create<ConstructionState>()(
           },
         ],
 
-        setCostBreakdown: (items) =>
+        setCostBreakdown: enforce(Permissions.BUDGET_UPDATE, 'setCostBreakdown', (items) =>
           set((state) => {
             state.costBreakdown = items;
-          }),
+          })),
 
-        addChangeOrder: (order) =>
+        addChangeOrder: enforce(Permissions.BUDGET_CREATE, 'addChangeOrder', (order) =>
           set((state) => {
             state.changeOrders.push(order);
-          }),
+          })),
 
-        updateChangeOrder: (id, updates) =>
+        updateChangeOrder: enforce(Permissions.BUDGET_UPDATE, 'updateChangeOrder', (id, updates) =>
           set((state) => {
             const idx = state.changeOrders.findIndex((o) => o.id === id);
             if (idx !== -1) Object.assign(state.changeOrders[idx]!, updates);
-          }),
+          })),
 
-        setCostLedger: (entries) =>
+        setCostLedger: enforce(Permissions.ENTITY_UPDATE, 'setCostLedger', (entries) =>
           set((state) => {
             state.costLedger = entries;
-          }),
+          })),
       })),
 
       {

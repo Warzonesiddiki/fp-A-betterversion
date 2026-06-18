@@ -63,9 +63,9 @@
   /* Focus ring */
   --focus-ring: #60a5fa;
 
-  /* Financial Variance */
-  --positive: #10b981;
-  --positive-subtle: rgba(16, 185, 129, 0.1);
+  /* Financial Variance — PATCH 19+ (Hephaestus T-18): green-700 #15803d (5.13:1 ✅ WCAG 2.1 AA Normal) replaces emerald-500 #10b981 (3.36:1 ❌) */
+  --positive: #15803d;
+  --positive-subtle: rgba(21, 128, 61, 0.1);
   --negative: #f43f5e;
   --negative-subtle: rgba(244, 63, 94, 0.1);
   --warning: #f59e0b;

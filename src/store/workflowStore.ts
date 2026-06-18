@@ -11,6 +11,7 @@ import type {
   WorkflowStats,
 } from '@/engines/WorkflowEngine';
 import { WorkflowEngine } from '@/engines/WorkflowEngine';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 interface WorkflowStoreState {
   readonly engine: WorkflowEngine;
@@ -72,69 +73,69 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
         isLoading: false,
         error: null,
 
-        createWorkflow: (def) => {
+        createWorkflow: enforce(Permissions.WORKFLOW_CREATE, 'createWorkflow', (def) => {
           set((state) => {
             engine.createWorkflow(def);
             const snap = snapshot(engine);
             state.workflows = snap.workflows;
             state.stats = snap.stats;
           });
-        },
+        }),
 
-        deleteWorkflow: (id) => {
+        deleteWorkflow: enforce(Permissions.WORKFLOW_DELETE, 'deleteWorkflow', (id) => {
           set((state) => {
             engine.deleteWorkflow(id);
             const snap = snapshot(engine);
             state.workflows = snap.workflows;
             state.stats = snap.stats;
           });
-        },
+        }),
 
-        submitRequest: (workflowId, title, description, requester, amount, entity, period) => {
+        submitRequest: enforce(Permissions.WORKFLOW_UPDATE, 'submitRequest', (workflowId, title, description, requester, amount, entity, period) => {
           set((state) => {
             engine.submitRequest(workflowId, title, description, requester, amount, entity, period);
             const snap = snapshot(engine);
             state.requests = snap.requests;
             state.stats = snap.stats;
           });
-        },
+        }),
 
-        approveRequest: (requestId, approver, comment) => {
+        approveRequest: enforce(Permissions.WORKFLOW_APPROVE, 'approveRequest', (requestId, approver, comment) => {
           set((state) => {
             engine.approve(requestId, approver, comment);
             const snap = snapshot(engine);
             state.requests = snap.requests;
             state.stats = snap.stats;
           });
-        },
+        }),
 
-        rejectRequest: (requestId, approver, comment) => {
+        rejectRequest: enforce(Permissions.WORKFLOW_APPROVE, 'rejectRequest', (requestId, approver, comment) => {
           set((state) => {
             engine.reject(requestId, approver, comment);
             const snap = snapshot(engine);
             state.requests = snap.requests;
             state.stats = snap.stats;
           });
-        },
+        }),
 
-        delegateRequest: (requestId, fromUser, toUser, comment) => {
+        delegateRequest: enforce(Permissions.WORKFLOW_UPDATE, 'delegateRequest', (requestId, fromUser, toUser, comment) => {
           set((state) => {
             engine.delegate(requestId, fromUser, toUser, comment);
             const snap = snapshot(engine);
             state.requests = snap.requests;
           });
-        },
+        }),
 
-        lockRequest: (requestId, actor) => {
+        lockRequest: enforce(Permissions.WORKFLOW_APPROVE, 'lockRequest', (requestId, actor) => {
           set((state) => {
             engine.lock(requestId, actor);
             const snap = snapshot(engine);
             state.requests = snap.requests;
             state.stats = snap.stats;
           });
-        },
+        }),
 
-        bulkApprove: (requestIds, approver) => {
+        bulkApprove: enforce(Permissions.WORKFLOW_APPROVE, 'bulkApprove', (requestIds, approver) => {
           set((state) => {
             for (const id of requestIds) {
               engine.approve(id, approver, 'Bulk approved');
@@ -143,21 +144,21 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
             state.requests = snap.requests;
             state.stats = snap.stats;
           });
-        },
+        }),
 
-        addDelegation: (d) => {
+        addDelegation: enforce(Permissions.WORKFLOW_UPDATE, 'addDelegation', (d) => {
           set((state) => {
             engine.addDelegation(d);
             state.delegations = engine.getDelegations();
           });
-        },
+        }),
 
-        removeDelegation: (fromUser) => {
+        removeDelegation: enforce(Permissions.WORKFLOW_DELETE, 'removeDelegation', (fromUser) => {
           set((state) => {
             engine.removeDelegation(fromUser);
             state.delegations = engine.getDelegations();
           });
-        },
+        }),
 
         checkEscalations: () => {
           let escalated: string[] = [];

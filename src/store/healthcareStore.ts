@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface QualityMetric {
   subject: string;
@@ -91,26 +92,26 @@ export const useHealthcareStore = create<HealthcareState>()(
           },
         ],
 
-        setQualityMetrics: (metrics) =>
+        setQualityMetrics: enforce(Permissions.DASHBOARD_UPDATE, 'setQualityMetrics', (metrics) =>
           set((state) => {
             state.qualityMetrics = metrics;
-          }),
+          })),
 
-        setSavingsData: (data) =>
+        setSavingsData: enforce(Permissions.BUDGET_UPDATE, 'setSavingsData', (data) =>
           set((state) => {
             state.savingsData = data;
-          }),
+          })),
 
-        addProgram: (program) =>
+        addProgram: enforce(Permissions.BUDGET_CREATE, 'addProgram', (program) =>
           set((state) => {
             state.programs.push(program);
-          }),
+          })),
 
-        updateProgram: (id, updates) =>
+        updateProgram: enforce(Permissions.BUDGET_UPDATE, 'updateProgram', (id, updates) =>
           set((state) => {
             const idx = state.programs.findIndex((p) => p.id === id);
             if (idx !== -1) Object.assign(state.programs[idx]!, updates);
-          }),
+          })),
       })),
 
       {

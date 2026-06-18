@@ -70,7 +70,7 @@ export default defineConfig({
         theme_color: '#1e40af',
         background_color: '#0f172a',
         display: 'standalone',
-        orientation: 'landscape',
+        orientation: 'any',
         start_url: '/',
         scope: '/',
         categories: ['finance', 'business', 'productivity'],
