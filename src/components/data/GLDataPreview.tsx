@@ -67,7 +67,7 @@ export function GLDataPreview({
         className={cn(
           'p-3 rounded-lg flex items-center justify-between',
           hasErrors
-            ? 'bg-red-500/10 border border-red-500/30 text-red-500'
+            ? 'bg-red-500/10 border border-red-500/30 text-red-600'
             : 'bg-green-500/10 border border-green-500/30 text-green-500'
         )}
       >

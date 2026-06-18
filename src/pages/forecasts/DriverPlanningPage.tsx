@@ -282,7 +282,7 @@ export default function DriverPlanningPage() {
             borderColor: 'rgba(239, 68, 68, 0.3)',
           }}
         >
-          <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm">
             <div className="font-medium text-red-400">Circular Dependencies Detected</div>
             <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>

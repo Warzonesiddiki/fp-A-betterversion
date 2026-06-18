@@ -264,7 +264,7 @@ export default function DashboardBuilderPage() {
                     aria-label={`Remove ${widget.title}`}
                     data-testid={`remove-${widget.id}`}
                   >
-                    <Trash2 className="h-4 w-4 text-red-500" aria-hidden="true" />
+                    <Trash2 className="h-4 w-4 text-red-600" aria-hidden="true" />
                     <span className="sr-only">Remove</span>
                   </button>
                 </div>

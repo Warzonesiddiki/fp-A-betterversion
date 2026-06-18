@@ -153,7 +153,7 @@ export const DependencyGraph: React.FC = () => {
                     <div className="font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       Cycles Detected
                     </div>
-                    <div className="text-xl text-red-500 font-bold">
+                    <div className="text-xl text-red-600 font-bold">
                       {graphData.cycles.cycles.length}
                     </div>
                   </div>
@@ -215,7 +215,7 @@ export const DependencyGraph: React.FC = () => {
                       <td className="px-4 py-2">{Array.from(node.dependents).join(', ') || '-'}</td>
                       <td className="px-4 py-2">
                         {node.error ? (
-                          <span className="text-red-500 font-semibold">{node.error}</span>
+                          <span className="text-red-600 font-semibold">{node.error}</span>
                         ) : node.dirty ? (
                           <span className="text-yellow-600">Dirty</span>
                         ) : (

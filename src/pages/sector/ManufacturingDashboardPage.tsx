@@ -101,7 +101,7 @@ export default function ManufacturingDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Unplanned Downtime</span>
-                <span className="font-mono text-red-500">5.8%</span>
+                <span className="font-mono text-red-600">5.8%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Throughput</span>

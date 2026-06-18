@@ -305,7 +305,7 @@ export default function FairValuePage() {
                     ${(item.fairValue / 1000).toFixed(0)}K
                   </td>
                   <td
-                    className={`px-3 py-2 text-right font-mono ${item.gain >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                    className={`px-3 py-2 text-right font-mono ${item.gain >= 0 ? 'text-green-500' : 'text-red-600'}`}
                   >
                     {item.gain >= 0 ? '+' : ''}${(item.gain / 1000).toFixed(0)}K
                   </td>

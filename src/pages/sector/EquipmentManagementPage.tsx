@@ -118,7 +118,7 @@ export default function EquipmentManagementPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Downtime Hours (MTD)</span>
-                <span className="font-mono text-red-500">24.5 hrs</span>
+                <span className="font-mono text-red-600">24.5 hrs</span>
               </div>
             </div>
           </CardContent>

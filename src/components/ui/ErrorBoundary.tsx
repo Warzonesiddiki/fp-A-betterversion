@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         >
           <div className="bg-red-50 dark:bg-red-950 p-4 rounded-full mb-6">
             {' '}
-            <AlertCircle className="h-10 w-10 text-red-500" />
+            <AlertCircle className="h-10 w-10 text-red-600" />
           </div>
           <h2 className="text-xl font-bold mb-2 dark:text-gray-100">
             We&apos;ve encountered an unexpected error

@@ -335,7 +335,7 @@ export default function ThreeStatementDashboardPage() {
             </div>
             <div className="flex justify-between">
               <span>COGS</span>
-              <span className="text-red-500">
+              <span className="text-red-600">
                 {fmt(
                   incomeStatement.grossProfit > 0
                     ? incomeStatement.grossProfit - incomeStatement.netIncome > 0
@@ -351,7 +351,7 @@ export default function ThreeStatementDashboardPage() {
             </div>
             <div className="flex justify-between">
               <span>Operating Expenses</span>
-              <span className="text-red-500">
+              <span className="text-red-600">
                 {fmt(incomeStatement.grossProfit - incomeStatement.operatingIncome)}
               </span>
             </div>
@@ -361,13 +361,13 @@ export default function ThreeStatementDashboardPage() {
             </div>
             <div className="flex justify-between">
               <span>Interest</span>
-              <span className="text-red-500">
+              <span className="text-red-600">
                 {fmt(incomeStatement.interestExpense.reduce((s, e) => s + e.amount, 0))}
               </span>
             </div>
             <div className="flex justify-between">
               <span>Tax</span>
-              <span className="text-red-500">
+              <span className="text-red-600">
                 {fmt(incomeStatement.taxExpense.reduce((s, e) => s + e.amount, 0))}
               </span>
             </div>
@@ -450,7 +450,7 @@ export default function ThreeStatementDashboardPage() {
                   {link.isLinked ? (
                     <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
                   ) : (
-                    <XCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                    <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
                   )}
                   <span className="flex-1">{link.accountName}</span>
                   <span className="text-muted-foreground">{link.linkType.replace(/_/g, ' ')}</span>

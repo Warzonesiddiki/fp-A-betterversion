@@ -78,7 +78,7 @@ export default function ConstructionDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Underbilling</span>
-                <span className="font-mono text-red-500">
+                <span className="font-mono text-red-600">
                   {formatCurrency(stats.revenue * 0.03)}
                 </span>
               </div>
@@ -101,7 +101,7 @@ export default function ConstructionDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Budget Variance</span>
-                <span className="font-mono text-red-500">+3.2%</span>
+                <span className="font-mono text-red-600">+3.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Change Order %</span>

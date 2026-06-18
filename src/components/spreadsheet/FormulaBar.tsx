@@ -182,7 +182,7 @@ export function FormulaBar({
         />
         {errors.length > 0 && (
           <div
-            className="flex items-center px-2 text-red-500"
+            className="flex items-center px-2 text-red-600"
             role="alert"
             title={errors.join('; ')}
           >

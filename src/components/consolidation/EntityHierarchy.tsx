@@ -193,7 +193,7 @@ function NodeRow({
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="p-0.5 text-red-500 hover:bg-red-500/10 rounded"
+                className="p-0.5 text-red-600 hover:bg-red-500/10 rounded"
                 aria-label="Cancel"
               >
                 <X className="h-3 w-3" />
@@ -235,7 +235,7 @@ function NodeRow({
               <button
                 type="button"
                 onClick={() => onDelete?.(node.entityId)}
-                className="p-1 rounded hover:bg-red-500/10 text-red-500"
+                className="p-1 rounded hover:bg-red-500/10 text-red-600"
                 aria-label={`Delete ${node.entityName}`}
               >
                 <Trash2 className="h-3.5 w-3.5" />

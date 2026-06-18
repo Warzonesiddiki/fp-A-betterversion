@@ -34,7 +34,7 @@ export const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({
         {isOnline ? (
           <ShieldCheck className="h-4 w-4 text-green-500" />
         ) : (
-          <ShieldAlert className="h-4 w-4 text-red-500" />
+          <ShieldAlert className="h-4 w-4 text-red-600" />
         )}
         <span
           className={cn(

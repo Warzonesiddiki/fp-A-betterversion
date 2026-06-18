@@ -74,7 +74,7 @@ export default function BankingDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">NPL Ratio</span>
-                <span className="font-mono text-red-500">2.4%</span>
+                <span className="font-mono text-red-600">2.4%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Capital Adequacy Ratio</span>

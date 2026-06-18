@@ -100,11 +100,11 @@ export default function EmissionsTradingPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Shortfall</span>
-                <span className="font-mono text-red-500">2,500 tCO2e</span>
+                <span className="font-mono text-red-600">2,500 tCO2e</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Estimated Penalty</span>
-                <span className="font-mono text-red-500">$75,000</span>
+                <span className="font-mono text-red-600">$75,000</span>
               </div>
             </div>
           </CardContent>

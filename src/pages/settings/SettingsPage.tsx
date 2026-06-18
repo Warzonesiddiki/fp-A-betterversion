@@ -32,7 +32,7 @@ export default function SettingsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
         <div className="bg-red-500/10 p-4 rounded-full mb-4">
-          <ShieldCheck className="w-12 h-12 text-red-500" />
+          <ShieldCheck className="w-12 h-12 text-red-600" />
         </div>
         <h2 className="text-xl font-bold text-white mb-2">Access Restricted</h2>
         <p className="text-slate-400 max-w-sm">
@@ -341,7 +341,7 @@ export default function SettingsPage() {
                 </div>
                 <Button
                   variant="ghost"
-                  className="text-red-500 hover:bg-red-500/10 hover:text-red-400 border border-red-500/20"
+                  className="text-red-600 hover:bg-red-500/10 hover:text-red-400 border border-red-500/20"
                 >
                   Reset Application
                 </Button>

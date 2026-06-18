@@ -222,7 +222,7 @@ export function WidgetLibrary({
                   {/* Remove button */}
                   <button
                     onClick={() => removeWidget(widget.id)}
-                    className="w-6 h-6 rounded flex items-center justify-center text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                    className="w-6 h-6 rounded flex items-center justify-center text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
                     title={`Remove ${def?.label}`}
                   >
                     x

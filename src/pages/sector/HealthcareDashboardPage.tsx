@@ -76,7 +76,7 @@ export default function HealthcareDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Readmission Rate</span>
-                <span className="font-mono text-red-500">8.7%</span>
+                <span className="font-mono text-red-600">8.7%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Case Mix Index</span>
@@ -102,7 +102,7 @@ export default function HealthcareDashboardPage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Operating Margin</span>
                 <span
-                  className={`font-mono ${stats.margin > 0 ? 'text-green-500' : 'text-red-500'}`}
+                  className={`font-mono ${stats.margin > 0 ? 'text-green-500' : 'text-red-600'}`}
                 >
                   {stats.margin.toFixed(1)}%
                 </span>

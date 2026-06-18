@@ -52,8 +52,8 @@ export const ChartWrapper = memo(function ChartWrapper({
         )}
         {error && !loading && (
           <div className="flex flex-col items-center justify-center text-center" style={{ height }}>
-            <AlertCircle className="h-6 w-6 text-red-400 dark:text-red-500 mb-2" />
-            <p className="text-red-400 dark:text-red-500 text-sm mb-3">{error}</p>
+            <AlertCircle className="h-6 w-6 text-red-400 dark:text-red-600 mb-2" />
+            <p className="text-red-400 dark:text-red-600 text-sm mb-3">{error}</p>
             {onRetry && (
               <Button size="sm" variant="secondary" onClick={onRetry}>
                 Retry

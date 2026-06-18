@@ -40,7 +40,7 @@ export function GaugeChart({
   if (error) {
     return (
       <div className={className} style={{ width, height }}>
-        <div className="flex items-center justify-center h-full text-red-500 text-sm">{error}</div>
+        <div className="flex items-center justify-center h-full text-red-600 text-sm">{error}</div>
       </div>
     );
   }

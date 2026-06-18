@@ -347,7 +347,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
             <button
               type="button"
               onClick={() => removeTarget(target.id)}
-              className="p-1 rounded text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+              className="p-1 rounded text-slate-500 hover:text-red-600 hover:bg-red-500/10 transition-colors"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
@@ -359,7 +359,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
           <div
             className={cn(
               'text-xs font-medium',
-              percentageValid ? 'text-green-500' : 'text-red-500'
+              percentageValid ? 'text-green-500' : 'text-red-600'
             )}
           >
             Total: {percentageTotal.toFixed(2)}% {percentageValid ? '✓' : '(must equal 100%)'}

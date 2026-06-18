@@ -279,7 +279,7 @@ export function GovernmentDashboardPage() {
                             ? 'text-green-500'
                             : dept.pct >= 90
                               ? 'text-yellow-500'
-                              : 'text-red-500'
+                              : 'text-red-600'
                         }
                       >
                         {dept.pct}%
@@ -338,7 +338,7 @@ export function GovernmentDashboardPage() {
                       ${row.fy2025.toLocaleString()}M
                     </td>
                     <td className="py-2 text-right font-mono">
-                      <span className={row.change >= 0 ? 'text-green-500' : 'text-red-500'}>
+                      <span className={row.change >= 0 ? 'text-green-500' : 'text-red-600'}>
                         {row.change >= 0 ? '+' : ''}
                         {row.change}%
                       </span>

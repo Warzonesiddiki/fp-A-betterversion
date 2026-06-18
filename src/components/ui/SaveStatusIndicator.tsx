@@ -19,7 +19,7 @@ export function SaveStatusIndicator({ data, onSave, delay = 3000 }: SaveStatusIn
       className: 'text-blue-500',
     },
     saved: { icon: <CheckCircle size={14} />, text: 'Saved', className: 'fin-positive' },
-    error: { icon: <AlertCircle size={14} />, text: 'Save failed', className: 'text-red-500' },
+    error: { icon: <AlertCircle size={14} />, text: 'Save failed', className: 'text-red-600' },
   };
 
   const { icon, text, className } = config[status];

@@ -172,7 +172,7 @@ export default function ConnectorSettingsPage() {
                   {testResults[conn.id] === 'success' && (
                     <CheckCircle className="h-4 w-4 text-green-500" />
                   )}
-                  {testResults[conn.id] === 'error' && <XCircle className="h-4 w-4 text-red-500" />}
+                  {testResults[conn.id] === 'error' && <XCircle className="h-4 w-4 text-red-600" />}
                   <Button
                     variant="outline"
                     size="sm"

@@ -95,12 +95,12 @@ export function GLColumnMapper({ csvColumns, mappings, onMap, onAutoMap }: GLCol
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-bold text-slate-200">{f.label}</span>
-                  {f.required && <span className="text-red-500 text-xs">*Required</span>}
+                  {f.required && <span className="text-red-600 text-xs">*Required</span>}
                 </div>
                 {isMapped ? (
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
                 ) : (
-                  f.required && <AlertCircle className="h-4 w-4 text-red-500" />
+                  f.required && <AlertCircle className="h-4 w-4 text-red-600" />
                 )}
               </div>
               <Select

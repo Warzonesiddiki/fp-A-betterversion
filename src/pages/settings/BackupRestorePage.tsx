@@ -232,7 +232,7 @@ export default function BackupRestorePage() {
           <Button
             variant="ghost"
             onClick={handleReset}
-            className="text-red-500 hover:bg-red-500/10 hover:text-red-400 border border-red-500/20"
+            className="text-red-600 hover:bg-red-500/10 hover:text-red-400 border border-red-500/20"
             aria-label="Reset application - this will delete all local data"
           >
             <Trash2 className="w-4 h-4 mr-2" />

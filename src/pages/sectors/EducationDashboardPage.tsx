@@ -307,7 +307,7 @@ export function EducationDashboardPage() {
                         <td className="py-2 text-right font-mono">{fmt(r.budget)}</td>
                         <td className="py-2 text-right font-mono">{fmt(r.actual)}</td>
                         <td
-                          className={`py-2 text-right font-mono font-semibold ${fav ? 'text-green-500' : 'text-red-500'}`}
+                          className={`py-2 text-right font-mono font-semibold ${fav ? 'text-green-500' : 'text-red-600'}`}
                         >
                           {v > 0 ? '+' : ''}
                           {pct}%

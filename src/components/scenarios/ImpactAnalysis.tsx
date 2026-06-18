@@ -185,7 +185,7 @@ export function ImpactAnalysis({
                   {isPositive ? (
                     <TrendingUp className="h-4 w-4 text-green-500" />
                   ) : (
-                    <TrendingDown className="h-4 w-4 text-red-500" />
+                    <TrendingDown className="h-4 w-4 text-red-600" />
                   )}
                 </div>
                 <div
@@ -292,7 +292,7 @@ export function ImpactAnalysis({
                                   ) : change.delta === 0 ? (
                                     <Minus className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                                   ) : (
-                                    <ArrowDownRight className="h-3 w-3 text-red-500" />
+                                    <ArrowDownRight className="h-3 w-3 text-red-600" />
                                   )}
                                   <span
                                     className={`text-xs ${

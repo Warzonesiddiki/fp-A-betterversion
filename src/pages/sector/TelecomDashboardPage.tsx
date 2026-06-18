@@ -84,7 +84,7 @@ export function TelecomDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Churn Rate</span>
-                <span className="font-mono text-red-500">1.8%</span>
+                <span className="font-mono text-red-600">1.8%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Subscriber Growth</span>

@@ -400,7 +400,7 @@ export function AllocationRuleBuilder({
               <button
                 type="button"
                 onClick={() => removeTarget(target.id)}
-                className="p-1 rounded text-slate-500 hover:text-red-500 hover:bg-red-500/10"
+                className="p-1 rounded text-slate-500 hover:text-red-600 hover:bg-red-500/10"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -408,7 +408,7 @@ export function AllocationRuleBuilder({
           ))}
           {method === 'direct' && targets.length > 0 && (
             <div
-              className={cn('text-xs font-medium', pctValid ? 'text-green-500' : 'text-red-500')}
+              className={cn('text-xs font-medium', pctValid ? 'text-green-500' : 'text-red-600')}
             >
               Total: {pctTotal.toFixed(2)}% {pctValid ? '\u2713' : '(must equal 100%)'}
             </div>

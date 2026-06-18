@@ -111,9 +111,9 @@ export function FileUploader({
       {progress.status === 'error' && (
         <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
           {' '}
-          <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm font-bold text-red-500">Import Failed</p>
+            <p className="text-sm font-bold text-red-600">Import Failed</p>
             <p className="text-xs text-red-400 mt-1">{progress.message}</p>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function FileUploader({
         >
           <div className="flex items-center gap-2 mb-2">
             {hasErrors ? (
-              <AlertCircle className="h-5 w-5 text-red-500" />
+              <AlertCircle className="h-5 w-5 text-red-600" />
             ) : hasWarnings ? (
               <AlertCircle className="h-5 w-5 text-yellow-500" />
             ) : (

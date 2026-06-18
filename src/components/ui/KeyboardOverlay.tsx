@@ -410,7 +410,7 @@ export function KeyboardOverlay({ isOpen, onClose }: KeyboardOverlayProps) {
                             className="ml-1 p-0.5 rounded opacity-0 group-hover:opacity-100 hover:bg-red-500/10 transition-opacity"
                             title="Remove custom shortcut"
                           >
-                            <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                            <Trash2 className="w-3.5 h-3.5 text-red-600" />
                           </button>
                         )}
                       </div>

@@ -259,7 +259,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
             {lastCascadeResult.totalImpact >= 0 ? (
               <TrendingUp className="w-3 h-3 text-green-500" />
             ) : (
-              <TrendingDown className="w-3 h-3 text-red-500" />
+              <TrendingDown className="w-3 h-3 text-red-600" />
             )}
             <span>
               Last cascade: {lastCascadeResult.affectedCells.length} cells in{' '}

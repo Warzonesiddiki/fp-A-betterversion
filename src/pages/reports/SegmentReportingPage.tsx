@@ -207,7 +207,7 @@ export default function SegmentReportingPage() {
                     ${(seg.expenses / 1000).toFixed(0)}K
                   </td>
                   <td
-                    className={`px-3 py-2 text-right font-mono ${seg.netIncome >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                    className={`px-3 py-2 text-right font-mono ${seg.netIncome >= 0 ? 'text-green-500' : 'text-red-600'}`}
                   >
                     ${Math.abs(seg.netIncome / 1000).toFixed(0)}K
                   </td>

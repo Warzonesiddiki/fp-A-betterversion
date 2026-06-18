@@ -193,7 +193,7 @@ export default function ConsolidationDashboard() {
     );
   if (error)
     return (
-      <div className="p-12 text-center text-red-500">
+      <div className="p-12 text-center text-red-600">
         {error}{' '}
         <Button onClick={() => setError(null)} className="ml-4">
           Retry
@@ -279,7 +279,7 @@ export default function ConsolidationDashboard() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-red-500 border-red-500/20 hover:bg-red-500/10"
+                          className="text-red-600 border-red-500/20 hover:bg-red-500/10"
                           onClick={() => handleDelete(entity)}
                         >
                           <Trash2 className="h-3 w-3" />

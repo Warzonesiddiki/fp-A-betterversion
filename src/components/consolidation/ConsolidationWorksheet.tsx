@@ -97,7 +97,7 @@ export function ConsolidationWorksheet({
             </span>
           </div>
           {validation.errors.length > 0 && (
-            <span className="text-xs text-red-500">{validation.errors.length} error(s)</span>
+            <span className="text-xs text-red-600">{validation.errors.length} error(s)</span>
           )}
         </CardContent>
       </Card>
@@ -543,7 +543,7 @@ function TR({ l, v, neg }: { l: string; v: number; neg?: boolean }) {
   return (
     <tr className="hover:bg-[var(--bg-muted)]">
       <td className="p-2">{l}</td>
-      <td className={cn('p-2 text-right font-mono', neg && 'text-red-500')}>{fmt(v)}</td>
+      <td className={cn('p-2 text-right font-mono', neg && 'text-red-600')}>{fmt(v)}</td>
     </tr>
   );
 }

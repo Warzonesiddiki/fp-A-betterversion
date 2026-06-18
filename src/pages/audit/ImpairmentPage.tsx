@@ -182,7 +182,7 @@ export default function ImpairmentPage() {
                     ${(asset.recoverableAmount / 1000).toFixed(0)}K
                   </td>
                   <td
-                    className={`px-3 py-2 text-right font-mono ${asset.impairmentLoss > 0 ? 'text-red-500' : 'text-green-500'}`}
+                    className={`px-3 py-2 text-right font-mono ${asset.impairmentLoss > 0 ? 'text-red-600' : 'text-green-500'}`}
                   >
                     {asset.impairmentLoss > 0
                       ? `($${(asset.impairmentLoss / 1000).toFixed(0)}K)`

@@ -95,7 +95,7 @@ export class RouteGroupErrorBoundary extends Component<Props, State> {
           aria-live="assertive"
         >
           <div className="bg-red-50 dark:bg-red-950 p-4 rounded-full mb-5">
-            <Icon className="h-10 w-10 text-red-500" aria-hidden="true" />
+            <Icon className="h-10 w-10 text-red-600" aria-hidden="true" />
           </div>
           <h2 className="text-lg font-bold mb-1 dark:text-gray-100">{domain.title} Error</h2>
           <p className="text-sm text-[var(--text-muted)] mb-2 max-w-md">

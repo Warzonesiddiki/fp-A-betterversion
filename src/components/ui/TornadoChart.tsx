@@ -75,7 +75,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
           className
         )}
       >
-        <div className="flex items-center justify-center h-48 text-red-500 text-sm">{error}</div>
+        <div className="flex items-center justify-center h-48 text-red-600 text-sm">{error}</div>
       </div>
     );
   }

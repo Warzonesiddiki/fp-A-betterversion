@@ -99,7 +99,7 @@ export default function RetailDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Inventory Shrink</span>
-                <span className="font-mono text-red-500">1.4%</span>
+                <span className="font-mono text-red-600">1.4%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Sales per Sq. Ft.</span>

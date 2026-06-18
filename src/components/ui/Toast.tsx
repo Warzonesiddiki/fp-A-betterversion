@@ -24,7 +24,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
       border: 'border-green-100 dark:border-green-900',
     },
     error: {
-      icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+      icon: <AlertCircle className="h-5 w-5 text-red-600" />,
       bg: 'bg-red-50 dark:bg-red-950',
       border: 'border-red-100 dark:border-red-900',
     },
