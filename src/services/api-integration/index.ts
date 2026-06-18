@@ -24,3 +24,35 @@ export type {
   GhostShaScanResult,
   GhostShaBulkValidationResult,
 } from './GhostShaValidator';
+
+// PATCH 21 — CONNECTOR BARREL EXPORTS (Prometheus T-3.15/T-4.0, 2026-06-18)
+// ERP / Accounting / Banking connectors
+export { NetSuiteConnector } from './NetSuiteConnector';
+export type { NetSuiteAuthConfig } from './NetSuiteConnector';
+
+export { QuickBooksConnector } from './QuickBooksConnector';
+
+export { PlaidConnector } from './PlaidConnector';
+export type { PlaidAuthConfig } from './PlaidConnector';
+
+export { XeroConnector } from './XeroConnector';
+
+// Connector framework
+export { BaseConnector } from './BaseConnector';
+export { ConnectorRegistry } from './ConnectorRegistry';
+export type { ConnectorFactory } from './ConnectorRegistry';
+
+// Shared connector types
+export type {
+  ConnectorConfig,
+  ConnectorAuthConfig,
+  ConnectorHealth,
+  ExternalAccount,
+  ExternalTransaction,
+  ExternalInvoice,
+  ExternalInvoiceLineItem,
+  ExternalBudget,
+  ExternalBudgetEntry,
+  PaginatedResponse,
+  PaginationParams,
+} from './types';
