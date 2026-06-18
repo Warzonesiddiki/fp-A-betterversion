@@ -255,7 +255,7 @@ export default function ClinicalTrialCostPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Beaker className="h-5 w-5 text-purple-500" />
+              <Beaker className="h-5 w-5 text-purple-600" />
               <CardTitle>Phase Breakdown</CardTitle>
             </div>
             <CardDescription>Cost distribution by trial stage</CardDescription>

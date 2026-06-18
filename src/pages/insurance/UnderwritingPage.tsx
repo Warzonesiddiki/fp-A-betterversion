@@ -235,7 +235,7 @@ export default function UnderwritingPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Percent className="h-5 w-5 text-purple-500" />
+              <Percent className="h-5 w-5 text-purple-600" />
               <CardTitle>Loss Pick Analysis</CardTitle>
             </div>
             <CardDescription>Selected picks vs. ultimate emergence</CardDescription>

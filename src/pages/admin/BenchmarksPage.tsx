@@ -164,7 +164,7 @@ const BenchmarksPage: React.FC = () => {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Card className="p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-purple-500" />
+            <Cpu className="w-5 h-5 text-purple-600" />
             AI Engine Latency Trends (ms)
           </h2>
           <div className="h-[300px]">
