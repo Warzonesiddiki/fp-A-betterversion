@@ -46,6 +46,19 @@ export { SalesforceConnector } from './SalesforceConnector';
 // ERP for general ledger integration (chart of accounts + GL entries + AP/AR)
 export { SageConnector, type SageAuthConfig } from './SageConnector';
 
+// PATCH 24 — DYNAMICS 365 CONNECTOR (Prometheus T-3.18/T-4.7, 2026-06-18)
+// Dataverse / CRM integration for accounts + invoices + products + opportunities
+export {
+  DynamicsConnector,
+  type DataverseAuthConfig,
+  type DynamicsAccount,
+  type DynamicsContact,
+  type DynamicsInvoice,
+  type DynamicsProduct,
+  type DynamicsOpportunity,
+  type DataverseODataEnvelope,
+} from './DynamicsConnector';
+
 // Connector framework
 export { BaseConnector } from './BaseConnector';
 export { ConnectorRegistry } from './ConnectorRegistry';
