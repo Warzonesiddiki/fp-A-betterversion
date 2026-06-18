@@ -37,6 +37,10 @@ export type { PlaidAuthConfig } from './PlaidConnector';
 
 export { XeroConnector } from './XeroConnector';
 
+// PATCH 22 — SALESFORCE CONNECTOR (Prometheus T-3.16/T-4.5, 2026-06-18)
+// CRM for revenue forecast pipeline integration
+export { SalesforceConnector } from './SalesforceConnector';
+
 // Connector framework
 export { BaseConnector } from './BaseConnector';
 export { ConnectorRegistry } from './ConnectorRegistry';
