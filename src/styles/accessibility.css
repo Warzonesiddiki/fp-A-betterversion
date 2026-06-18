@@ -69,7 +69,7 @@
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-primary, #0ea5e9);
+  outline: 2px solid var(--accent-primary, #0284c7);
   outline-offset: 2px;
 }
 
@@ -78,7 +78,7 @@
   position: absolute;
   top: -40px;
   left: 0;
-  background: var(--accent-primary, #0ea5e9);
+  background: var(--accent-primary, #0284c7);
   color: white;
   padding: 8px 16px;
   z-index: 10000;
