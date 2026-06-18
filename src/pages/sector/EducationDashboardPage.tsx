@@ -80,7 +80,7 @@ export function EducationDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Enrollment Rate</span>
-                <span className="font-mono text-green-500">94.2%</span>
+                <span className="font-mono text-green-600">94.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Student Retention Rate</span>
@@ -88,7 +88,7 @@ export function EducationDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Graduation Rate</span>
-                <span className="font-mono text-green-500">76.5%</span>
+                <span className="font-mono text-green-600">76.5%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Faculty to Student Ratio</span>
@@ -109,11 +109,11 @@ export function EducationDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Grant Utilization</span>
-                <span className="font-mono text-green-500">87.3%</span>
+                <span className="font-mono text-green-600">87.3%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Endowment Return</span>
-                <span className="font-mono text-green-500">8.2%</span>
+                <span className="font-mono text-green-600">8.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Cost Per Student</span>

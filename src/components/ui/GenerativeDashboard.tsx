@@ -68,7 +68,7 @@ function DashboardMetric({
       <div className="text-sm text-muted-foreground">{label}</div>
       {trend && (
         <div
-          className={`text-xs ${trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-600' : 'text-[var(--text-muted)]'}`}
+          className={`text-xs ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-[var(--text-muted)]'}`}
         >
           {trend === 'up' ? '\u2191' : trend === 'down' ? '\u2193' : '\u2192'}
         </div>

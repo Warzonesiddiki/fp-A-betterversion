@@ -70,7 +70,7 @@ export default function RetailDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Same-Store Sales Growth</span>
-                <span className="font-mono text-green-500">4.2%</span>
+                <span className="font-mono text-green-600">4.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Conversion Rate</span>
@@ -95,7 +95,7 @@ export default function RetailDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">GMROI</span>
-                <span className="font-mono text-green-500">2.3x</span>
+                <span className="font-mono text-green-600">2.3x</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Inventory Shrink</span>

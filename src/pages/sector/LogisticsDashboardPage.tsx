@@ -86,7 +86,7 @@ export function LogisticsDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Fleet Utilization</span>
-                <span className="font-mono text-green-500">82.6%</span>
+                <span className="font-mono text-green-600">82.6%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Cost Per Mile</span>
@@ -94,7 +94,7 @@ export function LogisticsDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">On-Time Delivery Rate</span>
-                <span className="font-mono text-green-500">96.4%</span>
+                <span className="font-mono text-green-600">96.4%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Empty Miles Percentage</span>
@@ -123,7 +123,7 @@ export function LogisticsDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Safety Incident Rate</span>
-                <span className="font-mono text-green-500">0.018</span>
+                <span className="font-mono text-green-600">0.018</span>
               </div>
             </div>
           </CardContent>

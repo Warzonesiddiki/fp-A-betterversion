@@ -72,7 +72,7 @@ export default function RealEstateDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">DSCR</span>
-                <span className="font-mono text-green-500">1.35x</span>
+                <span className="font-mono text-green-600">1.35x</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Occupancy Rate</span>
@@ -101,7 +101,7 @@ export default function RealEstateDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Cash-on-Cash Return</span>
-                <span className="font-mono text-green-500">8.2%</span>
+                <span className="font-mono text-green-600">8.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Debt Yield</span>

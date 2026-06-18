@@ -170,7 +170,7 @@ export default function ConnectorSettingsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   {testResults[conn.id] === 'success' && (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <CheckCircle className="h-4 w-4 text-green-600" />
                   )}
                   {testResults[conn.id] === 'error' && <XCircle className="h-4 w-4 text-red-600" />}
                   <Button

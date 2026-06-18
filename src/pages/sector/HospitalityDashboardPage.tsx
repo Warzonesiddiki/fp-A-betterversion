@@ -76,11 +76,11 @@ export default function HospitalityDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Occupancy Rate</span>
-                <span className="font-mono text-green-500">80%</span>
+                <span className="font-mono text-green-600">80%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Guest Satisfaction</span>
-                <span className="font-mono text-green-500">8.7/10</span>
+                <span className="font-mono text-green-600">8.7/10</span>
               </div>
             </div>
           </CardContent>

@@ -75,11 +75,11 @@ export function GovernmentDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Budget Utilization</span>
-                <span className="font-mono text-green-500">93.7%</span>
+                <span className="font-mono text-green-600">93.7%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Grant Compliance Rate</span>
-                <span className="font-mono text-green-500">96.2%</span>
+                <span className="font-mono text-green-600">96.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Procurement Cycle (Days)</span>
@@ -87,7 +87,7 @@ export function GovernmentDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Compliance Audit Score</span>
-                <span className="font-mono text-green-500">98.5%</span>
+                <span className="font-mono text-green-600">98.5%</span>
               </div>
             </div>
           </CardContent>

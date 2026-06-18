@@ -98,7 +98,7 @@ export function GLColumnMapper({ csvColumns, mappings, onMap, onAutoMap }: GLCol
                   {f.required && <span className="text-red-600 text-xs">*Required</span>}
                 </div>
                 {isMapped ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
                 ) : (
                   f.required && <AlertCircle className="h-4 w-4 text-red-600" />
                 )}

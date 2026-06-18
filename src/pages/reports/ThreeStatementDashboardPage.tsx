@@ -304,7 +304,7 @@ export default function ThreeStatementDashboardPage() {
               value={result?.balanceCheck.isBalanced ? 'Balanced' : 'Imbalanced'}
               icon={
                 result?.balanceCheck.isBalanced ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-green-600" />
                 ) : (
                   <AlertTriangle className="h-4 w-4 text-yellow-500" />
                 )
@@ -448,7 +448,7 @@ export default function ThreeStatementDashboardPage() {
               {result.linkedAccounts.map((link, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
                   {link.isLinked ? (
-                    <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                   ) : (
                     <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
                   )}

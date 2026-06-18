@@ -72,7 +72,7 @@ export default function TechnologyDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Net Revenue Retention</span>
-                <span className="font-mono text-green-500">115%</span>
+                <span className="font-mono text-green-600">115%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Logo Churn Rate</span>
@@ -80,7 +80,7 @@ export default function TechnologyDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Gross Margin</span>
-                <span className="font-mono text-green-500">72%</span>
+                <span className="font-mono text-green-600">72%</span>
               </div>
             </div>
           </CardContent>
@@ -93,7 +93,7 @@ export default function TechnologyDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">LTV/CAC Ratio</span>
-                <span className="font-mono text-green-500">2.8x</span>
+                <span className="font-mono text-green-600">2.8x</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Magic Number</span>
@@ -105,7 +105,7 @@ export default function TechnologyDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Rule of 40</span>
-                <span className="font-mono text-green-500">38</span>
+                <span className="font-mono text-green-600">38</span>
               </div>
             </div>
           </CardContent>

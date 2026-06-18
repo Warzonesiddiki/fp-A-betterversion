@@ -72,7 +72,7 @@ export default function ConstructionDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Overbilling</span>
-                <span className="font-mono text-green-500">
+                <span className="font-mono text-green-600">
                   {formatCurrency(stats.revenue * 0.08)}
                 </span>
               </div>
@@ -109,7 +109,7 @@ export default function ConstructionDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Safety Incident Rate</span>
-                <span className="font-mono text-green-500">0.8</span>
+                <span className="font-mono text-green-600">0.8</span>
               </div>
             </div>
           </CardContent>

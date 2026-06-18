@@ -340,7 +340,7 @@ export function AllocationPreview({
             </button>
           </>
         ) : (
-          <div className="flex items-center gap-1.5 text-xs text-green-500 font-medium">
+          <div className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
             <Check className="h-4 w-4" /> Accepted - {journalEntries.length} journal entries posted
           </div>
         )}

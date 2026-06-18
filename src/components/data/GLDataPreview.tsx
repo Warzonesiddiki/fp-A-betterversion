@@ -68,7 +68,7 @@ export function GLDataPreview({
           'p-3 rounded-lg flex items-center justify-between',
           hasErrors
             ? 'bg-red-500/10 border border-red-500/30 text-red-600'
-            : 'bg-green-500/10 border border-green-500/30 text-green-500'
+            : 'bg-green-500/10 border border-green-500/30 text-green-600'
         )}
       >
         <div className="flex items-center space-x-2">
@@ -113,7 +113,7 @@ export function GLDataPreview({
                   {errors.length > 0 ? (
                     <span className="text-red-400 text-xs font-medium">{errors.join(', ')}</span>
                   ) : (
-                    <span className="text-green-500 text-xs font-medium">Valid</span>
+                    <span className="text-green-600 text-xs font-medium">Valid</span>
                   )}
                 </td>
               </tr>

@@ -80,7 +80,7 @@ export default function AgricultureDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Equipment Utilization</span>
-                <span className="font-mono text-green-500">78%</span>
+                <span className="font-mono text-green-600">78%</span>
               </div>
             </div>
           </CardContent>
@@ -101,7 +101,7 @@ export default function AgricultureDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Gross Margin</span>
-                <span className="font-mono text-green-500">33%</span>
+                <span className="font-mono text-green-600">33%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Active Farms</span>

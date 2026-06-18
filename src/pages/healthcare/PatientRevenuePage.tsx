@@ -164,7 +164,7 @@ export default function PatientRevenuePage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <PieChartIcon className="h-5 w-5 text-green-500" />
+              <PieChartIcon className="h-5 w-5 text-green-600" />
               <CardTitle>Net Revenue by Payer</CardTitle>
             </div>
             <CardDescription>Strategic distribution of reimbursement sources</CardDescription>

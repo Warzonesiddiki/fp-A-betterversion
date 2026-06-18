@@ -359,7 +359,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
           <div
             className={cn(
               'text-xs font-medium',
-              percentageValid ? 'text-green-500' : 'text-red-600'
+              percentageValid ? 'text-green-600' : 'text-red-600'
             )}
           >
             Total: {percentageTotal.toFixed(2)}% {percentageValid ? '✓' : '(must equal 100%)'}

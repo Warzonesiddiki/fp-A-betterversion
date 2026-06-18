@@ -408,7 +408,7 @@ export function AllocationRuleBuilder({
           ))}
           {method === 'direct' && targets.length > 0 && (
             <div
-              className={cn('text-xs font-medium', pctValid ? 'text-green-500' : 'text-red-600')}
+              className={cn('text-xs font-medium', pctValid ? 'text-green-600' : 'text-red-600')}
             >
               Total: {pctTotal.toFixed(2)}% {pctValid ? '\u2713' : '(must equal 100%)'}
             </div>

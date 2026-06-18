@@ -75,7 +75,7 @@ export default function EmissionsTradingPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Credits Available</span>
-                <span className="font-mono text-green-500">4,300 tCO2e</span>
+                <span className="font-mono text-green-600">4,300 tCO2e</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Avg Price per Credit</span>
@@ -96,7 +96,7 @@ export default function EmissionsTradingPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Compliance Rate</span>
-                <span className="font-mono text-green-500">83.3%</span>
+                <span className="font-mono text-green-600">83.3%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Shortfall</span>

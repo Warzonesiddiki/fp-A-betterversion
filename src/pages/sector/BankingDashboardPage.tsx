@@ -78,7 +78,7 @@ export default function BankingDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Capital Adequacy Ratio</span>
-                <span className="font-mono text-green-500">14.2%</span>
+                <span className="font-mono text-green-600">14.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Loan-to-Deposit Ratio</span>
@@ -86,7 +86,7 @@ export default function BankingDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Net Interest Margin</span>
-                <span className="font-mono text-green-500">3.2%</span>
+                <span className="font-mono text-green-600">3.2%</span>
               </div>
             </div>
           </CardContent>
@@ -111,7 +111,7 @@ export default function BankingDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">ROE</span>
-                <span className="font-mono text-green-500">12.8%</span>
+                <span className="font-mono text-green-600">12.8%</span>
               </div>
             </div>
           </CardContent>

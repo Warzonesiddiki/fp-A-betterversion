@@ -137,7 +137,7 @@ export function FileUploader({
             ) : hasWarnings ? (
               <AlertCircle className="h-5 w-5 text-yellow-500" />
             ) : (
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
             )}
             <span className="font-bold text-sm">
               {result.rowCount} rows, {result.columnCount} columns
@@ -203,7 +203,7 @@ export function FileUploader({
                     <span className="text-[var(--text-secondary)]">
                       {snap.rowCount} rows &middot; {snap.columns.length} cols
                     </span>
-                    {snap.applied && <span className="text-green-500 font-bold">Applied</span>}
+                    {snap.applied && <span className="text-green-600 font-bold">Applied</span>}
                   </div>
                   {!snap.applied && (
                     <Button

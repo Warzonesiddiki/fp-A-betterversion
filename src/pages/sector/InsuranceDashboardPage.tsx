@@ -84,7 +84,7 @@ export default function InsuranceDashboardPage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Loss Ratio</span>
                 <span
-                  className={`font-mono ${stats.lossRatio < 65 ? 'text-green-500' : 'text-red-600'}`}
+                  className={`font-mono ${stats.lossRatio < 65 ? 'text-green-600' : 'text-red-600'}`}
                 >
                   {stats.lossRatio.toFixed(1)}%
                 </span>
@@ -96,14 +96,14 @@ export default function InsuranceDashboardPage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Combined Ratio</span>
                 <span
-                  className={`font-mono ${stats.combinedRatio < 100 ? 'text-green-500' : 'text-red-600'}`}
+                  className={`font-mono ${stats.combinedRatio < 100 ? 'text-green-600' : 'text-red-600'}`}
                 >
                   {stats.combinedRatio.toFixed(1)}%
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Retention Rate</span>
-                <span className="font-mono text-green-500">92.4%</span>
+                <span className="font-mono text-green-600">92.4%</span>
               </div>
             </div>
           </CardContent>

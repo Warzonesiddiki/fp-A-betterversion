@@ -102,7 +102,7 @@ export default function HealthcareDashboardPage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Operating Margin</span>
                 <span
-                  className={`font-mono ${stats.margin > 0 ? 'text-green-500' : 'text-red-600'}`}
+                  className={`font-mono ${stats.margin > 0 ? 'text-green-600' : 'text-red-600'}`}
                 >
                   {stats.margin.toFixed(1)}%
                 </span>

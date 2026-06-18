@@ -260,7 +260,7 @@ export function LogisticsDashboardPage() {
                     <span className="font-mono text-sm" style={{ color: 'var(--text-primary)' }}>
                       ${(lane.revenue / 1_000_000).toFixed(2)}M
                     </span>
-                    <span className="text-xs ml-2 text-green-500">{lane.margin}%</span>
+                    <span className="text-xs ml-2 text-green-600">{lane.margin}%</span>
                   </div>
                 </div>
               ))}

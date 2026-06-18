@@ -183,7 +183,7 @@ export function ImpactAnalysis({
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-[var(--text-primary)]">{s.name}</span>
                   {isPositive ? (
-                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <TrendingUp className="h-4 w-4 text-green-600" />
                   ) : (
                     <TrendingDown className="h-4 w-4 text-red-600" />
                   )}
@@ -288,7 +288,7 @@ export function ImpactAnalysis({
                               <td className="py-3 px-3 text-right">
                                 <div className="flex items-center justify-end gap-1">
                                   {change.isFavorable ? (
-                                    <ArrowUpRight className="h-3 w-3 text-green-500" />
+                                    <ArrowUpRight className="h-3 w-3 text-green-600" />
                                   ) : change.delta === 0 ? (
                                     <Minus className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                                   ) : (

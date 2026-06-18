@@ -235,7 +235,7 @@ export default function ValueBasedCarePage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-green-500" />
+              <BarChart3 className="h-5 w-5 text-green-600" />
               <CardTitle>Bundled Payment Performance</CardTitle>
             </div>
             <CardDescription>Target price vs. actual episode cost</CardDescription>

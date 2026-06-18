@@ -113,7 +113,7 @@ export default function EnergyDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Renewable %</span>
-                <span className="font-mono text-green-500">18.5%</span>
+                <span className="font-mono text-green-600">18.5%</span>
               </div>
             </div>
           </CardContent>

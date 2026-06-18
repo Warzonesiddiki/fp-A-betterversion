@@ -88,7 +88,7 @@ export function TelecomDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Subscriber Growth</span>
-                <span className="font-mono text-green-500">+3.2%</span>
+                <span className="font-mono text-green-600">+3.2%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Subscriber Acquisition Cost</span>
@@ -119,7 +119,7 @@ export function TelecomDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">EBITDA Per User</span>
-                <span className="font-mono text-green-500">$11.40</span>
+                <span className="font-mono text-green-600">$11.40</span>
               </div>
             </div>
           </CardContent>

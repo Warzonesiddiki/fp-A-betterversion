@@ -53,7 +53,7 @@ export function StepDownConfigPanel({
               <span
                 className={cn(
                   'text-[10px] font-medium',
-                  Math.abs(total - 100) < 0.01 ? 'text-green-500' : 'text-red-600'
+                  Math.abs(total - 100) < 0.01 ? 'text-green-600' : 'text-red-600'
                 )}
               >
                 {total.toFixed(1)}%

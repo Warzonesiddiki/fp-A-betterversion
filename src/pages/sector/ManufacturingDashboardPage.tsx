@@ -68,11 +68,11 @@ export default function ManufacturingDashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">OEE</span>
-                <span className="font-mono text-green-500">82%</span>
+                <span className="font-mono text-green-600">82%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Scrap Rate</span>
-                <span className="font-mono text-green-500">2.3%</span>
+                <span className="font-mono text-green-600">2.3%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Cycle Time</span>
@@ -80,7 +80,7 @@ export default function ManufacturingDashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Yield Rate</span>
-                <span className="font-mono text-green-500">93.5%</span>
+                <span className="font-mono text-green-600">93.5%</span>
               </div>
             </div>
           </CardContent>

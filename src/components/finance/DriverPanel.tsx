@@ -257,7 +257,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
             style={{ color: 'var(--text-secondary)' }}
           >
             {lastCascadeResult.totalImpact >= 0 ? (
-              <TrendingUp className="w-3 h-3 text-green-500" />
+              <TrendingUp className="w-3 h-3 text-green-600" />
             ) : (
               <TrendingDown className="w-3 h-3 text-red-600" />
             )}
