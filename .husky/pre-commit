@@ -1,9 +1,10 @@
 #!/bin/sh
-# <!-- SHIPPED v0.2 — Hephaestus 2026-06-18 — Husky Pre-Commit Hook (CYCLE 25 T-2.5) -->
+# <!-- SHIPPED v0.3 — Hephaestus + Ares 2026-06-18 — Husky Pre-Commit Hook (CYCLE 25 T-2.5 + T-19) -->
 # =============================================================================
-# FinPlan Pro — pre-commit hook (NEW, CYCLE 25 T-3.5 + FIXED T-2.5)
+# FinPlan Pro — pre-commit hook (NEW, CYCLE 25 T-3.5 + FIXED T-2.5 + FIXED T-19)
 # Created per Hephaestus T-3.5 task (post-TURN 198+ LOCKOUT LIFTED).
 # Fixed per FOUNDER PATH A ACK TURN 340+: PC-1/PC-2/PC-4 empty-arg-list bug.
+# Fixed per FOUNDER FULL FREEDOM PIVOT TURN 341+ (CODE-ONLY LIFTED): PC-4 tsconfig.json load bug.
 # Purpose: Lighter-weight checks that run BEFORE commit (faster feedback).
 # Complements pre-push gates (run BEFORE push, heavier).
 # =============================================================================
@@ -65,12 +66,25 @@ timeout 240 sh -c '
 # Gate PC-4 — TSC-ON-STAGED (TypeScript check on staged files only)
 # Lighter than pre-push Gate 1 (full TSC). Uses --noEmit.
 # FIX v0.2: Same empty-arg-list fix as PC-1.
+# FIX v0.3 (Hephaestus T-19, CYCLE 25 TURN 344+, Ares war-god precision lens 2026-06-18):
+#   Bug: `npx tsc --noEmit $FILES` does NOT load tsconfig.json when file args are
+#   passed directly. This causes false-positive "Cannot use JSX unless the '--jsx'
+#   flag is provided" errors when staged FILES includes .tsx files.
+#   Evidence: full project TSC (`npx tsc --noEmit`) returns Exit 0, but staged TSC
+#   (`npx tsc --noEmit src/file1.tsx src/file2.ts ...`) returns Exit 2 with --jsx
+#   errors. Confirmed by reading TSC docs: file args bypass tsconfig.json.
+#   Fix: use `npx tsc --noEmit -p tsconfig.json` (explicit project flag) — this
+#   loads tsconfig.json so --jsx, paths, baseUrl, strict are all configured.
+#   Trade-off: PC-4 becomes equivalent to pre-push Gate 1 (full project TSC),
+#   slower than staged-only, but ACCURATE (no false positives).
+#   Alternative: install `tsc-files` package and use `npx tsc-files --noEmit $FILES`
+#   (proper staged-file TSC). Deferred to PATH A PATCH 6 followup.
 FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx)$' | tr '\n' ' ')
 if [ -z "$(echo $FILES | tr -d '[:space:]')" ]; then
   echo "⏭️  PC-4: No TS/TSX files staged, skipping TSC-ON-STAGED"
 else
-  timeout 240 npx tsc --noEmit $FILES || { echo "❌ TSC-staged failed (or timed out at 240s). Commit blocked."; exit 1; }
+  timeout 240 npx tsc --noEmit -p tsconfig.json || { echo "❌ TSC-staged failed (or timed out at 240s). Commit blocked."; exit 1; }
 fi
 
-echo "✅ All pre-commit checks passed (v0.2 with empty-arg-list fix)."
+echo "✅ All pre-commit checks passed (v0.3 with empty-arg-list + tsconfig.json fix)."
 exit 0
