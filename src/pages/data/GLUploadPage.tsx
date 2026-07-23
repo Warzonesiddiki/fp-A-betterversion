@@ -293,105 +293,59 @@ export default function GLUploadPage() {
   const handleImport = useCallback(() => {
     setImportStatus('importing');
     setImportProgress(0);
+
     const mappedData = rawData.map((row) => {
       const getVal = (field: string) => row[mappings[field]!];
       return {
-        date: getVal('postDate') || '',
+        id: '',
+        accountId: getVal('accountCode') || '',
         accountCode: getVal('accountCode') || '',
-        debit: parseFloat(getVal('debit')!) || 0,
-        credit: parseFloat(getVal('credit')!) || 0,
+        accountName: getVal('accountCode') || '',
+        period: (getVal('postDate') || '').slice(0, 7),
+        periodName: (getVal('postDate') || '').slice(0, 7),
+        debit: parseFloat(String(getVal('debit') || '0')) || 0,
+        credit: parseFloat(String(getVal('credit') || '0')) || 0,
+        netChange: 0,
+        amount: 0,
+        date: getVal('postDate') || '',
+        postDate: getVal('postDate') || '',
         description: getVal('description') || '',
         reference: getVal('reference') || '',
         entityId: getVal('entityId') || '',
         departmentId: getVal('departmentId') || '',
       };
     });
+
     const validRows = mappedData.filter((r) => r.accountCode && r.date);
-    const invalidCount = mappedData.length - validRows.length;
     if (validRows.length === 0) {
-      setImportError(
-        'No valid rows found after filtering. All rows are missing required fields (accountCode, date).'
-      );
+      setImportError('No valid rows found. All rows are missing required fields (accountCode + date).');
       setImportStatus('idle');
       return;
     }
-    const { duplicates, newEntries: _filteredNewEntries } = checkDuplicates(
-      validRows.map((r, i) => ({
-        id: `tmp-${i}`,
-        accountId: r.accountCode,
-        accountCode: r.accountCode,
-        accountName: r.accountCode,
-        period: r.date.slice(0, 7),
-        periodName: r.date.slice(0, 7),
-        debit: r.debit,
-        credit: r.credit,
-        netChange: r.debit - r.credit,
-        amount: r.debit - r.credit,
-        date: r.date,
-        description: r.description,
-        reference: r.reference,
-      }))
-    );
+
+    // Use the new robust high-level import action
+    const result = useGLStore.getState().importGLData(validRows as any, currentFile?.name);
+
+    if (!result.success) {
+      setImportError('Import failed: ' + (result.errors ? 'validation/duplicates issues' : 'unknown'));
+      setImportStatus('error');
+      return;
+    }
+
+    // Simulate nice progress bar
     let progress = 0;
     const interval = setInterval(() => {
-      progress += 10;
-      setImportProgress(Math.min(progress, 100));
+      progress = Math.min(progress + 18, 100);
+      setImportProgress(progress);
       if (progress >= 100) {
         clearInterval(interval);
-        const timestamp = Date.now();
-        const finalEntries = validRows.map((r, i) => ({
-          id: `gl-${timestamp}-${i}`,
-          accountId: r.accountCode,
-          accountCode: r.accountCode,
-          accountName: r.accountCode,
-          period: r.date.slice(0, 7),
-          periodName: r.date.slice(0, 7),
-          debit: r.debit,
-          credit: r.credit,
-          netChange: r.debit - r.credit,
-          amount: r.debit - r.credit,
-          date: r.date,
-          description: r.description,
-          reference: r.reference,
-        }));
-
-        // Use setEntries for the first import or a clean replacement,
-        // or we could use addEntries to append. For this wizard,
-        // we'll assume it appends to the store.
-        const useGLStoreState = useGLStore.getState();
-        if (useGLStoreState.entries.length === 0) {
-          useGLStoreState.setEntries(finalEntries);
-        } else {
-          // If store has entries, we append
-          useGLStoreState.addEntry(finalEntries);
-        }
-
-        const rowCount = validRows.length;
-        const errorCount = invalidCount + duplicates;
-        recordImport({
-          filename: currentFile?.name || 'unknown',
-          rowCount,
-          errorCount,
-          warningCount: duplicates,
-          successCount: rowCount - (invalidCount + duplicates),
-          status: errorCount > 0 ? 'partial' : 'success',
-        });
-        setImportedRowCount(rowCount);
-        setImportedErrorCount(errorCount);
+        setImportedRowCount(result.imported || 0);
+        setImportedErrorCount(result.errors || 0);
         setImportStatus('complete');
         setStep(4);
       }
-    }, 50);
-  }, [
-    rawData,
-    mappings,
-    currentFile,
-    checkDuplicates,
-    recordImport,
-    setImportStatus,
-    setImportProgress,
-    setImportError,
-  ]);
+    }, 40);
+  }, [rawData, mappings, currentFile, setImportStatus, setImportProgress, setImportError]);
 
   const getStepStatus = (index: number): 'done' | 'current' | 'pending' => {
     if (step > index) return 'done';

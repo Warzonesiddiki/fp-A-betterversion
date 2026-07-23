@@ -196,8 +196,7 @@ const NLQChatPage = lazy(() => import('./pages/ai/NLQChatPage') as any);
 const DataFlowMapPage = lazy(() => import('./pages/data/DataFlowMapPage') as any);
 const DataSummaryCard = lazy(() => import('./pages/data/DataSummaryCard') as any);
 const MigrationWizard = lazy(() => import('./pages/data/MigrationWizard') as any);
-const ReconciliationPanel = lazy(() => import('./pages/data/ReconciliationPanel') as any);
-const ReconciliationResults = lazy(() => import('./pages/data/ReconciliationResults') as any);
+const ReconciliationPage = lazy(() => import('./pages/data/ReconciliationPage') as any);
 const ImportJobHistory = lazy(() => import('./pages/data/ImportJobHistory') as any);
 const VersionDiffPage = lazy(() => import('./pages/data/VersionDiffPage') as any);
 const SOXCompliancePage = lazy(() => import('./pages/audit/SOXCompliancePage') as any);
@@ -479,8 +478,7 @@ export default function App() {
                 <Route path="/data/data-flow" element={<DataFlowMapPage />} />
                 <Route path="/data/data-summary" element={<DataSummaryCard />} />
                 <Route path="/data/migration-wizard" element={<MigrationWizard />} />
-                <Route path="/data/reconciliation" element={<ReconciliationPanel />} />
-                <Route path="/data/reconciliation-results" element={<ReconciliationResults />} />
+                <Route path="/data/reconciliation" element={<ReconciliationPage />} />
                 <Route path="/data/import-history" element={<ImportJobHistory />} />
                 <Route path="/data/version-diff" element={<VersionDiffPage />} />
                 <Route path="/consolidation/detail" element={<ConsolidationPage />} />

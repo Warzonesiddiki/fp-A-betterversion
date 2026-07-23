@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -104,11 +103,14 @@ export const useGLStore = create<GLState>()(
         setEntries: enforce(Permissions.IMPORT_CREATE, 'setEntries', (entries) => {
           captureGLSnapshot(get);
           const ids = entries.map((e) => e.id);
-          set({
-            entries,
-            trialBalance: [],
-            accountAnalysis: null,
-            lastImportEntryIds: ids,
+          set((state) => {
+            state.entries = entries;
+            state.trialBalance = [];
+            state.accountAnalysis = null;
+            state.lastImportEntryIds = ids;
+            state.importStatus = 'complete';
+            state.importProgress = 100;
+            state.importError = null;
           });
           useUIStore.getState().addToast({
             type: 'success',
@@ -117,12 +119,78 @@ export const useGLStore = create<GLState>()(
           });
         }),
 
+        addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries) => {
+          captureGLSnapshot(get);
+          const ids = newEntries.map((e) => e.id);
+          set((state) => {
+            state.entries.push(...newEntries);
+            state.lastImportEntryIds = ids;
+            state.importStatus = 'complete';
+            state.importProgress = 100;
+          });
+        }),
+
+        /** High-level robust import action used by the GL Upload wizard */
+        importGLData: enforce(Permissions.IMPORT_CREATE, 'importGLData', (rawEntries, filename) => {
+          const validation = get().validateEntries(rawEntries);
+          if (!validation.isValid) {
+            set({ importError: validation.errors.slice(0, 5).join('; '), importStatus: 'error' });
+            return { success: false, imported: 0, errors: validation.errors.length };
+          }
+
+          const { duplicates, newEntries } = get().checkDuplicates(rawEntries as GLEntry[]);
+
+          if (newEntries.length === 0) {
+            set({ importError: 'All rows were duplicates.', importStatus: 'error' });
+            return { success: false, imported: 0, errors: duplicates };
+          }
+
+          captureGLSnapshot(get);
+          const timestamp = Date.now();
+          const finalEntries = newEntries.map((e, i) => ({
+            ...e,
+            id: e.id || `gl-${timestamp}-${i}`,
+          })) as GLEntry[];
+
+          const ids = finalEntries.map((e) => e.id);
+
+          set((state) => {
+            state.entries.push(...finalEntries);
+            state.lastImportEntryIds = ids;
+            state.importStatus = 'complete';
+            state.importProgress = 100;
+            state.importError = null;
+            state.trialBalance = [];
+            state.accountAnalysis = null;
+          });
+
+          const result = {
+            filename: filename || 'unknown',
+            rowCount: rawEntries.length,
+            successCount: finalEntries.length,
+            errorCount: validation.errors.length + duplicates,
+            warningCount: duplicates,
+            status: (duplicates > 0 ? 'partial' : 'success') as const,
+          };
+
+          get().recordImport(result);
+
+          return {
+            success: true,
+            imported: finalEntries.length,
+            duplicates,
+            errors: validation.errors.length,
+          };
+        }),
+
         addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
           captureGLSnapshot(get);
           const entries = Array.isArray(entry) ? entry : [entry];
           set((state) => {
             state.entries.push(...entries);
             state.lastImportEntryIds = entries.map((e) => e.id);
+            state.importStatus = 'complete';
+            state.importProgress = 100;
           });
           useUIStore.getState().addToast({
             type: 'success',
@@ -285,10 +353,16 @@ export const useGLStore = create<GLState>()(
         undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', () =>
           set((state) => {
             const count = state.lastImportEntryIds.length;
+            if (count === 0) return;
+
             const ids = new Set(state.lastImportEntryIds);
             state.entries = state.entries.filter((e) => !ids.has(e.id));
             state.lastImportEntryIds = [];
             state.lastImportResult = null;
+            state.importStatus = 'idle';
+            state.importProgress = 0;
+            state.trialBalance = [];
+            state.accountAnalysis = null;
 
             useUIStore.getState().addToast({
               type: 'info',
@@ -300,21 +374,41 @@ export const useGLStore = create<GLState>()(
 
         checkDuplicates: (entries) => {
           const state = get();
-          const keys = new Set(
+          const existingKeys = new Set(
             state.entries.map(
-              (e) => `${e.accountCode}|${e.postDate || e.date}|${e.amount || e.debit - e.credit}`
+              (e) =>
+                `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? e.debit - e.credit}`
             )
           );
-          const dups = entries.filter((e) =>
-            keys.has(`${e.accountCode}|${e.postDate || e.date}|${e.amount || e.debit - e.credit}`)
-          );
-          const newEntries = entries.filter(
-            (e) =>
-              !keys.has(
-                `${e.accountCode}|${e.postDate || e.date}|${e.amount || e.debit - e.credit}`
-              )
-          );
-          return { duplicates: dups.length, newEntries };
+          const duplicates: GLEntry[] = [];
+          const newEntries: GLEntry[] = [];
+
+          entries.forEach((e) => {
+            const key = `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? e.debit - e.credit}`;
+            if (existingKeys.has(key)) {
+              duplicates.push(e);
+            } else {
+              newEntries.push(e);
+            }
+          });
+
+          return { duplicates: duplicates.length, newEntries };
+        },
+
+        validateEntries: (entries: Partial<GLEntry>[]) => {
+          const errors: string[] = [];
+          entries.forEach((e, idx) => {
+            if (!e.accountCode) errors.push(`Row ${idx + 1}: missing accountCode`);
+            if (!e.date && !e.postDate) errors.push(`Row ${idx + 1}: missing date/postDate`);
+            if (typeof e.debit !== 'number' && typeof e.credit !== 'number') {
+              errors.push(`Row ${idx + 1}: missing debit or credit`);
+            }
+          });
+          return {
+            isValid: errors.length === 0,
+            errors,
+            validCount: entries.length - errors.length,
+          };
         },
 
         // --- CubeEngine integration ---

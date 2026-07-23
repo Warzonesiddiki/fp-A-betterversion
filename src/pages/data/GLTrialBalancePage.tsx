@@ -44,6 +44,11 @@ export default function GLTrialBalancePage() {
     };
   }, [trialBalance]);
 
+  // B2 Enhancement: Auto-generate on mount if needed + manual refresh
+  const handleGenerate = useCallback(() => {
+    generateTrialBalance();
+  }, [generateTrialBalance]);
+
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
@@ -78,7 +83,7 @@ export default function GLTrialBalancePage() {
           Click below to generate the Trial Balance from {entries.length.toLocaleString()} GL
           entries.
         </p>
-        <Button onClick={generateTrialBalance}>
+        <Button onClick={handleGenerate}>
           <RefreshCw className="h-4 w-4 mr-2" />
           Generate Trial Balance
         </Button>
@@ -120,11 +125,21 @@ export default function GLTrialBalancePage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" variant="secondary" onClick={generateTrialBalance}>
+          <Button size="sm" variant="secondary" onClick={handleGenerate}>
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
             Refresh
           </Button>
-          <Button size="sm" variant="ghost">
+          <Button size="sm" variant="ghost" onClick={() => {
+            // Simple CSV export of trial balance
+            const csv = ['Code,Name,Type,Beginning,Debits,Credits,Net,Ending'];
+            trialBalance.forEach(r => csv.push([
+              r.accountCode, `"${r.accountName}"`, r.accountType,
+              r.beginningBalance, r.debit, r.credit, r.netChange, r.endingBalance
+            ].join(',')));
+            const blob = new Blob([csv.join('\n')], {type:'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href=url; a.download='trial-balance.csv'; a.click();
+          }}>
             <Download className="h-3.5 w-3.5 mr-1.5" />
             Export
           </Button>

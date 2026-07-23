@@ -85,6 +85,23 @@ export default function GLJournalsPage() {
     return { debits, credits, isBalanced: Math.abs(debits - credits) < 0.01 };
   }, [filtered]);
 
+  // B2 Enhancement: Export journals
+  const exportJournals = useCallback(() => {
+    const csv = ['Date,Account,Description,Debit,Credit,Reference'];
+    filtered.forEach(e => {
+      csv.push([
+        e.date,
+        e.accountCode,
+        `"${(e.description || '').replace(/"/g, '""')}"`,
+        e.debit, e.credit, e.reference || ''
+      ].join(','));
+    });
+    const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `journals-${startDate}-to-${endDate}.csv`; a.click();
+  }, [filtered, startDate, endDate]);
+
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   if (entries.length === 0) {
@@ -120,7 +137,7 @@ export default function GLJournalsPage() {
               ` · ${filtered.length.toLocaleString()} filtered`}
           </p>
         </div>
-        <Button size="sm" variant="ghost">
+        <Button size="sm" variant="ghost" onClick={exportJournals}>
           <Download className="h-3.5 w-3.5 mr-1.5" />
           Export CSV
         </Button>

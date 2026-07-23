@@ -5,7 +5,7 @@
 
 import type { CellAddress } from '@/types/cell';
 
-export type AuditOperation = 'write' | 'update' | 'delete' | 'bulk';
+export type AuditOperation = 'read' | 'write' | 'update' | 'delete' | 'bulk';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'auto';
 export type DataType = 'number' | 'string' | 'boolean' | 'date' | 'object' | 'array';
 export type AuditSource = 'manual' | 'import' | 'api' | 'plugin' | 'automation' | 'gdpr';

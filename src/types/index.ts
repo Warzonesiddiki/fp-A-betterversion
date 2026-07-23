@@ -792,6 +792,10 @@ export interface GLState {
   recordImport: (result: ImportResult) => void;
   undoLastImport: () => void;
   checkDuplicates: (entries: GLEntry[]) => { duplicates: number; newEntries: GLEntry[] };
+  validateEntries: (entries: Partial<GLEntry>[]) => { isValid: boolean; errors: string[]; validCount: number };
+  importGLData: (entries: Partial<GLEntry>[], filename?: string) =>
+    | { success: true; imported: number; duplicates: number; errors: number }
+    | { success: false; imported: number; errors: number };
   syncToCube: () => void;
   syncFromCube: () => void;
   getCubeState: () => {

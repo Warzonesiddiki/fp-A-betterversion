@@ -3,14 +3,16 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 
 import { useNavigate } from 'react-router-dom';
 import { useDataStore } from '@/store/dataStore';
+import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
+import { FileDropZone } from '@/components/ui/FileDropZone';
 
-import type { AccountType } from '@/types';
+import type { AccountType, GLAccount } from '@/types';
 
 import {
   Plus,
@@ -61,8 +63,9 @@ export default function ChartOfAccountsPage() {
     document.title = 'FinPlan Pro — Chart Of Accounts';
   }, []);
 
-  const { accounts, addAccount, updateAccount, deleteAccount, toggleAccountActive } =
+  const { accounts, addAccount, updateAccount, deleteAccount, toggleAccountActive, setAccounts } =
     useDataStore();
+  const { entries } = useGLStore(); // to check usage for soft-delete warning
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -178,10 +181,20 @@ export default function ChartOfAccountsPage() {
 
   const handleDelete = useCallback(
     (id: string) => {
-      deleteAccount(id);
+      // B1 Enhancement: soft-delete warning based on GL usage
+      const hasGL = entries.some((e) => e.accountCode === accounts.find(a => a.id === id)?.code);
+      if (hasGL) {
+        if (!confirm('This account has GL entries. Deactivate instead of delete? (recommended)')) {
+          deleteAccount(id);
+        } else {
+          toggleAccountActive(id);
+        }
+      } else {
+        deleteAccount(id);
+      }
       setDeleteConfirmId(null);
     },
-    [deleteAccount]
+    [deleteAccount, entries, accounts, toggleAccountActive]
   );
 
   const handleToggle = useCallback(
@@ -190,6 +203,79 @@ export default function ChartOfAccountsPage() {
     },
     [toggleAccountActive]
   );
+
+  // B1 Enhancement: CSV Import for Chart of Accounts
+  const handleCSVImport = useCallback(async (file: File) => {
+    try {
+      const text = await file.text();
+      const lines = text.split('\n').filter((l) => l.trim());
+      if (lines.length < 2) return;
+
+      const headers = lines[0]!.split(',').map((h) => h.trim().toLowerCase());
+      const newAccounts: any[] = [];
+
+      lines.slice(1).forEach((line, idx) => {
+        const values = line.split(',').map((v) => v.trim().replace(/^"|"$/g, ''));
+        const code = values[headers.indexOf('code')] || values[0];
+        const name = values[headers.indexOf('name')] || values[1];
+        const type = (values[headers.indexOf('type')] || 'OpEx') as AccountType;
+
+        if (code && name && !accounts.some((a) => a.code === code)) {
+          newAccounts.push({
+            id: `acct-csv-${Date.now()}-${idx}`,
+            code: code.toUpperCase(),
+            name,
+            type,
+            category: values[headers.indexOf('category')] || '-',
+            subCategory: values[headers.indexOf('subcategory')] || '',
+            parentId: null,
+            level: 0,
+            sortOrder: accounts.length + newAccounts.length,
+            isActive: true,
+            entityId: 'default',
+            departmentId: null,
+            isCalculated: false,
+            formula: null,
+            children: [],
+          });
+        }
+      });
+
+      if (newAccounts.length > 0) {
+        // Use dataStore if available, otherwise fall back
+        newAccounts.forEach((acc) => addAccount(acc));
+        alert(`Imported ${newAccounts.length} new accounts from CSV`);
+      }
+    } catch (e) {
+      alert('Failed to import CSV: ' + (e as Error).message);
+    }
+  }, [accounts, addAccount]);
+
+  // B1 Enhancement: Export CSV
+  const exportCSV = useCallback(() => {
+    const header = 'code,name,type,category,subCategory,parentId,isActive\n';
+    const rows = accounts
+      .map((a) =>
+        [
+          a.code,
+          `"${a.name}"`,
+          a.type,
+          a.category || '',
+          a.subCategory || '',
+          a.parentId || '',
+          a.isActive,
+        ].join(',')
+      )
+      .join('\n');
+
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chart-of-accounts.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [accounts]);
 
   if (accounts.length === 0) {
     return (
@@ -271,6 +357,24 @@ export default function ChartOfAccountsPage() {
             <Plus className="h-4 w-4 mr-2" />
             Add Account
           </Button>
+          <Button variant="secondary" onClick={exportCSV}>
+            Export CSV
+          </Button>
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept=".csv"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleCSVImport(f);
+                e.target.value = '';
+              }}
+            />
+            <span className="inline-flex items-center px-3 py-1.5 rounded bg-slate-800 text-xs font-medium hover:bg-slate-700">
+              Import CSV
+            </span>
+          </label>
         </div>
       </div>
 
