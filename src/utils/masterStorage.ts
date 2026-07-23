@@ -49,4 +49,11 @@ export const masterStorage: PersistStorage<any, unknown> & { __resetCache: () =>
   __resetCache: () => {
     _isTauriCache = null;
   },
+
+  // B3 Enhancement: Explicit migration helper (called from onboarding or settings)
+  async migrateFromIndexedDB() {
+    // Placeholder for future full migration logic when running in Tauri
+    // Currently masterStorage already routes correctly based on isTauri()
+    console.log('[masterStorage] Migration helper invoked (no-op if already on target backend)');
+  },
 };

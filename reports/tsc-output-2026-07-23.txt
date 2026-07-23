@@ -1,0 +1,9 @@
+src/components/audit/AuditFilters.tsx(153,56): error TS2345: Argument of type 'import("/home/user/fp-A-betterversion/src/store/auditTrailStore").AuditOperation' is not assignable to parameter of type 'import("/home/user/fp-A-betterversion/src/types/audit").AuditOperation'.
+  Type '"read"' is not assignable to type 'AuditOperation'.
+src/store/auditTrailGdprEvents.ts(221,9): error TS2322: Type '"read"' is not assignable to type 'AuditOperation'.
+src/store/auditTrailGdprEvents.ts(256,9): error TS2322: Type '"read"' is not assignable to type 'AuditOperation'.
+src/store/auditTrailStore.ts(149,3): error TS2322: Type 'import("/home/user/fp-A-betterversion/src/store/auditTrailStore").AuditOperation' is not assignable to type 'import("/home/user/fp-A-betterversion/src/types/audit").AuditOperation'.
+  Type '"read"' is not assignable to type 'AuditOperation'.
+src/store/auditTrailStore.ts(225,13): error TS2322: Type 'import("/home/user/fp-A-betterversion/src/store/auditTrailStore").AuditOperation' is not assignable to type 'import("/home/user/fp-A-betterversion/src/types/audit").AuditOperation'.
+  Type '"read"' is not assignable to type 'AuditOperation'.
+src/store/auditTrailStore.ts(520,9): error TS2741: Property 'read' is missing in type '{ write: number; update: number; delete: number; bulk: number; }' but required in type 'Record<AuditOperation, number>'.

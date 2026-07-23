@@ -9,15 +9,20 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import type { CellAddress } from '@/types/cell';
-import type { CellAuditEntry, ExtendedAuditEntry, AuditFilters, AuditSource } from '@/types/audit';
+import type {
+  CellAuditEntry,
+  ExtendedAuditEntry,
+  AuditFilters,
+  AuditSource,
+  AuditOperation,
+} from '@/types/audit';
 
-export type { ExtendedAuditEntry, AuditSource };
+export type { ExtendedAuditEntry, AuditSource, AuditOperation };
 
 // ---------------------------------------------------------------------------
-// Types
+// Types (re-exported from canonical location)
 // ---------------------------------------------------------------------------
 
-export type AuditOperation = 'read' | 'write' | 'update' | 'delete' | 'bulk';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'auto';
 export type DataType = 'number' | 'string' | 'boolean' | 'date' | 'object' | 'array';
 
@@ -518,6 +523,7 @@ export const selectStats = (state: State & Actions) => {
     entries.map((e) => `${e.cellId.sectorId}/${e.cellId.periodId}/${e.cellId.lineItemId}`)
   );
   const operationCounts: Record<AuditOperation, number> = {
+    read: 0,
     write: 0,
     update: 0,
     delete: 0,
