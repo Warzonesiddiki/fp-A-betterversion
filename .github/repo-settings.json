@@ -1,0 +1,23 @@
+{
+  "description": "Enterprise Financial Planning & Analysis (FP&A) platform. Real-time financial modeling, multi-entity consolidation, scenario analysis, and 40+ industry templates. Built with React, TypeScript, Vite, Tauri, and 202+ financial calculation engines.",
+  "homepage": "https://finplanpro.dev",
+  "topics": [
+    "financial-planning",
+    "fpa",
+    "financial-analysis",
+    "fintech",
+    "consolidation",
+    "budgeting",
+    "scenario-analysis",
+    "monte-carlo",
+    "financial-modeling",
+    "react",
+    "typescript",
+    "vite",
+    "tauri",
+    "enterprise-software",
+    "dashboard",
+    "web-app",
+    "desktop-app"
+  ]
+}
