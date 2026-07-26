@@ -44,7 +44,11 @@ import {
   selectCanViewGdprAudit,
   GDPR_AUDIT_VIEW_ROLES,
 } from '@/store/auditTrailStore';
-import type { ExtendedAuditEntry, AuditFilters, AuditRole } from '@/store/auditTrailStore';
+import type {
+  ExtendedAuditEntry,
+  AuditFilters as AuditFiltersState,
+  AuditRole,
+} from '@/store/auditTrailStore';
 import { AuditTrailPage } from '@/pages/audit/AuditTrailPage';
 import { AuditFilters } from '@/components/audit/AuditFilters';
 import { AuditRow } from '@/components/audit/AuditRow';
@@ -109,7 +113,7 @@ const mockEntries: ExtendedAuditEntry[] = [
 const createMockStoreState = (
   overrides: Partial<{
     entries: ExtendedAuditEntry[];
-    filters: Partial<AuditFilters>;
+    filters: Partial<AuditFiltersState>;
     currentPage: number;
     pageSize: 25 | 50 | 100 | 500;
     selectedEntryId: string | null;
@@ -132,7 +136,7 @@ const createMockStoreState = (
       hasVersion: undefined,
       hasConsent: undefined,
       ...overrides.filters,
-    } as AuditFilters,
+    } as AuditFiltersState,
     currentPage: overrides.currentPage ?? 1,
     pageSize: overrides.pageSize ?? 50,
     sortField: 'timestamp' as const,
@@ -181,10 +185,12 @@ describe('AuditTrailPage', () => {
 
   it('Test 1: renders audit entries via selectPagedEntries from store', async () => {
     const state = createMockStoreState();
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) => {
-      if (typeof selector === 'function') return selector(state);
-      return state;
-    });
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) => {
+        if (typeof selector === 'function') return selector(state);
+        return state;
+      }
+    );
 
     renderWithProviders(<AuditTrailPage />);
     // Verify audit entries from store are rendered
@@ -196,8 +202,9 @@ describe('AuditTrailPage', () => {
 
   it('Test 2: Pagination supports 25/50/100/500 page sizes', async () => {
     const state = createMockStoreState();
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditTrailPage />);
@@ -210,8 +217,9 @@ describe('AuditTrailPage', () => {
 
   it('Test 3: WCAG AA 4.5:1 contrast — uses text-{color}-800 not text-{color}-500', async () => {
     const state = createMockStoreState();
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditTrailPage />);
@@ -237,8 +245,9 @@ describe('AuditFilters RBAC gating', () => {
 
   it('Test 4: viewer role does NOT see "gdpr" source option', () => {
     const state = createMockStoreState({ currentUserRole: 'viewer' });
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditFilters />);
@@ -251,8 +260,9 @@ describe('AuditFilters RBAC gating', () => {
 
   it('Test 4b: admin role DOES see "gdpr" source option', () => {
     const state = createMockStoreState({ currentUserRole: 'admin' });
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditFilters />);
@@ -263,8 +273,9 @@ describe('AuditFilters RBAC gating', () => {
 
   it('Test 4c: viewer role does NOT see "Has GDPR consent" checkbox', () => {
     const state = createMockStoreState({ currentUserRole: 'viewer' });
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditFilters />);
@@ -273,8 +284,9 @@ describe('AuditFilters RBAC gating', () => {
 
   it('Test 4d: compliance role DOES see "Has GDPR consent" checkbox', () => {
     const state = createMockStoreState({ currentUserRole: 'compliance' });
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditFilters />);
@@ -330,8 +342,9 @@ describe('AuditDiff', () => {
 describe('AuditRow', () => {
   it('Test 6: click row expands to 3-col detail view', async () => {
     const state = createMockStoreState();
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     const mockEntry = mockEntries[0];
@@ -356,8 +369,9 @@ describe('AuditRow', () => {
 describe('AuditCompliancePanel', () => {
   it('Test 7: renders GDPR/RBAC/SOX compliance status from selectStats', () => {
     const state = createMockStoreState();
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditCompliancePanel />);
@@ -381,8 +395,9 @@ describe('AuditExportButton + PIIRedactor', () => {
 
     const state = createMockStoreState();
     state.exportToCSV = vi.fn(() => csvOutput);
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditExportButton />);
@@ -408,8 +423,9 @@ describe('AuditExportButton + PIIRedactor', () => {
 
     const state = createMockStoreState();
     state.exportToJSON = vi.fn(() => jsonOutput);
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditExportButton />);
@@ -427,8 +443,9 @@ describe('AuditExportButton + PIIRedactor', () => {
 
   it('Test 8c: revokeObjectURL called after Blob download', async () => {
     const state = createMockStoreState();
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditExportButton />);
@@ -453,8 +470,9 @@ describe('uid() crypto.randomUUID', () => {
     crypto.randomUUID = vi.fn(() => mockUUID);
 
     const state = createMockStoreState();
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     // Trigger a recordWrite
@@ -492,8 +510,9 @@ describe('AuditTrailPage integration', () => {
         source: 'manual',
       },
     });
-    vi.mocked(useAuditTrailStore).mockImplementation((selector: any) =>
-      typeof selector === 'function' ? selector(state) : state
+    vi.mocked(useAuditTrailStore).mockImplementation(
+      (selector: ((state: ReturnType<typeof createMockStoreState>) => unknown) | undefined) =>
+        typeof selector === 'function' ? selector(state) : state
     );
 
     renderWithProviders(<AuditFilters />);

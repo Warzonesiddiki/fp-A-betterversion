@@ -20,7 +20,8 @@
     "canary:stage1": "node --experimental-strip-types scripts/canary-2.0/stage1-health/stage1-runner.ts",
     "canary:stage2": "node --experimental-strip-types scripts/canary-2.0/stage2-sanity/stage2-runner.ts",
     "canary:stage3": "node --experimental-strip-types scripts/canary-2.0/stage3-integration/stage3-runner.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "repo:hygiene": "node scripts/repo-hygiene-check.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.2.0",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -129,17 +129,34 @@ export default function GLTrialBalancePage() {
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
             Refresh
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => {
-            // Simple CSV export of trial balance
-            const csv = ['Code,Name,Type,Beginning,Debits,Credits,Net,Ending'];
-            trialBalance.forEach(r => csv.push([
-              r.accountCode, `"${r.accountName}"`, r.accountType,
-              r.beginningBalance, r.debit, r.credit, r.netChange, r.endingBalance
-            ].join(',')));
-            const blob = new Blob([csv.join('\n')], {type:'text/csv'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href=url; a.download='trial-balance.csv'; a.click();
-          }}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              // Simple CSV export of trial balance
+              const csv = ['Code,Name,Type,Beginning,Debits,Credits,Net,Ending'];
+              trialBalance.forEach((r) =>
+                csv.push(
+                  [
+                    r.accountCode,
+                    `"${r.accountName}"`,
+                    r.accountType,
+                    r.beginningBalance,
+                    r.debit,
+                    r.credit,
+                    r.netChange,
+                    r.endingBalance,
+                  ].join(',')
+                )
+              );
+              const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'trial-balance.csv';
+              a.click();
+            }}
+          >
             <Download className="h-3.5 w-3.5 mr-1.5" />
             Export
           </Button>

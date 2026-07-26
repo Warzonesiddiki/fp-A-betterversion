@@ -4,9 +4,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/i18n';
 
-import { useGLStore } from '@/store/glStore';
-import { AIEngine } from '@/engines/AIEngine';
-
 import { AIIntelligencePage } from '@/pages/ai/AIIntelligencePage';
 import * as AIIntelligencePageMod from '@/pages/ai/AIIntelligencePage';
 

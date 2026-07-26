@@ -1,6 +1,0 @@
-﻿﻿src/components/audit/AuditFilters.tsx(180,28): error TS2552: Cannot find name 'auditFiltersTokens'. Did you mean 'AuditFilters'?
-src/components/audit/AuditFilters.tsx(180,60): error TS2552: Cannot find name 'auditFiltersTokens'. Did you mean 'AuditFilters'?
-src/services/api-integration/index.ts(35,32): error TS2307: Cannot find module './PlaidConnector' or its corresponding type declarations.
-src/services/api-integration/index.ts(36,38): error TS2307: Cannot find module './PlaidConnector' or its corresponding type declarations.
-src/store/auditTrailGdprEvents.ts(221,9): error TS2322: Type '"read"' is not assignable to type 'AuditOperation'.
-src/store/auditTrailGdprEvents.ts(256,9): error TS2322: Type '"read"' is not assignable to type 'AuditOperation'.

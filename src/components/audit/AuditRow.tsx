@@ -3,11 +3,7 @@
 
 import { useState, type JSX } from 'react';
 import { ChevronDown, ChevronRight, RotateCcw, Network, FileJson } from 'lucide-react';
-import {
-  useAuditTrailStore,
-  type ExtendedAuditEntry,
-  type AuditOperation,
-} from '@/store/auditTrailStore';
+import { useAuditTrailStore, type ExtendedAuditEntry } from '@/store/auditTrailStore';
 import { AuditDiff } from './AuditDiff';
 import { Button } from '@/components/ui/Button';
 import {

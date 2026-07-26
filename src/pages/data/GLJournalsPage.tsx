@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -88,18 +88,24 @@ export default function GLJournalsPage() {
   // B2 Enhancement: Export journals
   const exportJournals = useCallback(() => {
     const csv = ['Date,Account,Description,Debit,Credit,Reference'];
-    filtered.forEach(e => {
-      csv.push([
-        e.date,
-        e.accountCode,
-        `"${(e.description || '').replace(/"/g, '""')}"`,
-        e.debit, e.credit, e.reference || ''
-      ].join(','));
+    filtered.forEach((e) => {
+      csv.push(
+        [
+          e.date,
+          e.accountCode,
+          `"${(e.description || '').replace(/"/g, '""')}"`,
+          e.debit,
+          e.credit,
+          e.reference || '',
+        ].join(',')
+      );
     });
     const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `journals-${startDate}-to-${endDate}.csv`; a.click();
+    a.href = url;
+    a.download = `journals-${startDate}-to-${endDate}.csv`;
+    a.click();
   }, [filtered, startDate, endDate]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);

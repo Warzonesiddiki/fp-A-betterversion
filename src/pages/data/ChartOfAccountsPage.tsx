@@ -11,6 +11,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FileDropZone } from '@/components/ui/FileDropZone';
+import { parseCSV } from '@/utils/csv';
 
 import type { AccountType, GLAccount } from '@/types';
 
@@ -182,7 +183,7 @@ export default function ChartOfAccountsPage() {
   const handleDelete = useCallback(
     (id: string) => {
       // B1 Enhancement: soft-delete warning based on GL usage
-      const hasGL = entries.some((e) => e.accountCode === accounts.find(a => a.id === id)?.code);
+      const hasGL = entries.some((e) => e.accountCode === accounts.find((a) => a.id === id)?.code);
       if (hasGL) {
         if (!confirm('This account has GL entries. Deactivate instead of delete? (recommended)')) {
           deleteAccount(id);
@@ -205,51 +206,58 @@ export default function ChartOfAccountsPage() {
   );
 
   // B1 Enhancement: CSV Import for Chart of Accounts
-  const handleCSVImport = useCallback(async (file: File) => {
-    try {
-      const text = await file.text();
-      const lines = text.split('\n').filter((l) => l.trim());
-      if (lines.length < 2) return;
+  const handleCSVImport = useCallback(
+    async (file: File) => {
+      try {
+        const text = await file.text();
+        const { headers, rows } = parseCSV(text);
+        if (headers.length === 0 || rows.length === 0) return;
 
-      const headers = lines[0]!.split(',').map((h) => h.trim().toLowerCase());
-      const newAccounts: any[] = [];
+        const lowerHeaders = headers.map((h) => h.toLowerCase());
+        const getValue = (row: Record<string, string>, field: string, fallbackIndex: number): string => {
+          const headerIndex = lowerHeaders.indexOf(field);
+          const header = headerIndex >= 0 ? headers[headerIndex] : headers[fallbackIndex];
+          return header ? row[header] || '' : '';
+        };
+        const newAccounts: GLAccount[] = [];
 
-      lines.slice(1).forEach((line, idx) => {
-        const values = line.split(',').map((v) => v.trim().replace(/^"|"$/g, ''));
-        const code = values[headers.indexOf('code')] || values[0];
-        const name = values[headers.indexOf('name')] || values[1];
-        const type = (values[headers.indexOf('type')] || 'OpEx') as AccountType;
+        rows.forEach((row, idx) => {
+          const code = getValue(row, 'code', 0);
+          const name = getValue(row, 'name', 1);
+          const type = (getValue(row, 'type', -1) || 'OpEx') as AccountType;
 
-        if (code && name && !accounts.some((a) => a.code === code)) {
-          newAccounts.push({
-            id: `acct-csv-${Date.now()}-${idx}`,
-            code: code.toUpperCase(),
-            name,
-            type,
-            category: values[headers.indexOf('category')] || '-',
-            subCategory: values[headers.indexOf('subcategory')] || '',
-            parentId: null,
-            level: 0,
-            sortOrder: accounts.length + newAccounts.length,
-            isActive: true,
-            entityId: 'default',
-            departmentId: null,
-            isCalculated: false,
-            formula: null,
-            children: [],
-          });
+          if (code && name && !accounts.some((a) => a.code === code)) {
+            newAccounts.push({
+              id: `acct-csv-${Date.now()}-${idx}`,
+              code: code.toUpperCase(),
+              name,
+              type,
+              category: getValue(row, 'category', -1) || '-',
+              subCategory: getValue(row, 'subcategory', -1) || '',
+              parentId: null,
+              level: 0,
+              sortOrder: accounts.length + newAccounts.length,
+              isActive: true,
+              entityId: 'default',
+              departmentId: null,
+              isCalculated: false,
+              formula: null,
+              children: [],
+            });
+          }
+        });
+
+        if (newAccounts.length > 0) {
+          // Use dataStore if available, otherwise fall back
+          newAccounts.forEach((acc) => addAccount(acc));
+          alert(`Imported ${newAccounts.length} new accounts from CSV`);
         }
-      });
-
-      if (newAccounts.length > 0) {
-        // Use dataStore if available, otherwise fall back
-        newAccounts.forEach((acc) => addAccount(acc));
-        alert(`Imported ${newAccounts.length} new accounts from CSV`);
+      } catch (e) {
+        alert('Failed to import CSV: ' + (e as Error).message);
       }
-    } catch (e) {
-      alert('Failed to import CSV: ' + (e as Error).message);
-    }
-  }, [accounts, addAccount]);
+    },
+    [accounts, addAccount]
+  );
 
   // B1 Enhancement: Export CSV
   const exportCSV = useCallback(() => {

@@ -107,12 +107,16 @@ export function AuditFilters(): JSX.Element {
 
       {/* 1. Cell ID text search */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="audit-filter-cell-id"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Cell ID (sector/scenario/period/lineItem)
         </label>
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
           <input
+            id="audit-filter-cell-id"
             type="text"
             value={filters.cellId ?? ''}
             onChange={(e) => setFilter('cellId', e.target.value || undefined)}
@@ -125,10 +129,14 @@ export function AuditFilters(): JSX.Element {
 
       {/* 2. User dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="audit-filter-user"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           User
         </label>
         <select
+          id="audit-filter-user"
           value={filters.userId ?? ''}
           onChange={(e) => setFilter('userId', e.target.value || undefined)}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -145,9 +153,9 @@ export function AuditFilters(): JSX.Element {
 
       {/* 3. Operation chips */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Operation (4 chips)
-        </label>
+        </p>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by operation">
           {OPERATIONS.map((op) => {
             const active = filters.operation?.includes(op.value) ?? false;
@@ -170,9 +178,9 @@ export function AuditFilters(): JSX.Element {
 
       {/* 4. Data type chips */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Data Type (6 chips)
-        </label>
+        </p>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by data type">
           {DATA_TYPES.map((dt) => {
             const active = filters.dataType?.includes(dt.value) ?? false;
@@ -195,9 +203,9 @@ export function AuditFilters(): JSX.Element {
 
       {/* 5. Approval status chips */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Approval Status (4 chips)
-        </label>
+        </p>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by approval status">
           {APPROVAL_STATUSES.map((a) => {
             const active = filters.approvalStatus?.includes(a.value) ?? false;
@@ -220,7 +228,10 @@ export function AuditFilters(): JSX.Element {
 
       {/* 6. Source dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="audit-filter-source"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Source
           {!canViewGdprAudit && (
             <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
@@ -229,6 +240,7 @@ export function AuditFilters(): JSX.Element {
           )}
         </label>
         <select
+          id="audit-filter-source"
           value={filters.source ?? ''}
           onChange={(e) =>
             setFilter('source', (e.target.value || undefined) as AuditSource | undefined)
@@ -247,10 +259,14 @@ export function AuditFilters(): JSX.Element {
 
       {/* 7. Transaction ID text search */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="audit-filter-transaction-id"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Transaction ID (bulk grouping)
         </label>
         <input
+          id="audit-filter-transaction-id"
           type="text"
           value={filters.transactionId ?? ''}
           onChange={(e) => setFilter('transactionId', e.target.value || undefined)}
@@ -262,9 +278,9 @@ export function AuditFilters(): JSX.Element {
 
       {/* 8. Date range */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Date Range
-        </label>
+        </p>
         <div className="flex gap-2">
           <input
             type="date"
@@ -307,12 +323,16 @@ export function AuditFilters(): JSX.Element {
 
       {/* 10. Full-text search */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="audit-filter-full-text"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Full-text Search
         </label>
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
           <input
+            id="audit-filter-full-text"
             type="text"
             value={filters.fullTextSearch ?? ''}
             onChange={(e) => setFilter('fullTextSearch', e.target.value || undefined)}
@@ -325,8 +345,12 @@ export function AuditFilters(): JSX.Element {
 
       {/* 11 + 12. Has version + Has GDPR consent (GDPR gate F-CLIO-7) */}
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <label
+          htmlFor="audit-filter-has-version"
+          className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+        >
           <input
+            id="audit-filter-has-version"
             type="checkbox"
             checked={filters.hasVersion ?? false}
             onChange={(e) => setFilter('hasVersion', e.target.checked || undefined)}
@@ -336,8 +360,12 @@ export function AuditFilters(): JSX.Element {
           Has version (Part 140 Cell Versioning)
         </label>
         {canViewGdprAudit && (
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="audit-filter-has-consent"
+            className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+          >
             <input
+              id="audit-filter-has-consent"
               type="checkbox"
               checked={filters.hasConsent ?? false}
               onChange={(e) => setFilter('hasConsent', e.target.checked || undefined)}

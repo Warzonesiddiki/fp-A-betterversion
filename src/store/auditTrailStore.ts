@@ -9,13 +9,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import type { CellAddress } from '@/types/cell';
-import type {
-  CellAuditEntry,
-  ExtendedAuditEntry,
-  AuditFilters,
-  AuditSource,
-  AuditOperation,
-} from '@/types/audit';
+import type { ExtendedAuditEntry, AuditFilters, AuditSource, AuditOperation } from '@/types/audit';
 
 export type { ExtendedAuditEntry, AuditSource, AuditOperation };
 
@@ -225,7 +219,7 @@ export const useAuditTrailStore = create<State & Actions>()(
               scenarioId: 'base',
               periodId: DEMO_PERIODS[Math.floor(i / 7) % DEMO_PERIODS.length]!,
               lineItemId: `item-${i}`,
-            } as any,
+            },
             userId: DEMO_USERS[i % DEMO_USERS.length]!,
             operation: DEMO_OPERATIONS[i % DEMO_OPERATIONS.length]!,
             dataType: 'number',

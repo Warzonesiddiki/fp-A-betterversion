@@ -8,6 +8,7 @@ import {
   type MigrationReadiness,
   type ColumnMapping,
 } from '@/engines/MigrationEngine';
+import { parseCSV } from '@/utils/csv';
 
 import { FileDropZone } from '@/components/ui/FileDropZone';
 import { Button } from '@/components/ui/Button';
@@ -30,22 +31,6 @@ import {
 const migrationEngine = new MigrationEngine();
 
 type WizardStep = 'upload' | 'analyze' | 'map' | 'import' | 'verify';
-
-function parseCSVLine(line: string): string[] {
-  const values: string[] = [];
-  let current = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (c === '"') inQuotes = !inQuotes;
-    else if (c === ',' && !inQuotes) {
-      values.push(current);
-      current = '';
-    } else current += c;
-  }
-  values.push(current);
-  return values;
-}
 
 export default function DataImportPage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -184,21 +169,12 @@ export default function DataImportPage() {
     setRecFile(file);
     try {
       const text = await file.text();
-      const lines = text.split('\n').filter((l) => l.trim());
-      if (lines.length < 2) {
+      const { headers, rows: data } = parseCSV(text);
+      if (headers.length === 0 || data.length === 0) {
         setRecError('File must have a header row and at least one data row.');
         setRecLoading(false);
         return;
       }
-      const headers = lines[0]!.split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
-      const data = lines.slice(1).map((line) => {
-        const values = parseCSVLine(line);
-        const row: Record<string, string> = {};
-        headers.forEach((h, i) => {
-          row[h] = (values[i] || '').trim();
-        });
-        return row;
-      });
       setRecData(data);
       if (headers.length >= 2) {
         setRecKeyCol(headers[0]!);

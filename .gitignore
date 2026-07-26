@@ -6,6 +6,7 @@ coverage/
 bundle-report/
 stats.html
 graphify-out/
+src/graphify-out/
 *.tsbuildinfo
 
 # OS / IDE
@@ -22,6 +23,8 @@ graphify-out/
 # Logs & audit trails
 *.log
 AUDIT_LOGS/
+reports/ts-errors*.txt
+reports/full-results.txt
 
 # Test artifacts
 test-results/
@@ -30,7 +33,7 @@ playwright-report/
 __pycache__/
 
 # Root-level diagnostic dumps (don't commit these)
-/tsc_*.txt
+/tsc*.txt
 /tsc_*.log
 /tsc_output.txt
 /eslint*.txt
@@ -38,8 +41,9 @@ __pycache__/
 !/eslint.config.js
 /build_output.txt
 /test_output.txt
+/test-output.txt
 /test.txt
-/vitest_output.txt
+/vitest*.txt
 /worker_pool_test.txt
 /codebase-context.txt
 /depcheck_output.txt
@@ -50,6 +54,27 @@ __pycache__/
 /stores.txt
 /tests.txt
 /wave02_setup.log
+/*_count.txt
+/*_counts.txt
+/*_err*.txt
+/*_eslint*.txt
+/*_lc*.txt
+/*_src.txt
+/*_test*.txt
+/memdir*.txt
+/tcount.txt
+/out.txt
+/exit.txt
+/git_status.txt
+/input_content.txt
+/select_content.txt
+/tabs_content.txt
+/tabs_text.txt
+/probe-marker.txt
+/badge.txt
+/ai_count.txt
+/ai_intel.txt
+/utf8.txt
 
 # Root-level agent progress / one-off planning docs
 /agent_*_progress.md
@@ -65,52 +90,60 @@ __pycache__/
 /NATIVE_BUILD_LOG.md
 /SECURITY_MIGRATION.md
 
-# Root-level orphan scripts (move to .archive/scripts/ instead of committing here)
+# Root-level orphan scripts
 /*.cjs
 !eslint.config.cjs
 /*.mjs
 /check-allocation-types.mjs
 /check-types.mjs
 
-# Misc binaries / DBs in root
+# Misc binaries / DBs in root and generated data dirs
 /*.tgz
 /*.db
+/*.db-shm
+/*.db-wal
 /sdk.tgz
 /ruvector.db
+server/data/*.db
+server/data/*.db-shm
+server/data/*.db-wal
 
-# Agent / AI tooling state
+# Agent / AI tooling state (not production source)
 .claude/
 .gemini/
 .aider*
-.claude-flow/sessions/
-.claude-flow/data/pending-insights.jsonl
+.claude-flow/
 .openclaude/
+.openhands/
+.hermes/
+.swarm/
+.obsidian/
+.planning/
+_TEMP_ACTIVE/
+AGENT_SWARM/
+hive/
+.a5c/
+.agents/
 
-# Archive of legacy/cruft (kept on disk for reference, not in git)
+# Archive of legacy/cruft
 .archive/
 
 # Tauri build output
 src-tauri/target/
 HANDOVER/
 
-# Agent temp directories (ATLAS P0 G20 hygiene)
+# Agent temp directories
 .hera-tmp/
 .hermes-tmp/
 .atlas-tmp/
-# docs/drafts/ contains per-agent scratch notes (apollo, athena, atlas,
-# hephaestus, hera, hermes, iris, leader, mnemosyne, prometheus, strategos).
-# These are Muse working files and never ship to production.
 docs/drafts/
-# Local memory store (per-agent persistent notes) - not for production
 memory/
 
 # Log files at repo root
 /audit.out
 /err.out
 
-# Muse scratch files (Apollo DECISION 1, 2026-06-15)
-# Per Leader grant: Apollo may amend .gitignore for Muse scratch + tooling
-# EXCLUDED (canonical, must be TRACKED): /AGENTS.md, /CLAUDE.md, /OPENHANDS_*.md
+# Scratch lifecycle
 /_*.ps1
 /_*.sh
 /_*.txt
@@ -118,17 +151,8 @@ memory/
 /check_*.sh
 /test_marker.txt
 /pwd_test.txt
-
-# Tooling / backup directories (Apollo .gitignore, 2026-06-15)
-# /.openhands/ - REMOVED by ATLAS 2026-06-15: see ATLAS NOTE above
-/.aionrs/
-/.openclaude-backup-*/
-/mnemosyne_ship/
-
-
-# NEVER-AGAIN RULE #59 — SCRATCH-FILE-LIFECYCLE (T-MN-051, 2026-06-16)
-# Per FOUNDER WORKSPACE HYGIENE DIRECTIVE 2026-06-16 + LEADER PICK A APPROVED
-# Closes 3 gaps in Apollo DECISION 1 .gitignore: *.out files + g5_results.json + *.bak* backups
 /_*.out
 /g5_results.json
 /tools/*.bak*
+*.bak
+*.backup

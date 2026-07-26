@@ -777,6 +777,7 @@ export interface GLState {
   importHistory: ImportHistoryEntry[];
   lastImportEntryIds: string[];
   setEntries: (entries: GLEntry[]) => void;
+  addEntries: (entries: GLEntry[]) => void;
   addEntry: (entry: GLEntry | GLEntry[]) => void;
   setAccounts: (accounts: GLAccount[]) => void;
   generateTrialBalance: () => void;
@@ -792,8 +793,15 @@ export interface GLState {
   recordImport: (result: ImportResult) => void;
   undoLastImport: () => void;
   checkDuplicates: (entries: GLEntry[]) => { duplicates: number; newEntries: GLEntry[] };
-  validateEntries: (entries: Partial<GLEntry>[]) => { isValid: boolean; errors: string[]; validCount: number };
-  importGLData: (entries: Partial<GLEntry>[], filename?: string) =>
+  validateEntries: (entries: Partial<GLEntry>[]) => {
+    isValid: boolean;
+    errors: string[];
+    validCount: number;
+  };
+  importGLData: (
+    entries: Partial<GLEntry>[],
+    filename?: string
+  ) =>
     | { success: true; imported: number; duplicates: number; errors: number }
     | { success: false; imported: number; errors: number };
   syncToCube: () => void;

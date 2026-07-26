@@ -13,6 +13,8 @@ import { Alert } from '@/components/ui/Alert';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
+import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
+import type { GLEntry } from '@/types';
 import {
   CheckCircle2,
   Upload,
@@ -26,25 +28,6 @@ import {
 } from 'lucide-react';
 
 const excelEngine = new ExcelImportEngine();
-
-function parseCSVLine(line: string): string[] {
-  const values: string[] = [];
-  let current = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      values.push(current);
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  values.push(current);
-  return values;
-}
 
 function mappingsToArray(
   mappings: Record<string, string>
@@ -127,33 +110,22 @@ export default function GLUploadPage() {
 
       try {
         if (ext === 'csv') {
-          // CSV parsing (existing logic)
           const text = await file.text();
-          const lines = text.split('\n').filter((l) => l.trim());
-          if (lines.length < 2) {
+          const { headers, rows: data } = parseCSV(text);
+          if (headers.length === 0 || data.length === 0) {
             setImportError(
               'File contains no data. The file must have a header row and at least one data row.'
             );
             setImportStatus('idle');
             return;
           }
-          const headers = lines[0]!.split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
-          const uniqueHeaders = new Set(headers);
-          if (uniqueHeaders.size !== headers.length) {
+          if (hasDuplicateHeaders(headers)) {
             setImportError(
               'Duplicate column headers detected. Each column must have a unique name.'
             );
             setImportStatus('idle');
             return;
           }
-          const data = lines.slice(1).map((line) => {
-            const values = parseCSVLine(line);
-            const row: Record<string, string> = {};
-            headers.forEach((h, i) => {
-              row[h] = (values[i] || '').trim();
-            });
-            return row;
-          });
           if (data.length === 0) {
             setImportError('No data rows found after the header. Please check your file.');
             setImportStatus('idle');
@@ -318,16 +290,22 @@ export default function GLUploadPage() {
 
     const validRows = mappedData.filter((r) => r.accountCode && r.date);
     if (validRows.length === 0) {
-      setImportError('No valid rows found. All rows are missing required fields (accountCode + date).');
+      setImportError(
+        'No valid rows found. All rows are missing required fields (accountCode + date).'
+      );
       setImportStatus('idle');
       return;
     }
 
     // Use the new robust high-level import action
-    const result = useGLStore.getState().importGLData(validRows as any, currentFile?.name);
+    const result = useGLStore
+      .getState()
+      .importGLData(validRows satisfies Partial<GLEntry>[], currentFile?.name);
 
     if (!result.success) {
-      setImportError('Import failed: ' + (result.errors ? 'validation/duplicates issues' : 'unknown'));
+      setImportError(
+        'Import failed: ' + (result.errors ? 'validation/duplicates issues' : 'unknown')
+      );
       setImportStatus('error');
       return;
     }
