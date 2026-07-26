@@ -268,7 +268,9 @@ export class CubeMigrationEngine {
     config: MigrationConfig,
     errors: MigrationError[]
   ): { membersAdded: number; cellsImported: number } {
-    const records = parseCSVRecords(data).filter((record) => !(record[0] ?? '').trim().startsWith('#'));
+    const records = parseCSVRecords(data).filter(
+      (record) => !(record[0] ?? '').trim().startsWith('#')
+    );
     let membersAdded = 0;
     let cellsImported = 0;
 
@@ -288,7 +290,9 @@ export class CubeMigrationEngine {
     config: MigrationConfig,
     errors: MigrationError[]
   ): { membersAdded: number; cellsImported: number } {
-    const records = parseCSVRecords(data).filter((record) => !(record[0] ?? '').trim().startsWith('#'));
+    const records = parseCSVRecords(data).filter(
+      (record) => !(record[0] ?? '').trim().startsWith('#')
+    );
     let membersAdded = 0;
     let cellsImported = 0;
 

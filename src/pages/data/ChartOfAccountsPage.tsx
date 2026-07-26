@@ -12,6 +12,13 @@ import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FileDropZone } from '@/components/ui/FileDropZone';
 import { parseCSV } from '@/utils/csv';
+import {
+  getDescendantAccountIds,
+  getNormalBalance,
+  normalizeAccountType,
+  rowValue,
+  validateChartAccountDraft,
+} from '@/domain/chartOfAccounts';
 
 import type { AccountType, GLAccount } from '@/types';
 
@@ -45,17 +52,6 @@ const accountRanges = [
   { label: '5000-5999', desc: 'COGS' },
   { label: '6000-6999', desc: 'Expenses' },
 ];
-
-function getNormalBalance(type: AccountType): string {
-  switch (type) {
-    case 'Asset':
-    case 'OpEx':
-    case 'COGS':
-      return 'Debit';
-    default:
-      return 'Credit';
-  }
-}
 
 export default function ChartOfAccountsPage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -98,18 +94,10 @@ export default function ChartOfAccountsPage() {
     setEditingId(null);
   }, []);
 
-  const formErrors = useMemo(() => {
-    const errors: Record<string, string> = {};
-    if (!form.code || form.code.length < 2) {
-      errors.code = 'Code must be at least 2 characters';
-    } else if (accounts.some((a) => a.code === form.code && a.id !== editingId)) {
-      errors.code = `Code "${form.code}" already exists`;
-    }
-    if (!form.name || form.name.length < 2) {
-      errors.name = 'Name must be at least 2 characters';
-    }
-    return errors;
-  }, [form, accounts, editingId]);
+  const formErrors = useMemo(
+    () => validateChartAccountDraft(form, accounts, editingId).errors,
+    [form, accounts, editingId]
+  );
 
   const filteredAccounts = useMemo(() => {
     let list = accounts;
@@ -123,15 +111,16 @@ export default function ChartOfAccountsPage() {
     return list.sort((a, b) => a.code.localeCompare(b.code));
   }, [accounts, filterType, search]);
 
-  const parentOptions = useMemo(
-    () => [
+  const parentOptions = useMemo(() => {
+    const blockedIds = editingId ? getDescendantAccountIds(accounts, editingId) : new Set<string>();
+    if (editingId) blockedIds.add(editingId);
+    return [
       { value: '', label: 'None (Top Level)' },
       ...accounts
-        .filter((a) => a.level < 3)
+        .filter((a) => a.level < 3 && !blockedIds.has(a.id))
         .map((a) => ({ value: a.id, label: `${a.code} — ${a.name}` })),
-    ],
-    [accounts]
-  );
+    ];
+  }, [accounts, editingId]);
 
   const handleSubmit = useCallback(() => {
     if (Object.keys(formErrors).length > 0) return;
@@ -213,44 +202,50 @@ export default function ChartOfAccountsPage() {
         const { headers, rows } = parseCSV(text);
         if (headers.length === 0 || rows.length === 0) return;
 
-        const lowerHeaders = headers.map((h) => h.toLowerCase());
-        const getValue = (row: Record<string, string>, field: string, fallbackIndex: number): string => {
-          const headerIndex = lowerHeaders.indexOf(field);
-          const header = headerIndex >= 0 ? headers[headerIndex] : headers[fallbackIndex];
-          return header ? row[header] || '' : '';
-        };
         const newAccounts: GLAccount[] = [];
+        let skippedRows = 0;
+        const importedCodes = new Set(accounts.map((a) => a.code.toUpperCase()));
 
         rows.forEach((row, idx) => {
-          const code = getValue(row, 'code', 0);
-          const name = getValue(row, 'name', 1);
-          const type = (getValue(row, 'type', -1) || 'OpEx') as AccountType;
+          const code = rowValue(row, headers, 'code', 0).trim().toUpperCase();
+          const name = rowValue(row, headers, 'name', 1).trim();
+          const type = normalizeAccountType(rowValue(row, headers, 'type', -1)) ?? 'OpEx';
+          const validation = validateChartAccountDraft({ code, name, type }, [
+            ...accounts,
+            ...newAccounts,
+          ]);
 
-          if (code && name && !accounts.some((a) => a.code === code)) {
-            newAccounts.push({
-              id: `acct-csv-${Date.now()}-${idx}`,
-              code: code.toUpperCase(),
-              name,
-              type,
-              category: getValue(row, 'category', -1) || '-',
-              subCategory: getValue(row, 'subcategory', -1) || '',
-              parentId: null,
-              level: 0,
-              sortOrder: accounts.length + newAccounts.length,
-              isActive: true,
-              entityId: 'default',
-              departmentId: null,
-              isCalculated: false,
-              formula: null,
-              children: [],
-            });
+          if (!validation.valid || importedCodes.has(code)) {
+            skippedRows++;
+            return;
           }
+
+          importedCodes.add(code);
+          newAccounts.push({
+            id: `acct-csv-${Date.now()}-${idx}`,
+            code,
+            name,
+            type,
+            category: rowValue(row, headers, 'category', -1) || '-',
+            subCategory: rowValue(row, headers, 'subcategory', -1) || '',
+            parentId: null,
+            level: 0,
+            sortOrder: accounts.length + newAccounts.length,
+            isActive: true,
+            entityId: 'default',
+            departmentId: null,
+            isCalculated: false,
+            formula: null,
+            children: [],
+          });
         });
 
         if (newAccounts.length > 0) {
           // Use dataStore if available, otherwise fall back
           newAccounts.forEach((acc) => addAccount(acc));
-          alert(`Imported ${newAccounts.length} new accounts from CSV`);
+          alert(
+            `Imported ${newAccounts.length} new accounts from CSV${skippedRows ? ` (${skippedRows} skipped)` : ''}`
+          );
         }
       } catch (e) {
         alert('Failed to import CSV: ' + (e as Error).message);
@@ -583,6 +578,9 @@ export default function ChartOfAccountsPage() {
                 value={form.parentId || ''}
                 onChange={(val) => setForm({ ...form, parentId: val || null })}
               />
+              {formErrors.parentId && (
+                <p className="text-xs text-red-400 mt-1">{formErrors.parentId}</p>
+              )}
             </div>
           </div>
           <div className="flex justify-end gap-3 mt-6">

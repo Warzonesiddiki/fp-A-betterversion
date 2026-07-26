@@ -144,6 +144,7 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 - [x] GL store import path exists and smoke-tested.
 - [x] GL upload wizard exists.
 - [x] Chart of Accounts CRUD exists.
+  - Section 009 added domain validation for duplicate codes, type normalization, normal balances, and circular hierarchy prevention.
 - [x] Data reconciliation page exists.
 - [ ] Finish Trial Balance + Journals + Explorer hardening.
   - Acceptance: import entries → trial balance auto-generates → journals filter/paginate/export → account analysis renders monthly trend/running balance.
@@ -333,7 +334,7 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 
 ## 14. Immediate Next Execution Order
 
-1. **Fix install reproducibility** (`npm ci` peer conflict + ONNX postinstall fragility).
+1. **Start Section 010: Persistence, Backup, Restore, Integrity** — backup/restore and integrity UI is the next active data foundation gap.
 2. **Stabilize tests** starting with audit suite and any hanging target tests.
 3. **Create official test baseline report** after hangs are isolated.
 4. **Complete GL Trial Balance/Journals/Explorer hardening** because it is the foundation for reports.
@@ -365,5 +366,6 @@ The project is complete only when all of these are true:
 
 - [x] Section 007 — General Ledger Import Pipeline — COMPLETE: 100% READY.
 - [x] Section 008 — Robust CSV/XLS/XLSX Parser and Mapping — COMPLETE: 100% READY.
-- [ ] Section 009 — Chart of Accounts Production Workflow — ACTIVE NEXT.
+- [x] Section 009 — Chart of Accounts Production Workflow — COMPLETE: 100% READY.
+- [ ] Section 010 — Persistence, Backup, Restore, Integrity — ACTIVE NEXT.
 

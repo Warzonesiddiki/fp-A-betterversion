@@ -10,5 +10,6 @@
 | 006 | Canonical Financial Data Model | Data | COMPLETE |
 | 007 | General Ledger Import Pipeline | Data | COMPLETE |
 | 008 | Robust CSV/XLS/XLSX Parser and Mapping | Data | COMPLETE |
-| 009 | Chart of Accounts Production Workflow | Data | ACTIVE |
-| 010-100 | Remaining BMAD sections | See project task board | BLOCKED |
+| 009 | Chart of Accounts Production Workflow | Data | COMPLETE |
+| 010 | Persistence, Backup, Restore, Integrity | Data | ACTIVE |
+| 011-100 | Remaining BMAD sections | See project task board | BLOCKED |
