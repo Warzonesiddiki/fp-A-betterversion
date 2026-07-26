@@ -11,6 +11,14 @@ import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FileDropZone } from '@/components/ui/FileDropZone';
+import { parseCSV } from '@/utils/csv';
+import {
+  getDescendantAccountIds,
+  getNormalBalance,
+  normalizeAccountType,
+  rowValue,
+  validateChartAccountDraft,
+} from '@/domain/chartOfAccounts';
 
 import type { AccountType, GLAccount } from '@/types';
 
@@ -44,17 +52,6 @@ const accountRanges = [
   { label: '5000-5999', desc: 'COGS' },
   { label: '6000-6999', desc: 'Expenses' },
 ];
-
-function getNormalBalance(type: AccountType): string {
-  switch (type) {
-    case 'Asset':
-    case 'OpEx':
-    case 'COGS':
-      return 'Debit';
-    default:
-      return 'Credit';
-  }
-}
 
 export default function ChartOfAccountsPage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -97,18 +94,10 @@ export default function ChartOfAccountsPage() {
     setEditingId(null);
   }, []);
 
-  const formErrors = useMemo(() => {
-    const errors: Record<string, string> = {};
-    if (!form.code || form.code.length < 2) {
-      errors.code = 'Code must be at least 2 characters';
-    } else if (accounts.some((a) => a.code === form.code && a.id !== editingId)) {
-      errors.code = `Code "${form.code}" already exists`;
-    }
-    if (!form.name || form.name.length < 2) {
-      errors.name = 'Name must be at least 2 characters';
-    }
-    return errors;
-  }, [form, accounts, editingId]);
+  const formErrors = useMemo(
+    () => validateChartAccountDraft(form, accounts, editingId).errors,
+    [form, accounts, editingId]
+  );
 
   const filteredAccounts = useMemo(() => {
     let list = accounts;
@@ -122,15 +111,16 @@ export default function ChartOfAccountsPage() {
     return list.sort((a, b) => a.code.localeCompare(b.code));
   }, [accounts, filterType, search]);
 
-  const parentOptions = useMemo(
-    () => [
+  const parentOptions = useMemo(() => {
+    const blockedIds = editingId ? getDescendantAccountIds(accounts, editingId) : new Set<string>();
+    if (editingId) blockedIds.add(editingId);
+    return [
       { value: '', label: 'None (Top Level)' },
       ...accounts
-        .filter((a) => a.level < 3)
+        .filter((a) => a.level < 3 && !blockedIds.has(a.id))
         .map((a) => ({ value: a.id, label: `${a.code} — ${a.name}` })),
-    ],
-    [accounts]
-  );
+    ];
+  }, [accounts, editingId]);
 
   const handleSubmit = useCallback(() => {
     if (Object.keys(formErrors).length > 0) return;
@@ -182,7 +172,7 @@ export default function ChartOfAccountsPage() {
   const handleDelete = useCallback(
     (id: string) => {
       // B1 Enhancement: soft-delete warning based on GL usage
-      const hasGL = entries.some((e) => e.accountCode === accounts.find(a => a.id === id)?.code);
+      const hasGL = entries.some((e) => e.accountCode === accounts.find((a) => a.id === id)?.code);
       if (hasGL) {
         if (!confirm('This account has GL entries. Deactivate instead of delete? (recommended)')) {
           deleteAccount(id);
@@ -205,29 +195,39 @@ export default function ChartOfAccountsPage() {
   );
 
   // B1 Enhancement: CSV Import for Chart of Accounts
-  const handleCSVImport = useCallback(async (file: File) => {
-    try {
-      const text = await file.text();
-      const lines = text.split('\n').filter((l) => l.trim());
-      if (lines.length < 2) return;
+  const handleCSVImport = useCallback(
+    async (file: File) => {
+      try {
+        const text = await file.text();
+        const { headers, rows } = parseCSV(text);
+        if (headers.length === 0 || rows.length === 0) return;
 
-      const headers = lines[0]!.split(',').map((h) => h.trim().toLowerCase());
-      const newAccounts: any[] = [];
+        const newAccounts: GLAccount[] = [];
+        let skippedRows = 0;
+        const importedCodes = new Set(accounts.map((a) => a.code.toUpperCase()));
 
-      lines.slice(1).forEach((line, idx) => {
-        const values = line.split(',').map((v) => v.trim().replace(/^"|"$/g, ''));
-        const code = values[headers.indexOf('code')] || values[0];
-        const name = values[headers.indexOf('name')] || values[1];
-        const type = (values[headers.indexOf('type')] || 'OpEx') as AccountType;
+        rows.forEach((row, idx) => {
+          const code = rowValue(row, headers, 'code', 0).trim().toUpperCase();
+          const name = rowValue(row, headers, 'name', 1).trim();
+          const type = normalizeAccountType(rowValue(row, headers, 'type', -1)) ?? 'OpEx';
+          const validation = validateChartAccountDraft({ code, name, type }, [
+            ...accounts,
+            ...newAccounts,
+          ]);
 
-        if (code && name && !accounts.some((a) => a.code === code)) {
+          if (!validation.valid || importedCodes.has(code)) {
+            skippedRows++;
+            return;
+          }
+
+          importedCodes.add(code);
           newAccounts.push({
             id: `acct-csv-${Date.now()}-${idx}`,
-            code: code.toUpperCase(),
+            code,
             name,
             type,
-            category: values[headers.indexOf('category')] || '-',
-            subCategory: values[headers.indexOf('subcategory')] || '',
+            category: rowValue(row, headers, 'category', -1) || '-',
+            subCategory: rowValue(row, headers, 'subcategory', -1) || '',
             parentId: null,
             level: 0,
             sortOrder: accounts.length + newAccounts.length,
@@ -238,18 +238,21 @@ export default function ChartOfAccountsPage() {
             formula: null,
             children: [],
           });
-        }
-      });
+        });
 
-      if (newAccounts.length > 0) {
-        // Use dataStore if available, otherwise fall back
-        newAccounts.forEach((acc) => addAccount(acc));
-        alert(`Imported ${newAccounts.length} new accounts from CSV`);
+        if (newAccounts.length > 0) {
+          // Use dataStore if available, otherwise fall back
+          newAccounts.forEach((acc) => addAccount(acc));
+          alert(
+            `Imported ${newAccounts.length} new accounts from CSV${skippedRows ? ` (${skippedRows} skipped)` : ''}`
+          );
+        }
+      } catch (e) {
+        alert('Failed to import CSV: ' + (e as Error).message);
       }
-    } catch (e) {
-      alert('Failed to import CSV: ' + (e as Error).message);
-    }
-  }, [accounts, addAccount]);
+    },
+    [accounts, addAccount]
+  );
 
   // B1 Enhancement: Export CSV
   const exportCSV = useCallback(() => {
@@ -575,6 +578,9 @@ export default function ChartOfAccountsPage() {
                 value={form.parentId || ''}
                 onChange={(val) => setForm({ ...form, parentId: val || null })}
               />
+              {formErrors.parentId && (
+                <p className="text-xs text-red-400 mt-1">{formErrors.parentId}</p>
+              )}
             </div>
           </div>
           <div className="flex justify-end gap-3 mt-6">

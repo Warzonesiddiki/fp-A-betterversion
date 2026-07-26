@@ -8,6 +8,7 @@ import { ReconciliationPanel } from './ReconciliationPanel';
 import { ReconciliationResults } from './ReconciliationResults';
 import { Download, RefreshCw, ArrowLeftRight, FileText } from 'lucide-react';
 import { saveAs } from 'file-saver';
+import { parseCSV } from '@/utils/csv';
 
 interface RecResult {
   matching: number;
@@ -35,7 +36,7 @@ export default function ReconciliationPage() {
     entries.forEach((e) => {
       const key = (e.accountCode || e.accountId || '').toUpperCase().trim();
       if (!key) return;
-      const net = (e.debit || 0) - (e.credit || 0) || (e.amount || 0);
+      const net = (e.debit || 0) - (e.credit || 0) || e.amount || 0;
       map.set(key, (map.get(key) || 0) + net);
     });
     return map;
@@ -48,30 +49,30 @@ export default function ReconciliationPage() {
 
     try {
       const text = await file.text();
-      const lines = text.split(/\r?\n/).filter((l) => l.trim());
-      if (lines.length < 2) {
+      const { headers, rows: data } = parseCSV(text);
+      if (headers.length === 0 || data.length === 0) {
         setRecError('CSV must have at least a header and one data row');
         return;
       }
 
-      const headers = lines[0]!.split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
       setCsvHeaders(headers);
-
-      const data: Record<string, string>[] = [];
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i]!.split(',').map((v) => v.trim().replace(/^"|"$/g, ''));
-        const row: Record<string, string> = {};
-        headers.forEach((h, idx) => {
-          row[h] = values[idx] || '';
-        });
-        data.push(row);
-      }
       setRecData(data);
 
       // Auto-suggest likely columns
-      const lowerHeaders = headers.map((h) => h.toLowerCase());
-      const keyGuess = lowerHeaders.find((h) => h.includes('account') || h.includes('code') || h.includes('key')) || headers[0];
-      const valGuess = lowerHeaders.find((h) => h.includes('balance') || h.includes('amount') || h.includes('value')) || headers[1] || '';
+      const keyGuess =
+        headers.find((h) => {
+          const lower = h.toLowerCase();
+          return lower.includes('account') || lower.includes('code') || lower.includes('key');
+        }) ??
+        headers[0] ??
+        '';
+      const valGuess =
+        headers.find((h) => {
+          const lower = h.toLowerCase();
+          return lower.includes('balance') || lower.includes('amount') || lower.includes('value');
+        }) ??
+        headers[1] ??
+        '';
 
       setRecKeyCol(keyGuess);
       setRecValCol(valGuess);
@@ -121,7 +122,7 @@ export default function ReconciliationPage() {
         const expected = glBalances.get(key) || 0;
         const diff = expected - actual;
 
-        const pctDiff = expected !== 0 ? Math.abs(diff) / Math.abs(expected) : (actual === 0 ? 0 : 1);
+        const pctDiff = expected !== 0 ? Math.abs(diff) / Math.abs(expected) : actual === 0 ? 0 : 1;
         const isMatch = Math.abs(diff) <= tolerance || pctDiff <= tolerance;
 
         if (expected === 0 && actual === 0) {
@@ -168,14 +169,11 @@ export default function ReconciliationPage() {
     const rows = result.details
       .filter((d) => d.expected !== 0 || d.actual !== 0)
       .map((d) => {
-        const status = d.expected === 0 ? 'missing' : Math.abs(d.diff) <= tolerance ? 'match' : 'mismatch';
-        return [
-          d.key,
-          d.expected.toFixed(2),
-          d.actual.toFixed(2),
-          d.diff.toFixed(2),
-          status,
-        ].join(',');
+        const status =
+          d.expected === 0 ? 'missing' : Math.abs(d.diff) <= tolerance ? 'match' : 'mismatch';
+        return [d.key, d.expected.toFixed(2), d.actual.toFixed(2), d.diff.toFixed(2), status].join(
+          ','
+        );
       })
       .join('\n');
 
@@ -205,7 +203,8 @@ export default function ReconciliationPage() {
             Data Reconciliation
           </h1>
           <p className="text-slate-400 mt-1">
-            Compare imported GL data against external source files with { (tolerance * 100).toFixed(1) }% tolerance matching.
+            Compare imported GL data against external source files with{' '}
+            {(tolerance * 100).toFixed(1)}% tolerance matching.
           </p>
         </div>
         <div className="flex gap-2">
@@ -225,7 +224,9 @@ export default function ReconciliationPage() {
         <Card>
           <CardContent className="p-4">
             <div className="text-sm text-slate-400">GL Entries Loaded</div>
-            <div className="text-2xl font-semibold tabular-nums">{entries.length.toLocaleString()}</div>
+            <div className="text-2xl font-semibold tabular-nums">
+              {entries.length.toLocaleString()}
+            </div>
             <div className="text-xs text-slate-500 mt-1">Unique accounts: {glBalances.size}</div>
           </CardContent>
         </Card>
@@ -248,7 +249,9 @@ export default function ReconciliationPage() {
               />
               <span className="text-xs text-slate-500">({(tolerance * 100).toFixed(1)}%)</span>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">Absolute or relative difference allowed</p>
+            <p className="text-[10px] text-slate-500 mt-1">
+              Absolute or relative difference allowed
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -260,7 +263,11 @@ export default function ReconciliationPage() {
               </div>
             </div>
             {!hasGLData && (
-              <Button size="sm" onClick={() => (window.location.href = '/data/gl-upload')} className="mt-2 w-fit">
+              <Button
+                size="sm"
+                onClick={() => (window.location.href = '/data/gl-upload')}
+                className="mt-2 w-fit"
+              >
                 Go to GL Upload
               </Button>
             )}
@@ -305,7 +312,8 @@ export default function ReconciliationPage() {
             </>
           ) : (
             <>
-              <ArrowLeftRight className="h-4 w-4 mr-2" /> Run Reconciliation ({(tolerance * 100).toFixed(0)}% tolerance)
+              <ArrowLeftRight className="h-4 w-4 mr-2" /> Run Reconciliation (
+              {(tolerance * 100).toFixed(0)}% tolerance)
             </>
           )}
         </Button>
@@ -334,8 +342,10 @@ export default function ReconciliationPage() {
 
       {/* Help / Acceptance */}
       <div className="text-xs text-slate-500 border-t border-slate-800 pt-4">
-        <strong>Acceptance Criteria (1.1.5):</strong> Side-by-side comparison of GL vs external file • 1% (configurable) tolerance • Detailed difference table with match/mismatch/missing • Export of differences as CSV. 
-        All logic uses live <code>glStore.entries</code> and performs pure numeric comparison.
+        <strong>Acceptance Criteria (1.1.5):</strong> Side-by-side comparison of GL vs external file
+        • 1% (configurable) tolerance • Detailed difference table with match/mismatch/missing •
+        Export of differences as CSV. All logic uses live <code>glStore.entries</code> and performs
+        pure numeric comparison.
       </div>
     </div>
   );

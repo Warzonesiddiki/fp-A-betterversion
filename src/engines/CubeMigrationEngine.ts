@@ -5,6 +5,8 @@
 // Pure TypeScript, deterministic, testable, zero external dependencies
 // =============================================================================
 
+import { parseCSVRecords } from '@/utils/csv';
+
 export type SourceSystem = 'essbase' | 'tm1' | 'ssas' | 'csv' | 'json' | 'custom';
 
 export interface MigrationConfig {
@@ -132,8 +134,8 @@ export class CubeMigrationEngine {
     const warnings: string[] = [];
     const delimiter = config.options.delimiter ?? ',';
 
-    const lines = data.split('\n').filter((l) => l.trim());
-    if (lines.length < 2) {
+    const records = parseCSVRecords(data, { delimiter });
+    if (records.length < 2) {
       errors.push({
         message: 'CSV must have at least a header and one data row',
         severity: 'error',
@@ -141,12 +143,12 @@ export class CubeMigrationEngine {
       return this.buildResult('csv', config, 0, 0, errors, warnings, start);
     }
 
-    const headers = lines[0]!.split(delimiter).map((h) => h.trim().replace(/^"|"$/g, ''));
+    const headers = records[0]!.map((h) => h.trim());
     let cellsImported = 0;
     const membersAdded = new Set<string>();
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i]!.split(delimiter).map((v) => v.trim().replace(/^"|"$/g, ''));
+    for (let i = 1; i < records.length; i++) {
+      const values = records[i]!.map((v) => v.trim());
       if (values.length !== headers.length) {
         errors.push({
           row: i + 1,
@@ -266,13 +268,14 @@ export class CubeMigrationEngine {
     config: MigrationConfig,
     errors: MigrationError[]
   ): { membersAdded: number; cellsImported: number } {
-    const lines = data.split('\n').filter((l) => l.trim());
+    const records = parseCSVRecords(data).filter(
+      (record) => !(record[0] ?? '').trim().startsWith('#')
+    );
     let membersAdded = 0;
     let cellsImported = 0;
 
-    for (const line of lines) {
-      if (line.startsWith('#') || line.trim() === '') continue;
-      const parts = line.split(',').map((p) => p.trim());
+    for (const record of records) {
+      const parts = record.map((p) => p.trim());
       if (parts.length >= 2) {
         membersAdded += parts.length - 1;
         cellsImported++;
@@ -287,12 +290,14 @@ export class CubeMigrationEngine {
     config: MigrationConfig,
     errors: MigrationError[]
   ): { membersAdded: number; cellsImported: number } {
-    const lines = data.split('\n').filter((l) => l.trim() && !l.startsWith('#'));
+    const records = parseCSVRecords(data).filter(
+      (record) => !(record[0] ?? '').trim().startsWith('#')
+    );
     let membersAdded = 0;
     let cellsImported = 0;
 
-    for (const line of lines) {
-      const parts = line.split(',').map((p) => p.trim());
+    for (const record of records) {
+      const parts = record.map((p) => p.trim());
       if (parts.length >= 3) {
         membersAdded += parts.length - 1;
         cellsImported++;

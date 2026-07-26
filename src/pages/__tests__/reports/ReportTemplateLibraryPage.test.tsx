@@ -31,7 +31,7 @@ vi.mock('@/store/reportStore', () => ({
   ),
 }));
 
-import { render, screen, fireEvent } from '@/test/testUtils';
+import { render, screen } from '@/test/testUtils';
 import ReportTemplateLibraryPage from '@/pages/reports/ReportTemplateLibraryPage';
 
 describe('ReportTemplateLibraryPage', () => {

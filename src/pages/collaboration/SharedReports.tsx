@@ -113,8 +113,7 @@ export function SharedReports() {
 
   // Apply date range + search filter to entries
   const filteredEntries = useMemo(() => {
-    const cutoff =
-      dateRange === 'all' ? null : Date.now() - Number(dateRange) * 24 * 60 * 60 * 1000;
+    const cutoff = dateRange === 'all' ? null : nowTick - Number(dateRange) * 24 * 60 * 60 * 1000;
     const q = searchQuery.trim().toLowerCase();
     return entries.filter((e) => {
       if (cutoff !== null) {
@@ -127,7 +126,7 @@ export function SharedReports() {
       }
       return true;
     });
-  }, [entries, dateRange, searchQuery]);
+  }, [entries, dateRange, nowTick, searchQuery]);
 
   const filteredStats = useMemo(() => computeReportStats(filteredEntries), [filteredEntries]);
 

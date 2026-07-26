@@ -20,6 +20,7 @@ describe('BackupRestore utility', () => {
     mockObjectStore = {
       getAll: vi.fn(),
       put: vi.fn(),
+      count: vi.fn(),
     };
     mockTx = {
       objectStore: vi.fn().mockReturnValue(mockObjectStore),
@@ -27,6 +28,9 @@ describe('BackupRestore utility', () => {
       onerror: null,
     };
     mockDb = {
+      objectStoreNames: {
+        contains: vi.fn(() => true),
+      },
       transaction: vi.fn().mockReturnValue(mockTx),
     };
     (dbStorage.openDB as any).mockResolvedValue(mockDb);
@@ -71,5 +75,22 @@ describe('BackupRestore utility', () => {
     const result = await BackupRestore.importBackup(file);
     expect(result.success).toBe(false);
     expect(result.errors[0]!).toContain('Failed to parse backup');
+  });
+
+  it('checkIntegrity reports store counts', async () => {
+    mockObjectStore.count.mockImplementation(() => {
+      const request: any = { result: 2, onsuccess: null, onerror: null };
+      setTimeout(() => {
+        request.onsuccess?.();
+        mockTx.oncomplete?.();
+      }, 0);
+      return request;
+    });
+
+    const result = await BackupRestore.checkIntegrity();
+    expect(result.ok).toBe(true);
+    expect(result.stores.stores).toBe(2);
+    expect(result.stores.backups).toBe(2);
+    expect(result.stores.metadata).toBe(2);
   });
 });

@@ -6,7 +6,6 @@ import type {
   GLEntry,
   TrialBalanceRow,
   AccountAnalysis,
-  ColumnMapping,
   GLState,
   ImportResult,
 } from '@/types';
@@ -119,7 +118,7 @@ export const useGLStore = create<GLState>()(
           });
         }),
 
-        addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries) => {
+        addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries: GLEntry[]) => {
           captureGLSnapshot(get);
           const ids = newEntries.map((e) => e.id);
           set((state) => {
@@ -131,57 +130,61 @@ export const useGLStore = create<GLState>()(
         }),
 
         /** High-level robust import action used by the GL Upload wizard */
-        importGLData: enforce(Permissions.IMPORT_CREATE, 'importGLData', (rawEntries, filename) => {
-          const validation = get().validateEntries(rawEntries);
-          if (!validation.isValid) {
-            set({ importError: validation.errors.slice(0, 5).join('; '), importStatus: 'error' });
-            return { success: false, imported: 0, errors: validation.errors.length };
+        importGLData: enforce(
+          Permissions.IMPORT_CREATE,
+          'importGLData',
+          (rawEntries: Partial<GLEntry>[], filename?: string) => {
+            const validation = get().validateEntries(rawEntries);
+            if (!validation.isValid) {
+              set({ importError: validation.errors.slice(0, 5).join('; '), importStatus: 'error' });
+              return { success: false, imported: 0, errors: validation.errors.length };
+            }
+
+            const { duplicates, newEntries } = get().checkDuplicates(rawEntries as GLEntry[]);
+
+            if (newEntries.length === 0) {
+              set({ importError: 'All rows were duplicates.', importStatus: 'error' });
+              return { success: false, imported: 0, errors: duplicates };
+            }
+
+            captureGLSnapshot(get);
+            const timestamp = Date.now();
+            const finalEntries = newEntries.map((e, i) => ({
+              ...e,
+              id: e.id || `gl-${timestamp}-${i}`,
+            })) as GLEntry[];
+
+            const ids = finalEntries.map((e) => e.id);
+
+            set((state) => {
+              state.entries.push(...finalEntries);
+              state.lastImportEntryIds = ids;
+              state.importStatus = 'complete';
+              state.importProgress = 100;
+              state.importError = null;
+              state.trialBalance = [];
+              state.accountAnalysis = null;
+            });
+
+            const result: ImportResult = {
+              filename: filename || 'unknown',
+              rowCount: rawEntries.length,
+              successCount: finalEntries.length,
+              errorCount: validation.errors.length + duplicates,
+              warningCount: duplicates,
+              status: duplicates > 0 ? 'partial' : 'success',
+            };
+
+            get().recordImport(result);
+
+            return {
+              success: true,
+              imported: finalEntries.length,
+              duplicates,
+              errors: validation.errors.length,
+            };
           }
-
-          const { duplicates, newEntries } = get().checkDuplicates(rawEntries as GLEntry[]);
-
-          if (newEntries.length === 0) {
-            set({ importError: 'All rows were duplicates.', importStatus: 'error' });
-            return { success: false, imported: 0, errors: duplicates };
-          }
-
-          captureGLSnapshot(get);
-          const timestamp = Date.now();
-          const finalEntries = newEntries.map((e, i) => ({
-            ...e,
-            id: e.id || `gl-${timestamp}-${i}`,
-          })) as GLEntry[];
-
-          const ids = finalEntries.map((e) => e.id);
-
-          set((state) => {
-            state.entries.push(...finalEntries);
-            state.lastImportEntryIds = ids;
-            state.importStatus = 'complete';
-            state.importProgress = 100;
-            state.importError = null;
-            state.trialBalance = [];
-            state.accountAnalysis = null;
-          });
-
-          const result = {
-            filename: filename || 'unknown',
-            rowCount: rawEntries.length,
-            successCount: finalEntries.length,
-            errorCount: validation.errors.length + duplicates,
-            warningCount: duplicates,
-            status: (duplicates > 0 ? 'partial' : 'success') as const,
-          };
-
-          get().recordImport(result);
-
-          return {
-            success: true,
-            imported: finalEntries.length,
-            duplicates,
-            errors: validation.errors.length,
-          };
-        }),
+        ),
 
         addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
           captureGLSnapshot(get);
@@ -376,8 +379,7 @@ export const useGLStore = create<GLState>()(
           const state = get();
           const existingKeys = new Set(
             state.entries.map(
-              (e) =>
-                `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? e.debit - e.credit}`
+              (e) => `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? e.debit - e.credit}`
             )
           );
           const duplicates: GLEntry[] = [];

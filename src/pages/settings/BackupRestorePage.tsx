@@ -27,6 +27,10 @@ export default function BackupRestorePage() {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [lastBackupDate, setLastBackupDate] = useState<string | null>(null);
+  const [integrityResult, setIntegrityResult] = useState<Awaited<
+    ReturnType<typeof BackupRestore.checkIntegrity>
+  > | null>(null);
+  const [isCheckingIntegrity, setIsCheckingIntegrity] = useState(false);
 
   useEffect(() => {
     document.title = 'FinPlan Pro - Backup & Restore';
@@ -39,6 +43,15 @@ export default function BackupRestorePage() {
       setLastBackupDate(new Date().toISOString());
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleIntegrityCheck = async () => {
+    setIsCheckingIntegrity(true);
+    try {
+      setIntegrityResult(await BackupRestore.checkIntegrity());
+    } finally {
+      setIsCheckingIntegrity(false);
     }
   };
 
@@ -113,11 +126,73 @@ export default function BackupRestorePage() {
             <ShieldCheck className="h-5 w-5 text-violet-400 shrink-0" />
             <div>
               <div className="text-sm text-slate-400">Integrity</div>
-              <div className="font-medium text-white">SHA-256 Checksum</div>
+              <div className="font-medium text-white">
+                {integrityResult
+                  ? integrityResult.ok
+                    ? 'Healthy'
+                    : 'Needs Attention'
+                  : 'Not checked'}
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Integrity */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-violet-400" />
+            Integrity Check
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-slate-400">
+            Verify that local persistence stores are available and countable before export or
+            restore operations.
+          </p>
+          <Button
+            variant="secondary"
+            onClick={handleIntegrityCheck}
+            disabled={isCheckingIntegrity}
+            aria-label="Run backup integrity check"
+          >
+            <ShieldCheck className="w-4 h-4 mr-2" />
+            {isCheckingIntegrity ? 'Checking...' : 'Run Integrity Check'}
+          </Button>
+          {integrityResult && (
+            <div
+              className={`p-4 rounded-lg border ${
+                integrityResult.ok
+                  ? 'bg-green-500/10 border-green-500/30'
+                  : 'bg-red-500/10 border-red-500/30'
+              }`}
+              role="status"
+            >
+              <div className="text-sm font-medium text-white mb-2">
+                {integrityResult.ok
+                  ? 'Storage integrity check passed'
+                  : 'Storage integrity check failed'}
+              </div>
+              <div className="text-xs text-slate-400 space-y-1">
+                <div>Stores: {integrityResult.stores.stores}</div>
+                <div>Backups: {integrityResult.stores.backups}</div>
+                <div>Metadata: {integrityResult.stores.metadata}</div>
+                <div>Checked: {new Date(integrityResult.checkedAt).toLocaleString()}</div>
+              </div>
+              {[...integrityResult.errors, ...integrityResult.warnings].length > 0 && (
+                <ul className="mt-3 space-y-1 text-xs text-slate-400">
+                  {[...integrityResult.errors, ...integrityResult.warnings].map(
+                    (message, index) => (
+                      <li key={index}>{message}</li>
+                    )
+                  )}
+                </ul>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Export */}
       <Card>

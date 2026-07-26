@@ -786,7 +786,7 @@ describe('IncidentResponse edge cases v2 (Probe T-FIX-12)', () => {
         lessonsLearned: '',
         actionItems: [],
         writtenBy: '',
-      } as any)
+      })
     ).toThrow();
   });
 
@@ -820,7 +820,7 @@ describe('IncidentResponse edge cases v2 (Probe T-FIX-12)', () => {
       ir.createIncident({
         title: 'T',
         description: 'D',
-        severity: 'UNKNOWN' as any,
+        severity: 'UNKNOWN' as never,
         reporter: 'r@example.com',
       })
     ).toThrow();

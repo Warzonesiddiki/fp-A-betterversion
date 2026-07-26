@@ -32,7 +32,12 @@ export function auditRequestMiddleware(req: Request, res: Response, next: NextFu
       const resourceType = extractResourceType(path);
 
       // Determine resource ID from params or body
-      const resourceId = req.params.id ?? req.body?.id ?? null;
+      const rawResourceId = req.params.id ?? req.body?.id ?? null;
+      const resourceId = Array.isArray(rawResourceId)
+        ? rawResourceId[0] ?? null
+        : rawResourceId === null || rawResourceId === undefined
+          ? null
+          : String(rawResourceId);
 
       // Skip logging for health checks and reads of non-sensitive data
       const shouldLog = method !== 'GET' || isSensitiveEndpoint(path);
@@ -73,7 +78,7 @@ function extractResourceType(path: string): string {
   // Skip 'api' prefix, return the next segment
   const apiIndex = segments.indexOf('api');
   if (apiIndex >= 0 && segments.length > apiIndex + 1) {
-    return segments[apiIndex + 1];
+    return segments[apiIndex + 1] ?? 'unknown';
   }
   return segments[0] ?? 'unknown';
 }
@@ -107,8 +112,14 @@ export function auditAction(params: {
 }) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (req.user) {
-      const resourceId = params.getResourceId?.(req) ?? req.params.id ?? null;
-      const details = params.getDetails?.(req) ?? null;
+      const rawResourceId = params.getResourceId?.(req) ?? req.params.id ?? null;
+      const resourceId = Array.isArray(rawResourceId)
+        ? rawResourceId[0] ?? null
+        : rawResourceId === null || rawResourceId === undefined
+          ? null
+          : String(rawResourceId);
+      const rawDetails = params.getDetails?.(req) ?? null;
+      const details = Array.isArray(rawDetails) ? rawDetails.join(',') : rawDetails;
 
       auditService.log({
         category: params.category,

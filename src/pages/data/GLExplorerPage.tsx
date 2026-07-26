@@ -119,12 +119,32 @@ export default function GLExplorerPage() {
         {entries.length.toLocaleString()} total · showing first {filtered.length}
       </p>
       {/* B2: Quick export from explorer */}
-      <Button size="sm" variant="ghost" onClick={() => {
-        const csv = ['Date,Account,Description,Debit,Credit'];
-        filtered.forEach(e => csv.push([e.date||e.period, e.accountCode, `"${(e.description||'').replace(/"/g,'""')}"`, e.debit, e.credit].join(',')));
-        const blob = new Blob([csv.join('\n')], {type:'text/csv'});
-        const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download='gl-explorer.csv';a.click();
-      }}>Export visible rows</Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => {
+          const csv = ['Date,Account,Description,Debit,Credit'];
+          filtered.forEach((e) =>
+            csv.push(
+              [
+                e.date || e.period,
+                e.accountCode,
+                `"${(e.description || '').replace(/"/g, '""')}"`,
+                e.debit,
+                e.credit,
+              ].join(',')
+            )
+          );
+          const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'gl-explorer.csv';
+          a.click();
+        }}
+      >
+        Export visible rows
+      </Button>
     </div>
   );
 }

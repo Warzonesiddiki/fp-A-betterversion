@@ -175,8 +175,8 @@ describe('CAVEMAN PERSIST — RULE #47 fallbacks', () => {
 // (Hephaestus retains PATCH 16 stubs above; Probe appends real tests below)
 // ============================================================================
 
-import { SecretsVault, createSecretsVault } from './SecretsVault';
-import type { AuditLogger, AuditEvent, TauriSecureStorage, ThreatSignal } from './interfaces';
+import { createSecretsVault } from './SecretsVault';
+import type { AuditLogger, AuditEvent, TauriSecureStorage } from './interfaces';
 
 function probeMakeStorage(
   overrides: Partial<TauriSecureStorage> = {}

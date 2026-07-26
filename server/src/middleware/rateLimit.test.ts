@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import express from 'express';
+import express, { type RequestHandler } from 'express';
 import request from 'supertest';
 import { authLimiter, generalLimiter } from './rateLimit.js';
 
-function createTestApp(limiter: ReturnType<typeof authLimiter>) {
+function createTestApp(limiter: RequestHandler) {
   const app = express();
   app.use(express.json());
   app.use('/api/auth', limiter, (_req, res) => {

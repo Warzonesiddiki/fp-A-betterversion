@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { runMigrations } from './db/migrate.js';
 import authRouter from './routes/auth.js';
 import auditRouter from './routes/audit.js';

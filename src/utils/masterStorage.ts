@@ -23,7 +23,12 @@ const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
  * @see ADR-005 (masterStorage) + ADR-007 (encryption-at-rest) + ADR-010 (schema migration).
  * @internal Invoked by every persisted store's `persist()` middleware — DO NOT bypass.
  */
-export const masterStorage: PersistStorage<any, unknown> & { __resetCache: () => void } = {
+type MasterStorage = PersistStorage<any, unknown> & {
+  __resetCache: () => void;
+  migrateFromIndexedDB: () => Promise<void>;
+};
+
+export const masterStorage: MasterStorage = {
   getItem: async (name) => {
     const isDesktop = await checkTauri();
     if (isDesktop) {
