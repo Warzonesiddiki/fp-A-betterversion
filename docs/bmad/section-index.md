@@ -12,5 +12,6 @@
 | 008 | Robust CSV/XLS/XLSX Parser and Mapping | Data | COMPLETE |
 | 009 | Chart of Accounts Production Workflow | Data | COMPLETE |
 | 010 | Persistence, Backup, Restore, Integrity | Data | COMPLETE |
-| 011 | Browser IndexedDB to Tauri SQLite Migration | Data | ACTIVE |
-| 012-100 | Remaining BMAD sections | See project task board | BLOCKED |
+| 011 | Browser IndexedDB to Tauri SQLite Migration | Data | COMPLETE |
+| 012 | GL Trial Balance, Journals and Explorer Hardening | Data | ACTIVE |
+| 013-100 | Remaining BMAD sections | See project task board | BLOCKED |

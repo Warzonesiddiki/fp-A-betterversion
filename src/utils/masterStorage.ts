@@ -25,7 +25,7 @@ const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
  */
 type MasterStorage = PersistStorage<any, unknown> & {
   __resetCache: () => void;
-  migrateFromIndexedDB: () => Promise<void>;
+  migrateFromIndexedDB: () => Promise<import('./migration/legacyStorageMigration').MigrationResult>;
 };
 
 export const masterStorage: MasterStorage = {
@@ -57,8 +57,7 @@ export const masterStorage: MasterStorage = {
 
   // B3 Enhancement: Explicit migration helper (called from onboarding or settings)
   async migrateFromIndexedDB() {
-    // Placeholder for future full migration logic when running in Tauri
-    // Currently masterStorage already routes correctly based on isTauri()
-    console.log('[masterStorage] Migration helper invoked (no-op if already on target backend)');
+    const { migrateFromIndexedDB } = await import('@/utils/migration/legacyStorageMigration');
+    return migrateFromIndexedDB();
   },
 };
