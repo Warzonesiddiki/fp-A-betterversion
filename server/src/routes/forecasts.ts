@@ -128,7 +128,7 @@ router.get('/:id', requireEntityAccess('forecasts'), (req: Request, res: Respons
        LEFT JOIN entities e ON e.id = f.entity_id
        WHERE f.id = ?`
       )
-      .get(req.params.id);
+      .get(String(req.params.id));
 
     if (!forecast) {
       res.status(404).json({ error: 'Forecast not found' });
@@ -137,7 +137,7 @@ router.get('/:id', requireEntityAccess('forecasts'), (req: Request, res: Respons
 
     const periods = db
       .prepare(`SELECT * FROM forecast_periods WHERE forecast_id = ? ORDER BY period_number`)
-      .all(req.params.id);
+      .all(String(req.params.id));
 
     const lineItems = db
       .prepare(
@@ -151,7 +151,7 @@ router.get('/:id', requireEntityAccess('forecasts'), (req: Request, res: Respons
        WHERE fli.forecast_id = ?
        ORDER BY fp.period_number, a.code`
       )
-      .all(req.params.id);
+      .all(String(req.params.id));
 
     res.json({ ...(forecast as Record<string, unknown>), periods, line_items: lineItems });
   } catch (err) {
@@ -210,7 +210,7 @@ router.put('/:id', requireEntityWriteAccess('forecasts'), (req: Request, res: Re
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Forecast not found' });
@@ -233,13 +233,13 @@ router.put('/:id', requireEntityWriteAccess('forecasts'), (req: Request, res: Re
     }
 
     fields.push("updated_at = datetime('now')");
-    values.push(req.params.id);
+    values.push(String(req.params.id));
 
     db.prepare(`UPDATE forecasts SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-    audit('UPDATE', 'forecast', req.params.id, req.user!.id, parsed.data);
+    audit('UPDATE', 'forecast', String(req.params.id), req.user!.id, parsed.data);
 
-    const forecast = db.prepare('SELECT * FROM forecasts WHERE id = ?').get(req.params.id);
+    const forecast = db.prepare('SELECT * FROM forecasts WHERE id = ?').get(String(req.params.id));
     res.json(forecast);
   } catch (err) {
     console.error('PUT /forecasts/:id error:', err);
@@ -250,7 +250,7 @@ router.put('/:id', requireEntityWriteAccess('forecasts'), (req: Request, res: Re
 // DELETE /:id — delete forecast
 router.delete('/:id', requireEntityWriteAccess('forecasts'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Forecast not found' });
@@ -263,9 +263,9 @@ router.delete('/:id', requireEntityWriteAccess('forecasts'), (req: Request, res:
       db.prepare('DELETE FROM forecasts WHERE id = ?').run(forecastId);
     });
 
-    deleteForecast(req.params.id);
+    deleteForecast(String(req.params.id));
 
-    audit('DELETE', 'forecast', req.params.id, req.user!.id);
+    audit('DELETE', 'forecast', String(req.params.id), req.user!.id);
 
     res.status(204).send();
   } catch (err) {
@@ -277,7 +277,7 @@ router.delete('/:id', requireEntityWriteAccess('forecasts'), (req: Request, res:
 // GET /:id/periods — list periods
 router.get('/:id/periods', requireEntityAccess('forecasts'), (req: Request, res: Response) => {
   try {
-    const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(req.params.id);
+    const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
 
     if (!forecast) {
       res.status(404).json({ error: 'Forecast not found' });
@@ -286,7 +286,7 @@ router.get('/:id/periods', requireEntityAccess('forecasts'), (req: Request, res:
 
     const periods = db
       .prepare(`SELECT * FROM forecast_periods WHERE forecast_id = ? ORDER BY period_number`)
-      .all(req.params.id);
+      .all(String(req.params.id));
 
     res.json(periods);
   } catch (err) {
@@ -307,7 +307,7 @@ router.post(
         return;
       }
 
-      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(req.params.id);
+      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
 
       if (!forecast) {
         res.status(404).json({ error: 'Forecast not found' });
@@ -320,10 +320,10 @@ router.post(
       db.prepare(
         `INSERT INTO forecast_periods (id, forecast_id, period_number, start_date, end_date, label, created_at)
        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-      ).run(id, req.params.id, period_number, start_date, end_date, label ?? null);
+      ).run(id, String(req.params.id), period_number, start_date, end_date, label ?? null);
 
       audit('CREATE', 'forecast_period', id, req.user!.id, {
-        forecast_id: req.params.id,
+        forecast_id: String(req.params.id),
         period_number,
       });
 
@@ -342,7 +342,7 @@ router.get(
   requireParentEntityAccess('forecasts', 'forecast_id'),
   (req: Request, res: Response) => {
     try {
-      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(req.params.id);
+      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
 
       if (!forecast) {
         res.status(404).json({ error: 'Forecast not found' });
@@ -361,7 +361,7 @@ router.get(
        WHERE fli.forecast_id = ?
        ORDER BY fp.period_number, a.code`
         )
-        .all(req.params.id);
+        .all(String(req.params.id));
 
       res.json(items);
     } catch (err) {
@@ -383,7 +383,7 @@ router.post(
         return;
       }
 
-      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(req.params.id);
+      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
 
       if (!forecast) {
         res.status(404).json({ error: 'Forecast not found' });
@@ -396,10 +396,10 @@ router.post(
       db.prepare(
         `INSERT INTO forecast_line_items (id, forecast_id, account_id, period_id, amount, department_id, notes, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-      ).run(id, req.params.id, account_id, period_id, amount, department_id ?? null, notes ?? null);
+      ).run(id, String(req.params.id), account_id, period_id, amount, department_id ?? null, notes ?? null);
 
       audit('CREATE', 'forecast_line_item', id, req.user!.id, {
-        forecast_id: req.params.id,
+        forecast_id: String(req.params.id),
         account_id,
         period_id,
         amount,

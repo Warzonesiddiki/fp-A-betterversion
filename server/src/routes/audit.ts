@@ -241,7 +241,7 @@ router.get('/user/:userId', (req, res) => {
 
 router.get('/entry/:id', (req, res) => {
   try {
-    const entry = auditService.getById(req.params.id);
+    const entry = auditService.getById(String(req.params.id));
     if (!entry) {
       res.status(404).json({ error: 'Audit entry not found' });
       return;

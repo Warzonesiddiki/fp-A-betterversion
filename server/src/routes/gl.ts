@@ -249,16 +249,16 @@ router.delete(
   requireEntityWriteAccess('gl_entries'),
   (req: Request, res: Response) => {
     try {
-      const existing = db.prepare('SELECT id FROM gl_entries WHERE id = ?').get(req.params.id);
+      const existing = db.prepare('SELECT id FROM gl_entries WHERE id = ?').get(String(req.params.id));
 
       if (!existing) {
         res.status(404).json({ error: 'GL entry not found' });
         return;
       }
 
-      db.prepare('DELETE FROM gl_entries WHERE id = ?').run(req.params.id);
+      db.prepare('DELETE FROM gl_entries WHERE id = ?').run(String(req.params.id));
 
-      audit('DELETE', 'gl_entry', req.params.id, req.user!.id);
+      audit('DELETE', 'gl_entry', String(req.params.id), req.user!.id);
 
       res.status(204).send();
     } catch (err) {
@@ -292,15 +292,17 @@ router.get('/accounts', (req: Request, res: Response) => {
        ${whereClause}
        ORDER BY a.code`
       )
-      .all(...params) as (Record<string, unknown> & { children: Record<string, unknown>[] })[];
+      .all(...params) as (Record<string, unknown> & { id: string; children: AccountTreeRow[] })[];
+
+    type AccountTreeRow = Record<string, unknown> & { id: string; children: AccountTreeRow[] };
 
     // Build hierarchical tree
-    const accountMap = new Map<string, (typeof rows)[0]>();
-    const roots: typeof rows = [];
+    const accountMap = new Map<string, AccountTreeRow>();
+    const roots: AccountTreeRow[] = [];
 
     for (const row of rows) {
-      const acct = { ...row, children: [] as Record<string, unknown>[] };
-      accountMap.set(acct.id as string, acct);
+      const acct: AccountTreeRow = { ...row, children: [] };
+      accountMap.set(acct.id, acct);
     }
 
     for (const acct of accountMap.values()) {
@@ -373,7 +375,7 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM accounts WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM accounts WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Account not found' });
@@ -384,7 +386,7 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
     if (parsed.data.code) {
       const duplicate = db
         .prepare('SELECT id FROM accounts WHERE code = ? AND id != ?')
-        .get(parsed.data.code, req.params.id);
+        .get(parsed.data.code, String(req.params.id));
 
       if (duplicate) {
         res.status(400).json({ error: 'Account code already exists' });
@@ -408,13 +410,13 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
     }
 
     fields.push("updated_at = datetime('now')");
-    values.push(req.params.id);
+    values.push(String(req.params.id));
 
     db.prepare(`UPDATE accounts SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-    audit('UPDATE', 'account', req.params.id, req.user!.id, parsed.data);
+    audit('UPDATE', 'account', String(req.params.id), req.user!.id, parsed.data);
 
-    const account = db.prepare('SELECT * FROM accounts WHERE id = ?').get(req.params.id);
+    const account = db.prepare('SELECT * FROM accounts WHERE id = ?').get(String(req.params.id));
     res.json(account);
   } catch (err) {
     console.error('PUT /gl/accounts/:id error:', err);

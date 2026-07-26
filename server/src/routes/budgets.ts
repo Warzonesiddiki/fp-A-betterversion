@@ -123,7 +123,7 @@ router.get('/:id', requireEntityAccess('budgets'), (req: Request, res: Response)
        LEFT JOIN entities e ON e.id = b.entity_id
        WHERE b.id = ? AND b.deleted_at IS NULL`
       )
-      .get(req.params.id);
+      .get(String(req.params.id));
 
     if (!budget) {
       res.status(404).json({ error: 'Budget not found' });
@@ -140,7 +140,7 @@ router.get('/:id', requireEntityAccess('budgets'), (req: Request, res: Response)
        WHERE bli.budget_id = ?
        ORDER BY bli.month, a.code`
       )
-      .all(req.params.id);
+      .all(String(req.params.id));
 
     res.json({ ...(budget as Record<string, unknown>), line_items: lineItems });
   } catch (err) {
@@ -200,7 +200,7 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
 
     const existing = db
       .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(req.params.id) as { id: string; status: string } | undefined;
+      .get(String(req.params.id)) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -228,13 +228,13 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
     }
 
     fields.push("updated_at = datetime('now')");
-    values.push(req.params.id);
+    values.push(String(req.params.id));
 
     db.prepare(`UPDATE budgets SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-    audit('UPDATE', 'budget', req.params.id, req.user!.id, parsed.data);
+    audit('UPDATE', 'budget', String(req.params.id), req.user!.id, parsed.data);
 
-    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(req.params.id);
+    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(String(req.params.id));
     res.json(budget);
   } catch (err) {
     console.error('PUT /budgets/:id error:', err);
@@ -247,7 +247,7 @@ router.delete('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: R
   try {
     const existing = db
       .prepare('SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(req.params.id);
+      .get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -256,9 +256,9 @@ router.delete('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: R
 
     db.prepare(
       "UPDATE budgets SET status = 'Cancelled', deleted_at = datetime('now'), updated_at = datetime('now') WHERE id = ?"
-    ).run(req.params.id);
+    ).run(String(req.params.id));
 
-    audit('DELETE', 'budget', req.params.id, req.user!.id);
+    audit('DELETE', 'budget', String(req.params.id), req.user!.id);
     res.status(204).send();
   } catch (err) {
     console.error('DELETE /budgets/:id error:', err);
@@ -271,7 +271,7 @@ router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, r
   try {
     const existing = db
       .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(req.params.id) as { id: string; status: string } | undefined;
+      .get(String(req.params.id)) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -285,14 +285,14 @@ router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, r
 
     db.prepare(
       "UPDATE budgets SET status = 'InReview', updated_at = datetime('now') WHERE id = ?"
-    ).run(req.params.id);
+    ).run(String(req.params.id));
 
-    audit('SUBMIT', 'budget', req.params.id, req.user!.id, {
+    audit('SUBMIT', 'budget', String(req.params.id), req.user!.id, {
       from: existing.status,
       to: 'InReview',
     });
 
-    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(req.params.id);
+    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(String(req.params.id));
     res.json(budget);
   } catch (err) {
     console.error('POST /budgets/:id/submit error:', err);
@@ -305,7 +305,7 @@ router.post('/:id/approve', requireEntityWriteAccess('budgets'), (req: Request, 
   try {
     const existing = db
       .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(req.params.id) as { id: string; status: string } | undefined;
+      .get(String(req.params.id)) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -319,14 +319,14 @@ router.post('/:id/approve', requireEntityWriteAccess('budgets'), (req: Request, 
 
     db.prepare(
       "UPDATE budgets SET status = 'Approved', approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now') WHERE id = ?"
-    ).run(req.user!.id, req.params.id);
+    ).run(req.user!.id, String(req.params.id));
 
-    audit('APPROVE', 'budget', req.params.id, req.user!.id, {
+    audit('APPROVE', 'budget', String(req.params.id), req.user!.id, {
       from: existing.status,
       to: 'Approved',
     });
 
-    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(req.params.id);
+    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(String(req.params.id));
     res.json(budget);
   } catch (err) {
     console.error('POST /budgets/:id/approve error:', err);
@@ -345,7 +345,7 @@ router.post('/:id/reject', requireEntityWriteAccess('budgets'), (req: Request, r
 
     const existing = db
       .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(req.params.id) as { id: string; status: string } | undefined;
+      .get(String(req.params.id)) as { id: string; status: string } | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -359,15 +359,15 @@ router.post('/:id/reject', requireEntityWriteAccess('budgets'), (req: Request, r
 
     db.prepare(
       "UPDATE budgets SET status = 'Rejected', rejection_reason = ?, updated_at = datetime('now') WHERE id = ?"
-    ).run(parsed.data.comment ?? null, req.params.id);
+    ).run(parsed.data.comment ?? null, String(req.params.id));
 
-    audit('REJECT', 'budget', req.params.id, req.user!.id, {
+    audit('REJECT', 'budget', String(req.params.id), req.user!.id, {
       from: existing.status,
       to: 'Rejected',
       reason: parsed.data.comment,
     });
 
-    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(req.params.id);
+    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(String(req.params.id));
     res.json(budget);
   } catch (err) {
     console.error('POST /budgets/:id/reject error:', err);
@@ -383,7 +383,7 @@ router.get(
     try {
       const budget = db
         .prepare('SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL')
-        .get(req.params.id);
+        .get(String(req.params.id));
 
       if (!budget) {
         res.status(404).json({ error: 'Budget not found' });
@@ -400,7 +400,7 @@ router.get(
        WHERE bli.budget_id = ?
        ORDER BY bli.month, a.code`
         )
-        .all(req.params.id);
+        .all(String(req.params.id));
 
       res.json(items);
     } catch (err) {
@@ -424,7 +424,7 @@ router.post(
 
       const budget = db
         .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-        .get(req.params.id) as { id: string; status: string } | undefined;
+        .get(String(req.params.id)) as { id: string; status: string } | undefined;
 
       if (!budget) {
         res.status(404).json({ error: 'Budget not found' });
@@ -442,10 +442,10 @@ router.post(
       db.prepare(
         `INSERT INTO budget_line_items (id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-      ).run(id, req.params.id, account_id, month, amount, department_id ?? null, notes ?? null);
+      ).run(id, String(req.params.id), account_id, month, amount, department_id ?? null, notes ?? null);
 
       audit('CREATE', 'budget_line_item', id, req.user!.id, {
-        budget_id: req.params.id,
+        budget_id: String(req.params.id),
         account_id,
         month,
         amount,
@@ -479,7 +479,7 @@ router.put(
        JOIN budgets b ON b.id = bli.budget_id
        WHERE bli.id = ? AND b.deleted_at IS NULL`
         )
-        .get(req.params.itemId) as { id: string; budget_id: string; status: string } | undefined;
+        .get(String(req.params.itemId)) as { id: string; budget_id: string; status: string } | undefined;
 
       if (!existing) {
         res.status(404).json({ error: 'Line item not found' });
@@ -507,15 +507,15 @@ router.put(
       }
 
       fields.push("updated_at = datetime('now')");
-      values.push(req.params.itemId);
+      values.push(String(req.params.itemId));
 
       db.prepare(`UPDATE budget_line_items SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-      audit('UPDATE', 'budget_line_item', req.params.itemId, req.user!.id, parsed.data);
+      audit('UPDATE', 'budget_line_item', String(req.params.itemId), req.user!.id, parsed.data);
 
       const item = db
         .prepare('SELECT * FROM budget_line_items WHERE id = ?')
-        .get(req.params.itemId);
+        .get(String(req.params.itemId));
       res.json(item);
     } catch (err) {
       console.error('PUT /budgets/items/:itemId error:', err);
@@ -537,7 +537,7 @@ router.delete(
        JOIN budgets b ON b.id = bli.budget_id
        WHERE bli.id = ? AND b.deleted_at IS NULL`
         )
-        .get(req.params.itemId) as { id: string; budget_id: string; status: string } | undefined;
+        .get(String(req.params.itemId)) as { id: string; budget_id: string; status: string } | undefined;
 
       if (!existing) {
         res.status(404).json({ error: 'Line item not found' });
@@ -549,9 +549,9 @@ router.delete(
         return;
       }
 
-      db.prepare('DELETE FROM budget_line_items WHERE id = ?').run(req.params.itemId);
+      db.prepare('DELETE FROM budget_line_items WHERE id = ?').run(String(req.params.itemId));
 
-      audit('DELETE', 'budget_line_item', req.params.itemId, req.user!.id);
+      audit('DELETE', 'budget_line_item', String(req.params.itemId), req.user!.id);
 
       res.status(204).send();
     } catch (err) {

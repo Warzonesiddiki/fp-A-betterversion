@@ -201,7 +201,7 @@ router.get('/:id', requireEntityAccess('reports'), (req: Request, res: Response)
        LEFT JOIN entities e ON e.id = r.entity_id
        WHERE r.id = ?`
       )
-      .get(req.params.id);
+      .get(String(req.params.id));
 
     if (!report) {
       res.status(404).json({ error: 'Report not found' });
@@ -267,7 +267,7 @@ router.put('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Resp
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Report not found' });
@@ -290,13 +290,13 @@ router.put('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Resp
     }
 
     fields.push("updated_at = datetime('now')");
-    values.push(req.params.id);
+    values.push(String(req.params.id));
 
     db.prepare(`UPDATE reports SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-    audit('UPDATE', 'report', req.params.id, req.user!.id, parsed.data);
+    audit('UPDATE', 'report', String(req.params.id), req.user!.id, parsed.data);
 
-    const report = db.prepare('SELECT * FROM reports WHERE id = ?').get(req.params.id);
+    const report = db.prepare('SELECT * FROM reports WHERE id = ?').get(String(req.params.id));
     res.json(report);
   } catch (err) {
     console.error('PUT /reports/:id error:', err);
@@ -307,16 +307,16 @@ router.put('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Resp
 // DELETE /:id — delete report
 router.delete('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Report not found' });
       return;
     }
 
-    db.prepare('DELETE FROM reports WHERE id = ?').run(req.params.id);
+    db.prepare('DELETE FROM reports WHERE id = ?').run(String(req.params.id));
 
-    audit('DELETE', 'report', req.params.id, req.user!.id);
+    audit('DELETE', 'report', String(req.params.id), req.user!.id);
 
     res.status(204).send();
   } catch (err) {

@@ -90,7 +90,7 @@ router.get('/:id', requireEntityAccess('entities'), (req: Request, res: Response
        LEFT JOIN entities pe ON pe.id = e.parent_id
        WHERE e.id = ?`
       )
-      .get(req.params.id);
+      .get(String(req.params.id));
 
     if (!entity) {
       res.status(404).json({ error: 'Entity not found' });
@@ -168,7 +168,7 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM entities WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM entities WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Entity not found' });
@@ -179,7 +179,7 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
     if (parsed.data.code) {
       const duplicate = db
         .prepare('SELECT id FROM entities WHERE code = ? AND id != ?')
-        .get(parsed.data.code, req.params.id);
+        .get(parsed.data.code, String(req.params.id));
 
       if (duplicate) {
         res.status(400).json({ error: 'Entity code already exists' });
@@ -203,13 +203,13 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
     }
 
     fields.push("updated_at = datetime('now')");
-    values.push(req.params.id);
+    values.push(String(req.params.id));
 
     db.prepare(`UPDATE entities SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-    audit('UPDATE', 'entity', req.params.id, req.user!.id, parsed.data);
+    audit('UPDATE', 'entity', String(req.params.id), req.user!.id, parsed.data);
 
-    const entity = db.prepare('SELECT * FROM entities WHERE id = ?').get(req.params.id);
+    const entity = db.prepare('SELECT * FROM entities WHERE id = ?').get(String(req.params.id));
     res.json(entity);
   } catch (err) {
     console.error('PUT /entities/:id error:', err);
@@ -345,7 +345,7 @@ router.get('/users/list', requireRole('Admin'), (req: Request, res: Response) =>
 router.get('/users/:id', (req: Request, res: Response) => {
   try {
     // Users can view their own profile; Admins can view any
-    if (req.user!.id !== req.params.id && req.user!.role !== 'Admin') {
+    if (req.user!.id !== String(req.params.id) && req.user!.role !== 'Admin') {
       res.status(403).json({ error: 'Insufficient permissions' });
       return;
     }
@@ -360,7 +360,7 @@ router.get('/users/:id', (req: Request, res: Response) => {
        LEFT JOIN departments d ON d.id = u.department_id
        WHERE u.id = ?`
       )
-      .get(req.params.id);
+      .get(String(req.params.id));
 
     if (!user) {
       res.status(404).json({ error: 'User not found' });

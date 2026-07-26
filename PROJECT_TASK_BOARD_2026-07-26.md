@@ -162,8 +162,8 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
   - Acceptance: export JSON → clear data → import JSON → all stores restored.
 - [ ] Complete browser IndexedDB ↔ Tauri SQLite migration proof.
   - Acceptance: browser-created data migrates to desktop SQLite on first Tauri launch.
-- [ ] Add integrity checker UI.
-  - Acceptance: user can run integrity check and see per-store status.
+- [x] Add integrity checker UI.
+  - User can run backup integrity check and see store/backups/metadata status counts.
 
 ---
 
@@ -334,7 +334,7 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 
 ## 14. Immediate Next Execution Order
 
-1. **Start Section 010: Persistence, Backup, Restore, Integrity** — backup/restore and integrity UI is the next active data foundation gap.
+1. **Start Section 011: Browser IndexedDB to Tauri SQLite Migration** — desktop persistence proof is next.
 2. **Stabilize tests** starting with audit suite and any hanging target tests.
 3. **Create official test baseline report** after hangs are isolated.
 4. **Complete GL Trial Balance/Journals/Explorer hardening** because it is the foundation for reports.
@@ -367,5 +367,6 @@ The project is complete only when all of these are true:
 - [x] Section 007 — General Ledger Import Pipeline — COMPLETE: 100% READY.
 - [x] Section 008 — Robust CSV/XLS/XLSX Parser and Mapping — COMPLETE: 100% READY.
 - [x] Section 009 — Chart of Accounts Production Workflow — COMPLETE: 100% READY.
-- [ ] Section 010 — Persistence, Backup, Restore, Integrity — ACTIVE NEXT.
+- [x] Section 010 — Persistence, Backup, Restore, Integrity — COMPLETE: 100% READY.
+- [ ] Section 011 — Browser IndexedDB to Tauri SQLite Migration — ACTIVE NEXT.
 

@@ -135,7 +135,7 @@ router.get('/:id', requireEntityAccess('scenarios'), (req: Request, res: Respons
        LEFT JOIN budgets b ON b.id = s.budget_id
        WHERE s.id = ?`
       )
-      .get(req.params.id);
+      .get(String(req.params.id));
 
     if (!scenario) {
       res.status(404).json({ error: 'Scenario not found' });
@@ -152,7 +152,7 @@ router.get('/:id', requireEntityAccess('scenarios'), (req: Request, res: Respons
        WHERE sli.scenario_id = ?
        ORDER BY sli.month, a.code`
       )
-      .all(req.params.id);
+      .all(String(req.params.id));
 
     res.json({ ...(scenario as Record<string, unknown>), line_items: lineItems });
   } catch (err) {
@@ -211,7 +211,7 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Scenario not found' });
@@ -234,13 +234,13 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
     }
 
     fields.push("updated_at = datetime('now')");
-    values.push(req.params.id);
+    values.push(String(req.params.id));
 
     db.prepare(`UPDATE scenarios SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-    audit('UPDATE', 'scenario', req.params.id, req.user!.id, parsed.data);
+    audit('UPDATE', 'scenario', String(req.params.id), req.user!.id, parsed.data);
 
-    const scenario = db.prepare('SELECT * FROM scenarios WHERE id = ?').get(req.params.id);
+    const scenario = db.prepare('SELECT * FROM scenarios WHERE id = ?').get(String(req.params.id));
     res.json(scenario);
   } catch (err) {
     console.error('PUT /scenarios/:id error:', err);
@@ -251,7 +251,7 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
 // DELETE /:id — delete scenario
 router.delete('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(req.params.id);
+    const existing = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
 
     if (!existing) {
       res.status(404).json({ error: 'Scenario not found' });
@@ -263,9 +263,9 @@ router.delete('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res:
       db.prepare('DELETE FROM scenarios WHERE id = ?').run(scenarioId);
     });
 
-    deleteScenario(req.params.id);
+    deleteScenario(String(req.params.id));
 
-    audit('DELETE', 'scenario', req.params.id, req.user!.id);
+    audit('DELETE', 'scenario', String(req.params.id), req.user!.id);
 
     res.status(204).send();
   } catch (err) {
@@ -280,7 +280,7 @@ router.get(
   requireParentEntityAccess('scenarios', 'scenario_id'),
   (req: Request, res: Response) => {
     try {
-      const scenario = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(req.params.id);
+      const scenario = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
@@ -297,7 +297,7 @@ router.get(
        WHERE sli.scenario_id = ?
        ORDER BY sli.month, a.code`
         )
-        .all(req.params.id);
+        .all(String(req.params.id));
 
       res.json(items);
     } catch (err) {
@@ -319,7 +319,7 @@ router.post(
         return;
       }
 
-      const scenario = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(req.params.id);
+      const scenario = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
@@ -342,7 +342,7 @@ router.post(
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
       ).run(
         id,
-        req.params.id,
+        String(req.params.id),
         account_id,
         month,
         base_amount,
@@ -353,7 +353,7 @@ router.post(
       );
 
       audit('CREATE', 'scenario_line_item', id, req.user!.id, {
-        scenario_id: req.params.id,
+        scenario_id: String(req.params.id),
         account_id,
         month,
         base_amount,
@@ -378,7 +378,7 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       return;
     }
 
-    const scenario = db.prepare('SELECT * FROM scenarios WHERE id = ?').get(req.params.id) as
+    const scenario = db.prepare('SELECT * FROM scenarios WHERE id = ?').get(String(req.params.id)) as
       | Record<string, unknown>
       | undefined;
 
@@ -391,7 +391,7 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
 
     const lineItems = db
       .prepare('SELECT * FROM scenario_line_items WHERE scenario_id = ?')
-      .all(req.params.id) as Record<string, unknown>[];
+      .all(String(req.params.id)) as Record<string, unknown>[];
 
     if (lineItems.length === 0) {
       res.status(400).json({ error: 'Scenario has no line items to apply' });
@@ -523,7 +523,7 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       applyToForecast(lineItems);
     }
 
-    audit('APPLY', 'scenario', req.params.id, req.user!.id, {
+    audit('APPLY', 'scenario', String(req.params.id), req.user!.id, {
       target,
       target_id,
       applied_count: appliedCount,
