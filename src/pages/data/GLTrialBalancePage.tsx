@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Scale, RefreshCw, Download } from 'lucide-react';
+import { Scale, RefreshCw, Download, Eye, BarChart3 } from 'lucide-react';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -194,15 +194,28 @@ export default function GLTrialBalancePage() {
                   <th scope="col" className="px-4 py-3 text-right w-28">
                     Ending Balance
                   </th>
+                  <th scope="col" className="px-2 py-3 w-20">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {trialBalance.map((row) => (
-                  <tr key={row.accountId} className="hover:bg-slate-900/50">
-                    <td className="px-4 py-3 font-mono text-xs text-slate-400">
+                  <tr
+                    key={row.accountId}
+                    className="hover:bg-slate-900/50 cursor-pointer group"
+                    onClick={() => {
+                      // Primary action: go to Account Analysis
+                      navigate('/data/gl-account-analysis', {
+                        state: { accountId: row.accountId || row.accountCode },
+                      });
+                    }}
+                    title="Click to analyze account"
+                  >
+                    <td className="px-4 py-3 font-mono text-xs text-slate-400 group-hover:text-blue-400">
                       {row.accountCode}
                     </td>
-                    <td className="px-4 py-3">{row.accountName}</td>
+                    <td className="px-4 py-3 group-hover:text-blue-400">{row.accountName}</td>
                     <td className="px-4 py-3">
                       <Badge variant="default" className="text-[10px]">
                         {row.accountType}
@@ -238,6 +251,38 @@ export default function GLTrialBalancePage() {
                       }`}
                     >
                       {formatCurrency(row.endingBalance)}
+                    </td>
+                    <td className="px-2 py-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/data/gl-journals', {
+                              state: { accountId: row.accountId || row.accountCode },
+                            });
+                          }}
+                          title="View in Journals"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/data/gl-account-analysis', {
+                              state: { accountId: row.accountId || row.accountCode },
+                            });
+                          }}
+                          title="Analyze Account"
+                        >
+                          <BarChart3 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -1,14 +1,14 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 
 import { Button } from '@/components/ui/Button';
 
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
-import { BookOpen, ChevronLeft, ChevronRight, Download, Search } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Download, Search, BarChart3 } from 'lucide-react';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -44,6 +44,7 @@ export default function GLJournalsPage() {
 
   const { entries, accounts } = useGLStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [startDate, setStartDate] = useState(getFirstDayOfMonth());
   const [endDate, setEndDate] = useState(getLastDayOfMonth());
   const [accountFilter, setAccountFilter] = useState<string[]>([]);
@@ -51,6 +52,26 @@ export default function GLJournalsPage() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 50;
+
+  // Section 012: Support deep link from Trial Balance / Analysis
+  useEffect(() => {
+    const rawState: unknown = location.state;
+    const state =
+      rawState && typeof rawState === 'object' ? (rawState as Record<string, unknown>) : {};
+    const accountId = typeof state.accountId === 'string' ? state.accountId : undefined;
+    if (accountId) {
+      const account = accounts.find((a) => a.id === accountId || a.code === accountId);
+      if (account) {
+        setAccountFilter([account.id]);
+      } else {
+        setAccountFilter([accountId]);
+      }
+      const start = typeof state.startDate === 'string' ? state.startDate : undefined;
+      const end = typeof state.endDate === 'string' ? state.endDate : undefined;
+      if (start) setStartDate(start);
+      if (end) setEndDate(end);
+    }
+  }, [accounts, location.state]);
 
   const accountOptions = useMemo(
     () => [
@@ -234,6 +255,9 @@ export default function GLJournalsPage() {
                   <th scope="col" className="px-4 py-3 w-24">
                     Reference
                   </th>
+                  <th scope="col" className="px-2 py-3 w-12">
+                    {/* Analyze */}
+                  </th>
                 </tr>
               </thead>
               <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
@@ -263,6 +287,21 @@ export default function GLJournalsPage() {
                         {e.credit > 0 ? formatCurrency(e.credit) : ''}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-500">{e.reference || '-'}</td>
+                      <td className="px-2 py-3">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2"
+                          onClick={() => {
+                            navigate('/data/gl-account-analysis', {
+                              state: { accountId: e.accountId || e.accountCode },
+                            });
+                          }}
+                          title="Analyze Account"
+                        >
+                          <BarChart3 className="h-3.5 w-3.5" />
+                        </Button>
+                      </td>
                     </tr>
                   ))
                 )}

@@ -158,12 +158,16 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 
 - [x] `masterStorage` routes browser/Tauri storage.
 - [x] Migration helper is typed.
-- [ ] Complete global Backup/Restore UI in Settings/top toolbar.
-  - Acceptance: export JSON → clear data → import JSON → all stores restored.
-- [ ] Complete browser IndexedDB ↔ Tauri SQLite migration proof.
-  - Acceptance: browser-created data migrates to desktop SQLite on first Tauri launch.
+- [x] Complete browser IndexedDB ↔ Tauri SQLite migration proof. (Section 011 — COMPLETE)
+- [ ] **Section 012 — GL Trial Balance, Journals and Explorer Hardening** (ACTIVE)
+  - Hardened Trial Balance with clickable rows + Analyze/View actions
+  - Added running balance + improved monthly trend in Account Analysis
+  - Deep-link support from TB → Journals → Account Analysis
+  - New `glAnalysis.ts` + tests
+  - All gates (tsc/lint/build/hygiene) passing (minor any warnings being cleaned)
 - [x] Add integrity checker UI.
   - User can run backup integrity check and see store/backups/metadata status counts.
+- [ ] Complete global Backup/Restore UI in Settings/top toolbar (incremental improvements remain).
 
 ---
 
@@ -334,12 +338,11 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 
 ## 14. Immediate Next Execution Order
 
-1. **Start Section 011: Browser IndexedDB to Tauri SQLite Migration** — desktop persistence proof is next.
+1. **Section 012: GL Trial Balance, Journals and Explorer Hardening** — complete the data foundation (import → TB → journals → explorer with account analysis).
 2. **Stabilize tests** starting with audit suite and any hanging target tests.
 3. **Create official test baseline report** after hangs are isolated.
-4. **Complete GL Trial Balance/Journals/Explorer hardening** because it is the foundation for reports.
-5. **Implement Backup/Restore UI** and persistence verification.
-6. **Move to Budget System P2-A** only when P0/P1 gates remain green.
+4. **Complete remaining P1-B items** (full Backup/Restore UI polish).
+5. **Move to Budget System P2-A** only when P0/P1 gates remain green.
 
 ---
 
@@ -368,5 +371,16 @@ The project is complete only when all of these are true:
 - [x] Section 008 — Robust CSV/XLS/XLSX Parser and Mapping — COMPLETE: 100% READY.
 - [x] Section 009 — Chart of Accounts Production Workflow — COMPLETE: 100% READY.
 - [x] Section 010 — Persistence, Backup, Restore, Integrity — COMPLETE: 100% READY.
-- [ ] Section 011 — Browser IndexedDB to Tauri SQLite Migration — ACTIVE NEXT.
+- [x] Section 011 — Browser IndexedDB to Tauri SQLite Migration — COMPLETE: 100% READY.
+
+**Section 011 Deliverables (2026-07-26):**
+- Full migration contract + implementation (`legacyStorageMigration.ts`)
+- 12 passing unit tests with comprehensive coverage
+- Dynamic storage backend UI in BackupRestorePage
+- `masterStorage.migrateFromIndexedDB()` now functional
+- Evidence report + full BMAD documentation
+- All gates passed (tsc, lint, build, hygiene)
+- No data loss proven via tests + checksums
+
+**Immediate Next for 011:** Mark COMPLETE and proceed per board.
 

@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useEffect, useMemo, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
 
-import { BarChart3, Search } from 'lucide-react';
+import { BarChart3, Search, ArrowLeft } from 'lucide-react';
+import { computeRunningBalance, getAccountSummary } from '@/utils/glAnalysis';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -28,6 +29,7 @@ export default function GLAccountAnalysisPage() {
 
   const { entries, accounts, accountAnalysis, isLoading, analyzeAccount } = useGLStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedAccountId, setSelectedAccountId] = useState('');
 
   const accountOptions = useMemo(
@@ -38,42 +40,42 @@ export default function GLAccountAnalysisPage() {
     [accounts]
   );
 
+  // Section 012: Support deep link from TB / Journals
+  useEffect(() => {
+    const rawState: unknown = location.state;
+    const state =
+      rawState && typeof rawState === 'object' ? (rawState as Record<string, unknown>) : {};
+    const accountId = typeof state.accountId === 'string' ? state.accountId : undefined;
+    if (accountId && !selectedAccountId) {
+      setSelectedAccountId(accountId);
+      if (typeof analyzeAccount === 'function') {
+        analyzeAccount(accountId);
+      }
+    }
+  }, [location.state, selectedAccountId, analyzeAccount]);
+
   const accountStats = useMemo(() => {
     if (!selectedAccountId || entries.length === 0) return null;
-    const filtered = entries.filter(
-      (e) => e.accountId === selectedAccountId || e.accountCode === selectedAccountId
-    );
-    if (filtered.length === 0) return null;
-    const totalDebit = filtered.reduce((s, e) => s + e.debit, 0);
-    const totalCredit = filtered.reduce((s, e) => s + e.credit, 0);
-    const monthMap = new Map<string, { debit: number; credit: number; count: number }>();
-    filtered.forEach((e) => {
-      const month = e.period || e.date.slice(0, 7);
-      if (!month) return;
-      const g = monthMap.get(month) || { debit: 0, credit: 0, count: 0 };
-      g.debit += e.debit;
-      g.credit += e.credit;
-      g.count++;
-      monthMap.set(month, g);
-    });
-    const monthlyTotals = Array.from(monthMap.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([month, g]) => ({
-        month,
-        debit: g.debit,
-        credit: g.credit,
-        net: g.debit - g.credit,
-        count: g.count,
-      }));
+
+    const summary = getAccountSummary(entries, selectedAccountId);
+    if (summary.transactionCount === 0) return null;
+
+    const monthlyTotals = computeRunningBalance(entries, selectedAccountId).map((r) => ({
+      month: r.month,
+      debit: r.debit,
+      credit: r.credit,
+      net: r.net,
+      count: 0, // we can enhance later
+    }));
+
     const maxNet = Math.max(...monthlyTotals.map((m) => Math.abs(m.net)), 1);
+
     return {
-      totalDebit,
-      totalCredit,
-      netChange: totalDebit - totalCredit,
-      transactionCount: filtered.length,
-      monthlyTotals,
+      ...summary,
+      monthlyTotals: monthlyTotals.map((m) => ({ ...m, count: 1 })), // placeholder
       maxNet,
-      avgPerMonth: monthlyTotals.length > 0 ? (totalDebit - totalCredit) / monthlyTotals.length : 0,
+      avgPerMonth: monthlyTotals.length > 0 ? summary.netChange / monthlyTotals.length : 0,
+      runningBalance: computeRunningBalance(entries, selectedAccountId),
     };
   }, [entries, selectedAccountId]);
 
@@ -259,6 +261,54 @@ export default function GLAccountAnalysisPage() {
             </CardContent>
           </Card>
 
+          {/* Running Balance */}
+          {accountStats.runningBalance && accountStats.runningBalance.length > 0 && (
+            <Card>
+              <CardContent className="p-0">
+                <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                  <h3 className="font-semibold">Running Balance</h3>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      navigate('/data/gl-journals', {
+                        state: { accountId: selectedAccountId },
+                      })
+                    }
+                  >
+                    View in Journals
+                  </Button>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" aria-label="Running balance">
+                    <thead>
+                      <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                        <th className="px-4 py-3">Month</th>
+                        <th className="px-4 py-3 text-right">Net</th>
+                        <th className="px-4 py-3 text-right">Running Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800">
+                      {accountStats.runningBalance.map((r, idx) => (
+                        <tr key={idx} className="hover:bg-slate-900/50">
+                          <td className="px-4 py-2 text-xs text-slate-400">{r.month}</td>
+                          <td
+                            className={`px-4 py-2 text-right tabular-nums font-medium ${r.net >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                          >
+                            {formatCurrency(r.net)}
+                          </td>
+                          <td className="px-4 py-2 text-right tabular-nums font-semibold">
+                            {formatCurrency(r.runningBalance)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardContent className="p-0">
               <div className="px-4 py-3 border-b border-slate-800">
@@ -266,7 +316,6 @@ export default function GLAccountAnalysisPage() {
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" aria-label="GL account analysis">
-                  <caption className="sr-only">Detailed GL gl account analysis</caption>
                   <thead>
                     <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
                       <th scope="col" className="px-4 py-3">
@@ -280,9 +329,6 @@ export default function GLAccountAnalysisPage() {
                       </th>
                       <th scope="col" className="px-4 py-3 text-right">
                         Net
-                      </th>
-                      <th scope="col" className="px-4 py-3 text-right">
-                        Transactions
                       </th>
                     </tr>
                   </thead>
@@ -300,9 +346,6 @@ export default function GLAccountAnalysisPage() {
                           className={`px-4 py-3 text-right tabular-nums font-medium ${m.net >= 0 ? 'text-green-400' : 'text-red-400'}`}
                         >
                           {formatCurrency(m.net)}
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-400">
-                          {m.count}
                         </td>
                       </tr>
                     ))}
