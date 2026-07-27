@@ -17,7 +17,7 @@ import { ScrollText, Download, RefreshCw, ChevronUp, ChevronDown, Search } from 
 // per Clio T-N+1 ↔ Demeter PICK CHAIN.
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
 import { auditOpBadges, auditFiltersTokens } from '@/components/audit/auditTokens';
-import { useAuditTrailStore, GDPR_AUDIT_VIEW_ROLES, selectCanViewGdprAudit, redactPII } from '@/store/auditTrailStore';
+import { useAuditTrailStore, GDPR_AUDIT_VIEW_ROLES, redactPII } from '@/store/auditTrailStore';
 
 const auditEngine = new CellAuditTrailEngine();
 
@@ -80,35 +80,9 @@ function SortHeader({
   );
 }
 
-export default function AuditTrailPage() {
-  useEffect(() => {
-    document.title = 'FinPlan Pro — Audit Trail';
-  }, []);
-
+/** Main audit trail content — all hooks declared unconditionally. */
+function AuditTrailContent() {
   const navigate = useNavigate();
-
-  // SECURITY FIX (C-03): Enforce GDPR audit view roles (F-CLIO-2/7 RBAC gating)
-  const canViewGdpr = useAuditTrailStore(selectCanViewGdprAudit);
-  const userRole = useAuditTrailStore((s) => s.currentUserRole);
-
-  if (!GDPR_AUDIT_VIEW_ROLES.includes(userRole as typeof GDPR_AUDIT_VIEW_ROLES[number])) {
-    return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-red-900/30 rounded-full inline-block mb-4">
-          <ScrollText className="h-10 w-10 text-red-400" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2 text-red-300">Access Denied</h2>
-        <p className="text-slate-400 mb-6">
-          GDPR audit trail access requires the{' '}
-          <span className="font-mono text-sm">admin</span>,{' '}
-          <span className="font-mono text-sm">compliance</span>, or{' '}
-          <span className="font-mono text-sm">data-protection-officer</span> role.
-        </p>
-        <Button onClick={() => navigate('/')}>Go Back</Button>
-      </div>
-    );
-  }
-
   const [nowTick, setNowTick] = useState(() => Date.now());
   const [entries, setEntries] = useState(() => auditEngine.getAllEntries());
   const [filters, setFilters] = useState({
@@ -221,7 +195,7 @@ export default function AuditTrailPage() {
     ];
     // SECURITY FIX (C-03): Apply PIIRedactor before CSV export
     const rows = filtered.map((e) => {
-      const redacted = redactPII(e);
+      const redacted = redactPII(e as Parameters<typeof redactPII>[0]);
       return [
         redacted.timestamp,
         redacted.userId,
@@ -657,4 +631,35 @@ export default function AuditTrailPage() {
       </Card>
     </div>
   );
+}
+
+/** GDPR-gated Audit Trail page wrapper. All hooks are in AuditTrailContent. */
+export default function AuditTrailPage() {
+  useEffect(() => {
+    document.title = 'FinPlan Pro — Audit Trail';
+  }, []);
+
+  const navigate = useNavigate();
+
+  // SECURITY FIX (C-03): Enforce GDPR audit view roles (F-CLIO-2/7 RBAC gating)
+  const userRole = useAuditTrailStore((s) => s.currentUserRole);
+
+  if (!GDPR_AUDIT_VIEW_ROLES.includes(userRole as (typeof GDPR_AUDIT_VIEW_ROLES)[number])) {
+    return (
+      <div className="p-12 text-center max-w-md mx-auto">
+        <div className="p-4 bg-red-900/30 rounded-full inline-block mb-4">
+          <ScrollText className="h-10 w-10 text-red-400" />
+        </div>
+        <h2 className="text-xl font-semibold mb-2 text-red-300">Access Denied</h2>
+        <p className="text-slate-400 mb-6">
+          GDPR audit trail access requires the <span className="font-mono text-sm">admin</span>,{' '}
+          <span className="font-mono text-sm">compliance</span>, or{' '}
+          <span className="font-mono text-sm">data-protection-officer</span> role.
+        </p>
+        <Button onClick={() => navigate('/')}>Go Back</Button>
+      </div>
+    );
+  }
+
+  return <AuditTrailContent />;
 }
