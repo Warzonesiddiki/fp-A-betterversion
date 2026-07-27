@@ -1,11 +1,38 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
+import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
 import type { GLAccount } from '@/types';
 import type { AccountType } from '@/types';
 
 describe('glStore', () => {
   beforeEach(() => {
+    useAuthStore.setState({
+      user: {
+        id: 'gl-store-test-user',
+        email: 'gl-store-test-user@finplan.local',
+        firstName: 'GL',
+        lastName: 'Tester',
+        avatarUrl: null,
+        role: 'Admin',
+        departmentId: 'finance',
+        departmentName: 'Finance',
+        entityId: 'entity-001',
+        status: 'Active',
+        lastLoginAt: new Date().toISOString(),
+        mfaEnabled: false,
+        permissions: [
+          'import:create',
+          'import:read',
+          'import:update',
+          'import:delete',
+          'ui:update',
+          'cube:read',
+          'cube:write',
+        ],
+      },
+      isAuthenticated: true,
+    });
     useGLStore.setState({
       entries: [],
       accounts: [],

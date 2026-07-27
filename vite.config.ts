@@ -278,7 +278,9 @@ export default defineConfig({
       // explicitly via `npm run test:bench` when measuring perf.
       '__benchmarks__/**',
       '**/*.benchmark.test.ts',
+      '**/*.benchmark.test.tsx',
       '**/*.bench.test.ts',
+      '**/*.bench.test.tsx',
     ],
     setupFiles: ['./src/test/setup.ts'],
     environment: 'jsdom',

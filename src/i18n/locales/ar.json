@@ -227,5 +227,10 @@
     "collapse": "طي",
     "previous": "السابق",
     "nextPage": "الصفحة التالية"
+  },
+  "onboarding": {
+    "setup": {
+      "sector": "القطاع"
+    }
   }
 }

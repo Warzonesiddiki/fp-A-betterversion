@@ -85,7 +85,8 @@
       "industry": "Industry/Sector",
       "fiscalYear": "Fiscal Year",
       "fiscalYearStart": "Fiscal Year Start",
-      "baseCurrency": "Base Currency"
+      "baseCurrency": "Base Currency",
+      "sector": "Sector"
     },
     "import": {
       "title": "Import Your Data",

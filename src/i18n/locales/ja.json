@@ -227,5 +227,10 @@
     "collapse": "折りたたむ",
     "previous": "前へ",
     "nextPage": "次のページ"
+  },
+  "onboarding": {
+    "setup": {
+      "sector": "セクター"
+    }
   }
 }

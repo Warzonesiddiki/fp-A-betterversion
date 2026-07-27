@@ -6,6 +6,7 @@
 // =============================================================================
 
 import ExcelJS from 'exceljs';
+import { parseCSVRecords } from '@/utils/csv';
 import { sanitizeForDisplay } from '@/utils/security';
 
 export type FileFormat = 'xlsx' | 'csv';
@@ -203,11 +204,10 @@ export class ExcelImportEngine {
     if (format === 'csv') {
       // Browser-compatible CSV parsing — no Node streams needed
       const text = new TextDecoder().decode(buffer);
-      const rows = text.split(/\r?\n/).filter((r) => r.trim());
+      const rows = parseCSVRecords(text, { trimValues: true });
       const sheet = workbook.addWorksheet('Sheet1');
       for (const row of rows) {
-        // Simple CSV split (handles basic cases; no quoted-comma support)
-        sheet.addRow(row.split(',').map((c) => c.trim()));
+        sheet.addRow(row.map((cell) => cell.trim()));
       }
     } else {
       await workbook.xlsx.load(buffer);

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
 
-import { BarChart3, Search, ArrowLeft } from 'lucide-react';
+import { BarChart3, Search } from 'lucide-react';
 import { computeRunningBalance, getAccountSummary } from '@/utils/glAnalysis';
 
 function formatCurrency(n: number): string {
@@ -27,7 +27,7 @@ export default function GLAccountAnalysisPage() {
     document.title = 'FinPlan Pro — G L Account Analysis';
   }, []);
 
-  const { entries, accounts, accountAnalysis, isLoading, analyzeAccount } = useGLStore();
+  const { entries, accounts, isLoading, analyzeAccount } = useGLStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedAccountId, setSelectedAccountId] = useState('');
@@ -60,22 +60,23 @@ export default function GLAccountAnalysisPage() {
     const summary = getAccountSummary(entries, selectedAccountId);
     if (summary.transactionCount === 0) return null;
 
-    const monthlyTotals = computeRunningBalance(entries, selectedAccountId).map((r) => ({
+    const runningBalance = computeRunningBalance(entries, selectedAccountId);
+    const monthlyTotals = runningBalance.map((r) => ({
       month: r.month,
       debit: r.debit,
       credit: r.credit,
       net: r.net,
-      count: 0, // we can enhance later
+      transactionCount: r.transactionCount,
     }));
 
     const maxNet = Math.max(...monthlyTotals.map((m) => Math.abs(m.net)), 1);
 
     return {
       ...summary,
-      monthlyTotals: monthlyTotals.map((m) => ({ ...m, count: 1 })), // placeholder
+      monthlyTotals,
       maxNet,
-      avgPerMonth: monthlyTotals.length > 0 ? summary.netChange / monthlyTotals.length : 0,
-      runningBalance: computeRunningBalance(entries, selectedAccountId),
+      avgPerMonth: summary.averageMonthlyNet,
+      runningBalance,
     };
   }, [entries, selectedAccountId]);
 
@@ -272,7 +273,11 @@ export default function GLAccountAnalysisPage() {
                     variant="ghost"
                     onClick={() =>
                       navigate('/data/gl-journals', {
-                        state: { accountId: selectedAccountId },
+                        state: {
+                          accountId: selectedAccountId,
+                          startDate: accountStats.firstDate,
+                          endDate: accountStats.lastDate,
+                        },
                       })
                     }
                   >
@@ -330,6 +335,9 @@ export default function GLAccountAnalysisPage() {
                       <th scope="col" className="px-4 py-3 text-right">
                         Net
                       </th>
+                      <th scope="col" className="px-4 py-3 text-right">
+                        Transactions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
@@ -346,6 +354,9 @@ export default function GLAccountAnalysisPage() {
                           className={`px-4 py-3 text-right tabular-nums font-medium ${m.net >= 0 ? 'text-green-400' : 'text-red-400'}`}
                         >
                           {formatCurrency(m.net)}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums text-slate-300">
+                          {m.transactionCount.toLocaleString()}
                         </td>
                       </tr>
                     ))}

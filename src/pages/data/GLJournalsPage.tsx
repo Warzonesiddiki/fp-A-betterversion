@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
+import { toCSV } from '@/utils/csv';
 import { BookOpen, ChevronLeft, ChevronRight, Download, Search, BarChart3 } from 'lucide-react';
 
 function formatCurrency(n: number): string {
@@ -17,22 +18,6 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
-}
-
-function getFirstDayOfMonth(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  return y + '-' + m + '-01';
-}
-
-function getLastDayOfMonth(): string {
-  const now = new Date();
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  const y = lastDay.getFullYear();
-  const m = String(lastDay.getMonth() + 1).padStart(2, '0');
-  const d = String(lastDay.getDate()).padStart(2, '0');
-  return y + '-' + m + '-' + d;
 }
 
 export default function GLJournalsPage() {
@@ -45,8 +30,8 @@ export default function GLJournalsPage() {
   const { entries, accounts } = useGLStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const [startDate, setStartDate] = useState(getFirstDayOfMonth());
-  const [endDate, setEndDate] = useState(getLastDayOfMonth());
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [accountFilter, setAccountFilter] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState('');
@@ -82,9 +67,15 @@ export default function GLJournalsPage() {
   );
 
   const filtered = useMemo(() => {
-    let list = entries.filter((e) => e.date >= startDate && e.date <= endDate);
+    let list = [...entries];
+    if (startDate) list = list.filter((e) => e.date >= startDate);
+    if (endDate) list = list.filter((e) => e.date <= endDate);
     if (accountFilter.length > 0 && accountFilter[0]!) {
-      list = list.filter((e) => accountFilter.includes(e.accountId));
+      list = list.filter((e) =>
+        accountFilter.some((account) =>
+          [e.accountId, e.accountCode, e.accountName].some((value) => value === account)
+        )
+      );
     }
     if (search) {
       const q = search.toLowerCase();
@@ -108,25 +99,24 @@ export default function GLJournalsPage() {
 
   // B2 Enhancement: Export journals
   const exportJournals = useCallback(() => {
-    const csv = ['Date,Account,Description,Debit,Credit,Reference'];
-    filtered.forEach((e) => {
-      csv.push(
-        [
-          e.date,
-          e.accountCode,
-          `"${(e.description || '').replace(/"/g, '""')}"`,
-          e.debit,
-          e.credit,
-          e.reference || '',
-        ].join(',')
-      );
-    });
-    const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+    const csv = toCSV(
+      filtered.map((e) => ({
+        Date: e.date,
+        Account: e.accountCode,
+        Description: e.description,
+        Debit: e.debit,
+        Credit: e.credit,
+        Reference: e.reference,
+      })),
+      ['Date', 'Account', 'Description', 'Debit', 'Credit', 'Reference']
+    );
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `journals-${startDate}-to-${endDate}.csv`;
+    a.download = `journals-${startDate || 'all'}-to-${endDate || 'all'}.csv`;
     a.click();
+    URL.revokeObjectURL(url);
   }, [filtered, startDate, endDate]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -263,7 +253,7 @@ export default function GLJournalsPage() {
               <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
                 {pageItems.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-12 text-slate-500">
+                    <td colSpan={7} className="text-center py-12 text-slate-500">
                       No entries match the current filters.
                     </td>
                   </tr>
@@ -318,7 +308,7 @@ export default function GLJournalsPage() {
                     <td className="px-4 py-3 text-right tabular-nums text-green-400">
                       {formatCurrency(totals.credits)}
                     </td>
-                    <td className="px-4 py-3"></td>
+                    <td className="px-4 py-3" colSpan={2}></td>
                   </tr>
                 </tfoot>
               )}

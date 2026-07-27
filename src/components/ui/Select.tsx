@@ -18,6 +18,7 @@ export interface SelectProps {
   error?: string;
   className?: string;
   label?: string;
+  required?: boolean;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -29,6 +30,7 @@ export const Select: React.FC<SelectProps> = ({
   error,
   className,
   label,
+  required = false,
 }) => {
   return (
     <div
@@ -52,6 +54,7 @@ export const Select: React.FC<SelectProps> = ({
           )}
           aria-labelledby={label ? `${label.replace(/\s+/g, '-').toLowerCase()}-label` : undefined}
           aria-invalid={error ? 'true' : undefined}
+          aria-required={required ? 'true' : undefined}
           aria-describedby={
             error ? `${label?.replace(/\s+/g, '-').toLowerCase() || 'select'}-error` : undefined
           }

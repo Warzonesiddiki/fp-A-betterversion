@@ -227,5 +227,10 @@
     "collapse": "收起",
     "previous": "上一步",
     "nextPage": "下一页"
+  },
+  "onboarding": {
+    "setup": {
+      "sector": "行业"
+    }
   }
 }

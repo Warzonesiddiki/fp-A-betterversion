@@ -1,7 +1,7 @@
 # FinPlan Pro — Current Audit + Zero-Compromise Task Board
 
-**Date:** 2026-07-26  
-**Branch:** `arena/019f9b2a-fp-a-betterversion`  
+**Date:** 2026-07-27
+**Branch:** `arena/019fa23b-fp-a-betterversion`
 **Repository:** `Warzonesiddiki/fp-A-betterversion`  
 **Purpose:** Single execution board for moving the project from current state to production-complete with no hidden deferrals.
 
@@ -30,8 +30,8 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 - [x] Node available: `v22.22.3`
 - [x] npm available: `10.9.8`
 - [x] `node_modules` installed via `npm install --legacy-peer-deps --ignore-scripts`
-- [ ] `npm ci` reproducible install is clean
-  - Current blocker: `npm ci` fails on Vite 8 vs `@tailwindcss/vite@4.1.17` peer range.
+- [x] `npm ci` reproducible install is clean
+  - Section 012 follow-up aligned Vite 8 peers by updating `@tailwindcss/vite`/`tailwindcss` to 4.3.3 and `@vitejs/plugin-react` to 5.2.0; plain `npm ci` now exits 0 with repository `.npmrc` settings.
 - [ ] Normal lifecycle-script install is clean
   - Current blocker observed: `onnxruntime-node` postinstall attempted `api.nuget.org` and failed with `ECONNRESET`.
 
@@ -41,18 +41,19 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 - [x] ESLint: `npm run lint -- --max-warnings=0` — **PASS**
 - [x] Production build: `npm run build` — **PASS**
 - [x] Bundle check: `npm run bundle-check` — **PASS WITH WARNINGS**
-  - Total JS: ~1,927.86 KB gzip, ~94.1% of 2 MB limit.
+  - Total JS: ~1,933.3 KB gzip, ~94.4% of 2 MB limit.
   - `grid-community-vendor`: ~284.85 KB gzip, ~95% of 300 KB budget.
-- [ ] Full unit/component test suite — **NOT GREEN / NOT BASELINED IN THIS SESSION**
-  - Targeted multi-file run timed out at 15 minutes.
-  - `src/store/glStore.smoke.test.ts` now passes 2/2.
-  - `src/pages/audit/AuditTrailPage.test.tsx` currently runs but has 12 failures / 19 tests; likely stale expectations plus component/test mismatch.
+- [ ] Full unit/component test suite — **NOT GREEN / HANG STILL OPEN**
+  - 2026-07-27 full-suite attempt exceeded runtime and left a Vitest worker alive; captured in `reports/test-baseline-2026-07-27.md`.
+  - `src/store/glStore.test.ts` + `src/store/glStore.smoke.test.ts` now pass 39/39 after RBAC test context and GL normalization safeguards.
+  - `src/pages/audit/AuditTrailPage.test.tsx` now passes 19/19.
+  - Targeted recovery set passes 11 files / 97 tests.
 
 ### 2.3 Codebase Snapshot
 
-- Source TS/TSX files under `src`: **1,876**
-- Test files under `src`: **885**
-- Page TS/TSX files under `src/pages`: **380**
+- Source TS/TSX files under `src`: **1,884**
+- Test files under `src`: **889**
+- Page TS/TSX files under `src/pages`: **383**
 - Engine TS/TSX files under `src/engines`: **420**
 - Store TS/TSX files under `src/store`: **80**
 - Worker files under `src/workers`: **14**
@@ -84,6 +85,10 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
   - Added `import:*` permissions to relevant roles.
   - Added `ui:update` to roles so UI state/toasts/filters are not blocked by RBAC.
 - [x] Fixed `glStore.smoke.test.ts` authentication context; GL smoke now passes.
+- [x] Resolved Vite 8 npm peer conflict and verified `npm ci`.
+- [x] Recovered AuditTrailPage suite to 19/19 with current page behavior.
+- [x] Hardened GL normalization so imports derive canonical `amount`/`netChange` from debit-credit, fill missing account/date/period fields, and Trial Balance ignores stale source `netChange`.
+- [x] Rolled robust CSV parsing into `ExcelImportEngine` CSV path with BOM, quoted comma, and escaped quote coverage.
 
 ---
 
@@ -91,39 +96,29 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 
 ### P0-A — Reproducible Environment
 
-- [ ] Resolve `npm ci` peer conflict cleanly.
+- [x] Resolve `npm ci` peer conflict cleanly.
   - Acceptance: fresh clone can run `npm ci` with exit code 0.
-  - Candidate fixes: align Vite to supported Tailwind peer range or upgrade Tailwind Vite plugin when peer support exists.
+  - 2026-07-27: upgraded `@tailwindcss/vite`/`tailwindcss` to 4.3.3 and `@vitejs/plugin-react` to 5.2.0; `npm ci` verified exit 0.
 - [ ] Resolve `onnxruntime-node` postinstall fragility.
   - Acceptance: install works without requiring flaky external NuGet fetch during CI.
   - Candidate fixes: make AI runtime optional/lazy, document required script install, or switch to browser/WASM-only package path.
-- [ ] Add environment setup report.
-  - Acceptance: `reports/environment-baseline-2026-07-26.md` records exact install command, caveats, and remediation plan.
+- [x] Add environment setup report.
+  - Acceptance: `reports/environment-baseline-2026-07-27.md` records exact install command, caveats, and remediation plan.
 
 ### P0-B — Test Baseline + Recovery
 
 - [x] `glStore.smoke.test.ts` passes.
-- [ ] Produce official full test baseline.
-  - Acceptance: `npm test` run captured with pass/fail/timeout counts in `reports/test-baseline-2026-07-26.md`.
-- [ ] Fix `src/pages/audit/AuditTrailPage.test.tsx`.
-  - Current: 7 pass / 12 fail.
+- [/] Produce official full test baseline.
+  - Full-suite `npm test` attempt captured as timeout/hang in `reports/test-baseline-2026-07-27.md`; JSON output was not produced because a Vitest worker remained alive and was killed manually.
+- [x] Fix `src/pages/audit/AuditTrailPage.test.tsx`.
+  - Current: 19/19 pass after rewriting stale expectations around current engine-backed page behavior.
   - Acceptance: 19/19 pass or stale tests intentionally rewritten with current component behavior.
-- [ ] Investigate targeted multi-file Vitest timeout.
+- [/] Investigate targeted multi-file Vitest timeout.
   - Acceptance: culprit file(s) isolated; no silent 15-minute hangs in critical subset.
-- [ ] Recover historically failing suites listed in `PROJECT_BACKLOG.md`.
-  - LoginPage
-  - DriverPlanningPage
-  - ActivityFeed
-  - Sidebar
-  - BudgetGrid
-  - ScenarioBuilderPage
-  - sector dashboard tests
-  - PluginEngine
-  - CommandPalette
-  - ExportMenu
-  - OnboardingWizard
-  - DataTable
-  - masterStorage stress tests
+  - 2026-07-27: historically risky files pass individually under 45s each. Found and fixed a default-test exclusion gap for `*.bench.test.tsx`; latest full-suite timeout did not leave a lingering worker, but total runtime still exceeds 360 seconds and stale OnboardingWizard deep suites remain failing.
+- [/] Recover historically failing suites listed in `PROJECT_BACKLOG.md`.
+  - 2026-07-27 individual checks passed: LoginPage, DriverPlanningPage, ActivityFeed, Sidebar, BudgetGrid, ScenarioBuilderPage, PluginEngine, CommandPalette, ExportMenu, DataTable, masterStorage unit suites, OnboardingWizard smoke suites.
+  - Still open: sector dashboard sweep, masterStorage stress/bench, and stale OnboardingWizard deep suites (`a11y`, `formValidation`, `i18n`, `integration`, `stepNavigation`).
 - [ ] Raise full test pass rate to ≥95%.
 - [ ] Add coverage report and target ≥80% statements.
 
@@ -132,8 +127,9 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 - [x] TypeScript zero errors.
 - [x] ESLint zero warnings.
 - [x] Build passes.
-- [ ] Keep gates green after every task batch.
+- [/] Keep gates green after every task batch.
   - Acceptance: every completed task batch records `tsc`, `lint`, `build`, and relevant tests.
+  - 2026-07-27 batch: `tsc`, `lint`, targeted Vitest, `build`, `bundle-check`, `npm ci`, and repo hygiene recorded; full `npm test` remains a hang investigation item.
 
 ---
 
@@ -146,8 +142,9 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 - [x] Chart of Accounts CRUD exists.
   - Section 009 added domain validation for duplicate codes, type normalization, normal balances, and circular hierarchy prevention.
 - [x] Data reconciliation page exists.
-- [ ] Finish Trial Balance + Journals + Explorer hardening.
+- [x] Finish Trial Balance + Journals + Explorer hardening.
   - Acceptance: import entries → trial balance auto-generates → journals filter/paginate/export → account analysis renders monthly trend/running balance.
+  - 2026-07-27: Trial Balance/Journals/Explorer/Account Analysis hardened with deep links, running balance, account summaries, robust CSV export escaping, and targeted tests.
 - [/] Add robust CSV parser for quoted commas/BOM/large files wherever simple `.split(',')` remains.
   - Shared parser added at `src/utils/csv.ts` and wired into GL Upload.
   - Section 008 rolled it out to Chart of Accounts, Data Import reconciliation, Reconciliation Page, and CubeMigrationEngine CSV paths.
@@ -159,12 +156,13 @@ Conclusion: docs are extensive but not fully consistent. This board treats `COMP
 - [x] `masterStorage` routes browser/Tauri storage.
 - [x] Migration helper is typed.
 - [x] Complete browser IndexedDB ↔ Tauri SQLite migration proof. (Section 011 — COMPLETE)
-- [ ] **Section 012 — GL Trial Balance, Journals and Explorer Hardening** (ACTIVE)
+- [x] **Section 012 — GL Trial Balance, Journals and Explorer Hardening** — COMPLETE
   - Hardened Trial Balance with clickable rows + Analyze/View actions
   - Added running balance + improved monthly trend in Account Analysis
   - Deep-link support from TB → Journals → Account Analysis
-  - New `glAnalysis.ts` + tests
-  - All gates (tsc/lint/build/hygiene) passing (minor any warnings being cleaned)
+  - New `glAnalysis.ts` + tests expanded with transaction counts/date ranges
+  - Explorer now includes account summary KPIs and account-analysis action links
+  - All gates (tsc/lint/build/bundle/hygiene) passing with bundle warnings noted
 - [x] Add integrity checker UI.
   - User can run backup integrity check and see store/backups/metadata status counts.
 - [ ] Complete global Backup/Restore UI in Settings/top toolbar (incremental improvements remain).
@@ -382,5 +380,20 @@ The project is complete only when all of these are true:
 - All gates passed (tsc, lint, build, hygiene)
 - No data loss proven via tests + checksums
 
-**Immediate Next for 011:** Mark COMPLETE and proceed per board.
+**Taskboard Audit + Comparison (2026-07-27):**
+- Compared this board with `COMPLETION_TASKLIST_ZERO_COMPROMISE.md` and current workspace evidence.
+- Added evidence report: `reports/taskboard-audit-2026-07-27.md`.
+- Reconciled `COMPLETION_TASKLIST_ZERO_COMPROMISE.md` item `1.1.4` to complete.
+- Corrected active branch/date, P0 npm-ci status, P1 Section 012 status, and current source/test counts.
+
+**Section 012 Deliverables (2026-07-27):**
+- Trial Balance/Journals/Explorer/Account Analysis hardening completed.
+- `glAnalysis.ts` now returns account-filtered entries, monthly debit/credit/net, transaction counts, date ranges, running balances, and account summary averages.
+- GL exports now use shared CSV escaping instead of hand-built comma joins.
+- Excel CSV import now uses the shared parser for BOM/quoted comma/escaped quote handling.
+- AuditTrailPage suite recovered to 19/19 passing.
+- Reproducible `npm ci` peer conflict resolved via Vite 8-compatible Tailwind/React plugin versions.
+- Evidence reports added under `reports/environment-baseline-2026-07-27.md` and `reports/test-baseline-2026-07-27.md`.
+
+**Immediate Next:** Continue P0 test-suite hang isolation and stale OnboardingWizard deep-suite rewrite before moving deeper into P2 budget workflow.
 
