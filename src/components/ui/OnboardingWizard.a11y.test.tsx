@@ -102,29 +102,32 @@ vi.mock('@/components/ui/Select', () => ({
     onChange: (v: string) => void;
     id?: string;
     required?: boolean;
-  }) => (
-    <div>
-      {label && (
-        <label htmlFor={id}>
-          {label}
-          {required && <span aria-label="required">*</span>}
-        </label>
-      )}
-      <select
-        id={id}
-        data-testid={`select-${label}`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  ),
+  }) => {
+    const selectId = id || `select-${label?.replace(/\s+/g, '-').toLowerCase()}`;
+    return (
+      <div>
+        {label && (
+          <label htmlFor={selectId}>
+            {label}
+            {required && <span aria-label="required">*</span>}
+          </label>
+        )}
+        <select
+          id={selectId}
+          data-testid={`select-${label}`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required={required}
+        >
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  },
 }));
 
 vi.mock('@/components/ui/FileDropZone', () => ({
