@@ -479,8 +479,9 @@ export class SageConnector extends BaseConnector {
     const pageSize = pagination?.pageSize ?? 100;
     const page = pagination?.page ?? 1;
 
-    // Use readByQuery to filter by ACCOUNTNO
-    const query = `FROM GLEntry WHERE ACCOUNTNO = '${accountId}' ORDER BY ENTRYDATE DESC`;
+    // Use readByQuery to filter by ACCOUNTNO — sanitize to prevent SQL injection (C-07 FIX)
+    const sanitizedAccountId = String(accountId).replace(/[^A-Z0-9_-]/gi, '');
+    const query = `FROM GLEntry WHERE ACCOUNTNO = '${sanitizedAccountId}' ORDER BY ENTRYDATE DESC`;
 
     try {
       const response = await this.client.post<SageResponseEnvelope<SageGLEntry>>(
@@ -709,12 +710,25 @@ export class SageConnector extends BaseConnector {
     netChange: number;
     entryCount: number;
   } {
+    // SECURITY FIX (C-06): Currency calculations must use fixed-point decimal
+    // arithmetic (integer-cents or decimal.js) to avoid floating-point errors.
+    // All amounts are rounded to 2 decimal places for reporting; production
+    // should store amounts as integer-cents (e.g., 15000 = $150.00).
     let totalDebits = 0;
     let totalCredits = 0;
     for (const e of entries) {
-      totalDebits += e.DEBITAMOUNT ?? 0;
-      totalCredits += e.CREDITAMOUNT ?? 0;
+      totalDebits += Math.round((e.DEBITAMOUNT ?? 0) * 100) / 100;
+      totalCredits += Math.round((e.CREDITAMOUNT ?? 0) * 100) / 100;
     }
+    const netChange = Math.round((totalDebits - totalCredits) * 100) / 100;
+    return {
+      accountId: accountId ?? null,
+      totalDebits: Math.round(totalDebits * 100) / 100,
+      totalCredits: Math.round(totalCredits * 100) / 100,
+      netChange,
+      entryCount: entries.length,
+    };
+  }
     return {
       accountId: accountId ?? null,
       totalDebits,

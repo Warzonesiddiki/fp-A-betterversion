@@ -1,8 +1,0 @@
-{
-  "agent": "agent-47",
-  "task": "Add JSDoc comments to all public exports in src/engines/AnomalyExplainer.ts (interfaces Anomaly/Explanation/FinancialContext, class AnomalyExplainer, static methods explainAnomaly/crossReference/rankBySeverity, and module header)",
-  "status": "success",
-  "jsdocLinesAdded": 86,
-  "tscErrorsAfter": 0,
-  "notes": "Baseline tsc errors for AnomalyExplainer was 0. After adding JSDoc blocks, tsc errors for AnomalyExplainer remain 0 (verified via: node run-tsc.cjs 2>&1 | Select-String 'AnomalyExplainer' | Measure-Object -Line). All 3 public interfaces, the class, and all 3 public static methods now carry JSDoc descriptions. Public function signatures unchanged. Documented tolerances and confidence-boost behavior in explainAnomaly and crossReference (5% amount matching window; confidence rises to 0.8 with supporting context, 0.5 otherwise). Did not run lint per task scope, but no code logic was changed so no lint regression expected."
-}

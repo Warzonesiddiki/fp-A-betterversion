@@ -1,8 +1,0 @@
-{
-  "agent": "agent-39",
-  "task": "Add JSDoc comments to public functions in src/engines/BatchOperationEngine.ts",
-  "status": "success",
-  "jsdocLinesAdded": 89,
-  "tscErrorsAfter": 0,
-  "notes": "Added JSDoc to both exported interfaces (BatchOperation, BatchResult) and all 8 public static methods of BatchOperationEngine (execute, undo, redo, undoLast, redoLast, getHistory, canUndo, canRedo) plus a class-level block. Verification: `node run-tsc.cjs 2>&1 | Select-String \"BatchOperationEngine\" | Measure-Object -Line` returned Count=0. File grew from 180 to 269 lines; the +89 delta is entirely JSDoc. No code logic changed."
-}

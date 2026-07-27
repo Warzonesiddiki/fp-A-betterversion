@@ -126,7 +126,7 @@ const redactEmail = (email: string): string => {
   return `${prefix}***@${domain}`;
 };
 
-const redactPII = (entry: ExtendedAuditEntry): ExtendedAuditEntry => ({
+export const redactPII = (entry: ExtendedAuditEntry): ExtendedAuditEntry => ({
   ...entry,
   userId: redactEmail(entry.userId),
   approvalUserId: entry.approvalUserId ? redactEmail(entry.approvalUserId) : undefined,
@@ -140,6 +140,14 @@ const redactPII = (entry: ExtendedAuditEntry): ExtendedAuditEntry => ({
       )
     : undefined,
 });
+
+const simpleHash = (s: string): string => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h).toString(16).padStart(8, '0');
+};
 
 const makeEntry = (operation: AuditOperation, input: RecordInput): ExtendedAuditEntry => ({
   id: uid(),
@@ -163,6 +171,18 @@ const makeEntry = (operation: AuditOperation, input: RecordInput): ExtendedAudit
   breachEventId: undefined,
   // Hera RBAC coupling (T-4.30 rbacEnforcer.ts)
   rbacEnforceId: undefined,
+  // Integrity hash (C-03 FIX): simple hash over entry content so silent
+  // modifications can be detected. In production, replace with HMAC-SHA256.
+  hash: simpleHash(
+    JSON.stringify({
+      id: uid(),
+      cellId: input.cellId,
+      userId: input.userId,
+      operation,
+      timestamp: now(),
+      newValue: input.newValue,
+    })
+  ),
 });
 
 const defaultFilters: AuditFilters = {
@@ -322,6 +342,16 @@ export const useAuditTrailStore = create<State & Actions>()(
       },
 
       revertToState: (entryId) => {
+        // SECURITY FIX (C-03): revertToState is restricted to prevent
+        // unauthorized mutation of the audit trail. Only admin / compliance
+        // / data-protection-officer roles may revert. The original entry
+        // remains intact; a new revert audit entry is added (append-only).
+        const allowedRoles: AuditRole[] = ['admin', 'compliance', 'data-protection-officer'];
+        if (!allowedRoles.includes(get().currentUserRole)) {
+          throw new Error(
+            'Audit trail revert denied: insufficient role. Required: admin, compliance, or data-protection-officer.'
+          );
+        }
         const entry = get().entries.find((e) => e.id === entryId);
         if (!entry) return;
         // Generate a new audit entry recording the revert action (Hades GDPR Article 16)

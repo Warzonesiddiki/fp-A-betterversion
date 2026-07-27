@@ -1,8 +1,0 @@
-{
-  "agent": "agent-35",
-  "task": "Add JSDoc comments to public functions in src/engines/AuditEngine.ts and verify with tsc",
-  "status": "success",
-  "jsdocLinesAdded": 54,
-  "tscErrorsAfter": 0,
-  "notes": "Expanded 8 brief method JSDoc blocks (log, query, exportCSV, exportJSON, getStats, archive, getAll, reset) from 3-line stubs to full JSDoc with @param, @returns, and {@link} cross-references. Class-level header preserved. Total JSDoc lines grew from 27 to 81 (delta +54). Verification command `node run-tsc.cjs 2>&1 | Select-String \"AuditEngine\" | Measure-Object -Line` returned 0, matching the required pass condition."
-}

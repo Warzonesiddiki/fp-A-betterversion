@@ -1,37 +1,8 @@
 /**
- * SecretsVault.ts — PATCH 16 — IMPLEMENTATION
- * @since 1.0.0
- * @ratification_gate 2026-06-22T16:00:00Z
- *
- * Hephaestus (Security Muse) — PATCH 16 — SecretsVault + VaultRotation
- *
- * ALIGNMENT: This file is REFACTORED (PICK A.2) to match the canonical
- * SecretsVault.d.ts contract. The previous version diverged on:
- *   - VaultShardId literals ('primary' → 'shard-0', etc.)
- *   - RotationReason (4 → 6 canonical values)
- *   - VaultError fields (recoverable → retriable; +traceId; +key)
- *   - VaultResult union (split read vs write)
- *   - VaultEntry (split encrypted envelope + optional payload)
- *   - VaultReadResult (entry → value/version/rotationCount/originShard)
- *   - Error code literals (CASCADE_DETECTED → CASCADE_VETO; +KEY_NOT_FOUND, etc.)
- *   - Missing isAvailable() pre-check
- *   - Missing storage.rotate?() delegation
- *
- * Co-signs: RULE #47 (CAVEMAN PERSIST), RULE #59 (workspace hygiene),
- *           RULE #60 (5-ICP SKEPTIC), RULE #61 (circuit breaker),
- *           RULE #63 (multi-shard persistence), RULE #67→#69 (rotation policy),
- *           RULE #68 (CATCH-NUMBERING hygiene).
- * 4-ICP STRICT (post-refactor target): I1 9.75 ✓ C2 10.0 ✓ P3 9.75 ✓ D4 9.5 ✓
- *   Composite target: 9.75/10 PLATINUM+ (restoration of original seal)
- *
- * Cross-patch dependencies (all SHIPPED):
- *   - PATCH 9  (IncidentResponse @ be3eaf119) — triage sink for ThreatSignal
- *   - PATCH 10 (ThreatModel @ d0fe9107)       — provides emit(ThreatSignal)
- *   - PATCH 11 (SecurityHeaders + CSRF @ 3547f51e) — HTTP-layer defense
- *   - PATCH 12 (AuditLogger @ fa02aad4)       — log(AuditEvent) => auditLogId
- *   - PATCH 13 (PIIRedactor)                 — payload sanitization pre-storage
- *   - PATCH 14 (RateLimiter + CircuitBreaker) — call-rate guard
- *   - PATCH 15 (TauriSecureStorage @ 8a1eea3cc) — runtime via tauri-plugin-stronghold
+ * SecretsVault.ts — AES-256-GCM encrypted vault with PBKDF2 key derivation,
+ * 2-of-3 shard quorum, WAL (write-ahead log), circuit breaker, and rotation.
+ * @security Master key must be derived from OS keychain (macOS Keychain,
+ * Windows Credential Manager, Linux libsecret) — see ADR-007.
  */
 
 // ─── Imports (CATCH #207-ENV UNBLOCK via interfaces.ts shim) ────────────────

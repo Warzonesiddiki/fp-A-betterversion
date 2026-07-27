@@ -1,1 +1,0 @@
-{"agent":"agent-08","task":"add-expect-import-bench","status":"done","tscErrorsAfter":0,"notes":"Import already correct. Line 1: 'import { describe, it, expect, vi, beforeAll } from \\'vitest\\';' — expect was already present, no edit required. tsc reports 0 errors for masterStorage.bench."}
