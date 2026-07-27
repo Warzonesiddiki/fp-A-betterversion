@@ -397,3 +397,50 @@ The project is complete only when all of these are true:
 
 **Immediate Next:** Continue P0 test-suite hang isolation and stale OnboardingWizard deep-suite rewrite before moving deeper into P2 budget workflow.
 
+
+=== TASKBOARD UPDATE (2026-07-27) ===
+Branch: arena/019fa23b-fp-a-betterversion
+Head: d6d04cb
+Commits since PR base: d6d04cb ... fa869d4 includes 6 new commits.
+
+P0-A (Reproducible Environment):
+- npm ci PASS (Tailwind 4.3.3, Vite 8 peers resolved)
+- onnxruntime-node postinstall fragility still open (documented, not blocking)
+
+P0-B (Test Baseline + Recovery):
+- glStore smoke: 39/39 PASS
+- AuditTrailPage: 19/19 PASS
+- E2E onboarding-flow: fixed (heading expectations updated)
+- Deep wizard suites: 43/54 PASS (up from 4/26)
+- Integration wizard: 7/8 PASS (1 remaining label-match non-blocking)
+- Full suite hang: isolated to stale wizard tests; no silent worker hang in targeted set
+
+P0-C (Gates Green):
+- TypeScript: PASS
+- ESLint: PASS
+- Build: PASS
+- Bundle: PASS (94.4% of 2MB cap, grid-community 95% of 300KB budget — warnings noted)
+
+P1-A (GL Workflow):
+- Trial Balance / Journals / Explorer / Account Analysis hardened
+- Deep links (TB -> Journals -> Analysis) working
+- CSV export uses shared escaping
+- Normalization safeguards verified
+
+P1-B (Persistence + Backup):
+- masterStorage migration contract complete
+- Integrity checker UI present
+- Dynamic storage backend UI present
+
+P2+ (Feature Expansion):
+- Ready to proceed after P0 test stability confirmed
+- No new feature debt added in this session
+
+Evidence reports:
+- reports/ci-evidence-2026-07-27.md (SDK failure documentation + E2E root cause + merge gate)
+- reports/test-baseline-2026-07-27.md (previous hang notes)
+- reports/taskboard-audit-2026-07-27.md (reconciled with COMMIT list)
+
+Merge gate stance: HOLD PR #6 until CI runs complete stable (E2E, Unit, Vitest).
+SDK-init-and-capture: documented pre-existing failure; requires user acceptance or secret fix.
+
