@@ -227,7 +227,7 @@ describe('OnboardingWizard — Form Validation (T-3.28.2 Batch 2: 16 tests)', ()
 
   // Helper to navigate to setup step (step 1)
   const navigateToSetup = async (user: ReturnType<typeof userEvent.setup>) => {
-    await user.click(screen.getByText('onboarding.welcome.start'));
+    await user.click(screen.getByText("Let's Start"));
     expect(screen.getByTestId('progress-stepper')).toHaveAttribute('data-current-step', '1');
   };
 
