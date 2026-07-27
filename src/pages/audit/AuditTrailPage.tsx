@@ -195,7 +195,7 @@ function AuditTrailContent() {
     ];
     // SECURITY FIX (C-03): Apply PIIRedactor before CSV export
     const rows = filtered.map((e) => {
-      const redacted = redactPII(e as Parameters<typeof redactPII>[0]);
+      const redacted = redactPII(e as unknown as Parameters<typeof redactPII>[0]);
       return [
         redacted.timestamp,
         redacted.userId,

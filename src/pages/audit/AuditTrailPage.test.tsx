@@ -218,6 +218,9 @@ describe('AuditTrailPage', () => {
     mockCreateObjectURL.mockClear();
     mockRevokeObjectURL.mockClear();
     mockAuditEngine.getAllEntries.mockReturnValue(pageEntries);
+    // Set up store mock with admin role so the GDPR gate passes
+    const adminState = createMockStoreState({ currentUserRole: 'admin' });
+    mockUseAuditTrailStore(adminState);
   });
 
   it('renders audit entries from the page audit engine', () => {
