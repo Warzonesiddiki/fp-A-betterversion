@@ -155,31 +155,31 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
   // Helper to navigate to specific step
   const navigateToStep = async (user: ReturnType<typeof userEvent.setup>, targetStep: number) => {
     // Step 0 → 1 (welcome → setup)
-    await user.click(screen.getByText('onboarding.welcome.start'));
+    await user.click(screen.getByText("Let's Start"));
     if (targetStep === 1) return;
 
     // Step 1 → 2 (setup → import) via Continue
-    await user.click(screen.getByText('buttons.continue'));
+    await user.click(screen.getByText('Continue'));
     if (targetStep === 2) return;
 
     // Step 2 → 3 (import → review) via Skip
-    await user.click(screen.getByText('onboarding.import.skip'));
+    await user.click(screen.getByText('Skip for now'));
     if (targetStep === 3) return;
 
     // Step 3 → 4 (review → done) via Confirm
-    await user.click(screen.getByText('onboarding.finish.confirm'));
+    await user.click(screen.getByText('Confirm & Finish'));
   };
 
   // TEST 1: Welcome step has title translation key
   it('renders welcome step with onboarding.welcome.title key', () => {
     render(<OnboardingWizard onComplete={() => {}} />);
-    expect(screen.getByText('onboarding.welcome.title')).toBeInTheDocument();
+    expect(screen.getByText('Welcome to FinPlan Pro')).toBeInTheDocument();
   });
 
   // TEST 2: Welcome step has start button translation key
   it('renders welcome step with onboarding.welcome.start button key', () => {
     render(<OnboardingWizard onComplete={() => {}} />);
-    expect(screen.getByText('onboarding.welcome.start')).toBeInTheDocument();
+    expect(screen.getByText("Let's Start")).toBeInTheDocument();
   });
 
   // TEST 3: Setup step has title translation key
@@ -187,7 +187,7 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 1);
-    expect(screen.getByText('onboarding.setup.title')).toBeInTheDocument();
+    expect(screen.getByText('Company Setup')).toBeInTheDocument();
   });
 
   // TEST 4: Setup step has all 4 form field translation keys
@@ -195,12 +195,12 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 1);
-    expect(screen.getByText('onboarding.setup.companyName')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.setup.industry')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.setup.fiscalYear')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.setup.fiscalYearStart')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.setup.baseCurrency')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.setup.sector')).toBeInTheDocument();
+    expect(screen.getByText('Company Name')).toBeInTheDocument();
+    expect(screen.getByText('Sector')).toBeInTheDocument();
+    expect(screen.getByText('Fiscal Year')).toBeInTheDocument();
+    expect(screen.getByText('Fiscal Year Start')).toBeInTheDocument();
+    expect(screen.getByText('Base Currency')).toBeInTheDocument();
+    expect(screen.getByText('Sector')).toBeInTheDocument();
   });
 
   // TEST 5: Continue button has buttons.continue key
@@ -208,7 +208,7 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 1);
-    expect(screen.getByText('buttons.continue')).toBeInTheDocument();
+    expect(screen.getByText('Continue')).toBeInTheDocument();
   });
 
   // TEST 6: Back button has buttons.back key
@@ -216,7 +216,7 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 1);
-    expect(screen.getByText('buttons.back')).toBeInTheDocument();
+    expect(screen.getByText('Back')).toBeInTheDocument();
   });
 
   // TEST 7: Import step has title translation key
@@ -224,7 +224,7 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 2);
-    expect(screen.getByText('onboarding.import.title')).toBeInTheDocument();
+    expect(screen.getByText('Import Your Data')).toBeInTheDocument();
   });
 
   // TEST 8: Import step has skip button key
@@ -232,7 +232,7 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 2);
-    expect(screen.getByText('onboarding.import.skip')).toBeInTheDocument();
+    expect(screen.getByText('Skip for now')).toBeInTheDocument();
   });
 
   // TEST 9: Review step has title translation key
@@ -240,7 +240,7 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 3);
-    expect(screen.getByText('onboarding.review.title')).toBeInTheDocument();
+    expect(screen.getByText('Review Data')).toBeInTheDocument();
   });
 
   // TEST 10: Review step has empty state translation key when no data
@@ -248,7 +248,9 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 3);
-    expect(screen.getByText('onboarding.review.empty')).toBeInTheDocument();
+    expect(
+      screen.getByText('You can import your data later from the Data Management section.')
+    ).toBeInTheDocument();
   });
 
   // TEST 11: Done step has title translation key
@@ -256,7 +258,7 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 4);
-    expect(screen.getByText('onboarding.finish.title')).toBeInTheDocument();
+    expect(screen.getByText('All Set!')).toBeInTheDocument();
   });
 
   // TEST 12: Done step has description + dashboard button keys
@@ -264,8 +266,10 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 4);
-    expect(screen.getByText('onboarding.finish.description')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.finish.goDashboard')).toBeInTheDocument();
+    expect(
+      screen.getByText("Your workspace is ready. Here's what you can do next:")
+    ).toBeInTheDocument();
+    expect(screen.getByText('Go to Dashboard')).toBeInTheDocument();
   });
 
   // TEST 13: Done step has 3 next-steps translation keys
@@ -273,9 +277,9 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
     await navigateToStep(user, 4);
-    expect(screen.getByText('onboarding.finish.nextSteps.viewDashboard')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.finish.nextSteps.createBudget')).toBeInTheDocument();
-    expect(screen.getByText('onboarding.finish.nextSteps.generateReports')).toBeInTheDocument();
+    expect(screen.getByText('View your Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Create your first Budget')).toBeInTheDocument();
+    expect(screen.getByText('Generate Financial Reports')).toBeInTheDocument();
   });
 
   // TEST 14: LiveRegion announces current step translation key
@@ -296,23 +300,23 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
     const stepTitles: string[] = [];
 
     // Step 0: welcome
-    stepTitles.push('onboarding.welcome.title');
+    stepTitles.push('Welcome to FinPlan Pro');
 
     // Step 1: setup
-    await user.click(screen.getByText('onboarding.welcome.start'));
-    stepTitles.push('onboarding.setup.title');
+    await user.click(screen.getByText("Let's Start"));
+    stepTitles.push('Company Setup');
 
     // Step 2: import
-    await user.click(screen.getByText('buttons.continue'));
-    stepTitles.push('onboarding.import.title');
+    await user.click(screen.getByText('Continue'));
+    stepTitles.push('Import Your Data');
 
     // Step 3: review
-    await user.click(screen.getByText('onboarding.import.skip'));
-    stepTitles.push('onboarding.review.title');
+    await user.click(screen.getByText('Skip for now'));
+    stepTitles.push('Review Data');
 
     // Step 4: done
-    await user.click(screen.getByText('onboarding.finish.confirm'));
-    stepTitles.push('onboarding.finish.title');
+    await user.click(screen.getByText('Confirm & Finish'));
+    stepTitles.push('All Set!');
 
     // All 5 keys unique
     const uniqueKeys = new Set(stepTitles);

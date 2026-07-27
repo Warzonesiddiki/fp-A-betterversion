@@ -12,12 +12,25 @@ import { LiveRegion } from './LiveRegion';
 import { getAllSectors } from '@/config/sectors';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useGLStore } from '@/store/glStore';
+import type { GLState, SettingsState } from '@/types';
 
 interface OnboardingWizardProps {
   onComplete: () => void;
 }
 
-export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
+type StoreAccessor<TState> = ((selector: (state: TState) => unknown) => unknown) | Partial<TState>;
+
+function selectFromStore<TState, TValue>(
+  store: StoreAccessor<TState>,
+  selector: (state: TState) => TValue
+): TValue {
+  if (typeof store === 'function') {
+    return store(selector) as TValue;
+  }
+  return selector(store as TState);
+}
+
+export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [companyInfo, setCompanyInfo] = useState({
@@ -37,9 +50,18 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     }
   }, [step]);
 
-  const updateOrganization = useSettingsStore((state) => state.updateOrganization);
-  const updatePreferences = useSettingsStore((state) => state.updatePreferences);
-  const setEntries = useGLStore((state) => state.setEntries);
+  const updateOrganization = selectFromStore(
+    useSettingsStore as unknown as StoreAccessor<SettingsState>,
+    (state) => state.updateOrganization
+  );
+  const updatePreferences = selectFromStore(
+    useSettingsStore as unknown as StoreAccessor<SettingsState>,
+    (state) => state.updatePreferences
+  );
+  const setEntries = selectFromStore(
+    useGLStore as unknown as StoreAccessor<GLState>,
+    (state) => state.setEntries
+  );
 
   const sectors = getAllSectors().map((s) => ({ value: s.id, label: s.name }));
   const months = [
@@ -178,33 +200,40 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input
+                    id="onboarding-company-name"
                     label={t('onboarding.setup.companyName')}
                     placeholder={t('onboarding.setup.companyNamePlaceholder')}
                     value={companyInfo.name}
+                    required
+                    maxLength={100}
                     onChange={(e) => setCompanyInfo({ ...companyInfo, name: e.target.value })}
                   />
                   <Select
-                    label={t('onboarding.setup.industry')}
+                    label={t('onboarding.setup.sector')}
                     options={sectors}
                     value={companyInfo.sector}
+                    required
                     onChange={(val) => setCompanyInfo({ ...companyInfo, sector: val })}
                   />
                   <Select
                     label={t('onboarding.setup.fiscalYear')}
                     options={years}
                     value={companyInfo.fiscalYear}
+                    required
                     onChange={(val) => setCompanyInfo({ ...companyInfo, fiscalYear: val })}
                   />
                   <Select
                     label={t('onboarding.setup.fiscalYearStart')}
                     options={months}
                     value={companyInfo.fiscalYearStart}
+                    required
                     onChange={(val) => setCompanyInfo({ ...companyInfo, fiscalYearStart: val })}
                   />
                   <Select
                     label={t('onboarding.setup.baseCurrency')}
                     options={currencies}
                     value={companyInfo.currency}
+                    required
                     onChange={(val) => setCompanyInfo({ ...companyInfo, currency: val })}
                   />
                 </div>
@@ -322,3 +351,5 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     </div>
   );
 }
+
+export default OnboardingWizard;

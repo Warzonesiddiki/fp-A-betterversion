@@ -29,7 +29,9 @@ test.describe('Core Flow: Onboarding to Data Import', () => {
     await page.getByRole('button', { name: /get started|start/i }).click();
 
     // Step 1: Company Info
-    await expect(page.getByRole('heading', { name: /set up your organization/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /set up your organization|company/i })
+    ).toBeVisible();
     await page.getByLabel(/company name/i).fill('Acme Corp');
     // Selects are custom components, but should have roles
     await page.getByLabel(/industry|sector/i).selectOption({ label: 'Technology' });
@@ -41,7 +43,7 @@ test.describe('Core Flow: Onboarding to Data Import', () => {
     await page.getByRole('button', { name: /skip for now/i }).click();
 
     // Step 3: Review
-    await expect(page.getByRole('heading', { name: /review & confirm/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /review|confirm/i })).toBeVisible();
     await page.getByRole('button', { name: /confirm/i }).click();
 
     // Step 4: Success

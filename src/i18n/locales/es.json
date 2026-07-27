@@ -227,5 +227,10 @@
     "collapse": "Contraer",
     "previous": "Anterior",
     "nextPage": "Siguiente página"
+  },
+  "onboarding": {
+    "setup": {
+      "sector": "Sector"
+    }
   }
 }

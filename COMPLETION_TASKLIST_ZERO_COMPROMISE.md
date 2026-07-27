@@ -46,10 +46,10 @@
   - Bundle sizes acceptable (main chunk < 150KB gzip recommended)
   - **Gate:** `dist/index.html` exists and `npm run preview` works
 
-- [/] **0.4** (partial — full run timed out; will re-run in CI/later) Establish official test baseline
+- [/] **0.4** (partial — full run timed out; hang isolation open) Establish official test baseline
   - Run full `npm test` (allow 15+ minutes)
-  - Record exact numbers (pass/fail/timeout) in `reports/test-baseline-2026-07-23.md`
-  - **Gate:** Baseline report committed
+  - Record exact numbers (pass/fail/timeout) in `reports/test-baseline-2026-07-27.md`
+  - **Current evidence (2026-07-27):** Full-suite run exceeded available runtime and left a Vitest worker alive; targeted recovery set now passes 97/97.
 
 - [x] **0.5** Linting baseline
   - `npm run lint`
@@ -86,10 +86,11 @@
   - Import/Export CSV
   - **Gate passed (2026-07-23):** ChartOfAccountsPage.tsx implements full CRUD, hierarchy display, CSV import (parse + add), CSV export, GL-usage soft-delete guard via useGLStore integration. Verified in reports/phase1-b1-b5-complete-2026-07-23.md.
 
-- [ ] **1.1.4 (Trial Balance + Journals + Explorer enhanced), Journals, Account Analysis
+- [x] **1.1.4 (Trial Balance + Journals + Explorer enhanced), Journals, Account Analysis
   - Auto-calculated Trial Balance with "Balanced / Off by $X" indicator
   - Filterable/paginated Journals
   - Per-account monthly trend + running balance
+  - **Gate passed (2026-07-27):** Trial Balance/Journals/Explorer/Account Analysis hardened with deep links, running balance, account summary KPIs, shared CSV export escaping, and GL normalization tests. Targeted GL suite passes 39/39; GL/data/audit/onboarding-smoke recovery set passes 97/97.
 
 - [x] **1.1.5** Data Reconciliation tool
   - Compare two files side-by-side

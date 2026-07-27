@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { toCSV } from '@/utils/csv';
 import { Scale, RefreshCw, Download, Eye, BarChart3 } from 'lucide-react';
 
 function formatCurrency(n: number): string {
@@ -133,28 +134,26 @@ export default function GLTrialBalancePage() {
             size="sm"
             variant="ghost"
             onClick={() => {
-              // Simple CSV export of trial balance
-              const csv = ['Code,Name,Type,Beginning,Debits,Credits,Net,Ending'];
-              trialBalance.forEach((r) =>
-                csv.push(
-                  [
-                    r.accountCode,
-                    `"${r.accountName}"`,
-                    r.accountType,
-                    r.beginningBalance,
-                    r.debit,
-                    r.credit,
-                    r.netChange,
-                    r.endingBalance,
-                  ].join(',')
-                )
+              const csv = toCSV(
+                trialBalance.map((row) => ({
+                  Code: row.accountCode,
+                  Name: row.accountName,
+                  Type: row.accountType,
+                  Beginning: row.beginningBalance,
+                  Debits: row.debit,
+                  Credits: row.credit,
+                  Net: row.netChange,
+                  Ending: row.endingBalance,
+                })),
+                ['Code', 'Name', 'Type', 'Beginning', 'Debits', 'Credits', 'Net', 'Ending']
               );
-              const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+              const blob = new Blob([csv], { type: 'text/csv' });
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
               a.href = url;
               a.download = 'trial-balance.csv';
               a.click();
+              URL.revokeObjectURL(url);
             }}
           >
             <Download className="h-3.5 w-3.5 mr-1.5" />

@@ -1,0 +1,4 @@
+start=2026-07-27T06:35:00+05:30
+end=2026-07-27T06:45:31+00:00
+exit=manual-timeout
+notes=Full npm test exceeded tool/runtime budget and left a runaway vitest worker; killed manually. See stdout/stderr logs.

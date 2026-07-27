@@ -88,29 +88,33 @@ vi.mock('@/components/ui/Select', () => ({
     onChange: (v: string) => void;
     id?: string;
     required?: boolean;
-  }) => (
-    <div>
-      {label && (
-        <label htmlFor={id}>
-          {label}
-          {required && <span aria-label="required">*</span>}
-        </label>
-      )}
-      <select
-        id={id}
-        data-testid={`select-${label}`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  ),
+  }) => {
+    const selectId =
+      id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : 'select-unknown');
+    return (
+      <div>
+        {label && (
+          <label htmlFor={selectId}>
+            {label}
+            {required && <span aria-label="required">*</span>}
+          </label>
+        )}
+        <select
+          id={selectId}
+          data-testid={`select-${label}`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required={required}
+        >
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  },
 }));
 
 vi.mock('@/components/ui/FileDropZone', () => ({
@@ -238,7 +242,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     await user.click(screen.getByRole('button', { name: /start/i }));
 
     // Fill form
-    const companyInput = screen.getByLabelText(/company.*name/i);
+    const companyInput = screen.getAllByLabelText(/company.*name/i)[0]!;
     await user.type(companyInput, 'Acme Corp');
 
     // setup → import
@@ -280,7 +284,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
 
     // welcome → setup → continue → import
     await user.click(screen.getByRole('button', { name: /start/i }));
-    await user.type(screen.getByLabelText(/company.*name/i), 'Beta Inc');
+    await user.type(screen.getAllByLabelText(/company.*name/i)[0]!, 'Beta Inc');
     await user.click(screen.getByRole('button', { name: /continue/i }));
 
     // Skip import → review
@@ -307,11 +311,11 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     await user.click(screen.getByRole('button', { name: /start/i }));
 
     // Fill form with specific values
-    await user.type(screen.getByLabelText(/company.*name/i), 'Gamma LLC');
+    await user.type(screen.getAllByLabelText(/company.*name/i)[0]!, 'Gamma LLC');
     await user.selectOptions(screen.getByLabelText(/industry|sector/i), 'sector-5');
-    await user.selectOptions(screen.getByLabelText(/fiscal.*year/i), '2025');
-    await user.selectOptions(screen.getByLabelText(/fiscal.*year.*start|month/i), 'April');
-    await user.selectOptions(screen.getByLabelText(/currency/i), 'EUR');
+    await user.selectOptions(screen.getByTestId('select-Fiscal Year'), '2025');
+    await user.selectOptions(screen.getAllByLabelText(/fiscal year start|month/i)[0]!, 'April');
+    await user.selectOptions(screen.getAllByLabelText(/currency/i)[0]!, 'EUR');
 
     // setup → import → skip → review
     await user.click(screen.getByRole('button', { name: /continue/i }));
@@ -343,7 +347,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
 
     // welcome → setup (fill) → import (upload) → review
     await user.click(screen.getByRole('button', { name: /start/i }));
-    await user.type(screen.getByLabelText(/company.*name/i), 'Delta Co');
+    await user.type(screen.getAllByLabelText(/company.*name/i)[0]!, 'Delta Co');
     await user.click(screen.getByRole('button', { name: /continue/i }));
 
     // Upload file (mock has 2 entries: Revenue 50000 + Payroll -20000)
@@ -396,7 +400,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
 
     // welcome → setup → import → skip → review (empty state) → done
     await user.click(screen.getByRole('button', { name: /start/i }));
-    await user.type(screen.getByLabelText(/company.*name/i), 'Epsilon Ltd');
+    await user.type(screen.getAllByLabelText(/company.*name/i)[0]!, 'Epsilon Ltd');
     await user.click(screen.getByRole('button', { name: /continue/i }));
     await user.click(screen.getByRole('button', { name: /skip/i }));
 
@@ -421,7 +425,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     await user.click(screen.getByRole('button', { name: /start/i }));
 
     // January = month index 0 + 1 = 1 → '01'
-    await user.selectOptions(screen.getByLabelText(/fiscal.*year.*start|month/i), 'January');
+    await user.selectOptions(screen.getAllByLabelText(/fiscal year start|month/i)[0]!, 'January');
 
     // December = month index 11 + 1 = 12 → '12'
     // Test December in a separate flow would need re-render; just verify January here
@@ -461,7 +465,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
 
     // Full flow
     await user.click(screen.getByRole('button', { name: /start/i }));
-    await user.type(screen.getByLabelText(/company.*name/i), 'Zeta Corp');
+    await user.type(screen.getAllByLabelText(/company.*name/i)[0]!, 'Zeta Corp');
     await user.click(screen.getByRole('button', { name: /continue/i }));
     await user.click(screen.getByRole('button', { name: /upload file/i }));
     await user.click(screen.getByRole('button', { name: /confirm/i }));

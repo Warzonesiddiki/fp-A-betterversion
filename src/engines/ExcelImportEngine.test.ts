@@ -4,6 +4,31 @@ import { ExcelImportEngine } from './ExcelImportEngine';
 describe('ExcelImportEngine', () => {
   const engine = new ExcelImportEngine();
 
+  describe('parseFile', () => {
+    it('parses CSV files with BOM, quoted commas and escaped quotes', async () => {
+      const csv =
+        '\uFEFFDate,Account,Description,Debit,Credit\n' +
+        '2026-01-01,1000,"Receipt, online",1500,0\n' +
+        '2026-01-02,2000,"Vendor said ""paid""",0,1500';
+      const file = new File([csv], 'quoted-ledger.csv', { type: 'text/csv' });
+
+      const workbook = await engine.parseFile(file);
+
+      expect(workbook.format).toBe('csv');
+      expect(workbook.sheetCount).toBe(1);
+      expect(workbook.totalRows).toBe(2);
+      expect(workbook.sheets[0]?.headers).toEqual([
+        'Date',
+        'Account',
+        'Description',
+        'Debit',
+        'Credit',
+      ]);
+      expect(workbook.sheets[0]?.rows[0]?.Description).toBe('Receipt, online');
+      expect(workbook.sheets[0]?.rows[1]?.Description).toBe('Vendor said "paid"');
+    });
+  });
+
   describe('autoDetectMappings', () => {
     it('detects date column from header keywords', () => {
       const headers = ['Posting Date', 'Account Code', 'Debit', 'Credit'];

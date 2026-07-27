@@ -32,6 +32,49 @@ interface GLSnapshot {
 
 const undoEngine = new UndoRedoEngine<GLSnapshot>(100);
 
+function toFiniteNumber(value: unknown, fallback = 0): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+function normalizeGLEntry(
+  entry: Partial<GLEntry>,
+  index: number,
+  fallbackIdPrefix = 'gl'
+): GLEntry {
+  const sourceAmount = toFiniteNumber(entry.amount, 0);
+  const debit = Math.max(
+    0,
+    entry.debit !== undefined ? toFiniteNumber(entry.debit) : Math.max(sourceAmount, 0)
+  );
+  const credit = Math.max(
+    0,
+    entry.credit !== undefined ? toFiniteNumber(entry.credit) : Math.max(-sourceAmount, 0)
+  );
+  const netChange = debit - credit;
+  const date = String(entry.date || entry.postDate || '');
+  const period = String(entry.period || date.slice(0, 7) || 'unknown');
+  const accountCode = String(entry.accountCode || entry.accountId || '').trim();
+  const accountId = String(entry.accountId || accountCode).trim();
+  const accountName = String(entry.accountName || accountCode).trim();
+
+  return {
+    ...entry,
+    id: String(entry.id || `${fallbackIdPrefix}-${index}`),
+    accountId,
+    accountCode,
+    accountName,
+    period,
+    periodName: String(entry.periodName || period),
+    debit,
+    credit,
+    netChange,
+    amount: netChange,
+    date,
+    description: String(entry.description || ''),
+    reference: String(entry.reference || ''),
+  };
+}
+
 function captureGLSnapshot(get: () => ReturnType<typeof useGLStore.getState>) {
   const state = get();
   undoEngine.push({
@@ -101,9 +144,12 @@ export const useGLStore = create<GLState>()(
 
         setEntries: enforce(Permissions.IMPORT_CREATE, 'setEntries', (entries) => {
           captureGLSnapshot(get);
-          const ids = entries.map((e) => e.id);
+          const normalizedEntries = entries.map((entry, index) =>
+            normalizeGLEntry(entry, index, 'gl-set')
+          );
+          const ids = normalizedEntries.map((e) => e.id);
           set((state) => {
-            state.entries = entries;
+            state.entries = normalizedEntries;
             state.trialBalance = [];
             state.accountAnalysis = null;
             state.lastImportEntryIds = ids;
@@ -114,15 +160,18 @@ export const useGLStore = create<GLState>()(
           useUIStore.getState().addToast({
             type: 'success',
             title: 'GL Entries Set',
-            message: `Successfully loaded ${entries.length} general ledger entries`,
+            message: `Successfully loaded ${normalizedEntries.length} general ledger entries`,
           });
         }),
 
         addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries: GLEntry[]) => {
           captureGLSnapshot(get);
-          const ids = newEntries.map((e) => e.id);
+          const normalizedEntries = newEntries.map((entry, index) =>
+            normalizeGLEntry(entry, index, `gl-add-${Date.now()}`)
+          );
+          const ids = normalizedEntries.map((e) => e.id);
           set((state) => {
-            state.entries.push(...newEntries);
+            state.entries.push(...normalizedEntries);
             state.lastImportEntryIds = ids;
             state.importStatus = 'complete';
             state.importProgress = 100;
@@ -149,10 +198,16 @@ export const useGLStore = create<GLState>()(
 
             captureGLSnapshot(get);
             const timestamp = Date.now();
-            const finalEntries = newEntries.map((e, i) => ({
-              ...e,
-              id: e.id || `gl-${timestamp}-${i}`,
-            })) as GLEntry[];
+            const finalEntries = newEntries.map((entry, index) =>
+              normalizeGLEntry(
+                {
+                  ...entry,
+                  id: entry.id || `gl-${timestamp}-${index}`,
+                },
+                index,
+                `gl-${timestamp}`
+              )
+            );
 
             const ids = finalEntries.map((e) => e.id);
 
@@ -188,7 +243,9 @@ export const useGLStore = create<GLState>()(
 
         addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
           captureGLSnapshot(get);
-          const entries = Array.isArray(entry) ? entry : [entry];
+          const entries = (Array.isArray(entry) ? entry : [entry]).map((item, index) =>
+            normalizeGLEntry(item, index, `gl-entry-${Date.now()}`)
+          );
           set((state) => {
             state.entries.push(...entries);
             state.lastImportEntryIds = entries.map((e) => e.id);
@@ -210,25 +267,33 @@ export const useGLStore = create<GLState>()(
         generateTrialBalance: () => {
           set({ isLoading: true });
           const { entries, accounts } = get();
-          const accountMap = new Map(accounts.map((a) => [a.id, a]));
+          const accountMap = new Map<string, GLAccount>();
+          for (const account of accounts) {
+            accountMap.set(account.id, account);
+            accountMap.set(account.code, account);
+          }
 
           const balanceMap = new Map<string, TrialBalanceRow>();
           for (const entry of entries) {
-            const key = entry.accountId;
+            const key = entry.accountId || entry.accountCode;
+            const account = accountMap.get(key) ?? accountMap.get(entry.accountCode);
             const existing = balanceMap.get(key) ?? {
-              accountId: entry.accountId,
+              accountId: key,
               accountCode: entry.accountCode,
               accountName: entry.accountName,
-              accountType: accountMap.get(entry.accountId)?.type ?? 'Unknown',
+              accountType: account?.type ?? 'Unknown',
               beginningBalance: 0,
               debit: 0,
               credit: 0,
               netChange: 0,
               endingBalance: 0,
             };
-            existing.debit += entry.debit;
-            existing.credit += entry.credit;
-            existing.netChange += entry.netChange;
+            const debit = toFiniteNumber(entry.debit);
+            const credit = toFiniteNumber(entry.credit);
+            const netChange = debit - credit;
+            existing.debit += debit;
+            existing.credit += credit;
+            existing.netChange += netChange;
             existing.endingBalance = existing.beginningBalance + existing.netChange;
             balanceMap.set(key, existing);
           }
@@ -243,7 +308,9 @@ export const useGLStore = create<GLState>()(
         analyzeAccount: (accountId) => {
           set({ isLoading: true });
           const { entries } = get();
-          const filtered = entries.filter((e) => e.accountId === accountId);
+          const filtered = entries.filter(
+            (e) => e.accountId === accountId || e.accountCode === accountId
+          );
 
           const monthGroups = new Map<string, { debit: number; credit: number; count: number }>();
           for (const entry of filtered) {
@@ -356,7 +423,12 @@ export const useGLStore = create<GLState>()(
         undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', () =>
           set((state) => {
             const count = state.lastImportEntryIds.length;
-            if (count === 0) return;
+            if (count === 0) {
+              state.lastImportResult = null;
+              state.importStatus = 'idle';
+              state.importProgress = 0;
+              return;
+            }
 
             const ids = new Set(state.lastImportEntryIds);
             state.entries = state.entries.filter((e) => !ids.has(e.id));
@@ -400,16 +472,33 @@ export const useGLStore = create<GLState>()(
         validateEntries: (entries: Partial<GLEntry>[]) => {
           const errors: string[] = [];
           entries.forEach((e, idx) => {
-            if (!e.accountCode) errors.push(`Row ${idx + 1}: missing accountCode`);
-            if (!e.date && !e.postDate) errors.push(`Row ${idx + 1}: missing date/postDate`);
-            if (typeof e.debit !== 'number' && typeof e.credit !== 'number') {
-              errors.push(`Row ${idx + 1}: missing debit or credit`);
+            const row = idx + 1;
+            const debitProvided = e.debit !== undefined;
+            const creditProvided = e.credit !== undefined;
+            const amountProvided = e.amount !== undefined;
+            const debit = toFiniteNumber(e.debit, Number.NaN);
+            const credit = toFiniteNumber(e.credit, Number.NaN);
+            const amount = toFiniteNumber(e.amount, Number.NaN);
+
+            if (!e.accountCode && !e.accountId) errors.push(`Row ${row}: missing accountCode`);
+            if (!e.date && !e.postDate) errors.push(`Row ${row}: missing date/postDate`);
+            if (!debitProvided && !creditProvided && !amountProvided) {
+              errors.push(`Row ${row}: missing debit, credit, or amount`);
+            }
+            if (debitProvided && (!Number.isFinite(debit) || debit < 0)) {
+              errors.push(`Row ${row}: debit must be a non-negative number`);
+            }
+            if (creditProvided && (!Number.isFinite(credit) || credit < 0)) {
+              errors.push(`Row ${row}: credit must be a non-negative number`);
+            }
+            if (amountProvided && !Number.isFinite(amount)) {
+              errors.push(`Row ${row}: amount must be a finite number`);
             }
           });
           return {
             isValid: errors.length === 0,
             errors,
-            validCount: entries.length - errors.length,
+            validCount: Math.max(0, entries.length - errors.length),
           };
         },
 
@@ -460,7 +549,7 @@ export const useGLStore = create<GLState>()(
               Scenario: 'Scenario:Actual',
               Currency: 'Currency:USD',
             };
-            const amount = e.amount ?? e.debit - e.credit;
+            const amount = toFiniteNumber(e.debit) - toFiniteNumber(e.credit);
 
             cubeCells.push({
               cube: 'GL_Actuals',
@@ -472,7 +561,7 @@ export const useGLStore = create<GLState>()(
             });
             cubeCells.push({
               cube: 'GL_Actuals',
-              cell: { coords, measure: 'netChange', value: e.netChange, dataType: 'input' },
+              cell: { coords, measure: 'netChange', value: amount, dataType: 'input' },
             });
             cubeCells.push({
               cube: 'GL_Actuals',

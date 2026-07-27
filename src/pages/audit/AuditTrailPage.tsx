@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { Fragment, useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CellAuditTrailEngine } from '@/engines/CellAuditTrailEngine';
 import type { AuditOperation } from '@/engines/CellAuditTrailEngine';
@@ -509,9 +509,8 @@ export default function AuditTrailPage() {
                     const rowId = e.id || `${e.cellId}-${e.timestamp}`;
                     const isExpanded = expandedRowId === rowId;
                     return (
-                      <>
+                      <Fragment key={rowId}>
                         <tr
-                          key={rowId}
                           className="hover:bg-slate-900/50 cursor-pointer"
                           aria-rowindex={i + 2}
                           aria-expanded={isExpanded}
@@ -548,13 +547,11 @@ export default function AuditTrailPage() {
                                   : '-'}
                               </td>
                               <td
-                                className="px-4 py-2 text-right tabular-nums font-medium"
-                                style={{
-                                  color:
-                                    Number(e.newValue || 0) >= Number(e.oldValue || 0)
-                                      ? '#4ade80'
-                                      : '#f87171',
-                                }}
+                                className={`px-4 py-2 text-right tabular-nums font-medium ${
+                                  Number(e.newValue || 0) >= Number(e.oldValue || 0)
+                                    ? 'text-green-400'
+                                    : 'text-red-400'
+                                }`}
                               >
                                 {e.newValue !== undefined && e.newValue !== null
                                   ? new Intl.NumberFormat('en-US', {
@@ -616,7 +613,7 @@ export default function AuditTrailPage() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </Fragment>
                     );
                   })
                 )}
