@@ -31,11 +31,7 @@ function makeNode(id: string, deps: string[] = []): DAGNode {
 describe('DAGEngine', () => {
   describe('buildDAG', () => {
     it('builds a simple linear graph', () => {
-      const nodes = [
-        makeNode('A'),
-        makeNode('B', ['A']),
-        makeNode('C', ['B']),
-      ];
+      const nodes = [makeNode('A'), makeNode('B', ['A']), makeNode('C', ['B'])];
       const graph = buildDAG(nodes);
 
       expect(graph.nodeCount).toBe(3);
@@ -57,26 +53,14 @@ describe('DAGEngine', () => {
       expect(graph.edgeCount).toBe(4);
       expect(graph.cycles).toHaveLength(0);
       // A must come before B and C; D must come after B and C
-      expect(graph.topologicalOrder.indexOf('A')).toBeLessThan(
-        graph.topologicalOrder.indexOf('B')
-      );
-      expect(graph.topologicalOrder.indexOf('A')).toBeLessThan(
-        graph.topologicalOrder.indexOf('C')
-      );
-      expect(graph.topologicalOrder.indexOf('B')).toBeLessThan(
-        graph.topologicalOrder.indexOf('D')
-      );
-      expect(graph.topologicalOrder.indexOf('C')).toBeLessThan(
-        graph.topologicalOrder.indexOf('D')
-      );
+      expect(graph.topologicalOrder.indexOf('A')).toBeLessThan(graph.topologicalOrder.indexOf('B'));
+      expect(graph.topologicalOrder.indexOf('A')).toBeLessThan(graph.topologicalOrder.indexOf('C'));
+      expect(graph.topologicalOrder.indexOf('B')).toBeLessThan(graph.topologicalOrder.indexOf('D'));
+      expect(graph.topologicalOrder.indexOf('C')).toBeLessThan(graph.topologicalOrder.indexOf('D'));
     });
 
     it('detects a simple cycle', () => {
-      const nodes = [
-        makeNode('A', ['C']),
-        makeNode('B', ['A']),
-        makeNode('C', ['B']),
-      ];
+      const nodes = [makeNode('A', ['C']), makeNode('B', ['A']), makeNode('C', ['B'])];
       const graph = buildDAG(nodes);
 
       expect(graph.cycles.length).toBeGreaterThan(0);
@@ -157,12 +141,7 @@ describe('DAGEngine', () => {
   });
 
   describe('transitive queries', () => {
-    const nodes = [
-      makeNode('A'),
-      makeNode('B', ['A']),
-      makeNode('C', ['B']),
-      makeNode('D', ['C']),
-    ];
+    const nodes = [makeNode('A'), makeNode('B', ['A']), makeNode('C', ['B']), makeNode('D', ['C'])];
     const graph = buildDAG(nodes);
 
     it('gets transitive dependencies', () => {

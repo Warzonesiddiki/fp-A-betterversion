@@ -83,7 +83,8 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
         ) => {
           const state = get();
           const chain = state.chains.get(cellId);
-          const previousHash = chain?.entries[chain.entries.length - 1]?.entryHash ?? '0'.repeat(64);
+          const previousHash =
+            chain?.entries[chain.entries.length - 1]?.entryHash ?? '0'.repeat(64);
 
           const entryId = `lin-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
           const timestamp = new Date().toISOString();

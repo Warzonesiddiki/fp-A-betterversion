@@ -145,9 +145,7 @@ export function topologicalSort(
 /**
  * Perform a topological sort with cycle detection.
  */
-export function topologicalSortWithValidation(
-  graph: DAGraph
-): TopologicalSortResult {
+export function topologicalSortWithValidation(graph: DAGraph): TopologicalSortResult {
   const start = performance.now();
 
   if (graph.cycles.length > 0) {
@@ -327,11 +325,7 @@ export function recalculate(
  * Propagate dependents: if cell A changed, all cells that depend on A
  * (directly or transitively) need recalculation.
  */
-function propagateDependents(
-  graph: DAGraph,
-  cellId: string,
-  needsRecalc: Set<string>
-): void {
+function propagateDependents(graph: DAGraph, cellId: string, needsRecalc: Set<string>): void {
   const visited = new Set<string>();
   const queue = [cellId];
 
@@ -355,10 +349,7 @@ function propagateDependents(
 /**
  * Get all cells that a given cell depends on (transitively).
  */
-export function getTransitiveDependencies(
-  graph: DAGraph,
-  cellId: string
-): string[] {
+export function getTransitiveDependencies(graph: DAGraph, cellId: string): string[] {
   const visited = new Set<string>();
   const result: string[] = [];
   const queue = [cellId];
@@ -384,10 +375,7 @@ export function getTransitiveDependencies(
 /**
  * Get all cells that depend on a given cell (transitively).
  */
-export function getTransitiveDependents(
-  graph: DAGraph,
-  cellId: string
-): string[] {
+export function getTransitiveDependents(graph: DAGraph, cellId: string): string[] {
   const visited = new Set<string>();
   const result: string[] = [];
   const queue = [cellId];

@@ -268,22 +268,18 @@ export function buildBudgetWriteBack(
   lineItems: readonly { accountCode: string; period: string; amount: number }[],
   metadata: WriteBackMetadata
 ): WriteBackOperation {
-  return createOperation(
-    'budget',
-    'create',
-    {
-      recordType: 'budget',
-      fields: {
-        budgetId,
-        lineItems: lineItems.map((li) => ({
-          accountCode: li.accountCode,
-          period: li.period,
-          amount: li.amount,
-        })),
-      },
-      metadata,
-    }
-  );
+  return createOperation('budget', 'create', {
+    recordType: 'budget',
+    fields: {
+      budgetId,
+      lineItems: lineItems.map((li) => ({
+        accountCode: li.accountCode,
+        period: li.period,
+        amount: li.amount,
+      })),
+    },
+    metadata,
+  });
 }
 
 /**
@@ -298,22 +294,18 @@ export function buildJournalEntryWriteBack(
   }[],
   metadata: WriteBackMetadata
 ): WriteBackOperation {
-  return createOperation(
-    'journal-entry',
-    'create',
-    {
-      recordType: 'journal-entry',
-      fields: {
-        entries: entries.map((e) => ({
-          accountCode: e.accountCode,
-          debit: e.debit,
-          credit: e.credit,
-          description: e.description,
-        })),
-        totalDebit: entries.reduce((s, e) => s + e.debit, 0),
-        totalCredit: entries.reduce((s, e) => s + e.credit, 0),
-      },
-      metadata,
-    }
-  );
+  return createOperation('journal-entry', 'create', {
+    recordType: 'journal-entry',
+    fields: {
+      entries: entries.map((e) => ({
+        accountCode: e.accountCode,
+        debit: e.debit,
+        credit: e.credit,
+        description: e.description,
+      })),
+      totalDebit: entries.reduce((s, e) => s + e.debit, 0),
+      totalCredit: entries.reduce((s, e) => s + e.credit, 0),
+    },
+    metadata,
+  });
 }

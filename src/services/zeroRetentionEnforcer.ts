@@ -71,7 +71,8 @@ export function enforcePolicy(
   // Block restricted data if configured
   if (config.blockRestrictedData && classification === 'restricted') {
     allowed = false;
-    denialReason = 'Restricted data cannot be sent to external services under zero-retention policy';
+    denialReason =
+      'Restricted data cannot be sent to external services under zero-retention policy';
   }
 
   // Check payload size
@@ -137,9 +138,7 @@ export function classifyField(fieldName: string, value: unknown): DataClassifica
 /**
  * Classify an entire payload by its most sensitive field.
  */
-export function classifyPayload(
-  payload: Record<string, unknown>
-): DataClassification {
+export function classifyPayload(payload: Record<string, unknown>): DataClassification {
   const levels: Record<DataClassification, number> = {
     public: 0,
     internal: 1,
@@ -164,9 +163,10 @@ export function classifyPayload(
 /**
  * Redact sensitive fields from outbound data.
  */
-export function redactSensitiveFields(
-  data: Record<string, unknown>
-): { redacted: Record<string, unknown>; redactions: DataRedaction[] } {
+export function redactSensitiveFields(data: Record<string, unknown>): {
+  redacted: Record<string, unknown>;
+  redactions: DataRedaction[];
+} {
   const redacted = { ...data };
   const redactions: DataRedaction[] = [];
 

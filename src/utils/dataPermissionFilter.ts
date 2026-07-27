@@ -34,10 +34,7 @@ export function applyRowFilters<T extends Record<string, unknown>>(
 /**
  * Check if a single row matches a row filter.
  */
-function matchesFilter<T extends Record<string, unknown>>(
-  row: T,
-  filter: RowFilter
-): boolean {
+function matchesFilter<T extends Record<string, unknown>>(row: T, filter: RowFilter): boolean {
   const value = row[filter.field];
 
   switch (filter.operator) {
@@ -210,7 +207,13 @@ export function hasDataPermission(
     // Check resource match
     const resource = perm.resource;
     if (resource.type !== resourceType && resource.type !== 'global') return false;
-    if (resource.type !== 'global' && 'budgetId' in resource && resource.budgetId !== '*' && resource.budgetId !== resourceId) return false;
+    if (
+      resource.type !== 'global' &&
+      'budgetId' in resource &&
+      resource.budgetId !== '*' &&
+      resource.budgetId !== resourceId
+    )
+      return false;
 
     // Check action
     return perm.actions.includes(action as 'read' | 'write' | 'export' | 'approve');

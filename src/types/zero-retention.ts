@@ -16,10 +16,10 @@
  * Classification of data sensitivity for outbound policy enforcement.
  */
 export type DataClassification =
-  | 'public'          // Non-sensitive (e.g., app version, UI preferences)
-  | 'internal'        // Internal business data (e.g., aggregated metrics)
-  | 'confidential'    // Financial data (e.g., budget amounts, forecasts)
-  | 'restricted';     // PII and regulated data (e.g., salaries, SSNs)
+  | 'public' // Non-sensitive (e.g., app version, UI preferences)
+  | 'internal' // Internal business data (e.g., aggregated metrics)
+  | 'confidential' // Financial data (e.g., budget amounts, forecasts)
+  | 'restricted'; // PII and regulated data (e.g., salaries, SSNs)
 
 /**
  * Zero-retention policy headers applied to outbound requests.

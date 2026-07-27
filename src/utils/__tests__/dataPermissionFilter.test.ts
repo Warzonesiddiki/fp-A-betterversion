@@ -29,7 +29,13 @@ describe('dataPermissionFilter', () => {
 
     it('filters by equals', () => {
       const filters: RowFilter[] = [
-        { id: '1', field: 'department', operator: 'equals', values: ['Engineering'], hardHide: true },
+        {
+          id: '1',
+          field: 'department',
+          operator: 'equals',
+          values: ['Engineering'],
+          hardHide: true,
+        },
       ];
       const result = applyRowFilters(sampleRows, filters);
       expect(result).toHaveLength(2);
@@ -38,7 +44,13 @@ describe('dataPermissionFilter', () => {
 
     it('filters by in', () => {
       const filters: RowFilter[] = [
-        { id: '1', field: 'department', operator: 'in', values: ['Engineering', 'Sales'], hardHide: true },
+        {
+          id: '1',
+          field: 'department',
+          operator: 'in',
+          values: ['Engineering', 'Sales'],
+          hardHide: true,
+        },
       ];
       expect(applyRowFilters(sampleRows, filters)).toHaveLength(3);
     });
@@ -101,7 +113,13 @@ describe('dataPermissionFilter', () => {
           resource: { type: 'global' },
           actions: ['read'],
           rowFilters: [
-            { id: 'r1', field: 'department', operator: 'equals', values: ['Engineering'], hardHide: true },
+            {
+              id: 'r1',
+              field: 'department',
+              operator: 'equals',
+              values: ['Engineering'],
+              hardHide: true,
+            },
           ],
           columnFilters: [
             { id: 'c1', field: 'salary', visible: false, masked: false, readOnly: false },
@@ -180,11 +198,15 @@ describe('dataPermissionFilter', () => {
     ];
 
     it('allows access for matching role and action', () => {
-      expect(hasDataPermission(permissions, 'user-1', ['admin'], 'read', 'budget', 'bgt-001')).toBe(true);
+      expect(hasDataPermission(permissions, 'user-1', ['admin'], 'read', 'budget', 'bgt-001')).toBe(
+        true
+      );
     });
 
     it('denies access for non-matching role', () => {
-      expect(hasDataPermission(permissions, 'user-1', ['viewer'], 'read', 'budget', 'bgt-001')).toBe(false);
+      expect(
+        hasDataPermission(permissions, 'user-1', ['viewer'], 'read', 'budget', 'bgt-001')
+      ).toBe(false);
     });
   });
 });

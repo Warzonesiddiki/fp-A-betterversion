@@ -142,9 +142,10 @@ export function useRollingForecast(
       const storedDriver = accountId
         ? forecastStore.drivers.find((d) => d.id === accountId)
         : undefined;
-      const storedValue = storedDriver && 'values' in storedDriver
-        ? (storedDriver as Record<string, unknown>).values
-        : undefined;
+      const storedValue =
+        storedDriver && 'values' in storedDriver
+          ? (storedDriver as Record<string, unknown>).values
+          : undefined;
 
       return {
         period,
@@ -167,10 +168,7 @@ export function useRollingForecast(
     [periods]
   );
 
-  const actualCount = useMemo(
-    () => periods.filter((p) => p.state === 'actual').length,
-    [periods]
-  );
+  const actualCount = useMemo(() => periods.filter((p) => p.state === 'actual').length, [periods]);
 
   const forecastCount = useMemo(
     () => periods.filter((p) => p.state === 'forecast').length,

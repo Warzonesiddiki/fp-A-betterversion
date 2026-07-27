@@ -162,18 +162,13 @@ export interface WriteBackCapable {
    * Execute a transaction atomically.
    * Throws WriteBackError on failure; connector handles rollback.
    */
-  executeWriteBack(
-    transaction: WriteBackTransaction
-  ): Promise<readonly WriteBackResult[]>;
+  executeWriteBack(transaction: WriteBackTransaction): Promise<readonly WriteBackResult[]>;
 
   /**
    * Roll back a previously committed transaction.
    * Used when post-commit validation detects data integrity issues.
    */
-  rollbackWriteBack(
-    transactionId: string,
-    results: readonly WriteBackResult[]
-  ): Promise<void>;
+  rollbackWriteBack(transactionId: string, results: readonly WriteBackResult[]): Promise<void>;
 
   /**
    * Check if the connector supports write-back for a given record type.

@@ -118,12 +118,7 @@ export interface SyncState {
   readonly conflicts: readonly SyncConflict[];
 }
 
-export type SyncStatus =
-  | 'idle'
-  | 'syncing'
-  | 'offline'
-  | 'conflict'
-  | 'error';
+export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'conflict' | 'error';
 
 // ─── Conflict Resolution ───────────────────────────────────────────────────
 
