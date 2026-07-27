@@ -1,0 +1,439 @@
+# Instincts generated from https://github.com/Warzonesiddiki/fp-A-betterversion
+# Generated: 2026-07-27T08:52:41.835Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: fp-A-betterversion-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: chore
+
+## Evidence
+
+- 1 commits analyzed
+- Detected conventional commit pattern
+- Examples: chore: harden GL foundation and recover gates
+
+---
+id: fp-A-betterversion-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Commit Length
+
+## Action
+
+Keep commit messages concise (~45 characters)
+
+## Evidence
+
+- Average commit message length: 45 chars
+- Based on 1 commits
+
+---
+id: fp-A-betterversion-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: fp-A-betterversion-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: fp-A-betterversion-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: fp-A-betterversion-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: components, engines, i18n, pages, store
+
+---
+id: fp-A-betterversion-test-colocate
+trigger: "when writing tests"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Test Colocate
+
+## Action
+
+Place test file next to the source file (e.g., Button.test.tsx next to Button.tsx)
+
+## Evidence
+
+- Colocated test pattern detected
+- Tests live alongside source files
+
+---
+id: fp-A-betterversion-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Test Framework
+
+## Action
+
+Use vitest as the test framework
+
+## Evidence
+
+- Test framework detected: vitest
+- File pattern: *.test.ts
+
+---
+id: fp-A-betterversion-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: fp-A-betterversion-test-mocking
+trigger: "when mocking dependencies in tests"
+confidence: 0.75
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Test Mocking
+
+## Action
+
+Use vi.mock for mocking
+
+## Evidence
+
+- Mocking pattern detected: vi.mock
+- Consistent across test files
+
+---
+id: fp-a-betterversion-instinct-file-naming
+trigger: "When creating a new file in the codebase"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct File Naming
+
+## Action
+
+Name the file using camelCase convention
+
+## Evidence
+
+- Pattern in namingConventions.files
+
+---
+id: fp-a-betterversion-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Function Naming
+
+## Action
+
+Name the function using camelCase convention
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: fp-a-betterversion-instinct-class-naming
+trigger: "When creating a new class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase convention
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: fp-a-betterversion-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE convention
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: fp-a-betterversion-instinct-import-alias
+trigger: "When importing modules"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Import Alias
+
+## Action
+
+Use import aliases instead of relative paths
+
+## Evidence
+
+- Pattern in importStyle: alias
+
+---
+id: fp-a-betterversion-instinct-export-mixed
+trigger: "When exporting from a module"
+confidence: 0.6
+domain: code-style
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Export Mixed
+
+## Action
+
+Use either named or default exports as appropriate (mixed export style)
+
+## Evidence
+
+- Pattern in exportStyle: mixed
+
+---
+id: fp-a-betterversion-instinct-test-location
+trigger: "When adding tests for a module"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Test Location
+
+## Action
+
+Co-locate test files (*.test.ts) with the module they test
+
+## Evidence
+
+- Pattern in testLocation: colocated
+- Pattern in testing.filePattern
+
+---
+id: fp-a-betterversion-instinct-test-framework
+trigger: "When writing new tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Test Framework
+
+## Action
+
+Use the vitest framework and write tests in TypeScript (*.test.ts)
+
+## Evidence
+
+- Pattern in testing.framework: vitest
+- Pattern in testing.filePattern
+
+---
+id: fp-a-betterversion-instinct-unit-test
+trigger: "When testing a function or component"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Unit Test
+
+## Action
+
+Write unit tests using vitest
+
+## Evidence
+
+- Pattern in testing.testTypes: unit
+
+---
+id: fp-a-betterversion-instinct-mocking
+trigger: "When mocking dependencies in tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Mocking
+
+## Action
+
+Use vi.mock for mocking
+
+## Evidence
+
+- Pattern in testing.mockingStyle: vi.mock
+
+---
+id: fp-a-betterversion-instinct-coverage
+trigger: "When configuring test coverage"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Coverage
+
+## Action
+
+Enable and configure coverage reporting in vitest
+
+## Evidence
+
+- Pattern in testing.coverageConfig: true
+
+---
+id: fp-a-betterversion-instinct-commit-format
+trigger: "When making a git commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Warzonesiddiki/fp-A-betterversion
+---
+
+# Fp A Betterversion Instinct Commit Format
+
+## Action
+
+Use the conventional commit format with 'chore' as the prefix and a concise message (~45 characters)
+
+## Evidence
+
+- Pattern in commits.type: conventional
+- Pattern in commits.prefixes: chore
+- Seen in commit: chore: harden GL foundation and recover gates
+
