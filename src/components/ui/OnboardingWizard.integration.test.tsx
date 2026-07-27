@@ -89,31 +89,32 @@ vi.mock('@/components/ui/Select', () => ({
     id?: string;
     required?: boolean;
   }) => {
-    const selectId = id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : 'select-unknown');
+    const selectId =
+      id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : 'select-unknown');
     return (
-    <div>
-      {label && (
-        <label htmlFor={selectId}>
-          {label}
-          {required && <span aria-label="required">*</span>}
-        </label>
-      )}
-      <select
-        id={selectId}
-        data-testid={`select-${label}`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-  }
+      <div>
+        {label && (
+          <label htmlFor={selectId}>
+            {label}
+            {required && <span aria-label="required">*</span>}
+          </label>
+        )}
+        <select
+          id={selectId}
+          data-testid={`select-${label}`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required={required}
+        >
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  },
 }));
 
 vi.mock('@/components/ui/FileDropZone', () => ({
@@ -312,7 +313,10 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     // Fill form with specific values
     await user.type(screen.getAllByLabelText(/company.*name/i)[0]!, 'Gamma LLC');
     await user.selectOptions(screen.getByLabelText(/industry|sector/i), 'sector-5');
-    await user.selectOptions(screen.getAllByRole('combobox', { name: /fiscal year$/i })[0]!, '2025');
+    await user.selectOptions(
+      screen.getAllByRole('combobox', { name: /fiscal year$/i })[0]!,
+      '2025'
+    );
     await user.selectOptions(screen.getAllByLabelText(/fiscal year start|month/i)[0]!, 'April');
     await user.selectOptions(screen.getAllByLabelText(/currency/i)[0]!, 'EUR');
 

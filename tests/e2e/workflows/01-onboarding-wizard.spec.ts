@@ -54,7 +54,9 @@ test.describe('Workflow: Onboarding Wizard', () => {
 
   test('rejects empty company name on setup step', async ({ page }) => {
     await page.getByRole('button', { name: /get started|start/i }).click();
-    await expect(page.getByRole('heading', { name: /set up your organization|company/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /set up your organization|company/i })
+    ).toBeVisible();
     // Try to continue without filling
     const continueBtn = page.getByRole('button', { name: /continue|next/i });
     if (await continueBtn.isEnabled()) {

@@ -185,7 +185,7 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
     expect(screen.getByTestId('live-region')).toHaveTextContent(/Step 1/);
 
     // Welcome title and start button visible
-    expect(screen.getByText("Welcome to FinPlan Pro")).toBeInTheDocument();
+    expect(screen.getByText('Welcome to FinPlan Pro')).toBeInTheDocument();
     expect(screen.getByText("Let's Start")).toBeInTheDocument();
   });
 
@@ -206,10 +206,10 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
     expect(screen.getByTestId('live-region')).toHaveTextContent(/Step 2/);
 
     // Verify setup form fields visible
-    expect(screen.getByText("Company Setup")).toBeInTheDocument();
-    expect(screen.getByText("Company Name")).toBeInTheDocument();
-    expect(screen.getByText("Sector")).toBeInTheDocument();
-    expect(screen.getByText("Fiscal Year")).toBeInTheDocument();
+    expect(screen.getByText('Company Setup')).toBeInTheDocument();
+    expect(screen.getByText('Company Name')).toBeInTheDocument();
+    expect(screen.getByText('Sector')).toBeInTheDocument();
+    expect(screen.getByText('Fiscal Year')).toBeInTheDocument();
   });
 
   // TEST 3: advances setup → import (step 1 → step 2)
@@ -224,7 +224,7 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
     expect(screen.getByTestId('progress-stepper')).toHaveAttribute('data-current-step', '1');
 
     // Click Continue button
-    const continueButton = screen.getByText("Continue");
+    const continueButton = screen.getByText('Continue');
     await user.click(continueButton);
 
     // Verify stepper advanced to step 2
@@ -232,9 +232,9 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
     expect(stepper).toHaveAttribute('data-current-step', '2');
 
     // Verify import step visible
-    expect(screen.getByText("Import Your Data")).toBeInTheDocument();
+    expect(screen.getByText('Import Your Data')).toBeInTheDocument();
     expect(screen.getByTestId('file-drop-zone')).toBeInTheDocument();
-    expect(screen.getByText("Skip for now")).toBeInTheDocument();
+    expect(screen.getByText('Skip for now')).toBeInTheDocument();
   });
 
   // TEST 4: advances import → review (step 2 → step 3) via Skip
@@ -244,13 +244,13 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
 
     // Navigate to import step
     await user.click(screen.getByText("Let's Start"));
-    await user.click(screen.getByText("Continue"));
+    await user.click(screen.getByText('Continue'));
 
     // Verify we're at import
     expect(screen.getByTestId('progress-stepper')).toHaveAttribute('data-current-step', '2');
 
     // Click Skip button
-    const skipButton = screen.getByText("Skip for now");
+    const skipButton = screen.getByText('Skip for now');
     await user.click(skipButton);
 
     // Verify stepper advanced to step 3
@@ -258,9 +258,11 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
     expect(stepper).toHaveAttribute('data-current-step', '3');
 
     // Verify review step visible with empty state (since we skipped)
-    expect(screen.getByText("Review Data")).toBeInTheDocument();
-    expect(screen.getByText("You can import your data later from the Data Management section.")).toBeInTheDocument();
-    expect(screen.getByText("Confirm & Finish")).toBeInTheDocument();
+    expect(screen.getByText('Review Data')).toBeInTheDocument();
+    expect(
+      screen.getByText('You can import your data later from the Data Management section.')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Confirm & Finish')).toBeInTheDocument();
   });
 
   // TEST 5: advances review → done (step 3 → step 4)
@@ -270,14 +272,14 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
 
     // Navigate through wizard to review
     await user.click(screen.getByText("Let's Start"));
-    await user.click(screen.getByText("Continue"));
-    await user.click(screen.getByText("Skip for now"));
+    await user.click(screen.getByText('Continue'));
+    await user.click(screen.getByText('Skip for now'));
 
     // Verify we're at review
     expect(screen.getByTestId('progress-stepper')).toHaveAttribute('data-current-step', '3');
 
     // Click Confirm button
-    const confirmButton = screen.getByText("Confirm & Finish");
+    const confirmButton = screen.getByText('Confirm & Finish');
     await user.click(confirmButton);
 
     // Verify stepper advanced to step 4
@@ -285,13 +287,15 @@ describe('OnboardingWizard — Step Navigation (T-3.28.2 Batch 1: 5 tests)', () 
     expect(stepper).toHaveAttribute('data-current-step', '4');
 
     // Verify done step visible with success message and dashboard button
-    expect(screen.getByText("All Set!")).toBeInTheDocument();
-    expect(screen.getByText("Your workspace is ready. Here's what you can do next:")).toBeInTheDocument();
-    expect(screen.getByText("Go to Dashboard")).toBeInTheDocument();
+    expect(screen.getByText('All Set!')).toBeInTheDocument();
+    expect(
+      screen.getByText("Your workspace is ready. Here's what you can do next:")
+    ).toBeInTheDocument();
+    expect(screen.getByText('Go to Dashboard')).toBeInTheDocument();
 
     // Verify next steps listed
-    expect(screen.getByText("View your Dashboard")).toBeInTheDocument();
-    expect(screen.getByText("Create your first Budget")).toBeInTheDocument();
-    expect(screen.getByText("Generate Financial Reports")).toBeInTheDocument();
+    expect(screen.getByText('View your Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Create your first Budget')).toBeInTheDocument();
+    expect(screen.getByText('Generate Financial Reports')).toBeInTheDocument();
   });
 });
