@@ -88,16 +88,18 @@ vi.mock('@/components/ui/Select', () => ({
     onChange: (v: string) => void;
     id?: string;
     required?: boolean;
-  }) => (
+  }) => {
+    const selectId = id || (label ? `select-${label.toLowerCase().replace(/\s+/g, '-')}` : 'select-unknown');
+    return (
     <div>
       {label && (
-        <label htmlFor={id}>
+        <label htmlFor={selectId}>
           {label}
           {required && <span aria-label="required">*</span>}
         </label>
       )}
       <select
-        id={id}
+        id={selectId}
         data-testid={`select-${label}`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -110,7 +112,8 @@ vi.mock('@/components/ui/Select', () => ({
         ))}
       </select>
     </div>
-  ),
+  );
+  }
 }));
 
 vi.mock('@/components/ui/FileDropZone', () => ({
@@ -309,8 +312,8 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     // Fill form with specific values
     await user.type(screen.getByLabelText(/company.*name/i), 'Gamma LLC');
     await user.selectOptions(screen.getByLabelText(/industry|sector/i), 'sector-5');
-    await user.selectOptions(screen.getByLabelText(/fiscal.*year/i), '2025');
-    await user.selectOptions(screen.getByLabelText(/fiscal.*year.*start|month/i), 'April');
+    await user.selectOptions(screen.getByRole('combobox', { name: /fiscal year$/i }), '2025');
+    await user.selectOptions(screen.getByLabelText(/fiscal year start|month/i), 'April');
     await user.selectOptions(screen.getByLabelText(/currency/i), 'EUR');
 
     // setup → import → skip → review
@@ -421,7 +424,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     await user.click(screen.getByRole('button', { name: /start/i }));
 
     // January = month index 0 + 1 = 1 → '01'
-    await user.selectOptions(screen.getByLabelText(/fiscal.*year.*start|month/i), 'January');
+    await user.selectOptions(screen.getByLabelText(/fiscal year start|month/i), 'January');
 
     // December = month index 11 + 1 = 12 → '12'
     // Test December in a separate flow would need re-render; just verify January here
