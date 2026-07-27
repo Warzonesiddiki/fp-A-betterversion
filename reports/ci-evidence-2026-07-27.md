@@ -53,3 +53,13 @@ Per session instruction: **DO NOT MERGE** PR #6 until:
 1. E2E check passes (expected after `50a2d42` push + new CI run).
 2. `Unit Tests` and `Vitest (single-run, 80 GiB heap, coverage)` complete (success or documented acceptable failure).
 3. `sdk-init-and-capture` either passes (if secrets become available) or is explicitly documented as a pre-existing non-required failure accepted by the user.
+
+---
+
+## 2026-07-27 Update (after push 40de701)
+
+- Onboarding wizard integration mock fixed (`selectId` generated from label; `getByRole('combobox', ...)` used for ambiguous labels).
+- Deep wizard suite status: 43/54 pass (integration: 7/8 pass, 1 remaining label-match failure at `getByRole('combobox', { name: /fiscal year$/i })` — non-blocking for E2E/core gates).
+- New push to `arena/019fa23b-fp-a-betterversion` (commit `40de701`).
+- Pending CI: Build, Unit Tests, Vitest, TypeScript, E2E (new runs triggered).
+- SDK failure (`sdk-init-and-capture`) remains pre-existing and secret-dependent.
