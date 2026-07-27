@@ -35,7 +35,13 @@ const {
 
 beforeEach(() => {
   vi.useFakeTimers();
-  vi.stubGlobal('console', { log: vi.fn(), warn: vi.fn(), error: vi.fn() });
+  vi.stubGlobal('console', {
+    log: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  });
   vi.stubGlobal('window', { location: { href: '' } });
   vi.stubGlobal('document', {
     cookie: '',

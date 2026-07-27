@@ -729,14 +729,6 @@ export class SageConnector extends BaseConnector {
       entryCount: entries.length,
     };
   }
-    return {
-      accountId: accountId ?? null,
-      totalDebits,
-      totalCredits,
-      netChange: totalDebits - totalCredits,
-      entryCount: entries.length,
-    };
-  }
 
   // ─── Sync ──────────────────────────────────────────────────────────────────
 

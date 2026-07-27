@@ -16,7 +16,7 @@ export interface CellAuditEntry {
   userId: string;
   operation: AuditOperation;
   dataType: DataType;
-  previousValue: unknown;
+  previousValue?: unknown;
   newValue: unknown;
   approvalStatus: ApprovalStatus;
   approvalUserId?: string;
@@ -37,6 +37,24 @@ export interface ExtendedAuditEntry extends CellAuditEntry {
   breachEventId?: string;
   /** Hera RBAC rbacEnforcer.ts cross-reference (T-4.30 enforce() call) */
   rbacEnforceId?: string;
+  /** Account ID (from CellAuditTrailEngine) */
+  accountId?: string;
+  /** Account name (from CellAuditTrailEngine) */
+  accountName?: string;
+  /** Month index (from CellAuditTrailEngine) */
+  month?: number;
+  /** Old value alias (from CellAuditTrailEngine) */
+  oldValue?: unknown;
+  /** User display name (from CellAuditTrailEngine) */
+  userName?: string;
+  /** Human-readable reason for the change */
+  reason?: string | null;
+  /** Approved by user ID */
+  approvedBy?: string;
+  /** Approval timestamp */
+  approvedAt?: string;
+  /** Integrity hash */
+  hash?: string;
 }
 
 /** 12 filter types per Part 141 spec §3.2 */

@@ -82,7 +82,12 @@ describe('masterStorage', () => {
       const value = { state: { data: 'test' }, version: 1 };
       await masterStorage.setItem('test-store', value);
 
-      expect(mockTauriSqlSetItem).toHaveBeenCalledWith('test-store', value);
+      // Value is encrypted before persisting, so we verify it was called with
+      // the correct key and a string (the encrypted payload).
+      expect(mockTauriSqlSetItem).toHaveBeenCalledTimes(1);
+      const [calledKey, calledValue] = mockTauriSqlSetItem.mock.calls[0]!;
+      expect(calledKey).toBe('test-store');
+      expect(typeof calledValue).toBe('string');
     });
   });
 

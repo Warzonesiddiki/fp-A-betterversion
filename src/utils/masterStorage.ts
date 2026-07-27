@@ -19,22 +19,30 @@ async function checkTauri() {
  * not a hardcoded string. For production, set MASTER_STORAGE_KEY env
  * or integrate with TauriSecureStorage / SecretsVault key rotation.
  */
-const STORAGE_KEY_RAW = typeof process !== 'undefined' && process.env?.MASTER_STORAGE_KEY
-  ? process.env.MASTER_STORAGE_KEY
-  : 'finplan-master-storage-key-change-in-production';
+const STORAGE_KEY_RAW =
+  typeof process !== 'undefined' && process.env?.MASTER_STORAGE_KEY
+    ? process.env.MASTER_STORAGE_KEY
+    : 'finplan-master-storage-key-change-in-production';
 
 async function deriveStorageKey(): Promise<CryptoKey> {
   const encoder = new TextEncoder();
   const keyData = encoder.encode(STORAGE_KEY_RAW);
   const hashBuffer = await crypto.subtle.digest('SHA-256', keyData);
-  return crypto.subtle.importKey('raw', hashBuffer.slice(0, 32), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+  return crypto.subtle.importKey('raw', hashBuffer.slice(0, 32), { name: 'AES-GCM' }, false, [
+    'encrypt',
+    'decrypt',
+  ]);
 }
 
 async function encryptStorageValue(value: string): Promise<string> {
   const key = await deriveStorageKey();
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoder = new TextEncoder();
-  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoder.encode(value));
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    encoder.encode(value)
+  );
   const combined = new Uint8Array(iv.length + ciphertext.byteLength);
   combined.set(iv, 0);
   combined.set(new Uint8Array(ciphertext), iv.length);
@@ -77,28 +85,30 @@ export const masterStorage: MasterStorage = {
     const isDesktop = await checkTauri();
     let raw: string | null;
     if (isDesktop) {
-      raw = await chunkedTauriStorage.getItem(name);
+      raw = (await chunkedTauriStorage.getItem(name)) as unknown as string | null;
     } else {
-      raw = await chunkedSqlJsStorage.getItem(name);
+      raw = (await chunkedSqlJsStorage.getItem(name)) as unknown as string | null;
     }
     if (raw === null || raw === undefined) return null;
     // SECURITY FIX (H-01): Decrypt data at rest before returning to store.
     try {
-      return await decryptStorageValue(raw);
+      const decrypted = await decryptStorageValue(raw);
+      return decrypted as unknown as ReturnType<NonNullable<MasterStorage['getItem']>>;
     } catch {
       // If decryption fails (e.g., old unencrypted data or corruption),
       // return the raw value with a warning. In production, enforce encryption.
-      return raw;
+      return raw as unknown as ReturnType<NonNullable<MasterStorage['getItem']>>;
     }
   },
   setItem: async (name, value) => {
     const isDesktop = await checkTauri();
     // SECURITY FIX (H-01): Encrypt data before persisting at rest.
-    const encryptedValue = await encryptStorageValue(value as string);
+    const serialized = typeof value === 'string' ? value : JSON.stringify(value);
+    const encryptedValue = await encryptStorageValue(serialized);
     if (isDesktop) {
-      return chunkedTauriStorage.setItem(name, encryptedValue);
+      return chunkedTauriStorage.setItem(name, encryptedValue as any);
     }
-    return chunkedSqlJsStorage.setItem(name, encryptedValue);
+    return chunkedSqlJsStorage.setItem(name, encryptedValue as any);
   },
   removeItem: async (name) => {
     const isDesktop = await checkTauri();
