@@ -149,9 +149,11 @@ export class WebSocketManager {
   // --- Internal ---
 
   private buildUrl(): string {
-    if (!this.config.token) return this.config.url;
-    const separator = this.config.url.includes('?') ? '&' : '?';
-    return `${this.config.url}${separator}token=${encodeURIComponent(this.config.token)}`;
+    // SECURITY FIX (C-05): Token must NOT be passed in URL query params
+    // (leaks to proxy logs, server access logs, browser history). The
+    // token is transmitted securely via the first 'auth' message after
+    // the WebSocket handshake.
+    return this.config.url;
   }
 
   private connectWithAuth(): void {

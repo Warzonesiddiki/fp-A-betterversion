@@ -1,8 +1,0 @@
-{
-  "agent": "agent-24",
-  "task": "Add JSDoc comments to public functions in src/store/entityStore.ts",
-  "status": "success",
-  "jsdocLinesAdded": 79,
-  "tscErrorsAfter": 0,
-  "notes": "Added JSDoc to all 17 EntityState interface members (4 state fields + 13 action methods across CRUD, Selection, Hierarchy, Offline cache, and State groups) plus a module-level JSDoc block on the exported useEntityStore hook describing its middleware composition (subscribeWithSelector + persist + immer) and offline cache strategy. Followed existing codebase JSDoc convention seen in src/store/migration/cubeMigration.ts (terse summary + @param/@returns where applicable). Implementation bodies left untouched; only the EntityState contract and the store export gained documentation. Verified via: node run-tsc.cjs 2>&1 | Select-String 'entityStore' | Measure-Object -Line = 0 (matches required gate)."
-}

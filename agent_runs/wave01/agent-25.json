@@ -1,8 +1,0 @@
-{
-  "agent": "agent-25",
-  "task": "Add JSDoc comments to public functions in src/store/driverStore.ts",
-  "status": "success",
-  "jsdocLinesAdded": 115,
-  "tscErrorsAfter": 0,
-  "notes": "Added JSDoc blocks (with @param/@returns tags where applicable) to 17 functions: getEngine (singleton helper), resetEngine, and all 15 store actions (addDriver, updateDriver, removeDriver, selectDriver, addRule, removeRule, getRulesForDriver, calculateCascade, applyCascade, analyzeImpact, batchUpdate, createSnapshot, restoreSnapshot, reset), plus the exported loadDriverTemplate. Verification command `node run-tsc.cjs 2>&1 | Select-String \"driverStore\" | Measure-Object -Line` returns 0 — no TSC errors in driverStore.ts. All JSDoc blocks sit immediately above their declarations, no inline comments introduced inside function bodies, and no API signatures or behavior were modified."
-}

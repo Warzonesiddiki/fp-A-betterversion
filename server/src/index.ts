@@ -6,9 +6,11 @@ import rateLimit from 'express-rate-limit';
 import { runMigrations } from './db/migrate.js';
 import authRouter from './routes/auth.js';
 import auditRouter from './routes/audit.js';
-import { authMiddleware } from './middleware/auth.js';
+import { authMiddleware, requireRole } from './middleware/auth.js';
 import { auditRequestMiddleware } from './middleware/auditMiddleware.js';
 import { authLimiter, generalLimiter } from './middleware/rateLimit.js';
+// SECURITY FIX (M-05): Wire IncidentResponse into the server for incident tracking.
+import { IncidentResponse } from '../src/services/IncidentResponse.js';
 
 // ---------------------------------------------------------------------------
 // Bootstrap
@@ -100,6 +102,7 @@ function stubRouter(name: string) {
     })
   );
   router.use(authMiddleware);
+  router.use(requireRole('Admin', 'FP&A_Manager', 'Analyst', 'Department_Head', 'Viewer'));
   router.use(auditRequestMiddleware);
   router.all('*', (_req, res) => {
     res.status(501).json({ error: `${name} API not yet implemented` });
@@ -114,6 +117,39 @@ app.use('/api/scenarios', stubRouter('Scenarios'));
 app.use('/api/reports', stubRouter('Reports'));
 app.use('/api/entities', stubRouter('Entities'));
 app.use('/api/export', stubRouter('Export'));
+
+// ---------------------------------------------------------------------------
+// Incident Response — wired (SECURITY FIX M-05)
+// ---------------------------------------------------------------------------
+
+app.get('/api/incidents', authMiddleware, requireRole('Admin', 'FP&A_Manager', 'compliance', 'data-protection-officer'), (_req, res) => {
+  try {
+    const ir = IncidentResponse.getInstance();
+    res.json({ incidents: ir.listIncidents() });
+  } catch (err) {
+    console.error('[server] Incident fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch incidents' });
+  }
+});
+
+app.post('/api/incidents', authMiddleware, requireRole('Admin', 'FP&A_Manager', 'compliance', 'data-protection-officer'), (req, res) => {
+  try {
+    const ir = IncidentResponse.getInstance();
+    const incident = ir.createIncident({
+      title: req.body?.title ?? 'Server-side incident',
+      description: req.body?.description ?? 'Created via server endpoint',
+      severity: (req.body?.severity ?? 'MEDIUM') as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO',
+      reporter: req.user?.email ?? 'system',
+      affectedSystems: req.body?.affectedSystems ?? [],
+      affectedUsers: req.body?.affectedUsers ?? 0,
+      tags: req.body?.tags ?? ['server-triggered'],
+    });
+    res.status(201).json({ incident });
+  } catch (err) {
+    console.error('[server] Incident creation error:', err);
+    res.status(500).json({ error: 'Failed to create incident' });
+  }
+});
 
 // ---------------------------------------------------------------------------
 // 404 Catch-All

@@ -1,8 +1,0 @@
-{
-  "agent": "agent-21",
-  "task": "Add JSDoc comments to public functions in src/store/budgetStore.ts (one-line /** description */ above every exported action/state). No semantic changes.",
-  "status": "success",
-  "jsdocLinesAdded": 31,
-  "tscErrorsAfter": 0,
-  "notes": "Added single-line JSDoc to: 1 exported useBudgetStore hook, 14 store actions (setBudgets, setActiveBudget, setLineItems, updateLineItem, createBudget, deleteBudget, duplicateBudget, submitBudget, approveBudget, rejectBudget, updateBudget, undo, redo, setSelectedCell), 1 exported budgetSelectors object, and 15 selector functions (budgets, activeBudgetId, lineItems, isLoading, isSubmitting, lastChange, historyIndex, selectedCellId, activeBudget, budgetCount, canUndo, canRedo, draftBudgets, inReviewBudgets, approvedBudgets). No code semantics changed; only /** description */ lines were inserted immediately above each export. Verification command `node run-tsc.cjs 2>&1 | Select-String \"budgetStore\" | Measure-Object -Line` returned 0."
-}

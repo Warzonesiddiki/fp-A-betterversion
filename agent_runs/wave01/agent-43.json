@@ -1,8 +1,0 @@
-{
-  "agent": "agent-43",
-  "task": "Add JSDoc comments to public functions in src/engines/ArrayFormulaEngine.ts",
-  "status": "success",
-  "jsdocLinesAdded": 14,
-  "tscErrorsAfter": 0,
-  "notes": "Expanded JSDoc on the four public static methods (register, evaluate, getFormulas, reset) with @param/@returns/@typeParam tags. Net +14 JSDoc body lines (register +3, evaluate +9, getFormulas +1, reset +1). Verification command reports 0 TypeScript errors referencing ArrayFormulaEngine."
-}

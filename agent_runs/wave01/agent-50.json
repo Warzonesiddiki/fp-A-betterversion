@@ -1,8 +1,0 @@
-{
-  "agent": "agent-50",
-  "task": "Add JSDoc comments to public functions in src/engines/BudgetCollectionEngine.ts; verify zero tsc errors mentioning BudgetCollectionEngine.",
-  "status": "success",
-  "jsdocLinesAdded": 68,
-  "tscErrorsAfter": 0,
-  "notes": "Documented all 10 public class methods (createTemplate, activateTemplate, submit, approve, reject, lock, getProgress, consolidate, getSubmissions, getTemplates) with JSDoc blocks describing purpose, parameters, and return values. Private helper indexSubmission intentionally left un-documented. tsc check via run-tsc.cjs reported 0 errors mentioning BudgetCollectionEngine (baseline was also 0)."
-}

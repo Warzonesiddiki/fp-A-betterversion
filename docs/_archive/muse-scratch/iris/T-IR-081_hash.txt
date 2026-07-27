@@ -1,6 +1,0 @@
-﻿
-Algorithm       Hash                                                                   Path                            
----------       ----                                                                   ----                            
-SHA256          097518F51723E60FA319504FD60558C942D5F25DF6E56DFE0335205D05DE79E3       C:\Users\Tahir\Desktop\fronte...
-
-

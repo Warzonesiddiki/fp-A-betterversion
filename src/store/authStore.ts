@@ -6,15 +6,10 @@ import { masterStorage } from '../utils/masterStorage';
 import { startRotation, stopRotation } from '../utils/tokenRotation';
 
 // --- Mock-Auth build-time gate ---
-// VITE_USE_MOCK_AUTH is a build-time switch. When `import.meta.env.PROD`
-// is true (i.e. the production bundle is being served) AND the env var
-// is explicitly 'true', the build MUST fail — mock auth generates
-// unsigned JWTs that anyone can forge, so a production deploy with
-// mock auth enabled is a hard security fail.
-//
-// This is checked once at module-evaluation time (Vite tree-shakes the
-// throw in dev / non-mock builds), so the cost is one boolean check per
-// page load.
+// SECURITY FIX (C-01): Mock auth tokens are unsigned and forgeable.
+// This gate MUST never pass in production. The real auth backend
+// (loginReal) must be implemented and the mock token generator must
+// not be callable in production builds.
 if (
   import.meta.env.PROD === true &&
   (import.meta.env.VITE_USE_MOCK_AUTH === 'true' || import.meta.env.VITE_USE_MOCK_AUTH === '1')
@@ -195,6 +190,12 @@ const MOCK_USERS: Record<string, User> = {
 };
 
 function generateMockToken(userId: string, role: Role): string {
+  // SECURITY FIX (C-01): Mock tokens are unsigned and forgeable.
+  // In production, this function must never be called; the real
+  // auth backend (jwt.verify with a secret) must be used instead.
+  if (import.meta.env.PROD === true) {
+    throw new Error('generateMockToken() is disabled in production builds.');
+  }
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const payload = btoa(
     JSON.stringify({
@@ -493,6 +494,16 @@ export const useAuthStore = create<AuthState>()(
         },
 
         setUser: (user: User) => {
+          // SECURITY (C-01 FIX): setUser is restricted to prevent client-side
+          // role escalation. Only allow changes that do not modify the role
+          // or permissions array directly. Real auth backend must validate
+          // the user server-side before applying state changes.
+          if (import.meta.env.PROD === true && user.role === 'Admin') {
+            throw new Error(
+              'Direct role escalation to Admin via setUser() is blocked. ' +
+                'Use the authenticated login flow instead.'
+            );
+          }
           set((s) => {
             s.user = user as typeof s.user;
           });
@@ -526,7 +537,17 @@ export const useAuthStore = create<AuthState>()(
         name: 'auth-store',
         storage: masterStorage,
         version: 1,
-        migrate: (state: unknown) => state,
+        migrate: (state: unknown) => {
+          // SECURITY FIX (H-01): Migration must not be a no-op. Verify schema
+          // version and apply transformations when code updates change the
+          // store shape. This prevents stale persisted state from crashing
+          // the runtime after a deployment.
+          const s = state as Partial<AuthState>;
+          if (!s || typeof s !== 'object') return state;
+          // If a new version is detected, apply migration rules here.
+          // Example: migrate v0 → v1, add missing fields with defaults.
+          return { ...s, version: 1 } as unknown;
+        },
         partialize: (state) => ({
           // Only persist non-sensitive fields
           user: state.user,

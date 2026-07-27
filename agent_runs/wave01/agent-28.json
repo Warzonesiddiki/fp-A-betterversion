@@ -1,8 +1,0 @@
-{
-  "agent": "agent-28",
-  "task": "add JSDoc comments to public functions in AnomalyDetectionEngine.ts",
-  "status": "success",
-  "jsdocLinesAdded": 128,
-  "tscErrorsAfter": 0,
-  "notes": "Added JSDoc to all 15 public items in src/engines/AnomalyDetectionEngine.ts: class-level docblock with @example for AnomalyDetectionEngine, constructor docblock with @param, and full @param/@returns tags for the 13 public methods (computeStatistics, detectZScoreAnomalies, detectModifiedZScoreAnomalies, detectIQRAnomalies, detectAllAnomalies, analyzeTrend, detectTrendBreakAnomalies, detectSeasonalAnomalies, runFullAnalysis, static fromValues, static fromTimeSeries, getConfig, updateConfig). Module-private helpers (mean, median, stdDev, mad, percentile, skewness, kurtosis) and private class methods were intentionally left undocumented per the 'public functions only' scope. TSC verification command returned 0 lines (0 errors) for AnomalyDetectionEngine."
-}

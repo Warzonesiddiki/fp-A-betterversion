@@ -1,8 +1,0 @@
-{
-  "agent": "agent-37",
-  "task": "Add JSDoc comments to public functions in src/engines/AutoCommentaryEngine.ts",
-  "status": "success",
-  "jsdocLinesAdded": 50,
-  "tscErrorsAfter": 0,
-  "notes": "Enhanced JSDoc on all 5 public static methods (generateVarianceCommentary, generateSectionNarrative, interpolate, getTemplates, generateOutlook) with full descriptions, @param tags, and @returns tags. File grew from 263 to 313 lines (50 net JSDoc lines added). Verification: `node run-tsc.cjs 2>&1 | Select-String \"AutoCommentaryEngine\" | Measure-Object -Line` returns Count=0."
-}
