@@ -313,10 +313,7 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     // Fill form with specific values
     await user.type(screen.getAllByLabelText(/company.*name/i)[0]!, 'Gamma LLC');
     await user.selectOptions(screen.getByLabelText(/industry|sector/i), 'sector-5');
-    await user.selectOptions(
-      screen.getAllByRole('combobox', { name: /fiscal year$/i })[0]!,
-      '2025'
-    );
+    await user.selectOptions(screen.getByTestId('select-Fiscal Year'), '2025');
     await user.selectOptions(screen.getAllByLabelText(/fiscal year start|month/i)[0]!, 'April');
     await user.selectOptions(screen.getAllByLabelText(/currency/i)[0]!, 'EUR');
 
