@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useVarianceStore } from './varianceStore';
 import type { VarianceAnalysis } from '../types';
+import { actAs } from '@/test/rbacFixtures';
 
 function createMockAnalysis(overrides?: Partial<VarianceAnalysis>): VarianceAnalysis {
   return {
@@ -27,6 +28,7 @@ function createMockAnalysis(overrides?: Partial<VarianceAnalysis>): VarianceAnal
 
 describe('varianceStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useVarianceStore.setState({
       analyses: [],
       isLoading: false,

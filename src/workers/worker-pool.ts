@@ -59,6 +59,11 @@ export class WorkerPool {
   private readonly defaultTimeoutMs: number;
   private readonly defaultMaxRetries: number;
   private terminated = false;
+  /**
+   * Set when `workerFactory()` throws. Presence means this environment cannot
+   * run workers at all, so queueing is pointless and tasks must be rejected.
+   */
+  private workerUnavailable: Error | null = null;
 
   constructor(workerFactory: () => Worker, options: WorkerPoolOptions = {}) {
     this.workerFactory = workerFactory;
@@ -93,12 +98,29 @@ export class WorkerPool {
       };
 
       // Try to dispatch immediately
+      this.workerUnavailable = null;
       const dispatched = this.dispatchTask(task as PendingTask<unknown>);
-      if (!dispatched) {
-        // Queue if no workers available
-        this.queue.push(task as PendingTask<unknown>);
+      if (dispatched) return;
+
+      if (this.workerUnavailable) {
+        // No worker can ever exist here — queueing would strand the caller.
+        reject(this.wrapUnavailable(this.workerUnavailable));
+        return;
       }
+
+      // Every worker is busy: a running task will drain this queue on completion.
+      this.queue.push(task as PendingTask<unknown>);
     });
+  }
+
+  /** Preserve the construction failure while naming the pool-level condition. */
+  private wrapUnavailable(cause: Error): Error {
+    const error = new Error(
+      `WorkerPool cannot create a worker in this environment: ${cause.message}`,
+      { cause }
+    );
+    error.name = 'WorkerUnavailableError';
+    return error;
   }
 
   /**
@@ -160,7 +182,14 @@ export class WorkerPool {
           timeoutTimer: null,
         };
         this.workers.push(managed);
-      } catch {
+      } catch (cause) {
+        // The pool cannot create workers in this environment (no `Worker`
+        // global, CSP refusal, module-worker unsupported...). Returning false
+        // here used to send the task to a queue that only a worker could ever
+        // drain, so the caller's promise never settled — masterStorage.setItem
+        // hung forever and data was silently never persisted. Fail loudly and
+        // immediately instead: an unusable pool must reject, never strand.
+        this.workerUnavailable = cause instanceof Error ? cause : new Error(String(cause));
         return false;
       }
     }
@@ -265,13 +294,25 @@ export class WorkerPool {
     if (this.queue.length === 0) return;
 
     const task = this.queue.shift();
-    if (task) {
-      const dispatched = this.dispatchTask(task);
-      if (!dispatched) {
-        // Put it back at the front
-        this.queue.unshift(task);
-      }
+    if (!task) return;
+
+    this.workerUnavailable = null;
+    const dispatched = this.dispatchTask(task);
+    if (dispatched) return;
+
+    if (this.workerUnavailable) {
+      // Worker creation just started failing (e.g. the last worker died and
+      // cannot be replaced). Re-queueing would strand this task and every task
+      // behind it, so drain the whole queue with the real reason.
+      const reason = this.wrapUnavailable(this.workerUnavailable);
+      task.reject(reason);
+      const stranded = this.queue.splice(0, this.queue.length);
+      for (const queued of stranded) queued.reject(reason);
+      return;
     }
+
+    // Workers exist but are all busy — a completion callback will retry.
+    this.queue.unshift(task);
   }
 
   private clearTimeout(managed: ManagedWorker): void {

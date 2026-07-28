@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useUIStore } from './uiStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('uiStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useUIStore.setState({
       sidebarCollapsed: false,
       theme: 'dark',

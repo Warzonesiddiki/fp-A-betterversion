@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useConstructionStore } from './constructionStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('constructionStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useConstructionStore.setState({
       costBreakdown: [],
       changeOrders: [],

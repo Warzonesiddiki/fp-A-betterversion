@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAnalyticsStore } from './analyticsStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('analyticsStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useAnalyticsStore.setState({
       charts: [],
       selectedChartId: null,

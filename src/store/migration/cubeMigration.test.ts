@@ -181,10 +181,6 @@ describe('CubeMigration', () => {
 
   describe('backup', () => {
     it('should create backup before migration when enabled', async () => {
-      // SKIP: cube.createSnapshot + masterStorage roundtrip is slow even with
-      // 1 store scoped (still times out at 60s). The real backup path works
-      // in production but needs faster storage mocks for unit testing.
-      // Tracking in docs/TEST_SKIPS.md for v1.1.
       const report = await migration.migrate({
         backupBeforeMigration: true,
         stores: [STORE_NAMES[0]],
@@ -199,37 +195,30 @@ describe('CubeMigration', () => {
     });
 
     it('should store backup data for all migrated stores', async () => {
-      // SKIP: full backup across all 35+ stores is too slow for unit test timeout.
-      // The path is exercised in production; needs faster storage mocks for unit testing.
-      // Tracking in docs/TEST_SKIPS.md for v1.1.
       const backup = await migration.createBackup(STORE_NAMES);
       expect(backup.storeData).toBeDefined();
       expect(Object.keys(backup.storeData).length).toBe(STORE_NAMES.length);
     });
 
     it('should generate unique backup IDs', async () => {
-      // SKIP: createBackup is slow (masterStorage IO + cube snapshot)
       const backup1 = await migration.createBackup(['authStore']);
       const backup2 = await migration.createBackup(['authStore']);
       expect(backup1.id).not.toBe(backup2.id);
     });
 
     it('should include timestamp in backup', async () => {
-      // SKIP: createBackup is slow
       const backup = await migration.createBackup(['authStore']);
       expect(backup.timestamp).toBeTruthy();
       expect(new Date(backup.timestamp).getTime()).toBeGreaterThan(0);
     });
 
     it('should track backup in migration instance', async () => {
-      // SKIP: createBackup is slow
       await migration.createBackup(['authStore']);
       const backups = migration.getBackups();
       expect(backups.length).toBe(1);
     });
 
     it('should create backup for specific stores', async () => {
-      // SKIP: createBackup is slow (masterStorage IO)
       const backup = await migration.createBackup(['authStore', 'budgetStore']);
       expect(Object.keys(backup.storeData)).toContain('authStore');
       expect(Object.keys(backup.storeData)).toContain('budgetStore');
@@ -240,7 +229,6 @@ describe('CubeMigration', () => {
 
   describe('rollback', () => {
     it('should rollback using backup ID', async () => {
-      // SKIP: rollback path also slow (uses createBackup internally)
       const backup = await migration.createBackup(['authStore']);
       const result = await migration.rollback(backup.id, ['authStore']);
       expect(result).toBe(true);
@@ -252,14 +240,12 @@ describe('CubeMigration', () => {
     });
 
     it('should rollback specific stores only', async () => {
-      // SKIP: rollback uses createBackup internally (slow)
       const backup = await migration.createBackup(['authStore', 'budgetStore']);
       const result = await migration.rollback(backup.id, ['authStore']);
       expect(result).toBe(true);
     });
 
     it('should rollback all stores when no specific stores given', async () => {
-      // SKIP: rollback uses createBackup internally (slow)
       const backup = await migration.createBackup(STORE_NAMES);
       const result = await migration.rollback(backup.id);
       expect(result).toBe(true);
@@ -407,7 +393,6 @@ describe('CubeMigration', () => {
 
 describe('convenience functions', () => {
   it('runFullMigration should run all stores', async () => {
-    // SKIP: runFullMigration runs across all 35+ stores (slow)
     const cube = createTestCube();
     const report = await runFullMigration(cube);
     expect(report.results.length).toBe(STORE_NAMES.length);
@@ -420,14 +405,12 @@ describe('convenience functions', () => {
   });
 
   it('runSelectiveMigration should run specified stores', async () => {
-    // SKIP: migration is slow (masterStorage IO)
     const cube = createTestCube();
     const report = await runSelectiveMigration(cube, ['authStore', 'uiStore']);
     expect(report.results.length).toBe(2);
   });
 
   it('createMigrationBackup should create a backup', async () => {
-    // SKIP: createMigrationBackup is slow
     const cube = createTestCube();
     const backup = await createMigrationBackup(cube, ['authStore']);
     expect(backup.id).toContain('cube-migration-backup-');

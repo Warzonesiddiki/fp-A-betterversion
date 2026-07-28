@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useEntityStore } from './entityStore';
 import type { Entity } from '@/types';
+import { actAs } from '@/test/rbacFixtures';
 
 // Mock the offline cache utilities
 vi.mock('@/utils/offlineCache', () => ({
@@ -13,6 +14,7 @@ vi.mock('@/utils/offlineCache', () => ({
 
 describe('entityStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useEntityStore.setState({
       entities: [],
       selectedEntityId: null,

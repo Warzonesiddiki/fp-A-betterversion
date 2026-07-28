@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useDriverStore, resetEngine } from './driverStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('driverStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     resetEngine();
     useDriverStore.setState({
       isRecalculating: false,

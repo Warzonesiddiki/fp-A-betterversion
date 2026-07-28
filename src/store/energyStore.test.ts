@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useEnergyStore } from './energyStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('energyStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useEnergyStore.setState({
       assets: [],
       generationTrend: [],

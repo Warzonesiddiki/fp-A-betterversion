@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useInsuranceStore } from './insuranceStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('insuranceStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useInsuranceStore.setState({
       rateAdequacy: [],
       lossPicks: [],

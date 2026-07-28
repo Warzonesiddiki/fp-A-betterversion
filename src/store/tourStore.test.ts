@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useTourStore } from './tourStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('tourStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useTourStore.setState({
       isActive: false,
       currentStepIndex: 0,

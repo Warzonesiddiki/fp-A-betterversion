@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useScenarioStore } from './scenarioStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('scenarioStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useScenarioStore.setState({
       scenarios: [],
       selectedScenarioId: null,
