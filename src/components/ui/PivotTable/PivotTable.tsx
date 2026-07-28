@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { cn } from '@/utils/cn';
-import type { PivotResult, PivotRow, PivotCell } from '@/engines/PivotTableEngine';
+import type { PivotResult, PivotRow } from '@/engines/PivotTableEngine';
 
 export interface PivotTableProps {
   data: PivotResult | null;

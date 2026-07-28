@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '../Button';
-import { X, GripVertical, Plus } from 'lucide-react';
+import { X, GripVertical } from 'lucide-react';
 import type { PivotConfig, PivotField } from '@/engines/PivotTableEngine';
 
 export interface PivotBuilderProps {

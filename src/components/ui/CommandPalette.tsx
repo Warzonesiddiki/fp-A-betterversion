@@ -87,7 +87,7 @@ export function CommandPalette({
     }
 
     return localMatches;
-  }, [items, query]);
+  }, [items, query, navigate, onClose]);
   const groupedItems = useMemo(() => {
     const groups = new Map<string, CommandItem[]>();
     for (const item of filteredItems) {

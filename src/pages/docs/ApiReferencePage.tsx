@@ -80,7 +80,7 @@ export default function ApiReferencePage() {
           API Reference & SDK
         </h1>
         <p className="text-[var(--text-secondary)] mt-2 text-lg">
-          Developer documentation for FinPlan Pro's internal engines, stores, and plugin
+          Developer documentation for FinPlan Pro&apos;s internal engines, stores, and plugin
           architecture.
         </p>
       </div>
