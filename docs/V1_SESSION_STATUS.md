@@ -86,13 +86,34 @@ Workers and Node contexts instead of reporting "not Tauri".
 
 ## Not done, and why
 
-### `noUnusedLocals` / `noUnusedParameters`
+### `noUnusedLocals` (`noUnusedParameters` is now ON)
 
-Enabling both yields **449 errors** (427 `TS6133`, 18 `TS6196`, 4 `TS6192`)
-across roughly 200 files. Auto-stripping unused symbols at that scale risks
-deleting something load-bearing (side-effecting imports, intentionally-unused
-API parameters) and cannot be safely reviewed in one pass. It should be a
-dedicated PR, ideally directory by directory. The flags remain `false`.
+Enabling **both** yields 449 errors (427 `TS6133`, 18 `TS6196`, 4 `TS6192`)
+across ~200 files. Splitting them showed the two halves have very different
+risk profiles:
+
+- **`noUnusedParameters` alone: 95 errors, all unused parameters — now
+  enabled.** TypeScript treats a leading `_` as intentional, matching the
+  `argsIgnorePattern: '^_'` this repo's ESLint already uses, so the fix is a
+  pure rename with no behaviour change. Done with the compiler API
+  (`scripts/prefix-unused-params.mjs`) rather than regex, because three
+  distinct shapes are involved and only the AST distinguishes them:
+
+  | Shape                  | Before              | After                  |
+  | ---------------------- | ------------------- | ---------------------- |
+  | positional             | `(value, name, p)`  | `(_value, _name, p)`   |
+  | object destructuring   | `{ period = '' }`   | `{ period: _period = '' }` |
+  | array destructuring    | `([key]) =>`        | `([_key]) =>`          |
+
+  The object case keeps the property name so callers are unaffected. The array
+  case must rename in place — an earlier version of the codemod emitted
+  `[key: _key]`, which is a syntax error; the script now handles it and is
+  checked in with that note.
+
+- **`noUnusedLocals`: the remaining ~354 (unused locals, imports, and types) is
+  still deferred.** Deleting these is not mechanical — a removed import may be
+  side-effecting, and an unused type may be re-exported. Wants a dedicated PR,
+  directory by directory. Flag remains `false`.
 
 ### `style-src 'unsafe-inline'`
 
@@ -121,17 +142,19 @@ works. Added `docs/_archive/README.md` pointing at the maintained set.
 | Gate                          | Result                                   |
 | ----------------------------- | ---------------------------------------- |
 | `npx tsc --noEmit`            | 0 errors                                 |
-| `npm run lint`                | 0 errors, 12 warnings (all pre-existing) |
+| `npm run lint`                | 0 errors, 9 warnings (all pre-existing)  |
 | `npm run build`               | passes, ~4s                              |
 | `node scripts/bundle-check.js`| passes (main chunk within limit)         |
 | `node scripts/csp-hash-check.js` | passes (source + dist)                |
 | `npm run test:bench`          | **13/13 files, 59/59 tests** (was 3 failing) |
+| Targeted tests                | 4,096 engine + 1,376 other, all green    |
 
 ## Suggested next steps
 
 1. Run P1/P2 on a machine with Rust + network — these are the last unverified
    areas and the Tauri shell has never been built end to end.
-2. Land `noUnusedLocals` incrementally, one directory per PR.
+2. Land `noUnusedLocals` incrementally, one directory per PR (~354 remaining;
+   `noUnusedParameters` is already on).
 3. Decide the hosting model, then remove `style-src 'unsafe-inline'` with
    nonces.
 4. Consider pinning `@huggingface/transformers` behind a lazy boundary or
