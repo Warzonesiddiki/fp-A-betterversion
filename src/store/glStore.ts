@@ -10,6 +10,7 @@ import type {
   ImportResult,
 } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
+import { toCents } from '../utils/money';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
@@ -471,6 +472,9 @@ export const useGLStore = create<GLState>()(
 
         validateEntries: (entries: Partial<GLEntry>[]) => {
           const errors: string[] = [];
+          // F-0005: invalidity is tracked per ROW. A row with 3 errors is one
+          // invalid row, not three (the old code subtracted the error count).
+          const invalidRows = new Set<number>();
           entries.forEach((e, idx) => {
             const row = idx + 1;
             const debitProvided = e.debit !== undefined;
@@ -480,25 +484,83 @@ export const useGLStore = create<GLState>()(
             const credit = toFiniteNumber(e.credit, Number.NaN);
             const amount = toFiniteNumber(e.amount, Number.NaN);
 
-            if (!e.accountCode && !e.accountId) errors.push(`Row ${row}: missing accountCode`);
-            if (!e.date && !e.postDate) errors.push(`Row ${row}: missing date/postDate`);
+            const fail = (msg: string) => {
+              errors.push(`Row ${row}: ${msg}`);
+              invalidRows.add(idx);
+            };
+
+            if (!e.accountCode && !e.accountId) fail('missing accountCode');
+            if (!e.date && !e.postDate) fail('missing date/postDate');
             if (!debitProvided && !creditProvided && !amountProvided) {
-              errors.push(`Row ${row}: missing debit, credit, or amount`);
+              fail('missing debit, credit, or amount');
             }
             if (debitProvided && (!Number.isFinite(debit) || debit < 0)) {
-              errors.push(`Row ${row}: debit must be a non-negative number`);
+              fail('debit must be a non-negative number');
             }
             if (creditProvided && (!Number.isFinite(credit) || credit < 0)) {
-              errors.push(`Row ${row}: credit must be a non-negative number`);
+              fail('credit must be a non-negative number');
             }
             if (amountProvided && !Number.isFinite(amount)) {
-              errors.push(`Row ${row}: amount must be a finite number`);
+              fail('amount must be a finite number');
             }
           });
+
+          // F-0004: double-entry invariant. Debits MUST equal credits exactly
+          // (integer cents, zero tolerance) per journal batch. Entries are
+          // grouped by journalId; entries without one form a single import
+          // batch. Amount-only rows contribute via the same normalization the
+          // importer applies (positive amount → debit, negative → credit).
+          // Rows already invalid above are excluded from the totals.
+          const groups = new Map<
+            string,
+            { debitCents: number; creditCents: number; rows: number[] }
+          >();
+          entries.forEach((e, idx) => {
+            if (invalidRows.has(idx)) return;
+            const groupKey = e.journalId ?? '__import_batch__';
+            let group = groups.get(groupKey);
+            if (!group) {
+              group = { debitCents: 0, creditCents: 0, rows: [] };
+              groups.set(groupKey, group);
+            }
+            const amount = e.amount !== undefined ? toFiniteNumber(e.amount) : undefined;
+            const effectiveDebit =
+              e.debit !== undefined
+                ? toFiniteNumber(e.debit)
+                : amount !== undefined
+                  ? Math.max(amount, 0)
+                  : 0;
+            const effectiveCredit =
+              e.credit !== undefined
+                ? toFiniteNumber(e.credit)
+                : amount !== undefined
+                  ? Math.max(-(amount ?? 0), 0)
+                  : 0;
+            // Exact cents via the canonical money primitive (F-0006).
+            group.debitCents += toCents(effectiveDebit);
+            group.creditCents += toCents(effectiveCredit);
+            group.rows.push(idx + 1);
+          });
+
+          for (const [journalId, group] of groups) {
+            const imbalanceCents = group.debitCents - group.creditCents;
+            if (imbalanceCents !== 0) {
+              const label =
+                journalId === '__import_batch__' ? 'Import batch' : `Journal '${journalId}'`;
+              const imbalance = (Math.abs(imbalanceCents) / 100).toFixed(2);
+              errors.push(
+                `${label}: debits (${(group.debitCents / 100).toFixed(2)}) do not equal credits ` +
+                  `(${(group.creditCents / 100).toFixed(2)}); imbalance ${imbalance} ` +
+                  `(rows ${group.rows.join(', ')})`
+              );
+              for (const row of group.rows) invalidRows.add(row - 1);
+            }
+          }
+
           return {
             isValid: errors.length === 0,
             errors,
-            validCount: Math.max(0, entries.length - errors.length),
+            validCount: entries.length - invalidRows.size,
           };
         },
 

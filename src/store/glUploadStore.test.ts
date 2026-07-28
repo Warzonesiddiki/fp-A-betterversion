@@ -1,8 +1,34 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGLUploadStore, type UploadFileInfo } from './glUploadStore';
+import { useAuthStore } from './authStore';
+
+// F-0026: RBAC-aware fixture covering exactly the permissions the store's
+// guarded actions require: import:create, import:update, import:delete,
+// ui:update.
+function authenticateUploadUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'upload-test-user',
+      email: 'upload-test@finplan.local',
+      firstName: 'Upload',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['import:create', 'import:update', 'import:delete', 'ui:update'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('glUploadStore', () => {
   beforeEach(() => {
+    authenticateUploadUser();
     useGLUploadStore.setState({
       step: 'select',
       fileInfo: null,

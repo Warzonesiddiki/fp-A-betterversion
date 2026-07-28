@@ -38,14 +38,23 @@ describe('Phase 1 GL Smoke', () => {
 
   it('validateEntries works', () => {
     const store = useGLStore.getState();
-    const res = store.validateEntries([{ accountCode: '4000', date: '2026-01-01', debit: 100 }]);
+    // F-0004: a lone debit row is an unbalanced journal and is now rejected;
+    // use a balanced debit/credit pair.
+    const res = store.validateEntries([
+      { accountCode: '4000', date: '2026-01-01', debit: 100, credit: 0 },
+      { accountCode: '1000', date: '2026-01-01', debit: 0, credit: 100 },
+    ]);
     expect(res.isValid).toBe(true);
   });
 
   it('importGLData imports cleanly and normalizes financial fields', () => {
     const store = useGLStore.getState();
+    // F-0004: imports must balance (debits = credits) to be stored.
     const result = store.importGLData(
-      [{ accountCode: '4100', date: '2026-01-15', debit: 500, credit: 0 }],
+      [
+        { accountCode: '4100', date: '2026-01-15', debit: 500, credit: 0 },
+        { accountCode: '1100', date: '2026-01-15', debit: 0, credit: 500 },
+      ],
       'test.csv'
     );
 
