@@ -2438,7 +2438,13 @@ export class SafeMathParser {
 
     const trimmed = expression.trim();
     if (trimmed.length === 0) {
-      return { value: 0, dependencies: [], error: undefined };
+      // F-0008: an empty formula is not 0 — treating it as 0 silently
+      // misstates any cell or line that consumes it.
+      return { value: NaN, dependencies: [], error: 'Expression must not be empty' };
+    }
+    // A bare '=' with nothing after it is equally invalid.
+    if (trimmed === '=') {
+      return { value: NaN, dependencies: [], error: 'Expression must not be empty' };
     }
 
     if (trimmed.length > MAX_INPUT_LENGTH) {
