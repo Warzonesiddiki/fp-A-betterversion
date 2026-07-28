@@ -4,6 +4,12 @@
 # version was structurally inert (non-executable hooks, missing husky
 # install, ignore-scripts=true in .npmrc) and spent most of its runtime on
 # ceremonial checks; those are deleted.
+#
+# EXCEPTION: Gate 10 (CASCADE-HOLD-BUNDLE) is retained per
+# docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md and is verified by
+# .github/workflows/cascade-hold-check.yml on every PR. The first F-0024
+# revision deleted it and broke that CI contract; it is restored here as a
+# HARD BLOCK per spec §2 (escalation date 2026-06-21 EOD has passed).
 set -e
 
 echo "pre-push: running quality gates (tsc, eslint, focused tests, build)"
@@ -45,5 +51,39 @@ node scripts/bundle-check.js
 # Gate 6: Version consistency across package.json / Cargo.toml / tauri.conf.json / lib.rs.
 echo "→ version consistency"
 node scripts/check-version-consistency.mjs
+
+# Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
+# CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.
+# Spec: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md (§2: BLOCKED push)
+# CI contract: .github/workflows/cascade-hold-check.yml requires this gate.
+# 3 detection criteria (OR-logic): multi-T-IDs (A), multi-Co-Authored-By (B),
+# cross-Muse path span (C). A candidate commit must have a CHB-XXX entry
+# referencing its short SHA in docs/security/CASCADE_HOLD_LEDGER.md.
+echo "→ gate 10: cascade-hold ledger check"
+unpushed_shas_gate10=$(git log @{u}..HEAD --format='%H' 2>/dev/null || git log --format='%H' -10)
+cascade_hold_blocked=0
+for sha in $unpushed_shas_gate10; do
+  short_sha=$(git rev-parse --short "$sha" 2>/dev/null || true)
+  if [ -z "$short_sha" ]; then continue; fi
+  t_ids=$(git log -1 --format='%B' "$sha" 2>/dev/null | grep -oE 'T-([A-Z]{2,4})-([0-9]{3})' | sort -u || true)
+  t_id_count=$(printf '%s\n' "$t_ids" | grep -c . || true)
+  co_authors=$(git log -1 --format='%B' "$sha" 2>/dev/null | grep -ciE '^Co-Authored-By:' || true)
+  cross_muse_paths=$(git show --name-only --format='' "$sha" 2>/dev/null | grep -oE 'docs/(atlas|hephaestus|iris|hermes|mnemosyne|chronos|vesta|tyche|hera|artemis|apollo|themis|strategos|calliope|orchestrator|athena|prometheus|vulcan|sentinel)/' | sort -u | wc -l | tr -d '[:space:]' || true)
+  # NOTE: unquoted operands are deliberate — all three counters are guaranteed
+  # single integers by the `|| true`-guarded pipelines above, and the spec
+  # harness (tests/security/HuskyGate10.test.sh group 4) greps these literals.
+  if [ $t_id_count -ge 2 ] || [ $co_authors -ge 2 ] || [ $cross_muse_paths -ge 2 ]; then
+    if [ ! -f "docs/security/CASCADE_HOLD_LEDGER.md" ] || ! grep -q "CHB.*$short_sha" docs/security/CASCADE_HOLD_LEDGER.md 2>/dev/null; then
+      echo "Gate 10 BLOCK: $short_sha CASCADE-HOLD candidate (T-IDs=$t_id_count Co-Authors=$co_authors CrossMuse=$cross_muse_paths), no ledger entry"
+      cascade_hold_blocked=$((cascade_hold_blocked + 1))
+    fi
+  fi
+done
+if [ "$cascade_hold_blocked" -gt 0 ]; then
+  echo "Gate 10: $cascade_hold_blocked CASCADE-HOLD candidate(s) without ledger entry — push BLOCKED"
+  echo "   Reference: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md"
+  echo "   Procedure: add CHB-XXX entry to docs/security/CASCADE_HOLD_LEDGER.md"
+  exit 1
+fi
 
 echo "✓ pre-push gates passed"

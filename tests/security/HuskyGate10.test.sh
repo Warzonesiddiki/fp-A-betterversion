@@ -140,7 +140,10 @@ test_ledger_has_resolution() {
 
 # Test Group 6: Detection Criteria Logic (5 tests)
 test_detection_a_tid_regex() {
-  grep -q 'T-([A-Z]{2,4})-([0-9]{3})' docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md && echo "✅ 6.1 Detection A: T-ID regex 2-4 char Muse prefix" || echo "❌ 6.1 Detection A: T-ID regex missing"
+  # grep -qF (fixed string): the pattern is meant literally. The previous
+  # basic-regex grep could never match (its [A-Z] class would have to match
+  # the literal '[' of the documented pattern) — provably-wrong assertion.
+  grep -qF 'T-([A-Z]{2,4})-([0-9]{3})' docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md && echo "✅ 6.1 Detection A: T-ID regex 2-4 char Muse prefix" || echo "❌ 6.1 Detection A: T-ID regex missing"
 }
 
 test_detection_b_coauthor_count() {
