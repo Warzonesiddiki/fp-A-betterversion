@@ -3,7 +3,9 @@ use tauri_plugin_updater::UpdaterExt;
 
 #[tauri::command]
 pub fn get_app_info() -> serde_json::Value {
-    serde_json::json!({ "name": "FinPlan Pro", "version": "0.1.0" })
+    // Keep in sync with package.json / tauri.conf.json / Cargo.toml —
+    // enforced by scripts/check-version-consistency.mjs (F-0033).
+    serde_json::json!({ "name": "FinPlan Pro", "version": env!("CARGO_PKG_VERSION") })
 }
 
 pub fn run_with_builder(builder: tauri::Builder<tauri::Wry>) {

@@ -9,12 +9,10 @@
     "beforeBuildCommand": "npm run build"
   },
   "updater": {
-    "active": true,
-    "endpoints": [
-      "https://updates.finplanpro.com/{{target}}/{{current_version}}"
-    ],
-    "dialog": true,
-    "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUzQkNFQkQ2RjI5NEVCQjQKUldSSE14ZGNNQ3Y2Yjh2bzlLNGJ0WjRJbHVkZmpUMGNHdUx3Y0JVYXhTRmd6c28="
+    "active": false,
+    "endpoints": [],
+    "dialog": false,
+    "pubkey": ""
   },
   "app": {
     "windows": [
@@ -62,29 +60,39 @@
     "licenseFile": "",
     "fileAssociations": [
       {
-        "ext": ["fp"],
+        "ext": [
+          "fp"
+        ],
         "mimeType": "application/x-finplan",
         "role": "Editor",
         "description": "FinPlan Project File"
       },
       {
-        "ext": ["fpa"],
+        "ext": [
+          "fpa"
+        ],
         "mimeType": "application/x-finplan-archive",
         "role": "Editor",
         "description": "FinPlan Archive"
       },
       {
-        "ext": ["xlsx", "xls"],
+        "ext": [
+          "xlsx",
+          "xls"
+        ],
         "mimeType": "application/vnd.ms-excel",
         "role": "Viewer",
         "description": "Microsoft Excel Spreadsheet"
       },
       {
-        "ext": ["csv"],
+        "ext": [
+          "csv"
+        ],
         "mimeType": "text/csv",
         "role": "Viewer",
         "description": "Comma-Separated Values"
       }
     ]
-  }
+  },
+  "_updater_comment": "F-0020: updater DISABLED. updates.finplanpro.com is not controlled infrastructure, so an active updater would poll a dead/uncontrolled domain. Re-enable only with controlled update infrastructure (endpoints + signing key + tests); scripts/check-version-consistency.mjs blocks unverified re-enablement."
 }
