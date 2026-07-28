@@ -1,6 +1,27 @@
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import type { ExportConfig, ExportData } from './ExportEngine';
+import { sanitizeSpreadsheetCell, sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
+
+/**
+ * F-0017: the previous implementation converted any string starting with
+ * '=' into a LIVE EXCEL FORMULA ({ formula: ... }) — a data cell like
+ * "=cmd|'/c calc'!A1" became executable on open. That conversion is removed.
+ * Strings are neutralized via the shared sanitizer; only genuine numeric
+ * and boolean values keep their types.
+ */
+export function sanitizeExcelRow(row: ReadonlyArray<unknown>): unknown[] {
+  return row.map((val) => {
+    if (val === null || val === undefined) return '';
+    if (typeof val === 'string') return sanitizeSpreadsheetCell(val);
+    return val;
+  });
+}
+
+/** Sanitized header row (headers are user-influenced strings too). */
+function sanitizeHeaders(headers: ReadonlyArray<unknown>): string[] {
+  return headers.map((h) => sanitizeSpreadsheetText(h));
+}
 
 const EXCEL_FREEZE_X = 0;
 const EXCEL_FREEZE_Y = 1;
@@ -27,17 +48,11 @@ export default async function exportToExcel(data: ExportData, config: ExportConf
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
 
-  const headerRow = worksheet.addRow(data.headers);
+  const headerRow = worksheet.addRow(sanitizeHeaders(data.headers));
   headerRow.font = { bold: true };
 
   data.rows.forEach((row) => {
-    const processedRow = row.map((val) => {
-      if (typeof val === 'string' && val.startsWith('=')) {
-        return { formula: val.substring(1) };
-      }
-      return val ?? '';
-    });
-    worksheet.addRow(processedRow);
+    worksheet.addRow(sanitizeExcelRow(row));
   });
 
   worksheet.views = [
@@ -85,17 +100,11 @@ export async function exportToExcelWithConditionalFormatting(
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
 
-  const headerRow = worksheet.addRow(data.headers);
+  const headerRow = worksheet.addRow(sanitizeHeaders(data.headers));
   headerRow.font = { bold: true };
 
   data.rows.forEach((row) => {
-    const processedRow = row.map((val) => {
-      if (typeof val === 'string' && val.startsWith('=')) {
-        return { formula: val.substring(1) };
-      }
-      return val ?? '';
-    });
-    worksheet.addRow(processedRow);
+    worksheet.addRow(sanitizeExcelRow(row));
   });
 
   worksheet.views = [{ state: 'frozen', xSplit: EXCEL_FREEZE_X, ySplit: EXCEL_FREEZE_Y }];

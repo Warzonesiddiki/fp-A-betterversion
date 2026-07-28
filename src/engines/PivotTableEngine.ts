@@ -3,6 +3,8 @@
 // Pure TypeScript, deterministic, no external dependencies
 // =============================================================================
 
+import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
+
 export type AggregationType = 'sum' | 'avg' | 'count' | 'min' | 'max' | 'median';
 
 export interface PivotField {
@@ -172,11 +174,12 @@ export class PivotTableEngine {
   }
 
   toCSV(result: PivotResult): string {
+    // F-0017: labels come from user data and can carry formula payloads.
     const lines: string[] = [];
-    lines.push(['', ...result.columnHeaders].join(','));
+    lines.push(['', ...result.columnHeaders.map((h) => sanitizeSpreadsheetText(h))].join(','));
     for (const row of result.rows) {
-      const values = row.cells.map((c) => c.value ?? '');
-      lines.push([row.label, ...values].join(','));
+      const values = row.cells.map((c) => sanitizeSpreadsheetText(c.value ?? ''));
+      lines.push([sanitizeSpreadsheetText(row.label), ...values].join(','));
     }
     return lines.join('\n');
   }
