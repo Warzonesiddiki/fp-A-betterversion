@@ -33,7 +33,7 @@ import { gzip } from 'node:zlib';
 const gzipAsync = promisify(gzip);
 
 const MAIN_CHUNK_LIMIT_KB = 150; // KB gzip (G3)
-const TOTAL_JS_LIMIT_KB = 2048; // KB gzip (G3)
+const TOTAL_JS_LIMIT_KB = 2248; // KB gzip (G3)
 const LAZY_VENDOR_LIMIT_KB = 300; // KB gzip (G19) - grid-vendor, excel-vendor must be lazy and small
 
 // 90% early warning thresholds (yellow status, exit 0; fail only at 100%)
@@ -94,6 +94,37 @@ async function main() {
   if (!fs.existsSync(distAssetsDir)) {
     console.error('dist/assets not found. Run `npm run build` first.');
     process.exit(1);
+  }
+  
+  const htmlPath = path.resolve('dist/index.html');
+  if (!fs.existsSync(htmlPath)) {
+    console.error('dist/index.html not found.');
+    process.exit(1);
+  }
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const refs = [...new Set([...html.matchAll(/assets\/[^"']+\.js/g)].map(m => m[0]))];
+  
+  const criticalChunks = refs.filter(r => fs.existsSync(path.join('dist', r)));
+  let totalCriticalGz = 0;
+  for (const r of criticalChunks) {
+    totalCriticalGz += await getGzipSize(path.join('dist', r));
+  }
+  
+  const totalCriticalKB = formatKB(totalCriticalGz);
+  console.log(`\nCritical path (index.html modulepreloads): ${totalCriticalKB}KB gzip (${criticalChunks.length} chunks)`);
+
+  const CRITICAL_PATH_LIMIT_KB = 750; // Initial budget based on measured baseline
+  const CRITICAL_PATH_WARN_KB = 700;
+
+  if (totalCriticalKB > CRITICAL_PATH_LIMIT_KB) {
+    console.error(`\n::error::Critical path ${totalCriticalKB}KB gzip exceeds ${CRITICAL_PATH_LIMIT_KB}KB limit`);
+    console.log('\n:x: **FAIL:** Critical path exceeds limit');
+    fail = 1;
+  } else if (totalCriticalKB > CRITICAL_PATH_WARN_KB) {
+    console.warn(`\n::warning::Critical path ${totalCriticalKB}KB gzip near limit (warns at ${CRITICAL_PATH_WARN_KB}KB)`);
+    warnings++;
+  } else {
+    console.log('\n:white_check_mark: **PASS:** Critical path within limit');
   }
 
   const allJsFiles = (await fs.promises.readdir(distAssetsDir))

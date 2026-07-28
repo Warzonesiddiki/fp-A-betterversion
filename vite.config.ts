@@ -7,6 +7,7 @@ import { defineConfig, type Plugin } from 'vite';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { VitePWA } from 'vite-plugin-pwa';
 import { visualizer } from 'rollup-plugin-visualizer';
+import compression from 'vite-plugin-compression';
 
 // Strip modulepreload for ai-vendor (553kB @huggingface/transformers + 23.5MB WASM)
 // so it only loads when user opens AI copilot panel, not on every page load.
@@ -33,6 +34,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    compression({ algorithm: 'brotliCompress' }),
     // Sentry source-map upload — only active when SENTRY_AUTH_TOKEN is set
     // (typically in CI / staging, never in dev or local prod-style builds).
     // See T-ATL-007 (Sentry self-hosted) + T-ATL-009 (SDK install).
@@ -102,6 +104,15 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globIgnores: [
+          '**/ai-vendor-*.js',
+          '**/pdf-vendor-*.js',
+          '**/excel-core-vendor-*.js',
+          '**/excel-vendor-*.js',
+          '**/grid-community-vendor-*.js',
+          '**/chart-vendor-*.js',
+          '**/DataGrid-*.js',
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -179,12 +190,7 @@ export default defineConfig({
     },
   },
   build: {
-    // ATLAS G3/G19: largest vendor chunks are ~1.05 MB raw (grid-community,
-    // excel-core). Their gzip sizes are well under the 300 KB lazy-vendor
-    // budget (grid 285 KB gz, excel 238 KB gz) so the bundle is healthy.
-    // The 300 KB raw limit was triggering an informational warning. Bump
-    // to 1200 so the build is 0-warning; real G3/G19 budgets are tracked
-    // in .openhands/baseline-g3-bundle.log.
+    target: 'es2022',
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       // ATLAS G2 hygiene: filter diagnostics that don't affect correctness.
@@ -211,59 +217,11 @@ export default defineConfig({
       },
       output: {
         manualChunks(id: string) {
-          if (id.includes('node_modules')) {
-            // React core ecosystem
-            if (id.includes('/react/') || id.includes('react-dom') || id.includes('react-router'))
-              return 'react-vendor';
-            // State management (zustand, redux toolkit from recharts, immer)
-            if (
-              id.includes('zustand') ||
-              id.includes('@reduxjs/toolkit') ||
-              id.includes('react-redux') ||
-              id.includes('/immer/') ||
-              id.includes('reselect')
-            )
-              return 'state-vendor';
-            // Forms
-            if (id.includes('react-hook-form') || id.includes('zod')) return 'form-vendor';
-            // AG Grid — split community from React to allow better tree-shaking
-            if (id.includes('ag-grid-community')) return 'grid-community-vendor';
-            if (id.includes('ag-grid-react')) return 'grid-react-vendor';
-            if (id.includes('ag-grid')) return 'grid-common-vendor';
-            // Recharts + victory-vendor (d3 wrapper)
-            if (id.includes('recharts') || id.includes('victory-vendor')) return 'chart-vendor';
-            // AI/ML
-            if (id.includes('@huggingface/transformers')) return 'ai-vendor';
-            // PDF generation + html2canvas (jspdf dep)
-            if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-vendor';
-            // Excel + file-saver + DOMPurify (used in data import)
-            // Split exceljs core from exceljs filetype plugins
-            if (id.includes('exceljs') && id.includes('/dist/exceljs/')) return 'excel-vendor';
-            if (id.includes('exceljs')) return 'excel-core-vendor';
-            if (id.includes('file-saver') || id.includes('dompurify') || id.includes('purify'))
-              return 'excel-vendor';
-            // SQL/SQLite
-            if (id.includes('sql.js')) return 'db-vendor';
-            // UI primitives (radix, tanstack-virtual)
-            if (id.includes('@radix-ui') || id.includes('@tanstack/react-virtual'))
-              return 'ui-vendor';
-            // Styling utilities
-            if (
-              id.includes('class-variance-authority') ||
-              id.includes('tailwind-merge') ||
-              id.includes('clsx')
-            )
-              return 'style-vendor';
-            // i18n
-            if (id.includes('i18next')) return 'i18n-vendor';
-            // Animation (only when actually imported)
-            if (id.includes('framer-motion')) return 'animation-vendor';
-            // Icons
-            if (id.includes('lucide-react')) return 'icons-vendor';
-            // Small utilities
-            if (id.includes('date-fns') || id.includes('axios') || id.includes('uuid'))
-              return 'utils-vendor';
-          }
+          if (id.includes('@huggingface/transformers')) return 'ai-vendor';
+          if (id.includes('exceljs') && id.includes('/dist/exceljs/')) return 'excel-vendor';
+          if (id.includes('exceljs')) return 'excel-core-vendor';
+          if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-vendor';
+          if (id.includes('sql.js')) return 'db-vendor';
         },
       },
     },
@@ -284,9 +242,13 @@ export default defineConfig({
     ],
     setupFiles: ['./src/test/setup.ts'],
     environment: 'jsdom',
-    pool: 'forks',
-    maxForks: 4,
-    minForks: 2,
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        maxThreads: 4,
+        minThreads: 2,
+      },
+    },
     testTimeout: 30000,
     hookTimeout: 30000,
     env: {

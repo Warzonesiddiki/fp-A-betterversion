@@ -281,6 +281,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
       suppressCellFocus: false,
       enableCellTextSelection: true,
       // Virtual scrolling configuration for large datasets
+      rowModelType: 'clientSide',
       suppressRowVirtualisation: false,
       suppressColumnVirtualisation: false,
       rowBuffer: 10,

@@ -1,4 +1,6 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { pageTransition, prefersReducedMotion } from '@/utils/animations';
 import { useUIStore } from '@/store/uiStore';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
@@ -18,6 +20,8 @@ export default function AppLayout() {
     useUIStore();
   const { mainContentRef } = useFocusManagement();
   const { i18n } = useTranslation();
+  const location = useLocation();
+  const reduceMotion = prefersReducedMotion();
   const dir = getLocaleDirection((i18n.language?.split('-')[0] ?? 'en') as SupportedLocale);
   const navigate = useNavigate();
 

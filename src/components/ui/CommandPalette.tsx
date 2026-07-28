@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, ArrowRight } from 'lucide-react';
 import { FormulaAutoCompleteEngine } from '@/engines/FormulaAutoCompleteEngine';
+import { GlobalSearchEngine } from '@/engines/GlobalSearchEngine';
+import { useBudgetStore } from '@/store/budgetStore';
+import { useForecastStore } from '@/store/forecastStore';
+import { useScenarioStore } from '@/store/scenarioStore';
+import { useEntityStore } from '@/store/entityStore';
+import { useNavigate } from 'react-router-dom';
 export interface CommandItem {
   id: string;
   label: string;
@@ -25,6 +31,20 @@ export function CommandPalette({
   placeholder,
 }: CommandPaletteProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const budgets = useBudgetStore((state) => state.budgets);
+  const forecasts = useForecastStore((state) => state.forecasts);
+  const scenarios = useScenarioStore((state) => state.scenarios);
+  const entities = useEntityStore((state) => state.entities);
+
+  useEffect(() => {
+    GlobalSearchEngine.buildIndex({
+      budgets,
+      forecasts,
+      scenarios,
+      entities: entities.map((e) => ({ id: e.id, name: e.name, type: 'entity' })),
+    });
+  }, [budgets, forecasts, scenarios, entities]);
   const visible = isOpen ?? open ?? false;
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -45,12 +65,28 @@ export function CommandPalette({
         onSelect: () => {},
       }));
     }
-    return items.filter(
+    const localMatches = items.filter(
       (item) =>
         item.label.toLowerCase().includes(lowerQuery) ||
         item.description?.toLowerCase().includes(lowerQuery) ||
         item.category.toLowerCase().includes(lowerQuery)
     );
+
+    if (lowerQuery.length > 1) {
+      const globalMatches = GlobalSearchEngine.search(lowerQuery).map((res, i) => ({
+        id: `global-${res.id}-${i}`,
+        label: res.title,
+        description: res.description,
+        category: `Search: ${res.type}`,
+        onSelect: () => {
+          onClose();
+          navigate(res.path);
+        },
+      }));
+      return [...localMatches, ...globalMatches];
+    }
+
+    return localMatches;
   }, [items, query]);
   const groupedItems = useMemo(() => {
     const groups = new Map<string, CommandItem[]>();

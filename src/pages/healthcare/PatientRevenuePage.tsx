@@ -51,7 +51,7 @@ import {
   Bar,
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
-import { HealthcareEngine } from '@/engines';
+import { HealthcareEngine } from '@/engines/HealthcareEngine';
 
 export default function PatientRevenuePage() {
   const { entries } = useGLStore();

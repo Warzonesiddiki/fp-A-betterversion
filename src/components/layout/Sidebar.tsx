@@ -14,6 +14,7 @@ import {
   MessageSquare,
   CheckSquare,
   Settings,
+  Puzzle,
   HelpCircle,
   ChevronLeft,
   ChevronRight,
@@ -46,6 +47,7 @@ export const Sidebar = memo(function Sidebar() {
         { path: '/forecasts', label: t('nav.forecasts'), icon: TrendingUp },
         { path: '/reports', label: t('nav.reports'), icon: BarChart3 },
         { path: '/analytics', label: t('nav.analytics'), icon: PieChart },
+        { path: '/analytics/pivot-explorer', label: 'Pivot Explorer', icon: BarChart3 },
       ],
     },
     {
@@ -188,6 +190,15 @@ export const Sidebar = memo(function Sidebar() {
         style={{ borderColor: 'var(--border-subtle)' }}
       >
         <NavLink
+          to="/plugins"
+          onClick={handleNavClick}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          <Puzzle className="w-4 h-4" aria-hidden="true" />
+          {!sidebarCollapsed && <span>Plugins</span>}
+        </NavLink>
+        <NavLink
           to="/settings"
           onClick={handleNavClick}
           className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
@@ -195,6 +206,15 @@ export const Sidebar = memo(function Sidebar() {
         >
           <Settings className="w-4 h-4" aria-hidden="true" />
           {!sidebarCollapsed && <span>{t('nav.settings')}</span>}
+        </NavLink>
+        <NavLink
+          to="/docs/api"
+          onClick={handleNavClick}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          <BookOpen className="w-4 h-4" aria-hidden="true" />
+          {!sidebarCollapsed && <span>API Reference</span>}
         </NavLink>
         <NavLink
           to="/help"

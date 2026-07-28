@@ -196,6 +196,59 @@ export default function HelpPage() {
 
       <Card>
         <CardContent className="p-4">
+          <h2 className="font-semibold mb-3">Video Tutorials</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="border border-slate-700 rounded-lg overflow-hidden flex flex-col hover:border-blue-500/50 transition-colors cursor-pointer group">
+              <div className="aspect-video bg-slate-800 flex items-center justify-center relative">
+                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                  <span className="text-white ml-1">▶</span>
+                </div>
+              </div>
+              <div className="p-3">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  Getting Started in 5 Mins
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">
+                  Learn how to import GL and build your first budget.
+                </p>
+              </div>
+            </div>
+            <div className="border border-slate-700 rounded-lg overflow-hidden flex flex-col hover:border-blue-500/50 transition-colors cursor-pointer group">
+              <div className="aspect-video bg-slate-800 flex items-center justify-center relative">
+                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                  <span className="text-white ml-1">▶</span>
+                </div>
+              </div>
+              <div className="p-3">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  Advanced Scenarios
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">
+                  Master the Scenario Builder and Monte Carlo simulations.
+                </p>
+              </div>
+            </div>
+            <div className="border border-slate-700 rounded-lg overflow-hidden flex flex-col hover:border-blue-500/50 transition-colors cursor-pointer group">
+              <div className="aspect-video bg-slate-800 flex items-center justify-center relative">
+                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                  <span className="text-white ml-1">▶</span>
+                </div>
+              </div>
+              <div className="p-3">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                  Consolidation Engine
+                </h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">
+                  Multi-entity eliminations and ownership rollups.
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-4">
           <h2 className="font-semibold mb-3">Frequently Asked Questions</h2>
           <div className="space-y-2">
             {faqs.map((faq, i) => (

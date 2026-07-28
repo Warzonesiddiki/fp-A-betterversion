@@ -1,18 +1,18 @@
 [
   {
     "benchmark": "monte-carlo-10k",
-    "timestamp": "2026-06-16T05:59:55.287Z",
+    "timestamp": "2026-07-28T10:30:10.596Z",
     "hardware": {
-      "cpu": "AMD Ryzen 5 5600G with Radeon Graphics         ",
-      "ram": "15663MB",
-      "os": "win32 x64",
-      "node": "v26.2.0"
+      "cpu": "Intel(R) Xeon(R) Processor @ 2.60GHz",
+      "ram": "3940MB",
+      "os": "linux x64",
+      "node": "v22.22.3"
     },
     "iterations": 10000,
-    "coldMs": 59.77,
-    "warmMs": 22.78,
-    "warmAvgMs": 22.46,
-    "memoryPeakMB": 6.66,
+    "coldMs": 30.07,
+    "warmMs": 15.19,
+    "warmAvgMs": 14.27,
+    "memoryPeakMB": 0,
     "passed": true,
     "target": "<30000ms",
     "engineFile": "src/engines/MonteCarloEngine.ts",
