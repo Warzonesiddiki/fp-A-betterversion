@@ -18,6 +18,7 @@ export interface ExportData {
 
 import { downloadBlob } from '@/utils/canvasFactory';
 import { loadJsPDF } from '@/utils/pdfRuntime';
+import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
 
 interface JsPDFInstance {
   autoTable: (options: Record<string, unknown>) => void;
@@ -204,9 +205,10 @@ export class ExportEngine {
   }
 
   static exportToCSV(data: ExportData, config: ExportConfig): void {
+    // F-0017: sanitize formula-injection payloads before quoting.
     const escapeCSV = (val: string | number | boolean | null | undefined): string => {
       if (val === null || val === undefined) return '';
-      const str = String(val);
+      const str = sanitizeSpreadsheetText(val);
       if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
         return '"' + str.replace(/"/g, '""') + '"';
       }

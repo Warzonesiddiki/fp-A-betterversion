@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { FXEngine } from '@/engines/FXEngine';
+import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { TrendingUp, TrendingDown, Globe } from 'lucide-react';
 import { CURRENCIES, formatMoney } from './constants';
@@ -86,23 +86,46 @@ export function MultiCurrencyReporting() {
     return map;
   }, [storeRates]);
 
-  const translated = useMemo((): TranslatedEntity[] => {
-    return ENTITIES.map((e) => {
-      const rate =
-        ratesMap.get(`${e.currency}_${parentCurrency}`) ??
-        FXEngine.getRate(e.currency, parentCurrency) ??
-        FXEngine.getRate(e.currency, 'USD') ??
-        1;
-      return {
+  // F-0001: entities without an FX rate are EXCLUDED from consolidation and
+  // surfaced via a blocking banner. The old `?? 1` silently translated at
+  // an invented 1.0 rate.
+  const translationResult = useMemo((): {
+    rows: TranslatedEntity[];
+    missingRates: string[];
+  } => {
+    const rows: TranslatedEntity[] = [];
+    const missingRates: string[] = [];
+    for (const e of ENTITIES) {
+      let rate = ratesMap.get(`${e.currency}_${parentCurrency}`);
+      if (rate === undefined) {
+        try {
+          rate = FXEngine.getRate(e.currency, parentCurrency);
+        } catch (err) {
+          if (err instanceof MissingFXRateError) {
+            if (e.currency === parentCurrency) {
+              rate = 1; // identity is a fact, not a fallback
+            } else {
+              missingRates.push(`${e.name} (${e.currency}→${parentCurrency})`);
+              continue;
+            }
+          } else {
+            throw err;
+          }
+        }
+      }
+      rows.push({
         ...e,
         rate,
         revenueUSD: e.revenue * rate,
         expensesUSD: e.expenses * rate,
         netIncomeUSD: e.netIncome * rate,
         assetsUSD: e.totalAssets * rate,
-      };
-    });
+      });
+    }
+    return { rows, missingRates };
   }, [parentCurrency, ratesMap]);
+  const translated = translationResult.rows;
+  const missingRateEntities = translationResult.missingRates;
 
   const consolidated = useMemo(
     () => ({
@@ -125,6 +148,19 @@ export function MultiCurrencyReporting() {
             {ENTITIES.length} entities &middot; Consolidated in {parentCurrency}
           </p>
         </div>
+      </div>
+
+      {missingRateEntities.length > 0 && (
+        <div
+          role="alert"
+          className="rounded-md border border-red-500 bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-800 dark:text-red-300"
+        >
+          Consolidation incomplete — {missingRateEntities.length} entity(ies) excluded for missing
+          FX rates: {missingRateEntities.join(', ')}. Totals below do NOT include these entities.
+        </div>
+      )}
+
+      <div className="flex items-center justify-between">
         <div>
           <label className="block text-xs text-slate-400 mb-1">Reporting Currency</label>
           <select

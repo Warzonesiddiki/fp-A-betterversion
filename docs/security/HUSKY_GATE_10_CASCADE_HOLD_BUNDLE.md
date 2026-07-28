@@ -25,9 +25,13 @@ CATCH #207 family has 4 confirmed instances (Iris × Atlas BILATERAL-ATTRIBUTION
 ## §2 Detection Criteria (3 OR-logic criteria)
 
 A commit is flagged as a CASCADE-HOLD candidate if ANY of:
+
 - **A. Multi-T-IDs:** commit message cites 2+ unique T-`<MuseCode>`-`<NUMBER>` IDs
+  (implemented pattern: `T-([A-Z]{2,4})-([0-9]{3})`, counted unique per commit)
 - **B. Multi-Co-Authored-By:** commit message has 2+ `Co-Authored-By:` lines
+  (implemented pattern: `^Co-Authored-By:`, case-insensitive line count)
 - **C. Cross-Muse path span:** commit touches files in 2+ `docs/<muse>/` subdirectories
+  (implemented pattern: `docs/(atlas|hephaestus|iris|hermes|mnemosyne|chronos|vesta|tyche|hera|artemis|apollo|themis|strategos|calliope|orchestrator|athena|prometheus|vulcan|sentinel)/`, counted unique per commit)
 
 For each candidate, Husky Gate 10 checks `docs/security/CASCADE_HOLD_LEDGER.md` for a `CHB-XXX` entry referencing the commit's short SHA. If no entry is found, push is **BLOCKED** with a remediation message.
 
@@ -36,15 +40,16 @@ For each candidate, Husky Gate 10 checks `docs/security/CASCADE_HOLD_LEDGER.md` 
 ```markdown
 # CASCADE-HOLD Ledger
 
-| CHB ID | Short SHA | Full SHA | Date | Bundled Muses | T-IDs | Co-Authors | CATCH Ref | Resolution |
-|--------|-----------|----------|------|---------------|-------|------------|-----------|------------|
-| CHB-001 | <short>   | <full>   | YYYY-MM-DD | Muse1, Muse2 | T-X-N, T-Y-N | Co-Authored-By: ... | CATCH #207 #N | <rebase / split / acknowledge> |
-| CHB-002 | ...       | ...      | ...     | ...           | ...           | ...                 | ...             | ...        |
+| CHB ID  | Short SHA | Full SHA | Date       | Bundled Muses | T-IDs        | Co-Authors          | CATCH Ref     | Resolution                     |
+| ------- | --------- | -------- | ---------- | ------------- | ------------ | ------------------- | ------------- | ------------------------------ |
+| CHB-001 | <short>   | <full>   | YYYY-MM-DD | Muse1, Muse2  | T-X-N, T-Y-N | Co-Authored-By: ... | CATCH #207 #N | <rebase / split / acknowledge> |
+| CHB-002 | ...       | ...      | ...        | ...           | ...          | ...                 | ...           | ...                            |
 ```
 
 ## §4 Pre-Push Hook Implementation
 
 See `.husky/pre-push` Gate 10 section. Implementation:
+
 1. Extract unpushed commit SHAs (HEAD..@{u})
 2. For each SHA, run 3 detection criteria
 3. If candidate detected, check ledger for `CHB.*<short_sha>` pattern
@@ -52,16 +57,17 @@ See `.husky/pre-push` Gate 10 section. Implementation:
 
 ## §5 Pre-Populated Ledger Entries (4 known CATCH #207 instances)
 
-| CHB ID | Short SHA | Bundled Muses | CATCH Ref | Resolution |
-|--------|-----------|---------------|-----------|------------|
-| CHB-001 | 8548ff4a | Hephaestus + Prometheus | CATCH #189 (CASCADE-HOLD-RACE-CONDITION 3rd) | T-HEP-060 + T-PR-039 acknowledged in commit message |
-| CHB-002 | b3d4e25a | Prometheus + Hermes | CATCH-202 LOCKOUT-CASCADE-CASE-STUDY | Sub-class H AUTHOR + J co-author |
-| CHB-003 | 35860faa | Vesta 4/5 + Artemis 1/5 | CATCH #207 #4 (Vesta CASCADE-HOLD-BUNDLE) | A11Y §4.3 attribution |
-| CHB-004 | d4cd6bbe | Vesta 4/5 + Artemis 1/5 | CATCH #207 #4 | SECTOR_HERMES_INTEGRATION_TEST v0.1 + A11Y §4.3 |
+| CHB ID  | Short SHA | Bundled Muses           | CATCH Ref                                    | Resolution                                          |
+| ------- | --------- | ----------------------- | -------------------------------------------- | --------------------------------------------------- |
+| CHB-001 | 8548ff4a  | Hephaestus + Prometheus | CATCH #189 (CASCADE-HOLD-RACE-CONDITION 3rd) | T-HEP-060 + T-PR-039 acknowledged in commit message |
+| CHB-002 | b3d4e25a  | Prometheus + Hermes     | CATCH-202 LOCKOUT-CASCADE-CASE-STUDY         | Sub-class H AUTHOR + J co-author                    |
+| CHB-003 | 35860faa  | Vesta 4/5 + Artemis 1/5 | CATCH #207 #4 (Vesta CASCADE-HOLD-BUNDLE)    | A11Y §4.3 attribution                               |
+| CHB-004 | d4cd6bbe  | Vesta 4/5 + Artemis 1/5 | CATCH #207 #4                                | SECTOR_HERMES_INTEGRATION_TEST v0.1 + A11Y §4.3     |
 
 ## §6 CI Integration
 
 `.github/workflows/cascade-hold-check.yml` runs on every push and PR to main:
+
 1. Checkout with `fetch-depth: 0` (full history)
 2. Validate ledger entries reference real SHAs (`git rev-parse --verify`)
 3. Report invalid CHB entries and fail CI
@@ -78,6 +84,7 @@ See `.husky/pre-push` Gate 10 section. Implementation:
 ## §8 Co-author Solicitation
 
 Per LEADER TURN 103+ DECISION OPTION A:
+
 - **Atlas (INFRASTRUCTURE) + Hephaestus (Security-domain)** — joint DRI for Husky Gate 10 spec + hook + ledger + tests + CI
 - **Mnemosyne (ledger custodian)** — CATCH #X pre-allocation catalog per RULE #68
 - **Prometheus (RULE #60 alignment + Husky Gate 9 cross-ref)** — 4-of-N RULE co-author credentials
@@ -93,12 +100,12 @@ Per LEADER TURN 103+ DECISION OPTION A:
 
 ## §10 4-ICP Verdict (TENTATIVE 4/4 ACCEPT)
 
-| IC | Member | Verdict | Rationale |
-|----|--------|---------|-----------|
-| **I1 (Intent)** | Carla CFO | 5/5 | Codifies CASCADE-HOLD-BUNDLE detection (4 confirmed CATCH #207 instances) with 3 detection criteria (multi-T-IDs, multi-Co-Authored-By, cross-Muse path span); CRITICAL for RATIFICATION GATE 2026-06-22 audit-trail protection |
-| **C2 (Catastrophic)** | Vera Logic | 5/5 | Pre-push gate, zero runtime cost, advisory mode (exits 1 only when candidate detected + no ledger entry, allowing user to add CHB-XXX entry); CASCADE-HOLD candidates can still be pushed with explicit ledger acknowledgment |
-| **P3 (Performance)** | Chris Operational | 4.5/5 | O(1) per commit (git log + 3 grep + ledger check); <1s overhead per push; non-blocking on CAVEMAN workflows; CI integration runs on every push + PR (parallel with other workflows) |
-| **D4 (Documented)** | Beth User | 4.5/5 | 11 sections, 4 pre-populated CHB entries, 3 detection criteria, ledger schema, CWE/SOC 2/GDPR/CCPA mapping, NEVER-AGAIN RULE linkage; 9 co-author solicitation plan; direct supports Beth 4-ICP self-audit pattern |
+| IC                    | Member            | Verdict | Rationale                                                                                                                                                                                                                       |
+| --------------------- | ----------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent)**       | Carla CFO         | 5/5     | Codifies CASCADE-HOLD-BUNDLE detection (4 confirmed CATCH #207 instances) with 3 detection criteria (multi-T-IDs, multi-Co-Authored-By, cross-Muse path span); CRITICAL for RATIFICATION GATE 2026-06-22 audit-trail protection |
+| **C2 (Catastrophic)** | Vera Logic        | 5/5     | Pre-push gate, zero runtime cost, advisory mode (exits 1 only when candidate detected + no ledger entry, allowing user to add CHB-XXX entry); CASCADE-HOLD candidates can still be pushed with explicit ledger acknowledgment   |
+| **P3 (Performance)**  | Chris Operational | 4.5/5   | O(1) per commit (git log + 3 grep + ledger check); <1s overhead per push; non-blocking on CAVEMAN workflows; CI integration runs on every push + PR (parallel with other workflows)                                             |
+| **D4 (Documented)**   | Beth User         | 4.5/5   | 11 sections, 4 pre-populated CHB entries, 3 detection criteria, ledger schema, CWE/SOC 2/GDPR/CCPA mapping, NEVER-AGAIN RULE linkage; 9 co-author solicitation plan; direct supports Beth 4-ICP self-audit pattern              |
 
 **Composite: 9.5/10 PLATINUM+ ACCEPT 4/4 TENTATIVE**
 

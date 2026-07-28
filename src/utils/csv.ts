@@ -1,3 +1,5 @@
+import { sanitizeSpreadsheetText } from './spreadsheetSanitize';
+
 export interface ParsedCSV {
   headers: string[];
   rows: Record<string, string>[];
@@ -71,12 +73,13 @@ export function hasDuplicateHeaders(headers: string[]): boolean {
   return new Set(headers).size !== headers.length;
 }
 export function toCSV(rows: Array<Record<string, unknown>>, headers: string[]): string {
+  // F-0017: sanitize formula-injection payloads before quoting.
   const escape = (value: unknown): string => {
-    const raw = value == null ? '' : String(value);
+    const raw = sanitizeSpreadsheetText(value);
     return /[",\n\r]/.test(raw) ? `"${raw.replace(/"/g, '""')}"` : raw;
   };
   return [
-    headers.join(','),
+    headers.map((h) => escape(h)).join(','),
     ...rows.map((row) => headers.map((header) => escape(row[header])).join(',')),
   ].join('\n');
 }

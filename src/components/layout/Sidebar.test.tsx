@@ -175,3 +175,31 @@ describe('Sidebar', () => {
     expect(screen.getByLabelText('sidebar.lightMode')).toBeInTheDocument();
   });
 });
+
+/**
+ * Regression for F-0023: production bundle crashed with
+ * `ReferenceError: BookOpen is not defined` on every authenticated route
+ * because the icon was used but never imported.
+ * These tests fail if ANY icon referenced by the Sidebar is undefined.
+ */
+describe('Sidebar icon integrity (F-0023 regression)', () => {
+  it('renders the API Reference nav link with a defined icon (was BookOpen ReferenceError)', () => {
+    renderSidebar();
+    const apiLink = screen.getByText('API Reference');
+    expect(apiLink).toBeInTheDocument();
+    // The icon renders as an <svg> sibling inside the same NavLink.
+    const navLink = apiLink.closest('a');
+    expect(navLink).not.toBeNull();
+    expect(navLink!.querySelector('svg')).not.toBeNull();
+  });
+
+  it('every rendered nav link icon resolves to a real SVG element', () => {
+    const { container } = renderSidebar();
+    const links = container.querySelectorAll('a');
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of Array.from(links)) {
+      // Every nav link must contain exactly one lucide <svg> icon.
+      expect(link.querySelectorAll('svg').length).toBeGreaterThanOrEqual(1);
+    }
+  });
+});

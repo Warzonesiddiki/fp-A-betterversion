@@ -590,16 +590,17 @@ describe('SafeMathParser', () => {
       expect(result.error).toBeDefined();
     });
 
-    it('should handle empty string', () => {
+    it('should reject empty string (F-0008)', () => {
+      // Old assertion (value 0, no error) certified the defect.
       const result = parser.safeEvaluate('');
-      expect(result.value).toBe(0);
-      expect(result.error).toBeUndefined();
+      expect(result.error).toBeDefined();
+      expect(result.value).toBeNaN();
     });
 
-    it('should handle whitespace-only string', () => {
+    it('should reject whitespace-only string (F-0008)', () => {
       const result = parser.safeEvaluate('   ');
-      expect(result.value).toBe(0);
-      expect(result.error).toBeUndefined();
+      expect(result.error).toBeDefined();
+      expect(result.value).toBeNaN();
     });
 
     it('should handle non-string input', () => {
@@ -819,8 +820,8 @@ describe('SafeMathParser', () => {
       expect(parser.validate('1**2').valid).toBe(false);
     });
 
-    it('should validate empty string', () => {
-      expect(parser.validate('').valid).toBe(true);
+    it('should invalidate empty string (F-0008)', () => {
+      expect(parser.validate('').valid).toBe(false);
     });
 
     it('should validate function call', () => {
@@ -1616,19 +1617,17 @@ describe('SafeMathParser boundary edge cases (Probe T-FIX-12)', () => {
   // 2 validate() function
   it('validate() returns true for valid expression "1+2*3"', () => {
     const parser = new SafeMathParser();
-    if (typeof parser.validate === 'function') {
-      expect(parser.validate('1+2*3')).toBe(true);
-    } else {
-      expect(true).toBe(true);
-    }
+    // validate() returns { valid, error? } — assert the contract, not a
+    // boolean (the old assertions compared the whole object to true/false
+    // and could never pass; they also had tautological else-branches).
+    expect(parser.validate('1+2*3').valid).toBe(true);
+    expect(parser.validate('1+2*3').error).toBeUndefined();
   });
   it('validate() returns false for invalid "1+"', () => {
     const parser = new SafeMathParser();
-    if (typeof parser.validate === 'function') {
-      expect(parser.validate('1+')).toBe(false);
-    } else {
-      expect(true).toBe(true);
-    }
+    const result = parser.validate('1+');
+    expect(result.valid).toBe(false);
+    expect(result.error).toBeDefined();
   });
 
   // 1 Injection attempts

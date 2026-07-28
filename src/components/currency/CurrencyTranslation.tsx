@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { FXEngine, type RateType } from '@/engines/FXEngine';
+import { FXEngine, MissingFXRateError, type RateType } from '@/engines/FXEngine';
 import { ArrowRight, TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
 import { CURRENCIES, formatMoney } from './constants';
 
@@ -69,20 +69,35 @@ export function CurrencyTranslation() {
   const [parentCurrency, setParentCurrency] = useState('USD');
   const [period, setPeriod] = useState('2026');
 
-  const closingRate = useMemo(
-    () => FXEngine.getRate(entityCurrency, parentCurrency, `${period}-12-31`) || 1.087,
-    [entityCurrency, parentCurrency, period]
-  );
-  const averageRate = useMemo(
-    () => FXEngine.getAverageRate(entityCurrency, parentCurrency, period) || 1.075,
-    [entityCurrency, parentCurrency, period]
-  );
-  const historicalRate = useMemo(
-    () => FXEngine.getRate(entityCurrency, parentCurrency) || 1.05,
-    [entityCurrency, parentCurrency]
-  );
+  // F-0001: NEVER fabricate fallback rates (the old `|| 1.087` invented a
+  // rate out of thin air). Missing rates are a blocking, user-visible error.
+  const rateResults = useMemo(() => {
+    const lookup = (label: string, fn: () => number) => {
+      try {
+        return { label, rate: fn(), error: null as string | null };
+      } catch (e) {
+        if (e instanceof MissingFXRateError)
+          return { label, rate: null as number | null, error: e.message };
+        throw e;
+      }
+    };
+    return [
+      lookup('closing', () => FXEngine.getRate(entityCurrency, parentCurrency, `${period}-12-31`)),
+      lookup('average', () => FXEngine.getAverageRate(entityCurrency, parentCurrency, period)),
+      lookup('historical', () => FXEngine.getRate(entityCurrency, parentCurrency)),
+    ];
+  }, [entityCurrency, parentCurrency, period]);
+
+  const missingRateErrors = rateResults
+    .filter((r) => r.error !== null)
+    .map((r) => `${r.label}: ${r.error}`);
+  const closingRate = rateResults[0]!.rate;
+  const averageRate = rateResults[1]!.rate;
+  const historicalRate = rateResults[2]!.rate;
 
   const rows = useMemo((): TranslationRow[] => {
+    // Blocking state: without all three rates no translated number is shown.
+    if (closingRate === null || averageRate === null || historicalRate === null) return [];
     return ACCOUNTS.map((acct) => {
       const rateType = getRateType(acct.name);
       const rate =
@@ -132,8 +147,16 @@ export function CurrencyTranslation() {
           <h2 className="text-xl font-bold">ASC 830 Currency Translation</h2>
           <p className="text-sm text-slate-400 mt-1">Temporal method with CTA adjustments</p>
         </div>
-        <Badge variant={isBalanced ? 'default' : 'destructive'}>
-          {isBalanced ? (
+        <Badge
+          variant={
+            missingRateErrors.length > 0 ? 'destructive' : isBalanced ? 'default' : 'destructive'
+          }
+        >
+          {missingRateErrors.length > 0 ? (
+            <span className="flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" /> Blocked: missing rates
+            </span>
+          ) : isBalanced ? (
             <span className="flex items-center gap-1">
               <CheckCircle className="h-3 w-3" /> Balanced
             </span>
@@ -144,6 +167,27 @@ export function CurrencyTranslation() {
           )}
         </Badge>
       </div>
+
+      {missingRateErrors.length > 0 && (
+        <div
+          role="alert"
+          className="rounded-md border border-red-500 bg-red-50 dark:bg-red-950/40 p-4"
+        >
+          <p className="flex items-center gap-2 font-semibold text-red-700 dark:text-red-300">
+            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+            Translation blocked: missing FX rates
+          </p>
+          <ul className="mt-2 list-disc pl-6 text-sm text-red-600 dark:text-red-400">
+            {missingRateErrors.map((msg) => (
+              <li key={msg}>{msg}</li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+            Load the missing {entityCurrency}→{parentCurrency} rates for the period before relying
+            on translated balances. No fallback rate is ever substituted.
+          </p>
+        </div>
+      )}
 
       <Card>
         <CardContent className="p-4">
@@ -189,15 +233,21 @@ export function CurrencyTranslation() {
             <div className="ml-auto flex gap-6 text-sm">
               <div>
                 <span className="text-slate-500">Closing</span>
-                <span className="ml-2 font-mono">{closingRate.toFixed(4)}</span>
+                <span className="ml-2 font-mono">
+                  {closingRate === null ? '— missing' : closingRate.toFixed(4)}
+                </span>
               </div>
               <div>
                 <span className="text-slate-500">Average</span>
-                <span className="ml-2 font-mono">{averageRate.toFixed(4)}</span>
+                <span className="ml-2 font-mono">
+                  {averageRate === null ? '— missing' : averageRate.toFixed(4)}
+                </span>
               </div>
               <div>
                 <span className="text-slate-500">Historical</span>
-                <span className="ml-2 font-mono">{historicalRate.toFixed(4)}</span>
+                <span className="ml-2 font-mono">
+                  {historicalRate === null ? '— missing' : historicalRate.toFixed(4)}
+                </span>
               </div>
             </div>
           </div>

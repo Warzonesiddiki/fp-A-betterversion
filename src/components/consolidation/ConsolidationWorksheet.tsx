@@ -42,19 +42,26 @@ export function ConsolidationWorksheet({
 }: ConsolidationWorksheetProps) {
   const [tab, setTab] = useState<Tab>('summary');
 
-  const result = useMemo<ConsolidatedResult | null>(() => {
-    if (!entities.length || !ownerships.length) return null;
+  const { result, unexpectedError } = useMemo<{
+    result: ConsolidatedResult | null;
+    unexpectedError: string | null;
+  }>(() => {
+    if (!entities.length || !ownerships.length) return { result: null, unexpectedError: null };
     try {
-      return ConsolidationEngine.consolidate(
-        entities,
-        ownerships,
-        icPairs,
-        fxRates,
-        adjustments,
-        vieNotifications
-      );
-    } catch {
-      return null;
+      return {
+        result: ConsolidationEngine.consolidate(
+          entities,
+          ownerships,
+          icPairs,
+          fxRates,
+          adjustments,
+          vieNotifications
+        ),
+        unexpectedError: null,
+      };
+    } catch (e) {
+      // Input-validation errors still throw; surface them visibly (F-0003).
+      return { result: null, unexpectedError: e instanceof Error ? e.message : String(e) };
     }
   }, [entities, ownerships, icPairs, fxRates, adjustments, vieNotifications]);
 
@@ -63,6 +70,23 @@ export function ConsolidationWorksheet({
       result ? ConsolidationEngine.validate(result) : { valid: false, errors: [] as string[] },
     [result]
   );
+
+  if (unexpectedError)
+    return (
+      <Card
+        className={cn(
+          'border border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30',
+          className
+        )}
+      >
+        <CardContent className="p-6">
+          <Badge variant="destructive">CONSOLIDATION FAILED</Badge>
+          <p className="mt-2 text-sm text-red-700 dark:text-red-300" role="alert">
+            {unexpectedError}
+          </p>
+        </CardContent>
+      </Card>
+    );
 
   if (!result)
     return (
@@ -73,6 +97,32 @@ export function ConsolidationWorksheet({
           </p>
         </CardContent>
       </Card>
+    );
+
+  // F-0003: failed consolidations render a blocking failure state listing
+  // every stage failure — never the clean zero report the old emptyResult()
+  // produced (isBalanced: true on zeros after swallowing the exception).
+  if (result.status === 'failed')
+    return (
+      <div className={cn('space-y-4', className)}>
+        <Card className="border border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <Badge variant="destructive">CONSOLIDATION FAILED</Badge>
+              <span className="text-sm text-red-700 dark:text-red-300">
+                {result.errors.length} blocking issue(s). No consolidated figures are shown.
+              </span>
+            </div>
+            <ul className="mt-3 list-disc pl-6 text-sm text-red-700 dark:text-red-300" role="alert">
+              {result.errors.map((f, i) => (
+                <li key={`${f.stage}-${i}`}>
+                  <strong>[{f.stage}]</strong> {f.message}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
     );
 
   return (
@@ -94,6 +144,8 @@ export function ConsolidationWorksheet({
               {result.isBalanced
                 ? 'Assets = Liabilities + Equity + NCI'
                 : `Imbalance: $${Math.abs(result.imbalanceAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+              {/* F-0009: balance tolerance is always disclosed, never implicit */}
+              {` · tolerance: ${result.balanceToleranceCents}¢`}
             </span>
           </div>
           {validation.errors.length > 0 && (

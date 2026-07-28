@@ -42,7 +42,7 @@ export default function PivotExplorerPage() {
   const pivotResult = useMemo(() => {
     if (data.length === 0) return null;
     const engine = new PivotTableEngine();
-    return engine.createPivot(data as any, config);
+    return engine.createPivot(data as Record<string, unknown>[], config);
   }, [data, config]);
 
   return (

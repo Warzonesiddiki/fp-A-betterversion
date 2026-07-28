@@ -10,6 +10,7 @@ import {
   GitCompareArrows,
   FlaskConical,
   Brain,
+  BookOpen,
   Database,
   MessageSquare,
   CheckSquare,

@@ -1,7 +1,38 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGLStore } from './glStore';
 import { useCubeStore, getEngine, resetEngine } from './cubeStore';
+import { useAuthStore } from './authStore';
 import type { GLEntry } from '@/types';
+
+// F-0026: authenticate an explicit user with exactly the permissions the
+// guarded actions require, instead of running as '(no user)'.
+function authenticateCubeUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'cube-test-user',
+      email: 'cube-test@finplan.local',
+      firstName: 'Cube',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: [
+        'import:create',
+        'import:update',
+        'import:delete',
+        'ui:update',
+        'cube:write',
+        'cube:read',
+      ],
+    },
+    isAuthenticated: true,
+  });
+}
 
 function makeEntry(overrides: Partial<GLEntry> = {}): GLEntry {
   return {
@@ -27,6 +58,7 @@ function makeEntry(overrides: Partial<GLEntry> = {}): GLEntry {
 describe('glStore ↔ CubeEngine integration', () => {
   beforeEach(() => {
     resetEngine();
+    authenticateCubeUser();
     useCubeStore.setState({
       engine: getEngine(),
       isInitialized: false,

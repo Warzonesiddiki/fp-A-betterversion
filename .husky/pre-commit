@@ -1,90 +1,55 @@
 #!/bin/sh
-# <!-- SHIPPED v0.3 — Hephaestus + Ares 2026-06-18 — Husky Pre-Commit Hook (CYCLE 25 T-2.5 + T-19) -->
-# =============================================================================
-# FinPlan Pro — pre-commit hook (NEW, CYCLE 25 T-3.5 + FIXED T-2.5 + FIXED T-19)
-# Created per Hephaestus T-3.5 task (post-TURN 198+ LOCKOUT LIFTED).
-# Fixed per FOUNDER PATH A ACK TURN 340+: PC-1/PC-2/PC-4 empty-arg-list bug.
-# Fixed per FOUNDER FULL FREEDOM PIVOT TURN 341+ (CODE-ONLY LIFTED): PC-4 tsconfig.json load bug.
-# Purpose: Lighter-weight checks that run BEFORE commit (faster feedback).
-# Complements pre-push gates (run BEFORE push, heavier).
-# =============================================================================
-# Gate Numbering Convention (PRE-COMMIT gates use "PC-" prefix to avoid
-# collision with pre-push Gates 1-17):
-#   - PC-1: LINT-STAGED (eslint on staged files, lighter than Gate 2)
-#   - PC-2: PRETTIER-CHECK (format check on staged files)
-#   - PC-3: NEVER-AGAIN RULE #55/#74 GHOST-SHA CHECK (commit-time critical)
-#   - PC-4: TSC-ON-STAGED (TypeScript check on staged files only)
-# =============================================================================
-# FIX T-2.5 (2026-06-18) — Apollo 60th HL TURN 326+ Husky Gate PC-1 BUG
-# Bug: When no .ts/.tsx/.js/.jsx files are staged (e.g. docs-only commit),
-#      `npx eslint --max-warnings 0 $(... | grep ... | tr '\n' ' ')` receives
-#      an EMPTY arg list and ESLint falls back to linting ENTIRE src/,
-#      producing 4901 errors + 104 warnings that BLOCK the commit.
-# Fix: Wrap each gate in a `FILES=$(...) ; [ -z "$FILES" ] && echo "skip" || run`
-#      pattern per Apollo 60th HL suggestion. Skip cleanly when no files match
-#      the file-type filter.
-# D-007 Honest Labels:
-# 1. Original PC-1/PC-2/PC-4 all had the same bug. All 3 fixed in v0.2.
-# 2. PC-3 (GHOST-SHA check) has no file-list dependency, so unaffected.
-# 3. This fix DOES NOT alter pre-push gates — per NEVER-AGAIN RULE #47.
-# =============================================================================
+# FinPlan Pro — pre-commit quality gates (rewritten per F-0024).
+# Real checks only. Ceremonial gates (persona counting, SHA astrology,
+# markdown keyword ledgers) were removed — they validated process theater,
+# not product correctness. Heavy checks (full suite, build) live in pre-push.
+set -e
 
-. "$(dirname -- "$0")/_/husky.sh"
+echo "pre-commit: running staged-file quality gates"
 
-echo "Running pre-commit checks (240s ceiling per gate, v0.2 with empty-arg-list fix)..."
+STAGED_TS=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx)$' || true)
+STAGED_CODE=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx)$' || true)
+STAGED_FMT=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx|json|md|css)$' || true)
 
-# Gate PC-1 — LINT-STAGED (mirrors Gate 10 pre-push but on staged files)
-# FIX v0.2: Skip cleanly when no TS/JS files staged (avoids ESLint full-src fallback).
-FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx)$' | tr '\n' ' ')
-if [ -z "$(echo $FILES | tr -d '[:space:]')" ]; then
-  echo "⏭️  PC-1: No TS/JS files staged, skipping LINT-STAGED"
+# Gate 1: ESLint on staged code files (zero warnings).
+if [ -n "$STAGED_CODE" ]; then
+  echo "→ eslint (staged)"
+  echo "$STAGED_CODE" | xargs npx eslint --max-warnings 0
 else
-  timeout 240 npx eslint --max-warnings 0 $FILES || { echo "❌ Lint-staged failed (or timed out at 240s). Commit blocked."; exit 1; }
+  echo "→ eslint: no staged code files, skipped"
 fi
 
-# Gate PC-2 — PRETTIER-CHECK (format check on staged files)
-# FIX v0.2: Same empty-arg-list fix as PC-1.
-FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx|json|md|css)$' | tr '\n' ' ')
-if [ -z "$(echo $FILES | tr -d '[:space:]')" ]; then
-  echo "⏭️  PC-2: No prettier-supported files staged, skipping PRETTIER-CHECK"
+# Gate 2: TypeScript project check when any TS/TSX is staged.
+if [ -n "$STAGED_TS" ]; then
+  echo "→ tsc --noEmit (project)"
+  npx tsc --noEmit -p tsconfig.json
 else
-  timeout 240 npx prettier --check $FILES || { echo "❌ Prettier check failed (or timed out at 240s). Commit blocked."; exit 1; }
+  echo "→ tsc: no staged TS files, skipped"
 fi
 
-# Gate PC-3 — NEVER-AGAIN RULE #55 / RULE #74 GHOST-SHA CHECK (commit-time critical)
-# Catches phantom SHA claims BEFORE they hit git history.
-# Scans staged commit message + staged diff for SHA-shaped strings.
-# FIX v0.2: No file-list dependency, no change needed.
-timeout 240 sh -c '
-  STAGED_SHA_COUNT=$(git diff --cached | grep -oE "[0-9a-f]{7,40}" | sort -u | wc -l)
-  if [ "$STAGED_SHA_COUNT" -gt 0 ]; then
-    echo "⚠️  Found $STAGED_SHA_COUNT SHA-shaped strings in staged diff — verify each per D-002 3-witness (cat-file-t + Read + git log)"
-  fi
-  exit 0
-' || { echo "❌ GHOST-SHA check failed (or timed out at 240s). Commit blocked."; exit 1; }
-
-# Gate PC-4 — TSC-ON-STAGED (TypeScript check on staged files only)
-# Lighter than pre-push Gate 1 (full TSC). Uses --noEmit.
-# FIX v0.2: Same empty-arg-list fix as PC-1.
-# FIX v0.3 (Hephaestus T-19, CYCLE 25 TURN 344+, Ares war-god precision lens 2026-06-18):
-#   Bug: `npx tsc --noEmit $FILES` does NOT load tsconfig.json when file args are
-#   passed directly. This causes false-positive "Cannot use JSX unless the '--jsx'
-#   flag is provided" errors when staged FILES includes .tsx files.
-#   Evidence: full project TSC (`npx tsc --noEmit`) returns Exit 0, but staged TSC
-#   (`npx tsc --noEmit src/file1.tsx src/file2.ts ...`) returns Exit 2 with --jsx
-#   errors. Confirmed by reading TSC docs: file args bypass tsconfig.json.
-#   Fix: use `npx tsc --noEmit -p tsconfig.json` (explicit project flag) — this
-#   loads tsconfig.json so --jsx, paths, baseUrl, strict are all configured.
-#   Trade-off: PC-4 becomes equivalent to pre-push Gate 1 (full project TSC),
-#   slower than staged-only, but ACCURATE (no false positives).
-#   Alternative: install `tsc-files` package and use `npx tsc-files --noEmit $FILES`
-#   (proper staged-file TSC). Deferred to PATH A PATCH 6 followup.
-FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx)$' | tr '\n' ' ')
-if [ -z "$(echo $FILES | tr -d '[:space:]')" ]; then
-  echo "⏭️  PC-4: No TS/TSX files staged, skipping TSC-ON-STAGED"
+# Gate 3: Prettier on staged files.
+if [ -n "$STAGED_FMT" ]; then
+  echo "→ prettier --check (staged)"
+  echo "$STAGED_FMT" | xargs npx prettier --check
 else
-  timeout 240 npx tsc --noEmit -p tsconfig.json || { echo "❌ TSC-staged failed (or timed out at 240s). Commit blocked."; exit 1; }
+  echo "→ prettier: no staged formattable files, skipped"
 fi
 
-echo "✅ All pre-commit checks passed (v0.3 with empty-arg-list + tsconfig.json fix)."
-exit 0
+# Gate 4: staged-diff secret scan (lightweight; CI runs the full gate).
+# Scans ADDED lines only: a diff that REMOVES secret material is a
+# remediation and must never be blocked by its own deletion lines.
+# (Root-cause fix: the whole-diff version made the F-0014 key-removal
+# commit itself un-committable.)
+echo "→ secret scan (staged diff)"
+ADDED_LINES=$(git diff --cached --unified=0 | grep -E '^\+' | grep -v '^\+\+\+' || true)
+if printf '%s\n' "$ADDED_LINES" | grep -nE '(BEGIN (RSA|OPENSSH|EC|PRIVATE)|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{32,}|xox[baprs]-[A-Za-z0-9-]{10,})'; then
+  echo "✗ Secret-like material detected in staged additions. Commit blocked."
+  exit 1
+fi
+# Known-bad literals must never RE-enter the tree.
+if printf '%s\n' "$ADDED_LINES" | grep -nF "$(printf 'finplan-master-storage-%s' 'key-change-in-production')" >/dev/null; then
+  echo "✗ Retired hardcoded storage key detected in staged additions. Commit blocked."
+  exit 1
+fi
+
+echo "✓ pre-commit gates passed"

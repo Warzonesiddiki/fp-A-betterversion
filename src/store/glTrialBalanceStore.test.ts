@@ -1,9 +1,35 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGLTrialBalanceStore, glTrialBalanceSelectors } from './glTrialBalanceStore';
+import { useAuthStore } from './authStore';
 import type { TrialBalanceRow } from '@/types';
+
+// F-0026: RBAC-aware fixture — actions are permission-guarded, so tests
+// authenticate an explicit user with exactly the permissions required
+// (import:update, ui:update) rather than stubbing RBAC away.
+function authenticateTBUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'tb-test-user',
+      email: 'tb-test@finplan.local',
+      firstName: 'TB',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['import:update', 'ui:update'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('glTrialBalanceStore', () => {
   beforeEach(() => {
+    authenticateTBUser();
     useGLTrialBalanceStore.setState({
       rows: [],
       filteredRows: [],
@@ -192,5 +218,36 @@ describe('glTrialBalanceStore', () => {
 
     useGLTrialBalanceStore.getState().refresh();
     expect(useGLTrialBalanceStore.getState().filteredRows).toHaveLength(1);
+  });
+});
+
+describe('glTrialBalanceStore — negative authorization (F-0026)', () => {
+  it('setRows is denied for an unauthenticated caller', () => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    expect(() => useGLTrialBalanceStore.getState().setRows([])).toThrow(/Permission denied/);
+  });
+
+  it('setSort is denied without the ui:update permission', () => {
+    useAuthStore.setState({
+      user: {
+        id: 'no-ui-user',
+        email: 'no-ui@finplan.local',
+        firstName: 'No',
+        lastName: 'UI',
+        avatarUrl: null,
+        role: 'Viewer',
+        departmentId: 'finance',
+        departmentName: 'Finance',
+        entityId: 'entity-001',
+        status: 'Active',
+        lastLoginAt: new Date().toISOString(),
+        mfaEnabled: false,
+        permissions: [],
+      },
+      isAuthenticated: true,
+    });
+    expect(() => useGLTrialBalanceStore.getState().setSort('accountCode', 'asc')).toThrow(
+      /Permission denied/
+    );
   });
 });

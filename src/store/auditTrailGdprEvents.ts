@@ -5,7 +5,11 @@
 // Date: 2026-06-18 TURN 396+ v0.2 EXECUTION
 // PICK CHAIN: Hades T-15 (event emitter) + Mnemosyne T-2 (audit coupling) + Hermes T-FIX-03 (D2+D4 cross-witness) + Sentinel (P1 verification) + Hera T-4 (RBAC) + Demeter T-4.4 (designToken) + Hephaestus T-19 (type narrowing)
 
-import { useAuditTrailStore, type ExtendedAuditEntry } from '@/store/auditTrailStore';
+import {
+  useAuditTrailStore,
+  type ExtendedAuditEntry,
+  type RecordInput,
+} from '@/store/auditTrailStore';
 import type { CellAddress } from '@/types/cell';
 
 // ---------------------------------------------------------------------------
@@ -309,6 +313,9 @@ const mapGdprEventToAuditEntry = (event: GdprEvent): ExtendedAuditEntry => {
           affectedDataSubjects: event.affectedDataSubjects,
         },
         breachEventId: event.breachId,
+        // Art. 33 severity is a first-class audit field (triage/filtering),
+        // not just payload content.
+        severity: event.severity,
         metadata: {
           detectedAt: event.detectedAt,
           containmentStatus: event.containmentStatus,
@@ -347,6 +354,42 @@ let gdprSubscriptionInitialized = false;
  *
  * @returns Cleanup function that unsubscribes and resets state
  */
+/**
+ * Dispatch a mapped GDPR entry to the audit store. This is the single
+ * conversion point: it carries the GDPR/RBAC cross-reference fields
+ * (consentId, breachEventId, tags) and — critically — the 'read' branch
+ * for Art. 15 access / Art. 20 portability events, which previously had no
+ * dispatch at all and were silently never audited (CWE-778 gap).
+ */
+const recordGdprEntry = (entry: ExtendedAuditEntry): void => {
+  const store = useAuditTrailStore.getState();
+  const recordInput: RecordInput = {
+    cellId: entry.cellId,
+    userId: entry.userId,
+    operation: entry.operation,
+    dataType: entry.dataType,
+    previousValue: entry.previousValue,
+    newValue: entry.newValue,
+    approvalStatus: entry.approvalStatus,
+    source: entry.source,
+    metadata: entry.metadata,
+    consentId: entry.consentId,
+    breachEventId: entry.breachEventId,
+    tags: entry.tags,
+    severity: entry.severity,
+  };
+
+  if (entry.operation === 'write' || entry.operation === 'bulk') {
+    store.recordWrite(recordInput);
+  } else if (entry.operation === 'update') {
+    store.recordUpdate(recordInput);
+  } else if (entry.operation === 'delete') {
+    store.recordDelete(recordInput);
+  } else if (entry.operation === 'read') {
+    store.recordRead(recordInput);
+  }
+};
+
 export const subscribeToGdprEvents = (): (() => void) => {
   if (gdprSubscriptionInitialized) {
     return () => {}; // Idempotent — return no-op cleanup
@@ -354,32 +397,7 @@ export const subscribeToGdprEvents = (): (() => void) => {
   gdprSubscriptionInitialized = true;
 
   const handleEvent = (event: GdprEvent): void => {
-    const entry = mapGdprEventToAuditEntry(event);
-    const store = useAuditTrailStore.getState();
-
-    // F-CLIO-4 P1: Convert ExtendedAuditEntry to RecordInput format
-    // Use `as any` cast to bypass the narrower RecordInput.source type (matches Hephaestus T-FIX-01 L212-220 pattern)
-    // Per cross-witness with Hephaestus T-19 (type narrowing decision pending ETA T+12h 2026-06-19 02:00 UTC)
-    const recordInput = {
-      cellId: entry.cellId,
-      userId: entry.userId,
-      operation: entry.operation,
-      dataType: entry.dataType,
-      previousValue: entry.previousValue,
-      newValue: entry.newValue,
-      approvalStatus: entry.approvalStatus,
-      source: entry.source, // 'gdpr' — cast handled by RecordInput extension
-      metadata: entry.metadata,
-    } as Parameters<typeof store.recordWrite>[0];
-
-    // Dispatch to the appropriate record action based on operation
-    if (entry.operation === 'write' || entry.operation === 'bulk') {
-      store.recordWrite(recordInput);
-    } else if (entry.operation === 'update') {
-      store.recordUpdate(recordInput);
-    } else if (entry.operation === 'delete') {
-      store.recordDelete(recordInput);
-    }
+    recordGdprEntry(mapGdprEventToAuditEntry(event));
   };
 
   // Primary channel: window CustomEvent
@@ -410,27 +428,7 @@ export const subscribeToGdprEvents = (): (() => void) => {
  * Used in vitest unit tests for deterministic event injection.
  */
 export const __testEmitGdprEvent = (event: GdprEvent): void => {
-  const entry = mapGdprEventToAuditEntry(event);
-  const store = useAuditTrailStore.getState();
-  const recordInput = {
-    cellId: entry.cellId,
-    userId: entry.userId,
-    operation: entry.operation,
-    dataType: entry.dataType,
-    previousValue: entry.previousValue,
-    newValue: entry.newValue,
-    approvalStatus: entry.approvalStatus,
-    source: entry.source,
-    metadata: entry.metadata,
-  } as Parameters<typeof store.recordWrite>[0];
-
-  if (entry.operation === 'write' || entry.operation === 'bulk') {
-    store.recordWrite(recordInput);
-  } else if (entry.operation === 'update') {
-    store.recordUpdate(recordInput);
-  } else if (entry.operation === 'delete') {
-    store.recordDelete(recordInput);
-  }
+  recordGdprEntry(mapGdprEventToAuditEntry(event));
 };
 
 /** Test-only utility: reset subscription state (for beforeEach in vitest) */

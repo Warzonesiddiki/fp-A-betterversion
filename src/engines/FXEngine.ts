@@ -23,6 +23,102 @@ export interface TranslationInput {
   period: string;
 }
 
+/**
+ * Thrown when no FX rate exists for the requested currency pair and date
+ * policy. NEVER substitute 0 or 1 for a missing rate (F-0001).
+ */
+export class MissingFXRateError extends Error {
+  readonly from: string;
+  readonly to: string;
+  readonly date?: string;
+  readonly context?: string;
+
+  constructor(from: string, to: string, date?: string, context?: string) {
+    super(
+      `Missing FX rate ${from}->${to}` +
+        (date ? ` for ${date} (latest-on-or-before policy)` : '') +
+        (context ? ` [${context}]` : '')
+    );
+    this.name = 'MissingFXRateError';
+    this.from = from;
+    this.to = to;
+    this.date = date;
+    this.context = context;
+  }
+}
+
+/** Thrown when a financial input is NaN, infinite, or otherwise invalid. */
+export class InvalidFinancialInputError extends Error {
+  readonly field: string;
+  readonly value: unknown;
+
+  constructor(field: string, value: unknown, reason: string) {
+    super(`Invalid financial input "${field}" (${reason}): ${String(value)}`);
+    this.name = 'InvalidFinancialInputError';
+    this.field = field;
+    this.value = value;
+  }
+}
+
+/**
+ * Policy for getRate when the requested date precedes every known rate.
+ * - 'throw' (default): raise MissingFXRateError. Safe and visible.
+ * - 'use-earliest': explicitly opt in to the earliest available rate.
+ *   Must only be used where the caller documents and surfaces that choice.
+ */
+export type BeforeEarliestPolicy = 'throw' | 'use-earliest';
+
+export interface GetRateOptions {
+  onDateBeforeEarliest?: BeforeEarliestPolicy;
+  context?: string;
+}
+
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}/;
+const YEAR_ONLY = /^\d{4}$/;
+const YEAR_MONTH = /^\d{4}-\d{2}$/;
+
+/**
+ * Normalizes a date or fiscal period to YYYY-MM-DD:
+ *  - 'YYYY-MM-DD' (optionally with ISO time suffix) → the calendar date
+ *  - 'YYYY-MM' → last day of that month (period-end convention)
+ *  - 'YYYY' → December 31 of that year (fiscal-year-end convention)
+ * Anything else throws InvalidFinancialInputError.
+ */
+function normalizeDate(date: string, field: string): string {
+  if (typeof date !== 'string' || date.length === 0) {
+    throw new InvalidFinancialInputError(field, date, 'expected YYYY[-MM[-DD]] or ISO datetime');
+  }
+  let normalized: string;
+  if (YEAR_ONLY.test(date)) {
+    normalized = `${date}-12-31`;
+  } else if (YEAR_MONTH.test(date)) {
+    const year = Number(date.slice(0, 4));
+    const month = Number(date.slice(5, 7));
+    if (month < 1 || month > 12) {
+      throw new InvalidFinancialInputError(field, date, 'month must be 01-12');
+    }
+    // Day 0 of month (month+1) is the last day of `month`.
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    normalized = `${date}-${String(lastDay).padStart(2, '0')}`;
+  } else if (DATE_ONLY.test(date)) {
+    normalized = date.slice(0, 10);
+  } else {
+    throw new InvalidFinancialInputError(field, date, 'expected YYYY[-MM[-DD]] or ISO datetime');
+  }
+  // Verify it is a real calendar date (rejects e.g. 2026-13-40).
+  const parsed = new Date(`${normalized}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== normalized) {
+    throw new InvalidFinancialInputError(field, date, 'not a valid calendar date');
+  }
+  return normalized;
+}
+
+function assertCurrency(code: unknown, field: string): asserts code is string {
+  if (typeof code !== 'string' || code.trim().length === 0) {
+    throw new InvalidFinancialInputError(field, code, 'currency code must be a non-empty string');
+  }
+}
+
 export class FXEngine {
   private static rates: Map<string, FXRateEntry[]> = new Map();
 
@@ -30,24 +126,67 @@ export class FXEngine {
     return `${from}_${to}`;
   }
 
-  static getRate(from: string, to: string, date?: string): number {
+  /**
+   * Returns the rate for a pair. With a date, returns the LATEST rate with
+   * date <= requested date (latest-on-or-before, F-0002). Without a date,
+   * returns the most recent rate. Same-currency is the identity rate (1).
+   * Throws MissingFXRateError when no rate exists — never returns 0 (F-0001).
+   */
+  static getRate(from: string, to: string, date?: string, options: GetRateOptions = {}): number {
+    assertCurrency(from, 'from');
+    assertCurrency(to, 'to');
+    const normalizedDate = date !== undefined ? normalizeDate(date, 'date') : undefined;
     if (from === to) return 1;
     const key = this.rateKey(from, to);
     const entries = this.rates.get(key) ?? [];
-    if (entries.length === 0) return 0;
-    if (date) {
-      const entry = entries.find((e) => e.date <= date) ?? entries[entries.length - 1];
-      return entry!.rate;
+    if (entries.length === 0) {
+      throw new MissingFXRateError(from, to, normalizedDate, options.context);
     }
-    return entries![entries.length - 1]!.rate;
+    if (normalizedDate) {
+      let latest: FXRateEntry | undefined;
+      for (const entry of entries) {
+        if (entry.date <= normalizedDate && (!latest || entry.date > latest.date)) {
+          latest = entry;
+        }
+      }
+      if (latest) return latest.rate;
+      // Requested date precedes all known rates.
+      if (options.onDateBeforeEarliest === 'use-earliest') {
+        return entries.reduce((a, b) => (a.date <= b.date ? a : b)).rate;
+      }
+      throw new MissingFXRateError(from, to, normalizedDate, options.context);
+    }
+    return entries.reduce((a, b) => (a.date >= b.date ? a : b)).rate;
   }
 
-  static convert(amount: number, from: string, to: string, date?: string): number {
-    if (!Number.isFinite(amount)) return 0;
-    const rate = this.getRate(from, to, date);
-    return rate === 0 ? 0 : amount * rate;
+  /**
+   * Converts an amount between currencies. Non-finite amounts are rejected;
+   * missing rates propagate as MissingFXRateError. Never silently returns 0.
+   */
+  static convert(
+    amount: number,
+    from: string,
+    to: string,
+    date?: string,
+    options: GetRateOptions = {}
+  ): number {
+    if (!Number.isFinite(amount)) {
+      throw new InvalidFinancialInputError('amount', amount, 'must be a finite number');
+    }
+    if (from === to) {
+      assertCurrency(from, 'from');
+      assertCurrency(to, 'to');
+      return amount;
+    }
+    const rate = this.getRate(from, to, date, options);
+    return amount * rate;
   }
 
+  /**
+   * Records a rate. Invalid rates (non-finite or <= 0) and invalid dates are
+   * rejected loudly — a stored 0/negative rate silently corrupts every
+   * downstream translation (F-0001).
+   */
   static setRate(
     from: string,
     to: string,
@@ -55,10 +194,15 @@ export class FXEngine {
     date: string,
     source: FXRateEntry['source'] = 'manual'
   ): void {
-    if (!Number.isFinite(rate) || rate < 0) return;
+    assertCurrency(from, 'from');
+    assertCurrency(to, 'to');
+    if (!Number.isFinite(rate) || rate <= 0) {
+      throw new InvalidFinancialInputError('rate', rate, 'must be a positive finite number');
+    }
+    const normalizedDate = normalizeDate(date, 'date');
     const key = this.rateKey(from, to);
     const entries = this.rates.get(key) ?? [];
-    entries.push({ from, to, rate, date, source });
+    entries.push({ from, to, rate, date: normalizedDate, source });
     entries.sort((a, b) => a.date.localeCompare(b.date));
     this.rates.set(key, entries);
   }
@@ -82,34 +226,48 @@ export class FXEngine {
     rateType: RateType;
   } {
     const { amount, rateType, entityCurrency, parentCurrency, period } = input;
-    let rate = 0;
+    if (!Number.isFinite(amount)) {
+      throw new InvalidFinancialInputError('amount', amount, 'must be a finite number');
+    }
+    const context = `translateForConsolidation:${rateType}:${period}`;
+    let rate: number;
 
     switch (rateType) {
       case 'closing':
-        rate = this.getRate(entityCurrency, parentCurrency, period);
+        rate = this.getRate(entityCurrency, parentCurrency, period, { context });
         break;
       case 'average':
         rate = this.getAverageRate(entityCurrency, parentCurrency, period);
         break;
       case 'historical':
-        rate = this.getRate(entityCurrency, parentCurrency);
+        rate = this.getRate(entityCurrency, parentCurrency, undefined, { context });
         break;
       case 'transaction':
-        rate = this.getRate(entityCurrency, parentCurrency, period);
+        rate = this.getRate(entityCurrency, parentCurrency, period, { context });
         break;
     }
 
     return {
-      translated: rate === 0 ? 0 : amount * rate,
+      translated: amount * rate,
       rateUsed: rate,
       rateType,
     };
   }
 
+  /**
+   * Average rate over a period's calendar year. Throws MissingFXRateError
+   * when the pair has no rates at all, or no rates in the requested year —
+   * silently substituting another period's rate is a misstatement.
+   */
   static getAverageRate(from: string, to: string, period?: string): number {
+    assertCurrency(from, 'from');
+    assertCurrency(to, 'to');
+    if (from === to) return 1;
     const key = this.rateKey(from, to);
     const entries = this.rates.get(key) ?? [];
-    if (entries.length === 0) return 0;
+    if (entries.length === 0) {
+      throw new MissingFXRateError(from, to, period, 'average rate');
+    }
 
     let filtered = entries;
     if (period) {
@@ -117,7 +275,9 @@ export class FXEngine {
       filtered = entries.filter((e) => e.date.startsWith(year));
     }
 
-    if (filtered.length === 0) return entries![entries.length - 1]!.rate;
+    if (filtered.length === 0) {
+      throw new MissingFXRateError(from, to, period, 'average rate: no rates in requested year');
+    }
     const sum = filtered.reduce((acc, e) => acc + e.rate, 0);
     return sum / filtered.length;
   }
@@ -128,21 +288,67 @@ export class FXEngine {
     currentRate: number,
     historicalRate: number
   ): number {
-    if (!Number.isFinite(baseAmount) || !Number.isFinite(functionalAmount)) return 0;
+    if (!Number.isFinite(baseAmount)) {
+      throw new InvalidFinancialInputError('baseAmount', baseAmount, 'must be finite');
+    }
+    if (!Number.isFinite(functionalAmount)) {
+      throw new InvalidFinancialInputError('functionalAmount', functionalAmount, 'must be finite');
+    }
+    if (!Number.isFinite(currentRate) || !Number.isFinite(historicalRate)) {
+      throw new InvalidFinancialInputError(
+        'rate',
+        { currentRate, historicalRate },
+        'must be finite'
+      );
+    }
     const translatedAtCurrent = baseAmount * currentRate;
     const translatedAtHistorical = baseAmount * historicalRate;
     return translatedAtCurrent - translatedAtHistorical;
   }
 
+  /**
+   * Bulk-loads rates from an exchange feed. Every record must carry an
+   * explicit currency pair and effective date — defaulting a missing date to
+   * "today" silently files the rate under the wrong period (F-0001 class).
+   * Invalid records abort the load before any partial state is written.
+   */
   static loadRates(rates: ExchangeRate[]): void {
-    for (const r of rates) {
-      this.setRate(
-        r.fromCurrency ?? 'USD',
-        r.toCurrency ?? 'EUR',
-        r.rate,
-        r.effectiveDate ?? new Date().toISOString(),
-        'api'
-      );
+    if (!Array.isArray(rates)) {
+      throw new InvalidFinancialInputError('rates', rates, 'must be an array');
+    }
+    // Validate everything first: a bulk load must be all-or-nothing.
+    const validated: FXRateEntry[] = rates.map((r, index) => {
+      if (!r.fromCurrency || !r.toCurrency) {
+        throw new InvalidFinancialInputError(
+          `rates[${index}]`,
+          { from: r.fromCurrency, to: r.toCurrency },
+          'currency pair is required'
+        );
+      }
+      if (!r.effectiveDate) {
+        throw new InvalidFinancialInputError(
+          `rates[${index}].effectiveDate`,
+          r.effectiveDate,
+          'effective date is required; refusing to default to today'
+        );
+      }
+      if (!Number.isFinite(r.rate) || r.rate <= 0) {
+        throw new InvalidFinancialInputError(
+          `rates[${index}].rate`,
+          r.rate,
+          'must be a positive finite number'
+        );
+      }
+      return {
+        from: r.fromCurrency,
+        to: r.toCurrency,
+        rate: r.rate,
+        date: normalizeDate(r.effectiveDate, `rates[${index}].effectiveDate`),
+        source: 'api' as const,
+      };
+    });
+    for (const entry of validated) {
+      this.setRate(entry.from, entry.to, entry.rate, entry.date, entry.source);
     }
   }
 
@@ -205,12 +411,15 @@ export class FXEngine {
    * This captures the equity impact of exchange rate changes.
    */
   static calculateCTA(amount: number, currentRate: number, historicalRate: number): number {
-    if (
-      !Number.isFinite(amount) ||
-      !Number.isFinite(currentRate) ||
-      !Number.isFinite(historicalRate)
-    ) {
-      return 0;
+    if (!Number.isFinite(amount)) {
+      throw new InvalidFinancialInputError('amount', amount, 'must be finite');
+    }
+    if (!Number.isFinite(currentRate) || !Number.isFinite(historicalRate)) {
+      throw new InvalidFinancialInputError(
+        'rate',
+        { currentRate, historicalRate },
+        'must be finite'
+      );
     }
     return amount * (currentRate - historicalRate);
   }
@@ -257,7 +466,11 @@ export class FXEngine {
         rateType,
         rateUsed,
         translatedAmount: translated,
-        ctaAdjustment: acct.category === 'non-monetary' ? 0 : cta,
+        // ASC 830 (F-0007): CTA captures the translation effect on the NET
+        // ASSET position. Income/expense lines are translated at the average
+        // rate and must NOT carry CTA; non-monetary items are translated at
+        // the historical rate, so their CTA is zero by construction.
+        ctaAdjustment: acct.category === 'monetary' ? cta : 0,
       };
     });
   }

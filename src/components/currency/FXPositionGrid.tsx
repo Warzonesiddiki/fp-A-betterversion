@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { FXEngine } from '@/engines/FXEngine';
+import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { TrendingUp, TrendingDown, Eye, EyeOff, AlertTriangle, BarChart3 } from 'lucide-react';
 import { CURRENCIES, formatMoney } from './constants';
@@ -90,13 +90,28 @@ export function FXPositionGrid() {
     return map;
   }, [storeRates]);
 
-  const exposure = useMemo(() => {
+  // F-0001: positions whose FX rate is missing are EXCLUDED from translated
+  // values and reported via a blocking banner. The old code silently valued
+  // them at their LOCAL amount as if it were USD (`rate > 0 ? ... : netLocal`).
+  const exposureResult = useMemo(() => {
     const net = new Map<string, { long: number; short: number; net: number; usdValue: number }>();
+    const missingRates: string[] = [];
     for (const p of positions) {
       const key = `${p.entityCurrency}_${p.currency}`;
-      const rate = ratesMap.get(key) ?? FXEngine.getRate(p.entityCurrency, p.currency);
+      let rate = ratesMap.get(key);
+      if (rate === undefined) {
+        try {
+          rate = FXEngine.getRate(p.entityCurrency, p.currency);
+        } catch (e) {
+          if (e instanceof MissingFXRateError) {
+            if (!missingRates.includes(key)) missingRates.push(key);
+            continue;
+          }
+          throw e;
+        }
+      }
       const netLocal = p.longAmount - p.shortAmount;
-      const usdValue = rate > 0 ? netLocal * rate : netLocal;
+      const usdValue = netLocal * rate;
       const existing = net.get(p.currency) ?? { long: 0, short: 0, net: 0, usdValue: 0 };
       existing.long += p.longAmount;
       existing.short += p.shortAmount;
@@ -104,11 +119,14 @@ export function FXPositionGrid() {
       existing.usdValue += usdValue;
       net.set(p.currency, existing);
     }
-    return Array.from(net.entries())
+    const rows = Array.from(net.entries())
       .map(([currency, data]) => ({ currency, ...data }))
       .filter((e) => !hideZero || e.net !== 0)
       .sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
+    return { rows, missingRates };
   }, [positions, ratesMap, hideZero]);
+  const exposure = exposureResult.rows;
+  const missingRatePairs = exposureResult.missingRates;
 
   const totals = useMemo(() => {
     const totalLong = exposure.reduce((s, e) => s + e.long, 0);
@@ -145,6 +163,17 @@ export function FXPositionGrid() {
           )}
         </Button>
       </div>
+
+      {missingRatePairs.length > 0 && (
+        <div
+          role="alert"
+          className="rounded-md border border-amber-500 bg-amber-50 dark:bg-amber-950/40 p-3 text-sm text-amber-800 dark:text-amber-300"
+        >
+          {missingRatePairs.length} position(s) excluded from translated values: no FX rate for{' '}
+          {missingRatePairs.map((k) => k.replace('_', '→')).join(', ')}. Load the missing rates to
+          include them — untranslated amounts are never shown as USD.
+        </div>
+      )}
 
       <div className="grid grid-cols-4 gap-4">
         <Card>

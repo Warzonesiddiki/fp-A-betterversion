@@ -1,199 +1,89 @@
 #!/bin/sh
-# <!-- SHIPPED v0.3 — Atlas 2026-06-17 — Gate 10 CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68 CATCH-NUMBERING-COLLISION PREVENTION) -->
-# =============================================================================
-# FinPlan Pro — pre-push hook
-# See docs/drafts/atlas/husky-timeout-fix.md for the IC-1 root cause + the
-# 240s rationale. Each gate is wrapped in `timeout 240` so a single hung
-# process cannot stall the developer's terminal indefinitely.
-# Cross-link: docs/drafts/atlas/ON_CALL_RUNBOOK.md IC-1 (husky hang) and
-# IC-5 (push timeout). The 240s ceiling matches git's own default push-timeout.
-# =============================================================================
+# FinPlan Pro — pre-push quality gates (rewritten per F-0024).
+# Every gate is a real product check with a hard failure. The previous
+# version was structurally inert (non-executable hooks, missing husky
+# install, ignore-scripts=true in .npmrc) and spent most of its runtime on
+# ceremonial checks; those are deleted.
+#
+# EXCEPTION: Gate 10 (CASCADE-HOLD-BUNDLE) is retained per
+# docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md and is verified by
+# .github/workflows/cascade-hold-check.yml on every PR. The first F-0024
+# revision deleted it and broke that CI contract; it is restored here as a
+# HARD BLOCK per spec §2 (escalation date 2026-06-21 EOD has passed).
+set -e
 
-. "$(dirname -- "$0")/_/husky.sh"
+echo "pre-push: running quality gates (tsc, eslint, focused tests, build)"
 
-echo "Running pre-push checks (240s ceiling per gate)..."
+# Gate 1: TypeScript.
+echo "→ tsc --noEmit"
+node ./node_modules/typescript/bin/tsc --noEmit
 
-# Gate 1 — TypeScript (use direct node call to avoid mingw tsc wrapper issue)
-timeout 240 node ./node_modules/typescript/bin/tsc --noEmit || { echo "❌ TypeScript check failed (or timed out at 240s). Push blocked."; exit 1; }
+# Gate 2: ESLint (zero warnings, matches CI).
+echo "→ eslint src --max-warnings 0"
+npx eslint src --max-warnings 0
 
-# Gate 2 — ESLint (zero-warnings, matches CI)
-timeout 240 npx eslint src --max-warnings 0 || { echo "❌ ESLint check failed (or timed out at 240s). Push blocked."; exit 1; }
-
-# Gate 3 — Vitest unit suite (8,334+ tests, 80 GiB heap per package.json)
-# Use a focused subset of security-critical test paths so the gate
-# finishes within the 240s ceiling on cold-cache / low-memory dev
-# laptops. The full suite (npm test) is gated in CI; the pre-push
-# hook here is a fast-fail sentinel for the P0 security fixes
-# (PluginSandbox, dataStore, authStore, ScenarioLocking). The full
-# suite still runs in `.github/workflows/test-unit.yml` and the
-# nightly `ci.yml` workflow.
-# wcag-aa is intentionally excluded from the focused subset — the
-# axe-core regression suite surfaces real a11y violations that are
-# tracked separately in P1 (see docs/drafts/hera/wcag-aa-violations).
-# Running axe on the full surface area takes 3+ minutes and would
-# time out the 240s pre-push ceiling.
-timeout 240 npx vitest run \
+# Gate 3: Security-critical and financial-invariant test shard.
+# (The full suite runs in CI; this shard covers the audit's P0 fixes within
+# a bounded runtime on developer machines.)
+echo "→ vitest (P0 financial/security shard)"
+npx vitest run \
+  src/engines/FXEngine.test.ts \
+  src/engines/ConsolidationEngine.test.ts \
+  src/engines/SafeMathParser.test.ts \
+  src/store/glValidation.test.ts \
+  src/store/glStore.smoke.test.ts \
+  src/utils/spreadsheetSanitize.test.ts \
+  src/utils/__tests__/masterStorage.security.test.ts \
+  src/components/layout/ \
   src/plugins/ \
-  src/store/authStore.test.ts \
-  src/store/dataStore.test.ts \
-  src/components/ui/ScenarioLocking.test.tsx \
   src/utils/storage/safeJSONStorage.test.ts \
-  src/components/ai/CopilotSidebar.test.tsx \
   --reporter=default \
-  --testTimeout=10000 \
-  || { echo "❌ Vitest failed (or timed out at 240s). Push blocked."; exit 1; }
+  --testTimeout=10000
 
-# Gate 4 — Vite production build (catches build-time-only failures, e.g. tsx-typing in build context)
-timeout 240 npm run build || { echo "❌ Build failed (or timed out at 240s). Push blocked."; exit 1; }
+# Gate 4: Production build (includes tsc + eslint + vite + PWA).
+echo "→ npm run build"
+npm run build
 
-# Gate 5 — NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) — v0.2 (strict-regex)
-# FOUNDER DIRECTIVE 2026-06-16 — closes CATCH #187 (Tyche P0 SHA-MISATTRIBUTION in 81d9cd27).
-# v0.2 UPGRADE (Atlas PICK D, 2026-06-16):
-#   - Strict-regex: SHA must be preceded by marker — `(commit|SHA)[ :]+` or `@` or `: `
-#   - Case-insensitive marker match (git rev-parse accepts both cases)
-#   - Same 7-40 char hex range as v0.1
-# v0.2 TRADE-OFF (precision over recall):
-#   ✅ MATCHES:  "commit 401d68003"  "SHA: 1f353d08"  "@f6c58374"  ": 917630df"
-#   ❌ IGNORED:  "post-815fa5d1"  "slot 019ecbef-..."  bare "d984569a"
-#   Convention: use a marker prefix when citing SHAs in commit messages
-#   to opt into GHOST-SHA verification. Bare 7-char SHAs and UUID fragments
-#   are now ignored to eliminate false positives.
-# Procedure: extract marked SHAs from unpushed commit messages, verify each
-# one exists in `git log --all` via `git rev-parse --verify $sha^{commit}`.
-# If any GHOST SHA found, ABORT push and reconcile.
-# Co-sign: Atlas (infra) + Hephaestus (security) + Mnemosyne (testing) — 3-Muse d0cff090d.
-# 4-Muse consensus (Tyche RULE #53 codification 5efb7e6e) ratified by Leader ACCEPT 4/4.
-# Documentation: docs/codif/RULE_55.md (when codif lands) — see also RULE #53 GHOST-SHA-DETECTION
-# (Leader-side 5th-ICP SHA verification) which is the corresponding pre-ceremony gate.
-# Note: HEAD-skip retained for own commit SHA (HEAD_short and HEAD_full).
-unpushed_shas=$(git log @{u}..HEAD --format='%B' 2>/dev/null \
-  | grep -oiE '((commit|SHA)[ :]+|@|: )[0-9a-f]{7,40}\b' \
-  | grep -oE '[0-9a-f]{7,40}\b' \
-  | sort -u)
-if [ -n "$unpushed_shas" ]; then
-  ghost_count=0
-  for sha in $unpushed_shas; do
-    # Skip our own HEAD SHAs (always valid by definition)
-    head_short=$(git rev-parse --short HEAD 2>/dev/null)
-    head_full=$(git rev-parse HEAD 2>/dev/null)
-    case "$sha" in
-      "$head_short"|"$head_full") continue ;;
-    esac
-    if ! git rev-parse --verify "$sha^{commit}" >/dev/null 2>&1; then
-      echo "⚠️  GHOST SHA detected: $sha (cited in commit message but not in git history)"
-      ghost_count=$((ghost_count + 1))
-    fi
-  done
-  if [ $ghost_count -gt 0 ]; then
-    echo "❌ NEVER-AGAIN RULE #55 violation: $ghost_count GHOST SHA(s) in commit messages."
-    echo "   Procedure: verify the cited SHA, fix the commit message, then re-push."
-    echo "   Note: v0.2 strict-regex only checks SHAs preceded by (commit|SHA)[: ]+ | @ | : ."
-    echo "   Reference: docs/codif/RULE_55.md (NEVER-AGAIN RULE #55)"
-    exit 1
-  fi
-fi
+# Gate 5: Bundle budget.
+echo "→ bundle-check"
+node scripts/bundle-check.js
 
-# Gate 5b - NEVER-AGAIN RULE #55 v0.3 (E.2 DRIFT-REAL + F STALE-NUMBERING-DRIFT + G TASK-ID-UNIQUENESS check) - Atlas 2026-06-16
-# Closes 3 CATCH entries:
-#   CATCH #197 (Stale-SHA-Drift, 4th CASCADE-TRAP variant) -> Sub-class E.2
-#   CATCH #199 (Stale-Numbering-Drift)                    -> Sub-class F (numeric consistency)
-#   CATCH #198 (TASK-ID-COLLISION)                          -> Sub-class G (T-<Muse>-<N> uniqueness)
-# Taxonomy per T-MN-048 v0.5 RATIFIED @ 3547f51e.
-#
-# Sub-class E.2: a SHA is DRIFT-REAL if it exists in git history (passes Gate 5 v0.2 E.1 GHOST check)
-#                but is no longer the canonical/HEAD version of the file it was supposed to reference.
-# Sub-class F:   a .md file makes numerically inconsistent claims about the same metric
-#                (e.g., "0 PARTIAL" in headline but "PARTIAL stays" in body).
-# Sub-class G:   the same T-<MuseCode>-<NUMBER> prefix is used for files describing DIFFERENT topics.
-#
-# Procedure: extract marked SHAs from unpushed commit messages (E.2), then for each SHA:
-#   1. Find the files it touched (git show --name-only)
-#   2. Find the current HEAD of each file (git log -1 --format=%H -- <file>)
-#   3. If the cited SHA is an ancestor of the current HEAD but not the current HEAD itself, it is DRIFT-REAL.
-#   4. For each .md file in the diff, extract numeric claims (F) and check T-ID uniqueness (G).
-# v0.3 is ADVISORY (warn-only, not a hard push blocker) - v0.2 GHOST is the hard gate.
-# The verifier script is self-contained and exits 0 in both PASS and WARN cases.
-# Co-sign: Atlas (infra, RULE #55 coder) - binding commitment from ATLAS_COSIGN_CODIF_41_V0_1.md
-# (1b54c7a8d), Sub-class A 3-witness. Ship target: T-3d 2026-06-19 EOD (Leader PICK URGENT CYCLE 15).
-timeout 240 sh tools/verify-rule-41-e2.sh --verbose || { echo "E.2/F/G verifier failed (or timed out at 240s). Push blocked."; exit 1; }
+# Gate 6: Version consistency across package.json / Cargo.toml / tauri.conf.json / lib.rs.
+echo "→ version consistency"
+node scripts/check-version-consistency.mjs
 
-# Gate 10 - NEVER-AGAIN RULE #68 CATCH-NUMBERING-COLLISION PREVENTION + CASCADE-HOLD-BUNDLE Auto-Detection
-# Atlas + Hephaestus joint DRI, 2026-06-17 (CYCLE 15 PICK A)
-# Closes CATCH #207 #4 (Vesta CASCADE-HOLD-BUNDLE 4/5)
-# 3 detection criteria (OR-logic): multi-T-IDs (A), multi-Co-Authored-By (B), cross-Muse path span (C)
-# Auto-checks docs/security/CASCADE_HOLD_LEDGER.md for CHB-XXX entry
-# BLOCKS push if no ledger entry found (advisory mode in CYCLE 15, hard block from 2026-06-21 EOD)
+# Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
+# CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.
+# Spec: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md (§2: BLOCKED push)
+# CI contract: .github/workflows/cascade-hold-check.yml requires this gate.
+# 3 detection criteria (OR-logic): multi-T-IDs (A), multi-Co-Authored-By (B),
+# cross-Muse path span (C). A candidate commit must have a CHB-XXX entry
+# referencing its short SHA in docs/security/CASCADE_HOLD_LEDGER.md.
+echo "→ gate 10: cascade-hold ledger check"
 unpushed_shas_gate10=$(git log @{u}..HEAD --format='%H' 2>/dev/null || git log --format='%H' -10)
-cascade_hold_detected=0
+cascade_hold_blocked=0
 for sha in $unpushed_shas_gate10; do
-  short_sha=$(git rev-parse --short $sha 2>/dev/null)
+  short_sha=$(git rev-parse --short "$sha" 2>/dev/null || true)
   if [ -z "$short_sha" ]; then continue; fi
-  t_ids=$(git log -1 --format='%B' $sha 2>/dev/null | grep -oE 'T-([A-Z]{2,4})-([0-9]{3})' | sort -u || true)
-  t_id_count=$(echo "$t_ids" | grep -c . 2>/dev/null || echo "0")
-  co_authors=$(git log -1 --format='%B' $sha 2>/dev/null | grep -ciE '^Co-Authored-By:' || echo "0")
-  cross_muse_paths=$(git show --name-only --format='' $sha 2>/dev/null | grep -oE 'docs/(atlas|hephaestus|iris|hermes|mnemosyne|chronos|vesta|tyche|hera|artemis|apollo|themis|strategos|calliope|orchestrator|athena|prometheus|vulcan|sentinel)/' | sort -u | wc -l 2>/dev/null || echo "0")
-  if [ "$t_id_count" -ge 2 ] || [ "$co_authors" -ge 2 ] || [ "$cross_muse_paths" -ge 2 ]; then
-    if [ -f "docs/security/CASCADE_HOLD_LEDGER.md" ] && ! grep -q "CHB.*$short_sha" docs/security/CASCADE_HOLD_LEDGER.md 2>/dev/null; then
-      echo "Gate 10 advisory: $short_sha T-IDs=$t_id_count Co-Authors=$co_authors CrossMuse=$cross_muse_paths; no CHB entry"
-      cascade_hold_detected=$((cascade_hold_detected + 1))
+  t_ids=$(git log -1 --format='%B' "$sha" 2>/dev/null | grep -oE 'T-([A-Z]{2,4})-([0-9]{3})' | sort -u || true)
+  t_id_count=$(printf '%s\n' "$t_ids" | grep -c . || true)
+  co_authors=$(git log -1 --format='%B' "$sha" 2>/dev/null | grep -ciE '^Co-Authored-By:' || true)
+  cross_muse_paths=$(git show --name-only --format='' "$sha" 2>/dev/null | grep -oE 'docs/(atlas|hephaestus|iris|hermes|mnemosyne|chronos|vesta|tyche|hera|artemis|apollo|themis|strategos|calliope|orchestrator|athena|prometheus|vulcan|sentinel)/' | sort -u | wc -l | tr -d '[:space:]' || true)
+  # NOTE: unquoted operands are deliberate — all three counters are guaranteed
+  # single integers by the `|| true`-guarded pipelines above, and the spec
+  # harness (tests/security/HuskyGate10.test.sh group 4) greps these literals.
+  if [ $t_id_count -ge 2 ] || [ $co_authors -ge 2 ] || [ $cross_muse_paths -ge 2 ]; then
+    if [ ! -f "docs/security/CASCADE_HOLD_LEDGER.md" ] || ! grep -q "CHB.*$short_sha" docs/security/CASCADE_HOLD_LEDGER.md 2>/dev/null; then
+      echo "Gate 10 BLOCK: $short_sha CASCADE-HOLD candidate (T-IDs=$t_id_count Co-Authors=$co_authors CrossMuse=$cross_muse_paths), no ledger entry"
+      cascade_hold_blocked=$((cascade_hold_blocked + 1))
     fi
   fi
 done
-if [ $cascade_hold_detected -gt 0 ]; then
-  echo "Gate 10: $cascade_hold_detected candidate(s) without ledger entry (advisory only in CYCLE 15 PICK A, hard block from 2026-06-21 EOD)"
+if [ "$cascade_hold_blocked" -gt 0 ]; then
+  echo "Gate 10: $cascade_hold_blocked CASCADE-HOLD candidate(s) without ledger entry — push BLOCKED"
   echo "   Reference: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md"
   echo "   Procedure: add CHB-XXX entry to docs/security/CASCADE_HOLD_LEDGER.md"
+  exit 1
 fi
 
-
-# Gate 15 - PERSONA-CROSS-COVERAGE (Artemis DRI, Vulcan impl 2026-06-17 CYCLE 14 W2 D2)
-# Closes CATCH #207 #6 (PERSONA-CROSS-COVERAGE missing)
-# Bundled with Vulcan PICK #2 (CAVEMAN PERSIST per RULE #47)
-# 3-tier cadence: 60s push feedback + 24h daily summary + 7d weekly trend
-# 60s tier: Real-time push feedback with persona mention count + missing persona list
-PERSONA_TARGETS=8  # min persona mentions per COSIGN/CODIF/CAVEMAN/A11Y/PERSONA file
-COSIGN_FILES=$(git diff --cached --name-only 2>/dev/null | grep -E "(COSIGN|CODIF|CAVEMAN|A11Y|PERSONA)" || true)
-if [ -z "$COSIGN_FILES" ]; then
-  # Fall back to unpushed commits for CAVEMAN PERSIST scenarios
-  COSIGN_FILES=$(git log @{u}..HEAD --name-only --format='' 2>/dev/null | grep -E "(COSIGN|CODIF|CAVEMAN|A11Y|PERSONA)" | sort -u || true)
-fi
-GATE15_VIOLATIONS=0
-for FILE in $COSIGN_FILES; do
-  if [ ! -f "$FILE" ]; then continue; fi
-  PERSONA_MENTIONS=$(grep -cE "(CFO|Controller|FP&A|Auditor|Operator|Admin|Developer|Compliance_Officer|Persona_[A-Z])" "$FILE" 2>/dev/null || echo "0")
-  if [ "$PERSONA_MENTIONS" -lt "$PERSONA_TARGETS" ]; then
-    MISSING_PERSONAS=$(echo "CFO Controller FP&A Auditor Operator Admin Developer Compliance_Officer" | tr ' ' '\n' | while read p; do
-      if ! grep -q "$p" "$FILE" 2>/dev/null; then echo "$p"; fi
-    done | tr '\n' ',' | sed 's/,$//')
-    echo "HUSKY GATE 15 (60s tier): $FILE has $PERSONA_MENTIONS persona mentions (min: $PERSONA_TARGETS)"
-    echo "   Missing personas: $MISSING_PERSONAS"
-    GATE15_VIOLATIONS=$((GATE15_VIOLATIONS + 1))
-  fi
-done
-if [ $GATE15_VIOLATIONS -gt 0 ]; then
-  echo "Gate 15: $GATE15_VIOLATIONS COSIGN/CODIF/CAVEMAN/A11Y/PERSONA file(s) below $PERSONA_TARGETS persona mentions"
-  echo "   Reference: docs/a11y/HUSKY_GATE_15_PERSONA_CROSS_COVERAGE.md"
-  echo "   Procedure: add persona references OR escalate to A11Y_READINESS v0.7 cross-witness deepening"
-  # T-1d 2026-06-21 EOD HARD BLOCK; until then ADVISORY only
-  echo "   Mode: ADVISORY (until 2026-06-21 EOD), HARD BLOCK from 2026-06-21 EOD"
-fi
-
-# Gate 17 - PRE-COMMIT-TSC-VERIFICATION (NEVER-AGAIN RULE #78)
-# Hephaestus T-2 CYCLE 25, Vulcan (lead) + Hephaestus (impl) 2026-06-17
-# CASCADE-TRAP class V (TSC-FALSIFIED-CLAIM) prevention
-# Delegates to scripts/husky/pre-push-17.sh (canonical TSC + claim verification)
-if [ -f scripts/husky/pre-push-17.sh ]; then
-  echo "→ Gate 17"
-  sh scripts/husky/pre-push-17.sh
-fi
-
-# Gate 18 - DESIGNTOKEN ENFORCEMENT (NEVER-AGAIN RULE #118)
-# Hephaestus T-18 PATCH 19+ COMPLETION, 2026-06-18 (CYCLE 25)
-# CASCADE-TRAP class VI (hex-literal WCAG regression) prevention
-# Delegates to scripts/husky/pre-push-18.sh (canonical hex-literal grep)
-if [ -f scripts/husky/pre-push-18.sh ]; then
-  echo "→ Gate 18"
-  sh scripts/husky/pre-push-18.sh
-fi
-
-echo "All pre-push checks passed."
+echo "✓ pre-push gates passed"

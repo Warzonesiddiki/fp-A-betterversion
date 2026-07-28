@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { GLEntry } from '@/types';
+import { MissingFXRateError } from './FXEngine';
+import { toCents } from '@/utils/money';
 
 // =============================================================================
 // CONSOLIDATION ENGINE — ASC 810 Compliant
@@ -111,6 +112,14 @@ export interface ConsolidationWorksheet {
   imbalanceAmount: number;
 }
 
+/** A single blocking consolidation failure, surfaced to the user (F-0003). */
+export interface ConsolidationFailure {
+  stage: string;
+  message: string;
+  entityId?: string;
+  cause?: string;
+}
+
 export interface ConsolidatedResult {
   consolidatedEntries: GLEntry[];
   eliminations: EliminationEntry[];
@@ -127,6 +136,35 @@ export interface ConsolidatedResult {
   isBalanced: boolean;
   imbalanceAmount: number;
   worksheet: ConsolidationWorksheet;
+  /**
+   * F-0003: 'failed' means one or more stages threw. A failed result NEVER
+   * claims isBalanced. UI must render a blocking failure state, not a clean
+   * zero report.
+   */
+  status: 'success' | 'failed';
+  errors: ConsolidationFailure[];
+  /**
+   * F-0009: balance tolerance applied, in cents of the reporting currency.
+   * Default 0 = cent-exact. Disclosed here so reports can print it.
+   */
+  balanceToleranceCents: number;
+}
+
+/**
+ * Thrown by consolidateOrThrow when any consolidation stage fails.
+ * Carries stage/entity/cause context (F-0003).
+ */
+export class ConsolidationFailedError extends Error {
+  readonly failures: ConsolidationFailure[];
+
+  constructor(failures: ConsolidationFailure[]) {
+    super(
+      `Consolidation failed (${failures.length} blocking issue(s)): ` +
+        failures.map((f) => `[${f.stage}] ${f.message}`).join('; ')
+    );
+    this.name = 'ConsolidationFailedError';
+    this.failures = failures;
+  }
 }
 
 export interface FXRate {
@@ -192,8 +230,12 @@ export class ConsolidationEngine {
     icPairs: ICPair[] = [],
     fxRates: FXRate[] = [],
     adjustments: ConsolidationAdjustment[] = [],
-    vieNotifications: VIENotification[] = []
+    vieNotifications: VIENotification[] = [],
+    options: { balanceToleranceCents?: number } = {}
   ): ConsolidatedResult {
+    // F-0009: default is cent-exact (0 cents tolerance). Callers needing a
+    // tolerance must pass it explicitly; it is disclosed on the result.
+    const balanceToleranceCents = options.balanceToleranceCents ?? 0;
     // Input validation
     if (!Array.isArray(entities)) {
       throw new Error('entities must be an array');
@@ -202,7 +244,11 @@ export class ConsolidationEngine {
       throw new Error('ownerships must be an array');
     }
     if (entities.length === 0) {
-      return this.emptyResult();
+      // F-0003: a neutral empty result must not claim to be balanced.
+      return this.failedResult(
+        [{ stage: 'validation', message: 'No entities provided for consolidation' }],
+        balanceToleranceCents
+      );
     }
     for (const entity of entities) {
       if (!entity.entityId || typeof entity.entityId !== 'string') {
@@ -319,9 +365,13 @@ export class ConsolidationEngine {
       );
 
       // Step 13: Verify balance (Assets + Liabilities + Equity + Minority Interest = 0)
-      // Liabilities and equity are stored as negative (credit) balances
+      // Liabilities and equity are stored as negative (credit) balances.
+      // F-0009: cent-exact by default (no hardcoded hidden $0.01 slack);
+      // imbalance is rounded to cents before comparing to the tolerance.
       const balanceCheck = totalAssets + totalLiabilities + totalEquity + totalMinorityInterest;
-      const isBalanced = Math.abs(balanceCheck) < 0.01;
+      // Exact cents via the canonical money primitive (F-0006/F-0009).
+      const imbalanceCents = toCents(balanceCheck);
+      const isBalanced = Math.abs(imbalanceCents) <= balanceToleranceCents;
       const imbalanceAmount = balanceCheck;
 
       // Step 14: Calculate total goodwill
@@ -362,10 +412,49 @@ export class ConsolidationEngine {
         isBalanced,
         imbalanceAmount,
         worksheet,
+        status: 'success',
+        errors: [],
+        balanceToleranceCents,
       };
     } catch (error) {
-      return this.emptyResult();
+      // F-0003: NEVER return a balanced zero result after an exception.
+      // Aggregate a blocking, user-visible failure list instead.
+      const stage =
+        error instanceof MissingFXRateError
+          ? 'fx-translation'
+          : error instanceof Error && error.name === 'InvalidFinancialInputError'
+            ? 'validation'
+            : 'consolidation';
+      const failure: ConsolidationFailure = {
+        stage,
+        message: error instanceof Error ? error.message : String(error),
+        cause: error instanceof Error ? error.name : typeof error,
+      };
+      return this.failedResult([failure], balanceToleranceCents);
     }
+  }
+
+  /**
+   * Strict variant: consolidates and throws ConsolidationFailedError when
+   * any stage failed or the result does not balance within the configured
+   * tolerance. For callers that must not continue with a failed result.
+   */
+  static consolidateOrThrow(
+    ...args: Parameters<typeof ConsolidationEngine.consolidate>
+  ): ConsolidatedResult {
+    const result = ConsolidationEngine.consolidate(...args);
+    if (result.status === 'failed') {
+      throw new ConsolidationFailedError(result.errors);
+    }
+    if (!result.isBalanced) {
+      throw new ConsolidationFailedError([
+        {
+          stage: 'balance-check',
+          message: `Consolidated statements do not balance. Imbalance: ${result.imbalanceAmount.toFixed(2)}`,
+        },
+      ]);
+    }
+    return result;
   }
 
   /**
@@ -386,7 +475,11 @@ export class ConsolidationEngine {
     const visited = new Set<string>();
 
     while (queue.length > 0) {
-      const { entityId, currentPct } = queue.shift()!;
+      const item = queue.shift()!;
+      // Cycle guard: a cyclic ownership graph must not loop forever.
+      if (visited.has(item.entityId)) continue;
+      visited.add(item.entityId);
+      const { entityId, currentPct } = item;
 
       // Find direct children
       const directOwnerships = ownerships.filter((o) => o.parentId === entityId);
@@ -418,7 +511,6 @@ export class ConsolidationEngine {
     const effectiveOwnerships =
       effectiveMap ?? this.calculateEffectiveOwnership(rootParentId, ownerships);
     const entityLookup = new Map(entities.map((e) => [e.entityId, e]));
-    const rootEntity = entityLookup.get(rootParentId);
 
     const buildNode = (entityId: string, ownershipPct: number): EntityHierarchyNode => {
       const entity = entityLookup.get(entityId);
@@ -527,12 +619,6 @@ export class ConsolidationEngine {
     effectiveOwnershipMap?: Map<string, number>
   ): MinorityInterestDetail[] {
     const details: MinorityInterestDetail[] = [];
-    const rootParentId =
-      subsidiaries.length > 0
-        ? effectiveOwnershipMap
-          ? Array.from(effectiveOwnershipMap.keys())[0]
-          : undefined
-        : undefined;
 
     // Use effective ownership map if provided, otherwise default to direct ownership for simple cases
     const effMap = effectiveOwnershipMap ?? new Map();
@@ -617,7 +703,6 @@ export class ConsolidationEngine {
       const fairValueAdjustments = 0; // Would need fair value data
 
       // Goodwill = Acquisition Cost - (Book Value × Ownership %) - Fair Value Adjustments
-      const impliedValue = ownership.acquisitionCost / (ownership.ownershipPct / 100);
       const goodwill =
         ownership.acquisitionCost -
         ownership.bookValueAtAcquisition * (ownership.ownershipPct / 100) -
@@ -694,8 +779,27 @@ export class ConsolidationEngine {
   /**
    * Translate foreign subsidiaries — ASC 830
    */
+  /**
+   * Translate foreign subsidiaries — ASC 830.
+   * F-0001/F-0003: a missing rate NEVER falls back to 1 (silent misstatement)
+   * and foreign entities are NEVER silently left untranslated. Missing rates
+   * throw MissingFXRateError with entity/account context; callers aggregate
+   * them into the blocking failure list on the result.
+   */
   static translateForeignSubsidiaries(entities: EntityData[], fxRates: FXRate[]): EntityData[] {
-    if (fxRates.length === 0) return entities;
+    const foreignEntities = entities.filter((e) => e.isForeign && e.currency !== 'USD');
+    if (fxRates.length === 0) {
+      if (foreignEntities.length > 0) {
+        throw new MissingFXRateError(
+          foreignEntities[0]!.currency,
+          'USD',
+          undefined,
+          `fx-translation: no FX rates loaded but ${foreignEntities.length} foreign ` +
+            `entity(ies) require translation (${foreignEntities.map((e) => e.entityId).join(', ')})`
+        );
+      }
+      return entities;
+    }
 
     const rateMap = new Map<string, FXRate>();
     for (const rate of fxRates) {
@@ -713,27 +817,49 @@ export class ConsolidationEngine {
       const averageRate = rateMap.get(`${entity.currency}:USD:average`);
       const historicalRate = rateMap.get(`${entity.currency}:USD:historical`);
 
-      if (!closingRate && !averageRate && !historicalRate) return entity;
+      if (!closingRate && !averageRate && !historicalRate) {
+        throw new MissingFXRateError(
+          entity.currency,
+          'USD',
+          undefined,
+          `fx-translation: entity ${entity.entityId} has no spot/average/historical rates`
+        );
+      }
 
       const translatedEntries = entity.entries.map((entry) => {
         const category = getAccountCategory(entry.accountCode);
-        let rate: number;
+        let rateEntry: FXRate | undefined;
+        let requiredType: 'spot' | 'average' | 'historical';
 
         switch (category) {
           case 'asset':
           case 'liability':
-            rate = closingRate?.rate ?? 1;
+            requiredType = 'spot';
+            rateEntry = closingRate;
             break;
           case 'revenue':
           case 'expense':
-            rate = averageRate?.rate ?? 1;
+            requiredType = 'average';
+            rateEntry = averageRate;
             break;
           case 'equity':
-            rate = historicalRate?.rate ?? 1;
+            requiredType = 'historical';
+            rateEntry = historicalRate;
             break;
           default:
-            rate = closingRate?.rate ?? 1;
+            requiredType = 'spot';
+            rateEntry = closingRate;
         }
+        if (!rateEntry || !Number.isFinite(rateEntry.rate)) {
+          throw new MissingFXRateError(
+            entity.currency,
+            'USD',
+            undefined,
+            `fx-translation: entity ${entity.entityId} account ${entry.accountCode} ` +
+              `requires ${requiredType} rate`
+          );
+        }
+        const rate = rateEntry.rate;
 
         return {
           ...entry,
@@ -822,6 +948,14 @@ export class ConsolidationEngine {
   static validate(result: ConsolidatedResult): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
+    // F-0003: a failed consolidation is never valid, regardless of numbers.
+    if (result.status === 'failed') {
+      for (const failure of result.errors) {
+        errors.push(`Consolidation failed at ${failure.stage}: ${failure.message}`);
+      }
+      return { valid: false, errors };
+    }
+
     // Check balance
     if (!result.isBalanced) {
       errors.push(
@@ -846,9 +980,6 @@ export class ConsolidationEngine {
       if (mi.minorityPct < 0 || mi.minorityPct > 100) {
         errors.push(`Invalid minority percentage for ${mi.entityId}: ${mi.minorityPct}%`);
       }
-      const expectedBalance =
-        (mi.minorityPct / 100) *
-        (mi.netIncome / (mi.minorityPct / 100) - mi.dividends / (mi.minorityPct / 100));
       // Simplified check — the minority interest should be non-zero for non-100% ownership
       if (mi.ownershipPct < 100 && mi.endingBalance === 0) {
         errors.push(
@@ -865,7 +996,15 @@ export class ConsolidationEngine {
 
   // --- Private Helpers ---
 
-  private static emptyResult(): ConsolidatedResult {
+  /**
+   * F-0003: the ONLY neutral result this engine produces is a FAILED result.
+   * It never reports isBalanced: true on zeros. Callers/UI must render the
+   * blocking failure list, not a clean empty report.
+   */
+  private static failedResult(
+    failures: ConsolidationFailure[],
+    balanceToleranceCents = 0
+  ): ConsolidatedResult {
     return {
       consolidatedEntries: [],
       eliminations: [],
@@ -879,7 +1018,7 @@ export class ConsolidationEngine {
       totalExpenses: 0,
       netIncome: 0,
       goodwill: 0,
-      isBalanced: true,
+      isBalanced: false,
       imbalanceAmount: 0,
       worksheet: {
         parentEntries: [],
@@ -895,9 +1034,12 @@ export class ConsolidationEngine {
         totalRevenue: 0,
         totalExpenses: 0,
         netIncome: 0,
-        isBalanced: true,
+        isBalanced: false,
         imbalanceAmount: 0,
       },
+      status: 'failed',
+      errors: failures,
+      balanceToleranceCents,
     };
   }
 
