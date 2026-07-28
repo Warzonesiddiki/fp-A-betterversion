@@ -4,7 +4,8 @@ import { lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
 import LoadingScreen from './components/ui/LoadingScreen';
-import { ErrorBoundary, AsyncErrorBoundary } from './components/ui';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { AsyncErrorBoundary } from './components/ui/AsyncErrorBoundary';
 import {
   RouteGroupErrorBoundary,
   RouteSkeleton,
@@ -108,6 +109,7 @@ const FairValuePage = lazy(() => import('./pages/audit/FairValuePage') as any);
 const ImpairmentPage = lazy(() => import('./pages/audit/ImpairmentPage') as any);
 const SegmentReportingPage = lazy(() => import('./pages/reports/SegmentReportingPage') as any);
 const DashboardBuilderPage = lazy(() => import('./pages/analytics/DashboardBuilderPage') as any);
+const PivotExplorerPage = lazy(() => import('./pages/analytics/PivotExplorerPage') as any);
 const DebugPage = lazy(() => import('./pages/admin/DebugPage') as any);
 const PluginMarketplacePage = lazy(() => import('./pages/plugins/PluginMarketplacePage') as any);
 
@@ -181,6 +183,7 @@ const SettingsPage = lazy(() => import('./pages/settings/SettingsPage') as any);
 const UserManagementPage = lazy(() => import('./pages/settings/UserManagementPage') as any);
 const ProfilePage = lazy(() => import('./pages/ProfilePage') as any);
 const HelpPage = lazy(() => import('./pages/HelpPage') as any);
+const ApiReferencePage = lazy(() => import('./pages/docs/ApiReferencePage') as any);
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage') as any);
 const DrillDownWindowPage = lazy(() => import('./pages/DrillDownWindowPage') as any);
 
@@ -453,6 +456,7 @@ export default function App() {
                 <Route path="/analytics/benchmarking" element={<BenchmarkingPage />} />
                 <Route path="/analytics/goal-seek" element={<GoalSeekPage />} />
                 <Route path="/analytics/dashboard-builder" element={<DashboardBuilderPage />} />
+                <Route path="/analytics/pivot-explorer" element={<PivotExplorerPage />} />
                 <Route path="/ai" element={<AIIntelligencePage />} />
               </Route>
 
@@ -614,6 +618,7 @@ export default function App() {
                 <Route path="/settings/users" element={<UserManagementPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/help" element={<HelpPage />} />
+                <Route path="/docs/api" element={<ApiReferencePage />} />
               </Route>
             </Route>
 

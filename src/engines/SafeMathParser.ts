@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // SAFEMATHPARSER — Bulletproof recursive descent math expression parser
@@ -79,7 +80,7 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return args[0]! % args[1]!;
   },
   INT: (args) => Math.floor(args[0]!),
-  SUM: (args) => args.reduce((a, b) => a + b, 0),
+  SUM: (args) => args.reduce((a, b) => new Decimal(a).plus(b).toNumber(), 0),
   AVG: (args) => (args.length === 0 ? 0 : args.reduce((a, b) => a + b, 0) / args.length),
   AVERAGE: (args) => (args.length === 0 ? 0 : args.reduce((a, b) => a + b, 0) / args.length),
   COUNT: (args) => args.length,
@@ -2114,7 +2115,10 @@ class Parser {
     while (this.current().type === 'plus' || this.current().type === 'minus') {
       const op = this.advance();
       const right = this.parseMulDiv();
-      left = op.type === 'plus' ? left + right : left - right;
+      left =
+        op.type === 'plus'
+          ? new Decimal(left).plus(right).toNumber()
+          : new Decimal(left).minus(right).toNumber();
     }
     this.leave();
     return left;
@@ -2133,20 +2137,20 @@ class Parser {
       const right = this.parsePower();
       switch (op.type) {
         case 'star':
-          left = left * right;
+          left = new Decimal(left).times(right).toNumber();
           break;
         case 'slash':
           if (right === 0) {
             left = 0; // Division by zero returns 0 per financial convention
           } else {
-            left = left / right;
+            left = new Decimal(left).dividedBy(right).toNumber();
           }
           break;
         case 'percent':
           if (right === 0) {
             left = NaN;
           } else {
-            left = left % right;
+            left = new Decimal(left).modulo(right).toNumber();
           }
           break;
       }
@@ -2163,7 +2167,7 @@ class Parser {
       this.advance();
       const right = this.parsePower(); // Right-associative
       this.leave();
-      return Math.pow(left, right);
+      return new Decimal(left).pow(right).toNumber();
     }
     this.leave();
     return left;

@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "scenario": "chaos-storage-quota-fill",
+    "setupMB": 4.72265625,
+    "writeSuccess": false,
+    "caughtError": "QuotaExceededError: The 5000000-code unit storage quota has been exceeded.",
+    "recoveryTimeMs": 0,
+    "userNotified": false,
+    "dataLoss": false,
+    "passed": false,
+    "target": "QuotaExceededError caught, no uncaught throw",
+    "serviceFile": "src/workers/storage.worker.ts",
+    "serviceLineRef": "See storage.worker.ts:21-66 (try/catch wrapping postMessage)"
+  },
+  {
+    "scenario": "chaos-storage-critical-save-fail",
+    "setupMB": 0,
+    "writeSuccess": false,
+    "caughtError": "QuotaExceededError: The 5000000-code unit storage quota has been exceeded.",
+    "recoveryTimeMs": 0.84,
+    "userNotified": true,
+    "dataLoss": true,
+    "passed": false,
+    "target": "graceful failure + user notification + no data loss",
+    "serviceFile": "src/utils/masterStorage.ts",
+    "serviceLineRef": "See masterStorage.ts:38-90 (set/get with quota handling)"
+  }
+]

@@ -69,7 +69,7 @@ const BATCH_SIZE_OPTIONS = [
 ];
 
 export function AIIntelligencePage() {
-  const { entries } = useGLStore();
+  const entries = useGLStore((state) => state.entries);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [initialized, setInitialized] = useState(false);

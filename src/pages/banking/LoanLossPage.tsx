@@ -9,7 +9,7 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { DataGrid } from '@/components/ui/DataGrid';
 import { Percent, AlertCircle, Download } from 'lucide-react';
-import { BankingEngine } from '@/engines';
+import { BankingEngine } from '@/engines/BankingEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   BarChart,

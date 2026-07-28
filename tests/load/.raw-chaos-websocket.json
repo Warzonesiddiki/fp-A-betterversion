@@ -5,7 +5,7 @@
     "editsDuringDisconnect": 5,
     "editsReplayedOnReconnect": 5,
     "editOrderPreserved": true,
-    "reconnectTimeMs": 0.33,
+    "reconnectTimeMs": 0.24,
     "dataLoss": false,
     "passed": true,
     "target": "5 queued edits replayed in order, 0 data loss",

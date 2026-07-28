@@ -419,6 +419,7 @@ export function SpreadsheetGrid({
             enableCellTextSelection: true,
             undoRedoCellEditing: true,
             // Virtual scrolling configuration for large datasets
+            rowModelType: 'clientSide',
             suppressRowVirtualisation: false,
             suppressColumnVirtualisation: false,
             rowBuffer: 10,

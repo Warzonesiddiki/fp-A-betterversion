@@ -19,7 +19,7 @@ import {
   Area,
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
-import { YieldCurveEngine, type CurvePoint } from '@/engines';
+import { YieldCurveEngine, type CurvePoint } from '@/engines/YieldCurveEngine';
 import type { GLEntry } from '@/types';
 
 /** Build a yield curve from GL entries by mapping entity account codes to maturities. */

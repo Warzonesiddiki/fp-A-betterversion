@@ -16,7 +16,7 @@ export {
 export { ComboChart } from './ComboChart';
 export { CommandPalette } from './CommandPalette';
 export { CurrencyInput } from './CurrencyInput';
-export { DataGrid } from './DataGrid';
+
 export { DataTable } from './DataTable';
 export { DrillDownModal } from './DrillDownModal';
 export { DriverSlider } from './DriverSlider';
@@ -59,8 +59,10 @@ export { WhatIfSandbox } from './WhatIfSandbox';
 export { ScenarioComparisonGrid } from './ScenarioComparisonGrid';
 export { ScenarioTimeline } from './ScenarioTimeline';
 export { ScenarioLocking } from './ScenarioLocking';
-export { SpreadsheetGrid } from './SpreadsheetGrid';
-export { SheetTabs } from './SheetTabs';
+
+export * from './PivotTable/PivotTable';
+export * from './PivotTable/PivotBuilder';
+
 export { ContextMenu } from './ContextMenu';
 export { CellFormatter } from './CellFormatter';
 export { DragFill } from './DragFill';

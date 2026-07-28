@@ -29,7 +29,7 @@ import {
   Cell,
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
-import { CreditRiskEngine, type Financials } from '@/engines';
+import { CreditRiskEngine, type Financials } from '@/engines/CreditRiskEngine';
 import type { GLEntry } from '@/types';
 
 /** Derive financial ratios from GL entries grouped by entity. */

@@ -33,7 +33,7 @@ import {
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
-import { RealEstateEngine } from '@/engines';
+import { RealEstateEngine } from '@/engines/RealEstateEngine';
 
 // Mock Data for UI structure
 const mockPeriods: FiscalPeriod[] = [

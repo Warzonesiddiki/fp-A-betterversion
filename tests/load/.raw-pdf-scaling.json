@@ -1,34 +1,34 @@
 {
   "hardware": {
-    "cpu": "AMD Ryzen 5 5600G with Radeon Graphics         ",
-    "ram": "15663MB",
-    "os": "win32 x64",
-    "node": "v26.2.0"
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.60GHz",
+    "ram": "3940MB",
+    "os": "linux x64",
+    "node": "v22.22.3"
   },
   "scaling": [
     {
       "rows": 100,
-      "ms": 35.56,
+      "ms": 29.64,
       "pages": 4,
-      "bytes": 118164
+      "bytes": 118147
     },
     {
       "rows": 250,
-      "ms": 88.88,
+      "ms": 72.11,
       "pages": 8,
-      "bytes": 287376
+      "bytes": 287398
     },
     {
       "rows": 500,
-      "ms": 166.37,
+      "ms": 149.73,
       "pages": 16,
-      "bytes": 571296
+      "bytes": 571254
     },
     {
       "rows": 1000,
-      "ms": 320.12,
+      "ms": 297.27,
       "pages": 32,
-      "bytes": 1139127
+      "bytes": 1139149
     }
   ]
 }

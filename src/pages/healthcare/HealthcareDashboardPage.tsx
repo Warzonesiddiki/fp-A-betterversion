@@ -20,7 +20,7 @@ import {
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
-import { HealthcareEngine } from '@/engines';
+import { HealthcareEngine } from '@/engines/HealthcareEngine';
 
 // Mock Data
 const mockPeriods: FiscalPeriod[] = [
