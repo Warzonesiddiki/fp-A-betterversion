@@ -86,13 +86,17 @@ describe('ConsolidationEngine', () => {
   // =========================================================================
 
   describe('consolidate - basic', () => {
-    it('should return empty result for empty entities', () => {
+    it('should return a failed (never falsely balanced) result for empty entities', () => {
+      // F-0003: the old assertion (isBalanced: true on an empty zero result)
+      // certified the error-swallowing defect. Empty input is a blocking
+      // failure with an explicit error list.
       const result = ConsolidationEngine.consolidate([], [], []);
       expect(result.consolidatedEntries).toHaveLength(0);
       expect(result.eliminations).toHaveLength(0);
       expect(result.minorityInterest).toBe(0);
       expect(result.totalEquity).toBe(0);
-      expect(result.isBalanced).toBe(true);
+      expect(result.status).toBe('failed');
+      expect(result.isBalanced).toBe(false);
     });
 
     it('should consolidate a single entity', () => {
@@ -678,9 +682,19 @@ describe('ConsolidationEngine', () => {
         },
       ];
 
-      const result = ConsolidationEngine.translateForeignSubsidiaries(entities, []);
+      // F-0001: no rates loaded + foreign entities → throws MissingFXRateError
+      // instead of silently returning untranslated entities as-is.
+      expect(() => ConsolidationEngine.translateForeignSubsidiaries(entities, [])).toThrow(
+        MissingFXRateError
+      );
 
-      expect(result![0]!.entries[0]!.amount).toBe(10000);
+      // With no foreign entities, an empty rate table is legitimate.
+      const domesticOnly = [
+        { entityId: 'dom', entityName: 'Domestic', currency: 'USD', entries: [] },
+      ];
+      expect(ConsolidationEngine.translateForeignSubsidiaries(domesticOnly, [])).toEqual(
+        domesticOnly
+      );
     });
 
     it('should use different rates for different account categories', () => {
@@ -1231,5 +1245,183 @@ describe('ConsolidationEngine', () => {
       expect(result.minorityInterestDetails).toHaveLength(0);
       expect(result.totalAssets).toBe(70000);
     });
+  });
+});
+
+// =============================================================================
+// F-0003: error swallowing — consolidation must never report balanced zeros
+// after an exception. F-0009: disclosed, cent-exact balance tolerance.
+// =============================================================================
+
+import { ConsolidationFailedError } from './ConsolidationEngine';
+import { MissingFXRateError } from './FXEngine';
+
+describe('F-0003: consolidation failure propagation', () => {
+  it('KAV-05: a foreign entity with no FX rates produces status failed, isBalanced false', () => {
+    const entities = [
+      createParent([createEntry('p1', '1000', 'Cash', 50000, 'parent')]),
+      createSubsidiary(
+        'sub-eur',
+        'Euro Sub',
+        [createEntry('s1', '1000', 'Cash', 20000, 'sub-eur', 'EUR')],
+        true,
+        'EUR'
+      ),
+    ];
+
+    const result = ConsolidationEngine.consolidate(entities, [], []);
+
+    expect(result.status).toBe('failed');
+    expect(result.isBalanced).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors[0]!.stage).toBe('fx-translation');
+    expect(result.errors[0]!.message).toContain('EUR');
+  });
+
+  it('translateForeignSubsidiaries throws MissingFXRateError instead of using rate 1', () => {
+    const entities = [
+      createSubsidiary(
+        'sub-eur',
+        'Euro Sub',
+        [createEntry('s1', '1000', 'Cash', 20000, 'sub-eur', 'EUR')],
+        true,
+        'EUR'
+      ),
+    ];
+    expect(() => ConsolidationEngine.translateForeignSubsidiaries(entities, [])).toThrow(
+      MissingFXRateError
+    );
+  });
+
+  it('missing per-category rate (e.g. no average rate) fails with account context', () => {
+    const entities = [
+      createSubsidiary(
+        'sub-eur',
+        'Euro Sub',
+        [createEntry('s1', '4000', 'Revenue', -5000, 'sub-eur', 'EUR')],
+        true,
+        'EUR'
+      ),
+    ];
+    const fxRates: FXRate[] = [
+      { fromCurrency: 'EUR', toCurrency: 'USD', rate: 1.1, rateType: 'spot' },
+    ];
+    // spot exists but the revenue account needs the missing average rate.
+    expect(() => ConsolidationEngine.translateForeignSubsidiaries(entities, fxRates)).toThrow(
+      /average rate/
+    );
+    const result = ConsolidationEngine.consolidate(entities, [], [], fxRates);
+    expect(result.status).toBe('failed');
+    expect(result.isBalanced).toBe(false);
+  });
+
+  it('a neutral/empty consolidation never claims to be balanced', () => {
+    const result = ConsolidationEngine.consolidate([], []);
+    expect(result.status).toBe('failed');
+    expect(result.isBalanced).toBe(false);
+    expect(result.worksheet.isBalanced).toBe(false);
+    expect(result.errors[0]!.stage).toBe('validation');
+  });
+
+  it('validate() rejects failed results even if numbers were zeroed', () => {
+    const result = ConsolidationEngine.consolidate([], []);
+    const validation = ConsolidationEngine.validate(result);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors.some((e) => e.includes('Consolidation failed'))).toBe(true);
+  });
+
+  it('successful consolidations report status success with an empty error list', () => {
+    const entities = [
+      createParent([
+        createEntry('p1', '1000', 'Cash', 50000, 'parent'),
+        createEntry('p2', '3000', 'Equity', -50000, 'parent'),
+      ]),
+    ];
+    const result = ConsolidationEngine.consolidate(entities, []);
+    expect(result.status).toBe('success');
+    expect(result.errors).toEqual([]);
+    expect(result.isBalanced).toBe(true);
+  });
+
+  it('consolidateOrThrow throws ConsolidationFailedError with stage/cause on failure', () => {
+    const entities = [
+      createParent([createEntry('p1', '1000', 'Cash', 50000, 'parent')]),
+      createSubsidiary(
+        'sub-eur',
+        'Euro Sub',
+        [createEntry('s1', '1000', 'Cash', 20000, 'sub-eur', 'EUR')],
+        true,
+        'EUR'
+      ),
+    ];
+    try {
+      ConsolidationEngine.consolidateOrThrow(entities, []);
+      expect.unreachable('should have thrown');
+    } catch (e) {
+      const err = e as ConsolidationFailedError;
+      expect(err).toBeInstanceOf(ConsolidationFailedError);
+      expect(err.name).toBe('ConsolidationFailedError');
+      expect(err.failures[0]!.stage).toBe('fx-translation');
+      expect(err.failures[0]!.cause).toBe('MissingFXRateError');
+    }
+  });
+
+  it('consolidateOrThrow throws when the consolidated balance sheet does not balance', () => {
+    const entities = [
+      createParent([createEntry('p1', '1000', 'Cash', 50000, 'parent')]), // no equity offset
+    ];
+    expect(() => ConsolidationEngine.consolidateOrThrow(entities, [])).toThrow(
+      ConsolidationFailedError
+    );
+  });
+});
+
+describe('F-0009: balance tolerance', () => {
+  it('is cent-exact by default: a one-cent imbalance fails', () => {
+    const entities = [
+      createParent([
+        createEntry('p1', '1000', 'Cash', 50000.01, 'parent'),
+        createEntry('p2', '3000', 'Equity', -50000, 'parent'),
+      ]),
+    ];
+    const result = ConsolidationEngine.consolidate(entities, []);
+    // imbalance = +0.01 → 1 cent → exceeds the default 0-cent tolerance
+    expect(result.isBalanced).toBe(false);
+    expect(result.balanceToleranceCents).toBe(0);
+  });
+
+  it('explicit tolerance is honored and disclosed', () => {
+    const entities = [
+      createParent([
+        createEntry('p1', '1000', 'Cash', 50000.01, 'parent'),
+        createEntry('p2', '3000', 'Equity', -50000, 'parent'),
+      ]),
+    ];
+    const result = ConsolidationEngine.consolidate(entities, [], [], [], [], [], {
+      balanceToleranceCents: 1,
+    });
+    expect(result.isBalanced).toBe(true);
+    expect(result.balanceToleranceCents).toBe(1);
+  });
+});
+
+describe('KAV-06: effective ownership math', () => {
+  it('A owns 80% of B; B owns 50% of C → effective A→C ownership is 40%', () => {
+    const ownerships = [createOwnership('A', 'B', 80), createOwnership('B', 'C', 50)];
+    const map = ConsolidationEngine.calculateEffectiveOwnership('A', ownerships);
+    expect(map.get('A')).toBe(100);
+    expect(map.get('B')).toBe(80);
+    expect(map.get('C')).toBeCloseTo(40, 10);
+  });
+
+  it('multiple paths accumulate effective ownership', () => {
+    const ownerships = [
+      createOwnership('A', 'B', 80),
+      createOwnership('A', 'C', 10),
+      createOwnership('B', 'C', 50),
+    ];
+    const map = ConsolidationEngine.calculateEffectiveOwnership('A', ownerships);
+    // 10% direct + 80%*50% via B = 10 + 40 = 50
+    expect(map.get('C')).toBeCloseTo(50, 10);
   });
 });
