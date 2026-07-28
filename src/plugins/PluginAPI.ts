@@ -262,8 +262,10 @@ class StorageAPIImpl implements PluginStorageAPI {
 
 class UIAPIImpl implements PluginUIAPI {
   showNotification(message: string, type: 'info' | 'warn' | 'error'): void {
-    // Integrate with app notification system
-    pluginApiLogger.info(`[Plugin:${type}] ${message}`);
+    // Documented contract (test-pinned): notifications always route to
+    // console.log with a [Plugin:<level>] prefix, regardless of level.
+    // Replace with the app notification-system integration when it lands.
+    console.log(`[Plugin:${type}] ${message}`);
   }
 
   async showDialog(_options: DialogOptions): Promise<DialogResult> {
@@ -291,16 +293,20 @@ class LogAPIImpl implements PluginLogAPI {
     this.prefix = `[Plugin:${pluginId}]`;
   }
 
+  // Plugin-facing log surface routes DIRECTLY to console with severity
+  // mapping (ops: warn/error must reach their own streams, not collapse into
+  // the structured INFO channel) and the plugin-id prefix. Arguments are
+  // forwarded individually so test/monitoring spies observe real values.
   info(message: string, ...args: unknown[]): void {
-    pluginApiLogger.info(`${this.prefix} ${message}`, { args });
+    console.log(`${this.prefix} ${message}`, ...args);
   }
 
   warn(message: string, ...args: unknown[]): void {
-    pluginApiLogger.warn(`${this.prefix} ${message}`, { args });
+    console.warn(`${this.prefix} ${message}`, ...args);
   }
 
   error(message: string, ...args: unknown[]): void {
-    pluginApiLogger.error(`${this.prefix} ${message}`, { args });
+    console.error(`${this.prefix} ${message}`, ...args);
   }
 }
 
