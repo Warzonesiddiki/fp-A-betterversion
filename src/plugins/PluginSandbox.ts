@@ -150,7 +150,7 @@ interface SandboxResult<T = unknown> {
  */
 function createSandboxProxy(): Record<string, unknown> {
   const handler: ProxyHandler<Record<string, unknown>> = {
-    get(target, prop) {
+    get(_target, prop) {
       if (typeof prop === 'symbol') return undefined;
       if (BLOCKED_GLOBALS.has(prop)) {
         throw new ReferenceError(`Access to '${prop}' is blocked in plugin sandbox`);

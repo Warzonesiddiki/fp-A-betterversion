@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { BarChart3, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -71,10 +72,10 @@ export default function ProfitLossPage() {
         ['Net Income', formatCurrency(report.netIncome)],
       ],
     };
-    ExportEngine.exportToPDF(data, {
+    void ExportEngine.exportToPDF(data, {
       title: 'Profit & Loss Statement',
       subtitle: `Period ending ${period}`,
-    });
+    }).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
@@ -89,7 +90,7 @@ export default function ProfitLossPage() {
         ['Net Income', report.netIncome],
       ],
     };
-    ExportEngine.exportToExcel(data, { title: 'Profit_Loss_Statement' });
+    void ExportEngine.exportToExcel(data, { title: 'Profit_Loss_Statement' }).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

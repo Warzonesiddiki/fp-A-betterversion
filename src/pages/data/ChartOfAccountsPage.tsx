@@ -188,7 +188,7 @@ export default function ChartOfAccountsPage() {
   );
 
   const handleToggle = useCallback(
-    (id: string, current: boolean) => {
+    (id: string, _current: boolean) => {
       toggleAccountActive(id);
     },
     [toggleAccountActive]

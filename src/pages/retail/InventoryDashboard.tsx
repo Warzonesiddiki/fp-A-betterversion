@@ -31,6 +31,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -95,7 +96,7 @@ export default function InventoryDashboard() {
   );
 
   const handleExport = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Store', 'Revenue', 'COGS', 'Gross Profit', 'Inventory Value'],
         rows: storeBreakdown.map((s) => [
@@ -107,7 +108,7 @@ export default function InventoryDashboard() {
         ]),
       },
       { title: 'Inventory_Dashboard' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

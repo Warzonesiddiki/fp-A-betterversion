@@ -15,6 +15,7 @@ import {
 } from '@/components/reports/FinancialStatementTemplates';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { FileText, Download, ChevronDown } from 'lucide-react';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 type StatementType = 'pl' | 'bs' | 'cf' | 'bva';
 
@@ -190,12 +191,12 @@ export default function FinancialStatementTemplatesPage() {
       entries.length > 0 ? [['GL Data', String(entries.length) + ' entries']] : [['No data', '']];
 
     if (format === 'pdf') {
-      ExportEngine.exportToPDF({ headers, rows }, { title: statement.label });
+      void ExportEngine.exportToPDF({ headers, rows }, { title: statement.label }).catch(reportExportFailure);
     } else if (format === 'excel') {
-      ExportEngine.exportToExcel(
+      void ExportEngine.exportToExcel(
         { headers, rows },
         { title: statement.label.replace(/\s+/g, '_') }
-      );
+      ).catch(reportExportFailure);
     }
 
     createReport({

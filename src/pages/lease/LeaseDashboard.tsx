@@ -31,6 +31,7 @@ import {
   Line,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -160,7 +161,7 @@ export default function LeaseDashboard() {
   ];
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Property', 'Type', 'Monthly Payment', 'Liability', 'End Date', 'Status'],
         rows: mockLeases.map((l) => [
@@ -173,7 +174,7 @@ export default function LeaseDashboard() {
         ]),
       },
       { title: 'Lease Portfolio Dashboard' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0 && glLeaseTotal === 0) {

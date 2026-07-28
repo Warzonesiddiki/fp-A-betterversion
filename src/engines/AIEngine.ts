@@ -79,10 +79,27 @@ export class AIEngine {
   private static classifier: PipelineInstance | null = null;
   private static extractor: PipelineInstance | null = null;
   private static device: AIDevice = 'unknown';
+  // De-duplicates concurrent initialization. `detectAnomalies` classifies a
+  // batch with `Promise.all`, so every entry in the first batch calls
+  // `classifyTransaction` -> `init()` before any of them has assigned
+  // `this.classifier`. Without this guard each one starts its own model load,
+  // multiplying network/GPU work and — because the loads race — leaving some
+  // callers to fail with "All devices failed to initialize classifier".
+  private static initPromise: Promise<void> | null = null;
 
   static async init(onProgress?: (progress: number) => void) {
     if (this.classifier) return;
+    if (this.initPromise) return this.initPromise;
 
+    this.initPromise = this.initOnce(onProgress);
+    try {
+      await this.initPromise;
+    } finally {
+      this.initPromise = null;
+    }
+  }
+
+  private static async initOnce(onProgress?: (progress: number) => void) {
     await loadTransformers();
 
     // Try WebGPU first, fall back to WASM

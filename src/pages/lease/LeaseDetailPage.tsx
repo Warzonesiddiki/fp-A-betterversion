@@ -20,6 +20,7 @@ import {
   Bar,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -203,23 +204,23 @@ export default function LeaseDetailPage() {
   ];
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Month', 'Payment', 'Principal', 'Interest', 'Balance'],
         rows: amortization.map((r) => [r.month, r.payment, r.principal, r.interest, r.balance]),
       },
       { title: `Lease Amortization - ${selectedLease.property}` }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Month', 'Payment', 'Principal', 'Interest', 'Balance'],
         rows: amortization.map((r) => [r.month, r.payment, r.principal, r.interest, r.balance]),
       },
       { title: `Lease_Amortization_${selectedLease.id}` }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0 && glLeaseTotal === 0) {

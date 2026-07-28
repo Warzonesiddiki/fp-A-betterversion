@@ -226,7 +226,7 @@ export class AutoCommentaryEngine {
     ytdActual: number,
     ytdBudget: number,
     fullYearBudget: number,
-    remainingPeriods: number,
+    _remainingPeriods: number,
     drivers?: string[]
   ): string {
     const ytdVariance = ytdActual - ytdBudget;

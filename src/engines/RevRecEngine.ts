@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export interface PerformanceObligation {
   id: string;
   description: string;
@@ -71,7 +70,7 @@ export class RevRecEngine {
     const poRecognitionState = new Map<string, number>(); // poId -> recognizedAmount
     const poCompletionHistory = new Map<string, number[]>(); // poId -> completion metrics per period
 
-    periods.forEach((period, periodIndex) => {
+    periods.forEach((period, _periodIndex) => {
       let periodAmount = 0;
 
       allocatedPOs.forEach((po) => {

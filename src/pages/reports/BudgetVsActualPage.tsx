@@ -20,6 +20,7 @@ import { BudgetVsActualHeader } from './components/BudgetVsActualHeader';
 import { BudgetVsActualSummary } from './components/BudgetVsActualSummary';
 import { BudgetVsActualTable, type VarianceDataRow } from './components/BudgetVsActualTable';
 import { PAGE_HELP } from '../_docs';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 const MATERIAL_THRESHOLD = 10;
 const PERIOD_OPTIONS = ['Monthly', 'Quarterly', 'Annual'] as const;
@@ -314,7 +315,7 @@ export default function BudgetVsActualPage() {
 
   const handleExportPDF = () => {
     if (!reportData) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Account', 'Budget', 'Actual', 'Variance', '% Variance', 'Status'],
         rows: reportData.rows.map((r) => [
@@ -327,12 +328,12 @@ export default function BudgetVsActualPage() {
         ]),
       },
       { title: 'Budget vs Actual Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!reportData) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Account', 'Budget', 'Actual', 'Variance', '% Variance', 'Status'],
         rows: reportData.rows.map((r) => [
@@ -345,7 +346,7 @@ export default function BudgetVsActualPage() {
         ]),
       },
       { title: 'Budget_vs_Actual_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportCSV = () => {

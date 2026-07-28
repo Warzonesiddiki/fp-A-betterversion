@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useCallback } from 'react';
 import {
   Upload as UploadIcon,
@@ -22,7 +21,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
   onFile,
   accept = '.csv,.xlsx,.xls',
   multiple = false,
-  maxSize = 50 * 1024 * 1024, // 50MB
+  maxSize: _maxSize = 50 * 1024 * 1024, // 50MB
 }) => {
   const [isDragActive, setIsDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);

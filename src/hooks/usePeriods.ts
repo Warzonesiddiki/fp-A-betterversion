@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo } from 'react';
 import { useGLStore } from '@/store/glStore';
 import type { FiscalPeriod } from '@/types';
@@ -56,7 +55,7 @@ export function usePeriods(): FiscalPeriod[] {
 
     const periods: FiscalPeriod[] = Array.from(periodMap.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, { year, month, startDate, endDate }], index) => ({
+      .map(([_key, { year, month, startDate, endDate }], index) => ({
         id: `P${String(index + 1).padStart(2, '0')}`,
         name: MONTH_NAMES[month - 1]!,
         year,

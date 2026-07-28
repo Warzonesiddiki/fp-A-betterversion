@@ -9,6 +9,7 @@ import { DataGrid } from '@/components/ui/DataGrid';
 import { Activity, ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import { BankingEngine } from '@/engines';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 export default function NIMDashboardPage() {
   const { entries } = useGLStore();
@@ -56,7 +57,9 @@ export default function NIMDashboardPage() {
       headers: ['Interest Source', 'Interest Income', 'Weighted Yield'],
       rows: components.map((c) => [c.source, c.income, `${c.yield.toFixed(2)}%`]),
     };
-    ExportEngine.exportToExcel(data, { title: 'NIM_Analysis_Report' });
+    void ExportEngine.exportToExcel(data, { title: 'NIM_Analysis_Report' }).catch(
+      reportExportFailure
+    );
   };
 
   if (entries.length === 0) {

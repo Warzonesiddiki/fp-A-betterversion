@@ -31,6 +31,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -92,7 +93,7 @@ export default function ProductionDashboardPage() {
       { line: 'Line E — QC', status: 'Idle', output: 0, efficiency: 0, downtime: 100 },
     ];
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const outputTrend = months.map((m, i) => ({
+    const outputTrend = months.map((m, _i) => ({
       month: m,
       output: Math.round(25000 + getRandom() * 10000),
       defects: Math.round(100 + getRandom() * 80),
@@ -105,7 +106,7 @@ export default function ProductionDashboardPage() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Line', 'Status', 'Output', 'Efficiency', 'Downtime'],
         rows: data.lines.map((l) => [
@@ -117,12 +118,12 @@ export default function ProductionDashboardPage() {
         ]),
       },
       { title: 'Production Dashboard Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Line', 'Status', 'Output', 'Efficiency', 'Downtime'],
         rows: data.lines.map((l) => [
@@ -134,7 +135,7 @@ export default function ProductionDashboardPage() {
         ]),
       },
       { title: 'Production_Dashboard_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<ProductionLine>[] = [

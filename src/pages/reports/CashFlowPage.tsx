@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { DollarSign, HelpCircle, FileText, Table as TableIcon, AlertTriangle } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -178,10 +179,10 @@ export default function CashFlowPage() {
         ['Ending Cash', r(report.endingCash)],
       ],
     };
-    ExportEngine.exportToPDF(data, {
+    void ExportEngine.exportToPDF(data, {
       title: 'Cash Flow Statement',
       subtitle: `Period ending ${period}`,
-    });
+    }).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
@@ -203,7 +204,7 @@ export default function CashFlowPage() {
         ['Ending Cash', report.endingCash],
       ],
     };
-    ExportEngine.exportToExcel(data, { title: 'Cash_Flow_Statement' });
+    void ExportEngine.exportToExcel(data, { title: 'Cash_Flow_Statement' }).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

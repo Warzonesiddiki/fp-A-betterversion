@@ -20,6 +20,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -79,7 +80,7 @@ export default function CompModelingPage() {
   }, [compData]);
 
   const handleExport = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: [
           'Level',
@@ -103,7 +104,7 @@ export default function CompModelingPage() {
         ]),
       },
       { title: 'Compensation_Model' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0)

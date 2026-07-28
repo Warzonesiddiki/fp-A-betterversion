@@ -423,7 +423,7 @@ export class ICMatchingEngine {
   // Helpers
   // ---------------------------------------------------------------------------
   private getEntityPairs(
-    entities: { entityId: string }[]
+    _entities: { entityId: string }[]
   ): { entityA: string; entityB: string; accountCode: string; accountName: string }[] {
     const pairs: {
       entityA: string;

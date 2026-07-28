@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @fileoverview Manufacturing sector metrics from GL entries (inventory turnover, COGS, OEE)
  * @purity-tier 1 PURE
@@ -160,7 +159,7 @@ export class ManufacturingEngine {
   /**
    * Builds output trend from monthly entries.
    */
-  static getOutputTrend(entries: GLEntry[]): OutputTrend[] {
+  static getOutputTrend(_entries: GLEntry[]): OutputTrend[] {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const sr = (s: number) => {
       const x = Math.sin(s * 9301 + 49297) * 49297;

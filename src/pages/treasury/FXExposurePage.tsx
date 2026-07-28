@@ -22,6 +22,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -166,7 +167,7 @@ export default function FXExposurePage() {
   );
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Currency', 'Gross Exposure', 'Hedged', 'Hedge Ratio', 'Unrealized G/L'],
         rows: mockExposures.map((e) => [
@@ -178,11 +179,11 @@ export default function FXExposurePage() {
         ]),
       },
       { title: 'FX Exposure Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: [
           'Currency',
@@ -202,7 +203,7 @@ export default function FXExposurePage() {
         ]),
       },
       { title: 'FX_Exposure_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   return (

@@ -16,6 +16,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -96,7 +97,7 @@ export default function ApprovalQueuePage() {
   };
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Name', 'Type', 'Requester', 'Amount', 'Submitted', 'Status'],
         rows: filtered.map((r) => [
@@ -109,11 +110,11 @@ export default function ApprovalQueuePage() {
         ]),
       },
       { title: 'Approval Queue Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Name', 'Type', 'Requester', 'Amount', 'Submitted', 'Status'],
         rows: filtered.map((r) => [
@@ -126,7 +127,7 @@ export default function ApprovalQueuePage() {
         ]),
       },
       { title: 'Approval_Queue_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<ApprovalRow>[] = [

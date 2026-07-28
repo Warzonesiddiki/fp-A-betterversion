@@ -34,7 +34,7 @@ export const useTourStore = create<TourState>()(
         steps: [],
         completedTours: [],
 
-        startTour: enforce(Permissions.UI_UPDATE, 'startTour', (tourId, steps) => {
+        startTour: enforce(Permissions.UI_UPDATE, 'startTour', (_tourId, steps) => {
           set({
             isActive: true,
             currentStepIndex: 0,

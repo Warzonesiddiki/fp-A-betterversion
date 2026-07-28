@@ -136,7 +136,7 @@ export class SignConventionEngine {
    * In storage, expenses may be stored as positive debits.
    * For P&L display, we want expenses as positive numbers.
    */
-  static normalizeForDisplay(storedValue: number, accountType: AccountType): number {
+  static normalizeForDisplay(storedValue: number, _accountType: AccountType): number {
     // In most accounting systems, values are stored with their natural sign
     // This function ensures consistent display regardless of storage convention
     return storedValue;

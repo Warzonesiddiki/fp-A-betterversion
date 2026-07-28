@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // RATIO ANALYSIS ENGINE — Financial Ratio Analysis (liquidity, leverage, profitability)
 // Pure TypeScript, deterministic, testable. Computes standard financial
@@ -153,7 +152,7 @@ export class RatioAnalysisEngine {
   }
 
   // 15. Compute full ratio suite
-  static computeSuite(bs: BalanceSheet, is: IncomeStatement, cf: CashFlow): RatioSuite {
+  static computeSuite(bs: BalanceSheet, is: IncomeStatement, _cf: CashFlow): RatioSuite {
     const liquidity = [
       RatioAnalysisEngine.currentRatio(bs),
       RatioAnalysisEngine.quickRatio(bs),

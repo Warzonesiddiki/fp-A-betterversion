@@ -10,7 +10,7 @@
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 11th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // =============================================================================
 // DEBT SCHEDULE ENGINE — Debt amortization with circular interest
 // Supports multiple debt instruments, prepayment, refinancing
@@ -197,7 +197,7 @@ export class DebtScheduleEngine {
     rate: number,
     periods: number,
     type: DebtInstrument['amortizationType'],
-    balloon?: number
+    _balloon?: number
   ): number {
     if (type === 'interest_only' || type === 'bullet') return principal * rate;
     if (rate === 0) return principal / periods;

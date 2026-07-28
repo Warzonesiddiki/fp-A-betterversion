@@ -292,7 +292,7 @@ export default function StorePerformancePage() {
                   />
                   <Tooltip cursor={{ fill: 'transparent' }} />
                   <Bar dataKey="revenue" name="Revenue" radius={[0, 4, 4, 0]} barSize={20}>
-                    {storeRankings.map((entry, i) => (
+                    {storeRankings.map((_entry, i) => (
                       <Cell key={i} fill={i < 2 ? '#3b82f6' : '#94a3b8'} />
                     ))}
                   </Bar>

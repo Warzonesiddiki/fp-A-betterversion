@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 
 import { FileText, Table as TableIcon, FileText as FileIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -75,11 +76,11 @@ export default function BoardPackPage() {
         ['BS', 'Total Equity', formatCurrency(report.equity)],
       ],
     };
-    ExportEngine.exportToPDF(data, {
+    void ExportEngine.exportToPDF(data, {
       title: 'Board Pack',
       companyName: 'FinPlan Pro',
       includeTimestamp: true,
-    });
+    }).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
@@ -95,7 +96,7 @@ export default function BoardPackPage() {
         ['BS', 'Total Equity', report.equity],
       ],
     };
-    ExportEngine.exportToExcel(data, { title: 'Board_Pack_Export' });
+    void ExportEngine.exportToExcel(data, { title: 'Board_Pack_Export' }).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @fileoverview Construction sector metrics from GL entries (backlog, WIP, over/under billed)
  * @purity-tier 1 PURE
@@ -136,7 +135,7 @@ export class ConstructionEngine {
   /**
    * Builds backlog trend from monthly entries.
    */
-  static getBacklogTrend(entries: GLEntry[]): BacklogTrend[] {
+  static getBacklogTrend(_entries: GLEntry[]): BacklogTrend[] {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const sr = (s: number) => {
       const x = Math.sin(s * 9301 + 49297) * 49297;

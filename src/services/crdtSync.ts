@@ -210,17 +210,14 @@ export function resolveConflict(
 export function applyIncomingOperations(
   state: SyncState,
   incomingOps: readonly SyncOperation[],
-  deviceId: string
+  _deviceId: string
 ): { state: SyncState; conflicts: SyncConflict[] } {
   const newState: SyncState = {
     ...state,
     incomingOps: incomingOps as SyncOperation[],
     serverClock: mergeClocks(
       state.serverClock,
-      incomingOps.reduce(
-        (clock, op) => mergeClocks(clock, op.clock),
-        {} as VectorClock
-      )
+      incomingOps.reduce((clock, op) => mergeClocks(clock, op.clock), {} as VectorClock)
     ),
   };
 

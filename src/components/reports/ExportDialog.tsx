@@ -9,6 +9,7 @@ import {
   type ExportFormat,
 } from '@/engines/ReportBuilderEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 /* ────────────────── props ────────────────── */
 
@@ -116,7 +117,7 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
           rows.push(exportRow);
         }
 
-        ExportEngine.exportToPDF(
+        void ExportEngine.exportToPDF(
           { headers, rows },
           {
             title: metadata.title,
@@ -125,16 +126,16 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
             pageSize: metadata.pageSize,
             companyName: 'FinPlan Pro',
           }
-        );
+        ).catch(reportExportFailure);
       } else if (selectedFormat === 'excel') {
         const excelResult = ReportBuilderEngine.generateExcelExport(report, cubeData);
         const sheet = excelResult.sheets[0];
         if (!sheet) throw new Error('No sheet data generated');
 
-        ExportEngine.exportToExcel(
+        void ExportEngine.exportToExcel(
           { headers: sheet.data[0] as string[], rows: sheet.data.slice(1) },
           { title: report.name, companyName: 'FinPlan Pro' }
-        );
+        ).catch(reportExportFailure);
       } else if (selectedFormat === 'csv') {
         const csvResult = ReportBuilderEngine.generateCSVExport(report, cubeData);
 

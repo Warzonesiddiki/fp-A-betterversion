@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Batch Operation Engine — Execute multiple operations as a single undoable unit
  * Supports: update, delete, insert, format, protect operations
@@ -149,33 +148,33 @@ export class BatchOperationEngine {
   }
 
   // Internal cell access — delegates to store/engine
-  private static getCurrentValue(ref: string): unknown {
+  private static getCurrentValue(_ref: string): unknown {
     // In production, this reads from the appropriate store
     // For now, return a placeholder
     return undefined;
   }
 
-  private static restoreValue(ref: string, value: unknown): void {
+  private static restoreValue(_ref: string, _value: unknown): void {
     // In production, this writes to the appropriate store
   }
 
-  private static applyUpdate(ref: string, payload: unknown): void {
+  private static applyUpdate(_ref: string, _payload: unknown): void {
     // Apply value update
   }
 
-  private static applyDelete(ref: string): void {
+  private static applyDelete(_ref: string): void {
     // Delete cell/row
   }
 
-  private static applyInsert(ref: string, payload: unknown): void {
+  private static applyInsert(_ref: string, _payload: unknown): void {
     // Insert cell/row
   }
 
-  private static applyFormat(ref: string, payload: unknown): void {
+  private static applyFormat(_ref: string, _payload: unknown): void {
     // Apply formatting
   }
 
-  private static applyProtection(ref: string, protect: boolean): void {
+  private static applyProtection(_ref: string, _protect: boolean): void {
     // Toggle cell protection
   }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * AdvancedExcelEngine — Enhanced Excel export for FinPlan Pro
  * Features: conditional formatting, named ranges, multi-sheet, cell comments
@@ -58,7 +57,7 @@ export class AdvancedExcelEngine {
   /**
    * Generate XLSX XML content
    */
-  private static generateXLSX(sheets: ExcelSheet[], options?: ExcelExportOptions): string {
+  private static generateXLSX(sheets: ExcelSheet[], _options?: ExcelExportOptions): string {
     let xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
     xml += '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"\n';
     xml += '  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">\n';

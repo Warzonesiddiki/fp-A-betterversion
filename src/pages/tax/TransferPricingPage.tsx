@@ -27,6 +27,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -183,7 +184,7 @@ export default function TransferPricingPage() {
   );
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['ID', 'From', 'To', 'Service', 'Amount', 'Method', 'Status'],
         rows: filtered.map((t) => [
@@ -197,11 +198,11 @@ export default function TransferPricingPage() {
         ]),
       },
       { title: 'Transfer Pricing Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['ID', 'From', 'To', 'Service', 'Amount', 'Method', 'Margin', 'Status'],
         rows: filtered.map((t) => [
@@ -216,7 +217,7 @@ export default function TransferPricingPage() {
         ]),
       },
       { title: 'Transfer_Pricing_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   return (

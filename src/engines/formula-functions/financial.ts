@@ -863,8 +863,8 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     impl: impl(
       (
         cost: number,
-        purchase: number,
-        firstPeriod: number,
+        _purchase: number,
+        _firstPeriod: number,
         salvage: number,
         period: number,
         rate: number
@@ -884,10 +884,10 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     impl: impl(
       (
         cost: number,
-        purchase: number,
-        firstPeriod: number,
+        _purchase: number,
+        _firstPeriod: number,
         salvage: number,
-        period: number,
+        _period: number,
         rate: number
       ) => {
         const life = 1 / rate;

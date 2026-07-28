@@ -24,7 +24,7 @@
     /* Linting */
     "strict": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": false,
     "noUncheckedIndexedAccess": true

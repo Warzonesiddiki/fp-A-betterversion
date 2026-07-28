@@ -21,6 +21,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -73,7 +74,7 @@ export default function ForecastBuilderPage() {
   const handleExportPDF = () => {
     setExportError(null);
     try {
-      ExportEngine.exportToPDF(
+      void ExportEngine.exportToPDF(
         {
           headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
           rows: historicalData.map((d) => [
@@ -85,7 +86,7 @@ export default function ForecastBuilderPage() {
           ]),
         },
         { title: 'Forecast Report', subtitle: `Method: ${method}` }
-      );
+      ).catch(reportExportFailure);
     } catch (err) {
       setExportError(err instanceof Error ? err.message : 'Failed to export PDF');
     }
@@ -94,7 +95,7 @@ export default function ForecastBuilderPage() {
   const handleExportExcel = () => {
     setExportError(null);
     try {
-      ExportEngine.exportToExcel(
+      void ExportEngine.exportToExcel(
         {
           headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
           rows: historicalData.map(
@@ -103,7 +104,7 @@ export default function ForecastBuilderPage() {
           ),
         },
         { title: 'Forecast_Report' }
-      );
+      ).catch(reportExportFailure);
     } catch (err) {
       setExportError(err instanceof Error ? err.message : 'Failed to export Excel');
     }

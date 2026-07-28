@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Dimensional Modeling Engine — Slice and dice financial data by dimensions
  */
@@ -85,7 +84,7 @@ export class DimensionalModelingEngine {
     data: Record<string, unknown>[],
     dimensionId: string,
     member: string,
-    toLevel: string
+    _toLevel: string
   ): Record<string, unknown>[] {
     return this.slice(data, dimensionId, member);
   }

@@ -21,6 +21,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatNumber(n: number): string {
   return new Intl.NumberFormat('en-US').format(n);
@@ -128,23 +129,23 @@ export default function CSRDReportPage() {
         : mockESG.governance;
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Metric', 'Unit', 'Current', 'Target', 'Trend'],
         rows: activeData.map((d) => [d.metric, d.unit, d.current, d.target, `${d.trend}%`]),
       },
       { title: 'CSRD Sustainability Report', subtitle: activeTab.toUpperCase() }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Metric', 'Unit', 'Current', 'Target', 'Trend'],
         rows: activeData.map((d) => [d.metric, d.unit, d.current, d.target, d.trend]),
       },
       { title: 'CSRD_Sustainability_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   return (

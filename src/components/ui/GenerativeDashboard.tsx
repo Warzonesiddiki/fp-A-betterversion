@@ -212,7 +212,7 @@ function renderElement(spec: DashboardSpec, elementId: string): React.ReactNode 
   if (!element) return null;
   const Component = componentMap[element.type];
   if (!Component) return null;
-  const childNodes = element.children?.map((child, i) => {
+  const childNodes = element.children?.map((_child, i) => {
     const childId = `${elementId}-${i}`;
     return <React.Fragment key={childId}>{renderElement(spec, childId)}</React.Fragment>;
   });

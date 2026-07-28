@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ExportTemplateEngine } from '@/engines/ExportTemplateEngine';
 import type { ExportContext, TemplateSection } from '@/engines/ExportTemplateEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 interface BoardPackTemplateProps {
   entity?: string;
@@ -242,7 +243,7 @@ export function BoardPackTemplate({
                   rows: [],
                 };
                 import('@/engines/ExportEngine').then(({ ExportEngine }) => {
-                  ExportEngine.exportToExcel(exportData, { title: `Board Pack ${period}` });
+                  void ExportEngine.exportToExcel(exportData, { title: `Board Pack ${period}` }).catch(reportExportFailure);
                 });
               }}
               className="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"

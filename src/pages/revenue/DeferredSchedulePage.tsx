@@ -28,6 +28,7 @@ import {
   Bar,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -225,7 +226,7 @@ export default function DeferredSchedulePage() {
   ];
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Customer', 'Contract Value', 'Deferred', 'Recognized YTD', 'Status'],
         rows: mockContracts.map((c) => [
@@ -237,7 +238,7 @@ export default function DeferredSchedulePage() {
         ]),
       },
       { title: 'Deferred Revenue Schedule' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const hasData = entries.length > 0 || mockContracts.length > 0;

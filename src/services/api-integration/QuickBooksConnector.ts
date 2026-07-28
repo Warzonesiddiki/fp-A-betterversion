@@ -372,7 +372,7 @@ export class QuickBooksConnector extends BaseConnector {
 
   // ── Budgets (via Profit & Loss Report) ───────────────────────────────────
 
-  async getBudgets(pagination?: PaginationParams): Promise<PaginatedResponse<ExternalBudget>> {
+  async getBudgets(_pagination?: PaginationParams): Promise<PaginatedResponse<ExternalBudget>> {
     // QuickBooks does not have a direct Budget API for all versions.
     // Use the BudgetSummary report when available, otherwise return empty.
     try {

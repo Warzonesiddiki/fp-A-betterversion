@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Plus, Copy, BookTemplate, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -34,7 +33,7 @@ export function DriverSummaryPanel({
   onCreateSnapshot,
   onShowAddForm,
   onToggleTemplates,
-  showTemplates,
+  showTemplates: _showTemplates,
 }: DriverSummaryPanelProps) {
   return (
     <div className="space-y-4">

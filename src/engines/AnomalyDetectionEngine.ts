@@ -622,7 +622,7 @@ export class AnomalyDetectionEngine {
    * Convert a Record<string, number> time-series into DataPoint[].
    */
   static fromTimeSeries(series: Array<{ timestamp: number; value: number }>): DataPoint[] {
-    return series.map((s, i) => ({ value: s.value, index: s.timestamp }));
+    return series.map((s, _i) => ({ value: s.value, index: s.timestamp }));
   }
 
   /**

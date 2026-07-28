@@ -19,6 +19,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -142,7 +143,7 @@ export default function DepreciationForecastPage() {
     .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
 
   const handleExport = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: [
           'ID',
@@ -166,7 +167,7 @@ export default function DepreciationForecastPage() {
         ]),
       },
       { title: 'Depreciation_Forecast' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0)

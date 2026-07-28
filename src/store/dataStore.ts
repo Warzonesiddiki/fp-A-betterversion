@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * ============================================================================
  * CAVEMAN PERSIST ANCHOR — CATCH #226 Track A RESOLVED (LEADER HARD PICK ν)
@@ -56,7 +55,7 @@ import { safeJSONStorage } from '../utils/storage/safeJSONStorage';
 export const useDataStore = create<DataState>()(
   subscribeWithSelector(
     persist(
-      immer((set, get) => ({
+      immer((set, _get) => ({
         accounts: [],
         importJobs: [],
         selectedAccountId: null,

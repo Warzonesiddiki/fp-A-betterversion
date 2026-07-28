@@ -170,7 +170,7 @@ export class FinanceCopilotEngine {
 
   // ─── Margin ──────────────────────────────────────────────────────────────
 
-  private static answerMargin(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerMargin(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -216,7 +216,7 @@ export class FinanceCopilotEngine {
 
   // ─── Cash Position ───────────────────────────────────────────────────────
 
-  private static answerCashPosition(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerCashPosition(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -239,7 +239,7 @@ export class FinanceCopilotEngine {
 
   // ─── Burn Rate ───────────────────────────────────────────────────────────
 
-  private static answerBurnRate(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerBurnRate(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -283,7 +283,7 @@ export class FinanceCopilotEngine {
 
   // ─── Top Expenses ────────────────────────────────────────────────────────
 
-  private static answerTopExpenses(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerTopExpenses(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -330,7 +330,7 @@ export class FinanceCopilotEngine {
 
   // ─── Department Breakdown ────────────────────────────────────────────────
 
-  private static answerByDepartment(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerByDepartment(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -370,7 +370,7 @@ export class FinanceCopilotEngine {
 
   // ─── Period Comparison ───────────────────────────────────────────────────
 
-  private static answerPeriodComparison(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerPeriodComparison(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -431,7 +431,7 @@ export class FinanceCopilotEngine {
   // ─── Variance (with actual calculation) ──────────────────────────────────
 
   private static answerVariance(
-    q: string,
+    _q: string,
     stores: { gl?: GLState; budget?: BudgetState }
   ): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
@@ -520,7 +520,7 @@ export class FinanceCopilotEngine {
   // ─── Budget Utilization ──────────────────────────────────────────────────
 
   private static answerBudgetUtilization(
-    q: string,
+    _q: string,
     stores: { gl?: GLState; budget?: BudgetState }
   ): CopilotAnswer {
     const lineItems = stores.budget?.lineItems ?? [];
@@ -563,7 +563,7 @@ export class FinanceCopilotEngine {
 
   // ─── Revenue (enhanced) ──────────────────────────────────────────────────
 
-  private static answerRevenue(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerRevenue(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -602,7 +602,7 @@ export class FinanceCopilotEngine {
 
   // ─── Expense (enhanced) ──────────────────────────────────────────────────
 
-  private static answerExpense(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerExpense(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {
@@ -641,7 +641,7 @@ export class FinanceCopilotEngine {
 
   // ─── Budget ──────────────────────────────────────────────────────────────
 
-  private static answerBudget(q: string, stores: { budget?: BudgetState }): CopilotAnswer {
+  private static answerBudget(_q: string, stores: { budget?: BudgetState }): CopilotAnswer {
     const budgets = stores.budget?.budgets ?? [];
     if (budgets.length === 0) {
       return {
@@ -668,7 +668,7 @@ export class FinanceCopilotEngine {
 
   // ─── Net Income ──────────────────────────────────────────────────────────
 
-  private static answerNetIncome(q: string, stores: { gl?: GLState }): CopilotAnswer {
+  private static answerNetIncome(_q: string, stores: { gl?: GLState }): CopilotAnswer {
     const entries = stores.gl?.entries ?? [];
     if (entries.length === 0) {
       return {

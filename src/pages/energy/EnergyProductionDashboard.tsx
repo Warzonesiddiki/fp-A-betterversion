@@ -22,6 +22,7 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -70,13 +71,13 @@ export default function EnergyProductionDashboard() {
   }));
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Source', 'MWh', 'Cost/MWh', 'Revenue'],
         rows: SOURCES.map((s) => [s.name, s.value, `$${s.cost}`, formatCurrency(s.revenue)]),
       },
       { title: 'Energy Production Dashboard' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0)

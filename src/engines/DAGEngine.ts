@@ -35,7 +35,7 @@ const DEFAULT_CONFIG: DAGEngineConfig = {
  * Build a DAG from a set of nodes.
  * Computes adjacency lists, reverse adjacency lists, and topological order.
  */
-export function buildDAG(nodes: readonly DAGNode[], config = DEFAULT_CONFIG): DAGraph {
+export function buildDAG(nodes: readonly DAGNode[], _config = DEFAULT_CONFIG): DAGraph {
   const nodeMap = new Map<string, DAGNode>();
   const adjacency = new Map<string, Set<string>>();
   const reverseAdjacency = new Map<string, Set<string>>();
@@ -260,7 +260,7 @@ export function recalculate(
   graph: DAGraph,
   evaluateCell: (cellId: string) => unknown,
   changedCells: ReadonlySet<string>,
-  config = DEFAULT_CONFIG
+  _config = DEFAULT_CONFIG
 ): RecalculationResult {
   const start = performance.now();
   const recomputedCells: string[] = [];

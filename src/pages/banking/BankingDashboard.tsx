@@ -30,6 +30,7 @@ import {
   Line,
 } from 'recharts';
 import type { GLEntry } from '@/types';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -76,7 +77,7 @@ export default function BankingDashboard() {
   const nimStats = useMemo(() => BankingEngine.calculateNIMStats(sectorEntries), [sectorEntries]);
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Metric', 'Value'],
         rows: [
@@ -94,7 +95,7 @@ export default function BankingDashboard() {
         ],
       },
       { title: 'Banking Dashboard Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

@@ -216,9 +216,7 @@ export function analyzeSensitivity(
   // Calculate elasticity (% change in output / % change in input)
   const plusTen = scenarios.find((s) => s.changePercent === 10);
   const elasticity =
-    plusTen && baseValue !== 0
-      ? (fromPrecise(plusTen.delta) / baseValue) / (10 / 100)
-      : 0;
+    plusTen && baseValue !== 0 ? fromPrecise(plusTen.delta) / baseValue / (10 / 100) : 0;
 
   return {
     driverId: targetDriverId,

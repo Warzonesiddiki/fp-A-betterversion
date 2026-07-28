@@ -31,6 +31,7 @@ import {
   Cell,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -206,7 +207,7 @@ export default function CapExDashboard() {
   ];
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['ID', 'Project', 'Category', 'Budget', 'Actual', 'Variance', 'Status'],
         rows: mockProjects.map((p) => [
@@ -220,7 +221,7 @@ export default function CapExDashboard() {
         ]),
       },
       { title: 'Capital Expenditures Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const hasData = entries.length > 0 || mockProjects.length > 0;

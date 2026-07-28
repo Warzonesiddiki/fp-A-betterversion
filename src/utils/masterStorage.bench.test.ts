@@ -1,6 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeAll } from 'vitest';
+
+// The chunked storage layer offloads stringify/chunking to a Web Worker. In
+// jsdom `Worker` is a bare stub that never posts a message back, so
+// `masterStorage.setItem` awaited forever and this bench always hit the
+// 60s timeout instead of reporting a number. Stub the underlying SQL
+// backends (as masterStorage.stress.test.ts does) so the bench still
+// exercises the real encrypt + serialize path it is meant to measure.
+const { mockSqlJs, mockTauriSql } = vi.hoisted(() => ({
+  mockSqlJs: { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn() },
+  mockTauriSql: { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn() },
+}));
+
+vi.mock('./sqlJsStorage', () => ({ sqlJsStorage: mockSqlJs }));
+vi.mock('./tauriSqlStorage', () => ({
+  tauriSqlStorage: mockTauriSql,
+  isTauri: vi.fn().mockResolvedValue(false),
+}));
+vi.mock('./chunkedStorage', () => ({
+  // Identity wrapper — bypasses the Worker round trip.
+  wrapChunkedStorage: (storage: unknown) => storage,
+}));
+
 import { masterStorage } from './masterStorage';
 import { generateGLEntries } from '../services/mockData/generators';
 import * as fs from 'fs';

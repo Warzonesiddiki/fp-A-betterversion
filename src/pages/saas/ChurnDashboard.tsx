@@ -19,6 +19,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -88,13 +89,13 @@ export default function ChurnDashboard() {
   }, []);
 
   const handleExport = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Customer', 'Segment', 'MRR', 'Risk Score', 'Last Login'],
         rows: AT_RISK.map((c) => [c.name, c.segment, c.mrr, c.riskScore, c.lastLogin]),
       },
       { title: 'Churn_At_Risk_Customers' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0)

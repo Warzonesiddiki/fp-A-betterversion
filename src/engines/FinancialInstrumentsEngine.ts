@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @fileoverview Financial Instruments Engine — Bond pricing, loan amortization, option pricing, DCF valuation
  * @purity-tier 1 PURE
@@ -178,7 +177,7 @@ export class FinancialInstrumentsEngine {
     principal: number,
     annualRate: number,
     termMonths: number,
-    startDate?: Date
+    _startDate?: Date
   ): AmortizationEntry[] {
     const monthlyRate = annualRate / 12;
     const payment =

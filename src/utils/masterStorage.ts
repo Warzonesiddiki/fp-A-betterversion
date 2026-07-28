@@ -34,6 +34,32 @@ async function deriveStorageKey(): Promise<CryptoKey> {
   ]);
 }
 
+// Base64 helpers.
+//
+// The previous implementation used `btoa(String.fromCharCode(...combined))`,
+// which spreads every ciphertext byte into a separate function argument. Past
+// roughly 100KB that exceeds the JS argument limit and throws
+// "RangeError: Maximum call stack size exceeded" — i.e. persisting any
+// realistically sized dataset (a 10K-row GL import is ~5.6MB) failed outright.
+// Encoding in fixed-size chunks keeps the argument count bounded.
+const BASE64_CHUNK_SIZE = 0x8000; // 32KB of bytes per fromCharCode call
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += BASE64_CHUNK_SIZE) {
+    const chunk = bytes.subarray(i, i + BASE64_CHUNK_SIZE);
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
+}
+
+function base64ToBytes(encoded: string): Uint8Array {
+  const binary = atob(encoded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
 async function encryptStorageValue(value: string): Promise<string> {
   const key = await deriveStorageKey();
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -46,14 +72,12 @@ async function encryptStorageValue(value: string): Promise<string> {
   const combined = new Uint8Array(iv.length + ciphertext.byteLength);
   combined.set(iv, 0);
   combined.set(new Uint8Array(ciphertext), iv.length);
-  return btoa(String.fromCharCode(...combined));
+  return bytesToBase64(combined);
 }
 
 async function decryptStorageValue(encrypted: string): Promise<string> {
   const key = await deriveStorageKey();
-  const binary = atob(encrypted);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const bytes = base64ToBytes(encrypted);
   const iv = bytes.slice(0, 12);
   const ciphertext = bytes.slice(12);
   const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);

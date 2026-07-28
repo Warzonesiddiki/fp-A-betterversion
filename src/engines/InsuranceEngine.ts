@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @fileoverview Insurance sector metrics from GL entries (loss ratio, combined ratio, earned premium)
  * @purity-tier 1 PURE
@@ -136,7 +135,7 @@ export class InsuranceEngine {
   /**
    * Builds combined ratio trend from monthly entries.
    */
-  static getCombinedRatioTrend(entries: GLEntry[]): CombinedRatioTrend[] {
+  static getCombinedRatioTrend(_entries: GLEntry[]): CombinedRatioTrend[] {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     return months.map((month, i) => {
       // Use seeded pseudo-random for deterministic mock-like trend
