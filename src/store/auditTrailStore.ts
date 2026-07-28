@@ -13,6 +13,9 @@ import type { ExtendedAuditEntry, AuditFilters, AuditSource, AuditOperation } fr
 
 export type { ExtendedAuditEntry, AuditSource, AuditOperation };
 
+import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
+import { sha256Hex } from '@/utils/sha256';
+
 // ---------------------------------------------------------------------------
 // Types (re-exported from canonical location)
 // ---------------------------------------------------------------------------
@@ -46,9 +49,22 @@ export interface RecordInput {
   newValue: unknown;
   approvalStatus?: ApprovalStatus;
   approvalUserId?: string;
-  source?: 'manual' | 'import' | 'api' | 'plugin' | 'automation';
+  // Widened to the full AuditSource (including 'gdpr'): the GDPR bridge no
+  // longer needs a type cast and GDPR-sourced entries are first-class.
+  source?: AuditSource;
   transactionId?: string;
   metadata?: Record<string, unknown>;
+  // Cross-reference fields (Hades GDPR Article 30 ROPA / Hera RBAC T-4.30 /
+  // Part 140 versioning). Previously these were absent from RecordInput and
+  // hardcoded to undefined in makeEntry, so GDPR linkage was silently
+  // discarded even when the caller supplied it (CWE-778 completeness gap).
+  versionId?: string;
+  consentId?: string;
+  breachEventId?: string;
+  rbacEnforceId?: string;
+  tags?: string[];
+  /** GDPR Art. 33 breach severity (breach.detected events) */
+  severity?: 'low' | 'medium' | 'high' | 'critical';
 }
 
 interface State {
@@ -62,6 +78,13 @@ interface State {
   loading: boolean;
   /** F-CLIO-2/7 RBAC gating — current user's role (Hera T-4.30 RBAC coupling) */
   currentUserRole: AuditRole;
+  /**
+   * F-0015: hash of the most recently appended entry (the SHA-256 chain head).
+   * `AUDIT_CHAIN_GENESIS_HASH` when the trail is empty. Stored separately from
+   * `entries` so that deleting the newest entries is detectable (head/tail
+   * mismatch), not just mid-chain edits.
+   */
+  chainHead: string;
 }
 
 interface Actions {
@@ -69,6 +92,12 @@ interface Actions {
   recordWrite: (input: RecordInput) => string;
   recordUpdate: (input: RecordInput) => string;
   recordDelete: (input: RecordInput) => string;
+  /**
+   * Record a read event (GDPR Art. 15 access / Art. 20 portability exports).
+   * Previously absent — the GDPR bridge had no branch for 'read' operations,
+   * so data-subject access events were never audited (CWE-778 gap).
+   */
+  recordRead: (input: RecordInput) => string;
   recordBulk: (inputs: RecordInput[]) => string[];
   setFilter: <K extends keyof AuditFilters>(key: K, value: AuditFilters[K]) => void;
   clearFilters: () => void;
@@ -82,6 +111,41 @@ interface Actions {
   exportToJSON: () => string;
   /** F-CLIO-2/7 RBAC gating — sets current user role for GDPR audit visibility check */
   setCurrentUserRole: (role: AuditRole) => void;
+  /**
+   * GDPR audit review filter (DPO/compliance view): returns only entries that
+   * are GDPR-relevant — source 'gdpr', carrying a consentId, or carrying a
+   * breachEventId. Pure predicate over the caller-provided array.
+   * (Distinct from the RBAC visibility gate, which HIDES gdpr entries from
+   * roles outside GDPR_AUDIT_VIEW_ROLES — see excludeGdprEntriesByRole.)
+   */
+  filterByGdprAccess: (entries: ExtendedAuditEntry[]) => ExtendedAuditEntry[];
+  /**
+   * F-0015: recompute the SHA-256 hash chain over the stored entries and
+   * report tampering. Detects content mutation (hash mismatch), mid-chain
+   * deletion and reordering (prevHash link break), and truncation of either
+   * end (genesis/head mismatch). Fail-closed: entries missing hash material
+   * are reported as tampered.
+   */
+  verifyIntegrity: () => AuditChainVerification;
+}
+
+/** One broken `prevHash` link, as reported by `verifyIntegrity`. */
+export interface AuditChainBreak {
+  entryId: string;
+  expectedPrevHash: string;
+  actualPrevHash: string | undefined;
+}
+
+/** Result of an F-0015 `verifyIntegrity()` pass over the stored trail. */
+export interface AuditChainVerification {
+  valid: boolean;
+  entryCount: number;
+  /** Entries whose stored hash does not match a recomputation (mutation). */
+  tamperedEntryIds: string[];
+  /** Broken prevHash links (mid-chain deletion / reordering / oldest-entry deletion). */
+  chainBreaks: AuditChainBreak[];
+  /** Whether state.chainHead still equals the newest entry's hash (head-truncation check). */
+  headIntact: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -141,49 +205,105 @@ export const redactPII = (entry: ExtendedAuditEntry): ExtendedAuditEntry => ({
     : undefined,
 });
 
-const simpleHash = (s: string): string => {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+// ---------------------------------------------------------------------------
+// F-0015 integrity chain — SHA-256 over the canonical serialization of the
+// STORED record, chained as hash_n = SHA-256(hash_{n-1} ‖ record_n).
+//
+// Root cause of F-0015: the previous `simpleHash` (a) hashed fresh uid()/now()
+// values instead of the stored ones, so no verifier could ever recompute it,
+// (b) was a 32-bit non-cryptographic djb2 variant, and (c) did not chain, so
+// deletions and reordering were undetectable. All three defects are removed:
+// the hash now covers every stored field (including previousValue/newValue),
+// is a full 256-bit SHA-256, and links each entry to its predecessor.
+// ---------------------------------------------------------------------------
+
+/** Hash of the (non-existent) entry before the first one — chain bootstrap. */
+export const AUDIT_CHAIN_GENESIS_HASH = '0'.repeat(64);
+
+/**
+ * Canonical JSON serializer: object keys sorted recursively, `undefined`
+ * object properties dropped, `undefined`/`function` array elements become
+ * `null` — mirroring JSON.stringify semantics with a key order that is
+ * stable across engines and object construction order. This is what makes
+ * the entry hash recomputable by an independent verifier.
+ */
+export const canonicalizeForHash = (value: unknown): string => {
+  if (value === undefined) return 'null';
+  if (value === null || typeof value !== 'object') {
+    // JSON.stringify semantics: NaN/Infinity → null, -0 → 0, etc.
+    return JSON.stringify(value) ?? 'null';
   }
-  return Math.abs(h).toString(16).padStart(8, '0');
+  if (Array.isArray(value)) {
+    return `[${value
+      .map((v) => (v === undefined || typeof v === 'function' ? 'null' : canonicalizeForHash(v)))
+      .join(',')}]`;
+  }
+  const obj = value as Record<string, unknown>;
+  const keys = Object.keys(obj)
+    .filter((k) => obj[k] !== undefined && typeof obj[k] !== 'function')
+    .sort();
+  return `{${keys.map((k) => `${JSON.stringify(k)}:${canonicalizeForHash(obj[k])}`).join(',')}}`;
 };
 
-const makeEntry = (operation: AuditOperation, input: RecordInput): ExtendedAuditEntry => ({
-  id: uid(),
-  cellId: input.cellId,
-  userId: input.userId,
-  operation,
-  dataType: input.dataType,
-  previousValue: input.previousValue,
-  newValue: input.newValue,
-  approvalStatus: input.approvalStatus ?? 'auto',
-  approvalUserId: input.approvalUserId,
-  approvalTimestamp: input.approvalUserId ? now() : undefined,
-  source: input.source ?? 'manual',
-  transactionId: input.transactionId,
-  timestamp: now(),
-  metadata: input.metadata,
-  // Part 140 cross-reference (optional)
-  versionId: undefined,
-  // Hades GDPR coupling (Article 30 ROPA)
-  consentId: undefined,
-  breachEventId: undefined,
-  // Hera RBAC coupling (T-4.30 rbacEnforcer.ts)
-  rbacEnforceId: undefined,
-  // Integrity hash (C-03 FIX): simple hash over entry content so silent
-  // modifications can be detected. In production, replace with HMAC-SHA256.
-  hash: simpleHash(
-    JSON.stringify({
-      id: uid(),
-      cellId: input.cellId,
-      userId: input.userId,
-      operation,
-      timestamp: now(),
-      newValue: input.newValue,
-    })
-  ),
-});
+/**
+ * Compute the chain hash of a stored entry: SHA-256 over
+ * `prevHash ‖ canonical(record)`, where the record is every stored field
+ * except `hash` itself. Exported so external verifiers (and the test suite)
+ * recompute exactly what the store computes.
+ */
+export const computeAuditEntryHash = (entry: ExtendedAuditEntry): string => {
+  const { hash: _hash, prevHash, ...record } = entry;
+  return sha256Hex(`${prevHash ?? AUDIT_CHAIN_GENESIS_HASH}|${canonicalizeForHash(record)}`);
+};
+
+/** The stored record without integrity material; chaining adds prevHash+hash. */
+type UnsignedAuditEntry = Omit<ExtendedAuditEntry, 'hash' | 'prevHash'>;
+
+const makeEntry = (operation: AuditOperation, input: RecordInput): UnsignedAuditEntry => {
+  const id = uid();
+  const timestamp = now();
+  return {
+    id,
+    cellId: input.cellId,
+    userId: input.userId,
+    operation,
+    dataType: input.dataType,
+    previousValue: input.previousValue,
+    newValue: input.newValue,
+    approvalStatus: input.approvalStatus ?? 'auto',
+    approvalUserId: input.approvalUserId,
+    approvalTimestamp: input.approvalUserId ? now() : undefined,
+    source: input.source ?? 'manual',
+    transactionId: input.transactionId,
+    timestamp,
+    metadata: input.metadata,
+    // Cross-reference fields — carried from the caller's input. Previously
+    // hardcoded to undefined, silently discarding GDPR/RBAC/version linkage
+    // even when supplied (CWE-778 completeness gap).
+    versionId: input.versionId,
+    consentId: input.consentId,
+    breachEventId: input.breachEventId,
+    rbacEnforceId: input.rbacEnforceId,
+    tags: input.tags,
+    severity: input.severity,
+  };
+};
+
+/**
+ * Append an unsigned entry to the trail, binding it to the current chain head.
+ * This is the ONLY path by which entries enter `entries`, so the chain covers
+ * every record (writes, updates, deletes, bulk, reverts, seeds).
+ */
+const appendChained = (
+  state: { entries: ExtendedAuditEntry[]; chainHead: string },
+  unsigned: UnsignedAuditEntry
+): void => {
+  const prevHash = state.chainHead;
+  const withPrev: ExtendedAuditEntry = { ...unsigned, prevHash };
+  const chained: ExtendedAuditEntry = { ...withPrev, hash: computeAuditEntryHash(withPrev) };
+  state.entries.unshift(chained); // entries are stored newest-first
+  state.chainHead = chained.hash!;
+};
 
 const defaultFilters: AuditFilters = {
   cellId: undefined,
@@ -222,11 +342,13 @@ export const useAuditTrailStore = create<State & Actions>()(
       loading: false,
       // F-CLIO-2/7 RBAC gating — default to 'viewer' (no GDPR audit access)
       currentUserRole: 'viewer' as AuditRole,
+      // F-0015: empty trail starts at the genesis hash
+      chainHead: AUDIT_CHAIN_GENESIS_HASH,
 
       seedDemoData: () => {
-        const entries: ExtendedAuditEntry[] = [];
+        const unsigned: UnsignedAuditEntry[] = [];
         for (let i = 0; i < SEED_COUNT; i++) {
-          entries.push({
+          unsigned.push({
             id: uid(),
             cellId: {
               cube: 'demo-cube',
@@ -257,14 +379,15 @@ export const useAuditTrailStore = create<State & Actions>()(
           });
         }
         set((state) => {
-          state.entries = entries;
+          // F-0015: seeded demo entries are chained like any other entry
+          for (const entry of unsigned) appendChained(state, entry);
         });
       },
 
       recordWrite: (input) => {
         const entry = makeEntry('write', input);
         set((state) => {
-          state.entries.unshift(entry);
+          appendChained(state, entry);
         });
         return entry.id;
       },
@@ -272,7 +395,7 @@ export const useAuditTrailStore = create<State & Actions>()(
       recordUpdate: (input) => {
         const entry = makeEntry('update', input);
         set((state) => {
-          state.entries.unshift(entry);
+          appendChained(state, entry);
         });
         return entry.id;
       },
@@ -280,7 +403,15 @@ export const useAuditTrailStore = create<State & Actions>()(
       recordDelete: (input) => {
         const entry = makeEntry('delete', input);
         set((state) => {
-          state.entries.unshift(entry);
+          appendChained(state, entry);
+        });
+        return entry.id;
+      },
+
+      recordRead: (input) => {
+        const entry = makeEntry('read', input);
+        set((state) => {
+          appendChained(state, entry);
         });
         return entry.id;
       },
@@ -290,7 +421,7 @@ export const useAuditTrailStore = create<State & Actions>()(
         const ids = inputs.map((input) => {
           const entry = makeEntry('bulk', { ...input, transactionId: txId });
           set((state) => {
-            state.entries.unshift(entry);
+            appendChained(state, entry);
           });
           return entry.id;
         });
@@ -354,25 +485,24 @@ export const useAuditTrailStore = create<State & Actions>()(
         }
         const entry = get().entries.find((e) => e.id === entryId);
         if (!entry) return;
-        // Generate a new audit entry recording the revert action (Hades GDPR Article 16)
-        const revertEntry: ExtendedAuditEntry = {
-          ...makeEntry('update', {
-            cellId: entry.cellId,
-            userId: entry.userId,
-            operation: 'update',
-            dataType: entry.dataType,
-            previousValue: entry.newValue,
-            newValue: entry.previousValue ?? null,
-            approvalStatus: 'auto',
-            source: 'manual',
-            metadata: {
-              revertedFrom: entryId,
-              reason: 'Audit-trail revert-to-state',
-            },
-          }),
-        };
+        // Generate a new audit entry recording the revert action (Hades GDPR Article 16).
+        // F-0015: the revert entry is chained like every other append.
+        const revertEntry = makeEntry('update', {
+          cellId: entry.cellId,
+          userId: entry.userId,
+          operation: 'update',
+          dataType: entry.dataType,
+          previousValue: entry.newValue,
+          newValue: entry.previousValue ?? null,
+          approvalStatus: 'auto',
+          source: 'manual',
+          metadata: {
+            revertedFrom: entryId,
+            reason: 'Audit-trail revert-to-state',
+          },
+        });
         set((state) => {
-          state.entries.unshift(revertEntry);
+          appendChained(state, revertEntry);
         });
       },
 
@@ -420,7 +550,7 @@ export const useAuditTrailStore = create<State & Actions>()(
             redacted.source,
             redacted.transactionId ?? '',
           ]
-            .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
+            .map((cell) => `"${sanitizeSpreadsheetText(cell).replace(/"/g, '""')}"`)
             .join(',');
         });
         return [header, ...rows].join('\n');
@@ -437,6 +567,63 @@ export const useAuditTrailStore = create<State & Actions>()(
         set((state) => {
           state.currentUserRole = role;
         });
+      },
+
+      // GDPR review-view filter: entries relevant to GDPR audit review
+      // (DPO/compliance), i.e. GDPR-sourced or GDPR-cross-referenced.
+      filterByGdprAccess: (entries) =>
+        entries.filter(
+          (e) => e.source === 'gdpr' || e.consentId !== undefined || e.breachEventId !== undefined
+        ),
+
+      verifyIntegrity: () => {
+        const { entries, chainHead } = get();
+        const tamperedEntryIds: string[] = [];
+        const chainBreaks: AuditChainBreak[] = [];
+
+        // entries are stored newest-first; the chain is verified in append
+        // order (oldest → newest), starting from the genesis hash.
+        const appendOrder = [...entries].reverse();
+        let expectedPrev = AUDIT_CHAIN_GENESIS_HASH;
+        for (const entry of appendOrder) {
+          // Fail closed: entries without integrity material cannot be verified.
+          if (!entry.hash || entry.prevHash === undefined) {
+            tamperedEntryIds.push(entry.id);
+            if (entry.hash) expectedPrev = entry.hash;
+            continue;
+          }
+          // Link break: mid-chain deletion, reordering, or oldest-entry deletion
+          // (the new oldest entry still points at its removed predecessor).
+          if (entry.prevHash !== expectedPrev) {
+            chainBreaks.push({
+              entryId: entry.id,
+              expectedPrevHash: expectedPrev,
+              actualPrevHash: entry.prevHash,
+            });
+          }
+          // Content mutation: the stored hash no longer matches a recomputation
+          // over the stored record (covers previousValue/newValue edits, and
+          // also a rewritten hash itself, which then desynchronises the chain).
+          if (computeAuditEntryHash(entry) !== entry.hash) {
+            tamperedEntryIds.push(entry.id);
+          }
+          expectedPrev = entry.hash;
+        }
+
+        // Head check: truncating the NEWEST entries leaves chainHead pointing
+        // at a hash no longer present at entries[0].
+        const headIntact =
+          entries.length === 0
+            ? chainHead === AUDIT_CHAIN_GENESIS_HASH
+            : entries[0]!.hash === chainHead;
+
+        return {
+          valid: tamperedEntryIds.length === 0 && chainBreaks.length === 0 && headIntact,
+          entryCount: entries.length,
+          tamperedEntryIds,
+          chainBreaks,
+          headIntact,
+        };
       },
     }))
   )
@@ -457,8 +644,10 @@ export const selectCanViewGdprAudit = (state: State & Actions): boolean =>
 /**
  * F-CLIO-2/7 FIX: Helper that filters GDPR-source entries from the entries array
  * for non-RBAC-permitted users. Used by selectFilteredEntries.
+ * (Inverse purpose of the store action filterByGdprAccess: this gate HIDES
+ * gdpr entries from roles without GDPR-audit visibility.)
  */
-const filterByGdprAccess = (
+const excludeGdprEntriesByRole = (
   entries: ExtendedAuditEntry[],
   canViewGdpr: boolean
 ): ExtendedAuditEntry[] => (canViewGdpr ? entries : entries.filter((e) => e.source !== 'gdpr'));
@@ -466,7 +655,7 @@ const filterByGdprAccess = (
 export const selectFilteredEntries = (state: State & Actions): ExtendedAuditEntry[] => {
   const { entries, filters, sortField, sortDir } = state;
   // F-CLIO-2/7 FIX: Pre-filter GDPR-source entries for non-RBAC users
-  const accessibleEntries = filterByGdprAccess(entries, selectCanViewGdprAudit(state));
+  const accessibleEntries = excludeGdprEntriesByRole(entries, selectCanViewGdprAudit(state));
   const filtered = accessibleEntries.filter((e) => {
     if (filters.cellId) {
       const cellKey = `${e.cellId.sectorId}/${e.cellId.scenarioId}/${e.cellId.periodId}/${e.cellId.lineItemId}`;

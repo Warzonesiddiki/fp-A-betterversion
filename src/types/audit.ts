@@ -37,6 +37,10 @@ export interface ExtendedAuditEntry extends CellAuditEntry {
   breachEventId?: string;
   /** Hera RBAC rbacEnforcer.ts cross-reference (T-4.30 enforce() call) */
   rbacEnforceId?: string;
+  /** Classification tags (e.g. ['gdpr', 'consent'] for GDPR-sourced entries) */
+  tags?: string[];
+  /** GDPR Art. 33 breach severity — first-class field so breach entries are triageable/filterable */
+  severity?: 'low' | 'medium' | 'high' | 'critical';
   /** Account ID (from CellAuditTrailEngine) */
   accountId?: string;
   /** Account name (from CellAuditTrailEngine) */
@@ -53,7 +57,17 @@ export interface ExtendedAuditEntry extends CellAuditEntry {
   approvedBy?: string;
   /** Approval timestamp */
   approvedAt?: string;
-  /** Integrity hash */
+  /**
+   * F-0015 integrity chain: hash of the PREVIOUS audit entry in append order
+   * (`AUDIT_CHAIN_GENESIS_HASH` for the first entry). Binds this entry to its
+   * predecessor so deletions and reordering are detectable.
+   */
+  prevHash?: string;
+  /**
+   * F-0015 integrity hash: SHA-256 hex over `prevHash ‖ canonical(record)`,
+   * where the record is the full stored entry (including previousValue /
+   * newValue) minus `hash` itself. Recomputable by `verifyIntegrity()`.
+   */
   hash?: string;
 }
 
