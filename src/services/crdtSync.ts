@@ -20,7 +20,9 @@ import type {
   SyncEngineConfig,
 } from '@/types/crdt';
 
-const DEFAULT_CONFIG: SyncEngineConfig = {
+/** Default sync-engine tuning. Exported so callers/tests can build on it
+ * rather than re-specifying these values. */
+export const DEFAULT_CONFIG: SyncEngineConfig = {
   pollIntervalMs: 30000,
   maxBatchSize: 100,
   autoMerge: true,
@@ -210,17 +212,14 @@ export function resolveConflict(
 export function applyIncomingOperations(
   state: SyncState,
   incomingOps: readonly SyncOperation[],
-  deviceId: string
+  _deviceId: string
 ): { state: SyncState; conflicts: SyncConflict[] } {
   const newState: SyncState = {
     ...state,
     incomingOps: incomingOps as SyncOperation[],
     serverClock: mergeClocks(
       state.serverClock,
-      incomingOps.reduce(
-        (clock, op) => mergeClocks(clock, op.clock),
-        {} as VectorClock
-      )
+      incomingOps.reduce((clock, op) => mergeClocks(clock, op.clock), {} as VectorClock)
     ),
   };
 

@@ -156,3 +156,10 @@ memory/
 /tools/*.bak*
 *.bak
 *.backup
+
+# Test/bench-generated export artifacts
+*.pdf
+!docs/**/*.pdf
+
+# Bench-generated performance log
+PERFORMANCE_LOG.md

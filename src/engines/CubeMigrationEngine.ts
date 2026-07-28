@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // CUBE MIGRATION ENGINE — Migrate from other OLAP systems
 // Supports Essbase, TM1, SSAS, and generic CSV/JSON import
@@ -265,8 +264,8 @@ export class CubeMigrationEngine {
 
   private parseEssbaseData(
     data: string,
-    config: MigrationConfig,
-    errors: MigrationError[]
+    _config: MigrationConfig,
+    _errors: MigrationError[]
   ): { membersAdded: number; cellsImported: number } {
     const records = parseCSVRecords(data).filter(
       (record) => !(record[0] ?? '').trim().startsWith('#')
@@ -287,8 +286,8 @@ export class CubeMigrationEngine {
 
   private parseTM1Data(
     data: string,
-    config: MigrationConfig,
-    errors: MigrationError[]
+    _config: MigrationConfig,
+    _errors: MigrationError[]
   ): { membersAdded: number; cellsImported: number } {
     const records = parseCSVRecords(data).filter(
       (record) => !(record[0] ?? '').trim().startsWith('#')
@@ -309,8 +308,8 @@ export class CubeMigrationEngine {
 
   private parseSSASData(
     data: string,
-    config: MigrationConfig,
-    errors: MigrationError[]
+    _config: MigrationConfig,
+    _errors: MigrationError[]
   ): { membersAdded: number; cellsImported: number } {
     const lines = data.split('\n').filter((l) => l.trim());
     let membersAdded = 0;

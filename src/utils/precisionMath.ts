@@ -69,7 +69,7 @@ export function formatPrecise(value: bigint, decimals = 2): string {
  * Example: parsePrecise('1,234.56') → 12345600n
  */
 export function parsePrecise(value: string): bigint {
-  const cleaned = value.replace(/[^0-9.\-]/g, '');
+  const cleaned = value.replace(/[^0-9.-]/g, '');
   const num = parseFloat(cleaned);
   if (!Number.isFinite(num)) return 0n;
   return toPrecise(num);

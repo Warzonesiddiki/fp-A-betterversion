@@ -498,7 +498,7 @@ export class NLQEngine {
   private static groupEntries(
     entries: readonly GLEntry[],
     dimensions: readonly string[],
-    accounts?: readonly GLAccount[]
+    _accounts?: readonly GLAccount[]
   ): Map<string, GLEntry[]> {
     const groups = new Map<string, GLEntry[]>();
 
@@ -629,7 +629,7 @@ export class NLQEngine {
 
   // ─── Chart Config ───────────────────────────────────────────────────────
 
-  static generateChartConfig(query: NLQQuery, data: readonly NLQDataPoint[]): NLQChartConfig {
+  static generateChartConfig(query: NLQQuery, _data: readonly NLQDataPoint[]): NLQChartConfig {
     const metric = query.entities.metrics[0] || 'value';
     const dim = query.entities.dimensions[0] || 'category';
 

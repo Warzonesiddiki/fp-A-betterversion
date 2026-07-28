@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * IntercompanyMatchingEngine — Match and eliminate intercompany transactions
  * Critical for multi-entity consolidation (ASC 810)
@@ -311,8 +310,8 @@ export class IntercompanyMatchingEngine {
   static allocateMinorityInterest(
     totalEarnings: number,
     ownershipPercentage: number,
-    parentEntity: string,
-    subsidiaryEntity: string
+    _parentEntity: string,
+    _subsidiaryEntity: string
   ): { parentShare: number; minorityShare: number; ownershipPct: number } {
     const parentShare = totalEarnings * (ownershipPercentage / 100);
     const minorityShare = totalEarnings - parentShare;

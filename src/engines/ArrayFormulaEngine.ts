@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * ArrayFormulaEngine — Array formula support for FinPlan Pro
  * Handles multi-cell array formulas like Excel's Ctrl+Shift+Enter
@@ -126,7 +125,7 @@ export class ArrayFormulaEngine {
   /**
    * Filter array by condition
    */
-  private static filter(data: number[][], formula: string): ArrayResult {
+  private static filter(data: number[][], _formula: string): ArrayResult {
     // Parse FILTER(array, condition)
     // For now, return data as-is (condition parsing is complex)
     return {
@@ -139,7 +138,7 @@ export class ArrayFormulaEngine {
   /**
    * Sort array
    */
-  private static sort(data: number[][], formula: string): ArrayResult {
+  private static sort(data: number[][], _formula: string): ArrayResult {
     const sorted = [...data].sort((a, b) => (a[0] ?? 0) - (b[0] ?? 0));
     return {
       values: sorted,

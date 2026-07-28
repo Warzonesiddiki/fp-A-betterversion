@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @purity-tier TIER_1_PURE — All 12 static methods (topoSort, detectCycles,
  * computeOwnershipChain, computeFXImpact, aggregateIntercompany, computeNCI,
@@ -222,7 +221,7 @@ export class CascadeCalculationEngine {
   static computeFXImpact(
     amount: number,
     rate: CascadeFXRate,
-    method: 'current-rate' | 'temporal'
+    _method: 'current-rate' | 'temporal'
   ): number {
     return amount * rate.rate; // simplified; full impl needs isMonetary flag
   }

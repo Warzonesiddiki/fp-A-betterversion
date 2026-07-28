@@ -12,6 +12,7 @@
 // =============================================================================
 
 import type { ExportData, ExportConfig } from './ExportEngine';
+import { loadJsPDF } from '@/utils/pdfRuntime';
 
 // ---------------------------------------------------------------------------
 // Type definitions
@@ -242,10 +243,10 @@ export class ProfessionalExportEngine {
   // PUBLIC API — Generate a complete board pack
   // =========================================================================
 
-  generateBoardPack(data: BoardPackData, options: BoardPackOptions = {}): void {
-    const jsPDFCtor = (window as unknown as { jsPDF: new (o: Record<string, unknown>) => JsPDFDoc })
-      .jsPDF;
-    if (!jsPDFCtor) throw new Error('jsPDF not loaded');
+  async generateBoardPack(data: BoardPackData, options: BoardPackOptions = {}): Promise<void> {
+    const jsPDFCtor = (await loadJsPDF()) as unknown as new (
+      o: Record<string, unknown>
+    ) => JsPDFDoc;
 
     this.pdf = new jsPDFCtor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     this.tocEntries = [];
@@ -356,10 +357,10 @@ export class ProfessionalExportEngine {
   // LEGACY COMPATIBILITY — Enhance existing ExportEngine data
   // =========================================================================
 
-  generateFromExportData(data: ExportData, config: ExportConfig): void {
-    const jsPDFCtor = (window as unknown as { jsPDF: new (o: Record<string, unknown>) => JsPDFDoc })
-      .jsPDF;
-    if (!jsPDFCtor) throw new Error('jsPDF not loaded');
+  async generateFromExportData(data: ExportData, config: ExportConfig): Promise<void> {
+    const jsPDFCtor = (await loadJsPDF()) as unknown as new (
+      o: Record<string, unknown>
+    ) => JsPDFDoc;
 
     this.pdf = new jsPDFCtor({
       orientation:
@@ -1088,15 +1089,15 @@ export class ProfessionalExportEngine {
   // BATCH PDF — Multiple sections with bookmarks
   // =========================================================================
 
-  static generateBatchReport(
+  static async generateBatchReport(
     sections: Array<{ title: string; data: ExportData }>,
     config: ExportConfig,
     branding?: Partial<BrandingConfig>
-  ): void {
+  ): Promise<void> {
     const engine = new ProfessionalExportEngine(branding);
-    const jsPDFCtor = (window as unknown as { jsPDF: new (o: Record<string, unknown>) => JsPDFDoc })
-      .jsPDF;
-    if (!jsPDFCtor) throw new Error('jsPDF not loaded');
+    const jsPDFCtor = (await loadJsPDF()) as unknown as new (
+      o: Record<string, unknown>
+    ) => JsPDFDoc;
 
     engine.pdf = new jsPDFCtor({
       orientation:

@@ -32,6 +32,7 @@ import {
   Line,
 } from 'recharts';
 import { TreemapChart } from '@/components/charts/TreemapChart';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -100,7 +101,7 @@ export default function HeadcountPlanPage() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Department', 'Current', 'Planned', 'Variance', 'Cost'],
         rows: data.deptData.map((d) => [
@@ -112,12 +113,12 @@ export default function HeadcountPlanPage() {
         ]),
       },
       { title: 'Headcount Plan Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Department', 'Current', 'Planned', 'Variance', 'Cost'],
         rows: data.deptData.map((d) => [
@@ -129,7 +130,7 @@ export default function HeadcountPlanPage() {
         ]),
       },
       { title: 'Headcount_Plan_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<DeptRow>[] = [

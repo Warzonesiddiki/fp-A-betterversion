@@ -167,7 +167,7 @@ export class LeaseEngine {
   }
 
   /** ASC 842: Low-value asset exemption — asset value ≤ $5,000 at commencement. */
-  static isLowValueAsset(lease: LeaseContract, assetValue: number): boolean {
+  static isLowValueAsset(_lease: LeaseContract, assetValue: number): boolean {
     return assetValue <= 5000;
   }
 

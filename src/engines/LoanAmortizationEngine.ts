@@ -8,7 +8,7 @@
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 6th engine REMEDIATED after D-007 8th SHL CATCH)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // Loan Amortization Engine — Full schedules, balloon payments, prepayment
 
 export interface AmortizationRow {
@@ -37,7 +37,7 @@ export class LoanAmortizationEngine {
     principal: number,
     annualRate: number,
     months: number,
-    startDate?: string
+    _startDate?: string
   ): AmortizationResult {
     const pmt = this.monthlyPayment(principal, annualRate, months);
     const r = annualRate / 12;

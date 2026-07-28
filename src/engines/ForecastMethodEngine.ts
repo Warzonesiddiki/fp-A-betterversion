@@ -569,7 +569,7 @@ export class ForecastMethodEngine {
           const lr = ForecastMethodEngine.linearRegression(t, h);
           return lr.forecast;
         },
-        fitted: (t, full) => {
+        fitted: (_t, full) => {
           const lr = ForecastMethodEngine.linearRegression(full, 0);
           return lr.forecast.length > 0 ? lr.forecast : full.map((_, i) => lr.predict(i));
         },

@@ -32,7 +32,7 @@ export function useFreezePanes(gridApi: GridApi | null) {
   );
 
   const freezeBoth = useCallback(
-    (rowCount: number, colCount: number) => {
+    (_rowCount: number, colCount: number) => {
       freezeTopRow();
       freezeFirstColumns(colCount);
     },

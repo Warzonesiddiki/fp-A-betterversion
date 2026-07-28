@@ -20,6 +20,7 @@ import { DataGrid } from '@/components/ui/DataGrid';
 import { Landmark, ShieldCheck, Download } from 'lucide-react';
 import { BankingEngine } from '@/engines';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 export default function CapitalAdequacyPage() {
   const { pathname } = useLocation();
@@ -76,10 +77,10 @@ export default function CapitalAdequacyPage() {
       headers: ['Risk Category', 'Exposure Amount', 'RWA Weight', 'Capital Charge'],
       rows: rwaBreakdown.map((r) => [r.category, r.amount, r.weight, r.charge]),
     };
-    ExportEngine.exportToPDF(data, {
+    void ExportEngine.exportToPDF(data, {
       title: 'Capital Adequacy Report',
       subtitle: `Reporting Period: ${period}`,
-    });
+    }).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

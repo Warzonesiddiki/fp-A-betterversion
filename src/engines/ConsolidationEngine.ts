@@ -445,7 +445,7 @@ export class ConsolidationEngine {
   static eliminateIntercompany(
     entries: GLEntry[],
     icPairs: ICPair[],
-    ownerships: OwnershipStructure[] = [],
+    _ownerships: OwnershipStructure[] = [],
     entityMap: Map<string, EntityData> = new Map()
   ): EliminationEntry[] {
     const eliminations: EliminationEntry[] = [];
@@ -523,7 +523,7 @@ export class ConsolidationEngine {
   static calculateMinorityInterestDetails(
     subsidiaries: EntityData[],
     ownerships: OwnershipStructure[],
-    entityMap: Map<string, EntityData>,
+    _entityMap: Map<string, EntityData>,
     effectiveOwnershipMap?: Map<string, number>
   ): MinorityInterestDetail[] {
     const details: MinorityInterestDetail[] = [];
@@ -648,7 +648,7 @@ export class ConsolidationEngine {
    */
   static processVIEConsolidation(
     entities: EntityData[],
-    ownerships: OwnershipStructure[],
+    _ownerships: OwnershipStructure[],
     vieNotifications: VIENotification[],
     entityMap: Map<string, EntityData>
   ): EliminationEntry[] {
@@ -904,7 +904,7 @@ export class ConsolidationEngine {
   private static createEliminationEntry(
     pair: ICPair,
     entries: GLEntry[],
-    entityMap: Map<string, EntityData>
+    _entityMap: Map<string, EntityData>
   ): EliminationEntry | null {
     const fromEntries = entries.filter(
       (e) => e.entityId === pair.fromEntityId && e.accountCode === pair.accountCode

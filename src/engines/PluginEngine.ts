@@ -108,7 +108,7 @@ class PluginEventBus {
     });
   }
 
-  removeAllListeners(pluginId: string): void {
+  removeAllListeners(_pluginId: string): void {
     // In production, track which handlers belong to which plugin
     // For now, this is handled by plugin.destroy()
   }
@@ -135,7 +135,7 @@ export class PluginEngine {
   // LIFECYCLE
   // =========================================================================
 
-  async discover(paths: string[]): Promise<PluginManifest[]> {
+  async discover(_paths: string[]): Promise<PluginManifest[]> {
     const manifests: PluginManifest[] = [];
     // In Tauri, scan directories for manifest.json files
     // For now, return empty — plugins are registered manually

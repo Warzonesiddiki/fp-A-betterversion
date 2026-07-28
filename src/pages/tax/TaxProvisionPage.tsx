@@ -33,6 +33,7 @@ import {
   Line,
 } from 'recharts';
 import { WaterfallChart, type WaterfallDataPoint } from '@/components/charts/WaterfallChart';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -107,7 +108,7 @@ export default function TaxProvisionPage() {
     const totalDeferred = jurisdictions.reduce((s, j) => s + j.deferred, 0);
     const effectiveRate = pretaxIncome > 0 ? (totalProvision / pretaxIncome) * 100 : 0;
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-    const trend = quarters.map((q, i) => ({
+    const trend = quarters.map((q, _i) => ({
       quarter: q,
       rate: 18 + getRandom() * 5,
       provision: Math.round(totalProvision / 4 + getRandom() * 10000),
@@ -132,7 +133,7 @@ export default function TaxProvisionPage() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Jurisdiction', 'Pre-Tax Income', 'Tax Rate', 'Provision', 'Deferred', 'Current'],
         rows: data.jurisdictions.map((j) => [
@@ -145,12 +146,12 @@ export default function TaxProvisionPage() {
         ]),
       },
       { title: 'Tax Provision Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Jurisdiction', 'Pre-Tax Income', 'Tax Rate', 'Provision', 'Deferred', 'Current'],
         rows: data.jurisdictions.map((j) => [
@@ -163,7 +164,7 @@ export default function TaxProvisionPage() {
         ]),
       },
       { title: 'Tax_Provision_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<JurisdictionRow>[] = [

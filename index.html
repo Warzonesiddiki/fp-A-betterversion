@@ -8,7 +8,13 @@
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(), payment=()" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qDoHjJmMx3+NFpRzWv9h5Kj6v5Jh3pL+pQZnz6v5cI0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.tauri.app https://*.huggingface.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"> 
+    <!--
+      CSP script-src carries the sha256 of the inline theme bootstrap below.
+      It is verified by `node scripts/csp-hash-check.js` (run in `npm run
+      build`'s gate set) — if you edit that script, run the checker and paste
+      the hash it prints, otherwise the bootstrap is blocked in production.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BjyiEMuHdOmAbS4mllDxuO/KmwHfGyCkVl5ax7Bs/+o='; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://*.tauri.app https://*.huggingface.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
     <title>FinPlan Pro - FP&A Platform</title>
     <script>
       (function() {

@@ -86,7 +86,7 @@ export class WaterfallBridgeEngine {
     revenue: number,
     cogs: number,
     opex: number,
-    priorRevenue?: number,
+    _priorRevenue?: number,
     priorCogs?: number,
     priorOpex?: number
   ): ProfitBridgeResult {

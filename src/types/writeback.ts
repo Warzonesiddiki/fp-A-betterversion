@@ -9,8 +9,6 @@
  * precise failure point. Zero partial updates.
  */
 
-import type { CurrencyCode } from './precision';
-
 // ─── Write-Back Operation Envelope ─────────────────────────────────────────
 
 /** The type of financial record being pushed. */

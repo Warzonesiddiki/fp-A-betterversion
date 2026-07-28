@@ -46,7 +46,7 @@ export class FairValueEngine {
   }
 
   static classifyByLevel(
-    inputs: Record<string, number>,
+    _inputs: Record<string, number>,
     hasQuotedPrice: boolean,
     hasObservableInputs: boolean
   ): 1 | 2 | 3 {

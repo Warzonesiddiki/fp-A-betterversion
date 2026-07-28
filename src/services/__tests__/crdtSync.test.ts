@@ -9,7 +9,6 @@ import {
   compareClocks,
   createSyncState,
   recordLocalOperation,
-  detectConflicts,
   resolveConflict,
   applyIncomingOperations,
   getSyncSummary,
@@ -62,13 +61,17 @@ describe('crdtSync', () => {
 
     it('records local operations with incremented clock', () => {
       let state = createSyncState('budgets', 'device-1');
-      state = recordLocalOperation(state, {
-        type: 'set',
-        path: 'budgets.bgt-001.name',
-        value: 'FY2026',
-        deviceId: 'device-1',
-        timestamp: new Date().toISOString(),
-      }, 'device-1');
+      state = recordLocalOperation(
+        state,
+        {
+          type: 'set',
+          path: 'budgets.bgt-001.name',
+          value: 'FY2026',
+          deviceId: 'device-1',
+          timestamp: new Date().toISOString(),
+        },
+        'device-1'
+      );
 
       expect(state.pendingOps).toHaveLength(1);
       expect(state.localClock['device-1']).toBe(1);
@@ -78,24 +81,30 @@ describe('crdtSync', () => {
   describe('conflict detection and resolution', () => {
     it('detects concurrent conflicts', () => {
       const state = createSyncState('budgets', 'device-1');
-      const stateWithLocal = recordLocalOperation(state, {
-        type: 'set',
-        path: 'budgets.bgt-001.amount',
-        value: 100,
-        deviceId: 'device-1',
-        timestamp: '2026-07-27T10:00:00Z',
-      }, 'device-1');
+      const stateWithLocal = recordLocalOperation(
+        state,
+        {
+          type: 'set',
+          path: 'budgets.bgt-001.amount',
+          value: 100,
+          deviceId: 'device-1',
+          timestamp: '2026-07-27T10:00:00Z',
+        },
+        'device-1'
+      );
 
-      const incoming = [{
-        id: 'server-op-1',
-        type: 'set' as const,
-        path: 'budgets.bgt-001.amount',
-        value: 200,
-        deviceId: 'device-2',
-        timestamp: '2026-07-27T10:00:01Z',
-        clock: { 'device-2': 1 },
-        acknowledged: true,
-      }];
+      const incoming = [
+        {
+          id: 'server-op-1',
+          type: 'set' as const,
+          path: 'budgets.bgt-001.amount',
+          value: 200,
+          deviceId: 'device-2',
+          timestamp: '2026-07-27T10:00:01Z',
+          clock: { 'device-2': 1 },
+          acknowledged: true,
+        },
+      ];
 
       const { conflicts } = applyIncomingOperations(stateWithLocal, incoming, 'device-1');
       expect(conflicts.length).toBeGreaterThan(0);
@@ -109,12 +118,24 @@ describe('crdtSync', () => {
         localValue: 100,
         remoteValue: 200,
         localOp: {
-          id: 'local-1', type: 'set' as const, path: 'test.path', value: 100,
-          deviceId: 'd1', timestamp: '2026-07-27T10:00:00Z', clock: { d1: 1 }, acknowledged: false,
+          id: 'local-1',
+          type: 'set' as const,
+          path: 'test.path',
+          value: 100,
+          deviceId: 'd1',
+          timestamp: '2026-07-27T10:00:00Z',
+          clock: { d1: 1 },
+          acknowledged: false,
         },
         remoteOp: {
-          id: 'remote-1', type: 'set' as const, path: 'test.path', value: 200,
-          deviceId: 'd2', timestamp: '2026-07-27T10:00:01Z', clock: { d2: 1 }, acknowledged: true,
+          id: 'remote-1',
+          type: 'set' as const,
+          path: 'test.path',
+          value: 200,
+          deviceId: 'd2',
+          timestamp: '2026-07-27T10:00:01Z',
+          clock: { d2: 1 },
+          acknowledged: true,
         },
         suggestedStrategy: 'local-wins' as const,
         isResolved: false,
@@ -132,12 +153,24 @@ describe('crdtSync', () => {
         localValue: 100,
         remoteValue: 200,
         localOp: {
-          id: 'local-1', type: 'set' as const, path: 'test.path', value: 100,
-          deviceId: 'd1', timestamp: '2026-07-27T10:00:00Z', clock: { d1: 1 }, acknowledged: false,
+          id: 'local-1',
+          type: 'set' as const,
+          path: 'test.path',
+          value: 100,
+          deviceId: 'd1',
+          timestamp: '2026-07-27T10:00:00Z',
+          clock: { d1: 1 },
+          acknowledged: false,
         },
         remoteOp: {
-          id: 'remote-1', type: 'set' as const, path: 'test.path', value: 200,
-          deviceId: 'd2', timestamp: '2026-07-27T10:00:05Z', clock: { d2: 1 }, acknowledged: true,
+          id: 'remote-1',
+          type: 'set' as const,
+          path: 'test.path',
+          value: 200,
+          deviceId: 'd2',
+          timestamp: '2026-07-27T10:00:05Z',
+          clock: { d2: 1 },
+          acknowledged: true,
         },
         suggestedStrategy: 'latest-wins' as const,
         isResolved: false,

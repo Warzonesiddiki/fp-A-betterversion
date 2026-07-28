@@ -30,6 +30,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -64,7 +65,7 @@ export default function StoreDashboardPage() {
     const totalCOGS = cogsEntries.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
     const grossMargin = totalRevenue > 0 ? ((totalRevenue - totalCOGS) / totalRevenue) * 100 : 0;
     const storeNames = ['Downtown', 'Mall', 'Airport', 'Online', 'Suburban'];
-    const storeData: StoreRow[] = storeNames.map((name, i) => {
+    const storeData: StoreRow[] = storeNames.map((name, _i) => {
       const rev = totalRevenue * (0.15 + getRandom() * 0.2);
       const txn = Math.floor(rev / (40 + getRandom() * 30));
       return {
@@ -90,7 +91,7 @@ export default function StoreDashboardPage() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Store', 'Revenue', 'Transactions', 'Avg Basket', 'YoY Growth'],
         rows: data.storeData.map((s) => [
@@ -102,12 +103,12 @@ export default function StoreDashboardPage() {
         ]),
       },
       { title: 'Store Dashboard Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Store', 'Revenue', 'Transactions', 'Avg Basket', 'YoY Growth'],
         rows: data.storeData.map((s) => [
@@ -119,7 +120,7 @@ export default function StoreDashboardPage() {
         ]),
       },
       { title: 'Store_Dashboard_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column[] = [

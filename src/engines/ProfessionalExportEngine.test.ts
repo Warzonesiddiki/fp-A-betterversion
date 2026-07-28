@@ -146,11 +146,11 @@ describe('ProfessionalExportEngine', () => {
   });
 
   describe('generateBoardPack', () => {
-    it('should generate a complete board pack PDF', () => {
+    it('should generate a complete board pack PDF', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // Should have saved with a filename containing entity and BoardPack
       expect(mockSave).toHaveBeenCalledTimes(1);
@@ -159,11 +159,11 @@ describe('ProfessionalExportEngine', () => {
       expect(savedFilename).toContain('BoardPack');
     });
 
-    it('should render cover page by default', () => {
+    it('should render cover page by default', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // Cover page uses rect for gradient
       expect(mockRect).toHaveBeenCalled();
@@ -176,33 +176,33 @@ describe('ProfessionalExportEngine', () => {
       );
     });
 
-    it('should skip cover page when includeCover is false', () => {
+    it('should skip cover page when includeCover is false', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data, { includeCover: false });
+      await engine.generateBoardPack(data, { includeCover: false });
 
       // Cover page entity name should NOT appear centered on first page
       // (it will still appear in header but not as hero text)
       expect(mockAddPage).toHaveBeenCalled();
     });
 
-    it('should render KPI dashboard', () => {
+    it('should render KPI dashboard', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // KPIs should be rendered (rect for cards + text for values)
       expect(mockRect).toHaveBeenCalled();
       expect(mockText).toHaveBeenCalled();
     });
 
-    it('should render financial sections with autoTable', () => {
+    it('should render financial sections with autoTable', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // autoTable should be called for each section
       expect(mockAutoTable).toHaveBeenCalled();
@@ -211,21 +211,21 @@ describe('ProfessionalExportEngine', () => {
       expect(lastCall.head).toEqual([['Line Item', 'Actual', 'Budget', 'Variance', 'Var %']]);
     });
 
-    it('should add page numbers', () => {
+    it('should add page numbers', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data, { pageNumbers: true });
+      await engine.generateBoardPack(data, { pageNumbers: true });
 
       // setPage should be called for each page to add numbers
       expect(mockSetPage).toHaveBeenCalled();
     });
 
-    it('should include confidential notice when enabled', () => {
+    it('should include confidential notice when enabled', async () => {
       const engine = new ProfessionalExportEngine({ confidential: true });
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data, { confidential: true });
+      await engine.generateBoardPack(data, { confidential: true });
 
       // Confidential text should appear
       const confidentialCalls = mockText.mock.calls.filter((call) =>
@@ -234,11 +234,11 @@ describe('ProfessionalExportEngine', () => {
       expect(confidentialCalls.length).toBeGreaterThan(0);
     });
 
-    it('should render notes when provided', () => {
+    it('should render notes when provided', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // Notes should be rendered (italic text)
       const noteCalls = mockText.mock.calls.filter((call) => String(call[0]!).includes('Note:'));
@@ -247,7 +247,7 @@ describe('ProfessionalExportEngine', () => {
   });
 
   describe('generateFromExportData', () => {
-    it('should generate PDF from ExportData format', () => {
+    it('should generate PDF from ExportData format', async () => {
       const engine = new ProfessionalExportEngine();
       const data = {
         headers: ['Name', 'Actual', 'Budget'],
@@ -257,17 +257,17 @@ describe('ProfessionalExportEngine', () => {
         ],
       };
 
-      engine.generateFromExportData(data, { title: 'Test Report' });
+      await engine.generateFromExportData(data, { title: 'Test Report' });
 
       expect(mockSave).toHaveBeenCalledTimes(1);
       expect(mockSave!.mock.calls[0]![0]).toContain('Test_Report');
     });
 
-    it('should handle empty data gracefully', () => {
+    it('should handle empty data gracefully', async () => {
       const engine = new ProfessionalExportEngine();
       const data = { headers: ['A'], rows: [] };
 
-      engine.generateFromExportData(data, { title: 'Empty Report' });
+      await engine.generateFromExportData(data, { title: 'Empty Report' });
 
       expect(mockSave).toHaveBeenCalled();
       // Should display "no data" message
@@ -277,14 +277,14 @@ describe('ProfessionalExportEngine', () => {
       expect(noDataCalls.length).toBeGreaterThan(0);
     });
 
-    it('should handle landscape orientation', () => {
+    it('should handle landscape orientation', async () => {
       const engine = new ProfessionalExportEngine();
       const data = {
         headers: ['Col1', 'Col2'],
         rows: [['A', 1]],
       };
 
-      engine.generateFromExportData(data, {
+      await engine.generateFromExportData(data, {
         title: 'Landscape Report',
         orientation: 'landscape',
       });
@@ -294,7 +294,7 @@ describe('ProfessionalExportEngine', () => {
   });
 
   describe('generateBatchReport', () => {
-    it('should generate batch PDF with multiple sections', () => {
+    it('should generate batch PDF with multiple sections', async () => {
       const sections = [
         {
           title: 'Income Statement',
@@ -312,13 +312,13 @@ describe('ProfessionalExportEngine', () => {
         },
       ];
 
-      ProfessionalExportEngine.generateBatchReport(sections, { title: 'Batch Report' });
+      await ProfessionalExportEngine.generateBatchReport(sections, { title: 'Batch Report' });
 
       expect(mockSave).toHaveBeenCalledTimes(1);
       expect(mockSave!.mock.calls[0]![0]).toContain('Batch_Report');
     });
 
-    it('should handle empty sections', () => {
+    it('should handle empty sections', async () => {
       const sections = [
         {
           title: 'Empty Section',
@@ -326,14 +326,14 @@ describe('ProfessionalExportEngine', () => {
         },
       ];
 
-      ProfessionalExportEngine.generateBatchReport(sections, { title: 'Empty Batch' });
+      await ProfessionalExportEngine.generateBatchReport(sections, { title: 'Empty Batch' });
 
       expect(mockSave).toHaveBeenCalled();
     });
   });
 
   describe('table rendering', () => {
-    it('should auto-detect total rows', () => {
+    it('should auto-detect total rows', async () => {
       const engine = new ProfessionalExportEngine();
       const data: BoardPackData = {
         entity: 'Test Corp',
@@ -358,13 +358,13 @@ describe('ProfessionalExportEngine', () => {
         ],
       };
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // autoTable should be called with the section data
       expect(mockAutoTable).toHaveBeenCalled();
     });
 
-    it('should right-align numeric columns', () => {
+    it('should right-align numeric columns', async () => {
       const engine = new ProfessionalExportEngine();
       const data: BoardPackData = {
         entity: 'Test Corp',
@@ -388,7 +388,7 @@ describe('ProfessionalExportEngine', () => {
         ],
       };
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // Check autoTable was called with didParseCell that right-aligns
       const autoTableCall = mockAutoTable.mock.calls.find((call) => call[0]!.didParseCell);
@@ -397,7 +397,7 @@ describe('ProfessionalExportEngine', () => {
   });
 
   describe('KPI dashboard rendering', () => {
-    it('should render KPI cards with status indicators', () => {
+    it('should render KPI cards with status indicators', async () => {
       const engine = new ProfessionalExportEngine();
       const data: BoardPackData = {
         entity: 'Test',
@@ -415,7 +415,7 @@ describe('ProfessionalExportEngine', () => {
         sections: [],
       };
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // Should render KPI cards (rect calls for backgrounds + indicators)
       expect(mockRect).toHaveBeenCalled();
@@ -426,7 +426,7 @@ describe('ProfessionalExportEngine', () => {
       expect(valueCalls.length).toBe(2);
     });
 
-    it('should handle many KPIs (more than 4)', () => {
+    it('should handle many KPIs (more than 4)', async () => {
       const engine = new ProfessionalExportEngine();
       const kpis: KPIItem[] = Array.from({ length: 8 }, (_, i) => ({
         label: `KPI ${i + 1}`,
@@ -448,7 +448,7 @@ describe('ProfessionalExportEngine', () => {
         sections: [],
       };
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // Should render all 8 KPIs
       expect(mockRect).toHaveBeenCalled();
@@ -456,19 +456,19 @@ describe('ProfessionalExportEngine', () => {
   });
 
   describe('branding', () => {
-    it('should use custom company name in headers', () => {
+    it('should use custom company name in headers', async () => {
       const engine = new ProfessionalExportEngine({
         companyName: 'Custom Corp',
       });
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       const companyNameCalls = mockText.mock.calls.filter((call) => call[0] === 'Custom Corp');
       expect(companyNameCalls.length).toBeGreaterThan(0);
     });
 
-    it('should render logo when provided', () => {
+    it('should render logo when provided', async () => {
       const mockAddImage = vi.fn();
       (mockPdf as any).addImage = mockAddImage;
 
@@ -477,17 +477,17 @@ describe('ProfessionalExportEngine', () => {
       });
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       // Logo should be rendered on cover page
       expect(mockAddImage).toHaveBeenCalled();
     });
 
-    it('should use default company name when not provided', () => {
+    it('should use default company name when not provided', async () => {
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       const finplanCalls = mockText.mock.calls.filter((call) =>
         String(call[0]!).includes('FinPlan Pro')
@@ -497,15 +497,18 @@ describe('ProfessionalExportEngine', () => {
   });
 
   describe('edge cases', () => {
-    it('should throw when jsPDF is not loaded', () => {
+    it('should fall back to the bundled jsPDF when no global is injected', async () => {
       delete (window as any).jsPDF;
       const engine = new ProfessionalExportEngine();
       const data = createSampleBoardPackData();
 
-      expect(() => engine.generateBoardPack(data)).toThrow('jsPDF not loaded');
+      // No window.jsPDF => pdfRuntime dynamically imports the bundled jspdf
+      // (+ autoTable plugin) instead of throwing, which is what shipped
+      // before and broke every export call site.
+      await expect(engine.generateBoardPack(data)).resolves.toBeUndefined();
     });
 
-    it('should handle sections with no rows', () => {
+    it('should handle sections with no rows', async () => {
       const engine = new ProfessionalExportEngine();
       const data: BoardPackData = {
         entity: 'Test',
@@ -526,11 +529,11 @@ describe('ProfessionalExportEngine', () => {
         ],
       };
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
       expect(mockSave).toHaveBeenCalled();
     });
 
-    it('should handle KPIs with no change value', () => {
+    it('should handle KPIs with no change value', async () => {
       const engine = new ProfessionalExportEngine();
       const data: BoardPackData = {
         entity: 'Test',
@@ -545,11 +548,11 @@ describe('ProfessionalExportEngine', () => {
         sections: [],
       };
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
       expect(mockSave).toHaveBeenCalled();
     });
 
-    it('should handle KPIs with target value', () => {
+    it('should handle KPIs with target value', async () => {
       const engine = new ProfessionalExportEngine();
       const data: BoardPackData = {
         entity: 'Test',
@@ -564,7 +567,7 @@ describe('ProfessionalExportEngine', () => {
         sections: [],
       };
 
-      engine.generateBoardPack(data);
+      await engine.generateBoardPack(data);
 
       const targetCalls = mockText.mock.calls.filter((call) =>
         String(call[0]!).includes('Target:')

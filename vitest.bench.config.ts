@@ -28,6 +28,13 @@ export default defineConfig({
     include: ['src/**/*.bench.test.ts', 'src/**/*.benchmark.test.ts'],
     // Standard excludes for build artifacts / node_modules / e2e
     exclude: ['node_modules/**', 'dist/**', '.idea/**', '.git/**', '.cache/**', 'tests/e2e/**'],
+    // Match the default suite's environment. Without these, benches ran in a
+    // bare Node context: `window` was undefined (masterStorage → isTauri threw
+    // ReferenceError) and sql.js/@huggingface/transformers were unmocked, so
+    // storage and AI benches failed or hung on network fetches rather than
+    // measuring anything.
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
     // Bench runs are slow; allow generous per-test timeout
     testTimeout: 60_000,
     hookTimeout: 60_000,

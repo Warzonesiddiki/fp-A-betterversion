@@ -19,6 +19,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatTons(n: number): string {
   return `${n.toLocaleString()} tCO₂e`;
@@ -70,13 +71,13 @@ export default function CarbonDashboardPage() {
   }, [entries]);
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Source', 'Scope', 'tCO₂e', '% of Total'],
         rows: SOURCES.map((s) => [s.source, s.scope, s.tons, `${s.pct}%`]),
       },
       { title: 'Carbon Emissions Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0)

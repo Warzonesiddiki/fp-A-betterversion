@@ -21,6 +21,7 @@ import {
   AlertTriangle,
   XCircle,
 } from 'lucide-react';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function fmt(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -225,10 +226,10 @@ export default function ThreeStatementDashboardPage() {
         ['Cash Flow', 'Financing', cashFlow.netCashFromFinancing],
       ],
     };
-    ExportEngine.exportToPDF(data, {
+    void ExportEngine.exportToPDF(data, {
       title: 'Three-Statement Model',
       subtitle: `Period: ${period}`,
-    });
+    }).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

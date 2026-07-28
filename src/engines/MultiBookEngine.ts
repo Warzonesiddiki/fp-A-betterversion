@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * MultiBookEngine — Multi-book accounting for GAAP, IFRS, Tax
  * Manages parallel accounting books with cross-book consolidation
@@ -159,7 +158,7 @@ export class MultiBookEngine {
     book.closedPeriods.push(period);
   }
 
-  static reopenBook(bookId: string, period: string, userId: string): void {
+  static reopenBook(bookId: string, period: string, _userId: string): void {
     const book = this.books.get(bookId);
     if (!book) throw new Error(`Book ${bookId} not found`);
     book.closedPeriods = book.closedPeriods.filter((p) => p !== period);

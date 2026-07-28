@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * SyncEngine — Offline-first sync for collaboration
  * Queues local changes, syncs when online, handles conflicts
@@ -171,7 +170,7 @@ export class SyncEngine {
     }
   }
 
-  private static async sendToRemote(change: SyncChange): Promise<void> {
+  private static async sendToRemote(_change: SyncChange): Promise<void> {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 10));
 

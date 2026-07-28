@@ -24,6 +24,7 @@ import {
   Line,
 } from 'recharts';
 import { VarianceChart } from '@/components/charts/VarianceChart';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -169,7 +170,7 @@ export default function ScenarioBuilderPage() {
   };
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Parameter', 'Base', 'Scenario', 'Impact'],
         rows: [
@@ -195,11 +196,11 @@ export default function ScenarioBuilderPage() {
         ],
       },
       { title: 'Scenario Analysis' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Parameter', 'Base', 'Scenario', 'Impact'],
         rows: [
@@ -219,7 +220,7 @@ export default function ScenarioBuilderPage() {
         ],
       },
       { title: 'Scenario_Analysis' }
-    );
+    ).catch(reportExportFailure);
   };
 
   return (

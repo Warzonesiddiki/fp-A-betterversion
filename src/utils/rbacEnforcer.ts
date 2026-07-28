@@ -214,8 +214,8 @@ export function enforce<TArgs extends unknown[], TReturn>(
  * ```
  */
 export function enforceMany<TState extends Record<string, unknown>, TKeys extends keyof TState>(
-  set: (recipe: (state: TState) => void, shouldReplace?: false) => void,
-  get: () => TState,
+  _set: (recipe: (state: TState) => void, shouldReplace?: false) => void,
+  _get: () => TState,
   permissionMap: Partial<Record<TKeys, string | string[]>>,
   handlers: Pick<TState, TKeys>,
   options: EnforceOptions = {}

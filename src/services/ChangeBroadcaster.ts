@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // Change Broadcaster
 // Broadcasts data changes to connected clients and handles incoming changes
@@ -249,9 +248,9 @@ export class ChangeBroadcaster {
   }
 
   private async checkServerPermission(
-    userId: string,
-    resourceType: ResourceType,
-    resourceId: string
+    _userId: string,
+    _resourceType: ResourceType,
+    _resourceId: string
   ): Promise<boolean> {
     // In production: call auth service or check local capabilities
     return true;

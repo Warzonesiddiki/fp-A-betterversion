@@ -35,6 +35,7 @@ import {
   Area,
 } from 'recharts';
 import { SparklineChart } from '@/components/charts/SparklineChart';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -107,7 +108,7 @@ export default function CashForecastPage() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Category', 'Inflows', 'Outflows', 'Net'],
         rows: data.categories.map((c) => [
@@ -118,12 +119,12 @@ export default function CashForecastPage() {
         ]),
       },
       { title: 'Cash Forecast Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Category', 'Inflows', 'Outflows', 'Net'],
         rows: data.categories.map((c) => [
@@ -134,7 +135,7 @@ export default function CashForecastPage() {
         ]),
       },
       { title: 'Cash_Forecast_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const catColumns: Column<CategoryRow>[] = [

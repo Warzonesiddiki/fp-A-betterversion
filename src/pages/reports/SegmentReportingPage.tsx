@@ -20,6 +20,7 @@ import {
 } from 'recharts';
 import { PieChart, Pie } from 'recharts';
 import { Layers, TrendingUp, Download, Filter } from 'lucide-react';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 const COLORS = [
   '#3B82F6',
@@ -78,13 +79,13 @@ export default function SegmentReportingPage() {
             variant="outline"
             size="sm"
             onClick={() => {
-              ExportEngine.exportToPDF(
+              void ExportEngine.exportToPDF(
                 {
                   headers: ['Segment', 'Revenue', 'Expenses', 'Net Income'],
                   rows: segmentData.map((s) => [s.name, s.revenue, s.expenses, s.netIncome]),
                 },
                 { title: 'Segment Report' }
-              );
+              ).catch(reportExportFailure);
             }}
           >
             <Download className="h-4 w-4 mr-1" /> Export

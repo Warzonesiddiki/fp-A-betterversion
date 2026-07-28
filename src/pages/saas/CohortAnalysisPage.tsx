@@ -17,6 +17,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -76,7 +77,7 @@ export default function CohortAnalysisPage() {
   }, [retentionMatrix, cohortSizes, entries]);
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Cohort', 'Size', 'M0 Retention', 'Final Retention'],
         rows: retentionMatrix.map((row) => [
@@ -91,7 +92,7 @@ export default function CohortAnalysisPage() {
         ]) as (string | number | boolean | null)[][],
       },
       { title: 'Cohort Retention Analysis' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0)

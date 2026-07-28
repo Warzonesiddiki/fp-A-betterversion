@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Scale, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -66,7 +67,7 @@ export default function BalanceSheetPage() {
         ],
       ],
     };
-    ExportEngine.exportToPDF(data, { title: 'Balance Sheet', subtitle: `As of ${asOfDate}` });
+    void ExportEngine.exportToPDF(data, { title: 'Balance Sheet', subtitle: `As of ${asOfDate}` }).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
@@ -80,7 +81,7 @@ export default function BalanceSheetPage() {
         ['Total Liabilities + Equity', report.totalLiabilities + report.totalEquity],
       ],
     };
-    ExportEngine.exportToExcel(data, { title: 'Balance_Sheet' });
+    void ExportEngine.exportToExcel(data, { title: 'Balance_Sheet' }).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

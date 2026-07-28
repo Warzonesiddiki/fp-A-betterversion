@@ -31,6 +31,7 @@ import {
   Cell,
 } from 'recharts';
 import { GaugeChart } from '@/components/charts/GaugeChart';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -142,7 +143,7 @@ export default function RevRecDashboard() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Contract', 'Total', 'Recognized', 'Remaining', 'Next Recognition', 'Method'],
         rows: data.contracts.map((c) => [
@@ -155,12 +156,12 @@ export default function RevRecDashboard() {
         ]),
       },
       { title: 'Revenue Recognition Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Contract', 'Total', 'Recognized', 'Remaining', 'Next Recognition', 'Method'],
         rows: data.contracts.map((c) => [
@@ -173,7 +174,7 @@ export default function RevRecDashboard() {
         ]),
       },
       { title: 'Revenue_Recognition_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<ContractRow>[] = [

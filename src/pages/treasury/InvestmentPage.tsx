@@ -22,6 +22,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -127,7 +128,7 @@ export default function InvestmentPage() {
   const weightedYield = INVESTMENTS.reduce((s, i) => s + i.yield * i.value, 0) / totalValue;
 
   const handleExport = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Instrument', 'Type', 'Issuer', 'Maturity', 'Yield', 'Value', 'Rating'],
         rows: INVESTMENTS.map((i) => [
@@ -141,7 +142,7 @@ export default function InvestmentPage() {
         ]),
       },
       { title: 'Investment_Portfolio' }
-    );
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0)

@@ -22,6 +22,7 @@ import {
   Area,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -211,7 +212,7 @@ export default function PayrollForecastPage() {
   ];
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: [
           'Department',
@@ -233,7 +234,7 @@ export default function PayrollForecastPage() {
         ]),
       },
       { title: 'Payroll Forecast Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const hasData = entries.length > 0 || mockDepartments.length > 0;

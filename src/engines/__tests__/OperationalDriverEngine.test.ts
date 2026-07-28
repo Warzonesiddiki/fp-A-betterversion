@@ -19,7 +19,12 @@ import type { OperationalDriver } from '@/types/operational-drivers';
 describe('OperationalDriverEngine', () => {
   const fteDriver = createDriver('fte-count', 'Engineering FTEs', 'FTE', 'headcount');
   const salaryDriver = createDriver('avg-salary', 'Avg Salary', '$/year', 'headcount');
-  const benefitsDriver = createDriver('benefits-multiplier', 'Benefits Multiplier', 'ratio', 'headcount');
+  const benefitsDriver = createDriver(
+    'benefits-multiplier',
+    'Benefits Multiplier',
+    'ratio',
+    'headcount'
+  );
 
   // Set values for Jan 2026
   const drivers = new Map<string, OperationalDriver>();
@@ -90,13 +95,7 @@ describe('OperationalDriverEngine', () => {
         '2026-01'
       );
 
-      const sensitivity = analyzeSensitivity(
-        chain,
-        drivers,
-        fteDriver.id,
-        '2026-01',
-        [-10, 10]
-      );
+      const sensitivity = analyzeSensitivity(chain, drivers, fteDriver.id, '2026-01', [-10, 10]);
 
       expect(sensitivity.driverId).toBe(fteDriver.id);
       expect(sensitivity.scenarios).toHaveLength(2);
@@ -112,8 +111,20 @@ describe('OperationalDriverEngine', () => {
       const periods = ['2026-01', '2026-02'];
       const entities = ['Engineering', 'Sales'];
       const values = new Map([
-        ['Engineering', new Map([['2026-01', 100], ['2026-02', 110]])],
-        ['Sales', new Map([['2026-01', 50], ['2026-02', 55]])],
+        [
+          'Engineering',
+          new Map([
+            ['2026-01', 100],
+            ['2026-02', 110],
+          ]),
+        ],
+        [
+          'Sales',
+          new Map([
+            ['2026-01', 50],
+            ['2026-02', 55],
+          ]),
+        ],
       ]);
 
       const matrix = createMatrix(fteDriver.id, periods, entities, 'base', values);

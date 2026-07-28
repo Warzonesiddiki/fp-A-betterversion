@@ -3,6 +3,8 @@
 // Handles variable substitution, page layout, bookmarks, headers/footers
 // =============================================================================
 
+import { loadJsPDF } from '@/utils/pdfRuntime';
+
 export type TemplateType =
   | 'board_pack'
   | 'pl_statement'
@@ -155,13 +157,11 @@ export class ExportTemplateEngine {
 
   // --- PDF Generation ---
 
-  generatePDF(templateId: string, ctx: ExportContext): void {
-    const doc = (window as unknown as { jsPDF: new (o: Record<string, unknown>) => JsPDFDoc })
-      .jsPDF;
-    if (!doc) return;
-
+  async generatePDF(templateId: string, ctx: ExportContext): Promise<void> {
     const tpl = this.templates.get(templateId);
     if (!tpl) return;
+
+    const doc = (await loadJsPDF()) as unknown as new (o: Record<string, unknown>) => JsPDFDoc;
 
     const pdf = new doc({
       orientation: 'portrait',

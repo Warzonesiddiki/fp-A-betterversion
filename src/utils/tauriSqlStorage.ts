@@ -60,5 +60,9 @@ export const tauriSqlStorage: PersistStorage<any> = {
 };
 
 export async function isTauri(): Promise<boolean> {
+  // Guard `window`: masterStorage (which calls this) also runs inside Web
+  // Workers and in Node-based test/bench environments, where dereferencing
+  // `window` throws a ReferenceError instead of simply reporting "not Tauri".
+  if (typeof window === 'undefined') return false;
   return '__TAURI_INTERNALS' in window || '__TAURI__' in window;
 }

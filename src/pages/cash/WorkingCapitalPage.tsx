@@ -30,6 +30,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -136,7 +137,7 @@ export default function WorkingCapitalPage() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Component', 'Amount', 'Type', 'Days'],
         rows: data.components.map((c) => [
@@ -147,12 +148,12 @@ export default function WorkingCapitalPage() {
         ]),
       },
       { title: 'Working Capital Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Component', 'Amount', 'Type', 'Days'],
         rows: data.components.map((c) => [
@@ -163,7 +164,7 @@ export default function WorkingCapitalPage() {
         ]),
       },
       { title: 'Working_Capital_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<ComponentRow>[] = [

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useMemo, useState, useCallback } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
@@ -49,7 +49,7 @@ export function ApprovalDashboard({
   onApprove,
   onReject,
   onBulkApprove,
-  onDelegate,
+  onDelegate: _onDelegate,
   onAddDelegation,
   onRemoveDelegation,
   className,

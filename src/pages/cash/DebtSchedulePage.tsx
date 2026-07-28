@@ -30,6 +30,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -189,7 +190,7 @@ export default function DebtSchedulePage() {
   );
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Lender', 'Type', 'Principal', 'Rate', 'Maturity', 'Remaining'],
         rows: mockDebt.map((d) => [
@@ -202,11 +203,11 @@ export default function DebtSchedulePage() {
         ]),
       },
       { title: 'Debt Schedule' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: [
           'ID',
@@ -232,7 +233,7 @@ export default function DebtSchedulePage() {
         ]),
       },
       { title: 'Debt_Schedule' }
-    );
+    ).catch(reportExportFailure);
   };
 
   return (

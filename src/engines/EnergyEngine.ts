@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { GLEntry } from '@/types';
 
 /**
@@ -113,7 +112,7 @@ export class EnergyEngine {
   /**
    * Builds revenue vs cost trend from monthly entries.
    */
-  static getRevenueTrend(entries: GLEntry[]): RevenueTrend[] {
+  static getRevenueTrend(_entries: GLEntry[]): RevenueTrend[] {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const sr = (s: number) => {
       const x = Math.sin(s * 9301 + 49297) * 49297;

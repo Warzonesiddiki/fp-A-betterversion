@@ -22,6 +22,7 @@ import {
   Legend,
   Cell,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 export default function LoanLossPage() {
   const { entries } = useGLStore();
@@ -101,10 +102,10 @@ export default function LoanLossPage() {
       headers: ['Loan Portfolio', 'Outstanding Balance', 'Specific Reserve', 'NPL %'],
       rows: loanPortfolio.map((l) => [l.type, l.balance, l.reserve, `${l.npl}%`]),
     };
-    ExportEngine.exportToPDF(data, {
+    void ExportEngine.exportToPDF(data, {
       title: 'Loan Loss Reserve Analysis',
       companyName: 'FinPlan Pro Banking',
-    });
+    }).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {

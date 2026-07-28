@@ -22,6 +22,7 @@ import {
   ScatterChart,
   Scatter,
 } from 'recharts';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -213,7 +214,7 @@ export default function PromoAnalysisPage() {
   );
 
   const handleExportPDF = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Promotion', 'Type', 'Cost', 'Revenue', 'Baseline', 'ROI'],
         rows: mockPromos.map((p) => [
@@ -226,11 +227,11 @@ export default function PromoAnalysisPage() {
         ]),
       },
       { title: 'Promotion Analysis' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['ID', 'Name', 'Type', 'Discount', 'Cost', 'Revenue', 'Baseline', 'Status'],
         rows: mockPromos.map((p) => [
@@ -245,7 +246,7 @@ export default function PromoAnalysisPage() {
         ]),
       },
       { title: 'Promotion_Analysis' }
-    );
+    ).catch(reportExportFailure);
   };
 
   return (

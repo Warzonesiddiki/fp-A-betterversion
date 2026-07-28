@@ -67,7 +67,7 @@ export function WaterfallChart({
             tick={{ fontSize: 12, fill: 'var(--text-secondary, #94a3b8)' }}
           />
           <Tooltip
-            formatter={(value, name, props) => [
+            formatter={(_value, _name, props) => [
               formatValue(props.payload?.value ?? 0),
               props.payload?.name ?? '',
             ]}

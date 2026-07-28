@@ -32,6 +32,7 @@ import {
 import { VarianceChart } from '@/components/charts/VarianceChart';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -135,7 +136,7 @@ export default function VarianceDashboardPage() {
 
   const handleExportPDF = () => {
     if (!data) return;
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Account', 'Budget', 'Actual', 'Variance', 'Variance %', 'Driver'],
         rows: data.rows.map((r) => [
@@ -148,12 +149,12 @@ export default function VarianceDashboardPage() {
         ]),
       },
       { title: 'Variance Dashboard Report', companyName: 'FinPlan Pro' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const handleExportExcel = () => {
     if (!data) return;
-    ExportEngine.exportToExcel(
+    void ExportEngine.exportToExcel(
       {
         headers: ['Account', 'Budget', 'Actual', 'Variance', 'Variance %', 'Driver'],
         rows: data.rows.map((r) => [
@@ -166,7 +167,7 @@ export default function VarianceDashboardPage() {
         ]),
       },
       { title: 'Variance_Dashboard_Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<VarianceRow>[] = [

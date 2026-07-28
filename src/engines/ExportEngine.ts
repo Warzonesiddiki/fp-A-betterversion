@@ -17,6 +17,7 @@ export interface ExportData {
 }
 
 import { downloadBlob } from '@/utils/canvasFactory';
+import { loadJsPDF } from '@/utils/pdfRuntime';
 
 interface JsPDFInstance {
   autoTable: (options: Record<string, unknown>) => void;
@@ -42,25 +43,9 @@ interface JsPDFConstructor {
   new (options: { orientation?: string; unit?: string; format?: string }): JsPDFInstance;
 }
 
-interface WindowWithJsPDF extends Window {
-  jsPDF?: JsPDFConstructor;
-  XLSX?: {
-    utils: {
-      book_new: () => unknown;
-      aoa_to_sheet: (data: unknown[][]) => Record<string, unknown>;
-      encode_cell: (cell: { r: number; c: number }) => string;
-      book_append_sheet: (wb: unknown, ws: Record<string, unknown>, name: string) => void;
-    };
-    writeFile: (wb: unknown, filename: string) => void;
-  };
-}
-
 export class ExportEngine {
-  static exportToPDF(data: ExportData, config: ExportConfig): void {
-    const { jsPDF } = window as unknown as WindowWithJsPDF;
-    if (!jsPDF) {
-      throw new Error('jsPDF not loaded — include jsPDF script before exporting');
-    }
+  static async exportToPDF(data: ExportData, config: ExportConfig): Promise<void> {
+    const jsPDF = (await loadJsPDF()) as unknown as JsPDFConstructor;
 
     const doc = new jsPDF({
       orientation: config.orientation || 'portrait',
@@ -125,55 +110,24 @@ export class ExportEngine {
     doc.save(`${config.title?.replace(/\s+/g, '_') || 'export'}.pdf`);
   }
 
-  static exportToExcel(data: ExportData, config: ExportConfig): void {
-    const XLSX = (window as unknown as WindowWithJsPDF).XLSX;
-    if (!XLSX) {
-      throw new Error('XLSX not loaded — include SheetJS script before exporting');
-    }
-
-    const wb = XLSX.utils.book_new();
-    const ws_data = [data.headers, ...data.rows];
-    const ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-    // Freeze header row
-    ws['!freeze'] = { xSplit: 0, ySplit: 1 };
-
-    // Auto column width
-    const colWidths = data.headers.map((h: string, i: number) => {
-      const maxLen = Math.max(
-        h.length,
-        ...data.rows.map((r: (string | number | boolean | null)[]) => String(r[i] || '').length)
-      );
-      return { wch: maxLen + 3 };
-    });
-    ws['!cols'] = colWidths;
-
-    // Currency format for number columns
-    for (let r = 1; r <= data.rows.length; r++) {
-      for (let c = 1; c < data.headers.length; c++) {
-        const cellRef = XLSX.utils.encode_cell({ r, c });
-        const cell = ws[cellRef] as { v?: number; z?: string } | undefined;
-        if (cell && typeof cell.v === 'number') {
-          cell.z = '$#,##0.00';
-        }
-      }
-    }
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    XLSX.writeFile(wb, `${config.title?.replace(/\s+/g, '_') || 'export'}.xlsx`);
+  /**
+   * Export to Excel. Delegates to the bundled ExcelJS implementation
+   * (`exportExcel.ts`) — the previous `window.XLSX` global was never populated
+   * by the app, so this path always threw at runtime.
+   */
+  static async exportToExcel(data: ExportData, config: ExportConfig): Promise<void> {
+    const { default: exportToExcel } = await import('./exportExcel');
+    await exportToExcel(data, config);
   }
 
   /**
    * Export multiple datasets as a single PDF with bookmarks per section.
    */
-  static exportBatchToPDF(
+  static async exportBatchToPDF(
     sections: Array<{ title: string; data: ExportData }>,
     config: ExportConfig
-  ): void {
-    const { jsPDF } = window as unknown as WindowWithJsPDF;
-    if (!jsPDF) {
-      throw new Error('jsPDF not loaded — include jsPDF script before exporting');
-    }
+  ): Promise<void> {
+    const jsPDF = (await loadJsPDF()) as unknown as JsPDFConstructor;
 
     const doc = new jsPDF({
       orientation: config.orientation || 'portrait',

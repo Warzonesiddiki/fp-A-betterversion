@@ -28,6 +28,7 @@ import {
   Legend,
 } from 'recharts';
 import type { GLEntry } from '@/types';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -73,7 +74,7 @@ export default function RetailDashboard() {
   const totalRevenue = useMemo(() => storeStats.reduce((s, st) => s + st.revenue, 0), [storeStats]);
 
   const handleExport = () => {
-    ExportEngine.exportToPDF(
+    void ExportEngine.exportToPDF(
       {
         headers: ['Store', 'Revenue', 'COGS', 'Labor', 'Gross Profit', 'Net Profit', 'Margin %'],
         rows: storeStats.map((s) => [
@@ -87,7 +88,7 @@ export default function RetailDashboard() {
         ]),
       },
       { title: 'Retail Store Performance Report' }
-    );
+    ).catch(reportExportFailure);
   };
 
   const columns: Column<StoreStats>[] = [

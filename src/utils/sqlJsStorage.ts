@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PersistStorage, StorageValue } from 'zustand/middleware';
 import initSqlJs, { type Database } from 'sql.js';
+// Resolve the WASM binary from the bundled dependency. Fetching it from
+// https://sql.js.org (the previous behaviour) is blocked by our own CSP
+// (`default-src 'self'`) and breaks the desktop/offline story entirely.
+import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import { createLogger } from '@/utils/logger';
 
 const sqlJsStorageLogger = createLogger('SqlJsStorage');
@@ -14,7 +18,7 @@ async function getDb(): Promise<Database> {
   if (!dbPromise) {
     dbPromise = (async () => {
       const SQL = await initSqlJs({
-        locateFile: (file) => `https://sql.js.org/dist/${file}`,
+        locateFile: (file) => (file.endsWith('.wasm') ? sqlWasmUrl : file),
       });
 
       // Try to restore from localStorage
