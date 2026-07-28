@@ -20,7 +20,9 @@ import type {
   SyncEngineConfig,
 } from '@/types/crdt';
 
-const DEFAULT_CONFIG: SyncEngineConfig = {
+/** Default sync-engine tuning. Exported so callers/tests can build on it
+ * rather than re-specifying these values. */
+export const DEFAULT_CONFIG: SyncEngineConfig = {
   pollIntervalMs: 30000,
   maxBatchSize: 100,
   autoMerge: true,

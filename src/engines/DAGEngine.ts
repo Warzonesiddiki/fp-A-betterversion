@@ -113,7 +113,7 @@ export function topologicalSort(
 ): string[] {
   // In-degree = number of dependencies for each node
   const inDegree = new Map<string, number>();
-  for (const [id, node] of nodes) {
+  for (const [id] of nodes) {
     inDegree.set(id, adjacency.get(id)?.size ?? 0);
   }
 

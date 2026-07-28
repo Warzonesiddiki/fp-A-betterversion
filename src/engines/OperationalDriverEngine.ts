@@ -18,7 +18,7 @@ import type {
   DriverSensitivity,
   SensitivityScenario,
 } from '@/types/operational-drivers';
-import { toPrecise, fromPrecise, preciseMul, preciseDiv, preciseSub } from '@/utils/precisionMath';
+import { toPrecise, fromPrecise, preciseMul } from '@/utils/precisionMath';
 
 // ─── Driver Creation ───────────────────────────────────────────────────────
 

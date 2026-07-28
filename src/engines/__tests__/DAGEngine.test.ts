@@ -6,7 +6,6 @@ import { describe, it, expect } from 'vitest';
 import {
   buildDAG,
   topologicalSortWithValidation,
-  detectCycles,
   recalculate,
   getTransitiveDependencies,
   getTransitiveDependents,

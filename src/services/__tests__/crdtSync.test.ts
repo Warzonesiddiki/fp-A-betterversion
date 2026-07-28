@@ -9,7 +9,6 @@ import {
   compareClocks,
   createSyncState,
   recordLocalOperation,
-  detectConflicts,
   resolveConflict,
   applyIncomingOperations,
   getSyncSummary,

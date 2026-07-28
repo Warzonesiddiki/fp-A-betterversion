@@ -13,7 +13,6 @@ import type {
   RowFilter,
   ColumnFilter,
   FilteredDataView,
-  RowFilterOperator,
 } from '@/types/permissions';
 
 // ─── Row Filtering ─────────────────────────────────────────────────────────
