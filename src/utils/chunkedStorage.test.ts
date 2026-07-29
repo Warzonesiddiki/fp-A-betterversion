@@ -7,8 +7,14 @@ vi.mock('../workers/worker-pool', () => ({
   createStoragePool: () => ({
     run: vi.fn(async (request: { type: string; payload: unknown }) => {
       if (request.type === 'parse') {
-        const chunks = request.payload as Array<{ value: string }>;
-        const joined = chunks.map((c) => c.value).join('');
+        // `wrapChunkedStorage` unwraps each persisted `{ value }` record into a
+        // raw string BEFORE dispatching 'parse' (see chunkedStorage.ts). The
+        // old mock re-read `.value` off those strings, produced "undefined"
+        // and threw `SyntaxError: Unexpected end of JSON input` — a mock that
+        // contradicted the production contract. Accept strings, and tolerate
+        // `{ value }` records for robustness.
+        const chunks = request.payload as Array<string | { value: string }>;
+        const joined = chunks.map((c) => (typeof c === 'string' ? c : c?.value)).join('');
         return { payload: JSON.parse(joined) };
       }
       if (request.type === 'stringify') {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- 
+
 /**
  * @fileoverview Generate 3 distinct PWA icons (192, 512, 512-maskable).
  *
@@ -67,8 +67,8 @@ function encodePNG(width, height, rgba) {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8;  // bit depth
-  ihdr[9] = 6;  // color type RGBA
+  ihdr[8] = 8; // bit depth
+  ihdr[9] = 6; // color type RGBA
   ihdr[10] = 0; // compression
   ihdr[11] = 0; // filter
   ihdr[12] = 0; // interlace
@@ -108,9 +108,9 @@ function renderIcon(size, maskable) {
   const radius = Math.round(inner * 0.125);
 
   // Brand colors
-  const primary = [30, 64, 175, 255];     // #1e40af
+  const primary = [30, 64, 175, 255]; // #1e40af
   const primaryDark = [30, 58, 138, 255]; // #1e3a8a
-  const accent = [16, 185, 129, 255];     // #10b981
+  const accent = [16, 185, 129, 255]; // #10b981
   const white = [255, 255, 255, 255];
 
   // Vertical gradient: top = primary, bottom = primaryDark
@@ -121,13 +121,19 @@ function renderIcon(size, maskable) {
     const cg = Math.round(primary[1] + (primaryDark[1] - primary[1]) * t);
     const cb = Math.round(primary[2] + (primaryDark[2] - primary[2]) * t);
     const i = (y * size + x) * 4;
-    buf[i] = cr; buf[i + 1] = cg; buf[i + 2] = cb; buf[i + 3] = a;
+    buf[i] = cr;
+    buf[i + 1] = cg;
+    buf[i + 2] = cb;
+    buf[i + 3] = a;
   }
 
   function setPixelSolid(x, y, [r, g, b, a]) {
     if (x < 0 || x >= size || y < 0 || y >= size) return;
     const i = (y * size + x) * 4;
-    buf[i] = r; buf[i + 1] = g; buf[i + 2] = b; buf[i + 3] = a;
+    buf[i] = r;
+    buf[i + 1] = g;
+    buf[i + 2] = b;
+    buf[i + 3] = a;
   }
 
   // Draw rounded rect background (inset for maskable)
@@ -160,7 +166,7 @@ function renderIcon(size, maskable) {
   const fScale = inner / 320; // 320 is design space
   const fX0 = Math.round(safeZone + inner * 0.2);
   const fY0 = Math.round(safeZone + inner * 0.15);
-  const fStroke = Math.round(inner * 0.13);  // thick stroke
+  const fStroke = Math.round(inner * 0.13); // thick stroke
   const fH = Math.round(inner * 0.55);
   const fTopW = Math.round(inner * 0.5);
   const fMidW = Math.round(inner * 0.42);
@@ -184,7 +190,7 @@ function renderIcon(size, maskable) {
   const barW = Math.round(inner * 0.06);
   const barGap = Math.round(inner * 0.025);
   const barX0 = Math.round(safeZone + inner * 0.22);
-  const heights = [0.5, 0.7, 0.85, 1.0].map(h => Math.round(barsAreaH * h));
+  const heights = [0.5, 0.7, 0.85, 1.0].map((h) => Math.round(barsAreaH * h));
   for (let i = 0; i < 4; i++) {
     const bx = barX0 + i * (barW + barGap);
     const bh = heights[i];
@@ -215,13 +221,19 @@ const png512 = renderIcon(512, false);
 const png512Mask = renderIcon(512, true);
 
 fs.writeFileSync(ICON_192, png192);
-console.log(`✅ ${path.relative(process.cwd(), ICON_192)} (${png192.length} bytes, MD5 ${md5(png192)})`);
+console.log(
+  `✅ ${path.relative(process.cwd(), ICON_192)} (${png192.length} bytes, MD5 ${md5(png192)})`
+);
 
 fs.writeFileSync(ICON_512, png512);
-console.log(`✅ ${path.relative(process.cwd(), ICON_512)} (${png512.length} bytes, MD5 ${md5(png512)})`);
+console.log(
+  `✅ ${path.relative(process.cwd(), ICON_512)} (${png512.length} bytes, MD5 ${md5(png512)})`
+);
 
 fs.writeFileSync(ICON_512_MASKABLE, png512Mask);
-console.log(`✅ ${path.relative(process.cwd(), ICON_512_MASKABLE)} (${png512Mask.length} bytes, MD5 ${md5(png512Mask)})`);
+console.log(
+  `✅ ${path.relative(process.cwd(), ICON_512_MASKABLE)} (${png512Mask.length} bytes, MD5 ${md5(png512Mask)})`
+);
 
 // Verify distinct hashes
 if (md5(png192) === md5(png512)) {

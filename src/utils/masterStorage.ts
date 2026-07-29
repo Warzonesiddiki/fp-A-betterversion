@@ -40,6 +40,30 @@ export class StorageDecryptionError extends Error {
   }
 }
 
+/**
+ * A persist READ failed at the backend (N-0002).
+ *
+ * This is deliberately distinct from "the key is absent". Absent data yields
+ * `null`; a FAILED read throws. Collapsing the two is what allowed a broken
+ * backend to hydrate an empty store and present it as the user's real data.
+ */
+export class StorageReadError extends Error {
+  readonly storeKey: string;
+  readonly kind: 'backend' | 'deserialize';
+
+  constructor(storeKey: string, kind: StorageReadError['kind'], cause?: unknown) {
+    super(
+      `Failed to read persisted value for "${storeKey}" (${kind}): ${describeCause(cause)}. ` +
+        'Data was NOT loaded. Recovery: retry, or restore from a backup. ' +
+        'Do not treat this as an empty dataset.'
+    );
+    this.name = 'StorageReadError';
+    this.storeKey = storeKey;
+    this.kind = kind;
+    if (cause !== undefined) this.cause = cause;
+  }
+}
+
 /** A persist write failed (quota, serialization, encryption, or backend). */
 export class StorageWriteError extends Error {
   readonly storeKey: string;
@@ -245,10 +269,14 @@ export const masterStorage: MasterStorage = {
         ? await chunkedTauriStorage.getItem(name)
         : await chunkedSqlJsStorage.getItem(name);
     } catch (cause) {
-      // Backend read failures are surfaced, not treated as "no data".
-      const error = cause instanceof Error ? cause : new Error(describeCause(cause));
+      // N-0002: a backend read FAILURE is not "no data". Returning null here
+      // let a failed read hydrate an EMPTY store, which the app then presented
+      // as valid state — silent financial misstatement. The failure is now
+      // surfaced AND propagated so callers must handle it explicitly.
+      const error =
+        cause instanceof StorageReadError ? cause : new StorageReadError(name, 'backend', cause);
       emitStorageError({ operation: 'read', storeKey: name, message: error.message, error });
-      return null;
+      throw error;
     }
     if (raw === null || raw === undefined) return null;
     const serialized = typeof raw === 'string' ? raw : JSON.stringify(raw);
@@ -257,12 +285,14 @@ export const masterStorage: MasterStorage = {
         Awaited<ReturnType<MasterStorage['getItem']>>
       >;
     } catch (cause) {
-      // F-0012: fail closed — corrupted or foreign-key ciphertext becomes a
-      // visible error and a null (fresh) store, never application state.
+      // F-0012 + N-0002: fail closed AND fail loudly. Corrupted or
+      // foreign-key ciphertext must never become application state, and must
+      // never be downgraded to "no data" — that silently discards the user's
+      // real (recoverable) data and starts them on an empty store.
       const error =
         cause instanceof StorageDecryptionError ? cause : new StorageDecryptionError(name, cause);
       emitStorageError({ operation: 'decrypt', storeKey: name, message: error.message, error });
-      return null;
+      throw error;
     }
   },
   setItem: async (name, value) => {

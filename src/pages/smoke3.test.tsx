@@ -231,17 +231,7 @@ vi.mock('recharts', () => {
 // Mock lucide-react icons
 // ---------------------------------------------------------------------------
 
-vi.mock('lucide-react', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('lucide-react')>();
-  const icon = ({ className }: { className?: string }) => (
-    <span data-testid="mock-icon" className={className} />
-  );
-  const mocked: Record<string, typeof icon> = {};
-  for (const key of Object.keys(actual)) {
-    mocked[key] = icon;
-  }
-  return mocked;
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 // ---------------------------------------------------------------------------
 // Import page components AFTER mocks

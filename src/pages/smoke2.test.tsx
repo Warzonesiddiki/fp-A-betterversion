@@ -239,17 +239,7 @@ vi.mock('recharts', () => {
 // Mock lucide-react icons — keep all original exports but override as icon stubs
 // ---------------------------------------------------------------------------
 
-vi.mock('lucide-react', async (importOriginal) => {
-  const actual = await importOriginal<Record<string, unknown>>();
-  const icon = ({ className }: { className?: string }) => (
-    <span data-testid="mock-icon" className={className} />
-  );
-  const mocked: Record<string, unknown> = {};
-  for (const key of Object.keys(actual)) {
-    mocked[key] = icon;
-  }
-  return mocked;
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 // ---------------------------------------------------------------------------
 // Import page components AFTER mocks
@@ -260,6 +250,7 @@ import InvestmentPage from '@/pages/treasury/InvestmentPage';
 import ConsolidationDashboard from '@/pages/consolidation/ConsolidationDashboard';
 import FXRatesPage from '@/pages/currency/FXRatesPage';
 import AuditTrailPage from '@/pages/audit/AuditTrailPage';
+import { useAuditTrailStore } from '@/store/auditTrailStore';
 import CapExDashboard from '@/pages/capex/CapExDashboard';
 import AIIntelligencePage from '@/pages/ai/AIIntelligencePage';
 import LeaseDashboard from '@/pages/lease/LeaseDashboard';
@@ -354,7 +345,14 @@ describe('Page Smoke Tests (Batch 2)', () => {
       expect(container).toBeTruthy();
     });
 
-    it('displays the empty state', () => {
+    it('denies access to roles without GDPR audit permission (RBAC gate)', () => {
+      useAuditTrailStore.setState({ currentUserRole: 'viewer' });
+      renderPage(AuditTrailPage, '/audit', '/audit');
+      expect(screen.getByText(/Access Denied/i)).toBeInTheDocument();
+    });
+
+    it('displays the empty state (authorized role)', () => {
+      useAuditTrailStore.setState({ currentUserRole: 'admin' });
       renderPage(AuditTrailPage, '/audit', '/audit');
       expect(screen.getByText(/No Audit Entries/i)).toBeInTheDocument();
     });

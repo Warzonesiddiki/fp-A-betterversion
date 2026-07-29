@@ -45,25 +45,7 @@ vi.mock('recharts', () => ({
   AreaChart: ({ children }: any) => <div>{children}</div>,
 }));
 
-vi.mock('lucide-react', async (importOriginal) => {
-  const actual: Record<string, unknown> = await importOriginal();
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return new Proxy(actual, {
-    get: (target, prop) => {
-      if (typeof prop === 'string' && !(prop in target)) {
-        return makeIcon();
-      }
-      if (typeof prop === 'symbol') return makeIcon();
-      return (target as Record<string, unknown>)[prop as string];
-    },
-  });
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 import ConstructionDashboardPage from '@/pages/construction/ConstructionDashboardPage';
 

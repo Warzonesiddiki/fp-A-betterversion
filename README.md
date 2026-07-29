@@ -33,10 +33,13 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 2 of
-  188 engine/store modules** (`ConsolidationEngine`, `glStore`) plus `SafeMathParser`. The
-  remaining financial paths still use IEEE-754 doubles; migration is tracked as F-0006.
-  Do not rely on repo-wide decimal exactness yet.
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 3 of
+  188 engine/store modules** (`ConsolidationEngine`, `FXEngine`, `glStore`) plus
+  `SafeMathParser`. Across all financial paths (`src/engines`, `src/store`, `src/utils`,
+  `src/services`) adoption is 3 of 352 modules with 134 raw `toFixed(n)` sites remaining —
+  run `npm run money:adoption` for the current measurement. The remaining financial paths
+  still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
+  CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
 - **Background Web Workers (4):** `consolidation`, `monte-carlo`, `batch-calc` and `storage`
   workers keep heavy serialization and simulation off the UI thread. When the environment
   cannot construct a worker (CSP, unsupported module workers), storage serialization falls
@@ -329,7 +332,7 @@ import { Button } from '@/components/ui/Button';
 
 ## 🔄 State Management Deep Dive
 
-### Store Architecture (35 Stores)
+### Store Architecture (38 Stores)
 
 Each store follows a standard pattern for consistency:
 
@@ -386,7 +389,7 @@ export const useBudgetStore = create<BudgetState>()(
 
 ---
 
-## 💾 Financial Engines (202+)
+## 💾 Financial Engines (188)
 
 ### Engine Categories
 
@@ -459,7 +462,7 @@ export async function createBudget(budget: CreateBudgetInput) {
 
 - **Registry**: Centralized plugin registration
 - **Sandbox**: Isolated execution environment
-- **Marketplace**: Discover and install plugins
+- **Marketplace**: NOT SHIPPED — no marketplace backend exists. Plugins are registered in-process only.
 - **API**: Standard plugin interface for consistency
 
 ### Creating a Plugin
@@ -483,7 +486,7 @@ export const myPlugin: FinPlanPlugin = {
 
 ## 🔗 Web Workers
 
-### Active Workers (7)
+### Active Workers (4)
 
 | Worker                    | Purpose                    | Use Case                     |
 | ------------------------- | -------------------------- | ---------------------------- |
@@ -758,7 +761,7 @@ npx vitest bench --run          # Direct Vitest run
 
 1. **Fork & Clone**: Create a feature branch
 2. **Type Check**: `npm run lint` before commit
-3. **Write Tests**: Maintain 80%+ coverage
+3. **Write Tests**: Coverage thresholds enforced in `vite.config.ts` are currently 50% (statements/branches/functions/lines). Do not claim a higher figure without a completed coverage run.
 4. **Format Code**: `npm run format`
 5. **Run Locally**: `npm run dev` + `npm test`
 6. **Submit PR**: Link to relevant issues

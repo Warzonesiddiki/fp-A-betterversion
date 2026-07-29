@@ -128,7 +128,10 @@ function findNodeAt(sourceFile, pos) {
 
 function isInsideParameterBindingPattern(bindingElement) {
   let n = bindingElement.parent; // ObjectBindingPattern / ArrayBindingPattern
-  while (n && (ts.isObjectBindingPattern(n) || ts.isArrayBindingPattern(n) || ts.isBindingElement(n))) {
+  while (
+    n &&
+    (ts.isObjectBindingPattern(n) || ts.isArrayBindingPattern(n) || ts.isBindingElement(n))
+  ) {
     n = n.parent;
   }
   return !!n && ts.isParameter(n);

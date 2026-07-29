@@ -27,7 +27,10 @@ const TAUTOLOGIES = [
   { re: /expect\(\s*true\s*\)\s*\.\s*toBeTruthy\(\s*\)/, why: 'expect(true).toBeTruthy()' },
   { re: /expect\(\s*false\s*\)\s*\.\s*toBe\(\s*false\s*\)/, why: 'expect(false).toBe(false)' },
   { re: /expect\(\s*(\d+)\s*\)\s*\.\s*toBe\(\s*\1\s*\)/, why: 'expect(N).toBe(N)' },
-  { re: /expect\(\s*(['"`])(.*?)\1\s*\)\s*\.\s*toBe\(\s*\1\2\1\s*\)/, why: 'expect("x").toBe("x")' },
+  {
+    re: /expect\(\s*(['"`])(.*?)\1\s*\)\s*\.\s*toBe\(\s*\1\2\1\s*\)/,
+    why: 'expect("x").toBe("x")',
+  },
   { re: /expect\(\s*1\s*\)\s*\.\s*toBe\(\s*1\s*\)/, why: 'expect(1).toBe(1)' },
 ];
 

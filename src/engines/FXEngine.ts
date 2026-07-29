@@ -1,4 +1,7 @@
+import type Decimal from 'decimal.js';
 import type { ExchangeRate } from '@/types';
+// N-0009: currency translation must not use raw IEEE-754 multiplication.
+import { multiplyMoney, toDecimal } from '@/utils/money';
 
 export type RateType = 'closing' | 'average' | 'historical' | 'transaction';
 
@@ -162,6 +165,14 @@ export class FXEngine {
   /**
    * Converts an amount between currencies. Non-finite amounts are rejected;
    * missing rates propagate as MissingFXRateError. Never silently returns 0.
+   *
+   * N-0009: the multiplication is performed with the canonical money
+   * primitive (decimal.js), NOT raw IEEE-754. The audit reproduced
+   * `convert(0.07, 'XXX','YYY')` at rate 1.1 returning 0.07700000000000001
+   * instead of 0.077. Currency translation feeds consolidation and every
+   * translated statement, so drift here propagates into reported figures.
+   *
+   * Use `convertExact` when the caller needs the full-precision Decimal.
    */
   static convert(
     amount: number,
@@ -170,16 +181,30 @@ export class FXEngine {
     date?: string,
     options: GetRateOptions = {}
   ): number {
+    return this.convertExact(amount, from, to, date, options).toNumber();
+  }
+
+  /**
+   * Exact-precision conversion. Returns a Decimal so callers composing
+   * multiple FX operations do not round-trip through a float at each step.
+   */
+  static convertExact(
+    amount: number,
+    from: string,
+    to: string,
+    date?: string,
+    options: GetRateOptions = {}
+  ): Decimal {
     if (!Number.isFinite(amount)) {
       throw new InvalidFinancialInputError('amount', amount, 'must be a finite number');
     }
     if (from === to) {
       assertCurrency(from, 'from');
       assertCurrency(to, 'to');
-      return amount;
+      return toDecimal(amount, 'amount');
     }
     const rate = this.getRate(from, to, date, options);
-    return amount * rate;
+    return multiplyMoney(amount, rate);
   }
 
   /**

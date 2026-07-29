@@ -124,14 +124,20 @@ describe('F-0012: decryption fails closed', () => {
     expect(await masterStorage.getItem('rt')).toBe('confidential journal data');
   });
 
-  it('corrupted ciphertext -> null + visible decrypt error, never raw blob as state', async () => {
+  it('corrupted ciphertext -> REJECTS + visible decrypt error, never raw blob as state', async () => {
     await masterStorage.setItem('corrupt', 'sensitive');
     // Simulate corruption / foreign-key data (or legacy old-key data).
     memSqlJs.set('corrupt', 'AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDD');
-    const result = await masterStorage.getItem('corrupt');
-    expect(result).toBeNull();
+
+    // N-0002: this used to resolve `null`, which zustand persist reads as
+    // "no saved data" — silently discarding recoverable user data and
+    // starting them on an empty store. It must now REJECT.
+    const outcome = await masterStorage.getItem('corrupt').catch((e: unknown) => e);
+    expect(outcome).toBeInstanceOf(Error);
     // Critically: the corrupted blob must NOT be returned as if it were data.
-    expect(result).not.toBe('AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDD');
+    expect(outcome).not.toBe('AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDD');
+    expect(String(outcome)).not.toContain('AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDD');
+
     const decryptEvents = events.filter((e) => e.operation === 'decrypt');
     expect(decryptEvents).toHaveLength(1);
     expect(decryptEvents[0]!.storeKey).toBe('corrupt');
@@ -139,10 +145,14 @@ describe('F-0012: decryption fails closed', () => {
     expect(decryptEvents[0]!.message).toContain('Recovery:');
   });
 
-  it('backend read error surfaces an event and returns null (not silent)', async () => {
+  it('backend read error surfaces an event and REJECTS (not silent, not null)', async () => {
     fault.nextGetError = new Error('SQL backend exploded');
-    const result = await masterStorage.getItem('whatever');
-    expect(result).toBeNull();
+
+    // N-0002: a FAILED read must never be indistinguishable from an empty
+    // store. Absent data still resolves null; a failure now rejects.
+    const outcome = await masterStorage.getItem('whatever').catch((e: unknown) => e);
+    expect(outcome).toBeInstanceOf(Error);
+    expect(outcome).not.toBeNull();
     expect(events.some((e) => e.operation === 'read' && e.message.includes('SQL backend'))).toBe(
       true
     );

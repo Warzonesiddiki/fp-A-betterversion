@@ -3,6 +3,7 @@
 ## Pre-Release Gates (ALL must pass)
 
 ### Build & Quality
+
 - [x] `npx tsc --noEmit` — Zero TypeScript errors
 - [x] `npm run lint` — Zero errors, zero warnings
 - [x] `npm run build` — Production build succeeds
@@ -10,8 +11,9 @@
 - [x] `npm run build && npm run preview` — Preview server works
 
 ### Testing
-- [x] All test batches verified passing (3,070+ tests)
-- [x] A11y tests: 428/430 passing (2 skipped)
+
+- [ ] Full suite green. STATUS 2026-07-29: `vitest run` now TERMINATES (894/894 files, 10,589 tests, 1001s) after the N-0001 deadlock fix, but exits non-zero — ~20 failures remain (N-0012). The previous "[x] 3,070+ tests passing" claim was false: the suite could not complete.
+- [x] A11y suite runs and passes: `npm run test:a11y` exit 0, 441 passed / 2 skipped, enforced in CI (N-0007)
 - [x] Engine tests: 100+ files, 1000+ tests passing
 - [x] Store tests: 40+ files, 133+ tests passing
 - [x] Page tests: 100+ files passing
@@ -19,14 +21,16 @@
 - [ ] Performance benchmark suite (requires dedicated run)
 
 ### Security
+
 - [x] Zero `@ts-nocheck` directives
 - [x] Security utilities implemented (CSRF, rate limiting, PIIRedactor)
 - [x] Zero-retention policy enforcer
 - [x] Data classification and redaction
-- [ ] CSP audit (remove unsafe-inline/eval)
-- [ ] Dependency vulnerability scan (`npm audit`)
+- [x] CSP: script-src uses a hash, no unsafe-eval. `style-src 'unsafe-inline'` retained and documented.
+- [x] Dependency vulnerability scan: `npm audit --omit=dev` exit 0, 0 production vulnerabilities; blocking CI job added (N-0004)
 
 ### Accessibility
+
 - [x] WCAG 2.2 AA a11y tests passing
 - [x] Keyboard navigation tests passing
 - [x] Focus management tests passing
@@ -35,6 +39,7 @@
 - [ ] Screen reader verification (manual)
 
 ### Desktop (Tauri)
+
 - [x] Tauri config complete (window, CSP, NSIS, updater)
 - [x] SQL migrations (initial + cube schema)
 - [x] 9 Tauri plugins configured
@@ -44,6 +49,7 @@
 - [ ] NSIS installer build and test
 
 ### Documentation
+
 - [x] README.md comprehensive
 - [x] CHANGELOG.md created
 - [x] ARCHITECTURE.md exists

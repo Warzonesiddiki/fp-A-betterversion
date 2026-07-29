@@ -1,0 +1,120 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 6befee3..7f2486f 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -84,7 +84,7 @@ jobs:
+   build:
+     name: Build & Bundle Check
+     runs-on: ubuntu-latest
+-    needs: [typecheck, lint]
++    needs: [typecheck, lint, test]
+     steps:
+       - uses: actions/checkout@v4
+ 
+@@ -227,7 +227,6 @@ jobs:
+     name: A11Y (axe-core)
+     needs: [build]
+     runs-on: ubuntu-latest
+-    continue-on-error: true  # Pre-Mnemosyne A11Y-P0-3: allow merge
+     steps:
+       - uses: actions/checkout@v4
+ 
+@@ -252,13 +251,12 @@ jobs:
+           if npm run | grep -q "test:a11y"; then
+             echo "runner=present" >> $GITHUB_OUTPUT
+           else
+-            echo "runner=absent" >> $GITHUB_OUTPUT
+-            echo "::notice::A11Y runner not defined (Mnemosyne A11Y-P0-3 pending). Skipping enforcement."
++            echo "::error::A11Y runner (test:a11y) is not defined. Accessibility is a required gate (N-0007) — it may not be skipped."
++            exit 1
+           fi
+ 
+       - name: Run A11Y tests
+-        if: steps.detect.outputs.runner == 'present'
+-        run: npm run test:a11y -- --bail=1
++        run: npm run test:a11y
+         # --bail=1 per Artemis PICK URGENT B (stop on first critical violation)
+         # Exits non-zero on critical a11y violations (NEVER-AGAIN RULE #50)
+ 
+@@ -275,7 +273,7 @@ jobs:
+   summary:
+     name: CI Summary
+     if: always()
+-    needs: [typecheck, lint, test, build, e2e, a11y]
++    needs: [typecheck, lint, test, build, e2e, a11y, audit, server, docs]
+     runs-on: ubuntu-latest
+     steps:
+       - name: Check results
+@@ -294,7 +292,12 @@ jobs:
+           if [ "${{ needs.typecheck.result }}" != "success" ] || \
+              [ "${{ needs.lint.result }}" != "success" ] || \
+              [ "${{ needs.test.result }}" != "success" ] || \
+-             [ "${{ needs.build.result }}" != "success" ]; then
++             [ "${{ needs.build.result }}" != "success" ] || \
++             [ "${{ needs.e2e.result }}" != "success" ] || \
++             [ "${{ needs.a11y.result }}" != "success" ] || \
++             [ "${{ needs.audit.result }}" != "success" ] || \
++             [ "${{ needs.server.result }}" != "success" ] || \
++             [ "${{ needs.docs.result }}" != "success" ]; then
+             echo ""
+             echo ":x: **CI FAILED** - One or more required checks did not pass."
+             exit 1
+@@ -302,3 +305,58 @@ jobs:
+ 
+           echo ""
+           echo ":white_check_mark: **CI PASSED** - All checks green."
++
++  # N-0004: production dependency vulnerabilities must BLOCK the pipeline.
++  audit:
++    name: Dependency Audit (production, blocking)
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++      - name: Setup Node.js
++        uses: actions/setup-node@v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++      - name: Install dependencies
++        run: npm ci --no-audit --no-fund
++      - name: Fail on HIGH/CRITICAL production vulnerabilities
++        run: npm run audit:prod
++
++  # N-0014: documentation claims must match measured reality.
++  docs:
++    name: Documentation Truth Check
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++      - name: Setup Node.js
++        uses: actions/setup-node@v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++      - name: Install dependencies
++        run: npm ci --no-audit --no-fund
++      - name: Verify README/RELEASE_CHECKLIST against measured repository stats
++        run: npm run docs:verify
++
++      - name: Verify engine manifest is current (N-0013)
++        run: npm run engines:verify
++
++  # N-0011: the server enforces RBAC and period close. It must be tested.
++  server:
++    name: Server (typecheck + tests)
++    runs-on: ubuntu-latest
++    defaults:
++      run:
++        working-directory: server
++    steps:
++      - uses: actions/checkout@v4
++      - name: Setup Node.js
++        uses: actions/setup-node@v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++      - name: Install server dependencies
++        run: npm install --no-audit --no-fund
++      - name: TypeScript check
++        run: npx tsc --noEmit
++      - name: Server tests (authz, period close, audit service)
++        run: npm test

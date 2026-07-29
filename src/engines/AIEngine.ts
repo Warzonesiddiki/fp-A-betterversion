@@ -39,13 +39,57 @@ const aiEngineLogger = createLogger('AIEngine');
 let pipeline: PipelineFunction | null = null;
 let env: { allowRemoteModels: boolean; useBrowserCache: boolean } | null = null;
 
+/**
+ * Thrown when the optional on-device AI runtime is not installed.
+ * Callers must surface this as "AI features unavailable", never as a crash.
+ */
+export class AIRuntimeUnavailableError extends Error {
+  constructor(cause?: unknown) {
+    super(
+      'On-device AI runtime is not installed. ' +
+        'FinPlan Pro ships without `@huggingface/transformers` because its ' +
+        'transitive native dependencies (onnxruntime-node -> sharp -> libvips) ' +
+        'carry unpatched HIGH-severity CVEs and require network egress during ' +
+        '`npm ci` (audit N-0004/N-0005). Install it explicitly to enable ' +
+        'on-device AI, or use a server-side inference endpoint.'
+    );
+    this.name = 'AIRuntimeUnavailableError';
+    if (cause !== undefined) this.cause = cause;
+  }
+}
+
+/**
+ * N-0004/N-0005: `@huggingface/transformers` is an OPTIONAL peer, not a hard
+ * dependency. It is resolved through a runtime-computed specifier so bundlers
+ * do not attempt to statically resolve (and therefore require) it.
+ */
 async function loadTransformers() {
   if (pipeline) return;
-  const mod = await import('@huggingface/transformers');
+  let mod: { pipeline: PipelineFunction; env: NonNullable<typeof env> };
+  try {
+    const specifier = '@huggingface/transformers';
+    mod = (await import(/* @vite-ignore */ specifier)) as typeof mod;
+  } catch (cause) {
+    throw new AIRuntimeUnavailableError(cause);
+  }
+  if (!mod?.pipeline)
+    throw new AIRuntimeUnavailableError('module loaded without a pipeline export');
   pipeline = mod.pipeline;
   env = mod.env;
-  env.allowRemoteModels = true;
-  env.useBrowserCache = true;
+  if (env) {
+    env.allowRemoteModels = true;
+    env.useBrowserCache = true;
+  }
+}
+
+/** True when the optional on-device AI runtime can be loaded. */
+export async function isAIRuntimeAvailable(): Promise<boolean> {
+  try {
+    await loadTransformers();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export type AIDevice = 'webgpu' | 'wasm' | 'unknown';
