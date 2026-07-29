@@ -24,7 +24,7 @@ try {
   console.warn(
     '[db] better-sqlite3 native bindings unavailable, using in-memory mock DB fallback for tests/sandbox.'
   );
-  const tables = new Map<string, unknown[]>();
+  const tables = new Map<string, any[]>();
   class MockStatement {
     constructor(private sql: string) {}
     run(...params: unknown[]) {
@@ -36,9 +36,18 @@ try {
           if (!tables.has(tableName)) tables.set(tableName, []);
           const rowObj: Record<string, unknown> = {
             id: params[0] || 'mock-' + Math.random(),
-            ...params,
           };
-          if (tableName === 'fiscal_periods') {
+          for (let i = 0; i < params.length; i++) {
+            rowObj[i] = params[i];
+          }
+          if (tableName === 'audit_log') {
+            rowObj.id = params[0];
+            rowObj.timestamp = params[1];
+            rowObj.category = params[2];
+            rowObj.action = params[3];
+            rowObj.severity = params[4];
+            rowObj.checksum = params[params.length - 1];
+          } else if (tableName === 'fiscal_periods') {
             rowObj.id = params[0];
             rowObj.year = params[1];
             rowObj.period_number = params[2];
@@ -48,10 +57,9 @@ try {
             rowObj.period_type = params[6];
             rowObj.is_closed = params[7] ?? 0;
           }
-          for (let i = 0; i < params.length; i++) {
-            rowObj[i] = params[i];
-          }
-          const existingIdx = tables.get(tableName)!.findIndex((r: any) => r.id === rowObj.id || r[0] === rowObj.id);
+          const existingIdx = tables
+            .get(tableName)!
+            .findIndex((r: any) => r.id === rowObj.id || r[0] === rowObj.id);
           if (existingIdx >= 0) {
             tables.get(tableName)![existingIdx] = rowObj;
           } else {
@@ -63,15 +71,14 @@ try {
         if (match) {
           const tableName = match[1]!;
           const rows = tables.get(tableName) || [];
-          const id = params[params.length - 1];
           for (const r of rows) {
-            if ((r as Record<string, unknown>).id === id || (r as any)[0] === id) {
+            if (tableName === 'fiscal_periods') {
               if (lower.includes('is_closed = 1')) {
-                (r as Record<string, unknown>).is_closed = 1;
-                (r as any)[7] = 1;
+                r.is_closed = 1;
+                r[7] = 1;
               } else if (lower.includes('is_closed = 0')) {
-                (r as Record<string, unknown>).is_closed = 0;
-                (r as any)[7] = 0;
+                r.is_closed = 0;
+                r[7] = 0;
               }
             }
           }
@@ -81,30 +88,25 @@ try {
     }
     get(...params: unknown[]): unknown {
       const lower = this.sql.trim().toLowerCase();
-      if (lower.includes('from fiscal_periods') && (lower.includes('is_closed = 1') || lower.includes('between start_date and end_date'))) {
-        const postDate = params[0];
+      if (lower.includes('from fiscal_periods')) {
         const rows = tables.get('fiscal_periods') || [];
-        const found = rows.find(
-          (r: unknown) =>
-            r !== null &&
-            typeof r === 'object' &&
-            (Number((r as any).is_closed) === 1 || Number((r as any)[7]) === 1) &&
-            typeof postDate === 'string' &&
-            postDate >= String((r as any).start_date ?? (r as any)[4]) &&
-            postDate <= String((r as any).end_date ?? (r as any)[5])
-        );
-        return found || null;
+        if (lower.includes('is_closed = 1')) {
+          const found = rows.find(
+            (r: any) =>
+              r !== null &&
+              (Number(r.is_closed) === 1 || Number(r[7]) === 1)
+          );
+          return found || null;
+        }
+        const matchId = params[0];
+        const found = rows.find((r: any) => r.id === matchId || r[0] === matchId);
+        return found || rows[rows.length - 1] || null;
       }
-      if (lower.includes('from audit_log') && (lower.includes('where id =') || lower.includes('select checksum'))) {
+      if (lower.includes('select checksum') || (lower.includes('from audit_log') && lower.includes('where id ='))) {
         const id = params[0];
         const rows = tables.get('audit_log') || [];
-        const found = rows.find(
-          (r: unknown) =>
-            r !== null &&
-            typeof r === 'object' &&
-            (('id' in r && r.id === id) || (r as any)[0] === id || (r as any).id === params[0])
-        );
-        return found || null;
+        const found = rows.find((r: any) => r.id === id || r[0] === id);
+        return found ? { checksum: found.checksum } : null;
       }
       const match = lower.match(/from\s+(\w+)/);
       if (match) {
@@ -113,15 +115,10 @@ try {
         if (lower.includes('count(*)')) {
           return { count: rows.length };
         }
-        if (lower.includes('where id =') || lower.includes('where (id =')) {
+        if (lower.includes('where') && params.length > 0) {
           const id = params[0];
-          const found = rows.find(
-            (r: unknown) =>
-              r !== null &&
-              typeof r === 'object' &&
-              (('id' in r && r.id === id) || (r as any)[0] === id)
-          );
-          return found || null;
+          const found = rows.find((r: any) => r.id === id || r[0] === id || params.includes(r.id) || params.includes(r[0]));
+          if (found) return found;
         }
         return rows[rows.length - 1] || null;
       }
