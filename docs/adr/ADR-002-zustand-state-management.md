@@ -22,6 +22,7 @@ FinPlan Pro is an offline-first FP&A desktop application requiring predictable s
 5. **Tauri desktop runtime** — strict typing, no `any`, no default exports
 
 Alternative state management libraries were considered:
+
 - **Redux Toolkit**: Too much boilerplate (slices, action creators, reducers) for 28+ stores
 - **Jotai**: Atomic model too granular for our 28+ store domains
 - **Recoil**: Experimental status, Facebook-only adoption
@@ -53,6 +54,7 @@ export const useBudgetStore = create<BudgetState>()(
 ```
 
 **Mandated patterns (per AGENTS.md L41-43):**
+
 1. Middleware order: `subscribeWithSelector` outermost → `persist` middle → `immer` innermost
 2. All persisted stores use `masterStorage` from `@/utils/masterStorage` (cross-ref ADR-005)
 3. Named exports only — no default exports
@@ -104,14 +106,14 @@ export const useBudgetStore = create<BudgetState>()(
 
 ## Alternatives Considered
 
-| Library | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **Zustand (chosen)** | Lightweight, TS-first, middleware matches our needs | Manual async handling | ✅ ACCEPT |
-| Redux Toolkit | Battle-tested, DevTools, RTK Query | Boilerplate at 28+ stores | ❌ REJECT |
-| Jotai | Atomic, ergonomic for forms | Too granular for 28+ domain stores | ❌ REJECT |
-| Recoil | Facebook-internal, concurrent mode | Experimental, small community | ❌ REJECT |
-| MobX | Observable, auto-tracking | Conflicts with pure engine layer | ❌ REJECT |
-| Context API | Built-in, simple | Re-render storms at >10K rows | ❌ REJECT |
+| Library              | Pros                                                | Cons                               | Verdict   |
+| -------------------- | --------------------------------------------------- | ---------------------------------- | --------- |
+| **Zustand (chosen)** | Lightweight, TS-first, middleware matches our needs | Manual async handling              | ✅ ACCEPT |
+| Redux Toolkit        | Battle-tested, DevTools, RTK Query                  | Boilerplate at 28+ stores          | ❌ REJECT |
+| Jotai                | Atomic, ergonomic for forms                         | Too granular for 28+ domain stores | ❌ REJECT |
+| Recoil               | Facebook-internal, concurrent mode                  | Experimental, small community      | ❌ REJECT |
+| MobX                 | Observable, auto-tracking                           | Conflicts with pure engine layer   | ❌ REJECT |
+| Context API          | Built-in, simple                                    | Re-render storms at >10K rows      | ❌ REJECT |
 
 ## References
 

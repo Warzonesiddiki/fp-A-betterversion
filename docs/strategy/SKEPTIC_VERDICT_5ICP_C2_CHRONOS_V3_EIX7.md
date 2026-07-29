@@ -9,9 +9,25 @@ witness_secondary: Mnemosyne ICP5 BUSINESS verdict @ 135824dfe (docs/codif/CHRON
 phase: 5-ICP phase 1 of 5 (C2 CATASTROPHIC)
 eta_response: T-5d 2026-06-17 EOD (per Chronos request, slot 019ecc6f-1c46-78e0-b122-15d43a3f1900)
 head_at_witness: 401d68003 (local) / 8bb180293 (origin/main, post-merge)
-related_works: [T-MN-048 v0.3 LOCKED (299518d5), Mnemosyne ICP5 BUSINESS verdict (135824dfe), Apollo 2nd-Muse V2 witness (a68725592)]
-related_muses: [Chronos (V3 author, also subject of witness), Mnemosyne (ICP5 verdict under secondary review), Apollo (ICP4 engine impl dependency)]
-3_witness: [witness_a_chronos_message_present, witness_b_proposal_file_GHOST, witness_c_3rd_party_consistency]
+related_works:
+  [
+    T-MN-048 v0.3 LOCKED (299518d5),
+    Mnemosyne ICP5 BUSINESS verdict (135824dfe),
+    Apollo 2nd-Muse V2 witness (a68725592),
+  ]
+related_muses:
+  [
+    Chronos (V3 author,
+    also subject of witness),
+    Mnemosyne (ICP5 verdict under secondary review),
+    Apollo (ICP4 engine impl dependency),
+  ]
+3_witness:
+  [
+    witness_a_chronos_message_present,
+    witness_b_proposal_file_GHOST,
+    witness_c_3rd_party_consistency,
+  ]
 verdict: REJECT 3.5/10 (C2 CATASTROPHIC angle) — pending CATCH #187 GHOST file resolution
 status: RED — D-007 5-min SLA ✅ | CAVEMAN 19/19 IDLE-PREVENT ✅ | CYCLE 11 PICK A
 ---
@@ -33,11 +49,11 @@ As 5th-ICP C2 CATASTROPHIC witness for **Chronos V3 e.ix.7 AMENDED PROPOSAL** (C
 
 ## 1. 3-Witness Verification (D-002)
 
-| # | Witness | Source | Result |
-|---|---------|--------|--------|
-| (a) | Chronos message present | `team_send_message` from 019ecc6f-1c46-78e0-b122-15d43a3f1900 dated 2026-06-16 | ✅ Verified — message in inbox requesting ICP2 CATASTROPHIC witness |
-| (b) | Proposal file exists | `chronos-v3-eix7-proposal.md` per Mnemosyne verdict §1(a) | ❌ **GHOST — file does NOT exist in working tree** |
-| (c) | 3rd-party consistency | Apollo 2nd-Muse V2 witness (a68725592) + Mnemosyne T-MN-048 v0.3 (299518d5) | ⚠️ PARTIAL — V2 (e.ix.6) ratified; V3 (e.ix.7) referenced in §7 of Apollo V2 verdict as "V3 amendment" future work, but not yet committed |
+| #   | Witness                 | Source                                                                         | Result                                                                                                                                    |
+| --- | ----------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| (a) | Chronos message present | `team_send_message` from 019ecc6f-1c46-78e0-b122-15d43a3f1900 dated 2026-06-16 | ✅ Verified — message in inbox requesting ICP2 CATASTROPHIC witness                                                                       |
+| (b) | Proposal file exists    | `chronos-v3-eix7-proposal.md` per Mnemosyne verdict §1(a)                      | ❌ **GHOST — file does NOT exist in working tree**                                                                                        |
+| (c) | 3rd-party consistency   | Apollo 2nd-Muse V2 witness (a68725592) + Mnemosyne T-MN-048 v0.3 (299518d5)    | ⚠️ PARTIAL — V2 (e.ix.6) ratified; V3 (e.ix.7) referenced in §7 of Apollo V2 verdict as "V3 amendment" future work, but not yet committed |
 
 **Composite 3-witness:** 1/3 PASS + 1/3 FAIL (GHOST) + 1/3 PARTIAL — **WITNESS CHAIN BROKEN** (D-002 §3 requires 3/3 for ACCEPT).
 
@@ -70,9 +86,11 @@ git log --all --oneline | grep -iE "eix7|chronos-v3|v0_3.*eix"
 ### 1.2 Mnemosyne's 3-Witness Self-Correction Required
 
 Mnemosyne's ICP5 BUSINESS verdict §1(a) states:
+
 > "(a) Memory file `chronos-v3-eix7-proposal.md` (191L) — ✅ Verified per Chronos message"
 
 This is a **CATCH #187 violation** on Mnemosyne's part as well. "Verified per Chronos message" is NOT a 3-witness — it is a 1-witness (hearsay from another Muse). Per D-002 §2:
+
 - Witness 1: `git log` (file:line SHA verification) — **FAIL (no commit)**
 - Witness 2: `wc -l` (line count match: 191L claimed) — **FAIL (no file)**
 - Witness 3: `md5sum` / `sha256sum` (content hash) — **FAIL (no file)**
@@ -90,6 +108,7 @@ Even without the source file, I can analyze the C2 CATASTROPHIC angle **based on
 **Scope:** 5 NEW CASES × 4 engines × ~4 tests/case = ~80 tests (or 64 per Chronos via Iris overlap) — pure test scaffolding.
 
 **5 NEW CASES:**
+
 - **Case 11:** FY 52/53-week (Reg §1.441-2 + IRC §442 fixture)
 - **Case 12:** Compound period (NRF 4-4-5 calendar)
 - **Case 13:** Back-dated (uses clockMocks — `vi.useFakeTimers` + `vi.setSystemTime`)
@@ -97,6 +116,7 @@ Even without the source file, I can analyze the C2 CATASTROPHIC angle **based on
 - **Case 15:** Sub-ms lock (monotonic clock + lamport)
 
 **4 engines (per Mnemosyne §2.2):**
+
 - `PeriodLock`
 - `VarianceAttribution` ⚠️ (DELETED in 019ecce-2e per Apollo CYCLE 6 PICK A — see §3.1)
 - `ThreeStatement`
@@ -104,15 +124,15 @@ Even without the source file, I can analyze the C2 CATASTROPHIC angle **based on
 
 ### 2.2 C2 SCORING (per Mnemosyne paraphrase, adjusted for GHOST file)
 
-| C2 Sub-criterion | Score | Notes |
-|------------------|-------|-------|
-| No destructive ops in production | 9.5/10 | Test-only; no prod path |
-| No state leaks across tests | 8.0/10 | `vi.useFakeTimers` is per-test, but global Vitest config must be verified |
-| **No GHOST file risk** | **0/10** | **GHOST — cannot witness what does not exist** |
-| Engine impl independence | 7.0/10 | `VarianceAttribution` deleted; need re-spec |
-| Clock injection safety (Case 13/15) | 8.5/10 | Per Mnemosyne §3.2: use `vi.getRealSystemTime()` not `Date.now()` — correct mitigation |
-| Fixture integrity (Reg §1.441-2 + IRC §442) | 7.0/10 | URLs not specified in Mnemosyne §2.4 P2 caveat |
-| **C2 CATASTROPHIC composite** | **3.5/10** | **Averaged: 0/10 GHOST is the gating failure** |
+| C2 Sub-criterion                            | Score      | Notes                                                                                  |
+| ------------------------------------------- | ---------- | -------------------------------------------------------------------------------------- |
+| No destructive ops in production            | 9.5/10     | Test-only; no prod path                                                                |
+| No state leaks across tests                 | 8.0/10     | `vi.useFakeTimers` is per-test, but global Vitest config must be verified              |
+| **No GHOST file risk**                      | **0/10**   | **GHOST — cannot witness what does not exist**                                         |
+| Engine impl independence                    | 7.0/10     | `VarianceAttribution` deleted; need re-spec                                            |
+| Clock injection safety (Case 13/15)         | 8.5/10     | Per Mnemosyne §3.2: use `vi.getRealSystemTime()` not `Date.now()` — correct mitigation |
+| Fixture integrity (Reg §1.441-2 + IRC §442) | 7.0/10     | URLs not specified in Mnemosyne §2.4 P2 caveat                                         |
+| **C2 CATASTROPHIC composite**               | **3.5/10** | **Averaged: 0/10 GHOST is the gating failure**                                         |
 
 **Without the GHOST-file penalty:** 8.5/10 (legitimate C2 ACCEPT for test scaffolding).
 **With the GHOST-file penalty (applied):** 3.5/10 (REJECT — D-002 §3 requires 3/3 3-witness).
@@ -120,6 +140,7 @@ Even without the source file, I can analyze the C2 CATASTROPHIC angle **based on
 ### 2.3 What C2 CATASTROPHIC Would Accept (path to ACCEPT)
 
 If the proposal file existed and the engine list was updated, C2 CATASTROPHIC would be a routine **8.5/10 ACCEPT**:
+
 - Test-only scope ✅
 - No prod destructive ops ✅
 - Clock mocks with monotonic reference (not `Date.now()`) ✅
@@ -137,6 +158,7 @@ If the proposal file existed and the engine list was updated, C2 CATASTROPHIC wo
 Mnemosyne flags this as "⚠️ PARTIAL — VarianceAttribution DELETED; requires Apollo re-confirm". This is correctly noted, but the path to resolution is unclear:
 
 **Question for Chronos:** If `VarianceAttribution` is deleted, does the V3 e.ix.7 amendment:
+
 - (a) Drop from 4 engines to 3 (Case 11-15 × 3 engines = 60 tests)?
 - (b) Re-introduce `VarianceAttribution` (incompatible with Apollo's deletion)?
 - (c) Replace with a different engine (e.g., `RegulatoryReporting`)?
@@ -152,13 +174,15 @@ Mnemosyne notes: "✅ Discrepancy noted (Chronos message sent before Hephaestus 
 ### 3.3 Apollo V2 Verdict §7 — V3 Future-Work Note
 
 Apollo's 2nd-Muse witness on Chronos V2 (e.ix.6) at a68725592 §7.1 says:
+
 > "V2 doc §8 follow-up: Rename test case (10) 'Microsecond precision' → 'Sub-millisecond truncation' (Chronos V3 amendment)."
 
-This is the only **verified, in-tree reference** to Chronos V3. It is a *minor doc-naming fix* — NOT the 64-test auto-impl amendment Mnemosyne witnessed.
+This is the only **verified, in-tree reference** to Chronos V3. It is a _minor doc-naming fix_ — NOT the 64-test auto-impl amendment Mnemosyne witnessed.
 
 **Conclusion:** Apollo's V2 §7.1 V3 amendment is **MINOR** (1-line doc rename). Mnemosyne's V3 e.ix.7 witness is **MAJOR** (64-test auto-impl, 9 new files, 4-ICP). These are **DIFFERENT proposals** with overlapping labels — a **NAMING COLLISION** (CATCH #26-style).
 
 **Question for Chronos:** Which is the actual V3 e.ix.7 amendment?
+
 - (a) Apollo's minor doc-naming fix (1 line in V2 test file)
 - (b) Mnemosyne's 64-test auto-impl (9 new files, 4 engines, 5 new cases)
 - (c) Both, in sequence (minor first, then major)
@@ -192,12 +216,12 @@ This is the only **verified, in-tree reference** to Chronos V3. It is a *minor d
 
 ## 5. 4-ICP Verdict Summary (Strategos C2 CATASTROPHIC witness only)
 
-| ICP | Verdict | Notes |
-|-----|---------|-------|
-| **I1 Intent** | (out of scope — Mnemosyne's angle) | Per Mnemosyne §2.1: 9.0/10 ACCEPT (if file existed) |
-| **C2 Catastrophic** | **3.5/10 REJECT** | GHOST file (CATCH #187) + NAMING COLLISION ambiguity (CATCH #26) + 1 PARTIAL engine deletion |
-| **P3 Performance** | (out of scope — Tyche's angle) | Per Mnemosyne §2.3: 9.5/10 ACCEPT (if file existed) |
-| **D4 Documented** | (out of scope — Themis's angle) | Per Mnemosyne §2.4: 9.5/10 ACCEPT (if file existed) |
+| ICP                 | Verdict                            | Notes                                                                                        |
+| ------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------- |
+| **I1 Intent**       | (out of scope — Mnemosyne's angle) | Per Mnemosyne §2.1: 9.0/10 ACCEPT (if file existed)                                          |
+| **C2 Catastrophic** | **3.5/10 REJECT**                  | GHOST file (CATCH #187) + NAMING COLLISION ambiguity (CATCH #26) + 1 PARTIAL engine deletion |
+| **P3 Performance**  | (out of scope — Tyche's angle)     | Per Mnemosyne §2.3: 9.5/10 ACCEPT (if file existed)                                          |
+| **D4 Documented**   | (out of scope — Themis's angle)    | Per Mnemosyne §2.4: 9.5/10 ACCEPT (if file existed)                                          |
 
 **Strategos 5th-ICP C2 CATASTROPHIC composite:** 3.5/10 **REJECT** (pending §4.1 BLOCKING actions).
 

@@ -53,33 +53,36 @@ T-MN-061 v0.1 (originally SHIPPED @ 6deb7b71 then RE-COVERED after rebase) is am
 
 ## §3. 6-WITNESS CHAIN CLOSE
 
-| # | Witness | Muse | Status | Co-sign SHA |
-|---|---------|------|--------|-------------|
-| 1 | Mnemosyne (DRI) | Mnemosyne | SHIPPED | T-MN-068 v0.1 @ d9cfe8a4a |
-| 2 | Mnemosyne (catalog author) | Mnemosyne | SHIPPED | T-MN-068 v0.1.1 @ 6deb7b71 (RE-COVERED) |
-| 3 | Prometheus (CATCH #211 filer) | Prometheus | SHIPPED | ba3754182 |
-| 4 | Hephaestus (Husky Gate 9) | Hephaestus | SHIPPED | PATCH 13 PIIRedactor |
-| 5 | Atlas (CATCH schema) | Atlas | SHIPPED | T-MN-061 SCHEMA v0.1 (234L) |
-| 6a | Strategos (RULE #68 ratification) | Strategos | PENDING | T-MN-061 v0.1.1 solicited |
-| 6b | Calliope (CATCH #200 LOCKOUT) | Calliope | PENDING | T-MN-061 v0.1.1 solicited |
+| #   | Witness                           | Muse       | Status  | Co-sign SHA                             |
+| --- | --------------------------------- | ---------- | ------- | --------------------------------------- |
+| 1   | Mnemosyne (DRI)                   | Mnemosyne  | SHIPPED | T-MN-068 v0.1 @ d9cfe8a4a               |
+| 2   | Mnemosyne (catalog author)        | Mnemosyne  | SHIPPED | T-MN-068 v0.1.1 @ 6deb7b71 (RE-COVERED) |
+| 3   | Prometheus (CATCH #211 filer)     | Prometheus | SHIPPED | ba3754182                               |
+| 4   | Hephaestus (Husky Gate 9)         | Hephaestus | SHIPPED | PATCH 13 PIIRedactor                    |
+| 5   | Atlas (CATCH schema)              | Atlas      | SHIPPED | T-MN-061 SCHEMA v0.1 (234L)             |
+| 6a  | Strategos (RULE #68 ratification) | Strategos  | PENDING | T-MN-061 v0.1.1 solicited               |
+| 6b  | Calliope (CATCH #200 LOCKOUT)     | Calliope   | PENDING | T-MN-061 v0.1.1 solicited               |
 
 **Quorum**: 4/6 SHIPPED meets 5-of-6 threshold with either Strategos OR Calliope ACK. Per RULE #56 PROACTIVE-PICK-CHAIN, formal 5-of-6 quorum acceptable.
 
 ## §4. RULE #68 CATALOG v0.1 → v0.1.1 → v0.2 CHANGELOG
 
 ### v0.1 (T-MN-068 SHIPPED @ d9cfe8a4a, 2026-06-17)
+
 - 215 CATCHes indexed
 - 19 sub-classes A-N+1 MECE
 - 6 OPEN CATCHes tracked
 - 5 NEW CATCHes in CYCLE 14 W2 D2 documented (#211-#215)
 
 ### v0.1.1 (T-MN-061 SHIPPED @ 6deb7b71, RE-COVERED)
+
 - CATCH #211 + #212 dispositioned
 - 4/6 co-author chain SHIPPED
 - §11 6-WITNESS CHAIN CLOSE added
 - 359L → 408L (+49L)
 
 ### v0.2 (T-MN-068 v0.2 SHIPPED, TURN 112+)
+
 - 220 CATCHes indexed (+5 NEW #216-#220)
 - 15+1+O sub-classes MECE v0.2
 - 4 CATCH disposition docs (§7.6-§7.9)
@@ -103,12 +106,12 @@ Per CAVEMAN PERSIST protocol (RULE #47) when push to origin/main is blocked:
 
 ## §7. 4-ICP VERDICT (D-011)
 
-| ICP | Muse | Verdict | Notes |
-|-----|------|---------|-------|
-| Carla (cascade) | Carla | 9.5/10 ACCEPT | All CATCHes chained properly |
-| Vera (logical) | Vera | 9.5/10 ACCEPT | Logic MECE verified |
-| Chris (operational) | Chris | 9.5/10 ACCEPT | Push unblock scheduled |
-| Beth (user-impact) | Beth | 9.5/10 ACCEPT | Founder has full visibility |
+| ICP                 | Muse  | Verdict       | Notes                        |
+| ------------------- | ----- | ------------- | ---------------------------- |
+| Carla (cascade)     | Carla | 9.5/10 ACCEPT | All CATCHes chained properly |
+| Vera (logical)      | Vera  | 9.5/10 ACCEPT | Logic MECE verified          |
+| Chris (operational) | Chris | 9.5/10 ACCEPT | Push unblock scheduled       |
+| Beth (user-impact)  | Beth  | 9.5/10 ACCEPT | Founder has full visibility  |
 
 **Composite**: **9.5/10 PLATINUM+ ACCEPT 4/4** ✅
 

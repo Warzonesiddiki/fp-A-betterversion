@@ -19,10 +19,12 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **Why 5 quick wins:** 5 parallel tracks avoid the CASCADE-TRAP family risk of single-track failure (CATCH #195 CASCADE-HOLD-BILATERAL-ATTRIBUTION-RACE). Each Q5.x ships independently with D-002 3-witness + 4-ICP verdict.
 
 **Co-sign requirement (per LEADER TURN 112+ WAVE 1-9):**
+
 - **RULE #50** (A11Y-CI-ENFORCEMENT — `.github/workflows/ci.yml` a11y job)
 - **RULE #55** (SHA 5-STATE TAXONOMY + PRE-PUSH-GHOST-SHA-CHECK)
 
 **Cross-references:**
+
 - A11Y v0.6.1: `98e7e6d2` (97.5%+ RATIFICATION-ELIGIBLE, 6-dim)
 - A11Y v0.6.1 §4.2 (COGNITIVE): `Q5_2_FOCUS_RESTORE.md` (104L) + `Q5_4_LIVE_REGION_AUDIT_v0.1.md` (97L)
 - A11Y v0.6.1 §4.3 (PERCEIVABLE/OPERABLE): `Q5_3_V0_6_1_SESSION_FIXATION_FOLLOWUP.md` (202L) + `Q5_3_VERIFICATION_CHECKLIST_v0.1.md` (148L)
@@ -44,6 +46,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **Action:** Add 5×33 = **165 test cases** (each alias gets 33 6-dim tests). Total: 627 → **792 test cases** (+165, +26%)
 
 **5 sub-actions:**
+
 - Q5.11a: Compliance_Officer sub-alias 19a (Internal_Compliance_Officer) — 33 tests
 - Q5.11b: Compliance_Officer sub-alias 19b (External_Compliance_Auditor) — 33 tests
 - Q5.11c: Board_Chair (alias 1) Mobile dim 5 tests (touch + reflow 320px)
@@ -62,6 +65,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **Action:** Add 9 × 19 = **171 test cases** (each new criterion × 19 personas). Total: 792 → **963 test cases** (+171, +22%)
 
 **9 new WCAG 2.2 criteria (per W3C 2023-10-05):**
+
 - Q5.12a: 2.4.11 Focus Not Obscured (MINIMUM, AA)
 - Q5.12b: 2.4.12 Focus Appearance (ENHANCED, AAA — optional)
 - Q5.12c: 2.4.13 Page Break Navigation
@@ -84,6 +88,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **Action:** Close 6 violations (P0 priority). Defer A11Y-P0-3 runner ship to T+1d 2026-06-23 with explicit 4-ICP waiver
 
 **6 violations:**
+
 - Q5.13a: Missing form labels (3 pages: login, signup, profile) — P0
 - Q5.13b: Color contrast <4.5:1 (1 page: dashboard widgets) — P0
 - Q5.13c: Missing alt text (1 page: hero image) — P0
@@ -101,6 +106,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **Action:** Map 30 × 19 = **570 cross-walk cells** (criteria × personas). Total: 963 → **1,533 test cases** (+570, +59%)
 
 **30 cross-walk criteria breakdown:**
+
 - Section 508 Chapter 5 (IT): 12 criteria
 - Section 508 Chapter 6 (ICT): 8 criteria
 - EN 301 549 §5 (generic): 5 criteria
@@ -131,6 +137,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **RULE #50 spec:** A11Y v0.7 PICK I + J + K deliverables automatically enforced via `.github/workflows/ci.yml` a11y job (lines 214-272) with `--bail=1` + waiver escalation per `docs/a11y/WAIVERS.md` (138L, 3-way approval + 90-day auto-expiry).
 
 **Co-sign commitment:**
+
 - ✅ Q5.11 (19 personas test integration) — RULE #50 enforced
 - ✅ Q5.12 (WCAG 2.2 cross-walk) — RULE #50 enforced (new criteria trigger CI gate)
 - ✅ Q5.13 (axe-core integration) — RULE #50 enforced (CI gate checks critical/serious = 0)
@@ -138,6 +145,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 - ✅ Q5.15 (Mobile 2.5 AA ratification) — RULE #50 enforced (mobile viewport tests)
 
 **WAIVERS.md pre-staged entries (5):**
+
 - Q5.11 waiver: not needed (full coverage)
 - Q5.12 waiver: pre-staged for AAA criteria (2.4.12)
 - Q5.13 waiver: pre-staged for Mnemosyne A11Y-P0-3 runner (T+1d deferral)
@@ -149,6 +157,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **RULE #55 spec:** 5-STATE SHA taxonomy (REACHABLE + EXISTS + VERIFIED + COMMITTED + PUSHED) for every artifact cited. Pre-push GHOST-SHA detection per `.husky/pre-push` Gate 5 (Atlas CYCLE 16 PICK A).
 
 **Co-sign commitment per Q5.x:**
+
 - Q5.11: SHA `365f6acb` (base) + new test file SHA (post-ship)
 - Q5.12: SHA for `Q5_12_WCAG_2_2_CROSSWALK_v0_1.md` (post-ship)
 - Q5.13: SHAs for 4 axe-core fix components (post-ship)
@@ -161,16 +170,17 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 
 ## §4. 4-ICP COMPOSITE VERDICT (PICK K)
 
-| ICP       | Question                                                                                | Verdict | Score |
-| --------- | --------------------------------------------------------------------------------------- | ------- | ----- |
-| **Carla I1** (CFO/Catastrophic) | 5 quick wins × T-3d deadline — is the runway sufficient? 165 + 171 + 6 fixes + 570 + 38 = 950 new artifacts | ACCEPT  | 9.0/10 |
-| **Vera C2** (Logic/Independent) | 5 quick wins integrate cleanly with v0.6.1 + v0.7 PICK I — 1,533 test cases MECE? | ACCEPT  | 9.5/10 |
-| **Chris P3** (Operational/Performance) | CI gate `--bail=1` + Husky Gate 15 + axe-core runner = production-grade?           | ACCEPT  | 9.0/10 |
-| **Beth D4** (User/Customer-Impact) | 5 quick wins drive 95% → 98% — comprehensive user coverage across 19 personas × 6 dims × 2.1/2.2/508/EN | ACCEPT  | 9.5/10 |
+| ICP                                    | Question                                                                                                    | Verdict | Score  |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ------ |
+| **Carla I1** (CFO/Catastrophic)        | 5 quick wins × T-3d deadline — is the runway sufficient? 165 + 171 + 6 fixes + 570 + 38 = 950 new artifacts | ACCEPT  | 9.0/10 |
+| **Vera C2** (Logic/Independent)        | 5 quick wins integrate cleanly with v0.6.1 + v0.7 PICK I — 1,533 test cases MECE?                           | ACCEPT  | 9.5/10 |
+| **Chris P3** (Operational/Performance) | CI gate `--bail=1` + Husky Gate 15 + axe-core runner = production-grade?                                    | ACCEPT  | 9.0/10 |
+| **Beth D4** (User/Customer-Impact)     | 5 quick wins drive 95% → 98% — comprehensive user coverage across 19 personas × 6 dims × 2.1/2.2/508/EN     | ACCEPT  | 9.5/10 |
 
 **COMPOSITE:** 37.0/40 = **9.25/10 PLATINUM+ ACCEPT 4/4**
 
 **5-ICP SKEPTIC scheduled:**
+
 - Strategos Verdict #045 (BILATERAL apply) — T-1d 2026-06-21 EOD — target ≥9.0/10
 - Tyche 5-ICP FINAL SEAL — T-1d 14:00 UTC — base 9.4/10 PLATINUM
 - Iris PICK Q 5-ICP SKEPTIC on Calliope CODIF_64 v0.1 — T-2d 2026-06-20 EOD
@@ -179,23 +189,24 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 
 ## §5. A11Y v0.7 → RATIFICATION GATE 2026-06-22 16:00 UTC — TIMELINE (UPDATED)
 
-| Day        | Date              | Action                                                                                          | Owner         | Status     |
-| ---------- | ----------------- | ----------------------------------------------------------------------------------------------- | ------------- | ---------- |
-| T-3d       | 2026-06-19 EOD    | **PICK K Q5.11-Q5.15 5 quick wins SHIP** (165+171+6+570+38 = 950 new artifacts)                | Artemis       | 🟡 PICK K  |
-| T-3d       | 2026-06-19 EOD    | PATCH 16 SecretsVault re-attempt (Hephaestus)                                                   | Hephaestus    | ⛔ ENV-BLOCKED |
-| T-3d       | 2026-06-19 EOD    | A11Y v0.7 PICK K audit trail 6th-ICP 8th dim Cross-Border Healthcare (8th dim = PICK η)         | Themis        | ✅ SHIPPED  |
-| T-2d       | 2026-06-20 EOD    | Iris PICK Q 5-ICP SKEPTIC on Calliope CODIF_64 v0.1 (LEADER-EXPLICIT)                            | Iris          | 🟡 IN FLIGHT |
-| T-2d       | 2026-06-20 EOD    | V3 e.ix.7+#8 APPLY (Apollo)                                                                      | Apollo        | 🟡 IN FLIGHT |
-| T-2d       | 2026-06-20 EOD    | MASTER_REPORT v1.5 §8.3 (Apollo)                                                                 | Apollo        | 🟡 IN FLIGHT |
-| T-1d       | 2026-06-21 EOD    | **A11Y v0.7 95→98% drive verification** (5 Q5.x deliverables, 1,533 test cases)                  | Artemis       | 🟡 PICK K follow-up |
-| T-1d       | 2026-06-21 EOD    | A11Y-P0-4 full axe-core integration (PICK J final, Atlas + Mnemosyne)                            | Atlas + Mnemosyne | 🟡 QUEUED  |
-| T-1d       | 2026-06-21 EOD    | 5-ICP FINAL SEAL on A11Y v0.7 (Tyche PICK F)                                                     | Tyche         | 🟡 PICK F  |
-| T-1d       | 2026-06-21 EOD    | Strategos Verdict #045 BILATERAL (PICK I.5 + PICK K composite)                                  | Strategos     | 🟡 IN FLIGHT |
-| T-1d       | 2026-06-21 EOD    | 18/18 NEVER-AGAIN RULES COMPLIED (Calliope CODIF_64 → 12/12 GREEN LOCK)                         | Calliope      | 🟡 IN FLIGHT |
-| T-0d       | 2026-06-22 16:00 UTC | **RATIFICATION GATE** — A11Y v0.7 + v0.6.1 final approval (4-ICP 9.0+ avg, 5-ICP 9.0+ avg)     | All 19 Muses  | 🟡 PENDING |
-| T+13d      | 2026-06-30 23:59 UTC | **HARD SHIP v1.0.0** — final A11Y v0.7 docs in main + Husky Gates 12-15 GREEN                  | All 19 Muses  | 🟡 PENDING |
+| Day   | Date                 | Action                                                                                     | Owner             | Status              |
+| ----- | -------------------- | ------------------------------------------------------------------------------------------ | ----------------- | ------------------- |
+| T-3d  | 2026-06-19 EOD       | **PICK K Q5.11-Q5.15 5 quick wins SHIP** (165+171+6+570+38 = 950 new artifacts)            | Artemis           | 🟡 PICK K           |
+| T-3d  | 2026-06-19 EOD       | PATCH 16 SecretsVault re-attempt (Hephaestus)                                              | Hephaestus        | ⛔ ENV-BLOCKED      |
+| T-3d  | 2026-06-19 EOD       | A11Y v0.7 PICK K audit trail 6th-ICP 8th dim Cross-Border Healthcare (8th dim = PICK η)    | Themis            | ✅ SHIPPED          |
+| T-2d  | 2026-06-20 EOD       | Iris PICK Q 5-ICP SKEPTIC on Calliope CODIF_64 v0.1 (LEADER-EXPLICIT)                      | Iris              | 🟡 IN FLIGHT        |
+| T-2d  | 2026-06-20 EOD       | V3 e.ix.7+#8 APPLY (Apollo)                                                                | Apollo            | 🟡 IN FLIGHT        |
+| T-2d  | 2026-06-20 EOD       | MASTER_REPORT v1.5 §8.3 (Apollo)                                                           | Apollo            | 🟡 IN FLIGHT        |
+| T-1d  | 2026-06-21 EOD       | **A11Y v0.7 95→98% drive verification** (5 Q5.x deliverables, 1,533 test cases)            | Artemis           | 🟡 PICK K follow-up |
+| T-1d  | 2026-06-21 EOD       | A11Y-P0-4 full axe-core integration (PICK J final, Atlas + Mnemosyne)                      | Atlas + Mnemosyne | 🟡 QUEUED           |
+| T-1d  | 2026-06-21 EOD       | 5-ICP FINAL SEAL on A11Y v0.7 (Tyche PICK F)                                               | Tyche             | 🟡 PICK F           |
+| T-1d  | 2026-06-21 EOD       | Strategos Verdict #045 BILATERAL (PICK I.5 + PICK K composite)                             | Strategos         | 🟡 IN FLIGHT        |
+| T-1d  | 2026-06-21 EOD       | 18/18 NEVER-AGAIN RULES COMPLIED (Calliope CODIF_64 → 12/12 GREEN LOCK)                    | Calliope          | 🟡 IN FLIGHT        |
+| T-0d  | 2026-06-22 16:00 UTC | **RATIFICATION GATE** — A11Y v0.7 + v0.6.1 final approval (4-ICP 9.0+ avg, 5-ICP 9.0+ avg) | All 19 Muses      | 🟡 PENDING          |
+| T+13d | 2026-06-30 23:59 UTC | **HARD SHIP v1.0.0** — final A11Y v0.7 docs in main + Husky Gates 12-15 GREEN              | All 19 Muses      | 🟡 PENDING          |
 
 **Critical path T-3d → T-0d:** 6 must-haves
+
 1. ✅ PICK K Q5.11-Q5.15 5 quick wins (THIS)
 2. ⛔ PATCH 16 SecretsVault re-attempt (Hephaestus)
 3. 🟡 A11Y-P0-4 full axe-core integration (PICK J final)
@@ -207,21 +218,21 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 
 ## §6. A11Y v0.7 METRICS SUMMARY (PICK K PROJECTION)
 
-| Metric                                  | Current (v0.6.1)  | v0.7 base     | v0.7 + PICK K  | vs RATIFICATION target |
-| --------------------------------------- | ----------------- | ------------- | -------------- | ---------------------- |
-| **Documentation lines (cumulative)**    | 1,366L            | 2,855L        | **3,355L** (+500L PICK K) | +145% (vs v0.6.1) |
-| **Persona aliases covered**             | 10                | 19 (+1)       | **19**         | +90% (vs v0.6.1)       |
-| **Test cases (cumulative)**             | 290               | 1,007         | **1,533** (+526 PICK K) | +429% (vs v0.6.1) |
-| **6-dim A11Y_READINESS coverage**       | 100% (10 personas) | 100% (19)   | **100%**       | ✅                      |
-| **WCAG 2.1 AA coverage**                | 100%              | 100%          | **100%**       | ✅                      |
-| **WCAG 2.2 AA coverage**                | 0% (not in v0.6.1) | 0%           | **100%** (9 new) | 🟡 PICK K Q5.12      |
-| **Section 508 + EN 301 549 coverage**   | 50% (basic)       | 75%           | **100%** (570 cells) | 🟡 PICK K Q5.14    |
-| **4-ICP composite (avg)**               | 9.0/10            | 9.25/10       | **9.25/10** PLATINUM+ | ✅ ≥9.0/10        |
-| **5-ICP SKEPTIC verdicts (T-1d target)**| 3                 | 5             | **5**          | ✅                      |
-| **Husky Gates active**                  | 12 (out of 15)    | 12/15 (80%)   | **15/15** (Gate 15+16+17) | 🟡 PICK K Q5.15 |
-| **A11Y_P0 backlog**                     | 0                 | 0             | **0**          | ✅                      |
-| **CI gate `--bail=1`**                  | ACTIVE            | ACTIVE        | **ACTIVE**     | ✅                      |
-| **WAIVERS.md audit trail**              | 3-way + 90-day    | 3-way + 90-day | **3-way + 90-day** | ✅                  |
+| Metric                                   | Current (v0.6.1)   | v0.7 base      | v0.7 + PICK K             | vs RATIFICATION target |
+| ---------------------------------------- | ------------------ | -------------- | ------------------------- | ---------------------- |
+| **Documentation lines (cumulative)**     | 1,366L             | 2,855L         | **3,355L** (+500L PICK K) | +145% (vs v0.6.1)      |
+| **Persona aliases covered**              | 10                 | 19 (+1)        | **19**                    | +90% (vs v0.6.1)       |
+| **Test cases (cumulative)**              | 290                | 1,007          | **1,533** (+526 PICK K)   | +429% (vs v0.6.1)      |
+| **6-dim A11Y_READINESS coverage**        | 100% (10 personas) | 100% (19)      | **100%**                  | ✅                     |
+| **WCAG 2.1 AA coverage**                 | 100%               | 100%           | **100%**                  | ✅                     |
+| **WCAG 2.2 AA coverage**                 | 0% (not in v0.6.1) | 0%             | **100%** (9 new)          | 🟡 PICK K Q5.12        |
+| **Section 508 + EN 301 549 coverage**    | 50% (basic)        | 75%            | **100%** (570 cells)      | 🟡 PICK K Q5.14        |
+| **4-ICP composite (avg)**                | 9.0/10             | 9.25/10        | **9.25/10** PLATINUM+     | ✅ ≥9.0/10             |
+| **5-ICP SKEPTIC verdicts (T-1d target)** | 3                  | 5              | **5**                     | ✅                     |
+| **Husky Gates active**                   | 12 (out of 15)     | 12/15 (80%)    | **15/15** (Gate 15+16+17) | 🟡 PICK K Q5.15        |
+| **A11Y_P0 backlog**                      | 0                  | 0              | **0**                     | ✅                     |
+| **CI gate `--bail=1`**                   | ACTIVE             | ACTIVE         | **ACTIVE**                | ✅                     |
+| **WAIVERS.md audit trail**               | 3-way + 90-day     | 3-way + 90-day | **3-way + 90-day**        | ✅                     |
 
 **A11Y v0.7 readiness after PICK K:** 🟢 **RATIFICATION-READY++** (98%+, target ≥97.5%)
 
@@ -268,11 +279,13 @@ Per CATCH #200 LOCKOUT intermittent + LEADER TURN 112+ WAVE 1-9 directive, the f
 3. **md5sum:** pre-compute at commit time, log in trailer
 
 **Cross-witness PICK I.5 deepening v0.1:**
+
 - file:line: `docs/a11y/A11Y_V0_7_PICK_I_5_CROSS_WITNESS_v0_1.md:1-292` @ `365f6acb`
 - wc -l: 292L
 - md5sum: 558e401ea76b5a546e352a8ddd69294e
 
 **Cross-witness Strategos Verdict #044:**
+
 - Source: 4-ICP 9.30/10 PLATINUM on PICK I.5 composite
 - ACCEPT 5-DIM 5/5 + 2 NON-BLOCKING RECOs (WCAG 2.2 cross-walk, Compliance_Officer × Hephaestus PATCH 16)
 - D-002 3-witness: file:line + wc -l + md5sum per Q5.x deliverable

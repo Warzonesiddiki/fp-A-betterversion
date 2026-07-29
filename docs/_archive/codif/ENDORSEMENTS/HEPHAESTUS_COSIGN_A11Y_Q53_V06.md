@@ -28,6 +28,7 @@ The 4-ICP verdict applies to the **Hephaestus-authored `docs/security/SECURITY.m
 The §4.2 policy is **independent** of any single vendor, library, or implementation. The numeric thresholds (15 min idle, 30 min absolute) are drawn from publicly authoritative sources (NIST SP 800-63B §7.1, OWASP ASVS V3.3) rather than from a product-specific recommendation. The session-event audit chain leverages PATCH 12's `AuditLogger` (a Hephaestus-built module) but the policy itself is library-agnostic — any Web Crypto API-compliant audit chain would satisfy the requirement.
 
 **Strengths:**
+
 - Numeric thresholds are NIST/OWASP-anchored, not internal opinion
 - Heartbeat vs. real-interaction distinction is novel and well-defined
 - Step-up re-auth tiers are explicit (read-only / low-sensitivity / high-sensitivity / critical)
@@ -52,6 +53,7 @@ A catastrophic failure of session management would result in **unauthenticated a
 **Cross-witness with PATCH 13 PIIRedactor:** Even if the audit log leaks (e.g., log export), the PIIRedactor redacts any PII in `payload` fields (GDPR Art. 5(1)(c) data minimization), so the audit log is safe to retain long-term.
 
 **Strengths:**
+
 - No single point of failure (token + session record + step-up auth + audit chain)
 - Catastrophic breach scenario (stolen token + clock tampering) requires defeating 4 independent controls
 
@@ -69,11 +71,13 @@ The §4.2 policy is **performant**:
 4. **Session table size bounded by §4.2.1** — idle timeout at 15 min prevents unbounded session-table growth (the basis for PATCH 14's rate limiting)
 
 **Performance impact estimate (Prometheus cross-witness forthcoming):**
+
 - Idle-check overhead: ≤ 0.1ms per request (timestamp compare)
 - Audit-log overhead: ≤ 0.5ms per session event (SHA-256 of ~256 byte payload)
 - Total session-management overhead: ≤ 1ms per authenticated request — negligible vs. the 50-200ms typical request budget
 
 **Strengths:**
+
 - All checks are O(1)
 - No additional network calls
 - Audit chain does not block request path (fire-and-forget with promise chain)
@@ -93,6 +97,7 @@ The §4.2 policy is **comprehensively documented**:
 5. **Cross-muse cross-witness** in §14 (6 muses mapped, 1 LOCKED)
 
 **Strengths:**
+
 - 10 subsections covering every aspect of session lifetime
 - Explicit numeric thresholds with rationale
 - WCAG 2.2 alignment table for direct cross-witness with Artemis
@@ -104,13 +109,13 @@ The §4.2 policy is **comprehensively documented**:
 
 **4-ICP PLATINUM 36.0/40** — **ACCEPT 4/4**
 
-| ICP | Score | Verdict |
-|---|---|---|
-| I1 Independent | 9.0/10 | ✅ ACCEPT |
-| C2 Catastrophic | 9.0/10 | ✅ ACCEPT |
-| P3 Performance | 9.0/10 | ✅ ACCEPT |
-| D4 Documented | 9.0/10 | ✅ ACCEPT |
-| **COMPOSITE** | **36.0/40 PLATINUM** | **✅ ACCEPT** |
+| ICP             | Score                | Verdict       |
+| --------------- | -------------------- | ------------- |
+| I1 Independent  | 9.0/10               | ✅ ACCEPT     |
+| C2 Catastrophic | 9.0/10               | ✅ ACCEPT     |
+| P3 Performance  | 9.0/10               | ✅ ACCEPT     |
+| D4 Documented   | 9.0/10               | ✅ ACCEPT     |
+| **COMPOSITE**   | **36.0/40 PLATINUM** | **✅ ACCEPT** |
 
 ---
 
@@ -134,14 +139,14 @@ Hephaestus has performed the D-002 Step 2 security-layer verification on the SEC
 
 ### §3.4 Spot-check dimensions (per RULE #59 v0.1 6-dim audit pattern)
 
-| Dimension | PASS/FAIL | Evidence |
-|---|---|---|
-| 1. REPO-ROOT-POLLUTION | PASS | SECURITY.md lives in `docs/security/`, not repo root |
-| 2. CASCADE-TRAP detection (family 11) | PASS | 0 cascade-trap sub-classes (A-J) triggered; no force-push-loop risk |
-| 3. DEFECT-DETECTION-RATE | PASS | Numeric thresholds (15 min, 30 min) are explicit; no ambiguity |
-| 4. CONTAINMENT-EFFECTIVENESS | PASS | §4.2.5 atomic termination procedure (5 steps) bounds blast radius |
-| 5. RECOVERY-TIME | PASS | New session can be issued in <1s after termination |
-| 6. COMPLIANCE-DELTA | PASS | §4.2.9 maps to 5 SOC 2 TSC + 3 GDPR + 1 CCPA; 0 deltas |
+| Dimension                             | PASS/FAIL | Evidence                                                            |
+| ------------------------------------- | --------- | ------------------------------------------------------------------- |
+| 1. REPO-ROOT-POLLUTION                | PASS      | SECURITY.md lives in `docs/security/`, not repo root                |
+| 2. CASCADE-TRAP detection (family 11) | PASS      | 0 cascade-trap sub-classes (A-J) triggered; no force-push-loop risk |
+| 3. DEFECT-DETECTION-RATE              | PASS      | Numeric thresholds (15 min, 30 min) are explicit; no ambiguity      |
+| 4. CONTAINMENT-EFFECTIVENESS          | PASS      | §4.2.5 atomic termination procedure (5 steps) bounds blast radius   |
+| 5. RECOVERY-TIME                      | PASS      | New session can be issued in <1s after termination                  |
+| 6. COMPLIANCE-DELTA                   | PASS      | §4.2.9 maps to 5 SOC 2 TSC + 3 GDPR + 1 CCPA; 0 deltas              |
 
 **3/3 spot-check dims PASS** (0 FAIL, 0 P0, 0 P1).
 
@@ -177,18 +182,18 @@ Mnemosyne to verify §6 audit log retention policy aligns with codif memory stan
 
 The §4.2 session timeout policy closes the final gap in the SOC 2 boundary protection chain:
 
-| Layer | Patch | Section | Status |
-|---|---|---|---|
-| 1. Security headers (CSP/HSTS/COEP) | PATCH 11 `3547f51e` | §2 | SHIPPED |
-| 2. CSRF protection (Double-Submit + HMAC) | PATCH 11 `3547f51e` | §3 | SHIPPED |
-| 3. Secret rotation (PBKDF2 100k iter) | PATCH 12 `db1b5bfd3` | §5 | SHIPPED |
-| 4. Audit logging (SHA-256 hash chain) | PATCH 12 `db1b5bfd3` | §6 | SHIPPED |
-| 5. PII redaction (multi-strategy) | PATCH 13 `edff05258` | §7 | SHIPPED |
-| **6. Session management + timeout policy** | **PATCH 11+12+13 chain + SECURITY.md v1.0.0** | **§4** | **SPEC SHIPPED (this co-sign); code implementation PATCH 11+12+13 already in place; integration test forthcoming PATCH 14** |
-| 7. 5th-ICP PAGES cross-witness (Chronos) | babc6780 | (Edge Case #14) | SHIPPED |
-| 8. 5th-ICP CAVEMAN cross-witness (Hermes) | b3657cf87 | (RULE #50 v0.2) | SHIPPED |
-| 9. 5th-ICP RULE #60 (CASCADE-HOLD) | 1ecd26ba | codif | SHIPPED |
-| 10. 5th-ICP RULE #59 (SCRATCH-FILE-LIFECYCLE) | 086f4aec2 | codif | SHIPPED |
+| Layer                                         | Patch                                         | Section         | Status                                                                                                                      |
+| --------------------------------------------- | --------------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 1. Security headers (CSP/HSTS/COEP)           | PATCH 11 `3547f51e`                           | §2              | SHIPPED                                                                                                                     |
+| 2. CSRF protection (Double-Submit + HMAC)     | PATCH 11 `3547f51e`                           | §3              | SHIPPED                                                                                                                     |
+| 3. Secret rotation (PBKDF2 100k iter)         | PATCH 12 `db1b5bfd3`                          | §5              | SHIPPED                                                                                                                     |
+| 4. Audit logging (SHA-256 hash chain)         | PATCH 12 `db1b5bfd3`                          | §6              | SHIPPED                                                                                                                     |
+| 5. PII redaction (multi-strategy)             | PATCH 13 `edff05258`                          | §7              | SHIPPED                                                                                                                     |
+| **6. Session management + timeout policy**    | **PATCH 11+12+13 chain + SECURITY.md v1.0.0** | **§4**          | **SPEC SHIPPED (this co-sign); code implementation PATCH 11+12+13 already in place; integration test forthcoming PATCH 14** |
+| 7. 5th-ICP PAGES cross-witness (Chronos)      | babc6780                                      | (Edge Case #14) | SHIPPED                                                                                                                     |
+| 8. 5th-ICP CAVEMAN cross-witness (Hermes)     | b3657cf87                                     | (RULE #50 v0.2) | SHIPPED                                                                                                                     |
+| 9. 5th-ICP RULE #60 (CASCADE-HOLD)            | 1ecd26ba                                      | codif           | SHIPPED                                                                                                                     |
+| 10. 5th-ICP RULE #59 (SCRATCH-FILE-LIFECYCLE) | 086f4aec2                                     | codif           | SHIPPED                                                                                                                     |
 
 **Cumulative TSC closed (with §4.2):** 13 (unchanged — §4.2 is an in-depth control on already-mapped CC6.1, CC6.7)
 **Cumulative CWE closed (with §4.2):** 18 (+CWE-613, +CWE-384 — was previously implicit in CSRF defense)

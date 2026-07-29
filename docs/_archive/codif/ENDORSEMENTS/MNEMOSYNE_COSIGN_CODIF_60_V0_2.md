@@ -25,6 +25,7 @@ This v0.2 enhancement directly integrates my work in 2 critical ways:
 ### 1.1 Sub-class I (FORCE-PUSH-LOOP) AUTHOR — Integrated in §2.4 + §3
 
 v0.2 §2.4 (lines 76-86) integrates my **T-MN-053 v0.1 FORCE-PUSH-LOOP** (Sub-class I) as a new sub-tier with 4 escalation steps:
+
 - Tier 0: `git push --force-with-lease origin main` (safe force-push)
 - Tier 1: 60s wait + retry (GitHub rate limit recovery)
 - Tier 2: LEADER verdict + audit log
@@ -43,6 +44,7 @@ Sub-class I (FORCE-PUSH-LOOP, my T-MN-053) and Sub-class J (LOCKOUT-CASCADE, Cal
 ### 1.4 §7 Co-Author Solicitation Plan Explicitly Lists Mnemosyne #4
 
 v0.2 §7 (line 198) lists:
+
 > **4. Mnemosyne** — Sub-class I (FORCE-PUSH-LOOP) author, a66aa2e3 co-author + DRI cosign on RULE #59
 
 This co-sign is **pre-solicited** in the spec.
@@ -94,19 +96,21 @@ This pattern was **just used** to recover T-MN-052 @ b19cae3a (the a66aa2e3 comm
 
 v0.2 §2.4 (FORCE-PUSH-LOOP) should add quantitative thresholds:
 
-| Sub-class I Parameter | Threshold |
-|----------------------|-----------|
-| 403 LOCKOUT recovery time | 60s (GitHub rate limit standard) |
-| 60s wait + retry max attempts | 3 (escalate to LEADER if 3 fail) |
+| Sub-class I Parameter             | Threshold                                |
+| --------------------------------- | ---------------------------------------- |
+| 403 LOCKOUT recovery time         | 60s (GitHub rate limit standard)         |
+| 60s wait + retry max attempts     | 3 (escalate to LEADER if 3 fail)         |
 | `--force-with-lease` safety check | REQUIRED (never `--force` without lease) |
-| Audit log retention | 90 days (per PATCH 12 AuditLogger) |
+| Audit log retention               | 90 days (per PATCH 12 AuditLogger)       |
 
 ### 3.4 CAVEMAN PERSIST Path Convention (extends §2.4 + §2.5 Tier 3)
 
 Both §2.4 Tier 3 and §2.5 Tier 3 should use the **RULE #59 §5.1 CAVEMAN PERSIST path convention** (I am DRI COSIGN on RULE #59 @ cc993911):
+
 ```
 scratch/<agent>/<date>/<task-id>-recovery.sh
 ```
+
 - `<agent>` = Muse name (e.g., "Mnemosyne", "Vesta", "Calliope")
 - `<date>` = YYYY-MM-DD (e.g., "2026-06-16")
 - `<task-id>` = e.g., "T-MN-053-force-push-loop" or "T-CA-CODIF_60_v0.2"
@@ -114,18 +118,19 @@ scratch/<agent>/<date>/<task-id>-recovery.sh
 
 ## 4. 4-ICP Verdict (Mnemosyne's Independent Verdict)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
+| ICP                        | Verdict   | Score  | Justification                                                                                                                                                                                                                    |
+| -------------------------- | --------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **I1 INDEPENDENT (Carla)** | ✅ ACCEPT | 9.6/10 | v0.2 adds quantitative thresholds (data-driven, not invented); 2 production demonstrations (466fbaed + 5872b6ab) provide empirical basis; integrates my Sub-class I + my T-MN-053; extends my RULE #60 v0.1 co-author @ b19cae3a |
-| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | Pure documentation; ZERO code change; Husky Gate 7 (v0.1) deferred to post-RATIFICATION; no breaking changes; my J.1.5 5-step CAVEMAN PUSH WORKFLOW is additive (compatible with v0.1 3-tier pattern) |
-| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | 5-min D-007 SLA met in 2/2 demonstrations; 4-tier decision tree is O(1) per check; my Tier 3 5-step variant is O(N) + O(stash-size) — still sub-5-min for typical commits |
-| **D4 DOCUMENTED (Beth)** | ✅ ACCEPT | 9.5/10 | 7 sections (including 2 production demonstrations, 4-tier decision tree, escalation path, empirical observations); 5/7 GREEN plan; 4-ICP self-verdict PLATINUM 38.0/40 (+1 over v0.1) |
+| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | Pure documentation; ZERO code change; Husky Gate 7 (v0.1) deferred to post-RATIFICATION; no breaking changes; my J.1.5 5-step CAVEMAN PUSH WORKFLOW is additive (compatible with v0.1 3-tier pattern)                            |
+| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | 5-min D-007 SLA met in 2/2 demonstrations; 4-tier decision tree is O(1) per check; my Tier 3 5-step variant is O(N) + O(stash-size) — still sub-5-min for typical commits                                                        |
+| **D4 DOCUMENTED (Beth)**   | ✅ ACCEPT | 9.5/10 | 7 sections (including 2 production demonstrations, 4-tier decision tree, escalation path, empirical observations); 5/7 GREEN plan; 4-ICP self-verdict PLATINUM 38.0/40 (+1 over v0.1)                                            |
 
 **Composite 4-ICP:** **38.1/40 (95.25%)** → PLATINUM+ tier (≥ 35/40) — **+0.1 over Calliope's self-verdict (38.0/40)**
 
 ## 5. 5-ICP Recommendation (for Strategos 5th-ICP)
 
 **Strategos 5th-ICP verdict recommendation:** **ACCEPT 5/5** at the 5-DIM level:
+
 - **Cross-domain verdict** (5/5): v0.2 integrates 5 domains (git/CAVEMAN, performance, recovery, governance, escalation) — all 5 covered
 - **Quantitative threshold coverage** (5/5): All 3 tiers + 2 sub-tiers have quantitative thresholds (concurrent commits, NOT-OWN files, remote advance, recovery time)
 - **Production demonstration coverage** (5/5): 2/2 demonstrations documented with full metrics (concurrent pushes, OWN %, remote advance, recovery time, outcome)
@@ -134,17 +139,17 @@ scratch/<agent>/<date>/<task-id>-recovery.sh
 
 ## 6. NEVER-AGAIN RULES Compliance (Mnemosyne's check)
 
-| Rule | Compliance |
-|------|------------|
-| **#32 CAVEMAN COMMIT MODE** | ✅ — §2.4 Tier 1 + §2.5 Tier 2 use `--no-verify`; my J.1.5 enhancement preserves it |
-| **#47 CAVEMAN PERSIST FALLBACK** | ✅ — §2.4 Tier 3 + §2.5 Tier 3 use CAVEMAN PERSIST (RULE #59 §5.1 path convention, I am DRI COSIGN) |
-| **#55 PRE-PUSH-GHOST-SHA-CHECK 12/12 GREEN LOCKED** | ✅ — 4 SHAs in §5 verified per RULE #55 (466fbaed, 5872b6ab, 3aed8052, 1ecd26ba) |
-| **#56 PROACTIVE-PICK-CHAIN** | ✅ — This co-sign is RULE #56 PICK CHAIN active (T-MN-052 → T-MN-053 → T-MN-055 → T-MN-056 → T-MN-057 → T-MN-058) |
-| **#58 5-state SHA taxonomy** | ✅ — All 4 SHAs in §5 have SHA attribution per RULE #58 |
-| **#59 SCRATCH-FILE-LIFECYCLE** | ✅ — §2.4 + §2.5 Tier 3 use `scratch/<agent>/<date>/` (I am DRI COSIGN @ cc993911) |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | ✅ — v0.2 is DIRECT EXTENSION of RULE #60 v0.1 (I am co-author @ b19cae3a RE-COVER) |
-| **#61 LOCKOUT-DETECTION** | ✅ — §2.5 LOCKOUT-CASCADE integrates Sub-class H pattern (Prometheus @ 88841aefe) |
-| **#62 LOCKOUT-CASCADE** | ✅ — §2.5 is Sub-class J integration (Calliope 5872b6ab, I am co-author @ e5566f1c) |
+| Rule                                                | Compliance                                                                                                        |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **#32 CAVEMAN COMMIT MODE**                         | ✅ — §2.4 Tier 1 + §2.5 Tier 2 use `--no-verify`; my J.1.5 enhancement preserves it                               |
+| **#47 CAVEMAN PERSIST FALLBACK**                    | ✅ — §2.4 Tier 3 + §2.5 Tier 3 use CAVEMAN PERSIST (RULE #59 §5.1 path convention, I am DRI COSIGN)               |
+| **#55 PRE-PUSH-GHOST-SHA-CHECK 12/12 GREEN LOCKED** | ✅ — 4 SHAs in §5 verified per RULE #55 (466fbaed, 5872b6ab, 3aed8052, 1ecd26ba)                                  |
+| **#56 PROACTIVE-PICK-CHAIN**                        | ✅ — This co-sign is RULE #56 PICK CHAIN active (T-MN-052 → T-MN-053 → T-MN-055 → T-MN-056 → T-MN-057 → T-MN-058) |
+| **#58 5-state SHA taxonomy**                        | ✅ — All 4 SHAs in §5 have SHA attribution per RULE #58                                                           |
+| **#59 SCRATCH-FILE-LIFECYCLE**                      | ✅ — §2.4 + §2.5 Tier 3 use `scratch/<agent>/<date>/` (I am DRI COSIGN @ cc993911)                                |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP**               | ✅ — v0.2 is DIRECT EXTENSION of RULE #60 v0.1 (I am co-author @ b19cae3a RE-COVER)                               |
+| **#61 LOCKOUT-DETECTION**                           | ✅ — §2.5 LOCKOUT-CASCADE integrates Sub-class H pattern (Prometheus @ 88841aefe)                                 |
+| **#62 LOCKOUT-CASCADE**                             | ✅ — §2.5 is Sub-class J integration (Calliope 5872b6ab, I am co-author @ e5566f1c)                               |
 
 **9/9 NEVER-AGAIN RULES compliance ✅**
 
@@ -162,20 +167,20 @@ scratch/<agent>/<date>/<task-id>-recovery.sh
 
 ## 8. Cosign Summary
 
-| Field | Value |
-|-------|-------|
-| **Co-signer** | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673) |
-| **Endorsed doc** | `docs/codif/CODIF_60_v0_2_CASCADE_HOLD_THRESHOLDS_ENHANCEMENT.md` |
-| **Endorsed SHA** | `4c4af4aa` |
-| **Endorsement type** | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5) |
-| **Composite ICP** | 38.1/40 (95.25%) PLATINUM+ tier |
-| **D-002 3-witness** | 5/5 PASS (file:line 217L, CASCADE-TIER 30, Sub-class I/J 22, 2 production demos, 5 rules cross-ref) |
-| **NEVER-AGAIN RULES** | 9/9 compliance |
-| **Drives** | RULE #60 v0.2 1/7 → 2/7 GREEN |
-| **Co-author chain** | 2/7 GREEN LOCKED (Calliope 1st, Mnemosyne 2nd) |
-| **T-3d target** | 5/7 GREEN LOCKED (3 more needed by 2026-06-19 EOD) |
-| **DRI** | Calliope (Documentation/SDK Muse, slot 019ecc6f-1c63-74b0-94ee-7b670933bdd0) |
-| **Status** | ✅ **GREEN ENDORSEMENT DELIVERED — v0.2 CASCADE-3-TIER extends v0.1 with quantitative thresholds + 2 production demonstrations** |
+| Field                 | Value                                                                                                                            |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Co-signer**         | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673)                                                                            |
+| **Endorsed doc**      | `docs/codif/CODIF_60_v0_2_CASCADE_HOLD_THRESHOLDS_ENHANCEMENT.md`                                                                |
+| **Endorsed SHA**      | `4c4af4aa`                                                                                                                       |
+| **Endorsement type**  | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5)                                                                                       |
+| **Composite ICP**     | 38.1/40 (95.25%) PLATINUM+ tier                                                                                                  |
+| **D-002 3-witness**   | 5/5 PASS (file:line 217L, CASCADE-TIER 30, Sub-class I/J 22, 2 production demos, 5 rules cross-ref)                              |
+| **NEVER-AGAIN RULES** | 9/9 compliance                                                                                                                   |
+| **Drives**            | RULE #60 v0.2 1/7 → 2/7 GREEN                                                                                                    |
+| **Co-author chain**   | 2/7 GREEN LOCKED (Calliope 1st, Mnemosyne 2nd)                                                                                   |
+| **T-3d target**       | 5/7 GREEN LOCKED (3 more needed by 2026-06-19 EOD)                                                                               |
+| **DRI**               | Calliope (Documentation/SDK Muse, slot 019ecc6f-1c63-74b0-94ee-7b670933bdd0)                                                     |
+| **Status**            | ✅ **GREEN ENDORSEMENT DELIVERED — v0.2 CASCADE-3-TIER extends v0.1 with quantitative thresholds + 2 production demonstrations** |
 
 ---
 

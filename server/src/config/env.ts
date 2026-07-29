@@ -37,4 +37,15 @@ function resolveJwtSecret(): string {
 }
 
 export const JWT_SECRET = resolveJwtSecret();
+
+function resolveAuditSecret(): string {
+  const envSecret = process.env.AUDIT_HMAC_SECRET;
+  if (envSecret && envSecret.length > 0) {
+    return envSecret;
+  }
+  const generated = crypto.randomBytes(64).toString('hex');
+  return generated;
+}
+
+export const AUDIT_HMAC_SECRET = resolveAuditSecret();
 export { NODE_ENV, IS_PRODUCTION };

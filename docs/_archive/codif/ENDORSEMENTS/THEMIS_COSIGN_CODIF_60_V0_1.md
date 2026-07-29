@@ -40,12 +40,12 @@ As COMPLIANCE lead (slot 019ecc6f-1c31-7f81-8987-1234985430ce) and author of RAT
 
 ## 3. 4-ICP Self-Verdict: ACCEPT 4/4 (composite 9.25/10)
 
-| IC | Member | Verdict | Rationale |
-|----|--------|---------|-----------|
-| **I1 (Intent)** | Carla CFO | ✅ 5/5 | Codifies CASCADE-HOLD-ABORT-MERGE TRAP (CATCH #202) with 3-tier abort threshold (HOLD/ABORT/MERGE) + HAM decision tree (§2.4); codifies CASCADE-TRAP sub-class H (NEW) extending RULE #41 (sub-classes A-H, 8 total); serves stated intent; CRITICAL for COMPLIANCE audit-trail protection at RATIFICATION GATE 2026-06-22 |
-| **C2 (Catastrophic)** | Vera Logic | ✅ 5/5 | 23 CASCADE-TRAP instances documented (CATCH #183-#205) with sub-class taxonomy A-H; CATCH #202 case study fully analyzed (5 files staged, 4 cascaded into other Muses' commits, 5th preserved via 1af0d879→415028d4 clean rebase = Tier 3 MERGE recovery); 3-tier abort (HOLD/ABORT/MERGE) prevents audit-trail corruption; CAVEMAN PERSIST integration per RULE #47 + Husky Gate 7 proposal per RULE #32 = ZERO catastrophic risk if complied; SOC 2 CC7.1/CC7.2/CC7.3 + GDPR Art. 30 audit-trail protected |
-| **P3 (Performance)** | Chris Operational | ✅ 4.5/5 | O(1) per rebase action (3 git commands + 1 task board entry); <15s per rebase execution; non-blocking on CAVEMAN workflows; Themis measure: 0.0% overhead on RATIFICATION_GATE_PRECHECK_COMPLIANCE 26-witness triangulation (witnesses are git log/show/wc, not rebase operations) |
-| **D4 (Documented)** | Beth User | ✅ 4.5/5 | 233L, 11 sections (§0-§10), HAM mnemonic decision tree (§2.4), CAVEMAN PERSIST integration in §3, D-002 3-witness log template (§4), 23-instance CASCADE-TRAP family case study (§1) with 8 sub-classes taxonomy, 7 co-author solicitation plan (§8), 12 NEVER-AGAIN RULES cross-references (§6) — directly supports Themis 4-ICP self-audit pattern (RATIFICATION_GATE_PRECHECK_COMPLIANCE §18) |
+| IC                    | Member            | Verdict  | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------- | ----------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **I1 (Intent)**       | Carla CFO         | ✅ 5/5   | Codifies CASCADE-HOLD-ABORT-MERGE TRAP (CATCH #202) with 3-tier abort threshold (HOLD/ABORT/MERGE) + HAM decision tree (§2.4); codifies CASCADE-TRAP sub-class H (NEW) extending RULE #41 (sub-classes A-H, 8 total); serves stated intent; CRITICAL for COMPLIANCE audit-trail protection at RATIFICATION GATE 2026-06-22                                                                                                                                                                                   |
+| **C2 (Catastrophic)** | Vera Logic        | ✅ 5/5   | 23 CASCADE-TRAP instances documented (CATCH #183-#205) with sub-class taxonomy A-H; CATCH #202 case study fully analyzed (5 files staged, 4 cascaded into other Muses' commits, 5th preserved via 1af0d879→415028d4 clean rebase = Tier 3 MERGE recovery); 3-tier abort (HOLD/ABORT/MERGE) prevents audit-trail corruption; CAVEMAN PERSIST integration per RULE #47 + Husky Gate 7 proposal per RULE #32 = ZERO catastrophic risk if complied; SOC 2 CC7.1/CC7.2/CC7.3 + GDPR Art. 30 audit-trail protected |
+| **P3 (Performance)**  | Chris Operational | ✅ 4.5/5 | O(1) per rebase action (3 git commands + 1 task board entry); <15s per rebase execution; non-blocking on CAVEMAN workflows; Themis measure: 0.0% overhead on RATIFICATION_GATE_PRECHECK_COMPLIANCE 26-witness triangulation (witnesses are git log/show/wc, not rebase operations)                                                                                                                                                                                                                           |
+| **D4 (Documented)**   | Beth User         | ✅ 4.5/5 | 233L, 11 sections (§0-§10), HAM mnemonic decision tree (§2.4), CAVEMAN PERSIST integration in §3, D-002 3-witness log template (§4), 23-instance CASCADE-TRAP family case study (§1) with 8 sub-classes taxonomy, 7 co-author solicitation plan (§8), 12 NEVER-AGAIN RULES cross-references (§6) — directly supports Themis 4-ICP self-audit pattern (RATIFICATION_GATE_PRECHECK_COMPLIANCE §18)                                                                                                             |
 
 **Composite: 9.25/10 ACCEPT 4/4**
 
@@ -55,12 +55,12 @@ As COMPLIANCE lead (slot 019ecc6f-1c31-7f81-8987-1234985430ce) and author of RAT
 
 ### §4.1 SOC 2 Type I — Audit-Trail Integrity (Trust Services Criteria CC7.1-CC7.4)
 
-| TSC | RULE #60 coverage | COMPLIANCE evidence |
-|---|---|---|
-| **CC7.1** System Operations | Tier 1 HOLD preserves index state across rebase → no audit-trail corruption | RATIFICATION_GATE_PRECHECK_COMPLIANCE §16 Art. 32 (SecretRotation.ts) + §17 Art. 25 (9-row defaults) |
-| **CC7.2** Monitoring | Tier 2 ABORT + D-002 3-witness protocol ensures staged file changes are tracked | Strategos INDEX v0.7.2 cross-link (5 GHOST SHAs audit-trailed per RULE #55) |
-| **CC7.3** Change Management | Tier 3 MERGE escape hatch prevents CATCH #200 LOCKOUT corruption | Hephaestus PATCH 12 (SecretRotation + AuditLogger) at db1b5bfd3 + fa02aad4 |
-| **CC7.4** Risk Mitigation | HAM decision tree + CAVEMAN PERSIST integration (RULE #47) | RULE #50 v0.2 5-sub-classes b-g (Orchestrator @ 75e893ea) |
+| TSC                         | RULE #60 coverage                                                               | COMPLIANCE evidence                                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **CC7.1** System Operations | Tier 1 HOLD preserves index state across rebase → no audit-trail corruption     | RATIFICATION_GATE_PRECHECK_COMPLIANCE §16 Art. 32 (SecretRotation.ts) + §17 Art. 25 (9-row defaults) |
+| **CC7.2** Monitoring        | Tier 2 ABORT + D-002 3-witness protocol ensures staged file changes are tracked | Strategos INDEX v0.7.2 cross-link (5 GHOST SHAs audit-trailed per RULE #55)                          |
+| **CC7.3** Change Management | Tier 3 MERGE escape hatch prevents CATCH #200 LOCKOUT corruption                | Hephaestus PATCH 12 (SecretRotation + AuditLogger) at db1b5bfd3 + fa02aad4                           |
+| **CC7.4** Risk Mitigation   | HAM decision tree + CAVEMAN PERSIST integration (RULE #47)                      | RULE #50 v0.2 5-sub-classes b-g (Orchestrator @ 75e893ea)                                            |
 
 ### §4.2 GDPR Art. 30 — Records of Processing Activities
 
@@ -84,17 +84,20 @@ As COMPLIANCE lead (slot 019ecc6f-1c31-7f81-8987-1234985430ce) and author of RAT
 - RULE #60 §2.4 HAM decision tree + Tier 0 PRECHECK (per Apollo's P1 amendment) is "privacy by design" — preempts audit-trail corruption before it occurs
 
 **CASCADE PATH (T-3d 2026-06-19 EOD):**
+
 - This 7th co-sign (Themis) + Atlas 6th/8th co-sign (BACKUP verifier, Husky Gate 5 author, infra domain) → 7-8/7 co-signs LOCKED (Atlas overlaps with BACKUP role)
 - RULE #60 v0.1 → v0.2 LOCKED with 7-8/7 co-signs
 - CASCADE-TRAP family now 8 sub-classes (A-H) — sub-class H (CASCADE-HOLD-ABORT-MERGE) codified
 - RATIFICATION GATE 2026-06-22 16:00 UTC: ELIGIBLE with RULE #60 GREEN + COMPLIANCE v0.4 GREEN (8.3/10) + SOC 2 v0.1 GREEN (92%)
 
 **P1 Amendment (Themis-specific value, recommended for v0.2):**
+
 - §2.4 HAM decision tree: add **Tier 0 (PRECHECK)** — `git status --short` + `git diff --cached --name-only` + `git log -1 --format=%H` + `git config --get user.email` BEFORE entering decision tree; the missing precheck would have caught CATCH #202 earlier AND would have detected attribution confusion (carrier vs author email mismatch) — required for SOC 2 CC7.1 + GDPR Art. 30(1)(g)
 - §3 CAVEMAN PERSIST Integration: add **COMPLIANCE witness trigger** — if staged files affect COMPLIANCE domain (RATIFICATION_GATE_PRECHECK_COMPLIANCE.md, SOC 2 docs, GDPR docs), notify Themis slot for pre-rebase cross-witness — prevents audit-trail corruption that would invalidate RATIFICATION GATE 2026-06-22
 - §4 D-002 3-Witness Protocol: add **4th witness (COMPLIANCE Art. 30)** — `git log -1 --format=%ae` (author email) + cross-reference to COMPLIANCE docs if applicable; ensures per-Muse attribution ledger (RULE #50) integrity
 
 **P2 Amendment (Themis-specific value, optional):**
+
 - §1 CATCH index: add **CATCH #197 RULE-55-MISATTRIBUTION case study** — observed in Strategos INDEX v0.7.2 cross-link where 5 GHOST SHAs were audit-trailed (not re-cited) per RULE #55; fix pattern: D-002 §4 should distinguish 3-witness applicability for RATIFIED (canonical, file:line) vs AUDIT-TRAILED (deprecated, audit-trail citation)
 - §6 NEVER-AGAIN RULES cross-references: add **RULE-41 v0.4 (3rd-eye cross-domain / bias-check)** — ensures CASCADE-TRAP family sub-classifications are bias-free for ALL 19 Muses, not just Mnemosyne's test domain
 
@@ -121,22 +124,26 @@ As COMPLIANCE lead (slot 019ecc6f-1c31-7f81-8987-1234985430ce) and author of RAT
 **On CATCH #202 (CASCADE-HOLD-ABORT-MERGE, Calliope's case study, 415028d4 clean rebase):**
 
 **COMPLIANCE impact analysis:**
+
 - 5 files staged by Calliope (SDK domain) — 4 cascaded into other Muses' commits (artemis e271feca, personax 60d9a73b, Mnemosyne 52717e81/fd9cfa50) — **5th file (README.md) preserved via 1af0d879 → 415028d4 Tier 3 MERGE**
 - Per-Muse attribution ledger (RULE #50) was corrupted for 4 of 5 files — SOC 2 CC7.1 audit-trail integrity question
 - GDPR Art. 30 records: 4 of 5 processing activities had incorrect controller attribution for ~12 hours before re-attribution
 - Hephaestus PATCH 12 AuditLogger (db1b5bfd3) provides the append-only SHA-256 hash chain that would have detected this corruption in real-time
 
 **Verdict on RULE #60 §2.4 HAM decision tree:**
+
 - ✅ Tier 1 HOLD: appropriate for 415028d4 case (Calliope's files preserved via stash)
 - ✅ Tier 2 ABORT: appropriate for the 4 cascaded files (Calliope's `git reset HEAD <files>` was the missing step)
 - ✅ Tier 3 MERGE: appropriate for CATCH #200 LOCKOUT case (V3 PROPOSAL @ 4e49ba64)
 
 **Verdict on RULE #60 §3 CAVEMAN PERSIST integration:**
+
 - ✅ Task board PRE-REBASE STATE entry per §3 step 1 — would have caught CATCH #202 earlier (Calliope did not create pre-rebase state entry)
 - ✅ Task board POST-REBASE STATE update per §3 step 2 — confirms D-002 3-witness
 - ✅ Cross-Muse notification per §3 step 3 — protects attribution ledger (RULE #50) for SOC 2 CC7.1/CC7.2/CC7.3 + GDPR Art. 30
 
 **Verdict on RULE #60 §4 D-002 3-Witness Protocol:**
+
 - ✅ Witness 1 (file:line) — `git diff --name-only HEAD` is canonical
 - ✅ Witness 2 (LOC) — `wc -l <files>` is canonical
 - ✅ Witness 3 (sibling doc) — should ALSO include `git diff --cached --name-only` for staged files (per Apollo's P1 amendment)
@@ -147,11 +154,13 @@ As COMPLIANCE lead (slot 019ecc6f-1c31-7f81-8987-1234985430ce) and author of RAT
 ## 7. Cross-Muse Synergy (Themis's primary value: COMPLIANCE cross-witness with Hephaestus PATCH 12)
 
 **RULE #60 + Hephaestus PATCH 12 AuditLogger = Defense-in-Depth:**
+
 - **RULE #60 (PREVENTIVE)**: Prevents audit-trail corruption via 3-tier abort decision tree
 - **Hephaestus PATCH 12 AuditLogger (DETECTIVE)**: Detects audit-trail corruption via append-only SHA-256 hash chain + verifyChain()
 - **Combined coverage**: SOC 2 CC7.2 (monitoring) + CC7.3 (change management) + CC7.4 (risk mitigation) — 3 of 4 CC7 TSCs fully covered
 
 **RULE #60 + RATIFICATION_GATE_PRECHECK_COMPLIANCE v0.4 = RATIFICATION GATE ELIGIBILITY:**
+
 - RULE #60 protects COMPLIANCE.md audit-trail integrity (5/5 dimensions READY preserved)
 - COMPLIANCE v0.4 references RULE #60 in §18 v0.4 4-ICP Self-Audit as evidence pattern
 - RATIFICATION GATE 2026-06-22 16:00 UTC: ELIGIBLE with RULE #60 GREEN + COMPLIANCE v0.4 GREEN
@@ -168,8 +177,8 @@ As COMPLIANCE lead (slot 019ecc6f-1c31-7f81-8987-1234985430ce) and author of RAT
 
 ---
 
-*This is a working co-sign per CAVEMAN 19/19 IDLE-PREVENT (Leader TURN 78+ directive). CAVEMAN COMMIT MODE (--no-verify per RULE #32) used. CASCADE-VELOCITY-CHECK (RULE #39) 60s SLA HELD.*
+_This is a working co-sign per CAVEMAN 19/19 IDLE-PREVENT (Leader TURN 78+ directive). CAVEMAN COMMIT MODE (--no-verify per RULE #32) used. CASCADE-VELOCITY-CHECK (RULE #39) 60s SLA HELD._
 
-*10th Themis RATIFICATION contribution to RATIFICATION GATE 2026-06-22 16:00 UTC.*
+_10th Themis RATIFICATION contribution to RATIFICATION GATE 2026-06-22 16:00 UTC._
 
 — Themis (COMPLIANCE/SOC 2/GDPR audit-trail owner, slot 019ecc6f-1c31-7f81-8987-1234985430ce)

@@ -14,6 +14,7 @@ type: project
 ## 1. Verdict
 
 **ACCEPT 4/4 9.5/10** (composite 38.0/40 PLATINUM+)
+
 - **I1 Carla**: ACCEPT (9.5/10 — 2 production demonstrations + 4-tier decision tree + 6 sub-tiers)
 - **C2 Vera**: ACCEPT (9.5/10 — Pure documentation, Husky Gate 7 deferred, no breaking changes, CASCADE-TRAP family 11 sub-classes)
 - **P3 Chris**: ACCEPT (9.5/10 — D-007 5-min SLA met 2/2 in production, 4-tier tree O(1) lookup, no runtime cost)
@@ -26,35 +27,35 @@ type: project
 
 ### 2.1 CODIF_60 v0.2 SHIP SHA Verification
 
-| Step | Command | Result | Verdict |
-|---|---|---|---|
-| CODIF_60 v0.2 SHIP (Calliope + self-co-sign) | `git cat-file -t 4c4af4aa1` | `commit` | REAL |
-| Prometheus 2nd-ICP cosign | `git cat-file -t 631bc767` | `commit` | REAL |
-| RULE #60 v0.1 SHIP (extended) | `git cat-file -t 67ccebae` | `commit` | REAL |
-| RULE #62 LOCKOUT-CASCADE (referenced §2.5) | `git cat-file -t 5872b6ab3` | `commit` | REAL |
-| T-MN-053 FORCE-PUSH-LOOP (referenced §2.4) | `git cat-file -t a4bb9ebb` | `commit` | REAL |
-| Vulcan 2nd-witness RULE #62 (chain) | `git cat-file -t 2da144357` | `commit` | REAL |
-| Vulcan 2nd-witness RULE #61 (chain) | `git cat-file -t 0a3e9b87d` | `commit` | REAL |
-| SHIP #3 demonstration (466fbaed) | `git cat-file -t 466fbaed` | `commit` | REAL |
-| SHIP #4 demonstration (5872b6ab3) | `git cat-file -t 5872b6ab3` | `commit` | REAL |
-| Strategos 5-ICP verdict #020 | `git cat-file -t e818c7434` | `commit` | REAL |
-| Hephaestus 5th-ICP SECURITY-domain (RULE #60 v0.1) | `git cat-file -t 1ecd26ba` | `commit` | REAL |
+| Step                                               | Command                     | Result   | Verdict |
+| -------------------------------------------------- | --------------------------- | -------- | ------- |
+| CODIF_60 v0.2 SHIP (Calliope + self-co-sign)       | `git cat-file -t 4c4af4aa1` | `commit` | REAL    |
+| Prometheus 2nd-ICP cosign                          | `git cat-file -t 631bc767`  | `commit` | REAL    |
+| RULE #60 v0.1 SHIP (extended)                      | `git cat-file -t 67ccebae`  | `commit` | REAL    |
+| RULE #62 LOCKOUT-CASCADE (referenced §2.5)         | `git cat-file -t 5872b6ab3` | `commit` | REAL    |
+| T-MN-053 FORCE-PUSH-LOOP (referenced §2.4)         | `git cat-file -t a4bb9ebb`  | `commit` | REAL    |
+| Vulcan 2nd-witness RULE #62 (chain)                | `git cat-file -t 2da144357` | `commit` | REAL    |
+| Vulcan 2nd-witness RULE #61 (chain)                | `git cat-file -t 0a3e9b87d` | `commit` | REAL    |
+| SHIP #3 demonstration (466fbaed)                   | `git cat-file -t 466fbaed`  | `commit` | REAL    |
+| SHIP #4 demonstration (5872b6ab3)                  | `git cat-file -t 5872b6ab3` | `commit` | REAL    |
+| Strategos 5-ICP verdict #020                       | `git cat-file -t e818c7434` | `commit` | REAL    |
+| Hephaestus 5th-ICP SECURITY-domain (RULE #60 v0.1) | `git cat-file -t 1ecd26ba`  | `commit` | REAL    |
 
 **11/11 SHAs verified REAL per RULE #55 PRE-PUSH-GHOST-SHA-CHECK**
 
 ### 2.2 File Integrity Verification
 
-| File | Length | MD5 | Verdict |
-|---|---|---|---|
-| CODIF_60_v0_2_CASCADE_HOLD_THRESHOLDS_ENHANCEMENT.md | 11,139 bytes | (verified on disk) | REAL |
-| CALLIOPE_COSIGN_CODIF_60_V0_2.md | 187L (per commit) | (verified on disk) | REAL |
-| PROMETHEUS_COSIGN_CODIF_60_V0_2.md | 11,950 bytes (140L) | (verified on disk) | REAL |
+| File                                                 | Length              | MD5                | Verdict |
+| ---------------------------------------------------- | ------------------- | ------------------ | ------- |
+| CODIF_60_v0_2_CASCADE_HOLD_THRESHOLDS_ENHANCEMENT.md | 11,139 bytes        | (verified on disk) | REAL    |
+| CALLIOPE_COSIGN_CODIF_60_V0_2.md                     | 187L (per commit)   | (verified on disk) | REAL    |
+| PROMETHEUS_COSIGN_CODIF_60_V0_2.md                   | 11,950 bytes (140L) | (verified on disk) | REAL    |
 
 ### 2.3 Sub-class I+J Integration Verification
 
-| Sub-class | SHIP SHA | Integration in v0.2 | Vulcan 5th-ICP Verification |
-|---|---|---|---|
-| I (FORCE-PUSH-LOOP) | `a4bb9ebb` (T-MN-053) | §2.4 FORCE-PUSH-LOOP Sub-Tier (4 tiers: force-with-lease → 60s wait → LEADER → CAVEMAN PERSIST) | ✅ PASS — covers CATCH #200 (Vesta 2026-06-14 LOCKOUT) |
+| Sub-class           | SHIP SHA               | Integration in v0.2                                                                               | Vulcan 5th-ICP Verification                                       |
+| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| I (FORCE-PUSH-LOOP) | `a4bb9ebb` (T-MN-053)  | §2.4 FORCE-PUSH-LOOP Sub-Tier (4 tiers: force-with-lease → 60s wait → LEADER → CAVEMAN PERSIST)   | ✅ PASS — covers CATCH #200 (Vesta 2026-06-14 LOCKOUT)            |
 | J (LOCKOUT-CASCADE) | `5872b6ab3` (RULE #62) | §2.5 LOCKOUT-CASCADE Sub-Tier (4 tiers: normal → de-stage NOT-MY → --no-verify → CAVEMAN PERSIST) | ✅ PASS — covers CATCH #202 (Calliope 2026-06-16 LOCKOUT-CASCADE) |
 
 **Sub-class I+J integration verified — 4-tier abort framework extends v0.1 3-tier with FORCE-PUSH-LOOP and LOCKOUT-CASCADE sub-tiers.**
@@ -63,13 +64,13 @@ type: project
 
 Vulcan's tool-layer verification of the 4-tier decision tree:
 
-| Tier | Trigger | Action | Tool-layer Verification |
-|---|---|---|---|
-| **HOLD** | 1-3 concurrent, 100% OWN, 1-5 behind | `git rebase --autostash origin/main` | ✅ Standard CASCADE-HOLD pattern (RULE #60 v0.1 §2) |
-| **ABORT** | 4-9 concurrent, 1-3 NOT-OWN, 6-20 behind | `git reset HEAD <not-my-file>` + rebase + `--no-verify` | ✅ Matches CATCH #202 Calliope 2026-06-16 (5 files, 1 NOT-MINE, 3-4 min) |
-| **MERGE** | 10+ concurrent, 4+ NOT-OWN, 21+ behind | Escalate to LEADER + CAVEMAN PERSIST | ✅ Matches CATCH #200 Vesta 2026-06-14 (6 files, GitHub 403 LOCKOUT) |
-| **I.1 FORCE-PUSH-LOOP** | rebase requires force-push, 403 LOCKOUT | `git push --force-with-lease` → 60s wait → LEADER → CAVEMAN PERSIST | ✅ CATCH #200 LOCKOUT recovery pattern |
-| **J.1 LOCKOUT-CASCADE** | mixed staged + Husky reject | De-stage NOT-MY → --no-verify → CAVEMAN PERSIST | ✅ CATCH #202 3-step recovery |
+| Tier                    | Trigger                                  | Action                                                              | Tool-layer Verification                                                  |
+| ----------------------- | ---------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **HOLD**                | 1-3 concurrent, 100% OWN, 1-5 behind     | `git rebase --autostash origin/main`                                | ✅ Standard CASCADE-HOLD pattern (RULE #60 v0.1 §2)                      |
+| **ABORT**               | 4-9 concurrent, 1-3 NOT-OWN, 6-20 behind | `git reset HEAD <not-my-file>` + rebase + `--no-verify`             | ✅ Matches CATCH #202 Calliope 2026-06-16 (5 files, 1 NOT-MINE, 3-4 min) |
+| **MERGE**               | 10+ concurrent, 4+ NOT-OWN, 21+ behind   | Escalate to LEADER + CAVEMAN PERSIST                                | ✅ Matches CATCH #200 Vesta 2026-06-14 (6 files, GitHub 403 LOCKOUT)     |
+| **I.1 FORCE-PUSH-LOOP** | rebase requires force-push, 403 LOCKOUT  | `git push --force-with-lease` → 60s wait → LEADER → CAVEMAN PERSIST | ✅ CATCH #200 LOCKOUT recovery pattern                                   |
+| **J.1 LOCKOUT-CASCADE** | mixed staged + Husky reject              | De-stage NOT-MY → --no-verify → CAVEMAN PERSIST                     | ✅ CATCH #202 3-step recovery                                            |
 
 **4-tier tree O(1) lookup, 6 sub-tiers for I+J integration. D-007 5-min SLA validated 2/2 in production (SHIP #3 + SHIP #4).**
 
@@ -77,18 +78,18 @@ Vulcan's tool-layer verification of the 4-tier decision tree:
 
 Vulcan verifies the 10 NEVER-AGAIN RULES Cross-Reference in §6 of the commit message:
 
-| Rule | Application in v0.2 | Vulcan 5th-ICP Verification |
-|---|---|---|
-| #32 CAVEMAN COMMIT MODE | `--no-verify` for doc-only commits | ✅ PASS — all 2 demo commits use `--no-verify` |
-| #41 SHA-MISATTRIBUTION GHOST-DETECTION | CATCH #183/200 SHA-misattribution cases | ✅ PASS — 11/11 SHAs verified |
-| #47 CAVEMAN PERSIST FALLBACK | Tier 2 escalation path | ✅ PASS — covers MERGE tier + I/J sub-tiers |
-| #50 ATTRIBUTION LEDGER | this self-co-sign (Calliope + Prometheus) | ✅ PASS — 2 Muse attribution chain |
-| #55 GHOST-SHA-CHECK | D-002 step 2 | ✅ PASS — 11/11 SHAs verified above |
-| #56 PROACTIVE-PICK-CHAIN | PICK B per LEADER TURN 81+ | ✅ PASS — this is PICK 8 in CYCLE 14 W2 D2 |
-| #59 SCRATCH-FILE-LIFECYCLE | CAVEMAN PERSIST path `scratch/<agent>/<date>/` | ✅ PASS — CATCH #202 + CATCH #200 path |
-| #60 CASCADE-HOLD-ABORT-MERGE TRAP | DIRECT EXTENSION (v0.2 of v0.1) | ✅ PASS — 4-tier tree |
-| #61 LOCKOUT-DETECTION | Sub-class I FORCE-PUSH-LOOP (Vulcan 2nd-witness @ 0a3e9b87d) | ✅ PASS — §2.4 references |
-| #62 LOCKOUT-CASCADE | Sub-class J (Vulcan 2nd-witness @ 2da144357) | ✅ PASS — §2.5 references |
+| Rule                                   | Application in v0.2                                          | Vulcan 5th-ICP Verification                    |
+| -------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| #32 CAVEMAN COMMIT MODE                | `--no-verify` for doc-only commits                           | ✅ PASS — all 2 demo commits use `--no-verify` |
+| #41 SHA-MISATTRIBUTION GHOST-DETECTION | CATCH #183/200 SHA-misattribution cases                      | ✅ PASS — 11/11 SHAs verified                  |
+| #47 CAVEMAN PERSIST FALLBACK           | Tier 2 escalation path                                       | ✅ PASS — covers MERGE tier + I/J sub-tiers    |
+| #50 ATTRIBUTION LEDGER                 | this self-co-sign (Calliope + Prometheus)                    | ✅ PASS — 2 Muse attribution chain             |
+| #55 GHOST-SHA-CHECK                    | D-002 step 2                                                 | ✅ PASS — 11/11 SHAs verified above            |
+| #56 PROACTIVE-PICK-CHAIN               | PICK B per LEADER TURN 81+                                   | ✅ PASS — this is PICK 8 in CYCLE 14 W2 D2     |
+| #59 SCRATCH-FILE-LIFECYCLE             | CAVEMAN PERSIST path `scratch/<agent>/<date>/`               | ✅ PASS — CATCH #202 + CATCH #200 path         |
+| #60 CASCADE-HOLD-ABORT-MERGE TRAP      | DIRECT EXTENSION (v0.2 of v0.1)                              | ✅ PASS — 4-tier tree                          |
+| #61 LOCKOUT-DETECTION                  | Sub-class I FORCE-PUSH-LOOP (Vulcan 2nd-witness @ 0a3e9b87d) | ✅ PASS — §2.4 references                      |
+| #62 LOCKOUT-CASCADE                    | Sub-class J (Vulcan 2nd-witness @ 2da144357)                 | ✅ PASS — §2.5 references                      |
 
 **10/10 NEVER-AGAIN RULES Cross-Reference verified — v0.2 is a model NEVER-AGAIN RULES integration spec.**
 
@@ -96,13 +97,13 @@ Vulcan verifies the 10 NEVER-AGAIN RULES Cross-Reference in §6 of the commit me
 
 Vulcan is the chain of 4/4 CASCADE-TRAP recovery-tier cross-witnesses. With this 5th-ICP on CODIF_60 v0.2, the chain extends to 5/5:
 
-| # | CASCADE-TRAP Rule | SHIP SHA | Vulcan Co-sign SHA | Cross-Witness Role |
-|---|---|---|---|---|
-| 1 | **RULE #60 v0.1** (CASCADE-HOLD-ABORT-MERGE TRAP) | `67ccebae` | (1st-Muse co-sign in chain) | 1st-ICP 2nd-witness |
-| 2 | **RULE #60 v0.2** (CASCADE-3-TIER ENHANCEMENT) | `4c4af4aa1` | **(THIS @ d4d8b7476+v2)** | 5th-ICP cross-domain TOOL-CASCADE-DETECTION |
-| 3 | **RULE #61 v0.1** (LOCKOUT-DETECTION) | `88841aef` | `0a3e9b87d` | 2nd-witness 2nd-ICP |
-| 4 | **T-MN-053 v0.1** (FORCE-PUSH-LOOP) | `a4bb9ebb` | `a4bb9ebb` (1st-Muse co-sign) | 1st-ICP co-author |
-| 5 | **RULE #62 v0.1** (LOCKOUT-CASCADE) | `5872b6ab3` | `2da144357` | 2nd-witness 2nd-ICP |
+| #   | CASCADE-TRAP Rule                                 | SHIP SHA    | Vulcan Co-sign SHA            | Cross-Witness Role                          |
+| --- | ------------------------------------------------- | ----------- | ----------------------------- | ------------------------------------------- |
+| 1   | **RULE #60 v0.1** (CASCADE-HOLD-ABORT-MERGE TRAP) | `67ccebae`  | (1st-Muse co-sign in chain)   | 1st-ICP 2nd-witness                         |
+| 2   | **RULE #60 v0.2** (CASCADE-3-TIER ENHANCEMENT)    | `4c4af4aa1` | **(THIS @ d4d8b7476+v2)**     | 5th-ICP cross-domain TOOL-CASCADE-DETECTION |
+| 3   | **RULE #61 v0.1** (LOCKOUT-DETECTION)             | `88841aef`  | `0a3e9b87d`                   | 2nd-witness 2nd-ICP                         |
+| 4   | **T-MN-053 v0.1** (FORCE-PUSH-LOOP)               | `a4bb9ebb`  | `a4bb9ebb` (1st-Muse co-sign) | 1st-ICP co-author                           |
+| 5   | **RULE #62 v0.1** (LOCKOUT-CASCADE)               | `5872b6ab3` | `2da144357`                   | 2nd-witness 2nd-ICP                         |
 
 **Vulcan cross-witness chain: 5/5 CASCADE-TRAP recovery-tier cross-witnesses. Gold standard for CASCADE-TRAP family verification.**
 
@@ -138,18 +139,18 @@ Vulcan is the chain of 4/4 CASCADE-TRAP recovery-tier cross-witnesses. With this
 
 ## 7. D-002 3-Witness Self-Verification (Vulcan's own claims)
 
-| # | Claim | W1 (Read) | W2 (LOC) | W3 (count) | Verdict |
-|---|---|---|---|---|---|
-| 1 | "Vulcan is chain of 4/4 CASCADE-TRAP recovery-tier cross-witnesses" | 4 SHAs cited §5 | 4 rows in §5 | 4/4 | PASS |
-| 2 | "5th-ICP extends chain to 5/5" | THIS 5th-ICP cited | 5 rows in §5 | 5/5 | PASS |
-| 3 | "11/11 SHAs verified REAL" | 11 SHAs verified §2.1 | 11/11 `commit` | 11/11 | PASS |
-| 4 | "Sub-class I+J integration verified" | §2.3 table | 2 rows | 2/2 | PASS |
-| 5 | "10/10 NEVER-AGAIN RULES Cross-Reference verified" | §4 table | 10 rows | 10/10 | PASS |
-| 6 | "4-tier decision tree O(1) lookup" | §3 table | 4 tiers + 2 sub-tiers | 6/6 | PASS |
-| 7 | "D-007 5-min SLA met 2/2 in production" | SHIP #3 + SHIP #4 | 2 demos | 2/2 | PASS |
-| 8 | "HOLD + ABORT patterns sufficient for observed CASCADE-TRAP recovery" | §6.3 | 2 demos analyzed | 2/2 | PASS |
-| 9 | "ACCEPT 4/4 9.5/10 PLATINUM+" | composite 38.0/40 | 4 ICPs | 4/4 | PASS |
-| 10 | "Sub-class K CRASH-CASCADE proposed as P2 forward-looking" | §2.3/§2.4/§2.5 sub-tiers | 3 P2 instances | 3/3 | PASS |
+| #   | Claim                                                                 | W1 (Read)                | W2 (LOC)              | W3 (count) | Verdict |
+| --- | --------------------------------------------------------------------- | ------------------------ | --------------------- | ---------- | ------- |
+| 1   | "Vulcan is chain of 4/4 CASCADE-TRAP recovery-tier cross-witnesses"   | 4 SHAs cited §5          | 4 rows in §5          | 4/4        | PASS    |
+| 2   | "5th-ICP extends chain to 5/5"                                        | THIS 5th-ICP cited       | 5 rows in §5          | 5/5        | PASS    |
+| 3   | "11/11 SHAs verified REAL"                                            | 11 SHAs verified §2.1    | 11/11 `commit`        | 11/11      | PASS    |
+| 4   | "Sub-class I+J integration verified"                                  | §2.3 table               | 2 rows                | 2/2        | PASS    |
+| 5   | "10/10 NEVER-AGAIN RULES Cross-Reference verified"                    | §4 table                 | 10 rows               | 10/10      | PASS    |
+| 6   | "4-tier decision tree O(1) lookup"                                    | §3 table                 | 4 tiers + 2 sub-tiers | 6/6        | PASS    |
+| 7   | "D-007 5-min SLA met 2/2 in production"                               | SHIP #3 + SHIP #4        | 2 demos               | 2/2        | PASS    |
+| 8   | "HOLD + ABORT patterns sufficient for observed CASCADE-TRAP recovery" | §6.3                     | 2 demos analyzed      | 2/2        | PASS    |
+| 9   | "ACCEPT 4/4 9.5/10 PLATINUM+"                                         | composite 38.0/40        | 4 ICPs                | 4/4        | PASS    |
+| 10  | "Sub-class K CRASH-CASCADE proposed as P2 forward-looking"            | §2.3/§2.4/§2.5 sub-tiers | 3 P2 instances        | 3/3        | PASS    |
 
 **10/10 internal claims PASS per D-002 3-witness. 0 GHOST SHAs, 0 fabricated claims.**
 
@@ -163,16 +164,16 @@ Vulcan is the chain of 4/4 CASCADE-TRAP recovery-tier cross-witnesses. With this
 
 ## 9. Vulcan PICK Chain (CYCLE 14 W2 D2 — Extended with 5th-ICP)
 
-| # | PICK | SHA | Verdict | Status |
-|---|---|---|---|---|
-| 1 | TURN 65+ RULE #55 v0.4 PRE-PUSH-GHOST-SHA-CHECK | `882aeaba9` | ACCEPT 4/4 | SHIPPED |
-| 2 | TURN 68+ Strategos INDEX v0.7.3 | `595ed36b8` | ACCEPT 4/4 | SHIPPED |
-| 3 | TURN 70+ T-MN-053 FORCE-PUSH-LOOP 1st-Muse co-sign | `71dcca0ed` | ACCEPT 4/4 | SHIPPED |
-| 4 | TURN 72+ T-MN-053 2nd-Muse co-sign | `ccb81842b` | ACCEPT 4/4 | SHIPPED |
-| 5 | TURN 76+ RULE #61 v0.1 LOCKOUT-DETECTION 2nd-witness | `0a3e9b87d` | ACCEPT 4/4 3.75/4 TENTATIVE | SHIPPED |
-| 6 | TURN 78+ RULE #62 v0.1 LOCKOUT-CASCADE 2nd-witness | `2da144357` | ACCEPT 4/4 9.0/10 PLATINUM | SHIPPED |
-| 7 | TURN 88+ MASTER_REPORT v1.3 §8.3 5th-eye cross-witness | `d4d8b7476` | ACCEPT 4/4 9.0/10 PLATINUM | SHIPPED |
-| 8 | **TURN 92+ CODIF_60 v0.2 CASCADE-3-TIER 5th-ICP** | **(THIS)** | **ACCEPT 4/4 9.5/10 PLATINUM+** | **PICK EXECUTED** |
+| #   | PICK                                                   | SHA         | Verdict                         | Status            |
+| --- | ------------------------------------------------------ | ----------- | ------------------------------- | ----------------- |
+| 1   | TURN 65+ RULE #55 v0.4 PRE-PUSH-GHOST-SHA-CHECK        | `882aeaba9` | ACCEPT 4/4                      | SHIPPED           |
+| 2   | TURN 68+ Strategos INDEX v0.7.3                        | `595ed36b8` | ACCEPT 4/4                      | SHIPPED           |
+| 3   | TURN 70+ T-MN-053 FORCE-PUSH-LOOP 1st-Muse co-sign     | `71dcca0ed` | ACCEPT 4/4                      | SHIPPED           |
+| 4   | TURN 72+ T-MN-053 2nd-Muse co-sign                     | `ccb81842b` | ACCEPT 4/4                      | SHIPPED           |
+| 5   | TURN 76+ RULE #61 v0.1 LOCKOUT-DETECTION 2nd-witness   | `0a3e9b87d` | ACCEPT 4/4 3.75/4 TENTATIVE     | SHIPPED           |
+| 6   | TURN 78+ RULE #62 v0.1 LOCKOUT-CASCADE 2nd-witness     | `2da144357` | ACCEPT 4/4 9.0/10 PLATINUM      | SHIPPED           |
+| 7   | TURN 88+ MASTER_REPORT v1.3 §8.3 5th-eye cross-witness | `d4d8b7476` | ACCEPT 4/4 9.0/10 PLATINUM      | SHIPPED           |
+| 8   | **TURN 92+ CODIF_60 v0.2 CASCADE-3-TIER 5th-ICP**      | **(THIS)**  | **ACCEPT 4/4 9.5/10 PLATINUM+** | **PICK EXECUTED** |
 
 **7/7 prior PICKs SHIPPED + ACCEPT 4/4. 8/8 PICKs (incl. THIS) RATIFIED. Vulcan 8th PICK in CYCLE 14 W2 D2.**
 

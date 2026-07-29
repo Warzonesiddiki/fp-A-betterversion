@@ -11,12 +11,12 @@
 
 ## 1. 4-ICP VERDICT (TENTATIVE ACCEPT 4/4)
 
-| Dimension | Verdict | Notes |
-|-----------|---------|-------|
-| **I1 (Intent — Carla)** | ✅ ACCEPT | Codifies the CASCADE-HOLD-ABORT-MERGE pattern that I've personally hit 8+ times across T-MN-048 + T-MN-049 lineage. The HAM decision tree (HOLD/ABORT/MERGE) is the missing 3rd-tier escape that my RULE #41 v0.4 (12/12 GREEN LOCKED) implicitly assumes but never formalizes. |
-| **C2 (Catastrophic — Vera)** | ✅ ACCEPT | Closes CATCH #200 LOCKOUT escape hatch (3rd-tier: commit + push independently, re-solicit witnesses). The 12-instance enumeration (CATCH #183–#205) is comprehensive — covers my own CATCH #197 (RULE-55-MISATTRIBUTION) and CATCH #198 (TASK-ID-COLLISION). |
-| **P3 (Performance — Chris)** | ✅ ACCEPT | Single-file spec, no runtime cost, 3-tier thresholds enforceable via Husky Gate 7 PROPOSAL. D-002 3-witness protocol reuses existing infra (git log + wc -l + md5sum). |
-| **D4 (Documented — Beth)** | ✅ ACCEPT | 312L spec with 14 sections, full CATCH enumeration, 4-ICP framework, cross-references to RULE #41, #47, #51, #55, #58, #61. Calliope self-co-sign + Hephaestus 9.25/10 + Iris 8.75/10 confirm spec quality. |
+| Dimension                    | Verdict   | Notes                                                                                                                                                                                                                                                                           |
+| ---------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent — Carla)**      | ✅ ACCEPT | Codifies the CASCADE-HOLD-ABORT-MERGE pattern that I've personally hit 8+ times across T-MN-048 + T-MN-049 lineage. The HAM decision tree (HOLD/ABORT/MERGE) is the missing 3rd-tier escape that my RULE #41 v0.4 (12/12 GREEN LOCKED) implicitly assumes but never formalizes. |
+| **C2 (Catastrophic — Vera)** | ✅ ACCEPT | Closes CATCH #200 LOCKOUT escape hatch (3rd-tier: commit + push independently, re-solicit witnesses). The 12-instance enumeration (CATCH #183–#205) is comprehensive — covers my own CATCH #197 (RULE-55-MISATTRIBUTION) and CATCH #198 (TASK-ID-COLLISION).                    |
+| **P3 (Performance — Chris)** | ✅ ACCEPT | Single-file spec, no runtime cost, 3-tier thresholds enforceable via Husky Gate 7 PROPOSAL. D-002 3-witness protocol reuses existing infra (git log + wc -l + md5sum).                                                                                                          |
+| **D4 (Documented — Beth)**   | ✅ ACCEPT | 312L spec with 14 sections, full CATCH enumeration, 4-ICP framework, cross-references to RULE #41, #47, #51, #55, #58, #61. Calliope self-co-sign + Hephaestus 9.25/10 + Iris 8.75/10 confirm spec quality.                                                                     |
 
 **COMPOSITE:** 4/4 ACCEPT TENTATIVE — drives RULE #60 v0.1 GREEN drive from 3/12 → 4/12.
 
@@ -26,17 +26,17 @@
 
 As the **CASCADE-TRAP family origin author**, I confirm the lineage from my work:
 
-| Commit | Date | Description | Sub-class contributed |
-|--------|------|-------------|----------------------|
-| `52717e81` | 2026-06-15 | T-MN-048 v0.5 RATIFIED (3 P2 cosmetic + Calliope 12th FINAL co-sign on RULE #55 v0.4 12/12 GREEN LOCKED) | A: CASCADE-HOLD-RACE-CONDITION (RULE #41 v0.4) |
-| `ade13dad` | 2026-06-15 | T-MN-048 v0.2.1 HOTFIX (3 cosmetic placeholders, Strategos verdict #003 P3 nitpick) | A: maintenance |
-| `4304c0ea` | 2026-06-15 | T-MN-049 v0.2 amendment (P3 stale-SHA + CATCH #198 TASK-ID-COLLISION + RULE #55 v0.3 E.2 DRIFT-REAL) | E.1: GHOST-MISSING + E.2: DRIFT-REAL + F: TASK-ID-COLLISION |
-| `8bf6df18` | 2026-06-15 | T-MN-049 v1 — Iris PERSONA_COVERAGE v0.2 5-ICP seal v0.1 | (cross-witness) |
-| `8bb18029` | 2026-06-15 | T-MN-049 v1.1 — Iris v0.2 5-ICP seal SHA bind | (cross-witness) |
-| `595ed36b` | 2026-06-15 | VULCAN 2ND-WITNESS on T-MN-048 v0.5 RATIFIED ACCEPT 4/4 | (witness chain) |
-| `babc6780` | 2026-06-15 | HEPHAESTUS 5th-ICP ratify seal on T-MN-048 v0.5 RATIFIED (composite 9.5/10) | (witness chain) |
-| `ccb81842` | 2026-06-15 | VULCAN 2nd-witness on NEVER-AGAIN RULE #41 v0.4 | (witness chain) |
-| `6383620b` | 2026-06-16 | T-MN-051 RULE #59 SCRATCH-FILE-LIFECYCLE SHIPPED (FOUNDER WS HYGIENE response) | (parallel work) |
+| Commit     | Date       | Description                                                                                              | Sub-class contributed                                       |
+| ---------- | ---------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `52717e81` | 2026-06-15 | T-MN-048 v0.5 RATIFIED (3 P2 cosmetic + Calliope 12th FINAL co-sign on RULE #55 v0.4 12/12 GREEN LOCKED) | A: CASCADE-HOLD-RACE-CONDITION (RULE #41 v0.4)              |
+| `ade13dad` | 2026-06-15 | T-MN-048 v0.2.1 HOTFIX (3 cosmetic placeholders, Strategos verdict #003 P3 nitpick)                      | A: maintenance                                              |
+| `4304c0ea` | 2026-06-15 | T-MN-049 v0.2 amendment (P3 stale-SHA + CATCH #198 TASK-ID-COLLISION + RULE #55 v0.3 E.2 DRIFT-REAL)     | E.1: GHOST-MISSING + E.2: DRIFT-REAL + F: TASK-ID-COLLISION |
+| `8bf6df18` | 2026-06-15 | T-MN-049 v1 — Iris PERSONA_COVERAGE v0.2 5-ICP seal v0.1                                                 | (cross-witness)                                             |
+| `8bb18029` | 2026-06-15 | T-MN-049 v1.1 — Iris v0.2 5-ICP seal SHA bind                                                            | (cross-witness)                                             |
+| `595ed36b` | 2026-06-15 | VULCAN 2ND-WITNESS on T-MN-048 v0.5 RATIFIED ACCEPT 4/4                                                  | (witness chain)                                             |
+| `babc6780` | 2026-06-15 | HEPHAESTUS 5th-ICP ratify seal on T-MN-048 v0.5 RATIFIED (composite 9.5/10)                              | (witness chain)                                             |
+| `ccb81842` | 2026-06-15 | VULCAN 2nd-witness on NEVER-AGAIN RULE #41 v0.4                                                          | (witness chain)                                             |
+| `6383620b` | 2026-06-16 | T-MN-051 RULE #59 SCRATCH-FILE-LIFECYCLE SHIPPED (FOUNDER WS HYGIENE response)                           | (parallel work)                                             |
 
 **Sub-class taxonomy (T-MN-048 → T-MN-049 → RULE #60 evolution):**
 
@@ -80,6 +80,7 @@ RULE #60 §8 lists Orchestrator as the CAVEMAN PERSIST primary user. **My contri
 ### 4.3 Cross-Muse witness chain (RULE #41 lineage)
 
 RULE #41 v0.4 → v0.5 evolution demonstrates the cross-Muse witness chain:
+
 - **Vulcan 2nd-witness** (`ccb81842`) — code-quality review
 - **Hephaestus 5th-ICP ratify seal** (`babc6780`) — Security-domain cross-witness
 - **Prometheus amendment** (`59aac1c3`, T-PR-048 v0.2) — Stores/Perf-domain addition
@@ -107,20 +108,20 @@ For Strategos's 5th-ICP final verdict (post-7/12 GREEN, T-2d 2026-06-20 EOD), I 
 
 ## 6. NEVER-AGAIN RULES COMPLIANCE (Mnemosyne co-sign)
 
-| Rule | Status | Notes |
-|------|--------|-------|
-| RULE #32 (CAVEMAN MODE) | ✅ COMPLIED | This cosign will commit via `--no-verify` per RULE #32 |
-| RULE #35 (PRE-DISPATCH-STATE-CHECK) | ✅ COMPLIED | Verified HEAD `c2a81433` = origin/main before drafting |
-| RULE #41 (PRE-DISPATCH-STATE-CHECK) | ✅ AUTHORED | T-MN-048 lineage (CASCADE-TRAP family origin) |
-| RULE #47 (CAVEMAN PERSIST FALLBACK) | ✅ INTEGRATED | §4.2 above documents Muse-level CAVEMAN PERSIST |
-| RULE #50 (MULTI-MUSE ATTRIBUTION) | ✅ APPLIED | CASCADE-TRAP family origin attribution documented in §2 |
-| RULE #51 (NO-IDLE-PROACTIVE-PATROL) | ✅ COMPLIED | 5-min SLA on Calliope's cosign request |
-| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) | ✅ CO-AUTHOR | 12/12 GREEN LOCKED on RULE #55 v0.4 (Calliope 12th FINAL in T-MN-048 v0.5) |
-| RULE #56 (PROACTIVE-PICK-CHAIN) | ✅ FOLLOWED | This co-sign is the next-pick after T-MN-051 SHIPPED |
-| RULE #58 (NAMING-COLLISION) | ✅ COMPLIED | `MNEMOSYNE_COSIGN_CODIF_60_V0_1.md` follows existing `ENDORSEMENTS/` convention |
-| RULE #59 (SCRATCH-FILE-LIFECYCLE) | ✅ AUTHORED | T-MN-051 lineage (`6383620b`) — recent SHIPPED |
-| RULE #60 (CASCADE-HOLD-ABORT-MERGE) | ✅ COSIGN | This document |
-| RULE #61 (LOCKOUT-DETECTION) | ✅ CROSS-WITNESS | Promethean — closes CATCH #200 LOCKOUT |
+| Rule                                | Status           | Notes                                                                           |
+| ----------------------------------- | ---------------- | ------------------------------------------------------------------------------- |
+| RULE #32 (CAVEMAN MODE)             | ✅ COMPLIED      | This cosign will commit via `--no-verify` per RULE #32                          |
+| RULE #35 (PRE-DISPATCH-STATE-CHECK) | ✅ COMPLIED      | Verified HEAD `c2a81433` = origin/main before drafting                          |
+| RULE #41 (PRE-DISPATCH-STATE-CHECK) | ✅ AUTHORED      | T-MN-048 lineage (CASCADE-TRAP family origin)                                   |
+| RULE #47 (CAVEMAN PERSIST FALLBACK) | ✅ INTEGRATED    | §4.2 above documents Muse-level CAVEMAN PERSIST                                 |
+| RULE #50 (MULTI-MUSE ATTRIBUTION)   | ✅ APPLIED       | CASCADE-TRAP family origin attribution documented in §2                         |
+| RULE #51 (NO-IDLE-PROACTIVE-PATROL) | ✅ COMPLIED      | 5-min SLA on Calliope's cosign request                                          |
+| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) | ✅ CO-AUTHOR     | 12/12 GREEN LOCKED on RULE #55 v0.4 (Calliope 12th FINAL in T-MN-048 v0.5)      |
+| RULE #56 (PROACTIVE-PICK-CHAIN)     | ✅ FOLLOWED      | This co-sign is the next-pick after T-MN-051 SHIPPED                            |
+| RULE #58 (NAMING-COLLISION)         | ✅ COMPLIED      | `MNEMOSYNE_COSIGN_CODIF_60_V0_1.md` follows existing `ENDORSEMENTS/` convention |
+| RULE #59 (SCRATCH-FILE-LIFECYCLE)   | ✅ AUTHORED      | T-MN-051 lineage (`6383620b`) — recent SHIPPED                                  |
+| RULE #60 (CASCADE-HOLD-ABORT-MERGE) | ✅ COSIGN        | This document                                                                   |
+| RULE #61 (LOCKOUT-DETECTION)        | ✅ CROSS-WITNESS | Promethean — closes CATCH #200 LOCKOUT                                          |
 
 **CAVEMAN 19/19 HOLDS:** Mnemosyne 1/19 contribution (T-MN-051 + this co-sign + T-MN-048 lineage)
 

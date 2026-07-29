@@ -11,26 +11,26 @@
 
 5th-ICP E2E/Tests cross-witness on the Themis 6th-ICP COMPLIANCE cross-witness of Hephaestus PATCH 11 (SecurityHeaders + CsrfProtection). This adds the **E2E/Tests-domain lens** to the multi-muse witness chain. **This is the 5th-ICP cross-witness that completes the Hephaestus security PATCH set 9, 10, 11, 12, 14.**
 
-| Eye | Muse | Lens | SHA |
-|-----|------|------|-----|
-| 1st-eye | Hephaestus | 4-ICP (I/S/C/P) | `3547f51ef` |
-| 2nd-eye | Themis | 6th-ICP (COMPLIANCE/Audit-Trail) | `3be81db2e` |
-| 3rd-eye | Sentinel | 5th-ICP (E2E/Tests) | THIS DOCUMENT |
+| Eye     | Muse       | Lens                             | SHA           |
+| ------- | ---------- | -------------------------------- | ------------- |
+| 1st-eye | Hephaestus | 4-ICP (I/S/C/P)                  | `3547f51ef`   |
+| 2nd-eye | Themis     | 6th-ICP (COMPLIANCE/Audit-Trail) | `3be81db2e`   |
+| 3rd-eye | Sentinel   | 5th-ICP (E2E/Tests)              | THIS DOCUMENT |
 
 ---
 
 ## 1. 5-ICP E2E/TESTS VERDICT: ACCEPT 9.0/10
 
-| Sub-domain | Score | Verdict |
-|------------|-------|---------|
+| Sub-domain          | Score  | Verdict                                                                                                                 |
+| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------- |
 | Unit tests (vitest) | 9.5/10 | 61/61 tests pass; 13 test groups covering CSP/HSTS/COOP/COEP/CORP/Permissions-Policy + CSRF double-submit + HMAC-SHA256 |
-| Integration tests | 8.0/10 | Set-Cookie + CSP nonce integration tested; no real WebView integration |
-| E2E tests | N/A | Service-only — no UI, no E2E applicable |
-| TypeScript | 9.5/10 | 0 errors (per Apollo P0 cascade) |
-| Test data realism | 9.0/10 | 15 CSP directives + 3 presets + 7 Referrer-Policy options; 7 CSRF verify scenarios |
-| Documentation tests | 9.5/10 | 254L policy doc with CWE/SOC 2/OWASP mapping |
-| CWE coverage | 9.5/10 | 5 CWE closed: CWE-79, CWE-1021, CWE-319, CWE-352, CWE-693 |
-| Browser integration | 5.0/10 | Service-only, no real browser test |
+| Integration tests   | 8.0/10 | Set-Cookie + CSP nonce integration tested; no real WebView integration                                                  |
+| E2E tests           | N/A    | Service-only — no UI, no E2E applicable                                                                                 |
+| TypeScript          | 9.5/10 | 0 errors (per Apollo P0 cascade)                                                                                        |
+| Test data realism   | 9.0/10 | 15 CSP directives + 3 presets + 7 Referrer-Policy options; 7 CSRF verify scenarios                                      |
+| Documentation tests | 9.5/10 | 254L policy doc with CWE/SOC 2/OWASP mapping                                                                            |
+| CWE coverage        | 9.5/10 | 5 CWE closed: CWE-79, CWE-1021, CWE-319, CWE-352, CWE-693                                                               |
+| Browser integration | 5.0/10 | Service-only, no real browser test                                                                                      |
 
 **5-ICP weighted average**: 9.0/10 — ACCEPT (comprehensive coverage; browser integration gap)
 
@@ -51,6 +51,7 @@ For PATCH 11 SecurityHeaders + CsrfProtection at `3547f51ef`:
 ### 2.2 W2 real test code (semantic)
 
 13 test groups in `SecurityHeaders-CsrfProtection.test.ts`:
+
 - SecurityHeaders: constants, nonce gen (Web Crypto), source validation, header name/value validation, preset policy, header generation, validation
 - CsrfProtection: constants, create, generate, verify (7 scenarios), Set-Cookie builder
 - Integration: SecurityHeaders + CsrfProtection
@@ -92,6 +93,7 @@ PATCH 9 IncidentResponse should be triggered when CSP nonce validation fails or 
 ### 3.4 PICK D 5th-ICP #3 (T-TH-077 PATCH 10 ThreatModel)
 
 PATCH 10 ThreatModel defines:
+
 - T-08: "XSS via unsanitized input" (CWE-79) — closed by PATCH 11 CSP
 - T-09: "CSRF via missing token" (CWE-352) — closed by PATCH 11 CsrfProtection
 - T-10: "Clickjacking via iframe" (CWE-1021) — closed by PATCH 11 X-Frame-Options
@@ -127,6 +129,7 @@ Boardroom cross-sector dimension may need CSRF protection for cross-tenant data 
 ## 4. THREAT MODELING (5th-ICP E2E/Tests lens)
 
 5 CWE closed by PATCH 11:
+
 - CWE-79 (XSS) — closed by CSP nonce + 15 directives
 - CWE-1021 (Clickjacking) — closed by X-Frame-Options DENY/SAMEORIGIN
 - CWE-319 (Cleartext Transmission) — closed by HSTS
@@ -136,6 +139,7 @@ Boardroom cross-sector dimension may need CSRF protection for cross-tenant data 
 **CWE coverage score**: 9.5/10 — comprehensive
 
 **SOC 2 TSC mapping**:
+
 - CC6.6 (Logical Access Controls — Transmission): HSTS + CSP
 - CC6.7 (Restriction of Access): CSP frame-ancestors + X-Frame-Options
 - CC7.1 (Threat Detection): CSP violation detection (browser-reported)
@@ -144,6 +148,7 @@ Boardroom cross-sector dimension may need CSRF protection for cross-tenant data 
 **SOC 2 TSC score**: 9.5/10
 
 **OWASP Secure Headers Project coverage**:
+
 - ✅ Content-Security-Policy
 - ✅ Strict-Transport-Security
 - ✅ X-Frame-Options
@@ -182,16 +187,16 @@ The policy doc maps CWE → SOC 2 but no test verifies the mapping. Recommend: a
 
 ## 6. 5-ICP VERDICT
 
-| Sub-domain | Score |
-|------------|-------|
-| Unit tests | 9.5/10 |
-| Integration | 8.0/10 |
-| E2E (N/A for service) | N/A |
-| TypeScript | 9.5/10 |
-| Test data realism | 9.0/10 |
-| Documentation tests | 9.5/10 |
-| CWE coverage | 9.5/10 |
-| Browser integration | 5.0/10 |
+| Sub-domain             | Score      |
+| ---------------------- | ---------- |
+| Unit tests             | 9.5/10     |
+| Integration            | 8.0/10     |
+| E2E (N/A for service)  | N/A        |
+| TypeScript             | 9.5/10     |
+| Test data realism      | 9.0/10     |
+| Documentation tests    | 9.5/10     |
+| CWE coverage           | 9.5/10     |
+| Browser integration    | 5.0/10     |
 | **5-ICP weighted avg** | **9.0/10** |
 
 **Verdict**: ACCEPT — PATCH 11 SecurityHeaders + CsrfProtection is a high-quality security deliverable with strong unit coverage (61/61 vitest), comprehensive CWE coverage (5 CWE closed), and excellent documentation (254L policy doc). F1 is P2 (browser integration gap), F2-F4 are P3 minor. Not blocking RATIFICATION GATE.
@@ -200,11 +205,11 @@ The policy doc maps CWE → SOC 2 but no test verifies the mapping. Recommend: a
 
 ## 7. SHAs VERIFIED (RULE #53)
 
-| SHA | Type | Status |
-|-----|------|--------|
+| SHA         | Type   | Status                                               |
+| ----------- | ------ | ---------------------------------------------------- |
 | `3547f51ef` | commit | ✅ REAL (Hephaestus PATCH 11 SecurityHeaders + CSRF) |
-| `3be81db2e` | commit | ✅ REAL (Themis 6th-ICP cross-witness) |
-| `babc67809` | commit | ✅ REAL (5th-ICP T-MN-048 v0.5 ratify seal) |
+| `3be81db2e` | commit | ✅ REAL (Themis 6th-ICP cross-witness)               |
+| `babc67809` | commit | ✅ REAL (5th-ICP T-MN-048 v0.5 ratify seal)          |
 
 All 3 SHAs verified via `git cat-file -t` returning `commit`. No GHOST-SHAs detected.
 

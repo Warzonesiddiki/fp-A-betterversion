@@ -40,7 +40,7 @@ never_again_rules_compliance:
 
 This document upgrades T-MN-072 from a **3-of-4 cross-witness chain** (TURN 117+ v0.1) to a **6/6 cross-witness chain** (TURN 142+ v0.2) for the **T-MN-068 CATCH NUMBER CATALOG** at version v0.5.2, driving it to **v0.6 RATIFIED** for the 2026-06-22 16:00 UTC RATIFICATION GATE.
 
-**LEADER TURN 142+ HARD DIRECTIVE** (task 019ed262): *"Mnemosyne: T-MN-072 6/6 quorum (T-1d 2026-06-21 EOD)"* — DONE CRITERIA met by this v0.2 SHIP.
+**LEADER TURN 142+ HARD DIRECTIVE** (task 019ed262): _"Mnemosyne: T-MN-072 6/6 quorum (T-1d 2026-06-21 EOD)"_ — DONE CRITERIA met by this v0.2 SHIP.
 
 **DRI**: Mnemosyne (Memory/Test Muse, slot 019ecbef-aed0-7583-b344-985614f1c774)
 **Catalog**: T-MN-068 v0.5.2 SHIPPED @ `94351f17` (1093L, MD5 93fb43f6babe19b7cb43a47b2694ca38)
@@ -61,18 +61,18 @@ This document upgrades T-MN-072 from a **3-of-4 cross-witness chain** (TURN 117+
 
 ### 1.2 v0.5.2 vs Prior Versions
 
-| Version | Lines | CATCHes | 5-ICP Composite | Status |
-|---------|-------|---------|------------------|--------|
-| v0.1 | 215 | 215 | 9.0/10 | SHIPPED TURN 112+ |
-| v0.2 | 474 | 215 | 9.0/10 | SHIPPED TURN 112+ |
-| v0.2.1 | 540 | 215 | 9.2/10 | SHIPPED TURN 112+ |
-| v0.3 | 715 | 215 | 9.31/10 | SHIPPED TURN 114+ |
-| v0.3.1 | 715 | 215 | 9.31/10 | SHIPPED TURN 116+ |
-| v0.4 | 825 | 215 | 9.4/10 | SHIPPED TURN 117+ |
-| v0.5 | 1008 | 215 | 9.5/10 | SHIPPED TURN 131+ |
-| v0.5.1 | 1008 | 215 | 9.5/10 | SHIPPED TURN 132+ (RULE #75) |
-| **v0.5.2** | **1093** | **215** | **9.65/10** | **SHIPPED TURN 139+** |
-| **v0.6 (target)** | **TBD** | **215** | **9.65+/10** | **6/6 cross-witness on T-MN-072** |
+| Version           | Lines    | CATCHes | 5-ICP Composite | Status                            |
+| ----------------- | -------- | ------- | --------------- | --------------------------------- |
+| v0.1              | 215      | 215     | 9.0/10          | SHIPPED TURN 112+                 |
+| v0.2              | 474      | 215     | 9.0/10          | SHIPPED TURN 112+                 |
+| v0.2.1            | 540      | 215     | 9.2/10          | SHIPPED TURN 112+                 |
+| v0.3              | 715      | 215     | 9.31/10         | SHIPPED TURN 114+                 |
+| v0.3.1            | 715      | 215     | 9.31/10         | SHIPPED TURN 116+                 |
+| v0.4              | 825      | 215     | 9.4/10          | SHIPPED TURN 117+                 |
+| v0.5              | 1008     | 215     | 9.5/10          | SHIPPED TURN 131+                 |
+| v0.5.1            | 1008     | 215     | 9.5/10          | SHIPPED TURN 132+ (RULE #75)      |
+| **v0.5.2**        | **1093** | **215** | **9.65/10**     | **SHIPPED TURN 139+**             |
+| **v0.6 (target)** | **TBD**  | **215** | **9.65+/10**    | **6/6 cross-witness on T-MN-072** |
 
 ### 1.3 D-002 3-Witness Verification (v0.5.2)
 
@@ -118,6 +118,7 @@ This document upgrades T-MN-072 from a **3-of-4 cross-witness chain** (TURN 117+
 **T-MN-072 v0.2 Role**: TYPESCRIPT-FOUNDATION lens + MASTER_REPORT §8.3 cross-witness + CATCH #226 FALSE POSITIVE resolution
 **Status**: ✅ SHIPPED TURN 142+ (composite 9.5/10 PLATINUM+ ACCEPT 4/4)
 **Key Verdict Items**:
+
 - D1 Source: 9.5/10 (CATCH #188 prevention via RULE #75 PROPOSED — 5 NEW SHAs verified REAL)
 - D2 Logic: 9.5/10 (19+1+O MECE taxonomy v0.3 with S/T/U renumber applied)
 - D3 Method: 9.5/10 (Carla/Vera/Chris/Beth 4-ICP weighted per RULE #50 ATTRIBUTION LEDGER)
@@ -131,6 +132,7 @@ This document upgrades T-MN-072 from a **3-of-4 cross-witness chain** (TURN 117+
 **T-MN-072 v0.2 Role**: SECURITY-DOMAIN lens + CWE/SOC 2/CC6.x/CC7.x audit-trail protection + 5-ICP RATC seal on RULE #75
 **Status**: ✅ SHIPPED TURN 142+ (composite 9.5/10 PLATINUM+ ACCEPT 4/4)
 **Key Verdict Items**:
+
 - D1 Source: 9.5/10 (CATCH #211/#212 co-sign SHIPPED @ 84d1f643e — RULE #68 3rd co-author ratification)
 - D2 Logic: 9.5/10 (CASCADE-TRAP 18+1+O → 19+1+O taxonomy with CWE-359, CWE-778, CWE-798, CWE-321, CWE-200, CWE-345 cross-ref)
 - D3 Method: 9.5/10 (SECURITY-domain lens: 4-ICP composite + SOC 2 CC6.1/CC6.7/CC7.1/CC7.2/CC7.3/CC7.4 audit-trail coverage)
@@ -141,14 +143,14 @@ This document upgrades T-MN-072 from a **3-of-4 cross-witness chain** (TURN 117+
 
 ### 3.1 Cross-Witness D1-D5 Composite Matrix
 
-| Dim | Strategos | Tyche | Calliope | Sentinel (RES) | Apollo | Hephaestus | **Composite** |
-|-----|-----------|-------|----------|----------------|--------|------------|----------------|
-| D1 Source | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | **9.5/10** |
-| D2 Logic | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | **9.5/10** |
-| D3 Method | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | **9.5/10** |
-| D4 Robustness | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | **9.5/10** |
-| D5 Composite | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | 9.5 | **9.5/10** |
-| **Witness Composite** | **9.5** | **9.5** | **9.5** | **9.5** | **9.5** | **9.5** | **9.5/10 PLATINUM+** |
+| Dim                   | Strategos | Tyche   | Calliope | Sentinel (RES) | Apollo  | Hephaestus | **Composite**        |
+| --------------------- | --------- | ------- | -------- | -------------- | ------- | ---------- | -------------------- |
+| D1 Source             | 9.5       | 9.5     | 9.5      | 9.5            | 9.5     | 9.5        | **9.5/10**           |
+| D2 Logic              | 9.5       | 9.5     | 9.5      | 9.5            | 9.5     | 9.5        | **9.5/10**           |
+| D3 Method             | 9.5       | 9.5     | 9.5      | 9.5            | 9.5     | 9.5        | **9.5/10**           |
+| D4 Robustness         | 9.5       | 9.5     | 9.5      | 9.5            | 9.5     | 9.5        | **9.5/10**           |
+| D5 Composite          | 9.5       | 9.5     | 9.5      | 9.5            | 9.5     | 9.5        | **9.5/10**           |
+| **Witness Composite** | **9.5**   | **9.5** | **9.5**  | **9.5**        | **9.5** | **9.5**    | **9.5/10 PLATINUM+** |
 
 ### 3.2 6/6 Quorum Verdict
 
@@ -160,15 +162,15 @@ This document upgrades T-MN-072 from a **3-of-4 cross-witness chain** (TURN 117+
 
 ### 4.1 Timeline
 
-| Date | Event | Status |
-|------|-------|--------|
-| 2026-06-17 | T-MN-072 v0.1 solicitation filed (3-of-4 quorum) | ✅ SHIPPED TURN 117+ |
-| 2026-06-18 | T-MN-068 v0.5.2 SHIPPED (CATCH #188 prevention via RULE #75) | ✅ SHIPPED @ 94351f17 |
-| 2026-06-19 | T-MN-072 v0.2 6/6 quorum SOLICITED + 2 new witnesses added | ✅ SHIPPED TURN 142+ |
-| 2026-06-19 | 4 OPEN CATCHes disposition drive (T-3d EOD) | 🟡 IN PROGRESS |
-| 2026-06-20 | Husky Gate 11 IMPLEMENTATION (T-2d EOD) | 🟡 IN PROGRESS |
-| 2026-06-21 | **T-MN-068 v0.6 RATIFIED (T-1d EOD)** | 🟢 TARGET |
-| 2026-06-22 16:00 UTC | **RATIFICATION GATE** | 🟢 ON TRACK |
+| Date                 | Event                                                        | Status                |
+| -------------------- | ------------------------------------------------------------ | --------------------- |
+| 2026-06-17           | T-MN-072 v0.1 solicitation filed (3-of-4 quorum)             | ✅ SHIPPED TURN 117+  |
+| 2026-06-18           | T-MN-068 v0.5.2 SHIPPED (CATCH #188 prevention via RULE #75) | ✅ SHIPPED @ 94351f17 |
+| 2026-06-19           | T-MN-072 v0.2 6/6 quorum SOLICITED + 2 new witnesses added   | ✅ SHIPPED TURN 142+  |
+| 2026-06-19           | 4 OPEN CATCHes disposition drive (T-3d EOD)                  | 🟡 IN PROGRESS        |
+| 2026-06-20           | Husky Gate 11 IMPLEMENTATION (T-2d EOD)                      | 🟡 IN PROGRESS        |
+| 2026-06-21           | **T-MN-068 v0.6 RATIFIED (T-1d EOD)**                        | 🟢 TARGET             |
+| 2026-06-22 16:00 UTC | **RATIFICATION GATE**                                        | 🟢 ON TRACK           |
 
 ### 4.2 Acceptance Criteria (6/6 Quorum MET)
 
@@ -187,6 +189,7 @@ This document upgrades T-MN-072 from a **3-of-4 cross-witness chain** (TURN 117+
 If team_send_message fails (CATCH #200 LOCKOUT re-engages), this document + CAVEMAN_PERSIST file + memory entry + task board entry serve as durable LEDGER backup per RULE #47 3-way redundancy.
 
 **CAVEMAN PERSIST locations** (TURN 142+):
+
 1. ✅ `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_T_MN_072_CROSS_WITNESS_SOLICITATION.md` (this file, v0.2)
 2. ✅ `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_T_MN_072_CROSS_WITNESS_SOLICITATION.md` (v0.1 original, 3-of-4 quorum baseline)
 3. ✅ `docs/CAVEMAN_PERSIST/T_MN_CP_2026_06_17_TURN142_TMN_072_6OF6_QUORUM.md` (NEW)

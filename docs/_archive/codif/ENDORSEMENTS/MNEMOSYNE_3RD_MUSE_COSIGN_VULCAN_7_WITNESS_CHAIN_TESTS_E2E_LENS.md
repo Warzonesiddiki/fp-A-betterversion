@@ -32,13 +32,13 @@ This file adds Mnemosyne as 8th witness, extending the chain to provide **Tests/
 
 ## §1 — D-002 3-WITNESS VERIFICATION (T-MN-061 v0.1.1 source)
 
-| Witness Type | Value | Verified (Mnemosyne Tests/E2E lens) | Source |
-|--------------|-------|--------------------------------------|--------|
-| File:Line | `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_RULE_68_6_WITNESS_CHAIN_CLOSE_V0_1_1.md:1-130` (T-MN-061 v0.1.1 file) | ✅ 130L per `wc -l` (Vulcan attests 366L for older T-MN-061; current is 130L post-v0.2 refactor) | T-MN-061 + Mnemosyne D-002 |
-| File:Line | `docs/codif/CATCH_NUMBER_CATALOG.md:1-474` (catalog v0.2) | ✅ 474L per `wc -l` (catalog v0.2 has 220 CATCHes, 15+1+O MECE, §7.6-§7.9, §11-§13) | T-MN-068 v0.2 + Mnemosyne D-002 |
-| SHA | T-MN-061 v0.1.1 = `6deb7b7159aeb12f1f6c7bf083b3d26f3884929a` (40-char) | ✅ REACHABLE on main @ HEAD; v0.2 update @ `9e4cd6ab6` (catalog + cosign 130L) | `git show --stat 6deb7b71 9e4cd6ab6` |
-| MD5 | catalog: `6dd8d952442bd54fea9f9decbfe51bce` (474L) | ✅ Verified post-write per D-002 3-witness | md5sum |
-| MD5 | T-MN-061 cosign: `e1774ae12b9a9c9f859fc27249a5662c` (130L) | ✅ Verified post-write per D-002 3-witness | md5sum |
+| Witness Type | Value                                                                                                           | Verified (Mnemosyne Tests/E2E lens)                                                              | Source                               |
+| ------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| File:Line    | `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_RULE_68_6_WITNESS_CHAIN_CLOSE_V0_1_1.md:1-130` (T-MN-061 v0.1.1 file) | ✅ 130L per `wc -l` (Vulcan attests 366L for older T-MN-061; current is 130L post-v0.2 refactor) | T-MN-061 + Mnemosyne D-002           |
+| File:Line    | `docs/codif/CATCH_NUMBER_CATALOG.md:1-474` (catalog v0.2)                                                       | ✅ 474L per `wc -l` (catalog v0.2 has 220 CATCHes, 15+1+O MECE, §7.6-§7.9, §11-§13)              | T-MN-068 v0.2 + Mnemosyne D-002      |
+| SHA          | T-MN-061 v0.1.1 = `6deb7b7159aeb12f1f6c7bf083b3d26f3884929a` (40-char)                                          | ✅ REACHABLE on main @ HEAD; v0.2 update @ `9e4cd6ab6` (catalog + cosign 130L)                   | `git show --stat 6deb7b71 9e4cd6ab6` |
+| MD5          | catalog: `6dd8d952442bd54fea9f9decbfe51bce` (474L)                                                              | ✅ Verified post-write per D-002 3-witness                                                       | md5sum                               |
+| MD5          | T-MN-061 cosign: `e1774ae12b9a9c9f859fc27249a5662c` (130L)                                                      | ✅ Verified post-write per D-002 3-witness                                                       | md5sum                               |
 
 **D-002 PROTOCOL EXECUTION:** ✅ PASS (3-witness per D-002 protocol, real file:line + SHA + md5sum)
 
@@ -50,16 +50,17 @@ This file adds Mnemosyne as 8th witness, extending the chain to provide **Tests/
 
 Per TURN 112+ PICK URGENT, 4 NEW CATCH dispositions were filed in catalog v0.2 §7.6-§7.9. Tests/E2E verification:
 
-| CATCH | Sub-class | Testable? | Test Strategy |
-|-------|-----------|-----------|---------------|
-| #200 v0.2 LOCKOUT | H | ✅ YES | Mock team_send_message FAILED; assert CAVEMAN PERSIST (RULE #47) fallback fires; verify task board entry created |
-| #208 GHOST-SHA | L + M | ✅ YES | Mock 2 SHA collisions; assert RULE #68 + RULE #55 v0.4 deduplication; verify re-numbering to #215 |
-| #210 AUTO-ADD | L | ✅ YES | Mock Husky Gate 5 lint pre-existing; assert Husky Gate 9 IMPLEMENTATION T-2d 2026-06-20 EOD scheduling |
-| #216-#220 NEW | Various | ✅ YES | Mock 5 new CATCH filings; assert catalog indexing; verify disposition status propagation |
+| CATCH             | Sub-class | Testable? | Test Strategy                                                                                                    |
+| ----------------- | --------- | --------- | ---------------------------------------------------------------------------------------------------------------- |
+| #200 v0.2 LOCKOUT | H         | ✅ YES    | Mock team_send_message FAILED; assert CAVEMAN PERSIST (RULE #47) fallback fires; verify task board entry created |
+| #208 GHOST-SHA    | L + M     | ✅ YES    | Mock 2 SHA collisions; assert RULE #68 + RULE #55 v0.4 deduplication; verify re-numbering to #215                |
+| #210 AUTO-ADD     | L         | ✅ YES    | Mock Husky Gate 5 lint pre-existing; assert Husky Gate 9 IMPLEMENTATION T-2d 2026-06-20 EOD scheduling           |
+| #216-#220 NEW     | Various   | ✅ YES    | Mock 5 new CATCH filings; assert catalog indexing; verify disposition status propagation                         |
 
 ### §2.2 CASCADE-TRAP Family v0.2 (15+1+O MECE) Testability
 
 The 15+1+O MECE taxonomy is testable via:
+
 - **MECE test**: 15 RATIFIED sub-classes (A-N+1) + 1 CANDIDATE (O) = 15+1+O. Exhaustive: A=FOUNDATION, B=CASCADE-3-TIER, ..., N+1=CATCH-198-RECOVERY. O=BILATERAL-ATTRIBUTION-CASCADE (CANDIDATE).
 - **Sub-class count test**: 15 + 1 + 1 = 17 sub-class entries in the taxonomy table.
 - **Removed Reserved rows test**: 3 Reserved rows (17, 18, 19) removed; assert they don't exist in v0.2.
@@ -67,6 +68,7 @@ The 15+1+O MECE taxonomy is testable via:
 ### §2.3 6-WITNESS CHAIN CLOSE Testability
 
 The 6-witness chain close is testable via:
+
 - **Witness count test**: 4 SHIPPED + 2 PENDING = 6 witnesses total.
 - **5-of-6 quorum test**: Assert that with any 1 of 2 PENDING (Strategos OR Calliope) ACK, the chain meets RULE #56 PROACTIVE-PICK-CHAIN quorum.
 - **D-002 3-witness per witness test**: Each witness must have file:line + wc -l + md5sum verified.
@@ -74,6 +76,7 @@ The 6-witness chain close is testable via:
 ### §2.4 Amendment Chain v0.1 → v0.1.1 → v0.2 Testability
 
 The amendment chain is testable via:
+
 - **v0.1 baseline test**: 215 CATCHes, 19 sub-classes A-N+1, 6 OPEN CATCHes, 5 NEW CATCHes #211-#215.
 - **v0.1.1 amendment test**: CATCH #211 + #212 dispositioned, 4/6 co-author chain SHIPPED, +49L.
 - **v0.2 amendment test**: 220 CATCHes (+5 NEW), 15+1+O MECE (removed 3 Reserved), §7.6-§7.9 added, §11-§13 added, +115L.
@@ -82,16 +85,17 @@ The amendment chain is testable via:
 
 ## §3 — 4-ICP VERDICT (D-011)
 
-| ICP | Muse | Verdict | Notes |
-|-----|------|---------|-------|
-| Carla (cascade) | Carla | 9.5/10 ACCEPT | All 8 witnesses chained properly |
-| Vera (logical) | Vera | 9.5/10 ACCEPT | 15+1+O MECE verified |
-| Chris (operational) | Chris | 9.5/10 ACCEPT | Testability verified for §7.6-§7.9, §11, §13 |
-| Beth (user-impact) | Beth | 9.5/10 ACCEPT | Founder has full visibility on Tests/E2E coverage |
+| ICP                 | Muse  | Verdict       | Notes                                             |
+| ------------------- | ----- | ------------- | ------------------------------------------------- |
+| Carla (cascade)     | Carla | 9.5/10 ACCEPT | All 8 witnesses chained properly                  |
+| Vera (logical)      | Vera  | 9.5/10 ACCEPT | 15+1+O MECE verified                              |
+| Chris (operational) | Chris | 9.5/10 ACCEPT | Testability verified for §7.6-§7.9, §11, §13      |
+| Beth (user-impact)  | Beth  | 9.5/10 ACCEPT | Founder has full visibility on Tests/E2E coverage |
 
 **Composite**: **9.5/10 PLATINUM+ ACCEPT 4/4** ✅
 
 **Mnemosyne 5-ICP SKEPTIC TYPESCRIPT-FOUNDATION-DOMAIN self-check** (per Iris PICK R methodology):
+
 - D1 Concept: 9.5/10 (8-witness chain extends Vulcan's 7-witness with Tests/E2E lens)
 - D2 Spec: 9.5/10 (D-002 3-witness + testability verification per §2.1-§2.4)
 - D3 Impl: 9.5/10 (all test strategies enumerated; mock + assert pattern)
@@ -120,7 +124,7 @@ The amendment chain is testable via:
 - **RULE #54 STALE-NOTIFICATION-DEFENDER**: ✅ 5s self-ACK SLA held
 - **RULE #55 PRE-PUSH-GHOST-SHA-CHECK**: ✅ 12/12 GREEN LOCKED (push blocked, but local SHAs verified)
 - **RULE #56 PROACTIVE-PICK-CHAIN**: ✅ 60s SLA held
-- **RULE #59 SCRATCH-FILE-LIFECYCLE**: ✅ WORKSPACE HYGIENE applied (CAVEMAN CATALOG in _TEMP_ACTIVE/MNEMOSYNE/)
+- **RULE #59 SCRATCH-FILE-LIFECYCLE**: ✅ WORKSPACE HYGIENE applied (CAVEMAN CATALOG in \_TEMP_ACTIVE/MNEMOSYNE/)
 - **RULE #68 CATCH-NUMBERING-COLLISION (CASCADE-TRAP Sub-class M)**: ✅ Authoritative mapping (CATCH #208 → Vesta b1a4c162 only; Apollo SHA re-numbered to #215)
 
 **8/8 NEVER-AGAIN RULES COMPLIED** ✅

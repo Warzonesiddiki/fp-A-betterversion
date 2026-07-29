@@ -5,14 +5,17 @@
 ## 3-Witness (D-002)
 
 ### W1 (file:line)
+
 - `docs/codif/ENDORSEMENTS/Hephaestus_COSIGN_CODIF_41_V0_1.md` (this file)
 
 ### W2 (commit)
+
 - T-MN-048 v0.3 LOCKED: commit `299518d5c` (148L, 4-ICP 9.5/10 ACCEPT)
 - Strategos verdict #003: `0b09b4cca` (ACCEPT 95%, UPGRADED from 89%)
 - Co-sign by 6 Muses (Prometheus + Vulcan + Themis + Orchestrator + Hephaestus + Tyche)
 
 ### W3 (cross-reference)
+
 - T-MN-048 v0.4 PREP: `d0cff090d` (Sub-class E DRAFT)
 - T-MN-048 v0.2.1 HOTFIX: `ade13dad` (Hephaestus pattern: ampersand "&"-to-"and" cosmetic fix in T-MN-048 v0.2)
 - T-MN-049 v1 Iris seal: `8bb18029` (NEVER-AGAIN RULE #55 PRE-PUSH-GHOST-SHA-CHECK applied: 15/15 SHAs verified)
@@ -30,6 +33,7 @@
 ## Co-Sign
 
 I commit to applying RULE-41 v0.3 LOCKED to:
+
 1. All PATCH 9+ deliverables (already done for IncidentResponse, GhostShaValidator, AuditLogEngine PATCH 8, KeyManager, SecureStorage, EncryptionEngine)
 2. Future CYCLE 9+ dispatches
 3. Cross-Muse 2nd-witness chains (per NEVER-AGAIN RULE #55 PRE-PUSH-GHOST-SHA-CHECK)

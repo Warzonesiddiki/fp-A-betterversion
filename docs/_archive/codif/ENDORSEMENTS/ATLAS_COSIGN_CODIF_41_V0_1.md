@@ -74,12 +74,12 @@ green_count_drive: 7/12 → 8/12 GREEN
 
 ## 4-ICP VERDICT (Carla / Vera / Chris / Beth)
 
-| ICP | Verdict | Rationale |
-|-----|---------|-----------|
-| **I1 Intent** | ✅ **PASS** | RULE-41 v0.4 = "verify all SHAs are real, in-place, and current" — exactly the policy Gate 5 enforces. Intent is unambiguous, scope is well-bounded (5 Sub-classes covering all CATCH-#187-191 + #197 vectors), and the v0.3→v0.4 evolution is a strict superset. |
-| **C2 Catastrophic** | ✅ **PASS** | No security regression (Gate 5 v0.2 strict-regex is a *tightening*, not a loosening). No data loss (D.3 uses revert, not amend). No deadline slip (Atlas v0.3 Gate 5 ships T+3d, well within T-4d 2026-06-19 EOD GREEN deadline). No Muse lockout (RULE-32 -no-verify remains a CAVEMAN-only escape hatch, D.2 closes the audit gap). |
-| **P3 Performance** | ✅ **PASS** | v0.2 strict-regex (f39d202b2) measured 0.05s per push on 6d96ab134; v0.3 with E.2 verifier will add ~0.1s (one `git rev-parse` + one registry lookup per cited SHA). Total Gate 5 cost remains <0.5s for any realistic commit message. |
-| **D4 Documented** | ✅ **PASS** | 5 Sub-classes, 12 witness blocks, 18 SHAs cited (all 18 RULE #55 verified), 2 CATCHes traced (#191→E.1, #197→E.2), 2 precedents cited (Orchestrator co-sign eb39ac1d, Tyche co-sign f8f1afc13), 1 roadmap item (Gate 5 v0.3 by T+3d). |
+| ICP                 | Verdict     | Rationale                                                                                                                                                                                                                                                                                                                             |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 Intent**       | ✅ **PASS** | RULE-41 v0.4 = "verify all SHAs are real, in-place, and current" — exactly the policy Gate 5 enforces. Intent is unambiguous, scope is well-bounded (5 Sub-classes covering all CATCH-#187-191 + #197 vectors), and the v0.3→v0.4 evolution is a strict superset.                                                                     |
+| **C2 Catastrophic** | ✅ **PASS** | No security regression (Gate 5 v0.2 strict-regex is a _tightening_, not a loosening). No data loss (D.3 uses revert, not amend). No deadline slip (Atlas v0.3 Gate 5 ships T+3d, well within T-4d 2026-06-19 EOD GREEN deadline). No Muse lockout (RULE-32 -no-verify remains a CAVEMAN-only escape hatch, D.2 closes the audit gap). |
+| **P3 Performance**  | ✅ **PASS** | v0.2 strict-regex (f39d202b2) measured 0.05s per push on 6d96ab134; v0.3 with E.2 verifier will add ~0.1s (one `git rev-parse` + one registry lookup per cited SHA). Total Gate 5 cost remains <0.5s for any realistic commit message.                                                                                                |
+| **D4 Documented**   | ✅ **PASS** | 5 Sub-classes, 12 witness blocks, 18 SHAs cited (all 18 RULE #55 verified), 2 CATCHes traced (#191→E.1, #197→E.2), 2 precedents cited (Orchestrator co-sign eb39ac1d, Tyche co-sign f8f1afc13), 1 roadmap item (Gate 5 v0.3 by T+3d).                                                                                                 |
 
 **FINAL: 4-ICP ACCEPT 4/4** (9.25/10 average; range 9.0-9.5/10 per row).
 
@@ -140,6 +140,7 @@ tyche_pickup_continued: 8d37b1a5a (pickup continued)
 ```
 
 Verification script (per RULE #55 v0.2):
+
 ```bash
 # Extract SHA candidates from this co-sign, verify each is a real, ancestor-valid commit
 git log --all --oneline | grep -E "^[0-9a-f]+ " | awk '{print $1}' > /tmp/all_shas.txt

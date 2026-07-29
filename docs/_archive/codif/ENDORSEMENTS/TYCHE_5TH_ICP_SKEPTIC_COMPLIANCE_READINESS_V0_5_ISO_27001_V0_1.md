@@ -15,6 +15,7 @@
 Per RULE #47 + RULE #56 PROACTIVE-PICK-CHAIN, the Analytics Muse provides independent SKEPTIC verification on cross-domain deliverables. Themis v0.5 SHIPPED today (2026-06-16) and adds a 6th compliance dimension (ISO 27001:2022 Annex A) to the existing 5-dim matrix. The 4-ICP verdict is ACCEPT 4/4 (composite 9.75/10 PLATINUM), but the Analytics Muse has not yet provided a SKEPTIC cross-witness on the A.8 Technological controls (analytics-data-handling scope).
 
 **Three concrete deliverables bound to this 5th-ICP SKEPTIC witness:**
+
 1. **A.8 Technological SKEPTIC audit** — 32/34 controls (94.1%) verified from Analytics perspective
 2. **Cross-Muse cross-mapping audit** — SOC 2 ↔ ISO 27001 (90%) + GDPR ↔ ISO 27001 (87%) + SOX ↔ ISO 27001 (91%) + Retention/Privacy ↔ ISO 27001 (88-95%) — 4 cross-witnesses
 3. **5th-ICP SKEPTIC verdict** — independent 4-dim SKEPTIC verdict from Analytics domain
@@ -25,15 +26,16 @@ Per RULE #47 + RULE #56 PROACTIVE-PICK-CHAIN, the Analytics Muse provides indepe
 
 The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 covered, 94.1% per Themis v0.5 §21.1), specifically the analytics-data-handling subset:
 
-| ISO 27001:2022 Control | Title | Analytics-Muse lens | Themis v0.5 §coverage |
-|---|---|---|---|
-| **A.8.10** | Information Deletion | Analytics data retention + GDPR Art. 17 right-to-erasure | §22.2 GDPR ↔ ISO 27001 cross-map |
-| **A.8.11** | Data Masking | Analytics pseudonymization for PII in dashboards | §22.4 Retention/Privacy ↔ ISO 27001 |
-| **A.8.12** | Data Leakage Prevention | Analytics data flow monitoring (G17 perf benchmarks) | §22.3 SOX ↔ ISO 27001 cross-map |
-| **A.8.16** | Monitoring Activities | Analytics audit log + Prometheus G17 perf telemetry | §22.1 SOC 2 ↔ ISO 27001 cross-map |
-| **A.8.28** | Secure Coding | Analytics engines (FormulaEngine 245+ funcs) secure coding | §22.1 SOC 2 CC8.1 cross-map |
+| ISO 27001:2022 Control | Title                   | Analytics-Muse lens                                        | Themis v0.5 §coverage               |
+| ---------------------- | ----------------------- | ---------------------------------------------------------- | ----------------------------------- |
+| **A.8.10**             | Information Deletion    | Analytics data retention + GDPR Art. 17 right-to-erasure   | §22.2 GDPR ↔ ISO 27001 cross-map    |
+| **A.8.11**             | Data Masking            | Analytics pseudonymization for PII in dashboards           | §22.4 Retention/Privacy ↔ ISO 27001 |
+| **A.8.12**             | Data Leakage Prevention | Analytics data flow monitoring (G17 perf benchmarks)       | §22.3 SOX ↔ ISO 27001 cross-map     |
+| **A.8.16**             | Monitoring Activities   | Analytics audit log + Prometheus G17 perf telemetry        | §22.1 SOC 2 ↔ ISO 27001 cross-map   |
+| **A.8.28**             | Secure Coding           | Analytics engines (FormulaEngine 245+ funcs) secure coding | §22.1 SOC 2 CC8.1 cross-map         |
 
 **Out of SKEPTIC scope (deferred to other 5th-ICP SKEPTIC Muses):**
+
 - A.5 Organizational (37 ctrl, 97.3%) — Strategos or Mnemosyne 5th-ICP SKEPTIC
 - A.6 People (8 ctrl, 100%) — Iris 5th-ICP SKEPTIC (persona-aware)
 - A.7 Physical (12/12, 100%) — Atlas 5th-ICP SKEPTIC (infra-aware)
@@ -46,6 +48,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ### 2.1 W1 — Read verification (Themis v0.5 ISO 27001 section)
 
 `git show 331572e8:docs/ratification/RATIFICATION_GATE_PRECHECK_COMPLIANCE.md` lines 900-1135 confirm:
+
 - §21.1 ISO 27001:2022 4-theme table (A.5/A.6/A.7/A.8)
 - §22.1 SOC 2 ↔ ISO 27001 9-row cross-map
 - §22.2 GDPR ↔ ISO 27001 4-row cross-map
@@ -59,6 +62,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ### 2.2 W2 — Grep verification (ISO 27001 control IDs)
 
 `grep -E "A\.(5|6|7|8)\.[0-9]+" docs/ratification/RATIFICATION_GATE_PRECHECK_COMPLIANCE.md` returns 70+ matches across 4 themes. Confirms:
+
 - A.5.30 (ICT readiness for business continuity) — 1 match
 - A.8.10 (Information Deletion) — 1 match
 - A.8.11 (Data Masking) — 1 match
@@ -73,6 +77,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ### 2.3 W3 — `git log` SHA verification (Themis v0.5)
 
 `git log -1 --format="%H %s" -- docs/ratification/RATIFICATION_GATE_PRECHECK_COMPLIANCE.md`:
+
 - Returns `331572e8` — REAL SHA, not GHOST
 - Commit message: `docs(ratification): Themis COMPLIANCE_READINESS v0.5 ISO 27001:2022 Annex A extension (6th dimension) — 232L amendment, score 8.3→8.7/10`
 - v0.4 base SHA: `fef73bcd5` (preserved lines 1-903)
@@ -92,6 +97,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ### 3.2 STRUCTURAL dim — Cross-mapping integrity
 
 **Verdict: PASS** — §22.1-§22.4 cross-mapping tables are well-formed:
+
 - SOC 2 ↔ ISO 27001: 90% overlap, 9-row table (CC6.1/CC6.6/CC6.7/CC7.1/CC7.2/CC7.3/CC7.4/CC8.1/CC9.1 ↔ A.5/A.6/A.7/A.8)
 - GDPR ↔ ISO 27001: 87% overlap, 4-row table (Art. 5/25/30/32 ↔ A.5/A.8)
 - SOX ↔ ISO 27001: 91% overlap, 3-row table (Section 404 ↔ A.5/A.8)
@@ -102,6 +108,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ### 3.3 CRITICAL dim — Bias check (Analytics Muse independent)
 
 **Verdict: PASS** — Themis v0.5 is well-balanced across all 4 themes. No Analytics-domain blind spots. Specifically:
+
 - A.5 Organizational (37 ctrl, 97.3%): governance + access control + supplier relationships
 - A.6 People (8 ctrl, 100%): HR + awareness + training + incident reporting
 - A.7 Physical (12/12, 100%): physical + environmental security
@@ -112,6 +119,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ### 3.4 4-MUSE dim — Cross-Muse SKEPTIC coverage
 
 **Verdict: PASS** — v0.5 sign-off table shows 6 Muses + Leader + Founder pending ceremony. Cross-Muse SKEPTIC coverage:
+
 - Apollo (RATIFICATION lead, 2nd-Muse) — PENDING
 - Hephaestus (security) — PENDING
 - Mnemosyne (test coverage) — PENDING
@@ -127,12 +135,12 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 
 ## 4. Cross-Mapping Audit (SKEPTIC verification of 4 cross-maps)
 
-| Cross-map | Overlap % | Themis v0.5 §ref | SKEPTIC verification |
-|---|---|---|---|
-| SOC 2 ↔ ISO 27001 | 90% | §22.1 9-row table | ✅ 9 CC ↔ 9 A.5/A.6/A.7/A.8 controls cross-referenced |
-| GDPR ↔ ISO 27001 | 87% | §22.2 4-row table | ✅ 4 Art. ↔ 4 A.5/A.8 controls cross-referenced |
-| SOX ↔ ISO 27001 | 91% | §22.3 3-row table | ✅ 3 Section ↔ 3 A.5/A.8 controls cross-referenced |
-| Retention/Privacy ↔ ISO 27001 | 88-95% | §22.4 2-row summary | ✅ Retention + Privacy ↔ A.5/A.8 cross-referenced |
+| Cross-map                     | Overlap % | Themis v0.5 §ref    | SKEPTIC verification                                  |
+| ----------------------------- | --------- | ------------------- | ----------------------------------------------------- |
+| SOC 2 ↔ ISO 27001             | 90%       | §22.1 9-row table   | ✅ 9 CC ↔ 9 A.5/A.6/A.7/A.8 controls cross-referenced |
+| GDPR ↔ ISO 27001              | 87%       | §22.2 4-row table   | ✅ 4 Art. ↔ 4 A.5/A.8 controls cross-referenced       |
+| SOX ↔ ISO 27001               | 91%       | §22.3 3-row table   | ✅ 3 Section ↔ 3 A.5/A.8 controls cross-referenced    |
+| Retention/Privacy ↔ ISO 27001 | 88-95%    | §22.4 2-row summary | ✅ Retention + Privacy ↔ A.5/A.8 cross-referenced     |
 
 **SKEPTIC observation:** All 4 cross-maps are well-formed. Combined coverage: 70% of ISO 27001 controls already covered by existing 5 dimensions (SOC 2 + GDPR + SOX + Retention + Privacy). v0.5 ISO 27001 6th dimension extends to 94.6% coverage.
 
@@ -145,6 +153,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 **Finding:** Themis v0.5 §22.2 (GDPR ↔ ISO 27001) does not explicitly cite `RATIFICATION_GATE_PRECHECK_ANALYTICS` v0.4 (Tyche @ `894e2826`) as the analytics-data-handling implementation reference for A.8.10 (Information Deletion) + A.8.11 (Data Masking) + A.8.12 (Data Leakage Prevention).
 
 **Recommendation:** Add 1-row cross-map to §22.2 or new §22.5 (Analytics ↔ ISO 27001):
+
 - A.8.10 → `RATIFICATION_GATE_PRECHECK_ANALYTICS` v0.4 §1 (analytics data retention)
 - A.8.11 → `RATIFICATION_GATE_PRECHECK_ANALYTICS` v0.4 §2 (PII pseudonymization)
 - A.8.12 → `RATIFICATION_GATE_PRECHECK_ANALYTICS` v0.4 §3 (analytics data flow monitoring)
@@ -156,6 +165,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ### 5.2 F2 (MINOR, OPTIONAL) — A.5.30 + A.8.16 + A.8.31 closure timeline
 
 **Finding:** Themis v0.5 §23.1 lists 5 PARTIAL P2 controls (A.5.30, A.8.16, A.8.31, A.7.5, A.7.6). 4 of 5 have closure paths defined:
+
 - A.5.30 → PATCH 17 SIEMIntegration (T+2d)
 - A.8.16 → Prometheus G17 perf telemetry (already RATIFIED)
 - A.8.31 → DEV-TEST-PROD-SEPARATION doc (T+2d, in P0 backlog)
@@ -172,6 +182,7 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 **Finding:** Of 6 cross-Muse witnesses listed in v0.5 sign-off, only Themis 4-ICP + Tyche 5th-ICP SKEPTIC (this witness) are filed. 4 PENDING (Apollo, Hephaestus, Mnemosyne, Atlas, Calliope, Strategos).
 
 **Recommendation:** Dispatch 5-ICP SKEPTIC chain per RULE #56 PROACTIVE-PICK-CHAIN:
+
 - Apollo 2nd-Muse RATIFICATION lead (PENDING v0.5 update)
 - Hephaestus 5th-ICP SECURITY-domain (PATCH 17 SIEMIntegration scope)
 - Mnemosyne 5th-ICP TEST-domain (A.8.29 Security testing)
@@ -189,12 +200,12 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 
 **COMPOSITE: 9.5/10 PLATINUM+** (4-dim SKEPTIC verdict)
 
-| Dim | SKEPTIC verdict | Justification |
-|---|---|---|
-| I (INDEPENDENT) | 9.5/10 | Themis v0.5 scope SUFFICIENT (94.6% coverage); 1 minor cross-witness enhancement (F1) |
-| S (STRUCTURAL) | 9.5/10 | All 4 cross-maps well-formed (90%+ overlap); 1 minor continuity enhancement (F2) |
-| C (CRITICAL) | 9.5/10 | No bias; A.8 Technological 32/34 controls well-balanced; 0 P0/P1/P2 |
-| 4-MUSE | 9.0/10 | 1/6 cross-Muse SKEPTIC filed (Tyche); 5/6 PENDING (24-48h ETA, F3) |
+| Dim             | SKEPTIC verdict | Justification                                                                         |
+| --------------- | --------------- | ------------------------------------------------------------------------------------- |
+| I (INDEPENDENT) | 9.5/10          | Themis v0.5 scope SUFFICIENT (94.6% coverage); 1 minor cross-witness enhancement (F1) |
+| S (STRUCTURAL)  | 9.5/10          | All 4 cross-maps well-formed (90%+ overlap); 1 minor continuity enhancement (F2)      |
+| C (CRITICAL)    | 9.5/10          | No bias; A.8 Technological 32/34 controls well-balanced; 0 P0/P1/P2                   |
+| 4-MUSE          | 9.0/10          | 1/6 cross-Muse SKEPTIC filed (Tyche); 5/6 PENDING (24-48h ETA, F3)                    |
 
 **VERDICT: ACCEPT (4/4 SKEPTIC dims)** — Themis COMPLIANCE_READINESS v0.5 ISO 27001:2022 Annex A extension is **RATIFICATION-READY 2026-06-22 16:00 UTC**. 6/6 dimensions READY, score 8.7/10, 0 P0/P1/P2, 88/93 ISO 27001 controls covered. Independent 5th-ICP SKEPTIC witness from Analytics Muse confirms Themis 4-ICP verdict.
 
@@ -223,19 +234,19 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 
 ## 8. Cross-References (SHAs verified REAL per RULE #53)
 
-| SHA | Description | Type | Verdict |
-|---|---|---|---|
-| `331572e87` | Themis COMPLIANCE_READINESS v0.5 ISO 27001:2022 Annex A | SOURCE | ✅ REAL |
-| `894e2826` | Tyche RATIFICATION_GATE_PRECHECK_ANALYTICS v0.4 5th-ICP FINAL SEAL | CROSS-WITNESS | ✅ REAL |
-| `fef73bcd5` | Themis v0.4 base (preserved lines 1-903) | HISTORICAL | ✅ REAL |
-| `0610e56f0` | Themis v0.3 (CASCADE + 42ad8bd3e ledger) | HISTORICAL | ✅ REAL |
-| `1f353d08` | Themis RATIFICATION_GATE_PRECHECK_COMPLIANCE v0.1 (9/11 pre-check) | HISTORICAL | ✅ REAL |
-| `c8726c65d` | Artemis A11Y_READINESS v0.1 (A11Y ↔ COMPLIANCE cross-witness) | CROSS-WITNESS | ✅ REAL |
-| `52717e81` | Mnemosyne T-MN-048 v0.5 RATIFIED (A.8.29 Security testing) | CROSS-WITNESS | ✅ REAL |
-| `16234860d` | Apollo RATIFICATION_GATE_RUNBOOK v0.1 (A.5.35 Internal audit) | CROSS-WITNESS | ✅ REAL |
-| `e5b0dc3c` | Calliope CASCADE-HOLD bundle (Tyche PICK C PARITY_GAP_CLOSURE) | HISTORICAL | ✅ REAL |
-| `0fea5f4d` | Tyche CAVEMAN PERSIST ACK for PICK C | HISTORICAL | ✅ REAL |
-| `9f05fb88` | Hephaestus 6th-ICP MASTER_REPORT v1.3 §8.3 (T-2d MET) | CROSS-WITNESS | ✅ REAL |
+| SHA         | Description                                                        | Type          | Verdict |
+| ----------- | ------------------------------------------------------------------ | ------------- | ------- |
+| `331572e87` | Themis COMPLIANCE_READINESS v0.5 ISO 27001:2022 Annex A            | SOURCE        | ✅ REAL |
+| `894e2826`  | Tyche RATIFICATION_GATE_PRECHECK_ANALYTICS v0.4 5th-ICP FINAL SEAL | CROSS-WITNESS | ✅ REAL |
+| `fef73bcd5` | Themis v0.4 base (preserved lines 1-903)                           | HISTORICAL    | ✅ REAL |
+| `0610e56f0` | Themis v0.3 (CASCADE + 42ad8bd3e ledger)                           | HISTORICAL    | ✅ REAL |
+| `1f353d08`  | Themis RATIFICATION_GATE_PRECHECK_COMPLIANCE v0.1 (9/11 pre-check) | HISTORICAL    | ✅ REAL |
+| `c8726c65d` | Artemis A11Y_READINESS v0.1 (A11Y ↔ COMPLIANCE cross-witness)      | CROSS-WITNESS | ✅ REAL |
+| `52717e81`  | Mnemosyne T-MN-048 v0.5 RATIFIED (A.8.29 Security testing)         | CROSS-WITNESS | ✅ REAL |
+| `16234860d` | Apollo RATIFICATION_GATE_RUNBOOK v0.1 (A.5.35 Internal audit)      | CROSS-WITNESS | ✅ REAL |
+| `e5b0dc3c`  | Calliope CASCADE-HOLD bundle (Tyche PICK C PARITY_GAP_CLOSURE)     | HISTORICAL    | ✅ REAL |
+| `0fea5f4d`  | Tyche CAVEMAN PERSIST ACK for PICK C                               | HISTORICAL    | ✅ REAL |
+| `9f05fb88`  | Hephaestus 6th-ICP MASTER_REPORT v1.3 §8.3 (T-2d MET)              | CROSS-WITNESS | ✅ REAL |
 
 **11/11 SHAs verified REAL** per RULE #53. 0 GHOST. 0 STALE per RULE #58 EXT-ADDENDUM.
 
@@ -244,9 +255,11 @@ The 5th-ICP SKEPTIC witness focuses on **A.8 Technological controls** (32/34 cov
 ## 9. DRI + Handoff
 
 **DRI chain:**
+
 - Tyche (this 5th-ICP SKEPTIC witness) → Themis (DRI for v0.5, 24h review window per standard SKEPTIC SLA) → Apollo (2nd-Muse RATIFICATION lead, PENDING v0.5 update) → Leader (RATIFICATION ceremony 2026-06-22 16:00 UTC) → Founder (final approval)
 
 **Next steps (per RULE #56):**
+
 - PICK F (standby): v0.6 amendment with F1 + F2 enhancements (15-30 min ETA) — IF Leader requests
 - PICK F-Alt 1: 5th-ICP SKEPTIC on Vesta SECTOR_ENGINE_AUDIT v0.7 @ a4ca277f (16/16 SECTOR_DIMENSION 12, 1413L)
 - PICK F-Alt 2: 5th-ICP SKEPTIC on MASTER_REPORT v1.3 §8.3 (Hephaestus 6th-ICP @ 9f05fb88, T-2d MET)

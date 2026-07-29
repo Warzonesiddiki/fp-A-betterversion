@@ -15,16 +15,16 @@
 
 This PICK delivers the 5 missing behavioral E2E spec files for the 8 critical user journeys defined in the v0.1 audit (`docs/parts/USER_JOURNEY_TEST_COVERAGE.md`):
 
-| # | User Journey | Status Before | Status After | Spec File |
-|---|--------------|---------------|--------------|-----------|
-| 1 | Onboarding | partial (12 tests in `onboarding-flow.spec.ts`) | partial+ | (existing) |
-| 2 | Budget Creation | partial (3 tests in `financial.spec.ts`) | partial+ | (existing) |
-| 3 | Forecast | partial | partial+ | (existing) |
-| 4 | **Scenario Modeling** | smoke only | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/scenario-modeling.spec.ts` |
-| 5 | **Report Generation** | no behavioral E2E | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/report-generation.spec.ts` |
-| 6 | **Consolidation** | no behavioral E2E | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/consolidation.spec.ts` |
-| 7 | **Dashboard** | no behavioral E2E | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/dashboard.spec.ts` |
-| 8 | **Export** | no behavioral E2E | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/export.spec.ts` |
+| #   | User Journey          | Status Before                                   | Status After           | Spec File                                                    |
+| --- | --------------------- | ----------------------------------------------- | ---------------------- | ------------------------------------------------------------ |
+| 1   | Onboarding            | partial (12 tests in `onboarding-flow.spec.ts`) | partial+               | (existing)                                                   |
+| 2   | Budget Creation       | partial (3 tests in `financial.spec.ts`)        | partial+               | (existing)                                                   |
+| 3   | Forecast              | partial                                         | partial+               | (existing)                                                   |
+| 4   | **Scenario Modeling** | smoke only                                      | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/scenario-modeling.spec.ts` |
+| 5   | **Report Generation** | no behavioral E2E                               | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/report-generation.spec.ts` |
+| 6   | **Consolidation**     | no behavioral E2E                               | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/consolidation.spec.ts`     |
+| 7   | **Dashboard**         | no behavioral E2E                               | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/dashboard.spec.ts`         |
+| 8   | **Export**            | no behavioral E2E                               | **5 new E2E tests** ✅ | `tests/e2e/critical-user-journeys/export.spec.ts`            |
 
 **Total new E2E tests**: 25 (CUJ-01 through CUJ-25)
 **Total new LOC**: 359 (5 spec files)
@@ -46,25 +46,25 @@ tests/e2e/critical-user-journeys/
 
 ### 1.2 Source mapping (D-002 2nd-witness: real DOM)
 
-| Spec | Source component(s) | data-testid/role |
-|------|--------------------|--------------------|
-| scenario-modeling | `src/components/scenarios/ScenarioComparison.tsx`, `DriverTreeView.tsx` | `getByLabel`, `getByRole('button', { name: /.../ })` |
-| report-generation | `src/components/reports/ReportBuilder.tsx`, `ReportTemplateLibrary.tsx` | `[data-testid="report-grid"]` |
-| consolidation | `src/pages/consolidation/ConsolidationDashboard.tsx` | form labels (name/code/currency/country/ownership) |
-| dashboard | `src/components/dashboard/KPICard.tsx`, `WidgetLibrary.tsx`, `ActivityFeed.tsx` | `[data-testid="kpi-card"]`, `[data-testid="activity-feed"]` |
-| export | `src/components/reports/ExportDialog.tsx` | `[data-testid="export-dialog"]` |
+| Spec              | Source component(s)                                                             | data-testid/role                                            |
+| ----------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| scenario-modeling | `src/components/scenarios/ScenarioComparison.tsx`, `DriverTreeView.tsx`         | `getByLabel`, `getByRole('button', { name: /.../ })`        |
+| report-generation | `src/components/reports/ReportBuilder.tsx`, `ReportTemplateLibrary.tsx`         | `[data-testid="report-grid"]`                               |
+| consolidation     | `src/pages/consolidation/ConsolidationDashboard.tsx`                            | form labels (name/code/currency/country/ownership)          |
+| dashboard         | `src/components/dashboard/KPICard.tsx`, `WidgetLibrary.tsx`, `ActivityFeed.tsx` | `[data-testid="kpi-card"]`, `[data-testid="activity-feed"]` |
+| export            | `src/components/reports/ExportDialog.tsx`                                       | `[data-testid="export-dialog"]`                             |
 
 ### 1.3 Route mapping (D-002 1st-witness: canonical step)
 
 All routes from `src/App.tsx:18-72`:
 
-| Spec | Route(s) |
-|------|----------|
-| scenario-modeling | `/scenarios`, `/scenarios/create`, `/scenarios/compare` |
-| report-generation | `/reports/designer`, `/reports/library`, `/reports/scheduler` |
-| consolidation | `/consolidation`, `/consolidation/ic-eliminations`, `/consolidation/ownership` |
-| dashboard | `/analytics/dashboard-builder`, `/collaboration/activity` |
-| export | `/reports/designer` → ExportDialog modal |
+| Spec              | Route(s)                                                                       |
+| ----------------- | ------------------------------------------------------------------------------ |
+| scenario-modeling | `/scenarios`, `/scenarios/create`, `/scenarios/compare`                        |
+| report-generation | `/reports/designer`, `/reports/library`, `/reports/scheduler`                  |
+| consolidation     | `/consolidation`, `/consolidation/ic-eliminations`, `/consolidation/ownership` |
+| dashboard         | `/analytics/dashboard-builder`, `/collaboration/activity`                      |
+| export            | `/reports/designer` → ExportDialog modal                                       |
 
 ---
 
@@ -88,12 +88,12 @@ Each test names the route it targets and uses `.catch(() => null)` for non-essen
 
 ## 4. E2E TEST COUNT EVOLUTION
 
-| Cycle | Total E2E tests | New tests | Coverage |
-|-------|-----------------|-----------|----------|
-| Pre-CYCLE 14 | 175 | — | 8 critical user journeys 3/8 P1 |
-| CYCLE 14 (PICK A.2) | 193 | +18 A11Y | (no change to 8) |
-| CYCLE 14 (PICK B v0.8) | 201 | +8 finance persona | (no change to 8) |
-| **CYCLE 14 (PICK C 8.0)** | **226** | **+25 CUJ-01..25** | **8/8 GREEN** ✅ |
+| Cycle                     | Total E2E tests | New tests          | Coverage                        |
+| ------------------------- | --------------- | ------------------ | ------------------------------- |
+| Pre-CYCLE 14              | 175             | —                  | 8 critical user journeys 3/8 P1 |
+| CYCLE 14 (PICK A.2)       | 193             | +18 A11Y           | (no change to 8)                |
+| CYCLE 14 (PICK B v0.8)    | 201             | +8 finance persona | (no change to 8)                |
+| **CYCLE 14 (PICK C 8.0)** | **226**         | **+25 CUJ-01..25** | **8/8 GREEN** ✅                |
 
 ---
 
@@ -107,12 +107,12 @@ The 10 AS-BUILT journeys in `tests/e2e/journeys/` (01-10) are different from the
 
 ## 6. 4-ICP VERDICT
 
-| ICP | Score | Rationale |
-|-----|-------|-----------|
-| **I** (Impact) | 8.5/10 | Closes G-014 from 3/8 P1 → 8/8 GREEN. High project value for RATIFICATION GATE. |
-| **S** (Safety) | 8.0/10 | Adds 25 new E2E tests in new spec directory; no risk to existing tests. |
-| **C** (Coherence) | 8.5/10 | Follows `01-import-data.spec.ts` pattern; uses same `signInAsCfo` helper; uses real data-testid from src/. |
-| **5-Muse** | 8.0/10 | Cross-pollination: Scenarios (PICK B v0.8), Reports (PICK A.1 A11Y), Consolidation (Hera PICK G), Dashboard (Apollo P0 fix), Export (ExportEngine). |
+| ICP               | Score  | Rationale                                                                                                                                           |
+| ----------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I** (Impact)    | 8.5/10 | Closes G-014 from 3/8 P1 → 8/8 GREEN. High project value for RATIFICATION GATE.                                                                     |
+| **S** (Safety)    | 8.0/10 | Adds 25 new E2E tests in new spec directory; no risk to existing tests.                                                                             |
+| **C** (Coherence) | 8.5/10 | Follows `01-import-data.spec.ts` pattern; uses same `signInAsCfo` helper; uses real data-testid from src/.                                          |
+| **5-Muse**        | 8.0/10 | Cross-pollination: Scenarios (PICK B v0.8), Reports (PICK A.1 A11Y), Consolidation (Hera PICK G), Dashboard (Apollo P0 fix), Export (ExportEngine). |
 
 **PLATINUM-ACCEPT** — 8.5/10 — G-014 closed.
 
@@ -120,12 +120,12 @@ The 10 AS-BUILT journeys in `tests/e2e/journeys/` (01-10) are different from the
 
 ## 7. RATIFICATION GATE 2026-06-22 16:00 UTC DISPOSITION
 
-| Gating requirement | Status |
-|--------------------|--------|
-| G-014 8/8 covered | ✅ GREEN (3/8 → 8/8) |
-| TS errors 0 | ✅ GREEN (37→0 Apollo P0) |
-| All 10 AS-BUILT journeys green | ✅ GREEN (per v0.7) |
-| 5th-ICP E2E/Tests coverage | ✅ GREEN (4-ICP + 5-ICP Strategos) |
+| Gating requirement             | Status                             |
+| ------------------------------ | ---------------------------------- |
+| G-014 8/8 covered              | ✅ GREEN (3/8 → 8/8)               |
+| TS errors 0                    | ✅ GREEN (37→0 Apollo P0)          |
+| All 10 AS-BUILT journeys green | ✅ GREEN (per v0.7)                |
+| 5th-ICP E2E/Tests coverage     | ✅ GREEN (4-ICP + 5-ICP Strategos) |
 
 **Ready for RATIFICATION GATE 2026-06-22 16:00 UTC** ✅
 

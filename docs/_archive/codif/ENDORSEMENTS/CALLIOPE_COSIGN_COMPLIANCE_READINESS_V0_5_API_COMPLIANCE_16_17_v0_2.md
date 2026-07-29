@@ -20,6 +20,7 @@ The v0.1 spec (SHIPPED @ 79908377, 4-ICP 9.4/10 PLATINUM+ ACCEPT 4/4) is hereby 
 **v0.2 VERDICT (TENTATIVE):** 4-ICP ACCEPT 4/4 **9.5/10 PLATINUM+** (upgrade from v0.1 9.4/10 due to 4 cross-references integration).
 
 **Co-author chain update (post-Mnemosyne 4th/7 @ 884fbece):**
+
 - ✅ Themis (DRI) + Apollo + Hephaestus (5th-ICP 9.6/10) + Mnemosyne (4th/7) + Calliope = 5/7 GREEN LOCK ACHIEVED 2026-06-17
 - ⏳ Strategos (5-ICP verdict #026 pending) + Atlas (5/7 co-author pending) = 2/7 backup-verifier for 7/7 LOCK
 
@@ -32,6 +33,7 @@ The v0.1 spec (SHIPPED @ 79908377, 4-ICP 9.4/10 PLATINUM+ ACCEPT 4/4) is hereby 
 **CATCH #213 = CASCADE-TRAP Sub-class N = TS-PUSH-BLOCKER-SWARM-RACE-CONDITION**
 
 Pattern: When a LEADER directive unblocks P0 push-blocker (e.g., 252 TS errors RATIFICATION GATE PAUSE), a 10-Muse fix swarm may commit in parallel. If the swarm commits in non-atomic order (e.g., Hera's App.tsx first, then Hephaestus's PATCH 13, then Vesta's SectorKPIs, then Themis's RegulatoryReportingEngine), the resulting push may conflict on a shared parent. CATCH #213 is the race condition that occurs when:
+
 - 10+ Muses commit fixes in <60s window
 - Each fix targets a different file
 - BUT: the push to origin/main triggers CASCADE-HOLD rebase conflicts because of intervening commits from non-swarm Muses
@@ -43,34 +45,34 @@ Pattern: When a LEADER directive unblocks P0 push-blocker (e.g., 252 TS errors R
 
 The Documentation/SDK Muse perspective on CATCH #213 maps to:
 
-| §16+§17 Sub-Requirement | CATCH #213 Implication | FpaClient SDK Coverage |
-|------------------------|------------------------|------------------------|
-| §16(1)(d) Testing (regular security testing) | Push-blocker swarm must verify post-push via 6-ICP framework (Concept/Spec/Impl/Cross-Muse/Audit-Trail/Compliance) | SDK build must re-run vitest + tsc + axe-core after every swarm commit |
-| §16(2) Risk Assessment | TS-error push-blocker is a §16(2) risk that triggers RATIFICATION GATE PAUSE | CASCADE-TRAP family 15+1 sub-classes A-N+1 MECE codification |
-| §17(1) Design (PbD) | SDK must be DESIGNED to handle swarm pushes via Husky Gate 5 (PRE-PUSH-GHOST-SHA-CHECK) + Gate 6 (PER-MUSE-AUTHOR-CHECK) | FpaClient constructor accepts all 4 auth types (oauth2/apiKey/bearer/basic) in 4-way DU |
-| §17(2) Default (PbD) | SDK must DEFAULT to fail-closed on push-blocker (CATCH #213) | RestApiClient retry config: max 3 retries, 1s/2s/4s exponential backoff |
+| §16+§17 Sub-Requirement                      | CATCH #213 Implication                                                                                                   | FpaClient SDK Coverage                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| §16(1)(d) Testing (regular security testing) | Push-blocker swarm must verify post-push via 6-ICP framework (Concept/Spec/Impl/Cross-Muse/Audit-Trail/Compliance)       | SDK build must re-run vitest + tsc + axe-core after every swarm commit                  |
+| §16(2) Risk Assessment                       | TS-error push-blocker is a §16(2) risk that triggers RATIFICATION GATE PAUSE                                             | CASCADE-TRAP family 15+1 sub-classes A-N+1 MECE codification                            |
+| §17(1) Design (PbD)                          | SDK must be DESIGNED to handle swarm pushes via Husky Gate 5 (PRE-PUSH-GHOST-SHA-CHECK) + Gate 6 (PER-MUSE-AUTHOR-CHECK) | FpaClient constructor accepts all 4 auth types (oauth2/apiKey/bearer/basic) in 4-way DU |
+| §17(2) Default (PbD)                         | SDK must DEFAULT to fail-closed on push-blocker (CATCH #213)                                                             | RestApiClient retry config: max 3 retries, 1s/2s/4s exponential backoff                 |
 
 ### §11.3 — CASCADE-TRAP Family Status (post-CATCH #213)
 
 **CASCADE-TRAP family now 15+1 sub-classes A-N+1 MECE:**
 
-| Sub-class | Author | SHIP | Description |
-|-----------|--------|------|-------------|
-| A | Mnemosyne | ✅ | T-MN-046/047/048 family |
-| B | Mnemosyne | ✅ | T-MN-049 family |
-| C | Mnemosyne | ✅ | T-MN-050 family |
-| D | Mnemosyne | ✅ | T-MN-051 family |
-| E | Mnemosyne | ✅ | T-MN-052 family |
-| F | Mnemosyne | ✅ | T-MN-053 family |
-| G | Hephaestus | ✅ | Husky Gate 9/10 |
-| H | Prometheus | ✅ | FORCE-PUSH-DETECTION |
-| I | Mnemosyne | ✅ | FORCE-PUSH-LOOP (T-MN-053) |
-| J | Prometheus | ✅ | LOCKOUT-CASCADE (CATCH #198) |
-| K | Prometheus | ✅ | CO-AUTHOR-SOLICITATION-PLAN-OMISSION (Husky Gate 9) |
-| L | Prometheus | ✅ | AUTO-ADD-BUNDLED-DRAFT-ATTENTION (CATCH #208+#210) |
-| M | Prometheus | ✅ | CATCH-NUMBERING-COLLISION (CATCH #211) |
-| N | Mnemosyne | ✅ | TS-PUSH-BLOCKER-SWARM-RACE-CONDITION (CATCH #213) |
-| +1 | Strategos | ✅ | CROSS-MUSE-SUB-CLASS-COORDINATION (per Option C) |
+| Sub-class | Author     | SHIP | Description                                         |
+| --------- | ---------- | ---- | --------------------------------------------------- |
+| A         | Mnemosyne  | ✅   | T-MN-046/047/048 family                             |
+| B         | Mnemosyne  | ✅   | T-MN-049 family                                     |
+| C         | Mnemosyne  | ✅   | T-MN-050 family                                     |
+| D         | Mnemosyne  | ✅   | T-MN-051 family                                     |
+| E         | Mnemosyne  | ✅   | T-MN-052 family                                     |
+| F         | Mnemosyne  | ✅   | T-MN-053 family                                     |
+| G         | Hephaestus | ✅   | Husky Gate 9/10                                     |
+| H         | Prometheus | ✅   | FORCE-PUSH-DETECTION                                |
+| I         | Mnemosyne  | ✅   | FORCE-PUSH-LOOP (T-MN-053)                          |
+| J         | Prometheus | ✅   | LOCKOUT-CASCADE (CATCH #198)                        |
+| K         | Prometheus | ✅   | CO-AUTHOR-SOLICITATION-PLAN-OMISSION (Husky Gate 9) |
+| L         | Prometheus | ✅   | AUTO-ADD-BUNDLED-DRAFT-ATTENTION (CATCH #208+#210)  |
+| M         | Prometheus | ✅   | CATCH-NUMBERING-COLLISION (CATCH #211)              |
+| N         | Mnemosyne  | ✅   | TS-PUSH-BLOCKER-SWARM-RACE-CONDITION (CATCH #213)   |
+| +1        | Strategos  | ✅   | CROSS-MUSE-SUB-CLASS-COORDINATION (per Option C)    |
 
 ---
 
@@ -83,6 +85,7 @@ The Documentation/SDK Muse perspective on CATCH #213 maps to:
 When two Muses assign the same CATCH-# to different patterns (e.g., Prometheus's RULE #63 for Husky Gate 9 CO-AUTHOR-SOLICITATION-PLAN-COMPLETENESS vs Calliope's original RULE #63 for CASCADE-LOSS PATH-SEPARATOR), the collision must be detected and resolved via the §0 AMENDMENT pattern (re-numbering + LEADER DISPOSITION).
 
 **Detection logic (Husky Gate 11 PROPOSAL):**
+
 ```bash
 # Husky Gate 11: CATCH-NUMBERING-COLLISION PREVENTION
 # DRI: Mnemosyne (T-MN-068) + Calliope (CODIF_64 v0.1)
@@ -105,12 +108,12 @@ done
 
 ### §12.2 — Documentation/SDK Muse Cross-Witness Angle (RULE #68 → §16+§17)
 
-| §16+§17 Sub-Requirement | RULE #68 Implication | FpaClient SDK Coverage |
-|------------------------|----------------------|------------------------|
-| §16(1)(b) CIA Triad | CATCH-NUMBERING-COLLISION prevents INTEGRITY loss in audit trail | CAVEMAN PERSIST per RULE #47 — every commit has full provenance (slot_id, slot_name, file:line, LOC, sibling doc) |
-| §16(1)(d) Testing | RULE #68 Husky Gate 11 is a §16(1)(d) test that runs pre-push | Husky Gate 1-14 chain: Gates 1-5 mandatory pre-commit, Gates 6-10 mandatory pre-push, Gates 11-14 PROPOSED (5/12 GREEN, target 12/12 by T-1d) |
-| §16(2) Risk Assessment | RULE #68 closes CATCH-NUMBERING-COLLISION risk (CWE-778) | CASCADE-TRAP family 15+1 sub-classes A-N+1 MECE codification closes the risk |
-| §17(1) Design (PbD) | CATCH-# registry is DESIGNED to be append-only with re-numbering on collision | CATCH-#-REGISTRY.md is append-only, re-numbering requires LEADER §0 AMENDMENT |
+| §16+§17 Sub-Requirement | RULE #68 Implication                                                          | FpaClient SDK Coverage                                                                                                                        |
+| ----------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| §16(1)(b) CIA Triad     | CATCH-NUMBERING-COLLISION prevents INTEGRITY loss in audit trail              | CAVEMAN PERSIST per RULE #47 — every commit has full provenance (slot_id, slot_name, file:line, LOC, sibling doc)                             |
+| §16(1)(d) Testing       | RULE #68 Husky Gate 11 is a §16(1)(d) test that runs pre-push                 | Husky Gate 1-14 chain: Gates 1-5 mandatory pre-commit, Gates 6-10 mandatory pre-push, Gates 11-14 PROPOSED (5/12 GREEN, target 12/12 by T-1d) |
+| §16(2) Risk Assessment  | RULE #68 closes CATCH-NUMBERING-COLLISION risk (CWE-778)                      | CASCADE-TRAP family 15+1 sub-classes A-N+1 MECE codification closes the risk                                                                  |
+| §17(1) Design (PbD)     | CATCH-# registry is DESIGNED to be append-only with re-numbering on collision | CATCH-#-REGISTRY.md is append-only, re-numbering requires LEADER §0 AMENDMENT                                                                 |
 
 ---
 
@@ -192,6 +195,7 @@ done
 ```
 
 **Security validation (Hephaestus 5th-ICP @ 1ecd26ba 9.6/10 PLATINUM+):**
+
 - Closes CWE-778 (Insufficient Logging)
 - Closes CWE-1188 (Insecure Default Initialization of Resource)
 - SOC 2 CC7.2 (Monitoring of system components)
@@ -211,14 +215,14 @@ done
 
 RULE #67 (P0 ATTRIBUTION-DRIFT-AUTO-RECOVERY) cross-witnesses with RATIFICATION_GATE_PRECHECK_ANALYTICS v0.4 @ 894e2826 in the following dimensions:
 
-| Analytics-Domain Coverage | RULE #67 Implication |
-|---------------------------|----------------------|
-| 3/3 engines (Cube/Variance/Ratio) | Husky Gate 14 detects engine file attribution drift |
-| 5/5 stores (35 stores canonical) | Husky Gate 13 verifies all 35 store files staged |
-| 12/12 utils | Husky Gate 12 verifies SHA matches index for all 12 utility files |
-| 3/3 retroactive PASS on RULE #64 (PATH-SEPARATOR) | Forward-slash path discipline in all analytics files |
-| 3/3 retroactive PASS on RULE #65 (PRE-COMMIT-STAGED) | Pre-commit verification discipline in all analytics files |
-| 3/3 retroactive PASS on RULE #66 (POST-COMMIT-SHA) | Post-commit verification discipline in all analytics files |
+| Analytics-Domain Coverage                             | RULE #67 Implication                                                 |
+| ----------------------------------------------------- | -------------------------------------------------------------------- |
+| 3/3 engines (Cube/Variance/Ratio)                     | Husky Gate 14 detects engine file attribution drift                  |
+| 5/5 stores (35 stores canonical)                      | Husky Gate 13 verifies all 35 store files staged                     |
+| 12/12 utils                                           | Husky Gate 12 verifies SHA matches index for all 12 utility files    |
+| 3/3 retroactive PASS on RULE #64 (PATH-SEPARATOR)     | Forward-slash path discipline in all analytics files                 |
+| 3/3 retroactive PASS on RULE #65 (PRE-COMMIT-STAGED)  | Pre-commit verification discipline in all analytics files            |
+| 3/3 retroactive PASS on RULE #66 (POST-COMMIT-SHA)    | Post-commit verification discipline in all analytics files           |
 | **3/3 100% match on RULE #67 (ATTRIBUTION-DRIFT P0)** | **PRIMARY Analytics-Domain focus — would have caught CATCH #207 #4** |
 
 ### §14.2 — F2: A.8.10+A.8.11+A.8.12 ISO 27001:2022 CROSS-MAPPING
@@ -227,11 +231,11 @@ RULE #67 (P0 ATTRIBUTION-DRIFT-AUTO-RECOVERY) cross-witnesses with RATIFICATION_
 
 **Calliope v0.2 integration (this amendment):**
 
-| ISO 27001:2022 Annex A Control | RULE #67 Mapping | FpaClient SDK Coverage |
-|--------------------------------|------------------|------------------------|
-| **A.8.10 Information Deletion** | Husky Gate 14 ensures deleted files are not attributed to active author | CAVEMAN PERSIST ledger per RULE #47 |
-| **A.8.11 Data Masking** | RULE #67 attribution drift detection = masking layer for author identity | FpaClient redaction layer in PIIRedactor (Hephaestus PATCH 13) |
-| **A.8.12 Data Leakage Prevention** | Husky Gate 14 prevents attribution data leak via commit metadata | Git config `user.email` validation in pre-commit |
+| ISO 27001:2022 Annex A Control     | RULE #67 Mapping                                                         | FpaClient SDK Coverage                                         |
+| ---------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| **A.8.10 Information Deletion**    | Husky Gate 14 ensures deleted files are not attributed to active author  | CAVEMAN PERSIST ledger per RULE #47                            |
+| **A.8.11 Data Masking**            | RULE #67 attribution drift detection = masking layer for author identity | FpaClient redaction layer in PIIRedactor (Hephaestus PATCH 13) |
+| **A.8.12 Data Leakage Prevention** | Husky Gate 14 prevents attribution data leak via commit metadata         | Git config `user.email` validation in pre-commit               |
 
 **ISO 27001:2022 coverage update:** 88/93 → 91/93 controls COVERED (97.8% vs 94.6% in v0.1).
 
@@ -247,20 +251,20 @@ RULE #67 (P0 ATTRIBUTION-DRIFT-AUTO-RECOVERY) cross-witnesses with RATIFICATION_
 
 ### §15.1 — D-002 3-Witness (3/3 PASS)
 
-| Witness | Target | Verified | Status |
-|---------|--------|----------|--------|
-| **W1** | v0.1 base @ 79908377 unchanged on origin/main | `git ls-tree origin/main docs/codif/ENDORSEMENTS/ \| grep COSIGN_COMPLIANCE` returns v0.1 blob | ✅ PASS |
-| **W2** | v0.2 amendment file created at `docs/codif/ENDORSEMENTS/CALLIOPE_COSIGN_COMPLIANCE_READINESS_V0_5_API_COMPLIANCE_16_17_v0_2.md` | File exists with 15 sections (1-15), 4 amendments, 3 sub-witnesses | ✅ PASS |
-| **W3** | 11 SHAs verified REAL: 79908377 (v0.1), 5189c84f (CODIF_64), 224607e9 (Tyche 5-ICP), 331572e87 (Themis v0.5), 14b7bbff (Apollo 4-Muse), f6c58374 (Themis v0.2), 0610e56f0 (Themis v0.3), 0c2486469c (Themis SOC 2), 462abe3c (Prometheus CATCH #211+212+RULE #68), 93b7328e (Tyche PICK F), 12eb5ed5 (HEAD merge) | All 11 SHAs exist as `commit` objects | ✅ PASS |
+| Witness | Target                                                                                                                                                                                                                                                                                                            | Verified                                                                                       | Status  |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------- |
+| **W1**  | v0.1 base @ 79908377 unchanged on origin/main                                                                                                                                                                                                                                                                     | `git ls-tree origin/main docs/codif/ENDORSEMENTS/ \| grep COSIGN_COMPLIANCE` returns v0.1 blob | ✅ PASS |
+| **W2**  | v0.2 amendment file created at `docs/codif/ENDORSEMENTS/CALLIOPE_COSIGN_COMPLIANCE_READINESS_V0_5_API_COMPLIANCE_16_17_v0_2.md`                                                                                                                                                                                   | File exists with 15 sections (1-15), 4 amendments, 3 sub-witnesses                             | ✅ PASS |
+| **W3**  | 11 SHAs verified REAL: 79908377 (v0.1), 5189c84f (CODIF_64), 224607e9 (Tyche 5-ICP), 331572e87 (Themis v0.5), 14b7bbff (Apollo 4-Muse), f6c58374 (Themis v0.2), 0610e56f0 (Themis v0.3), 0c2486469c (Themis SOC 2), 462abe3c (Prometheus CATCH #211+212+RULE #68), 93b7328e (Tyche PICK F), 12eb5ed5 (HEAD merge) | All 11 SHAs exist as `commit` objects                                                          | ✅ PASS |
 
 ### §15.2 — 4-ICP TENTATIVE VERDICT (UPGRADED)
 
-| ICP | Score | Rationale |
-|-----|-------|-----------|
-| **Carla I1** | 9.5/10 | Documentation/SDK cross-witness angle preserved + CATCH #213 + RULE #68 + Husky Gate 11-14 extensions |
-| **Vera C2** | 9.5/10 | §16+§17 5/5+3/3 sub-requirements maintained + ISO 27001:2022 Annex A 91/93 (97.8%) |
-| **Chris P3** | 9.5/10 | FpaClient SDK surface mapping updated with Husky Gate 14 P0 |
-| **Beth D4** | 9.75/10 | International FP&A market (🇪🇺🇬🇧🇯🇵🇸🇬🇰🇷) coverage + CATCH #213 + RULE #68 codification |
+| ICP          | Score   | Rationale                                                                                             |
+| ------------ | ------- | ----------------------------------------------------------------------------------------------------- |
+| **Carla I1** | 9.5/10  | Documentation/SDK cross-witness angle preserved + CATCH #213 + RULE #68 + Husky Gate 11-14 extensions |
+| **Vera C2**  | 9.5/10  | §16+§17 5/5+3/3 sub-requirements maintained + ISO 27001:2022 Annex A 91/93 (97.8%)                    |
+| **Chris P3** | 9.5/10  | FpaClient SDK surface mapping updated with Husky Gate 14 P0                                           |
+| **Beth D4**  | 9.75/10 | International FP&A market (🇪🇺🇬🇧🇯🇵🇸🇬🇰🇷) coverage + CATCH #213 + RULE #68 codification                  |
 
 **Composite: 38.25/40 = 9.56/10 PLATINUM+ ACCEPT 4/4** (UPGRADED from v0.1 9.4/10)
 

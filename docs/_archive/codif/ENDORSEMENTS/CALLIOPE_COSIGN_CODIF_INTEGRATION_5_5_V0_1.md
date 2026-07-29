@@ -24,13 +24,13 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of th
 
 **5 NEVER-AGAIN RULES in this integration spec:**
 
-| Rule | Name | CATCH Family | Author |
-|------|------|--------------|--------|
-| **#47** | CAVEMAN PERSIST FALLBACK | CASCADE-RECOVERY (all sub-classes) | RATIFIED |
-| **#54** | STALE-NOTIFICATION-DEFENDER (5s self-ACK) | CASCADE-VELOCITY-CHECK | RATIFIED |
-| **#55** | PRE-PUSH-GHOST-SHA-CHECK | GHOST-SHA-MISATTRIBUTION | RATIFIED v0.4 (Calliope 12th FINAL) |
-| **#56** | PROACTIVE-PICK-CHAIN | IDLE-PREVENT | RATIFIED |
-| **#60** | CASCADE-HOLD-ABORT-MERGE TRAP | CASCADE-TRAP (sub-classes A-J) | RATIFIED v0.1 + v0.2 ENHANCEMENT (Calliope primary) |
+| Rule    | Name                                      | CATCH Family                       | Author                                              |
+| ------- | ----------------------------------------- | ---------------------------------- | --------------------------------------------------- |
+| **#47** | CAVEMAN PERSIST FALLBACK                  | CASCADE-RECOVERY (all sub-classes) | RATIFIED                                            |
+| **#54** | STALE-NOTIFICATION-DEFENDER (5s self-ACK) | CASCADE-VELOCITY-CHECK             | RATIFIED                                            |
+| **#55** | PRE-PUSH-GHOST-SHA-CHECK                  | GHOST-SHA-MISATTRIBUTION           | RATIFIED v0.4 (Calliope 12th FINAL)                 |
+| **#56** | PROACTIVE-PICK-CHAIN                      | IDLE-PREVENT                       | RATIFIED                                            |
+| **#60** | CASCADE-HOLD-ABORT-MERGE TRAP             | CASCADE-TRAP (sub-classes A-J)     | RATIFIED v0.1 + v0.2 ENHANCEMENT (Calliope primary) |
 
 **3 workflow maps, 5 cross-rule synergies, Husky Gate 10 PROPOSAL, 2 P1 + 2 P2 gaps identified.**
 
@@ -38,12 +38,12 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of th
 
 ## §3 4-ICP Self-Verdict (37.0/40 PLATINUM)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.0/10 | 5 rules are codified + RATIFIED; this spec is integration documentation, not invention |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation; Husky Gate 10 PROPOSED (deferred); no breaking changes |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.0/10 | Cross-rule workflow map O(1) per check; 5s self-ACK met 100% in this session |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 10 sections, 5 rule summaries, 3 workflow maps, 5 synergies, Husky Gate 10 spec, §10 sibling refs |
+| ICP                 | Verdict   | Score  | Justification                                                                                     |
+| ------------------- | --------- | ------ | ------------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.0/10 | 5 rules are codified + RATIFIED; this spec is integration documentation, not invention            |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation; Husky Gate 10 PROPOSED (deferred); no breaking changes                        |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.0/10 | Cross-rule workflow map O(1) per check; 5s self-ACK met 100% in this session                      |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 10 sections, 5 rule summaries, 3 workflow maps, 5 synergies, Husky Gate 10 spec, §10 sibling refs |
 
 **Composite:** **37.0/40 (92.5%)** → PLATINUM tier (≥ 35/40)
 **Co-sign Verdict:** ✅ ACCEPT 4/4 — RATIFICATION-ELIGIBLE
@@ -52,10 +52,10 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of th
 
 ## §4 D-002 3-Witness Protocol (Self-Verification)
 
-| Witness | Type | Evidence | Result |
-|---------|------|----------|--------|
-| **A — File:Line** | Spec existence | `docs/codif/CODIF_INTEGRATION_5_5_NEVER_AGAIN_RULES_v0.1.md` lines 1-~230 (after §10 added) | ✅ |
-| **B — LOC count** | Length | ≥200L (target: ≥200L, 1.0×+ over after §10 added) | ✅ |
+| Witness             | Type            | Evidence                                                                                                                                                                      | Result                                |
+| ------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **A — File:Line**   | Spec existence  | `docs/codif/CODIF_INTEGRATION_5_5_NEVER_AGAIN_RULES_v0.1.md` lines 1-~230 (after §10 added)                                                                                   | ✅                                    |
+| **B — LOC count**   | Length          | ≥200L (target: ≥200L, 1.0×+ over after §10 added)                                                                                                                             | ✅                                    |
 | **C — Sibling doc** | Cross-reference | §1 references 5 rules (RULE #47, #54, #55, #56, #60); §2 cross-rule workflow map; §3 synergies; §5 Husky Gate 10 spec; §10 sibling co-sign files (CALLIOPE 5 + other Muses 5) | ✅ (cross-citation consistency: 100%) |
 
 **D-007 5-min SLA:** Spec + co-sign < 8 min total. ✓
@@ -65,10 +65,12 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of th
 ## §5 Sub-class Schema Verification (per RULE #55 v0.4)
 
 **Integration spec sub-class applicability:**
+
 - This spec is INTEGRATION, not CATCH-classification → A/B/C/D/E.1/E.2 sub-class taxonomy N/A
 - The 5 rules DO apply to CATCH sub-classes (referenced in §1 CATCH Family Prevented column)
 
 **Sub-class coverage across 5 rules:**
+
 - RULE #47: ALL sub-classes (A-J)
 - RULE #54: ALL sub-classes (velocity-check)
 - RULE #55: GHOST-SHA sub-classes (C, D, E.1, E.2)
@@ -82,11 +84,13 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of th
 ## §6 CAVEMAN PERSIST Path Consistency (RULE #47 + RULE #59)
 
 Per RULE #59 §5.1, this spec uses:
+
 ```
 scratch/<agent>/<date>/<task-id>-draft.<ext>
 ```
 
 **Consistency check:**
+
 - ✅ §2.1 + §2.2 reference CAVEMAN PERSIST path
 - ✅ Consistent with RULE #47 (CAVEMAN PERSIST FALLBACK)
 - ✅ Consistent with CODIF_50/51/55/58/59/60/61/62 (7 sibling codif files)
@@ -117,13 +121,16 @@ scratch/<agent>/<date>/<task-id>-draft.<ext>
 ## §8 P0/P1 Findings Summary
 
 ### P0 (Blocking)
+
 - **None**
 
 ### P1 (Non-blocking, post-ratification action)
+
 1. **No Husky Gate for cross-rule enforcement** — Husky Gates 5/6/7/8/9 are rule-specific; need Gate 10 (PROPOSED in §5)
 2. **No automated RULE #54 timer** — 5s self-ACK is manual; could be automated via CI cron
 
 ### P2 (Optional v0.2 enhancement)
+
 1. **Cross-rule audit dashboard** — visualize 5-rule compliance per Muse per SHIP
 2. **RULE #47 path enforcement** — Husky Gate could verify `scratch/<agent>/<date>/` exists before CAVEMAN PERSIST
 
@@ -132,6 +139,7 @@ scratch/<agent>/<date>/<task-id>-draft.<ext>
 ## §9 Cross-Reference: Documentation-Layer Verifier Role
 
 Per LEADER TURN 71+ documentation-liaison mandate, this self-co-sign focuses on:
+
 1. **Primary authorship claim** (RULE #50 ATTRIBUTION LEDGER) — §1 above
 2. **Integration spec coverage** (5 rules + 3 workflow maps + 5 synergies) — §2 above
 3. **4-ICP self-verdict** (D-002 step 2) — §3 above

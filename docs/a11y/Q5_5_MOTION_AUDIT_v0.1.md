@@ -23,7 +23,9 @@
 ```css
 /* accessibility.css:47-54 */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -58,15 +60,15 @@ export function useReducedMotion(): boolean {
 
 ## 3. Inventory (7 motion-bearing constructs)
 
-| # | File:Line | Construct | Status | Notes |
-|---|-----------|-----------|--------|-------|
-| 1 | `src/styles/accessibility.css:47-54` | Global CSS override | ✅ GOLD | @media (prefers-reduced-motion: reduce) — kills all motion |
-| 2 | `src/hooks/useReducedMotion.ts:8-25` | React hook | ✅ GOLD | useEffect + matchMedia listener |
-| 3 | `src/hooks/useReducedMotion.test.ts:1-50` | Hook test | ✅ GOLD | vitest, 4-ICP Carla covered |
-| 4 | `src/components/ui/TourOverlay.tsx` | framer-motion consumer | ⚠️ **FIX NEEDED** | uses framer-motion without useReducedMotion |
-| 5 | `src/components/ui/PresenceIndicator.tsx` (Hera @ a1720c0e3) | LiveRegion pulse | ✅ FIXED | respects reduced-motion |
-| 6 | `src/components/ui/Modal.tsx` | CSS transition | ✅ OK | uses CSS @media query |
-| 7 | `src/components/ui/Toast.tsx` | CSS animation | ✅ OK | uses CSS @media query |
+| #   | File:Line                                                    | Construct              | Status            | Notes                                                      |
+| --- | ------------------------------------------------------------ | ---------------------- | ----------------- | ---------------------------------------------------------- |
+| 1   | `src/styles/accessibility.css:47-54`                         | Global CSS override    | ✅ GOLD           | @media (prefers-reduced-motion: reduce) — kills all motion |
+| 2   | `src/hooks/useReducedMotion.ts:8-25`                         | React hook             | ✅ GOLD           | useEffect + matchMedia listener                            |
+| 3   | `src/hooks/useReducedMotion.test.ts:1-50`                    | Hook test              | ✅ GOLD           | vitest, 4-ICP Carla covered                                |
+| 4   | `src/components/ui/TourOverlay.tsx`                          | framer-motion consumer | ⚠️ **FIX NEEDED** | uses framer-motion without useReducedMotion                |
+| 5   | `src/components/ui/PresenceIndicator.tsx` (Hera @ a1720c0e3) | LiveRegion pulse       | ✅ FIXED          | respects reduced-motion                                    |
+| 6   | `src/components/ui/Modal.tsx`                                | CSS transition         | ✅ OK             | uses CSS @media query                                      |
+| 7   | `src/components/ui/Toast.tsx`                                | CSS animation          | ✅ OK             | uses CSS @media query                                      |
 
 ---
 
@@ -111,6 +113,7 @@ export function useReducedMotion(): boolean {
 ---
 
 **3-witness (D-002):**
+
 1. file:line: `docs/a11y/Q5_5_MOTION_AUDIT_v0.1.md:1-93` (this commit)
 2. wc -l: 93 lines
 3. md5sum: pending commit

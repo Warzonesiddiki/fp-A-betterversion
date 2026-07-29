@@ -16,18 +16,18 @@ This document specifies the **Onboarding Step 3 consent capture** requirement fo
 
 **Regulatory mappings:**
 
-| Regulation | Article / Section | Requirement satisfied by this doc |
-|------------|-------------------|-----------------------------------|
-| GDPR | Art. 6(1)(a) lawful basis — consent | Explicit, freely-given, specific, informed, unambiguous consent capture at first-run |
-| GDPR | Art. 7(1) — conditions for consent | Demonstrable controller proof of consent (timestamp, version, scope, IP/UA) |
-| GDPR | Art. 7(2) — explicit consent | Affirmative action required (no pre-ticked boxes, no implied consent) |
-| GDPR | Art. 7(3) — right to withdraw | One-click withdrawal mechanism exposed in Settings > Privacy |
-| GDPR | Art. 8 — child's consent (N/A for B2B) | Out of scope; FinPlan Pro is B2B |
-| GDPR | Art. 13 — information to be provided | Privacy notice linked at capture moment |
-| ePrivacy | Recital 17 / Art. 5(3) | No cookie wall needed (offline-first desktop, no analytics without consent) |
-| CCPA / CPRA | §1798.135 "Do Not Sell" | Out of scope (no third-party data sale in MVP) |
-| SOC 2 | CC2.1 — information & communication | Consent evidence retained per record-retention policy |
-| ISO 27001:2022 | A.5.34 PII and privacy | Consent register maintained; minimum-necessary data principle |
+| Regulation     | Article / Section                      | Requirement satisfied by this doc                                                    |
+| -------------- | -------------------------------------- | ------------------------------------------------------------------------------------ |
+| GDPR           | Art. 6(1)(a) lawful basis — consent    | Explicit, freely-given, specific, informed, unambiguous consent capture at first-run |
+| GDPR           | Art. 7(1) — conditions for consent     | Demonstrable controller proof of consent (timestamp, version, scope, IP/UA)          |
+| GDPR           | Art. 7(2) — explicit consent           | Affirmative action required (no pre-ticked boxes, no implied consent)                |
+| GDPR           | Art. 7(3) — right to withdraw          | One-click withdrawal mechanism exposed in Settings > Privacy                         |
+| GDPR           | Art. 8 — child's consent (N/A for B2B) | Out of scope; FinPlan Pro is B2B                                                     |
+| GDPR           | Art. 13 — information to be provided   | Privacy notice linked at capture moment                                              |
+| ePrivacy       | Recital 17 / Art. 5(3)                 | No cookie wall needed (offline-first desktop, no analytics without consent)          |
+| CCPA / CPRA    | §1798.135 "Do Not Sell"                | Out of scope (no third-party data sale in MVP)                                       |
+| SOC 2          | CC2.1 — information & communication    | Consent evidence retained per record-retention policy                                |
+| ISO 27001:2022 | A.5.34 PII and privacy                 | Consent register maintained; minimum-necessary data principle                        |
 
 **Source-of-truth:** T-3.33 audit findings (`docs/CAVEMAN_PERSIST/CYCLE_25_TURN_393_PLUS_POLYHYMNIA_*` — see ch1 memory), Strategos ADR-007 (consent management).
 
@@ -36,6 +36,7 @@ This document specifies the **Onboarding Step 3 consent capture** requirement fo
 ## 2. Problem Statement (CRITICAL — €20M fine risk)
 
 **GAP P0A-09:** The current onboarding wizard (3 steps) does **NOT** capture affirmative consent for:
+
 - (a) storage of business financial data on local-device encrypted store
 - (b) processing of business contacts (if multi-currency feature wires address book)
 - (c) audit-log retention beyond the 90-day default
@@ -51,12 +52,12 @@ Without explicit consent capture at first run, FinPlan Pro has **no GDPR Art. 6(
 
 ### 3.1 Onboarding wizard — revised 4-step structure
 
-| Step | Title | Purpose | Output to store |
-|------|-------|---------|-----------------|
-| 1 | Welcome | Product intro, value props, branding | `onboarding.step1.viewedAt` |
-| 2 | Workspace setup | Org name, fiscal year start, base currency | `workspace.*` |
-| 3 | **Consent & Privacy** | **THIS DOC — capture affirmative consent** | `consentRegistry.onboardingConsent` |
-| 4 | Done | Confirmation, link to dashboard | `onboarding.completedAt` |
+| Step | Title                 | Purpose                                    | Output to store                     |
+| ---- | --------------------- | ------------------------------------------ | ----------------------------------- |
+| 1    | Welcome               | Product intro, value props, branding       | `onboarding.step1.viewedAt`         |
+| 2    | Workspace setup       | Org name, fiscal year start, base currency | `workspace.*`                       |
+| 3    | **Consent & Privacy** | **THIS DOC — capture affirmative consent** | `consentRegistry.onboardingConsent` |
+| 4    | Done                  | Confirmation, link to dashboard            | `onboarding.completedAt`            |
 
 ### 3.2 Step 3 wireframe (text mode)
 
@@ -99,6 +100,7 @@ Without explicit consent capture at first run, FinPlan Pro has **no GDPR Art. 6(
 ### 3.4 Withdrawal flow (GDPR Art. 7(3))
 
 Settings > Privacy > Consent Management must expose:
+
 - View all captured consents (timestamp, version, scope)
 - One-click revoke per consent scope
 - Confirmation: "Withdrawing consent will [describe consequence, e.g., 'disable extended audit retention and delete logs older than 90 days']"
@@ -113,25 +115,24 @@ Settings > Privacy > Consent Management must expose:
 ```typescript
 // src/types/consent.ts
 export type ConsentScope =
-  | 'onboarding_consent'              // P0A-09 — GDPR Art. 6(1)(a) lawful basis
-  | 'crash_reports'                   // Optional, GDPR Art. 6(1)(a)
-  | 'audit_log_extended_retention'    // Optional, GDPR Art. 6(1)(a) + SOC 2 CC7.2
-  | 'address_book_processing'         // P0A-16 pseudonymization scope
-  | 'currency_exchange_rate_cache'    // Optional, legitimate interest
-  | 'dsar_data_export'                // P0A-17 — GDPR Art. 15 DSAR wire
-;
+  | 'onboarding_consent' // P0A-09 — GDPR Art. 6(1)(a) lawful basis
+  | 'crash_reports' // Optional, GDPR Art. 6(1)(a)
+  | 'audit_log_extended_retention' // Optional, GDPR Art. 6(1)(a) + SOC 2 CC7.2
+  | 'address_book_processing' // P0A-16 pseudonymization scope
+  | 'currency_exchange_rate_cache' // Optional, legitimate interest
+  | 'dsar_data_export'; // P0A-17 — GDPR Art. 15 DSAR wire
 
 export type ConsentRecord = {
-  id: string;                          // ULID
+  id: string; // ULID
   userId: string;
   scope: ConsentScope;
   granted: boolean;
-  grantedAt: string;                   // ISO 8601 UTC
-  revokedAt?: string;                  // ISO 8601 UTC
-  version: string;                     // Privacy notice version, e.g., '1.4.0'
-  ipAddress?: string;                  // Optional — only if online; offline = undefined
-  userAgent?: string;                  // Optional — only if online
-  evidenceArtifactHash?: string;       // SHA-256 of rendered notice HTML at capture moment
+  grantedAt: string; // ISO 8601 UTC
+  revokedAt?: string; // ISO 8601 UTC
+  version: string; // Privacy notice version, e.g., '1.4.0'
+  ipAddress?: string; // Optional — only if online; offline = undefined
+  userAgent?: string; // Optional — only if online
+  evidenceArtifactHash?: string; // SHA-256 of rendered notice HTML at capture moment
   withdrawalMethod?: 'settings_ui' | 'dsar_request' | 'admin_action';
 };
 
@@ -168,7 +169,11 @@ export const useConsentStore = create<ConsentState>()(
   subscribeWithSelector(
     persist(
       immer((set, get) => ({
-        registry: { records: [], privacyNoticeVersion: '1.4.0', lastUpdated: new Date().toISOString() },
+        registry: {
+          records: [],
+          privacyNoticeVersion: '1.4.0',
+          lastUpdated: new Date().toISOString(),
+        },
         capture: (input) => {
           const record: ConsentRecord = {
             id: ulid(),
@@ -197,8 +202,8 @@ export const useConsentStore = create<ConsentState>()(
           });
         },
         hasActiveConsent: (scope) => {
-          const r = get().registry.records
-            .filter((r) => r.scope === scope)
+          const r = get()
+            .registry.records.filter((r) => r.scope === scope)
             .sort((a, b) => b.grantedAt.localeCompare(a.grantedAt))[0];
           return !!r && r.granted && !r.revokedAt;
         },
@@ -227,7 +232,11 @@ const handleAgree = () => {
     consentStore.capture({ scope: 'crash_reports', granted: true, privacyNoticeVersion: '1.4.0' });
   }
   if (extendedRetentionChecked) {
-    consentStore.capture({ scope: 'audit_log_extended_retention', granted: true, privacyNoticeVersion: '1.4.0' });
+    consentStore.capture({
+      scope: 'audit_log_extended_retention',
+      granted: true,
+      privacyNoticeVersion: '1.4.0',
+    });
   }
   router.push('/onboarding/step4');
 };
@@ -243,14 +252,14 @@ The consentRegistry must be exportable as part of the GDPR Art. 15 DSAR (Data Su
 
 Per **P0A-14 Undo/Redo audit-logging spec** (`docs/security/UNDO-REDO-AUDIT-LOGGING.md`), every consent capture, withdrawal, and update action must emit an audit-log entry with:
 
-| Field | Type | Example |
-|-------|------|---------|
-| timestamp | ISO 8601 UTC | `2026-06-18T22:14:33.117Z` |
-| actor | user ID | `user_019eda5a` |
-| action | enum | `consent.capture` / `consent.revoke` / `consent.update` |
-| scope | ConsentScope | `onboarding_consent` |
-| outcome | enum | `success` / `denied` / `error` |
-| evidenceHash | SHA-256 (hex) | `9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08` |
+| Field             | Type          | Example                                                            |
+| ----------------- | ------------- | ------------------------------------------------------------------ |
+| timestamp         | ISO 8601 UTC  | `2026-06-18T22:14:33.117Z`                                         |
+| actor             | user ID       | `user_019eda5a`                                                    |
+| action            | enum          | `consent.capture` / `consent.revoke` / `consent.update`            |
+| scope             | ConsentScope  | `onboarding_consent`                                               |
+| outcome           | enum          | `success` / `denied` / `error`                                     |
+| evidenceHash      | SHA-256 (hex) | `9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08` |
 | previousStateHash | SHA-256 (hex) | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
 
 Audit-log retention: **90 days default; 365 days if user opted into `audit_log_extended_retention`**.
@@ -259,18 +268,18 @@ Audit-log retention: **90 days default; 365 days if user opted into `audit_log_e
 
 ## 6. Acceptance Criteria
 
-| # | Criterion | Verification |
-|---|-----------|--------------|
-| AC-1 | Onboarding wizard has 4 steps (was 3); consent capture is Step 3 | E2E test: Playwright `tests/e2e/onboarding-consent.spec.ts` |
-| AC-2 | No pre-ticked checkboxes; "I Agree & Continue" disabled until Privacy Notice ticked | Component test: `<Step3Consent>` checkbox state |
-| AC-3 | On "I Agree & Continue", `consentRegistry.capture('onboarding_consent', granted=true)` called | Store test: `consentStore.test.ts` |
-| AC-4 | Privacy Notice version (1.4.0) recorded in `ConsentRecord.version` | Store test |
-| AC-5 | Evidence artifact SHA-256 hash recorded | Store test |
-| AC-6 | Settings > Privacy exposes consent view + one-click revoke | E2E test |
-| AC-7 | Every consent action emits audit-log entry | Audit log test |
-| AC-8 | DSAR export includes all `ConsentRecord` entries | DSAR test (see `04-DSAR-WIRE.md`) |
-| AC-9 | Withdrawal confirmation dialog describes consequences | Component test |
-| AC-10 | Optional consents (crash reports, extended retention) independent | Component test |
+| #     | Criterion                                                                                     | Verification                                                |
+| ----- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| AC-1  | Onboarding wizard has 4 steps (was 3); consent capture is Step 3                              | E2E test: Playwright `tests/e2e/onboarding-consent.spec.ts` |
+| AC-2  | No pre-ticked checkboxes; "I Agree & Continue" disabled until Privacy Notice ticked           | Component test: `<Step3Consent>` checkbox state             |
+| AC-3  | On "I Agree & Continue", `consentRegistry.capture('onboarding_consent', granted=true)` called | Store test: `consentStore.test.ts`                          |
+| AC-4  | Privacy Notice version (1.4.0) recorded in `ConsentRecord.version`                            | Store test                                                  |
+| AC-5  | Evidence artifact SHA-256 hash recorded                                                       | Store test                                                  |
+| AC-6  | Settings > Privacy exposes consent view + one-click revoke                                    | E2E test                                                    |
+| AC-7  | Every consent action emits audit-log entry                                                    | Audit log test                                              |
+| AC-8  | DSAR export includes all `ConsentRecord` entries                                              | DSAR test (see `04-DSAR-WIRE.md`)                           |
+| AC-9  | Withdrawal confirmation dialog describes consequences                                         | Component test                                              |
+| AC-10 | Optional consents (crash reports, extended retention) independent                             | Component test                                              |
 
 ---
 
@@ -301,10 +310,10 @@ Audit-log retention: **90 days default; 365 days if user opted into `audit_log_e
 
 This document uses a **NARROW technical mapping** focused on the primary GDPR Article directly governing consent capture. The Strategos **H3 ROADMAP v0.2 compliance consolidation lens** uses BROADER mapping that captures additional Articles across the same P0A feature.
 
-| Lens | Primary Article(s) | Rationale |
-|------|-------------------|-----------|
-| **Narrow (this doc)** | **Art. 6(1)(a) consent** + Art. 7(1)(2)(3) demonstrability + Art. 13 information | Direct law-basis + consent mechanics + transparency at capture point |
-| **Broad (Strategos)** | **Art. 6(1)(b) contract** OR **Art. 7 consent** (both valid) | H3 compliance consolidation: contract-necessary processing ALSO applies when consent withdrawal triggers service degradation (Art. 6(1)(b) necessity for contract performance is an alternative law basis to fall back on) |
+| Lens                  | Primary Article(s)                                                               | Rationale                                                                                                                                                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Narrow (this doc)** | **Art. 6(1)(a) consent** + Art. 7(1)(2)(3) demonstrability + Art. 13 information | Direct law-basis + consent mechanics + transparency at capture point                                                                                                                                                       |
+| **Broad (Strategos)** | **Art. 6(1)(b) contract** OR **Art. 7 consent** (both valid)                     | H3 compliance consolidation: contract-necessary processing ALSO applies when consent withdrawal triggers service degradation (Art. 6(1)(b) necessity for contract performance is an alternative law basis to fall back on) |
 
 **BOTH MAPPINGS ARE TECHNICALLY CORRECT** — they are different analytical lenses, not contradictions. Per Strategos 45th cadence, the H3 ROADMAP v0.2 view is preferred for H1 P0-A SHIP 2026-06-30 because it positions FinPlan Pro for enterprise customers who require BOTH consent-based (Art. 6(1)(a) for marketing/analytics) AND contract-necessary (Art. 6(1)(b) for core FP&A functionality) law-basis documentation.
 
@@ -314,10 +323,10 @@ This document uses a **NARROW technical mapping** focused on the primary GDPR Ar
 
 ## 9. Change Log
 
-| Version | Date | Author | Change |
-|---------|------|--------|--------|
-| v0.1 | 2026-06-18 | Polyhymnia | Initial SPEC; awaiting Apollo+Hades implementation |
-| v0.1.1 | 2026-06-18 | Polyhymnia | D-007 12th SHL: Added MAPPING ADDENDUM §8b (narrow vs broad) per Strategos 45th cadence |
+| Version | Date       | Author     | Change                                                                                  |
+| ------- | ---------- | ---------- | --------------------------------------------------------------------------------------- |
+| v0.1    | 2026-06-18 | Polyhymnia | Initial SPEC; awaiting Apollo+Hades implementation                                      |
+| v0.1.1  | 2026-06-18 | Polyhymnia | D-007 12th SHL: Added MAPPING ADDENDUM §8b (narrow vs broad) per Strategos 45th cadence |
 
 ---
 

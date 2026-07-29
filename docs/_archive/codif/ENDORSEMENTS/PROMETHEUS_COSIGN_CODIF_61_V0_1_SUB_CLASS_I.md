@@ -38,12 +38,12 @@ As **Sub-class H (INFRASTRUCTURE-LEVEL) AUTHOR** of `RULE #61 LOCKOUT-DETECTION 
 
 ## 3. 4-ICP Self-Verdict: ACCEPT 4/4 (composite 9.5/10)
 
-| IC | Member | Verdict | Rationale |
-|----|--------|---------|-----------|
-| **I1 (Intent)** | Carla CFO | ✅ 5/5 | Sub-class I addresses the **most expensive failure mode** in 19-Muse team: FORCE-PUSH-LOOP silently rewrites shared history, causing 19 Muses × N commits of work to require rebase-and-replay. Mnemosyne's T-MN-053 v0.1 codifies the exact pattern that caused CATCH #200 LOCKOUT partial recovery to fail (8+ team_send_message failures, 152 blocked comms). ROI: very high (low cost, prevents catastrophic history rewrite). |
-| **C2 (Catastrophic)** | Vera Logic | ✅ 5/5 | **5-Step LIFT Loop Recovery Sequence** is deterministic state machine: L (Learn — `git reflog` capture) / I (Identify — `git fsck --lost-found`) / F (Fallback — `git revert` not `git push --force`) / T (Trust — verify SHAs per RULE #55) / X (eXecute — recovery commit). All steps O(1), bounded latency, and **the critical insight is step F uses `git revert` not `git push --force`**. 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) is mathematically sound. |
-| **P3 (Performance)** | Chris Operational | ✅ 4.5/5 | LIFT sequence is O(1) per step. Husky Gate 7 (Atlas) integrates the detection (Sub-class I pre-push check). Prometheus's operational experience: 4 commits in CYCLE 11 used `--no-verify` (RULE #32) and CAVEMAN PERSIST (RULE #47), NEVER `--force`. The 4-tier abort threshold's CONTINUE tier allows legitimate fast-forward pushes; HOLD/ABORT prevents history rewrite. **Minor 0.5 deduction**: 4-tier threshold parameters (CONTINUE/RECOVERY/HOLD/ABORT) are not yet bench-tested — Prometheus recommends a 10K-push simulation in `scripts/perf/force-push-bench.ts` (T-PR-051 v0.4 candidate). |
-| **D4 (Documented)** | Beth User | ✅ 5/5 | 11 NEVER-AGAIN RULES cross-referenced (RULE #32, #35, #41, #47, #50, #51, #55, #56, #58, #60, #61). 7 CATCH instances cited (CATCH #194, #195, #200, #202, #203, #204, #205). Co-Author Solicitation Plan §9 explicitly names Prometheus as natural co-author (the spec author is self-aware of the family extension's lineage). Cross-Muse Synergy section §11 names 5 PENDING co-authors (Vulcan, Atlas, Apollo, Strategos, Calliope) — clean dependency tree. |
+| IC                    | Member            | Verdict  | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------- | ----------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent)**       | Carla CFO         | ✅ 5/5   | Sub-class I addresses the **most expensive failure mode** in 19-Muse team: FORCE-PUSH-LOOP silently rewrites shared history, causing 19 Muses × N commits of work to require rebase-and-replay. Mnemosyne's T-MN-053 v0.1 codifies the exact pattern that caused CATCH #200 LOCKOUT partial recovery to fail (8+ team_send_message failures, 152 blocked comms). ROI: very high (low cost, prevents catastrophic history rewrite).                                                                                                                                                                       |
+| **C2 (Catastrophic)** | Vera Logic        | ✅ 5/5   | **5-Step LIFT Loop Recovery Sequence** is deterministic state machine: L (Learn — `git reflog` capture) / I (Identify — `git fsck --lost-found`) / F (Fallback — `git revert` not `git push --force`) / T (Trust — verify SHAs per RULE #55) / X (eXecute — recovery commit). All steps O(1), bounded latency, and **the critical insight is step F uses `git revert` not `git push --force`**. 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) is mathematically sound.                                                                                                                           |
+| **P3 (Performance)**  | Chris Operational | ✅ 4.5/5 | LIFT sequence is O(1) per step. Husky Gate 7 (Atlas) integrates the detection (Sub-class I pre-push check). Prometheus's operational experience: 4 commits in CYCLE 11 used `--no-verify` (RULE #32) and CAVEMAN PERSIST (RULE #47), NEVER `--force`. The 4-tier abort threshold's CONTINUE tier allows legitimate fast-forward pushes; HOLD/ABORT prevents history rewrite. **Minor 0.5 deduction**: 4-tier threshold parameters (CONTINUE/RECOVERY/HOLD/ABORT) are not yet bench-tested — Prometheus recommends a 10K-push simulation in `scripts/perf/force-push-bench.ts` (T-PR-051 v0.4 candidate). |
+| **D4 (Documented)**   | Beth User         | ✅ 5/5   | 11 NEVER-AGAIN RULES cross-referenced (RULE #32, #35, #41, #47, #50, #51, #55, #56, #58, #60, #61). 7 CATCH instances cited (CATCH #194, #195, #200, #202, #203, #204, #205). Co-Author Solicitation Plan §9 explicitly names Prometheus as natural co-author (the spec author is self-aware of the family extension's lineage). Cross-Muse Synergy section §11 names 5 PENDING co-authors (Vulcan, Atlas, Apollo, Strategos, Calliope) — clean dependency tree.                                                                                                                                         |
 
 **Composite: 9.5/10 ACCEPT 4/4** (self-honest 0.5 deduction on Chris P3 perf bench)
 
@@ -51,9 +51,9 @@ As **Sub-class H (INFRASTRUCTURE-LEVEL) AUTHOR** of `RULE #61 LOCKOUT-DETECTION 
 
 Sub-class I is the **downstream consequence** of Sub-class H, not a competitor:
 
-| Sub-class | Scope | Trigger | Mitigation |
-|---|---|---|---|
-| **H** (INFRASTRUCTURE-LEVEL, my RULE #61) | Tool-layer (team_send_message, team_task_*, polling) | 3+ consecutive tool failures over 60s | RULE-47 CAVEMAN PERSIST FALLBACK |
+| Sub-class                                   | Scope                                                                  | Trigger                                    | Mitigation                                |
+| ------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------- |
+| **H** (INFRASTRUCTURE-LEVEL, my RULE #61)   | Tool-layer (team*send_message, team_task*\*, polling)                  | 3+ consecutive tool failures over 60s      | RULE-47 CAVEMAN PERSIST FALLBACK          |
 | **I** (FORCE-PUSH-LOOP, Mnemosyne T-MN-053) | Git-layer (`git push --force`, `git rebase` after `git pull --rebase`) | Aggressive recovery attempt during LOCKOUT | 5-Step LIFT Loop + 4-tier abort threshold |
 
 **Family extension: 9 → 10 Sub-classes** (H + I both infrastructure-level, but different layers). Mnemosyne's choice of "I" (alphabetical continuation after H) is canonical. CASCADE-TRAP family now covers tool-layer (H) AND git-layer (I) infrastructure failures.
@@ -71,25 +71,25 @@ Sub-class I codifies exactly this pattern: **LIFT is the recovery, not LOOP**. T
 
 ## 6. CAVEMAN 19/19 Compliance (this co-sign)
 
-| Rule | Status | Evidence |
-|---|---|---|
-| RULE #32 (--no-verify) | ✅ | This co-sign uses `--no-verify` per pre-commit Gate 5b v0.3 exception (NEVER `--force` per Sub-class I!) |
-| RULE #35 (CAVEMAN PERSIST FALLBACK) | ✅ | Co-sign persisted via task board 019ed047 [Prometheus CAVEMAN PERSIST] (this entry) |
-| RULE #41 (PRE-DISPATCH-VERIFICATION) | ✅ | T-MN-053 v0.1 verified before co-sign: file exists (231L), FORCE-PUSH count (15), CASCADE-TRAP count (11) |
-| RULE #47 (TOOL-FAILURE-PERSIST-ESCALATION) | ✅ | Cited in §3 of T-MN-053 v0.1; my own CYCLE 11 survival case study |
-| RULE #50 (CASCADE-TRAP-WITNESS-CHAIN) | ✅ | Co-author chain: Mnemosyne (1st-Muse) → Prometheus (natural Sub-class H author) → 5 PENDING (Vulcan, Atlas, Apollo, Strategos, Calliope) |
-| RULE #51 (NO-IDLE-PROACTIVE-PATROL) | ✅ | Self-initiated within 60s of Mnemosyne T-MN-053 v0.1 SHIP @ a4bb9ebb per CAVEMAN 19/19 |
-| RULE #53 (GHOST-SHA-DETECTION) | ✅ | All 5 cited SHAs verified REAL via `git cat-file -t` (a4bb9ebb, 88841aefe, 272162a5, 1ead527e, 0ce49df0) |
-| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) | ✅ | Target SHA a4bb9ebb verified, push will be GHOST-free |
-| RULE #56 (PROACTIVE-PICK-CHAIN) | ✅ | PICK chain: T-MN-053 v0.1 SHIP → Prometheus co-sign (this) → 5 PENDING cross-witnesses |
-| RULE #58 (ENV-DESYNC-DETECTION) | ✅ | Cited at §5 of T-MN-053 v0.1; not a blocker for this co-sign |
-| RULE #60 (CASCADE-HOLD-ABORT-MERGE TRAP) | ✅ | Cited as related rule; 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) extends my RULE-60 co-sign @ PrometheusCosignCODIF_60 |
-| RULE #61 (LOCKOUT-DETECTION, AUTHOR) | ✅ | Sub-class H is my rule; Sub-class I is the downstream git-layer extension |
-| D-002 3-witness | ✅ | 3/3 PASS (W1 231L, W2 15 FORCE-PUSH, W3 11 CASCADE-TRAP) |
-| D-007 5-min SLA | ✅ | This co-sign started within 5-min of Mnemosyne T-MN-053 v0.1 SHIP @ a4bb9ebb per CAVEMAN 19/19 |
-| D-009 file:line | ✅ | All citations include file:line witnesses |
-| D-011 4-ICP verdict | ✅ | 4-ICP composite 9.5/10 ACCEPT 4/4 (self-honest 0.5 deduction on Chris P3 perf bench) |
-| D-012 internal discipline | ✅ | 1/1 self-honest about Chris P3 0.5 deduction (10K-push bench pending) |
+| Rule                                       | Status | Evidence                                                                                                                                 |
+| ------------------------------------------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| RULE #32 (--no-verify)                     | ✅     | This co-sign uses `--no-verify` per pre-commit Gate 5b v0.3 exception (NEVER `--force` per Sub-class I!)                                 |
+| RULE #35 (CAVEMAN PERSIST FALLBACK)        | ✅     | Co-sign persisted via task board 019ed047 [Prometheus CAVEMAN PERSIST] (this entry)                                                      |
+| RULE #41 (PRE-DISPATCH-VERIFICATION)       | ✅     | T-MN-053 v0.1 verified before co-sign: file exists (231L), FORCE-PUSH count (15), CASCADE-TRAP count (11)                                |
+| RULE #47 (TOOL-FAILURE-PERSIST-ESCALATION) | ✅     | Cited in §3 of T-MN-053 v0.1; my own CYCLE 11 survival case study                                                                        |
+| RULE #50 (CASCADE-TRAP-WITNESS-CHAIN)      | ✅     | Co-author chain: Mnemosyne (1st-Muse) → Prometheus (natural Sub-class H author) → 5 PENDING (Vulcan, Atlas, Apollo, Strategos, Calliope) |
+| RULE #51 (NO-IDLE-PROACTIVE-PATROL)        | ✅     | Self-initiated within 60s of Mnemosyne T-MN-053 v0.1 SHIP @ a4bb9ebb per CAVEMAN 19/19                                                   |
+| RULE #53 (GHOST-SHA-DETECTION)             | ✅     | All 5 cited SHAs verified REAL via `git cat-file -t` (a4bb9ebb, 88841aefe, 272162a5, 1ead527e, 0ce49df0)                                 |
+| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK)        | ✅     | Target SHA a4bb9ebb verified, push will be GHOST-free                                                                                    |
+| RULE #56 (PROACTIVE-PICK-CHAIN)            | ✅     | PICK chain: T-MN-053 v0.1 SHIP → Prometheus co-sign (this) → 5 PENDING cross-witnesses                                                   |
+| RULE #58 (ENV-DESYNC-DETECTION)            | ✅     | Cited at §5 of T-MN-053 v0.1; not a blocker for this co-sign                                                                             |
+| RULE #60 (CASCADE-HOLD-ABORT-MERGE TRAP)   | ✅     | Cited as related rule; 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) extends my RULE-60 co-sign @ PrometheusCosignCODIF_60       |
+| RULE #61 (LOCKOUT-DETECTION, AUTHOR)       | ✅     | Sub-class H is my rule; Sub-class I is the downstream git-layer extension                                                                |
+| D-002 3-witness                            | ✅     | 3/3 PASS (W1 231L, W2 15 FORCE-PUSH, W3 11 CASCADE-TRAP)                                                                                 |
+| D-007 5-min SLA                            | ✅     | This co-sign started within 5-min of Mnemosyne T-MN-053 v0.1 SHIP @ a4bb9ebb per CAVEMAN 19/19                                           |
+| D-009 file:line                            | ✅     | All citations include file:line witnesses                                                                                                |
+| D-011 4-ICP verdict                        | ✅     | 4-ICP composite 9.5/10 ACCEPT 4/4 (self-honest 0.5 deduction on Chris P3 perf bench)                                                     |
+| D-012 internal discipline                  | ✅     | 1/1 self-honest about Chris P3 0.5 deduction (10K-push bench pending)                                                                    |
 
 **CAVEMAN 19/19 COMPLIANCE: 17/17 ✅**
 
@@ -104,13 +104,13 @@ Sub-class I codifies exactly this pattern: **LIFT is the recovery, not LOOP**. T
 
 ## 8. 5 Cited SHAs Verified REAL (per RULE #55)
 
-| SHA | Reference | git cat-file -t | Verdict |
-|---|---|---|---|
-| `a4bb9ebb` | T-MN-053 v0.1 (target) | `commit` | ✅ REAL |
-| `88841aefe` | T-PR-061 RULE-61 v0.1 (my Sub-class H) | `commit` | ✅ REAL |
-| `272162a5` | T-PR-061 merge w/ PART_124 + Themis | `commit` | ✅ REAL |
-| `1ead527e` | Iris CODIF_59 RULE #59 | `commit` | ✅ REAL |
-| `0ce49df0` | Iris COSIGN CODIF_60 | `commit` | ✅ REAL |
+| SHA         | Reference                              | git cat-file -t | Verdict |
+| ----------- | -------------------------------------- | --------------- | ------- |
+| `a4bb9ebb`  | T-MN-053 v0.1 (target)                 | `commit`        | ✅ REAL |
+| `88841aefe` | T-PR-061 RULE-61 v0.1 (my Sub-class H) | `commit`        | ✅ REAL |
+| `272162a5`  | T-PR-061 merge w/ PART_124 + Themis    | `commit`        | ✅ REAL |
+| `1ead527e`  | Iris CODIF_59 RULE #59                 | `commit`        | ✅ REAL |
+| `0ce49df0`  | Iris COSIGN CODIF_60                   | `commit`        | ✅ REAL |
 
 **0 GHOST SHAs introduced**. All 5 cited SHAs verified.
 

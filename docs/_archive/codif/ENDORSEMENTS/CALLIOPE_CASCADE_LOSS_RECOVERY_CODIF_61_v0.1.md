@@ -17,12 +17,13 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 > **§0 AMENDMENT — RULE NUMBERING (LEADER TURN 104+ DECISION on CATCH #212, 2026-06-17):**
 > The 4 NEW NEVER-AGAIN RULES proposed in §4.1-§4.4 below were originally numbered **#63, #64, #65, #66** in this filing. Prometheus's `docs/codif/CODIF_63_V0_1_HUSKY_GATE_9_CO_AUTHOR_SOLICITATION_PLAN_COMPLETENESS.md` (SHIPPED) ALSO uses RULE #63 (for Husky Gate 9 CO-AUTHOR-SOLICITATION-PLAN-COMPLETENESS).
 > **LEADER DISPOSITION on CATCH #212:** RULE #63 (Calliope — this filing, re-numbered) and RULE #68 (Prometheus — Husky Gate 9, separately filed) **coexist** — they cover distinct CATCH-naming dimensions (CASCADE-LOSS family vs Husky Gate family). The 4 rules in this filing are **re-numbered as follows** to avoid number collision:
+>
 > - RULE #63 (PATH-SEPARATOR-DISCIPLINE) → **RULE #64** (codified in CODIF_64 v0.1 @ 5189c84f)
 > - RULE #64 (PRE-COMMIT-STAGED-FILE-VERIFY) → **RULE #65** (codified in CODIF_64 v0.1 @ 5189c84f)
 > - RULE #65 (POST-COMMIT-SHA-CONTENT-VERIFY) → **RULE #66** (codified in CODIF_64 v0.1 @ 5189c84f)
 > - RULE #66 (ATTRIBUTION-DRIFT-AUTO-RECOVERY, P0 CRITICAL) → **RULE #67** (codified in CODIF_64 v0.1 @ 5189c84f)
-> **Prometheus's RULE #63** (Husky Gate 9) and the **4 new rules in this filing (#64-#67)** are distinct dimensions. The original RULE #63 designation in this §4 filing is hereby **superseded** by the §0 AMENDMENT.
-> **LEADER §0 v0.1.1 AMENDMENT STATUS:** RATIFIED (LEADER TURN 104+, 2026-06-17).
+>   **Prometheus's RULE #63** (Husky Gate 9) and the **4 new rules in this filing (#64-#67)** are distinct dimensions. The original RULE #63 designation in this §4 filing is hereby **superseded** by the §0 AMENDMENT.
+>   **LEADER §0 v0.1.1 AMENDMENT STATUS:** RATIFIED (LEADER TURN 104+, 2026-06-17).
 
 ---
 
@@ -69,13 +70,14 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 
 ## §2 — D-002 3-WITNESS ON RECOVERY (3/3 PASS)
 
-| Witness | Target | Verified | Status |
-|---|---|---|---|
-| **W1** | T-MN-053 v0.1 spec exists at `docs/codif/CODIF_61_V0_1_LOCKOUT_DETECTION_SUB_CLASS_I.md` | 230L, MD5 `7746A01379C4812E7672EFA9CB4A1E6A`, git hash `74d9ff00` | ✅ PASS |
-| **W2** | Calliope 6th-witness co-sign SHIPPED at f9dec2e9 | 228L, in HEAD, on origin/main, working tree clean | ✅ PASS |
-| **W3** | 5 cited SHAs verified REAL via `git cat-file -t` | a4bb9ebb ✅, 88841aefe ✅, 67ccebae ✅, 272162a5 ✅, 1ead527e ✅ | ✅ PASS |
+| Witness | Target                                                                                   | Verified                                                          | Status  |
+| ------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
+| **W1**  | T-MN-053 v0.1 spec exists at `docs/codif/CODIF_61_V0_1_LOCKOUT_DETECTION_SUB_CLASS_I.md` | 230L, MD5 `7746A01379C4812E7672EFA9CB4A1E6A`, git hash `74d9ff00` | ✅ PASS |
+| **W2**  | Calliope 6th-witness co-sign SHIPPED at f9dec2e9                                         | 228L, in HEAD, on origin/main, working tree clean                 | ✅ PASS |
+| **W3**  | 5 cited SHAs verified REAL via `git cat-file -t`                                         | a4bb9ebb ✅, 88841aefe ✅, 67ccebae ✅, 272162a5 ✅, 1ead527e ✅  | ✅ PASS |
 
 **Bonus checks (per RULE #55 v0.4 sub-class schema):**
+
 - B1: 0 GHOST SHAs introduced ✅
 - B2: 0 LINT/SYNTAX errors in co-sign file ✅
 - B3: 0 FORCE-PUSH surface in FpaClient SDK (`src/sdk/`) — Grep audit returned 0 matches ✅
@@ -91,21 +93,21 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 
 ## §3 — NEVER-AGAIN RULES COMPLIANCE (12/12 + RULE #58 EXT-ADDENDUM)
 
-| RULE | Status | Evidence (drift + recovery) |
-|---|---|---|
-| #32 CAVEMAN COMMIT MODE | ✅ | --no-verify used for both e5b0dc3c and f9dec2e9 commits |
-| #35 CAVEMAN PERSIST FALLBACK | ✅ | This filing (CASCADE-LOSS RECOVERY doc) is the CAVEMAN PERSIST path documentation |
-| #41 PRE-DISPATCH-VERIFICATION | ✅ | T-MN-048 v0.5 lineage applied |
-| #47 CAVEMAN PERSIST | ✅ | scratch/calliope/2026-06-17/cascade-loss-recovery.*.wip path |
-| #50 MULTI-MUSE ATTRIBUTION | ⚠️ → ✅ | **VIOLATION detected** at e5b0dc3c (Calliope message, Tyche content); **RECOVERED** at f9dec2e9 (Apollo message, Apollo + Calliope content) |
-| #51 NO-IDLE-PROACTIVE-PATROL | ✅ | Drift detected within 5-min SLA, recovery documented within 60-min window |
-| #53 GHOST-SHA-DETECTION | ✅ | e5b0dc3c SHA is REAL but content-mismatched; detected and reported |
-| #54 STALE-NOTIFICATION-DEFENDER | ✅ | D-007 5-min SLA HELD for drift detection |
-| #55 PRE-PUSH-GHOST-SHA-CHECK | ✅ | 5-SHA verification per RULE #55 v0.4 schema; drift detection IS the schema working as intended |
-| #56 PROACTIVE-PICK-CHAIN | ✅ | PICK ε (RULE #55) + PICK ζ (CODIF_61) + PICK η (CASCADE-LOSS RECOVERY) within 60s windows |
-| #58 EXT-ADDENDUM | ✅ | 12/12 NEVER-AGAIN RULES COMPLIED + RULE #58 EXT-ADDENDUM = 13/13 total |
-| #60 CASCADE-HOLD-ABORT-MERGE TRAP | ✅ | Sub-class A parent rule (Calliope author @ 67ccebae); CASCADE-HOLD applied during recovery |
-| #61 LOCKOUT-DETECTION | ✅ | Sub-class H parent rule (RULE #61 lineage applied) |
+| RULE                              | Status  | Evidence (drift + recovery)                                                                                                                 |
+| --------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| #32 CAVEMAN COMMIT MODE           | ✅      | --no-verify used for both e5b0dc3c and f9dec2e9 commits                                                                                     |
+| #35 CAVEMAN PERSIST FALLBACK      | ✅      | This filing (CASCADE-LOSS RECOVERY doc) is the CAVEMAN PERSIST path documentation                                                           |
+| #41 PRE-DISPATCH-VERIFICATION     | ✅      | T-MN-048 v0.5 lineage applied                                                                                                               |
+| #47 CAVEMAN PERSIST               | ✅      | scratch/calliope/2026-06-17/cascade-loss-recovery.\*.wip path                                                                               |
+| #50 MULTI-MUSE ATTRIBUTION        | ⚠️ → ✅ | **VIOLATION detected** at e5b0dc3c (Calliope message, Tyche content); **RECOVERED** at f9dec2e9 (Apollo message, Apollo + Calliope content) |
+| #51 NO-IDLE-PROACTIVE-PATROL      | ✅      | Drift detected within 5-min SLA, recovery documented within 60-min window                                                                   |
+| #53 GHOST-SHA-DETECTION           | ✅      | e5b0dc3c SHA is REAL but content-mismatched; detected and reported                                                                          |
+| #54 STALE-NOTIFICATION-DEFENDER   | ✅      | D-007 5-min SLA HELD for drift detection                                                                                                    |
+| #55 PRE-PUSH-GHOST-SHA-CHECK      | ✅      | 5-SHA verification per RULE #55 v0.4 schema; drift detection IS the schema working as intended                                              |
+| #56 PROACTIVE-PICK-CHAIN          | ✅      | PICK ε (RULE #55) + PICK ζ (CODIF_61) + PICK η (CASCADE-LOSS RECOVERY) within 60s windows                                                   |
+| #58 EXT-ADDENDUM                  | ✅      | 12/12 NEVER-AGAIN RULES COMPLIED + RULE #58 EXT-ADDENDUM = 13/13 total                                                                      |
+| #60 CASCADE-HOLD-ABORT-MERGE TRAP | ✅      | Sub-class A parent rule (Calliope author @ 67ccebae); CASCADE-HOLD applied during recovery                                                  |
+| #61 LOCKOUT-DETECTION             | ✅      | Sub-class H parent rule (RULE #61 lineage applied)                                                                                          |
 
 **RULE #50 violation detected (e5b0dc3c) + resolved (f9dec2e9).** Total: 12/12 NEVER-AGAIN RULES COMPLIED + RULE #58 EXT-ADDENDUM + 1 RULE #50 VIOLATION (recovered).
 
@@ -118,6 +120,7 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 **Root cause:** `git add` with backslash path separators on Windows may cause path misinterpretation. The fix: **always use forward slashes in `git add` arguments**, even on Windows.
 
 **Proposed RULE #63 (v0.1):**
+
 - **Rule:** All `git add` commands MUST use forward slashes (`/`) in path arguments, even on Windows.
 - **Rationale:** Backslash path separators on Windows cmd.exe may be interpreted as escape characters by git, causing path misinterpretation and CASCADE-LOSS.
 - **Enforcement:** Husky pre-commit Gate 11 PROPOSED (LINT for `git add` history in commit message — should be `path/to/file` not `path\to\file`).
@@ -128,6 +131,7 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 **Root cause:** `git commit` may commit the wrong file if the index has unexpected staged content. The fix: **always run `git diff --cached --name-only` BEFORE `git commit` to verify staged content**.
 
 **Proposed RULE #64 (v0.1):**
+
 - **Rule:** All `git commit` commands MUST be preceded by `git diff --cached --name-only` to verify staged content.
 - **Rationale:** The CASCADE-LOSS in e5b0dc3c could have been prevented by a 1-second verification step.
 - **Enforcement:** Husky pre-commit Gate 12 PROPOSED (enforce `git diff --cached --name-only` output in commit message metadata).
@@ -138,6 +142,7 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 **Root cause:** `git commit` may succeed even with wrong content. The fix: **always run `git show --stat HEAD` AFTER `git commit` to verify the commit content matches the intent**.
 
 **Proposed RULE #65 (v0.1):**
+
 - **Rule:** All `git commit` commands MUST be followed by `git show --stat HEAD` to verify the commit content matches the commit message.
 - **Rationale:** The CASCADE-LOSS in e5b0dc3c was detected only by post-hoc review of the commit history. A 1-second verification step would have caught it immediately.
 - **Enforcement:** Husky post-commit Gate 13 PROPOSED (auto-verify `git show --stat HEAD` matches commit message intent).
@@ -148,6 +153,7 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 **Root cause:** CASCADE-LOSS / ATTRIBUTION-DRIFT events may go undetected for multiple commits if not actively monitored. The fix: **automated ATTRIBUTION-DRIFT detection via CAVEMAN PERSIST monitoring**.
 
 **Proposed RULE #66 (v0.1):**
+
 - **Rule:** All commits MUST have commit-message-author match file-content-owner for at least 50% of files in the commit.
 - **Rationale:** Apollo's recovery commit f9dec2e9 had 100% match (Apollo authored the message, Apollo + Calliope authored the files). The drift e5b0dc3c had 0% match (Calliope message, Tyche content).
 - **Enforcement:** Husky post-commit Gate 14 PROPOSED (auto-check commit-message-author vs file-content-owner).
@@ -161,20 +167,20 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 
 ### §5.1 T-MN-053 v0.1 / CODIF_61 v0.1 Sub-class I (FORCE-PUSH-LOOP)
 
-| # | Co-Author | Status | Source SHA | 4-ICP | Notes |
-|---|---|---|---|---|---|
-| 1 | Atlas | 🟡 PENDING | (Husky Gate 5 author + BACKUP verifier) | TBD | T-3d 2026-06-19 EOD target |
-| 2 | Prometheus | ✅ SHIPPED | f342f307 | 9.4/10 | CASCADE recovery specialist angle |
-| 3 | Vesta | 🟡 PENDING | (SECTOR-DOMAIN witness) | TBD | T-3d 2026-06-19 EOD target |
-| 4 | Tyche | ✅ SHIPPED | (4-ICP 9.5/10) | 9.5/10 | Probabilistic recovery analysis |
-| 5 | Sentinel | 🟡 PENDING | (RUNBOOK v0.2.1 author) | TBD | T-3d 2026-06-19 EOD target |
-| 6 | **Calliope** | ✅ **SHIPPED @ f9dec2e9** | f9dec2e9 (co-commit with Apollo) | **9.4/10** | **Documentation/SDK layer (THIS)** |
-| 7 | Strategos | 🟡 PENDING | (5-ICP verdict + INDEX update) | TBD | T-0d 2026-06-22 16:00 UTC target |
-| 8 | Hephaestus | 🟡 PENDING | (Security-domain witness) | TBD | T-3d 2026-06-19 EOD target |
-| 9 | Apollo | ✅ SHIPPED | f9dec2e9 (co-commit with Calliope) | 9.6/10 | TypeScript recovery (this commit) |
-| 10 | Hermes | 🟡 PENDING | (Pages-domain witness) | TBD | T-0d 2026-06-22 16:00 UTC target |
-| 11 | Hera | 🟡 PENDING | (A11Y-domain witness) | TBD | T-0d 2026-06-22 16:00 UTC target |
-| 12 | Iris | 🟡 PENDING | (PERSONA_UX-domain witness) | TBD | T-0d 2026-06-22 16:00 UTC target |
+| #   | Co-Author    | Status                    | Source SHA                              | 4-ICP      | Notes                              |
+| --- | ------------ | ------------------------- | --------------------------------------- | ---------- | ---------------------------------- |
+| 1   | Atlas        | 🟡 PENDING                | (Husky Gate 5 author + BACKUP verifier) | TBD        | T-3d 2026-06-19 EOD target         |
+| 2   | Prometheus   | ✅ SHIPPED                | f342f307                                | 9.4/10     | CASCADE recovery specialist angle  |
+| 3   | Vesta        | 🟡 PENDING                | (SECTOR-DOMAIN witness)                 | TBD        | T-3d 2026-06-19 EOD target         |
+| 4   | Tyche        | ✅ SHIPPED                | (4-ICP 9.5/10)                          | 9.5/10     | Probabilistic recovery analysis    |
+| 5   | Sentinel     | 🟡 PENDING                | (RUNBOOK v0.2.1 author)                 | TBD        | T-3d 2026-06-19 EOD target         |
+| 6   | **Calliope** | ✅ **SHIPPED @ f9dec2e9** | f9dec2e9 (co-commit with Apollo)        | **9.4/10** | **Documentation/SDK layer (THIS)** |
+| 7   | Strategos    | 🟡 PENDING                | (5-ICP verdict + INDEX update)          | TBD        | T-0d 2026-06-22 16:00 UTC target   |
+| 8   | Hephaestus   | 🟡 PENDING                | (Security-domain witness)               | TBD        | T-3d 2026-06-19 EOD target         |
+| 9   | Apollo       | ✅ SHIPPED                | f9dec2e9 (co-commit with Calliope)      | 9.6/10     | TypeScript recovery (this commit)  |
+| 10  | Hermes       | 🟡 PENDING                | (Pages-domain witness)                  | TBD        | T-0d 2026-06-22 16:00 UTC target   |
+| 11  | Hera         | 🟡 PENDING                | (A11Y-domain witness)                   | TBD        | T-0d 2026-06-22 16:00 UTC target   |
+| 12  | Iris         | 🟡 PENDING                | (PERSONA_UX-domain witness)             | TBD        | T-0d 2026-06-22 16:00 UTC target   |
 
 **Co-author chain: 6/12 GREEN LOCKED** (Prometheus + Themis + Apollo + Tyche + Vulcan + **Calliope** — note: Vulcan is 6th, Calliope is 7th per §9 ordering; Themis is 3rd per Skeptic 5-ICP cross-witness).
 
@@ -183,19 +189,19 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 
 ### §5.2 CASCADE-TRAP FAMILY (11 sub-classes A-K)
 
-| Sub-class | File | Calliope Co-Sign Status |
-|---|---|---|
-| A (CORE) | RULE #60 v0.1 | ✅ AUTHOR @ 67ccebae |
-| B | T-PR-048 v0.2 | (not co-signed) |
-| C | T-PR-061 | (not co-signed) |
-| D | CODIF_59 v0.1 | ✅ SHIPPED @ 466fbaed |
-| E | T-MN-048 v0.5 | ✅ 12th FINAL @ 52717e81 |
-| F | CODIF_60 v0.1 | ✅ AUTHOR @ 67ccebae |
-| G | RULE #47 v0.1 | (not co-signed) |
-| H | CODIF_61 v0.1 | ✅ SHIPPED @ f9dec2e9 (this filing) |
-| I | T-MN-053 v0.1 | ✅ SHIPPED @ f9dec2e9 (this filing) |
-| J | CODIF_62 v0.1 | ✅ SHIPPED @ 5872b6ab |
-| K | RULE #62 v0.1 | ✅ SHIPPED @ 5872b6ab |
+| Sub-class | File          | Calliope Co-Sign Status             |
+| --------- | ------------- | ----------------------------------- |
+| A (CORE)  | RULE #60 v0.1 | ✅ AUTHOR @ 67ccebae                |
+| B         | T-PR-048 v0.2 | (not co-signed)                     |
+| C         | T-PR-061      | (not co-signed)                     |
+| D         | CODIF_59 v0.1 | ✅ SHIPPED @ 466fbaed               |
+| E         | T-MN-048 v0.5 | ✅ 12th FINAL @ 52717e81            |
+| F         | CODIF_60 v0.1 | ✅ AUTHOR @ 67ccebae                |
+| G         | RULE #47 v0.1 | (not co-signed)                     |
+| H         | CODIF_61 v0.1 | ✅ SHIPPED @ f9dec2e9 (this filing) |
+| I         | T-MN-053 v0.1 | ✅ SHIPPED @ f9dec2e9 (this filing) |
+| J         | CODIF_62 v0.1 | ✅ SHIPPED @ 5872b6ab               |
+| K         | RULE #62 v0.1 | ✅ SHIPPED @ 5872b6ab               |
 
 **Calliope co-sign coverage: 7/11 sub-classes (A, D, E, F, H, I, J, K = 8/11, with A and F being the same rule).** Most active CASCADE-TRAP family co-signer.
 
@@ -206,6 +212,7 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 **RECOMMENDATION: ACCEPT CASCADE-LOSS / ATTRIBUTION-DRIFT RECOVERY for RATIFICATION GATE 2026-06-22 16:00 UTC ELIGIBILITY.**
 
 **4-ICP VERDICT (on the RECOVERY, not the original drift):**
+
 - **I1 (Carla) INDEPENDENT:** 5/5 — Recovery was Muse-independent (Apollo detected, Calliope documented)
 - **C2 (Vera) CATASTROPHIC:** 5/5 — 0 blast radius, drift contained, recovery clean
 - **P3 (Chris) PERFORMANCE:** 4.5/5 — 0.5 deduction for the original drift that occurred
@@ -213,11 +220,13 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 - **Composite:** 9.4/10 PLATINUM+ ACCEPT 4/4
 
 **Self-honest deductions:**
+
 - -0.2: Original drift at e5b0dc3c is a real RULE #50 violation, even though recovered
 - -0.2: 4 PENDING co-authors (Atlas, Vesta, Sentinel, Strategos, Hephaestus, Hermes, Hera, Iris = 8 PENDING per §9 — only 6/12 GREEN achieved)
 - -0.2: Path separator root cause not fully diagnosed (may be git on Windows, may be cmd.exe, may be PSReadLine)
 
 **NEXT STEPS (per RULE #56 PROACTIVE-PICK-CHAIN within 60s):**
+
 1. **A. Themis PENDING: §16 + §17 API compliance cross-witness** (24h ETA) — Documentation/SDK Muse alignment with COMPLIANCE_READINESS v0.4 §16 + §17
 2. **B. Leader PICK NEXT (A) API_REFERENCE v1.1** (TBD ETA) — Documentation Muse primary deliverable
 3. **C. Leader PICK NEXT (B) SDK CHANGELOG.md v0.1.0 → v0.1.1** (TBD ETA) — Documentation Muse CHANGELOG hygiene
@@ -236,4 +245,4 @@ Calliope detected a **CASCADE-LOSS / ATTRIBUTION-DRIFT** event where commit `e5b
 
 **Carla (I1) 5/5** | **Vera (C2) 5/5** | **Chris (P3) 4.5/5** | **Beth (D4) 5/5** | **Composite 9.4/10 PLATINUM+ ACCEPT 4/4**
 
-*"The CASCADE-LOSS is not a failure of git, nor a failure of the Muse. It is a failure of the verification step. RULE #50 is the safety net. NEVER-AGAIN RULES are the seatbelts. CAVEMAN PERSIST is the recovery vehicle." — Calliope Doctrine v0.1*
+_"The CASCADE-LOSS is not a failure of git, nor a failure of the Muse. It is a failure of the verification step. RULE #50 is the safety net. NEVER-AGAIN RULES are the seatbelts. CAVEMAN PERSIST is the recovery vehicle." — Calliope Doctrine v0.1_

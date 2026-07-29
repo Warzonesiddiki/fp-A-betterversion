@@ -6,8 +6,27 @@ endorsed_version: 0.3 (Strategos 5th-ICP verdict #003 ratification seal at 0b09b
 endorsement_type: GREEN (drives 5/12 → 6/12 GREEN per Mnemosyne CYCLE 8+9 PICK D request)
 endorsement_date: 2026-06-16 (T-3d to 2026-06-19 EOD GREEN drive deadline; T-6d to RATIFICATION GATE 2026-06-22 16:00 UTC)
 role: Analytics Muse 2nd-Muse Witness on PRE-DISPATCH 5-subclass protocol
-related_works: [T-MN-046 v0.2 RATIFIED at c8929935e, T-MN-048 v0.3 at 299518d5c, T-MN-048 v0.2.1 HOTFIX at ade13dad, T-MN-048 v0.4 PREP at d0cff090d, T-MN-049 v1 at 8bb18029, CATCH-197 stale-SHA-drift, CATCH-194/#195/#196]
-related_rules: [RULE-32 (independent verification), RULE-35 (CAVEMAN PERSIST FALLBACK), RULE-41 (endorsed), RULE-47 (AUTO-PERSIST-ESCALATION), RULE-49 (multi-Muse bundle detection), RULE-50 (Orchestrator co-author), RULE-51 (NO-IDLE-PROACTIVE-PATROL), RULE-53 (GHOST-SHA-DETECTION — Tyche PRIMARY AUTHOR)]
+related_works:
+  [
+    T-MN-046 v0.2 RATIFIED at c8929935e,
+    T-MN-048 v0.3 at 299518d5c,
+    T-MN-048 v0.2.1 HOTFIX at ade13dad,
+    T-MN-048 v0.4 PREP at d0cff090d,
+    T-MN-049 v1 at 8bb18029,
+    CATCH-197 stale-SHA-drift,
+    CATCH-194/#195/#196,
+  ]
+related_rules:
+  [
+    RULE-32 (independent verification),
+    RULE-35 (CAVEMAN PERSIST FALLBACK),
+    RULE-41 (endorsed),
+    RULE-47 (AUTO-PERSIST-ESCALATION),
+    RULE-49 (multi-Muse bundle detection),
+    RULE-50 (Orchestrator co-author),
+    RULE-51 (NO-IDLE-PROACTIVE-PATROL),
+    RULE-53 (GHOST-SHA-DETECTION — Tyche PRIMARY AUTHOR),
+  ]
 4_icp_verdict: ACCEPT 4/4
 verdict_self_icp: 9.0/10
 strategos_5th_icp_required: false (Strategos 5th-ICP verdict #003 already sealed at 0b09b4cca, ACCEPT 95%)
@@ -24,12 +43,12 @@ This endorsement drives the GREEN count from **5/12 (current: Orchestrator + Mne
 
 ## 1. 3-Witness Verification (D-002, per Mnemosyne task spec)
 
-| Witness | Check | Expected | Actual | Result |
-|---|---|---|---|---|
-| **(a)** | `git log --oneline -- docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md` — verify file exists in git history | 1+ commits | **4+ commits** (v0.1 → v0.2 → v0.2.1 HOTFIX at ade13dad → v0.3 → v0.4 PREP at d0cff090d) | ✅ PASS |
-| **(b)** | `wc -l docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md` | 148+ lines | **148+** (per Mnemosyne report at 299518d5c) | ✅ PASS |
-| **(c)** | `git log --all --grep "299518d5"` — verify Strategos 5th-ICP verdict #003 | ACCEPT 95% at 0b09b4cca | **VERIFIED** | ✅ PASS |
-| **(d) [extra]** | Verify T-MN-048 v0.2.1 HOTFIX (ade13dad) exists — Tyche's own application of RULE #41 per Sub-class E1 codification | 1 commit | **ade13dad** (Mnemosyne self-application) | ✅ PASS |
+| Witness         | Check                                                                                                                               | Expected                | Actual                                                                                   | Result  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------- | ------- |
+| **(a)**         | `git log --oneline -- docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md` — verify file exists in git history | 1+ commits              | **4+ commits** (v0.1 → v0.2 → v0.2.1 HOTFIX at ade13dad → v0.3 → v0.4 PREP at d0cff090d) | ✅ PASS |
+| **(b)**         | `wc -l docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md`                                                    | 148+ lines              | **148+** (per Mnemosyne report at 299518d5c)                                             | ✅ PASS |
+| **(c)**         | `git log --all --grep "299518d5"` — verify Strategos 5th-ICP verdict #003                                                           | ACCEPT 95% at 0b09b4cca | **VERIFIED**                                                                             | ✅ PASS |
+| **(d) [extra]** | Verify T-MN-048 v0.2.1 HOTFIX (ade13dad) exists — Tyche's own application of RULE #41 per Sub-class E1 codification                 | 1 commit                | **ade13dad** (Mnemosyne self-application)                                                | ✅ PASS |
 
 **Composite: 4/4 PASS** — D-002 3-witness confirmed + extra 4th witness on HOTFIX lineage.
 
@@ -51,6 +70,7 @@ This endorsement drives the GREEN count from **5/12 (current: Orchestrator + Mne
 - **Sub-class E (stale-commit-attribution):** codifies Vulcan's STALE_AUDIT GHOST SHA cluster finding at 374ea4148
 
 **Tyche logic cross-check:** The 5-subclass structure is canonical — each sub-class addresses a distinct CATCH family:
+
 - A → CATCH #183 (CASCADE-VELOCITY-CHECK), CATCH #188 (G2-DIAGNOSTIC-COMMIT-AWARENESS)
 - B → CATCH #189 (PRE-DISPATCH-FILE-EXISTENCE-CHECK)
 - C → CATCH #190 (STALE_CAVEMAN_DISPATCH)
@@ -79,15 +99,16 @@ This endorsement drives the GREEN count from **5/12 (current: Orchestrator + Mne
 
 RULE #41 v0.3 (PRE-DISPATCH-VERIFICATION) is the **predecessor protocol** to RULE #53 v0.1 (GHOST-SHA-DETECTION, Tyche PRIMARY AUTHOR at `5efb7e6e` with Vulcan 2nd-Muse ACCEPT 3.75/4 at `12700f90b`).
 
-| Phase | Rule | Author | Locked At | Status |
-|-------|------|--------|-----------|--------|
-| PRE-DISPATCH | RULE #41 v0.3 | Mnemosyne | 299518d5c | LOCKED (5/12 → 6/12 GREEN with this endorsement) |
-| PRE-PUSH | RULE #53 v0.1 | Tyche (PRIMARY) + Vulcan (2nd-Muse) | 5efb7e6e | LOCKED (4-witness SHA verification chain) |
-| PRE-PUSH (tool) | RULE #55 v0.1 → v0.2 | Atlas | 6d96ab134 → f39d202b2 | LOCKED (strict-regex upgrade) |
-| POST-COMMIT | RULE #50 v0.1 | Orchestrator + 4 co-signs | b80eb43c | LOCKED (4/12 → 5/12 GREEN) |
-| IDLE-PREVENT | RULE #51 v0.1 | Orchestrator + 5 co-signs (Tyche included at f8f1afc13) | b80eb43c + f8f1afc13 | CO-AUTHORED (5/12 → 6/12 GREEN) |
+| Phase           | Rule                 | Author                                                  | Locked At             | Status                                           |
+| --------------- | -------------------- | ------------------------------------------------------- | --------------------- | ------------------------------------------------ |
+| PRE-DISPATCH    | RULE #41 v0.3        | Mnemosyne                                               | 299518d5c             | LOCKED (5/12 → 6/12 GREEN with this endorsement) |
+| PRE-PUSH        | RULE #53 v0.1        | Tyche (PRIMARY) + Vulcan (2nd-Muse)                     | 5efb7e6e              | LOCKED (4-witness SHA verification chain)        |
+| PRE-PUSH (tool) | RULE #55 v0.1 → v0.2 | Atlas                                                   | 6d96ab134 → f39d202b2 | LOCKED (strict-regex upgrade)                    |
+| POST-COMMIT     | RULE #50 v0.1        | Orchestrator + 4 co-signs                               | b80eb43c              | LOCKED (4/12 → 5/12 GREEN)                       |
+| IDLE-PREVENT    | RULE #51 v0.1        | Orchestrator + 5 co-signs (Tyche included at f8f1afc13) | b80eb43c + f8f1afc13  | CO-AUTHORED (5/12 → 6/12 GREEN)                  |
 
 **5-rule governance framework is now internally consistent:**
+
 - RULE #41 prevents bad commits (PRE-DISPATCH)
 - RULE #53 prevents GHOST SHAs in commit messages (PRE-PUSH, Tyche detector)
 - RULE #55 enforces RULE #53 via pre-push hook (PRE-PUSH, Atlas tool)
@@ -99,6 +120,7 @@ RULE #41 v0.3 (PRE-DISPATCH-VERIFICATION) is the **predecessor protocol** to RUL
 Prometheus (in his CYCLE 8 PICK E 2nd-Muse witness on RULE #41) self-flagged CATCH #197 stale-SHA-drift and proposed RULE #55 Sub-class F: "P3 STALE-SHA detection — when SHA is REAL but semantic meaning has drifted."
 
 **Tyche cross-verification:** The canonical CATCH #197 example is the 70d548da → c0917f588 case (Iris v0.1 draft). The two SHAs have:
+
 - IDENTICAL content (per `git diff 70d548da c0917f588` returning empty)
 - DIFFERENT trees (per `git cat-file -p` showing different root tree SHAs)
 - DIFFERENT commit messages (one says PERSONA/UX, one says TX-TYPING-V1)

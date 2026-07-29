@@ -23,12 +23,12 @@ This is the **4th-Muse cross-witness** on the a11y forward-path (after Artemis A
 
 ## §1 — SUBJECT ARTIFACTS
 
-| # | Artifact | SHA | Author | Type | Status |
-|---|----------|-----|--------|------|--------|
-| 1 | Hera PICK Q — DataTable caption+ariaLabel rollout (5 pages) | `bcf96bae` | Hera | 5 file edits (charts/ChartOfAccountsPage, collaboration/ActivityFeed, collaboration/ApprovalQueuePage, education/EducationPage, energy/EnergyDashboardPage) | ✅ SHIPPED + PUSHED |
-| 2 | Hera PICK R — T-HE-024 §11 CubeBuilderPage 5 P0 a11y fixes spec | `332f3679` | Hera | Spec amendment (5 normative P0 fixes for src/pages/scenarios/CubeBuilderPage.tsx — file not yet created) | ✅ SHIPPED + PUSHED |
-| 3 | Hera PICK S — VarianceAnalysisPage focus trap (Modal a11y upgrade) | `7fb2c608` | Hera | Component upgrade (src/components/ui/Modal.tsx + Modal.test.tsx — 3 new tests, 10/10 pass) | ✅ SHIPPED + PUSHED |
-| 4 | Iris PICK R v0.1.1 hotfix — §10 + §11 BAT trailer | `b7fca4ea` | Iris | Verdict document amendment (docs/verdicts/IRIS_5TH_ICP_SKEPTIC_SELF_CRITIQUE_PICK_T_v0.1.1.md, 63 insertions) | ✅ SHIPPED + PUSHED |
+| #   | Artifact                                                           | SHA        | Author | Type                                                                                                                                                        | Status              |
+| --- | ------------------------------------------------------------------ | ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 1   | Hera PICK Q — DataTable caption+ariaLabel rollout (5 pages)        | `bcf96bae` | Hera   | 5 file edits (charts/ChartOfAccountsPage, collaboration/ActivityFeed, collaboration/ApprovalQueuePage, education/EducationPage, energy/EnergyDashboardPage) | ✅ SHIPPED + PUSHED |
+| 2   | Hera PICK R — T-HE-024 §11 CubeBuilderPage 5 P0 a11y fixes spec    | `332f3679` | Hera   | Spec amendment (5 normative P0 fixes for src/pages/scenarios/CubeBuilderPage.tsx — file not yet created)                                                    | ✅ SHIPPED + PUSHED |
+| 3   | Hera PICK S — VarianceAnalysisPage focus trap (Modal a11y upgrade) | `7fb2c608` | Hera   | Component upgrade (src/components/ui/Modal.tsx + Modal.test.tsx — 3 new tests, 10/10 pass)                                                                  | ✅ SHIPPED + PUSHED |
+| 4   | Iris PICK R v0.1.1 hotfix — §10 + §11 BAT trailer                  | `b7fca4ea` | Iris   | Verdict document amendment (docs/verdicts/IRIS_5TH_ICP_SKEPTIC_SELF_CRITIQUE_PICK_T_v0.1.1.md, 63 insertions)                                               | ✅ SHIPPED + PUSHED |
 
 **Cumulative line count:** 2 file edits (PICK Q) + 23 line spec amendment (PICK R) + 46 line test file (PICK S) + 63 line verdict amendment (Iris hotfix) = **134 lines** of new content across 4 commits.
 
@@ -40,12 +40,12 @@ This is the **4th-Muse cross-witness** on the a11y forward-path (after Artemis A
 
 **D1 VERDICT: 9.5/10 PLATINUM+**
 
-| Artifact | file:line verification | Status |
-|----------|------------------------|--------|
-| PICK Q (bcf96bae) | `git show --stat bcf96bae` confirms 5 files: `src/pages/charts/ChartOfAccountsPage.tsx`, `src/pages/collaboration/ActivityFeed.tsx`, `src/pages/collaboration/ApprovalQueuePage.tsx`, `src/pages/education/EducationPage.tsx`, `src/pages/energy/EnergyDashboardPage.tsx` — all 5 files EXIST in repo per `git ls-files src/pages/`. | ✅ D-002 3-witness verified |
-| PICK R (332f3679) | `git show 332f3679` confirms 1 file: `docs/drafts/hera/T-HE-024_CUBEBUILDERPAGE_KEYBOARD_NAV_SPEC.md` +23 lines. Spec references `src/config/perfBudgets.ts:12` for performance budget — verified via `Read` (line 12: `'/scenarios/cube-builder': { maxLoad: 1500, maxInteraction: 200 }`). | ✅ D-002 3-witness verified |
-| PICK S (7fb2c608) | `git show 7fb2c608` confirms 1 file: `src/components/ui/Modal.test.tsx` +46 lines. Component src at `src/components/ui/Modal.tsx` — verified via `Read`. | ✅ D-002 3-witness verified |
-| Iris hotfix (b7fca4ea) | `git show b7fca4ea` confirms 1 file: `docs/verdicts/IRIS_5TH_ICP_SKEPTIC_SELF_CRITIQUE_PICK_T_v0.1.1.md` +63 lines. md5sum of target verified via D-002 3-witness. | ✅ D-002 3-witness verified |
+| Artifact               | file:line verification                                                                                                                                                                                                                                                                                                               | Status                      |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| PICK Q (bcf96bae)      | `git show --stat bcf96bae` confirms 5 files: `src/pages/charts/ChartOfAccountsPage.tsx`, `src/pages/collaboration/ActivityFeed.tsx`, `src/pages/collaboration/ApprovalQueuePage.tsx`, `src/pages/education/EducationPage.tsx`, `src/pages/energy/EnergyDashboardPage.tsx` — all 5 files EXIST in repo per `git ls-files src/pages/`. | ✅ D-002 3-witness verified |
+| PICK R (332f3679)      | `git show 332f3679` confirms 1 file: `docs/drafts/hera/T-HE-024_CUBEBUILDERPAGE_KEYBOARD_NAV_SPEC.md` +23 lines. Spec references `src/config/perfBudgets.ts:12` for performance budget — verified via `Read` (line 12: `'/scenarios/cube-builder': { maxLoad: 1500, maxInteraction: 200 }`).                                         | ✅ D-002 3-witness verified |
+| PICK S (7fb2c608)      | `git show 7fb2c608` confirms 1 file: `src/components/ui/Modal.test.tsx` +46 lines. Component src at `src/components/ui/Modal.tsx` — verified via `Read`.                                                                                                                                                                             | ✅ D-002 3-witness verified |
+| Iris hotfix (b7fca4ea) | `git show b7fca4ea` confirms 1 file: `docs/verdicts/IRIS_5TH_ICP_SKEPTIC_SELF_CRITIQUE_PICK_T_v0.1.1.md` +63 lines. md5sum of target verified via D-002 3-witness.                                                                                                                                                                   | ✅ D-002 3-witness verified |
 
 **D1 composite: 9.5/10** — All 4 artifacts cite real, resolvable file:line references. No ghost paths. No hallucinated components.
 
@@ -65,13 +65,13 @@ This is the **4th-Muse cross-witness** on the a11y forward-path (after Artemis A
 
 The 5 P0 fixes map cleanly to WAI-ARIA 1.2 patterns:
 
-| # | P0 Fix | WAI-ARIA 1.2 Pattern | Pages-Domain Verdict |
-|---|--------|----------------------|----------------------|
-| 1 | Skip-link trio | Native `<a href="#id">` + sr-only utility | ✅ PASS — standard pattern |
-| 2 | Dimension tree TreeView | `role="tree"` + `role="treeitem"` + roving tabindex | ✅ PASS — WAI-ARIA APG §3.13 |
-| 3 | Cube selector Combobox 1.2 | `role="combobox"` + `role="listbox"` + `aria-activedescendant` | ✅ PASS — WAI-ARIA APG §3.11 |
-| 4 | Focus trap on 3 modals | `useFocusTrap` hook (RULE #55) or focus-trap-react | ✅ PASS — pattern is canonical |
-| 5 | Grid + roving tabindex | `role="grid"` + `role="row"` + `role="gridcell"` + roving tabindex | ✅ PASS — WAI-ARIA APG §3.5 |
+| #   | P0 Fix                     | WAI-ARIA 1.2 Pattern                                               | Pages-Domain Verdict           |
+| --- | -------------------------- | ------------------------------------------------------------------ | ------------------------------ |
+| 1   | Skip-link trio             | Native `<a href="#id">` + sr-only utility                          | ✅ PASS — standard pattern     |
+| 2   | Dimension tree TreeView    | `role="tree"` + `role="treeitem"` + roving tabindex                | ✅ PASS — WAI-ARIA APG §3.13   |
+| 3   | Cube selector Combobox 1.2 | `role="combobox"` + `role="listbox"` + `aria-activedescendant`     | ✅ PASS — WAI-ARIA APG §3.11   |
+| 4   | Focus trap on 3 modals     | `useFocusTrap` hook (RULE #55) or focus-trap-react                 | ✅ PASS — pattern is canonical |
+| 5   | Grid + roving tabindex     | `role="grid"` + `role="row"` + `role="gridcell"` + roving tabindex | ✅ PASS — WAI-ARIA APG §3.5    |
 
 **Pages-Domain logic check:** ✅ PASS — all 5 P0 fixes are implementable as normative contract. Spec §11 (lines 270-289) is the binding table.
 
@@ -98,12 +98,12 @@ The 5 P0 fixes map cleanly to WAI-ARIA 1.2 patterns:
 
 **D3 VERDICT: 8.5/10 PLATINUM**
 
-| Artifact | Test Coverage | Pages-Domain Verdict |
-|----------|---------------|----------------------|
-| PICK Q | ❌ No new tests added (caption+ariaLabel is attribute-only; no behavior change) | ⚠️ PARTIAL — attribute-only fixes don't strictly need tests, but axe-core scan would be best-practice |
-| PICK R | 📋 Spec §6 mandates 6 test files (cube-builder-keyboard-nav, screen-reader, focus-trap, tab-order, high-contrast, axe) | 🟡 DEFERRED — page not yet created; tests will land with implementation |
-| PICK S | ✅ 3 new tests added (focus trap, escape closes, aria-labelledby) — 10/10 pass | ✅ PASS |
-| Iris hotfix | N/A (verdict document, not code) | ➖ N/A |
+| Artifact    | Test Coverage                                                                                                          | Pages-Domain Verdict                                                                                  |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| PICK Q      | ❌ No new tests added (caption+ariaLabel is attribute-only; no behavior change)                                        | ⚠️ PARTIAL — attribute-only fixes don't strictly need tests, but axe-core scan would be best-practice |
+| PICK R      | 📋 Spec §6 mandates 6 test files (cube-builder-keyboard-nav, screen-reader, focus-trap, tab-order, high-contrast, axe) | 🟡 DEFERRED — page not yet created; tests will land with implementation                               |
+| PICK S      | ✅ 3 new tests added (focus trap, escape closes, aria-labelledby) — 10/10 pass                                         | ✅ PASS                                                                                               |
+| Iris hotfix | N/A (verdict document, not code)                                                                                       | ➖ N/A                                                                                                |
 
 **D3 composite: 8.5/10** — PICK S is the gold standard. PICK Q lacks axe-core verification (gap). PICK R is forward-path so tests will land with implementation (acceptable per spec).
 
@@ -111,12 +111,12 @@ The 5 P0 fixes map cleanly to WAI-ARIA 1.2 patterns:
 
 **D4 VERDICT: 9.0/10 PLATINUM**
 
-| Artifact | Edge Case Coverage | Pages-Domain Verdict |
-|----------|---------------------|----------------------|
-| PICK Q | 5/5 pages get the same pattern — no edge case variance | ✅ PASS |
-| PICK R | Spec §5 covers focus restoration on modal close. Spec §4 covers aria-live for dynamic updates. Spec §6 covers high-contrast AAA 7:1 ratio. | ✅ PASS — comprehensive edge case coverage |
-| PICK S | Modal handles Escape + X button + backdrop click. useId() prevents hydration mismatches. | ✅ PASS |
-| Iris hotfix | BAT trailer + 4-Muse cross-witness chain is robust to attribution drift | ✅ PASS |
+| Artifact    | Edge Case Coverage                                                                                                                         | Pages-Domain Verdict                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| PICK Q      | 5/5 pages get the same pattern — no edge case variance                                                                                     | ✅ PASS                                    |
+| PICK R      | Spec §5 covers focus restoration on modal close. Spec §4 covers aria-live for dynamic updates. Spec §6 covers high-contrast AAA 7:1 ratio. | ✅ PASS — comprehensive edge case coverage |
+| PICK S      | Modal handles Escape + X button + backdrop click. useId() prevents hydration mismatches.                                                   | ✅ PASS                                    |
+| Iris hotfix | BAT trailer + 4-Muse cross-witness chain is robust to attribution drift                                                                    | ✅ PASS                                    |
 
 **D4 composite: 9.0/10** — Spec is forward-looking (PICK R) and current state (PICK Q+S) both handle edge cases appropriately.
 
@@ -124,14 +124,14 @@ The 5 P0 fixes map cleanly to WAI-ARIA 1.2 patterns:
 
 **D5 VERDICT: 9.0/10 PLATINUM+ RATIFICATION-GATE-READY**
 
-| Question | Answer | Evidence |
-|----------|--------|----------|
-| Are all 4 artifacts in `origin/main`? | ✅ YES | `git log --oneline origin/main -25` confirms all 4 SHAs |
-| Is the spec implementable in the page code? | ✅ YES | D2 logic check passed for all 4 |
-| Are the page files (PICK Q's 5 pages) real? | ✅ YES | `git ls-files src/pages/{charts,collaboration,education,energy}` returns 5 paths |
-| Is the spec (PICK R) future-proof? | ✅ YES | CubeBuilderPage not yet created, spec is normative contract for when it is |
-| Is the Modal upgrade (PICK S) backward-compatible? | ✅ YES | Existing aria-label consumers not affected; useId() ensures stable SSR id |
-| Is the verdict hotfix (Iris) dual-lens compliant? | ✅ YES | 4-ICP + 5-ICP composite preserved per Iris commit message |
+| Question                                           | Answer | Evidence                                                                         |
+| -------------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| Are all 4 artifacts in `origin/main`?              | ✅ YES | `git log --oneline origin/main -25` confirms all 4 SHAs                          |
+| Is the spec implementable in the page code?        | ✅ YES | D2 logic check passed for all 4                                                  |
+| Are the page files (PICK Q's 5 pages) real?        | ✅ YES | `git ls-files src/pages/{charts,collaboration,education,energy}` returns 5 paths |
+| Is the spec (PICK R) future-proof?                 | ✅ YES | CubeBuilderPage not yet created, spec is normative contract for when it is       |
+| Is the Modal upgrade (PICK S) backward-compatible? | ✅ YES | Existing aria-label consumers not affected; useId() ensures stable SSR id        |
+| Is the verdict hotfix (Iris) dual-lens compliant?  | ✅ YES | 4-ICP + 5-ICP composite preserved per Iris commit message                        |
 
 **D5 composite: 9.0/10** — RATIFICATION-GATE-READY+. All 4 artifacts are SHIPPED + PUSHED with D-002 3-witness verified.
 
@@ -141,13 +141,13 @@ The 5 P0 fixes map cleanly to WAI-ARIA 1.2 patterns:
 
 **Composite formula:** (D1 + D2 + D3 + D4 + D5) / 5 = (9.5 + 9.0 + 8.5 + 9.0 + 9.0) / 5 = **9.0/10 PLATINUM+**
 
-| Dimension | Score | Verdict |
-|-----------|-------|---------|
-| D1 Source | 9.5/10 | ✅ PLATINUM+ |
-| D2 Logic | 9.0/10 | ✅ PLATINUM |
-| D3 Method | 8.5/10 | ✅ PLATINUM |
-| D4 Robustness | 9.0/10 | ✅ PLATINUM |
-| D5 Composite | 9.0/10 | ✅ PLATINUM+ |
+| Dimension           | Score      | Verdict                                             |
+| ------------------- | ---------- | --------------------------------------------------- |
+| D1 Source           | 9.5/10     | ✅ PLATINUM+                                        |
+| D2 Logic            | 9.0/10     | ✅ PLATINUM                                         |
+| D3 Method           | 8.5/10     | ✅ PLATINUM                                         |
+| D4 Robustness       | 9.0/10     | ✅ PLATINUM                                         |
+| D5 Composite        | 9.0/10     | ✅ PLATINUM+                                        |
 | **5-ICP COMPOSITE** | **9.0/10** | **✅ PLATINUM+ ACCEPT 5/5 RATIFICATION-GATE-READY** |
 
 ---
@@ -197,20 +197,21 @@ This cross-witness is filed within the CAVEMAN 19/19 IDLE-PREVENT window per RUL
 
 ## §8 — RATIFICATION GATE IMPACT
 
-| Gate | Impact | Notes |
-|------|--------|-------|
-| G8 (0 stubs) | ➖ NEUTRAL | No page stubs added/removed |
-| G11 (192 wired) | ➖ NEUTRAL | No new pages wired (PICK Q refines existing 5) |
-| G12 (7/7 competitive gaps) | ➖ NEUTRAL | competitiveGaps.ts not touched in these PICKs |
-| G16 (axe-core 0/0) | 🟢 POSITIVE | PICK Q + S move G16 toward ✅; PICK R spec is forward-path |
-| G18 (dark mode 0 hardcoded) | ➖ NEUTRAL | Not addressed |
-| **Pages-Domain composite** | **🟢 POSITIVE** | **RATIFICATION-GATE-READY+ 9.0/10 PLATINUM+** |
+| Gate                        | Impact          | Notes                                                      |
+| --------------------------- | --------------- | ---------------------------------------------------------- |
+| G8 (0 stubs)                | ➖ NEUTRAL      | No page stubs added/removed                                |
+| G11 (192 wired)             | ➖ NEUTRAL      | No new pages wired (PICK Q refines existing 5)             |
+| G12 (7/7 competitive gaps)  | ➖ NEUTRAL      | competitiveGaps.ts not touched in these PICKs              |
+| G16 (axe-core 0/0)          | 🟢 POSITIVE     | PICK Q + S move G16 toward ✅; PICK R spec is forward-path |
+| G18 (dark mode 0 hardcoded) | ➖ NEUTRAL      | Not addressed                                              |
+| **Pages-Domain composite**  | **🟢 POSITIVE** | **RATIFICATION-GATE-READY+ 9.0/10 PLATINUM+**              |
 
 ---
 
 ## §9 — NEXT PICK per RULE #56 60s SLA
 
 After this PICK W ship:
+
 - **PICK X (T+1d post-RATIFICATION)**: CubeBuilderPage implementation per T-HE-024 spec — 8 regions × 6 axes + 6 test files. ETA: 2026-06-23/24.
 - **PICK Y (T+1d)**: 192-page axe-core verification sweep — cross-witness with Hera G16 + Sentinel E2E.
 - **PICK Z (T+1d)**: Modal consumer audit — sweep + upgrade any stragglers.

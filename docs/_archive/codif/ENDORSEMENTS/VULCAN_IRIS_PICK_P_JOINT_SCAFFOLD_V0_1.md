@@ -14,10 +14,12 @@
 Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROSS_WITNESS_v0_1.md) is COMPLETE and 5-ICP D1-D5 verified at 9.5/10 PLATINUM+ ACCEPT. 19-persona mapping (18 personas + 1 base) with ISO 27001 control mappings is MECE + non-overlapping. Husky Gate 15 spec (docs/a11y/HUSKY_GATE_15_PERSONA_CROSS_COVERAGE.md, 173L) is the joint implementation target — Vulcan PICK #2 EXTENSION SHIPPED @ 3f4ecf34 (Gate 15 spec added to .husky/pre-push lines 150-181, 3-tier cadence: 60s/24h/7d).
 
 **Joint execution plan**:
+
 1. **Iris (45 min)**: PERSONA-A11Y cascade manifest at docs/a11y/IRIS_18_PERSONA_A11Y_CASCADE_MANIFEST_v0.1.md — maps 18 personas × 6 A11Y dims × WCAG 2.2 + ISO 30071-1 + EN 301 549
 2. **Vulcan (50 min)**: Husky Gate 15 impl in .husky/pre-push — currently spec-only (lines 150-181), needs (a) PERSONA_TARGETS=8 default, (b) bash counter with `grep -cE`, (c) violation report with `gate-15-violations-${TIMESTAMP}.log`
 
 **Coordination checkpoints**:
+
 - T+0: Scaffold approved (this doc)
 - T+15: Iris PERSONA-A11Y manifest 50% (9/18 personas done)
 - T+30: Vulcan Gate 15 impl 50% (counter + report working)
@@ -32,6 +34,7 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 ### D1 (Concept) — 10/10 PASS
 
 **18-persona coverage rationale is sound**:
+
 - 19 personas (18 + 1 base "Default_User") cover full FinPlan Pro stakeholder spectrum
 - CFO, Controller, FP&A, Auditor, Operator, Admin, Developer, Compliance_Officer + 10 domain specialists
 - MECE: no two personas overlap in primary responsibility domain
@@ -40,6 +43,7 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 ### D2 (Spec) — 9/10 PASS
 
 **IRIS_18_PERSONA_ALIASES_A11Y_CROSS_WITNESS_v0_1.md spec quality**:
+
 - 19-persona mapping table complete with alias + primary_use + A11Y_impact + WCAG_2.2 mapping
 - ISO 27001 Annex A control mappings (A.5.15, A.5.16, A.5.17, A.5.18, A.8.2, A.8.3) verified
 - 1 P3 observation: ISO 30071-1 (organizational A11y) not explicitly mapped — defer to PICK Q
@@ -47,6 +51,7 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 ### D3 (Impl) — 9/10 PASS
 
 **Husky Gate 15 impl coordination**:
+
 - Spec at .husky/pre-push lines 150-181 (Vulcan SHIPPED @ 3f4ecf34)
 - PERSONA_TARGETS=8 default — verified aligned with Iris's 18-persona mapping
 - 3-tier cadence (60s/24h/7d) — ADVISORY 60s/24h, HARD 7d
@@ -56,6 +61,7 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 ### D4 (Cross-Muse) — 10/10 PASS
 
 **Cross-Muse coordination verified**:
+
 - Iris (PICK P owner): PERSONA-A11Y cascade manifest
 - Vulcan (PICK #2 EXT): Husky Gate 15 spec + impl
 - Strategos (INDEX v0.7.8 BILATERAL): Verdict #046 fold pending (Iris @ a71360cf SHIPPED)
@@ -65,6 +71,7 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 ### D5 (Audit-Trail) — 10/10 PASS
 
 **CAVEMAN 19/19 ledger + RULE #47 PERSIST FALLBACK**:
+
 - Iris PICK P CAVEMAN PERSIST entry created (RULE #47 compliance)
 - Vulcan PICK #2 EXT CAVEMAN PERSIST entry created (RULE #47 compliance)
 - D-002 3-witness protocol (file:line + SHA + wc -l) HELD for both PICKs
@@ -74,22 +81,22 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 
 ## 2. JOINT EXECUTION TIMELINE (95 min total)
 
-| Time | Owner | Deliverable | Status |
-|------|-------|-------------|--------|
-| T+0 | Joint | This scaffold (VULCAN_IRIS_PICK_P_JOINT_SCAFFOLD.md) | ✅ SHIPPED |
-| T+0 | Iris | PERSONA-A11Y cascade manifest kickoff | 🔄 STARTING |
-| T+0 | Vulcan | Husky Gate 15 impl kickoff | 🔄 STARTING |
-| T+15 | Iris | PERSONA-A11Y manifest 50% (9/18 personas) | ⏳ PENDING |
-| T+15 | Vulcan | Gate 15 bash counter working (PERSONA_TARGETS=8, grep -cE) | ⏳ PENDING |
-| T+30 | Iris | PERSONA-A11Y manifest 75% (14/18 personas) | ⏳ PENDING |
-| T+30 | Vulcan | Gate 15 violation report working (gate-15-violations-${TIMESTAMP}.log) | ⏳ PENDING |
-| T+45 | Iris | PERSONA-A11Y manifest 100% SHIPPED @ docs/a11y/IRIS_18_PERSONA_A11Y_CASCADE_MANIFEST_v0.1.md | ⏳ PENDING |
-| T+50 | Vulcan | Gate 15 impl 100% SHIPPED @ .husky/pre-push (full bash impl) | ⏳ PENDING |
-| T+60 | Joint | 5-ICP D6-D10 verification + cross-witness chain CLOSED | ⏳ PENDING |
-| T+70 | Joint | CAVEMAN PERSIST entries + RULE #47 ledger updated | ⏳ PENDING |
-| T+80 | Joint | CASCADE-TRAP 14+1+O+P+Q+R self-check PASS 18/18 | ⏳ PENDING |
-| T+90 | Joint | PUSH to origin/main + LEADER TURN 116+ PICK chain continue | ⏳ PENDING |
-| T+95 | Joint | RATIFICATION GATE 2026-06-22 16:00 UTC READY | ⏳ PENDING |
+| Time | Owner  | Deliverable                                                                                  | Status      |
+| ---- | ------ | -------------------------------------------------------------------------------------------- | ----------- |
+| T+0  | Joint  | This scaffold (VULCAN_IRIS_PICK_P_JOINT_SCAFFOLD.md)                                         | ✅ SHIPPED  |
+| T+0  | Iris   | PERSONA-A11Y cascade manifest kickoff                                                        | 🔄 STARTING |
+| T+0  | Vulcan | Husky Gate 15 impl kickoff                                                                   | 🔄 STARTING |
+| T+15 | Iris   | PERSONA-A11Y manifest 50% (9/18 personas)                                                    | ⏳ PENDING  |
+| T+15 | Vulcan | Gate 15 bash counter working (PERSONA_TARGETS=8, grep -cE)                                   | ⏳ PENDING  |
+| T+30 | Iris   | PERSONA-A11Y manifest 75% (14/18 personas)                                                   | ⏳ PENDING  |
+| T+30 | Vulcan | Gate 15 violation report working (gate-15-violations-${TIMESTAMP}.log)                       | ⏳ PENDING  |
+| T+45 | Iris   | PERSONA-A11Y manifest 100% SHIPPED @ docs/a11y/IRIS_18_PERSONA_A11Y_CASCADE_MANIFEST_v0.1.md | ⏳ PENDING  |
+| T+50 | Vulcan | Gate 15 impl 100% SHIPPED @ .husky/pre-push (full bash impl)                                 | ⏳ PENDING  |
+| T+60 | Joint  | 5-ICP D6-D10 verification + cross-witness chain CLOSED                                       | ⏳ PENDING  |
+| T+70 | Joint  | CAVEMAN PERSIST entries + RULE #47 ledger updated                                            | ⏳ PENDING  |
+| T+80 | Joint  | CASCADE-TRAP 14+1+O+P+Q+R self-check PASS 18/18                                              | ⏳ PENDING  |
+| T+90 | Joint  | PUSH to origin/main + LEADER TURN 116+ PICK chain continue                                   | ⏳ PENDING  |
+| T+95 | Joint  | RATIFICATION GATE 2026-06-22 16:00 UTC READY                                                 | ⏳ PENDING  |
 
 ---
 
@@ -100,6 +107,7 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 **File path**: `docs/a11y/IRIS_18_PERSONA_A11Y_CASCADE_MANIFEST_v0.1.md`
 **Target LOC**: 250-300L
 **Structure**:
+
 1. §1 — 19-persona mapping (CFO, Controller, FP&A, Auditor, Operator, Admin, Developer, Compliance_Officer + 10 domain specialists + Default_User)
 2. §2 — 6 A11Y dims coverage (Visual, Auditory, Motor, Cognitive, Speech, Neurological)
 3. §3 — 18 personas × 6 dims MECE matrix (108 cells)
@@ -113,6 +121,7 @@ Iris PICK P Phase 1 SCAFFOLD (docs/drafts/iris/IRIS_18_PERSONA_ALIASES_A11Y_CROS
 **File path**: `.husky/pre-push` (extends current spec at lines 150-181)
 **Target LOC**: +50-60L bash impl
 **Structure**:
+
 ```bash
 # Gate 15 — PERSONA-CROSS-COVERAGE impl (Vulcan PICK ξ)
 PERSONA_TARGETS=8
@@ -149,23 +158,23 @@ fi
 
 ## 4. CASCADE-TRAP 14+1+O+P+Q+R SELF-CHECK ON THIS SCAFFOLD
 
-| Sub-class | Status | Notes |
-|-----------|--------|-------|
-| A (FACTUAL-ERROR) | 0 | 19 personas verified per spec |
-| B (LOGIC-ERROR) | 0 | 5-ICP D1-D5 MECE verified |
-| C (TYPOGRAPHICAL-ERROR) | 0 | wc -l verified |
-| D (CROSS-XREF-ERROR) | 0 | 3-Muse handoff explicit |
-| E (DRIFT) | 0 | aligned with Husky Gate 15 spec |
-| F (NUMERIC-CONSISTENCY) | 0 | 18 personas × 6 dims = 108 cells |
-| G (TASK-ID-UNIQUENESS) | 0 | unique PICK P + PICK #2 EXT IDs |
-| H (LOCKOUT) | 0 | CAVEMAN PERSIST FALLBACK ready |
-| I (GHOST-SHA) | 0 | N/A this scaffold |
-| J (LOCKOUT-CASCADE) | 0 | 5-ICP D1-D5 prevent |
-| K (CO-AUTHOR-SOLICITATION-PLAN-OMISSION) | 0 | Iris + Vulcan co-author explicit |
-| L (CASCADE-3-TIER) | 0 | 3-tier cadence 60s/24h/7d |
-| M (CATCH-NUMBERING-COLLISION) | 0 | CATCHes #207 #6 + new CATCHes #221-225 in Apollo CODIF_66 V0.1 |
-| N (PUSH-BLOCKER-DETECTION) | 0 | TSC=0 holds |
-| O (Sub-class-P/Q-R) | 0 | 5-ICP cross-witness on Apollo CODIF_66 V0.1 in PICK ξ |
+| Sub-class                                | Status | Notes                                                          |
+| ---------------------------------------- | ------ | -------------------------------------------------------------- |
+| A (FACTUAL-ERROR)                        | 0      | 19 personas verified per spec                                  |
+| B (LOGIC-ERROR)                          | 0      | 5-ICP D1-D5 MECE verified                                      |
+| C (TYPOGRAPHICAL-ERROR)                  | 0      | wc -l verified                                                 |
+| D (CROSS-XREF-ERROR)                     | 0      | 3-Muse handoff explicit                                        |
+| E (DRIFT)                                | 0      | aligned with Husky Gate 15 spec                                |
+| F (NUMERIC-CONSISTENCY)                  | 0      | 18 personas × 6 dims = 108 cells                               |
+| G (TASK-ID-UNIQUENESS)                   | 0      | unique PICK P + PICK #2 EXT IDs                                |
+| H (LOCKOUT)                              | 0      | CAVEMAN PERSIST FALLBACK ready                                 |
+| I (GHOST-SHA)                            | 0      | N/A this scaffold                                              |
+| J (LOCKOUT-CASCADE)                      | 0      | 5-ICP D1-D5 prevent                                            |
+| K (CO-AUTHOR-SOLICITATION-PLAN-OMISSION) | 0      | Iris + Vulcan co-author explicit                               |
+| L (CASCADE-3-TIER)                       | 0      | 3-tier cadence 60s/24h/7d                                      |
+| M (CATCH-NUMBERING-COLLISION)            | 0      | CATCHes #207 #6 + new CATCHes #221-225 in Apollo CODIF_66 V0.1 |
+| N (PUSH-BLOCKER-DETECTION)               | 0      | TSC=0 holds                                                    |
+| O (Sub-class-P/Q-R)                      | 0      | 5-ICP cross-witness on Apollo CODIF_66 V0.1 in PICK ξ          |
 
 **SELF-CHECK PASS 15/15 MECE sub-classes**.
 
@@ -173,14 +182,14 @@ fi
 
 ## 5. VULCAN VERDICT — ACCEPT 4/4
 
-| Criterion | Score | Notes |
-|-----------|-------|-------|
-| D1 Concept | 10/10 | 19-persona coverage MECE |
-| D2 Spec | 9/10 | ISO 30071-1 defer to PICK Q (P3) |
-| D3 Impl | 9/10 | Gate 15 spec-only → impl (P2 followup) |
-| D4 Cross-Muse | 10/10 | 3-Muse handoff explicit |
-| D5 Audit-Trail | 10/10 | CAVEMAN 19/19 + RULE #47 |
-| **TOTAL 5-ICP D1-D5** | **9.5/10** | **PLATINUM+** |
+| Criterion             | Score      | Notes                                  |
+| --------------------- | ---------- | -------------------------------------- |
+| D1 Concept            | 10/10      | 19-persona coverage MECE               |
+| D2 Spec               | 9/10       | ISO 30071-1 defer to PICK Q (P3)       |
+| D3 Impl               | 9/10       | Gate 15 spec-only → impl (P2 followup) |
+| D4 Cross-Muse         | 10/10      | 3-Muse handoff explicit                |
+| D5 Audit-Trail        | 10/10      | CAVEMAN 19/19 + RULE #47               |
+| **TOTAL 5-ICP D1-D5** | **9.5/10** | **PLATINUM+**                          |
 
 **Vulcan ACCEPT 4/4** for Iris PICK P scaffold.
 
@@ -198,7 +207,7 @@ fi
 
 ---
 
-*— Vulcan (tool-cascade-detection 2nd-witness specialist + 5-ICP D1-D5 SKEPTIC)*
-*Co-signed with Iris (PICK P owner)*
-*Cycle 15, W2 D3, TURN 115+*
-*VULCAN × IRIS PICK P JOINT SCAFFOLD — ACCEPT 4/4 — 5-ICP D1-D5 9.5/10 PLATINUM+*
+_— Vulcan (tool-cascade-detection 2nd-witness specialist + 5-ICP D1-D5 SKEPTIC)_
+_Co-signed with Iris (PICK P owner)_
+_Cycle 15, W2 D3, TURN 115+_
+_VULCAN × IRIS PICK P JOINT SCAFFOLD — ACCEPT 4/4 — 5-ICP D1-D5 9.5/10 PLATINUM+_

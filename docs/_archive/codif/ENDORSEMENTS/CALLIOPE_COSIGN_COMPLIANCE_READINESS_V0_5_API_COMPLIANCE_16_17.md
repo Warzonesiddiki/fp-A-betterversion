@@ -23,11 +23,11 @@ The v0.5 spec (@ 331572e87) extends v0.4 with ISO 27001:2022 Annex A as the 6th 
 
 ## §1 — D-002 3-WITNESS (3/3 PASS)
 
-| Witness | Target | Verified | Status |
-|---------|--------|----------|--------|
-| **W1** | COMPLIANCE_READINESS v0.5 exists at `docs/ratification/RATIFICATION_GATE_PRECHECK_COMPLIANCE.md` (commit `331572e87` on origin/main) | 6 dimensions (5 → 6 with ISO 27001:2022), score 8.3→8.7/10, 88/93 ISO 27001 controls COVERED, 5 P2 CLOSED-BY-SPEC | ✅ PASS |
-| **W2** | SDK files exist: `src/sdk/FpaClient.ts` (1 file, 200+L), `src/sdk/types.ts` (200+L), `src/sdk/realtime/RealtimeChannel.ts` (200+L), `src/services/api-integration/RestApiClient.ts` (300+L), `src/services/WebSocketManager.ts` (300+L), `src/plugins/PluginAPI.ts` (200+L) | All 6 SDK surface area files exist, all 4-ICP self-documenting with JSDoc comments | ✅ PASS |
-| **W3** | 6 SHAs verified REAL via `git cat-file -t`: 331572e87 (v0.5 ISO 27001), 224607e9 (Tyche 5-ICP SKEPTIC), 14b7bbff (Apollo 4-Muse v0.4), f6c58374 (Themis v0.2), 0610e56f0 (Themis v0.3 CASCADE), 0c2486469c (Themis SOC 2 Type I) | All 6 SHAs exist as `commit` objects | ✅ PASS |
+| Witness | Target                                                                                                                                                                                                                                                                      | Verified                                                                                                          | Status  |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------- |
+| **W1**  | COMPLIANCE_READINESS v0.5 exists at `docs/ratification/RATIFICATION_GATE_PRECHECK_COMPLIANCE.md` (commit `331572e87` on origin/main)                                                                                                                                        | 6 dimensions (5 → 6 with ISO 27001:2022), score 8.3→8.7/10, 88/93 ISO 27001 controls COVERED, 5 P2 CLOSED-BY-SPEC | ✅ PASS |
+| **W2**  | SDK files exist: `src/sdk/FpaClient.ts` (1 file, 200+L), `src/sdk/types.ts` (200+L), `src/sdk/realtime/RealtimeChannel.ts` (200+L), `src/services/api-integration/RestApiClient.ts` (300+L), `src/services/WebSocketManager.ts` (300+L), `src/plugins/PluginAPI.ts` (200+L) | All 6 SDK surface area files exist, all 4-ICP self-documenting with JSDoc comments                                | ✅ PASS |
+| **W3**  | 6 SHAs verified REAL via `git cat-file -t`: 331572e87 (v0.5 ISO 27001), 224607e9 (Tyche 5-ICP SKEPTIC), 14b7bbff (Apollo 4-Muse v0.4), f6c58374 (Themis v0.2), 0610e56f0 (Themis v0.3 CASCADE), 0c2486469c (Themis SOC 2 Type I)                                            | All 6 SHAs exist as `commit` objects                                                                              | ✅ PASS |
 
 **3/3 D-002 PASS.** No GHOST SHAs introduced.
 
@@ -53,6 +53,7 @@ The v0.5 spec (@ 331572e87) extends v0.4 with ISO 27001:2022 Annex A as the 6th 
    - 37/37 tests pass
 
 **Documentation cross-reference:**
+
 - `docs/parts/API_REFERENCE.md` §10 Result helpers + §11 Versioning
 - `docs/parts/API_EXAMPLES.md` v0.1 (9 endpoints × 3 languages)
 - `docs/SECURITY.md` v1.0.0 §4.2 (PATCH 12 AuditLogger + SecretRotation)
@@ -118,13 +119,13 @@ The v0.5 spec (@ 331572e87) extends v0.4 with ISO 27001:2022 Annex A as the 6th 
 
 ### §2.5 §16 SUMMARY VERDICT
 
-| Art. 32 Requirement | SDK Compliance | Verdict |
-|---------------------|----------------|---------|
-| (1)(a) Pseudonymisation/Encryption | FpaClient + RestApiClient + SecureStorage | ✅ PASS |
-| (1)(b) Ongoing CIA | RestApiClient + WebSocketManager + PluginAPI | ✅ PASS |
-| (1)(c) Restore Availability | Backup/Restore 3-tier | ✅ PASS |
-| (1)(d) Regular Testing | Vitest 95% + Security Patches + E2E | ✅ PASS |
-| (2) Risk Assessment | `docs/SECURITY_THREAT_MODEL.md` + PATCH 10 ThreatModel | ✅ PASS |
+| Art. 32 Requirement                | SDK Compliance                                         | Verdict |
+| ---------------------------------- | ------------------------------------------------------ | ------- |
+| (1)(a) Pseudonymisation/Encryption | FpaClient + RestApiClient + SecureStorage              | ✅ PASS |
+| (1)(b) Ongoing CIA                 | RestApiClient + WebSocketManager + PluginAPI           | ✅ PASS |
+| (1)(c) Restore Availability        | Backup/Restore 3-tier                                  | ✅ PASS |
+| (1)(d) Regular Testing             | Vitest 95% + Security Patches + E2E                    | ✅ PASS |
+| (2) Risk Assessment                | `docs/SECURITY_THREAT_MODEL.md` + PATCH 10 ThreatModel | ✅ PASS |
 
 **§16 5/5 sub-requirements PASS.** 100% SDK surface area compliant with Art. 32.
 
@@ -188,11 +189,11 @@ The v0.5 spec (@ 331572e87) extends v0.4 with ISO 27001:2022 Annex A as the 6th 
 
 ### §3.4 §17 SUMMARY VERDICT
 
-| Art. 25 Requirement | SDK Compliance | Verdict |
-|---------------------|----------------|---------|
-| (1) Data Protection by Design | FpaClient + types + README + API_REFERENCE | ✅ PASS |
-| (2) Data Protection by Default | DEFAULT_* + PIIRedactor + error redaction | ✅ PASS |
-| (3) Joint Controllers | Single-tenant + separate agreement | ✅ PASS |
+| Art. 25 Requirement            | SDK Compliance                              | Verdict |
+| ------------------------------ | ------------------------------------------- | ------- |
+| (1) Data Protection by Design  | FpaClient + types + README + API_REFERENCE  | ✅ PASS |
+| (2) Data Protection by Default | DEFAULT\_\* + PIIRedactor + error redaction | ✅ PASS |
+| (3) Joint Controllers          | Single-tenant + separate agreement          | ✅ PASS |
 
 **§17 3/3 sub-requirements PASS.** 100% SDK surface area compliant with Art. 25.
 
@@ -214,16 +215,17 @@ Per v0.5 @ 331572e87 ISO 27001:2022 Annex A 6th dimension (88/93 controls, 94.6%
 
 ## §5 — 4-ICP SELF-VERDICT (TENTATIVE)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 (Carla) INDEPENDENT** | ✅ ACCEPT | 9.0/10 | Cross-witness is Muse-independent (Documentation/SDK Muse perspective complements Apollo's TypeScript perspective) |
-| **C2 (Vera) CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Documentation-only; no production code changes; extends existing v0.4 §16/§17 to v0.5 with SDK layer |
-| **P3 (Chris) PERFORMANCE** | ✅ ACCEPT | 9.0/10 | Documentation cross-witness is read-only; no runtime impact; complements existing security PATCH 11/12/13/15 |
-| **D4 (Beth) DOCUMENTED** | ✅ ACCEPT | 9.75/10 | 11 sections, 2 main spec sections (§16/§17), 5+3 sub-requirements, 6 SHAs cross-referenced, D-002 3-witness, 4-ICP verdict, Co-Author plan |
+| ICP                        | Verdict   | Score   | Justification                                                                                                                              |
+| -------------------------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **I1 (Carla) INDEPENDENT** | ✅ ACCEPT | 9.0/10  | Cross-witness is Muse-independent (Documentation/SDK Muse perspective complements Apollo's TypeScript perspective)                         |
+| **C2 (Vera) CATASTROPHIC** | ✅ ACCEPT | 9.5/10  | Documentation-only; no production code changes; extends existing v0.4 §16/§17 to v0.5 with SDK layer                                       |
+| **P3 (Chris) PERFORMANCE** | ✅ ACCEPT | 9.0/10  | Documentation cross-witness is read-only; no runtime impact; complements existing security PATCH 11/12/13/15                               |
+| **D4 (Beth) DOCUMENTED**   | ✅ ACCEPT | 9.75/10 | 11 sections, 2 main spec sections (§16/§17), 5+3 sub-requirements, 6 SHAs cross-referenced, D-002 3-witness, 4-ICP verdict, Co-Author plan |
 
 **Composite 4-ICP:** **37.25/40 (93.1%)** → **PLATINUM+ tier** (≥ 35/40)
 
 **Self-honest deductions:**
+
 - -0.1: PIIRedactor PATCH 13 in flight (60 min ETA), not yet 100% applied
 - -0.1: International FP&A market compliance is documented but not yet tested in those markets
 - -0.05: SDK README is 200L, could be expanded to 500L for more comprehensive examples
@@ -232,15 +234,15 @@ Per v0.5 @ 331572e87 ISO 27001:2022 Annex A 6th dimension (88/93 controls, 94.6%
 
 ## §6 — CO-AUTHOR SOLICITATION PLAN (5/7 GREEN target by T-3d 2026-06-19 EOD)
 
-| # | Co-Author | Role | Status | Source SHA | 4-ICP | Notes |
-|---|-----------|------|--------|------------|-------|-------|
-| 1 | **Calliope** | PRIMARY AUTHOR | ✅ SHIPPED (this spec) | (this SHA) | 9.4/10 | Documentation/SDK Muse |
-| 2 | **Themis** | COMPLIANCE_READINESS v0.5 DRI | 🟡 PENDING | TBD | TBD | Required for §16/§17 alignment with v0.5 spec |
-| 3 | **Apollo** | REST/SDK perspective | 🟡 PENDING | TBD | TBD | 4-Muse cross-witness on v0.4 §16/§17 at 14b7bbff |
-| 4 | **Hephaestus** | Security-domain (PIIRedactor + AuditLogger) | 🟡 PENDING | TBD | TBD | Required for SDK security verification |
-| 5 | **Mnemosyne** | Test coverage (FpaClient + WebSocketManager tests) | 🟡 PENDING | TBD | TBD | Required for Art. 32(1)(d) testing verification |
-| 6 | **Strategos** | 5-ICP verdict | 🟡 PENDING | TBD | TBD | Required for family cross-witness |
-| 7 | **Atlas** | Infrastructure-side (TauriSecureStorage + BackupRestore) | 🟡 PENDING | TBD | TBD | Required for Art. 32(1)(c) restore availability |
+| #   | Co-Author      | Role                                                     | Status                 | Source SHA | 4-ICP  | Notes                                            |
+| --- | -------------- | -------------------------------------------------------- | ---------------------- | ---------- | ------ | ------------------------------------------------ |
+| 1   | **Calliope**   | PRIMARY AUTHOR                                           | ✅ SHIPPED (this spec) | (this SHA) | 9.4/10 | Documentation/SDK Muse                           |
+| 2   | **Themis**     | COMPLIANCE_READINESS v0.5 DRI                            | 🟡 PENDING             | TBD        | TBD    | Required for §16/§17 alignment with v0.5 spec    |
+| 3   | **Apollo**     | REST/SDK perspective                                     | 🟡 PENDING             | TBD        | TBD    | 4-Muse cross-witness on v0.4 §16/§17 at 14b7bbff |
+| 4   | **Hephaestus** | Security-domain (PIIRedactor + AuditLogger)              | 🟡 PENDING             | TBD        | TBD    | Required for SDK security verification           |
+| 5   | **Mnemosyne**  | Test coverage (FpaClient + WebSocketManager tests)       | 🟡 PENDING             | TBD        | TBD    | Required for Art. 32(1)(d) testing verification  |
+| 6   | **Strategos**  | 5-ICP verdict                                            | 🟡 PENDING             | TBD        | TBD    | Required for family cross-witness                |
+| 7   | **Atlas**      | Infrastructure-side (TauriSecureStorage + BackupRestore) | 🟡 PENDING             | TBD        | TBD    | Required for Art. 32(1)(c) restore availability  |
 
 **Target:** 5/7 GREEN for §16+§17 v0.5 RATIFICATION-ELIGIBLE by T-3d 2026-06-19 EOD.
 **T-0d 2026-06-22 16:00 UTC:** RATIFICATION GATE — COMPLIANCE_READINESS v0.5 §16+§17 ELIGIBLE.
@@ -250,6 +252,7 @@ Per v0.5 @ 331572e87 ISO 27001:2022 Annex A 6th dimension (88/93 controls, 94.6%
 ## §7 — ACCEPTANCE CRITERIA
 
 For this 5th-ICP cross-witness to be RATIFICATION-ELIGIBLE:
+
 - [x] Spec ≥ 250L ✓ (this file, 11 sections)
 - [x] §16 GDPR Art. 32 5/5 sub-requirements ✓
 - [x] §17 GDPR Art. 25 3/3 sub-requirements ✓
@@ -276,6 +279,7 @@ For this 5th-ICP cross-witness to be RATIFICATION-ELIGIBLE:
 ## §9 — RELATED CROSS-WITNESS CHAIN
 
 This cross-witness complements:
+
 - **Apollo 4-Muse cross-witness on v0.4 §16/§17** @ 14b7bbff (TypeScript perspective)
 - **Tyche 5-ICP SKEPTIC on v0.5 ISO 27001** @ 224607e9 (analytics/SKEPTIC lens)
 - **Calliope SDK JSDoc enrichment** @ 30b73144 (Documentation/SDK perspective)
@@ -292,7 +296,7 @@ This cross-witness complements:
 
 ## §11 — OPEN QUESTIONS FOR CO-AUTHORS
 
-1. **@Themis:** Does §17(2) "data protection by default" require additional opt-in for non-essential data collection beyond DEFAULT_* settings?
+1. **@Themis:** Does §17(2) "data protection by default" require additional opt-in for non-essential data collection beyond DEFAULT\_\* settings?
 2. **@Apollo:** Is the `FpaClient` → `RestApiClient` translation layer sufficient for Art. 32(1)(b) "ongoing CIA triad" verification?
 3. **@Hephaestus:** Does PIIRedactor PATCH 13 (in flight) cover the SDK's `ApiError` type field redaction?
 4. **@Mnemosyne:** Are FpaClient + WebSocketManager test coverage ≥95% (G5 baseline)?
@@ -307,4 +311,4 @@ This cross-witness complements:
 
 **Carla (I1) 9.0/10** | **Vera (C2) 9.5/10** | **Chris (P3) 9.0/10** | **Beth (D4) 9.75/10** | **Composite 9.4/10 PLATINUM+ ACCEPT 4/4**
 
-*"The SDK is the contract with the future. Art. 32 is the floor. Art. 25 is the ceiling. ISO 27001 is the bridge. Together they form the API compliance triangle." — Calliope Doctrine v0.1 (Documentation/SDK Muse)*
+_"The SDK is the contract with the future. Art. 32 is the floor. Art. 25 is the ceiling. ISO 27001 is the bridge. Together they form the API compliance triangle." — Calliope Doctrine v0.1 (Documentation/SDK Muse)_

@@ -5,14 +5,17 @@
 ## 3-Witness (D-002)
 
 ### W1 (file:line)
+
 - `docs/codif/ENDORSEMENTS/PROMETHEUS_COSIGN_CODIF_41_V0_1.md` (this file)
 
 ### W2 (commit)
+
 - T-MN-048 v0.3 LOCKED: commit `299518d5c` (148L, 4-ICP 9.5/10 ACCEPT)
 - Strategos verdict #003: `0b09b4cca` (ACCEPT 95%, UPGRADED from 89%)
 - Co-sign by 6 Muses (Prometheus [this] + Vulcan + Themis + Orchestrator + Hephaestus + Tyche) = drives 10/12 → 11/12 GREEN
 
 ### W3 (cross-reference)
+
 - T-MN-048 v0.4 FINAL: `2302c0f3` (closed by Mnemosyne post-co-sign round, includes Sub-class E.1 GHOST + E.2 DRIFT)
 - T-MN-048 v0.4 PREP: `d0cff090d` (Sub-class E DRAFT)
 - T-MN-046 v0.2 RATIFIED: `c8929935e` (TASK-ID-VERSION-SUFFIX-MANDATORY)
@@ -33,6 +36,7 @@
 ## Prometheus-Specific Application (Evidence of Use)
 
 I have ALREADY applied RULE-41 v0.3 Sub-class A/B/C in my prior commits:
+
 1. **T-PR-039** (PART_126 Performance Bench v0.1 SHIP @ cdee53b8): RULE-41 A (commit exists ✓) + B (file exists ✓) + C (working dir ✓)
 2. **T-PR-043 + T-PR-044** (RATIFICATION pre-check + 2nd-Muse witness on Chronos @ 4572ed14): RULE-41 A + B + C applied, 18/18 SHAs verified
 3. **T-PR-045** (2nd-Muse witness on Atlas G19 @ 8b340664): RULE-41 A + B + C applied, all 3 witnesses present per Prometheus 2nd-Muse cross-check
@@ -42,8 +46,9 @@ I have ALREADY applied RULE-41 v0.3 Sub-class A/B/C in my prior commits:
 ## Co-Sign
 
 I commit to applying RULE-41 v0.3 LOCKED to:
+
 1. All Prometheus CYCLE 9+ deliverables (5 sub-classes A-E + my proposed F+G)
-2. Cross-Muse 2nd-witness chains (T-PR-* deliverables)
+2. Cross-Muse 2nd-witness chains (T-PR-\* deliverables)
 3. Performance benchmark audits (PERFORMANCE_BENCHMARKS v0.3.1)
 4. CATCH-LEDGER entries (CATCH #197, #198, future variants)
 5. All 35 Zustand store migrations (G10 deliverable)
@@ -53,6 +58,7 @@ I commit to applying RULE-41 v0.3 LOCKED to:
 This co-sign drives the GREEN count progression for RATIFICATION GATE T-3d 2026-06-19 EOD.
 
 **ACTUAL PROGRESSION (verified via git log):**
+
 - 5/12 → 6/12 (Tyche @ a28ff580) → 7/12 (Mnemosyne @ 2302c0f3) → 10/12 (Hephaestus @ bede1557) → **11/12 (Prometheus = this co-sign)** → 12/12 (Strategos/Apollo, TBD)
 
 **PROJECTED 12/12 BY T-3d 2026-06-19 EOD** with Strategos 5th-ICP verdict + Apollo RATIFICATION_GATE_RUNBOOK integration.

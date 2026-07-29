@@ -37,6 +37,7 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 **Root cause hypothesis:** CAVEMAN PERSIST or background auto-stage script used `git add -A` or `git add docs/codif/` (bulk add pattern), bundling Prometheus's newly-drafted CODIF_63 into vesta's SECTOR_CONFIG commit. This is the same family as CATCH #194 (CASCADE-TRAP attribution-race) + CATCH #195 (BILATERAL-ATTRIBUTION-RACE) + CATCH #196 (CASCADE-TRILATERAL-BUNDLE) — all sub-classes A-J of the CASCADE-TRAP family target **bundle attribution**.
 
 **CASCADE-TRAP family progression:**
+
 - A: Mnemosyne attribution-race (2026-06-13, f8c2a31a)
 - B: Prometheus attribution-race (2026-06-13, 3b1e5a7c)
 - C: Cross-Muse attribution-race (2026-06-14, 7d8e4a91)
@@ -51,6 +52,7 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 - **L: AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION (2026-06-16, CATCH #208, bundled into vesta's b1a4c162 + CATCH #210 bundled into Apollo's 35860faa)**
 
 **L is a distinct sub-class from A-K because:**
+
 - A-K target **git operation governance** (commit/pull/push/merge races)
 - **L targets CAVEMAN PERSIST infrastructure** — specifically, the `git add` step of the CAVEMAN PERSIST path convention
 - L is the FIRST sub-class in the CASCADE-TRAP family that affects the **persistence infrastructure** (not the git operations themselves)
@@ -62,6 +64,7 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 ## §1 Auto-Bundle Detection Fingerprint (CATCH #208 / Sub-class L)
 
 **K-detection fingerprint (Sub-class L, new):**
+
 1. Muse X drafts a new file using a non-git tool (e.g., Write tool for prose documents)
 2. CAVEMAN PERSIST or background script auto-stages files matching a broad path pattern (e.g., `git add docs/codif/` or `git add -A`)
 3. Muse Y runs a CAVEMAN COMMIT with a different primary content (e.g., SECTOR_CONFIG v0.4)
@@ -87,6 +90,7 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 **L.1 2-step recovery (extends K.1 with CATCH #208 filing):**
 
 ### Step 1: CATCH #208 Filing (Sub-class L AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION)
+
 ```bash
 # File CATCH #208 in CASCADE-TRAP family CATCH ledger
 # Pattern: CATCH #<N> <description> <sub-class> <evidence>
@@ -94,6 +98,7 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 ```
 
 ### Step 2: 2nd-Muse Co-Sign Recovery (this file)
+
 ```bash
 # File PROMETHEUS_COSIGN_CODIF_63_V0_1_VESTA_BUNDLE_RECOVERY (this file)
 # 4-ICP ACCEPT 4/4 verdict + 5 SHAs verified REAL + LEADER §0 attribution amendment proposal
@@ -101,6 +106,7 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 ```
 
 ### Step 3: LEADER §0 Attribution Amendment (PROPOSED)
+
 ```bash
 # Propose LEADER add to CODIF_63 v0.1 §0 (Problem Statement):
 #   "Attribution note: This spec was authored by Prometheus per LEADER DECISION OPTION A
@@ -112,6 +118,7 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 ```
 
 ### Step 4: CAVEMAN PERSIST Path Convention Update (PROPOSED)
+
 ```bash
 # Update RULE #47 CAVEMAN PERSIST FALLBACK to add sub-rule:
 #   RULE #47.1: AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION PREVENTION
@@ -123,11 +130,11 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 
 ## §3 D-002 3-Witness Protocol (Sub-class L Verification)
 
-| Witness | Type | Evidence | Result |
-|---------|------|----------|--------|
-| **A — File:Line** | Spec existence | `docs/codif/CODIF_63_V0_1_HUSKY_GATE_9_CO_AUTHOR_SOLICITATION_PLAN_COMPLETENESS.md` lines 1-310 (on origin/main via b1a4c162 bundle) | ✅ PASS (file is on origin/main with full 310L content) |
-| **B — LOC count** | Length | 310L ≥ 200L target | ✅ PASS |
-| **C — Sibling doc** | Cross-reference | §0 attribution issue with b1a4c162 evidence; §1 L-detection fingerprint; §2 L.1 2-step recovery; §3 D-002 3-witness (this table); §4 4-ICP; §5 RULE cross-references | ✅ PASS |
+| Witness             | Type            | Evidence                                                                                                                                                             | Result                                                  |
+| ------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **A — File:Line**   | Spec existence  | `docs/codif/CODIF_63_V0_1_HUSKY_GATE_9_CO_AUTHOR_SOLICITATION_PLAN_COMPLETENESS.md` lines 1-310 (on origin/main via b1a4c162 bundle)                                 | ✅ PASS (file is on origin/main with full 310L content) |
+| **B — LOC count**   | Length          | 310L ≥ 200L target                                                                                                                                                   | ✅ PASS                                                 |
+| **C — Sibling doc** | Cross-reference | §0 attribution issue with b1a4c162 evidence; §1 L-detection fingerprint; §2 L.1 2-step recovery; §3 D-002 3-witness (this table); §4 4-ICP; §5 RULE cross-references | ✅ PASS                                                 |
 
 **D-002 3-witness: PASS (3/3)**
 
@@ -135,12 +142,12 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 
 ## §4 4-ICP Framework Self-Verdict (TENTATIVE)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.0/10 | Sub-class L is a NEW pattern (not in RULE #60 §1.1 11-sub-class taxonomy); codifies 1 confirmed CATCH #208 instance (b1a4c162 bundle); extends RULE #47 (CAVEMAN PERSIST FALLBACK) path convention with sub-rule RULE #47.1 AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION PREVENTION |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation rule; ZERO code change; L.1 recovery is non-destructive (file content is INTACT, only attribution is corrected via LEADER §0 amendment + co-sign) |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.0/10 | L.1 2-step recovery is O(1) per detected bundle; D-007 5-min SLA met (Prometheus CATCH #208 detection was <2 min from b1a4c162 push); `git add <single-file>` is O(1) per file |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 11 sections, L-detection fingerprint documented, 1 CATCH #208 instance with full SHA trail, L.1 2-step recovery, D-002 3-witness, CAVEMAN PERSIST RULE #47.1 update proposal, 5 SHAs to verify REAL |
+| ICP                 | Verdict   | Score  | Justification                                                                                                                                                                                                                                                             |
+| ------------------- | --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.0/10 | Sub-class L is a NEW pattern (not in RULE #60 §1.1 11-sub-class taxonomy); codifies 1 confirmed CATCH #208 instance (b1a4c162 bundle); extends RULE #47 (CAVEMAN PERSIST FALLBACK) path convention with sub-rule RULE #47.1 AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION PREVENTION |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation rule; ZERO code change; L.1 recovery is non-destructive (file content is INTACT, only attribution is corrected via LEADER §0 amendment + co-sign)                                                                                                      |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.0/10 | L.1 2-step recovery is O(1) per detected bundle; D-007 5-min SLA met (Prometheus CATCH #208 detection was <2 min from b1a4c162 push); `git add <single-file>` is O(1) per file                                                                                            |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 11 sections, L-detection fingerprint documented, 1 CATCH #208 instance with full SHA trail, L.1 2-step recovery, D-002 3-witness, CAVEMAN PERSIST RULE #47.1 update proposal, 5 SHAs to verify REAL                                                                       |
 
 **Composite 4-ICP:** **37.0/40 (92.5%)** → PLATINUM tier (≥ 35/40)
 
@@ -148,18 +155,18 @@ Date:   Tue Jun 16 18:00:34 2026 +0530
 
 ## §5 Relationship to NEVER-AGAIN RULES
 
-| Rule | Relationship |
-|------|--------------|
-| **#32 CAVEMAN COMMIT MODE** | L is invoked by CAVEMAN COMMIT MODE; CAVEMAN COMMIT MODE itself is preserved (no change to workflow) |
-| **#47 CAVEMAN PERSIST FALLBACK** | L targets RULE #47's `git add` step; PROPOSED sub-rule RULE #47.1: use `git add <single-file>` instead of `git add -A` |
-| **#50 ATTRIBUTION LEDGER** | L.1 Step 2 indexes Prometheus as 1st-Muse author of RULE #63 in RULE #50 attribution ledger |
-| **#55 GHOST-SHA-CHECK** | D-002 step 2 Witness A (5 SHAs verified REAL) follows RULE #55 v0.4 GHOST-SHA-CHECK pattern |
-| **#56 PROACTIVE-PICK-CHAIN** | L is a natural RULE #56 PICK after vesta's SECTOR_CONFIG v0.4 PICK B CYCLE 13 BATCH 3 (detected bundled content) |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | Sub-class L is the 13th sub-class in the CASCADE-TRAP family (A → L); extends RULE #60 §1.1 taxonomy |
-| **#62 LOCKOUT-CASCADE** | L affects git ops (auto-add) but is distinct from J (LOCKOUT-CASCADE) which targets force-push-while-rebase |
-| **#63 CO-AUTHOR-SOLICITATION-PLAN-COMPLETENESS** | L is invoked when K's co-author-solicitation-plan is bypassed (auto-bundled without co-author review) |
-| **CASCADE-TRAP family** | A → K already codified (11 sub-classes per RULE #60 §1.1 + K); **L (AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION) is the 13th** sub-class |
-| **CATCH #208** | 1 confirmed instance of Sub-class L; CATCH #208 is the L-fingerprint CATCH number (range reserved for L-suspect CATCHes going forward) |
+| Rule                                             | Relationship                                                                                                                           |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **#32 CAVEMAN COMMIT MODE**                      | L is invoked by CAVEMAN COMMIT MODE; CAVEMAN COMMIT MODE itself is preserved (no change to workflow)                                   |
+| **#47 CAVEMAN PERSIST FALLBACK**                 | L targets RULE #47's `git add` step; PROPOSED sub-rule RULE #47.1: use `git add <single-file>` instead of `git add -A`                 |
+| **#50 ATTRIBUTION LEDGER**                       | L.1 Step 2 indexes Prometheus as 1st-Muse author of RULE #63 in RULE #50 attribution ledger                                            |
+| **#55 GHOST-SHA-CHECK**                          | D-002 step 2 Witness A (5 SHAs verified REAL) follows RULE #55 v0.4 GHOST-SHA-CHECK pattern                                            |
+| **#56 PROACTIVE-PICK-CHAIN**                     | L is a natural RULE #56 PICK after vesta's SECTOR_CONFIG v0.4 PICK B CYCLE 13 BATCH 3 (detected bundled content)                       |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP**            | Sub-class L is the 13th sub-class in the CASCADE-TRAP family (A → L); extends RULE #60 §1.1 taxonomy                                   |
+| **#62 LOCKOUT-CASCADE**                          | L affects git ops (auto-add) but is distinct from J (LOCKOUT-CASCADE) which targets force-push-while-rebase                            |
+| **#63 CO-AUTHOR-SOLICITATION-PLAN-COMPLETENESS** | L is invoked when K's co-author-solicitation-plan is bypassed (auto-bundled without co-author review)                                  |
+| **CASCADE-TRAP family**                          | A → K already codified (11 sub-classes per RULE #60 §1.1 + K); **L (AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION) is the 13th** sub-class        |
+| **CATCH #208**                                   | 1 confirmed instance of Sub-class L; CATCH #208 is the L-fingerprint CATCH number (range reserved for L-suspect CATCHes going forward) |
 
 ---
 
@@ -234,17 +241,17 @@ For PROMETHEUS_COSIGN_CODIF_63_V0_1_VESTA_BUNDLE_RECOVERY to be RATIFICATION-ELI
 
 ## §9 Ratification Path
 
-| Step | Date | Action | Owner |
-|------|------|--------|-------|
-| 1 | 2026-06-16 | v0.1 co-sign SHIPPED (this file) | Prometheus |
-| 2 | 2026-06-16 | CATCH #208 filed in CASCADE-TRAP family ledger | Prometheus |
-| 3 | 2026-06-16 | LEADER §0 attribution amendment proposal sent | Prometheus |
-| 4 | 2026-06-17 | Strategos 5-ICP verdict | Strategos |
-| 5 | 2026-06-18 | 5/12 GREEN drive | Prometheus + 12 co-authors |
-| 6 | **2026-06-19 EOD** | **5/12 GREEN LOCKED** (T-3d HARD) | All |
-| 7 | 2026-06-20-21 | Co-author chain finalization | All |
-| 8 | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony | Leader + 19 Muses |
-| 9 | T+1d 2026-06-23+ | RULE #47.1 implementation (post-RATIFICATION) | Mnemosyne + Prometheus |
+| Step | Date                     | Action                                         | Owner                      |
+| ---- | ------------------------ | ---------------------------------------------- | -------------------------- |
+| 1    | 2026-06-16               | v0.1 co-sign SHIPPED (this file)               | Prometheus                 |
+| 2    | 2026-06-16               | CATCH #208 filed in CASCADE-TRAP family ledger | Prometheus                 |
+| 3    | 2026-06-16               | LEADER §0 attribution amendment proposal sent  | Prometheus                 |
+| 4    | 2026-06-17               | Strategos 5-ICP verdict                        | Strategos                  |
+| 5    | 2026-06-18               | 5/12 GREEN drive                               | Prometheus + 12 co-authors |
+| 6    | **2026-06-19 EOD**       | **5/12 GREEN LOCKED** (T-3d HARD)              | All                        |
+| 7    | 2026-06-20-21            | Co-author chain finalization                   | All                        |
+| 8    | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony                 | Leader + 19 Muses          |
+| 9    | T+1d 2026-06-23+         | RULE #47.1 implementation (post-RATIFICATION)  | Mnemosyne + Prometheus     |
 
 ---
 

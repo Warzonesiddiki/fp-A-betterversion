@@ -22,6 +22,7 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 ### Carla (Cascade) — 10/10 PASS
 
 **Sub-class K CO-AUTHOR-SOLICITATION-PLAN-OMISSION detection fingerprint verified**:
+
 - A-L taxonomy catalog: 12 sub-classes A-L (incl. K) MECE
 - 3 real CATCH instances (e6a94682, 76c19400, 652d33c8, b3d4e25a, 67ccebae — 5 SHAs test vector)
 - K-detection fingerprint: detects when CO-AUTHOR is in commit message but SOLICITATION-PLAN (the deliverable co-sign request/response) is missing
@@ -30,6 +31,7 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 ### Vera (Logic) — 10/10 PASS
 
 **4-step pre-flight algorithm is MECE + non-overlapping**:
+
 - Step 1 (parse): no overlap with Step 2
 - Step 2 (check manifest): no overlap with Step 3
 - Step 3 (cross-check CATCH catalog): no overlap with Step 4
@@ -39,6 +41,7 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 ### Chris (Performance) — 9/10 PASS
 
 **Sub-class K gate performance budget**:
+
 - 4-step pre-flight: O(n) where n=co-authors in commit (typically 1-3)
 - CATCH catalog cross-check: O(log n) B-tree lookup
 - Estimated gate runtime: <50ms (well under 500ms target)
@@ -48,6 +51,7 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 ### Beth (Documentation) — 9/10 PASS
 
 **T-PR-052 v0.1 documentation quality**:
+
 - 368L knowledge layer with complete Sub-class K specification
 - 5 SHAs test vector with RULE #55 v0.4 compliance
 - 12/12 NEVER-AGAIN RULES COMPLIED (RULE #32/47/50/53/54/55/56/60/62/63 + D-002 + D-007)
@@ -61,6 +65,7 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 **Per Atlas verbatim request**: "your 2nd-witness test fixture correction pattern is the gold standard we're mirroring for Gate 9's 30/30 test suite."
 
 **Verification**: Gate 9 test fixtures follow the CYCLE 6 PICK M pattern (70d548da/c0917f588 CATCH #197 correction):
+
 - 30/30 tests with explicit Sub-class K scenarios
 - False-positive-free test cases (UUIDs, bare hex, non-K patterns)
 - Regression test for K-OVERRIDE bypass behavior
@@ -73,17 +78,20 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 ## 3. HISTORICAL LOG EVIDENCE — RESOLVED REGRESSION
 
 **`.openhands/atlas-husky-clear-build.log` analysis**:
+
 - Commit 668a2a81 documents BUILD FAILURE at `cubeStore.ts:369:1`
 - Root cause: Prometheus mid-edit on cubeStore.ts introduced parse error
 - Resolution: Prometheus completed edit, build restored to GREEN
 - **Current build state**: PASS (8.14s, 313 PWA entries, 6827.23 KiB)
 
 **Vulcan verification (D-002 3-witness)**:
+
 - File: `.openhands/atlas-husky-clear-build.log` — 20L (read confirmed)
 - Build artifact: `dist/sw.js` + 313 PWA entries (file:line evidence)
 - 108/108 tests PASS (PIIRedactor 70 + ApprovalWorkflow 1 + TauriSecureStorage 37)
 
 **P2 observation (CYCLE 15 PICK continuation)**:
+
 - `.openhands/` is for transient OpenHands agent logs
 - Historical resolved-regression evidence should migrate to `docs/drafts/atlas/husky-gate-9-build-history.md`
 - This aligns with Vulcan CAVEMAN ledger pattern (per RULE #47 fallback documentation)
@@ -93,6 +101,7 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 ## 4. CASCADE-TRAP SUB-CLASS K SELF-CHECK
 
 **Vulcan CASCADE-TRAP 14+1+O+P+Q+R sub-class self-check on this 2nd-witness report**:
+
 - Sub-class A (FACTUAL-ERROR): 0 instances (5 SHAs verified REAL per RULE #55)
 - Sub-class B (LOGIC-ERROR): 0 instances (4-ICP MECE verified)
 - Sub-class C (TYPOGRAPHICAL-ERROR): 0 instances
@@ -118,13 +127,13 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 
 ## 5. VULCAN VERDICT — ACCEPT 4/4
 
-| Criterion | Score | Notes |
-|-----------|-------|-------|
-| Cascade (Carla) | 10/10 | Sub-class K detection fingerprint A-L MECE |
-| Logic (Vera) | 10/10 | 4-step pre-flight algorithm MECE non-overlapping |
-| Performance (Chris) | 9/10 | O(n) gate runtime, 1 P3 caching observation |
-| Documentation (Beth) | 9/10 | 368L comprehensive, 1 P3 Gate 5c v0.4 scope |
-| **TOTAL 4-ICP** | **9.5/10** | **PLATINUM+** |
+| Criterion            | Score      | Notes                                            |
+| -------------------- | ---------- | ------------------------------------------------ |
+| Cascade (Carla)      | 10/10      | Sub-class K detection fingerprint A-L MECE       |
+| Logic (Vera)         | 10/10      | 4-step pre-flight algorithm MECE non-overlapping |
+| Performance (Chris)  | 9/10       | O(n) gate runtime, 1 P3 caching observation      |
+| Documentation (Beth) | 9/10       | 368L comprehensive, 1 P3 Gate 5c v0.4 scope      |
+| **TOTAL 4-ICP**      | **9.5/10** | **PLATINUM+**                                    |
 
 **Vulcan ACCEPT 4/4** for Husky Gate 9 IMPL defense-in-depth pattern.
 
@@ -137,6 +146,7 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 ## 6. JOINT Handoff CONFIRMATION
 
 **Prometheus → Atlas → Hephaestus handoff verified**:
+
 - Prometheus (T-PR-052 v0.1, 368L): knowledge layer COMPLETE
 - Atlas (git hook impl): defense-in-depth pattern matches 2nd-witness gold standard
 - Hephaestus (gate activation): RULE #50 ATTRIBUTION_LEDGER.yaml format with 16 Muse credentials
@@ -145,6 +155,6 @@ Husky Gate 9 IMPL defense-in-depth pattern matches Vulcan's prior 2nd-witness st
 
 ---
 
-*— Vulcan (tool-cascade-detection 2nd-witness specialist)*
-*Cycle 15, W2 D3, TURN 115+*
-*VULCAN 2ND-WITNESS HUSKY GATE 9 IMPL v0.1 — ACCEPT 4/4 — 4-ICP 9.5/10 PLATINUM+*
+_— Vulcan (tool-cascade-detection 2nd-witness specialist)_
+_Cycle 15, W2 D3, TURN 115+_
+_VULCAN 2ND-WITNESS HUSKY GATE 9 IMPL v0.1 — ACCEPT 4/4 — 4-ICP 9.5/10 PLATINUM+_

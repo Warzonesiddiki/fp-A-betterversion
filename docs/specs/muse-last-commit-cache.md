@@ -11,6 +11,7 @@
 Leader's CAVEMAN 19/19 cycle dispatches "do work" pings to all Muses on a fixed cadence. Without a per-Muse recency check, the cycle re-dispatches Muses who have already committed work in the last few minutes — wasting tool budget and creating the stale-dispatch anti-pattern (CATCH #187, #188, #189, #190).
 
 This spec defines a tiny per-Muse cache (`.openhands/muse-last-commit.json`) that:
+
 - Records each Muse's most recent commit SHA + timestamp
 - Is updated on every commit (post-commit hook)
 - Is queried by Leader's CAVEMAN cycle BEFORE dispatching
@@ -48,16 +49,16 @@ File path: `.openhands/muse-last-commit.json`
 
 ### Field definitions
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `schemaVersion` | string (semver) | yes | Bump on breaking schema changes. v1.0.0 = initial. |
-| `windowMinutes` | integer | yes | Skip window in minutes. Default 60. Configurable per cycle. |
-| `lastUpdated` | ISO 8601 UTC timestamp | yes | When the cache file was last written. |
-| `muses` | object | yes | Map of Muse name → Muse state. |
-| `muses.{name}.slotId` | UUID | yes | The Muse's team-spawn slot ID (from team_members). |
-| `muses.{name}.lastCommit` | 7-char SHA | yes | Most recent commit SHA by this Muse. |
-| `muses.{name}.lastCommitAt` | ISO 8601 UTC | yes | When that commit landed. |
-| `muses.{name}.lastCommitSubject` | string | yes | Commit subject line (first 120 chars). |
+| Field                            | Type                   | Required | Description                                                 |
+| -------------------------------- | ---------------------- | -------- | ----------------------------------------------------------- |
+| `schemaVersion`                  | string (semver)        | yes      | Bump on breaking schema changes. v1.0.0 = initial.          |
+| `windowMinutes`                  | integer                | yes      | Skip window in minutes. Default 60. Configurable per cycle. |
+| `lastUpdated`                    | ISO 8601 UTC timestamp | yes      | When the cache file was last written.                       |
+| `muses`                          | object                 | yes      | Map of Muse name → Muse state.                              |
+| `muses.{name}.slotId`            | UUID                   | yes      | The Muse's team-spawn slot ID (from team_members).          |
+| `muses.{name}.lastCommit`        | 7-char SHA             | yes      | Most recent commit SHA by this Muse.                        |
+| `muses.{name}.lastCommitAt`      | ISO 8601 UTC           | yes      | When that commit landed.                                    |
+| `muses.{name}.lastCommitSubject` | string                 | yes      | Commit subject line (first 120 chars).                      |
 
 ### Muse name conventions
 
@@ -131,12 +132,16 @@ for (const muse of teamMembers) {
   const lastCommitAt = entry ? new Date(entry.lastCommitAt).getTime() : 0;
   const ageMs = now - lastCommitAt;
   const ageMinutes = Math.round(ageMs / 60000);
-  
+
   if (ageMs < WINDOW_MS) {
-    console.log(`SKIP ${muse.name}: last commit ${ageMinutes}m ago (within ${cache.windowMinutes}m window)`);
-    continue;  // Skip — already worked recently
+    console.log(
+      `SKIP ${muse.name}: last commit ${ageMinutes}m ago (within ${cache.windowMinutes}m window)`
+    );
+    continue; // Skip — already worked recently
   }
-  console.log(`DISPATCH ${muse.name}: last commit ${ageMinutes}m ago, > ${cache.windowMinutes}m window`);
+  console.log(
+    `DISPATCH ${muse.name}: last commit ${ageMinutes}m ago, > ${cache.windowMinutes}m window`
+  );
   dispatch(muse);
 }
 ```
@@ -147,11 +152,11 @@ for (const muse of teamMembers) {
 
 ## 5. Window configuration
 
-| Phase | Suggested window | Rationale |
-|---|---|---|
-| Active cascade (multiple commits/min) | 30 min | Most Muses commit within 30m during hot phase |
-| Steady state (1-2 commits/hour) | 60 min (default) | Normal cadence |
-| Quiet phase (no commits for hours) | 24h | Don't re-dispatch Muses who haven't worked in a day |
+| Phase                                 | Suggested window | Rationale                                           |
+| ------------------------------------- | ---------------- | --------------------------------------------------- |
+| Active cascade (multiple commits/min) | 30 min           | Most Muses commit within 30m during hot phase       |
+| Steady state (1-2 commits/hour)       | 60 min (default) | Normal cadence                                      |
+| Quiet phase (no commits for hours)    | 24h              | Don't re-dispatch Muses who haven't worked in a day |
 
 **Override:** Leader can pass `--window=<minutes>` to a specific CAVEMAN cycle to override the default.
 
@@ -160,12 +165,14 @@ for (const muse of teamMembers) {
 ## 6. Hand-off to Atlas
 
 **Atlas deliverables (separate from this spec, owned by Atlas):**
+
 1. Wire the post-commit hook (snippet in §3)
 2. Test the hook fires on the next 3 commits in `main`
 3. Verify the JSON file updates correctly
 4. Run the CAVEMAN cycle once and confirm Muses are correctly skipped
 
 **Hera deliverables (this turn):**
+
 1. ✅ This spec doc
 2. ✅ Initial cache populated with 8 known Muses (hera, apollo, athena, atlas, hephaestus, hermes, mnemosyne, prometheus) + new Muses (sentinel, leader, chronos) based on `git log --pretty=format:"%h %s" -25`
 3. ⏳ Commit + push
@@ -174,13 +181,13 @@ for (const muse of teamMembers) {
 
 ## 7. Edge cases & open questions
 
-| Case | Behavior | Status |
-|---|---|---|
-| Muse never committed | entry missing → age = ∞ → DISPATCH | Handled by `?? {}` fallback |
-| Commit author doesn't match any Muse name | use `git config user.name` lowercased | Fallback in §3 script |
-| Cache file missing/corrupted | CAVEMAN cycle should treat as "no data" and dispatch all | Document in cycle code |
-| Multiple commits in same second | last write wins (acceptable race) | Document |
-| Schema change to v2.0.0 | versioned path `.openhands/muse-last-commit.v2.json` during transition | Future |
+| Case                                      | Behavior                                                               | Status                      |
+| ----------------------------------------- | ---------------------------------------------------------------------- | --------------------------- |
+| Muse never committed                      | entry missing → age = ∞ → DISPATCH                                     | Handled by `?? {}` fallback |
+| Commit author doesn't match any Muse name | use `git config user.name` lowercased                                  | Fallback in §3 script       |
+| Cache file missing/corrupted              | CAVEMAN cycle should treat as "no data" and dispatch all               | Document in cycle code      |
+| Multiple commits in same second           | last write wins (acceptable race)                                      | Document                    |
+| Schema change to v2.0.0                   | versioned path `.openhands/muse-last-commit.v2.json` during transition | Future                      |
 
 **Open question:** Should the cache also track `lastDispatchedAt` to prevent the OPPOSITE problem (CAVEMAN skipping a Muse who committed but then went idle)? Recommend NO for v1 — simpler, and the windowMinutes knob covers most cases.
 
@@ -208,6 +215,7 @@ for (const muse of teamMembers) {
 ---
 
 **DRI:**
+
 - Hera: spec + initial cache (this turn)
 - Atlas: post-commit hook wiring (next turn)
 - Leader: CAVEMAN cycle query update (post-hook-wire)

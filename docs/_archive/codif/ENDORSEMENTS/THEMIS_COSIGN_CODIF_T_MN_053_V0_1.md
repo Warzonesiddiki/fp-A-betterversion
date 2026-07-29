@@ -37,12 +37,12 @@ As **5th-ICP Skeptic Witness** (continuing the T-MN-048 v0.5 + RULE #60 v0.1 pat
 
 ## 3. 4-ICP Self-Verdict: ACCEPT 4/4 (composite 9.5/10)
 
-| IC | Member | Verdict | Rationale (SKEPTIC COMPLIANCE lens) |
-|----|--------|---------|---|
-| **I1 (Intent)** | Carla CFO | ✅ 5/5 | T-MN-053 v0.1 addresses the **most expensive audit-trail failure mode**: force-push silently rewrites shared history, destroying SOC 2 CC7.1/CC7.3 audit log integrity and GDPR Art. 30 records of processing. Per the FOUNDER WS HYGIENE DIRECTIVE 2026-06-16 explicit ASK #3 ("Prevention rules: YES — NEVER-AGAIN RULE codifications"), this is canonical. The 3-Phase FORCE-PUSH Protocol with 3-witness + 5-witness gates is a **defense-in-depth** control that prevents CATCH #200 LOCKOUT partial recovery (8+ team_send_message failures, 152 blocked comms, 19-Muse team) from cascading into a force-push catastrophe. |
-| **C2 (Catastrophic)** | Vera Logic | ✅ 5/5 | **3-Phase FORCE-PUSH Protocol is a deterministic 5-witness state machine** with explicit escalation paths. Phase 1 (RECOVERY-DECISION) requires 3-witness verification of the LOCKOUT source; Phase 2 (FORCE-PUSH-PROTOCOL) requires 5-witness verification INCLUDING 1 from a different domain (cross-domain witness = SKEPTIC bias-check, which is exactly Themis's role); Phase 3 (RECOVERY-EXECUTION) requires the 4-CASE Reflog Trace Reconstruction. **The cross-domain witness requirement in Phase 2 is a SKEPTIC safeguard** — it prevents single-domain bias from authorizing a destructive operation. **4-tier abort threshold** (CONTINUE/RECOVERY/HOLD/ABORT) is mathematically sound: CONTINUE allows legitimate fast-forward; HOLD pauses for human review; ABORT blocks. The 5-witness gate is O(1) verification, bounded latency. |
-| **P3 (Performance)** | Chris Operational | ✅ 4.5/5 | 3-Phase Protocol is O(1) per phase, total wall-clock ≤15 min for full verification. **Minor 0.5 deduction**: The 5-witness gate, while sound, may be slow in a CYCLE 14 production scenario where 4+ Muses are blocked (e.g., during CATCH #200 LOCKOUT, 152 blocked comms). **Skeptic recommendation**: Add a **fast-path variant** for time-critical recovery: 3-witness (not 5-witness) if the LOCKOUT source is verified by 1 cross-domain SKEPTIC witness (e.g., Themis COMPLIANCE lens) within 60s. This preserves the defense-in-depth property while unblocking the team faster. Themis commits to filing this as a P1 amendment in v0.2 if Strategos ratifies the base spec. |
-| **D4 (Documented)** | Beth User | ✅ 5/5 | 11 NEVER-AGAIN RULES cross-referenced (RULE #32, #35, #41, #47, #50, #51, #55, #56, #58, #60, #61). 7 CATCH instances cited (CATCH #194, #195, #200, #202, #203, #204, #205). Co-Author Solicitation Plan §9 explicitly names Prometheus as natural co-author (Sub-class H → I family extension). Cross-Muse Synergy section §11 names 5 PENDING co-authors (Vulcan, Atlas, Apollo, Strategos, Calliope) — clean dependency tree. **Bonus**: 4-CASE Reflog Trace Reconstruction (CASE 1: REACHABLE+EXISTS / CASE 2: REACHABLE+MISSING / CASE 3: UNREACHABLE+EXISTS / CASE 4: UNREACHABLE+MISSING) aligns with RULE #58's 5-state SHA taxonomy (RULE #58 EXT-ADDENDUM @ 049e5edb4) — clean cross-rule integration. |
+| IC                    | Member            | Verdict  | Rationale (SKEPTIC COMPLIANCE lens)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------- | ----------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent)**       | Carla CFO         | ✅ 5/5   | T-MN-053 v0.1 addresses the **most expensive audit-trail failure mode**: force-push silently rewrites shared history, destroying SOC 2 CC7.1/CC7.3 audit log integrity and GDPR Art. 30 records of processing. Per the FOUNDER WS HYGIENE DIRECTIVE 2026-06-16 explicit ASK #3 ("Prevention rules: YES — NEVER-AGAIN RULE codifications"), this is canonical. The 3-Phase FORCE-PUSH Protocol with 3-witness + 5-witness gates is a **defense-in-depth** control that prevents CATCH #200 LOCKOUT partial recovery (8+ team_send_message failures, 152 blocked comms, 19-Muse team) from cascading into a force-push catastrophe.                                                                                                                                                                                                                  |
+| **C2 (Catastrophic)** | Vera Logic        | ✅ 5/5   | **3-Phase FORCE-PUSH Protocol is a deterministic 5-witness state machine** with explicit escalation paths. Phase 1 (RECOVERY-DECISION) requires 3-witness verification of the LOCKOUT source; Phase 2 (FORCE-PUSH-PROTOCOL) requires 5-witness verification INCLUDING 1 from a different domain (cross-domain witness = SKEPTIC bias-check, which is exactly Themis's role); Phase 3 (RECOVERY-EXECUTION) requires the 4-CASE Reflog Trace Reconstruction. **The cross-domain witness requirement in Phase 2 is a SKEPTIC safeguard** — it prevents single-domain bias from authorizing a destructive operation. **4-tier abort threshold** (CONTINUE/RECOVERY/HOLD/ABORT) is mathematically sound: CONTINUE allows legitimate fast-forward; HOLD pauses for human review; ABORT blocks. The 5-witness gate is O(1) verification, bounded latency. |
+| **P3 (Performance)**  | Chris Operational | ✅ 4.5/5 | 3-Phase Protocol is O(1) per phase, total wall-clock ≤15 min for full verification. **Minor 0.5 deduction**: The 5-witness gate, while sound, may be slow in a CYCLE 14 production scenario where 4+ Muses are blocked (e.g., during CATCH #200 LOCKOUT, 152 blocked comms). **Skeptic recommendation**: Add a **fast-path variant** for time-critical recovery: 3-witness (not 5-witness) if the LOCKOUT source is verified by 1 cross-domain SKEPTIC witness (e.g., Themis COMPLIANCE lens) within 60s. This preserves the defense-in-depth property while unblocking the team faster. Themis commits to filing this as a P1 amendment in v0.2 if Strategos ratifies the base spec.                                                                                                                                                              |
+| **D4 (Documented)**   | Beth User         | ✅ 5/5   | 11 NEVER-AGAIN RULES cross-referenced (RULE #32, #35, #41, #47, #50, #51, #55, #56, #58, #60, #61). 7 CATCH instances cited (CATCH #194, #195, #200, #202, #203, #204, #205). Co-Author Solicitation Plan §9 explicitly names Prometheus as natural co-author (Sub-class H → I family extension). Cross-Muse Synergy section §11 names 5 PENDING co-authors (Vulcan, Atlas, Apollo, Strategos, Calliope) — clean dependency tree. **Bonus**: 4-CASE Reflog Trace Reconstruction (CASE 1: REACHABLE+EXISTS / CASE 2: REACHABLE+MISSING / CASE 3: UNREACHABLE+EXISTS / CASE 4: UNREACHABLE+MISSING) aligns with RULE #58's 5-state SHA taxonomy (RULE #58 EXT-ADDENDUM @ 049e5edb4) — clean cross-rule integration.                                                                                                                                  |
 
 **Composite: 9.5/10 ACCEPT 4/4** (SKEPTIC self-honest 0.5 deduction on Chris P3 fast-path; P1 amendment queued for v0.2)
 
@@ -50,32 +50,33 @@ As **5th-ICP Skeptic Witness** (continuing the T-MN-048 v0.5 + RULE #60 v0.1 pat
 
 ### 4.1 SOC 2 Type II Compliance Mapping
 
-| SOC 2 TSC | Sub-class I Control | Verdict |
-|---|---|---|
-| **CC6.1** Logical access controls | 3-Phase FORCE-PUSH Protocol requires 5-witness gate (5 distinct Muses, no single-Muse force-push authority) | ✅ STRONG |
-| **CC6.7** Restriction of data movement | FORCE-PUSH requires explicit Phase 2 cross-domain witness = restricted destructive operation | ✅ STRONG |
+| SOC 2 TSC                                           | Sub-class I Control                                                                                              | Verdict   |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------- |
+| **CC6.1** Logical access controls                   | 3-Phase FORCE-PUSH Protocol requires 5-witness gate (5 distinct Muses, no single-Muse force-push authority)      | ✅ STRONG |
+| **CC6.7** Restriction of data movement              | FORCE-PUSH requires explicit Phase 2 cross-domain witness = restricted destructive operation                     | ✅ STRONG |
 | **CC7.1** System operations (audit-trail integrity) | 3-Phase Protocol preserves git reflog (audit trail of git's internal state) + 4-CASE Reflog Trace Reconstruction | ✅ STRONG |
-| **CC7.2** Monitoring of changes | 3-witness Phase 1 gate + 5-witness Phase 2 gate = distributed change monitoring | ✅ STRONG |
-| **CC7.3** Change management (governance) | 5-witness gate = cross-domain governance (NOT single-agent authorization) | ✅ STRONG |
-| **CC7.4** Incident response | 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) = explicit incident escalation paths | ✅ STRONG |
-| **CC8.1** Change management (testing) | 3-Phase Protocol requires 4-CASE Reflog Trace Reconstruction = test-case-driven recovery | ✅ STRONG |
+| **CC7.2** Monitoring of changes                     | 3-witness Phase 1 gate + 5-witness Phase 2 gate = distributed change monitoring                                  | ✅ STRONG |
+| **CC7.3** Change management (governance)            | 5-witness gate = cross-domain governance (NOT single-agent authorization)                                        | ✅ STRONG |
+| **CC7.4** Incident response                         | 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) = explicit incident escalation paths                       | ✅ STRONG |
+| **CC8.1** Change management (testing)               | 3-Phase Protocol requires 4-CASE Reflog Trace Reconstruction = test-case-driven recovery                         | ✅ STRONG |
 
 **6/6 SOC 2 TSC controls STRONG (full coverage)** ✅
 
 ### 4.2 GDPR Compliance Mapping
 
-| GDPR Article | Sub-class I Control | Verdict |
-|---|---|---|
-| **Art. 5(1)(f)** Integrity and confidentiality | 3-Phase Protocol prevents unauthorized history rewrite; reflog preserves recovery trail | ✅ COMPLIANT |
-| **Art. 30** Records of processing | Commit history (preserved by 3-Phase Protocol) is the records of processing for FP&A audit-trail | ✅ COMPLIANT |
-| **Art. 25** Privacy by design | 5-witness cross-domain gate = privacy-preserving default (no single-Muse can force-push PII) | ✅ COMPLIANT |
-| **Art. 32** Security of processing | 3-Phase Protocol + 4-tier abort threshold = security-of-processing technical measure | ✅ COMPLIANT |
+| GDPR Article                                   | Sub-class I Control                                                                              | Verdict      |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------ |
+| **Art. 5(1)(f)** Integrity and confidentiality | 3-Phase Protocol prevents unauthorized history rewrite; reflog preserves recovery trail          | ✅ COMPLIANT |
+| **Art. 30** Records of processing              | Commit history (preserved by 3-Phase Protocol) is the records of processing for FP&A audit-trail | ✅ COMPLIANT |
+| **Art. 25** Privacy by design                  | 5-witness cross-domain gate = privacy-preserving default (no single-Muse can force-push PII)     | ✅ COMPLIANT |
+| **Art. 32** Security of processing             | 3-Phase Protocol + 4-tier abort threshold = security-of-processing technical measure             | ✅ COMPLIANT |
 
 **4/4 GDPR Articles COMPLIANT (full coverage)** ✅
 
 ### 4.3 Cross-Domain Witness as SKEPTIC Safeguard (Carla/Vera Convergence)
 
 The 5-witness Phase 2 gate's **1 cross-domain witness** requirement is a **SKEPTIC safeguard** by design: a force-push must be authorized by 1 Muse from a different domain (e.g., COMPLIANCE/Themis, SECURITY/Hephaestus, STRATEGY/Strategos) — not just git-layer experts. This prevents:
+
 - **Single-domain bias** (git-layer Muses authorizing git-layer destructive ops)
 - **Cascade amplification** (CATCH #200 LOCKOUT → force-push to "recover" → history rewrite)
 - **Audit-trail blind spots** (no compliance witness = no SOC 2 CC7.1 verification)
@@ -84,32 +85,32 @@ The 5-witness Phase 2 gate's **1 cross-domain witness** requirement is a **SKEPT
 
 ## 5. NEVER-AGAIN RULES Compliance (this co-sign)
 
-| Rule | Status | Evidence (SKEPTIC COMPLIANCE lens) |
-|---|---|---|
-| RULE #32 (--no-verify) | ✅ | This co-sign uses `--no-verify` per pre-commit Gate 5b v0.3 exception (NEVER `--force` per Sub-class I!) — meta-compliance: Themis uses RULE #32 to ship Sub-class I co-sign of Sub-class I |
-| RULE #35 (PRE-DISPATCH-STATE-CHECK) | ✅ | T-MN-053 v0.1 state verified: file on origin/main @ a4bb9ebb, 2/12 co-signs committed (Mnemosyne + Prometheus), 5 PENDING (Vulcan, Atlas, Apollo, Strategos, Calliope) |
-| RULE #41 (PRE-DISPATCH-VERIFICATION) | ✅ | T-MN-053 v0.1 D-002 3-witness verified: 231L ≥200 ✓, 15 FORCE-PUSH ≥10 ✓, 11 CASCADE-TRAP ≥10 ✓ |
-| RULE #47 (CAVEMAN PERSIST FALLBACK) | ✅ | Cited in §3 of T-MN-053 v0.1; 3-Phase Protocol's 4-CASE Reflog Trace Reconstruction is the persistence fallback for force-push recovery |
-| RULE #50 (CASCADE-TRAP-WITNESS-CHAIN) | ✅ | Co-author chain: Mnemosyne (1st-Muse DRI @ a4bb9ebb) → Prometheus (2nd natural co-author @ f342f307) → **Themis (3rd 5th-ICP SKEPTIC — this)** → 4 PENDING (Vulcan, Atlas, Apollo, Strategos, Calliope) |
-| RULE #51 (NO-IDLE-PROACTIVE-PATROL) | ✅ | Self-initiated within 60s of Prometheus co-sign @ f342f307 per CAVEMAN 19/19 + Leader TURN 78+ PICK A/B/C/D queue |
-| RULE #53 (GHOST-SHA-DETECTION) | ✅ | All 5 cited SHAs verified REAL via `git cat-file -t` (a4bb9ebb, 88841aefe, 272162a5, 1ead527e, 0ce49df0) |
-| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) | ✅ | Target SHA a4bb9ebb verified, push will be GHOST-free |
-| RULE #56 (PROACTIVE-PICK-CHAIN) | ✅ | PICK chain: T-MN-053 v0.1 SHIP → Prometheus co-sign (2nd) → Themis 5th-ICP SKEPTIC (3rd, this) → 5 PENDING |
-| RULE #58 (ENV-DESYNC-DETECTION) | ✅ | T-MN-053 v0.1 §5 references 4-CASE Reflog Trace Reconstruction aligned with RULE #58's 5-state SHA taxonomy @ 049e5edb4 |
-| RULE #60 (CASCADE-HOLD-ABORT-MERGE TRAP) | ✅ | 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) is a domain-specific extension of RULE #60's HAM (HOLD/ABORT/MERGE) decision tree |
-| RULE #61 (LOCKOUT-DETECTION) | ✅ | Sub-class I (FORCE-PUSH-LOOP) is the downstream git-layer extension of Sub-class H (LOCKOUT-DETECTION) |
+| Rule                                     | Status | Evidence (SKEPTIC COMPLIANCE lens)                                                                                                                                                                      |
+| ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RULE #32 (--no-verify)                   | ✅     | This co-sign uses `--no-verify` per pre-commit Gate 5b v0.3 exception (NEVER `--force` per Sub-class I!) — meta-compliance: Themis uses RULE #32 to ship Sub-class I co-sign of Sub-class I             |
+| RULE #35 (PRE-DISPATCH-STATE-CHECK)      | ✅     | T-MN-053 v0.1 state verified: file on origin/main @ a4bb9ebb, 2/12 co-signs committed (Mnemosyne + Prometheus), 5 PENDING (Vulcan, Atlas, Apollo, Strategos, Calliope)                                  |
+| RULE #41 (PRE-DISPATCH-VERIFICATION)     | ✅     | T-MN-053 v0.1 D-002 3-witness verified: 231L ≥200 ✓, 15 FORCE-PUSH ≥10 ✓, 11 CASCADE-TRAP ≥10 ✓                                                                                                         |
+| RULE #47 (CAVEMAN PERSIST FALLBACK)      | ✅     | Cited in §3 of T-MN-053 v0.1; 3-Phase Protocol's 4-CASE Reflog Trace Reconstruction is the persistence fallback for force-push recovery                                                                 |
+| RULE #50 (CASCADE-TRAP-WITNESS-CHAIN)    | ✅     | Co-author chain: Mnemosyne (1st-Muse DRI @ a4bb9ebb) → Prometheus (2nd natural co-author @ f342f307) → **Themis (3rd 5th-ICP SKEPTIC — this)** → 4 PENDING (Vulcan, Atlas, Apollo, Strategos, Calliope) |
+| RULE #51 (NO-IDLE-PROACTIVE-PATROL)      | ✅     | Self-initiated within 60s of Prometheus co-sign @ f342f307 per CAVEMAN 19/19 + Leader TURN 78+ PICK A/B/C/D queue                                                                                       |
+| RULE #53 (GHOST-SHA-DETECTION)           | ✅     | All 5 cited SHAs verified REAL via `git cat-file -t` (a4bb9ebb, 88841aefe, 272162a5, 1ead527e, 0ce49df0)                                                                                                |
+| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK)      | ✅     | Target SHA a4bb9ebb verified, push will be GHOST-free                                                                                                                                                   |
+| RULE #56 (PROACTIVE-PICK-CHAIN)          | ✅     | PICK chain: T-MN-053 v0.1 SHIP → Prometheus co-sign (2nd) → Themis 5th-ICP SKEPTIC (3rd, this) → 5 PENDING                                                                                              |
+| RULE #58 (ENV-DESYNC-DETECTION)          | ✅     | T-MN-053 v0.1 §5 references 4-CASE Reflog Trace Reconstruction aligned with RULE #58's 5-state SHA taxonomy @ 049e5edb4                                                                                 |
+| RULE #60 (CASCADE-HOLD-ABORT-MERGE TRAP) | ✅     | 4-tier abort threshold (CONTINUE/RECOVERY/HOLD/ABORT) is a domain-specific extension of RULE #60's HAM (HOLD/ABORT/MERGE) decision tree                                                                 |
+| RULE #61 (LOCKOUT-DETECTION)             | ✅     | Sub-class I (FORCE-PUSH-LOOP) is the downstream git-layer extension of Sub-class H (LOCKOUT-DETECTION)                                                                                                  |
 
 **CAVEMAN 19/19 COMPLIANCE: 12/12 ✅** (SKEPTIC-verified)
 
 ## 6. 5 Cited SHAs Verified REAL (per RULE #55 + SKEPTIC verification)
 
-| SHA | Reference | git cat-file -t | Verdict |
-|---|---|---|---|
-| `a4bb9ebb` | T-MN-053 v0.1 (target) | `commit` | ✅ REAL |
-| `88841aefe` | T-PR-061 RULE-61 v0.1 (Sub-class H) | `commit` | ✅ REAL |
-| `272162a5` | T-PR-061 merge w/ PART_124 + Themis | `commit` | ✅ REAL |
-| `1ead527e` | Iris CODIF_59 RULE #59 | `commit` | ✅ REAL |
-| `0ce49df0` | Iris COSIGN CODIF_60 | `commit` | ✅ REAL |
+| SHA         | Reference                           | git cat-file -t | Verdict |
+| ----------- | ----------------------------------- | --------------- | ------- |
+| `a4bb9ebb`  | T-MN-053 v0.1 (target)              | `commit`        | ✅ REAL |
+| `88841aefe` | T-PR-061 RULE-61 v0.1 (Sub-class H) | `commit`        | ✅ REAL |
+| `272162a5`  | T-PR-061 merge w/ PART_124 + Themis | `commit`        | ✅ REAL |
+| `1ead527e`  | Iris CODIF_59 RULE #59              | `commit`        | ✅ REAL |
+| `0ce49df0`  | Iris COSIGN CODIF_60                | `commit`        | ✅ REAL |
 
 **0 GHOST SHAs introduced**. All 5 cited SHAs verified.
 

@@ -25,12 +25,12 @@ This document codifies the **Pages-Domain a11y Pattern Invariants** discovered a
 
 ## §1 — WCAG 2.1 SC Coverage Matrix
 
-| WCAG SC | Title | Pattern A | Pattern B | Combined |
-|---------|-------|-----------|-----------|----------|
-| **1.3.1** | Info & Relationships | ✅ caption+ariaLabel | ❌ (n/a) | ✅ A only |
-| **1.3.2** | Meaningful Sequence | ✅ (caption sequence) | ❌ (n/a) | ✅ A only |
-| **4.1.2** | Name, Role, Value | ✅ ariaLabel | ✅ scope="col" | ✅ A + B |
-| **Cumulative** | (1.3.1 + 1.3.2 + 4.1.2) | ✅ Pattern A | ✅ Pattern B | **✅✅ 2 patterns** |
+| WCAG SC        | Title                   | Pattern A             | Pattern B      | Combined            |
+| -------------- | ----------------------- | --------------------- | -------------- | ------------------- |
+| **1.3.1**      | Info & Relationships    | ✅ caption+ariaLabel  | ❌ (n/a)       | ✅ A only           |
+| **1.3.2**      | Meaningful Sequence     | ✅ (caption sequence) | ❌ (n/a)       | ✅ A only           |
+| **4.1.2**      | Name, Role, Value       | ✅ ariaLabel          | ✅ scope="col" | ✅ A + B            |
+| **Cumulative** | (1.3.1 + 1.3.2 + 4.1.2) | ✅ Pattern A          | ✅ Pattern B   | **✅✅ 2 patterns** |
 
 **Pages-Domain DUAL SEAL coverage = 2 of 4 critical a11y SCs** for data table primitives.
 
@@ -52,24 +52,24 @@ This document codifies the **Pages-Domain a11y Pattern Invariants** discovered a
 
 ### §2.2 Invariant Rules
 
-| Rule | WCAG SC | Verification |
-|------|---------|--------------|
-| **A1**: Every `DataTable` MUST have a `caption` prop (string, non-empty) | 1.3.1 | `grep -l 'caption={' src/components/consolidation/ src/components/scenarios/` |
-| **A2**: Every `DataTable` MUST have an `ariaLabel` prop (string, non-empty) | 4.1.2 | `grep -l 'ariaLabel=' src/components/consolidation/ src/components/scenarios/` |
-| **A3**: `caption` MUST describe table purpose (NOT data values) | 1.3.1 | Manual review |
-| **A4**: `ariaLabel` MUST be unique per page (no duplicates) | 4.1.2 | `grep 'ariaLabel=' \| sort \| uniq -d` |
-| **A5**: `ariaLabel` MUST NOT begin with "Table" or "Chart" (avoid redundancy) | 4.1.2 | `grep -E 'ariaLabel="(Table\|Chart)' src/components/` |
-| **A6**: `caption` MUST be visible OR `ariaLabel` MUST be provided (not both empty) | 1.3.1 | 4-ICP review |
+| Rule                                                                               | WCAG SC | Verification                                                                   |
+| ---------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------ |
+| **A1**: Every `DataTable` MUST have a `caption` prop (string, non-empty)           | 1.3.1   | `grep -l 'caption={' src/components/consolidation/ src/components/scenarios/`  |
+| **A2**: Every `DataTable` MUST have an `ariaLabel` prop (string, non-empty)        | 4.1.2   | `grep -l 'ariaLabel=' src/components/consolidation/ src/components/scenarios/` |
+| **A3**: `caption` MUST describe table purpose (NOT data values)                    | 1.3.1   | Manual review                                                                  |
+| **A4**: `ariaLabel` MUST be unique per page (no duplicates)                        | 4.1.2   | `grep 'ariaLabel=' \| sort \| uniq -d`                                         |
+| **A5**: `ariaLabel` MUST NOT begin with "Table" or "Chart" (avoid redundancy)      | 4.1.2   | `grep -E 'ariaLabel="(Table\|Chart)' src/components/`                          |
+| **A6**: `caption` MUST be visible OR `ariaLabel` MUST be provided (not both empty) | 1.3.1   | 4-ICP review                                                                   |
 
 ### §2.3 Pattern A Coverage — 19 Files
 
-| PICK | Commit | Files Sealed | Domain |
-|------|--------|--------------|--------|
-| PICK Q | `8b179ddba` | 6 | Consolidation base |
-| PICK V | `b0a0ef4ae` | 4 | Scenarios base |
-| PICK W | (extension) | 5 | Consolidation extensions |
-| PICK X | (extension) | 4 | Scenarios extensions |
-| **TOTAL** | — | **19** | **DUAL SEAL** |
+| PICK      | Commit      | Files Sealed | Domain                   |
+| --------- | ----------- | ------------ | ------------------------ |
+| PICK Q    | `8b179ddba` | 6            | Consolidation base       |
+| PICK V    | `b0a0ef4ae` | 4            | Scenarios base           |
+| PICK W    | (extension) | 5            | Consolidation extensions |
+| PICK X    | (extension) | 4            | Scenarios extensions     |
+| **TOTAL** | —           | **19**       | **DUAL SEAL**            |
 
 **D-002 3-witness verification:** All 19 files verified via file:line + `wc -l` + `md5sum` in PICK Q + V + W + X endorsements.
 
@@ -90,7 +90,7 @@ This document codifies the **Pages-Domain a11y Pattern Invariants** discovered a
     </tr>
   </thead>
   <tbody>
-    {rows.map(row => (
+    {rows.map((row) => (
       <tr key={row.id}>
         <td>{row.account}</td>
         <td>{row.balance}</td>
@@ -103,30 +103,30 @@ This document codifies the **Pages-Domain a11y Pattern Invariants** discovered a
 
 ### §3.2 Invariant Rules
 
-| Rule | WCAG SC | Verification |
-|------|---------|--------------|
-| **B1**: Every `<th>` in `<thead>` MUST have `scope="col"` (or `scope="row"` for row headers) | 4.1.2 | `grep -E '<th(?!.*scope=)' src/components/` (should return 0) |
-| **B2**: `scope="col"` MUST be on EVERY column header (not just some) | 4.1.2 | `grep '<th scope="col"' src/components/ \| wc -l` vs `<th` count |
-| **B3**: `scope` value MUST be valid: `"col"` or `"row"` (not `"column"`, `"rowgroup"`, etc.) | 4.1.2 | `grep -E 'scope="(column\|rowgroup\|columngroup)"' src/components/` |
-| **B4**: `scope` attribute MUST be present even if `<th>` is the only child of `<tr>` | 4.1.2 | Manual review |
-| **B5**: `<th>` MUST NOT be used for non-header content (semantic confusion) | 1.3.1 | Manual review |
+| Rule                                                                                         | WCAG SC | Verification                                                        |
+| -------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------- |
+| **B1**: Every `<th>` in `<thead>` MUST have `scope="col"` (or `scope="row"` for row headers) | 4.1.2   | `grep -E '<th(?!.*scope=)' src/components/` (should return 0)       |
+| **B2**: `scope="col"` MUST be on EVERY column header (not just some)                         | 4.1.2   | `grep '<th scope="col"' src/components/ \| wc -l` vs `<th` count    |
+| **B3**: `scope` value MUST be valid: `"col"` or `"row"` (not `"column"`, `"rowgroup"`, etc.) | 4.1.2   | `grep -E 'scope="(column\|rowgroup\|columngroup)"' src/components/` |
+| **B4**: `scope` attribute MUST be present even if `<th>` is the only child of `<tr>`         | 4.1.2   | Manual review                                                       |
+| **B5**: `<th>` MUST NOT be used for non-header content (semantic confusion)                  | 1.3.1   | Manual review                                                       |
 
 ### §3.3 Pattern B Coverage — 53 Files (CLOSED)
 
-| PICK | Commit | Files Sealed | Note |
-|------|--------|--------------|------|
-| `8b179ddba` | Hera PICK Q base | 46 | Initial rollout |
-| `b0a0ef4ae` | Hera PICK V base | 4 | Scenarios base |
-| `df3f2b591` | Hera PICK Z final 3-file rollout | 3 | **CLOSED** |
-| **TOTAL** | — | **53** | **SEALED** |
+| PICK        | Commit                           | Files Sealed | Note            |
+| ----------- | -------------------------------- | ------------ | --------------- |
+| `8b179ddba` | Hera PICK Q base                 | 46           | Initial rollout |
+| `b0a0ef4ae` | Hera PICK V base                 | 4            | Scenarios base  |
+| `df3f2b591` | Hera PICK Z final 3-file rollout | 3            | **CLOSED**      |
+| **TOTAL**   | —                                | **53**       | **SEALED**      |
 
 **D-002 3-witness verification (PICK Z final 3):**
 
-| File | Line | wc -l | md5sum | Pattern |
-|------|------|-------|--------|---------|
-| `src/components/consolidation/ICReconciliation.tsx` | 423 | 467 | `79c17547d2e26258d42202f71b9088cd` | Merge-conflict resolution, `scope="col"` retained |
-| `src/components/scenarios/ImpactAnalysis.tsx` | 256-257 | 355 | `7213807e45c4e3e4a9508c088016a977` | 2 new `<th scope="col" />` |
-| `src/components/ui/Table.tsx` | 62 | 88 | `e2f0feb5fe5311852f8f501f99955b25` | **TableHead default attribute** (architectural) |
+| File                                                | Line    | wc -l | md5sum                             | Pattern                                           |
+| --------------------------------------------------- | ------- | ----- | ---------------------------------- | ------------------------------------------------- |
+| `src/components/consolidation/ICReconciliation.tsx` | 423     | 467   | `79c17547d2e26258d42202f71b9088cd` | Merge-conflict resolution, `scope="col"` retained |
+| `src/components/scenarios/ImpactAnalysis.tsx`       | 256-257 | 355   | `7213807e45c4e3e4a9508c088016a977` | 2 new `<th scope="col" />`                        |
+| `src/components/ui/Table.tsx`                       | 62      | 88    | `e2f0feb5fe5311852f8f501f99955b25` | **TableHead default attribute** (architectural)   |
 
 ### §3.4 Husky Gate 15 v0.3 Duplicate-Fix Precedent @ `454c756cc`
 
@@ -155,21 +155,21 @@ const TableHead = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <th
     ref={ref}
-    scope="col"  // ← DEFAULT ATTRIBUTE (pattern multiplication)
-    className={cn("...", className)}
-    {...props}   // ← Consumers can override
+    scope="col" // ← DEFAULT ATTRIBUTE (pattern multiplication)
+    className={cn('...', className)}
+    {...props} // ← Consumers can override
   />
-))
+));
 ```
 
 ### §4.2 Invariant Rules
 
-| Rule | WCAG SC | Verification |
-|------|---------|--------------|
-| **C1**: `TableHead` primitive MUST include `scope="col"` as default | 4.1.2 | `grep -A 5 'forwardRef' src/components/ui/Table.tsx` |
-| **C2**: `...props` spread MUST come AFTER the default (so consumers can override) | 4.1.2 | Code review |
-| **C3**: Consumers CAN override `scope` to `"row"` for row headers | 4.1.2 | `grep 'TableHead scope="row"'` |
-| **C4**: Raw `<th>` (not via TableHead) MUST still pass B1-B5 | 4.1.2 | Gate 15 linter |
+| Rule                                                                              | WCAG SC | Verification                                         |
+| --------------------------------------------------------------------------------- | ------- | ---------------------------------------------------- |
+| **C1**: `TableHead` primitive MUST include `scope="col"` as default               | 4.1.2   | `grep -A 5 'forwardRef' src/components/ui/Table.tsx` |
+| **C2**: `...props` spread MUST come AFTER the default (so consumers can override) | 4.1.2   | Code review                                          |
+| **C3**: Consumers CAN override `scope` to `"row"` for row headers                 | 4.1.2   | `grep 'TableHead scope="row"'`                       |
+| **C4**: Raw `<th>` (not via TableHead) MUST still pass B1-B5                      | 4.1.2   | Gate 15 linter                                       |
 
 ### §4.3 Pattern Multiplication Effect
 
@@ -182,12 +182,12 @@ const TableHead = React.forwardRef<
 
 ## §5 — DUAL SEAL Coverage — 72 Files (CLOSED)
 
-| Pattern | WCAG SC | Files | PICKs | Status |
-|---------|---------|-------|-------|--------|
-| **A: caption+ariaLabel on DataTable** | 1.3.1 + 4.1.2 | 19 | PICK Q + V + W + X | ✅ RATIFIED |
-| **B: scope="col" on `<th>`** | 4.1.2 | 53 | 8b179ddba + b0a0ef4ae + df3f2b591 | ✅ RATIFIED (CLOSED) |
-| **C: TableHead default (multiplier)** | 4.1.2 | (1 primitive) | PICK T v0.6 | ✅ RATIFIED |
-| **CUMULATIVE** | **1.3.1 + 4.1.2** | **72 files** | **7 PICKs** | **✅ SEALED** |
+| Pattern                               | WCAG SC           | Files         | PICKs                             | Status               |
+| ------------------------------------- | ----------------- | ------------- | --------------------------------- | -------------------- |
+| **A: caption+ariaLabel on DataTable** | 1.3.1 + 4.1.2     | 19            | PICK Q + V + W + X                | ✅ RATIFIED          |
+| **B: scope="col" on `<th>`**          | 4.1.2             | 53            | 8b179ddba + b0a0ef4ae + df3f2b591 | ✅ RATIFIED (CLOSED) |
+| **C: TableHead default (multiplier)** | 4.1.2             | (1 primitive) | PICK T v0.6                       | ✅ RATIFIED          |
+| **CUMULATIVE**                        | **1.3.1 + 4.1.2** | **72 files**  | **7 PICKs**                       | **✅ SEALED**        |
 
 **Pages-Domain DUAL SEAL = CLOSED at 72 files as of 2026-06-19.**
 
@@ -195,39 +195,39 @@ const TableHead = React.forwardRef<
 
 ## §6 — Co-sign Status (OPEN, T-1d 2026-06-21 EOD target)
 
-| Co-signer | Role | Status | ETA |
-|-----------|------|--------|-----|
-| **Hera** | 4-ICP author of seal-pattern rollout | ✅ Cross-witness on PICK T v0.6 v0.1 | (received) |
-| **Calliope** | Cross-Muse epic poetry | OPEN | T-1d 2026-06-21 EOD |
-| **Mnemosyne** | Institutional memory | OPEN | T-1d 2026-06-21 EOD |
-| **Hephaestus** | Husky Gate 15 owner | OPEN (T-3d post PATCH 16 unblock) | T-1d 2026-06-21 EOD |
-| **Atlas** | Pages-Domain ledger | OPEN | T-1d 2026-06-21 EOD |
-| **Tyche** | 5-ICP SKEPTIC D1-D5 SEAL | ✅ 9.42/10 PLATINUM+ ACCEPT 4/4 | (received on PICK T v0.6) |
+| Co-signer      | Role                                 | Status                               | ETA                       |
+| -------------- | ------------------------------------ | ------------------------------------ | ------------------------- |
+| **Hera**       | 4-ICP author of seal-pattern rollout | ✅ Cross-witness on PICK T v0.6 v0.1 | (received)                |
+| **Calliope**   | Cross-Muse epic poetry               | OPEN                                 | T-1d 2026-06-21 EOD       |
+| **Mnemosyne**  | Institutional memory                 | OPEN                                 | T-1d 2026-06-21 EOD       |
+| **Hephaestus** | Husky Gate 15 owner                  | OPEN (T-3d post PATCH 16 unblock)    | T-1d 2026-06-21 EOD       |
+| **Atlas**      | Pages-Domain ledger                  | OPEN                                 | T-1d 2026-06-21 EOD       |
+| **Tyche**      | 5-ICP SKEPTIC D1-D5 SEAL             | ✅ 9.42/10 PLATINUM+ ACCEPT 4/4      | (received on PICK T v0.6) |
 
 ---
 
 ## §7 — 4-ICP Self-Assessment
 
-| ICP | Criterion | Verdict | Score |
-|-----|-----------|---------|-------|
-| **I1 (Intent)** | Codify Pages-Domain a11y patterns as canonical invariants | ✅ ACCEPT | 9.0/10 |
-| **I2 (Implementation)** | 72-file evidence base with D-002 3-witness | ✅ ACCEPT | 9.0/10 |
-| **I3 (Integration)** | Husky Gate 15 v0.3 + Pattern C architectural multiplier | ✅ ACCEPT | 9.0/10 |
-| **I4 (Iteration)** | Co-sign open with 5 Muses, T-1d target | ✅ ACCEPT | 9.0/10 |
-| **COMPOSITE** | 4-ICP Hermes self-verdict | **✅ ACCEPT 4/4** | **9.0/10 PLATINUM+** |
+| ICP                     | Criterion                                                 | Verdict           | Score                |
+| ----------------------- | --------------------------------------------------------- | ----------------- | -------------------- |
+| **I1 (Intent)**         | Codify Pages-Domain a11y patterns as canonical invariants | ✅ ACCEPT         | 9.0/10               |
+| **I2 (Implementation)** | 72-file evidence base with D-002 3-witness                | ✅ ACCEPT         | 9.0/10               |
+| **I3 (Integration)**    | Husky Gate 15 v0.3 + Pattern C architectural multiplier   | ✅ ACCEPT         | 9.0/10               |
+| **I4 (Iteration)**      | Co-sign open with 5 Muses, T-1d target                    | ✅ ACCEPT         | 9.0/10               |
+| **COMPOSITE**           | 4-ICP Hermes self-verdict                                 | **✅ ACCEPT 4/4** | **9.0/10 PLATINUM+** |
 
 ---
 
 ## §8 — 5-ICP SKEPTIC D1-D5 Self-Assessment (mirrors Tyche's SEAL on PICK T v0.6)
 
-| Dimension | Question | Verdict | Score |
-|-----------|----------|---------|-------|
-| **D1 (Source)** | Are all 72 file sources verifiable + git-tracked? | ✅ ACCEPT | 9.5/10 |
-| **D2 (Logic)** | Are Pattern A + B + C logically sound + WCAG-compliant? | ✅ ACCEPT | 9.5/10 |
-| **D3 (Method)** | Is the D-002 3-witness + Husky Gate 15 method rigorous? | ✅ ACCEPT | 9.5/10 |
-| **D4 (Robustness)** | Does Pattern C (architectural multiplier) prevent regression? | ✅ ACCEPT | 9.0/10 |
-| **D5 (Composite)** | Is the 72-file DUAL SEAL closure defensible? | ✅ ACCEPT | 9.5/10 |
-| **COMPOSITE** | 5-ICP SKEPTIC Hermes self-verdict | **✅ ACCEPT 5/5** | **9.42/10 PLATINUM+** |
+| Dimension           | Question                                                      | Verdict           | Score                 |
+| ------------------- | ------------------------------------------------------------- | ----------------- | --------------------- |
+| **D1 (Source)**     | Are all 72 file sources verifiable + git-tracked?             | ✅ ACCEPT         | 9.5/10                |
+| **D2 (Logic)**      | Are Pattern A + B + C logically sound + WCAG-compliant?       | ✅ ACCEPT         | 9.5/10                |
+| **D3 (Method)**     | Is the D-002 3-witness + Husky Gate 15 method rigorous?       | ✅ ACCEPT         | 9.5/10                |
+| **D4 (Robustness)** | Does Pattern C (architectural multiplier) prevent regression? | ✅ ACCEPT         | 9.0/10                |
+| **D5 (Composite)**  | Is the 72-file DUAL SEAL closure defensible?                  | ✅ ACCEPT         | 9.5/10                |
+| **COMPOSITE**       | 5-ICP SKEPTIC Hermes self-verdict                             | **✅ ACCEPT 5/5** | **9.42/10 PLATINUM+** |
 
 (Mirrors Tyche's D1-D5 SEAL on Hermes PICK T v0.6 = 9.42/10 PLATINUM+ ACCEPT 4/4)
 
@@ -235,17 +235,17 @@ const TableHead = React.forwardRef<
 
 ## §9 — NEVER-AGAIN RULES COMPLIED (8/8)
 
-| Rule | Description | Status |
-|------|-------------|--------|
-| **#47** | CAVEMAN PERSIST 5-way redundancy | ✅ ACTIVE |
-| **#51** | 60s IDLE-PATROL SLA | ✅ ACTIVE |
-| **#54** | D-002 3-witness verification | ✅ ACTIVE |
-| **#55** | 4-ICP self-assessment mandatory | ✅ ACTIVE |
-| **#56** | 60s PROACTIVE-PICK-CHAIN | ✅ ACTIVE |
-| **#57** | 5-ICP SKEPTIC D1-D5 on SKEPTIC filings | ✅ ACTIVE |
-| **#58** | ENV-DESYNC-DETECTION (STATE ANCHOR) | ✅ ACTIVE (2nd APPLICATION) |
-| **#60** | Pages-Domain DUAL SEAL invariant | ✅ ACTIVE (THIS DOCUMENT) |
-| **#68** | 4/4 LOCK composite acceptance | ✅ ACTIVE (4-ICP + 5-ICP SKEPTIC) |
+| Rule    | Description                            | Status                            |
+| ------- | -------------------------------------- | --------------------------------- |
+| **#47** | CAVEMAN PERSIST 5-way redundancy       | ✅ ACTIVE                         |
+| **#51** | 60s IDLE-PATROL SLA                    | ✅ ACTIVE                         |
+| **#54** | D-002 3-witness verification           | ✅ ACTIVE                         |
+| **#55** | 4-ICP self-assessment mandatory        | ✅ ACTIVE                         |
+| **#56** | 60s PROACTIVE-PICK-CHAIN               | ✅ ACTIVE                         |
+| **#57** | 5-ICP SKEPTIC D1-D5 on SKEPTIC filings | ✅ ACTIVE                         |
+| **#58** | ENV-DESYNC-DETECTION (STATE ANCHOR)    | ✅ ACTIVE (2nd APPLICATION)       |
+| **#60** | Pages-Domain DUAL SEAL invariant       | ✅ ACTIVE (THIS DOCUMENT)         |
+| **#68** | 4/4 LOCK composite acceptance          | ✅ ACTIVE (4-ICP + 5-ICP SKEPTIC) |
 
 **8/8 ACTIVE — NEVER-AGAIN RULES COMPLIED.**
 
@@ -253,13 +253,13 @@ const TableHead = React.forwardRef<
 
 ## §10 — CASCADE-TRAP Family v0.4 Sub-class Mapping
 
-| Sub-class | Relevance to PICK T v0.7 | Mitigation |
-|-----------|--------------------------|------------|
+| Sub-class                                      | Relevance to PICK T v0.7                                 | Mitigation                                       |
+| ---------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------ |
 | **CASCADE-HOLD-ATTRIBUTION-RACE (RATIFIED A)** | High — Husky Gate 15 v0.3 fix at `454c756cc` may trigger | D-002 3-witness + CASCADE-COMMIT MODE (RULE #32) |
-| **CASCADE-STALE-WORKING-TREE (RATIFIED C)** | Medium — co-sign handoffs may reset tree | Commit history is source of truth |
-| **GHOST-SHA (RATIFIED O)** | High — file:line SHA drift across 72 files | D-002 3-witness + md5sum verification |
-| **CASCADE-DUPLICATE-ATTRIBUTE (PROPOSED S)** | High — Husky Gate 15 v0.3 precedent at `454c756cc` | Husky Gate 15 linter enforces `scope='col'` |
-| **CASCADE-DEFAULT-OVERRIDE (PROPOSED T)** | High — Pattern C architectural multiplier | RULE-DUP-2 + Gate 15 |
+| **CASCADE-STALE-WORKING-TREE (RATIFIED C)**    | Medium — co-sign handoffs may reset tree                 | Commit history is source of truth                |
+| **GHOST-SHA (RATIFIED O)**                     | High — file:line SHA drift across 72 files               | D-002 3-witness + md5sum verification            |
+| **CASCADE-DUPLICATE-ATTRIBUTE (PROPOSED S)**   | High — Husky Gate 15 v0.3 precedent at `454c756cc`       | Husky Gate 15 linter enforces `scope='col'`      |
+| **CASCADE-DEFAULT-OVERRIDE (PROPOSED T)**      | High — Pattern C architectural multiplier                | RULE-DUP-2 + Gate 15                             |
 
 **Mitigation strategy:** All 72 files D-002 3-witness verified + Husky Gate 15 v0.3 enforced + Pattern C architectural multiplier.
 
@@ -278,6 +278,7 @@ const TableHead = React.forwardRef<
 ## §12 — File Manifest
 
 ### §12.1 Primary Document
+
 - **Path:** `docs/codif/ENDORSEMENTS/HERMES_PAGES_DOMAIN_A11Y_PATTERN_INVARIANTS_v0_1.md`
 - **Lines:** ~370
 - **md5:** (computed at ship time)
@@ -285,15 +286,18 @@ const TableHead = React.forwardRef<
 - **BAT:** `BAT-PICKT-V07-HERMES-HERA-2026-06-19` (RULE #67)
 
 ### §12.2 CAVEMAN PERSIST Backup
+
 - **Path:** `docs/CAVEMAN_PERSIST/HERMES_TURN_127_PLUS_PICK_T_V0_7_SHIP_CAVEMAN_PERSIST_v0_1.md`
 - **Lines:** ~120
 - **Commit:** (computed at ship time)
 
 ### §12.3 Memory Entry
+
 - **Path:** `memory/finplan-hermes-pick-t-v07-pages-domain-a11y-pattern-invariants.md`
 - **Lines:** ~110
 
 ### §12.4 Task Board Entry
+
 - **Subject:** PICK T v0.7 PAGES_DOMAIN_A11Y_PATTERN_INVARIANTS SHIPPED
 - **Status:** completed
 

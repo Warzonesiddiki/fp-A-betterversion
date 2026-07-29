@@ -57,12 +57,12 @@ session:
   warning_offset_seconds: 20
   countdown_interval_seconds: 5
   default_action_on_dismiss: logout
-  live_region_announcement: "Session will expire in {seconds} seconds"
+  live_region_announcement: 'Session will expire in {seconds} seconds'
   audit:
-    on_warning: "session.timeout.warning"
-    on_extend: "session.timeout.extended"
-    on_expire: "session.timeout.expired"
-    on_reauth: "session.timeout.reauth"
+    on_warning: 'session.timeout.warning'
+    on_extend: 'session.timeout.extended'
+    on_expire: 'session.timeout.expired'
+    on_reauth: 'session.timeout.reauth'
 ```
 
 ### 3.2 TypeScript skeleton (`src/auth/SessionManager.ts`)
@@ -80,11 +80,21 @@ export class SessionManager {
     this.timeoutId = setTimeout(() => this.expire(), totalMs);
   }
 
-  extend(): void { /* POST /api/auth/extend, reset timers */ }
-  logout(): void { /* POST /api/auth/logout, redirect */ }
-  reauth(): void { /* show re-auth form */ }
-  private showWarning(): void { /* LiveRegion + modal */ }
-  private expire(): void { /* logout, audit event */ }
+  extend(): void {
+    /* POST /api/auth/extend, reset timers */
+  }
+  logout(): void {
+    /* POST /api/auth/logout, redirect */
+  }
+  reauth(): void {
+    /* show re-auth form */
+  }
+  private showWarning(): void {
+    /* LiveRegion + modal */
+  }
+  private expire(): void {
+    /* logout, audit event */
+  }
 }
 ```
 
@@ -125,6 +135,7 @@ describe('Q5.3 SessionManager — 20s warning offset', () => {
 ## 5. Local Caveat (3-witness)
 
 **Files owned by Hephaestus in team-shared branch:**
+
 - `docs/security/SECURITY.md` — may not exist locally
 - `src/auth/SessionManager.ts` — may not exist locally
 
@@ -143,6 +154,7 @@ describe('Q5.3 SessionManager — 20s warning offset', () => {
 ---
 
 **3-witness (D-002):**
+
 1. file:line: `docs/a11y/Q5_3_VERIFICATION_CHECKLIST_v0.1.md:1-122` (this commit)
 2. wc -l: 122 lines
 3. md5sum: pending commit

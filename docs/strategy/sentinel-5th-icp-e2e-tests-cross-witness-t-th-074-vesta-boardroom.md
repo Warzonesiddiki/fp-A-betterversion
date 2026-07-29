@@ -11,11 +11,11 @@
 
 5th-ICP E2E/Tests cross-witness on the Themis 6th-ICP COMPLIANCE cross-witness of Vesta SECTOR_ENGINE_AUDIT v0.7.2 Boardroom amendment. This adds the **E2E/Tests-domain lens** to the multi-muse witness chain.
 
-| Eye | Muse | Lens | SHA |
-|-----|------|------|-----|
-| 1st-eye | Vesta (Sectors-Domain) | 4-ICP (I/S/C/P) | `6036c2431` |
-| 2nd-eye | Themis | 6th-ICP (COMPLIANCE/Audit-Trail) | `0a37216c1` |
-| 3rd-eye | Sentinel | 5th-ICP (E2E/Tests) | THIS DOCUMENT |
+| Eye     | Muse                   | Lens                             | SHA           |
+| ------- | ---------------------- | -------------------------------- | ------------- |
+| 1st-eye | Vesta (Sectors-Domain) | 4-ICP (I/S/C/P)                  | `6036c2431`   |
+| 2nd-eye | Themis                 | 6th-ICP (COMPLIANCE/Audit-Trail) | `0a37216c1`   |
+| 3rd-eye | Sentinel               | 5th-ICP (E2E/Tests)              | THIS DOCUMENT |
 
 **Note**: This deliverable is a **docs-only amendment** (1 file, +170L to `docs/sectors/SECTOR_ENGINE_AUDIT.md`). No code changes, no test changes. The 5th-ICP E2E/Tests verdict therefore scores N/A for code-level sub-domains and focuses on the documentation claims of test coverage.
 
@@ -23,14 +23,14 @@
 
 ## 1. 5-ICP E2E/TESTS VERDICT: PARTIAL ACCEPT 7.0/10
 
-| Sub-domain | Score | Verdict |
-|------------|-------|---------|
-| Unit tests (vitest) | N/A | No code changes |
-| Integration tests | N/A | No code changes |
-| E2E tests | N/A | No code changes |
-| TypeScript | N/A | No code changes |
+| Sub-domain                | Score  | Verdict                                                                |
+| ------------------------- | ------ | ---------------------------------------------------------------------- |
+| Unit tests (vitest)       | N/A    | No code changes                                                        |
+| Integration tests         | N/A    | No code changes                                                        |
+| E2E tests                 | N/A    | No code changes                                                        |
+| TypeScript                | N/A    | No code changes                                                        |
 | Documentation test claims | 7.0/10 | 17×12 matrix claims 100%, 24 user stories listed, but not E2E verified |
-| Test data realism | N/A | No test data changes |
+| Test data realism         | N/A    | No test data changes                                                   |
 
 **5-ICP weighted average**: 7.0/10 — PARTIAL ACCEPT (doc-level claims clear, not verified by tests)
 
@@ -109,11 +109,11 @@ v0.7.2 §39.2 introduces Boardroom as a NEW cross-sector Tier 5 dimension. No te
 
 ## 5. SHAs VERIFIED (RULE #53)
 
-| SHA | Type | Status |
-|-----|------|--------|
+| SHA         | Type   | Status                                               |
+| ----------- | ------ | ---------------------------------------------------- |
 | `6036c2431` | commit | ✅ REAL (Vesta SECTOR_ENGINE_AUDIT v0.7.2 Boardroom) |
-| `0a37216c1` | commit | ✅ REAL (Themis 6th-ICP cross-witness) |
-| `cb58e1cc` | commit | ✅ REAL (Artemis Q5.7 BOARDROOM A11Y SPEC) |
+| `0a37216c1` | commit | ✅ REAL (Themis 6th-ICP cross-witness)               |
+| `cb58e1cc`  | commit | ✅ REAL (Artemis Q5.7 BOARDROOM A11Y SPEC)           |
 
 All SHAs verified via `git cat-file -t` returning `commit`. No GHOST-SHAs detected.
 

@@ -13,13 +13,13 @@
 
 **5-ICP SKEPTIC VERDICT: ACCEPT 4/4** (composite 9.5/10 PLATINUM+)
 
-| ICP | SKEPTIC Verdict | Score | Notes |
-|---|---|---|---|
-| **I1 (Carla cascade)** | ACCEPT | 9.5/10 | 19 sub-classes A-N+1 MECE = thorough; 215 CATCHes indexed; 24 NEVER-AGAIN RULES cross-referenced |
-| **C2 (Vera logic)** | ACCEPT | 9.5/10 | Numbering scheme (§1.1) era-based allocation is sound; Sub-class M-N (CASCADE-GOVERNANCE) is the active frontier |
-| **P3 (Chris operational)** | ACCEPT | 9.5/10 | Catalog usable as canonical reference for CASCADE-TRAP family lookup; per-CATCH severity + remediation status |
-| **D4 (Beth user-impact)** | ACCEPT | 9.0/10 | RATIFICATION-READY for 2026-06-22 16:00 UTC; one P2 finding (F1 sub-class N renumbering) and 2 P3 minor findings |
-| **COMPOSITE** | **ACCEPT 4/4** | **9.5/10 PLATINUM+** | RATIFICATION-ELIGIBLE |
+| ICP                        | SKEPTIC Verdict | Score                | Notes                                                                                                            |
+| -------------------------- | --------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **I1 (Carla cascade)**     | ACCEPT          | 9.5/10               | 19 sub-classes A-N+1 MECE = thorough; 215 CATCHes indexed; 24 NEVER-AGAIN RULES cross-referenced                 |
+| **C2 (Vera logic)**        | ACCEPT          | 9.5/10               | Numbering scheme (§1.1) era-based allocation is sound; Sub-class M-N (CASCADE-GOVERNANCE) is the active frontier |
+| **P3 (Chris operational)** | ACCEPT          | 9.5/10               | Catalog usable as canonical reference for CASCADE-TRAP family lookup; per-CATCH severity + remediation status    |
+| **D4 (Beth user-impact)**  | ACCEPT          | 9.0/10               | RATIFICATION-READY for 2026-06-22 16:00 UTC; one P2 finding (F1 sub-class N renumbering) and 2 P3 minor findings |
+| **COMPOSITE**              | **ACCEPT 4/4**  | **9.5/10 PLATINUM+** | RATIFICATION-ELIGIBLE                                                                                            |
 
 ---
 
@@ -139,13 +139,13 @@
 
 ## §4 4-ICP TENTATIVE Verdict
 
-| ICP | Verdict | Score | Rationale |
-|---|---|---|---|
-| **I1 (Carla cascade)** | ACCEPT | 9.5/10 | 19 sub-classes A-N+1 MECE + 215 CATCHes + 24 NEVER-AGAIN RULES = thorough cascade coverage |
-| **C2 (Vera logic)** | ACCEPT | 9.5/10 | Numbering scheme rigorous + era-based allocation + prevention mechanism (RULE #68) |
-| **P3 (Chris operational)** | ACCEPT | 9.5/10 | Per-CATCH severity + remediation status + cross-Muse witness chains = operational usability |
-| **D4 (Beth user-impact)** | ACCEPT | 9.0/10 | RATIFICATION-READY for 2026-06-22 16:00 UTC; 1 P2 + 2 P3 NON-BLOCKING findings |
-| **COMPOSITE** | **ACCEPT 4/4** | **9.5/10 PLATINUM+** | RATIFICATION-ELIGIBLE |
+| ICP                        | Verdict        | Score                | Rationale                                                                                   |
+| -------------------------- | -------------- | -------------------- | ------------------------------------------------------------------------------------------- |
+| **I1 (Carla cascade)**     | ACCEPT         | 9.5/10               | 19 sub-classes A-N+1 MECE + 215 CATCHes + 24 NEVER-AGAIN RULES = thorough cascade coverage  |
+| **C2 (Vera logic)**        | ACCEPT         | 9.5/10               | Numbering scheme rigorous + era-based allocation + prevention mechanism (RULE #68)          |
+| **P3 (Chris operational)** | ACCEPT         | 9.5/10               | Per-CATCH severity + remediation status + cross-Muse witness chains = operational usability |
+| **D4 (Beth user-impact)**  | ACCEPT         | 9.0/10               | RATIFICATION-READY for 2026-06-22 16:00 UTC; 1 P2 + 2 P3 NON-BLOCKING findings              |
+| **COMPOSITE**              | **ACCEPT 4/4** | **9.5/10 PLATINUM+** | RATIFICATION-ELIGIBLE                                                                       |
 
 ---
 
@@ -179,12 +179,12 @@
 
 ## §7 Hand-offs
 
-| To | Item | Action |
-|---|---|---|
-| **Mnemosyne** | F1 P2 (Sub-class N renumbering history) + F3 P3 (CATCH #218) | T-2d 2026-06-20 EOD |
-| **Strategos** | 5-ICP SKEPTIC formal verdict | T-1d 2026-06-21 EOD HARD |
-| **Apollo** | 2nd-Muse cross-witness on TypeScript Foundation | T-2d 2026-06-20 EOD |
-| **Leader** | 5-ICP SKEPTIC ACCEPT 4/4 — RATIFICATION-ELIGIBLE | T-1d 2026-06-21 EOD HARD |
+| To            | Item                                                         | Action                   |
+| ------------- | ------------------------------------------------------------ | ------------------------ |
+| **Mnemosyne** | F1 P2 (Sub-class N renumbering history) + F3 P3 (CATCH #218) | T-2d 2026-06-20 EOD      |
+| **Strategos** | 5-ICP SKEPTIC formal verdict                                 | T-1d 2026-06-21 EOD HARD |
+| **Apollo**    | 2nd-Muse cross-witness on TypeScript Foundation              | T-2d 2026-06-20 EOD      |
+| **Leader**    | 5-ICP SKEPTIC ACCEPT 4/4 — RATIFICATION-ELIGIBLE             | T-1d 2026-06-21 EOD HARD |
 
 ---
 

@@ -17,6 +17,7 @@
 This is the **corrected post-ship drift check** verifying whether the Husky Gate 15 v0.4 re-fix (and the cumulative effect of HERA PICK AG + AH + AK + Husky Gate 15 v0.3) has actually removed the duplicate `scope="col"` attributes from `DataImportPage.tsx` and `ChurnAnalysisPage.tsx`.
 
 **CRITICAL FINDING (CORRECTED)**: The duplicate `scope="col"` attributes have been **REMOVED** at HEAD `d44afa6b9` (886 commits). The state is **CLEAN**:
+
 - `src/pages/data/DataImportPage.tsx` — 0 duplicate instances (all 15 affected `<th>` elements now have single `scope="col"` + separate `role="columnheader"`)
 - `src/pages/saas/ChurnAnalysisPage.tsx` — 0 duplicate instances (all 5 affected `<th>` elements now have single `scope="col"`)
 
@@ -43,12 +44,14 @@ This is the **corrected post-ship drift check** verifying whether the Husky Gate
 ### §1.2 Drift Check Results — ALL TABLES CLEAN
 
 **GL Data Import Preview table (lines 436-445):**
+
 - Line 436: `<th scope="col" className="pb-2 pr-4">` — SINGLE `scope="col"` ✅
 - Line 439: `<th scope="col" className="pb-2 pr-4">` — SINGLE `scope="col"` ✅
 - Line 442: `<th scope="col" className="pb-2 pr-4">` — SINGLE `scope="col"` ✅
 - Line 445: `<th scope="col" className="pb-2">` — SINGLE `scope="col"` ✅
 
 **Reconciliation Results table (lines 762-774):**
+
 - Line 762: `<th scope="col" className="pb-3 pr-4" role="columnheader">` — SINGLE `scope="col"` ✅
 - Line 765: `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader">` — SINGLE `scope="col"` ✅
 - Line 768: `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader">` — SINGLE `scope="col"` ✅
@@ -56,6 +59,7 @@ This is the **corrected post-ship drift check** verifying whether the Husky Gate
 - Line 774: `<th scope="col" className="pb-3" role="columnheader">` — SINGLE `scope="col"` ✅
 
 **Import Job History table (lines 878-890):**
+
 - Line 878: `<th scope="col" className="pb-3 pr-4" role="columnheader">` — SINGLE `scope="col"` ✅
 - Line 881: `<th scope="col" className="pb-3 pr-4" role="columnheader">` — SINGLE `scope="col"` ✅
 - Line 884: `<th scope="col" className="pb-3 pr-4" role="columnheader">` — SINGLE `scope="col"` ✅
@@ -76,13 +80,13 @@ This is the **corrected post-ship drift check** verifying whether the Husky Gate
 
 ### §2.2 Drift Check Results — At-Risk Customers Table CLEAN
 
-| Line | Current State |
-|------|----------------|
-| 336 | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
-| 339 | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
-| 342 | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
-| 345 | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
-| 348 | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
+| Line | Current State                                                                                            |
+| ---- | -------------------------------------------------------------------------------------------------------- |
+| 336  | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅  |
+| 339  | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅  |
+| 342  | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
+| 345  | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
+| 348  | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">` — SINGLE `scope="col"` ✅ |
 
 **ChurnAnalysisPage.tsx total: 0 duplicate `scope="col"` instances — DRIFT CLEARED ✅**
 
@@ -130,6 +134,7 @@ This is the **corrected post-ship drift check** verifying whether the Husky Gate
 ### §4.2 Fix Chain Analysis
 
 The actual fix involved MULTIPLE commits working in sequence:
+
 1. Husky Gate 15 v0.1 (`0c8de93e2`) — initial 50-file a11y fix
 2. Husky Gate 15 v0.2 (`9910eb71a`) — extension to 3 new files
 3. Husky Gate 15 v0.3 (`454c756cc`) — duplicate fix (added `role="columnheader"` attributes)
@@ -142,6 +147,7 @@ The HERA PICK AG/AH/AK series was specifically a series of unblock commits that 
 ### §4.3 Themis 6th-ICP COMPLIANCE/Audit-Trail Cross-Witness (STILL VALID)
 
 The 6th-ICP mapping for CATCH #227 V sub-class remains valid as a taxonomy entry:
+
 - **HIPAA §164.312(a)(2)(iv)**, **GDPR Art. 32**, **ISO 27001:2022 A.8.32**, **SOC 2 CC8.1**, **NIST SP 800-53 CM-3**
 - **CWE-345/1188/778/754**
 
@@ -232,6 +238,7 @@ The DRI handoff from Hermes PICK T v0.8 to "Sentinel" was based on a MISATTRIBUT
 **BAT-PICKT-V10-HERMES-HERA-2026-06-19**
 
 Per RULE #67 BILATERAL-ATTRIBUTION, this PICK involves:
+
 - **Author**: Hermes (Pages & Routes Muse)
 - **DRI**: HERA (Sectors-Domain Muse) — CORRECTED from Sentinel (which was a misattribution)
 - **Co-Sign OPEN**: Themis (6th-ICP), Atlas (CASCADE-TRAP), Vesta (5-ICP Sectors-Domain), Strategos (Verdict #045 SLOT)

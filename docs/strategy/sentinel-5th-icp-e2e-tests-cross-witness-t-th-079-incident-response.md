@@ -11,23 +11,23 @@
 
 5th-ICP E2E/Tests cross-witness on the Themis 6th-ICP COMPLIANCE cross-witness of Hephaestus PATCH 9 IncidentResponse. This adds the **E2E/Tests-domain lens** to the multi-muse witness chain (1st-eye: Hephaestus 4-ICP, 2nd-eye: Themis 6th-ICP, 3rd-eye: Sentinel 5th-ICP).
 
-| Eye | Muse | Lens | SHA |
-|-----|------|------|-----|
-| 1st-eye | Hephaestus | 4-ICP (I/S/C/P) | `5223d3b55` |
-| 2nd-eye | Themis | 6th-ICP (COMPLIANCE/Audit-Trail) | `11cb90395` |
-| 3rd-eye | Sentinel | 5th-ICP (E2E/Tests) | THIS DOCUMENT |
+| Eye     | Muse       | Lens                             | SHA           |
+| ------- | ---------- | -------------------------------- | ------------- |
+| 1st-eye | Hephaestus | 4-ICP (I/S/C/P)                  | `5223d3b55`   |
+| 2nd-eye | Themis     | 6th-ICP (COMPLIANCE/Audit-Trail) | `11cb90395`   |
+| 3rd-eye | Sentinel   | 5th-ICP (E2E/Tests)              | THIS DOCUMENT |
 
 ---
 
 ## 1. 5-ICP E2E/TESTS VERDICT: PARTIAL ACCEPT 7.5/10
 
-| Sub-domain | Score | Verdict |
-|------------|-------|---------|
-| Unit tests (vitest) | 9.0/10 | 48/48 tests pass; comprehensive coverage of all 6 sub-features |
-| Integration tests | 7.0/10 | AuditLogger integration via injected emitter tested; no real DB/persistence integration test |
-| E2E tests | N/A | Service-only module — no UI, no E2E applicable |
-| TypeScript | 9.5/10 | 0 errors (post Apollo P0 cascade + fa5f567aa TS-fix) |
-| Test data realism | 8.0/10 | Tests use realistic incident data (CVE refs, SLA calculations, severity scoring) |
+| Sub-domain          | Score  | Verdict                                                                                      |
+| ------------------- | ------ | -------------------------------------------------------------------------------------------- |
+| Unit tests (vitest) | 9.0/10 | 48/48 tests pass; comprehensive coverage of all 6 sub-features                               |
+| Integration tests   | 7.0/10 | AuditLogger integration via injected emitter tested; no real DB/persistence integration test |
+| E2E tests           | N/A    | Service-only module — no UI, no E2E applicable                                               |
+| TypeScript          | 9.5/10 | 0 errors (post Apollo P0 cascade + fa5f567aa TS-fix)                                         |
+| Test data realism   | 8.0/10 | Tests use realistic incident data (CVE refs, SLA calculations, severity scoring)             |
 
 **5-ICP weighted average**: 7.5/10 — PARTIAL ACCEPT (PASS unit + integration + TS; defer UI/E2E as not applicable for service-only)
 
@@ -96,11 +96,11 @@ The 10 AS-BUILT journeys in v0.7 do not include incident response flows. PATCH 9
 
 ## 4. THREAT MODELING (5th-ICP E2E/Tests lens)
 
-| Threat | CWE | Test coverage |
-|--------|-----|---------------|
-| Insufficient logging | CWE-778 | ✅ Tests cover full timeline + audit events |
-| Omission of security info | CWE-223 | ✅ Tests cover full artifact list |
-| Insecure defaults | CWE-1188 | ✅ Tests cover strict typing, no implicit escalation |
+| Threat                    | CWE      | Test coverage                                        |
+| ------------------------- | -------- | ---------------------------------------------------- |
+| Insufficient logging      | CWE-778  | ✅ Tests cover full timeline + audit events          |
+| Omission of security info | CWE-223  | ✅ Tests cover full artifact list                    |
+| Insecure defaults         | CWE-1188 | ✅ Tests cover strict typing, no implicit escalation |
 
 **Threat coverage score**: 9.0/10 — all 3 CWEs explicitly tested
 
@@ -109,6 +109,7 @@ The 10 AS-BUILT journeys in v0.7 do not include incident response flows. PATCH 9
 ## 5. SOC 2 / RATIFICATION GATE EVIDENCE (5th-ICP lens)
 
 PATCH 9 IncidentResponse provides:
+
 - **CC7.4 (Incident Response)**: Full incident lifecycle with severity, SLA, postmortem
 - **CC7.5 (Recovery)**: Resolution + closure with sign-off
 
@@ -142,13 +143,13 @@ Auto-escalation logic exists (`autoEscalate()`) but no test simulates a clock-ad
 
 ## 7. 5-ICP VERDICT
 
-| Sub-domain | Score |
-|------------|-------|
-| Unit tests | 9.0/10 |
-| Integration | 7.0/10 |
-| E2E (N/A for service) | N/A |
-| TypeScript | 9.5/10 |
-| Test data realism | 8.0/10 |
+| Sub-domain             | Score      |
+| ---------------------- | ---------- |
+| Unit tests             | 9.0/10     |
+| Integration            | 7.0/10     |
+| E2E (N/A for service)  | N/A        |
+| TypeScript             | 9.5/10     |
+| Test data realism      | 8.0/10     |
 | **5-ICP weighted avg** | **7.5/10** |
 
 **Verdict**: PARTIAL ACCEPT — PATCH 9 IncidentResponse has solid unit coverage (48/48 vitest) but lacks real LocalStorage adapter integration test and audit payload verification. F1-F5 are P3 minor findings not blocking RATIFICATION GATE.
@@ -157,10 +158,10 @@ Auto-escalation logic exists (`autoEscalate()`) but no test simulates a clock-ad
 
 ## 8. SHAs VERIFIED (RULE #53)
 
-| SHA | Type | Status |
-|-----|------|--------|
-| `5223d3b55` | commit | ✅ REAL (Hephaestus PATCH 9 original) |
-| `fa5f567aa` | commit | ✅ REAL (TS-fix cascade) |
+| SHA         | Type   | Status                                 |
+| ----------- | ------ | -------------------------------------- |
+| `5223d3b55` | commit | ✅ REAL (Hephaestus PATCH 9 original)  |
+| `fa5f567aa` | commit | ✅ REAL (TS-fix cascade)               |
 | `11cb90395` | commit | ✅ REAL (Themis 6th-ICP cross-witness) |
 
 All SHAs verified via `git cat-file -t` returning `commit`. No GHOST-SHAs detected.

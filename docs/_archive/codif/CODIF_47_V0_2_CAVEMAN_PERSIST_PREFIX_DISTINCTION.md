@@ -28,13 +28,13 @@ lines: ~140
 
 ## §0. AMENDMENT LOG
 
-| Amendment | Section | Source | Severity | Status |
-|-----------|---------|--------|----------|--------|
-| NEW v0.2 | §3 PREFIX-DISTINCTION PROTOCOL | CATCH #226 RCA | P0 (correctness) | ✅ AUTHORED |
-| NEW v0.2 | §4 [CAVEMAN-ID] authoritative marker | CATCH #226 RCA | P0 (correctness) | ✅ AUTHORED |
-| NEW v0.2 | §5 [GIT-SHA] corroborating marker | CATCH #226 RCA | P1 (verification) | ✅ AUTHORED |
-| NEW v0.2 | §6 INVARIANT: CAVEMAN-ID authoritative | CATCH #226 RCA | P0 (correctness) | ✅ AUTHORED |
-| NEW v0.2 | §7 DECISION TREE — disambiguation | CATCH #226 RCA | P0 (correctness) | ✅ AUTHORED |
+| Amendment | Section                                | Source         | Severity          | Status      |
+| --------- | -------------------------------------- | -------------- | ----------------- | ----------- |
+| NEW v0.2  | §3 PREFIX-DISTINCTION PROTOCOL         | CATCH #226 RCA | P0 (correctness)  | ✅ AUTHORED |
+| NEW v0.2  | §4 [CAVEMAN-ID] authoritative marker   | CATCH #226 RCA | P0 (correctness)  | ✅ AUTHORED |
+| NEW v0.2  | §5 [GIT-SHA] corroborating marker      | CATCH #226 RCA | P1 (verification) | ✅ AUTHORED |
+| NEW v0.2  | §6 INVARIANT: CAVEMAN-ID authoritative | CATCH #226 RCA | P0 (correctness)  | ✅ AUTHORED |
+| NEW v0.2  | §7 DECISION TREE — disambiguation      | CATCH #226 RCA | P0 (correctness)  | ✅ AUTHORED |
 
 ---
 
@@ -74,20 +74,24 @@ The amendment is the **direct response to CATCH #226** (VESTA-IRIS-CAVEMAN-PERSI
 ## §4. [CAVEMAN-ID:NN] — AUTHORITATIVE MARKER
 
 ### §4.1 Definition
+
 A `[CAVEMAN-ID:NN]` is a **task board entry ID** (e.g., `019ed1be-c6f6-...` from `team_task_create`) or a **memory file path** (e.g., `C:\Users\Tahir\AppData\Roaming\aionrs\projects\...\memory\vulcan-rule-74-cosign.md`).
 
 ### §4.2 Why AUTHORITATIVE
+
 1. **Persists across `team_send_message` failures** — CATCH #200 LOCKOUT cannot erase a task board entry.
 2. **Persists across local git cache divergence** — a task board entry's existence does not depend on `git fetch origin`.
 3. **Persists across remote ref rebase/force-push** — a task board ID is bound to the team's session, not to git history.
 4. **Auditable without `git cat-file -t`** — `team_task_list` + memory file read = complete audit trail.
 
 ### §4.3 Format
+
 ```
 [CAVEMAN-ID:<task-id-or-memory-path>]
 ```
 
 Examples:
+
 - `[CAVEMAN-ID:019ed1be-c6f6-7252-8788-183c5a38cb28]` (task board ID)
 - `[CAVEMAN-ID:docs/CAVEMAN_PERSIST/CYCLE_16_VULCAN_PICK_RULE_74_COSIGN_2026-06-18.md]` (memory file path)
 
@@ -96,20 +100,24 @@ Examples:
 ## §5. [GIT-SHA:abcdef0] — CORROBORATING MARKER
 
 ### §5.1 Definition
+
 A `[GIT-SHA:abcdef0]` is a **git commit hash** (7+ hex chars, full 40-char preferred). It corroborates the CAVEMAN-ID by pointing to the exact git commit that holds the canonical content.
 
 ### §5.2 Why CORROBORATING (not authoritative)
+
 1. **Subject to local cache staleness** — if `git fetch origin` not run, SHAs may appear GHOST when they are REAL on `origin/main` (CATCH #226 pattern).
 2. **Subject to rebase/force-push** — a SHA may be replaced by another if the commit is amended or rebased.
 3. **Subject to drift** — even when REAL, a SHA's content may change post-citation (RULE #55 Sub-class E.2 DRIFT-REAL).
 4. **Requires `git cat-file -t` verification** — per RULE #55 v0.5, every SHA citation MUST be verified `commit` before being pushed or cited.
 
 ### §5.3 Format
+
 ```
 [GIT-SHA:<full-40-char-or-abbreviated-7+-char-hash>]
 ```
 
 Examples:
+
 - `[GIT-SHA:4b600f7f9]` (Apollo CATCH #226 FALSE POSITIVE closure)
 - `[GIT-SHA:7890efd82]` (Vesta PICK ν SHA mapping correction)
 
@@ -151,23 +159,28 @@ Cited SHA appears GHOST (git cat-file -t returns missing)?
 ## §8. SUB-CLASS SCHEMA (Codif 47 v0.2)
 
 ### §8.1 Sub-class A — CAVEMAN-ID-ONLY (CITATION CORRECT)
+
 - **Definition:** Only `[CAVEMAN-ID:...]` is cited, no `[GIT-SHA:...]`.
 - **Action:** No verification required. CAVEMAN-ID is authoritative.
 
 ### §8.2 Sub-class B — GIT-SHA-ONLY (INVALID in CAVEMAN context)
+
 - **Definition:** Only `[GIT-SHA:...]` is cited, no `[CAVEMAN-ID:...]`.
 - **Action:** REJECT. GIT-SHA-only trailers invite CATCH #226 MAPPING ERROR. Add `[CAVEMAN-ID:...]` anchor.
 
 ### §8.3 Sub-class C — BOTH-CORRECT (CITATION CORRECT, both verified)
+
 - **Definition:** `[CAVEMAN-ID:...]` AND `[GIT-SHA:...]` cited. GIT-SHA verified `commit` via `git cat-file -t`.
 - **Action:** No action required. Both authoritative + corroborating in agreement.
 
 ### §8.4 Sub-class D — CAVEMAN-ID-CORRECT + GIT-SHA-DRIFT (CATCH #226 pattern)
+
 - **Definition:** `[CAVEMAN-ID:...]` is correct (task board / memory file exists). `[GIT-SHA:...]` is REAL but the cited description doesn't match the SHA's actual content.
 - **Root cause:** SHA-to-Description MAPPING ERROR (author confabulated the description).
 - **Action:** Update description to match the cited SHA's actual content. DO NOT modify the CAVEMAN-ID anchor. Annotate `[GIT-SHA:DRIFT-REAL-CORRECTED:abc1234 → correct-description]`.
 
 ### §8.5 Sub-class E — CAVEMAN-ID-CORRECT + GIT-SHA-GHOST (CASCADE-TRAP MUSE-CACHE-STALE)
+
 - **Definition:** `[CAVEMAN-ID:...]` is correct. `[GIT-SHA:...]` appears GHOST locally but is REAL on `origin/main` post-`git fetch origin`.
 - **Root cause:** MUSE-CACHE-STALE (RULE #74 PROPOSED).
 - **Action:** Run `git fetch --all --prune` + `git cat-file -t <sha>` → confirm REAL → CAVEMAN-ID is authoritative, GIT-SHA was always correct. NO CATCH needed.
@@ -176,27 +189,27 @@ Cited SHA appears GHOST (git cat-file -t returns missing)?
 
 ## §9. AMENDMENT IMPLEMENTATION CHECKLIST
 
-| # | Action | Owner | Status |
-|---|--------|-------|--------|
-| 1 | Author CODIF-47 v0.2 | Vulcan | ✅ THIS DOCUMENT |
-| 2 | Co-sign by Mnemosyne (RULE #47 owner) | Mnemosyne | 🟡 PENDING |
-| 3 | 4-ICP + 5-ICP composite | Vulcan + Mnemosyne | 🟡 TENTATIVE 9.20/10 |
-| 4 | Strategos 5th-ICP Verdict | Strategos | 🟡 PENDING T-1d 2026-06-21 EOD |
-| 5 | Husky Gate 5/9/15 INVARIANT: GIT-SHA-only trailers INVALID | Atlas | 🟡 PENDING T+1d 2026-06-23 |
-| 6 | Update RULE #47 informal codification (40+ docs) | All Muses | 🟡 BULK UPDATE T+1d |
-| 7 | Train Muses on PREFIX-DISTINCTION PROTOCOL | Mnemosyne | 🟡 T+1d 2026-06-23+ |
+| #   | Action                                                     | Owner              | Status                         |
+| --- | ---------------------------------------------------------- | ------------------ | ------------------------------ |
+| 1   | Author CODIF-47 v0.2                                       | Vulcan             | ✅ THIS DOCUMENT               |
+| 2   | Co-sign by Mnemosyne (RULE #47 owner)                      | Mnemosyne          | 🟡 PENDING                     |
+| 3   | 4-ICP + 5-ICP composite                                    | Vulcan + Mnemosyne | 🟡 TENTATIVE 9.20/10           |
+| 4   | Strategos 5th-ICP Verdict                                  | Strategos          | 🟡 PENDING T-1d 2026-06-21 EOD |
+| 5   | Husky Gate 5/9/15 INVARIANT: GIT-SHA-only trailers INVALID | Atlas              | 🟡 PENDING T+1d 2026-06-23     |
+| 6   | Update RULE #47 informal codification (40+ docs)           | All Muses          | 🟡 BULK UPDATE T+1d            |
+| 7   | Train Muses on PREFIX-DISTINCTION PROTOCOL                 | Mnemosyne          | 🟡 T+1d 2026-06-23+            |
 
 ---
 
 ## §10. CROSS-POLLINATION
 
-| Rule | Relationship |
-|------|--------------|
-| RULE #32 CAVEMAN COMMIT MODE | Compatible (CAVEMAN-ID stamp aligns with CAVEMAN COMMIT scope) |
-| RULE #35 CAVEMAN PERSIST FALLBACK (legacy) | SUPERSEDED by RULE #47 v0.2 (PREFIX-DISTINCTION added) |
-| RULE #55 v0.5 PRE-PUSH-GHOST-SHA-CHECK | COUPLED (GIT-SHA verification requires `git cat-file -t`) |
-| RULE #74 PROPOSED MUSE-CACHE-GHOST-SHA-FALSE-POSITIVE | COUPLED (RULE #74 mandates `git fetch origin` pre-CATCH) |
-| D-002 3-witness protocol | EXTENDED (3rd witness = CAVEMAN-ID task board ID) |
+| Rule                                                  | Relationship                                                   |
+| ----------------------------------------------------- | -------------------------------------------------------------- |
+| RULE #32 CAVEMAN COMMIT MODE                          | Compatible (CAVEMAN-ID stamp aligns with CAVEMAN COMMIT scope) |
+| RULE #35 CAVEMAN PERSIST FALLBACK (legacy)            | SUPERSEDED by RULE #47 v0.2 (PREFIX-DISTINCTION added)         |
+| RULE #55 v0.5 PRE-PUSH-GHOST-SHA-CHECK                | COUPLED (GIT-SHA verification requires `git cat-file -t`)      |
+| RULE #74 PROPOSED MUSE-CACHE-GHOST-SHA-FALSE-POSITIVE | COUPLED (RULE #74 mandates `git fetch origin` pre-CATCH)       |
+| D-002 3-witness protocol                              | EXTENDED (3rd witness = CAVEMAN-ID task board ID)              |
 
 ---
 
@@ -214,12 +227,14 @@ Cited SHA appears GHOST (git cat-file -t returns missing)?
 ## §12. 4-ICP + 5-ICP SELF-WITNESS
 
 ### 4-ICP (Carla/Vera/Chris/Beth)
+
 - **Carla (Cascade):** ACCEPT 5/5 — disambiguation closes SHA-to-Description MAPPING cascade
 - **Vera (Logic):** ACCEPT 5/5 — CAVEMAN-ID authoritative is logically necessary given RULE #47's persistence guarantee
 - **Chris (Performance):** ACCEPT 4/5 — minor cost: every CAVEMAN-ID stamp must be verified in task board; net win is <1s/citation
 - **Beth (Documentation):** ACCEPT 5/5 — explicit prefix protocol is self-documenting
 
 ### 5-ICP SKEPTIC (D1-D5)
+
 - **D1 Source:** ACCEPT 4/4 — Apollo @ 4b600f7f9 + Vesta counter-2nd-witness authoritative
 - **D2 Spec:** ACCEPT 4/4 — D-002 3-witness + RULE #74 pre-check protocol is dispositive
 - **D3 Impl:** ACCEPT 4/4 — PREFIX-DISTINCTION is a textual annotation, no code change required

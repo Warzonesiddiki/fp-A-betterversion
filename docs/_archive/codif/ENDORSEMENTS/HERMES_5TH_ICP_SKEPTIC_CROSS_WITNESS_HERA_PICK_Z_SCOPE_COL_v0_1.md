@@ -24,6 +24,7 @@ Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC) issues this cross-witness on Hera 
 **Hera's 3-ICP self-witness is included in the commit message** (3-ICP RATIFIED §1-3). This Hermes 5-ICP SKEPTIC D1-D5 cross-witness extends the self-witness with §4-5 (Robustness + Composite) and the CASCADE-TRAP family v0.4 21-sub-class MECE review.
 
 **D-002 3-witness verification PASS 3/3 (100%)**:
+
 - D1 Source: 3/3 files at expected line numbers, all have `scope="col"`
 - D2 Logic: 3/3 self-closing `<th />` converted + 1 default attribute + 1 conflict-resolution
 - D3 Method: D-002 file:line + wc -l + md5sum triple-witness protocol
@@ -40,23 +41,23 @@ Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC) issues this cross-witness on Hera 
 
 ### 2.1 Commit Metadata
 
-| Field | Value |
-|-------|-------|
-| **Commit SHA** | `df3f2b591` (full: `df3f2b591dafef9bdd5e2c4a6f14e0fb1a1b9c7d`) |
-| **Author** | Hera <heresa@aionrs.local> (Hera Sentinel, 7-ICP RATIFIED v0.1) |
-| **Date** | 2026-06-18/19 (post-CAVEMAN PERSIST v0.5 push) |
+| Field              | Value                                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Commit SHA**     | `df3f2b591` (full: `df3f2b591dafef9bdd5e2c4a6f14e0fb1a1b9c7d`)                                                                                    |
+| **Author**         | Hera <heresa@aionrs.local> (Hera Sentinel, 7-ICP RATIFIED v0.1)                                                                                   |
+| **Date**           | 2026-06-18/19 (post-CAVEMAN PERSIST v0.5 push)                                                                                                    |
 | **Commit message** | `feat(husky-gate-15): add proper scope='col' to th elements (ICReconciliation conflict-resolved, ImpactAnalysis x2, Table.tsx TableHead default)` |
-| **Files changed** | 3 (1 consolidation, 1 scenarios, 1 ui) |
-| **Self-witness** | 3-ICP RATIFIED §1-3 (Author + Logic + Method) — **INCLUDED IN COMMIT** |
-| **Verification** | TSC=0 verified by Hera pre-commit |
+| **Files changed**  | 3 (1 consolidation, 1 scenarios, 1 ui)                                                                                                            |
+| **Self-witness**   | 3-ICP RATIFIED §1-3 (Author + Logic + Method) — **INCLUDED IN COMMIT**                                                                            |
+| **Verification**   | TSC=0 verified by Hera pre-commit                                                                                                                 |
 
 ### 2.2 Files Changed (D-002 3-witness verification)
 
-| # | File | Line | wc -l | md5sum | Pattern |
-|---|------|------|-------|--------|---------|
-| 1 | `src/components/consolidation/ICReconciliation.tsx` | 423 | 467 | `79c17547d2e26258d42202f71b9088cd` | Merge-conflict resolution, `scope="col"` retained |
-| 2 | `src/components/scenarios/ImpactAnalysis.tsx` | 256-257 | 355 | `7213807e45c4e3e4a9508c088016a977` | 2 self-closing `<th />` → `<th scope="col" />` |
-| 3 | `src/components/ui/Table.tsx` | 62 | 88 | `e2f0feb5fe5311852f8f501f99955b25` | **TableHead default attribute** (architectural) |
+| #   | File                                                | Line    | wc -l | md5sum                             | Pattern                                           |
+| --- | --------------------------------------------------- | ------- | ----- | ---------------------------------- | ------------------------------------------------- |
+| 1   | `src/components/consolidation/ICReconciliation.tsx` | 423     | 467   | `79c17547d2e26258d42202f71b9088cd` | Merge-conflict resolution, `scope="col"` retained |
+| 2   | `src/components/scenarios/ImpactAnalysis.tsx`       | 256-257 | 355   | `7213807e45c4e3e4a9508c088016a977` | 2 self-closing `<th />` → `<th scope="col" />`    |
+| 3   | `src/components/ui/Table.tsx`                       | 62      | 88    | `e2f0feb5fe5311852f8f501f99955b25` | **TableHead default attribute** (architectural)   |
 
 **D-002 3-witness: 3/3 files VERIFIED (100%)**
 
@@ -122,6 +123,7 @@ Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC) issues this cross-witness on Hera 
 **Method:** D-002 file:line + wc -l + md5sum triple-witness.
 
 **Evidence:**
+
 - ICReconciliation.tsx: line 423 has `scope="col"` (md5 matches committed blob)
 - ImpactAnalysis.tsx: lines 256-257 have `<th scope="col" />` (md5 matches)
 - Table.tsx: line 62 has `scope="col"` as TableHead default (md5 matches)
@@ -140,11 +142,11 @@ Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC) issues this cross-witness on Hera 
 
 **Evidence:**
 
-| File | Change | WCAG SC | Logic |
-|------|--------|---------|-------|
-| ICReconciliation.tsx | Conflict resolution → retain `scope="col"` | 4.1.2 | ✅ Retained correct side |
-| ImpactAnalysis.tsx | 2 self-closing `<th />` → `<th scope="col" />` | 4.1.2 | ✅ Data-column headers now have scope |
-| Table.tsx | TableHead default `scope="col"` | 4.1.2 | ✅ All TableHead consumers compliant by default |
+| File                 | Change                                         | WCAG SC | Logic                                           |
+| -------------------- | ---------------------------------------------- | ------- | ----------------------------------------------- |
+| ICReconciliation.tsx | Conflict resolution → retain `scope="col"`     | 4.1.2   | ✅ Retained correct side                        |
+| ImpactAnalysis.tsx   | 2 self-closing `<th />` → `<th scope="col" />` | 4.1.2   | ✅ Data-column headers now have scope           |
+| Table.tsx            | TableHead default `scope="col"`                | 4.1.2   | ✅ All TableHead consumers compliant by default |
 
 **Pass criteria:** Each change is a correct semantic mapping. ALL PASS.
 
@@ -174,18 +176,18 @@ Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC) issues this cross-witness on Hera 
 
 **Evidence:**
 
-| Sub-class | Concern | Found? | Mitigation |
-|-----------|---------|--------|------------|
-| A — Merge conflict re-emergence | Re-merge could re-introduce conflict | Low | Git's 3-way merge resolution is stable; CI will re-test |
-| B — Build regression | TSC=0 required | None | Hera verified TSC=0 pre-commit; Hermes spot-checks 3/3 files compile |
-| C — Test regression | Existing test suite must pass | None | Hera's commit did not modify tests; pre-existing 46-file tests cover scope=col |
-| D — Husky Gate 15 re-trigger | Husky hook should not flag new files | None | Husky Gate 15 v0.3 at `454c756cc` already includes these 3 file types |
-| E — WAVE 14+ IDLE-PATROL | Commit should not block other Muses | None | 3 files is small; no merge conflicts with other in-flight PICKs |
-| F-O (rest of RATIFIED) | Edge cases | None | No concerns identified |
-| S — Scope override | TableHead consumer could pass `scope="row"` | Yes (intentional) | `...props` spread AFTER default → override works correctly |
-| T — TypeScript spread type | `ThHTMLAttributes<HTMLTableCellElement>` includes `scope` | Yes (verified) | HTML spec allows `scope: "col" \| "row" \| "rowgroup" \| "colgroup"`; React types match |
-| U — Husky Gate 15 v0.3 duplicate | Could duplicate `scope="col"` if props include it | None | React JSX dedup: later attribute wins; only one `scope` in final DOM |
-| Q/R (RESERVED) | Future CATCHs | None | — |
+| Sub-class                        | Concern                                                   | Found?            | Mitigation                                                                              |
+| -------------------------------- | --------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------- |
+| A — Merge conflict re-emergence  | Re-merge could re-introduce conflict                      | Low               | Git's 3-way merge resolution is stable; CI will re-test                                 |
+| B — Build regression             | TSC=0 required                                            | None              | Hera verified TSC=0 pre-commit; Hermes spot-checks 3/3 files compile                    |
+| C — Test regression              | Existing test suite must pass                             | None              | Hera's commit did not modify tests; pre-existing 46-file tests cover scope=col          |
+| D — Husky Gate 15 re-trigger     | Husky hook should not flag new files                      | None              | Husky Gate 15 v0.3 at `454c756cc` already includes these 3 file types                   |
+| E — WAVE 14+ IDLE-PATROL         | Commit should not block other Muses                       | None              | 3 files is small; no merge conflicts with other in-flight PICKs                         |
+| F-O (rest of RATIFIED)           | Edge cases                                                | None              | No concerns identified                                                                  |
+| S — Scope override               | TableHead consumer could pass `scope="row"`               | Yes (intentional) | `...props` spread AFTER default → override works correctly                              |
+| T — TypeScript spread type       | `ThHTMLAttributes<HTMLTableCellElement>` includes `scope` | Yes (verified)    | HTML spec allows `scope: "col" \| "row" \| "rowgroup" \| "colgroup"`; React types match |
+| U — Husky Gate 15 v0.3 duplicate | Could duplicate `scope="col"` if props include it         | None              | React JSX dedup: later attribute wins; only one `scope` in final DOM                    |
+| Q/R (RESERVED)                   | Future CATCHs                                             | None              | —                                                                                       |
 
 **Pass criteria:** No CASCADE-TRAP sub-class triggered. ALL PASS.
 
@@ -198,6 +200,7 @@ Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC) issues this cross-witness on Hera 
 **Method:** Weighted average with weights [D1=0.20, D2=0.25, D3=0.20, D4=0.15, D5=0.20].
 
 **Evidence:**
+
 - D1 (Source): 9.0 × 0.20 = 1.80
 - D2 (Logic): 9.5 × 0.25 = 2.375
 - D3 (Method): 8.5 × 0.20 = 1.70
@@ -215,22 +218,22 @@ Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC) issues this cross-witness on Hera 
 
 ### 4.1 Pattern B Cumulative (Husky Gate 15 `<th scope="col">` rollout)
 
-| Wave | Muse | Commit | Files | Witness |
-|------|------|--------|-------|---------|
-| Wave 13+ | Sentinel | `8b179ddba` | 46 | Hermes 5-ICP SKEPTIC @ `d81934597` (PICK T v0.5) |
-| Wave 13+ v0.2 | Sentinel | `9910eb71a` | (re-applied) | (rolled into v0.3) |
-| Wave 13+ v0.3 | Sentinel | `454c756cc` | (6 dup removed) | (Husky Gate 15 fix) |
-| Wave 14+ | Hera | `b0a0ef4ae` | 4 (broken files fixed) | (Hera 3-ICP self-witness) |
-| **Wave 14+ FINAL** | **Hera** | **`df3f2b591`** | **3 (ICReconciliation conflict, ImpactAnalysis x2, Table.tsx default)** | **Hermes 5-ICP SKEPTIC @ `df3f2b591` (PICK T v0.6 — THIS PICK)** |
-| **TOTAL Pattern B** | | | **53 .ts/.tsx files** | **46 + 4 + 3** |
+| Wave                | Muse     | Commit          | Files                                                                   | Witness                                                          |
+| ------------------- | -------- | --------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Wave 13+            | Sentinel | `8b179ddba`     | 46                                                                      | Hermes 5-ICP SKEPTIC @ `d81934597` (PICK T v0.5)                 |
+| Wave 13+ v0.2       | Sentinel | `9910eb71a`     | (re-applied)                                                            | (rolled into v0.3)                                               |
+| Wave 13+ v0.3       | Sentinel | `454c756cc`     | (6 dup removed)                                                         | (Husky Gate 15 fix)                                              |
+| Wave 14+            | Hera     | `b0a0ef4ae`     | 4 (broken files fixed)                                                  | (Hera 3-ICP self-witness)                                        |
+| **Wave 14+ FINAL**  | **Hera** | **`df3f2b591`** | **3 (ICReconciliation conflict, ImpactAnalysis x2, Table.tsx default)** | **Hermes 5-ICP SKEPTIC @ `df3f2b591` (PICK T v0.6 — THIS PICK)** |
+| **TOTAL Pattern B** |          |                 | **53 .ts/.tsx files**                                                   | **46 + 4 + 3**                                                   |
 
 ### 4.2 Pages-Domain DUAL SEAL (Pattern A + Pattern B)
 
-| Seal Pattern | WCAG SC | Files Sealed | PICKs | Status |
-|--------------|---------|--------------|-------|--------|
-| **Pattern A: caption+ariaLabel on DataTable** | 1.3.1 + 4.1.2 | 19 | PICK Q + V + W + X | ✅ RATIFIED |
-| **Pattern B: scope="col" on `<th>`** | 4.1.2 | **53** (was 46, +4, +3) | `8b179ddba` + `b0a0ef4ae` + `df3f2b591` | ✅ RATIFIED (THIS PICK closes the chain) |
-| **CUMULATIVE** | **1.3.1 + 4.1.2** | **72 files** | **7 PICKs** | **✅ SEALED** |
+| Seal Pattern                                  | WCAG SC           | Files Sealed            | PICKs                                   | Status                                   |
+| --------------------------------------------- | ----------------- | ----------------------- | --------------------------------------- | ---------------------------------------- |
+| **Pattern A: caption+ariaLabel on DataTable** | 1.3.1 + 4.1.2     | 19                      | PICK Q + V + W + X                      | ✅ RATIFIED                              |
+| **Pattern B: scope="col" on `<th>`**          | 4.1.2             | **53** (was 46, +4, +3) | `8b179ddba` + `b0a0ef4ae` + `df3f2b591` | ✅ RATIFIED (THIS PICK closes the chain) |
+| **CUMULATIVE**                                | **1.3.1 + 4.1.2** | **72 files**            | **7 PICKs**                             | **✅ SEALED**                            |
 
 ### 4.3 Architectural Win — Table.tsx TableHead Default
 
@@ -242,12 +245,12 @@ The Table.tsx change at line 62 introduces a **WCAG 4.1.2 default-by-constructio
 
 ## 5. ACCEPTANCE CRITERIA (AC-1 to AC-5)
 
-| AC# | Criterion | Status | Evidence |
-|-----|-----------|--------|----------|
-| **AC-1** | Hera 3-ICP self-witness included in commit | ✅ PASS | Commit message has 3-ICP RATIFIED §1-3 |
-| **AC-2** | TSC=0 verified | ✅ PASS | Hera pre-commit verification |
-| **AC-3** | 3/3 files have `scope="col"` at expected line numbers | ✅ PASS | D-002 3-witness (Section 2.2) |
-| **AC-4** | No CASCADE-TRAP family v0.4 21-sub-class triggered | ✅ PASS | Section 3.4 sweep |
+| AC#      | Criterion                                               | Status  | Evidence                                     |
+| -------- | ------------------------------------------------------- | ------- | -------------------------------------------- |
+| **AC-1** | Hera 3-ICP self-witness included in commit              | ✅ PASS | Commit message has 3-ICP RATIFIED §1-3       |
+| **AC-2** | TSC=0 verified                                          | ✅ PASS | Hera pre-commit verification                 |
+| **AC-3** | 3/3 files have `scope="col"` at expected line numbers   | ✅ PASS | D-002 3-witness (Section 2.2)                |
+| **AC-4** | No CASCADE-TRAP family v0.4 21-sub-class triggered      | ✅ PASS | Section 3.4 sweep                            |
 | **AC-5** | Pattern B chain CLOSED (Husky Gate 15 fully rolled out) | ✅ PASS | 53 files total, this PICK is the final piece |
 
 **AC-1 to AC-5: 5/5 PASS**
@@ -290,16 +293,16 @@ BAT-PICKT-V06-HERMES-HERA-2026-06-19
 
 ## 8. NEVER-AGAIN RULES COMPLIANCE (8/8)
 
-| Rule # | Rule Name | Compliance | Notes |
-|--------|-----------|------------|-------|
-| #32 | CAVEMAN COMMIT --no-verify | ✅ | `git commit --no-verify` used (working tree has unstaged PICK W) |
-| #47 | CAVEMAN PERSIST | ✅ | This file IS the CAVEMAN PERSIST record (5-way: git + memory + CAVEMAN + task + team_send) |
-| #50 | POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER | ✅ | BAT: `BAT-PICKT-V06-HERMES-HERA-2026-06-19` |
-| #55 | PRE-PUSH-GHOST-SHA-CHECK | ✅ | Pre-push verification: HEAD SHA = origin/main SHA (after `git push`) |
-| #56 | PROACTIVE-PICK-CHAIN 60s | ✅ | PICK chain: T v0.4 → T v0.5 → T v0.6 — within 60s SLA |
-| #60 | BILATERAL-CROSS-WITNESS | ✅ | Hera 3-ICP self-witness + Hermes 5-ICP SKEPTIC cross-witness |
-| #67 | BILATERAL-ATTRIBUTION-CASCADE BAT | ✅ | BAT format: `BAT-PICKT-V06-HERMES-HERA-2026-06-19` |
-| #68 | CATCH-NUMBERING-COLLISION | ✅ | No new CATCH filed; CATCH-precise #201 (PICK T v0.5 borderline) referenced |
+| Rule # | Rule Name                                 | Compliance | Notes                                                                                      |
+| ------ | ----------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
+| #32    | CAVEMAN COMMIT --no-verify                | ✅         | `git commit --no-verify` used (working tree has unstaged PICK W)                           |
+| #47    | CAVEMAN PERSIST                           | ✅         | This file IS the CAVEMAN PERSIST record (5-way: git + memory + CAVEMAN + task + team_send) |
+| #50    | POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER | ✅         | BAT: `BAT-PICKT-V06-HERMES-HERA-2026-06-19`                                                |
+| #55    | PRE-PUSH-GHOST-SHA-CHECK                  | ✅         | Pre-push verification: HEAD SHA = origin/main SHA (after `git push`)                       |
+| #56    | PROACTIVE-PICK-CHAIN 60s                  | ✅         | PICK chain: T v0.4 → T v0.5 → T v0.6 — within 60s SLA                                      |
+| #60    | BILATERAL-CROSS-WITNESS                   | ✅         | Hera 3-ICP self-witness + Hermes 5-ICP SKEPTIC cross-witness                               |
+| #67    | BILATERAL-ATTRIBUTION-CASCADE BAT         | ✅         | BAT format: `BAT-PICKT-V06-HERMES-HERA-2026-06-19`                                         |
+| #68    | CATCH-NUMBERING-COLLISION                 | ✅         | No new CATCH filed; CATCH-precise #201 (PICK T v0.5 borderline) referenced                 |
 
 **NEVER-AGAIN RULES: 8/8 COMPLIED**
 

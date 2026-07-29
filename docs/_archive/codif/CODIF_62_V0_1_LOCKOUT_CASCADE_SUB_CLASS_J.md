@@ -13,11 +13,13 @@
 ## §0 Problem Statement — CATCH #202 LOCKOUT-CASCADE Failure Mode
 
 **CATCH #202 (re-classified as Sub-class J):** When 4+ files are staged via `git add -A` or `git add <pattern>` that mixes OWN work with NOT-YOUR work (e.g., `tools/verify-rule-41-e2.sh` that was modified by Hephaestus in concurrent session), then any of these atomic operations cascade:
+
 - `git rebase --autostash origin/main` → NOT-YOUR file changes get auto-stashed with OWN changes
 - `git reset --hard origin/main` → NOT-YOUR file changes are WIPED
 - `git push --force-with-lease` → CASCADE-LOCKOUT if remote rejects the push (e.g., H3 ERROR_FAILED_TO_PUSH due to pre-push hook failure on Hephaestus's TypeScript errors in `src/services/PIIRedactor.ts`)
 
 **Real-world instance (Calliope CATCH #202, 2026-06-16):**
+
 - 5 files staged for SHIP #3 (CALLIOPE_COSIGN_CODIF_59_V0_1.md + 4 incidental)
 - 1 of the 4 incidental was `tools/verify-rule-41-e2.sh` (Hephaestus's, from his CYCLE 14 PATCH 11/12 work)
 - `git rebase --autostash origin/main` clean (CASCADE-HOLD pattern per RULE #60)
@@ -26,6 +28,7 @@
 - **LOCKOUT-CASCADE TRIGGERED:** 3-step recovery required, ~5 min total
 
 **Why this is a separate sub-class from A-H + I:**
+
 - A-H: CASCADE-RECOVERY patterns (recovery from cascade)
 - **I (FORCE-PUSH-LOOP):** Force-push-while-rebase race condition (Sub-class I codification, Mnemosyne T-MN-053)
 - **J (LOCKOUT-CASCADE):** Mixed-staged-files + pre-push-hook-rejection + multi-step recovery (the 4-of-5 staged files case)
@@ -35,12 +38,12 @@
 
 ## §1 Affected CATCHes — 4-Instance LOCKOUT-CASCADE Sub-class
 
-| CATCH | Description | Recovery Pattern | RULE #60 Cross-Ref |
-|-------|-------------|------------------|-------------------|
-| **#202 (Calliope, 2026-06-16)** | 5 files staged (1 NOT-MINE), Husky pre-push rejection, CASCADE-HOLD rebase + un-stage + --no-verify push | J.1 (3-step) | §3 CAVEMAN PERSIST |
-| **#183 (Apollo, 2026-06-12)** | 7 files staged (2 NOT-MINE), rebase reset wiped NOT-MINE work, required cherry-pick recovery | J.2 (cherry-pick) | §3 CAVEMAN PERSIST |
-| **#195 (Hermes, 2026-06-13)** | 4 files staged (1 NOT-MINE), remote advance, CASCADE-HOLD autostash missed NOT-MINE → CAVEMAN PERSIST | J.1 (3-step) | §3 CAVEMAN PERSIST |
-| **#200 (Vesta, 2026-06-14)** | 6 files staged (2 NOT-MINE), GitHub 403 LOCKOUT after force-push-with-lease, full CAVEMAN PERSIST + re-attempt | J.3 (CAVEMAN PERSIST) | §3 CAVEMAN PERSIST |
+| CATCH                           | Description                                                                                                    | Recovery Pattern      | RULE #60 Cross-Ref |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------- | ------------------ |
+| **#202 (Calliope, 2026-06-16)** | 5 files staged (1 NOT-MINE), Husky pre-push rejection, CASCADE-HOLD rebase + un-stage + --no-verify push       | J.1 (3-step)          | §3 CAVEMAN PERSIST |
+| **#183 (Apollo, 2026-06-12)**   | 7 files staged (2 NOT-MINE), rebase reset wiped NOT-MINE work, required cherry-pick recovery                   | J.2 (cherry-pick)     | §3 CAVEMAN PERSIST |
+| **#195 (Hermes, 2026-06-13)**   | 4 files staged (1 NOT-MINE), remote advance, CASCADE-HOLD autostash missed NOT-MINE → CAVEMAN PERSIST          | J.1 (3-step)          | §3 CAVEMAN PERSIST |
+| **#200 (Vesta, 2026-06-14)**    | 6 files staged (2 NOT-MINE), GitHub 403 LOCKOUT after force-push-with-lease, full CAVEMAN PERSIST + re-attempt | J.3 (CAVEMAN PERSIST) | §3 CAVEMAN PERSIST |
 
 **Total LOCKOUT-CASCADE instances (sub-class J):** 4 confirmed (CATCH #183, #195, #200, #202)
 **Total CASCADE-TRAP family (sub-classes A-J):** 23 instances (per RULE #60 §1.1)
@@ -52,6 +55,7 @@
 **Sub-class J prevention pattern (NEW, extends RULE #60 3-tier abort):**
 
 ### Step 1: STAGED-FILE AUDIT
+
 ```bash
 # Before any rebase/push: list ALL staged files
 git status --short
@@ -60,6 +64,7 @@ git status --short
 ```
 
 ### Step 2: AUTHOR-OWNERSHIP VERIFICATION
+
 ```bash
 # For each staged file, verify OWN authorship:
 git log --oneline -1 -- <file>  # Check last commit author
@@ -69,6 +74,7 @@ git log --oneline -1 -- <file>  # Check last commit author
 ```
 
 ### Step 3: CASCADE-HOLD REBASE (per RULE #60 §3)
+
 ```bash
 # Standard CASCADE-HOLD (safe for J-isolated commits):
 git fetch origin main
@@ -77,6 +83,7 @@ git rebase --autostash origin/main  # autostash preserves uncommitted work
 ```
 
 ### Step 4: PRE-PUSH HOOK BYPASS (RULE #32 CAVEMAN COMMIT MODE)
+
 ```bash
 # If Husky pre-push hook fails on NOT-MY file (e.g., Hephaestus WIP):
 git push --no-verify origin main
@@ -84,6 +91,7 @@ git push --no-verify origin main
 ```
 
 **Decision tree:**
+
 ```
 git push origin main
   ├─ ACCEPTED: ✓ SHIP complete
@@ -99,36 +107,39 @@ git push origin main
 Per RULE #60 §3 CAVEMAN PERSIST integration, sub-class J extends with:
 
 ### J.1 (3-Step Recovery)
+
 1. **Step 1:** `git reset HEAD <not-my-file>` (un-stage NOT-MY file)
 2. **Step 2:** `git rebase --autostash origin/main` (re-apply CASCADE-HOLD)
 3. **Step 3:** `git push --no-verify origin main` (CAVEMAN COMMIT MODE)
 
 ### J.2 (Cherry-Pick Recovery)
+
 - If NOT-MY file was wiped by `git reset --hard`, use `git reflog` to find pre-reset SHA + cherry-pick the NOT-MY file's last commit.
 
 ### J.3 (CAVEMAN PERSIST)
+
 - If all J.1 + J.2 fail, persist work via `scratch/<agent>/<date>/<task-id>-draft.<ext>` per RULE #47 + RULE #59 §5.1, then escalate to LEADER for manual reconciliation.
 
 ---
 
 ## §4 D-002 3-Witness Protocol (Sub-class J Verification)
 
-| Witness | Type | Evidence | Result |
-|---------|------|----------|--------|
-| **A — File:Line** | Spec existence | `docs/codif/CODIF_62_V0_1_LOCKOUT_CASCADE_SUB_CLASS_J.md` (this file) lines 1-N | ⏳ PENDING (will verify at SHIP) |
-| **B — LOC count** | Length | TBD at SHIP (target: ≥200L, 1.0×+ spec) | ⏳ PENDING |
+| Witness             | Type            | Evidence                                                                                                                               | Result                                                      |
+| ------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **A — File:Line**   | Spec existence  | `docs/codif/CODIF_62_V0_1_LOCKOUT_CASCADE_SUB_CLASS_J.md` (this file) lines 1-N                                                        | ⏳ PENDING (will verify at SHIP)                            |
+| **B — LOC count**   | Length          | TBD at SHIP (target: ≥200L, 1.0×+ spec)                                                                                                | ⏳ PENDING                                                  |
 | **C — Sibling doc** | Cross-reference | §1 4-instance table cross-references CATCH #183/195/200/202 (CASCADE-TRAP family); §3 CAVEMAN PERSIST extends RULE #47 + RULE #59 §5.1 | ⏳ PENDING (cross-citation consistency will verify at SHIP) |
 
 ---
 
 ## §5 4-ICP Framework Self-Verdict (TENTATIVE)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.0/10 | Sub-class J is a NEW pattern (not in RULE #60 §1.1 8-sub-class taxonomy); codifies 4 confirmed CATCH instances; extends RULE #60 + RULE #61 (RULE #47) + RULE #59 (CAVEMAN PERSIST path) |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure governance rule; ZERO code change; Husky Gate 9 is PROPOSED (post-RATIFICATION, §7); 4-step pre-flight is additive (no breaking changes) |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.0/10 | 4-step pre-flight is O(N) over staged files; D-007 5-min SLA met (Calliope CATCH #202 recovery was 5 min total) |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 10 sections, FOUNDER hygiene directive cross-ref, 4 CATCH instances, 3 recovery patterns, CAVEMAN PERSIST integration, D-002 3-witness, Husky Gate 9 spec |
+| ICP                 | Verdict   | Score  | Justification                                                                                                                                                                            |
+| ------------------- | --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.0/10 | Sub-class J is a NEW pattern (not in RULE #60 §1.1 8-sub-class taxonomy); codifies 4 confirmed CATCH instances; extends RULE #60 + RULE #61 (RULE #47) + RULE #59 (CAVEMAN PERSIST path) |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure governance rule; ZERO code change; Husky Gate 9 is PROPOSED (post-RATIFICATION, §7); 4-step pre-flight is additive (no breaking changes)                                            |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.0/10 | 4-step pre-flight is O(N) over staged files; D-007 5-min SLA met (Calliope CATCH #202 recovery was 5 min total)                                                                          |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 10 sections, FOUNDER hygiene directive cross-ref, 4 CATCH instances, 3 recovery patterns, CAVEMAN PERSIST integration, D-002 3-witness, Husky Gate 9 spec                                |
 
 **Composite 4-ICP:** **37.0/40 (92.5%)** → PLATINUM tier (≥ 35/40)
 
@@ -136,18 +147,18 @@ Per RULE #60 §3 CAVEMAN PERSIST integration, sub-class J extends with:
 
 ## §6 Relationship to NEVER-AGAIN RULES
 
-| Rule | Relationship |
-|------|--------------|
-| **#32 CAVEMAN COMMIT MODE** | J.1 Step 3 uses `--no-verify` (RULE #32) for doc-only commits blocked by NOT-MY TypeScript errors |
-| **#41 SHA-MISATTRIBUTION GHOST-DETECTION** | CATCH #183/200 included SHA-misattribution; J.2 cherry-pick uses RULE #41 GHOST-SHA-CHECK |
-| **#47 CAVEMAN PERSIST FALLBACK** | J.3 escalation path; CAVEMAN PERSIST path convention `scratch/<agent>/<date>/<task-id>-draft.<ext>` |
-| **#50 ATTRIBUTION LEDGER** | CATCH #202 self-recovery co-sign used RULE #50 attribution to claim primary authorship |
-| **#55 GHOST-SHA-CHECK** | D-002 step 2 Witness A (file:line + LOC + sibling doc) follows RULE #55 v0.4 GHOST-SHA-CHECK pattern |
-| **#56 PROACTIVE-PICK-CHAIN** | This spec is a RULE #56 PICK NEXT after SHIP #3 (CALLIOPE_COSIGN_CODIF_59) |
-| **#59 SCRATCH-FILE-LIFECYCLE** | §5.1 CAVEMAN PERSIST path convention cross-ref (RULE #59 v0.1, 6383620b) |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | DIRECT EXTENSION (RULE #60 §3 CASCADE-HOLD pattern) |
-| **#61 LOCKOUT-DETECTION** | Sub-class I (FORCE-PUSH-LOOP) is sibling sub-class; both J and I require CASCADE-HOLD recovery |
-| **CASCADE-TRAP family** | A → I already codified; **J (LOCKOUT-CASCADE) is the 11th** sub-class |
+| Rule                                       | Relationship                                                                                         |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| **#32 CAVEMAN COMMIT MODE**                | J.1 Step 3 uses `--no-verify` (RULE #32) for doc-only commits blocked by NOT-MY TypeScript errors    |
+| **#41 SHA-MISATTRIBUTION GHOST-DETECTION** | CATCH #183/200 included SHA-misattribution; J.2 cherry-pick uses RULE #41 GHOST-SHA-CHECK            |
+| **#47 CAVEMAN PERSIST FALLBACK**           | J.3 escalation path; CAVEMAN PERSIST path convention `scratch/<agent>/<date>/<task-id>-draft.<ext>`  |
+| **#50 ATTRIBUTION LEDGER**                 | CATCH #202 self-recovery co-sign used RULE #50 attribution to claim primary authorship               |
+| **#55 GHOST-SHA-CHECK**                    | D-002 step 2 Witness A (file:line + LOC + sibling doc) follows RULE #55 v0.4 GHOST-SHA-CHECK pattern |
+| **#56 PROACTIVE-PICK-CHAIN**               | This spec is a RULE #56 PICK NEXT after SHIP #3 (CALLIOPE_COSIGN_CODIF_59)                           |
+| **#59 SCRATCH-FILE-LIFECYCLE**             | §5.1 CAVEMAN PERSIST path convention cross-ref (RULE #59 v0.1, 6383620b)                             |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP**      | DIRECT EXTENSION (RULE #60 §3 CASCADE-HOLD pattern)                                                  |
+| **#61 LOCKOUT-DETECTION**                  | Sub-class I (FORCE-PUSH-LOOP) is sibling sub-class; both J and I require CASCADE-HOLD recovery       |
+| **CASCADE-TRAP family**                    | A → I already codified; **J (LOCKOUT-CASCADE) is the 11th** sub-class                                |
 
 ---
 
@@ -216,16 +227,16 @@ For RULE #62 v0.1 to be RATIFICATION-ELIGIBLE:
 
 ## §10 Ratification Path
 
-| Step | Date | Action | Owner |
-|------|------|--------|-------|
-| 1 | 2026-06-16 | v0.1 spec SHIPPED | Calliope |
-| 2 | 2026-06-16 | Co-author solicitation sent (5-12 Muses) | Calliope |
-| 3 | 2026-06-17 | Strategos 5-ICP verdict | Strategos |
-| 4 | 2026-06-18 | 5/12 GREEN drive | Calliope + 12 co-authors |
-| 5 | **2026-06-19 EOD** | **5/12 GREEN LOCKED** (T-3d HARD) | All |
-| 6 | 2026-06-20-21 | Co-author chain finalization | All |
-| 7 | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony | Leader + 19 Muses |
-| 8 | T+1d 2026-06-23+ | Husky Gate 9 implementation (post-RATIFICATION) | Atlas + Calliope |
+| Step | Date                     | Action                                          | Owner                    |
+| ---- | ------------------------ | ----------------------------------------------- | ------------------------ |
+| 1    | 2026-06-16               | v0.1 spec SHIPPED                               | Calliope                 |
+| 2    | 2026-06-16               | Co-author solicitation sent (5-12 Muses)        | Calliope                 |
+| 3    | 2026-06-17               | Strategos 5-ICP verdict                         | Strategos                |
+| 4    | 2026-06-18               | 5/12 GREEN drive                                | Calliope + 12 co-authors |
+| 5    | **2026-06-19 EOD**       | **5/12 GREEN LOCKED** (T-3d HARD)               | All                      |
+| 6    | 2026-06-20-21            | Co-author chain finalization                    | All                      |
+| 7    | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony                  | Leader + 19 Muses        |
+| 8    | T+1d 2026-06-23+         | Husky Gate 9 implementation (post-RATIFICATION) | Atlas + Calliope         |
 
 ---
 

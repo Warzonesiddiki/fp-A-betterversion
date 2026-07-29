@@ -21,12 +21,14 @@ ratification_gate_eligible: TENTATIVE (subject to F1+F2 fix)
 **Vulcan 2nd-Muse verdict:** TENTATIVE ACCEPT 3.0/4 with **7 findings** (3 P1 SHA-ATTRIBUTION-DRIFT, 2 P2, 1 P2 GHOST SHA persistence, 1 P3) — most serious is the **GHOST SHA cluster + new SHA-ATTRIBUTION-DRIFT in §2.2/§2.4**.
 
 **Composite:** 4-ICP 8.5/10 (downgraded from Strategos's implicit 9.5/10)
+
 - I1 (Intent): 9.0/10 — v0.7 intent is correct (5th-ICP #003 + #004 integration)
 - C2 (Catastrophic): 7.0/10 — **3 P1 SHA misattributions** undermine master INDEX integrity
 - P3 (Performance): 9.0/10 — v0.7 shipped in <2h after PICK B witness
 - D4 (Documented): 9.0/10 — 3-witness per claim, but GHOST SHAs + misattributions undermine some witnesses
 
 **Status of PICK B findings (374ea4148 — LOST in branch switch, see PICK D):**
+
 - F1 (GHOST SHA cluster — 1f353d08, f6c58374, d984569a, 8b340664): PARTIALLY ADDRESSED
   - `917630df` was replaced with `6ebb2adac` (Strategos's amendment in L21)
   - `1f353d08` still in 7+ places (L11, 14, 21, 108, 215, 405, 422, 428) — acknowledged as stale but not removed
@@ -43,6 +45,7 @@ Tyche's 3rd-eye verdict (filed at `81d9cd27e`, ACCEPT 75%, 1 P0 SHA-MISATTRIBUTI
 - CATCH #197 (proposed by Tyche): CASCADE-TRAP-COMMIT-MESSAGE-REUSE — commit-message cross-verify is required for any "rebase duplicate" claim.
 
 **Updated F1 finding (incorporating Tyche):**
+
 - The c0917f588/70d548da "rebase duplicate" claim is INCORRECT (they modify different files).
 - c0917f588 should be REPLACED with 70d548da throughout INDEX v0.6/v0.7 (7+ references per Tyche F0).
 - This is CATCH #197 (CASCADE-TRAP-COMMIT-MESSAGE-REUSE), not CATCH #187 (STALE_AUDIT).
@@ -51,21 +54,23 @@ Tyche's 3rd-eye verdict (filed at `81d9cd27e`, ACCEPT 75%, 1 P0 SHA-MISATTRIBUTI
 
 ### 2.1 Phantom SHAs in v0.7 INDEX (verified via `git log --oneline -1 <sha>` → exit 128)
 
-| SHA | Location | Status |
-|---|---|---|
+| SHA        | Location                                              | Status                 |
+| ---------- | ----------------------------------------------------- | ---------------------- |
 | `1f353d08` | L11, 14, 21, 108, 215, 405, 422, 428 (7+ occurrences) | GHOST — does not exist |
-| `8b340664` | L172 (§2.8 LOAD/PERF) | GHOST — does not exist |
-| `59001411` | L62, 141 (§2.4 TEMPORAL Chronos) | GHOST — does not exist |
-| `917630df` | (was) L21 — Strategos amended to `6ebb2adac` | RESOLVED |
+| `8b340664` | L172 (§2.8 LOAD/PERF)                                 | GHOST — does not exist |
+| `59001411` | L62, 141 (§2.4 TEMPORAL Chronos)                      | GHOST — does not exist |
+| `917630df` | (was) L21 — Strategos amended to `6ebb2adac`          | RESOLVED               |
 
 ### 2.2 Misattribution witnesses
 
 **§2.2 (Prometheus STORES+PERF) — SHA `4572ed14` is Chronos v0.1, NOT Prometheus:**
+
 - `git log --oneline 4572ed14 -1` returns: `4572ed142 docs(ratification): Chronos RATIFICATION GATE pre-check v0.1 (12-item temporal checklist + 3 drift points surfaced)`
 - This is a **Chronos commit**, not Prometheus. The v0.6 INDEX line 137 also cited `4572ed14` for "Hephaestus SECURITY FINAL v1.0" — second misattribution. v0.7 fixed Hephaestus's line, but incorrectly re-attributed the same SHA to Prometheus.
 - **Actual Prometheus SHA:** `1be01905` (per T-PR-043 file L8 "HEAD: 1be01905 (232 commits)") OR `df124754b` (Vulcan LOAD_TEST v0.2).
 
 **§2.4 (Chronos TEMPORAL) — SHA `59001411` is GHOST:**
+
 - `git log --oneline -1 59001411` returns exit 128 (unknown revision)
 - The actual Chronos RATIFICATION pre-check commit is `4572ed14` (which is now misattributed to Prometheus in §2.2)
 - The CATCH #195 bilateral bundle at `4572ed14` contains both Chronos v0.1 + BUG-CHR-D-1 fix + Prometheus T-PR-044 2nd-witness on BUG-CHR-D-1 — so the `59001411` SHA was either the pre-rebase SHA or a phantom placeholder.
@@ -75,9 +80,11 @@ Tyche's 3rd-eye verdict (filed at `81d9cd27e`, ACCEPT 75%, 1 P0 SHA-MISATTRIBUTI
 ### FINDING-1 (P1 SHA-ATTRIBUTION-DRIFT) — §2.2 misattributes Chronos SHA to Prometheus
 
 INDEX v0.7 line 127:
+
 > `### 2.2 STORES+PERF (Prometheus) - 4572ed14`
 
 **Verification:** `git log --oneline 4572ed14 -1` returns:
+
 > `4572ed142 docs(ratification): Chronos RATIFICATION GATE pre-check v0.1 (12-item temporal checklist + 3 drift points surfaced)`
 
 This is a **Chronos commit**, not Prometheus. The SHA was previously (in v0.6 line 137) wrongly attributed to Hephaestus SECURITY, and now (in v0.7) wrongly attributed to Prometheus. The SHA has drifted between attributions across versions.
@@ -91,6 +98,7 @@ This is a **Chronos commit**, not Prometheus. The SHA was previously (in v0.6 li
 ### FINDING-2 (P1 GHOST SHA) — §2.4 cites non-existent `59001411`
 
 INDEX v0.7 line 141:
+
 > `### 2.4 TEMPORAL (Chronos) - 59001411`
 
 **Verification:** `git log --oneline -1 59001411` returns exit 128 (unknown revision). The SHA does not exist in any commit on any branch.
@@ -106,6 +114,7 @@ The actual Chronos commit is `4572ed14` (already used in §2.2 as Prometheus's S
 ### FINDING-3 (P1 GHOST SHA) — §2.8 still cites non-existent `8b340664`
 
 INDEX v0.7 line 172:
+
 > `### 2.8 LOAD/PERF (Vulcan) ... CATCH #196 trilateral bundle (8b340664) properly attributed.`
 
 **Verification:** `git log --oneline -1 8b340664` returns exit 128 (unknown revision). The SHA does not exist in any commit on any branch.
@@ -125,6 +134,7 @@ INDEX v0.7 has `1f353d08` cited in lines 11, 14, 21, 108, 215, 405, 422, 428 —
 **Verification:** `git log --oneline -1 1f353d08` returns exit 128 (unknown revision). The SHA does not exist in any commit on any branch.
 
 The header (line 3) claims "all P1 SHA-drift findings resolved" — but `1f353d08` is still cited as:
+
 - L11: v0.2 delta historical context (acceptable as historical reference, but should be flagged as GHOST)
 - L14: v0.4 delta "Themis SHA drift CORRECTED (1f353d08 → 657d10524/f4efa362)" — this is the FIX record, OK
 - L21: Strategos 5th-ICP #004 P1 finding reference (the issue itself)
@@ -137,6 +147,7 @@ The header (line 3) claims "all P1 SHA-drift findings resolved" — but `1f353d0
 **Severity:** P2 — the SHA is documented as known stale, but the volume of occurrences (7+) makes it easy for readers to mistake it for a valid SHA. v0.7's "all P1 SHA-drift findings resolved" header is INACCURATE.
 
 **Recommendation:** Strategos to ship INDEX v0.7.1 with:
+
 - Header line 3 corrected: "all P1 SHA-drift findings RESOLVED in §2.9 and §9; §5 line 215 and §2.8 line 172 and §2.4 line 141 STILL PENDING"
 - §5 L215 corrected to `f4efa362` (v0.2)
 - All other `1f353d08` occurrences annotated as `[STALE — pre-rebase 8-char ref]`
@@ -144,6 +155,7 @@ The header (line 3) claims "all P1 SHA-drift findings resolved" — but `1f353d0
 ### FINDING-5 (P2) — `4572ed14` SHA has 2 different attributions in v0.7
 
 INDEX v0.7:
+
 - L127 (§2.2 Prometheus STORES+PERF): `4572ed14`
 - L144 (§2.4 Chronos BUG-CHR-D-1 fixed in same carrier commit `4572ed14`): `4572ed14`
 
@@ -166,6 +178,7 @@ The replacement is correct, but the file:line reference in L21 is ambiguous — 
 ### FINDING-7 (P3) — §5 L215 still cites `1f353d08` (F5 from PICK B 374ea4148 NOT ADDRESSED)
 
 This is a direct carry-forward of my PICK B F5 finding. INDEX v0.7 line 215:
+
 > `1f353d08 (Themis COMPLIANCE) WITNESSED 2026-06-16`
 
 **Severity:** P3 — single line, documentation drift only. The §5 witness log is read-only and non-blocking.
@@ -174,13 +187,13 @@ This is a direct carry-forward of my PICK B F5 finding. INDEX v0.7 line 215:
 
 ## 4. Composite 4-ICP Verdict (Vulcan 2nd-Muse)
 
-| Dimension | Strategos INDEX v0.7 | Vulcan 2nd-Witness | Delta |
-|---|---|---|---|
-| I1 (Intent) | 9.5 | 9.0 | -0.5 (intent correct but "all P1 SHA-drift findings resolved" claim is inaccurate) |
-| C2 (Catastrophic) | 9.0 | 7.0 | -2.0 (3 P1 SHA misattributions in master INDEX) |
-| P3 (Performance) | 9.5 | 9.0 | -0.5 (fast iteration but quality trade-off) |
-| D4 (Documented) | 9.5 | 9.0 | -0.5 (3-witness per claim, but GHOST SHAs undermine some witnesses) |
-| **Composite** | **9.4/10** | **8.5/10** | **-0.9** |
+| Dimension         | Strategos INDEX v0.7 | Vulcan 2nd-Witness | Delta                                                                              |
+| ----------------- | -------------------- | ------------------ | ---------------------------------------------------------------------------------- |
+| I1 (Intent)       | 9.5                  | 9.0                | -0.5 (intent correct but "all P1 SHA-drift findings resolved" claim is inaccurate) |
+| C2 (Catastrophic) | 9.0                  | 7.0                | -2.0 (3 P1 SHA misattributions in master INDEX)                                    |
+| P3 (Performance)  | 9.5                  | 9.0                | -0.5 (fast iteration but quality trade-off)                                        |
+| D4 (Documented)   | 9.5                  | 9.0                | -0.5 (3-witness per claim, but GHOST SHAs undermine some witnesses)                |
+| **Composite**     | **9.4/10**           | **8.5/10**         | **-0.9**                                                                           |
 
 **Rationale for C2 major downgrade:** 3 P1 SHA misattributions (§2.2, §2.4, §2.8) + 1 P2 GHOST SHA persistence (§5 L215) elevate the catastrophic risk profile. The master INDEX is the most critical artifact for the 2026-06-22 16:00 UTC RATIFICATION GATE ceremony. If the ceremony auditor flags these misattributions, the RATIFICATION-READY claim could be downgraded to PENDING.
 
@@ -223,12 +236,12 @@ This is a direct carry-forward of my PICK B F5 finding. INDEX v0.7 line 215:
 
 ## 8. CATCH Ledger
 
-| CATCH | Classification | Severity | Status |
-|---|---|---|---|
-| #187 STALE_AUDIT | 3 GHOST SHAs (§2.2 `4572ed14` misattr, §2.4 `59001411` GHOST, §2.8 `8b340664` GHOST) | P1 | OPEN — pending Strategos v0.7.1 |
-| #187 STALE_AUDIT (carry-forward) | `1f353d08` in 7+ places including §5 L215 | P2 | OPEN — F4 + F7 amendments |
-| SHA-ATTRIBUTION-DRIFT (new sub-class) | `4572ed14` attributed to Prometheus in §2.2 but is Chronos; previously attributed to Hephaestus in v0.6 | P1 | OPEN — F1 amendment + RULE #51 proposal |
-| #196 CASCADE-TRAP family | `59001411` SHA loss during CATCH #195 bilateral rebase | P1 | OPEN — F2 amendment |
+| CATCH                                 | Classification                                                                                          | Severity | Status                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------- |
+| #187 STALE_AUDIT                      | 3 GHOST SHAs (§2.2 `4572ed14` misattr, §2.4 `59001411` GHOST, §2.8 `8b340664` GHOST)                    | P1       | OPEN — pending Strategos v0.7.1         |
+| #187 STALE_AUDIT (carry-forward)      | `1f353d08` in 7+ places including §5 L215                                                               | P2       | OPEN — F4 + F7 amendments               |
+| SHA-ATTRIBUTION-DRIFT (new sub-class) | `4572ed14` attributed to Prometheus in §2.2 but is Chronos; previously attributed to Hephaestus in v0.6 | P1       | OPEN — F1 amendment + RULE #51 proposal |
+| #196 CASCADE-TRAP family              | `59001411` SHA loss during CATCH #195 bilateral rebase                                                  | P1       | OPEN — F2 amendment                     |
 
 ---
 

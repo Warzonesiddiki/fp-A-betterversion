@@ -19,6 +19,7 @@ When a force-push is performed (with Leader approval per RULE #32 / RATIFICATION
 6. Cycle continues until all Muses are rebased on the new baseline — **FORCE-PUSH-LOOP**
 
 **Real CATCH evidence:**
+
 - CATCH #187 (STALE_VISION_PIVOT_BROADCAST) — Tyche INDEX 2nd witness found duplicate commits from force-push artifact (`1f353d08` vs `657d1052`)
 - CATCH #194-#196 CASCADE-TRAP family — 5 GHOST SHAs (d984569a, 1f353d08, f6c58374, 8b340664, 917630df) all from rebase/amend/**force-push** artifacts
 - Vesta SECTOR_ENGINE_AUDIT — "These 5 SHAs were committed during a multi-Muse bundle race-condition. The commits WERE made, but during rebase/amend/force-push, the original SHAs were orphaned"
@@ -31,6 +32,7 @@ When a force-push is performed (with Leader approval per RULE #32 / RATIFICATION
 Per LEADER TURN 80+ IDLE-PATROL and FOUNDER URGENT DIRECTIVE 2026-06-16 ("keep team working no idle agents speedup upgrade the team"):
 
 **Sub-class I codification is required because:**
+
 - CASCADE-TRAP family grows from 9 to **10 sub-classes (A-H + I)**
 - Real CATCH #200 LOCKOUT triggered investigation of force-push artifacts (per Tyche 2nd witness)
 - RATIFICATION GATE 2026-06-22 16:00 UTC needs full CASCADE-TRAP family enumeration for GATE-ELIGIBLE status
@@ -40,16 +42,16 @@ Per LEADER TURN 80+ IDLE-PATROL and FOUNDER URGENT DIRECTIVE 2026-06-16 ("keep t
 
 ## 2. Affected CATCHes / Force-Push Artifacts
 
-| CATCH # | Title | Sub-class | Status | Source |
-|---------|-------|-----------|--------|--------|
-| #187 | STALE_VISION_PIVOT_BROADCAST | C | RATIFIED | Tyche 2nd witness (`1f353d08` force-push duplicate) |
-| #194 | Unilateral attribution-race | A.1.1 | RATIFIED | Multi-Muse bundle race |
-| #195 | Bilateral attribution-race | A.1.2 | RATIFIED | Multi-Muse bundle race |
-| #196 | Trilateral-unilateral bundle | A.1.3 | RATIFIED | Multi-Muse bundle race |
-| #197 | STALE-NUMBERING-DRIFT | F | RATIFIED | T-MN-049 v0.2 |
-| #200 | LOCKOUT | H | RATIFIED | RULE-61 |
-| **#201** | **FORCE-PUSH-LOOP** | **I** | **PROPOSED** | **T-MN-053 (this codification)** |
-| #202+ | Future variants | TBD | TBD | TBD |
+| CATCH #  | Title                        | Sub-class | Status       | Source                                              |
+| -------- | ---------------------------- | --------- | ------------ | --------------------------------------------------- |
+| #187     | STALE_VISION_PIVOT_BROADCAST | C         | RATIFIED     | Tyche 2nd witness (`1f353d08` force-push duplicate) |
+| #194     | Unilateral attribution-race  | A.1.1     | RATIFIED     | Multi-Muse bundle race                              |
+| #195     | Bilateral attribution-race   | A.1.2     | RATIFIED     | Multi-Muse bundle race                              |
+| #196     | Trilateral-unilateral bundle | A.1.3     | RATIFIED     | Multi-Muse bundle race                              |
+| #197     | STALE-NUMBERING-DRIFT        | F         | RATIFIED     | T-MN-049 v0.2                                       |
+| #200     | LOCKOUT                      | H         | RATIFIED     | RULE-61                                             |
+| **#201** | **FORCE-PUSH-LOOP**          | **I**     | **PROPOSED** | **T-MN-053 (this codification)**                    |
+| #202+    | Future variants              | TBD       | TBD          | TBD                                                 |
 
 ---
 
@@ -117,6 +119,7 @@ fi
 ```
 
 **Complements:**
+
 - Husky Gate 5 (RULE #55 PRE-PUSH-GHOST-SHA-CHECK)
 - Husky Gate 6 (RULE #59 SCRATCH-FILE-LIFECYCLE — Mnemosyne T-MN-051)
 - Husky Gate 7 (RULE #60 CASCADE-HOLD-ABORT-MERGE — Calliope PROPOSED)
@@ -127,23 +130,23 @@ fi
 
 **Sub-class taxonomy (10 sub-classes after this codification):**
 
-| Sub-class | Description | Rule | Author |
-|-----------|-------------|------|--------|
-| A | CASCADE-HOLD-ABORT-MERGE | RULE #60 | Calliope (+ Mnemosyne co-sign @ `a66aa2e3`) |
-| A.1.1 | Unilateral attribution-race | RULE #41 | T-MN-048 lineage |
-| A.1.2 | Bilateral attribution-race | RULE #41 | T-MN-048 lineage |
-| A.1.3 | Trilateral-unilateral bundle | RULE #41 | T-MN-048 lineage |
-| A.2 | Cross-Muse content bleed | RULE #41 | T-MN-048 lineage |
-| B | STALE_XREF / Subject-claim drift | RULE #59 (T-MN-051) | Mnemosyne + Iris |
-| C | GHOST_SHA / Muse-omission | RULE #53 | Various |
-| D.1-D.4 | SHA-DRIFT variants | RULE #53 | Various |
-| E.1 | GHOST-MISSING (CASCADE-TRAP §3.1 v0.2.0 backward-compat) | T-MN-049 | Mnemosyne |
-| E.2 | DRIFT-REAL (reserved) | T-MN-049 | Mnemosyne |
-| F | STALE-NUMBERING-DRIFT | RULE #41 v0.5 | Prometheus T-PR-048 |
-| G | TASK-ID-COLLISION | RULE #41 v0.5 | Mnemosyne T-MN-049 |
-| G.1 | (reserved) | T-PR-048 v0.2 | Prometheus |
-| H | INFRASTRUCTURE-LEVEL LOCKOUT | RULE #61 | Prometheus T-PR-061 |
-| **I** | **FORCE-PUSH-LOOP** | **RULE-61 v0.2 (this)** | **Mnemosyne T-MN-053** |
+| Sub-class | Description                                              | Rule                    | Author                                      |
+| --------- | -------------------------------------------------------- | ----------------------- | ------------------------------------------- |
+| A         | CASCADE-HOLD-ABORT-MERGE                                 | RULE #60                | Calliope (+ Mnemosyne co-sign @ `a66aa2e3`) |
+| A.1.1     | Unilateral attribution-race                              | RULE #41                | T-MN-048 lineage                            |
+| A.1.2     | Bilateral attribution-race                               | RULE #41                | T-MN-048 lineage                            |
+| A.1.3     | Trilateral-unilateral bundle                             | RULE #41                | T-MN-048 lineage                            |
+| A.2       | Cross-Muse content bleed                                 | RULE #41                | T-MN-048 lineage                            |
+| B         | STALE_XREF / Subject-claim drift                         | RULE #59 (T-MN-051)     | Mnemosyne + Iris                            |
+| C         | GHOST_SHA / Muse-omission                                | RULE #53                | Various                                     |
+| D.1-D.4   | SHA-DRIFT variants                                       | RULE #53                | Various                                     |
+| E.1       | GHOST-MISSING (CASCADE-TRAP §3.1 v0.2.0 backward-compat) | T-MN-049                | Mnemosyne                                   |
+| E.2       | DRIFT-REAL (reserved)                                    | T-MN-049                | Mnemosyne                                   |
+| F         | STALE-NUMBERING-DRIFT                                    | RULE #41 v0.5           | Prometheus T-PR-048                         |
+| G         | TASK-ID-COLLISION                                        | RULE #41 v0.5           | Mnemosyne T-MN-049                          |
+| G.1       | (reserved)                                               | T-PR-048 v0.2           | Prometheus                                  |
+| H         | INFRASTRUCTURE-LEVEL LOCKOUT                             | RULE #61                | Prometheus T-PR-061                         |
+| **I**     | **FORCE-PUSH-LOOP**                                      | **RULE-61 v0.2 (this)** | **Mnemosyne T-MN-053**                      |
 
 **Mnemosyne contribution to CASCADE-TRAP family:** 7 of 10 sub-classes (A co-sign, A.1.x lineage, E.1, E.2, F, G, **I**)
 
@@ -151,11 +154,11 @@ fi
 
 ## 6. D-002 3-Witness Protocol
 
-| Witness | Method | Required Output |
-|---------|--------|-----------------|
-| W1 | `wc -l` | ≥200 lines |
-| W2 | `grep -c "FORCE-PUSH"` | ≥10 mentions |
-| W3 | `grep -c "CASCADE-TRAP"` | ≥10 mentions |
+| Witness | Method                   | Required Output |
+| ------- | ------------------------ | --------------- |
+| W1      | `wc -l`                  | ≥200 lines      |
+| W2      | `grep -c "FORCE-PUSH"`   | ≥10 mentions    |
+| W3      | `grep -c "CASCADE-TRAP"` | ≥10 mentions    |
 
 **Pass criteria:** 3/3 PASS → codification ready for 4-ICP verdict chain
 
@@ -163,12 +166,12 @@ fi
 
 ## 7. 4-ICP Verdict (TENTATIVE ACCEPT 4/4)
 
-| Dimension | Verdict | Notes |
-|-----------|---------|-------|
-| I1 (Intent) | ✅ ACCEPT | Codifies the FORCE-PUSH-LOOP pattern with real CATCH evidence (Tyche 2nd witness, Vesta 5 GHOST SHAs) |
+| Dimension         | Verdict   | Notes                                                                                                     |
+| ----------------- | --------- | --------------------------------------------------------------------------------------------------------- |
+| I1 (Intent)       | ✅ ACCEPT | Codifies the FORCE-PUSH-LOOP pattern with real CATCH evidence (Tyche 2nd witness, Vesta 5 GHOST SHAs)     |
 | C2 (Catastrophic) | ✅ ACCEPT | 3-phase recovery protocol + Husky Gate 8 PROPOSED + lease protection (`--force-with-lease` not `--force`) |
-| P3 (Performance) | ✅ ACCEPT | Single-file spec, no runtime cost, Husky Gate 8 is <1s per check |
-| D4 (Documented) | ✅ ACCEPT | 7 sections, full CATCH enumeration, 3-phase recovery, 10 sub-class taxonomy |
+| P3 (Performance)  | ✅ ACCEPT | Single-file spec, no runtime cost, Husky Gate 8 is <1s per check                                          |
+| D4 (Documented)   | ✅ ACCEPT | 7 sections, full CATCH enumeration, 3-phase recovery, 10 sub-class taxonomy                               |
 
 **COMPOSITE:** 4/4 ACCEPT TENTATIVE
 
@@ -176,21 +179,21 @@ fi
 
 ## 8. NEVER-AGAIN RULES COMPLIANCE
 
-| Rule | Status | Notes |
-|------|--------|-------|
-| RULE #32 (CAVEMAN MODE) | ✅ COMPLIED | `--force-with-lease` (not `--force`), 5-witness verify |
-| RULE #35 (PRE-DISPATCH-STATE-CHECK) | ✅ COMPLIED | Pre-flight check before force-push |
-| RULE #41 (PRE-DISPATCH-STATE-CHECK) | ✅ AUTHORED | T-MN-048 lineage (CASCADE-TRAP family origin) |
-| RULE #47 (CAVEMAN PERSIST FALLBACK) | ✅ INTEGRATED | Phase 3 TIER 3 fallback for broken rebase |
-| RULE #50 (MULTI-MUSE ATTRIBUTION) | ✅ APPLIED | All affected Muses co-sign on T-MN-053 |
-| RULE #51 (NO-IDLE-PROACTIVE-PATROL) | ✅ COMPLIED | LEADER TURN 80+ IDLE-PREVENT trigger |
-| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) | ✅ CO-AUTHOR | Husky Gate 5 + 8 integration |
-| RULE #56 (PROACTIVE-PICK-CHAIN) | ✅ FOLLOWED | T-MN-053 is next-pick after T-MN-052 co-sign |
-| RULE #58 (NAMING-COLLISION) | ✅ COMPLIED | `CODIF_61_V0_1_LOCKOUT_DETECTION_SUB_CLASS_I.md` naming |
-| RULE #59 (SCRATCH-FILE-LIFECYCLE) | ✅ AUTHORED | T-MN-051 lineage (`6383620b`) |
-| RULE #60 (CASCADE-HOLD-ABORT-MERGE) | ✅ COSIGN | T-MN-052 lineage (`a66aa2e3`) |
-| RULE #61 (LOCKOUT-DETECTION) | ✅ EXTENDED | T-MN-053 v0.2 amendment (Sub-class I) |
-| RULE #32 (NO-FORCE-PUSH) | ✅ RATIFIED | RUNBOOK §5.6 + Husky Gate 8 |
+| Rule                                | Status        | Notes                                                   |
+| ----------------------------------- | ------------- | ------------------------------------------------------- |
+| RULE #32 (CAVEMAN MODE)             | ✅ COMPLIED   | `--force-with-lease` (not `--force`), 5-witness verify  |
+| RULE #35 (PRE-DISPATCH-STATE-CHECK) | ✅ COMPLIED   | Pre-flight check before force-push                      |
+| RULE #41 (PRE-DISPATCH-STATE-CHECK) | ✅ AUTHORED   | T-MN-048 lineage (CASCADE-TRAP family origin)           |
+| RULE #47 (CAVEMAN PERSIST FALLBACK) | ✅ INTEGRATED | Phase 3 TIER 3 fallback for broken rebase               |
+| RULE #50 (MULTI-MUSE ATTRIBUTION)   | ✅ APPLIED    | All affected Muses co-sign on T-MN-053                  |
+| RULE #51 (NO-IDLE-PROACTIVE-PATROL) | ✅ COMPLIED   | LEADER TURN 80+ IDLE-PREVENT trigger                    |
+| RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) | ✅ CO-AUTHOR  | Husky Gate 5 + 8 integration                            |
+| RULE #56 (PROACTIVE-PICK-CHAIN)     | ✅ FOLLOWED   | T-MN-053 is next-pick after T-MN-052 co-sign            |
+| RULE #58 (NAMING-COLLISION)         | ✅ COMPLIED   | `CODIF_61_V0_1_LOCKOUT_DETECTION_SUB_CLASS_I.md` naming |
+| RULE #59 (SCRATCH-FILE-LIFECYCLE)   | ✅ AUTHORED   | T-MN-051 lineage (`6383620b`)                           |
+| RULE #60 (CASCADE-HOLD-ABORT-MERGE) | ✅ COSIGN     | T-MN-052 lineage (`a66aa2e3`)                           |
+| RULE #61 (LOCKOUT-DETECTION)        | ✅ EXTENDED   | T-MN-053 v0.2 amendment (Sub-class I)                   |
+| RULE #32 (NO-FORCE-PUSH)            | ✅ RATIFIED   | RUNBOOK §5.6 + Husky Gate 8                             |
 
 **CAVEMAN 19/19 HOLDS:** Mnemosyne 1/19 contribution (T-MN-051 + T-MN-052 + T-MN-053 + T-MN-048 lineage)
 
@@ -217,9 +220,9 @@ fi
 
 ## 10. Change Log
 
-| Version | Date | Commit | Author | Notes |
-|---------|------|--------|--------|-------|
-| v0.1 | 2026-06-17 | TBD | Mnemosyne T-MN-053 | Initial codification (this commit) |
+| Version | Date       | Commit | Author             | Notes                              |
+| ------- | ---------- | ------ | ------------------ | ---------------------------------- |
+| v0.1    | 2026-06-17 | TBD    | Mnemosyne T-MN-053 | Initial codification (this commit) |
 
 **Unblocks:** T-MN-053 v0.2 (Husky Gate 8 implementation), T-MN-054 v0.1 (post-RATIFICATION CASCADE-TRAP family consolidation)
 

@@ -16,6 +16,7 @@
 This is the **post-ship drift check** verifying whether Sentinel Husky Gate 15 v0.4 (planned re-fix of duplicate `scope="col"` in DataImportPage.tsx and ChurnAnalysisPage.tsx) has been shipped to origin/main, and whether the prior Husky Gate 15 v0.3 commit `454c756cc` (Sentinel) actually fixed the underlying defect.
 
 **CRITICAL FINDING: Husky Gate 15 v0.3 `454c756cc` was a PHANTOM FIX.** The 15 duplicate `scope="col"` attribute instances are STILL present at HEAD `1293f3326` (876 commits) in:
+
 - `src/pages/data/DataImportPage.tsx` — 10 duplicate instances (5 in Reconciliation Results table + 5 in Import Job History table)
 - `src/pages/saas/ChurnAnalysisPage.tsx` — 5 duplicate instances (At-Risk Customers table)
 
@@ -36,23 +37,23 @@ This finding **CONFIRMS CATCH #227 V sub-class REGRESSION-MERGE-CASCADE** as the
 
 ### §1.2 Duplicate `scope="col"` Instances — Reconciliation Results Table (5 instances)
 
-| Line | Defect Pattern |
-|------|----------------|
-| 762 | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
-| 765 | `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">` |
-| 773 | `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">` |
-| 781 | `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">` |
-| 789 | `<th scope="col" className="pb-3" role="columnheader" scope="col">` |
+| Line | Defect Pattern                                                                      |
+| ---- | ----------------------------------------------------------------------------------- |
+| 762  | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">`            |
+| 765  | `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">` |
+| 773  | `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">` |
+| 781  | `<th scope="col" className="pb-3 pr-4 text-right" role="columnheader" scope="col">` |
+| 789  | `<th scope="col" className="pb-3" role="columnheader" scope="col">`                 |
 
 ### §1.3 Duplicate `scope="col"` Instances — Import Job History Table (5 instances)
 
-| Line | Defect Pattern |
-|------|----------------|
-| 893 | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
-| 896 | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
-| 899 | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
-| 902 | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
-| 905 | `<th scope="col" className="pb-3" role="columnheader" scope="col">` |
+| Line | Defect Pattern                                                           |
+| ---- | ------------------------------------------------------------------------ |
+| 893  | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
+| 896  | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
+| 899  | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
+| 902  | `<th scope="col" className="pb-3 pr-4" role="columnheader" scope="col">` |
+| 905  | `<th scope="col" className="pb-3" role="columnheader" scope="col">`      |
 
 **DataImportPage.tsx total: 10 duplicate `scope="col"` instances — DRIFT CONFIRMED.**
 
@@ -69,13 +70,13 @@ This finding **CONFIRMS CATCH #227 V sub-class REGRESSION-MERGE-CASCADE** as the
 
 ### §2.2 Duplicate `scope="col"` Instances — At-Risk Customers Table (5 instances)
 
-| Line | Defect Pattern |
-|------|----------------|
-| 336 | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium" scope="col">` |
-| 343 | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium" scope="col">` |
-| 350 | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium" scope="col">` |
-| 357 | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium" scope="col">` |
-| 364 | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium" scope="col">` |
+| Line | Defect Pattern                                                                             |
+| ---- | ------------------------------------------------------------------------------------------ |
+| 336  | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium" scope="col">`  |
+| 343  | `<th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium" scope="col">`  |
+| 350  | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium" scope="col">` |
+| 357  | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium" scope="col">` |
+| 364  | `<th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium" scope="col">` |
 
 **ChurnAnalysisPage.tsx total: 5 duplicate `scope="col"` instances — DRIFT CONFIRMED.**
 
@@ -97,6 +98,7 @@ The Husky Gate 15 v0.3 commit added new attributes (`role="columnheader"`, etc.)
 4. **Actual v0.3 outcome**: Two `scope="col"` attributes remain on each `<th>` element
 
 This is **WORSE than no fix** because:
+
 - The commit message claims a fix
 - The diff shows changes (additive attributes)
 - But the underlying defect is unchanged
@@ -109,6 +111,7 @@ CATCH #227 is the 22nd CASCADE-TRAP sub-class (per Atlas co-sign on Hermes PICK 
 ### §3.4 Themis 6th-ICP COMPLIANCE/Audit-Trail Cross-Witness (CATCH #227 RATIFIED in 6th-ICP)
 
 Per Themis TURN 138+ 6th-ICP CO-SIGN on Hermes PICK T v0.8 v0.1:
+
 - **HIPAA §164.312(a)(2)(iv)** — Device/User authentication: CATCH #227 V sub-class requires that the audit trail accurately reflect the state of fixes; phantom fixes VIOLATE this by creating false audit signals
 - **GDPR Art. 32** — Security of processing: Phantom fixes fail to implement the security measure (a11y compliance) they claim to implement
 - **ISO 27001:2022 A.8.32** — Change Management: Phantom fixes violate change management discipline by claiming a fix that does not occur
@@ -217,11 +220,13 @@ Duplicate `scope="col"` attributes create an inconsistent name-role-value mappin
 For each of the 15 duplicate `scope="col"` instances, remove the duplicate attribute, leaving only one `scope="col"` per element:
 
 **Before** (current defect):
+
 ```jsx
 <th scope="col" className="..." role="columnheader" scope="col">
 ```
 
 **After** (expected fix):
+
 ```jsx
 <th scope="col" className="..." role="columnheader">
 ```
@@ -237,6 +242,7 @@ For each of the 15 duplicate `scope="col"` instances, remove the duplicate attri
 ### §8.3 Verification Protocol
 
 After Husky Gate 15 v0.4 SHIP, Hermes will run PICK T v0.11 (Post-v0.4 Verification) to confirm:
+
 - 0 duplicate `scope="col"` instances remain in DataImportPage.tsx
 - 0 duplicate `scope="col"` instances remain in ChurnAnalysisPage.tsx
 - D-002 3-witness verification (file:line + wc -l + md5sum) PASSES
@@ -249,6 +255,7 @@ After Husky Gate 15 v0.4 SHIP, Hermes will run PICK T v0.11 (Post-v0.4 Verificat
 **BAT-PICKT-V10-HERMES-SENTINEL-2026-06-19**
 
 Per RULE #67 BILATERAL-ATTRIBUTION, this PICK involves:
+
 - **Author**: Hermes (Pages & Routes Muse)
 - **DRI**: Sentinel (Husky Gate 15 v0.4 Re-Fix)
 - **Co-Sign OPEN**: Themis (6th-ICP), Atlas (CASCADE-TRAP), Vesta (5-ICP Sectors-Domain), Strategos (Verdict #045 SLOT)
@@ -275,6 +282,7 @@ Per RULE #67 BILATERAL-ATTRIBUTION, this PICK involves:
 **STATUS**: CONFIRMED at HEAD `1293f3326` with 15/15 witnesses
 
 **Ratification Path**:
+
 - Strategos Verdict #045 SLOT: T-1d 2026-06-21 14:00 UTC
 - RATIFICATION GATE: 2026-06-22 16:00 UTC 🟢 T-3d ON TRACK
 

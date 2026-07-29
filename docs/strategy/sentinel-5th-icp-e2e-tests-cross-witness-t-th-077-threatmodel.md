@@ -11,25 +11,25 @@
 
 5th-ICP E2E/Tests cross-witness on the Themis 6th-ICP COMPLIANCE cross-witness of Hephaestus PATCH 10 ThreatModel. This adds the **E2E/Tests-domain lens** to the multi-muse witness chain.
 
-| Eye | Muse | Lens | SHA |
-|-----|------|------|-----|
-| 1st-eye | Hephaestus | 4-ICP (I/S/C/P) | `d0fe9107b` |
-| 2nd-eye | Themis | 6th-ICP (COMPLIANCE/Audit-Trail) | `be3eaf119` |
-| 3rd-eye | Sentinel | 5th-ICP (E2E/Tests) | THIS DOCUMENT |
+| Eye     | Muse       | Lens                             | SHA           |
+| ------- | ---------- | -------------------------------- | ------------- |
+| 1st-eye | Hephaestus | 4-ICP (I/S/C/P)                  | `d0fe9107b`   |
+| 2nd-eye | Themis     | 6th-ICP (COMPLIANCE/Audit-Trail) | `be3eaf119`   |
+| 3rd-eye | Sentinel   | 5th-ICP (E2E/Tests)              | THIS DOCUMENT |
 
 ---
 
 ## 1. 5-ICP E2E/TESTS VERDICT: ACCEPT 8.5/10
 
-| Sub-domain | Score | Verdict |
-|------------|-------|---------|
-| Unit tests (vitest) | 9.5/10 | 75/75 tests pass; 12 test groups covering all 6 STRIDE categories |
-| Integration tests | 7.0/10 | Audit emitter tested via mock; no real AuditLogger integration |
-| E2E tests | N/A | Service-only module — no UI, no E2E applicable |
-| TypeScript | 9.5/10 | 0 errors (per Apollo P0 cascade) |
-| Test data realism | 9.0/10 | 24 FinPlan Pro v1.0.0 threats documented; 18 control catalog |
+| Sub-domain          | Score  | Verdict                                                                            |
+| ------------------- | ------ | ---------------------------------------------------------------------------------- |
+| Unit tests (vitest) | 9.5/10 | 75/75 tests pass; 12 test groups covering all 6 STRIDE categories                  |
+| Integration tests   | 7.0/10 | Audit emitter tested via mock; no real AuditLogger integration                     |
+| E2E tests           | N/A    | Service-only module — no UI, no E2E applicable                                     |
+| TypeScript          | 9.5/10 | 0 errors (per Apollo P0 cascade)                                                   |
+| Test data realism   | 9.0/10 | 24 FinPlan Pro v1.0.0 threats documented; 18 control catalog                       |
 | Documentation tests | 9.0/10 | 4-ICP LOCKED v1.0; CWE refs (CWE-345, CWE-501, CWE-778, CWE-200, CWE-400, CWE-269) |
-| Load/DoS tests | 5.0/10 | MAX_THREATS=500, MAX_CONTROLS=500 limits documented but not load-tested |
+| Load/DoS tests      | 5.0/10 | MAX_THREATS=500, MAX_CONTROLS=500 limits documented but not load-tested            |
 
 **5-ICP weighted average**: 8.5/10 — ACCEPT (comprehensive unit + documentation; gaps in integration + load)
 
@@ -49,6 +49,7 @@ For PATCH 10 ThreatModel at `d0fe9107b`:
 ### 2.2 W2 real test code (semantic)
 
 12 test groups in `ThreatModel.test.ts`:
+
 - Constants (6 STRIDE categories, DREAD weights)
 - Helpers (severity scoring, risk level mapping)
 - Singleton (getInstance/resetInstance)
@@ -79,6 +80,7 @@ For PATCH 10 ThreatModel at `d0fe9107b`:
 ### 3.1 PICK D 5th-ICP #1 (T-TH-079 PATCH 9 IncidentResponse)
 
 PATCH 9 IncidentResponse uses CVSS-aligned SLAs and integrates with AuditLogger. PATCH 10 ThreatModel defines threats including:
+
 - T-01: "Unauthorized incident response command injection" (CWE-78)
 - T-02: "Incident severity inflation" (CWE-129)
 
@@ -89,6 +91,7 @@ These threats should be cross-referenced with PATCH 9 IncidentResponse's audit e
 ### 3.2 PICK B v0.8 (10-temporal-e2e-cross-check.spec.ts)
 
 The 10 AS-BUILT journeys include temporal edge cases. PATCH 10 ThreatModel defines:
+
 - T-12: "DoS via threat model thrashing" (CWE-400)
 
 This DoS threat should be tested in temporal journeys. Cross-pollination: not yet tested.
@@ -118,6 +121,7 @@ Vesta SECTOR_ENGINE_AUDIT v0.7.2 Boardroom is a cross-sector dimension. PATCH 10
 ## 4. THREAT MODELING (5th-ICP E2E/Tests lens)
 
 24 FinPlan Pro v1.0.0 threats documented:
+
 - 4 STRIDE per category × 6 categories = 24 threats
 - 6 STRIDE: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege
 - 18 control catalog
@@ -130,6 +134,7 @@ Vesta SECTOR_ENGINE_AUDIT v0.7.2 Boardroom is a cross-sector dimension. PATCH 10
 ## 5. SOC 2 / RATIFICATION GATE EVIDENCE (5th-ICP lens)
 
 PATCH 10 ThreatModel provides:
+
 - **CC7.1 (Threat Detection)**: 24 threats with STRIDE + DREAD scoring
 - **CC7.2 (Security Event Monitoring)**: Audit emitter for all lifecycle events
 - **CC7.3 (Security Incident Response)**: Cross-references with PATCH 9 IncidentResponse
@@ -164,15 +169,15 @@ Cross-referenced with PATCH 9 IncidentResponse for defense-in-depth, but no test
 
 ## 7. 5-ICP VERDICT
 
-| Sub-domain | Score |
-|------------|-------|
-| Unit tests | 9.5/10 |
-| Integration | 7.0/10 |
-| E2E (N/A for service) | N/A |
-| TypeScript | 9.5/10 |
-| Test data realism | 9.0/10 |
-| Documentation tests | 9.0/10 |
-| Load/DoS | 5.0/10 |
+| Sub-domain             | Score      |
+| ---------------------- | ---------- |
+| Unit tests             | 9.5/10     |
+| Integration            | 7.0/10     |
+| E2E (N/A for service)  | N/A        |
+| TypeScript             | 9.5/10     |
+| Test data realism      | 9.0/10     |
+| Documentation tests    | 9.0/10     |
+| Load/DoS               | 5.0/10     |
 | **5-ICP weighted avg** | **8.5/10** |
 
 **Verdict**: ACCEPT — PATCH 10 ThreatModel has strong unit coverage (75/75 vitest), comprehensive documentation (4-ICP LOCKED v1.0), and good test data realism (24 FinPlan Pro threats). F1-F5 are P3 minor findings, F1 is P2 (audit integration). Not blocking RATIFICATION GATE.
@@ -181,10 +186,10 @@ Cross-referenced with PATCH 9 IncidentResponse for defense-in-depth, but no test
 
 ## 8. SHAs VERIFIED (RULE #53)
 
-| SHA | Type | Status |
-|-----|------|--------|
+| SHA         | Type   | Status                                             |
+| ----------- | ------ | -------------------------------------------------- |
 | `d0fe9107b` | commit | ✅ REAL (Hephaestus PATCH 10 ThreatModel original) |
-| `be3eaf119` | commit | ✅ REAL (Themis 6th-ICP cross-witness) |
+| `be3eaf119` | commit | ✅ REAL (Themis 6th-ICP cross-witness)             |
 
 All SHAs verified via `git cat-file -t` returning `commit`. No GHOST-SHAs detected.
 

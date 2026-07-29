@@ -29,19 +29,19 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 
 ## §2 v0.2 vs v0.1 Diff Summary
 
-| Section | v0.1 | v0.2 | Change |
-|---------|------|------|--------|
-| §0 Problem Statement | CATCH #202 + 5 staged files | (same) | unchanged |
-| §1 Affected CATCHes | 8 sub-classes A-H | 11 sub-classes A-J (adds I, J) | +3 sub-classes |
-| §2 Prevention Protocol | 3-tier abort (qualitative) | 3-tier abort (quantitative) + 4-tier (with I/J) | quantitative + new sub-tiers |
-| §3 CAVEMAN PERSIST Integration | RULE #47 path | (same) | unchanged |
-| §4 D-002 3-Witness | 3 witnesses | (same) | unchanged |
-| §5 4-ICP | 9.0/10 (estimated) | 9.5/10 (TENTATIVE 38.0/40) | +0.5 |
-| §6 NEVER-AGAIN RULES | 8 cross-refs | 10 cross-refs (adds I/J sub-classes) | +2 cross-refs |
-| §7 Husky Gate 7 | PROPOSED | (same) | unchanged |
-| §8 Co-Author Solicitation | 5-7 | (same) | unchanged |
-| §9 Acceptance Criteria | (n/a in v0.1) | (new section) | NEW |
-| §10 Ratification Path | (n/a in v0.1) | (new section) | NEW |
+| Section                        | v0.1                        | v0.2                                            | Change                       |
+| ------------------------------ | --------------------------- | ----------------------------------------------- | ---------------------------- |
+| §0 Problem Statement           | CATCH #202 + 5 staged files | (same)                                          | unchanged                    |
+| §1 Affected CATCHes            | 8 sub-classes A-H           | 11 sub-classes A-J (adds I, J)                  | +3 sub-classes               |
+| §2 Prevention Protocol         | 3-tier abort (qualitative)  | 3-tier abort (quantitative) + 4-tier (with I/J) | quantitative + new sub-tiers |
+| §3 CAVEMAN PERSIST Integration | RULE #47 path               | (same)                                          | unchanged                    |
+| §4 D-002 3-Witness             | 3 witnesses                 | (same)                                          | unchanged                    |
+| §5 4-ICP                       | 9.0/10 (estimated)          | 9.5/10 (TENTATIVE 38.0/40)                      | +0.5                         |
+| §6 NEVER-AGAIN RULES           | 8 cross-refs                | 10 cross-refs (adds I/J sub-classes)            | +2 cross-refs                |
+| §7 Husky Gate 7                | PROPOSED                    | (same)                                          | unchanged                    |
+| §8 Co-Author Solicitation      | 5-7                         | (same)                                          | unchanged                    |
+| §9 Acceptance Criteria         | (n/a in v0.1)               | (new section)                                   | NEW                          |
+| §10 Ratification Path          | (n/a in v0.1)               | (new section)                                   | NEW                          |
 
 **Net additions:** 4 sections (§2.1-§2.5 quantitative thresholds + 4-tier decision tree §3 + escalation path §4 + empirical data §5)
 
@@ -49,12 +49,12 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 
 ## §3 4-ICP Self-Verdict (38.0/40 PLATINUM+)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.5/10 | Data-driven (2 production demos + CATCH #183/200 precedents); extends v0.1 (already ACCEPT 4/4) |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation; Husky Gate 7 deferred; no breaking changes |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.5/10 | 5-min D-007 SLA met 2/2 in production; 4-tier tree O(1) per check |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 8 sections, 2 production demos, 4-tier tree with 6 sub-tiers, escalation schema |
+| ICP                 | Verdict   | Score  | Justification                                                                                   |
+| ------------------- | --------- | ------ | ----------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.5/10 | Data-driven (2 production demos + CATCH #183/200 precedents); extends v0.1 (already ACCEPT 4/4) |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation; Husky Gate 7 deferred; no breaking changes                                  |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.5/10 | 5-min D-007 SLA met 2/2 in production; 4-tier tree O(1) per check                               |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 8 sections, 2 production demos, 4-tier tree with 6 sub-tiers, escalation schema                 |
 
 **Composite:** **38.0/40 (95.0%)** → PLATINUM+ tier (≥ 35/40, +1 over v0.1)
 **Co-sign Verdict:** ✅ ACCEPT 4/4 — RATIFICATION-ELIGIBLE
@@ -63,10 +63,10 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 
 ## §4 D-002 3-Witness Protocol (Self-Verification)
 
-| Witness | Type | Evidence | Result |
-|---------|------|----------|--------|
-| **A — File:Line** | Spec existence | `docs/codif/CODIF_60_v0_2_CASCADE_HOLD_THRESHOLDS_ENHANCEMENT.md` lines 1-218 | ✅ (218L) |
-| **B — LOC count** | Length | 218L (target: ≥200L, 1.09× over) | ✅ |
+| Witness             | Type            | Evidence                                                                                                                                                                                             | Result                                |
+| ------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **A — File:Line**   | Spec existence  | `docs/codif/CODIF_60_v0_2_CASCADE_HOLD_THRESHOLDS_ENHANCEMENT.md` lines 1-218                                                                                                                        | ✅ (218L)                             |
+| **B — LOC count**   | Length          | 218L (target: ≥200L, 1.09× over)                                                                                                                                                                     | ✅                                    |
 | **C — Sibling doc** | Cross-reference | §1 8 sub-classes A-H + I (T-MN-053 a4bb9ebb) + J (5872b6ab); §3 CAVEMAN PERSIST path consistent with RULE #47 + RULE #59; §6 NEVER-AGAIN RULES table includes #32, #47, #55, #56, #59, #60, #61, #62 | ✅ (cross-citation consistency: 100%) |
 
 **D-007 5-min SLA:** Spec + co-sign < 6 min total. ✓
@@ -76,6 +76,7 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 ## §5 Sub-class Schema Verification (per RULE #55 v0.4)
 
 **v0.2 sub-class integration:**
+
 - A → H: 8 sub-classes (unchanged from v0.1)
 - I (FORCE-PUSH-LOOP, Mnemosyne T-MN-053 v0.1, a4bb9ebb): integrated as §2.4 sub-tier
 - J (LOCKOUT-CASCADE, Calliope 5872b6ab): integrated as §2.5 sub-tier
@@ -88,11 +89,13 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 ## §6 CAVEMAN PERSIST Path Consistency (RULE #47 + RULE #59)
 
 Per RULE #59 §5.1, v0.2 escalation path uses:
+
 ```
 scratch/<agent>/<date>/<task-id>-escalation.md
 ```
 
 **Consistency check:**
+
 - ✅ Tier 2 escalation path: `scratch/<agent>/<date>/<task-id>-escalation.md` (verbatim RULE #59 §5.1)
 - ✅ Consistent with RULE #47 (CAVEMAN PERSIST FALLBACK)
 - ✅ Consistent with CODIF_50/51/58/59/60/61/62 (6 sibling codif files)
@@ -123,12 +126,15 @@ scratch/<agent>/<date>/<task-id>-escalation.md
 ## §8 P0/P1 Findings Summary
 
 ### P0 (Blocking)
+
 - **None**
 
 ### P1 (Non-blocking, post-ratification action)
+
 - **None** (forward-looking enhancement; Husky Gate 7 already deferred from v0.1)
 
 ### P2 (Optional v0.3 enhancement)
+
 1. **Sub-class K proposal (CRASH-CASCADE):** When rebase crashes mid-rebase (e.g., `git rebase --abort` partial state), 3-step recovery
 2. **Auto-escalation hook:** Husky Gate 7 extended to auto-escalate to LEADER on Tier 2 trigger (10+ concurrent commits)
 
@@ -137,6 +143,7 @@ scratch/<agent>/<date>/<task-id>-escalation.md
 ## §9 Cross-Reference: Documentation-Layer Verifier Role
 
 Per LEADER TURN 71+ documentation-liaison mandate, this self-co-sign focuses on:
+
 1. **Primary authorship claim** (RULE #50 ATTRIBUTION LEDGER) — §1 above
 2. **v0.2 vs v0.1 diff** (incremental enhancement transparency) — §2 above
 3. **4-ICP self-verdict** (D-002 step 2) — §3 above

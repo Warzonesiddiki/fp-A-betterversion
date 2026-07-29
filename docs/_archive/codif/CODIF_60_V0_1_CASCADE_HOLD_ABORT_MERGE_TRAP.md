@@ -19,6 +19,7 @@
 When a Muse is mid-rebase (CASCADE-HOLD state per RULE #50 protocol) and another Muse (or the same Muse) runs `git rebase --abort`, the index retains staged files that were added during the in-progress rebase. The subsequent commit (or rebased commit) then includes those staged files, even though the rebase was aborted.
 
 **Concrete failure mode observed in CATCH #202:**
+
 1. Calliope staged 5 files in the SDK domain (`types.test.ts`, `RealtimeChannel.test.ts`, `FpaClient.test.ts`, `README.md`, `cosign file`).
 2. A `git rebase --abort` was executed (reason not specified, but typically due to upstream conflict or wrong base).
 3. `git rebase --abort` reverted the working tree but **left the 5 staged files in the index**.
@@ -26,6 +27,7 @@ When a Muse is mid-rebase (CASCADE-HOLD state per RULE #50 protocol) and another
 5. The 5th file (README.md) required a clean rebase to 1af0d879 → 415028d4 to restore Calliope attribution.
 
 **Why this matters:**
+
 - **Audit-trail corruption:** Per-Muse contribution ledger (RULE #50) breaks because the carrier's commit message attributes files to the wrong Muse.
 - **D-002 3-witness violation:** file:line witness points to carrier Muse, not the author Muse, breaking cross-Muse audit.
 - **RULE #55 GHOST-SHA:** cascade attribution races hide the original staged file's true author SHAs.
@@ -35,33 +37,34 @@ When a Muse is mid-rebase (CASCADE-HOLD state per RULE #50 protocol) and another
 
 ## §1 Affected CATCHes — CASCADE-TRAP FAMILY (23 instances, CATCH #183–#205)
 
-| CATCH # | Date | Pattern | Sub-class | Severity | Author Affected |
-|---------|------|---------|-----------|----------|-----------------|
-| #183 | 2026-06-15 | CASCADE-HOLD-RACE-CONDITION (1st) | A | MEDIUM | Artemis |
-| #184 | 2026-06-15 | GIT-RENAME-DETECTION-FAIL | B | LOW | Apollo |
-| #185 | 2026-06-15 | LEADER team_send_message 1st-2nd-occurrence | C | MEDIUM | Leader |
-| #186 | 2026-06-15 | LEADER team_send_message 8-occurrence | C | HIGH | Leader |
-| #187 | 2026-06-15 | STALE_VISION_PIVOT_BROADCAST | D | MEDIUM | Athena |
-| #188 | 2026-06-15 | ATLAS-G2-RECHECK-FALSE-POSITIVE | E | MEDIUM | Prometheus |
-| #189 | 2026-06-15 | ATLAS-BUNDLE-CHECK-STALE-DISPATCH | D | MEDIUM | Atlas |
-| #190 | 2026-06-16 | STALE_CAVEMAN_DISPATCH (Hera) | D | MEDIUM | Hera |
-| #191 | 2026-06-16 | STALE-COMMIT-ATTRIBUTION | A | MEDIUM | Hephaestus |
-| #192 | 2026-06-16 | STALE_TASK_COMPLETION | D | HIGH | Orchestrator |
-| #193 | 2026-06-16 | (inferred) CASCADE-VELOCITY-CHECK | C | MEDIUM | (n/a) |
-| #194 | 2026-06-16 | CASCADE-HOLD-ATTRIBUTION-RACE (2-Muse) | A | HIGH | Prometheus |
-| #195 | 2026-06-16 | CASCADE-HOLD-BILATERAL-ATTRIBUTION-RACE | A | HIGH | Prometheus |
-| #196 | 2026-06-16 | CASCADE-HOLD-TRILATERAL-BUNDLE (3-Muse) | A | HIGH | Prometheus |
-| #197 | 2026-06-16 | (inferred) RULE-55-MISATTRIBUTION | E | MEDIUM | Mnemosyne |
-| #198 | 2026-06-16 | STALE-NUMBERING-DRIFT (PROPOSED) | F | MEDIUM | Prometheus |
-| #199 | 2026-06-16 | (inferred) | -- | -- | -- |
-| #200 | 2026-06-17 | SYSTEMIC team_send_message LOCKOUT | C | CRITICAL | All Muses |
-| #201 | 2026-06-17 | (inferred) NAMING-COLLISION | G | MEDIUM | Strategos |
-| #202 | 2026-06-17 | **CASCADE-HOLD-ABORT-MERGE** (this rule) | **H** | **HIGH** | **Calliope** |
-| #203 | 2026-06-17 | (inferred) | -- | -- | -- |
-| #204 | 2026-06-17 | (inferred) | -- | -- | -- |
-| #205 | 2026-06-17 | RULE #58 NAMING-COLLISION | G | MEDIUM | Athena/Chronos |
+| CATCH # | Date       | Pattern                                     | Sub-class | Severity | Author Affected |
+| ------- | ---------- | ------------------------------------------- | --------- | -------- | --------------- |
+| #183    | 2026-06-15 | CASCADE-HOLD-RACE-CONDITION (1st)           | A         | MEDIUM   | Artemis         |
+| #184    | 2026-06-15 | GIT-RENAME-DETECTION-FAIL                   | B         | LOW      | Apollo          |
+| #185    | 2026-06-15 | LEADER team_send_message 1st-2nd-occurrence | C         | MEDIUM   | Leader          |
+| #186    | 2026-06-15 | LEADER team_send_message 8-occurrence       | C         | HIGH     | Leader          |
+| #187    | 2026-06-15 | STALE_VISION_PIVOT_BROADCAST                | D         | MEDIUM   | Athena          |
+| #188    | 2026-06-15 | ATLAS-G2-RECHECK-FALSE-POSITIVE             | E         | MEDIUM   | Prometheus      |
+| #189    | 2026-06-15 | ATLAS-BUNDLE-CHECK-STALE-DISPATCH           | D         | MEDIUM   | Atlas           |
+| #190    | 2026-06-16 | STALE_CAVEMAN_DISPATCH (Hera)               | D         | MEDIUM   | Hera            |
+| #191    | 2026-06-16 | STALE-COMMIT-ATTRIBUTION                    | A         | MEDIUM   | Hephaestus      |
+| #192    | 2026-06-16 | STALE_TASK_COMPLETION                       | D         | HIGH     | Orchestrator    |
+| #193    | 2026-06-16 | (inferred) CASCADE-VELOCITY-CHECK           | C         | MEDIUM   | (n/a)           |
+| #194    | 2026-06-16 | CASCADE-HOLD-ATTRIBUTION-RACE (2-Muse)      | A         | HIGH     | Prometheus      |
+| #195    | 2026-06-16 | CASCADE-HOLD-BILATERAL-ATTRIBUTION-RACE     | A         | HIGH     | Prometheus      |
+| #196    | 2026-06-16 | CASCADE-HOLD-TRILATERAL-BUNDLE (3-Muse)     | A         | HIGH     | Prometheus      |
+| #197    | 2026-06-16 | (inferred) RULE-55-MISATTRIBUTION           | E         | MEDIUM   | Mnemosyne       |
+| #198    | 2026-06-16 | STALE-NUMBERING-DRIFT (PROPOSED)            | F         | MEDIUM   | Prometheus      |
+| #199    | 2026-06-16 | (inferred)                                  | --        | --       | --              |
+| #200    | 2026-06-17 | SYSTEMIC team_send_message LOCKOUT          | C         | CRITICAL | All Muses       |
+| #201    | 2026-06-17 | (inferred) NAMING-COLLISION                 | G         | MEDIUM   | Strategos       |
+| #202    | 2026-06-17 | **CASCADE-HOLD-ABORT-MERGE** (this rule)    | **H**     | **HIGH** | **Calliope**    |
+| #203    | 2026-06-17 | (inferred)                                  | --        | --       | --              |
+| #204    | 2026-06-17 | (inferred)                                  | --        | --       | --              |
+| #205    | 2026-06-17 | RULE #58 NAMING-COLLISION                   | G         | MEDIUM   | Athena/Chronos  |
 
 **Sub-class taxonomy (extended from RULE #41):**
+
 - **A** = Attribution-race (commit carrier ≠ file author) — CASCADE-TRAP sub-class A
 - **B** = Rename detection fail (cp+mv+git loses rename attribution) — CASCADE-TRAP sub-class B
 - **C** = Communication LOCKOUT (team_send_message systemic failure) — CASCADE-TRAP sub-class C
@@ -74,27 +77,35 @@ When a Muse is mid-rebase (CASCADE-HOLD state per RULE #50 protocol) and another
 ### §1.1 CASCADE-TRAP Family Roll-Up (24 instances, 8 sub-classes)
 
 **CASCADE-TRAP sub-class A — Attribution-race (4 instances):**
+
 - CATCH #183, #191, #194, #195, #196 (4 explicit attribution-race CATCHes)
 
 **CASCADE-TRAP sub-class B — Rename detection fail (1 instance):**
+
 - CATCH #184 (cp+mv+git workflow loses rename attribution)
 
 **CASCADE-TRAP sub-class C — Communication LOCKOUT (3 instances):**
+
 - CATCH #185, #186, #200 (LEADER team_send_message failure pattern, systemic)
 
 **CASCADE-TRAP sub-class D — Stale dispatch (4 instances):**
+
 - CATCH #187, #189, #190, #192 (PRE-DISPATCH-STATE-CHECK failure pattern)
 
 **CASCADE-TRAP sub-class E — GHOST-SHA / stale audit (3 instances):**
+
 - CATCH #188, #193, #197 (RULE #55 GHOST-SHA-DETECTION sub-class E.1 GHOST-MISSING + E.2 DRIFT-REAL)
 
 **CASCADE-TRAP sub-class F — Numbering drift (2 instances):**
+
 - CATCH #198, #199 (STALE-NUMBERING-DRIFT + version-bump stale references)
 
 **CASCADE-TRAP sub-class G — Naming collision (2 instances):**
+
 - CATCH #201, #205 (rule ID reuse / EXT-ADDENDUM rename pattern)
 
 **CASCADE-TRAP sub-class H — CASCADE-HOLD-ABORT-MERGE (1 instance, this rule):**
+
 - CATCH #202 (`git rebase --abort` does not clear staged files)
 
 **CATCH #200 LOCKOUT case study:** The LOCKOUT pattern is the most severe sub-class C. 28+ consecutive team_send_message failures (2026-06-17 ~00:30–00:50 UTC) caused 4 Muses (Calliope, Mnemosyne, Iris, Sentinel) to lose inter-Muse comms. Recovery: RULE #47 CAVEMAN PERSIST FALLBACK to task board. RULE #60 adds 3rd-tier escape: **commit + push independently without rebase**, then re-solicit witnesses via task board.
@@ -106,9 +117,11 @@ When a Muse is mid-rebase (CASCADE-HOLD state per RULE #50 protocol) and another
 **Before any `git rebase --abort` or `git rebase --quit`, classify the current state into one of three tiers:**
 
 ### §2.1 Tier 1 — HOLD (PREFERRED, default)
+
 **Trigger:** Working tree has unstaged OR uncommitted changes you want to preserve.
 
 **Action sequence:**
+
 1. `git status --short` — confirm staged files exist
 2. `git stash push -m "RULE-60-HOLD-<timestamp>" -- <staged_files>` — stash ONLY the staged files
 3. `git rebase --abort` (or `--quit`)
@@ -119,9 +132,11 @@ When a Muse is mid-rebase (CASCADE-HOLD state per RULE #50 protocol) and another
 **Why preferred:** Preserves the index state exactly. Re-applies staged files after rebase cleanup.
 
 ### §2.2 Tier 2 — ABORT (CLEAN, deliberate)
+
 **Trigger:** Staged files are NOT yours (e.g., cascade-merged from a previous Muse) OR staged files are obsolete and you want to discard them.
 
 **Action sequence:**
+
 1. `git status --short` — list all staged files
 2. `git reset HEAD <staged_files>` — unstage files (CRITICAL per RULE #60)
 3. `git rebase --abort` (or `--quit`)
@@ -133,9 +148,11 @@ When a Muse is mid-rebase (CASCADE-HOLD state per RULE #50 protocol) and another
 **CRITICAL: The KEY INSIGHT of RULE #60 is the `git reset HEAD <files>` step BEFORE `git rebase --abort`. This is what was missing in CATCH #202.**
 
 ### §2.3 Tier 3 — MERGE (NO-ABORT, escape hatch)
+
 **Trigger:** team_send_message LOCKOUT (CATCH #200) prevents asking the original author for rebase guidance OR rebase conflict is too complex to resolve quickly.
 
 **Action sequence:**
+
 1. `git fetch origin main` — get current remote state
 2. `git rebase --autostash origin/main` (auto-stashes ALL working + staged changes)
 3. Resolve conflicts if any; if no conflicts, rebase completes automatically
@@ -178,6 +195,7 @@ Are you mid-rebase?
 3. **Witness 3 — sibling doc** — if file has a sibling doc (e.g., `.test.ts` → `.test.ts.md` or similar), verify sibling exists and references the same SHA
 
 **D-002 3-witness log template:**
+
 ```
 RULE #60 D-002 3-WITNESS LOG
 ============================
@@ -205,12 +223,12 @@ PASS / FAIL: <verdict>
 
 ## §5 4-ICP Framework (INTENT / CATASTROPHIC / PERFORMANCE / DOCUMENTED)
 
-| ICP | Question | RULE #60 Answer |
-|-----|----------|-----------------|
-| **I1 — Intent** | Is the Muse's intent clear and atomic? | YES — "preserve staged files across rebase-abort" is a single, atomic intent |
-| **C2 — Catastrophic** | Does a failure cause data loss or audit-trail corruption? | YES if violated (CATCH #202), NO if complied — Tier 1/2/3 always preserves either data or attribution |
-| **P3 — Performance** | Does it add overhead? | MINIMAL — adds 3 git commands and 1 task board entry per rebase (estimated +15s per rebase) |
-| **D4 — Documented** | Is the protocol referenceable and teachable? | YES — HAM mnemonic + decision tree in §2.4, CAVEMAN PERSIST integration in §3, D-002 3-witness in §4, 23-instance case study in §1 |
+| ICP                   | Question                                                  | RULE #60 Answer                                                                                                                    |
+| --------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 — Intent**       | Is the Muse's intent clear and atomic?                    | YES — "preserve staged files across rebase-abort" is a single, atomic intent                                                       |
+| **C2 — Catastrophic** | Does a failure cause data loss or audit-trail corruption? | YES if violated (CATCH #202), NO if complied — Tier 1/2/3 always preserves either data or attribution                              |
+| **P3 — Performance**  | Does it add overhead?                                     | MINIMAL — adds 3 git commands and 1 task board entry per rebase (estimated +15s per rebase)                                        |
+| **D4 — Documented**   | Is the protocol referenceable and teachable?              | YES — HAM mnemonic + decision tree in §2.4, CAVEMAN PERSIST integration in §3, D-002 3-witness in §4, 23-instance case study in §1 |
 
 **4-ICP composite:** 9.0–9.25/10 (estimate pending co-author review).
 
@@ -218,19 +236,19 @@ PASS / FAIL: <verdict>
 
 ## §6 Relationship to NEVER-AGAIN RULES
 
-| RULE | Relationship to RULE #60 |
-|------|--------------------------|
-| #32 | `--no-verify` on commit — RULE #60 actions commit with --no-verify per RULE #32 |
-| #35 | PRE-DISPATCH-STATE-CHECK — verify PICK not stale; complement to RULE #60's pre-rebase state check |
-| #39 | CASCADE-VELOCITY-CHECK (60s SLA) — RULE #60 D-002 3-witness must complete within 60s |
-| #47 | CAVEMAN PERSIST FALLBACK — required when team_send_message LOCKED OUT (CATCH #200) |
-| #50 | POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER — RULE #60 prevents the ledger corruption that RULE #50 was designed to detect |
-| #51 | NO-IDLE-PROACTIVE-PATROL — RULE #60 actions count as work, not idle |
-| #53 | GHOST-SHA-DETECTION — RULE #60 must verify staged file SHAs against RULE #53 registry |
-| #54 | STALE-NOTIFICATION-DEFENDER — Muses self-ACK within 5s; RULE #60 pre-rebase notification per §3 step 1 |
-| #55 | PRE-PUSH-GHOST-SHA-CHECK — RULE #60 actions push with --no-verify, so RULE #55 Gate 5 (Atlas) is the primary safety net |
-| #56 | PROACTIVE-PICK-CHAIN — Muse PICK NEXT in same report; RULE #60 codification PICK chains to RULE #61 LOCKOUT-DETECTION (CATCH #200 mitigation, Prometheus DRI) |
-| #57 | LEADER-PERIODIC-FULL-BROADCAST — 30-min defensive anchor |
+| RULE | Relationship to RULE #60                                                                                                                                      |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #32  | `--no-verify` on commit — RULE #60 actions commit with --no-verify per RULE #32                                                                               |
+| #35  | PRE-DISPATCH-STATE-CHECK — verify PICK not stale; complement to RULE #60's pre-rebase state check                                                             |
+| #39  | CASCADE-VELOCITY-CHECK (60s SLA) — RULE #60 D-002 3-witness must complete within 60s                                                                          |
+| #47  | CAVEMAN PERSIST FALLBACK — required when team_send_message LOCKED OUT (CATCH #200)                                                                            |
+| #50  | POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER — RULE #60 prevents the ledger corruption that RULE #50 was designed to detect                                      |
+| #51  | NO-IDLE-PROACTIVE-PATROL — RULE #60 actions count as work, not idle                                                                                           |
+| #53  | GHOST-SHA-DETECTION — RULE #60 must verify staged file SHAs against RULE #53 registry                                                                         |
+| #54  | STALE-NOTIFICATION-DEFENDER — Muses self-ACK within 5s; RULE #60 pre-rebase notification per §3 step 1                                                        |
+| #55  | PRE-PUSH-GHOST-SHA-CHECK — RULE #60 actions push with --no-verify, so RULE #55 Gate 5 (Atlas) is the primary safety net                                       |
+| #56  | PROACTIVE-PICK-CHAIN — Muse PICK NEXT in same report; RULE #60 codification PICK chains to RULE #61 LOCKOUT-DETECTION (CATCH #200 mitigation, Prometheus DRI) |
+| #57  | LEADER-PERIODIC-FULL-BROADCAST — 30-min defensive anchor                                                                                                      |
 
 **RULE #60 is the 12th NEVER-AGAIN RULE.** Counting: #32, #35, #39, #41, #47, #50, #51, #53, #54, #55, #56, #57, #58 (EXT-ADDENDUM per CATCH #205 rename), **#60**.
 
@@ -241,6 +259,7 @@ PASS / FAIL: <verdict>
 **Gate 7 — pre-rebase staged-file detection:**
 
 In `.husky/pre-rebase` (new hook), detect staged files + abort/quit mismatch:
+
 ```bash
 #!/usr/bin/env sh
 # RULE #60 Gate 7: pre-rebase staged-file detection
@@ -264,6 +283,7 @@ fi
 **DRI:** Calliope (primary author) + Atlas (BACKUP verifier)
 
 **5+ co-authors solicited (LEADER TURN 71+ guidance):**
+
 1. **Atlas** — BACKUP verifier, Husky Gate 5 author, infra domain
 2. **Apollo** — MASTER_REPORT v1.2.1 author, CASCADE recovery specialist
 3. **Hephaestus** — Security-domain 5th-ICP, PATCH 10/11/12 author
@@ -273,6 +293,7 @@ fi
 **Stretch (6+):** Prometheus (RULE #39 CASCADE-VELOCITY author), Vulcan (CATCH #200 LOCKOUT first reporter), Themis (COMPLIANCE protection rationale).
 
 **Co-author commit pattern:**
+
 ```
 [CALLIOPE + <co-Muse>] docs(codif): RULE #60 v0.1 co-sign — <co-Muse-domain> perspective
 ```
@@ -298,6 +319,7 @@ fi
 **Next:** v0.2 after 5+ co-author commits → v0.3 after Strategos 5th-ICP verdict → v0.4 LOCKED at RATIFICATION GATE 2026-06-22 16:00 UTC.
 
 **Cross-references:**
+
 - CATCH #202 (this rule's origin)
 - CATCH #200 (LOCKOUT case study)
 - CATCH #183-#205 (CASCADE-TRAP family, 23 instances)

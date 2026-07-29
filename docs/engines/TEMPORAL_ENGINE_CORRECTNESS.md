@@ -13,12 +13,12 @@ Financial correctness **IS** time correctness. A DST bug in period close can cor
 
 This audit covers **4 engines** (MonteCarlo, PeriodClose, AuditTrail v2, VarianceAttribution) against **5 edge cases** (DST spring, DST fall, leap year, timezone crossing, century boundary). Result:
 
-| Engine | Temporal Surface | Bugs Found | Severity | Fixed |
-|---|---|---|---|---|
-| **MonteCarlo** | None (pure math) | 0 | — | N/A — inherits time-correctness from inputs |
-| **PeriodClose** | Period dates, dueDate, SLA | 2 | 🔴 HIGH | ✅ BUG-PC-1, BUG-PC-2 |
-| **AuditTrail v2** | Event timestamps, SOX export | 1 | 🔴 HIGH | ✅ BUG-AT-1 |
-| **VarianceAttribution** | None (pure financial math) | 0 | — | N/A — inherits time-correctness from inputs |
+| Engine                  | Temporal Surface             | Bugs Found | Severity | Fixed                                       |
+| ----------------------- | ---------------------------- | ---------- | -------- | ------------------------------------------- |
+| **MonteCarlo**          | None (pure math)             | 0          | —        | N/A — inherits time-correctness from inputs |
+| **PeriodClose**         | Period dates, dueDate, SLA   | 2          | 🔴 HIGH  | ✅ BUG-PC-1, BUG-PC-2                       |
+| **AuditTrail v2**       | Event timestamps, SOX export | 1          | 🔴 HIGH  | ✅ BUG-AT-1                                 |
+| **VarianceAttribution** | None (pure financial math)   | 0          | —        | N/A — inherits time-correctness from inputs |
 
 **Net result:** 2 HIGH-severity temporal correctness bugs found, both fixed via the new `src/engines/temporal/` utility module. New module exports UTC-anchored, timezone-safe, DST/leap/TZ-aware date primitives used by both fixed engines.
 
@@ -29,15 +29,19 @@ This audit covers **4 engines** (MonteCarlo, PeriodClose, AuditTrail v2, Varianc
 ## Methodology
 
 ### 3-Witness per Claim (D-002)
+
 Every claim in this document is backed by 3 witnesses:
+
 1. **Source witness** — engine file:line citation
 2. **Test witness** — failing test case (then passing after fix)
 3. **Doc witness** — this audit document + the TemporalDate.test.ts file
 
 ### 4-ICP Verdict (D-011)
+
 Final 4-ICP verdict appears at the end of this document. Each individual fix has its own mini-ICP.
 
 ### 5 Edge Cases × 4 Engines = 20 Audit Cells
+
 Every engine was checked against every edge case. Cells with no temporal surface are marked "N/A — pure math, inherits from inputs" with a Grep witness (D-009 triangulation).
 
 ---
@@ -50,13 +54,13 @@ Every engine was checked against every edge case. Cells with no temporal surface
 
 ### Edge Case Audit
 
-| # | Edge Case | Status | Witness |
-|---|---|---|---|
-| 1 | DST spring-forward | N/A | Grep: 0 hits for `Date\|Time\|UTC\|TZ\|toISO\|toLocale\|getTime\|timezone\|DST\|leap` |
-| 2 | DST fall-back | N/A | Same Grep result |
-| 3 | Leap year | N/A | Same Grep result |
-| 4 | Timezone crossing | N/A | Same Grep result |
-| 5 | Century boundary | N/A | Same Grep result |
+| #   | Edge Case          | Status | Witness                                                                               |
+| --- | ------------------ | ------ | ------------------------------------------------------------------------------------- |
+| 1   | DST spring-forward | N/A    | Grep: 0 hits for `Date\|Time\|UTC\|TZ\|toISO\|toLocale\|getTime\|timezone\|DST\|leap` |
+| 2   | DST fall-back      | N/A    | Same Grep result                                                                      |
+| 3   | Leap year          | N/A    | Same Grep result                                                                      |
+| 4   | Timezone crossing  | N/A    | Same Grep result                                                                      |
+| 5   | Century boundary   | N/A    | Same Grep result                                                                      |
 
 ### Analysis
 
@@ -67,6 +71,7 @@ MonteCarlo is a **pure-math engine**. It uses a seeded PRNG (Mulberry32 at line 
 **Recommendation:** No code change required. Add a docstring note in v0.2 of the engine explicitly stating "temporal correctness is the caller's responsibility" (P1 follow-up, not blocking).
 
 ### 4-ICP Mini-Verdict
+
 - **Intent (I1):** ✅ Audit performed; no temporal surface found
 - **Correctness (C2):** ✅ Engine is time-invariant; no failure mode
 - **Performance (P3):** ✅ Zero overhead — no Date objects
@@ -82,19 +87,20 @@ MonteCarlo is a **pure-math engine**. It uses a seeded PRNG (Mulberry32 at line 
 
 ### Edge Case Audit
 
-| # | Edge Case | Bug | Status |
-|---|---|---|---|
-| 1 | DST spring-forward | BUG-PC-1 (locale-dependent comparison) | 🔴 FOUND + FIXED |
-| 2 | DST fall-back | (same as #1, included in fix) | 🔴 FOUND + FIXED |
-| 3 | Leap year | (inherits from `new Date()` — correct) | ✅ OK |
-| 4 | Timezone crossing | (same as #1, included in fix) | 🔴 FOUND + FIXED |
-| 5 | Century boundary | (inherits from `new Date()` — correct; 2000 leap, 2100 not) | ✅ OK |
+| #   | Edge Case          | Bug                                                         | Status           |
+| --- | ------------------ | ----------------------------------------------------------- | ---------------- |
+| 1   | DST spring-forward | BUG-PC-1 (locale-dependent comparison)                      | 🔴 FOUND + FIXED |
+| 2   | DST fall-back      | (same as #1, included in fix)                               | 🔴 FOUND + FIXED |
+| 3   | Leap year          | (inherits from `new Date()` — correct)                      | ✅ OK            |
+| 4   | Timezone crossing  | (same as #1, included in fix)                               | 🔴 FOUND + FIXED |
+| 5   | Century boundary   | (inherits from `new Date()` — correct; 2000 leap, 2100 not) | ✅ OK            |
 
 ### BUG-PC-1: Locale-dependent SLA breach detection (HIGH)
 
 **Location:** `src/engines/PeriodCloseEngine.ts:60` (caller), `:80-82` (function body)
 
 **Original code:**
+
 ```typescript
 // Line 60 (caller):
 slaBreaches: this.getSLABreaches(finalTasks, new Date().toISOString()),
@@ -107,6 +113,7 @@ static getSLABreaches(tasks: CloseTask[], currentDate: string): SLABreach[] {
 ```
 
 **Failure mode:**
+
 1. The caller passes `new Date().toISOString()` (UTC) for `currentDate`.
 2. The function parses it with `new Date(currentDate).getTime()` — for an ISO string with `Z`, this returns the correct UTC epoch ms.
 3. But the comparison `new Date(t.dueDate).getTime() < now` is **locale-dependent**:
@@ -116,6 +123,7 @@ static getSLABreaches(tasks: CloseTask[], currentDate: string): SLABreach[] {
 4. **Inconsistency:** Comparing local-parsed `dueDate` to UTC-parsed `currentDate` produces wrong breach detection near timezone boundaries. A task due "23:59 local" in NY might be classified as breached or not-breached depending on whether the comparison is in local or UTC terms.
 
 **Concrete failure scenario:**
+
 - User in NY: `currentDate = 2026-04-01T02:00:00Z` (which is 2026-03-31 22:00 local).
 - Task: `dueDate = "2026-03-31T23:59:00"` (local NY).
 - `new Date("2026-03-31T23:59:00").getTime()` in NY = 2026-04-01T03:59:00Z.
@@ -124,6 +132,7 @@ static getSLABreaches(tasks: CloseTask[], currentDate: string): SLABreach[] {
 - But intuitively, at 22:00 local, the task due at 23:59 local has 1h 59m remaining. ✓ correct in this case.
 
 **Actual failure scenario** (where the bug bites):
+
 - User in NY: `currentDate = 2026-04-01T04:00:00Z` (which is 2026-04-01 00:00 local — past midnight).
 - Task: `dueDate = "2026-03-31T23:59:00"` (local NY).
 - `new Date("2026-03-31T23:59:00").getTime()` in NY = 2026-04-01T03:59:00Z.
@@ -131,6 +140,7 @@ static getSLABreaches(tasks: CloseTask[], currentDate: string): SLABreach[] {
 - Comparison: `2026-04-01T03:59:00Z < 2026-04-01T04:00:00Z` = **true** (task IS breached). ✓ correct in this case.
 
 OK so this exact case happens to work. The bug bites when:
+
 - **User in Tokyo** views the same task at 2026-04-01T13:00:00 local (= 04:00 UTC).
 - Same code path: `now` = 2026-04-01T04:00:00Z.
 - `dueDate = "2026-03-31T23:59:00"` parsed in **Tokyo local** = 2026-03-31T23:59:00 JST = 2026-03-31T14:59:00Z.
@@ -138,10 +148,12 @@ OK so this exact case happens to work. The bug bites when:
 - But chronologically, the task is due 2026-03-31 23:59 JST, and we're at 2026-04-01 13:00 JST. So 13h 1m past due. **Same answer** — task is correctly classified as breached.
 
 So far the bug is silent. Where it bites:
+
 - **Mixed display locale** — task created by NY user, viewed by Tokyo user. The same task is parsed differently.
 - **DST spring-forward day** — at 02:30 local NY, the local clock has already jumped to 03:30. `new Date("2026-03-08T02:30:00")` is **invalid** in NY (no such time). Date constructor returns Invalid Date. `getTime()` = NaN. `NaN < now` = false. Task **not** flagged as breached, even though it is. **THIS IS THE BUG.**
 
 **Witness (D-002):**
+
 - Source: `src/engines/PeriodCloseEngine.ts:60, 80-82`
 - Test: `src/engines/temporal/TemporalDate.test.ts:BUG-PC-1/2 fix: PeriodClose SLA breach` (suite at line 240+)
 - Doc: this document (BUG-PC-1)
@@ -151,11 +163,13 @@ So far the bug is silent. Where it bites:
 Replace both `new Date(...).getTime()` calls with `parseToUTCEpoch(...)` from the new `src/engines/temporal/` module. This normalizes both sides to UTC epoch ms, eliminating locale-dependence.
 
 **Fixed code (line 60 area unchanged — caller still passes `toISOString()`, which is already UTC):**
+
 ```typescript
 slaBreaches: this.getSLABreaches(finalTasks, new Date().toISOString()),
 ```
 
 **Fixed code (lines 78-93):**
+
 ```typescript
 static getSLABreaches(tasks: CloseTask[], currentDate: string): SLABreach[] {
   // CHRONOS BUG-PC-1/2 FIX: normalize both sides to UTC epoch ms.
@@ -179,6 +193,7 @@ static getSLABreaches(tasks: CloseTask[], currentDate: string): SLABreach[] {
 ```
 
 **Import added at top of file:**
+
 ```typescript
 import { parseToUTCEpoch } from './temporal';
 ```
@@ -188,6 +203,7 @@ import { parseToUTCEpoch } from './temporal';
 **Same root cause as PC-1.** `new Date("2026-03-31").getTime()` parses as **UTC midnight** (per ECMAScript spec), but `new Date("2026-03-31T00:00:00").getTime()` parses as **local midnight**. The inconsistency between date-only and datetime-only strings is a documented ECMAScript quirk; the fix is to **standardize on UTC interpretation** in our internal helpers.
 
 `parseToUTCEpoch` in the new module handles this consistently:
+
 - `"2026-03-31"` → UTC midnight (deliberate, documented convention)
 - `"2026-03-31T00:00:00"` → local (Date constructor default)
 - `"2026-03-31T00:00:00Z"` → UTC
@@ -206,6 +222,7 @@ The current `PeriodCloseEngine` has no notion of fiscal year. Periods are string
 **Recommendation:** P1 follow-up — add a `fiscalCalendar: FiscalCalendarConfig` field to `CloseChecklist` and use `periodOf` / `quarterOf` for period boundaries. (Not blocking v1.0.0 ship.)
 
 ### 4-ICP Mini-Verdict (BUG-PC-1/2)
+
 - **Intent (I1):** ✅ Eliminate locale-dependent comparison in SLA detection
 - **Correctness (C2):** ✅ Both sides normalized to UTC ms; deterministic
 - **Performance (P3):** ✅ O(1) per task; no measurable overhead
@@ -221,19 +238,20 @@ The current `PeriodCloseEngine` has no notion of fiscal year. Periods are string
 
 ### Edge Case Audit
 
-| # | Edge Case | Bug | Status |
-|---|---|---|---|
-| 1 | DST spring-forward | BUG-AT-1 (lex comparison on mixed offsets) | 🔴 FOUND + FIXED |
-| 2 | DST fall-back | (same as #1) | 🔴 FOUND + FIXED |
-| 3 | Leap year | (inherits from Date — correct) | ✅ OK |
-| 4 | Timezone crossing | (same as #1) | 🔴 FOUND + FIXED |
-| 5 | Century boundary | (inherits from Date — correct; FNV hash is content-based, not time-based) | ✅ OK |
+| #   | Edge Case          | Bug                                                                       | Status           |
+| --- | ------------------ | ------------------------------------------------------------------------- | ---------------- |
+| 1   | DST spring-forward | BUG-AT-1 (lex comparison on mixed offsets)                                | 🔴 FOUND + FIXED |
+| 2   | DST fall-back      | (same as #1)                                                              | 🔴 FOUND + FIXED |
+| 3   | Leap year          | (inherits from Date — correct)                                            | ✅ OK            |
+| 4   | Timezone crossing  | (same as #1)                                                              | 🔴 FOUND + FIXED |
+| 5   | Century boundary   | (inherits from Date — correct; FNV hash is content-based, not time-based) | ✅ OK            |
 
 ### BUG-AT-1: Lexicographic timestamp comparison fails on mixed offsets (HIGH)
 
 **Location:** `src/engines/AuditTrailEngine.ts:222-223` (query method), `:245` (exportForSOX)
 
 **Original code (query method, lines 218-228):**
+
 ```typescript
 static query(entries: readonly AuditEntry[], q: AuditQuery): readonly AuditEntry[] {
   return entries.filter((e) => {
@@ -249,6 +267,7 @@ static query(entries: readonly AuditEntry[], q: AuditQuery): readonly AuditEntry
 ```
 
 **Original code (exportForSOX, line 245):**
+
 ```typescript
 const inRange = entries.filter((e) => e.timestamp >= from && e.timestamp <= to);
 ```
@@ -269,11 +288,13 @@ Lexicographic comparison of ISO 8601 strings is **only correct when both strings
 3. **Worse failure:** Query asks for entries from `"2026-06-15T00:00:00+05:00"` (= 2026-06-14T19:00:00Z) to `"2026-06-15T00:00:00+05:00"`. Entry `"2026-06-15T03:00:00Z"` (= 08:00 +05:00) is at the **end** of the range, but lex comparison puts it **before** the start. Entry is **incorrectly excluded**.
 
 This is a real bug because:
+
 - Audit entries from a distributed system (multiple regions) may use local offsets.
 - SOX export consumers (regulators) expect strict chronological correctness.
 - The Merkle hash chain (line 110-115) is computed per-entry, so a misordered query produces a **different Merkle root** for the same underlying data, breaking tamper detection consistency.
 
 **Witness (D-002):**
+
 - Source: `src/engines/AuditTrailEngine.ts:222-223, 245`
 - Test: `src/engines/temporal/TemporalDate.test.ts:BUG-AT-1 fix: timezone-safe comparison` (suite at line 200+)
 - Doc: this document (BUG-AT-1)
@@ -283,6 +304,7 @@ This is a real bug because:
 Replace lex comparison with `isInRange()` and `parseToUTCEpoch()` from the new temporal module.
 
 **Fixed code (query method):**
+
 ```typescript
 static query(entries: readonly AuditEntry[], q: AuditQuery): readonly AuditEntry[] {
   // Pre-compute range boundaries once.
@@ -305,11 +327,13 @@ static query(entries: readonly AuditEntry[], q: AuditQuery): readonly AuditEntry
 ```
 
 **Fixed code (exportForSOX, line 245):**
+
 ```typescript
 const inRange = entries.filter((e) => isInRange(e.timestamp, from, to));
 ```
 
 **Imports added at top of file:**
+
 ```typescript
 import { isInRange, parseToUTCEpoch } from './temporal';
 ```
@@ -325,6 +349,7 @@ The original lex comparison was O(1) per entry. The new UTC-parse is O(1) per en
 - **Leap year:** JavaScript's `new Date()` handles Feb 29 correctly. No bug.
 
 ### 4-ICP Mini-Verdict (BUG-AT-1)
+
 - **Intent (I1):** ✅ Correct chronological ordering for mixed-offset timestamps
 - **Correctness (C2):** ✅ Merkle root now consistent regardless of entry offset format
 - **Performance (P3):** ✅ Pre-computed boundaries; O(1) per entry
@@ -340,13 +365,13 @@ The original lex comparison was O(1) per entry. The new UTC-parse is O(1) per en
 
 ### Edge Case Audit
 
-| # | Edge Case | Status | Witness |
-|---|---|---|---|
-| 1 | DST spring-forward | N/A | Grep: 0 hits for `Date\|Time\|UTC\|TZ\|toISO\|toLocale\|getTime\|timezone\|DST\|leap` |
-| 2 | DST fall-back | N/A | Same Grep result |
-| 3 | Leap year | N/A | Same Grep result |
-| 4 | Timezone crossing | N/A | Same Grep result |
-| 5 | Century boundary | N/A | Same Grep result |
+| #   | Edge Case          | Status | Witness                                                                               |
+| --- | ------------------ | ------ | ------------------------------------------------------------------------------------- |
+| 1   | DST spring-forward | N/A    | Grep: 0 hits for `Date\|Time\|UTC\|TZ\|toISO\|toLocale\|getTime\|timezone\|DST\|leap` |
+| 2   | DST fall-back      | N/A    | Same Grep result                                                                      |
+| 3   | Leap year          | N/A    | Same Grep result                                                                      |
+| 4   | Timezone crossing  | N/A    | Same Grep result                                                                      |
+| 5   | Century boundary   | N/A    | Same Grep result                                                                      |
 
 ### Analysis
 
@@ -357,6 +382,7 @@ VarianceAttribution is a **pure financial math engine**. It computes variance be
 **Recommendation:** No code change required. Add a docstring note in v0.2 of the engine explicitly stating "temporal correctness is the caller's responsibility" (P1 follow-up, not blocking).
 
 ### 4-ICP Mini-Verdict
+
 - **Intent (I1):** ✅ Audit performed; no temporal surface found
 - **Correctness (C2):** ✅ Engine is time-invariant; no failure mode
 - **Performance (P3):** ✅ Zero overhead — no Date objects
@@ -370,16 +396,17 @@ Created in this audit. Provides UTC-anchored, timezone-safe, DST/leap/TZ-aware d
 
 ### Files
 
-| File | Lines | Purpose |
-|---|---|---|
-| `TemporalDate.ts` | 290 | Core date parsing, arithmetic, comparison |
-| `fiscalCalendar.ts` | 175 | Fiscal year/period/quarter helpers |
-| `index.ts` | 35 | Barrel export |
-| `TemporalDate.test.ts` | 408 | Comprehensive test coverage (10 test suites, 50+ assertions) |
+| File                   | Lines | Purpose                                                      |
+| ---------------------- | ----- | ------------------------------------------------------------ |
+| `TemporalDate.ts`      | 290   | Core date parsing, arithmetic, comparison                    |
+| `fiscalCalendar.ts`    | 175   | Fiscal year/period/quarter helpers                           |
+| `index.ts`             | 35    | Barrel export                                                |
+| `TemporalDate.test.ts` | 408   | Comprehensive test coverage (10 test suites, 50+ assertions) |
 
 ### Exported API
 
 **From `TemporalDate.ts`:**
+
 - `parseToUTCEpoch(input)` — parse any ISO 8601, date-only, epoch ms, or Date to UTC ms
 - `toUTCISOString(ms)` — format UTC ms to fixed-width ISO 8601 with `Z`
 - `isLeapYear(year)` — Gregorian leap year (handles 2000 leap, 2100 not)
@@ -393,6 +420,7 @@ Created in this audit. Provides UTC-anchored, timezone-safe, DST/leap/TZ-aware d
 - `startOfUTCMonth(ms)` / `endOfUTCMonth(ms)` — month boundaries (leap-aware)
 
 **From `fiscalCalendar.ts`:**
+
 - `DEFAULT_CALENDAR` — calendar year in UTC, 12 monthly periods
 - `fiscalYearOf(ms, config)` — which fiscal year contains this timestamp
 - `fiscalYearStart(ms, config)` — UTC ms of fiscal year start
@@ -404,6 +432,7 @@ Created in this audit. Provides UTC-anchored, timezone-safe, DST/leap/TZ-aware d
 ### Convention Documentation
 
 The `TemporalDate.ts` header (lines 0-30) documents 4 invariants:
+
 1. All timestamps stored in UTC (ISO 8601 with `Z` suffix).
 2. All date-only strings parsed as UTC midnight unless explicitly local.
 3. All comparisons normalized to UTC epoch ms.
@@ -413,12 +442,12 @@ The `TemporalDate.ts` header (lines 0-30) documents 4 invariants:
 
 ## Test Coverage Matrix (5 edge cases × 4 engines)
 
-| | DST spring | DST fall | Leap | TZ | Century |
-|---|---|---|---|---|---|
-| **MonteCarlo** | N/A (pure math) | N/A | N/A | N/A | N/A |
-| **PeriodClose** | ✅ test line 102 | ✅ test line 117 | ✅ test line 140 | ✅ test line 175 | ✅ test line 220 |
-| **AuditTrail v2** | ✅ test line 200 | ✅ test line 200 | ✅ test line 140 | ✅ test line 175 | ✅ test line 220 |
-| **VarianceAttribution** | N/A (pure math) | N/A | N/A | N/A | N/A |
+|                         | DST spring       | DST fall         | Leap             | TZ               | Century          |
+| ----------------------- | ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| **MonteCarlo**          | N/A (pure math)  | N/A              | N/A              | N/A              | N/A              |
+| **PeriodClose**         | ✅ test line 102 | ✅ test line 117 | ✅ test line 140 | ✅ test line 175 | ✅ test line 220 |
+| **AuditTrail v2**       | ✅ test line 200 | ✅ test line 200 | ✅ test line 140 | ✅ test line 175 | ✅ test line 220 |
+| **VarianceAttribution** | N/A (pure math)  | N/A              | N/A              | N/A              | N/A              |
 
 All test lines refer to `src/engines/temporal/TemporalDate.test.ts` (the new test file). Both engine fixes use `parseToUTCEpoch` / `isInRange` from the new module, so the test coverage applies to both.
 
@@ -427,6 +456,7 @@ All test lines refer to `src/engines/temporal/TemporalDate.test.ts` (the new tes
 ## Summary of Changes
 
 ### Files Created
+
 - `src/engines/temporal/TemporalDate.ts` (290 lines)
 - `src/engines/temporal/fiscalCalendar.ts` (175 lines)
 - `src/engines/temporal/index.ts` (35 lines)
@@ -434,16 +464,19 @@ All test lines refer to `src/engines/temporal/TemporalDate.test.ts` (the new tes
 - `docs/engines/TEMPORAL_ENGINE_CORRECTNESS.md` (this file, ~600 lines)
 
 ### Files Modified
+
 - `src/engines/PeriodCloseEngine.ts` — added import + fixed `getSLABreaches` (lines 1-7 + 78-93)
 - `src/engines/AuditTrailEngine.ts` — added import + fixed `query` (lines 0-30 + 218-238) + fixed `exportForSOX` (line 245)
 - `src/engines/index.ts` — added temporal module exports (lines 234-260)
 
 ### Lines Changed
+
 - **+1,508 lines** (mostly new module + tests + this doc)
 - **~20 lines** modified in existing engines (the actual fixes)
 - **~25 lines** added to barrel export
 
 ### Risk Assessment
+
 - **Low risk:** New module is additive; existing engines only changed to use the new helpers.
 - **Backward compatible:** The new `parseToUTCEpoch` returns the same value as `new Date(s).getTime()` for valid ISO strings with `Z` suffix (the recommended format).
 - **Test coverage:** 50+ new test assertions across 10 test suites, all 5 edge cases × 4 engines.
@@ -452,12 +485,12 @@ All test lines refer to `src/engines/temporal/TemporalDate.test.ts` (the new tes
 
 ## 4-ICP Final Verdict (D-011)
 
-| Dimension | Score | Evidence |
-|---|---|---|
-| **I1 — Intent** | ✅ CLEAR | "Financial correctness IS time correctness" — concrete engineering property, not metaphor. 4 engines audited, 2 bugs found, both fixed. |
-| **C2 — Catastrophic** | ✅ NONE | No commits lost, no data corruption. The 2 HIGH bugs are **detection** bugs (wrong SLA breach flag, wrong audit-trail query results) — they don't cause silent data corruption, they cause wrong flags/reports. Fixed before ship. |
-| **P3 — Hot paths** | ✅ MINIMAL | New module adds ~100ns per call. `getSLABreaches` is not in a hot path (period close is monthly). `query` is O(n) before and after. `exportForSOX` is O(n) before and after. Pre-computed boundaries (lines 219-220) keep per-entry cost O(1). |
-| **D4 — Documented** | ✅ EXHAUSTIVE | 4-ICP on every fix + 4-ICP on every engine + this master 4-ICP. Inline comments in 2 engine fixes cite this audit doc. Test file has 10 describe blocks with full coverage. |
+| Dimension             | Score         | Evidence                                                                                                                                                                                                                                       |
+| --------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 — Intent**       | ✅ CLEAR      | "Financial correctness IS time correctness" — concrete engineering property, not metaphor. 4 engines audited, 2 bugs found, both fixed.                                                                                                        |
+| **C2 — Catastrophic** | ✅ NONE       | No commits lost, no data corruption. The 2 HIGH bugs are **detection** bugs (wrong SLA breach flag, wrong audit-trail query results) — they don't cause silent data corruption, they cause wrong flags/reports. Fixed before ship.             |
+| **P3 — Hot paths**    | ✅ MINIMAL    | New module adds ~100ns per call. `getSLABreaches` is not in a hot path (period close is monthly). `query` is O(n) before and after. `exportForSOX` is O(n) before and after. Pre-computed boundaries (lines 219-220) keep per-entry cost O(1). |
+| **D4 — Documented**   | ✅ EXHAUSTIVE | 4-ICP on every fix + 4-ICP on every engine + this master 4-ICP. Inline comments in 2 engine fixes cite this audit doc. Test file has 10 describe blocks with full coverage.                                                                    |
 
 **Final verdict: ✅ SHIP-READY** — the 2 temporal correctness bugs found have been fixed, tested, and documented. The remaining 2 engines (MonteCarlo, VarianceAttribution) have no temporal surface and inherit time-correctness from their inputs.
 
@@ -484,4 +517,4 @@ All test lines refer to `src/engines/temporal/TemporalDate.test.ts` (the new tes
 
 ---
 
-*End of TEMPORAL_ENGINE_CORRECTNESS v0.1*
+_End of TEMPORAL_ENGINE_CORRECTNESS v0.1_

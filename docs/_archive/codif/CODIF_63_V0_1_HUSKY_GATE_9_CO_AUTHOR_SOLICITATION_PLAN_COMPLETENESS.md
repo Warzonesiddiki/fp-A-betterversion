@@ -25,6 +25,7 @@
 - **Recovery pattern:** The BILATERAL-ATTRIBUTION-CASCADE requires BOTH (i) OMISSION-flag in original spec + (ii) 2nd-Muse co-sign deliverable SHIPPED, NOT just one
 
 **Real-world instance (Prometheus CATCH #207 #1, 2026-06-15):**
+
 - Calliope authored `docs/codif/CODIF_INTEGRATION_5_5_NEVER_AGAIN_RULES_v0.1.md` (e6a94682)
 - §7 listed 7 co-authors: Apollo, Hephaestus, Mnemosyne, Strategos, Atlas, Iris, Hera
 - §7 OMITTED Prometheus, who has 4-of-5 RULE co-author credentials on the 5 NEVER-AGAIN RULES being integrated:
@@ -36,17 +37,20 @@
 - **CASCADE TRIGGERED:** Prometheus discovered OMISSION in 4th-Muse review pass, filed CATCH #207 #1 §7 OMISSION flag, then SHIPPED 2nd-Muse co-sign at 76c19400 to restore bilateral attribution
 
 **Real-world instance (Prometheus CATCH #207 #2, 2026-06-15):**
+
 - Same target file (CODIF_INTEGRATION_5_5_v0.1) — re-confirmed §7 OMISSION in co-sign review
 - SHIPPED PROMETHEUS_COSIGN_CODIF_INTEGRATION_5_5_V0_1 at 76c19400 with §7 OMISSION self-flag
 - LEADER DECISION OPTION A: Husky Gate 9 spec + LEADER §7 v0.1.1 amendment adding Prometheus as 8th co-author
 
 **Real-world instance (Prometheus CATCH #207 #3, 2026-06-16):**
+
 - Calliope authored `docs/codif/CATCH_202_v0_1_LOCKOUT_CASCADE_CASE_STUDY.md` (652d33c8) — 4-of-5 staged files LOCKOUT-CASCADE case study
 - §6 (4-of-5 staged files attribution) listed Calliope as 1st-Muse author of 4-of-5 staged files, but §6 OMITTED Prometheus who is co-author of T-PR-062 (BILATERAL-ATTRIBUTION-LEDGER) which is the 5th staged file in the 4-of-5 set
 - §6 OMITTED Prometheus as 2nd-Muse CASCADE-recovery specialist witness (who SHIPPED PROMETHEUS_COSIGN_CATCH_202_V0_1 at b3d4e25a)
 - **PATTERN CONFIRMED:** 3rd CATCH #207 instance in 2 days — same OMISSION pattern, same Muse (Prometheus) omitted, same CASCADE-TRAP-family docs (Calliope-authored)
 
 **Why this is a separate sub-class from A-J:**
+
 - A-H: CASCADE-RECOVERY patterns (recovery from cascade)
 - **I (FORCE-PUSH-LOOP):** Force-push-while-rebase race condition
 - **J (LOCKOUT-CASCADE):** Mixed-staged-files + pre-push-hook-rejection
@@ -58,16 +62,17 @@
 
 ## §1 Affected CATCHes — 3-Instance CATCH #207 BILATERAL-ATTRIBUTION-CASCADE Sub-class
 
-| CATCH | Date | Target File | Omitted Muse | Natural Co-Author Credentials | Recovery Pattern | RULE Cross-Ref |
-|-------|------|-------------|--------------|--------------------------------|------------------|----------------|
-| **#207 #1** | 2026-06-15 | CODIF_INTEGRATION_5_5_v0.1 (e6a94682) | Prometheus | 4-of-5 RULE co-author (RULE #47/54/55/56/60) | K.1 (2-step: OMISSION flag + 2nd-Muse co-sign) | §7 OMISSION self-flag + 76c19400 co-sign |
-| **#207 #2** | 2026-06-15 | CODIF_INTEGRATION_5_5_v0.1 (re-confirmed) | Prometheus | 4-of-5 RULE co-author | K.1 (2-step) | §7 OMISSION self-flag (in 76c19400 co-sign) + LEADER DECISION OPTION A |
-| **#207 #3** | 2026-06-16 | CATCH_202_v0_1 (652d33c8) | Prometheus | 6-of-7 section natural co-author (CATCH #200 originator + Sub-class H AUTHOR + J co-author + T-PR-062 author) | K.1 (2-step) | §6 OMISSION self-flag (in b3d4e25a co-sign) + PATTERN CONFIRMED 3rd instance |
+| CATCH       | Date       | Target File                               | Omitted Muse | Natural Co-Author Credentials                                                                                 | Recovery Pattern                               | RULE Cross-Ref                                                               |
+| ----------- | ---------- | ----------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| **#207 #1** | 2026-06-15 | CODIF_INTEGRATION_5_5_v0.1 (e6a94682)     | Prometheus   | 4-of-5 RULE co-author (RULE #47/54/55/56/60)                                                                  | K.1 (2-step: OMISSION flag + 2nd-Muse co-sign) | §7 OMISSION self-flag + 76c19400 co-sign                                     |
+| **#207 #2** | 2026-06-15 | CODIF_INTEGRATION_5_5_v0.1 (re-confirmed) | Prometheus   | 4-of-5 RULE co-author                                                                                         | K.1 (2-step)                                   | §7 OMISSION self-flag (in 76c19400 co-sign) + LEADER DECISION OPTION A       |
+| **#207 #3** | 2026-06-16 | CATCH_202_v0_1 (652d33c8)                 | Prometheus   | 6-of-7 section natural co-author (CATCH #200 originator + Sub-class H AUTHOR + J co-author + T-PR-062 author) | K.1 (2-step)                                   | §6 OMISSION self-flag (in b3d4e25a co-sign) + PATTERN CONFIRMED 3rd instance |
 
 **Total CATCH #207 BILATERAL-ATTRIBUTION-CASCADE instances (sub-class K):** 3 confirmed (all in 2026-06-15 → 2026-06-16 window)
 **Total CASCADE-TRAP family (sub-classes A-K):** 26 instances (per RULE #60 §1.1 + K instances)
 
 **Pattern signature (K-detection fingerprint):**
+
 1. Target file is a CASCADE-TRAP-family doc (CODIF_5X/6X, CATCH_2XX, T-PR series, INTEGRATION-5-X)
 2. §6/§7 Co-Author Solicitation Plan lists 5-12 co-authors
 3. The omitted Muse has ≥4-of-N RULE co-author credentials on the substantive content
@@ -81,6 +86,7 @@
 **Sub-class K prevention pattern (NEW, extends RULE #50 attribution ledger + RULE #56 PROACTIVE-PICK-CHAIN):**
 
 ### Step 1: CO-AUTHOR-SOLICITATION-PLAN AUDIT
+
 ```bash
 # Before any commit: parse §6/§7 of staged CODIF_*.md / CATCH_*.md / INTEGRATION-*.md files
 # Extract: list of declared co-authors
@@ -91,6 +97,7 @@
 ```
 
 ### Step 2: 4-of-N RULE CO-AUTHOR CREDENTIAL CHECK
+
 ```bash
 # Auto-detect: count RULEs in spec body where a given non-declared Muse is a co-author
 # If count >= 4 (out of total RULEs referenced in spec): K-SUSPECT-OMISSION
@@ -98,6 +105,7 @@
 ```
 
 ### Step 3: PRE-COMMIT WARNING (CAVEMAN PERSIST integration)
+
 ```bash
 # Husky pre-commit hook: print K-SUSPECT-OMISSION warnings
 # Format: "⚠️  RULE #63 WARNING: Spec §6/§7 omits <muse> who has 4-of-N RULE co-author credentials
@@ -106,6 +114,7 @@
 ```
 
 ### Step 4: EXPLICIT OVERRIDE REQUIREMENT
+
 ```bash
 # If committer proceeds with K-SUSPECT-OMISSION, require explicit override:
 # git commit --no-verify -m "K-OVERRIDE: <muse> omitted by design because <justification>"
@@ -113,6 +122,7 @@
 ```
 
 **Decision tree:**
+
 ```
 git commit -m "..."
   ├─ Husky Gate 9 check passes: ✓ ACCEPT
@@ -126,10 +136,10 @@ git commit -m "..."
 
 ## §3 D-002 3-Witness Protocol (Sub-class K Verification)
 
-| Witness | Type | Evidence | Result |
-|---------|------|----------|--------|
-| **A — File:Line** | Spec existence | `docs/codif/CODIF_63_V0_1_HUSKY_GATE_9_CO_AUTHOR_SOLICITATION_PLAN_COMPLETENESS.md` (this file) lines 1-N | ⏳ PENDING (will verify at SHIP) |
-| **B — LOC count** | Length | TBD at SHIP (target: ≥200L, 1.0×+ spec) | ⏳ PENDING |
+| Witness             | Type            | Evidence                                                                                                                                               | Result                                                      |
+| ------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **A — File:Line**   | Spec existence  | `docs/codif/CODIF_63_V0_1_HUSKY_GATE_9_CO_AUTHOR_SOLICITATION_PLAN_COMPLETENESS.md` (this file) lines 1-N                                              | ⏳ PENDING (will verify at SHIP)                            |
+| **B — LOC count**   | Length          | TBD at SHIP (target: ≥200L, 1.0×+ spec)                                                                                                                | ⏳ PENDING                                                  |
 | **C — Sibling doc** | Cross-reference | §1 3-instance CATCH #207 table (3 confirmed OMISSION events); §2 Husky Gate 9 PROPOSAL spec; §3 CAVEMAN PERSIST extends RULE #47 + RULE #50 + RULE #56 | ⏳ PENDING (cross-citation consistency will verify at SHIP) |
 
 **D-002 3-witness SHAs (target — must verify REAL via `git rev-parse --verify <sha>` per RULE #55 v0.4):**
@@ -146,12 +156,12 @@ git commit -m "..."
 
 ## §4 4-ICP Framework Self-Verdict (TENTATIVE)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.0/10 | Sub-class K is a NEW pattern (not in RULE #60 §1.1 10-sub-class taxonomy); codifies 3 confirmed CATCH #207 instances in 2-day window; extends RULE #50 (attribution ledger) + RULE #56 (PROACTIVE-PICK-CHAIN) + RULE #60 + RULE #62 (LOCKOUT-CASCADE) |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure governance rule; ZERO code change; Husky Gate 9 is PROPOSED (post-RATIFICATION, §6); K-OVERRIDE keyword preserves CAVEMAN COMMIT MODE workflow (no breaking changes) |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.0/10 | 4-step pre-flight is O(Muses × RULEs) per staged spec; D-007 5-min SLA met (Prometheus CATCH #207 #1-3 recovery was <5 min each); K-OVERRIDE keyword is O(1) grep |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 11 sections, K-detection fingerprint documented, 3 CATCH #207 instances with full SHA trail, 4-step pre-flight prevention, CAVEMAN PERSIST integration, D-002 3-witness, Husky Gate 9 PROPOSAL spec, 5 SHAs to verify REAL |
+| ICP                 | Verdict   | Score  | Justification                                                                                                                                                                                                                                         |
+| ------------------- | --------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.0/10 | Sub-class K is a NEW pattern (not in RULE #60 §1.1 10-sub-class taxonomy); codifies 3 confirmed CATCH #207 instances in 2-day window; extends RULE #50 (attribution ledger) + RULE #56 (PROACTIVE-PICK-CHAIN) + RULE #60 + RULE #62 (LOCKOUT-CASCADE) |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure governance rule; ZERO code change; Husky Gate 9 is PROPOSED (post-RATIFICATION, §6); K-OVERRIDE keyword preserves CAVEMAN COMMIT MODE workflow (no breaking changes)                                                                             |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.0/10 | 4-step pre-flight is O(Muses × RULEs) per staged spec; D-007 5-min SLA met (Prometheus CATCH #207 #1-3 recovery was <5 min each); K-OVERRIDE keyword is O(1) grep                                                                                     |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 11 sections, K-detection fingerprint documented, 3 CATCH #207 instances with full SHA trail, 4-step pre-flight prevention, CAVEMAN PERSIST integration, D-002 3-witness, Husky Gate 9 PROPOSAL spec, 5 SHAs to verify REAL                            |
 
 **Composite 4-ICP:** **37.0/40 (92.5%)** → PLATINUM tier (≥ 35/40)
 
@@ -159,18 +169,18 @@ git commit -m "..."
 
 ## §5 Relationship to NEVER-AGAIN RULES
 
-| Rule | Relationship |
-|------|--------------|
-| **#32 CAVEMAN COMMIT MODE** | K Step 4 uses `--no-verify` + K-OVERRIDE keyword (RULE #32) when committer proceeds with K-SUSPECT-OMISSION |
-| **#47 CAVEMAN PERSIST FALLBACK** | K.1 2-step recovery: OMISSION flag in original spec + 2nd-Muse co-sign SHIPPED (RULE #47 path convention `scratch/<agent>/<date>/<task-id>-draft.<ext>`) |
-| **#50 ATTRIBUTION LEDGER** | K Step 2 4-of-N RULE co-author credential check uses RULE #50 attribution ledger as data source; K-OVERRIDE keyword indexed in RULE #50 for audit |
-| **#55 GHOST-SHA-CHECK** | D-002 step 2 Witness A (5 SHAs verified REAL) follows RULE #55 v0.4 GHOST-SHA-CHECK pattern |
-| **#56 PROACTIVE-PICK-CHAIN** | K is a natural RULE #56 PICK NEXT after PROMETHEUS_COSIGN_CATCH_202_V0_1 SHIP @ b3d4e25a (3rd CATCH #207 instance) |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | Sub-class K is the 12th sub-class in the CASCADE-TRAP family (A → K); extends RULE #60 §1.1 taxonomy |
-| **#61 LOCKOUT-DETECTION** | Sub-class K complements Sub-class I (FORCE-PUSH-LOOP) + Sub-class J (LOCKOUT-CASCADE) — all 3 sub-classes require LEADER/COMMITTER intervention |
-| **#62 LOCKOUT-CASCADE** | DIRECT COMPLEMENT (Sub-class J is the 11th, K is the 12th); J targets git ops, K targets attribution governance |
-| **CASCADE-TRAP family** | A → J already codified (10 sub-classes per RULE #60 §1.1); **K (CO-AUTHOR-SOLICITATION-PLAN-OMISSION) is the 12th** sub-class |
-| **CATCH #207** | 3 confirmed instances of Sub-class K; CATCH #207 is the K-fingerprint CATCH number (range reserved for K-suspect CATCHes going forward) |
+| Rule                                  | Relationship                                                                                                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **#32 CAVEMAN COMMIT MODE**           | K Step 4 uses `--no-verify` + K-OVERRIDE keyword (RULE #32) when committer proceeds with K-SUSPECT-OMISSION                                              |
+| **#47 CAVEMAN PERSIST FALLBACK**      | K.1 2-step recovery: OMISSION flag in original spec + 2nd-Muse co-sign SHIPPED (RULE #47 path convention `scratch/<agent>/<date>/<task-id>-draft.<ext>`) |
+| **#50 ATTRIBUTION LEDGER**            | K Step 2 4-of-N RULE co-author credential check uses RULE #50 attribution ledger as data source; K-OVERRIDE keyword indexed in RULE #50 for audit        |
+| **#55 GHOST-SHA-CHECK**               | D-002 step 2 Witness A (5 SHAs verified REAL) follows RULE #55 v0.4 GHOST-SHA-CHECK pattern                                                              |
+| **#56 PROACTIVE-PICK-CHAIN**          | K is a natural RULE #56 PICK NEXT after PROMETHEUS_COSIGN_CATCH_202_V0_1 SHIP @ b3d4e25a (3rd CATCH #207 instance)                                       |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | Sub-class K is the 12th sub-class in the CASCADE-TRAP family (A → K); extends RULE #60 §1.1 taxonomy                                                     |
+| **#61 LOCKOUT-DETECTION**             | Sub-class K complements Sub-class I (FORCE-PUSH-LOOP) + Sub-class J (LOCKOUT-CASCADE) — all 3 sub-classes require LEADER/COMMITTER intervention          |
+| **#62 LOCKOUT-CASCADE**               | DIRECT COMPLEMENT (Sub-class J is the 11th, K is the 12th); J targets git ops, K targets attribution governance                                          |
+| **CASCADE-TRAP family**               | A → J already codified (10 sub-classes per RULE #60 §1.1); **K (CO-AUTHOR-SOLICITATION-PLAN-OMISSION) is the 12th** sub-class                            |
+| **CATCH #207**                        | 3 confirmed instances of Sub-class K; CATCH #207 is the K-fingerprint CATCH number (range reserved for K-suspect CATCHes going forward)                  |
 
 ---
 
@@ -214,6 +224,7 @@ fi
 ```
 
 **Configuration:**
+
 - `K_BLOCK_ENABLED=0` (default): WARNING only, no block
 - `K_BLOCK_ENABLED=1`: HARD BLOCK on K-SUSPECT-OMISSION unless K-OVERRIDE keyword present
 - `K_MIN_CREDS=4` (default): minimum RULE co-author credentials to trigger K-SUSPECT-OMISSION
@@ -267,16 +278,16 @@ For RULE #63 v0.1 to be RATIFICATION-ELIGIBLE:
 
 ## §9 Ratification Path
 
-| Step | Date | Action | Owner |
-|------|------|--------|-------|
-| 1 | 2026-06-16 | v0.1 spec SHIPPED | Prometheus |
-| 2 | 2026-06-16 | Co-author solicitation sent (5-12 Muses) | Prometheus |
-| 3 | 2026-06-17 | Strategos 5-ICP verdict | Strategos |
-| 4 | 2026-06-18 | 5/12 GREEN drive | Prometheus + 12 co-authors |
-| 5 | **2026-06-19 EOD** | **5/12 GREEN LOCKED** (T-3d HARD) | All |
-| 6 | 2026-06-20-21 | Co-author chain finalization | All |
-| 7 | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony | Leader + 19 Muses |
-| 8 | T+1d 2026-06-23+ | Husky Gate 9 implementation (post-RATIFICATION) | Atlas + Prometheus |
+| Step | Date                     | Action                                          | Owner                      |
+| ---- | ------------------------ | ----------------------------------------------- | -------------------------- |
+| 1    | 2026-06-16               | v0.1 spec SHIPPED                               | Prometheus                 |
+| 2    | 2026-06-16               | Co-author solicitation sent (5-12 Muses)        | Prometheus                 |
+| 3    | 2026-06-17               | Strategos 5-ICP verdict                         | Strategos                  |
+| 4    | 2026-06-18               | 5/12 GREEN drive                                | Prometheus + 12 co-authors |
+| 5    | **2026-06-19 EOD**       | **5/12 GREEN LOCKED** (T-3d HARD)               | All                        |
+| 6    | 2026-06-20-21            | Co-author chain finalization                    | All                        |
+| 7    | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony                  | Leader + 19 Muses          |
+| 8    | T+1d 2026-06-23+         | Husky Gate 9 implementation (post-RATIFICATION) | Atlas + Prometheus         |
 
 ---
 

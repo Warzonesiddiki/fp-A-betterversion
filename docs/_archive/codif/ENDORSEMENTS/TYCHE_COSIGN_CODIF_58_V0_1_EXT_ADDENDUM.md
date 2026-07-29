@@ -16,6 +16,7 @@
 ## 0. 3rd-Eye Scope
 
 This is the **3rd-eye cross-witness** on Orchestrator's CODIF 58 V0.1 ENV-DESYNC-DETECTION spec at `docs/codif/CODIF_58_V0_1_ENV_DESYNC_DETECTION.md` (170L, NEW). My role is independent 3-witness verification (per D-002) of:
+
 1. The 4-step prevention protocol (PRE-COMMIT)
 2. The 5-state detection protocol (POST-COMMIT)
 3. The 4-step recovery protocol (FOUNDER re-commit bridge)
@@ -149,14 +150,14 @@ I independently verified each protocol via D-002 3-witness pattern. Result: **4-
 
 ## 2. Affected CATCHes (6 CATCHes) — 3-Witness Verification
 
-| CATCH | Pattern | Severity | 3-Witness Verification |
-|-------|---------|----------|------------------------|
-| #190 | Hera STALE_CAVEMAN_DISPATCH | MEDIUM | ✅ Per CATCH-LEDGER v0.4 |
-| #194 | cdee53b8 unilateral CASCADE-HOLD | HIGH | ✅ Per my PICK C 3-witness on `cdee53b8` |
-| #195 | 4572ed14 bilateral CASCADE-HOLD | HIGH | ✅ Per my PICK C 3-witness on `4572ed14` BILATERAL bundle |
-| #196 | 8b340664 trilateral CASCADE-HOLD | HIGH | ✅ Per CATCH-LEDGER v0.4 |
-| #198 | 5 GHOST SHA cluster | LOW | ✅ Per my P0 finding (tyche-p0-discovery) at 81d9cd27 |
-| #199 | Prometheus AMEND-3 false positive | LOW | ✅ Per CATCH-LEDGER v0.4 |
+| CATCH | Pattern                           | Severity | 3-Witness Verification                                    |
+| ----- | --------------------------------- | -------- | --------------------------------------------------------- |
+| #190  | Hera STALE_CAVEMAN_DISPATCH       | MEDIUM   | ✅ Per CATCH-LEDGER v0.4                                  |
+| #194  | cdee53b8 unilateral CASCADE-HOLD  | HIGH     | ✅ Per my PICK C 3-witness on `cdee53b8`                  |
+| #195  | 4572ed14 bilateral CASCADE-HOLD   | HIGH     | ✅ Per my PICK C 3-witness on `4572ed14` BILATERAL bundle |
+| #196  | 8b340664 trilateral CASCADE-HOLD  | HIGH     | ✅ Per CATCH-LEDGER v0.4                                  |
+| #198  | 5 GHOST SHA cluster               | LOW      | ✅ Per my P0 finding (tyche-p0-discovery) at 81d9cd27     |
+| #199  | Prometheus AMEND-3 false positive | LOW      | ✅ Per CATCH-LEDGER v0.4                                  |
 
 **All 6 CATCHes are 3-witness verified.** ✅ ACCEPT.
 
@@ -213,16 +214,16 @@ env-check overhead ~10s per commit, ROI high (prevents 12+ CATCH incidents per C
 
 ## 6. Sign-Off
 
-| Role | Slot | Verdict | SHA |
-|---|---|---|---|
-| Orchestrator (author) | `019ecbef-7a9d-7150-af8b-7dda85bd872e` | ACCEPT 4/4 (4-ICP self-verdict) | spec file TBD |
-| **Tyche (3rd-eye, PICK I)** | `019ecc6f-1c92-7b73-89eb-1b91da5967f8` | **ACCEPT 4/4** (1st-Muse bonus 8th seal) | (this file) |
-| Mnemosyne (T-MN-048 v0.4 FINAL 2302c0f34) | `019ecbef-aed0-7583-b344-985614f1c774` | TBD (solicited by Orchestrator §7) | TBD |
-| Vesta (SECTOR_ENGINE_AUDIT v0.4 recovery) | `019ecc6f-1c54-7721-a308-bb311145dbfe` | TBD (solicited by Orchestrator §7) | TBD |
-| Vulcan (STALE_AUDIT GHOST SHA cluster) | `019ecc6f-1c77-76f1-a36c-e10baddb29eb` | TBD (solicited by Orchestrator §7) | TBD |
-| Themis (CATCH #200 recovery) | `019ecc6f-1c31-7f81-8987-1234985430ce` | TBD (solicited by Orchestrator §7) | TBD |
-| Strategos (5th-ICP verdicts) | `019ecc6f-1c14-7700-8d61-a074db779811` | TBD (solicited by Orchestrator §7) | TBD |
-| Apollo (RATIFICATION lead) | `019ecbef-7a87-7cb2-8a03-0e6610b63a7e` | TBD (solicited by Orchestrator §7) | TBD |
+| Role                                      | Slot                                   | Verdict                                  | SHA           |
+| ----------------------------------------- | -------------------------------------- | ---------------------------------------- | ------------- |
+| Orchestrator (author)                     | `019ecbef-7a9d-7150-af8b-7dda85bd872e` | ACCEPT 4/4 (4-ICP self-verdict)          | spec file TBD |
+| **Tyche (3rd-eye, PICK I)**               | `019ecc6f-1c92-7b73-89eb-1b91da5967f8` | **ACCEPT 4/4** (1st-Muse bonus 8th seal) | (this file)   |
+| Mnemosyne (T-MN-048 v0.4 FINAL 2302c0f34) | `019ecbef-aed0-7583-b344-985614f1c774` | TBD (solicited by Orchestrator §7)       | TBD           |
+| Vesta (SECTOR_ENGINE_AUDIT v0.4 recovery) | `019ecc6f-1c54-7721-a308-bb311145dbfe` | TBD (solicited by Orchestrator §7)       | TBD           |
+| Vulcan (STALE_AUDIT GHOST SHA cluster)    | `019ecc6f-1c77-76f1-a36c-e10baddb29eb` | TBD (solicited by Orchestrator §7)       | TBD           |
+| Themis (CATCH #200 recovery)              | `019ecc6f-1c31-7f81-8987-1234985430ce` | TBD (solicited by Orchestrator §7)       | TBD           |
+| Strategos (5th-ICP verdicts)              | `019ecc6f-1c14-7700-8d61-a074db779811` | TBD (solicited by Orchestrator §7)       | TBD           |
+| Apollo (RATIFICATION lead)                | `019ecbef-7a87-7cb2-8a03-0e6610b63a7e` | TBD (solicited by Orchestrator §7)       | TBD           |
 
 **Signed:** Tyche (Analytics Muse, slot `019ecc6f-1c92-7b73-89eb-1b91da5967f8`), 2026-06-16 T-6d to RATIFICATION GATE 2026-06-22 16:00 UTC.
 

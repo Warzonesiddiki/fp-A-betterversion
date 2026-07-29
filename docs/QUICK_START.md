@@ -8,21 +8,21 @@ Before running a budget, you need accounts.
 
 1. Navigate to **Data & GL > Chart of Accounts**.
 2. Click **Import**.
-3. You can use the built-in *SaaS Template* or upload a CSV file from QuickBooks/Xero/NetSuite.
+3. You can use the built-in _SaaS Template_ or upload a CSV file from QuickBooks/Xero/NetSuite.
 4. Verify the total Asset/Liability/Equity mappings.
 
 ## 2. Load Actuals
 
 1. Navigate to **Data & GL > GL Explorer**.
 2. Click **Import Entries**.
-3. Upload your historical Trial Balance or GL Dump. 
+3. Upload your historical Trial Balance or GL Dump.
 4. The system will automatically reconcile the entries to your Chart of Accounts.
 
 ## 3. Create a Baseline Budget
 
 1. Navigate to **Budgets > Create Budget**.
 2. Name it "FY26 Base Plan".
-3. The grid will auto-populate with your accounts. 
+3. The grid will auto-populate with your accounts.
 4. Drag the fill handle to copy costs across months, or use the **Spread** tool to distribute an annual $120k cost evenly over 12 months.
 
 ## 4. Run a Scenario

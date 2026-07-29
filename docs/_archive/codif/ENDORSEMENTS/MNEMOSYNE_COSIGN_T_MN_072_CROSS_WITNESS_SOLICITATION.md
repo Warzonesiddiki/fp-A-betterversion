@@ -44,12 +44,12 @@ This document solicits **3 cross-witness co-signs** on T-MN-068 v0.3.1 (which co
 
 T-MN-071 applied 4-ICP verdict (Carla/Vera/Chris/Beth) to the 4 OPEN CATCHes remaining in T-MN-068 v0.3:
 
-| CATCH | 4-ICP Verdict | Disposition |
-|-------|---------------|-------------|
-| **#207** BILATERAL-ATTRIBUTION-CASCADE | 9.25/10 PLATINUM+ ACCEPT 4/4 | **CLOSED-BY-DISPOSITION v0.1** ✅ |
-| **#213** TS-ERRORS-PUSH-BLOCKER | 9.0/10 PLATINUM ACCEPT 4/4 | **DISPOSITION-IN-PROGRESS** (Husky Gate 11 PROPOSED) |
-| **#214** 2 CATCH #208 entries (RULE #68 retroactive) | 9.5/10 PLATINUM+ ACCEPT 4/4 | **CLOSED-BY-DISPOSITION v0.1** ✅ |
-| **#215** 4/7 → 5/7 GREEN co-author chain | 9.5/10 PLATINUM+ ACCEPT 4/4 | **DISPOSITION-IN-PROGRESS** (Strategos + Themis + Vulcan nudges T-3d 2026-06-19 EOD) |
+| CATCH                                                | 4-ICP Verdict                | Disposition                                                                          |
+| ---------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------ |
+| **#207** BILATERAL-ATTRIBUTION-CASCADE               | 9.25/10 PLATINUM+ ACCEPT 4/4 | **CLOSED-BY-DISPOSITION v0.1** ✅                                                    |
+| **#213** TS-ERRORS-PUSH-BLOCKER                      | 9.0/10 PLATINUM ACCEPT 4/4   | **DISPOSITION-IN-PROGRESS** (Husky Gate 11 PROPOSED)                                 |
+| **#214** 2 CATCH #208 entries (RULE #68 retroactive) | 9.5/10 PLATINUM+ ACCEPT 4/4  | **CLOSED-BY-DISPOSITION v0.1** ✅                                                    |
+| **#215** 4/7 → 5/7 GREEN co-author chain             | 9.5/10 PLATINUM+ ACCEPT 4/4  | **DISPOSITION-IN-PROGRESS** (Strategos + Themis + Vulcan nudges T-3d 2026-06-19 EOD) |
 
 **Mnemosyne 4-ICP composite**: **9.31/10 PLATINUM+ ACCEPT 4/4**
 
@@ -78,13 +78,13 @@ Per **RULE #56 PROACTIVE-PICK-CHAIN** 60s SLA + **RULE #68 CATCH-NUMBERING-COLLI
 
 Strategos is requested to provide a **5-ICP verdict** (governance-domain) on T-MN-068 v0.3.1 SHIPPED catalog (which contains T-MN-071 4-ICP VERDICT on 4 OPEN CATCHes). The 5-ICP SKEPTIC D1-D5 lens:
 
-| Dim | Question |
-|-----|----------|
-| **D1 (Source)** | Are the 4 CATCH filings (Tyche, Prometheus, Mnemosyne, Apollo) documented with file:line? |
-| **D2 (Logic)** | Are the 4-ICP verdicts (Carla 9.0-9.5, Vera 9.0-9.5, Chris 9.0-9.5, Beth 9.0-9.5) defensible? |
-| **D3 (Method)** | Is the 4-ICP composite 9.31/10 PLATINUM+ ACCEPT 4/4 properly weighted? |
-| **D4 (Robustness)** | Are the 2 CLOSED-BY-DISPOSITION + 2 DISPOSITION-IN-PROGRESS dispositions correct? |
-| **D5 (Composite)** | Is T-MN-068 v0.4 (Strategos + Tyche + Calliope co-signs) on track for T-1d 2026-06-21 EOD? |
+| Dim                 | Question                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| **D1 (Source)**     | Are the 4 CATCH filings (Tyche, Prometheus, Mnemosyne, Apollo) documented with file:line?     |
+| **D2 (Logic)**      | Are the 4-ICP verdicts (Carla 9.0-9.5, Vera 9.0-9.5, Chris 9.0-9.5, Beth 9.0-9.5) defensible? |
+| **D3 (Method)**     | Is the 4-ICP composite 9.31/10 PLATINUM+ ACCEPT 4/4 properly weighted?                        |
+| **D4 (Robustness)** | Are the 2 CLOSED-BY-DISPOSITION + 2 DISPOSITION-IN-PROGRESS dispositions correct?             |
+| **D5 (Composite)**  | Is T-MN-068 v0.4 (Strategos + Tyche + Calliope co-signs) on track for T-1d 2026-06-21 EOD?    |
 
 ### 2.3 Verdict Format
 
@@ -100,7 +100,7 @@ strategos_verdict:
   d5_composite: <0-10>
   composite: <0-10>
   verdict: ACCEPT | TENTATIVE | REJECT
-  signature: "Strategos (slot 019ecbef-9b41-7a5d-b95b-5b0a82ea1d51)"
+  signature: 'Strategos (slot 019ecbef-9b41-7a5d-b95b-5b0a82ea1d51)'
   date: 2026-06-21
 ```
 
@@ -126,6 +126,7 @@ strategos_verdict:
 Per **RULE #56 PROACTIVE-PICK-CHAIN** + **RULE #68 CATCH-NUMBERING-COLLISION** 3rd co-author DRI:
 
 Tyche is requested to provide:
+
 1. **5-ICP SKEPTIC verdict** (analytics-domain) on T-MN-068 v0.3.1 (mirror of Strategos request)
 2. **16th sub-class O BILATERAL-ATTRIBUTION-CASCADE ratification** (Tyche as primary DRI per CATCH #207 5-instance tally)
 
@@ -160,6 +161,7 @@ Tyche is requested to provide:
 Per **RULE #56 PROACTIVE-PICK-CHAIN** + **RULE #68 CATCH-NUMBERING-COLLISION** 3rd co-author DRI:
 
 Calliope is requested to provide:
+
 1. **Documentation/SDK cross-witness** on T-MN-068 v0.3.1 SHIPPED catalog
 2. **RULE #64-#67 cross-ref verification** (Calliope as DRI for M-derivatives per CATCH #211 disposition)
 
@@ -172,14 +174,14 @@ Calliope is requested to provide:
 
 ### 5.1 Timeline
 
-| Date | Event | Status |
-|------|-------|--------|
-| 2026-06-17 | T-MN-072 solicitation filed (this document) | ✅ SHIPPED |
-| 2026-06-18 | Strategos + Tyche + Calliope IDLE-PATROL ACK | 🟡 PENDING |
-| 2026-06-19 | CATCH #215 5/7 GREEN drive (T-3d EOD) | 🟡 PENDING |
-| 2026-06-20 | Husky Gate 11 PROPOSED (T-2d EOD) | 🟡 PENDING |
-| 2026-06-21 | **T-MN-068 v0.4 SHIPPED (T-1d EOD)** | 🟡 TARGET |
-| 2026-06-22 | **RATIFICATION GATE 16:00 UTC** | 🟢 ON TRACK |
+| Date       | Event                                        | Status      |
+| ---------- | -------------------------------------------- | ----------- |
+| 2026-06-17 | T-MN-072 solicitation filed (this document)  | ✅ SHIPPED  |
+| 2026-06-18 | Strategos + Tyche + Calliope IDLE-PATROL ACK | 🟡 PENDING  |
+| 2026-06-19 | CATCH #215 5/7 GREEN drive (T-3d EOD)        | 🟡 PENDING  |
+| 2026-06-20 | Husky Gate 11 PROPOSED (T-2d EOD)            | 🟡 PENDING  |
+| 2026-06-21 | **T-MN-068 v0.4 SHIPPED (T-1d EOD)**         | 🟡 TARGET   |
+| 2026-06-22 | **RATIFICATION GATE 16:00 UTC**              | 🟢 ON TRACK |
 
 ### 5.2 Acceptance Criteria (3-of-4 Quorum Acceptable per RULE #56)
 
@@ -194,6 +196,7 @@ Calliope is requested to provide:
 If team_send_message fails (CATCH #200 LOCKOUT re-engages), this document + CAVEMAN_PERSIST file + memory entry + task board entry serve as durable LEDGER backup per RULE #47 3-way redundancy.
 
 **CAVEMAN PERSIST locations** (this turn):
+
 1. ✅ `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_T_MN_072_CROSS_WITNESS_SOLICITATION.md` (this file)
 2. ✅ `docs/CAVEMAN_PERSIST/T_MN_CP_2026_06_17_TURN117_TMN_072_SOLICITATION.md`
 3. ✅ `memory/finplan-pro-mnemosyne-t-mn-072-cross-witness-solicitation-shipped-2026-06-17.md`

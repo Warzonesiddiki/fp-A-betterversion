@@ -14,37 +14,37 @@
 
 **There are 2 different D-001 to D-009 schemes in the cycle.**
 
-| ID | Cycle Protocol (`docs/drafts/TASKBOARD.md`) | Strategic Decision (`docs/STRATEGIC_DECISIONS_LOG.md`) | Aligned? |
-|----|--------------------------------------------|------------------------------------------------------|----------|
-| D-001 | Founder commit 553de19a (11/14 role="alert" sed-fix) accepted | Phase 0 is the "perfection cycle" | ❌ |
-| D-002 | Test gate refined (8,334+ tests / 70 pre-existing fails) | Three Witnesses verification rule | ❌ |
-| D-003 | 5 dead workers + 5 test files (PascalCase legacy) to be deleted | P0 #0 (test setup mock + dead workers) takes priority | 🟡 related |
-| D-004 | SOXComplianceEngine 1,354 LOC test gap = P0 | Hephaestus's P0 #1 (".env not gitignored") is a false positive | ❌ |
-| D-005 | Muse delivery reports get ≤2 sentence reply or silence | Strategos's 4-pillar mandate ratified | ❌ |
-| D-006 | Cross-Muse file-system visibility — persona files in workspace | Security-deferral discipline | ❌ |
-| D-007 | No-idle-agents — 5 patterns (now 7) | 7-phase audit pattern (A-G) | ❌ |
-| D-008 | Push-now-fix-tests-post-push | Muse team may expand to 11 (Hermes, Iris, Atlas proposed) | ❌ |
-| D-009 | Triangulation discipline (verify state changes) | Triangulation discipline | ✅ aligned |
+| ID    | Cycle Protocol (`docs/drafts/TASKBOARD.md`)                     | Strategic Decision (`docs/STRATEGIC_DECISIONS_LOG.md`)         | Aligned?   |
+| ----- | --------------------------------------------------------------- | -------------------------------------------------------------- | ---------- |
+| D-001 | Founder commit 553de19a (11/14 role="alert" sed-fix) accepted   | Phase 0 is the "perfection cycle"                              | ❌         |
+| D-002 | Test gate refined (8,334+ tests / 70 pre-existing fails)        | Three Witnesses verification rule                              | ❌         |
+| D-003 | 5 dead workers + 5 test files (PascalCase legacy) to be deleted | P0 #0 (test setup mock + dead workers) takes priority          | 🟡 related |
+| D-004 | SOXComplianceEngine 1,354 LOC test gap = P0                     | Hephaestus's P0 #1 (".env not gitignored") is a false positive | ❌         |
+| D-005 | Muse delivery reports get ≤2 sentence reply or silence          | Strategos's 4-pillar mandate ratified                          | ❌         |
+| D-006 | Cross-Muse file-system visibility — persona files in workspace  | Security-deferral discipline                                   | ❌         |
+| D-007 | No-idle-agents — 5 patterns (now 7)                             | 7-phase audit pattern (A-G)                                    | ❌         |
+| D-008 | Push-now-fix-tests-post-push                                    | Muse team may expand to 11 (Hermes, Iris, Atlas proposed)      | ❌         |
+| D-009 | Triangulation discipline (verify state changes)                 | Triangulation discipline                                       | ✅ aligned |
 
 **3 of 9 IDs are aligned (D-003 🟡, D-009 ✅); 6 of 9 are misaligned.**
 
 **Strategos recommendation:** Renumber strategic decisions to **D-010 through D-019** to free D-001 to D-009 for the cycle protocols (which are referenced more often — every task uses them). **DECISION NEEDED from Leader by 2026-06-15.** Full analysis: `docs/MUSE_LINEUP_v2.md §3`.
 
-> **Witness (D-002):** *Source:* `STRATEGIC_DECISIONS_LOG.md` L22-30 + `TASKBOARD.md` L146-158 compliance table. *Data:* 9 IDs in 2 namespaces; 6 misaligned. *Competitive context:* Internal process discipline. Git branch naming analogue — must be unambiguous or PRs collide. Same risk for D-NNN in cross-Muse handoffs.
+> **Witness (D-002):** _Source:_ `STRATEGIC_DECISIONS_LOG.md` L22-30 + `TASKBOARD.md` L146-158 compliance table. _Data:_ 9 IDs in 2 namespaces; 6 misaligned. _Competitive context:_ Internal process discipline. Git branch naming analogue — must be unambiguous or PRs collide. Same risk for D-NNN in cross-Muse handoffs.
 
 ---
 
 ## I Want to Understand the Vision
 
-| Question                          | Read this                                  |
-| --------------------------------- | ------------------------------------------ |
-| What's the one-sentence vision?   | `PRODUCT_VISION.md` §1                     |
-| How do we define "100× better"?   | `PRODUCT_VISION.md` §2                     |
-| What are the 6 strategic pillars? | `PRODUCT_VISION.md` §3                     |
-| What's the 4-year roadmap?        | `PRODUCT_VISION.md` §4, `ROADMAP.md`       |
-| What capabilities are missing?    | `PRODUCT_VISION.md` §5 (capability matrix) |
-| What are the success metrics?     | `PRODUCT_VISION.md` §6                     |
-| What does "all-in-one" mean?      | `PRODUCT_VISION.md` §5                     |
+| Question                          | Read this                                                            |
+| --------------------------------- | -------------------------------------------------------------------- |
+| What's the one-sentence vision?   | `PRODUCT_VISION.md` §1                                               |
+| How do we define "100× better"?   | `PRODUCT_VISION.md` §2                                               |
+| What are the 6 strategic pillars? | `PRODUCT_VISION.md` §3                                               |
+| What's the 4-year roadmap?        | `PRODUCT_VISION.md` §4, `ROADMAP.md`                                 |
+| What capabilities are missing?    | `PRODUCT_VISION.md` §5 (capability matrix)                           |
+| What are the success metrics?     | `PRODUCT_VISION.md` §6                                               |
+| What does "all-in-one" mean?      | `PRODUCT_VISION.md` §5                                               |
 | **What are the 11 Muses?**        | **`PRODUCT_VISION.md` §9, [`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md)** |
 
 ## I Want to Understand the Competitive Landscape
@@ -59,8 +59,8 @@
 | Tier 1 / Tier 2 / Tier 3 prioritization   | `1000X_ADVANTAGE_ROADMAP.md`, `ADVANCED_FEATURES_ROADMAP.md`, `TIER1_FEATURES_PLAN.md`                                                                                 |
 | Deep gap analysis                         | `GAP_DEEP_ANALYSIS_PART1_8.md`, `GAP_DEEP_ANALYSIS_PART9_15.md`, `GAP_PART4_FINANCIAL_DOMAIN.md`, `GAP_PART5_DEEP_GAPS.md`, `GAP_PART6_COMPETITIVE_DIFFERENTIATION.md` |
 | "IMP" question/answer transcripts         | `IMP_ANSWERS.md`, `IMP_ANSWERS_PART2-5.md`, `IMP_QA_SUMMARY.md`, `IMP_ANSWERS_Q*.md` (1-2200)                                                                          |
-| **Anaplan battlecard (v2)**               | **`docs/drafts/hermes/BATTLECARD_ANAPLAN.md`**                                                                                                                          |
-| **8 Q2 2026 competitor moves**            | **`FPA_COMPETITIVE_MATRIX.md` §4** (Anaplan AI, Pigment $145M, Drivetrain Connect, Prophix/Signals, Cube v2, Abacum $50M ARR, Vena×MS, Workday Adaptive free)             |
+| **Anaplan battlecard (v2)**               | **`docs/drafts/hermes/BATTLECARD_ANAPLAN.md`**                                                                                                                         |
+| **8 Q2 2026 competitor moves**            | **`FPA_COMPETITIVE_MATRIX.md` §4** (Anaplan AI, Pigment $145M, Drivetrain Connect, Prophix/Signals, Cube v2, Abacum $50M ARR, Vena×MS, Workday Adaptive free)          |
 
 ## I Want to Understand the Architecture
 
@@ -101,48 +101,48 @@
 
 ## I Want to Understand the Muse System (Multi-Agent) — **v2: 7 → 11 Muses**
 
-| Question                                | Read this                                                                                                              |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| What is a Muse?                         | `PRODUCT_VISION.md` §9, `memory/persona-*.md`                                                                          |
-| What does each Muse do?                 | `PRODUCT_VISION.md` §9, **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §1** (full 11-Muse roster)                          |
-| **The 4 new Muses (joined 2026-06-13)** | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §2** (Iris, Hermes, Atlas, Themis — each with 3-witness verification)        |
-| **The D-NNN namespace collision**       | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §3** (Strategos's first major call-out)                                      |
-| **Muse-to-roadmap mapping**             | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §5** (which Muse owns which Phase deliverable)                              |
-| **How Muses invoke each other**        | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §6** (slot-ID-based messaging table)                                         |
-| What audits have they delivered?        | `memory/project-*-audit-2026-06-12.md`                                                                                 |
-| What docs have they drafted?            | `docs/drafts/{apollo,athena,prometheus,hera,hephaestus,mnemosyne,strategos,iris,hermes,atlas,themis}/` (11 directories) |
-| How do the Muses coordinate?            | **`docs/drafts/TASKBOARD.md`** (the work-protocol source of truth, owned by Leader + Themis)                           |
-| The "three witnesses" verification rule | `memory/feedback-verify-before-claiming.md`                                                                            |
-| **The "no idle agents" discipline (D-007)** | **`docs/drafts/TASKBOARD.md` §Work Protocol** (7 patterns, Themis enforces)                                         |
+| Question                                    | Read this                                                                                                               |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| What is a Muse?                             | `PRODUCT_VISION.md` §9, `memory/persona-*.md`                                                                           |
+| What does each Muse do?                     | `PRODUCT_VISION.md` §9, **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §1** (full 11-Muse roster)                           |
+| **The 4 new Muses (joined 2026-06-13)**     | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §2** (Iris, Hermes, Atlas, Themis — each with 3-witness verification)        |
+| **The D-NNN namespace collision**           | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §3** (Strategos's first major call-out)                                      |
+| **Muse-to-roadmap mapping**                 | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §5** (which Muse owns which Phase deliverable)                               |
+| **How Muses invoke each other**             | **[`MUSE_LINEUP_v2.md`](MUSE_LINEUP_v2.md) §6** (slot-ID-based messaging table)                                         |
+| What audits have they delivered?            | `memory/project-*-audit-2026-06-12.md`                                                                                  |
+| What docs have they drafted?                | `docs/drafts/{apollo,athena,prometheus,hera,hephaestus,mnemosyne,strategos,iris,hermes,atlas,themis}/` (11 directories) |
+| How do the Muses coordinate?                | **`docs/drafts/TASKBOARD.md`** (the work-protocol source of truth, owned by Leader + Themis)                            |
+| The "three witnesses" verification rule     | `memory/feedback-verify-before-claiming.md`                                                                             |
+| **The "no idle agents" discipline (D-007)** | **`docs/drafts/TASKBOARD.md` §Work Protocol** (7 patterns, Themis enforces)                                             |
 
 ## I Want to Find the Current Task Board **(NEW IN v2)**
 
-| If you need to...                        | Read this                                                                                  |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
-| See what's ready to work on              | `docs/drafts/TASKBOARD.md` §Ready Queue                                                    |
-| See what's in flight                     | `docs/drafts/TASKBOARD.md` §In Progress                                                    |
-| See the Q2 2026 scorecard                | `docs/STRATEGIC_REVIEW_Q2_2026.md` §9 ("Is 100× yet?" 10-dimension weighted score)        |
-| See strategic decisions                  | `docs/STRATEGIC_DECISIONS_LOG.md` (D-000 through D-009)                                   |
-| See security deferrals (D-006 sister)    | `docs/security-deferrals.md` (DEFER-2026-001/002/003)                                      |
-| See the 4 strategic bets                 | `ROADMAP.md` §Strategic bets                                                               |
-| **Submit a deliverable for review**      | **`docs/drafts/TASKBOARD.md` §Delivery Report Template** (≤2 sentence reply or silence, D-005) |
+| If you need to...                     | Read this                                                                                      |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| See what's ready to work on           | `docs/drafts/TASKBOARD.md` §Ready Queue                                                        |
+| See what's in flight                  | `docs/drafts/TASKBOARD.md` §In Progress                                                        |
+| See the Q2 2026 scorecard             | `docs/STRATEGIC_REVIEW_Q2_2026.md` §9 ("Is 100× yet?" 10-dimension weighted score)             |
+| See strategic decisions               | `docs/STRATEGIC_DECISIONS_LOG.md` (D-000 through D-009)                                        |
+| See security deferrals (D-006 sister) | `docs/security-deferrals.md` (DEFER-2026-001/002/003)                                          |
+| See the 4 strategic bets              | `ROADMAP.md` §Strategic bets                                                                   |
+| **Submit a deliverable for review**   | **`docs/drafts/TASKBOARD.md` §Delivery Report Template** (≤2 sentence reply or silence, D-005) |
 
 ## I Want to Understand What's Built **(v2: counts updated to Q2 2026 ground truth)**
 
-| Asset                        | File                             |
-| ---------------------------- | -------------------------------- |
-| **202 financial engines**    | **`src/engines/`** (was 178 in v1; 175/176 have tests, 99.4%) |
-| **35 zustand stores**        | **`src/store/`** (was 36 in v1; 35/36 have immer wrapper, 100%) |
-| **82 pages across 50+ domains** | **`src/pages/`** (was 192 in v1) |
-| 274 components               | `src/components/`                |
-| 17 sector configurations     | `src/config/sectors/`            |
-| 14 industry templates        | `src/engines/templates/`         |
-| 245+ formula functions       | `src/engines/formula-functions/` |
-| 17 sector dashboards         | `src/pages/sector/`              |
-| 6 plugin system files        | `src/plugins/`                   |
-| **8,334+ tests, 16 failing** | **`npm test` output (Prometheus P0 #0 blocker)** |
-| **0 CVEs across 1,111 deps** | **`npm audit` output**           |
-| Master test config           | `PERFECTION_PLAN.md`             |
+| Asset                           | File                                                            |
+| ------------------------------- | --------------------------------------------------------------- |
+| **202 financial engines**       | **`src/engines/`** (was 178 in v1; 175/176 have tests, 99.4%)   |
+| **35 zustand stores**           | **`src/store/`** (was 36 in v1; 35/36 have immer wrapper, 100%) |
+| **82 pages across 50+ domains** | **`src/pages/`** (was 192 in v1)                                |
+| 274 components                  | `src/components/`                                               |
+| 17 sector configurations        | `src/config/sectors/`                                           |
+| 14 industry templates           | `src/engines/templates/`                                        |
+| 245+ formula functions          | `src/engines/formula-functions/`                                |
+| 17 sector dashboards            | `src/pages/sector/`                                             |
+| 6 plugin system files           | `src/plugins/`                                                  |
+| **8,334+ tests, 16 failing**    | **`npm test` output (Prometheus P0 #0 blocker)**                |
+| **0 CVEs across 1,111 deps**    | **`npm audit` output**                                          |
+| Master test config              | `PERFECTION_PLAN.md`                                            |
 
 ## I Want to Find a Specific Doc by Topic
 
@@ -242,15 +242,15 @@
 
 ## Search Shortcuts
 
-| If you're looking for...  | Try this Grep pattern                                                                                                                                          |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Mention of a competitor   | `grep -l -i "anaplan\|pigment\|adaptive\|cubi" docs/*.md`                                                                                                      |
-| A specific feature gap    | `grep -B2 -A5 "TODO\|missing\|gap" docs/GAP_*.md`                                                                                                              |
-| A specific engine mention | `grep -l "MonteCarlo\|CapEx\|Cube" docs/*.md`                                                                                                                  |
-| Roadmap priority          | `grep -B1 -A2 "TIER 1\|Tier 1\|P0" docs/*ROADMAP*.md docs/*PLAN*.md`                                                                                           |
+| If you're looking for...  | Try this Grep pattern                                                                                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Mention of a competitor   | `grep -l -i "anaplan\|pigment\|adaptive\|cubi" docs/*.md`                                                                                                       |
+| A specific feature gap    | `grep -B2 -A5 "TODO\|missing\|gap" docs/GAP_*.md`                                                                                                               |
+| A specific engine mention | `grep -l "MonteCarlo\|CapEx\|Cube" docs/*.md`                                                                                                                   |
+| Roadmap priority          | `grep -B1 -A2 "TIER 1\|Tier 1\|P0" docs/*ROADMAP*.md docs/*PLAN*.md`                                                                                            |
 | The 11 Muses              | `grep -l "Muse\|Apollo\|Athena\|Prometheus\|Hera\|Hephaestus\|Mnemosyne\|Strategos\|Iris\|Hermes\|Atlas\|Themis" docs/PRODUCT_VISION.md docs/MUSE_LINEUP_v2.md` |
-| A D-NNN decision          | `grep -B1 -A3 "^### D-0" docs/STRATEGIC_DECISIONS_LOG.md` (D-000 to D-009) **OR** `grep -B1 -A3 "^| D-0" docs/drafts/TASKBOARD.md` (cycle protocols)           |
-| A specific Muse's lane    | `grep -l "Muse name" docs/MUSE_LINEUP_v2.md`                                                                                                                   |
+| A D-NNN decision          | `grep -B1 -A3 "^### D-0" docs/STRATEGIC_DECISIONS_LOG.md` (D-000 to D-009) **OR** `grep -B1 -A3 "^                                                              | D-0" docs/drafts/TASKBOARD.md` (cycle protocols) |
+| A specific Muse's lane    | `grep -l "Muse name" docs/MUSE_LINEUP_v2.md`                                                                                                                    |
 
 ## How to Add a New Strategic Doc
 

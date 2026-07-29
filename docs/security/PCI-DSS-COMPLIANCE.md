@@ -16,17 +16,17 @@ This document specifies the **transport-layer encryption requirements** for FinP
 
 **Regulatory mappings:**
 
-| Regulation | Section | Requirement |
-|------------|---------|-------------|
-| GDPR | Art. 32(1)(a) | Pseudonymisation and encryption of personal data in transit |
-| GDPR | Art. 32(2) | Regular testing of effectiveness of security measures |
-| PCI-DSS v4.0 | Req 4.1 | Strong cryptography and security protocols to safeguard sensitive data during transmission over open networks |
-| PCI-DSS v4.0 | Req 4.2 | Never send unprotected PANs via end-user messaging tech |
-| PCI-DSS v4.0 | Req 4.3 | Ensure security policies and procedures for encryption are documented and known |
-| SOC 2 | CC6.1 | Logical access controls protect against threats from external sources |
-| SOC 2 | CC6.7 | Restricts the transmission, movement, and removal of information to authorized users |
-| ISO 27001:2022 | A.8.20 Networks security | Secure networks, segregation, encryption-in-transit |
-| ISO 27001:2022 | A.8.24 Use of cryptography | Cryptographic rules + key management |
+| Regulation     | Section                    | Requirement                                                                                                   |
+| -------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| GDPR           | Art. 32(1)(a)              | Pseudonymisation and encryption of personal data in transit                                                   |
+| GDPR           | Art. 32(2)                 | Regular testing of effectiveness of security measures                                                         |
+| PCI-DSS v4.0   | Req 4.1                    | Strong cryptography and security protocols to safeguard sensitive data during transmission over open networks |
+| PCI-DSS v4.0   | Req 4.2                    | Never send unprotected PANs via end-user messaging tech                                                       |
+| PCI-DSS v4.0   | Req 4.3                    | Ensure security policies and procedures for encryption are documented and known                               |
+| SOC 2          | CC6.1                      | Logical access controls protect against threats from external sources                                         |
+| SOC 2          | CC6.7                      | Restricts the transmission, movement, and removal of information to authorized users                          |
+| ISO 27001:2022 | A.8.20 Networks security   | Secure networks, segregation, encryption-in-transit                                                           |
+| ISO 27001:2022 | A.8.24 Use of cryptography | Cryptographic rules + key management                                                                          |
 
 **Applicability to FinPlan Pro:**
 
@@ -37,6 +37,7 @@ FinPlan Pro is **offline-first desktop** with optional online sync (Multi-curren
 ## 2. Problem Statement (CRITICAL — GDPR Art. 32 violation)
 
 **GAP P0A-15:** Current transport-layer configuration lacks:
+
 - (a) Mandatory TLS 1.3 enforcement (TLS 1.2 allowed as fallback in some code paths)
 - (b) HSTS preload for any HTTPS endpoints
 - (c) Certificate pinning for online API calls (exchange rates, DSAR wire, telemetry)
@@ -56,11 +57,11 @@ Without these controls, any data egress (even if rare) violates GDPR Art. 32(1)(
 // src/config/tlsPolicy.ts — Demeter implementation
 export const TLS_POLICY = {
   minimumVersion: 'TLSv1.3',
-  allowedFallbackVersions: [],  // NO fallback; TLS 1.3 only
+  allowedFallbackVersions: [], // NO fallback; TLS 1.3 only
   cipherSuites: [
     'TLS_AES_256_GCM_SHA384',
     'TLS_CHACHA20_POLY1305_SHA256',
-    'TLS_AES_128_GCM_SHA256',  // only if negotiated by peer
+    'TLS_AES_128_GCM_SHA256', // only if negotiated by peer
   ],
   certificatePinning: {
     enabled: true,
@@ -70,18 +71,18 @@ export const TLS_POLICY = {
       { hostname: 'cdn.finplanpro.io', pinSha256: '<generated at deploy>' },
       { hostname: 'telemetry.finplanpro.io', pinSha256: '<generated at deploy>' },
     ],
-    backupPin: '<generated at deploy>',  // for cert rotation
+    backupPin: '<generated at deploy>', // for cert rotation
     enforceInProduction: true,
     reportOnlyInDev: true,
   },
   hsts: {
     enabled: true,
-    maxAge: 63072000,  // 2 years
+    maxAge: 63072000, // 2 years
     includeSubDomains: true,
     preload: true,
   },
   ocspStapling: true,
-  supportedGroups: ['X25519', 'P-256', 'P-384'],  // no P-521
+  supportedGroups: ['X25519', 'P-256', 'P-384'], // no P-521
 } as const;
 ```
 
@@ -115,10 +116,7 @@ export default defineConfig({
 // src/services/secureFetch.ts — Demeter implementation
 import { TLS_POLICY } from '@/config/tlsPolicy';
 
-export async function secureFetch(
-  url: string,
-  init?: RequestInit
-): Promise<Response> {
+export async function secureFetch(url: string, init?: RequestInit): Promise<Response> {
   const parsed = new URL(url);
   if (parsed.protocol !== 'https:') {
     throw new Error(`Refusing non-HTTPS URL: ${url}`);
@@ -139,16 +137,16 @@ export async function secureFetch(
 
 ## 4. PCI-DSS Req 4 Mapping
 
-| Req | Control | Implementation |
-|-----|---------|----------------|
-| 4.1(a) | Use TLS 1.2+ (we enforce 1.3) | `TLS_POLICY.minimumVersion: 'TLSv1.3'` |
-| 4.1(b) | Strong cryptography (AES-128+) | `cipherSuites: [AES_256_GCM, CHACHA20_POLY1305, AES_128_GCM]` |
-| 4.1(c) | Render PAN unreadable wherever stored | N/A in MVP — no PAN storage |
-| 4.2(a) | Never send unprotected PAN via end-user messaging | N/A — no PAN in MVP |
-| 4.2(b) | PAN masking if displayed | N/A — no PAN display |
-| 4.3(a) | Documented cryptographic standards | This document |
-| 4.3(b) | Key management procedures | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` |
-| 4.3(c) | Training and awareness | Onboarding step 3 consent + Privacy Notice v1.4.0 |
+| Req    | Control                                           | Implementation                                                |
+| ------ | ------------------------------------------------- | ------------------------------------------------------------- |
+| 4.1(a) | Use TLS 1.2+ (we enforce 1.3)                     | `TLS_POLICY.minimumVersion: 'TLSv1.3'`                        |
+| 4.1(b) | Strong cryptography (AES-128+)                    | `cipherSuites: [AES_256_GCM, CHACHA20_POLY1305, AES_128_GCM]` |
+| 4.1(c) | Render PAN unreadable wherever stored             | N/A in MVP — no PAN storage                                   |
+| 4.2(a) | Never send unprotected PAN via end-user messaging | N/A — no PAN in MVP                                           |
+| 4.2(b) | PAN masking if displayed                          | N/A — no PAN display                                          |
+| 4.3(a) | Documented cryptographic standards                | This document                                                 |
+| 4.3(b) | Key management procedures                         | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md`       |
+| 4.3(c) | Training and awareness                            | Onboarding step 3 consent + Privacy Notice v1.4.0             |
 
 ---
 
@@ -181,11 +179,11 @@ Reference: `docs/security/tauri-allowlist-review.md` (existing) + this section.
 
 If FinPlan Pro ships via Tauri mobile (iOS/Android) in a future release, additional controls apply:
 
-| Platform | Control |
-|----------|---------|
-| iOS | NSAppTransportSecurity → `NSAllowsArbitraryLoads = false`; ATS exception list minimized |
-| Android | `network_security_config.xml` → cleartextTrafficPermitted="false"; pin-set for known hosts |
-| Both | Certificate Transparency (CT) log enforcement for EV certs |
+| Platform | Control                                                                                    |
+| -------- | ------------------------------------------------------------------------------------------ |
+| iOS      | NSAppTransportSecurity → `NSAllowsArbitraryLoads = false`; ATS exception list minimized    |
+| Android  | `network_security_config.xml` → cleartextTrafficPermitted="false"; pin-set for known hosts |
+| Both     | Certificate Transparency (CT) log enforcement for EV certs                                 |
 
 ### 6.2 WSS / WebSocket security
 
@@ -206,16 +204,16 @@ export function createSecureWebSocket(url: string): WebSocket {
 
 ## 7. Acceptance Criteria
 
-| # | Criterion | Verification |
-|---|-----------|--------------|
-| AC-1 | TLS 1.3 enforced; no TLS 1.2 fallback | TLS scan (testssl.sh) on staging |
-| AC-2 | HSTS preload enabled with 2-year max-age | `curl -I https://api.finplanpro.io \| grep -i strict-transport` |
-| AC-3 | Certificate pinning enforced in production | Pin mismatch triggers audit-log + connection drop |
-| AC-4 | All fetch() calls use `secureFetch()` wrapper | Grep test: no bare `fetch(` in `src/services/` or `src/pages/` |
-| AC-5 | WebSocket connections use `wss://` only | Grep test: no `ws://` (non-secure) in src/ |
-| AC-6 | Audit-log entries for all TLS events | Hades audit-log test |
-| AC-7 | Cipher suites restricted to AEAD only | testssl.sh cipher enum check |
-| AC-8 | Key rotation documented | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` linked |
+| #    | Criterion                                     | Verification                                                    |
+| ---- | --------------------------------------------- | --------------------------------------------------------------- |
+| AC-1 | TLS 1.3 enforced; no TLS 1.2 fallback         | TLS scan (testssl.sh) on staging                                |
+| AC-2 | HSTS preload enabled with 2-year max-age      | `curl -I https://api.finplanpro.io \| grep -i strict-transport` |
+| AC-3 | Certificate pinning enforced in production    | Pin mismatch triggers audit-log + connection drop               |
+| AC-4 | All fetch() calls use `secureFetch()` wrapper | Grep test: no bare `fetch(` in `src/services/` or `src/pages/`  |
+| AC-5 | WebSocket connections use `wss://` only       | Grep test: no `ws://` (non-secure) in src/                      |
+| AC-6 | Audit-log entries for all TLS events          | Hades audit-log test                                            |
+| AC-7 | Cipher suites restricted to AEAD only         | testssl.sh cipher enum check                                    |
+| AC-8 | Key rotation documented                       | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` linked  |
 
 ---
 
@@ -246,10 +244,10 @@ export function createSecureWebSocket(url: string): WebSocket {
 
 This document uses a **NARROW mapping** focused on the primary regulatory frameworks directly governing TLS 1.3 + PCI-DSS Req 4 transmission security. The Strategos **H3 ROADMAP v0.2 compliance consolidation lens** adds GDPR Art. 25 by-design as a CRITICAL secondary mapping because mobile transmission security design decisions must be documented from a privacy-by-design perspective.
 
-| Lens | Primary Framework(s) | Rationale |
-|------|---------------------|-----------|
-| **Narrow (this doc)** | **GDPR Art. 32(1)(a)(2)** security of processing + **PCI-DSS Req 4.1/4.2/4.3** transmission encryption + SOC 2 CC6.1/6.7 + ISO 27001 A.8.20/A.8.24 | TLS 1.3 is primarily a TRANSMISSION SECURITY control (Art. 32(1)(a) "appropriate technical measures" + PCI Req 4 "encrypt transmission of cardholder data") |
-| **Broad (Strategos)** | **+ GDPR Art. 25 by-design** + Art. 25(2) by-default | H3 compliance consolidation: Art. 25 requires that transmission security decisions (TLS version, cipher suite selection, certificate pinning, mobile fallback) be documented AS PART OF the privacy-by-design process, not just as an operational control. Mobile-specific decisions (network detection, fallback behavior, cert pinning) require Art. 25(1) design rationale documentation |
+| Lens                  | Primary Framework(s)                                                                                                                               | Rationale                                                                                                                                                                                                                                                                                                                                                                                   |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Narrow (this doc)** | **GDPR Art. 32(1)(a)(2)** security of processing + **PCI-DSS Req 4.1/4.2/4.3** transmission encryption + SOC 2 CC6.1/6.7 + ISO 27001 A.8.20/A.8.24 | TLS 1.3 is primarily a TRANSMISSION SECURITY control (Art. 32(1)(a) "appropriate technical measures" + PCI Req 4 "encrypt transmission of cardholder data")                                                                                                                                                                                                                                 |
+| **Broad (Strategos)** | **+ GDPR Art. 25 by-design** + Art. 25(2) by-default                                                                                               | H3 compliance consolidation: Art. 25 requires that transmission security decisions (TLS version, cipher suite selection, certificate pinning, mobile fallback) be documented AS PART OF the privacy-by-design process, not just as an operational control. Mobile-specific decisions (network detection, fallback behavior, cert pinning) require Art. 25(1) design rationale documentation |
 
 **BOTH MAPPINGS ARE TECHNICALLY CORRECT** — they are different analytical lenses, not contradictions. Per Strategos 45th cadence, the H3 ROADMAP v0.2 view is preferred for H1 P0-A SHIP 2026-06-30 because Art. 25 by-design documentation is a frequent enterprise customer DPIA (Data Protection Impact Assessment) request.
 
@@ -259,10 +257,10 @@ This document uses a **NARROW mapping** focused on the primary regulatory framew
 
 ## 10. Change Log
 
-| Version | Date | Author | Change |
-|---------|------|--------|--------|
-| v0.1 | 2026-06-18 | Polyhymnia | Initial SPEC; awaiting Demeter+Apollo implementation |
-| v0.1.1 | 2026-06-18 | Polyhymnia | D-007 12th SHL: Added MAPPING ADDENDUM §9b (narrow vs broad) per Strategos 45th cadence |
+| Version | Date       | Author     | Change                                                                                  |
+| ------- | ---------- | ---------- | --------------------------------------------------------------------------------------- |
+| v0.1    | 2026-06-18 | Polyhymnia | Initial SPEC; awaiting Demeter+Apollo implementation                                    |
+| v0.1.1  | 2026-06-18 | Polyhymnia | D-007 12th SHL: Added MAPPING ADDENDUM §9b (narrow vs broad) per Strategos 45th cadence |
 
 ---
 

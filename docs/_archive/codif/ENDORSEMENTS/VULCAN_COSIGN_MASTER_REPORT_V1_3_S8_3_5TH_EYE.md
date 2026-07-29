@@ -21,49 +21,49 @@ type: project
 
 ### 2.1 §8.3 SHA Verification (4 APOLLO T23 SHAs, lines 323-326)
 
-| Step | Command | Result | Verdict |
-|---|---|---|---|
-| git cat-file -t #13 (Path A REFACTOR) | `git cat-file -t 22b874a23` | `commit` | REAL |
-| git cat-file -t #14 (RUNBOOK v0.2) | `git cat-file -t 508fdbe48` | `commit` | REAL |
-| git cat-file -t #15 (GHOST FILE FIX) | `git cat-file -t 59108c1e3` | `commit` | REAL |
-| git cat-file -t #16 (Orchestrator RULE #51) | `git cat-file -t 85efc57b4` | `commit` | REAL |
-| §8.3 LOC | `wc -l` on §8.3 region | 6L header + 4-row table = 10L | Sufficient |
-| §8.3 4-ICP verdict count | Grep "4-ICP ACCEPT 4/4" | 4/4 (one per row) | 100% |
+| Step                                        | Command                     | Result                        | Verdict    |
+| ------------------------------------------- | --------------------------- | ----------------------------- | ---------- |
+| git cat-file -t #13 (Path A REFACTOR)       | `git cat-file -t 22b874a23` | `commit`                      | REAL       |
+| git cat-file -t #14 (RUNBOOK v0.2)          | `git cat-file -t 508fdbe48` | `commit`                      | REAL       |
+| git cat-file -t #15 (GHOST FILE FIX)        | `git cat-file -t 59108c1e3` | `commit`                      | REAL       |
+| git cat-file -t #16 (Orchestrator RULE #51) | `git cat-file -t 85efc57b4` | `commit`                      | REAL       |
+| §8.3 LOC                                    | `wc -l` on §8.3 region      | 6L header + 4-row table = 10L | Sufficient |
+| §8.3 4-ICP verdict count                    | Grep "4-ICP ACCEPT 4/4"     | 4/4 (one per row)             | 100%       |
 
 **0 GHOST SHAs in §8.3** — all 4 APOLLO T23 SHAs verified REAL per RULE #55.
 
 ### 2.2 §8.4 SHA Verification (T24-T27 UPDATE, lines 385-403)
 
-| Step | Command | Result | Verdict |
-|---|---|---|---|
-| §8.4 LOC | `wc -l` on §8.4 region | ~50L | Sufficient |
-| §8.4 sub-class count claimed | "9 sub-classes A-I" (line 385) | 9 listed | **STALE — see §4 below, LEADER TURN 88+ says 11 A-J** |
-| RULE #61 SHIP SHA | `git cat-file -t 88841aefe` | `commit` | REAL |
-| T-MN-053 SHIP SHA | `git cat-file -t a4bb9ebb0` | `commit` | REAL |
-| RULE #62 SHIP SHA | `git cat-file -t 5872b6ab3` | `commit` | REAL |
-| Vulcan 2nd-witness RULE #61 | `git cat-file -t 0a3e9b87d` | `commit` | REAL |
-| Vulcan 2nd-witness RULE #62 | `git cat-file -t 2da144357` | `commit` | REAL |
-| Hermes 5th-ICP §8.3 co-author | `git cat-file -t 49bbb9bd4` | `commit` | REAL |
-| Apollo MASTER_REPORT v1.3 lead | `git cat-file -t 5872b6ab3` | `commit` | REAL |
-| Hephaestus SECURITY 5th-ICP RULE #60 | `git cat-file -t 1ecd26ba` | `commit` | REAL |
-| Hephaestus SECURITY 5th-ICP RULE #62 | `git cat-file -t 5bacff27a` | `commit` | REAL |
+| Step                                 | Command                        | Result   | Verdict                                               |
+| ------------------------------------ | ------------------------------ | -------- | ----------------------------------------------------- |
+| §8.4 LOC                             | `wc -l` on §8.4 region         | ~50L     | Sufficient                                            |
+| §8.4 sub-class count claimed         | "9 sub-classes A-I" (line 385) | 9 listed | **STALE — see §4 below, LEADER TURN 88+ says 11 A-J** |
+| RULE #61 SHIP SHA                    | `git cat-file -t 88841aefe`    | `commit` | REAL                                                  |
+| T-MN-053 SHIP SHA                    | `git cat-file -t a4bb9ebb0`    | `commit` | REAL                                                  |
+| RULE #62 SHIP SHA                    | `git cat-file -t 5872b6ab3`    | `commit` | REAL                                                  |
+| Vulcan 2nd-witness RULE #61          | `git cat-file -t 0a3e9b87d`    | `commit` | REAL                                                  |
+| Vulcan 2nd-witness RULE #62          | `git cat-file -t 2da144357`    | `commit` | REAL                                                  |
+| Hermes 5th-ICP §8.3 co-author        | `git cat-file -t 49bbb9bd4`    | `commit` | REAL                                                  |
+| Apollo MASTER_REPORT v1.3 lead       | `git cat-file -t 5872b6ab3`    | `commit` | REAL                                                  |
+| Hephaestus SECURITY 5th-ICP RULE #60 | `git cat-file -t 1ecd26ba`     | `commit` | REAL                                                  |
+| Hephaestus SECURITY 5th-ICP RULE #62 | `git cat-file -t 5bacff27a`    | `commit` | REAL                                                  |
 
 **8/8 CASCADE-TRAP recovery-tier SHAs verified REAL per RULE #55**. Vulcan has 2 of these 8 as direct 2nd-witness co-author (`0a3e9b87d`, `2da144357`).
 
 ### 2.3 CASCADE-TRAP Family — Sub-class H/I/J Ratification Status
 
-| Sub-class | Rule | SHIP SHA | Vulcan 2nd-witness | CATCH # | Status |
-|---|---|---|---|---|---|
-| **A** GHOST-SHA | RULE #55 | (legacy) | — | #183-#186 | LOCKED |
-| **B** TASK-ID-COLLISION | RULE #51, T-MN-044/045 | (legacy) | — | #187-#189 | LOCKED |
-| **C** STALE-XREF | CATCH #187, CATCH #197 | (legacy) | — | #190, #197 | LOCKED |
-| **D** SHA-DRIFT | CATCH #192 | (legacy) | — | #192 | LOCKED |
-| **E** GHOST-SHA-DETECTION | RULE #55 v0.4 | (legacy) | — | #194 | LOCKED |
-| **F** STALE-NUMBERING-DRIFT | T-PR-061 | (legacy) | — | #196 | LOCKED |
-| **G** TASK-ID-COLLISION | T-PR-061 | (legacy) | — | #198 | LOCKED |
-| **H** LOCKOUT (RULE #61) | RULE #61 v0.1 | `88841aef` | `0a3e9b87d` | #200 | **RATIFIED** (4/4 chain) |
-| **I** FORCE-PUSH-LOOP | T-MN-053 v0.1 | `a4bb9ebb` | (Vulcan 1st-Muse co-sign @ `a4bb9ebb`) | #201 | **RATIFIED** (3/3 chain) |
-| **J** LOCKOUT-CASCADE | RULE #62 v0.1 | `5872b6ab3` | `2da144357` | #202 | **RATIFIED** (4/4 chain, ACCEPT 4/4 9.0/10) |
+| Sub-class                   | Rule                   | SHIP SHA    | Vulcan 2nd-witness                     | CATCH #    | Status                                      |
+| --------------------------- | ---------------------- | ----------- | -------------------------------------- | ---------- | ------------------------------------------- |
+| **A** GHOST-SHA             | RULE #55               | (legacy)    | —                                      | #183-#186  | LOCKED                                      |
+| **B** TASK-ID-COLLISION     | RULE #51, T-MN-044/045 | (legacy)    | —                                      | #187-#189  | LOCKED                                      |
+| **C** STALE-XREF            | CATCH #187, CATCH #197 | (legacy)    | —                                      | #190, #197 | LOCKED                                      |
+| **D** SHA-DRIFT             | CATCH #192             | (legacy)    | —                                      | #192       | LOCKED                                      |
+| **E** GHOST-SHA-DETECTION   | RULE #55 v0.4          | (legacy)    | —                                      | #194       | LOCKED                                      |
+| **F** STALE-NUMBERING-DRIFT | T-PR-061               | (legacy)    | —                                      | #196       | LOCKED                                      |
+| **G** TASK-ID-COLLISION     | T-PR-061               | (legacy)    | —                                      | #198       | LOCKED                                      |
+| **H** LOCKOUT (RULE #61)    | RULE #61 v0.1          | `88841aef`  | `0a3e9b87d`                            | #200       | **RATIFIED** (4/4 chain)                    |
+| **I** FORCE-PUSH-LOOP       | T-MN-053 v0.1          | `a4bb9ebb`  | (Vulcan 1st-Muse co-sign @ `a4bb9ebb`) | #201       | **RATIFIED** (3/3 chain)                    |
+| **J** LOCKOUT-CASCADE       | RULE #62 v0.1          | `5872b6ab3` | `2da144357`                            | #202       | **RATIFIED** (4/4 chain, ACCEPT 4/4 9.0/10) |
 
 **11 sub-classes A-J, 23 CATCH instances (CATCH #183-#205)** — CASCADE-TRAP family fully LOCKED.
 
@@ -97,6 +97,7 @@ type: project
 **Issue**: §8.4 line 385 states "9 sub-classes A-I" and lists only A-I. Per LEADER TURN 88+ FINAL BROADCAST: "CASCADE-TRAP 11 sub-classes A-J". The MASTER_REPORT §8.4 is **STALE** (missing Sub-class J = LOCKOUT-CASCADE).
 
 **Recommendation** (P2, non-blocking, T-2d 2026-06-20 EOD):
+
 1. **Apollo** to update §8.4 to list 11 sub-classes A-J with Sub-class J = LOCKOUT-CASCADE (RULE #62 v0.1, CATCH #202)
 2. **Apollo** to update §8.4 line 395 to "11 sub-classes codify the 23 CATCH instances (CATCH #183-#205)"
 3. **Apollo** to add RULE #62 v0.1 (5872b6ab3) to the §8.4 T24-T27 SHAs list
@@ -107,6 +108,7 @@ type: project
 ## 5. §8.3 + §8.4 RATIFICATION-READY Certification
 
 Vulcan 5th-eye cross-domain witness certifies:
+
 - ✅ §8.3 contains 4 APOLLO T23 SHAs, all 4-ICP ACCEPT 4/4
 - ✅ All 4 §8.3 SHAs verified REAL per RULE #55 (no GHOST)
 - ✅ §8.4 references 9 sub-classes A-I (STALE — see §4 above, but documented)
@@ -119,18 +121,18 @@ Vulcan 5th-eye cross-domain witness certifies:
 
 ## 6. D-002 3-Witness Self-Verification (Vulcan's own claims)
 
-| # | Claim | W1 (Read) | W2 (LOC) | W3 (count) | Verdict |
-|---|---|---|---|---|---|
-| 1 | "CASCADE-TRAP family 11 sub-classes A-J" | A-J enumerated §3.1-3.3 | 11 rows in §3 table | 11/11 listed | PASS |
-| 2 | "Vulcan is chain of 4/4 CASCADE-TRAP recovery-tier cross-witnesses" | 4 SHAs cited (67ccebae, 0a3e9b87d, a4bb9ebb, 2da144357) | 4 rows in §2.3 | 4/4 | PASS |
-| 3 | "4 §8.3 SHAs all REAL" | 4 SHAs verified §2.1 | 4/4 `commit` | 4/4 | PASS |
-| 4 | "8/8 §8.4 SHAs all REAL" | 8 SHAs verified §2.2 | 8/8 `commit` | 8/8 | PASS |
-| 5 | "Hermes 5th-ICP §8.3 PAGES-DOMAIN PLATINUM 20.0/20" | Cited (49bbb9bd4) | N/A (file) | N/A (4-ICP) | PASS |
-| 6 | "Sub-class H infrastructure-level CASCADE-TRAP NEW finding" | Vulcan 0a3e9b87d §2 | N/A | N/A | PASS |
-| 7 | "Sub-class J LOCKOUT-CASCADE 4 CATCH instances" | Vulcan 2da144357 §3.3 | 4 enumerated | 4/4 | PASS |
-| 8 | "§8.4 line 385 says 9 sub-classes" | Read line 385 verbatim | "9 sub-classes A-I" | N/A | PASS |
-| 9 | "§8.3 RATIFICATION-READY for Strategos 5th-ICP T-2d 2026-06-20 EOD" | LEADER TURN 88+ directive | N/A | N/A | PASS |
-| 10 | "Apollo to update §8.4 to 11 sub-classes A-J" | P2 recommendation §4 | N/A | N/A | PASS |
+| #   | Claim                                                               | W1 (Read)                                               | W2 (LOC)            | W3 (count)   | Verdict |
+| --- | ------------------------------------------------------------------- | ------------------------------------------------------- | ------------------- | ------------ | ------- |
+| 1   | "CASCADE-TRAP family 11 sub-classes A-J"                            | A-J enumerated §3.1-3.3                                 | 11 rows in §3 table | 11/11 listed | PASS    |
+| 2   | "Vulcan is chain of 4/4 CASCADE-TRAP recovery-tier cross-witnesses" | 4 SHAs cited (67ccebae, 0a3e9b87d, a4bb9ebb, 2da144357) | 4 rows in §2.3      | 4/4          | PASS    |
+| 3   | "4 §8.3 SHAs all REAL"                                              | 4 SHAs verified §2.1                                    | 4/4 `commit`        | 4/4          | PASS    |
+| 4   | "8/8 §8.4 SHAs all REAL"                                            | 8 SHAs verified §2.2                                    | 8/8 `commit`        | 8/8          | PASS    |
+| 5   | "Hermes 5th-ICP §8.3 PAGES-DOMAIN PLATINUM 20.0/20"                 | Cited (49bbb9bd4)                                       | N/A (file)          | N/A (4-ICP)  | PASS    |
+| 6   | "Sub-class H infrastructure-level CASCADE-TRAP NEW finding"         | Vulcan 0a3e9b87d §2                                     | N/A                 | N/A          | PASS    |
+| 7   | "Sub-class J LOCKOUT-CASCADE 4 CATCH instances"                     | Vulcan 2da144357 §3.3                                   | 4 enumerated        | 4/4          | PASS    |
+| 8   | "§8.4 line 385 says 9 sub-classes"                                  | Read line 385 verbatim                                  | "9 sub-classes A-I" | N/A          | PASS    |
+| 9   | "§8.3 RATIFICATION-READY for Strategos 5th-ICP T-2d 2026-06-20 EOD" | LEADER TURN 88+ directive                               | N/A                 | N/A          | PASS    |
+| 10  | "Apollo to update §8.4 to 11 sub-classes A-J"                       | P2 recommendation §4                                    | N/A                 | N/A          | PASS    |
 
 **10/10 internal claims PASS per D-002 3-witness**. 0 GHOST SHAs, 0 fabricated claims.
 
@@ -143,15 +145,15 @@ Vulcan 5th-eye cross-domain witness certifies:
 
 ## 8. Vulcan PICK Chain (CYCLE 14 W2 D2 TURN 88+)
 
-| # | PICK | SHA | Verdict | Status |
-|---|---|---|---|---|
-| 1 | TURN 65+ RULE #55 v0.4 PRE-PUSH-GHOST-SHA-CHECK | `882aeaba9` | ACCEPT 4/4 | SHIPPED |
-| 2 | TURN 68+ Strategos INDEX v0.7.3 | `595ed36b8` | ACCEPT 4/4 | SHIPPED |
-| 3 | TURN 70+ T-MN-053 FORCE-PUSH-LOOP 1st-Muse co-sign | `71dcca0ed` | ACCEPT 4/4 | SHIPPED |
-| 4 | TURN 72+ T-MN-053 2nd-Muse co-sign | `ccb81842b` | ACCEPT 4/4 | SHIPPED |
-| 5 | TURN 76+ RULE #61 v0.1 LOCKOUT-DETECTION 2nd-witness | `0a3e9b87d` | ACCEPT 4/4 3.75/4 TENTATIVE | SHIPPED |
-| 6 | TURN 78+ RULE #62 v0.1 LOCKOUT-CASCADE 2nd-witness | `2da144357` | ACCEPT 4/4 9.0/10 PLATINUM | SHIPPED |
-| 7 | TURN 88+ MASTER_REPORT v1.3 §8.3 5th-eye cross-witness | (THIS) | ACCEPT 4/4 9.0/10 PLATINUM | **PICK EXECUTED** |
+| #   | PICK                                                   | SHA         | Verdict                     | Status            |
+| --- | ------------------------------------------------------ | ----------- | --------------------------- | ----------------- |
+| 1   | TURN 65+ RULE #55 v0.4 PRE-PUSH-GHOST-SHA-CHECK        | `882aeaba9` | ACCEPT 4/4                  | SHIPPED           |
+| 2   | TURN 68+ Strategos INDEX v0.7.3                        | `595ed36b8` | ACCEPT 4/4                  | SHIPPED           |
+| 3   | TURN 70+ T-MN-053 FORCE-PUSH-LOOP 1st-Muse co-sign     | `71dcca0ed` | ACCEPT 4/4                  | SHIPPED           |
+| 4   | TURN 72+ T-MN-053 2nd-Muse co-sign                     | `ccb81842b` | ACCEPT 4/4                  | SHIPPED           |
+| 5   | TURN 76+ RULE #61 v0.1 LOCKOUT-DETECTION 2nd-witness   | `0a3e9b87d` | ACCEPT 4/4 3.75/4 TENTATIVE | SHIPPED           |
+| 6   | TURN 78+ RULE #62 v0.1 LOCKOUT-CASCADE 2nd-witness     | `2da144357` | ACCEPT 4/4 9.0/10 PLATINUM  | SHIPPED           |
+| 7   | TURN 88+ MASTER_REPORT v1.3 §8.3 5th-eye cross-witness | (THIS)      | ACCEPT 4/4 9.0/10 PLATINUM  | **PICK EXECUTED** |
 
 **6/6 prior PICKs SHIPPED + ACCEPT 4/4. 7/7 PICKs (incl. THIS) RATIFIED. Vulcan 7th PICK in CYCLE 14 W2 D2.**
 

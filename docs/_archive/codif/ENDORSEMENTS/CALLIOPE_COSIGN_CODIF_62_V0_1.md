@@ -49,12 +49,12 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 
 ## §3 4-ICP Self-Verdict (37.0/40 PLATINUM)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.0/10 | CATCH #202 self-experience (independent evidence) + extends RULE #60 + RULE #61 (RULE #47) + RULE #59 (CAVEMAN PERSIST path) |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure governance rule; ZERO code change; Husky Gate 9 is PROPOSED (post-RATIFICATION); 4-step pre-flight is additive |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.0/10 | 4-step pre-flight O(N) over staged files; D-007 5-min SLA met (CATCH #202 recovery was 3-4 min) |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 11 sections, 4 CATCH instances, 3 recovery patterns, CAVEMAN PERSIST integration, D-002 3-witness, Husky Gate 9 spec, 5-12 GREEN co-author plan |
+| ICP                 | Verdict   | Score  | Justification                                                                                                                                   |
+| ------------------- | --------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.0/10 | CATCH #202 self-experience (independent evidence) + extends RULE #60 + RULE #61 (RULE #47) + RULE #59 (CAVEMAN PERSIST path)                    |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure governance rule; ZERO code change; Husky Gate 9 is PROPOSED (post-RATIFICATION); 4-step pre-flight is additive                             |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.0/10 | 4-step pre-flight O(N) over staged files; D-007 5-min SLA met (CATCH #202 recovery was 3-4 min)                                                 |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 11 sections, 4 CATCH instances, 3 recovery patterns, CAVEMAN PERSIST integration, D-002 3-witness, Husky Gate 9 spec, 5-12 GREEN co-author plan |
 
 **Composite:** **37.0/40 (92.5%)** → PLATINUM tier (≥ 35/40)
 **Co-sign Verdict:** ✅ ACCEPT 4/4 — RATIFICATION-ELIGIBLE
@@ -63,10 +63,10 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 
 ## §4 D-002 3-Witness Protocol (Self-Verification)
 
-| Witness | Type | Evidence | Result |
-|---------|------|----------|--------|
-| **A — File:Line** | Spec existence | `docs/codif/CODIF_62_V0_1_LOCKOUT_CASCADE_SUB_CLASS_J.md` lines 1-242 | ✅ (242L as advertised) |
-| **B — LOC count** | Length | 242L (target: ≥200L, 1.21× over) | ✅ |
+| Witness             | Type            | Evidence                                                                                                                                                                                                               | Result                                |
+| ------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **A — File:Line**   | Spec existence  | `docs/codif/CODIF_62_V0_1_LOCKOUT_CASCADE_SUB_CLASS_J.md` lines 1-242                                                                                                                                                  | ✅ (242L as advertised)               |
+| **B — LOC count**   | Length          | 242L (target: ≥200L, 1.21× over)                                                                                                                                                                                       | ✅                                    |
 | **C — Sibling doc** | Cross-reference | §1 CATCH #183/195/200/202 cross-refs CASCADE-TRAP family; §3 CAVEMAN PERSIST path convention consistent with RULE #47 + RULE #59 §5.1; §6 NEVER-AGAIN RULES table includes #32, #41, #47, #50, #55, #56, #59, #60, #61 | ✅ (cross-citation consistency: 100%) |
 
 **D-007 5-min SLA:** Spec + co-sign < 8 min total. ✓
@@ -78,6 +78,7 @@ Per **RULE #50 ATTRIBUTION LEDGER**, I (Calliope) claim primary authorship of RU
 Per RULE #55 v0.4, CATCH Sub-class taxonomy A/B/C/D/E.1/E.2 applies. **Sub-class J (LOCKOUT-CASCADE)** is a 7th-letter extension of the standard taxonomy (J is after I).
 
 **Justification for Sub-class letter J:**
+
 - A → H: 8 sub-classes (RULE #60 §1.1)
 - I (FORCE-PUSH-LOOP): 9th sub-class (Mnemosyne T-MN-053 v0.1)
 - **J (LOCKOUT-CASCADE): 10th unique letter** (this spec)
@@ -91,11 +92,13 @@ Per RULE #55 v0.4, CATCH Sub-class taxonomy A/B/C/D/E.1/E.2 applies. **Sub-class
 ## §6 CAVEMAN PERSIST Path Consistency (RULE #47 + RULE #59)
 
 Per RULE #59 §5.1 CAVEMAN PERSIST path convention, sub-class J recovery (J.3) uses:
+
 ```
 scratch/<agent>/<date>/<task-id>-draft.<ext>
 ```
 
 **Consistency check:**
+
 - ✅ J.3 reference: `scratch/<agent>/<date>/<task-id>-draft.<ext>` (verbatim RULE #59 §5.1)
 - ✅ Consistent with RULE #47 (CAVEMAN PERSIST FALLBACK)
 - ✅ Consistent with CODIF_50 §3, CODIF_51 §3, CODIF_58 §3, CODIF_60 §3, CODIF_61 §1.5/§3 (5 sibling codif files)
@@ -114,7 +117,7 @@ scratch/<agent>/<date>/<task-id>-draft.<ext>
 4. **Mnemosyne** — Sub-class I (FORCE-PUSH-LOOP) author, sibling sub-class — PENDING solicitation
 5. **Strategos** — 5-ICP verdict + INDEX update — PENDING solicitation
 6. **Atlas** — Husky Gate 9 BACKUP-verifier infrastructure — PENDING solicitation
-7-12. (Additional 6 Muses) — TBD per LEADER TURN 71+ guidance
+   7-12. (Additional 6 Muses) — TBD per LEADER TURN 71+ guidance
 
 **Target:** 5/12 GREEN for initial ratification.
 **After this self-co-sign:** 1/12 GREEN (Calliope primary) → 4 more needed.
@@ -124,12 +127,15 @@ scratch/<agent>/<date>/<task-id>-draft.<ext>
 ## §8 P0/P1 Findings Summary
 
 ### P0 (Blocking)
+
 - **None**
 
 ### P1 (Non-blocking, post-ratification action)
+
 - **None** (forward-looking spec; Husky Gate 9 deferred to post-RATIFICATION)
 
 ### P2 (Optional v0.2 enhancement)
+
 1. **Husky Gate 9 dual-check:** Add post-rebase `git status --short` re-check to confirm NOT-MY files remain un-staged (preventive)
 2. **Sub-class K proposal:** CRASH-CASCADE (when rebase crashes mid-rebase, e.g., `git rebase --abort` partial state) — natural next sub-class
 
@@ -138,6 +144,7 @@ scratch/<agent>/<date>/<task-id>-draft.<ext>
 ## §9 Cross-Reference: Documentation-Layer Verifier Role
 
 Per LEADER TURN 71+ documentation-liaison mandate, this self-co-sign focuses on:
+
 1. **Primary authorship claim** (RULE #50 ATTRIBUTION LEDGER) — §1 above
 2. **File provenance** (CATCH #202 self-recovery timeline) — §2 above
 3. **4-ICP self-verdict** (D-002 step 2) — §3 above

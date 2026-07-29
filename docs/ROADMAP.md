@@ -28,16 +28,16 @@ A deliverable is **P0** if the phase cannot ship without it, **P1** if the phase
 
 ### Top deliverables (current quarter)
 
-| # | Deliverable | Priority | Owner Muse | Success metric |
-|---|---|---|---|---|
-| 0.1 | Apollo pre-push queue lands cleanly on `origin/main` | P0 | Apollo | `npx vitest run` → 0 failures across 8,334+ tests; tsc=0; lint=0/0; build<2 MB gzip |
-| 0.2 | Security P0 fixes (PluginSandbox acorn, ScenarioLocking DOM API, mock-auth gate, dataStore encryption) | P0 | Hephaestus | 4/4 fixes merged; secret scanner in `prebuild` hook |
-| 0.3 | 13-store `immer` wrapper + `uiStore` masterStorage migration | P0 | Apollo | All 13 stores use `subscribeWithSelector(persist(immer(...)))`; 0 direct `localStorage` calls in stores |
-| 0.4 | 11 component `role="alert"` text-leak fix (Hera's P0) | P0 | Apollo (Hera's patches) | 11 `.patch` files apply cleanly; vitest-axe green |
-| 0.5 | Performance Top-10 (per-namespace i18n, React.memo × 10, react-virtual × 5, runMonteCarlo wire-up, SOXComplianceEngine test) | P1 | Prometheus | Cold start -48 kB gzip; render time -30-50% on heavy components; 600+ new test cases |
-| 0.6 | Documentation ground truth (README metrics, GLOSSARY, 5 P0 ADRs, ONBOARDING, TESTING) | P0 | Mnemosyne | 7/7 doc files merged; 30-min onboarding time-to-first-PR |
-| 0.7 | A11y ground truth (vitest-axe, i18n locale cleanup, SettingsPage a11y, 35 stale eslint-disable removed) | P1 | Hera | WCAG 2.1 AA pass on all top-10 pages; 0 stale `eslint-disable jsx-a11y` |
-| 0.8 | Strategic corpus (this roadmap + Q2 review + decisions log + persona) | P0 | Strategos | 4/4 docs merged; founder approval received |
+| #   | Deliverable                                                                                                                  | Priority | Owner Muse              | Success metric                                                                                          |
+| --- | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------- |
+| 0.1 | Apollo pre-push queue lands cleanly on `origin/main`                                                                         | P0       | Apollo                  | `npx vitest run` → 0 failures across 8,334+ tests; tsc=0; lint=0/0; build<2 MB gzip                     |
+| 0.2 | Security P0 fixes (PluginSandbox acorn, ScenarioLocking DOM API, mock-auth gate, dataStore encryption)                       | P0       | Hephaestus              | 4/4 fixes merged; secret scanner in `prebuild` hook                                                     |
+| 0.3 | 13-store `immer` wrapper + `uiStore` masterStorage migration                                                                 | P0       | Apollo                  | All 13 stores use `subscribeWithSelector(persist(immer(...)))`; 0 direct `localStorage` calls in stores |
+| 0.4 | 11 component `role="alert"` text-leak fix (Hera's P0)                                                                        | P0       | Apollo (Hera's patches) | 11 `.patch` files apply cleanly; vitest-axe green                                                       |
+| 0.5 | Performance Top-10 (per-namespace i18n, React.memo × 10, react-virtual × 5, runMonteCarlo wire-up, SOXComplianceEngine test) | P1       | Prometheus              | Cold start -48 kB gzip; render time -30-50% on heavy components; 600+ new test cases                    |
+| 0.6 | Documentation ground truth (README metrics, GLOSSARY, 5 P0 ADRs, ONBOARDING, TESTING)                                        | P0       | Mnemosyne               | 7/7 doc files merged; 30-min onboarding time-to-first-PR                                                |
+| 0.7 | A11y ground truth (vitest-axe, i18n locale cleanup, SettingsPage a11y, 35 stale eslint-disable removed)                      | P1       | Hera                    | WCAG 2.1 AA pass on all top-10 pages; 0 stale `eslint-disable jsx-a11y`                                 |
+| 0.8 | Strategic corpus (this roadmap + Q2 review + decisions log + persona)                                                        | P0       | Strategos               | 4/4 docs merged; founder approval received                                                              |
 
 ### Success metrics for Phase 0
 
@@ -57,18 +57,19 @@ A deliverable is **P0** if the phase cannot ship without it, **P1** if the phase
 
 Two-week cadence, with the 6 Muses + Strategos. Assumes founder signoff is in-hand by 2026-06-15.
 
-| Week | Focus | Owner | Gate |
-|---|---|---|---|
-| W1 (Jun 9–15) | Finalize 4 strategic docs; founder signoff on `ROADMAP.md` + `STRATEGIC_REVIEW_Q2_2026.md` | Strategos | All 4 docs at DRAFT v0.1; founder approval |
-| W2 (Jun 16–22) | Apollo lands P0 #0 (test setup mock + dead workers) | Apollo | `npx vitest run` → 0 failures |
-| W3 (Jun 23–29) | Apollo lands P0 #1–#5 (security) | Apollo + Hephaestus | 4/4 P0 security fixes merged; secret scanner in `prebuild` |
-| W4 (Jun 30–Jul 6) | Apollo lands 13-store immer + 11 role="alert" fixes | Apollo + Hera | 13/13 stores wrapped; 11/11 patches applied |
-| W5 (Jul 7–13) | Apollo lands perf Top-10 + docs ground truth | Apollo + Prometheus + Mnemosyne | -48 kB cold start; 7/7 doc files merged |
-| W6 (Jul 14–20) | Apollo lands a11y ground truth + prettier + logger | Apollo + Hera | WCAG 2.1 AA pass on top-10 pages; 0 lint warnings |
-| W7 (Jul 21–27) | Apollo cuts the release; founder approves; first push to `origin/main` | Apollo + Founder | `origin/main` green, public roadmap goes live |
-| W8 (Jul 28–Aug 3) | Phase 1 planning: backend strategy decision (D-001-pending); pilot cohort outreach (D-002-pending) | Founder + Strategos | D-001 + D-002 resolved |
+| Week              | Focus                                                                                              | Owner                           | Gate                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------- |
+| W1 (Jun 9–15)     | Finalize 4 strategic docs; founder signoff on `ROADMAP.md` + `STRATEGIC_REVIEW_Q2_2026.md`         | Strategos                       | All 4 docs at DRAFT v0.1; founder approval                 |
+| W2 (Jun 16–22)    | Apollo lands P0 #0 (test setup mock + dead workers)                                                | Apollo                          | `npx vitest run` → 0 failures                              |
+| W3 (Jun 23–29)    | Apollo lands P0 #1–#5 (security)                                                                   | Apollo + Hephaestus             | 4/4 P0 security fixes merged; secret scanner in `prebuild` |
+| W4 (Jun 30–Jul 6) | Apollo lands 13-store immer + 11 role="alert" fixes                                                | Apollo + Hera                   | 13/13 stores wrapped; 11/11 patches applied                |
+| W5 (Jul 7–13)     | Apollo lands perf Top-10 + docs ground truth                                                       | Apollo + Prometheus + Mnemosyne | -48 kB cold start; 7/7 doc files merged                    |
+| W6 (Jul 14–20)    | Apollo lands a11y ground truth + prettier + logger                                                 | Apollo + Hera                   | WCAG 2.1 AA pass on top-10 pages; 0 lint warnings          |
+| W7 (Jul 21–27)    | Apollo cuts the release; founder approves; first push to `origin/main`                             | Apollo + Founder                | `origin/main` green, public roadmap goes live              |
+| W8 (Jul 28–Aug 3) | Phase 1 planning: backend strategy decision (D-001-pending); pilot cohort outreach (D-002-pending) | Founder + Strategos             | D-001 + D-002 resolved                                     |
 
 **Phase 0 exit criteria (the "100× ship gate"):**
+
 - ✅ All 6 Muse audits accepted.
 - ✅ `origin/main` has 0 failing tests, 0 type errors, 0 lint warnings, 0 CVEs.
 - ✅ Main bundle <150 kB gzip, total JS <2 MB gzip.
@@ -86,18 +87,18 @@ If any exit criterion is red, Phase 0 does not end. We extend by 1 week per red 
 
 ### Top deliverables
 
-| # | Deliverable | Priority | Success metric |
-|---|---|---|---|
-| 1.1 | Cloud backend (Node + Fastify, deployable to Cloudflare Workers or Vercel) with multi-tenant data isolation | P0 | 100 tenants in pilot; per-tenant RLS in Postgres; 99.9% uptime |
-| 1.2 | Identity layer (Auth.js / OIDC + passkeys + SCIM) replacing the current VITE_USE_MOCK_AUTH gate | P0 | 0 mock-auth references in production bundle; passkey login <2 s; SCIM 2.0 test green |
-| 1.3 | Public REST + GraphQL API with rate limiting, OpenAPI 3.1 schema, generated SDKs (TS, Python) | P0 | 200+ endpoints documented; 3 customer-built integrations on the SDK |
-| 1.4 | Real-time collaboration (Yjs over WebSocket) on the 3 most-edited artifacts: BudgetVsActual, ForecastModel, ScenarioModel | P0 | <100 ms CRDT propagation; 5+ concurrent users in same model without conflict |
-| 1.5 | SOC 2 Type I + Type II readiness (Hephaestus's roadmap; pen test; vendor questionnaire) | P0 | Type I report in hand by Q4 2026; Type II by Q1 2027 |
-| 1.6 | Stripe billing with self-serve tier upgrade, metered AI usage, 14-day trial | P0 | First 5 paying customers; ARPU $1.5 k/mo by end of Q1 2027 |
-| 1.7 | Multi-entity consolidation in production (currently the engine exists; needs the tenant boundary) | P0 | 3 mid-market pilots using 5+ entities each |
-| 1.8 | Audit trail + immutable event log (SOXComplianceEngine promoted from "untested" to "SOC 2 evidence") | P0 | Every model mutation produces a signed audit event; quarterly evidence export |
-| 1.9 | NIM proxy backend (fixes the VITE_NIM_API_KEY inlining architectural issue) | P1 | 0 secrets in browser bundle; per-tenant rate limits; cost per tenant visible |
-| 1.10 | Customer success playbook (onboarding, health scoring, renewal motion) | P2 | First NPS survey at 3 months; CSAT ≥40 |
+| #    | Deliverable                                                                                                               | Priority | Success metric                                                                       |
+| ---- | ------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| 1.1  | Cloud backend (Node + Fastify, deployable to Cloudflare Workers or Vercel) with multi-tenant data isolation               | P0       | 100 tenants in pilot; per-tenant RLS in Postgres; 99.9% uptime                       |
+| 1.2  | Identity layer (Auth.js / OIDC + passkeys + SCIM) replacing the current VITE_USE_MOCK_AUTH gate                           | P0       | 0 mock-auth references in production bundle; passkey login <2 s; SCIM 2.0 test green |
+| 1.3  | Public REST + GraphQL API with rate limiting, OpenAPI 3.1 schema, generated SDKs (TS, Python)                             | P0       | 200+ endpoints documented; 3 customer-built integrations on the SDK                  |
+| 1.4  | Real-time collaboration (Yjs over WebSocket) on the 3 most-edited artifacts: BudgetVsActual, ForecastModel, ScenarioModel | P0       | <100 ms CRDT propagation; 5+ concurrent users in same model without conflict         |
+| 1.5  | SOC 2 Type I + Type II readiness (Hephaestus's roadmap; pen test; vendor questionnaire)                                   | P0       | Type I report in hand by Q4 2026; Type II by Q1 2027                                 |
+| 1.6  | Stripe billing with self-serve tier upgrade, metered AI usage, 14-day trial                                               | P0       | First 5 paying customers; ARPU $1.5 k/mo by end of Q1 2027                           |
+| 1.7  | Multi-entity consolidation in production (currently the engine exists; needs the tenant boundary)                         | P0       | 3 mid-market pilots using 5+ entities each                                           |
+| 1.8  | Audit trail + immutable event log (SOXComplianceEngine promoted from "untested" to "SOC 2 evidence")                      | P0       | Every model mutation produces a signed audit event; quarterly evidence export        |
+| 1.9  | NIM proxy backend (fixes the VITE_NIM_API_KEY inlining architectural issue)                                               | P1       | 0 secrets in browser bundle; per-tenant rate limits; cost per tenant visible         |
+| 1.10 | Customer success playbook (onboarding, health scoring, renewal motion)                                                    | P2       | First NPS survey at 3 months; CSAT ≥40                                               |
 
 ### Success metrics for Phase 1
 
@@ -121,18 +122,18 @@ If any exit criterion is red, Phase 0 does not end. We extend by 1 week per red 
 
 ### Top deliverables
 
-| # | Deliverable | Priority | Success metric |
-|---|---|---|---|
-| 2.1 | 50+ pre-built ERP/CRM/HRIS integrations (NetSuite, QuickBooks, Xero, Sage Intacct, Salesforce, HubSpot, Gusto, Rippling, ADP, Workday, etc.) | P0 | 50 connectors live; median time-to-first-sync <30 min |
-| 2.2 | Bidirectional Excel add-in (Cube's positioning) + Google Sheets add-in | P0 | Cube parity on add-in UX; 1-click install from Office Add-in Store |
-| 2.3 | Data warehouse sync (Snowflake, BigQuery, Databricks) for both extract and write-back | P1 | 3 customers running nightly warehouse sync in production |
-| 2.4 | Self-service ETL visual builder (Abacum's "finance-owned, no IT" positioning) | P1 | 80% of pilot customers build their own pipelines without support |
-| 2.5 | Sector templates: SaaS (MRR, churn, LTV), Retail (SKU, store), Manufacturing (BOM, capacity), Healthcare (RCM), Professional Services (utilization) | P0 | 5 templates shipped; median pilot time-to-first-dashboard <1 day |
-| 2.6 | Customer-facing marketplace for community-built integrations (read-only at launch) | P2 | 25 community integrations listed by end of Q4 |
-| 2.7 | Branded customer reports (white-label PDFs, scheduled emails) | P1 | 100+ scheduled reports across pilot base |
-| 2.8 | Multi-currency, multi-GAAP, multi-entity consolidation in production at scale | P0 | 1 customer running 25+ entities in production |
-| 2.9 | Public roadmap + public changelog + feature-vote board | P2 | 200+ votes on roadmap; 50+ customer-submitted feature requests triaged |
-| 2.10 | Mid-market GTM motion (Pigment / Drivetrain lane): sales engineer hire, ICP definition, 3 case studies | P0 | 10 mid-market customers; $30 k MRR |
+| #    | Deliverable                                                                                                                                         | Priority | Success metric                                                         |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
+| 2.1  | 50+ pre-built ERP/CRM/HRIS integrations (NetSuite, QuickBooks, Xero, Sage Intacct, Salesforce, HubSpot, Gusto, Rippling, ADP, Workday, etc.)        | P0       | 50 connectors live; median time-to-first-sync <30 min                  |
+| 2.2  | Bidirectional Excel add-in (Cube's positioning) + Google Sheets add-in                                                                              | P0       | Cube parity on add-in UX; 1-click install from Office Add-in Store     |
+| 2.3  | Data warehouse sync (Snowflake, BigQuery, Databricks) for both extract and write-back                                                               | P1       | 3 customers running nightly warehouse sync in production               |
+| 2.4  | Self-service ETL visual builder (Abacum's "finance-owned, no IT" positioning)                                                                       | P1       | 80% of pilot customers build their own pipelines without support       |
+| 2.5  | Sector templates: SaaS (MRR, churn, LTV), Retail (SKU, store), Manufacturing (BOM, capacity), Healthcare (RCM), Professional Services (utilization) | P0       | 5 templates shipped; median pilot time-to-first-dashboard <1 day       |
+| 2.6  | Customer-facing marketplace for community-built integrations (read-only at launch)                                                                  | P2       | 25 community integrations listed by end of Q4                          |
+| 2.7  | Branded customer reports (white-label PDFs, scheduled emails)                                                                                       | P1       | 100+ scheduled reports across pilot base                               |
+| 2.8  | Multi-currency, multi-GAAP, multi-entity consolidation in production at scale                                                                       | P0       | 1 customer running 25+ entities in production                          |
+| 2.9  | Public roadmap + public changelog + feature-vote board                                                                                              | P2       | 200+ votes on roadmap; 50+ customer-submitted feature requests triaged |
+| 2.10 | Mid-market GTM motion (Pigment / Drivetrain lane): sales engineer hire, ICP definition, 3 case studies                                              | P0       | 10 mid-market customers; $30 k MRR                                     |
 
 ### Success metrics for Phase 2
 
@@ -155,18 +156,18 @@ If any exit criterion is red, Phase 0 does not end. We extend by 1 week per red 
 
 ### Top deliverables
 
-| # | Deliverable | Priority | Success metric |
-|---|---|---|---|
-| 3.1 | **AI Copilot** (NL → SQL/OLAP) in-app chat; backed by NIM (Llama 3.1 70B) via the Phase 1 proxy | P0 | 50% of pilot MAUs use Copilot weekly; 70% task completion rate on internal eval set |
-| 3.2 | **ML forecasting** (Prophet, NeuralProphet, N-BEATS) selectable per series; backtest harness | P0 | 30% MAE reduction vs naive seasonal baseline on customer data |
-| 3.3 | **Document AI** — ingest PDFs (10-Q, board decks, contracts) and extract assumptions | P1 | 100+ documents processed per pilot; 85% F1 on field extraction |
-| 3.4 | **Sector AI personas** — SaaS Copilot, Retail Copilot, etc. with sector-specific prompts and KPIs | P1 | 5 sector Copilots shipped; each with ≥1 reference customer |
-| 3.5 | **Anomaly detection** (Prophix Signals positioning) on all financial series with auto-narrative | P1 | 90% precision@10 on internal eval; <5% alert fatigue rate |
-| 3.6 | **Auto-scenario generation** — Copilot proposes 3 what-if scenarios from a natural-language goal | P2 | 30% of users who try it ship at least 1 generated scenario |
-| 3.7 | **AI Backsolving** (Abacum positioning) — "what would have to be true to hit the goal?" | P2 | 10% of MAU use it; meets internal CPA review |
-| 3.8 | **AI safety** — human-in-the-loop, model card, hallucination guardrails, content policy | P0 | 0 customer-reported hallucination incidents in production; quarterly red-team |
-| 3.9 | **Pro tier** (AI features gated) at $500/seat/mo + usage | P0 | 20% of customers upgrade to Pro; AI revenue >10% of total MRR |
-| 3.10 | **AI evals + observability** — Langfuse or Helicone, prompt versioning, regression suite | P1 | 100% of AI features in eval suite; weekly regression run |
+| #    | Deliverable                                                                                       | Priority | Success metric                                                                      |
+| ---- | ------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| 3.1  | **AI Copilot** (NL → SQL/OLAP) in-app chat; backed by NIM (Llama 3.1 70B) via the Phase 1 proxy   | P0       | 50% of pilot MAUs use Copilot weekly; 70% task completion rate on internal eval set |
+| 3.2  | **ML forecasting** (Prophet, NeuralProphet, N-BEATS) selectable per series; backtest harness      | P0       | 30% MAE reduction vs naive seasonal baseline on customer data                       |
+| 3.3  | **Document AI** — ingest PDFs (10-Q, board decks, contracts) and extract assumptions              | P1       | 100+ documents processed per pilot; 85% F1 on field extraction                      |
+| 3.4  | **Sector AI personas** — SaaS Copilot, Retail Copilot, etc. with sector-specific prompts and KPIs | P1       | 5 sector Copilots shipped; each with ≥1 reference customer                          |
+| 3.5  | **Anomaly detection** (Prophix Signals positioning) on all financial series with auto-narrative   | P1       | 90% precision@10 on internal eval; <5% alert fatigue rate                           |
+| 3.6  | **Auto-scenario generation** — Copilot proposes 3 what-if scenarios from a natural-language goal  | P2       | 30% of users who try it ship at least 1 generated scenario                          |
+| 3.7  | **AI Backsolving** (Abacum positioning) — "what would have to be true to hit the goal?"           | P2       | 10% of MAU use it; meets internal CPA review                                        |
+| 3.8  | **AI safety** — human-in-the-loop, model card, hallucination guardrails, content policy           | P0       | 0 customer-reported hallucination incidents in production; quarterly red-team       |
+| 3.9  | **Pro tier** (AI features gated) at $500/seat/mo + usage                                          | P0       | 20% of customers upgrade to Pro; AI revenue >10% of total MRR                       |
+| 3.10 | **AI evals + observability** — Langfuse or Helicone, prompt versioning, regression suite          | P1       | 100% of AI features in eval suite; weekly regression run                            |
 
 ### Success metrics for Phase 3
 
@@ -189,18 +190,18 @@ If any exit criterion is red, Phase 0 does not end. We extend by 1 week per red 
 
 ### Top deliverables
 
-| # | Deliverable | Priority | Success metric |
-|---|---|---|---|
-| 4.1 | **Mobile apps** (iOS + Android, React Native) for CFO + executive dashboards, approval flows, scenario review on the go | P0 | 30% of MAUs open the mobile app weekly; App Store rating ≥4.5 |
-| 4.2 | **Public TypeScript + Python SDKs** with first-class auth, retries, and observability | P0 | 100+ customer-built integrations; 50+ community SDK projects |
-| 4.3 | **Marketplace** (read + write) — 200+ community integrations; rev share with builders | P0 | 200 listings; 20% of new customers install ≥1 marketplace app |
-| 4.4 | **White-label** (banks, accounting firms) — rebrand + multi-tenant per reseller | P0 | 5 white-label resellers live; 10% of revenue from channel |
-| 4.5 | **PE/VC portfolio reporting** — roll-up 50+ portfolio companies into one dashboard | P1 | 3 PE/VC firms as customers; 100+ portfolio companies in production |
-| 4.6 | **Embedded FP&A** — JS widget + iframe for SaaS products to offer FP&A to their SMB users | P1 | 5 SaaS partners live; 50 k end-users via embed |
-| 4.7 | **Realtime data network** — inter-company benchmarking (Syft's positioning), anonymized | P2 | 100+ contributors; median opt-in reward = $500/yr credit |
-| 4.8 | **SOC 2 Type II + ISO 27001 + HIPAA** (healthcare vertical) | P0 | ISO 27001 cert; 1 healthcare customer in production |
-| 4.9 | **Internationalization** (real translation pipeline via Crowdin, not stubs) — 10 languages | P1 | 10 locales fully translated; 20% of new signups non-English |
-| 4.10 | **Self-serve enterprise tier** — admin SSO, audit log export, custom data residency | P0 | 5 self-serve enterprise customers (no sales touch); $100 k+ ACV |
+| #    | Deliverable                                                                                                             | Priority | Success metric                                                     |
+| ---- | ----------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------ |
+| 4.1  | **Mobile apps** (iOS + Android, React Native) for CFO + executive dashboards, approval flows, scenario review on the go | P0       | 30% of MAUs open the mobile app weekly; App Store rating ≥4.5      |
+| 4.2  | **Public TypeScript + Python SDKs** with first-class auth, retries, and observability                                   | P0       | 100+ customer-built integrations; 50+ community SDK projects       |
+| 4.3  | **Marketplace** (read + write) — 200+ community integrations; rev share with builders                                   | P0       | 200 listings; 20% of new customers install ≥1 marketplace app      |
+| 4.4  | **White-label** (banks, accounting firms) — rebrand + multi-tenant per reseller                                         | P0       | 5 white-label resellers live; 10% of revenue from channel          |
+| 4.5  | **PE/VC portfolio reporting** — roll-up 50+ portfolio companies into one dashboard                                      | P1       | 3 PE/VC firms as customers; 100+ portfolio companies in production |
+| 4.6  | **Embedded FP&A** — JS widget + iframe for SaaS products to offer FP&A to their SMB users                               | P1       | 5 SaaS partners live; 50 k end-users via embed                     |
+| 4.7  | **Realtime data network** — inter-company benchmarking (Syft's positioning), anonymized                                 | P2       | 100+ contributors; median opt-in reward = $500/yr credit           |
+| 4.8  | **SOC 2 Type II + ISO 27001 + HIPAA** (healthcare vertical)                                                             | P0       | ISO 27001 cert; 1 healthcare customer in production                |
+| 4.9  | **Internationalization** (real translation pipeline via Crowdin, not stubs) — 10 languages                              | P1       | 10 locales fully translated; 20% of new signups non-English        |
+| 4.10 | **Self-serve enterprise tier** — admin SSO, audit log export, custom data residency                                     | P0       | 5 self-serve enterprise customers (no sales touch); $100 k+ ACV    |
 
 ### Success metrics for Phase 4
 
@@ -220,14 +221,14 @@ If any exit criterion is red, Phase 0 does not end. We extend by 1 week per red 
 
 ## Cross-phase risks (read these before changing the order)
 
-| Risk | Affected phase | Mitigation |
-|---|---|---|
-| Backend hiring lag | Phase 1 | Founder writes the first 10 endpoints personally; engage contractor for the rest |
-| SOC 2 timeline slip | Phase 1 → Phase 2 | Start Vanta/Drata setup in Phase 0; don't wait for Phase 1 |
-| AI cost overrun | Phase 3 | Caching, prompt compression, per-tenant rate limits; revisit gross margin monthly |
-| Excel add-in complexity | Phase 2 | Hire 1 engineer with Office Add-in experience; consider Microsoft co-sell motion |
-| Multi-entity tax complexity | Phase 2 | Partner with a tax firm (Andersen, RSM) for the first 3 implementations |
-| White-label product fragmentation | Phase 4 | Maintain a single codebase; the customer-facing brand is a config, not a fork |
+| Risk                              | Affected phase    | Mitigation                                                                        |
+| --------------------------------- | ----------------- | --------------------------------------------------------------------------------- |
+| Backend hiring lag                | Phase 1           | Founder writes the first 10 endpoints personally; engage contractor for the rest  |
+| SOC 2 timeline slip               | Phase 1 → Phase 2 | Start Vanta/Drata setup in Phase 0; don't wait for Phase 1                        |
+| AI cost overrun                   | Phase 3           | Caching, prompt compression, per-tenant rate limits; revisit gross margin monthly |
+| Excel add-in complexity           | Phase 2           | Hire 1 engineer with Office Add-in experience; consider Microsoft co-sell motion  |
+| Multi-entity tax complexity       | Phase 2           | Partner with a tax firm (Andersen, RSM) for the first 3 implementations           |
+| White-label product fragmentation | Phase 4           | Maintain a single codebase; the customer-facing brand is a config, not a fork     |
 
 ---
 
@@ -289,42 +290,42 @@ A roadmap is a list of bets. These are the 4 bets that, if we are right, define 
 
 The Muse team gets asked for many things. This is the explicit list of "no, not this year." Re-evaluate quarterly.
 
-| Idea | Why we're not building it | When to reconsider |
-|---|---|---|
-| Cryptocurrency / DeFi accounting | Not the ICP; adds regulatory burden | Q4 2027 (Phase 2 retrospective) |
-| Personal finance (consumer) | Different ICP; different unit economics | Never, by current strategy |
-| Custom chart builder (drag-and-drop) | Cube has this; it's not a wedge; defer to Phase 4 | Phase 4 |
-| Native Mac / Windows desktop app | The web app is the product; Tauri/Electron are 2-year detours | Phase 4 (after mobile validates the demand) |
-| Blockchain / NFT anything | No. | Never. |
-| In-house payments / AP automation | Different product; Bill.com / Ramp own this | Phase 2 (as an integration, not a build) |
-| Forecasting for crypto / Web3 startups | Not the ICP | Q4 2027 |
-| "AI that writes the financial close memo" | Phase 3 deliverable 3.3 (Document AI) is the closest; do not duplicate | Phase 3 |
-| White-label in Phase 0 or Phase 1 | Distracts from the platform wedge; requires multi-tenant to be solid first | Phase 4 |
+| Idea                                      | Why we're not building it                                                  | When to reconsider                          |
+| ----------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------- |
+| Cryptocurrency / DeFi accounting          | Not the ICP; adds regulatory burden                                        | Q4 2027 (Phase 2 retrospective)             |
+| Personal finance (consumer)               | Different ICP; different unit economics                                    | Never, by current strategy                  |
+| Custom chart builder (drag-and-drop)      | Cube has this; it's not a wedge; defer to Phase 4                          | Phase 4                                     |
+| Native Mac / Windows desktop app          | The web app is the product; Tauri/Electron are 2-year detours              | Phase 4 (after mobile validates the demand) |
+| Blockchain / NFT anything                 | No.                                                                        | Never.                                      |
+| In-house payments / AP automation         | Different product; Bill.com / Ramp own this                                | Phase 2 (as an integration, not a build)    |
+| Forecasting for crypto / Web3 startups    | Not the ICP                                                                | Q4 2027                                     |
+| "AI that writes the financial close memo" | Phase 3 deliverable 3.3 (Document AI) is the closest; do not duplicate     | Phase 3                                     |
+| White-label in Phase 0 or Phase 1         | Distracts from the platform wedge; requires multi-tenant to be solid first | Phase 4                                     |
 
 ---
 
 ## Glossary (for the founder and the Muses)
 
-| Term | Meaning |
-|---|---|
-| **CPF (Customer-Pilot Flywheel)** | The metric: 5 LOIs → 5 paid pilots → 5 referenceable customers → 10 LOIs. |
-| **DRAFT v0.1** | The marker Strategos puts on every doc until the founder approves; strip on approval. |
-| **DDC (Decider-Decision-Cycle)** | The minimum time from "I need a decision" to "decision made + logged": 7 days. |
-| **GTV (Gross Trust Value)** | A non-revenue metric: # of customers who would publicly reference us. |
-| **Hero workflow** | One of the 5 workflows every pilot must use: budget, forecast, scenario, consolidation, dashboard. |
-| **NPS gate** | The minimum NPS required to advance to the next phase: 20 in Phase 1, 30 in Phase 2, 40 in Phase 3, 50 in Phase 4. |
-| **Phase 0 exit criteria** | The 6 conditions listed under "Phase 0 sprint plan." All 6 must be green. |
-| **Three Witnesses** | The verification rule: every strategic claim cites (a) source doc, (b) data point, (c) competitive context. |
-| **The 100× promise** | From `PRODUCT_VISION.md §2`. "100× better FP&A platform than the 2025-Q4 baseline." |
-| **The 7 Muses** | Apollo, Athena, Prometheus, Hera, Hephaestus, Mnemosyne, Strategos. |
-| **TTV (Time-to-Value)** | Time from signup to first useful dashboard. Target: <1 hour by end of Phase 1, <15 min by end of Phase 2. |
+| Term                              | Meaning                                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **CPF (Customer-Pilot Flywheel)** | The metric: 5 LOIs → 5 paid pilots → 5 referenceable customers → 10 LOIs.                                          |
+| **DRAFT v0.1**                    | The marker Strategos puts on every doc until the founder approves; strip on approval.                              |
+| **DDC (Decider-Decision-Cycle)**  | The minimum time from "I need a decision" to "decision made + logged": 7 days.                                     |
+| **GTV (Gross Trust Value)**       | A non-revenue metric: # of customers who would publicly reference us.                                              |
+| **Hero workflow**                 | One of the 5 workflows every pilot must use: budget, forecast, scenario, consolidation, dashboard.                 |
+| **NPS gate**                      | The minimum NPS required to advance to the next phase: 20 in Phase 1, 30 in Phase 2, 40 in Phase 3, 50 in Phase 4. |
+| **Phase 0 exit criteria**         | The 6 conditions listed under "Phase 0 sprint plan." All 6 must be green.                                          |
+| **Three Witnesses**               | The verification rule: every strategic claim cites (a) source doc, (b) data point, (c) competitive context.        |
+| **The 100× promise**              | From `PRODUCT_VISION.md §2`. "100× better FP&A platform than the 2025-Q4 baseline."                                |
+| **The 7 Muses**                   | Apollo, Athena, Prometheus, Hera, Hephaestus, Mnemosyne, Strategos.                                                |
+| **TTV (Time-to-Value)**           | Time from signup to first useful dashboard. Target: <1 hour by end of Phase 1, <15 min by end of Phase 2.          |
 
 ---
 
 ## Change log
 
-| Date | Author | Change |
-|---|---|---|
+| Date       | Author    | Change                                                                                        |
+| ---------- | --------- | --------------------------------------------------------------------------------------------- |
 | 2026-06-12 | Strategos | Initial draft. 5 phases. 4 strategic bets. Anti-roadmap. Glossary. Awaiting founder approval. |
 
 ---

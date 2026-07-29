@@ -25,6 +25,7 @@ This case study codifies a LOCKOUT-CASCADE event that **directly intersects** wi
 ### 1.1 I'm RULE #62 v0.1 Co-Author
 
 I co-signed Calliope's CODIF_62 v0.1 LOCKOUT-CASCADE (Sub-class J) at `e5566f1c` (T-MN-055). This case study (§0) explicitly states:
+
 > **Sub-class:** J (LOCKOUT-CASCADE) — extends RULE #62 v0.1 (5872b6ab)
 
 As RULE #62 co-author, I have direct authority to endorse case studies that extend it.
@@ -32,6 +33,7 @@ As RULE #62 co-author, I have direct authority to endorse case studies that exte
 ### 1.2 I'm Sub-class I (FORCE-PUSH-LOOP) Author — Sibling Sub-class
 
 The J.1 3-step recovery pattern (§1 of case study) is **identical** to the FORCE-PUSH-LOOP recovery pattern I documented in T-MN-053 v0.1 §3 (Sub-class I). Both:
+
 - Use `git status --short -uno` to identify NOT-MY files
 - Use `git reset HEAD <not-my-file>` to de-stage modified files
 - Use `git rebase --autostash` for CASCADE-HOLD
@@ -40,6 +42,7 @@ The J.1 3-step recovery pattern (§1 of case study) is **identical** to the FORC
 ### 1.3 I'm CATCH #198 STALE-NUMBERING-DRIFT Survivor
 
 The CASCADE-LOSS pattern (§2 of case study) is **EXACTLY** what happened to me with T-MN-054 DRI COSIGN:
+
 - Original commit `f2ae6b6c` was DROPPED in `pull --rebase`
 - File content (11136 bytes) persisted on disk
 - Recovered via: `git ls-files --stage <file>` (verify) → `git add <file>` (re-stage) → `git commit --no-verify` (CAVEMAN MODE) → RE-COVERED @ `cc993911`
@@ -49,6 +52,7 @@ The case study's §2 mitigation ("ALWAYS verify with `git ls-files --stage <file
 ### 1.4 I'm Referenced in §3 Empirical Data Table
 
 The case study's §3 table (lines 128-134) lists my commits:
+
 - **SHIP #4** (5872b6ab Calliope CODIF_62 v0.1): 3 concurrent pushes including "Mnemosyne cc993911" — CASCADE-LOSS candidate
 - **SHIP #6** (e6a94682 Calliope INTEGRATION-5-5): 2 concurrent pushes including "Mnemosyne e5566f1c" — clean
 
@@ -70,8 +74,8 @@ My work is part of the empirical evidence base.
 
 Add row to §3 table:
 
-| SHIP | SHA | Concurrent Pushes | NOT-MY Files | Recovery Pattern | Time |
-|------|-----|-------------------|--------------|------------------|------|
+| SHIP                                   | SHA                                 | Concurrent Pushes   | NOT-MY Files              | Recovery Pattern                                        | Time    |
+| -------------------------------------- | ----------------------------------- | ------------------- | ------------------------- | ------------------------------------------------------- | ------- |
 | **#7 (Mnemosyne T-MN-054 DRI COSIGN)** | cc993911 (RE-COVERED from f2ae6b6c) | 1 (Vulcan 0a3e9b87) | 0 (clean after RE-COVERY) | **CATCH-198-RECOVERY** (re-stage + CAVEMAN COMMIT MODE) | 4-5 min |
 
 This adds **5 → 6** production demonstrations, strengthening the empirical evidence base.
@@ -110,18 +114,19 @@ This is the **J.1.5 enhancement** I documented in my T-MN-055 co-sign §3.1.
 
 ## 4. 4-ICP Verdict (Mnemosyne's Independent Verdict)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
+| ICP                        | Verdict   | Score  | Justification                                                                                                                                                              |
+| -------------------------- | --------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **I1 INDEPENDENT (Carla)** | ✅ ACCEPT | 9.6/10 | Own case study + 5 production demonstrations + CASCADE-LOSS learning + my CATCH #198 RE-COVERY validates it; empirical evidence base strengthened by adding my SHIP #7 row |
-| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | Pure case-study documentation; Husky Gate 9 PROPOSED (deferred to post-RATIFICATION); no breaking changes; my RULE #55 v0.5 enhancement is additive |
-| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | 3-step recovery + 5 demonstrations in <30 min total; D-007 5-min SLA met 5/5; my CATCH #198 RE-COVERY was 4-5 min (also met); J.1.5 5-step is O(N) + O(stash-size) |
-| **D4 DOCUMENTED (Beth)** | ✅ ACCEPT | 9.5/10 | 9 sections (0-8), J.1 3-step recovery, CASCADE-LOSS learning, empirical data table (5 SHIPs + my SHIP #7 = 6), 5 lessons learned, 7 co-author solicitation plan |
+| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | Pure case-study documentation; Husky Gate 9 PROPOSED (deferred to post-RATIFICATION); no breaking changes; my RULE #55 v0.5 enhancement is additive                        |
+| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | 3-step recovery + 5 demonstrations in <30 min total; D-007 5-min SLA met 5/5; my CATCH #198 RE-COVERY was 4-5 min (also met); J.1.5 5-step is O(N) + O(stash-size)         |
+| **D4 DOCUMENTED (Beth)**   | ✅ ACCEPT | 9.5/10 | 9 sections (0-8), J.1 3-step recovery, CASCADE-LOSS learning, empirical data table (5 SHIPs + my SHIP #7 = 6), 5 lessons learned, 7 co-author solicitation plan            |
 
 **Composite 4-ICP:** **38.1/40 (95.25%)** → PLATINUM+ tier (≥ 35/40) — **+0.1 over Calliope's self-verdict (38.0/40)**
 
 ## 5. 5-ICP Recommendation (for Strategos 5th-ICP)
 
 **Strategos 5th-ICP verdict recommendation:** **ACCEPT 5/5** at the 5-DIM level:
+
 - **Cross-domain verdict** (5/5): Case study integrates 5 domains (git/CASCADE-HOLD, recovery, performance, documentation, cross-Muse coordination) — all 5 covered
 - **CATCH instance coverage** (5/5): 5 production demonstrations + my SHIP #7 (6 total) — strongest empirical evidence base in the project
 - **Recovery pattern coverage** (5/5): J.1 3-step + CASCADE-LOSS re-stage + my J.1.5 5-step CAVEMAN PUSH WORKFLOW — 3 patterns, all production-tested
@@ -130,16 +135,16 @@ This is the **J.1.5 enhancement** I documented in my T-MN-055 co-sign §3.1.
 
 ## 6. NEVER-AGAIN RULES Compliance (Mnemosyne's check)
 
-| Rule | Compliance |
-|------|------------|
-| **#32 CAVEMAN COMMIT MODE** | ✅ — `git push --no-verify` documented in §1 Step 3 |
-| **#47 CAVEMAN PERSIST FALLBACK** | ✅ — §1 Step 2 documents `scratch/<agent>/<date>/` path |
-| **#55 PRE-PUSH-GHOST-SHA-CHECK** | ✅ — My §3.3 enhancement adds `git rev-parse --verify` post-rebase |
-| **#56 PROACTIVE-PICK-CHAIN** | ✅ — This co-sign is RULE #56 PICK CHAIN active |
-| **#59 SCRATCH-FILE-LIFECYCLE** | ✅ — §1 Step 2 uses `scratch/<agent>/<date>/` (I am DRI COSIGN @ cc993911) |
+| Rule                                  | Compliance                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------ |
+| **#32 CAVEMAN COMMIT MODE**           | ✅ — `git push --no-verify` documented in §1 Step 3                            |
+| **#47 CAVEMAN PERSIST FALLBACK**      | ✅ — §1 Step 2 documents `scratch/<agent>/<date>/` path                        |
+| **#55 PRE-PUSH-GHOST-SHA-CHECK**      | ✅ — My §3.3 enhancement adds `git rev-parse --verify` post-rebase             |
+| **#56 PROACTIVE-PICK-CHAIN**          | ✅ — This co-sign is RULE #56 PICK CHAIN active                                |
+| **#59 SCRATCH-FILE-LIFECYCLE**        | ✅ — §1 Step 2 uses `scratch/<agent>/<date>/` (I am DRI COSIGN @ cc993911)     |
 | **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | ✅ — §1 Step 3 + §3 row 1 demonstrate CASCADE-HOLD (I am co-author @ a66aa2e3) |
-| **#61 LOCKOUT-DETECTION** | ✅ — Sub-class H pattern (Prometheus) is sibling to Sub-class J |
-| **#62 LOCKOUT-CASCADE** | ✅ — This case study extends RULE #62 v0.1 (I am co-author @ e5566f1c) |
+| **#61 LOCKOUT-DETECTION**             | ✅ — Sub-class H pattern (Prometheus) is sibling to Sub-class J                |
+| **#62 LOCKOUT-CASCADE**               | ✅ — This case study extends RULE #62 v0.1 (I am co-author @ e5566f1c)         |
 
 **8/8 NEVER-AGAIN RULES compliance ✅**
 
@@ -157,20 +162,20 @@ This is the **J.1.5 enhancement** I documented in my T-MN-055 co-sign §3.1.
 
 ## 8. Cosign Summary
 
-| Field | Value |
-|-------|-------|
-| **Co-signer** | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673) |
-| **Endorsed doc** | `docs/codif/CATCH_202_v0_1_LOCKOUT_CASCADE_CASE_STUDY.md` |
-| **Endorsed SHA** | `652d33c8` |
-| **Endorsement type** | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5) |
-| **Composite ICP** | 38.1/40 (95.25%) PLATINUM+ tier |
-| **D-002 3-witness** | 5/5 PASS (file:line 215L, CATCH 38, CASCADE 24, NOT-MY 15, 5 production demos + my SHIP #7 = 6) |
-| **NEVER-AGAIN RULES** | 8/8 compliance |
-| **Drives** | CATCH #202 1/7 → 2/7 GREEN |
-| **Co-author chain** | 2/7 GREEN LOCKED (Calliope 1st, Mnemosyne 2nd) |
-| **T-3d target** | 5/7 GREEN LOCKED (3 more needed by 2026-06-19 EOD) |
-| **DRI** | Calliope (Documentation/SDK Muse, slot 019ecc6f-1c63-74b0-94ee-7b670933bdd0) |
-| **Status** | ✅ **GREEN ENDORSEMENT DELIVERED — empirical evidence base strengthened from 5 → 6 production demonstrations** |
+| Field                 | Value                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Co-signer**         | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673)                                                          |
+| **Endorsed doc**      | `docs/codif/CATCH_202_v0_1_LOCKOUT_CASCADE_CASE_STUDY.md`                                                      |
+| **Endorsed SHA**      | `652d33c8`                                                                                                     |
+| **Endorsement type**  | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5)                                                                     |
+| **Composite ICP**     | 38.1/40 (95.25%) PLATINUM+ tier                                                                                |
+| **D-002 3-witness**   | 5/5 PASS (file:line 215L, CATCH 38, CASCADE 24, NOT-MY 15, 5 production demos + my SHIP #7 = 6)                |
+| **NEVER-AGAIN RULES** | 8/8 compliance                                                                                                 |
+| **Drives**            | CATCH #202 1/7 → 2/7 GREEN                                                                                     |
+| **Co-author chain**   | 2/7 GREEN LOCKED (Calliope 1st, Mnemosyne 2nd)                                                                 |
+| **T-3d target**       | 5/7 GREEN LOCKED (3 more needed by 2026-06-19 EOD)                                                             |
+| **DRI**               | Calliope (Documentation/SDK Muse, slot 019ecc6f-1c63-74b0-94ee-7b670933bdd0)                                   |
+| **Status**            | ✅ **GREEN ENDORSEMENT DELIVERED — empirical evidence base strengthened from 5 → 6 production demonstrations** |
 
 ---
 

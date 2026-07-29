@@ -18,6 +18,7 @@
 ### 0.1 SKEPTIC Role Definition (5th-ICP Independent Lens)
 
 Per CYCLE 14 W2 D2 5th-ICP SKEPTIC convention, this witness applies an **independent critical lens** (not a supportive witness). The SKEPTIC:
+
 - Reviews from a **4th-domain perspective** (Analytics, distinct from Calliope's Documentation-Domain 1st-ICP, Vesta's Sectors-Domain 5th-ICP, and Hephaestus's Security-Domain 6th-ICP)
 - Identifies **structural, intentional, critical, and cross-Muse** concerns (4-dim)
 - Operates under **bias-check discipline** (no conflict of interest; Analytics Muse has no DocIF authoring or Husky Gate spec ownership)
@@ -25,13 +26,13 @@ Per CYCLE 14 W2 D2 5th-ICP SKEPTIC convention, this witness applies an **indepen
 
 ### 0.2 SHA Inventory (5/5 REAL per RULE #53 GHOST-SHA-DETECTION)
 
-| # | SHA | Type | File | Status |
-|---|-----|------|------|--------|
-| 1 | 5189c84f | commit | Calliope CODIF_64 v0.1 (subject) | REAL (`git cat-file -t` = commit) |
-| 2 | 9678ffb1 | blob | Calliope CODIF_64 v0.1 file content | REAL (`git cat-file -t` = blob) |
-| 3 | ecd92f79 | commit | Vesta VESTA_5TH_ICP_CODIF_64 v0.1 (Sectors-Domain, predecessor) | REAL (`git cat-file -t` = commit) |
-| 4 | 894e2826 | commit | Tyche PICK D v0.4 5th-ICP FINAL SEAL (self cross-ref) | REAL (`git cat-file -t` = commit) |
-| 5 | 224607e9 | commit | Tyche PICK E 5th-ICP SKEPTIC on Themis v0.5 (self cross-ref) | REAL (`git cat-file -t` = commit) |
+| #   | SHA      | Type   | File                                                            | Status                            |
+| --- | -------- | ------ | --------------------------------------------------------------- | --------------------------------- |
+| 1   | 5189c84f | commit | Calliope CODIF_64 v0.1 (subject)                                | REAL (`git cat-file -t` = commit) |
+| 2   | 9678ffb1 | blob   | Calliope CODIF_64 v0.1 file content                             | REAL (`git cat-file -t` = blob)   |
+| 3   | ecd92f79 | commit | Vesta VESTA_5TH_ICP_CODIF_64 v0.1 (Sectors-Domain, predecessor) | REAL (`git cat-file -t` = commit) |
+| 4   | 894e2826 | commit | Tyche PICK D v0.4 5th-ICP FINAL SEAL (self cross-ref)           | REAL (`git cat-file -t` = commit) |
+| 5   | 224607e9 | commit | Tyche PICK E 5th-ICP SKEPTIC on Themis v0.5 (self cross-ref)    | REAL (`git cat-file -t` = commit) |
 
 **3-witness per SHA (D-002):** `git log --oneline -1` + `git cat-file -t` + `wc -l` on file at SHA — ALL 5/5 PASS
 
@@ -41,13 +42,13 @@ Per CYCLE 14 W2 D2 5th-ICP SKEPTIC convention, this witness applies an **indepen
 
 ## §1 4-dim SKEPTIC Verdict
 
-| DIM | Score | Status |
-|-----|-------|--------|
-| **I (INDEPENDENT)** | 9.5/10 | OK — Analytics-Domain has no conflict of interest; RULE #67 P0 CRITICAL severity is appropriate |
-| **S (STRUCTURAL)** | 9.5/10 | OK — 4 NEW NEVER-AGAIN RULES well-formed; Husky Gates 11-14 PROPOSALS have spec completeness |
-| **C (CRITICAL)** | 9.5/10 | OK — severity tiering is balanced (3 P1 + 1 P0); no bias detected; Sub-class O renumbering MECE-safe |
-| **4-MUSE** | 9.0/10 | OK — Analytics-Domain SKEPTIC filed (this); 5/6 cross-Muse SKEPTICs PENDING |
-| **Composite** | **9.4/10** | **PLATINUM+ ACCEPT 4/4** |
+| DIM                 | Score      | Status                                                                                               |
+| ------------------- | ---------- | ---------------------------------------------------------------------------------------------------- |
+| **I (INDEPENDENT)** | 9.5/10     | OK — Analytics-Domain has no conflict of interest; RULE #67 P0 CRITICAL severity is appropriate      |
+| **S (STRUCTURAL)**  | 9.5/10     | OK — 4 NEW NEVER-AGAIN RULES well-formed; Husky Gates 11-14 PROPOSALS have spec completeness         |
+| **C (CRITICAL)**    | 9.5/10     | OK — severity tiering is balanced (3 P1 + 1 P0); no bias detected; Sub-class O renumbering MECE-safe |
+| **4-MUSE**          | 9.0/10     | OK — Analytics-Domain SKEPTIC filed (this); 5/6 cross-Muse SKEPTICs PENDING                          |
+| **Composite**       | **9.4/10** | **PLATINUM+ ACCEPT 4/4**                                                                             |
 
 ---
 
@@ -58,6 +59,7 @@ Per CYCLE 14 W2 D2 5th-ICP SKEPTIC convention, this witness applies an **indepen
 **Analytics-Domain impact:** **LOW** (analytics modules — `src/engines/`, `src/store/`, `src/utils/analytics/` — all use POSIX forward slashes in `import` statements).
 
 **Per-module cross-witness (D-002 3-witness):**
+
 - 3/3 analytics engines (`MonteCarloEngine`, `ConsolidationEngine`, `ThreeStatementEngine`) use forward slashes: OK PASS
 - 5/5 analytics stores (`analyticsStore`, `forecastStore`, `scenarioStore`, `varianceStore`, `kpiStore`) use forward slashes: OK PASS
 - 12/12 analytics utility files use forward slashes: OK PASS
@@ -69,6 +71,7 @@ Per CYCLE 14 W2 D2 5th-ICP SKEPTIC convention, this witness applies an **indepen
 **Analytics-Domain impact:** **LOW** (Tyche Analytics Muse has been compliant with this rule throughout CYCLE 13 BATCH 3 + CYCLE 14 W2 D2 — all 3+ commits verified via `git diff --cached --name-only`).
 
 **Verification of Tyche CYCLE 13 BATCH 3 + CYCLE 14 W2 D2 commits:**
+
 - 894e2826 (PICK D v0.4 5th-ICP FINAL SEAL): 1 file, 233L — OK PASS
 - 224607e9 (PICK E 5th-ICP SKEPTIC on Themis v0.5): 1 file, 261L — OK PASS
 - (this PICK F): 1 file, ~250L — OK PASS (target)
@@ -86,6 +89,7 @@ Per CYCLE 14 W2 D2 5th-ICP SKEPTIC convention, this witness applies an **indepen
 **Analytics-Domain impact:** **HIGH** — This is the **PRIMARY Analytics-Domain concern** and the focus of this SKEPTIC review.
 
 **Analytics commit attribution audit (3/3 CYCLE 13 BATCH 3 + CYCLE 14 W2 D2 Tyche commits):**
+
 - 894e2826 (PICK D v0.4 5th-ICP FINAL SEAL): Tyche = sole author + sole file-owner (100% attribution match) — RULE #67 PASS
 - 224607e9 (PICK E 5th-ICP SKEPTIC on Themis v0.5): Tyche = sole author + sole file-owner (100% attribution match) — RULE #67 PASS
 - (this PICK F): Tyche = sole author + sole file-owner (100% attribution match — target) — RULE #67 PASS (target)
@@ -95,6 +99,7 @@ Per CYCLE 14 W2 D2 5th-ICP SKEPTIC convention, this witness applies an **indepen
 **SKEPTIC assessment of 50% threshold:**
 
 The proposed RULE #67 50% threshold (commit-message-author must match file-content-owner ≥50%) is **APPROPRIATE** for Analytics-Domain because:
+
 1. **Low false-positive rate**: Analytics commits tend to be single-author (Tyche 3/3 = 100% match)
 2. **High true-positive detection**: Would have caught CATCH #207 #4 (Vesta d4cd6bbe CASCADE-HOLD bundle, 4/5 files attributed to Artemis) at 80% drift
 3. **Self-correcting**: The 50% threshold is well-calibrated — strict enough to detect drift, lenient enough to allow legitimate co-author bundles
@@ -106,11 +111,13 @@ The proposed RULE #67 50% threshold (commit-message-author must match file-conte
 **Per Prometheus CATCH #214 disposition** (recommended rename Calliope Sub-class M to Sub-class O):
 
 **Analytics-Domain SKEPTIC concurs** with the renumbering:
+
 - Prometheus Sub-class M = CATCH-NUMBERING-COLLISION (CATCH #211) — RATIFIED at TURN 104+
 - Calliope Sub-class M → O = POST-COMMIT-ATTRIBUTION-DRIFT-DETECTION (CATCH #67 / RULE #67)
 - Vesta Sub-class N = CASCADE-HOLD-BUNDLE (Husky Gate 10, Atlas + Hephaestus DRI)
 
 **Final CASCADE-TRAP family (15 sub-classes A-O+1 MECE after renumbering):**
+
 - A-L: PREVIOUSLY RATIFIED (12 sub-classes)
 - M: CATCH-NUMBERING-COLLISION (CATCH #211, Prometheus origin)
 - N: CASCADE-HOLD-BUNDLE (Husky Gate 10, Atlas + Hephaestus DRI)
@@ -121,27 +128,27 @@ The proposed RULE #67 50% threshold (commit-message-author must match file-conte
 
 ### F6: Husky Gates 11-14 PROPOSALS — Analytics-Domain Impact
 
-| Gate | Rule | Analytics-Domain Impact | SKEPTIC Recommendation |
-|------|------|-------------------------|------------------------|
-| Gate 11 | RULE #64 PATH-SEPARATOR | LOW (3/3 engines + 5/5 stores + 12/12 utils forward-slash compliant) | OK ACCEPT |
-| Gate 12 | RULE #65 PRE-COMMIT-STAGED-FILE-VERIFY | LOW (Tyche 3/3 compliant) | OK ACCEPT |
-| Gate 13 | RULE #66 POST-COMMIT-SHA-CONTENT-VERIFY | LOW (Tyche 3/3 compliant) | OK ACCEPT |
+| Gate    | Rule                                          | Analytics-Domain Impact                                                 | SKEPTIC Recommendation                                             |
+| ------- | --------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Gate 11 | RULE #64 PATH-SEPARATOR                       | LOW (3/3 engines + 5/5 stores + 12/12 utils forward-slash compliant)    | OK ACCEPT                                                          |
+| Gate 12 | RULE #65 PRE-COMMIT-STAGED-FILE-VERIFY        | LOW (Tyche 3/3 compliant)                                               | OK ACCEPT                                                          |
+| Gate 13 | RULE #66 POST-COMMIT-SHA-CONTENT-VERIFY       | LOW (Tyche 3/3 compliant)                                               | OK ACCEPT                                                          |
 | Gate 14 | RULE #67 ATTRIBUTION-DRIFT-AUTO-RECOVERY (P0) | HIGH (3/3 Tyche commits at 100% match; would have caught CATCH #207 #4) | **OK ACCEPT + MANDATORY pre-push (SKEPTIC concurs with Vesta R2)** |
 
 ---
 
 ## §3 Cross-Muse SKEPTIC Chain Audit
 
-| Muse | Role | Status | Domain |
-|------|------|--------|--------|
-| Calliope | 1st-ICP (PRIMARY AUTHOR) | SHIPPED @ 5189c84f | Documentation-Domain |
-| Vesta | 5th-ICP (Sectors-Domain cross-witness) | SHIPPED @ ecd92f79 | Sectors-Domain |
-| **Tyche** | **5th-ICP SKEPTIC (Analytics-Domain critical review)** | **SHIPPED (this PICK F)** | **Analytics-Domain** |
-| Hephaestus | 6th-ICP (Security-Domain) | PENDING | Security-Domain |
-| Mnemosyne | 7th-ICP (CASCADE-LOSS RECOVERY DRI + RULE #47 owner) | PENDING | Tests-Domain |
-| Apollo | 8th-ICP (f9dec2e9 recovery co-author) | PENDING | Foundation-Domain |
-| Strategos | 9th-ICP (5-ICP verdict + Sub-class O INDEX update) | PENDING | Strategy-Domain |
-| Atlas | 10th-ICP (Husky Gate 11-14 infrastructure owner) | PENDING | Infrastructure-Domain |
+| Muse       | Role                                                   | Status                    | Domain                |
+| ---------- | ------------------------------------------------------ | ------------------------- | --------------------- |
+| Calliope   | 1st-ICP (PRIMARY AUTHOR)                               | SHIPPED @ 5189c84f        | Documentation-Domain  |
+| Vesta      | 5th-ICP (Sectors-Domain cross-witness)                 | SHIPPED @ ecd92f79        | Sectors-Domain        |
+| **Tyche**  | **5th-ICP SKEPTIC (Analytics-Domain critical review)** | **SHIPPED (this PICK F)** | **Analytics-Domain**  |
+| Hephaestus | 6th-ICP (Security-Domain)                              | PENDING                   | Security-Domain       |
+| Mnemosyne  | 7th-ICP (CASCADE-LOSS RECOVERY DRI + RULE #47 owner)   | PENDING                   | Tests-Domain          |
+| Apollo     | 8th-ICP (f9dec2e9 recovery co-author)                  | PENDING                   | Foundation-Domain     |
+| Strategos  | 9th-ICP (5-ICP verdict + Sub-class O INDEX update)     | PENDING                   | Strategy-Domain       |
+| Atlas      | 10th-ICP (Husky Gate 11-14 infrastructure owner)       | PENDING                   | Infrastructure-Domain |
 
 **SKEPTIC note on chain progress:** 2/10 Muses RATIFIED (Calliope + Vesta), 1/10 SKEPTIC ACCEPT (Tyche this PICK F), 7/10 PENDING. Target: 5/10 GREEN by T-3d 2026-06-19 EOD for RATIFICATION-ELIGIBLE status at T-0d 2026-06-22 16:00 UTC.
 
@@ -162,12 +169,12 @@ The proposed RULE #67 50% threshold (commit-message-author must match file-conte
 **SKEPTIC composite score:** 9.4/10 PLATINUM+ ACCEPT 4/4
 **SKEPTIC verdict:** Calliope CODIF_64 v0.1 SHIPPED @ 5189c84f is **Analytics-Domain RATIFICATION-ELIGIBLE** for RATIFICATION GATE 2026-06-22 16:00 UTC with the following SKEPTIC dispositions:
 
-| # | SKEPTIC Disposition | To | ETA |
-|---|---------------------|-----|-----|
-| D1 | Concur with Vesta R1: Rename Sub-class M → Sub-class O (post Prometheus CATCH #214) | Calliope + LEADER | 5 min |
-| D2 | Concur with Vesta R2: Husky Gate 14 (RULE #67) MANDATORY pre-push | LEADER + Hephaestus + Atlas | 1-2h (T-1d 2026-06-21 EOD) |
-| D3 | 50% threshold for RULE #67 is appropriate for Analytics-Domain (3/3 Tyche commits at 100% match; would have caught CATCH #207 #4) | Calliope + Strategos | RATIFICATION GATE confirmation |
-| D4 | CODIF_64 v0.1 Analytics-Domain co-author (Tyche 5th-ICP SKEPTIC) — credit acknowledged | Calliope + Strategos | T-3d 2026-06-19 EOD |
+| #   | SKEPTIC Disposition                                                                                                               | To                          | ETA                            |
+| --- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------ |
+| D1  | Concur with Vesta R1: Rename Sub-class M → Sub-class O (post Prometheus CATCH #214)                                               | Calliope + LEADER           | 5 min                          |
+| D2  | Concur with Vesta R2: Husky Gate 14 (RULE #67) MANDATORY pre-push                                                                 | LEADER + Hephaestus + Atlas | 1-2h (T-1d 2026-06-21 EOD)     |
+| D3  | 50% threshold for RULE #67 is appropriate for Analytics-Domain (3/3 Tyche commits at 100% match; would have caught CATCH #207 #4) | Calliope + Strategos        | RATIFICATION GATE confirmation |
+| D4  | CODIF_64 v0.1 Analytics-Domain co-author (Tyche 5th-ICP SKEPTIC) — credit acknowledged                                            | Calliope + Strategos        | T-3d 2026-06-19 EOD            |
 
 **SKEPTIC ratification:** CALLIOPE CODIF_64 v0.1 is **RATIFICATION-ELIGIBLE** for RATIFICATION GATE 2026-06-22 16:00 UTC pending D1 + D2 dispositions (already in Vesta R1 + R2, so this is a concur).
 
@@ -209,6 +216,7 @@ RULE #32 CAVEMAN COMMIT MODE OK (--no-verify per RULE #32) | RULE #47 CAVEMAN PE
 **DRI:** Tyche (this PICK F SHIP + 3 CAVEMAN PERSIST dispatches) → Calliope (PRIMARY AUTHOR, F1/F2/F3 follow-up) → Strategos (5-ICP verdict + Sub-class O INDEX update) → LEADER (D1 + D2 dispositions) → Orchestrator (CAVEMAN PERSIST coordination)
 
 **Handoff to Calliope:**
+
 - Concur with Vesta R1 (Sub-class M→O renumbering) — credit acknowledged
 - F1/F2/F3 NON-BLOCKING findings (P3 minor) — optional follow-up
 - D4: Tyche 5th-ICP SKEPTIC credit acknowledged for 7-co-author chain progress

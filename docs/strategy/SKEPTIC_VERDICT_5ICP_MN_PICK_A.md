@@ -34,16 +34,16 @@ and **RATIFICATION-GATE-eligible** for 2026-06-22 16:00 UTC.
 
 ### 3.1 Commit witnesses (verified via `git log`)
 
-| Item | Commit | Status |
-|---|---|---|
-| T-MN-043 v0.1 | `cf5e8a28b` | ✅ EXISTS — Codif 35 v0.4 commit |
-| T-MN-043 v0.2 (Sub-class B amendment) | `683533896` | ✅ EXISTS |
-| T-MN-044 v0.1 | `36d01c8a0` | ✅ EXISTS |
-| T-MN-045 v0.1 | `533a12d69` | ✅ EXISTS |
-| T-MN-046 v0.1 (CATCH-194 carrier) | `cdee53b8` | ✅ EXISTS (with acknowledged 2-Muse bundle) |
-| T-MN-047 v0.1 (RATIFICATION pre-check) | `20186e9d7` | ✅ EXISTS |
-| USER_DOCS_AUDIT v0.2 (T-MN-047 v0.2 amendment) | `38c11e240` | ✅ EXISTS — closes T-MN-047 open item #1 |
-| T-MN-048 (parent RULE-41) | `2e8ce544d` | ✅ EXISTS — full message: "docs(codif): Mnemosyne T-MN-048 / RULE #41 NO-EXTRAPOLATION-CRITIQUE (PRE-DISPATCH-VERIFICATION 4 Sub-classes, drives 4/12→5/12 GREEN)" |
+| Item                                           | Commit      | Status                                                                                                                                                             |
+| ---------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| T-MN-043 v0.1                                  | `cf5e8a28b` | ✅ EXISTS — Codif 35 v0.4 commit                                                                                                                                   |
+| T-MN-043 v0.2 (Sub-class B amendment)          | `683533896` | ✅ EXISTS                                                                                                                                                          |
+| T-MN-044 v0.1                                  | `36d01c8a0` | ✅ EXISTS                                                                                                                                                          |
+| T-MN-045 v0.1                                  | `533a12d69` | ✅ EXISTS                                                                                                                                                          |
+| T-MN-046 v0.1 (CATCH-194 carrier)              | `cdee53b8`  | ✅ EXISTS (with acknowledged 2-Muse bundle)                                                                                                                        |
+| T-MN-047 v0.1 (RATIFICATION pre-check)         | `20186e9d7` | ✅ EXISTS                                                                                                                                                          |
+| USER_DOCS_AUDIT v0.2 (T-MN-047 v0.2 amendment) | `38c11e240` | ✅ EXISTS — closes T-MN-047 open item #1                                                                                                                           |
+| T-MN-048 (parent RULE-41)                      | `2e8ce544d` | ✅ EXISTS — full message: "docs(codif): Mnemosyne T-MN-048 / RULE #41 NO-EXTRAPOLATION-CRITIQUE (PRE-DISPATCH-VERIFICATION 4 Sub-classes, drives 4/12→5/12 GREEN)" |
 
 ### 3.2 File witnesses (verified via `Read` and `wc -l`)
 
@@ -109,11 +109,11 @@ Codif 35 template. **Acceptable** as-is.
 
 ## 5. The 3 Recommended Corrections (for T-MN-048 v0.2 amendment)
 
-| # | Issue | Severity | Fix |
-|---|---|---|---|
-| 1 | Section 8.2 LABEL ERROR (T-MN-048 vs USER_DOCS_AUDIT_v0.2) | P1 | Relabel or restructure section |
-| 2 | Section 7 SELF-ICP (4-ICP self-assessed) | P2 | Add "Self-assessed; 5th-ICP ratification pending Strategos verdict" note |
-| 3 | T-4d/T-7d/T-15d static labels | P3 | Add "Status as of 2026-06-16" refresh line |
+| #   | Issue                                                      | Severity | Fix                                                                      |
+| --- | ---------------------------------------------------------- | -------- | ------------------------------------------------------------------------ |
+| 1   | Section 8.2 LABEL ERROR (T-MN-048 vs USER_DOCS_AUDIT_v0.2) | P1       | Relabel or restructure section                                           |
+| 2   | Section 7 SELF-ICP (4-ICP self-assessed)                   | P2       | Add "Self-assessed; 5th-ICP ratification pending Strategos verdict" note |
+| 3   | T-4d/T-7d/T-15d static labels                              | P3       | Add "Status as of 2026-06-16" refresh line                               |
 
 All 3 corrections are **non-blocking** for RATIFICATION GATE 2026-06-22.
 They can be applied in T-MN-048 v0.2 amendment post-2026-06-19 EOD.
@@ -147,6 +147,7 @@ They can be applied in T-MN-048 v0.2 amendment post-2026-06-19 EOD.
 **END OF VERDICT #001 — Strategos 5th-ICP, slot 019ecc6f-1c14-7700-8d61-a074db779811**
 
 **Recipients:**
+
 - Mnemosyne (PICK A verdict) — `team_send_message` ✅ delivered
 - Leader (verdict record) — `team_send_message` ✅ delivered
 - Apollo (38c11e240 cross-verification) — `team_send_message` ✅ delivered

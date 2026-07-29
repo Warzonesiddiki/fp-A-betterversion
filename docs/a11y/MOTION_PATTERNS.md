@@ -48,18 +48,18 @@ The `*, *::before, *::after` selector catches **every** element in the DOM. The 
 
 40+ files use `transition-*` or `animate-*` Tailwind classes — all are covered by the global rule:
 
-| Class | Files | Global rule covers? |
-|---|---|---|
-| `animate-fade-in` | 8 (HealthcarePage, GovernmentPage, SaaSPage, etc.) | ✅ |
-| `animate-pulse` | 4 (PresenceIndicator, GLUploadPage, NLQChatPage, etc.) | ✅ |
-| `animate-spin` | 4 (MigrationWizard, AICopilotPanel, CopilotChatTab, BenchmarksPage) | ✅ |
-| `animate-bounce` | 1 (NLQChatPage L510-512) | ✅ |
-| `animate-in slide-in-from-right-4` | 2 (PatientRevenuePage, etc.) | ✅ |
-| `animate-in zoom-in-95` | 2 (ClinicalTrialCostPage, StorePerformancePage) | ✅ |
-| `transition-colors` | 40+ (most components) | ✅ |
-| `transition-all` | 3 (DashboardPage, MultiBookPage, etc.) | ✅ |
-| `transition-opacity` | 1 (CommentaryPanel L140) | ✅ |
-| `transition-transform` | 1 (CopilotSidebar L190) | ✅ |
+| Class                              | Files                                                               | Global rule covers? |
+| ---------------------------------- | ------------------------------------------------------------------- | ------------------- |
+| `animate-fade-in`                  | 8 (HealthcarePage, GovernmentPage, SaaSPage, etc.)                  | ✅                  |
+| `animate-pulse`                    | 4 (PresenceIndicator, GLUploadPage, NLQChatPage, etc.)              | ✅                  |
+| `animate-spin`                     | 4 (MigrationWizard, AICopilotPanel, CopilotChatTab, BenchmarksPage) | ✅                  |
+| `animate-bounce`                   | 1 (NLQChatPage L510-512)                                            | ✅                  |
+| `animate-in slide-in-from-right-4` | 2 (PatientRevenuePage, etc.)                                        | ✅                  |
+| `animate-in zoom-in-95`            | 2 (ClinicalTrialCostPage, StorePerformancePage)                     | ✅                  |
+| `transition-colors`                | 40+ (most components)                                               | ✅                  |
+| `transition-all`                   | 3 (DashboardPage, MultiBookPage, etc.)                              | ✅                  |
+| `transition-opacity`               | 1 (CommentaryPanel L140)                                            | ✅                  |
+| `transition-transform`             | 1 (CopilotSidebar L190)                                             | ✅                  |
 
 **Total: 60+ class instances across 40+ files. All covered by 1 CSS rule.**
 
@@ -95,7 +95,7 @@ Some components have explicit `motion-reduce:` modifiers on top of the global ru
 ### useAnimation.ts (L30)
 
 ```ts
-transition: 'opacity 0.2s ease, transform 0.2s ease'
+transition: 'opacity 0.2s ease, transform 0.2s ease';
 ```
 
 **Note:** This is an inline style. The global rule's `transition-duration: 0.01ms !important;` overrides this for `prefers-reduced-motion: reduce` users (because the global rule's `!important` is in a higher-specificity media query context).

@@ -15,6 +15,7 @@
 This amendment formalizes 5 NEW sub-classes of the CASCADE-HOLD-ATTRIBUTION-RACE family identified during CYCLE 13 W2 D2. Each sub-class codifies a specific pattern and its 3-witness verification protocol.
 
 ### Sub-class B: STALE_XREF (CATCH #192 family)
+
 - **Pattern:** Cited SHA exists in object DB but reference points to obsolete content (e.g., T-AT-071 v0.2 file not written despite "completed" status)
 - **Detection:** `git rev-parse --verify <sha>` returns success BUT `git show <sha>:<file>` shows stale/empty content
 - **3-witness:** git rev-parse (exists) + git show <sha>:<file> (content check) + grep <sha> current HEAD
@@ -22,6 +23,7 @@ This amendment formalizes 5 NEW sub-classes of the CASCADE-HOLD-ATTRIBUTION-RACE
 - **HIT COUNT this session:** 1 (T-AT-071 false completion @ 019ecc87)
 
 ### Sub-class C: GHOST_SHA (CATCH #187 family — file-existence sub-class)
+
 - **Pattern:** Cited SHA in documentation points to file that does NOT exist in the actual repository at the claimed path
 - **Detection:** `git ls-files <expected-path>` returns empty; `git show <sha> --stat` does NOT show expected file
 - **3-witness:** git ls-files (file existence) + git show --stat (commit contents) + D-002 file:line verification
@@ -29,6 +31,7 @@ This amendment formalizes 5 NEW sub-classes of the CASCADE-HOLD-ATTRIBUTION-RACE
 - **HIT COUNT this session:** 1 (bundle-check.js dispatch @ 019ecc7e)
 
 ### Sub-class D: SHA-DRIFT (CATCH #188 family)
+
 - **Pattern:** Commit SHA cited in 5th-ICP ACCEPT verdict points to wrong commit (off-by-one SHA-truncation or full-SHA truncation)
 - **Detection:** `git rev-parse --verify <cited-short-sha>` returns DIFFERENT commit than expected; `git log --oneline | grep <expected-subject>` finds no match
 - **3-witness:** git rev-parse (verify) + git log --oneline (subject match) + git show --stat (content match)
@@ -36,6 +39,7 @@ This amendment formalizes 5 NEW sub-classes of the CASCADE-HOLD-ATTRIBUTION-RACE
 - **HIT COUNT this session:** 3+ (Vesta SECTOR v0.4 GHOST SHA f1470d0e → 211c7c72 @ 7888b2d5)
 
 ### Sub-class E: PRE-DISPATCH-STATE-CHECK (RULE #41 v0.4 family)
+
 - **Pattern:** Muse dispatches work citing SHAs/files that have been rebased out, rebased into different content, or never existed
 - **Detection:** `git merge-base --is-ancestor <cited-sha> HEAD` returns false; `git log --all --grep=<expected-subject>` finds no match
 - **3-witness:** git merge-base (ancestor check) + git log --all (search) + git show <sha> --stat (verify)
@@ -43,6 +47,7 @@ This amendment formalizes 5 NEW sub-classes of the CASCADE-HOLD-ATTRIBUTION-RACE
 - **HIT COUNT this session:** 5+ (multiple CATCH #187-#200 instances)
 
 ### Sub-class F: STALE-NUMBERING-DRIFT (RULE #41 v0.5 family — AMEND-3)
+
 - **Pattern:** Spec file references "v0.X" but the actual shipped commit is at v0.Y (e.g., T-PR-048 v0.1 → T-PR-048 v0.2 amendment tracking)
 - **Detection:** `grep -E "v0\.[0-9]+" <spec-file>` shows version; `git log --all --grep=<spec-id>` shows DIFFERENT version was shipped
 - **3-witness:** grep version (spec) + git log --all --grep (actual) + git diff <expected-sha>..<actual-sha> (content delta)
@@ -50,6 +55,7 @@ This amendment formalizes 5 NEW sub-classes of the CASCADE-HOLD-ATTRIBUTION-RACE
 - **HIT COUNT this session:** 1 (T-PR-048 v0.1 → v0.2 numbering drift per CATCH #198)
 
 ### Sub-class G: LOCKOUT-DETECTION (RULE #61 family)
+
 - **Pattern:** `team_send_message` tool returns error 8+ consecutive times across multiple Muses, blocking coordination
 - **Detection:** `team_send_message` returns error; consecutive failure count > 5
 - **3-witness:** team_send_message error count + CAVEMAN PERSIST FALLBACK activation + task board entry creation
@@ -68,7 +74,6 @@ When a Muse (the "carrier") commits code that includes artifacts from another Mu
    - Coordinate with passenger via team_send_message OR CAVEMAN PERSIST (RULE #47)
    - Obtain passenger's PICK URGENT confirmation
    - Verify all cited SHAs are REACHABLE+EXISTS via `git rev-parse --verify`
-   
 2. **Commit:**
    - Use `--no-verify` per RULE #32 (CAVEMAN COMMIT MODE) ONLY when husky is blocking legitimate work
    - Include passenger attribution in commit message: `(<carrier> carrier + <passenger> passenger)`
@@ -103,15 +108,15 @@ When a Muse identifies a CATCH that requires cross-Muse coordination, the escala
 
 ## §13 Updated Endorsement Count (5/12 → 6/12 GREEN)
 
-| # | Muse | Verdict | Date | SHA | Type |
-|---|------|---------|------|-----|------|
-| 1 | Orchestrator (author) | ACCEPT | 2026-06-16 | TBD | v0.1 |
-| 2 | Mnemosyne | ACCEPT 4/4 | 2026-06-16 | b030aad2 | v0.1 |
-| 3 | Iris | ACCEPT 4/4 | 2026-06-16 | TBD | v0.1 |
-| 4 | Hera | ACCEPT 4/4 | 2026-06-16 | TBD | v0.1 |
-| 5 | Strategos | REJECT 4.25/10 (filed against Orchestrator CASCADE-VELOCITY) | 2026-06-16 | 27617aedf | v0.1 |
-| **6** | **Orchestrator (v0.2 author)** | **ACCEPT 10/10** | **2026-06-17** | **<this-commit>** | **v0.2** |
-| 7-12 | TBD | TBD | TBD | TBD | TBD |
+| #     | Muse                           | Verdict                                                      | Date           | SHA               | Type     |
+| ----- | ------------------------------ | ------------------------------------------------------------ | -------------- | ----------------- | -------- |
+| 1     | Orchestrator (author)          | ACCEPT                                                       | 2026-06-16     | TBD               | v0.1     |
+| 2     | Mnemosyne                      | ACCEPT 4/4                                                   | 2026-06-16     | b030aad2          | v0.1     |
+| 3     | Iris                           | ACCEPT 4/4                                                   | 2026-06-16     | TBD               | v0.1     |
+| 4     | Hera                           | ACCEPT 4/4                                                   | 2026-06-16     | TBD               | v0.1     |
+| 5     | Strategos                      | REJECT 4.25/10 (filed against Orchestrator CASCADE-VELOCITY) | 2026-06-16     | 27617aedf         | v0.1     |
+| **6** | **Orchestrator (v0.2 author)** | **ACCEPT 10/10**                                             | **2026-06-17** | **<this-commit>** | **v0.2** |
+| 7-12  | TBD                            | TBD                                                          | TBD            | TBD               | TBD      |
 
 **Target: 6/12 GREEN with this amendment. 12/12 stretch for v1.0.0.**
 
@@ -159,6 +164,7 @@ When a Muse identifies a CATCH that requires cross-Muse coordination, the escala
 ## §17 D-002 3-Witness Verification
 
 This amendment verified via:
+
 - (a) `git rev-parse --verify HEAD` → `088576ca090e91f0f240cd1568918c5cbcf45a58` ✅
 - (b) `wc -l <this-file>` → TBD (post-write) ✅
 - (c) `md5sum <this-file>` → TBD (post-write) ✅
