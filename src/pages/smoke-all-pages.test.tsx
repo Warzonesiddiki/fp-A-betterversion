@@ -28,6 +28,7 @@ vi.mock('@/store/glStore', () => ({
 vi.mock('@/store/budgetStore', () => ({
   useBudgetStore: vi.fn(() => ({
     budgets: [],
+    lineItems: [],
     activeBudgetId: null,
     isLoading: false,
     error: null,

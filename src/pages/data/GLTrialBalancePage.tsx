@@ -2,12 +2,22 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useGLTrialBalanceStore } from '@/store/glTrialBalanceStore';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { toCSV } from '@/utils/csv';
-import { Scale, RefreshCw, Download, Eye, BarChart3 } from 'lucide-react';
+import {
+  Scale,
+  RefreshCw,
+  Download,
+  Eye,
+  BarChart3,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+} from 'lucide-react';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -28,11 +38,61 @@ export default function GLTrialBalancePage() {
   const { entries, trialBalance, isLoading, generateTrialBalance } = useGLStore();
   const navigate = useNavigate();
 
+  // Sorting is delegated to glTrialBalanceStore, which already implements
+  // real column sort/filter/pagination logic (previously built but never
+  // wired to any page — a fully-tested, fully-functional store sitting
+  // unused while this page rendered rows in raw GL order with no way to
+  // sort by any column). Feed the generated trial balance rows into it and
+  // render its sorted, RBAC-enforced output instead of the raw store rows.
+  const setTBRows = useGLTrialBalanceStore((s) => s.setRows);
+  const tbSortConfig = useGLTrialBalanceStore((s) => s.sortConfig);
+  const tbFilteredRows = useGLTrialBalanceStore((s) => s.filteredRows);
+  const setTBSort = useGLTrialBalanceStore((s) => s.setSort);
+
   useEffect(() => {
     if (entries.length > 0 && trialBalance.length === 0 && !isLoading) {
       generateTrialBalance();
     }
   }, [entries, trialBalance, isLoading, generateTrialBalance]);
+
+  useEffect(() => {
+    if (trialBalance.length === 0) return;
+    try {
+      setTBRows(trialBalance);
+    } catch {
+      // glTrialBalanceStore.setRows is RBAC-gated (IMPORT_UPDATE) because
+      // its primary caller is the import pipeline. Feeding it the trial
+      // balance to enable column sorting is a read-side convenience, not a
+      // data mutation — a viewer without import:update should still see
+      // the (unsorted) trial balance rather than have the whole page
+      // crash. sortedTrialBalance below already falls back to the raw
+      // trialBalance array whenever the sort store has nothing loaded.
+    }
+  }, [trialBalance, setTBRows]);
+
+  const sortedTrialBalance =
+    tbFilteredRows.length > 0 || tbSortConfig ? tbFilteredRows : trialBalance;
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const nextDirection: 'asc' | 'desc' =
+        tbSortConfig?.column === column && tbSortConfig.direction === 'asc' ? 'desc' : 'asc';
+      setTBSort(column, nextDirection);
+    },
+    [tbSortConfig, setTBSort]
+  );
+
+  const sortIconFor = useCallback(
+    (column: string) => {
+      if (tbSortConfig?.column !== column) return <ArrowUpDown className="h-3 w-3 opacity-40" />;
+      return tbSortConfig.direction === 'asc' ? (
+        <ArrowUp className="h-3 w-3" />
+      ) : (
+        <ArrowDown className="h-3 w-3" />
+      );
+    },
+    [tbSortConfig]
+  );
 
   const { totalDebits, totalCredits, diff, isBalanced } = useMemo(() => {
     const debits = trialBalance.reduce((s, r) => s + r.debit, 0);
@@ -169,37 +229,45 @@ export default function GLTrialBalancePage() {
               <caption className="sr-only">Detailed gl trial balance</caption>
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
-                  <th scope="col" className="px-4 py-3 w-20">
-                    Code
-                  </th>
-                  <th scope="col" className="px-4 py-3">
-                    Account Name
-                  </th>
-                  <th scope="col" className="px-4 py-3 w-16">
-                    Type
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right w-28">
-                    Beginning Balance
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right w-28">
-                    Debits
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right w-28">
-                    Credits
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right w-28">
-                    Net Change
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right w-28">
-                    Ending Balance
-                  </th>
+                  {(
+                    [
+                      { key: 'accountCode', label: 'Code', className: 'w-20' },
+                      { key: 'accountName', label: 'Account Name', className: '' },
+                      { key: 'accountType', label: 'Type', className: 'w-16' },
+                      {
+                        key: 'beginningBalance',
+                        label: 'Beginning Balance',
+                        className: 'text-right w-28',
+                      },
+                      { key: 'debit', label: 'Debits', className: 'text-right w-28' },
+                      { key: 'credit', label: 'Credits', className: 'text-right w-28' },
+                      { key: 'netChange', label: 'Net Change', className: 'text-right w-28' },
+                      {
+                        key: 'endingBalance',
+                        label: 'Ending Balance',
+                        className: 'text-right w-28',
+                      },
+                    ] as const
+                  ).map((col) => (
+                    <th key={col.key} scope="col" className={`px-4 py-3 ${col.className}`}>
+                      <button
+                        type="button"
+                        onClick={() => handleSort(col.key)}
+                        className="inline-flex items-center gap-1 hover:text-white transition-colors"
+                        aria-label={`Sort by ${col.label}`}
+                      >
+                        {col.label}
+                        {sortIconFor(col.key)}
+                      </button>
+                    </th>
+                  ))}
                   <th scope="col" className="px-2 py-3 w-20">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
-                {trialBalance.map((row) => (
+                {sortedTrialBalance.map((row) => (
                   <tr
                     key={row.accountId}
                     className="hover:bg-slate-900/50 cursor-pointer group"

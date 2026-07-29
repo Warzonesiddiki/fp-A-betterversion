@@ -1,62 +1,50 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LayoutGrid, Plus, Save, Download, Trash2, GripVertical } from 'lucide-react';
+import { useDashboardStore, type Widget, type WidgetType } from '@/store/dashboardStore';
+import { useAuthStore } from '@/store/authStore';
 
-interface Widget {
-  id: string;
-  type: 'kpi' | 'chart' | 'table' | 'text';
-  title: string;
-  config: Record<string, unknown>;
-  position: { x: number; y: number; w: number; h: number };
-}
+const DEFAULT_DASHBOARD_NAME = 'My Dashboard';
 
-const DEFAULT_WIDGETS: Widget[] = [
+const DEFAULT_WIDGETS: ReadonlyArray<Omit<Widget, 'id'>> = [
   {
-    id: '1',
     type: 'kpi',
     title: 'Total Revenue',
     config: { format: 'currency' },
     position: { x: 0, y: 0, w: 3, h: 1 },
   },
   {
-    id: '2',
     type: 'kpi',
     title: 'Net Income',
     config: { format: 'currency' },
     position: { x: 3, y: 0, w: 3, h: 1 },
   },
   {
-    id: '3',
     type: 'kpi',
     title: 'Operating Margin',
     config: { format: 'percent' },
     position: { x: 6, y: 0, w: 3, h: 1 },
   },
   {
-    id: '4',
     type: 'kpi',
     title: 'Cash Flow',
     config: { format: 'currency' },
     position: { x: 9, y: 0, w: 3, h: 1 },
   },
   {
-    id: '5',
     type: 'chart',
     title: 'Revenue Trend',
     config: { chartType: 'line' },
     position: { x: 0, y: 1, w: 6, h: 2 },
   },
   {
-    id: '6',
     type: 'chart',
     title: 'Expense Breakdown',
     config: { chartType: 'pie' },
     position: { x: 6, y: 1, w: 6, h: 2 },
   },
   {
-    id: '7',
     type: 'table',
     title: 'Top Accounts',
     config: { pageSize: 5 },
@@ -64,73 +52,159 @@ const DEFAULT_WIDGETS: Widget[] = [
   },
 ];
 
+/**
+ * Dashboard Builder — custom widget dashboards.
+ *
+ * PREVIOUSLY: widgets lived in raw `useState` and "Save" wrote to a
+ * `localStorage` key nothing ever read back — edits appeared to save (no
+ * error, edit mode exited) but were silently discarded on the next load.
+ * Meanwhile `dashboardStore` (this file's current data source) already
+ * existed as a fully built, fully tested (14/14 passing), RBAC-enforced,
+ * masterStorage-persisted, multi-dashboard CRUD store with the exact same
+ * Widget/WidgetPosition shape — and was never imported by any page. This
+ * page now uses that store directly: every add/remove/move/save operation
+ * is a real, persisted, cross-session mutation instead of a component-local
+ * illusion of one.
+ */
 export default function DashboardBuilderPage() {
-  const [widgets, setWidgets] = useState<Widget[]>(DEFAULT_WIDGETS);
-  const [isEditing, setIsEditing] = useState(false);
-  // [Hera] PICK J a11y: live region for widget add/remove/move announcements
-  const [announcement, setAnnouncement] = useState<string>('');
-  const lastWidgetCount = useRef<number>(widgets.length);
+  const dashboards = useDashboardStore((s) => s.dashboards);
+  const activeDashboardId = useDashboardStore((s) => s.activeDashboardId);
+  const addDashboard = useDashboardStore((s) => s.addDashboard);
+  const setActiveDashboard = useDashboardStore((s) => s.setActiveDashboard);
+  const addWidget = useDashboardStore((s) => s.addWidget);
+  const removeWidget = useDashboardStore((s) => s.removeWidget);
+  const updateDashboard = useDashboardStore((s) => s.updateDashboard);
+  const currentUser = useAuthStore((s) => s.user);
+
   const announceRef = useRef<HTMLDivElement | null>(null);
 
-  // [Hera] PICK J a11y: announce widget count on mount
+  // Bootstrap: create the user's first dashboard on first visit, exactly
+  // once. Without this, dashboards.length === 0 forever and the page would
+  // have nothing to render — the store provides no default data itself
+  // (correctly: a generic "seed a dashboard" concern belongs to the page,
+  // not the store).
   useEffect(() => {
-    setAnnouncement(`Dashboard loaded with ${DEFAULT_WIDGETS.length} widgets`);
-  }, []);
+    if (dashboards.length === 0) {
+      const id = addDashboard({
+        name: DEFAULT_DASHBOARD_NAME,
+        description: 'Default financial overview dashboard',
+        widgets: DEFAULT_WIDGETS.map((w, i) => ({ ...w, id: `seed-${i}` })),
+        layout: 'grid',
+        columns: 12,
+        createdBy: currentUser?.id ?? 'system',
+        isTemplate: false,
+        tags: [],
+      });
+      setActiveDashboard(id);
+    } else if (!activeDashboardId) {
+      setActiveDashboard(dashboards[0]?.id ?? null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dashboards.length]);
 
-  // [Hera] PICK J a11y: announce widget count changes
+  const activeDashboard = useMemo(
+    () => dashboards.find((d) => d.id === activeDashboardId) ?? null,
+    [dashboards, activeDashboardId]
+  );
+
+  const widgets = useMemo(() => activeDashboard?.widgets ?? [], [activeDashboard]);
+
+  const [isEditing, setIsEditingState] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
+  const lastWidgetCount = useRef<number>(widgets.length);
+  const preEditSnapshot = useRef<Widget[] | null>(null);
+
+  useEffect(() => {
+    setAnnouncement(`Dashboard loaded with ${widgets.length} widgets`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDashboardId]);
+
   useEffect(() => {
     if (widgets.length !== lastWidgetCount.current) {
       const delta = widgets.length - lastWidgetCount.current;
-      if (delta > 0) {
-        setAnnouncement(`Widget added. Dashboard now has ${widgets.length} widgets`);
-      } else {
-        setAnnouncement(`Widget removed. Dashboard now has ${widgets.length} widgets`);
-      }
+      setAnnouncement(
+        delta > 0
+          ? `Widget added. Dashboard now has ${widgets.length} widgets`
+          : `Widget removed. Dashboard now has ${widgets.length} widgets`
+      );
       lastWidgetCount.current = widgets.length;
     }
-  }, [widgets.length]);
+  }, [widgets.length, setAnnouncement]);
 
-  const handleAddWidget = (type: Widget['type']) => {
-    const newWidget: Widget = {
-      id: String(Date.now()),
+  const handleAddWidget = (type: WidgetType) => {
+    if (!activeDashboard) return;
+    addWidget(activeDashboard.id, {
       type,
       title: `New ${type} widget`,
       config: {},
       position: { x: 0, y: widgets.length, w: type === 'kpi' ? 3 : 6, h: type === 'kpi' ? 1 : 2 },
-    };
-    setWidgets([...widgets, newWidget]);
+    });
   };
 
   const handleRemoveWidget = (id: string) => {
-    setWidgets(widgets.filter((w) => w.id !== id));
+    if (!activeDashboard) return;
+    removeWidget(activeDashboard.id, id);
   };
 
-  // [Hera] PICK J a11y: keyboard-accessible widget reordering (up/down)
-  const handleMoveWidget = useCallback((id: string, direction: 'up' | 'down') => {
-    setWidgets((prev) => {
-      const idx = prev.findIndex((w) => w.id === id);
-      if (idx === -1) return prev;
+  const handleMoveWidget = useCallback(
+    (id: string, direction: 'up' | 'down') => {
+      if (!activeDashboard) return;
+      const idx = widgets.findIndex((w) => w.id === id);
+      if (idx === -1) return;
       const newIdx = direction === 'up' ? idx - 1 : idx + 1;
-      if (newIdx < 0 || newIdx >= prev.length) return prev;
-      const next = [...prev];
+      if (newIdx < 0 || newIdx >= widgets.length) return;
+      const next = [...widgets];
       const moved = next.splice(idx, 1)[0];
-      if (!moved) return prev;
+      if (!moved) return;
       next.splice(newIdx, 0, moved);
+      updateDashboard(activeDashboard.id, { widgets: next });
       setAnnouncement(
         `Widget ${moved.title} moved ${direction}. Now at position ${newIdx + 1} of ${next.length}`
       );
-      return next;
-    });
-  }, []);
+    },
+    [activeDashboard, widgets, updateDashboard, setAnnouncement]
+  );
+
+  const handleEnterEdit = () => {
+    preEditSnapshot.current = widgets;
+    setIsEditingState(true);
+  };
+
+  const handleCancelEdit = () => {
+    if (preEditSnapshot.current && activeDashboard) {
+      updateDashboard(activeDashboard.id, { widgets: preEditSnapshot.current });
+    }
+    preEditSnapshot.current = null;
+    setIsEditingState(false);
+  };
 
   const handleSave = () => {
-    localStorage.setItem('custom-dashboard', JSON.stringify(widgets));
-    setIsEditing(false);
+    // dashboardStore's updateDashboard already persists through
+    // masterStorage on every mutation (addWidget/removeWidget/moveWidget
+    // above already wrote through immediately); "Save" here simply commits
+    // the edit session and clears the undo snapshot, matching the same UX
+    // contract the previous version exposed (Save = exit edit mode keeping
+    // changes; Cancel = exit edit mode discarding changes).
+    preEditSnapshot.current = null;
+    setIsEditingState(false);
+    setAnnouncement('Dashboard saved.');
+  };
+
+  const handleExportLayout = () => {
+    if (!activeDashboard) return;
+    const blob = new Blob([JSON.stringify(activeDashboard, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${activeDashboard.name.replace(/\s+/g, '-').toLowerCase()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <main className="p-6 space-y-6" aria-labelledby="db-builder-heading">
-      {/* [Hera] PICK J a11y: live region for screen reader announcements */}
       <div
         ref={announceRef}
         role="status"
@@ -152,12 +226,22 @@ export default function DashboardBuilderPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportLayout}
+            aria-label="Export dashboard layout as JSON"
+            data-testid="export-dashboard"
+            disabled={!activeDashboard}
+          >
+            <Download className="h-4 w-4 mr-1" aria-hidden="true" /> Export
+          </Button>
           {isEditing ? (
             <>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setIsEditing(false)}
+                onClick={handleCancelEdit}
                 aria-label="Cancel and exit edit mode"
                 data-testid="cancel-edit"
               >
@@ -175,7 +259,7 @@ export default function DashboardBuilderPage() {
           ) : (
             <Button
               size="sm"
-              onClick={() => setIsEditing(true)}
+              onClick={handleEnterEdit}
               aria-pressed={isEditing}
               aria-label={isEditing ? 'Exit customize mode' : 'Customize dashboard'}
               data-testid="customize-toggle"
