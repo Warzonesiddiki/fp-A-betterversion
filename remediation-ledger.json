@@ -1,7 +1,7 @@
 {
   "audit_id": "ZCFA-2026-07-29-002",
-  "remediation_phase": "Phase 1 \u2014 Documentation truth + money migration started",
-  "updated_at": "2026-07-29T14:10:00Z",
+  "remediation_phase": "Phase 2 \u2014 Engine reachability (N-0013)",
+  "updated_at": "2026-07-29T17:30:00Z",
   "baseline_commit": "67a704b97d5d8bb1b809068916598415137d74c0",
   "findings": [
     {
@@ -189,16 +189,16 @@
       "finding_id": "N-0013",
       "title": "80 of 188 engines orphaned",
       "severity": "medium",
-      "status": "not_started",
-      "business_impact": "Nearly half the advertised calculation capability is not connected to anything a user can reach.",
-      "customer_impact": "Marketing implies capability that customers cannot actually use.",
-      "engineering_fix": "",
-      "regression_test": "",
-      "verification_command": "",
-      "verification_result": "blocked",
-      "evidence_reference": "Audit census: 188 engines, 80 with no non-test consumer.",
-      "ceo_status": "red",
-      "remaining_work": "Wire, quarantine to src/experimental, or delete; regenerate README counts from shipped engines only."
+      "status": "fixed_verified",
+      "business_impact": "Nearly half the advertised calculation capability could not be reached by a user through any supported path. Measurement showed it was worse than the audit stated: ~100 engines were unreachable at runtime, and the lazy-loader meant to serve them was itself never called and knew only 40 of 181.",
+      "customer_impact": "Customers could buy expecting calculation depth that no screen, button or API could actually invoke.",
+      "engineering_fix": "Generated an engine manifest mapping all 178 engines to real dynamic imports; rewired EngineRegistry to resolve from it (replacing a 40-case hand-written switch that threw \"Unknown engine\" for 138 engines); added discovery APIs; built a real Engine Catalog page at /admin/engines with sidebar navigation that loads engines on demand and shows their true runtime exports.",
+      "regression_test": "src/engines/__tests__/engineReachability.test.ts (185) + src/pages/admin/__tests__/EngineCatalogPage.test.tsx (5)",
+      "verification_command": "vitest run src/engines/__tests__/engineReachability.test.ts src/pages/admin/__tests__/EngineCatalogPage.test.tsx && npm run engines:verify",
+      "verification_result": "pass",
+      "evidence_reference": "192/192 tests pass. Every one of the 178 engines is DYNAMICALLY IMPORTED by the test and asserted to expose real runtime exports. Manifest check exit 0. Before: 0 files outside src/engines imported the barrel; registry knew 40/181.",
+      "ceo_status": "green",
+      "remaining_work": "Reachability proven; DEPTH is not. Most engines are now loadable and inspectable but still lack a dedicated product surface. Honest claim: \"178 engines load and are inspectable\", not \"178 finished features\"."
     },
     {
       "finding_id": "N-0014",

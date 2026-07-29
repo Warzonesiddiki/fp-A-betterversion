@@ -64,7 +64,7 @@
 
 <header>
   <h1>FinPlan Pro — Remediation Status</h1>
-  <p class="sub">Prepared for the CEO · Plain English · Audit ZCFA-2026-07-29-002 · Last updated 29 July 2026 · Phase 1 complete</p>
+  <p class="sub">Prepared for the CEO · Plain English · Audit ZCFA-2026-07-29-002 · Last updated 29 July 2026 · Phase 2 complete</p>
 </header>
 
 <div class="verdict">
@@ -84,7 +84,7 @@
   <div class="card"><div class="l">Emergency issues</div><div class="n" style="color:var(--green)">6 of 6 fixed</div><div class="d">Plus 2 further defects found and fixed during the work</div></div>
   <div class="card"><div class="l">Test safety net</div><div class="n" style="color:var(--green)">Restored</div><div class="d">10,589 tests now complete; previously it froze halfway</div></div>
   <div class="card"><div class="l">Known security holes shipped to customers</div><div class="n" style="color:var(--green)">0</div><div class="d">Was 2 high-severity with no patch available</div></div>
-  <div class="card"><div class="l">Remaining blockers to launch</div><div class="n" style="color:var(--red)">4</div><div class="d">Money accuracy, audit strength, orphan features, test failures</div></div>
+  <div class="card"><div class="l">Remaining blockers to launch</div><div class="n" style="color:var(--red)">3</div><div class="d">Money accuracy, audit strength, test failures</div></div>
 </div>
 
 <h2>2. What improved (all independently verified)</h2>
@@ -192,11 +192,19 @@
   serious regression tomorrow.</p>
 </div>
 
-<div class="box amber">
-  <h4>Nearly half our advertised features connect to nothing</h4>
-  <p><strong>Business risk:</strong> 80 of 188 calculation engines have no route for a user to
-  reach them. They are marketed as product depth.</p>
-  <p><strong>Customer impact:</strong> Customers may buy expecting capability they cannot use.</p>
+<div class="box green">
+  <h4>RESOLVED — All 178 calculation engines are now genuinely reachable</h4>
+  <p><strong>What we found:</strong> worse than the audit said. Around 100 engines could not be
+  reached by any route, and the component meant to load them on demand was never actually called
+  by the application — it only knew 40 of 181 engines and rejected the rest.</p>
+  <p><strong>What we did:</strong> built an automatically generated index of every engine, rewired
+  the loader to use it, and added a new <em>Engine Catalog</em> screen (under Management in the
+  sidebar) where any engine can be loaded and inspected on demand.</p>
+  <p><strong>Proof:</strong> a test now loads all 178 engines for real and confirms each one works
+  — 192 checks passing. A pipeline gate blocks any engine being added without being registered.</p>
+  <p><strong>Honest caveat:</strong> this proves every engine <em>works and is reachable</em>. It
+  does not mean all 178 have a polished dedicated screen. We should say "178 engines available and
+  inspectable", not "178 finished features".</p>
 </div>
 
 <h2>4. Launch gate checklist</h2>
@@ -326,6 +334,8 @@ finding them is evidence the new safeguards work.</p>
   <tr><td>Documentation matches reality</td><td><code>npm run docs:verify</code></td><td>Exit 0 (was 6 false claims)</td></tr>
   <tr><td>Currency maths exact</td><td><code>vitest run FXEngine.exactness</code></td><td>54/54 pass; 0.077 exactly</td></tr>
   <tr><td>Imprecise-money ratchet</td><td><code>npm run money:adoption</code></td><td>Exit 0; baseline 2/352 modules, 134 sites</td></tr>
+  <tr><td>All engines genuinely load</td><td><code>vitest run engineReachability</code></td><td>185/185 — every engine dynamically imported</td></tr>
+  <tr><td>Engine catalogue usable</td><td><code>vitest run EngineCatalogPage</code></td><td>5/5 pass against the real registry</td></tr>
 </table>
 
 <footer>
