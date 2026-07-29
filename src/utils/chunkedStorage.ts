@@ -2,10 +2,76 @@
 import type { PersistStorage } from 'zustand/middleware';
 import { CHUNK_SIZE } from './storageConstants';
 import { createStoragePool } from '../workers/worker-pool';
+import {
+  serializeForStorage,
+  deserializeFromStorage,
+  type SerializedPayload,
+} from './storageSerialization';
+import { createLogger } from './logger';
 
 import type { StorageRequest, StorageResult } from '../workers/storage.worker';
 
 const storagePool = createStoragePool();
+const chunkedStorageLogger = createLogger('ChunkedStorage');
+
+/**
+ * Once worker construction has failed we stop attempting it: every subsequent
+ * call would pay the same failure and log the same warning. Serialization then
+ * runs inline, which is correct in every environment — just not off-thread.
+ */
+let workersUnavailable = false;
+
+function isWorkerUnavailable(error: unknown): boolean {
+  return error instanceof Error && error.name === 'WorkerUnavailableError';
+}
+
+/**
+ * Run the serialization step in the storage worker, falling back to the
+ * main thread when this environment cannot host workers.
+ *
+ * F-0025: previously a missing `Worker` global stranded the caller's promise
+ * forever (WorkerPool queued a task nothing could drain), so every persistence
+ * write hung and no data was ever saved. The pool now rejects; this wrapper
+ * keeps the product WORKING by computing the same result inline rather than
+ * turning an optimization failure into a data-loss failure.
+ */
+async function runInWorkerOrInline<T>(request: StorageRequest, inline: () => T): Promise<T> {
+  if (workersUnavailable) return inline();
+
+  try {
+    return (await storagePool.run<StorageResult>(request)) as T;
+  } catch (error) {
+    if (!isWorkerUnavailable(error)) throw error;
+    workersUnavailable = true;
+    chunkedStorageLogger.warn(
+      'Storage worker unavailable; serializing on the main thread. Large saves may block the UI.',
+      { reason: error instanceof Error ? error.message : String(error) }
+    );
+    return inline();
+  }
+}
+
+/** JSON-stringify + chunk a value, off-thread when possible. */
+function runStringify(value: unknown): Promise<SerializedPayload> {
+  return runInWorkerOrInline<SerializedPayload>(
+    { type: 'stringify', payload: value, chunkSize: CHUNK_SIZE } as StorageRequest,
+    () => serializeForStorage(value, CHUNK_SIZE)
+  );
+}
+
+/** Rejoin chunks and JSON-parse them, off-thread when possible. */
+async function runParse(chunks: string[]): Promise<unknown> {
+  const result = await runInWorkerOrInline<{ payload?: unknown }>(
+    { type: 'parse', payload: chunks } as StorageRequest,
+    () => ({ payload: deserializeFromStorage(chunks) })
+  );
+  return result.payload;
+}
+
+/** Test seam: forget the cached "workers are unavailable" decision. */
+export function __resetWorkerAvailabilityForTests(): void {
+  workersUnavailable = false;
+}
 
 export interface StorageMetadata {
   _isChunked: boolean;
@@ -27,27 +93,32 @@ export function wrapChunkedStorage(storage: PersistStorage<any>): PersistStorage
           chunkPromises.push(storage.getItem(`${name}:chunk:${i}`));
         }
 
-        const chunks = await Promise.all(chunkPromises);
+        const records = await Promise.all(chunkPromises);
 
-        // Use worker to parse large string
-        const result = await storagePool.run<StorageResult>({
-          type: 'parse',
-          payload: chunks,
-        } as StorageRequest);
+        // setItem persists each slice as `{ value: chunk }`, so the raw records
+        // must be unwrapped before joining. Passing them through as objects
+        // produced the literal string "[object Object]" and made every store
+        // larger than CHUNK_SIZE permanently unreadable — the write succeeded,
+        // the read threw a JSON SyntaxError, and masterStorage reported the
+        // store as empty. Missing slices are a corrupt backup, not "no data".
+        const chunks = records.map((record, index) => {
+          if (typeof record === 'string') return record;
+          if (record && typeof record === 'object' && typeof (record as any).value === 'string') {
+            return (record as any).value as string;
+          }
+          throw new Error(
+            `Chunked store "${name}" is corrupt: slice ${index} of ${chunkCount} is missing or malformed`
+          );
+        });
 
-        return result.payload;
+        return (await runParse(chunks)) as never;
       }
 
       return meta;
     },
 
     setItem: async (name, value) => {
-      // Use worker to stringify and chunk
-      const result = await storagePool.run<StorageResult>({
-        type: 'stringify',
-        payload: value,
-        chunkSize: CHUNK_SIZE,
-      } as StorageRequest);
+      const result = await runStringify(value);
 
       if (result.chunks) {
         // Large payload - store in chunks
@@ -69,7 +140,10 @@ export function wrapChunkedStorage(storage: PersistStorage<any>): PersistStorage
         );
       } else {
         // Small payload - store normally (pre-stringified to avoid jank in engine if it does stringify)
-        await storage.setItem(name, result.payload);
+        if (result.payload === undefined) {
+          throw new Error(`Serialization of "${name}" produced neither chunks nor a payload`);
+        }
+        await storage.setItem(name, result.payload as never);
 
         // Cleanup safety (limit to 10 chunks as mentioned before)
         for (let i = 0; i < 10; i++) {

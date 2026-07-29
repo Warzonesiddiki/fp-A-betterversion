@@ -279,10 +279,14 @@ export default function BackupRestorePage() {
                   : 'Storage integrity check failed'}
               </div>
               <div className="text-xs text-slate-400 space-y-1">
-                <div>Stores: {integrityResult.stores.stores}</div>
-                <div>Backups: {integrityResult.stores.backups}</div>
-                <div>Metadata: {integrityResult.stores.metadata}</div>
+                <div>Stores with data: {integrityResult.populatedStores.length}</div>
+                <div>Empty stores: {integrityResult.emptyStores.length}</div>
                 <div>Checked: {new Date(integrityResult.checkedAt).toLocaleString()}</div>
+                {integrityResult.populatedStores.length > 0 && (
+                  <div className="pt-1">
+                    Backed up: {integrityResult.populatedStores.join(', ')}
+                  </div>
+                )}
               </div>
               {[...integrityResult.errors, ...integrityResult.warnings].length > 0 && (
                 <ul className="mt-3 space-y-1 text-xs text-slate-400">

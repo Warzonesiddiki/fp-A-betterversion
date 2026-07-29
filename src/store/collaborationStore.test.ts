@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCollaborationStore } from './collaborationStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('collaborationStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useCollaborationStore.setState({
       comments: [],
       tasks: [],

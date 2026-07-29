@@ -2,9 +2,11 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { useBudgetStore } from './budgetStore';
 import type { Budget, BudgetLineItem } from '@/types';
 import type { AccountType } from '@/types';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('budgetStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useBudgetStore.setState({
       budgets: [],
       activeBudgetId: null,

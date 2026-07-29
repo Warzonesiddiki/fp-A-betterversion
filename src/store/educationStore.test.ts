@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useEducationStore } from './educationStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('educationStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useEducationStore.setState({
       programs: [],
       enrollmentTrends: [],

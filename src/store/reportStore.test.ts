@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useReportStore } from './reportStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('reportStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useReportStore.setState({
       reports: [],
       scheduledReports: [],

@@ -402,12 +402,20 @@ describe('offlineCache', () => {
   });
 
   describe('markSynced', () => {
-    it('should update lastSyncAt', () => {
+    it('should update lastSyncAt', async () => {
+      // The old body said "we verify this indirectly through getCacheStatus"
+      // and then asserted nothing at all. getCacheStatus() does expose
+      // lastSyncAt, so verify it for real.
+      const before = (await getCacheStatus()).lastSyncAt;
       markSynced();
+      const after = (await getCacheStatus()).lastSyncAt;
 
-      // The internal _lastSyncAt should now be set
-      // We verify this indirectly through getCacheStatus
-      expect(true).toBe(true); // markSynced doesn't return anything
+      expect(after).not.toBeNull();
+      expect(typeof after).toBe('string');
+      expect(Number.isNaN(Date.parse(after as string))).toBe(false);
+      if (before !== null) {
+        expect(Date.parse(after as string)).toBeGreaterThanOrEqual(Date.parse(before));
+      }
     });
   });
 

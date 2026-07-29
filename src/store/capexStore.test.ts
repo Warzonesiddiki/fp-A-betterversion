@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCapExStore } from './capexStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('capexStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useCapExStore.setState({
       projects: [],
       assets: [],

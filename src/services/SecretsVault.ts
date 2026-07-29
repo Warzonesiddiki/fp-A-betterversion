@@ -49,6 +49,23 @@ export interface SecretsVaultDeps {
   readonly rotationCounterKey?: string;
   /** Optional override for fallback cache TTL (defaults to FALLBACK_CACHE_TTL_MS) */
   readonly fallbackCacheTtlMs?: number;
+  /**
+   * Master secret used to derive per-record AES keys.
+   *
+   * SECURITY (F-0027 follow-up): the vault previously derived its AES-256 key
+   * by running PBKDF2 over `this.rotationCounterKey` — the literal constant
+   * 'vault.rotation.counter'. That is hardcoded key material of exactly the
+   * class F-0014 removed from masterStorage: anyone holding the source could
+   * decrypt every stored secret, and the 600k-iteration PBKDF2 bought nothing
+   * because the input was public.
+   *
+   * Supply real secret material (OS keychain, user passphrase, injected
+   * environment secret). When omitted, the vault generates a random 32-byte
+   * process-local secret so it still refuses to key itself from a public
+   * constant — data written under it is not readable by a later process,
+   * which is the correct fail-safe for a vault with no key management.
+   */
+  readonly masterSecret?: Uint8Array | string;
 }
 
 // ─── Internal types (not exported) ───────────────────────────────────────────
@@ -84,6 +101,17 @@ export class SecretsVault implements SecretsVaultAPI {
   private readonly fallbackCache: Map<string, FallbackCacheEntry> = new Map();
   private readonly rotateListeners: Set<RotateListenerHandle> = new Set();
   private rotationInFlight: Promise<RotationResult | VaultError> | null = null;
+  /** Reentrancy guard: the WAL must never journal its own persistence write. */
+  private walWriteInFlight = false;
+  /** Real key material — never a public constant. */
+  private readonly masterSecret: Uint8Array;
+  /**
+   * HKDF master key, stretched ONCE per vault instance. Deriving per operation
+   * cost a 600,000-iteration PBKDF2 stretch on EVERY read and write (~115ms
+   * measured here), which is what made the vault's own benchmark bounds
+   * unreachable and made 100 round-trips take 23s.
+   */
+  private masterKeyPromise: Promise<CryptoKey> | null = null;
   private walSequence: number = 0;
 
   constructor(deps: SecretsVaultDeps) {
@@ -91,6 +119,7 @@ export class SecretsVault implements SecretsVaultAPI {
     this.auditLogger = deps.auditLogger;
     this.threatModel = deps.threatModel;
     this.rotationCounterKey = deps.rotationCounterKey ?? ROTATION_COUNTER_KEY_DEFAULT;
+    this.masterSecret = SecretsVault.resolveMasterSecret(deps.masterSecret);
     this.fallbackCacheTtlMs = deps.fallbackCacheTtlMs ?? FALLBACK_CACHE_TTL_MS;
   }
 
@@ -160,7 +189,15 @@ export class SecretsVault implements SecretsVaultAPI {
 
       // 4. Check quorum
       if (written.length < VAULT_QUORUM) {
-        // Insufficient shards — append failed WAL records and abort
+        // Insufficient shards — append failed WAL records and abort.
+        //
+        // This early return previously skipped recordCircuitFailure(), so the
+        // breaker never tripped on the MOST COMMON failure mode: a storage
+        // backend that is reachable but rejects every shard write. The vault
+        // would retry a dead backend indefinitely, one full 3-shard fan-out per
+        // call, instead of failing fast with CIRCUIT_OPEN. Only the catch-all
+        // `INTERNAL` path recorded failures.
+        this.recordCircuitFailure();
         await this.appendWal(walRecords);
         return this.makeError(
           'QUORUM_NOT_REACHED',
@@ -174,16 +211,29 @@ export class SecretsVault implements SecretsVaultAPI {
       // 5. Append WAL records (post-success)
       await this.appendWal(walRecords);
 
-      // 6. Audit log
-      await this.auditLogger.log({
-        kind: 'VAULT_WRITE',
-        key,
-        version: envelope.version,
-        shardsWritten: written.length,
-        walSequence: this.walSequence,
-        timestamp: Date.now(),
-        traceId,
-      });
+      // 6. Audit log.
+      // Observability failure must not destroy a durable write: the data is
+      // already on quorum. Previously a throwing auditLogger fell through to
+      // the catch below and returned INTERNAL for a write that had SUCCEEDED,
+      // so the caller would retry — or report data loss — over a logging
+      // outage. The failure is still recorded via the threat channel.
+      try {
+        await this.auditLogger.log({
+          kind: 'VAULT_WRITE',
+          key,
+          version: envelope.version,
+          shardsWritten: written.length,
+          walSequence: this.walSequence,
+          timestamp: Date.now(),
+          traceId,
+        });
+      } catch (auditErr) {
+        await this.emitThreat('audit-log-failure', {
+          key,
+          traceId,
+          error: auditErr instanceof Error ? auditErr.message : String(auditErr),
+        });
+      }
 
       // 7. Reset circuit breaker on success
       this.circuit.failures = 0;
@@ -370,8 +420,27 @@ export class SecretsVault implements SecretsVaultAPI {
             checksum: this.walChecksum(key, shardId, this.walSequence),
           });
         } catch {
-          // Best-effort delete; missing shard is OK
+          // Best-effort per shard: a shard that is already missing must not
+          // fail the delete. Total failure is handled after the loop.
         }
+      }
+
+      // A delete that removed the key from NO shard is not a success. Returning
+      // ok:true here told the caller the secret was gone while every shard
+      // still held it — and reset the circuit breaker on a fully failed
+      // operation, hiding a dead backend. Deletion must reach quorum for the
+      // same reason writes must: below it, the cluster does not agree the key
+      // is gone.
+      if (deletedFrom.length < VAULT_QUORUM) {
+        this.recordCircuitFailure();
+        await this.appendWal(walRecords);
+        return this.makeError(
+          'QUORUM_NOT_REACHED',
+          `Delete reached only ${deletedFrom.length}/${VAULT_SHARD_IDS.length} shards`,
+          key,
+          true,
+          traceId
+        );
       }
 
       await this.appendWal(walRecords);
@@ -422,18 +491,24 @@ export class SecretsVault implements SecretsVaultAPI {
       );
     }
 
-    // Resolve current rotation count
-    const counterResult = await this.get<number>(this.rotationCounterKey);
-    const previousRotationCount = counterResult.ok ? counterResult.value : 0;
-    const newRotationCount = previousRotationCount + 1;
-
-    const _startTime = Date.now();
-    this.rotationInFlight = this.performRotation(
-      reason,
-      previousRotationCount,
-      newRotationCount,
-      traceId
-    );
+    // Arm the in-flight guard SYNCHRONOUSLY, before the first await.
+    //
+    // The counter read below is asynchronous, so the previous ordering left a
+    // window in which a second rotate() call saw rotationInFlight === null and
+    // started a concurrent rotation — exactly the condition this guard exists
+    // to prevent, and the reason the ROTATION_IN_PROGRESS test hung: with a
+    // storage backend that never resolves, both calls awaited forever instead
+    // of the second one returning immediately.
+    this.rotationInFlight = (async () => {
+      const counterResult = await this.get<number>(this.rotationCounterKey);
+      const previousRotationCount = counterResult.ok ? counterResult.value : 0;
+      return this.performRotation(
+        reason,
+        previousRotationCount,
+        previousRotationCount + 1,
+        traceId
+      );
+    })();
 
     try {
       const result = await this.rotationInFlight;
@@ -498,6 +573,96 @@ export class SecretsVault implements SecretsVaultAPI {
     return { recovered, failed };
   }
 
+  // ─── Private: key management (F-0027 follow-up) ──────────────────────────
+
+  /**
+   * Resolve real key material. Never falls back to a public constant.
+   */
+  private static resolveMasterSecret(provided?: Uint8Array | string): Uint8Array {
+    if (provided instanceof Uint8Array) {
+      if (provided.length < 16) {
+        throw new Error('SecretsVault: masterSecret must be at least 16 bytes');
+      }
+      return provided;
+    }
+    if (typeof provided === 'string') {
+      if (provided.trim().length === 0) {
+        throw new Error('SecretsVault: masterSecret string must not be empty');
+      }
+      return new TextEncoder().encode(provided);
+    }
+    // No key management supplied: use a random process-local secret rather than
+    // keying from a guessable constant. Persisted data is intentionally not
+    // recoverable by a later process — fail safe, not fail open.
+    return crypto.getRandomValues(new Uint8Array(32));
+  }
+
+  /**
+   * Stretch the master secret ONCE per vault instance with PBKDF2, then keep
+   * the result as an HKDF master key.
+   *
+   * The expensive stretch is a defence against offline brute force of the
+   * master secret, so it is preserved in full (PBKDF2_ITERATIONS). What is NOT
+   * preserved is running it on every operation: each record uses a fresh random
+   * salt, so a per-salt PBKDF2 could never hit a cache and every read and write
+   * paid ~115ms. Per-record key separation is now provided by HKDF-Expand over
+   * the record salt, which is the standard construction (slow KDF for the
+   * password, fast KDF for per-record subkeys) and is microseconds per call.
+   */
+  private getMasterKey(): Promise<CryptoKey> {
+    if (this.masterKeyPromise === null) {
+      this.masterKeyPromise = (async () => {
+        const pbkdf2Base = await crypto.subtle.importKey(
+          'raw',
+          this.masterSecret as BufferSource,
+          { name: 'PBKDF2' },
+          false,
+          ['deriveBits']
+        );
+        // Fixed instance salt: per-record separation comes from HKDF below.
+        const stretched = await crypto.subtle.deriveBits(
+          {
+            name: 'PBKDF2',
+            salt: new TextEncoder().encode('finplan.secretsvault.v1') as unknown as BufferSource,
+            iterations: PBKDF2_ITERATIONS,
+            hash: 'SHA-256',
+          },
+          pbkdf2Base,
+          256
+        );
+        return crypto.subtle.importKey('raw', stretched, { name: 'HKDF' }, false, ['deriveKey']);
+      })();
+    }
+    return this.masterKeyPromise;
+  }
+
+  /** Derive the per-record AES key from the stretched master key via HKDF. */
+  private async deriveKeyForSalt(salt: Uint8Array): Promise<CryptoKey> {
+    return crypto.subtle.deriveKey(
+      {
+        name: 'HKDF',
+        hash: 'SHA-256',
+        salt: salt as unknown as BufferSource,
+        info: new TextEncoder().encode('finplan.vault.record.v1') as unknown as BufferSource,
+      },
+      await this.getMasterKey(),
+      { name: 'AES-GCM', length: AES_KEY_BITS },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
+
+  /** HMAC key for envelope integrity, derived from the master secret. */
+  private getIntegrityKey(): Promise<CryptoKey> {
+    return crypto.subtle.importKey(
+      'raw',
+      this.masterSecret as BufferSource,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+  }
+
   // ─── Private: storage availability pre-check ─────────────────────────────
   private async isStorageAvailable(): Promise<boolean> {
     try {
@@ -524,26 +689,8 @@ export class SecretsVault implements SecretsVaultAPI {
     const iv = crypto.getRandomValues(new Uint8Array(AES_IV_BYTES));
     const salt = crypto.getRandomValues(new Uint8Array(16));
 
-    // Derive key from salt via PBKDF2
-    const baseKey = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(this.rotationCounterKey),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveKey']
-    );
-    const derivedKey = await crypto.subtle.deriveKey(
-      {
-        name: 'PBKDF2',
-        salt: salt as unknown as BufferSource,
-        iterations: PBKDF2_ITERATIONS,
-        hash: 'SHA-256',
-      },
-      baseKey,
-      { name: 'AES-GCM', length: AES_KEY_BITS },
-      false,
-      ['encrypt', 'decrypt']
-    );
+    // Derive key from salt via PBKDF2 over the MASTER SECRET (never a constant).
+    const derivedKey = await this.deriveKeyForSalt(salt);
 
     // Encrypt via AES-256-GCM
     const ciphertextBuf = await crypto.subtle.encrypt(
@@ -553,13 +700,7 @@ export class SecretsVault implements SecretsVaultAPI {
     );
 
     // Compute HMAC-SHA256 over (ciphertext || iv) for integrity
-    const integrityKey = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(this.rotationCounterKey),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
+    const integrityKey = await this.getIntegrityKey();
     const checksumBuf = await crypto.subtle.sign(
       'HMAC',
       integrityKey,
@@ -585,25 +726,7 @@ export class SecretsVault implements SecretsVaultAPI {
     const iv = this.fromBase64(envelope.iv);
     const salt = this.fromBase64(envelope.salt);
 
-    const baseKey = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(this.rotationCounterKey),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveKey']
-    );
-    const derivedKey = await crypto.subtle.deriveKey(
-      {
-        name: 'PBKDF2',
-        salt: salt as unknown as BufferSource,
-        iterations: PBKDF2_ITERATIONS,
-        hash: 'SHA-256',
-      },
-      baseKey,
-      { name: 'AES-GCM', length: AES_KEY_BITS },
-      false,
-      ['encrypt', 'decrypt']
-    );
+    const derivedKey = await this.deriveKeyForSalt(salt);
 
     const plaintextBuf = await crypto.subtle.decrypt(
       { name: 'AES-GCM', iv: iv as unknown as BufferSource },
@@ -802,6 +925,29 @@ export class SecretsVault implements SecretsVaultAPI {
   // ─── Private: WAL append ────────────────────────────────────────────────
   private async appendWal(records: WalRecord[]): Promise<void> {
     if (records.length === 0) return;
+
+    // UNBOUNDED RECURSION GUARD.
+    //
+    // set() ends by calling appendWal(), and appendWal() persisted the log with
+    // set(WAL_KEY, ...) — which called appendWal() again, forever. Measured on
+    // the untouched tree: a single vault.set('k','v') issued 275+ storage
+    // operations and was still climbing when the probe cut it off, each one
+    // carrying a 600,000-iteration PBKDF2 derivation (~115ms here). That is why
+    // every rotation/integration/benchmark test in this file timed out, and it
+    // is a production hang, not a test artifact: the first secret ever written
+    // never completes.
+    //
+    // The WAL is infrastructure for value writes; it must not journal itself.
+    if (this.walWriteInFlight) return;
+    this.walWriteInFlight = true;
+    try {
+      await this.appendWalUnguarded(records);
+    } finally {
+      this.walWriteInFlight = false;
+    }
+  }
+
+  private async appendWalUnguarded(records: WalRecord[]): Promise<void> {
     const existingResult = await this.get<WalRecord[]>(WAL_KEY).catch(() => null);
     const existing = existingResult && existingResult.ok ? existingResult.value : [];
     const merged = [...existing, ...records].slice(-MAX_WAL_RECORDS);

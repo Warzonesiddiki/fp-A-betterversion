@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useESGStore } from './esgStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('esgStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useESGStore.setState({
       metrics: [],
       initiatives: [],

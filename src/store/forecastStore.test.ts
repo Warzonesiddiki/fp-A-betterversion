@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useForecastStore } from './forecastStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('forecastStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useForecastStore.setState({
       forecasts: [],
       drivers: [],

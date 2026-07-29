@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useHealthcareStore } from './healthcareStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('healthcareStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useHealthcareStore.setState({
       qualityMetrics: [],
       savingsData: [],

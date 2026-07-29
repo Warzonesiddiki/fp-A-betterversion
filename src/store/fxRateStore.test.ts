@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useFxRateStore, fxRateSelectors } from './fxRateStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('fxRateStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useFxRateStore.setState({ rates: [] });
   });
 

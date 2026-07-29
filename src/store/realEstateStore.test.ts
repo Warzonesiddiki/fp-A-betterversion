@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useRealEstateStore } from './realEstateStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('realEstateStore', () => {
   beforeEach(() => {
+    actAs('Admin');
     useRealEstateStore.setState({
       maintenanceTrend: [],
       facilities: [],
