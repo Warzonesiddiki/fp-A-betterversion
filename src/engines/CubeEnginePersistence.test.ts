@@ -236,14 +236,23 @@ describe('CubeEnginePersistence', () => {
 
   describe('Initialization', () => {
     it('should initialize successfully in browser environment', async () => {
-      await persistence.initialize();
-      expect(true).toBe(true);
+      // `expect(true).toBe(true)` here asserted nothing: it passed even if
+      // initialize() silently did no work, and even if the class did not
+      // exist. Assert the OBSERVABLE contract instead — after initialize()
+      // the store is usable, which is the only thing callers care about.
+      await expect(persistence.initialize()).resolves.toBeUndefined();
+      await expect(persistence.loadCells()).resolves.toEqual([]);
     });
 
     it('should not re-initialize if already initialized', async () => {
       await persistence.initialize();
+      // Write through the initialised backend, then initialise again. If the
+      // second call rebuilt the connection or re-created tables, this data
+      // would be gone — that is what makes the idempotence claim testable.
+      await persistence.saveCell('cube-a', { value: 42 } as never, 'k1');
       await persistence.initialize();
-      expect(true).toBe(true);
+      const cells = await persistence.loadCells();
+      expect(cells.map((c) => c.cellKey)).toContain('k1');
     });
   });
 

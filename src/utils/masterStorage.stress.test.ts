@@ -45,15 +45,11 @@ describe('masterStorage Stress Tests', () => {
     expect(mockTauriSql.setItem).not.toHaveBeenCalled();
   });
 
-  it.skip('handles 1000 rapid concurrent writes (STRESS — too slow in JSDOM)', async () => {
-    // Stress test skipped — pure-load test that doesn't run in CI; the non-stress masterStorage.test.ts covers functional behavior.
-    expect(true).toBe(true);
-  });
-
-  it.skip('handles failover scenarios (simulated) (STRESS — too slow in JSDOM)', async () => {
-    // Stress test skipped — pure-load test that doesn't run in CI; the non-stress masterStorage.test.ts covers functional behavior.
-    expect(true).toBe(true);
-  });
+  // F-0027: two `it.skip(... ) { expect(true).toBe(true); }` placeholders were
+  // deleted here. They were DUPLICATES of the skipped stress tests immediately
+  // above and below (same names, suffixed "(STRESS — too slow in JSDOM)") whose
+  // real bodies are retained, so nothing was lost. A skipped test whose body is
+  // a tautology cannot ever assert anything, even if un-skipped.
 
   it.skip('handles failover scenarios (simulated)', async () => {
     vi.mocked(isTauri).mockResolvedValue(true); // Desktop mode

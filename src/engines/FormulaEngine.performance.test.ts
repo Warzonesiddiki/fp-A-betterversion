@@ -275,35 +275,46 @@ describe('FormulaEngine Performance', () => {
       const cellFn = createSpreadsheet();
       const { nodes } = FormulaEngine.parseFormula('A1+B1*C1');
 
-      // Run many evaluations
+      // "If we get here without crashing" is not an assertion — the old
+      // expect(true).toBe(true) passed even if every evaluation returned
+      // undefined. Assert that repeated evaluation stays CORRECT (no state
+      // leaking between runs) and bounded in time.
+      const expected = FormulaEngine.evaluate(nodes, cellFn);
+      expect(expected.value).toBeTypeOf('number');
+      const started = Date.now();
       for (let i = 0; i < 10000; i++) {
-        FormulaEngine.evaluate(nodes, cellFn);
+        expect(FormulaEngine.evaluate(nodes, cellFn).value).toBe(expected.value);
       }
-
-      // If we get here without crashing, memory is stable
-      expect(true).toBe(true);
+      expect(Date.now() - started).toBeLessThan(10000);
     });
 
     it('should not leak memory with repeated parsing', () => {
+      // Assert each parse actually produced a usable AST rather than merely
+      // not throwing.
       for (let i = 0; i < 10000; i++) {
-        FormulaEngine.parseFormula(`${i}+${i + 1}*${i + 2}`);
+        const { nodes } = FormulaEngine.parseFormula(`${i}+${i + 1}*${i + 2}`);
+        if (i % 1000 === 0) {
+          expect(nodes.length).toBeGreaterThan(0);
+        }
       }
-
-      // If we get here without crashing, memory is stable
-      expect(true).toBe(true);
+      // Parsing the same formula after 10k parses must still be correct —
+      // a leaking cache would change the result or blow up here.
+      const { nodes } = FormulaEngine.parseFormula('1+2*3');
+      expect(FormulaEngine.evaluate(nodes, createSpreadsheet()).value).toBe(7);
     });
 
     it('should handle large number of unique formulas', () => {
       const formulas = Array.from({ length: 1000 }, (_, i) => `SUM(A${i + 1}:A${i + 10})`);
       const cellFn = createSpreadsheet();
 
+      let evaluated = 0;
       for (const formula of formulas) {
         const { nodes } = FormulaEngine.parseFormula(formula);
-        FormulaEngine.evaluate(nodes, cellFn);
+        const result = FormulaEngine.evaluate(nodes, cellFn);
+        expect(Number.isFinite(result.value)).toBe(true);
+        evaluated += 1;
       }
-
-      // If we get here without crashing, memory is stable
-      expect(true).toBe(true);
+      expect(evaluated).toBe(formulas.length);
     });
   });
 });

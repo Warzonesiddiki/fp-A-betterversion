@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from 'vitest';
-import { SafeMathParser, safeMathParser } from './SafeMathParser';
+import { SafeMathParser, safeMathParser, DivisionByZeroError } from './SafeMathParser';
 
 describe('SafeMathParser', () => {
   const parser = new SafeMathParser();
@@ -567,12 +567,31 @@ describe('SafeMathParser', () => {
   // 16. DIVISION BY ZERO
   // =========================================================================
   describe('division by zero', () => {
-    it('should return 0 for division by zero', () => {
-      expect(parser.evaluate('10/0')).toBe(0);
+    // DEFECT-ASSERTING TESTS REPLACED. These two asserted that 10/0 evaluates
+    // to 0 — certifying the "Division by zero returns 0 per financial
+    // convention" branch as correct. There is no such convention: an undefined
+    // quotient reported as 0 is a silent misstatement (profit/revenue with
+    // revenue = 0 rendered a 0% margin indistinguishable from a measured zero).
+    // The engine now throws; these assert that, including through a cell ref.
+    it('throws on literal division by zero rather than returning 0', () => {
+      expect(() => parser.evaluate('10/0')).toThrow(DivisionByZeroError);
     });
 
-    it('should return 0 for cell ref division by zero', () => {
-      expect(parser.evaluate('10/D1', getCellValue)).toBe(0);
+    it('throws when a cell reference resolves to a zero denominator', () => {
+      expect(() => parser.evaluate('10/D1', getCellValue)).toThrow(DivisionByZeroError);
+    });
+
+    it('still divides normally when the denominator is non-zero', () => {
+      expect(parser.evaluate('10/4')).toBe(2.5);
+    });
+
+    it('exposes the failure through safeEvaluate without throwing', () => {
+      // safeEvaluate is the non-throwing surface; it must still REPORT the
+      // error rather than returning a fabricated value.
+      const result = parser.safeEvaluate('10/0');
+      expect(result.error).toMatch(/Division by zero/);
+      expect(result.cause).toBeInstanceOf(DivisionByZeroError);
+      expect(Number.isNaN(result.value)).toBe(true);
     });
   });
 
@@ -1496,34 +1515,43 @@ describe('SafeMathParser boundary edge cases (Probe T-FIX-12)', () => {
     expect(Object.is(negZero, -0) || negZero === 0).toBe(true);
   });
 
-  // 3 Div/Mod by zero
-  it('handles 1/0 (Infinity or throw)', () => {
+  // Div/Mod by zero — MUST throw, never fabricate a value.
+  //
+  // These three tests previously accepted ANY outcome ("throw is acceptable"),
+  // which concealed a real financial defect: 1/0 returned 0 with the comment
+  // "Division by zero returns 0 per financial convention", and 1%0 returned
+  // NaN. A margin formula profit/revenue with revenue = 0 therefore reported a
+  // 0% margin indistinguishable from a measured zero.
+  it('throws DivisionByZeroError on 1/0 instead of returning 0', () => {
+    const parser = new SafeMathParser();
+    expect(() => parser.evaluate('1/0')).toThrow(DivisionByZeroError);
+    expect(() => parser.evaluate('1/0')).toThrow(/Division by zero/);
+  });
+  it('throws DivisionByZeroError on 1%0 instead of returning NaN', () => {
+    const parser = new SafeMathParser();
+    expect(() => parser.evaluate('1%0')).toThrow(DivisionByZeroError);
+  });
+  it('reports the operator and numerator on the typed error', () => {
     const parser = new SafeMathParser();
     try {
-      const r = parser.evaluate('1/0');
-      expect(r === Infinity || Number.isFinite(r as number)).toBe(true);
-    } catch {
-      expect(true).toBe(true); // throw is acceptable
+      parser.evaluate('42/0');
+      throw new Error('expected DivisionByZeroError');
+    } catch (error) {
+      expect(error).toBeInstanceOf(DivisionByZeroError);
+      expect((error as DivisionByZeroError).operator).toBe('/');
+      expect((error as DivisionByZeroError).numerator).toBe(42);
     }
   });
-  it('handles 1%0 (NaN or throw)', () => {
+  it('throws for a zero denominator reached through a sub-expression', () => {
     const parser = new SafeMathParser();
-    try {
-      const r = parser.evaluate('1%0');
-      expect(Number.isNaN(r as number) || Number.isFinite(r as number)).toBe(true);
-    } catch {
-      expect(true).toBe(true); // throw is acceptable
-    }
+    // The denominator is only zero after evaluation, so this cannot be caught
+    // by literal inspection — it proves the guard is on the computed value.
+    expect(() => parser.evaluate('100/(5-5)')).toThrow(DivisionByZeroError);
   });
-  it('configurable zero-division behavior', () => {
+  it('remains usable after a division-by-zero error', () => {
     const parser = new SafeMathParser();
-    // Should not crash the parser regardless of config
-    try {
-      parser.evaluate('1/0');
-    } catch {
-      // acceptable
-    }
-    expect(true).toBe(true);
+    expect(() => parser.evaluate('1/0')).toThrow(DivisionByZeroError);
+    expect(parser.evaluate('10/2')).toBe(5);
   });
 
   // 3 Nesting & length
@@ -1532,26 +1560,19 @@ describe('SafeMathParser boundary edge cases (Probe T-FIX-12)', () => {
     const expr = '('.repeat(50) + '1' + ')'.repeat(50);
     expect(parser.evaluate(expr)).toBe(1);
   });
-  it('throws or rejects 100-level nested parens', () => {
+  it('evaluates 100-level nested parens correctly', () => {
+    // Measured behaviour: this parser handles 100 levels and returns 1.
+    // The old "any outcome is fine" form would have passed even if the parser
+    // returned undefined or a wrong number.
     const parser = new SafeMathParser();
     const expr = '('.repeat(100) + '1' + ')'.repeat(100);
-    try {
-      const r = parser.evaluate(expr);
-      // Some parsers handle 100; we accept any safe return
-      expect(r).toBeDefined();
-    } catch {
-      expect(true).toBe(true);
-    }
+    expect(parser.evaluate(expr)).toBe(1);
   });
-  it('handles 1000-char expression or throws safely', () => {
+  it('evaluates a 1000-char expression to the arithmetically correct value', () => {
     const parser = new SafeMathParser();
+    // 500 additions of 1 to a leading 1 = 501.
     const expr = '1+'.repeat(500) + '1';
-    try {
-      const r = parser.evaluate(expr);
-      expect(r).toBeDefined();
-    } catch {
-      expect(true).toBe(true);
-    }
+    expect(parser.evaluate(expr)).toBe(501);
   });
 
   // 6 Malformed expressions
@@ -1595,23 +1616,16 @@ describe('SafeMathParser boundary edge cases (Probe T-FIX-12)', () => {
   });
 
   // 2 Boolean coercion
+  // Measured behaviour: this parser evaluates the bare literal `true` to 1 and
+  // `false` to 0, so the coercions below are real, asserted outcomes rather
+  // than "either a value or a throw is fine".
   it('coerces true + 1 to 2', () => {
     const parser = new SafeMathParser();
-    try {
-      const r = parser.evaluate('true + 1');
-      expect(r).toBe(2);
-    } catch {
-      expect(true).toBe(true); // parser may not support booleans
-    }
+    expect(parser.evaluate('true + 1')).toBe(2);
   });
   it('coerces false + 1 to 1', () => {
     const parser = new SafeMathParser();
-    try {
-      const r = parser.evaluate('false + 1');
-      expect(r).toBe(1);
-    } catch {
-      expect(true).toBe(true);
-    }
+    expect(parser.evaluate('false + 1')).toBe(1);
   });
 
   // 2 validate() function
@@ -1639,15 +1653,14 @@ describe('SafeMathParser boundary edge cases (Probe T-FIX-12)', () => {
       'obj.__proto__.polluted = true',
     ];
     for (const expr of malicious) {
-      try {
-        const r = parser.evaluate(expr);
-        // If it returns, must be 1 (no side effect)
-        expect(r).toBe(1);
-      } catch {
-        // acceptable: throw on injection
-        expect(true).toBe(true);
-      }
+      // Each payload must be REJECTED. The previous form accepted either a
+      // throw or a return of 1, so a parser that quietly evaluated part of the
+      // payload would still have passed. Injection must be refused outright.
+      expect(() => parser.evaluate(expr), `must reject: ${expr}`).toThrow();
     }
+    // Prove no payload achieved its side effect.
+    expect((Object.prototype as Record<string, unknown>).polluted).toBeUndefined();
+    expect(parser.evaluate('1+1')).toBe(2);
   });
 });
 

@@ -175,8 +175,23 @@ describe('executeSandboxed', () => {
   // │ Mnemosyne: tests-only, do not modify PluginSandbox.ts.              │
   // └─────────────────────────────────────────────────────────────────────┘
 
-  it('skipped: wrapper has strict-mode const eval/Function bug — see KNOWN BUG', () => {
-    expect(true).toBe(true);
+  it('constructs the sandbox wrapper without a strict-mode SyntaxError', () => {
+    // This replaces a placeholder that asserted expect(true).toBe(true) for a
+    // "KNOWN BUG" that was FIXED in the F-0018 wave (see the comment block in
+    // PluginSandbox.ts around the wrapper: `const eval = undefined` is a
+    // strict-mode SyntaxError, so reserved identifiers are now skipped in the
+    // const preamble and blocked by the AST walker instead). A placeholder
+    // that outlives its bug silently certifies a defect as unfixed.
+    const result = executeSandboxed('(function() { return 7; })();', safeApi);
+    expect(result.success).toBe(true);
+    expect(result.value).toBe(7);
+  });
+
+  it('still blocks eval and Function despite not const-shadowing them', () => {
+    // The reserved identifiers cannot be shadowed, so rejection must come from
+    // static validation. Prove it still happens.
+    expect(validatePluginCode('eval("1+1")').safe).toBe(false);
+    expect(validatePluginCode('new Function("return 1")()').safe).toBe(false);
   });
 
   it('executes a simple IIFE expression and returns the value', () => {

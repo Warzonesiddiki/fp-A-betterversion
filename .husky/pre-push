@@ -62,6 +62,11 @@ node scripts/check-readme-claims.mjs
 echo "→ production dependency audit"
 node scripts/check-dependency-audit.mjs
 
+# Gate 9: tautological-assertion scan (F-0027). A test that asserts a constant
+# certifies nothing and hides defects; three real ones were found behind them.
+echo "→ tautological-assertion scan"
+node scripts/check-tautological-tests.mjs
+
 # Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
 # CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.
 # Spec: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md (§2: BLOCKED push)

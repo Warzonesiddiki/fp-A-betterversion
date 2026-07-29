@@ -2006,7 +2006,15 @@ class Parser {
       return { value, dependencies: [...new Set(this.dependencies)].sort(), error: undefined };
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Parse error';
-      return { value: NaN, dependencies: [], error: msg };
+      // Preserve the original error object: the parser is the layer that raises
+      // DivisionByZeroError, and flattening it to a message here would erase
+      // the type before safeEvaluate/evaluate ever see it.
+      return {
+        value: NaN,
+        dependencies: [],
+        error: msg,
+        cause: e instanceof Error ? e : undefined,
+      };
     }
   }
 
@@ -2140,18 +2148,27 @@ class Parser {
           left = new Decimal(left).times(right).toNumber();
           break;
         case 'slash':
+          // Division by zero is an ERROR, not a value.
+          //
+          // This previously returned 0 with the comment "per financial
+          // convention". There is no such convention: a ratio whose
+          // denominator is zero is undefined, and silently substituting 0
+          // misstates the result. A margin formula like profit/revenue with
+          // revenue = 0 reported a 0% margin as if it were a real measurement,
+          // and the caller had no way to distinguish it from a genuine zero.
+          // Three tautological tests ("throw is acceptable") kept this hidden.
           if (right === 0) {
-            left = 0; // Division by zero returns 0 per financial convention
-          } else {
-            left = new Decimal(left).dividedBy(right).toNumber();
+            throw new DivisionByZeroError('/', left);
           }
+          left = new Decimal(left).dividedBy(right).toNumber();
           break;
         case 'percent':
+          // Modulo by zero produced NaN, which then propagated silently through
+          // every downstream arithmetic operation. Fail loudly instead.
           if (right === 0) {
-            left = NaN;
-          } else {
-            left = new Decimal(left).modulo(right).toNumber();
+            throw new DivisionByZeroError('%', left);
           }
+          left = new Decimal(left).modulo(right).toNumber();
           break;
       }
     }
@@ -2394,11 +2411,39 @@ export interface ParseResult {
   value: number;
   dependencies: string[];
   error?: string;
+  /**
+   * The original thrown error, preserved so callers can branch on its TYPE
+   * (e.g. DivisionByZeroError) instead of string-matching `error`.
+   */
+  cause?: Error;
 }
 
 export interface ValidationResult {
   valid: boolean;
   error?: string;
+}
+
+/**
+ * Thrown when a formula divides (or takes a modulo) by zero.
+ *
+ * Financial engines must never receive a fabricated 0 or NaN in place of an
+ * undefined quotient — see docs/architecture/money.md. Callers that want a
+ * displayed placeholder must catch this explicitly and decide, at the call
+ * site, what the user should see.
+ */
+export class DivisionByZeroError extends Error {
+  readonly operator: '/' | '%';
+  readonly numerator: number;
+
+  constructor(operator: '/' | '%', numerator: number) {
+    super(
+      `Division by zero: ${numerator} ${operator} 0 is undefined. ` +
+        'Guard the denominator or handle DivisionByZeroError at the call site.'
+    );
+    this.name = 'DivisionByZeroError';
+    this.operator = operator;
+    this.numerator = numerator;
+  }
 }
 
 export class SafeMathParser {
@@ -2413,6 +2458,11 @@ export class SafeMathParser {
   evaluate(expression: string, getCellValue?: (ref: string) => number | string | boolean): number {
     const result = this.safeEvaluate(expression, getCellValue);
     if (result.error) {
+      // Rethrow the ORIGINAL error when one was captured. Wrapping every
+      // failure in a bare `new Error(message)` destroyed the error type, so a
+      // caller could not distinguish DivisionByZeroError (a data problem worth
+      // surfacing to the user) from a syntax error (a formula problem).
+      if (result.cause instanceof Error) throw result.cause;
       throw new Error(result.error);
     }
     return result.value;

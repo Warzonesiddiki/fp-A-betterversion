@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
-index 6befee3..bb6c1dd 100644
+index 6befee3..200ad9e 100644
 --- a/.github/workflows/ci.yml
 +++ b/.github/workflows/ci.yml
 @@ -14,9 +14,9 @@ concurrency:
@@ -15,7 +15,7 @@ index 6befee3..bb6c1dd 100644
  
  jobs:
    typecheck:
-@@ -52,8 +52,11 @@ jobs:
+@@ -52,8 +52,14 @@ jobs:
        - name: Install dependencies
          run: npm ci
  
@@ -26,10 +26,13 @@ index 6befee3..bb6c1dd 100644
 +
 +      - name: README claim check
 +        run: node scripts/check-readme-claims.mjs
++
++      - name: Tautological-assertion scan
++        run: node scripts/check-tautological-tests.mjs
  
    test:
      name: Unit Tests
-@@ -84,7 +87,9 @@ jobs:
+@@ -84,7 +90,9 @@ jobs:
    build:
      name: Build & Bundle Check
      runs-on: ubuntu-latest
@@ -40,7 +43,7 @@ index 6befee3..bb6c1dd 100644
      steps:
        - uses: actions/checkout@v4
  
-@@ -227,7 +232,7 @@ jobs:
+@@ -227,7 +235,7 @@ jobs:
      name: A11Y (axe-core)
      needs: [build]
      runs-on: ubuntu-latest
@@ -49,7 +52,7 @@ index 6befee3..bb6c1dd 100644
      steps:
        - uses: actions/checkout@v4
  
-@@ -270,12 +275,33 @@ jobs:
+@@ -270,12 +278,33 @@ jobs:
            path: |
              a11y-report/
              coverage/a11y/
@@ -85,7 +88,7 @@ index 6befee3..bb6c1dd 100644
      runs-on: ubuntu-latest
      steps:
        - name: Check results
-@@ -290,11 +316,13 @@ jobs:
+@@ -290,11 +319,13 @@ jobs:
            echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
            echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
            echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped (A11Y-P0-3 pending)' || ':warning: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
