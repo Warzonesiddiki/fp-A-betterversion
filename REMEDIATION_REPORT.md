@@ -80,7 +80,8 @@ All commands run at `43107ad` unless noted.
 | `node scripts/csp-hash-check.js` | 0 | inline script hash valid |
 | `sh tests/security/HuskyGate10.test.sh` | 0 | 40/41 (2.4 needs pyyaml) |
 | `npm run tauri:build` | — | **BLOCKED** — no Rust toolchain |
-| `npm run test:e2e` | — | **BLOCKED** — Playwright browsers unavailable |
+| `npm run test:e2e` | — | **BLOCKED** — `playwright install` fails (Download failure, code=1) |
+| `curl http://localhost:5173/` (dev server) | 0 | **HTTP 200 in 0.027s** — E2E webServer target is healthy |
 | `vitest run` (full) + `--coverage` | — | **NOT RUN** — see F-0025 below |
 
 ### `npm ci` caveat (unchanged from wave 1)
@@ -206,12 +207,36 @@ manifest inspection and are covered by `src/__tests__/csp.test.ts`, which parses
 
 ## E2E EVIDENCE
 
-**BLOCKED.** Playwright browsers cannot be installed here.
-Required: `npx playwright install chromium && npm run test:e2e`.
-Consequence: the `react-router` 8.3.0 override (taken to clear the CSRF
-advisory) is verified by `npm run build` and 56/56 layout+App tests, **not** by
-an end-to-end navigation run. This is the single largest unverified change in
-wave 2 and should be exercised before merge.
+**BLOCKED, and red in CI.** `npx playwright install chromium` fails in this
+sandbox with `Download failure, code=1`, so the suite cannot be run locally.
+Required to close: `npx playwright install chromium && npm run test:e2e`.
+
+**Pre-existence established, not assumed.** The E2E job failed on run
+`30331505636` (started 2026-07-28T05:26:39Z) — before any commit on this branch
+and before wave 1 landed. On PR #15 it fails identically at the same step
+(`Run E2E tests`, ~69s, run `30420688576`). It is a pre-existing failure carried
+forward, not a wave-2 regression.
+
+**Partial diagnosis performed** (what the sandbox permits):
+
+- `playwright.config.ts` **does** define a `webServer` block running `npm run dev`
+  against `http://localhost:5173` with a 120s timeout, so the earlier hypothesis
+  that CI never starts the app is **wrong** and is recorded here as refuted.
+- The dev server was started locally and verified serving: `curl` →
+  **HTTP 200 in 0.027s**, Vite 8.0.16 ready in 551ms. The server side of the
+  E2E setup is therefore not the failure.
+- 57 spec files exist under `tests/`. Which of them fails, and why, cannot be
+  determined without browsers or the CI log — the log/artifact endpoints
+  redirect to `*.blob.core.windows.net`, which the sandbox proxy blocks.
+
+**Next command required** (from a machine with browsers or unrestricted network):
+`npx playwright test --reporter=line` locally, or download the
+`playwright-report` artifact from run `30420688576`.
+
+Consequence for this PR: the `react-router` 8.3.0 override (taken to clear the
+CSRF advisory) is verified by `npm run build`, three green OS builds and 56/56
+layout+App tests, **not** by an end-to-end navigation run. This is the single
+largest unverified change in wave 2 and should be exercised before merge.
 
 ---
 
