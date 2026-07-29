@@ -6,6 +6,7 @@ import './index.css';
 import './styles/accessibility.css';
 import './styles/print.css';
 import { registerSW } from './pwa';
+import { buildSentryReplayOptions } from './sentryReplayConfig';
 
 // ── PWA service worker (must run before render) ─────────────────────────
 registerSW();
@@ -14,11 +15,27 @@ registerSW();
 // Gated on VITE_SENTRY_DSN so dev/staging/CI run without Sentry.
 // Browser-tracing + replay integrations are imported eagerly because
 // @sentry/react is a runtime dep; they only activate when DSN is set.
-// tracesSampleRate=0.1 (10% of transactions), replays only on error.
+//
+// F-0022 — replay privacy. This app renders general-ledger balances, salaries,
+// budgets and customer names. Replay previously ran with NO masking options at
+// replaysOnErrorSampleRate 1.0, so every error session shipped a pixel-accurate
+// video of that data to the Sentry backend, and the documented
+// SENTRY_REPLAY_MASK_ALL_TEXT switch was never read by any code.
+//
+// Masking is now unconditional and NOT configurable by environment variable: a
+// deployment must not be able to turn off financial-data redaction with a typo
+// in a .env file. Sentry's own defaults for maskAllText/blockAllMedia are true,
+// but they are stated explicitly here so a future dependency upgrade that flips
+// a default cannot silently start recording plaintext.
+// buildSentryReplayOptions() is exported and unit-tested in
+// src/sentryReplayConfig.test.ts.
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
-    integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.replayIntegration(buildSentryReplayOptions()),
+    ],
     tracesSampleRate: 0.1,
     replaysSessionSampleRate: 0.0,
     replaysOnErrorSampleRate: 1.0,

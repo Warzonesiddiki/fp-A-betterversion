@@ -52,6 +52,16 @@ node scripts/bundle-check.js
 echo "→ version consistency"
 node scripts/check-version-consistency.mjs
 
+# Gate 7: README claim check (F-0034). Documentation that contradicts the
+# repository is a defect class, so it is gated like any other.
+echo "→ readme claim check"
+node scripts/check-readme-claims.mjs
+
+# Gate 8: production dependency audit (F-0021). HIGH/CRITICAL in the prod tree
+# blocks unless documented in security/audit-allowlist.json with an expiry.
+echo "→ production dependency audit"
+node scripts/check-dependency-audit.mjs
+
 # Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
 # CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.
 # Spec: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md (§2: BLOCKED push)

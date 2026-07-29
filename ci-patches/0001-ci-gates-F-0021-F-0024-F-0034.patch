@@ -1,0 +1,102 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 6befee3..bb6c1dd 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -14,9 +14,9 @@ concurrency:
+   cancel-in-progress: true
+ 
+ env:
+-  NODE_VERSION: "22"
+-  MAIN_CHUNK_LIMIT: 150    # KB gzip
+-  TOTAL_JS_LIMIT: 2048     # KB gzip
++  NODE_VERSION: '22'
++  MAIN_CHUNK_LIMIT: 150 # KB gzip
++  TOTAL_JS_LIMIT: 2048 # KB gzip
+ 
+ jobs:
+   typecheck:
+@@ -52,8 +52,11 @@ jobs:
+       - name: Install dependencies
+         run: npm ci
+ 
+-      - name: ESLint
+-        run: npx eslint src
++      - name: ESLint (zero warnings)
++        run: npx eslint src --max-warnings 0
++
++      - name: README claim check
++        run: node scripts/check-readme-claims.mjs
+ 
+   test:
+     name: Unit Tests
+@@ -84,7 +87,9 @@ jobs:
+   build:
+     name: Build & Bundle Check
+     runs-on: ubuntu-latest
+-    needs: [typecheck, lint]
++    # F-0024 / mandatory_ci_gates: a build that can ship while tests fail is not
++    # a gate. Build now requires the unit-test job to succeed.
++    needs: [typecheck, lint, test]
+     steps:
+       - uses: actions/checkout@v4
+ 
+@@ -227,7 +232,7 @@ jobs:
+     name: A11Y (axe-core)
+     needs: [build]
+     runs-on: ubuntu-latest
+-    continue-on-error: true  # Pre-Mnemosyne A11Y-P0-3: allow merge
++    continue-on-error: true # Pre-Mnemosyne A11Y-P0-3: allow merge
+     steps:
+       - uses: actions/checkout@v4
+ 
+@@ -270,12 +275,33 @@ jobs:
+           path: |
+             a11y-report/
+             coverage/a11y/
+-          retention-days: 30  # Longer retention for a11y audit trail
++          retention-days: 30 # Longer retention for a11y audit trail
++
++  audit:
++    name: Production Dependency Audit
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Setup Node.js
++        uses: actions/setup-node@v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++
++      - name: Install dependencies
++        run: npm ci
++
++      # F-0021: HIGH/CRITICAL vulnerabilities in PRODUCTION dependencies block.
++      # Accepted, documented exceptions live in security/audit-allowlist.json and
++      # are re-reviewed on every run by the checker itself.
++      - name: npm audit (production)
++        run: node scripts/check-dependency-audit.mjs
+ 
+   summary:
+     name: CI Summary
+     if: always()
+-    needs: [typecheck, lint, test, build, e2e, a11y]
++    needs: [typecheck, lint, test, build, e2e, a11y, audit]
+     runs-on: ubuntu-latest
+     steps:
+       - name: Check results
+@@ -290,11 +316,13 @@ jobs:
+           echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped (A11Y-P0-3 pending)' || ':warning: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Dependency Audit | ${{ needs.audit.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+ 
+           if [ "${{ needs.typecheck.result }}" != "success" ] || \
+              [ "${{ needs.lint.result }}" != "success" ] || \
+              [ "${{ needs.test.result }}" != "success" ] || \
+-             [ "${{ needs.build.result }}" != "success" ]; then
++             [ "${{ needs.build.result }}" != "success" ] || \
++             [ "${{ needs.audit.result }}" != "success" ]; then
+             echo ""
+             echo ":x: **CI FAILED** - One or more required checks did not pass."
+             exit 1

@@ -1,0 +1,51 @@
+{
+  "$comment": [
+    "F-0021 — accepted production-dependency vulnerabilities.",
+    "An entry here is a DOCUMENTED RISK ACCEPTANCE, not a suppression. Each one",
+    "must state why no patched version can be adopted, what limits the exposure,",
+    "and when the acceptance expires. scripts/check-dependency-audit.mjs fails the",
+    "build when an entry expires, when an allowlisted advisory stops appearing",
+    "(stale entry must be deleted), or when any advisory outside this file reaches",
+    "HIGH or CRITICAL in the production tree."
+  ],
+  "policy": {
+    "blockSeverities": ["high", "critical"],
+    "scope": "production dependencies only (npm audit --omit=dev)"
+  },
+  "accepted": [
+    {
+      "id": "GHSA-f88m-g3jw-g9cj",
+      "package": "sharp",
+      "severity": "high",
+      "range": "<0.35.0",
+      "summary": "sharp inherits libvips CVE-2026-33327 / 33328 / 35590 / 35591",
+      "why_unpatched": "Reached only via @huggingface/transformers@4.2.0, which pins sharp ^0.34.5. 4.2.0 is the latest published release, so no upgrade exists; npm reports fixAvailable=false.",
+      "exposure_assessment": [
+        "sharp is a Node-only image codec used by the transformers Node backend.",
+        "FinPlan Pro loads transformers exclusively in the browser (src/engines/AIEngine.ts dynamic import), where onnxruntime-web is used and sharp is never resolved.",
+        "Verified 2026-07-29: after `npm run build`, no dist/assets/*.js references sharp or onnxruntime-node, so the vulnerable code is not shipped to users.",
+        "The CVEs require decoding attacker-controlled images through libvips; the product performs no server-side image decoding."
+      ],
+      "mitigation": "Keep the AI feature browser-only. Do not add a Node/server path that imports @huggingface/transformers without re-reviewing this acceptance.",
+      "accepted_on": "2026-07-29",
+      "expires_on": "2026-10-29",
+      "owner": "remediation-agent (ZCFA-2026-07-28-001 F-0021)"
+    },
+    {
+      "id": "TRANSFORMERS-SHARP-CHAIN",
+      "package": "@huggingface/transformers",
+      "severity": "high",
+      "range": ">=0.0.0",
+      "summary": "Flagged solely because it depends on the vulnerable sharp/onnxruntime-node versions above",
+      "why_unpatched": "4.2.0 is the latest published version; the advisory is inherited from its dependency pins, not from its own code.",
+      "exposure_assessment": [
+        "Same chain as the sharp entry: the vulnerable transitive packages are Node-only and absent from the browser bundle.",
+        "onnxruntime-node's adm-zip advisory is resolved separately by the adm-zip ^0.6.0 override in package.json."
+      ],
+      "mitigation": "Re-evaluate on the next @huggingface/transformers release; drop this entry if the pins move.",
+      "accepted_on": "2026-07-29",
+      "expires_on": "2026-10-29",
+      "owner": "remediation-agent (ZCFA-2026-07-28-001 F-0021)"
+    }
+  ]
+}
