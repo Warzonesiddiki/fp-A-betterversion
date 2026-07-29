@@ -5,8 +5,9 @@
 // Lane: P0A-17 Audit Trail UI + 6 Data tasks (OLAP/Lineage/Quality/MDM/Schema/Backup)
 
 import { create } from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
+import { subscribeWithSelector, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { masterStorage } from '@/utils/masterStorage';
 
 import type { CellAddress } from '@/types/cell';
 import type { ExtendedAuditEntry, AuditFilters, AuditSource, AuditOperation } from '@/types/audit';
@@ -331,301 +332,320 @@ const DEMO_PERIODS = ['2026Q1', '2026Q2', '2026Q3', '2026Q4'];
 
 export const useAuditTrailStore = create<State & Actions>()(
   subscribeWithSelector(
-    immer((set, get) => ({
-      entries: [],
-      filters: { ...defaultFilters },
-      currentPage: 1,
-      pageSize: 50,
-      sortField: 'timestamp',
-      sortDir: 'desc',
-      selectedEntryId: null,
-      loading: false,
-      // F-CLIO-2/7 RBAC gating — default to 'viewer' (no GDPR audit access)
-      currentUserRole: 'viewer' as AuditRole,
-      // F-0015: empty trail starts at the genesis hash
-      chainHead: AUDIT_CHAIN_GENESIS_HASH,
+    // N-0003: the compliance trail MUST survive reload, restart and restore.
+    // It was previously the only critical store with no persistence, so every
+    // SOX/SOC 2/GDPR Art. 30 record evaporated on refresh — which also made
+    // the F-0015 hash chain worthless in practice.
+    persist(
+      immer((set, get) => ({
+        entries: [],
+        filters: { ...defaultFilters },
+        currentPage: 1,
+        pageSize: 50,
+        sortField: 'timestamp',
+        sortDir: 'desc',
+        selectedEntryId: null,
+        loading: false,
+        // F-CLIO-2/7 RBAC gating — default to 'viewer' (no GDPR audit access)
+        currentUserRole: 'viewer' as AuditRole,
+        // F-0015: empty trail starts at the genesis hash
+        chainHead: AUDIT_CHAIN_GENESIS_HASH,
 
-      seedDemoData: () => {
-        const unsigned: UnsignedAuditEntry[] = [];
-        for (let i = 0; i < SEED_COUNT; i++) {
-          unsigned.push({
-            id: uid(),
-            cellId: {
-              cube: 'demo-cube',
-              coords: {
+        seedDemoData: () => {
+          const unsigned: UnsignedAuditEntry[] = [];
+          for (let i = 0; i < SEED_COUNT; i++) {
+            unsigned.push({
+              id: uid(),
+              cellId: {
+                cube: 'demo-cube',
+                coords: {
+                  sectorId: DEMO_SECTORS[i % DEMO_SECTORS.length]!,
+                  periodId: DEMO_PERIODS[Math.floor(i / 7) % DEMO_PERIODS.length]!,
+                },
+                measure: 'value',
                 sectorId: DEMO_SECTORS[i % DEMO_SECTORS.length]!,
+                scenarioId: 'base',
                 periodId: DEMO_PERIODS[Math.floor(i / 7) % DEMO_PERIODS.length]!,
+                lineItemId: `item-${i}`,
               },
-              measure: 'value',
-              sectorId: DEMO_SECTORS[i % DEMO_SECTORS.length]!,
-              scenarioId: 'base',
-              periodId: DEMO_PERIODS[Math.floor(i / 7) % DEMO_PERIODS.length]!,
-              lineItemId: `item-${i}`,
-            },
-            userId: DEMO_USERS[i % DEMO_USERS.length]!,
-            operation: DEMO_OPERATIONS[i % DEMO_OPERATIONS.length]!,
-            dataType: 'number',
-            previousValue: i % 3 === 0 ? null : Math.round(Math.random() * 100000) / 100,
-            newValue: Math.round(Math.random() * 100000) / 100,
-            approvalStatus: (['approved', 'auto', 'pending', 'approved'] as ApprovalStatus[])[
-              i % 4
-            ]!,
-            approvalUserId: i % 2 === 0 ? 'manager@finplan.io' : undefined,
-            approvalTimestamp: i % 2 === 0 ? now() - i * 60_000 : undefined,
-            source: (['manual', 'import', 'api', 'plugin'] as const)[i % 4]!,
-            transactionId: i % 5 === 0 ? `tx-${Math.floor(i / 5)}` : undefined,
-            timestamp: now() - i * 60_000,
-            metadata: i % 4 === 0 ? { reason: 'Q2 close adjustment' } : undefined,
+              userId: DEMO_USERS[i % DEMO_USERS.length]!,
+              operation: DEMO_OPERATIONS[i % DEMO_OPERATIONS.length]!,
+              dataType: 'number',
+              previousValue: i % 3 === 0 ? null : Math.round(Math.random() * 100000) / 100,
+              newValue: Math.round(Math.random() * 100000) / 100,
+              approvalStatus: (['approved', 'auto', 'pending', 'approved'] as ApprovalStatus[])[
+                i % 4
+              ]!,
+              approvalUserId: i % 2 === 0 ? 'manager@finplan.io' : undefined,
+              approvalTimestamp: i % 2 === 0 ? now() - i * 60_000 : undefined,
+              source: (['manual', 'import', 'api', 'plugin'] as const)[i % 4]!,
+              transactionId: i % 5 === 0 ? `tx-${Math.floor(i / 5)}` : undefined,
+              timestamp: now() - i * 60_000,
+              metadata: i % 4 === 0 ? { reason: 'Q2 close adjustment' } : undefined,
+            });
+          }
+          set((state) => {
+            // F-0015: seeded demo entries are chained like any other entry
+            for (const entry of unsigned) appendChained(state, entry);
           });
-        }
-        set((state) => {
-          // F-0015: seeded demo entries are chained like any other entry
-          for (const entry of unsigned) appendChained(state, entry);
-        });
-      },
+        },
 
-      recordWrite: (input) => {
-        const entry = makeEntry('write', input);
-        set((state) => {
-          appendChained(state, entry);
-        });
-        return entry.id;
-      },
-
-      recordUpdate: (input) => {
-        const entry = makeEntry('update', input);
-        set((state) => {
-          appendChained(state, entry);
-        });
-        return entry.id;
-      },
-
-      recordDelete: (input) => {
-        const entry = makeEntry('delete', input);
-        set((state) => {
-          appendChained(state, entry);
-        });
-        return entry.id;
-      },
-
-      recordRead: (input) => {
-        const entry = makeEntry('read', input);
-        set((state) => {
-          appendChained(state, entry);
-        });
-        return entry.id;
-      },
-
-      recordBulk: (inputs) => {
-        const txId = uid();
-        const ids = inputs.map((input) => {
-          const entry = makeEntry('bulk', { ...input, transactionId: txId });
+        recordWrite: (input) => {
+          const entry = makeEntry('write', input);
           set((state) => {
             appendChained(state, entry);
           });
           return entry.id;
-        });
-        return ids;
-      },
+        },
 
-      setFilter: (key, value) => {
-        set((state) => {
-          state.filters[key] = value;
-          state.currentPage = 1;
-        });
-      },
-
-      clearFilters: () => {
-        set((state) => {
-          state.filters = { ...defaultFilters };
-          state.currentPage = 1;
-        });
-      },
-
-      setSort: (field) => {
-        set((state) => {
-          if (state.sortField === field) {
-            state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
-          } else {
-            state.sortField = field;
-            state.sortDir = 'desc';
-          }
-        });
-      },
-
-      setPage: (page) => {
-        set((state) => {
-          state.currentPage = page;
-        });
-      },
-
-      setPageSize: (size) => {
-        set((state) => {
-          state.pageSize = size;
-          state.currentPage = 1;
-        });
-      },
-
-      selectEntry: (id) => {
-        set((state) => {
-          state.selectedEntryId = id;
-        });
-      },
-
-      revertToState: (entryId) => {
-        // SECURITY FIX (C-03): revertToState is restricted to prevent
-        // unauthorized mutation of the audit trail. Only admin / compliance
-        // / data-protection-officer roles may revert. The original entry
-        // remains intact; a new revert audit entry is added (append-only).
-        const allowedRoles: AuditRole[] = ['admin', 'compliance', 'data-protection-officer'];
-        if (!allowedRoles.includes(get().currentUserRole)) {
-          throw new Error(
-            'Audit trail revert denied: insufficient role. Required: admin, compliance, or data-protection-officer.'
-          );
-        }
-        const entry = get().entries.find((e) => e.id === entryId);
-        if (!entry) return;
-        // Generate a new audit entry recording the revert action (Hades GDPR Article 16).
-        // F-0015: the revert entry is chained like every other append.
-        const revertEntry = makeEntry('update', {
-          cellId: entry.cellId,
-          userId: entry.userId,
-          operation: 'update',
-          dataType: entry.dataType,
-          previousValue: entry.newValue,
-          newValue: entry.previousValue ?? null,
-          approvalStatus: 'auto',
-          source: 'manual',
-          metadata: {
-            revertedFrom: entryId,
-            reason: 'Audit-trail revert-to-state',
-          },
-        });
-        set((state) => {
-          appendChained(state, revertEntry);
-        });
-      },
-
-      refreshEntries: () => {
-        set((state) => {
-          state.loading = true;
-        });
-        // Simulate async refresh
-        setTimeout(() => {
+        recordUpdate: (input) => {
+          const entry = makeEntry('update', input);
           set((state) => {
-            state.loading = false;
+            appendChained(state, entry);
           });
-        }, 250);
-      },
+          return entry.id;
+        },
 
-      exportToCSV: () => {
-        const { entries } = get();
-        // F-CLIO-3 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — GDPR Art. 5(1)(c) + Art. 32 + CWE-359):
-        // Apply PIIRedactor before CSV export to redact email addresses.
-        const header = [
-          'id',
-          'timestamp',
-          'cellId',
-          'userId',
-          'operation',
-          'dataType',
-          'previousValue',
-          'newValue',
-          'approvalStatus',
-          'source',
-          'transactionId',
-        ].join(',');
-        const rows = entries.map((e) => {
-          const redacted = redactPII(e);
-          return [
-            redacted.id,
-            new Date(redacted.timestamp).toISOString(),
-            `${redacted.cellId.sectorId}/${redacted.cellId.scenarioId}/${redacted.cellId.periodId}/${redacted.cellId.lineItemId}`,
-            redacted.userId,
-            redacted.operation,
-            redacted.dataType,
-            JSON.stringify(redacted.previousValue ?? ''),
-            JSON.stringify(redacted.newValue),
-            redacted.approvalStatus,
-            redacted.source,
-            redacted.transactionId ?? '',
-          ]
-            .map((cell) => `"${sanitizeSpreadsheetText(cell).replace(/"/g, '""')}"`)
-            .join(',');
-        });
-        return [header, ...rows].join('\n');
-      },
+        recordDelete: (input) => {
+          const entry = makeEntry('delete', input);
+          set((state) => {
+            appendChained(state, entry);
+          });
+          return entry.id;
+        },
 
-      exportToJSON: () => {
-        const { entries } = get();
-        // F-CLIO-3 FIX: Apply PIIRedactor before JSON export
-        return JSON.stringify(entries.map(redactPII), null, 2);
-      },
+        recordRead: (input) => {
+          const entry = makeEntry('read', input);
+          set((state) => {
+            appendChained(state, entry);
+          });
+          return entry.id;
+        },
 
-      // F-CLIO-2/7 RBAC gating — set current user role for GDPR audit visibility check
-      setCurrentUserRole: (role: AuditRole) => {
-        set((state) => {
-          state.currentUserRole = role;
-        });
-      },
-
-      // GDPR review-view filter: entries relevant to GDPR audit review
-      // (DPO/compliance), i.e. GDPR-sourced or GDPR-cross-referenced.
-      filterByGdprAccess: (entries) =>
-        entries.filter(
-          (e) => e.source === 'gdpr' || e.consentId !== undefined || e.breachEventId !== undefined
-        ),
-
-      verifyIntegrity: () => {
-        const { entries, chainHead } = get();
-        const tamperedEntryIds: string[] = [];
-        const chainBreaks: AuditChainBreak[] = [];
-
-        // entries are stored newest-first; the chain is verified in append
-        // order (oldest → newest), starting from the genesis hash.
-        const appendOrder = [...entries].reverse();
-        let expectedPrev = AUDIT_CHAIN_GENESIS_HASH;
-        for (const entry of appendOrder) {
-          // Fail closed: entries without integrity material cannot be verified.
-          if (!entry.hash || entry.prevHash === undefined) {
-            tamperedEntryIds.push(entry.id);
-            if (entry.hash) expectedPrev = entry.hash;
-            continue;
-          }
-          // Link break: mid-chain deletion, reordering, or oldest-entry deletion
-          // (the new oldest entry still points at its removed predecessor).
-          if (entry.prevHash !== expectedPrev) {
-            chainBreaks.push({
-              entryId: entry.id,
-              expectedPrevHash: expectedPrev,
-              actualPrevHash: entry.prevHash,
+        recordBulk: (inputs) => {
+          const txId = uid();
+          const ids = inputs.map((input) => {
+            const entry = makeEntry('bulk', { ...input, transactionId: txId });
+            set((state) => {
+              appendChained(state, entry);
             });
-          }
-          // Content mutation: the stored hash no longer matches a recomputation
-          // over the stored record (covers previousValue/newValue edits, and
-          // also a rewritten hash itself, which then desynchronises the chain).
-          if (computeAuditEntryHash(entry) !== entry.hash) {
-            tamperedEntryIds.push(entry.id);
-          }
-          expectedPrev = entry.hash;
-        }
+            return entry.id;
+          });
+          return ids;
+        },
 
-        // Head check: truncating the NEWEST entries leaves chainHead pointing
-        // at a hash no longer present at entries[0].
-        const headIntact =
-          entries.length === 0
-            ? chainHead === AUDIT_CHAIN_GENESIS_HASH
-            : entries[0]!.hash === chainHead;
+        setFilter: (key, value) => {
+          set((state) => {
+            state.filters[key] = value;
+            state.currentPage = 1;
+          });
+        },
 
-        return {
-          valid: tamperedEntryIds.length === 0 && chainBreaks.length === 0 && headIntact,
-          entryCount: entries.length,
-          tamperedEntryIds,
-          chainBreaks,
-          headIntact,
-        };
-      },
-    }))
+        clearFilters: () => {
+          set((state) => {
+            state.filters = { ...defaultFilters };
+            state.currentPage = 1;
+          });
+        },
+
+        setSort: (field) => {
+          set((state) => {
+            if (state.sortField === field) {
+              state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+              state.sortField = field;
+              state.sortDir = 'desc';
+            }
+          });
+        },
+
+        setPage: (page) => {
+          set((state) => {
+            state.currentPage = page;
+          });
+        },
+
+        setPageSize: (size) => {
+          set((state) => {
+            state.pageSize = size;
+            state.currentPage = 1;
+          });
+        },
+
+        selectEntry: (id) => {
+          set((state) => {
+            state.selectedEntryId = id;
+          });
+        },
+
+        revertToState: (entryId) => {
+          // SECURITY FIX (C-03): revertToState is restricted to prevent
+          // unauthorized mutation of the audit trail. Only admin / compliance
+          // / data-protection-officer roles may revert. The original entry
+          // remains intact; a new revert audit entry is added (append-only).
+          const allowedRoles: AuditRole[] = ['admin', 'compliance', 'data-protection-officer'];
+          if (!allowedRoles.includes(get().currentUserRole)) {
+            throw new Error(
+              'Audit trail revert denied: insufficient role. Required: admin, compliance, or data-protection-officer.'
+            );
+          }
+          const entry = get().entries.find((e) => e.id === entryId);
+          if (!entry) return;
+          // Generate a new audit entry recording the revert action (Hades GDPR Article 16).
+          // F-0015: the revert entry is chained like every other append.
+          const revertEntry = makeEntry('update', {
+            cellId: entry.cellId,
+            userId: entry.userId,
+            operation: 'update',
+            dataType: entry.dataType,
+            previousValue: entry.newValue,
+            newValue: entry.previousValue ?? null,
+            approvalStatus: 'auto',
+            source: 'manual',
+            metadata: {
+              revertedFrom: entryId,
+              reason: 'Audit-trail revert-to-state',
+            },
+          });
+          set((state) => {
+            appendChained(state, revertEntry);
+          });
+        },
+
+        refreshEntries: () => {
+          set((state) => {
+            state.loading = true;
+          });
+          // Simulate async refresh
+          setTimeout(() => {
+            set((state) => {
+              state.loading = false;
+            });
+          }, 250);
+        },
+
+        exportToCSV: () => {
+          const { entries } = get();
+          // F-CLIO-3 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — GDPR Art. 5(1)(c) + Art. 32 + CWE-359):
+          // Apply PIIRedactor before CSV export to redact email addresses.
+          const header = [
+            'id',
+            'timestamp',
+            'cellId',
+            'userId',
+            'operation',
+            'dataType',
+            'previousValue',
+            'newValue',
+            'approvalStatus',
+            'source',
+            'transactionId',
+          ].join(',');
+          const rows = entries.map((e) => {
+            const redacted = redactPII(e);
+            return [
+              redacted.id,
+              new Date(redacted.timestamp).toISOString(),
+              `${redacted.cellId.sectorId}/${redacted.cellId.scenarioId}/${redacted.cellId.periodId}/${redacted.cellId.lineItemId}`,
+              redacted.userId,
+              redacted.operation,
+              redacted.dataType,
+              JSON.stringify(redacted.previousValue ?? ''),
+              JSON.stringify(redacted.newValue),
+              redacted.approvalStatus,
+              redacted.source,
+              redacted.transactionId ?? '',
+            ]
+              .map((cell) => `"${sanitizeSpreadsheetText(cell).replace(/"/g, '""')}"`)
+              .join(',');
+          });
+          return [header, ...rows].join('\n');
+        },
+
+        exportToJSON: () => {
+          const { entries } = get();
+          // F-CLIO-3 FIX: Apply PIIRedactor before JSON export
+          return JSON.stringify(entries.map(redactPII), null, 2);
+        },
+
+        // F-CLIO-2/7 RBAC gating — set current user role for GDPR audit visibility check
+        setCurrentUserRole: (role: AuditRole) => {
+          set((state) => {
+            state.currentUserRole = role;
+          });
+        },
+
+        // GDPR review-view filter: entries relevant to GDPR audit review
+        // (DPO/compliance), i.e. GDPR-sourced or GDPR-cross-referenced.
+        filterByGdprAccess: (entries) =>
+          entries.filter(
+            (e) => e.source === 'gdpr' || e.consentId !== undefined || e.breachEventId !== undefined
+          ),
+
+        verifyIntegrity: () => {
+          const { entries, chainHead } = get();
+          const tamperedEntryIds: string[] = [];
+          const chainBreaks: AuditChainBreak[] = [];
+
+          // entries are stored newest-first; the chain is verified in append
+          // order (oldest → newest), starting from the genesis hash.
+          const appendOrder = [...entries].reverse();
+          let expectedPrev = AUDIT_CHAIN_GENESIS_HASH;
+          for (const entry of appendOrder) {
+            // Fail closed: entries without integrity material cannot be verified.
+            if (!entry.hash || entry.prevHash === undefined) {
+              tamperedEntryIds.push(entry.id);
+              if (entry.hash) expectedPrev = entry.hash;
+              continue;
+            }
+            // Link break: mid-chain deletion, reordering, or oldest-entry deletion
+            // (the new oldest entry still points at its removed predecessor).
+            if (entry.prevHash !== expectedPrev) {
+              chainBreaks.push({
+                entryId: entry.id,
+                expectedPrevHash: expectedPrev,
+                actualPrevHash: entry.prevHash,
+              });
+            }
+            // Content mutation: the stored hash no longer matches a recomputation
+            // over the stored record (covers previousValue/newValue edits, and
+            // also a rewritten hash itself, which then desynchronises the chain).
+            if (computeAuditEntryHash(entry) !== entry.hash) {
+              tamperedEntryIds.push(entry.id);
+            }
+            expectedPrev = entry.hash;
+          }
+
+          // Head check: truncating the NEWEST entries leaves chainHead pointing
+          // at a hash no longer present at entries[0].
+          const headIntact =
+            entries.length === 0
+              ? chainHead === AUDIT_CHAIN_GENESIS_HASH
+              : entries[0]!.hash === chainHead;
+
+          return {
+            valid: tamperedEntryIds.length === 0 && chainBreaks.length === 0 && headIntact,
+            entryCount: entries.length,
+            tamperedEntryIds,
+            chainBreaks,
+            headIntact,
+          };
+        },
+      })),
+      {
+        name: 'audit-trail-store',
+        storage: masterStorage,
+        version: 1,
+        migrate: (state: unknown) => state,
+        // Persist ONLY the integrity-bearing data. Filters, pagination,
+        // selection and the RBAC view role are ephemeral UI state; persisting
+        // them would let a stale view role survive a session.
+        partialize: (state) => ({
+          entries: state.entries,
+          chainHead: state.chainHead,
+        }),
+      }
+    )
   )
 );
 

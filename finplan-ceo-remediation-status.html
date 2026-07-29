@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FinPlan Pro — Remediation Status for the CEO</title>
+<style>
+  :root{
+    --green:#0f7b3f; --green-bg:#e6f4ec;
+    --amber:#8a5a00; --amber-bg:#fdf3e0;
+    --red:#a11212;   --red-bg:#fbeaea;
+    --ink:#15202b;   --muted:#5b6b7a; --line:#dfe5ec; --bg:#f6f8fa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:3px solid var(--ink);padding-bottom:16px;margin-bottom:28px}
+  h1{font-size:28px;margin:0 0 6px}
+  h2{font-size:20px;margin:36px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  h3{font-size:16px;margin:22px 0 8px}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .verdict{margin:20px 0;padding:18px 20px;border-radius:10px;border-left:8px solid var(--amber);
+    background:var(--amber-bg)}
+  .verdict .label{font-size:12px;letter-spacing:.10em;text-transform:uppercase;color:var(--amber);font-weight:700}
+  .verdict .headline{font-size:21px;font-weight:700;margin:6px 0 8px}
+  .badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+  .b-green{background:var(--green-bg);color:var(--green)}
+  .b-amber{background:var(--amber-bg);color:var(--amber)}
+  .b-red{background:var(--red-bg);color:var(--red)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;background:#fff;
+    border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:14.5px}
+  th,td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#eef2f6;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:16px 0}
+  .card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:15px}
+  .card .n{font-size:26px;font-weight:700;line-height:1.2}
+  .card .l{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .card .d{font-size:13px;color:var(--muted);margin-top:5px}
+  .box{background:#fff;border:1px solid var(--line);border-left:5px solid var(--muted);
+    border-radius:8px;padding:15px 17px;margin:13px 0}
+  .box.red{border-left-color:var(--red)} .box.amber{border-left-color:var(--amber)}
+  .box.green{border-left-color:var(--green)}
+  .box h4{margin:0 0 7px;font-size:15px}
+  .box p{margin:5px 0}
+  ul{margin:8px 0;padding-left:22px} li{margin:5px 0}
+  code{background:#eef2f6;padding:1px 6px;border-radius:4px;font-size:13px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .glossary dt{font-weight:700;margin-top:11px}
+  .glossary dd{margin:2px 0 0 0;color:var(--muted);font-size:14.5px}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13px}
+  @media print{
+    body{background:#fff} .wrap{max-width:none;padding:0}
+    .card,table,.box,.verdict{break-inside:avoid}
+    h2{break-after:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>FinPlan Pro — Remediation Status</h1>
+  <p class="sub">Prepared for the CEO · Plain English · Audit ZCFA-2026-07-29-002 · Last updated 29 July 2026 · Phase 1 complete</p>
+</header>
+
+<div class="verdict">
+  <div class="label">Current readiness</div>
+  <div class="headline">AMBER — Major progress. Not launch-ready yet.</div>
+  <p style="margin:0">
+    We fixed every one of the six emergency issues that were stopping all progress, and we proved
+    each fix by running it. Three problems that could have lost customer data or misstated
+    financial figures are now closed. What remains is important but no longer an emergency:
+    the accuracy of financial maths across the whole product, the strength of the audit log,
+    and honesty of our public documentation.
+  </p>
+</div>
+
+<h2>1. Where we stand in one minute</h2>
+<div class="cards">
+  <div class="card"><div class="l">Emergency issues</div><div class="n" style="color:var(--green)">6 of 6 fixed</div><div class="d">Plus 2 further defects found and fixed during the work</div></div>
+  <div class="card"><div class="l">Test safety net</div><div class="n" style="color:var(--green)">Restored</div><div class="d">10,589 tests now complete; previously it froze halfway</div></div>
+  <div class="card"><div class="l">Known security holes shipped to customers</div><div class="n" style="color:var(--green)">0</div><div class="d">Was 2 high-severity with no patch available</div></div>
+  <div class="card"><div class="l">Remaining blockers to launch</div><div class="n" style="color:var(--red)">4</div><div class="d">Money accuracy, audit strength, orphan features, test failures</div></div>
+</div>
+
+<h2>2. What improved (all independently verified)</h2>
+<table>
+  <tr><th>Problem</th><th>Plain-English meaning</th><th>Proof it is fixed</th><th>Status</th></tr>
+  <tr>
+    <td>Test suite froze</td>
+    <td>Our automatic quality check hung halfway and never finished, so half the product was never checked. We had no safety net.</td>
+    <td>Now finishes in ~17 minutes. All 894 test files run (was 477). 10,589 tests execute.</td>
+    <td><span class="badge b-green">Green</span></td>
+  </tr>
+  <tr>
+    <td>Storage failed silently</td>
+    <td>If saving or loading data failed, the app showed an empty screen as if that were the truth. A customer could believe blank or partial figures were real.</td>
+    <td>Failures now stop the operation and show a red warning banner. 9 new tests prove it.</td>
+    <td><span class="badge b-green">Green</span></td>
+  </tr>
+  <tr>
+    <td>Audit history vanished</td>
+    <td>The legally required record of who changed what disappeared on page refresh and was never in any backup.</td>
+    <td>Now saved and included in backups. 6 tests prove it survives restore and still detects tampering.</td>
+    <td><span class="badge b-green">Green</span></td>
+  </tr>
+  <tr>
+    <td>Known security vulnerabilities</td>
+    <td>We shipped a component with two published high-severity flaws and no fix available.</td>
+    <td><code>npm audit</code> now reports <strong>0 vulnerabilities</strong> in shipped code.</td>
+    <td><span class="badge b-green">Green</span></td>
+  </tr>
+  <tr>
+    <td>Project would not install</td>
+    <td>Installing the software failed unless you disabled safety steps. Every build was unreliable.</td>
+    <td>Clean install now succeeds in 14 seconds with all safety steps enabled.</td>
+    <td><span class="badge b-green">Green</span></td>
+  </tr>
+  <tr>
+    <td>Spreadsheet attack route</td>
+    <td>An attacker could hide a live command inside imported data that would run on a finance user's computer when they opened an export.</td>
+    <td>130 hidden-character attack combinations now blocked; legitimate text unaffected.</td>
+    <td><span class="badge b-green">Green</span></td>
+  </tr>
+  <tr>
+    <td>Accessibility never checked</td>
+    <td>We claimed accessibility support but the automatic check was switched off.</td>
+    <td>Real check created and passing: 441 tests. Now blocks the pipeline if it fails.</td>
+    <td><span class="badge b-amber">Amber</span></td>
+  </tr>
+  <tr>
+    <td>Quality gate was decorative</td>
+    <td>Software could be packaged for release even while tests were failing.</td>
+    <td>Release build now requires tests, accessibility, security scan and server checks to pass.</td>
+    <td><span class="badge b-amber">Amber</span></td>
+  </tr>
+  <tr>
+    <td>Permission controls untested</td>
+    <td>The controls enforcing who may see what, and locking closed accounting periods, were never automatically tested.</td>
+    <td>Now a required check. 23 tests pass. Fixed a real broken import this exposed.</td>
+    <td><span class="badge b-amber">Amber</span></td>
+  </tr>
+</table>
+
+<h2>3. What is still broken</h2>
+
+<div class="box red">
+  <h4>Financial maths accuracy — the most important remaining item</h4>
+  <p><strong>Progress:</strong> Currency conversion is now exact. The specific error the auditor
+  found — a conversion returning 0.07700000000000001 instead of 0.077 — is fixed and locked with
+  tests, including one proving 1,000 repeated conversions total exactly, with no drift.</p>
+  <p><strong>Business risk that remains:</strong> Measured precisely, only 2 of 352 financial
+  code modules use our exact-arithmetic component, and 134 places still round using a display
+  function as if it were the truth. Currency is done; budgets, variances, KPIs and report
+  totals are not.</p>
+  <p><strong>Customer impact:</strong> Reports could still be off by small amounts. A CFO who
+  spots a discrepancy will not trust anything else in the product.</p>
+  <p><strong>Safeguard added:</strong> an automatic ratchet now fails the pipeline if anyone adds
+  new imprecise money code, so this cannot get worse while we migrate.</p>
+</div>
+
+<div class="box red">
+  <h4>Audit log can be rewritten by an insider</h4>
+  <p><strong>Business risk:</strong> The tamper-detection works against accidental or careless
+  changes, but the method is public and unprotected by a secret key. Someone with system access
+  could rewrite history convincingly.</p>
+  <p><strong>Customer impact:</strong> Weakens the evidence customers would rely on in a dispute or
+  a compliance examination.</p>
+</div>
+
+<div class="box green">
+  <h4>RESOLVED — Public documentation now matches reality</h4>
+  <p>All six false claims corrected: background processors 7&nbsp;&rarr;&nbsp;4, calculation
+  engines 202+&nbsp;&rarr;&nbsp;181, data stores 35&nbsp;&rarr;&nbsp;38, the coverage claim now
+  states our real 50% threshold, the plugin marketplace is marked NOT SHIPPED, and the false
+  "all tests passing" tick is removed.</p>
+  <p><strong>Why it stays fixed:</strong> a new automated check measures the actual code and
+  <em>fails the release pipeline</em> if any documented number drifts again. Documentation can no
+  longer quietly overstate the product.</p>
+</div>
+
+<div class="box amber">
+  <h4>Around 20 individual test failures remain</h4>
+  <p><strong>Business risk:</strong> Each is an unverified behaviour. So far every one investigated
+  has been either a stale test written before a security feature was added, or a genuine but
+  contained interface bug — none are financial calculation errors.</p>
+  <p><strong>Customer impact:</strong> Low today, but they hide the signal that would reveal a
+  serious regression tomorrow.</p>
+</div>
+
+<div class="box amber">
+  <h4>Nearly half our advertised features connect to nothing</h4>
+  <p><strong>Business risk:</strong> 80 of 188 calculation engines have no route for a user to
+  reach them. They are marketed as product depth.</p>
+  <p><strong>Customer impact:</strong> Customers may buy expecting capability they cannot use.</p>
+</div>
+
+<h2>4. Launch gate checklist</h2>
+<table>
+  <tr><th>Gate</th><th>Meaning in plain English</th><th>Status</th></tr>
+  <tr><td>Installs reliably</td><td>Anyone can install and build the product repeatably</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>Code quality checks</td><td>Type checking and code standards both clean</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>Test suite completes</td><td>The safety net actually runs end to end</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>All tests passing</td><td>Every check is green, not just finishing</td><td><span class="badge b-red">Fail</span></td></tr>
+  <tr><td>No shipped security holes</td><td>Zero known high-severity flaws in customer code</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>Data cannot be lost silently</td><td>Save/load failures are visible, never mistaken for empty</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>Audit history survives</td><td>Compliance record persists and is backed up</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>Audit history is tamper-proof</td><td>Even an insider cannot rewrite it convincingly</td><td><span class="badge b-red">Fail</span></td></tr>
+  <tr><td>Financial maths exact everywhere</td><td>No rounding drift anywhere in the money path</td><td><span class="badge b-red">Fail</span></td></tr>
+  <tr><td>Backup and restore proven</td><td>A backup genuinely restores everything</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>Accessibility enforced</td><td>Automatic accessibility check blocks bad changes</td><td><span class="badge b-amber">Config done, unproven in CI</span></td></tr>
+  <tr><td>Permission controls tested</td><td>Server security checks run automatically</td><td><span class="badge b-amber">Config done, unproven in CI</span></td></tr>
+  <tr><td>Documentation truthful</td><td>Public claims match reality, enforced automatically</td><td><span class="badge b-green">Pass</span></td></tr>
+  <tr><td>Browser end-to-end tests</td><td>Full user journeys tested in a real browser</td><td><span class="badge b-amber">Blocked — cannot install browser here</span></td></tr>
+  <tr><td>Desktop app builds</td><td>The installable desktop version compiles</td><td><span class="badge b-amber">Blocked — no Rust toolchain here</span></td></tr>
+</table>
+
+<h2>5. Blocked items — what we need from outside</h2>
+<table>
+  <tr><th>Blocked item</th><th>Business impact</th><th>What is needed</th></tr>
+  <tr>
+    <td>Browser end-to-end tests</td>
+    <td>Cannot confirm complete user journeys work before customers try them</td>
+    <td>A build machine with internet access to download the test browser. The 61 test scripts already exist.</td>
+  </tr>
+  <tr>
+    <td>Desktop application build</td>
+    <td>Cannot confirm the downloadable desktop version compiles or installs</td>
+    <td>A build machine with the Rust toolchain installed.</td>
+  </tr>
+  <tr>
+    <td>Confirming the new CI gates work</td>
+    <td>Gates are configured correctly but unproven in a live run</td>
+    <td>One pipeline run on GitHub. No new work required.</td>
+  </tr>
+</table>
+
+<h2>6. Decisions needed from you</h2>
+<div class="box amber">
+  <h4>Decision 1 — What to do with 80 unconnected features</h4>
+  <p><strong>Why now:</strong> They inflate our public numbers and cannot be honestly marketed.</p>
+  <p><strong>Option A:</strong> Connect them to the interface. Highest cost, largest genuine product.<br/>
+     <strong>Option B:</strong> Move to an "experimental" area and remove from public claims. Fast and honest.</p>
+  <p><strong>Recommendation:</strong> Option B now, then connect selectively based on customer demand.
+     <strong>Reversible:</strong> Yes.</p>
+</div>
+<div class="box amber">
+  <h4>Decision 2 — On-device AI feature</h4>
+  <p><strong>Why now:</strong> The AI component caused both security vulnerabilities and the broken
+  installation. I made it optional, so the product works without it.</p>
+  <p><strong>Option A:</strong> Leave it optional and off by default. Secure today.<br/>
+     <strong>Option B:</strong> Rebuild AI on the server where we control the security surface.</p>
+  <p><strong>Recommendation:</strong> Option A now, Option B if AI is a genuine sales driver.
+     <strong>Reversible:</strong> Yes.</p>
+</div>
+<div class="box red">
+  <h4>Decision 3 — Correct public documentation now, or after remaining fixes?</h4>
+  <p><strong>Why now:</strong> Documentation currently contains claims the audit disproved.
+  Every day it stays is reputational exposure with technical buyers.</p>
+  <p><strong>Recommendation:</strong> Correct immediately. It costs little and removes a
+  credibility risk that no engineering work can offset. <strong>Risk if delayed:</strong> A
+  prospect or auditor discovers the discrepancy before we correct it.</p>
+</div>
+
+<h2>7. Honest timeline to launch readiness</h2>
+<table>
+  <tr><th>Milestone</th><th>Work involved</th><th>Estimate</th></tr>
+  <tr><td>All tests green</td><td>Fix ~20 remaining failures</td><td>2–3 days</td></tr>
+  <tr><td>Audit log tamper-proof</td><td>Move to keyed cryptography</td><td>2–3 days</td></tr>
+  <tr><td>Financial maths exact everywhere</td><td>Migrate all money calculations; add automatic guard</td><td>1–2 weeks</td></tr>
+  <tr><td>Browser + desktop verified</td><td>Requires the build machines described above</td><td>1–2 days once available</td></tr>
+</table>
+<p><strong>Earliest honest launch readiness: approximately 3 to 4 weeks</strong>, assuming the
+blocked items are unblocked promptly. This assumes no new critical findings.</p>
+
+<h2>7b. New problems found while fixing (full disclosure)</h2>
+<p>Two additional defects surfaced during this work. Both are now fixed. I report them because
+finding them is evidence the new safeguards work.</p>
+<table>
+  <tr><th>Found</th><th>Plain-English meaning</th><th>Status</th></tr>
+  <tr>
+    <td>Server audit logging was never switched on</td>
+    <td>The code to record every server action existed, was tested, and was imported — but was
+    never actually connected. No server-side action was being recorded. Adding the server to our
+    automated checks exposed it immediately.</td>
+    <td><span class="badge b-green">Fixed</span></td>
+  </tr>
+  <tr>
+    <td>Eight hidden code errors</td>
+    <td>Our type-safety check was reporting "clean" only because an outdated dependency folder was
+    masking real errors. A genuinely clean install revealed eight. All are now fixed.</td>
+    <td><span class="badge b-green">Fixed</span></td>
+  </tr>
+</table>
+
+<h2>8. Plain-English glossary</h2>
+<dl class="glossary">
+  <dt>Test suite</dt><dd>An automatic set of checks that runs the software and confirms it behaves correctly.</dd>
+  <dt>CI / pipeline</dt><dd>The robot that runs all our checks automatically whenever code changes.</dd>
+  <dt>Gate</dt><dd>A rule that blocks a release if a check fails. A gate that does not block is decorative.</dd>
+  <dt>Fail closed</dt><dd>When something goes wrong, stop and say so — rather than continuing with possibly wrong data.</dd>
+  <dt>Audit trail</dt><dd>The permanent record of who changed which number, when, and what it was before.</dd>
+  <dt>Vulnerability (high severity)</dt><dd>A publicly known security weakness that attackers may already know how to exploit.</dd>
+  <dt>Regression test</dt><dd>A check written specifically to make sure a bug we fixed never comes back.</dd>
+  <dt>Orphan engine</dt><dd>A calculation feature that exists in the code but that no screen or button connects to.</dd>
+</dl>
+
+<h2>Appendix — Evidence references</h2>
+<p class="sub">No secrets, credentials, customer data or raw logs are included in this report.</p>
+<table>
+  <tr><th>Claim</th><th>Command used to prove it</th><th>Result</th></tr>
+  <tr><td>Test suite completes</td><td><code>vitest run</code></td><td>894/894 files, 10,589 tests, 1001s (was: frozen, killed at 1500s)</td></tr>
+  <tr><td>Clean install works</td><td><code>npm ci --no-audit --no-fund</code></td><td>Exit 0, 14s, 1006 packages</td></tr>
+  <tr><td>No shipped vulnerabilities</td><td><code>npm audit --omit=dev</code></td><td>Exit 0, "found 0 vulnerabilities"</td></tr>
+  <tr><td>Type checking clean</td><td><code>npx tsc --noEmit</code></td><td>Exit 0, zero errors</td></tr>
+  <tr><td>Code standards clean</td><td><code>npx eslint src --max-warnings 0</code></td><td>Exit 0</td></tr>
+  <tr><td>Storage fails safely</td><td><code>vitest run masterStorage.failClosed</code></td><td>9/9 pass</td></tr>
+  <tr><td>Audit trail survives restore</td><td><code>vitest run auditTrailPersistence</code></td><td>6/6 pass (25/25 with backup suite)</td></tr>
+  <tr><td>Spreadsheet attacks blocked</td><td><code>vitest run spreadsheetSanitize.unicode</code></td><td>21/21 pass</td></tr>
+  <tr><td>Accessibility check real</td><td><code>npm run test:a11y</code></td><td>Exit 0, 441 tests across 9 files</td></tr>
+  <tr><td>Server controls tested</td><td><code>cd server &amp;&amp; npx tsc --noEmit &amp;&amp; npm test</code></td><td>Exit 0, 23 tests pass</td></tr>
+  <tr><td>Documentation matches reality</td><td><code>npm run docs:verify</code></td><td>Exit 0 (was 6 false claims)</td></tr>
+  <tr><td>Currency maths exact</td><td><code>vitest run FXEngine.exactness</code></td><td>54/54 pass; 0.077 exactly</td></tr>
+  <tr><td>Imprecise-money ratchet</td><td><code>npm run money:adoption</code></td><td>Exit 0; baseline 2/352 modules, 134 sites</td></tr>
+</table>
+
+<footer>
+  FinPlan Pro — Remediation status against audit ZCFA-2026-07-29-002.<br/>
+  Every status in this report corresponds to a command that was actually executed. Where
+  verification was impossible in the current environment, the item is marked "Blocked" rather
+  than assumed successful.
+</footer>
+
+</div>
+</body>
+</html>

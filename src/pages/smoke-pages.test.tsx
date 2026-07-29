@@ -87,21 +87,7 @@ vi.mock('recharts', () => ({
 // Mock lucide-react icons
 // ---------------------------------------------------------------------------
 
-vi.mock('lucide-react', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('lucide-react')>();
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  const mocked: Record<string, unknown> = {};
-  for (const key of Object.keys(actual)) {
-    mocked[key] = makeIcon();
-  }
-  return mocked;
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 // ---------------------------------------------------------------------------
 // Import page components AFTER mocks
@@ -112,6 +98,7 @@ import InvestmentPage from '@/pages/treasury/InvestmentPage';
 import ICEliminationPage from '@/pages/consolidation/ICEliminationPage';
 import FXRatesPage from '@/pages/currency/FXRatesPage';
 import AuditTrailPage from '@/pages/audit/AuditTrailPage';
+import { useAuditTrailStore } from '@/store/auditTrailStore';
 
 // ---------------------------------------------------------------------------
 // Helper
@@ -212,7 +199,15 @@ describe('Page Smoke Tests — 5 Additional Pages', () => {
       expect(container).toBeTruthy();
     });
 
-    it('displays the empty state when no audit entries exist', () => {
+    it('denies access to roles without GDPR audit permission (RBAC gate)', () => {
+      // Default role is 'viewer'. The page must fail CLOSED, not render data.
+      useAuditTrailStore.setState({ currentUserRole: 'viewer' });
+      const { getByText } = renderPage(AuditTrailPage, '/audit/trail', '/audit/trail');
+      expect(getByText(/Access Denied/i)).toBeInTheDocument();
+    });
+
+    it('displays the empty state when no audit entries exist (authorized role)', () => {
+      useAuditTrailStore.setState({ currentUserRole: 'admin' });
       const { getByText } = renderPage(AuditTrailPage, '/audit/trail', '/audit/trail');
       expect(getByText(/No Audit Entries/i)).toBeInTheDocument();
     });

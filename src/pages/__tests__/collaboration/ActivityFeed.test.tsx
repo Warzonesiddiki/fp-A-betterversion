@@ -30,21 +30,7 @@ vi.mock('@/store/collaborationStore', () => ({
 }));
 
 // Mock lucide-react icons
-vi.mock('lucide-react', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('lucide-react')>();
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  const mocked: Record<string, unknown> = {};
-  for (const key of Object.keys(actual)) {
-    mocked[key] = makeIcon();
-  }
-  return mocked;
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 import { ActivityFeed } from '@/pages/collaboration/ActivityFeed';
 

@@ -58,13 +58,29 @@ describe('masterStorage', () => {
   // in the first test group (isTauri returns true).
   describe('getItem (Tauri path - first call sets cache)', () => {
     it('should delegate to tauriSqlStorage when on Tauri', async () => {
+      // N-0002: values at rest are ENCRYPTED. This test previously fed a raw
+      // plaintext object straight back from the backend, which can never
+      // decrypt — it only passed while getItem swallowed the failure and
+      // returned null. Round-trip through setItem so the stored payload is a
+      // real ciphertext, then assert the decrypted value matches.
       mockIsTauri.mockResolvedValue(true);
-      mockTauriSqlGetItem.mockResolvedValue({ state: 'test-data', version: 1 });
+      const value = { state: 'test-data', version: 1 };
 
+      let storedCiphertext: unknown;
+      mockTauriSqlSetItem.mockImplementation(async (_k: string, v: unknown) => {
+        storedCiphertext = v;
+      });
+      await masterStorage.setItem('test-store', value);
+      expect(typeof storedCiphertext).toBe('string');
+
+      mockTauriSqlGetItem.mockResolvedValue(storedCiphertext);
       const result = await masterStorage.getItem('test-store');
 
       expect(mockTauriSqlGetItem).toHaveBeenCalledWith('test-store');
-      expect(result).toEqual({ state: 'test-data', version: 1 });
+      // getItem returns the decrypted serialized payload; zustand's persist
+      // middleware performs the JSON.parse. Assert the decrypted content.
+      const decoded = typeof result === 'string' ? JSON.parse(result) : result;
+      expect(decoded).toEqual(value);
     });
 
     it('should return null when tauri storage returns null', async () => {

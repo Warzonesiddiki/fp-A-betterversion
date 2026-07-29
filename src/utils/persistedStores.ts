@@ -20,6 +20,7 @@
  */
 export const PERSISTED_STORE_KEYS: readonly string[] = [
   'analytics-store',
+  'audit-trail-store',
   'auth-store',
   'budget-store',
   'capex-store',

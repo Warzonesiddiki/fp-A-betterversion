@@ -11,6 +11,7 @@ import {
   RouteSkeleton,
 } from './components/errors/RouteGroupErrorBoundary';
 import { useFirstRun } from './hooks/useFirstRun';
+import { StorageFailureBanner } from './components/system/StorageFailureBanner';
 
 // Core (not route-dependent)
 const OnboardingWizard = lazy(
@@ -374,6 +375,8 @@ export default function App() {
   return (
     <Router>
       <ThemeProvider>
+        {/* N-0002: storage durability failures must be visible, not silent. */}
+        <StorageFailureBanner />
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             <Route
