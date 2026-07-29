@@ -177,3 +177,5 @@ export function ESGPage() {
     </main>
   );
 }
+
+export default ESGPage;

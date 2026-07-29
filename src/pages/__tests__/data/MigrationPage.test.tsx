@@ -25,9 +25,22 @@ vi.mock('@/engines/CubeMigrationEngine', () => ({
   CubeMigrationEngine: vi.fn(),
 }));
 
+// MigrationPage imports 11 icons from lucide-react; this mock previously
+// stubbed only 2, so any icon used by the page beyond Database/ArrowLeft
+// crashed the render with "no export is defined on the mock". Cover every
+// icon the page actually imports.
 vi.mock('lucide-react', () => ({
-  Database: () => <span data-testid="mock-icon" />,
   ArrowLeft: () => <span data-testid="mock-icon" />,
+  Database: () => <span data-testid="mock-icon" />,
+  FileSpreadsheet: () => <span data-testid="mock-icon" />,
+  FileText: () => <span data-testid="mock-icon" />,
+  Layers: () => <span data-testid="mock-icon" />,
+  Building2: () => <span data-testid="mock-icon" />,
+  Trash2: () => <span data-testid="mock-icon" />,
+  Play: () => <span data-testid="mock-icon" />,
+  CheckCircle2: () => <span data-testid="mock-icon" />,
+  AlertCircle: () => <span data-testid="mock-icon" />,
+  Clock: () => <span data-testid="mock-icon" />,
 }));
 
 vi.mock('@/components/ui/Button', () => ({
@@ -50,6 +63,7 @@ vi.mock('@/components/ui/Card', () => ({
 }));
 
 import { render, screen } from '@/test/testUtils';
+import userEvent from '@testing-library/user-event';
 import MigrationPage from '@/pages/data/MigrationPage';
 
 describe('MigrationPage', () => {
@@ -59,7 +73,10 @@ describe('MigrationPage', () => {
 
   it('renders the page heading', () => {
     render(<MigrationPage />);
-    expect(screen.getByText(/Data Migration/i)).toBeInTheDocument();
+    // The picker view's empty-migrations-history panel also mentions "data
+    // migration" in its helper copy ("start your first data migration"), so
+    // a loose text match matches two elements. Scope to the actual <h1>.
+    expect(screen.getByRole('heading', { level: 1, name: /Data Migration/i })).toBeInTheDocument();
   });
 
   it('renders the description text', () => {
@@ -67,8 +84,14 @@ describe('MigrationPage', () => {
     expect(screen.getByText(/Migrate data from Excel/i)).toBeInTheDocument();
   });
 
-  it('renders the migration wizard', () => {
+  it('renders the migration wizard', async () => {
+    // MigrationWizard only mounts once a source has been chosen (showWizard
+    // becomes true); the picker screen renders first. Drive that real user
+    // flow via the empty-state "Start with Excel" shortcut rather than
+    // asserting the wizard is present before any source is selected.
+    const user = userEvent.setup();
     render(<MigrationPage />);
+    await user.click(screen.getByText('Start with Excel'));
     expect(screen.getByTestId('migration-wizard')).toBeInTheDocument();
   });
 

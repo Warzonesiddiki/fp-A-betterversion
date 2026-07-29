@@ -170,3 +170,5 @@ export function ChartShowcasePage() {
     </div>
   );
 }
+
+export default ChartShowcasePage;

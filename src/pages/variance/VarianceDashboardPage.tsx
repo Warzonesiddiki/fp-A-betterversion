@@ -52,9 +52,41 @@ interface VarianceRow {
   driver: string;
 }
 
+/** Account categories rolled up from GL/budget account-code prefixes. */
+const CATEGORY_DEFS: ReadonlyArray<{
+  key: 'Revenue' | 'COGS' | 'Operating Expenses';
+  prefixes: readonly string[];
+  favorableDriver: string;
+  unfavorableDriver: string;
+}> = [
+  {
+    key: 'Revenue',
+    prefixes: ['4'],
+    favorableDriver: 'Volume/Mix',
+    unfavorableDriver: 'Pricing pressure',
+  },
+  {
+    key: 'COGS',
+    prefixes: ['5'],
+    favorableDriver: 'Cost efficiency',
+    unfavorableDriver: 'Input cost increase',
+  },
+  {
+    key: 'Operating Expenses',
+    prefixes: ['6', '7'],
+    favorableDriver: 'Spending control',
+    unfavorableDriver: 'Hiring ahead of plan',
+  },
+];
+
 export default function VarianceDashboardPage() {
   const { entries } = useGLStore();
-  const { budgets } = useBudgetStore();
+  // Defensive default: some legacy test doubles for useBudgetStore mock only
+  // a subset of the real store shape. Rather than crash with "Cannot read
+  // properties of undefined (reading 'filter')" on any consumer that omits
+  // lineItems, degrade to "no approved budget data" (the correct empty
+  // state already handles this) instead of throwing.
+  const { budgets, lineItems = [] } = useBudgetStore();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -62,56 +94,76 @@ export default function VarianceDashboardPage() {
     document.title = 'FinPlan Pro — Variance Dashboard';
   }, []);
 
+  // Only an APPROVED budget is a legitimate baseline for variance reporting.
+  // Prior versions of this page fabricated a "budget" by scaling actuals
+  // (revenue x1.05, COGS x0.95, opex x0.93) whenever no approved budget line
+  // items existed, then presented those invented numbers as real budget vs
+  // actual variance with no disclosure. That is a P1 faked-calculation
+  // defect for financial software: it renders confident, wrong numbers.
+  // This page now only computes variance from real budget line items tied
+  // to an approved budget; if none exist, it says so explicitly instead of
+  // inventing a comparison baseline.
+  const approvedBudgetIds = useMemo(
+    () => new Set(budgets.filter((b) => b.status === 'Approved').map((b) => b.id)),
+    [budgets]
+  );
+
+  const approvedLineItems = useMemo(
+    () => lineItems.filter((li) => approvedBudgetIds.has(li.budgetId)),
+    [lineItems, approvedBudgetIds]
+  );
+
   const data = useMemo(() => {
-    if (entries.length === 0) return null;
-    const actualRevenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const actualCOGS = entries
-      .filter((e) => (e.accountCode || '').startsWith('5'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const actualOpEx = entries
-      .filter((e) => (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const budgetRevenue =
-      budgets
-        .filter((b) => b.status === 'Approved')
-        .reduce((s, b) => s + (b.totalAmount || 0), 0) || actualRevenue * 1.05;
-    const budgetCOGS = actualCOGS * 0.95;
-    const budgetOpEx = actualOpEx * 0.93;
-    const revenueVar = actualRevenue - budgetRevenue;
-    const cogsVar = budgetCOGS - actualCOGS;
-    const opexVar = budgetOpEx - actualOpEx;
-    const revenueVarPct = budgetRevenue > 0 ? (revenueVar / budgetRevenue) * 100 : 0;
-    const rows: VarianceRow[] = [
-      {
-        account: 'Revenue',
-        budget: budgetRevenue,
-        actual: actualRevenue,
-        variance: revenueVar,
-        variancePct: revenueVarPct,
-        driver: revenueVar >= 0 ? 'Volume/Mix' : 'Pricing pressure',
-      },
-      {
-        account: 'COGS',
-        budget: budgetCOGS,
-        actual: actualCOGS,
-        variance: cogsVar,
-        variancePct: budgetCOGS > 0 ? (cogsVar / budgetCOGS) * 100 : 0,
-        driver: cogsVar >= 0 ? 'Cost efficiency' : 'Input cost increase',
-      },
-      {
-        account: 'Operating Expenses',
-        budget: budgetOpEx,
-        actual: actualOpEx,
-        variance: opexVar,
-        variancePct: budgetOpEx > 0 ? (opexVar / budgetOpEx) * 100 : 0,
-        driver: opexVar >= 0 ? 'Spending control' : 'Hiring ahead of plan',
-      },
-    ];
-    const totalBudget = budgetRevenue + budgetCOGS + budgetOpEx;
-    const totalActual = actualRevenue + actualCOGS + actualOpEx;
-    const totalVar = totalBudget - totalActual;
+    if (entries.length === 0 || approvedLineItems.length === 0) return null;
+
+    // Real actuals from the GL, normalized so revenue and expense variances
+    // both read positive-is-favorable (matches BudgetVAReport's convention).
+    const actualByCategory = new Map<string, number>();
+    const budgetByCategory = new Map<string, number>();
+
+    for (const cat of CATEGORY_DEFS) {
+      const inCategory = (code: string) => cat.prefixes.some((p) => code.startsWith(p));
+
+      const actual = entries
+        .filter((e) => inCategory(e.accountCode || ''))
+        .reduce((s, e) => {
+          const amt =
+            cat.key === 'Revenue'
+              ? e.credit - e.debit // revenue: credit-normal
+              : e.debit - e.credit; // COGS/opex: debit-normal, expressed as a positive cost
+          return s + amt;
+        }, 0);
+
+      const budget = approvedLineItems
+        .filter((li) => inCategory(li.accountCode))
+        .reduce((s, li) => s + li.amount, 0);
+
+      actualByCategory.set(cat.key, actual);
+      budgetByCategory.set(cat.key, budget);
+    }
+
+    const rows: VarianceRow[] = CATEGORY_DEFS.map((cat) => {
+      const actual = actualByCategory.get(cat.key) ?? 0;
+      const budget = budgetByCategory.get(cat.key) ?? 0;
+      // Revenue: actual > budget is favorable. COGS/Opex: actual < budget
+      // (spending less than planned) is favorable — so variance is defined
+      // as (budget - actual) for cost categories and (actual - budget) for
+      // revenue, consistently yielding "positive variance = favorable".
+      const variance = cat.key === 'Revenue' ? actual - budget : budget - actual;
+      const variancePct = budget !== 0 ? (variance / Math.abs(budget)) * 100 : 0;
+      return {
+        account: cat.key,
+        budget,
+        actual,
+        variance,
+        variancePct,
+        driver: variance >= 0 ? cat.favorableDriver : cat.unfavorableDriver,
+      };
+    });
+
+    const totalBudget = rows.reduce((s, r) => s + r.budget, 0);
+    const totalActual = rows.reduce((s, r) => s + r.actual, 0);
+    const totalVar = rows.reduce((s, r) => s + r.variance, 0);
     const favorable = rows.filter((r) => r.variance >= 0).reduce((s, r) => s + r.variance, 0);
     const unfavorable = rows
       .filter((r) => r.variance < 0)
@@ -121,18 +173,23 @@ export default function VarianceDashboardPage() {
       favorable: r.variance >= 0 ? r.variance : 0,
       unfavorable: r.variance < 0 ? Math.abs(r.variance) : 0,
     }));
+
+    const revenueRow = rows.find((r) => r.account === 'Revenue');
+
     return {
-      actualRevenue,
-      budgetRevenue,
-      revenueVar,
-      revenueVarPct,
+      actualRevenue: revenueRow?.actual ?? 0,
+      budgetRevenue: revenueRow?.budget ?? 0,
+      revenueVar: revenueRow?.variance ?? 0,
+      revenueVarPct: revenueRow?.variancePct ?? 0,
       rows,
+      totalBudget,
+      totalActual,
       totalVar,
       favorable,
       unfavorable,
       chartData,
     };
-  }, [entries, budgets]);
+  }, [entries, approvedLineItems]);
 
   const handleExportPDF = () => {
     if (!data) return;

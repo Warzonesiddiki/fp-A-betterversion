@@ -179,3 +179,5 @@ export function BudgetApproval() {
     </main>
   );
 }
+
+export default BudgetApproval;

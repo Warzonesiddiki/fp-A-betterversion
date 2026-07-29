@@ -178,3 +178,5 @@ export function HealthcarePage() {
     </main>
   );
 }
+
+export default HealthcarePage;

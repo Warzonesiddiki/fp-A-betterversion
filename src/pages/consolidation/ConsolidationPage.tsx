@@ -179,3 +179,5 @@ export function ConsolidationPage() {
     </main>
   );
 }
+
+export default ConsolidationPage;

@@ -736,3 +736,5 @@ export function AIIntelligencePage() {
     </div>
   );
 }
+
+export default AIIntelligencePage;

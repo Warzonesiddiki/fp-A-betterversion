@@ -60,7 +60,7 @@ vi.mock('@/engines', () => ({
   },
   ExportEngine: {
     exportToCSV: vi.fn(),
-    exportToExcel: vi.fn(),
+    exportToExcel: vi.fn(async () => {}),
     exportToPDF: vi.fn(),
   },
   HealthcareEngine: {
@@ -125,7 +125,7 @@ vi.mock('@/engines', () => ({
 vi.mock('@/engines/ExportEngine', () => ({
   ExportEngine: {
     exportToCSV: vi.fn(),
-    exportToExcel: vi.fn(),
+    exportToExcel: vi.fn(async () => {}),
     exportToPDF: vi.fn(),
   },
 }));

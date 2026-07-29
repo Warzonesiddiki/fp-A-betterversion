@@ -37,7 +37,7 @@ vi.mock('@/store/glStore', () => ({
 vi.mock('@/engines/ExportEngine', () => ({
   ExportEngine: {
     exportToCSV: vi.fn(),
-    exportToExcel: vi.fn(),
+    exportToExcel: vi.fn(async () => {}),
     exportToPDF: vi.fn(),
   },
 }));

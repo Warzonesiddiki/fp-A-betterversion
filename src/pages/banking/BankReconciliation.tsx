@@ -179,3 +179,5 @@ export function BankReconciliation() {
     </main>
   );
 }
+
+export default BankReconciliation;

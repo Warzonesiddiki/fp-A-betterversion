@@ -293,3 +293,5 @@ export function LogisticsDashboardPage() {
     </main>
   );
 }
+
+export default LogisticsDashboardPage;

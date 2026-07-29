@@ -301,3 +301,5 @@ export function CapexTracker() {
     </main>
   );
 }
+
+export default CapexTracker;

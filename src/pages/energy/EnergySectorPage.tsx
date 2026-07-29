@@ -181,3 +181,5 @@ export function EnergySectorPage() {
     </main>
   );
 }
+
+export default EnergySectorPage;

@@ -183,3 +183,5 @@ export function ActivityFeed() {
     </main>
   );
 }
+
+export default ActivityFeed;

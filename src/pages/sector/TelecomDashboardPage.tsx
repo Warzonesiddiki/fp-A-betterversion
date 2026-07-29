@@ -128,3 +128,5 @@ export function TelecomDashboardPage() {
     </main>
   );
 }
+
+export default TelecomDashboardPage;

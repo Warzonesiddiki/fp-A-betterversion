@@ -180,3 +180,5 @@ export function BankStatements() {
     </main>
   );
 }
+
+export default BankStatements;

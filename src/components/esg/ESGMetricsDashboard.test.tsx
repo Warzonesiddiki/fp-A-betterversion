@@ -2,9 +2,11 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ESGMetricsDashboard } from './ESGMetricsDashboard';
 import { useESGStore } from '@/store/esgStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('ESGMetricsDashboard', () => {
   beforeEach(() => {
+    actAs('Admin');
     useESGStore.setState({
       metrics: [],
       initiatives: [],

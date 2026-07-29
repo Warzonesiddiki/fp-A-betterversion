@@ -40,6 +40,12 @@ vi.mock('@/engines/AIEngine', () => ({
     detectAnomalies: vi.fn(async () => []),
     classify: vi.fn(async () => []),
     dispose: vi.fn(async () => {}),
+    getStatus: vi.fn(() => ({
+      initialized: false,
+      device: null,
+      classifierReady: false,
+      extractorReady: false,
+    })),
   },
 }));
 
@@ -49,6 +55,12 @@ vi.mock('@/engines', () => ({
     detectAnomalies: vi.fn(async () => []),
     classify: vi.fn(async () => []),
     dispose: vi.fn(async () => {}),
+    getStatus: vi.fn(() => ({
+      initialized: false,
+      device: null,
+      classifierReady: false,
+      extractorReady: false,
+    })),
   },
   HealthcareEngine: {
     calculateMetrics: vi.fn(() => ({
@@ -120,7 +132,7 @@ vi.mock('@/engines', () => ({
   },
   ExportEngine: {
     exportToCSV: vi.fn(),
-    exportToExcel: vi.fn(),
+    exportToExcel: vi.fn(async () => {}),
     exportToPDF: vi.fn(),
   },
 }));

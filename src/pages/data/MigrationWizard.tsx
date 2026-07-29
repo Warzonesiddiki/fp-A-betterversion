@@ -336,3 +336,5 @@ export function MigrationWizard({
     </div>
   );
 }
+
+export default MigrationWizard;

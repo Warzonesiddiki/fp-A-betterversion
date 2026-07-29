@@ -353,3 +353,5 @@ export function GovernmentDashboardPage() {
     </main>
   );
 }
+
+export default GovernmentDashboardPage;

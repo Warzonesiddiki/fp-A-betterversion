@@ -24,6 +24,7 @@ vi.mock('@/store/glStore', () => ({
 vi.mock('@/store/budgetStore', () => ({
   useBudgetStore: vi.fn(() => ({
     budgets: [],
+    lineItems: [],
   })),
 }));
 
@@ -32,7 +33,7 @@ vi.mock('@/store/budgetStore', () => ({
 // ---------------------------------------------------------------------------
 
 vi.mock('@/engines/ExportEngine', () => ({
-  ExportEngine: { exportToPDF: vi.fn(), exportToExcel: vi.fn() },
+  ExportEngine: { exportToPDF: vi.fn(async () => {}), exportToExcel: vi.fn(async () => {}) },
 }));
 
 vi.mock('@/engines/MultiCurrencyEngine', () => ({

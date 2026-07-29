@@ -422,6 +422,18 @@ export class IncidentResponse {
     if (!input.reporter || input.reporter.trim().length === 0) {
       throw new IncidentError('Reporter is required', 'INVALID_INPUT');
     }
+    // The IncidentSeverity union is a compile-time-only guarantee; any input
+    // that crosses an untyped boundary (JSON API body, CLI arg, imported
+    // fixture) can carry an arbitrary string. Without a runtime check here,
+    // an invalid severity silently propagates into SEVERITY_SCORE / SLA
+    // lookups as `undefined`, corrupting downstream SLA and score reporting.
+    if (!(input.severity in INCIDENT_RESPONSE_CONSTANTS.SEVERITY_SCORE)) {
+      throw new IncidentError(
+        `Invalid severity: "${String(input.severity)}". Must be one of: ` +
+          `${Object.keys(INCIDENT_RESPONSE_CONSTANTS.SEVERITY_SCORE).join(', ')}`,
+        'INVALID_INPUT'
+      );
+    }
 
     const now = Date.now();
     const incident: Incident = {

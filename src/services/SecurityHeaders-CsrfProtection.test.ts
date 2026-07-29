@@ -168,7 +168,11 @@ describe('5. SecurityHeaders.fromPreset', () => {
 
   it('5.4 moderate preset allows unsafe-inline for styles', () => {
     const sh = SecurityHeaders.fromPreset('moderate', 'production');
-    expect(sh.getPolicy().csp!.styleSrc).toContain("'unsafe-inline'");
+    // getPolicy() returns the internal CspDirectives config, which stores
+    // keywords UNQUOTED (e.g. 'unsafe-inline', not "'unsafe-inline'" with
+    // literal quote characters). Quoting is applied only when generate()
+    // serializes the policy into the actual CSP header string.
+    expect(sh.getPolicy().csp!.styleSrc).toContain('unsafe-inline');
   });
 
   it('5.5 permissive preset is rejected in production', () => {
@@ -177,7 +181,9 @@ describe('5. SecurityHeaders.fromPreset', () => {
 
   it('5.6 permissive preset is allowed in development', () => {
     const sh = SecurityHeaders.fromPreset('permissive', 'development');
-    expect(sh.getPolicy().csp!.scriptSrc).toContain("'unsafe-eval'");
+    // See 5.4: getPolicy() stores keywords unquoted; quoting happens in
+    // generate() when serializing to the CSP header string.
+    expect(sh.getPolicy().csp!.scriptSrc).toContain('unsafe-eval');
   });
 
   it('5.7 custom preset requires create()', () => {

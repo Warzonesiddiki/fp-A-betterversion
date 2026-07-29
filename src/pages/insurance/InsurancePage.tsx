@@ -177,3 +177,5 @@ export function InsurancePage() {
     </main>
   );
 }
+
+export default InsurancePage;

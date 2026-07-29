@@ -39,7 +39,12 @@ vi.mock('@/store/glStore', () => ({
 // Mock ExportEngine
 vi.mock('@/engines/ExportEngine', () => ({
   ExportEngine: {
-    exportToExcel: vi.fn(),
+    // exportToExcel is async in production and its call site does
+    // `.catch(reportExportFailure)` on the returned promise. A bare
+    // `vi.fn()` resolves to `undefined`, so `.catch()` on the return value
+    // throws "Cannot read properties of undefined (reading 'catch')" the
+    // instant the export button is clicked. Match the real async contract.
+    exportToExcel: vi.fn(async () => {}),
   },
 }));
 

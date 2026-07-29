@@ -496,3 +496,5 @@ export function SharedReports() {
     </main>
   );
 }
+
+export default SharedReports;

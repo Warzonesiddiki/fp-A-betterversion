@@ -34,7 +34,39 @@ vi.mock('@/store/glStore', () => ({
 }));
 
 vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({ budgets: [] })),
+  // VarianceDashboardPage now computes variance only from real approved
+  // budget line items (see the fix removing the fabricated
+  // actual*1.05/0.95/0.93 placeholder baseline). Provide a realistic
+  // approved budget + line items matching the mocked GL account codes
+  // (4000 = Revenue, 5000 = COGS) so the page renders its full data view.
+  useBudgetStore: vi.fn(() => ({
+    budgets: [
+      {
+        id: 'b1',
+        name: 'FY26 Budget',
+        status: 'Approved',
+        totalAmount: 150000,
+      },
+    ],
+    lineItems: [
+      {
+        id: 'li1',
+        budgetId: 'b1',
+        accountId: 'a1',
+        accountCode: '4000',
+        accountName: 'Revenue',
+        amount: 95000,
+      },
+      {
+        id: 'li2',
+        budgetId: 'b1',
+        accountId: 'a2',
+        accountCode: '5000',
+        accountName: 'COGS',
+        amount: 28000,
+      },
+    ],
+  })),
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
