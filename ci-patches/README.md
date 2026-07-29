@@ -1,67 +1,48 @@
-# Pending CI workflow patches — BLOCKED on push permission
+# CI gate patches (apply manually)
 
-The remediation of **F-0021** (production dependency audit gate), **F-0024** (CI
-gates must actually enforce) and **F-0034** (README claim gate) requires changes
-to `.github/workflows/ci.yml`. Those changes are **written and verified locally**
-but could not be pushed:
+GitHub refuses pushes from this app that modify `.github/workflows/**`:
 
 ```
-! [remote rejected] refusing to allow a GitHub App to create or update
-  workflow `.github/workflows/ci.yml` without `workflows` permission
+refusing to allow a GitHub App to create or update workflow
+`.github/workflows/ci.yml` without `workflows` permission
 ```
 
-This is an authentication scope limitation, not a defect in the change. Per the
-remediation directive, the item is recorded as **BLOCKED** rather than claimed
-complete.
+The CI hardening for audit ZCFA-2026-07-29-002 is therefore delivered as a
+patch file rather than a direct edit. **The gates are NOT active until a human
+applies it.** Until then, treat every CI-related finding below as
+`config_written_but_not_enforced`.
+
+## Apply
+
+```bash
+git apply ci-patches/N-0004-N-0007-N-0008-N-0011-N-0013-ci-gates.patch
+git add .github/workflows/ci.yml
+git commit -m "ci: apply audit ZCFA-2026-07-29-002 gate hardening"
+```
 
 ## What the patch changes
 
-`0001-ci-gates-F-0021-F-0024-F-0034.patch`
+| Finding | Change                                                                                                                           | Why                                                                                                            |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| N-0008  | `build` job now `needs: [typecheck, lint, test]`                                                                                 | Release artifacts could previously be produced while tests were red or hanging.                                |
+| N-0007  | Removed `continue-on-error: true` from the a11y job; a MISSING `test:a11y` runner is now a hard failure instead of a silent skip | The accessibility gate was doubly inert: it could not fail, and it skipped itself.                             |
+| N-0004  | New blocking `audit` job running `npm run audit:prod`                                                                            | Production vulnerabilities had no CI gate at all.                                                              |
+| N-0011  | New blocking `server` job (install, `tsc --noEmit`, tests)                                                                       | Server-side RBAC and period-close enforcement were never tested in CI.                                         |
+| N-0014  | New blocking `docs` job running `npm run docs:verify`                                                                            | README statistics could drift from reality unchecked.                                                          |
+| N-0013  | `docs` job also runs `npm run engines:verify`                                                                                    | Prevents the engine manifest going stale, which is how the old loader ended up knowing only 40 of 181 engines. |
+| —       | `summary` job now requires e2e, a11y, audit, server and docs                                                                     | The summary previously ignored these jobs, so the overall check could be green while they failed.              |
 
-1. **Lint job enforces zero warnings.** `npx eslint src` became
-   `npx eslint src --max-warnings 0`. The job previously disagreed with both the
-   documented gate and the pre-push hook, so warnings could merge.
-2. **Build depends on tests.** `needs: [typecheck, lint]` became
-   `needs: [typecheck, lint, test]`. A build that can ship while the unit-test
-   job is red is not a gate (`mandatory_ci_gates`: "CI build must depend on test
-   success").
-3. **New blocking `audit` job** running `node scripts/check-dependency-audit.mjs`
-   — HIGH/CRITICAL in the production dependency tree fails CI unless recorded in
-   `security/audit-allowlist.json` with a reason and an expiry.
-4. **README claim check** added to the lint job
-   (`node scripts/check-readme-claims.mjs`).
-5. **Summary job** includes the audit result in both the table and the
-   pass/fail condition.
+## Verified locally
 
-## Apply it
+Each gate was executed on this branch before being written into the workflow:
 
-```bash
-git apply ci-patches/0001-ci-gates-F-0021-F-0024-F-0034.patch
-git add .github/workflows/ci.yml
-git commit -m "ci: enforce eslint zero-warnings, test-gated build, dependency audit, README claims"
-git push
-```
+| Command                                     | Result                                |
+| ------------------------------------------- | ------------------------------------- |
+| `npm run audit:prod`                        | exit 0 — 0 production vulnerabilities |
+| `npm run test:a11y`                         | exit 0 — 441 tests across 9 files     |
+| `npm run docs:verify`                       | exit 0                                |
+| `npm run engines:verify`                    | exit 0 — 178 engines                  |
+| `cd server && npx tsc --noEmit && npm test` | exit 0 — 23 tests                     |
 
-Requires a token with the `workflows` scope (a maintainer push, or a GitHub App
-installation granted `workflows: write`).
-
-## Interim coverage
-
-Every gate in the patch **already runs locally** via `.husky/pre-push`, which was
-updated in the same commits and is not subject to this restriction:
-
-| Gate | pre-push | CI (blocked) |
-|---|---|---|
-| `tsc --noEmit` | yes | yes (already present) |
-| `eslint src --max-warnings 0` | yes | patch needed |
-| P0 vitest shard | yes | full suite already present |
-| `npm run build` | yes | yes (already present) |
-| `bundle-check` | yes | yes (already present) |
-| version consistency | yes | — |
-| README claim check | yes | patch needed |
-| production dependency audit | yes | patch needed |
-| Gate 10 cascade-hold | yes | separate workflow |
-
-So a developer cannot push a change that violates these gates; the gap is that
-CI would not independently re-verify three of them on the server side until the
-patch lands.
+Local success is **not** CI enforcement. The gates only bind once this patch is
+applied and a pipeline run is observed green.
