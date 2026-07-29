@@ -82,3 +82,5 @@ export function ImportJobHistory({ jobs }: ImportJobHistoryProps) {
     </div>
   );
 }
+
+export default ImportJobHistory;

@@ -179,3 +179,5 @@ export function ManufacturingPage() {
     </main>
   );
 }
+
+export default ManufacturingPage;

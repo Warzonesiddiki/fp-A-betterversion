@@ -175,3 +175,5 @@ export function SaaSPage() {
     </main>
   );
 }
+
+export default SaaSPage;

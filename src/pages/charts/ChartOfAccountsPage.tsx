@@ -179,3 +179,5 @@ export function ChartOfAccountsPage() {
     </main>
   );
 }
+
+export default ChartOfAccountsPage;

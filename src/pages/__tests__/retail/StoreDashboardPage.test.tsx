@@ -4,7 +4,7 @@ vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({ entries: [] })),
 }));
 vi.mock('@/engines/ExportEngine', () => ({
-  ExportEngine: { exportToPDF: vi.fn(), exportToExcel: vi.fn() },
+  ExportEngine: { exportToPDF: vi.fn(async () => {}), exportToExcel: vi.fn(async () => {}) },
 }));
 vi.mock('@/engines/ManufacturingEngine', () => ({
   ManufacturingEngine: {},

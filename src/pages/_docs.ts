@@ -1524,4 +1524,43 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       { title: 'What is this page?', content: 'Preview a budget template before applying.' },
     ],
   },
+  '/admin/engines': {
+    title: 'Engine Catalog',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'An inventory of every financial calculation engine bundled with FinPlan Pro, including which pages, components, and stores reference it.',
+      },
+      {
+        title: 'What should I do here?',
+        content:
+          'Use this to audit engine coverage: engines with no consumers are flagged so they can be wired up or removed.',
+      },
+    ],
+  },
+  '/analytics/pivot-explorer': {
+    title: 'Pivot Explorer',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'An interactive pivot table for slicing GL and cube data by any combination of dimensions (account, entity, period, department).',
+      },
+      {
+        title: 'What should I do here?',
+        content: 'Drag dimensions onto rows/columns and choose a measure to aggregate.',
+      },
+    ],
+  },
+  '/docs/api': {
+    title: 'API Reference',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Reference documentation for the FinPlan Pro public API surface, including available endpoints and SDK usage.',
+      },
+    ],
+  },
 };

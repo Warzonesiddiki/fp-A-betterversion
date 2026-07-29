@@ -126,3 +126,5 @@ export function EducationDashboardPage() {
     </main>
   );
 }
+
+export default EducationDashboardPage;

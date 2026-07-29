@@ -570,3 +570,5 @@ export function NLQChatPage() {
     </div>
   );
 }
+
+export default NLQChatPage;

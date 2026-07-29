@@ -567,3 +567,5 @@ export function TeamWorkspace() {
     </main>
   );
 }
+
+export default TeamWorkspace;

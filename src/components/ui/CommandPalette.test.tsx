@@ -3,7 +3,12 @@
  */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import { CommandPalette } from './CommandPalette';
+
+// CommandPalette calls useNavigate() internally to jump to selected
+// commands, so it must be mounted inside a Router in tests.
+const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
 const items = [
   {
@@ -25,14 +30,14 @@ const items = [
 
 describe('CommandPalette', () => {
   it('shows search input', () => {
-    render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
+    renderWithRouter(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
     // Use getByLabelText (JSDOM does not implement role="combobox" accessibility)
     const input = screen.getByLabelText('Search commands');
     expect(input).toBeInTheDocument();
   });
 
   it('filters items based on search query', () => {
-    render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
+    renderWithRouter(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
     const input = screen.getByLabelText('Search commands');
     fireEvent.change(input, { target: { value: 'Export' } });
     expect(screen.getByText('Export Data')).toBeInTheDocument();
@@ -40,26 +45,28 @@ describe('CommandPalette', () => {
   });
 
   it('shows empty state when no items match', () => {
-    render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
+    renderWithRouter(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
     const input = screen.getByLabelText('Search commands');
     fireEvent.change(input, { target: { value: 'zzzzz' } });
     expect(screen.getByText(/commands.notFound/i)).toBeInTheDocument();
   });
 
   it('renders nothing when isOpen is false', () => {
-    const { container } = render(<CommandPalette items={items} isOpen={false} onClose={vi.fn()} />);
+    const { container } = renderWithRouter(
+      <CommandPalette items={items} isOpen={false} onClose={vi.fn()} />
+    );
     expect(container.querySelector('input')).toBeNull();
   });
 
   it('renders all items when opened', () => {
-    render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
+    renderWithRouter(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
     expect(screen.getByText('New Project')).toBeInTheDocument();
     expect(screen.getByText('Open File')).toBeInTheDocument();
     expect(screen.getByText('Export Data')).toBeInTheDocument();
   });
 
   it('restores all items when search is cleared', () => {
-    render(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
+    renderWithRouter(<CommandPalette items={items} isOpen={true} onClose={vi.fn()} />);
     const input = screen.getByLabelText('Search commands');
     fireEvent.change(input, { target: { value: 'Export' } });
     expect(screen.queryByText('New Project')).not.toBeInTheDocument();

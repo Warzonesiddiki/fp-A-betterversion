@@ -342,3 +342,5 @@ export function LeaseAccountingPage() {
     </main>
   );
 }
+
+export default LeaseAccountingPage;

@@ -105,7 +105,10 @@ describe('OnboardingWizard', () => {
 
   it('displays welcome message on first step', () => {
     render(<OnboardingWizard onComplete={() => {}} />);
-    expect(screen.getByText('onboarding.welcome.title')).toBeInTheDocument();
+    // i18next is initialized in src/test/setup.ts with real English
+    // resources, so `t('onboarding.welcome.title')` resolves to the
+    // translated string, not the raw key. Assert on the resolved text.
+    expect(screen.getByText('Welcome to FinPlan Pro')).toBeInTheDocument();
   });
 
   it('displays progress stepper', () => {
@@ -115,6 +118,8 @@ describe('OnboardingWizard', () => {
 
   it('displays "Let\'s Start" button', () => {
     render(<OnboardingWizard onComplete={() => {}} />);
-    expect(screen.getByText('onboarding.welcome.start')).toBeInTheDocument();
+    // The setup i18n resources translate onboarding.welcome.start to
+    // "Start Setup" (see src/test/setup.ts); assert on that resolved text.
+    expect(screen.getByText('Start Setup')).toBeInTheDocument();
   });
 });

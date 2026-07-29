@@ -764,6 +764,10 @@ describe('IncidentResponse edge cases v2 (Probe T-FIX-12)', () => {
       severity: 'HIGH',
       reporter: 'r@example.com',
     });
+    // Postmortems may only be written once an incident has left the 'open'
+    // state (resolved, postmortem, or closed) — this is the real lifecycle
+    // invariant enforced by writePostmortem. Transition the incident first.
+    ir.updateIncident(incident.id, { status: 'resolved' }, 'admin@example.com');
     expect(() =>
       ir.writePostmortem(incident.id, {
         rootCause: 'DB connection pool exhausted',

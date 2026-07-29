@@ -240,8 +240,12 @@ describe('OnboardingWizard — Form Validation (T-3.28.2 Batch 2: 16 tests)', ()
     const label = screen.getByText(/Company Name/i);
     expect(label).toBeInTheDocument();
 
-    // Required indicator (asterisk) should be present
-    const requiredMark = screen.getByLabelText('required');
+    // Required indicator (asterisk) should be present next to the Company
+    // Name label specifically. The setup step has five required fields, so
+    // five "required" markers legitimately exist on the page; scope the
+    // assertion to the Company Name label's own required marker rather than
+    // asserting there is exactly one on the whole page.
+    const requiredMark = label.querySelector('[aria-label="required"]');
     expect(requiredMark).toBeInTheDocument();
   });
 

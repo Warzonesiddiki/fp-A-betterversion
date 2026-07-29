@@ -24,7 +24,7 @@ vi.mock('@/store/glStore', () => ({
 }));
 
 vi.mock('@/engines', () => ({
-  ExportEngine: { exportToExcel: vi.fn() },
+  ExportEngine: { exportToExcel: vi.fn(async () => {}) },
   BankingEngine: {
     calculateNIMStats: vi.fn(() => ({
       nim: 3.2,
@@ -37,7 +37,7 @@ vi.mock('@/engines', () => ({
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
-  ExportEngine: { exportToExcel: vi.fn() },
+  ExportEngine: { exportToExcel: vi.fn(async () => {}) },
 }));
 
 vi.mock('@/components/dashboard/KPICard', () => ({

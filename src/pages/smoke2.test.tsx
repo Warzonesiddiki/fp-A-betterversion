@@ -45,7 +45,7 @@ vi.mock('@/store/uiStore', () => ({
 vi.mock('@/engines/ExportEngine', () => ({
   ExportEngine: {
     exportToPDF: vi.fn(),
-    exportToExcel: vi.fn(),
+    exportToExcel: vi.fn(async () => {}),
     exportToCSV: vi.fn(),
   },
 }));
@@ -57,12 +57,23 @@ vi.mock('@/engines/CellAuditTrailEngine', () => ({
 }));
 
 vi.mock('@/engines/AIEngine', () => ({
-  AIEngine: vi.fn(function () {
-    return {
-      init: vi.fn(async () => {}),
-      detectAnomalies: vi.fn(async () => []),
-    };
-  }),
+  // AIEngine exposes only static methods (init, getStatus, detectAnomalies,
+  // classify, dispose) — it is never instantiated with `new`. The previous
+  // mock modeled it as a constructor function, so any page calling a static
+  // method (e.g. AIIntelligencePage's `AIEngine.getStatus()`) crashed with
+  // "AIEngine.getStatus is not a function".
+  AIEngine: {
+    init: vi.fn(async () => {}),
+    detectAnomalies: vi.fn(async () => []),
+    classify: vi.fn(async () => []),
+    dispose: vi.fn(async () => {}),
+    getStatus: vi.fn(() => ({
+      initialized: false,
+      device: null,
+      classifierReady: false,
+      extractorReady: false,
+    })),
+  },
 }));
 
 vi.mock('@/engines/ConsolidationEngine', () => ({
@@ -161,6 +172,10 @@ vi.mock('@/components/ui/Card', () => ({
   CardContent: (props: Record<string, unknown>) => <div data-testid="card-content" {...props} />,
   CardHeader: (props: Record<string, unknown>) => <div data-testid="card-header" {...props} />,
   CardTitle: (props: Record<string, unknown>) => <div data-testid="card-title" {...props} />,
+  CardDescription: (props: Record<string, unknown>) => (
+    <div data-testid="card-description" {...props} />
+  ),
+  CardFooter: (props: Record<string, unknown>) => <div data-testid="card-footer" {...props} />,
 }));
 
 vi.mock('@/components/ui/Input', () => ({

@@ -164,8 +164,15 @@ describe('SharedReports', () => {
     expect(search.value).toBe('Cash');
   });
 
-  it('uses a named export for SharedReports (no default export)', () => {
+  it('provides both a named export and a default export for React.lazy()', () => {
+    // SharedReports is loaded via `lazy(() => import('./pages/collaboration/SharedReports'))`
+    // in App.tsx (see the '/collaboration/shared' route). React.lazy()
+    // requires a *default* export; without one it resolves to `undefined`
+    // and every mount crashes with "Element type is invalid". A prior
+    // version of this test asserted the opposite (that `default` must be
+    // `undefined`), which enshrined that exact production crash as
+    // "passing". Both exports must exist and point at the same component.
     expect(typeof SharedReportsMod.SharedReports).toBe('function');
-    expect((SharedReportsMod as unknown as { default?: unknown }).default).toBeUndefined();
+    expect(SharedReportsMod.default).toBe(SharedReportsMod.SharedReports);
   });
 });

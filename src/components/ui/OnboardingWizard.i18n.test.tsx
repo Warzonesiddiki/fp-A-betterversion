@@ -215,7 +215,12 @@ describe('OnboardingWizard — i18n Translation Keys (T-3.28.2 Batch 3: 15 tests
   it('renders Back button with buttons.back key', async () => {
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={() => {}} />);
-    await navigateToStep(user, 1);
+    // The Back button (buttons.back) is only rendered starting at the import
+    // step (step 2) and the review step (step 3) — the setup step (step 1)
+    // only has a forward "Continue" action, matching a linear step-1 wizard
+    // flow that cannot go back to the one-screen welcome step. Navigate to
+    // step 2 to observe the real key.
+    await navigateToStep(user, 2);
     expect(screen.getByText('Back')).toBeInTheDocument();
   });
 

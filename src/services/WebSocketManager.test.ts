@@ -215,12 +215,19 @@ describe('WebSocketManager', () => {
     expect(connectingCount).toBeGreaterThanOrEqual(1);
   });
 
-  it('should append token to URL', () => {
+  it('should send the token via an auth message, never in the URL', async () => {
+    // SECURITY FIX (C-05): tokens must not be passed as URL query params —
+    // they leak into proxy access logs, server logs, and browser history.
+    // The manager instead sends the token as the first message after the
+    // handshake opens. Assert both halves of that contract: the URL is
+    // clean, and the auth message is actually sent.
     const mgr = createManager();
     mgr.connect();
+    await flush();
 
     const ws = (mgr as unknown as { ws: MockWebSocket }).ws;
-    expect(ws.url).toContain('token=test-token');
+    expect(ws.url).not.toContain('token');
+    expect(ws.sent).toContainEqual(JSON.stringify({ type: 'auth', token: 'test-token' }));
   });
 
   it('should destroy cleanly', () => {

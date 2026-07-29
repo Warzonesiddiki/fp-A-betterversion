@@ -51,3 +51,5 @@ export function DataSummaryCard({ summary }: DataSummaryCardProps) {
     </div>
   );
 }
+
+export default DataSummaryCard;

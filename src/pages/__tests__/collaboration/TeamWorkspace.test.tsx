@@ -174,9 +174,16 @@ describe('TeamWorkspace', () => {
     expect(screen.getByText(/Import GL data to view team workspace/i)).toBeInTheDocument();
   });
 
-  it('uses a named export for TeamWorkspace (no default export)', () => {
+  it('provides both a named export and a default export for React.lazy()', () => {
+    // TeamWorkspace is loaded via `lazy(() => import('./pages/collaboration/TeamWorkspace'))`
+    // in App.tsx (see the '/collaboration/team' route). React.lazy() requires
+    // a *default* export; without one it resolves to `undefined` and every
+    // mount crashes with "Element type is invalid". A prior version of this
+    // test asserted the opposite (that `default` must be `undefined`), which
+    // enshrined that exact production crash as "passing". Both exports must
+    // exist and point at the same component.
     expect(typeof TeamWorkspaceMod.TeamWorkspace).toBe('function');
-    expect((TeamWorkspaceMod as unknown as { default?: unknown }).default).toBeUndefined();
+    expect(TeamWorkspaceMod.default).toBe(TeamWorkspaceMod.TeamWorkspace);
   });
 
   it('shows the Account Overview data table on the Overview tab', () => {

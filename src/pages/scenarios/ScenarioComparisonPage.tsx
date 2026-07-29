@@ -286,3 +286,5 @@ export function ScenarioComparisonPage() {
     </div>
   );
 }
+
+export default ScenarioComparisonPage;

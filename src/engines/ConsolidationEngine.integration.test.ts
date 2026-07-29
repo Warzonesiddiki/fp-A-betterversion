@@ -891,9 +891,16 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
 
   describe('error handling', () => {
     it('should handle empty cube gracefully', () => {
+      // F-0003: an empty consolidation is a failure condition, not a
+      // "balanced" no-op. A consumer that discards the empty-entities case
+      // must never be told the books tie out — that is exactly the silent
+      // "balanced zero" defect the fix closed. Zero entities => status
+      // 'failed', isBalanced false, with a validation error explaining why.
       const result = ConsolidationEngine.consolidate([], [], []);
-      expect(result.isBalanced).toBe(true);
+      expect(result.status).toBe('failed');
+      expect(result.isBalanced).toBe(false);
       expect(result.totalAssets).toBe(0);
+      expect(result.errors?.[0]?.message).toMatch(/no entities provided/i);
     });
 
     it('should handle missing cube cells', () => {

@@ -35,7 +35,7 @@ vi.mock('@/store/glStore', () => ({
 // ---------------------------------------------------------------------------
 
 vi.mock('@/engines', () => ({
-  ExportEngine: { exportToPDF: vi.fn(), exportToExcel: vi.fn() },
+  ExportEngine: { exportToPDF: vi.fn(async () => {}), exportToExcel: vi.fn(async () => {}) },
   BankingEngine: {
     calculateLoanLossStats: vi.fn(() => ({
       reserveBalance: 2500000,
@@ -48,7 +48,7 @@ vi.mock('@/engines', () => ({
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
-  ExportEngine: { exportToPDF: vi.fn(), exportToExcel: vi.fn() },
+  ExportEngine: { exportToPDF: vi.fn(async () => {}), exportToExcel: vi.fn(async () => {}) },
 }));
 
 // ---------------------------------------------------------------------------

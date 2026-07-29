@@ -152,9 +152,15 @@ describe('AIIntelligencePage', () => {
     expect(within(tabPanel).getByText('Sentiment breakdown')).toBeInTheDocument();
   });
 
-  it('uses a named export for AIIntelligencePage (no default export)', () => {
-    // verify named export and the absence of a default export
+  it('provides both a named export and a default export for React.lazy()', () => {
+    // AIIntelligencePage is loaded via `lazy(() => import('./pages/ai/AIIntelligencePage'))`
+    // in App.tsx (see the '/ai' route). React.lazy() requires a *default*
+    // export — without one it resolves to `undefined` and crashes every
+    // mount with "Element type is invalid". A prior version of this test
+    // asserted the opposite (that `default` must be `undefined`), which
+    // enshrined that exact production crash as "passing". Both exports must
+    // exist and must point at the same component.
     expect(typeof AIIntelligencePageMod.AIIntelligencePage).toBe('function');
-    expect((AIIntelligencePageMod as unknown as { default?: unknown }).default).toBeUndefined();
+    expect(AIIntelligencePageMod.default).toBe(AIIntelligencePageMod.AIIntelligencePage);
   });
 });
