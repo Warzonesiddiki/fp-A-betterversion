@@ -77,6 +77,9 @@ export const Sidebar = memo(function Sidebar() {
         { path: '/data', label: t('nav.dataManagement'), icon: Database },
         { path: '/collaboration', label: t('nav.collaboration'), icon: MessageSquare },
         { path: '/collaboration/approvals', label: t('nav.approvals'), icon: CheckSquare },
+        // N-0013: the calculation engines were unreachable from the UI. This
+        // is the entry point that makes the full catalogue genuinely usable.
+        { path: '/admin/engines', label: 'Engine Catalog', icon: Cpu },
       ],
     },
   ];

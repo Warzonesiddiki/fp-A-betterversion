@@ -85,7 +85,10 @@ if (moneyModules.length) {
 }
 
 if (process.argv.includes('--update')) {
-  writeFileSync(BASELINE_PATH, JSON.stringify({ ...measured, recordedAt: new Date().toISOString() }, null, 2) + '\n');
+  writeFileSync(
+    BASELINE_PATH,
+    JSON.stringify({ ...measured, recordedAt: new Date().toISOString() }, null, 2) + '\n'
+  );
   console.log(`Baseline recorded at ${relative(ROOT, BASELINE_PATH)}`);
   process.exit(0);
 }

@@ -25,7 +25,9 @@
     "test:a11y": "node node_modules/vitest/vitest.mjs run __tests__/a11y .a11y.test",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "money:adoption": "node scripts/money-adoption.mjs",
-    "docs:verify": "node scripts/verify-readme-stats.mjs"
+    "docs:verify": "node scripts/verify-readme-stats.mjs",
+    "engines:manifest": "node scripts/generate-engine-manifest.mjs",
+    "engines:verify": "node scripts/generate-engine-manifest.mjs --check"
   },
   "dependencies": {
     "@json-render/core": "^0.19.0",

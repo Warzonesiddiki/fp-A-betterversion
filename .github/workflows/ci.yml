@@ -338,6 +338,9 @@ jobs:
       - name: Verify README/RELEASE_CHECKLIST against measured repository stats
         run: npm run docs:verify
 
+      - name: Verify engine manifest is current (N-0013)
+        run: npm run engines:verify
+
   # N-0011: the server enforces RBAC and period close. It must be tested.
   server:
     name: Server (typecheck + tests)

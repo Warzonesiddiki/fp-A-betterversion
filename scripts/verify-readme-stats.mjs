@@ -53,7 +53,14 @@ const engineDir = join(ROOT, 'src', 'engines');
 // (top-level .ts, excluding .test./.bench.) so the two gates cannot disagree
 // with each other and deadlock the push.
 const engineFiles = readdirSync(engineDir)
-  .filter((f) => f.endsWith('.ts') && !f.includes('.test.') && !f.includes('.bench.'))
+  .filter(
+    (f) =>
+      f.endsWith('.ts') &&
+      !f.includes('.test.') &&
+      !f.includes('.bench.') &&
+      // Generated plumbing, not an engine module (N-0013).
+      f !== 'engineManifest.generated.ts'
+  )
   .map((f) => basename(f, '.ts'));
 
 const sourceBlobs = allSrc

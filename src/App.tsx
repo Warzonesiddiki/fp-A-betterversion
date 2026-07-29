@@ -208,6 +208,8 @@ const ConsolidationPage = lazy(() => import('./pages/consolidation/Consolidation
 const LeaseAccountingPage = lazy(() => import('./pages/lease/LeaseAccountingPage') as any);
 const CapexTracker = lazy(() => import('./pages/capex/CapexTracker') as any);
 const BenchmarksPage = lazy(() => import('./pages/admin/BenchmarksPage') as any);
+// N-0013: makes every calculation engine reachable from the UI.
+const EngineCatalogPage = lazy(() => import('./pages/admin/EngineCatalogPage'));
 const BankingDashboard = lazy(() => import('./pages/banking/BankingDashboard') as any);
 const BankReconciliation = lazy(() => import('./pages/banking/BankReconciliation') as any);
 const BankStatements = lazy(() => import('./pages/banking/BankStatements') as any);
@@ -492,6 +494,7 @@ export default function App() {
                 <Route path="/lease/accounting" element={<LeaseAccountingPage />} />
                 <Route path="/capex/tracker" element={<CapexTracker />} />
                 <Route path="/admin/benchmarks" element={<BenchmarksPage />} />
+                <Route path="/admin/engines" element={<EngineCatalogPage />} />
                 <Route path="/banking/banking" element={<BankingDashboard />} />
                 <Route path="/banking/reconciliation" element={<BankReconciliation />} />
                 <Route path="/banking/statements" element={<BankStatements />} />

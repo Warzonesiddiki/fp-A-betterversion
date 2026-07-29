@@ -110,7 +110,12 @@ check('store count matches src/store/*.ts', () => {
 
 check('engine count matches src/engines/*.ts', () => {
   const actual = readdirSync(join(ROOT, 'src', 'engines')).filter(
-    (n) => n.endsWith('.ts') && !n.includes('.test.') && !n.includes('.bench.')
+    (n) =>
+      n.endsWith('.ts') &&
+      !n.includes('.test.') &&
+      !n.includes('.bench.') &&
+      // Generated plumbing, not an engine module (N-0013).
+      n !== 'engineManifest.generated.ts'
   ).length;
   const claimed = readme.match(/Financial Engines \((\d+) modules\)/);
   if (!claimed) throw new Error('no "Financial Engines (N modules)" claim found to verify');
