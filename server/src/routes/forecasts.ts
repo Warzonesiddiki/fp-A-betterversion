@@ -307,7 +307,9 @@ router.post(
         return;
       }
 
-      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
+      const forecast = db
+        .prepare('SELECT id FROM forecasts WHERE id = ?')
+        .get(String(req.params.id));
 
       if (!forecast) {
         res.status(404).json({ error: 'Forecast not found' });
@@ -342,7 +344,9 @@ router.get(
   requireParentEntityAccess('forecasts', 'forecast_id'),
   (req: Request, res: Response) => {
     try {
-      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
+      const forecast = db
+        .prepare('SELECT id FROM forecasts WHERE id = ?')
+        .get(String(req.params.id));
 
       if (!forecast) {
         res.status(404).json({ error: 'Forecast not found' });
@@ -383,7 +387,9 @@ router.post(
         return;
       }
 
-      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(String(req.params.id));
+      const forecast = db
+        .prepare('SELECT id FROM forecasts WHERE id = ?')
+        .get(String(req.params.id));
 
       if (!forecast) {
         res.status(404).json({ error: 'Forecast not found' });
@@ -396,7 +402,15 @@ router.post(
       db.prepare(
         `INSERT INTO forecast_line_items (id, forecast_id, account_id, period_id, amount, department_id, notes, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-      ).run(id, String(req.params.id), account_id, period_id, amount, department_id ?? null, notes ?? null);
+      ).run(
+        id,
+        String(req.params.id),
+        account_id,
+        period_id,
+        amount,
+        department_id ?? null,
+        notes ?? null
+      );
 
       audit('CREATE', 'forecast_line_item', id, req.user!.id, {
         forecast_id: String(req.params.id),

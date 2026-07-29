@@ -34,7 +34,7 @@ export function auditRequestMiddleware(req: Request, res: Response, next: NextFu
       // Determine resource ID from params or body
       const rawResourceId = req.params.id ?? req.body?.id ?? null;
       const resourceId = Array.isArray(rawResourceId)
-        ? rawResourceId[0] ?? null
+        ? (rawResourceId[0] ?? null)
         : rawResourceId === null || rawResourceId === undefined
           ? null
           : String(rawResourceId);
@@ -114,7 +114,7 @@ export function auditAction(params: {
     if (req.user) {
       const rawResourceId = params.getResourceId?.(req) ?? req.params.id ?? null;
       const resourceId = Array.isArray(rawResourceId)
-        ? rawResourceId[0] ?? null
+        ? (rawResourceId[0] ?? null)
         : rawResourceId === null || rawResourceId === undefined
           ? null
           : String(rawResourceId);
