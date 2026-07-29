@@ -37,28 +37,31 @@ RULE #55 codifies the PRE-PUSH GHOST-SHA-CHECK discipline that prevented these 3
 
 ## 3. 4-ICP Self-Verdict: ACCEPT 4/4 (composite 9.5/10)
 
-| IC | Member | Verdict | Rationale |
-|----|--------|---------|-----------|
-| **I1 (Intent)** | Carla CFO | ✅ 5/5 | Codif 35 v0.4 → v0.5 schema expansion (4 Sub-classes A/B/C/D + E.1 GHOST-MISSING + E.2 DRIFT-REAL) serves stated intent; PRE-PUSH-GHOST-SHA-CHECK is operationally critical for RATIFICATION GATE 2026-06-22 |
-| **C2 (Catastrophic)** | Vera Logic | ✅ 5/5 | 18/18 non-evidence SHAs REAL; 5/5 GHOST cluster SHAs (d984569a, 1f353d08, f6c58374, 8b340664, 917630df) ALL confirmed GHOST; 1/1 DRIFT SHA (70d548da) REAL but superseded — ZERO false-positive GHOST contamination; tool enforcement (Atlas husky Gate 5 v0.1+v0.2) ALREADY LANDED = 0 catastrophic risk |
-| **P3 (Performance)** | Chris Operational | ✅ 4.5/5 | O(n) per pre-push check; <1s hook execution; non-blocking on standard CAVEMAN workflows |
-| **D4 (Documented)** | Beth User | ✅ 4.5/5 | 281L, 10 sections, comprehensive audit trail; 11 NEVER-AGAIN RULES cross-referenced; Codif 35 v0.5 schema documented; CATCH #195/197 patterns cited |
+| IC                    | Member            | Verdict  | Rationale                                                                                                                                                                                                                                                                                                 |
+| --------------------- | ----------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent)**       | Carla CFO         | ✅ 5/5   | Codif 35 v0.4 → v0.5 schema expansion (4 Sub-classes A/B/C/D + E.1 GHOST-MISSING + E.2 DRIFT-REAL) serves stated intent; PRE-PUSH-GHOST-SHA-CHECK is operationally critical for RATIFICATION GATE 2026-06-22                                                                                              |
+| **C2 (Catastrophic)** | Vera Logic        | ✅ 5/5   | 18/18 non-evidence SHAs REAL; 5/5 GHOST cluster SHAs (d984569a, 1f353d08, f6c58374, 8b340664, 917630df) ALL confirmed GHOST; 1/1 DRIFT SHA (70d548da) REAL but superseded — ZERO false-positive GHOST contamination; tool enforcement (Atlas husky Gate 5 v0.1+v0.2) ALREADY LANDED = 0 catastrophic risk |
+| **P3 (Performance)**  | Chris Operational | ✅ 4.5/5 | O(n) per pre-push check; <1s hook execution; non-blocking on standard CAVEMAN workflows                                                                                                                                                                                                                   |
+| **D4 (Documented)**   | Beth User         | ✅ 4.5/5 | 281L, 10 sections, comprehensive audit trail; 11 NEVER-AGAIN RULES cross-referenced; Codif 35 v0.5 schema documented; CATCH #195/197 patterns cited                                                                                                                                                       |
 
 **Composite: 9.5/10 ACCEPT 4/4**
 
 ## 4. Strategic Significance (Apollo-specific value)
 
 **RULE #55 protects Apollo's own work:**
+
 - MASTER_REPORT v1.2.1 P0 SHA-MISATTRIBUTION fix would not have been needed if RULE #55 had been LOCKED GREEN at T-1d
 - All 4 T23 SHAs (Path A 22b874a23, RUNBOOK v0.2 508fdbe48, GHOST FIX 59108c1e3, RULE #51 85efc57b4) are PROTECTED going forward by RULE #55 pre-push gate
 
 **CASCADE PATH (T-3d 2026-06-19 EOD):**
+
 - This 11th co-sign drives 10/12 → 11/12 GREEN
 - Calliope 12th FINAL co-sign → 12/12 GREEN LOCKED
 - RULE #50 LOCKED GREEN path enabled (Orchestrator co-author chain)
 - RATIFICATION GATE 2026-06-22 16:00 UTC: eligible with RULE #55 GREEN
 
 **P2 Amendment (Apollo-specific value):**
+
 - §6 CATCH index add CATCH #199 (CASCADE-HOLD-RACE-CONDITION) — observed in T23 GHOST FILE FIX race window (multiple Muse rebases un-staged files between `git add` and `git commit`); fix pattern: combine `git add -f` + `git commit` in SINGLE command to minimize race window
 - §6 CATCH index add CATCH #201 (CASCADE-HOLD-DETECTION ≠ GHOST-SHA distinction) — RULE #58 EXTENSION proposed to detect cascade-hold BEFORE GHOST-SHA attribution
 - §6 CATCH index add CATCH #202 (D-002 SHIP-stage vs DRAFT-stage witness distinction) — D-002 §4-§5 should distinguish 3-witness applicability for SHIPped (canonical) vs DRAFT (in-flight) files
@@ -86,4 +89,4 @@ RULE #55 codifies the PRE-PUSH GHOST-SHA-CHECK discipline that prevented these 3
 
 ---
 
-*This is a working co-sign per CAVEMAN 19/19 IDLE-PREVENT. CAVEMAN COMMIT MODE (--no-verify per RULE #32) used.*
+_This is a working co-sign per CAVEMAN 19/19 IDLE-PREVENT. CAVEMAN COMMIT MODE (--no-verify per RULE #32) used._

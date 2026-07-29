@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { db } from '../db/connection.js';
+import { AUDIT_HMAC_SECRET } from '../config/env.js';
 
 // =============================================================================
 // Types
@@ -1101,7 +1102,11 @@ export class AuditService {
 
   private computeChecksum(data: Record<string, unknown>): string {
     const payload = JSON.stringify(data, Object.keys(data).sort());
-    return crypto.createHash('sha256').update(payload).digest('hex').slice(0, 16);
+    return crypto
+      .createHmac('sha256', AUDIT_HMAC_SECRET)
+      .update(payload)
+      .digest('hex')
+      .slice(0, 16);
   }
 
   private mapAuditRow(row: Record<string, unknown>): AuditLogEntry {

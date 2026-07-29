@@ -24,6 +24,7 @@ FinPlan Pro is an offline-first FP&A desktop application. Master data schemas ev
 7. **Testable**: Property-based testing + mutation testing must validate migration logic
 
 Standard migration libraries were considered:
+
 - **Sequelize migrations**: SQL-focused, doesn't fit our NoSQL Zustand stores
 - **Knex.js migrations**: SQL-focused, complex setup
 - **TypeORM migrations**: Heavy, ORM-coupled
@@ -56,7 +57,7 @@ export const migrations: MigrationStep[] = [
   {
     version: 2,
     up: (state) => ({
-      ...state as object,
+      ...(state as object),
       // Add new field with default
       scenario: (state as any).scenario ?? 'baseline',
     }),
@@ -70,12 +71,13 @@ export const migrations: MigrationStep[] = [
   {
     version: 3,
     up: (state) => ({
-      ...state as object,
+      ...(state as object),
       // Breaking: rename field
-      items: (state as any).items?.map((item: any) => ({
-        ...item,
-        amount: item.amount ?? item.value, // accept both names
-      })) ?? [],
+      items:
+        (state as any).items?.map((item: any) => ({
+          ...item,
+          amount: item.amount ?? item.value, // accept both names
+        })) ?? [],
     }),
     down: (state) => state,
     description: 'Rename value → amount on budget items',
@@ -88,6 +90,7 @@ export const maxBackwardsCompatVersion = 1; // support up to 3 versions back
 ```
 
 **Masterstorage integration (cross-ref ADR-005):**
+
 ```typescript
 // masterStorage.getItem() pattern
 async getItem(name: string) {
@@ -151,14 +154,14 @@ async getItem(name: string) {
 
 ## Alternatives Considered
 
-| Approach | Pros | Cons | Verdict |
-|----------|------|------|---------|
-| **Custom versioned + lazy + DDL (chosen)** | Tailored to our stack, comprehensive | Custom code to maintain | ✅ ACCEPT |
-| Sequelize migrations | SQL-focused | Doesn't fit NoSQL Zustand stores | ❌ REJECT |
-| Knex.js migrations | SQL-focused | Complex setup, SQL-coupled | ❌ REJECT |
-| TypeORM migrations | Heavy ORM | Heavy, complex | ❌ REJECT |
-| Prisma migrations | Modern, schema-first | SQL-focused, schema-first required | ❌ REJECT |
-| GraphQL migrations | Schema-coupled | Not generic, schema-coupled | ❌ REJECT |
+| Approach                                   | Pros                                 | Cons                               | Verdict   |
+| ------------------------------------------ | ------------------------------------ | ---------------------------------- | --------- |
+| **Custom versioned + lazy + DDL (chosen)** | Tailored to our stack, comprehensive | Custom code to maintain            | ✅ ACCEPT |
+| Sequelize migrations                       | SQL-focused                          | Doesn't fit NoSQL Zustand stores   | ❌ REJECT |
+| Knex.js migrations                         | SQL-focused                          | Complex setup, SQL-coupled         | ❌ REJECT |
+| TypeORM migrations                         | Heavy ORM                            | Heavy, complex                     | ❌ REJECT |
+| Prisma migrations                          | Modern, schema-first                 | SQL-focused, schema-first required | ❌ REJECT |
+| GraphQL migrations                         | Schema-coupled                       | Not generic, schema-coupled        | ❌ REJECT |
 
 ## References
 

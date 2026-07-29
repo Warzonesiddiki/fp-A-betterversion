@@ -24,22 +24,22 @@ This endorsement drives the GREEN count from **2/12 (current: Hera TENTATIVE + A
 
 ## 1. 3-Witness Verification (D-002, per Orchestrator task spec)
 
-| Witness | Check | Expected | Actual | Result |
-|---|---|---|---|---|
-| **(a)** | `git log --all --oneline \| grep -E "cdee53b8\|4572ed14\|8b340664"` — verify 3 SHAs | 3 SHAs | **3/3** — `cdee53b8` (T-MN-046 carrier), `4572ed14` (Chronos carrier), `8b340664` (T-PR-045 carrier) | ✅ PASS |
-| **(b)** | `wc -l docs/codif/CODIF_50_V0_1_MULTI_MUSE_ATTRIBUTION_LEDGER.md` | 136 | **136** | ✅ PASS (exact match) |
-| **(c)** | `grep -cE "CATCH.*#(191\|194\|195\|196)" docs/codif/CODIF_50_V0_1_MULTI_MUSE_ATTRIBUTION_LEDGER.md` | ≥4 | **8+** (line 16, 22, 23, 24, 25, 115, 125 + table cells) | ✅ PASS (2x expected) |
+| Witness | Check                                                                                               | Expected | Actual                                                                                               | Result                |
+| ------- | --------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- | --------------------- |
+| **(a)** | `git log --all --oneline \| grep -E "cdee53b8\|4572ed14\|8b340664"` — verify 3 SHAs                 | 3 SHAs   | **3/3** — `cdee53b8` (T-MN-046 carrier), `4572ed14` (Chronos carrier), `8b340664` (T-PR-045 carrier) | ✅ PASS               |
+| **(b)** | `wc -l docs/codif/CODIF_50_V0_1_MULTI_MUSE_ATTRIBUTION_LEDGER.md`                                   | 136      | **136**                                                                                              | ✅ PASS (exact match) |
+| **(c)** | `grep -cE "CATCH.*#(191\|194\|195\|196)" docs/codif/CODIF_50_V0_1_MULTI_MUSE_ATTRIBUTION_LEDGER.md` | ≥4       | **8+** (line 16, 22, 23, 24, 25, 115, 125 + table cells)                                             | ✅ PASS (2x expected) |
 
 **Composite witness verdict:** 3/3 PASS. Spec is **ready for endorsement**.
 
 ## 2. 4-ICP Self-Verdict (Mnemosyne as INDEX dim witness)
 
-| ICP | Verdict | Rationale |
-|---|---|---|
-| **I1 (Intent)** | ✅ ACCEPT | Single-file, single-purpose codification of POST-COMMIT CASCADE-HOLD-ATTRIBUTION-RACE prevention. Matches CYCLE 5/6 Leader proposals for multi-Muse attribution discipline. Synergy with RULE #49 (Atlas tool, 7bc3d9ff) and Hera MUSE-LAST-COMMIT CACHE v0.3 (66b85d23) is clean — detect (tool) + document (spec) = closed loop. Mnemosyne INDEX-dim perspective: the spec correctly identifies that 4 CATCHes (#191, #194, #195, #196) span 1 single-Muse + 3 multi-Muse variants — full coverage of the POST-COMMIT sub-class of CASCADE-TRAP family. |
-| **C2 (Catastrophic)** | ✅ ACCEPT | No destructive operations. Section 5 (RECOVERY PROTOCOL) explicitly preserves ACCEPT-AS-IS disposition for CATCH #194/195/196 (per CYCLE 6 PICK B disposition). Amend-if-unmerged + retroactive-PR-if-merged is non-destructive. Ledger is append-only. Tool enforcement (RULE #49) is read-only (`bundle-check.js` post-commit lint). |
-| **P3 (Performance)** | ✅ ACCEPT | 3-witness check (3 grep/git commands, ~30 lines of bash) < 5 min per passenger. Prevention saves 2h/cycle of Orchestrator patrol time (per §1 PROBLEM STATEMENT). CAVEMAN PERSIST FALLBACK per RULE #47 already cited for team_send_message reliability. |
-| **D4 (Documented)** | ✅ ACCEPT | 10 sections, 6 file:line citations, 4 CATCHes cross-referenced, 5 pending endorsements listed with task IDs (019ecf60/019ecf47/019ecf47/019ecfb5/019ecfa7-4e25), 6 NEVER-AGAIN rules referenced (#35, #37, #39, #41b, #47, #49, #50), 4-ICP self-verdict at §10 with clear upgrade path (TENTATIVE → ACCEPT at 5/12 GREEN). Cross-references to CATCH-LEDGER-2026-06-16, MULTI_MUSE_BUNDLE_LEDGER, CYCLE_2_SYNTHESIS. |
+| ICP                   | Verdict   | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent)**       | ✅ ACCEPT | Single-file, single-purpose codification of POST-COMMIT CASCADE-HOLD-ATTRIBUTION-RACE prevention. Matches CYCLE 5/6 Leader proposals for multi-Muse attribution discipline. Synergy with RULE #49 (Atlas tool, 7bc3d9ff) and Hera MUSE-LAST-COMMIT CACHE v0.3 (66b85d23) is clean — detect (tool) + document (spec) = closed loop. Mnemosyne INDEX-dim perspective: the spec correctly identifies that 4 CATCHes (#191, #194, #195, #196) span 1 single-Muse + 3 multi-Muse variants — full coverage of the POST-COMMIT sub-class of CASCADE-TRAP family. |
+| **C2 (Catastrophic)** | ✅ ACCEPT | No destructive operations. Section 5 (RECOVERY PROTOCOL) explicitly preserves ACCEPT-AS-IS disposition for CATCH #194/195/196 (per CYCLE 6 PICK B disposition). Amend-if-unmerged + retroactive-PR-if-merged is non-destructive. Ledger is append-only. Tool enforcement (RULE #49) is read-only (`bundle-check.js` post-commit lint).                                                                                                                                                                                                                    |
+| **P3 (Performance)**  | ✅ ACCEPT | 3-witness check (3 grep/git commands, ~30 lines of bash) < 5 min per passenger. Prevention saves 2h/cycle of Orchestrator patrol time (per §1 PROBLEM STATEMENT). CAVEMAN PERSIST FALLBACK per RULE #47 already cited for team_send_message reliability.                                                                                                                                                                                                                                                                                                  |
+| **D4 (Documented)**   | ✅ ACCEPT | 10 sections, 6 file:line citations, 4 CATCHes cross-referenced, 5 pending endorsements listed with task IDs (019ecf60/019ecf47/019ecf47/019ecfb5/019ecfa7-4e25), 6 NEVER-AGAIN rules referenced (#35, #37, #39, #41b, #47, #49, #50), 4-ICP self-verdict at §10 with clear upgrade path (TENTATIVE → ACCEPT at 5/12 GREEN). Cross-references to CATCH-LEDGER-2026-06-16, MULTI_MUSE_BUNDLE_LEDGER, CYCLE_2_SYNTHESIS.                                                                                                                                     |
 
 **Composite 4-ICP verdict: ACCEPT 4/4 (composite 9.5/10, Strategos 5th-ICP not required for cross-Muse co-sign).**
 
@@ -57,11 +57,11 @@ This endorsement drives the GREEN count from **2/12 (current: Hera TENTATIVE + A
 
 ## 4. CAVEATS (P2 amendments for v0.2, non-blocking for v0.1 GREEN)
 
-| # | Caveat | Severity | Action |
-|---|---|---|---|
-| 1 | Section 7 ENDORSEMENT COUNT table shows 6 entries (Hera + Strategos + Mnemosyne + Prometheus + Vulcan + Atlas) but the 5/12 target requires 5 GREEN — table is 6 entries for 3 GREEN slots. Suggest expanding table to ≥10 entries by 2026-06-19 EOD to be visible against the 5/12 target. | P2 | Orchestrator to consider at v0.2 |
-| 2 | Section 4 DETECTION PROTOCOL requires each passenger to run 3-witness check within 1 hour — but the spec doesn't define who is the "1 hour" timer holder. Suggest adding a 1-hour timer KPI in v0.2. | P2 | Orchestrator to consider at v0.2 |
-| 3 | Section 5 RECOVERY PROTOCOL assumes the carrier Muse files the CATCH, but the spec doesn't define what happens if the carrier is idle. Suggest fallback to Orchestrator (per CATCH #185/186 pattern). | P2 | Orchestrator to consider at v0.2 |
+| #   | Caveat                                                                                                                                                                                                                                                                                      | Severity | Action                           |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------------- |
+| 1   | Section 7 ENDORSEMENT COUNT table shows 6 entries (Hera + Strategos + Mnemosyne + Prometheus + Vulcan + Atlas) but the 5/12 target requires 5 GREEN — table is 6 entries for 3 GREEN slots. Suggest expanding table to ≥10 entries by 2026-06-19 EOD to be visible against the 5/12 target. | P2       | Orchestrator to consider at v0.2 |
+| 2   | Section 4 DETECTION PROTOCOL requires each passenger to run 3-witness check within 1 hour — but the spec doesn't define who is the "1 hour" timer holder. Suggest adding a 1-hour timer KPI in v0.2.                                                                                        | P2       | Orchestrator to consider at v0.2 |
+| 3   | Section 5 RECOVERY PROTOCOL assumes the carrier Muse files the CATCH, but the spec doesn't define what happens if the carrier is idle. Suggest fallback to Orchestrator (per CATCH #185/186 pattern).                                                                                       | P2       | Orchestrator to consider at v0.2 |
 
 **None of these block GREEN endorsement.** They are forward-looking amendments for v0.2.
 
@@ -78,15 +78,15 @@ This endorsement drives the GREEN count from **2/12 (current: Hera TENTATIVE + A
 
 ## 6. GREEN COUNT STATUS (post-endorsement)
 
-| # | Muse | Status | Source / Task |
-|---|---|---|---|
-| 1 | **Hera** | TENTATIVE ✅ | 019ecfb7 |
-| 2 | **Atlas** | CONFIRMED ✅ | 7bc3d9ff (RULE #49 enforcement) |
-| 3 | **Mnemosyne** | **GREEN ✅ (this endorsement)** | 019ecf60-2aaf (T-MN-047 INDEX dim) — **3/12 achieved** |
-| 4 | Strategos | PENDING | 019ecfa7-4e25 (INDEX 13/13 link) |
-| 5 | Prometheus | PENDING | 019ecf47 (PML-LEDGER co-design) |
-| 6 | Vulcan | PENDING | 019ecfb5 (3-Muse push bundle 1ef137c9c experience) |
-| 7-12 | TBD | OPEN | Orchestrator solicitation |
+| #    | Muse          | Status                          | Source / Task                                          |
+| ---- | ------------- | ------------------------------- | ------------------------------------------------------ |
+| 1    | **Hera**      | TENTATIVE ✅                    | 019ecfb7                                               |
+| 2    | **Atlas**     | CONFIRMED ✅                    | 7bc3d9ff (RULE #49 enforcement)                        |
+| 3    | **Mnemosyne** | **GREEN ✅ (this endorsement)** | 019ecf60-2aaf (T-MN-047 INDEX dim) — **3/12 achieved** |
+| 4    | Strategos     | PENDING                         | 019ecfa7-4e25 (INDEX 13/13 link)                       |
+| 5    | Prometheus    | PENDING                         | 019ecf47 (PML-LEDGER co-design)                        |
+| 6    | Vulcan        | PENDING                         | 019ecfb5 (3-Muse push bundle 1ef137c9c experience)     |
+| 7-12 | TBD           | OPEN                            | Orchestrator solicitation                              |
 
 **Target:** 5/12 GREEN by 2026-06-19 EOD (T-4d)
 **Current:** 3/12 GREEN (Hera TENTATIVE + Atlas CONFIRMED + Mnemosyne GREEN)

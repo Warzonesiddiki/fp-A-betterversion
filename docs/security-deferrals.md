@@ -52,10 +52,7 @@ function percentile(sorted: number[], p: number): number {
   //   rank = ceil(0.75 * 2) = 2 → sorted[1] = 20. ✓
   // For sorted.length=5, p=25:  rank = ceil(0.25 * 5) = 2 → sorted[1] = 20. ✓
   // For sorted.length=5, p=75:  rank = ceil(0.75 * 5) = 4 → sorted[3] = 40. ✓
-  const rank = Math.min(
-    Math.max(Math.ceil((p / 100) * sorted.length), 1),
-    sorted.length
-  );
+  const rank = Math.min(Math.max(Math.ceil((p / 100) * sorted.length), 1), sorted.length);
   return sorted[rank - 1]!;
 }
 ```
@@ -113,6 +110,7 @@ Located directly above the `percentile` function definition in `AnomalyDetection
 **Test that proves the fix:** `npx vitest run src/utils/decimalUtils.test.ts` should show all 35 tests passing (0 failing).
 
 **Proposed fix shape:**
+
 ```ts
 import { Decimal } from 'decimal.js';
 
@@ -184,10 +182,10 @@ To be added at line 1 of `src/utils/decimalUtils.ts` by Apollo during the decima
 **ETA:** Sprint 2026-Q3-W2 (parallel to DEFER-2026-001)
 **Owner:** TBD — design discussion needed. Options:
 
-  - **(a) Mutex with `p-queue` (small, fast, low-risk):** Wrap each method in `storageQueue.add(() => ...)`. Single-flight serialization. Cost: serializes all chunked-storage writes (small perf hit for multi-store writes).
-  - **(b) Migrate to IndexedDB (built-in transactions, larger quota, but bigger refactor):** Replace `PersistStorage<any>` adapter to use `idb` library. Pros: real ACID, much higher quota (50% of disk vs. 5-10MB localStorage). Cons: bigger migration, async API change cascades to 13+ stores.
-  - **(c) Optimistic concurrency control with version stamps (most robust):** Each write tags metadata with a `version` (Lamport clock or `crypto.randomUUID()`). Reader detects version mismatch and retries. Pros: no serialization. Cons: complex; needs retry logic in zustand persist middleware.
-  - **(d) Single-flight pattern with `storagePool` as serialization point:** Already have a worker pool at L8. Make it the gating mechanism (one in-flight chunked-storage op at a time). Cost: 13+ stores serialize through one worker. Pros: minimal new code. Cons: doesn't help getItem races.
+- **(a) Mutex with `p-queue` (small, fast, low-risk):** Wrap each method in `storageQueue.add(() => ...)`. Single-flight serialization. Cost: serializes all chunked-storage writes (small perf hit for multi-store writes).
+- **(b) Migrate to IndexedDB (built-in transactions, larger quota, but bigger refactor):** Replace `PersistStorage<any>` adapter to use `idb` library. Pros: real ACID, much higher quota (50% of disk vs. 5-10MB localStorage). Cons: bigger migration, async API change cascades to 13+ stores.
+- **(c) Optimistic concurrency control with version stamps (most robust):** Each write tags metadata with a `version` (Lamport clock or `crypto.randomUUID()`). Reader detects version mismatch and retries. Pros: no serialization. Cons: complex; needs retry logic in zustand persist middleware.
+- **(d) Single-flight pattern with `storagePool` as serialization point:** Already have a worker pool at L8. Make it the gating mechanism (one in-flight chunked-storage op at a time). Cost: 13+ stores serialize through one worker. Pros: minimal new code. Cons: doesn't help getItem races.
 
 **Recommended starting point:** Option (a) for the next sprint. Defer (b) and (c) to Phase 1 architectural work (alongside ADRs 019-021).
 

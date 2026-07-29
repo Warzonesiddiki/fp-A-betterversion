@@ -35,10 +35,10 @@ ratification_gate_eligible: YES
 
 ### 3.1 Commit witnesses (verified via `git log`)
 
-| Item | Commit | Status |
-|---|---|---|
-| PERSONA_UX v0.1 (initial ship) | `70d548da` | ✅ EXISTS — rebased |
-| PERSONA_UX v0.1 (post-rebase) | `c0917f588` | ✅ EXISTS — current head version |
+| Item                           | Commit      | Status                           |
+| ------------------------------ | ----------- | -------------------------------- |
+| PERSONA_UX v0.1 (initial ship) | `70d548da`  | ✅ EXISTS — rebased              |
+| PERSONA_UX v0.1 (post-rebase)  | `c0917f588` | ✅ EXISTS — current head version |
 
 ### 3.2 File witnesses (verified via `Read` + `wc -l`)
 
@@ -52,18 +52,19 @@ ratification_gate_eligible: YES
 
 **5-dim matrix (lines 19-26):** VERIFIED ✅
 
-| Dim | Lead | Score | Verdict |
-|---|---|---|---|
-| Dim 1 — PERSONA_COVERAGE v2 | Iris | 8.6/10 | 10 personas × 4 JTBDs = 40 cells, 30/40 FULL = 75% |
-| Dim 2 — UX_COMPLETENESS v0.3 | Hera | 8.2/10 | 8 sub-dim, 8.10/10 avg, 3 conditionals CLOSED |
-| Dim 3 — Cross-Coverage Matrix | Joint | 7.8/10 | 110,240 cells, 78,420 FULL (71.4%) + 26,395 PARTIAL (24.1%) + 5,425 GAP (4.5%) |
-| Dim 4 — Dark Mode Parity | Hera | 8.5/10 | 192/192 pages, 47/47 components, 0 hardcoded |
-| Dim 5 — Persona-driven E2E | Joint | 8.4/10 | 10/10 personas ≥1 journey, 7/10 FULL + 3/10 PARTIAL |
-| **Composite** | | **8.4/10** | RATIFICATION-READY |
+| Dim                           | Lead  | Score      | Verdict                                                                        |
+| ----------------------------- | ----- | ---------- | ------------------------------------------------------------------------------ |
+| Dim 1 — PERSONA_COVERAGE v2   | Iris  | 8.6/10     | 10 personas × 4 JTBDs = 40 cells, 30/40 FULL = 75%                             |
+| Dim 2 — UX_COMPLETENESS v0.3  | Hera  | 8.2/10     | 8 sub-dim, 8.10/10 avg, 3 conditionals CLOSED                                  |
+| Dim 3 — Cross-Coverage Matrix | Joint | 7.8/10     | 110,240 cells, 78,420 FULL (71.4%) + 26,395 PARTIAL (24.1%) + 5,425 GAP (4.5%) |
+| Dim 4 — Dark Mode Parity      | Hera  | 8.5/10     | 192/192 pages, 47/47 components, 0 hardcoded                                   |
+| Dim 5 — Persona-driven E2E    | Joint | 8.4/10     | 10/10 personas ≥1 journey, 7/10 FULL + 3/10 PARTIAL                            |
+| **Composite**                 |       | **8.4/10** | RATIFICATION-READY                                                             |
 
 **No factual errors found in matrix scores.**
 
 **8 P2 open items (lines 203-216):** All v1.0.1 backlog, 0 P0/P1 — VERIFIED ✅
+
 - UX-PI-001/002 (Vesta) — Sector-Logistics/Non-profit JTBD-3/4
 - UX-PI-003 (Prometheus) — Operations JTBD-2/3/4
 - UX-PI-004 (Iris) — i18n 92%→100% es/fr/de/ja
@@ -77,6 +78,7 @@ ratification_gate_eligible: YES
 #### ⚠️ Check 2 — Missing Risks
 
 **1 P1 SHA-truncation finding (CATCH #187/192 pattern):**
+
 - **Line 195:** `Themis 1f353d08 + f6c58374`
 - **Issue:** `1f353d08` is a stale ref that does not exist as a commit in `git log`. Actual Themis COMPLIANCE 1st-witness commit is `657d10524`, v0.2 at `f4efa3628` (verified via `git show`). The `f6c58374` reference is also non-traceable.
 - **Impact:** CATCH #187/192 SHA drift pattern. Could cause confusion during RATIFICATION GATE ceremony if a reviewer tries to verify the Themis reference and finds nothing.
@@ -88,6 +90,7 @@ ratification_gate_eligible: YES
 #### ✅ Check 3 — Unsubstantiated Claims
 
 **All claims verified.** Notable cross-references confirmed:
+
 - Hermes PAGES v1.0 SHIPPED at 73603c4a4 (4-ICP GOLD 95%) — cross-witness target
 - Iris slot 019ecc6f-1bcc-7d73-9cd8-e1deb114d270, Hera slot 019ecbef-9cf4-7ee3-bfed-7f8c6b6a6990 — both verified via `team_members`
 - 192/192 pages, 47/47 components, 10/10 personas — all counts match Hermes PAGES v1.0 and PERSONA_COVERAGE v2
@@ -97,6 +100,7 @@ ratification_gate_eligible: YES
 #### ✅ Check 4 — Cross-References
 
 **Cross-references verified:**
+
 - Hermes PAGES v1.0 (73603c4a4) — 192/192 pages ✅
 - Apollo INDEX v0.4 (62e3e6f11) — Strategos 2nd-witness ✅
 - Themis COMPLIANCE v0.2 (f4efa362) — 5-dim matrix ✅
@@ -107,24 +111,24 @@ ratification_gate_eligible: YES
 
 ## 4. Composite 4-ICP Verdict
 
-| Dimension | Score | Notes |
-|---|---|---|
-| I1 (Intent) | 9.5/10 | Dim 11/11 delivered, T-3d deadline MET, 5-dim matrix complete |
-| C2 (Catastrophic) | 8.5/10 | 0 P0/P1, 8 P2 backlog, Themis SHA-truncation non-blocking |
-| P3 (Performance) | 9.0/10 | 90-min joint write (vs 30-min target, +2 personas added scope) |
-| D4 (Documented) | 9.0/10 | 3-witness per dim, 5-dim matrix, cross-references to 8 other pre-checks |
-| **Composite** | **9.0/10** | ACCEPT |
+| Dimension         | Score      | Notes                                                                   |
+| ----------------- | ---------- | ----------------------------------------------------------------------- |
+| I1 (Intent)       | 9.5/10     | Dim 11/11 delivered, T-3d deadline MET, 5-dim matrix complete           |
+| C2 (Catastrophic) | 8.5/10     | 0 P0/P1, 8 P2 backlog, Themis SHA-truncation non-blocking               |
+| P3 (Performance)  | 9.0/10     | 90-min joint write (vs 30-min target, +2 personas added scope)          |
+| D4 (Documented)   | 9.0/10     | 3-witness per dim, 5-dim matrix, cross-references to 8 other pre-checks |
+| **Composite**     | **9.0/10** | ACCEPT                                                                  |
 
 **Composite 9.0/10 ACCEPT (Strategos)** vs **8.4/10 RATIFICATION-READY (self-claim)** — Strategos scores slightly higher due to recognizing the joint-ship milestone as a 5th-ICP-worthy coordination achievement.
 
 ## 5. Findings Summary
 
-| Finding | Severity | Status | Action |
-|---|---|---|---|
-| Themis SHA-truncation (line 195, 1f353d08) | P1 | CATCH #187/192 pattern | Iris+Hera v0.1.1 hotfix (5-min) |
-| Self-correction: Strategos verdict cited 917630df (GHOST SHA, Vulcan 2nd-witness found 5 GHOST refs) | P0 | CATCH #187/192 pattern | Strategos v0.1.1 hotfix (5-min) -- see v0.1.1 below |
-| Self-claimed 8.4/10 vs Strategos 9.0/10 | P3 (delta) | Composite variance | ACCEPT-AS-IS |
-| 8 P2 open items (v1.0.1 backlog) | P2 | All tracked | v1.0.1 cycle planning |
+| Finding                                                                                              | Severity   | Status                 | Action                                              |
+| ---------------------------------------------------------------------------------------------------- | ---------- | ---------------------- | --------------------------------------------------- |
+| Themis SHA-truncation (line 195, 1f353d08)                                                           | P1         | CATCH #187/192 pattern | Iris+Hera v0.1.1 hotfix (5-min)                     |
+| Self-correction: Strategos verdict cited 917630df (GHOST SHA, Vulcan 2nd-witness found 5 GHOST refs) | P0         | CATCH #187/192 pattern | Strategos v0.1.1 hotfix (5-min) -- see v0.1.1 below |
+| Self-claimed 8.4/10 vs Strategos 9.0/10                                                              | P3 (delta) | Composite variance     | ACCEPT-AS-IS                                        |
+| 8 P2 open items (v1.0.1 backlog)                                                                     | P2         | All tracked            | v1.0.1 cycle planning                               |
 
 **P1 finding rationale:** SHA-truncation on a cross-Muse reference is a CATCH #187/192 pattern. Forward-looking (RULE #192) suggests correcting BEFORE the RATIFICATION GATE ceremony to prevent reviewer confusion.
 

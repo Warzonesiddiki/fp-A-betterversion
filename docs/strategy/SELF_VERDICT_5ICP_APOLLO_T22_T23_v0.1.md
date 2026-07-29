@@ -17,6 +17,7 @@ status: SELF-VERDICT DELIVERED (Strategos 5th-ICP final witness pending)
 ## 1. Scope
 
 5-ICP SELF-VERDICT on Apollo's 7 deliverables in the T22+T23 cluster:
+
 1. **af58dca24** — MASTER_REPORT v1.2.1 P0 SHA-MISATTRIBUTION fix (T22 carry)
 2. **508fdbe48** — RUNBOOK v0.2 Hermes co-author (T23 PICK A)
 3. **59108c1e3** — Chronos GHOST FILE FIX (T23 PICK B)
@@ -29,26 +30,26 @@ status: SELF-VERDICT DELIVERED (Strategos 5th-ICP final witness pending)
 
 ## 2. D-002 3-Witness (per Apollo's verifiable claims)
 
-| SHA | File | L | md5 | D-002 3-witness |
-|---|---|---|---|---|
-| af58dca24 | VISION_TO_REALITY_MASTER_REPORT.md | 369 | (post-fix) | git log -1 ✓ + wc -l 369 ✓ + git show --stat ✓ |
-| 508fdbe48 | RATIFICATION_GATE_RUNBOOK.md | 363 | (post-integrate) | git log -1 ✓ + wc -l 363 ✓ + git show --stat ✓ |
-| 59108c1e3 | chronos-v3-eix7-proposal.md | 117 | c28edf9452864d64cdca8c111f696b5a | git log -1 ✓ + wc -l 117 ✓ + md5 ✓ |
-| 22b874a23 | PeriodLockEngine.ts + test | 386+148 | (post-refactor) | git log -1 ✓ + wc -l 386+148 ✓ + git show --stat ✓ |
-| 85efc57b4 | APOLLO_COSIGN_CODIF_51_V0_1.md | 84 | (per yaml) | git log -1 ✓ + wc -l 84 ✓ + git show --stat ✓ |
-| bb1492660 | VISION_TO_REALITY_MASTER_REPORT.md | 400 | ffe548d921cfd6e18c3c404cd140b4ad | git log -1 ✓ + wc -l 400 ✓ + md5 ✓ |
-| 9df87000d | APOLLO_COSIGN_CODIF_55_V0_4.md | 89 | 8b513e82b88f753a0ce081cf0985d57c | git log -1 ✓ + wc -l 89 ✓ + md5 ✓ |
+| SHA       | File                               | L       | md5                              | D-002 3-witness                                    |
+| --------- | ---------------------------------- | ------- | -------------------------------- | -------------------------------------------------- |
+| af58dca24 | VISION_TO_REALITY_MASTER_REPORT.md | 369     | (post-fix)                       | git log -1 ✓ + wc -l 369 ✓ + git show --stat ✓     |
+| 508fdbe48 | RATIFICATION_GATE_RUNBOOK.md       | 363     | (post-integrate)                 | git log -1 ✓ + wc -l 363 ✓ + git show --stat ✓     |
+| 59108c1e3 | chronos-v3-eix7-proposal.md        | 117     | c28edf9452864d64cdca8c111f696b5a | git log -1 ✓ + wc -l 117 ✓ + md5 ✓                 |
+| 22b874a23 | PeriodLockEngine.ts + test         | 386+148 | (post-refactor)                  | git log -1 ✓ + wc -l 386+148 ✓ + git show --stat ✓ |
+| 85efc57b4 | APOLLO_COSIGN_CODIF_51_V0_1.md     | 84      | (per yaml)                       | git log -1 ✓ + wc -l 84 ✓ + git show --stat ✓      |
+| bb1492660 | VISION_TO_REALITY_MASTER_REPORT.md | 400     | ffe548d921cfd6e18c3c404cd140b4ad | git log -1 ✓ + wc -l 400 ✓ + md5 ✓                 |
+| 9df87000d | APOLLO_COSIGN_CODIF_55_V0_4.md     | 89      | 8b513e82b88f753a0ce081cf0985d57c | git log -1 ✓ + wc -l 89 ✓ + md5 ✓                  |
 
 ## 3. 5-ICP Composite (PLATINUM+ 23.5/25)
 
-| Dimension | 5-ICP Score | Reasoning |
-|---|---|---|
-| **I1 (Intent)** | 5/5 | All 7 deliverables serve RATIFICATION GATE lead intent: master report accuracy (af58dca24, bb1492660), gate procedure codification (508fdbe48, 59108c1e3), engine correctness (22b874a23), codification enforcement (85efc57b4, 9df87000d). NO IDLE Muse; CAVEMAN 19/19 holds. |
-| **C2 (Catastrophic)** | 5/5 | 0 NEW errors introduced (Path A REFACTOR 22b874a23 added 2 tests, 15→17 PASS); 0 GHOST SHAs in non-evidence claims (all 4 T23 SHAs verified via `git cat-file -t`); 0 false-positive RULE co-signs (each co-sign is on a verified ratified codif doc). Zero blast radius. |
-| **P3 (Performance)** | 5/5 | Path A REFACTOR adds 4 helpers (nowNs, generateTransactionId, nextLamportClock, comparePeriods) at O(1) per call; sub-ms lock impl demonstrated; 0 perf regression in existing 15 tests. RUNBOOK v0.2 adds §4 (72/72 cells) + §5 (5-step) at <1ms human-time-scale. |
-| **D4 (Documented)** | 4.5/5 | 7 deliverables, all with YAML frontmatter (id, related_works, related_rules, 4-ICP verdict, status); all 4-ICP verdicts substantiated; cross-references verified via `git merge-base --is-ancestor`. Slight deduction: 1-2 P2 cosmetic placeholders in §8.3 narrative. |
-| **V5 (Vera meta)** | 4/5 | Self-4-ICP verdicts (9.5/10) consistently applied across 5 ships; CAVEMAN 19/19 IDLE-PREVENT attested; NEVER-AGAIN RULES #32, #35, #47, #50, #51, #53, #55, #56, #58 all COMPLIED. Slight deduction: 3 P2 carry-forwards to MASTER_REPORT v1.4 (P2-A §9.2 disambiguation, P2-B §8 step 1 v0.7.1/v0.7.2, P2-C §4.3 scope). |
-| **Composite** | **23.5/25 PLATINUM+ (9.4/10 self-4-ICP)** |
+| Dimension             | 5-ICP Score                               | Reasoning                                                                                                                                                                                                                                                                                                                 |
+| --------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent)**       | 5/5                                       | All 7 deliverables serve RATIFICATION GATE lead intent: master report accuracy (af58dca24, bb1492660), gate procedure codification (508fdbe48, 59108c1e3), engine correctness (22b874a23), codification enforcement (85efc57b4, 9df87000d). NO IDLE Muse; CAVEMAN 19/19 holds.                                            |
+| **C2 (Catastrophic)** | 5/5                                       | 0 NEW errors introduced (Path A REFACTOR 22b874a23 added 2 tests, 15→17 PASS); 0 GHOST SHAs in non-evidence claims (all 4 T23 SHAs verified via `git cat-file -t`); 0 false-positive RULE co-signs (each co-sign is on a verified ratified codif doc). Zero blast radius.                                                 |
+| **P3 (Performance)**  | 5/5                                       | Path A REFACTOR adds 4 helpers (nowNs, generateTransactionId, nextLamportClock, comparePeriods) at O(1) per call; sub-ms lock impl demonstrated; 0 perf regression in existing 15 tests. RUNBOOK v0.2 adds §4 (72/72 cells) + §5 (5-step) at <1ms human-time-scale.                                                       |
+| **D4 (Documented)**   | 4.5/5                                     | 7 deliverables, all with YAML frontmatter (id, related_works, related_rules, 4-ICP verdict, status); all 4-ICP verdicts substantiated; cross-references verified via `git merge-base --is-ancestor`. Slight deduction: 1-2 P2 cosmetic placeholders in §8.3 narrative.                                                    |
+| **V5 (Vera meta)**    | 4/5                                       | Self-4-ICP verdicts (9.5/10) consistently applied across 5 ships; CAVEMAN 19/19 IDLE-PREVENT attested; NEVER-AGAIN RULES #32, #35, #47, #50, #51, #53, #55, #56, #58 all COMPLIED. Slight deduction: 3 P2 carry-forwards to MASTER_REPORT v1.4 (P2-A §9.2 disambiguation, P2-B §8 step 1 v0.7.1/v0.7.2, P2-C §4.3 scope). |
+| **Composite**         | **23.5/25 PLATINUM+ (9.4/10 self-4-ICP)** |
 
 ## 4. Dim 5 Infrastructure + Dim 8 Engines Verification
 
@@ -102,4 +103,4 @@ Total P2 carry-forward: 4 items, ~20 min work. NON-BLOCKING for RATIFICATION GAT
 
 ---
 
-*This is a self-verdict per CAVEMAN 19/19 IDLE-PREVENT. CAVEMAN COMMIT MODE (--no-verify per RULE #32) used for this verdict. Strategos 5th-ICP independent witness required for full RATIFICATION GATE eligibility.*
+_This is a self-verdict per CAVEMAN 19/19 IDLE-PREVENT. CAVEMAN COMMIT MODE (--no-verify per RULE #32) used for this verdict. Strategos 5th-ICP independent witness required for full RATIFICATION GATE eligibility._

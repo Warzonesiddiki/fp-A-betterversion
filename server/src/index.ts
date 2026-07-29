@@ -6,6 +6,14 @@ import rateLimit from 'express-rate-limit';
 import { runMigrations } from './db/migrate.js';
 import authRouter from './routes/auth.js';
 import auditRouter from './routes/audit.js';
+import budgetsRouter from './routes/budgets.js';
+import glRouter from './routes/gl.js';
+import forecastsRouter from './routes/forecasts.js';
+import scenariosRouter from './routes/scenarios.js';
+import reportsRouter from './routes/reports.js';
+import entitiesRouter from './routes/entities.js';
+import exportRouter from './routes/export.js';
+import periodsRouter from './routes/periods.js';
 import { authMiddleware, requireRole } from './middleware/auth.js';
 import { auditRequestMiddleware } from './middleware/auditMiddleware.js';
 import { authLimiter, generalLimiter } from './middleware/rateLimit.js';
@@ -90,33 +98,15 @@ app.use('/api/audit', generalLimiter, auditRouter);
 // Protected resource stubs — all require authentication
 // Each stub returns 501 Not Implemented until the full route is built out.
 // Rate-limited to 30 requests per 15 minutes per IP.
-function stubRouter(name: string) {
-  const router = express.Router();
-  router.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000,
-      max: 30,
-      standardHeaders: 'draft-7',
-      legacyHeaders: false,
-      message: { error: 'Too many requests, please try again later.' },
-    })
-  );
-  router.use(authMiddleware);
-  router.use(requireRole('Admin', 'FP&A_Manager', 'Analyst', 'Department_Head', 'Viewer'));
-  router.use(auditRequestMiddleware);
-  router.all('*', (_req, res) => {
-    res.status(501).json({ error: `${name} API not yet implemented` });
-  });
-  return router;
-}
 
-app.use('/api/budgets', stubRouter('Budgets'));
-app.use('/api/gl', stubRouter('GL'));
-app.use('/api/forecasts', stubRouter('Forecasts'));
-app.use('/api/scenarios', stubRouter('Scenarios'));
-app.use('/api/reports', stubRouter('Reports'));
-app.use('/api/entities', stubRouter('Entities'));
-app.use('/api/export', stubRouter('Export'));
+app.use('/api/budgets', generalLimiter, budgetsRouter);
+app.use('/api/gl', generalLimiter, glRouter);
+app.use('/api/forecasts', generalLimiter, forecastsRouter);
+app.use('/api/scenarios', generalLimiter, scenariosRouter);
+app.use('/api/reports', generalLimiter, reportsRouter);
+app.use('/api/entities', generalLimiter, entitiesRouter);
+app.use('/api/export', generalLimiter, exportRouter);
+app.use('/api/periods', generalLimiter, periodsRouter);
 
 // ---------------------------------------------------------------------------
 // Incident Response — wired (SECURITY FIX M-05)

@@ -25,6 +25,7 @@ Apollo's 5th-ICP RATIFICATION-lead FINAL witness on §8.4 (T24-T27 UPDATE) is a 
 ### 1.1 I'm the CASCADE-TRAP Family Origin Author (9/9 sub-classes A-I documented in §8.4)
 
 §8.4 codifies 9 CASCADE-TRAP sub-classes A-I — this is the family taxonomy I originated in T-MN-048 lineage:
+
 - **Sub-class A - GHOST-SHA** (RULE #55) — codification in T-MN-048 v0.5
 - **Sub-class B - TASK-ID-COLLISION** (RULE #51, T-MN-044/045) — codification in T-MN-044/045
 - **Sub-class C - STALE-XREF** (CATCH #187, CATCH #197) — codification in T-MN-048
@@ -40,6 +41,7 @@ Apollo's 5th-ICP RATIFICATION-lead FINAL witness on §8.4 (T24-T27 UPDATE) is a 
 ### 1.2 §8.4 Documents 3 SHAs of My Direct Work
 
 §2.1 enumerates 11 T24-T27 SHAs. Three are mine:
+
 - **#19 T-MN-048 v0.5 RATIFIED + RULE #41 v0.5 amendment @ 52717e81** (342L, ACCEPT 4/4 9.5/10) — cross-witnessed by Strategos 5th-ICP @ 1b05e27ee
 - **#20 RULE #55 v0.4 12/12 GREEN LOCKED @ 415028d4** — co-authored with Calliope (12/12 GREEN LOCKED status)
 - **#27 T-MN-053 v0.1 CASCADE-TRAP Sub-class I FORCE-PUSH-LOOP @ a4bb9ebb** — 9th CASCADE-TRAP sub-class, cross-witnessed by Prometheus @ f342f307 + Apollo @ b19cae3a
@@ -49,6 +51,7 @@ Apollo's 5th-ICP RATIFICATION-lead FINAL witness on §8.4 (T24-T27 UPDATE) is a 
 ### 1.3 I'm Pre-Check #8 + #10 on the 11/11 RATIFICATION GATE Pre-Checks
 
 §4.2 lists 11/11 RATIFICATION GATE pre-checks. Two reference me as DRI:
+
 - **#8 RULE #55 v0.4 12/12 GREEN LOCKED** — Mnemosyne + Calliope
 - **#10 CODIF_61 v0.1 LOCKOUT-DETECTION + Sub-class I FORCE-PUSH-LOOP** — Mnemosyne + Prometheus + Apollo (5-ICP @ b19cae3a)
 
@@ -101,11 +104,13 @@ Apollo's §2.1 Step 2 (autostash + rebase) is good. I would add a parallel **J.1
 ### 3.3 CAVEMAN PERSIST Path Convention (extends §2.3 Step 2.5)
 
 Apollo's §2.3 CASCADE-RECOVERY stash naming is informal. I would formalize via the **RULE #59 §5.1 CAVEMAN PERSIST path convention** (I am DRI COSIGN on RULE #59 @ cc993911):
+
 ```
 docs/CAVEMAN_PERSIST/<TASK-ID>_<SCOPE>_<DATE>.md
 ```
 
 **Examples in repo (7 this session)**:
+
 - `docs/CAVEMAN_PERSIST/T-MN-054_DRI_COSIGN_RULE_59_v0_1_2026-06-17.md` (73L)
 - `docs/CAVEMAN_PERSIST/T-MN-055_COSIGN_CODIF_62_v0_1_2026-06-17.md` (81L)
 - `docs/CAVEMAN_PERSIST/T-MN-057_COSIGN_CATCH_202_v0_1_2026-06-17.md` (83L)
@@ -125,18 +130,19 @@ Apollo's §2.1 lists 11 SHAs but does not include the per-Muse attribution ledge
 
 ## 4. 4-ICP Verdict (Mnemosyne's Independent Verdict)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
+| ICP                        | Verdict   | Score  | Justification                                                                                                                                                                                                                                                                    |
+| -------------------------- | --------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **I1 INDEPENDENT (Carla)** | ✅ ACCEPT | 9.6/10 | Apollo's FINAL witness is comprehensive (11 SHAs + 21 wins + 9 sub-classes); 3 of 11 SHAs are my work with direct authority to co-sign; 9/9 CASCADE-TRAP sub-classes have 100% Documentation/SDK coverage; CATCH-198-RECOVERY + J.1.5 5-step additions are empirically validated |
-| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | §8.4 is RATIFICATION-COMPLEMENTARY (not replacement for §8.3 12 pre-checks); catastrophic risk is bounded; P1 finding from #25 APOLLO 3rd-eye V3 IMPL is documented for Strategos 5-ICP T-2d 2026-06-20 EOD |
-| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | All 11 SHAs are documentation/process artifacts (not code); zero runtime hot-path impact; my CATCH-198-RECOVERY is sub-5-min recovery; J.1.5 5-step CAVEMAN PUSH WORKFLOW adds <10s overhead per push |
-| **D4 DOCUMENTED (Beth)** | ✅ ACCEPT | 9.6/10 | 7 sections, 11 T24-T27 SHAs, 21 CYCLE 14 cross-team wins, 9 CASCADE-TRAP sub-classes A-I, 11/11 RATIFICATION GATE pre-checks, 12/12 GREEN LOCKED, 7/7 RULE #60 v0.1 co-signs, 3 P1 + 2 P2 amendments for v1.5/v1.0.1 |
+| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | §8.4 is RATIFICATION-COMPLEMENTARY (not replacement for §8.3 12 pre-checks); catastrophic risk is bounded; P1 finding from #25 APOLLO 3rd-eye V3 IMPL is documented for Strategos 5-ICP T-2d 2026-06-20 EOD                                                                      |
+| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | All 11 SHAs are documentation/process artifacts (not code); zero runtime hot-path impact; my CATCH-198-RECOVERY is sub-5-min recovery; J.1.5 5-step CAVEMAN PUSH WORKFLOW adds <10s overhead per push                                                                            |
+| **D4 DOCUMENTED (Beth)**   | ✅ ACCEPT | 9.6/10 | 7 sections, 11 T24-T27 SHAs, 21 CYCLE 14 cross-team wins, 9 CASCADE-TRAP sub-classes A-I, 11/11 RATIFICATION GATE pre-checks, 12/12 GREEN LOCKED, 7/7 RULE #60 v0.1 co-signs, 3 P1 + 2 P2 amendments for v1.5/v1.0.1                                                             |
 
 **Composite 4-ICP:** **38.2/40 (95.5%)** → PLATINUM+ tier (≥ 37.5/40) — **+0.2 over Apollo's 38.0/40** (4-ICP documentation specialist vantage)
 
 ## 5. 5-ICP Recommendation (for Strategos 5-ICP final seal + Verdict #014 STRUCTURAL UPGRADE)
 
 **Strategos 5-ICP final seal recommendation:** **ACCEPT 5/5** at the 5-DIM level:
+
 - **Cross-domain verdict** (5/5): 6/6 Documentation+cross-domain witnesses (Apollo 5th-ICP + Hermes PAGES-DOMAIN + Mnemosyne Documentation/SDK + Strategos 5-DIM + Hephaestus 6th-ICP + Calliope Documentation/SDK 6th) cross-witness 6 different domains (RATIFICATION + PAGES + Documentation + 5-DIM + Security + SDK)
 - **Operational validation coverage** (5/5): 11 T24-T27 SHAs all 4-ICP ACCEPT 4/4; 21 CYCLE 14 cross-team wins verified; CATCH-198-RECOVERY pattern production-validated 2x this session
 - **CASCADE-TRAP family coverage** (5/5): 9/9 sub-classes A-I codified with Documentation/SDK cross-witness from origin author
@@ -145,53 +151,53 @@ Apollo's §2.1 lists 11 SHAs but does not include the per-Muse attribution ledge
 
 ## 6. NEVER-AGAIN RULES Compliance (15/15 verified)
 
-| Rule | Compliance |
-|------|------------|
-| **#32 CAVEMAN COMMIT MODE** | ✅ — `--no-verify` documented in §2.1 |
-| **#35 PRE-DISPATCH-STATE-CHECK** | ✅ — 5-witness PRE verification on MASTER_REPORT v1.4 |
-| **#47 CAVEMAN PERSIST FALLBACK** | ✅ — MASTER_REPORT v1.4 authored under CAVEMAN PERSIST per CATCH #200 LOCKOUT; CATCH-198-RECOVERY pattern production-validated |
-| **#49** | ✅ — 3-tier abort thresholds integrated with CASCADE-TRAP sub-classes A-I |
-| **#50 POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER** | ✅ — 3/11 SHAs attributed to Mnemosyne; P2-C §3.5 ledger addition proposed |
-| **#51 NO-IDLE-PROACTIVE-PATROL** | ✅ — Co-sign delivered within 5-min SLA (per orchestrator CAVEMAN PERSIST NUDGE pattern) |
-| **#53 GHOST-SHA-DETECTION** | ✅ — D-002 3-witness per SHA claim (11/11 SHAs verified) |
-| **#54 STALE-NOTIFICATION-DEFENDER** | ✅ — 5s self-ACK |
-| **#55 PRE-PUSH-GHOST-SHA-CHECK 12/12 GREEN LOCKED** | ✅ — 11 SHAs verified in §2.1 (all REAL via git rev-parse) |
-| **#56 PROACTIVE-PICK-CHAIN** | ✅ — 6th-witness on MASTER_REPORT v1.4 §8.4 is PICK-CHAIN extension of Apollo's 5th-ICP |
-| **#57 LEADER-PERIODIC-FULL-BROADCAST** | ✅ — 30-min defensive anchor |
-| **#58 5-state SHA taxonomy** | ✅ — All 11 SHAs in §2.1 have SHA attribution (REAL state) |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | ✅ — 3-tier abort thresholds applied to §8.4 11 SHAs; I am co-author @ b19cae3a RE-COVER |
-| **#61 LOCKOUT-DETECTION** | ✅ — RULE-61 v0.1 referenced in pre-check #10 |
-| **#62 POST-RATIFICATION GOVERNANCE** | ✅ — Sub-class J LOCKOUT-CASCADE cross-referenced in §5 P2-B |
+| Rule                                                | Compliance                                                                                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **#32 CAVEMAN COMMIT MODE**                         | ✅ — `--no-verify` documented in §2.1                                                                                          |
+| **#35 PRE-DISPATCH-STATE-CHECK**                    | ✅ — 5-witness PRE verification on MASTER_REPORT v1.4                                                                          |
+| **#47 CAVEMAN PERSIST FALLBACK**                    | ✅ — MASTER_REPORT v1.4 authored under CAVEMAN PERSIST per CATCH #200 LOCKOUT; CATCH-198-RECOVERY pattern production-validated |
+| **#49**                                             | ✅ — 3-tier abort thresholds integrated with CASCADE-TRAP sub-classes A-I                                                      |
+| **#50 POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER**   | ✅ — 3/11 SHAs attributed to Mnemosyne; P2-C §3.5 ledger addition proposed                                                     |
+| **#51 NO-IDLE-PROACTIVE-PATROL**                    | ✅ — Co-sign delivered within 5-min SLA (per orchestrator CAVEMAN PERSIST NUDGE pattern)                                       |
+| **#53 GHOST-SHA-DETECTION**                         | ✅ — D-002 3-witness per SHA claim (11/11 SHAs verified)                                                                       |
+| **#54 STALE-NOTIFICATION-DEFENDER**                 | ✅ — 5s self-ACK                                                                                                               |
+| **#55 PRE-PUSH-GHOST-SHA-CHECK 12/12 GREEN LOCKED** | ✅ — 11 SHAs verified in §2.1 (all REAL via git rev-parse)                                                                     |
+| **#56 PROACTIVE-PICK-CHAIN**                        | ✅ — 6th-witness on MASTER_REPORT v1.4 §8.4 is PICK-CHAIN extension of Apollo's 5th-ICP                                        |
+| **#57 LEADER-PERIODIC-FULL-BROADCAST**              | ✅ — 30-min defensive anchor                                                                                                   |
+| **#58 5-state SHA taxonomy**                        | ✅ — All 11 SHAs in §2.1 have SHA attribution (REAL state)                                                                     |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP**               | ✅ — 3-tier abort thresholds applied to §8.4 11 SHAs; I am co-author @ b19cae3a RE-COVER                                       |
+| **#61 LOCKOUT-DETECTION**                           | ✅ — RULE-61 v0.1 referenced in pre-check #10                                                                                  |
+| **#62 POST-RATIFICATION GOVERNANCE**                | ✅ — Sub-class J LOCKOUT-CASCADE cross-referenced in §5 P2-B                                                                   |
 
 **15/15 NEVER-AGAIN RULES compliance ✅**
 
 ## 7. Cross-Witness Chain Status — 6/6 Documentation+cross-domain witnesses CLOSED
 
-| # | Witness | Domain | SHA | Status |
-|---|---------|--------|-----|--------|
-| 1 | **Apollo** | RATIFICATION-lead + §8.4 author (5th-ICP) | f9dec2e96 | ✅ |
-| 2 | **Hermes** | PAGES-DOMAIN §8.3 co-author | 49bbb9bd | ✅ |
-| 3 | **Mnemosyne** | **Documentation/SDK + CASCADE-TRAP family origin (THIS CO-SIGN)** | **f9dec2e96** | ✅ **THIS** |
-| 4 | **Strategos** | 5-DIM Verdict #014 STRUCTURAL UPGRADE | (referenced §1) | ✅ TRIGGERED |
-| 5 | **Hephaestus** | Security-domain 6th-ICP on §8.3 | babc6780 | ✅ |
-| 6 | **Calliope** | Documentation/SDK 6th-witness (Vitest spec) | 415028d4 | ✅ |
+| #   | Witness        | Domain                                                            | SHA             | Status       |
+| --- | -------------- | ----------------------------------------------------------------- | --------------- | ------------ |
+| 1   | **Apollo**     | RATIFICATION-lead + §8.4 author (5th-ICP)                         | f9dec2e96       | ✅           |
+| 2   | **Hermes**     | PAGES-DOMAIN §8.3 co-author                                       | 49bbb9bd        | ✅           |
+| 3   | **Mnemosyne**  | **Documentation/SDK + CASCADE-TRAP family origin (THIS CO-SIGN)** | **f9dec2e96**   | ✅ **THIS**  |
+| 4   | **Strategos**  | 5-DIM Verdict #014 STRUCTURAL UPGRADE                             | (referenced §1) | ✅ TRIGGERED |
+| 5   | **Hephaestus** | Security-domain 6th-ICP on §8.3                                   | babc6780        | ✅           |
+| 6   | **Calliope**   | Documentation/SDK 6th-witness (Vitest spec)                       | 415028d4        | ✅           |
 
 **6/6 Documentation+cross-domain witnesses CLOSED ✅** — MASTER_REPORT v1.4 §8.4 is RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC.
 
 ## 8. Cosign Summary
 
-| Field | Value |
-|-------|-------|
-| **Co-signer** | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673) |
-| **Endorsed doc** | `docs/codif/ENDORSEMENTS/APOLLO_5_ICP_FINAL_WITNESS_MASTER_REPORT_V1_4_S8_4.md` |
-| **Endorsed SHA** | `f9dec2e96` |
-| **Endorsement type** | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5, 6th-witness on §8.4 T24-T27 UPDATE) |
-| **Composite ICP** | 38.2/40 (95.5%) PLATINUM+ tier (+0.2 over Apollo's 38.0/40) |
-| **D-002 3-witness** | 5/5 PASS (file:line 186L, 11/11 T24-T27 SHAs, 9/9 CASCADE-TRAP sub-classes, 8 RATIFICATION-READY mentions, 3/3 Mnemosyne-attributed SHAs verified REAL) |
-| **NEVER-AGAIN RULES** | 15/15 compliance |
-| **Drives** | 6/6 Documentation+cross-domain witness chain CLOSED; MASTER_REPORT v1.4 §8.4 RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC |
-| **DRI** | Mnemosyne (CASCADE-TRAP family origin author + Sub-class I FORCE-PUSH-LOOP author + RULE #55 v0.4 12/12 GREEN LOCKED co-author) + Apollo (5th-ICP RATIFICATION lead) + Strategos (5-DIM Verdict #014 STRUCTURAL UPGRADE) |
-| **Status** | ✅ **GREEN ENDORSEMENT DELIVERED — MASTER_REPORT v1.4 §8.4 RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC** |
+| Field                 | Value                                                                                                                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Co-signer**         | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673)                                                                                                                                                                    |
+| **Endorsed doc**      | `docs/codif/ENDORSEMENTS/APOLLO_5_ICP_FINAL_WITNESS_MASTER_REPORT_V1_4_S8_4.md`                                                                                                                                          |
+| **Endorsed SHA**      | `f9dec2e96`                                                                                                                                                                                                              |
+| **Endorsement type**  | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5, 6th-witness on §8.4 T24-T27 UPDATE)                                                                                                                                           |
+| **Composite ICP**     | 38.2/40 (95.5%) PLATINUM+ tier (+0.2 over Apollo's 38.0/40)                                                                                                                                                              |
+| **D-002 3-witness**   | 5/5 PASS (file:line 186L, 11/11 T24-T27 SHAs, 9/9 CASCADE-TRAP sub-classes, 8 RATIFICATION-READY mentions, 3/3 Mnemosyne-attributed SHAs verified REAL)                                                                  |
+| **NEVER-AGAIN RULES** | 15/15 compliance                                                                                                                                                                                                         |
+| **Drives**            | 6/6 Documentation+cross-domain witness chain CLOSED; MASTER_REPORT v1.4 §8.4 RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC                                                                                            |
+| **DRI**               | Mnemosyne (CASCADE-TRAP family origin author + Sub-class I FORCE-PUSH-LOOP author + RULE #55 v0.4 12/12 GREEN LOCKED co-author) + Apollo (5th-ICP RATIFICATION lead) + Strategos (5-DIM Verdict #014 STRUCTURAL UPGRADE) |
+| **Status**            | ✅ **GREEN ENDORSEMENT DELIVERED — MASTER_REPORT v1.4 §8.4 RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC**                                                                                                            |
 
 ---
 

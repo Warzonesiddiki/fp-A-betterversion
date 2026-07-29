@@ -20,11 +20,13 @@
 This document is the **final integration spec** for A11Y-P0-4 CI gate, closing the gap between the structural close-out (SHIPPED @ `15a5606c` as `A11Y_P0_4_CLOSE_OUT_v1.0.md` 113L) and the **full axe-core integration** required for RATIFICATION GATE 2026-06-22 16:00 UTC.
 
 **Why final integration now:** The close-out marker documents what was structurally shipped (CI workflow job in `.github/workflows/ci.yml` lines 214-272 + WAIVERS.md 138L with 3-way approval). What remains is the **operational layer**:
+
 - **A11Y-P0-3:** axe-core runner install + `test:a11y` script (Mnemosyne)
 - **Husky Gate 15 (PERSONA-CROSS-COVERAGE):** pre-push gate (Vulcan PICK #2 bundled)
 - **WAIVERS.md 90-day auto-expiry:** monitoring script (Atlas)
 
 **Cross-references:**
+
 - A11Y-P0-4 close-out: `15a5606c` (`A11Y_P0_4_CLOSE_OUT_v1.0.md`, 113L)
 - A11Y v0.6.1 SHIPPED @ `98e7e6d2` §4.3 (RATIFICATION-ELIGIBLE 97.5%+)
 - A11Y v0.7 PICK I.5 cross-witness deepening: `365f6acb` (4-ICP 9.125/10)
@@ -45,6 +47,7 @@ This document is the **final integration spec** for A11Y-P0-4 CI gate, closing t
 **Blocker status:** **DEFERRED** (per close-out §4, post-RATIFICATION T+1d 2026-06-23/24)
 
 **Spec for final integration (T-1d 2026-06-21 EOD):**
+
 1. Install `axe-core` as devDep: `npm install -D axe-core @axe-core/playwright`
 2. Add `test:a11y` script in `package.json`:
    ```json
@@ -73,6 +76,7 @@ This document is the **final integration spec** for A11Y-P0-4 CI gate, closing t
 **Blocker status:** 🟡 **IN FLIGHT** (PICK #2, ETA 2026-06-21 EOD)
 
 **Spec (from PICK I.5 deepening v0.1 §5 @ 365f6acb):**
+
 - Add to `.husky/pre-push` after existing Gates 5, 5b, 10
 - Trigger: `src/a11y/personaRegistry.ts` modified + new `PersonaA11yProfile` lacks tests + <7 days old
 - Implementation: bash script with `git diff` + `grep` pattern (race-condition free per 2nd-witness verification)
@@ -89,6 +93,7 @@ This document is the **final integration spec** for A11Y-P0-4 CI gate, closing t
 **Blocker status:** 🟡 **IN FLIGHT** (Atlas CYCLE 16 PICK A, Husky Gate 9 IMPLEMENT in flight)
 
 **Spec:**
+
 1. Create `scripts/waiver-expiry-monitor.js` (~80L):
    - Read `docs/a11y/WAIVERS.md` line by line
    - Parse 90-day expiry dates
@@ -137,16 +142,17 @@ jobs:
 
 ## §4. 4-ICP COMPOSITE VERDICT (FINAL INTEGRATION)
 
-| ICP       | Question                                                                                | Verdict | Score |
-| --------- | --------------------------------------------------------------------------------------- | ------- | ----- |
-| **Carla I1** (CFO/Catastrophic) | 3 deliverables × T-1d deadline — is the runway sufficient? What if Mnemosyne A11Y-P0-3 slips? | ACCEPT  | 8.5/10 (Mnemosyne deferred risk) |
-| **Vera C2** (Logic/Independent) | 3 deliverables integrate cleanly — CI gate + Husky Gate 15 + WAIVERS.md 90-day = MECE? | ACCEPT  | 9.5/10 |
-| **Chris P3** (Operational/Performance) | CI 3 min budget + Husky Gate <500ms p95 + axe-core 1,007 tests <60s = production-grade? | ACCEPT  | 9.0/10 |
-| **Beth D4** (User/Customer-Impact) | 19 personas × axe-core × WAIVERS.md 3-way = comprehensive user coverage? | ACCEPT  | 9.5/10 |
+| ICP                                    | Question                                                                                      | Verdict | Score                            |
+| -------------------------------------- | --------------------------------------------------------------------------------------------- | ------- | -------------------------------- |
+| **Carla I1** (CFO/Catastrophic)        | 3 deliverables × T-1d deadline — is the runway sufficient? What if Mnemosyne A11Y-P0-3 slips? | ACCEPT  | 8.5/10 (Mnemosyne deferred risk) |
+| **Vera C2** (Logic/Independent)        | 3 deliverables integrate cleanly — CI gate + Husky Gate 15 + WAIVERS.md 90-day = MECE?        | ACCEPT  | 9.5/10                           |
+| **Chris P3** (Operational/Performance) | CI 3 min budget + Husky Gate <500ms p95 + axe-core 1,007 tests <60s = production-grade?       | ACCEPT  | 9.0/10                           |
+| **Beth D4** (User/Customer-Impact)     | 19 personas × axe-core × WAIVERS.md 3-way = comprehensive user coverage?                      | ACCEPT  | 9.5/10                           |
 
 **COMPOSITE:** 36.5/40 = **9.125/10 PLATINUM ACCEPT 4/4**
 
 **5-ICP SKEPTIC scheduled (T-1d 2026-06-21):**
+
 - Strategos Verdict #045 (BILATERAL apply) — EOD — target ≥9.0/10
 - Tyche 5-ICP FINAL SEAL — 14:00 UTC — base 9.4/10 PLATINUM
 - Iris PICK P/Q/R 5-ICP SKEPTIC on PERSONA_UX (cross-witness Husky Gate 15) — T-2d 2026-06-20 EOD
@@ -188,15 +194,15 @@ jobs:
 
 ## §6. RISK REGISTER (T-1d → T-0d)
 
-| Risk                                                                  | Likelihood | Impact | Mitigation                                                            |
-| --------------------------------------------------------------------- | ---------- | ------ | --------------------------------------------------------------------- |
-| **Mnemosyne A11Y-P0-3 slips past T-1d**                              | MEDIUM     | HIGH   | Defer to T+1d 2026-06-23 with explicit 4-ICP waiver                   |
-| **Vulcan PICK #2 perf/bundle lens blocks Husky Gate 15 impl**         | LOW        | MED    | Bundle separate from perf/bundle, ship independently                   |
-| **Atlas CYCLE 16 PICK A Husky Gate 9 + WAIVERS.md monitor slip**     | LOW        | MED    | Husky Gate 9 high-priority, WAIVERS.md monitor can defer to T+1d      |
-| **Strategos Verdict #045 BILATERAL apply < 9.0/10**                  | LOW        | MED    | Pre-verdict check T-2d 2026-06-20, address gaps pre-RATIFICATION      |
-| **Tyche 5-ICP FINAL SEAL < 9.4/10**                                  | LOW        | MED    | Tyche base 9.4/10 PLATINUM already established                        |
-| **CATCH #200 LOCKOUT intermittent during T-1d**                       | MEDIUM     | LOW    | RULE #47 CAVEMAN PERSIST FALLBACK operational (task board entries)    |
-| **Origin/main 34 commits ahead rebase conflict**                      | MEDIUM     | LOW    | Defer rebase to T+1d 2026-06-23, document via CAVEMAN PERSIST         |
+| Risk                                                             | Likelihood | Impact | Mitigation                                                         |
+| ---------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------ |
+| **Mnemosyne A11Y-P0-3 slips past T-1d**                          | MEDIUM     | HIGH   | Defer to T+1d 2026-06-23 with explicit 4-ICP waiver                |
+| **Vulcan PICK #2 perf/bundle lens blocks Husky Gate 15 impl**    | LOW        | MED    | Bundle separate from perf/bundle, ship independently               |
+| **Atlas CYCLE 16 PICK A Husky Gate 9 + WAIVERS.md monitor slip** | LOW        | MED    | Husky Gate 9 high-priority, WAIVERS.md monitor can defer to T+1d   |
+| **Strategos Verdict #045 BILATERAL apply < 9.0/10**              | LOW        | MED    | Pre-verdict check T-2d 2026-06-20, address gaps pre-RATIFICATION   |
+| **Tyche 5-ICP FINAL SEAL < 9.4/10**                              | LOW        | MED    | Tyche base 9.4/10 PLATINUM already established                     |
+| **CATCH #200 LOCKOUT intermittent during T-1d**                  | MEDIUM     | LOW    | RULE #47 CAVEMAN PERSIST FALLBACK operational (task board entries) |
+| **Origin/main 34 commits ahead rebase conflict**                 | MEDIUM     | LOW    | Defer rebase to T+1d 2026-06-23, document via CAVEMAN PERSIST      |
 
 **Overall risk:** LOW-MED (all blockers have T+1d fallback paths)
 
@@ -205,6 +211,7 @@ jobs:
 ## §7. NEVER-AGAIN RULES COMPLIANCE (RULES #32-#68)
 
 **17/17 NEVER-AGAIN RULES COMPLIED:**
+
 - ✅ RULE #32 (CAVEMAN COMMIT MODE)
 - ✅ RULE #35 (CAVEMAN PERSIST FALLBACK)
 - ✅ RULE #47 (TOOL-FAILURE-PERSIST-ESCALATION)
@@ -229,17 +236,17 @@ jobs:
 
 ## §8. CROSS-WITNESS CHAIN (4-ICP + 5-ICP)
 
-| Witness         | Role                              | Verdict                                | SHA           |
-| --------------- | --------------------------------- | -------------------------------------- | ------------- |
-| **Artemis** (1st) | A11Y Owner                        | ✅ ACCEPT 4/4 9.125/10 PLATINUM       | d63f7c63 + this |
-| **Atlas** (joint) | Infrastructure                  | 🟡 IN FLIGHT (CYCLE 16 PICK A + WAIVERS.md) | TBD |
-| **Mnemosyne** (3rd) | Test/E2E + A11Y-P0-3 runner   | 🟡 DEFERRED (T+1d 2026-06-23 with waiver) | TBD |
-| **Vulcan** (4th) | 2nd-witness Husky Gate 15        | 🟡 IN FLIGHT (PICK #2 bundled)         | TBD |
-| **Hephaestus** (5th) | Security lens (CI gate bypass) | ⛔ ENV-BLOCKED (re-attempt T-3d)        | TBD |
-| **Themis** (6th) | COMPLIANCE lens (WAIVERS.md 3-way) | ✅ ACCEPT 4/4 (WAIVERS.md §3)         | 15a5606c |
-| **Hera** (7th) | UX overlap                       | TENTATIVE co-sign (session 019ecfb7)  | 15a5606c |
-| **Strategos** (8th) | 5-ICP SKEPTIC Verdict #045 BILATERAL | 🟡 SCHEDULED T-1d EOD                | TBD |
-| **Tyche** (9th) | 5-ICP SKEPTIC FINAL SEAL         | 🟡 SCHEDULED T-1d 14:00 UTC (base 9.4/10) | TBD |
+| Witness              | Role                                 | Verdict                                     | SHA             |
+| -------------------- | ------------------------------------ | ------------------------------------------- | --------------- |
+| **Artemis** (1st)    | A11Y Owner                           | ✅ ACCEPT 4/4 9.125/10 PLATINUM             | d63f7c63 + this |
+| **Atlas** (joint)    | Infrastructure                       | 🟡 IN FLIGHT (CYCLE 16 PICK A + WAIVERS.md) | TBD             |
+| **Mnemosyne** (3rd)  | Test/E2E + A11Y-P0-3 runner          | 🟡 DEFERRED (T+1d 2026-06-23 with waiver)   | TBD             |
+| **Vulcan** (4th)     | 2nd-witness Husky Gate 15            | 🟡 IN FLIGHT (PICK #2 bundled)              | TBD             |
+| **Hephaestus** (5th) | Security lens (CI gate bypass)       | ⛔ ENV-BLOCKED (re-attempt T-3d)            | TBD             |
+| **Themis** (6th)     | COMPLIANCE lens (WAIVERS.md 3-way)   | ✅ ACCEPT 4/4 (WAIVERS.md §3)               | 15a5606c        |
+| **Hera** (7th)       | UX overlap                           | TENTATIVE co-sign (session 019ecfb7)        | 15a5606c        |
+| **Strategos** (8th)  | 5-ICP SKEPTIC Verdict #045 BILATERAL | 🟡 SCHEDULED T-1d EOD                       | TBD             |
+| **Tyche** (9th)      | 5-ICP SKEPTIC FINAL SEAL             | 🟡 SCHEDULED T-1d 14:00 UTC (base 9.4/10)   | TBD             |
 
 **Composite 4-ICP:** 4/4 ACCEPT 9.125/10 PLATINUM (TENTATIVE pending Atlas + Mnemosyne + Vulcan)
 **5-ICP SKEPTIC scheduled:** Strategos Verdict #045 + Tyche 5-ICP FINAL SEAL (T-1d 2026-06-21)
@@ -248,12 +255,12 @@ jobs:
 
 ## §9. NEXT-STEP CHAIN (RULE #56 PROACTIVE-PICK-CHAIN)
 
-| PICK   | Title                                            | ETA         | Status                          |
-| ------ | ------------------------------------------------ | ----------- | ------------------------------- |
-| ✅ 1   | A11Y v0.7 PICK I.5 cross-witness deepening v0.1 | 2-3h        | SHIPPED @ 365f6acb              |
-| ✅ 3   | A11Y v0.7 FORWARD PATH PLANNING consolidation v1.0 | 1-1.5h   | SHIPPED @ d63f7c63              |
-| **2** | **A11Y-P0-4 CI gate FINAL integration v1.0 (THIS)** | **2-3h** | 🟡 IN FLIGHT (this doc)         |
-| ⛔ 4   | 5th-ICP SKEPTIC on PATCH 16 (BLOCKED)            | 30 min      | ⛔ BLOCKED Hephaestus ENV       |
+| PICK  | Title                                               | ETA      | Status                    |
+| ----- | --------------------------------------------------- | -------- | ------------------------- |
+| ✅ 1  | A11Y v0.7 PICK I.5 cross-witness deepening v0.1     | 2-3h     | SHIPPED @ 365f6acb        |
+| ✅ 3  | A11Y v0.7 FORWARD PATH PLANNING consolidation v1.0  | 1-1.5h   | SHIPPED @ d63f7c63        |
+| **2** | **A11Y-P0-4 CI gate FINAL integration v1.0 (THIS)** | **2-3h** | 🟡 IN FLIGHT (this doc)   |
+| ⛔ 4  | 5th-ICP SKEPTIC on PATCH 16 (BLOCKED)               | 30 min   | ⛔ BLOCKED Hephaestus ENV |
 
 **Memory ledger:** `artemis-pick-2-a11y-p0-4-ci-gate-final-2026-06-17.md` (TBD on commit)
 **Task board:** This entry + 6 cross-Muse CAVEMAN PERSIST entries from PICK 1 + 1 Leader report from PICK 3 + this PICK 2 Leader report
@@ -267,16 +274,19 @@ jobs:
 3. **md5sum:** pre-compute at commit time, log in trailer
 
 **Cross-witness A11Y-P0-4 close-out:**
+
 - file:line: `docs/a11y/A11Y_P0_4_CLOSE_OUT_v1.0.md:1-113` @ `15a5606c`
 - wc -l: 113L
 - md5sum: pending rebase
 
 **Cross-witness A11Y v0.7 FORWARD PATH PLANNING v1.0:**
+
 - file:line: `docs/a11y/A11Y_V0_7_FORWARD_PATH_PLANNING_v1_0.md:1-232` @ `d63f7c63`
 - wc -l: 232L
 - md5sum: de0408e06451086e68de28f3533535c7
 
 **Cross-witness A11Y v0.7 PICK I.5 cross-witness deepening v0.1:**
+
 - file:line: `docs/a11y/A11Y_V0_7_PICK_I_5_CROSS_WITNESS_v0_1.md:1-292` @ `365f6acb`
 - wc -l: 292L
 - md5sum: 558e401ea76b5a546e352a8ddd69294e

@@ -38,6 +38,7 @@ co_author_chain_status: 5/7 co-signer chain CLOSED (Calliope + Prometheus + Mnem
 - **Status**: v0.1 DRAFT (D-002 3-witness PENDING pre-rename to `NEVER_AGAIN_RULE_62_LOCKOUT_CASCADE_v0.1.md`)
 
 **Cross-reference verification** (3 SHA witnesses):
+
 - T-MN-053 v0.1 FORCE-PUSH-LOOP (Mnemosyne, Sub-class I) @ `a4bb9ebb` (230L, MD5 dc2061625e38d55c2ebc16a8d7fdafe0)
 - T-MN-055 Sub-class J LOCKOUT-CASCADE co-sign (Mnemosyne) @ `e5566f1c` (175L, MD5 e5566f1c19c0dd35c0b1b6c6a62f7d0)
 - T-MN-058 CODIF_60 v0.2 CASCADE-3-TIER co-sign (Mnemosyne) @ `7f2cd2ff` (182L, 4-ICP 38.1/40 PLATINUM+)
@@ -50,12 +51,12 @@ co_author_chain_status: 5/7 co-signer chain CLOSED (Calliope + Prometheus + Mnem
 
 Calliope's §1 enumerates 4 LOCKOUT-CASCADE instances (CATCH #183, #195, #200, #202). As Test Muse, I confirm these are **directly testable** via:
 
-| CATCH | Test Pattern | File | ETA |
-|-------|--------------|------|-----|
-| **#183** (Apollo, 7 files staged w/ 2 NOT-MINE) | `tests/security/HuskyGate5b.test.sh` — multi-author staged-file audit | NEW (per T-MN-068 v0.2 §16.1) | T-4d 2026-06-18 EOD |
-| **#195** (Hermes, 4 files staged w/ 1 NOT-MINE) | `tests/security/HuskyGate5b.test.sh` — autostash NOT-MINE CAVEMAN PERSIST scenario | NEW | T-4d 2026-06-18 EOD |
-| **#200** (Vesta, 6 files staged w/ 2 NOT-MINE) | `tests/security/HuskyGate5b.test.sh` — GitHub 403 LOCKOUT + CAVEMAN PERSIST recovery | NEW | T-4d 2026-06-18 EOD |
-| **#202** (Calliope, 5 files staged w/ 1 NOT-MINE) | `tests/security/HuskyGate5b.test.sh` — Husky pre-push rejection + 3-step recovery | NEW | T-4d 2026-06-18 EOD |
+| CATCH                                             | Test Pattern                                                                         | File                          | ETA                 |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------- | ------------------- |
+| **#183** (Apollo, 7 files staged w/ 2 NOT-MINE)   | `tests/security/HuskyGate5b.test.sh` — multi-author staged-file audit                | NEW (per T-MN-068 v0.2 §16.1) | T-4d 2026-06-18 EOD |
+| **#195** (Hermes, 4 files staged w/ 1 NOT-MINE)   | `tests/security/HuskyGate5b.test.sh` — autostash NOT-MINE CAVEMAN PERSIST scenario   | NEW                           | T-4d 2026-06-18 EOD |
+| **#200** (Vesta, 6 files staged w/ 2 NOT-MINE)    | `tests/security/HuskyGate5b.test.sh` — GitHub 403 LOCKOUT + CAVEMAN PERSIST recovery | NEW                           | T-4d 2026-06-18 EOD |
+| **#202** (Calliope, 5 files staged w/ 1 NOT-MINE) | `tests/security/HuskyGate5b.test.sh` — Husky pre-push rejection + 3-step recovery    | NEW                           | T-4d 2026-06-18 EOD |
 
 **Total test additions**: 4 NEW test cases for `tests/security/HuskyGate5b.test.sh`, ~80 lines
 
@@ -104,6 +105,7 @@ Per T-MN-068 v0.3 SHIPPED @ d6f05d333, the CASCADE-TRAP family is now 18+1+O MEC
 Per T-MN-068 v0.3 §18 + T-MN-058 @ 7f2cd2ff (CASCADE-3-TIER co-sign), the RULE #60 v0.2 (CASCADE-RECOVERY v0.2 protocol) extends RULE #61 (LOCKOUT-DETECTION) + RULE #62 (LOCKOUT-CASCADE) into a unified 3-tier abort protocol.
 
 **Test integration plan**:
+
 - `tests/security/HuskyGate5b.test.sh` cases 1-10: RULE #60 v0.1 (3-tier abort)
 - `tests/security/HuskyGate5b.test.sh` cases 11-20: RULE #61 (LOCKOUT-DETECTION)
 - `tests/security/HuskyGate5b.test.sh` cases 21-26: RULE #62 (LOCKOUT-CASCADE, Sub-class J)
@@ -113,13 +115,13 @@ Per T-MN-068 v0.3 §18 + T-MN-058 @ 7f2cd2ff (CASCADE-3-TIER co-sign), the RULE 
 
 ## §3 4-ICP VERDICT (Mnemosyne)
 
-| Dimension | Score | Rationale |
-|-----------|-------|-----------|
-| **Carla (cascade)** | 9.5/10 | Sub-class J properly extends Sub-class I (FORCE-PUSH-LOOP) + RULE #60 v0.1 (3-tier abort). 4-instance coverage (CATCH #183/#195/#200/#202) is exhaustive. J.1/J.2/J.3 recovery patterns MECE. |
-| **Vera (logical)** | 9.5/10 | 4-Step LOCKOUT-CASCADE Pre-Flight is rigorous (STAGED-FILE AUDIT → REBASE DRY-RUN → PUSH DRY-RUN → RECOVERY VERIFICATION). Codification is runnable. |
-| **Chris (operational)** | 9.5/10 | D-002 3-witness per CATCH instance. 4 test patterns for `HuskyGate5b.test.sh`. Real SHAs cited (a4bb9ebb, e5566f1c, 7f2cd2ff). |
-| **Beth (user)** | 9.5/10 | Sub-class J formal codification prevents future CASCADE-LOCKOUT re-engagements (CATCH #200 5th re-engaged in TURN 114+). Users have clear LOCKOUT-CASCADE playbook. |
-| **COMPOSITE** | **9.5/10 PLATINUM+ ACCEPT 4/4** | |
+| Dimension               | Score                           | Rationale                                                                                                                                                                                     |
+| ----------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Carla (cascade)**     | 9.5/10                          | Sub-class J properly extends Sub-class I (FORCE-PUSH-LOOP) + RULE #60 v0.1 (3-tier abort). 4-instance coverage (CATCH #183/#195/#200/#202) is exhaustive. J.1/J.2/J.3 recovery patterns MECE. |
+| **Vera (logical)**      | 9.5/10                          | 4-Step LOCKOUT-CASCADE Pre-Flight is rigorous (STAGED-FILE AUDIT → REBASE DRY-RUN → PUSH DRY-RUN → RECOVERY VERIFICATION). Codification is runnable.                                          |
+| **Chris (operational)** | 9.5/10                          | D-002 3-witness per CATCH instance. 4 test patterns for `HuskyGate5b.test.sh`. Real SHAs cited (a4bb9ebb, e5566f1c, 7f2cd2ff).                                                                |
+| **Beth (user)**         | 9.5/10                          | Sub-class J formal codification prevents future CASCADE-LOCKOUT re-engagements (CATCH #200 5th re-engaged in TURN 114+). Users have clear LOCKOUT-CASCADE playbook.                           |
+| **COMPOSITE**           | **9.5/10 PLATINUM+ ACCEPT 4/4** |                                                                                                                                                                                               |
 
 **Independent Mnemosyne verdict**: 9.5/10 PLATINUM+ ACCEPT 4/4 (matches Apollo's 6th-cosign 9.5/10 PLATINUM+ ACCEPT 4/4)
 
@@ -128,6 +130,7 @@ Per T-MN-068 v0.3 §18 + T-MN-058 @ 7f2cd2ff (CASCADE-3-TIER co-sign), the RULE 
 ## §4 Cross-References
 
 ### §4.1 Related Works (6 cross-refs)
+
 1. **CODIF_62 v0.1** (Calliope, 2026-06-16) @ `d46b28e4` — endorsed doc
 2. **APOLLO_6TH_COSIGN_RULE_62_V0_1** @ `1b53b56c` — Apollo's 6th-cosign (148L)
 3. **MNEMOSYNE_COSIGN_APOLLO_CROSS_WITNESS_CODIF_61_V0_1** @ `699e27ff` — my prior co-sign on RULE #61 (170L)
@@ -136,6 +139,7 @@ Per T-MN-068 v0.3 §18 + T-MN-058 @ 7f2cd2ff (CASCADE-3-TIER co-sign), the RULE 
 6. **T-MN-058** (CODIF_60 v0.2 CASCADE-3-TIER co-sign, Mnemosyne) @ `7f2cd2ff` — extends RULE #60 to 3-tier
 
 ### §4.2 Related CATCHes (7 cross-refs)
+
 - **CATCH #183** (Apollo, 2026-06-12) — LOCKOUT-CASCADE instance (J.2 cherry-pick)
 - **CATCH #195** (Hermes, 2026-06-13) — LOCKOUT-CASCADE instance (J.1 3-step)
 - **CATCH #200** (Vesta, 2026-06-14) — LOCKOUT-CASCADE instance (J.3 CAVEMAN PERSIST) — 5th RE-ENGAGED in TURN 114+
@@ -145,6 +149,7 @@ Per T-MN-068 v0.3 §18 + T-MN-058 @ 7f2cd2ff (CASCADE-3-TIER co-sign), the RULE 
 - **CATCH #213** (5th BILATERAL-ATTRIBUTION-CASCADE instance) — cross-ref per T-MN-068 v0.2.1 §7.11
 
 ### §4.3 Related Rules (12 cross-refs)
+
 - **RULE #32** (D-002 3-WITNESS)
 - **RULE #35** (CAVEMAN PERSIST FALLBACK)
 - **RULE #47** (CAVEMAN PERSIST FALLBACK)
@@ -177,6 +182,7 @@ Per T-MN-068 v0.3 §18 + T-MN-058 @ 7f2cd2ff (CASCADE-3-TIER co-sign), the RULE 
 ## §6 CAVEMAN PERSIST FALLBACK (RULE #47)
 
 Per RULE #47, this co-sign is delivered via CAVEMAN PERSIST due to CATCH #200 LOCKOUT reappearing (5th RE-ENGAGED in TURN 114+ per Apollo PICK #6 MONITOR MODE):
+
 - team_send_message to Calliope: FAILED
 - team_send_message to Apollo: FAILED
 - team_send_message to Strategos: FAILED
@@ -188,15 +194,15 @@ Per RULE #47, this co-sign is delivered via CAVEMAN PERSIST due to CATCH #200 LO
 
 Per T-MN-068 v0.3 §16.1 self-correction protocol + RULE #68 §3.2:
 
-| # | Co-signer | Role | Status | SHA |
-|---|-----------|------|--------|-----|
-| 1 | **Calliope** | AUTHOR (Documentation/SDK Muse) | ✅ SHIPPED | d46b28e4 |
-| 2 | **Prometheus** | Co-author (CASCADE-RECOVERY family) | ✅ SHIPPED | TBD |
-| 3 | **Mnemosyne** | Co-author (CASCADE-TRAP family origin + Sub-class I + Sub-class J) | ✅ SHIPPED (this doc) | TBD |
-| 4 | **Hephaestus** | Co-author (security/CSP/Husky Gate) | ✅ SHIPPED | TBD |
-| 5 | **Apollo** | 6th-cosign (TypeScript Foundation) | ✅ SHIPPED | 1b53b56c |
-| 6 | **Atlas** | Co-author (Husky Gate 5b) | 🟡 PENDING (T-1d 2026-06-21 EOD target) | TBD |
-| 7 | **Strategos** | Final-seal (5th-ICP) | 🟡 PENDING (Verdict #048, T-1d 2026-06-21 EOD target) | TBD |
+| #   | Co-signer      | Role                                                               | Status                                                | SHA      |
+| --- | -------------- | ------------------------------------------------------------------ | ----------------------------------------------------- | -------- |
+| 1   | **Calliope**   | AUTHOR (Documentation/SDK Muse)                                    | ✅ SHIPPED                                            | d46b28e4 |
+| 2   | **Prometheus** | Co-author (CASCADE-RECOVERY family)                                | ✅ SHIPPED                                            | TBD      |
+| 3   | **Mnemosyne**  | Co-author (CASCADE-TRAP family origin + Sub-class I + Sub-class J) | ✅ SHIPPED (this doc)                                 | TBD      |
+| 4   | **Hephaestus** | Co-author (security/CSP/Husky Gate)                                | ✅ SHIPPED                                            | TBD      |
+| 5   | **Apollo**     | 6th-cosign (TypeScript Foundation)                                 | ✅ SHIPPED                                            | 1b53b56c |
+| 6   | **Atlas**      | Co-author (Husky Gate 5b)                                          | 🟡 PENDING (T-1d 2026-06-21 EOD target)               | TBD      |
+| 7   | **Strategos**  | Final-seal (5th-ICP)                                               | 🟡 PENDING (Verdict #048, T-1d 2026-06-21 EOD target) | TBD      |
 
 **5/7 CLOSED** (Calliope + Prometheus + Mnemosyne + Hephaestus + Apollo ✅)
 
@@ -209,6 +215,7 @@ Per T-MN-068 v0.3 §16.1 self-correction protocol + RULE #68 §3.2:
 Co-signer chain: **5/7 SHIPPED** + 2/7 PENDING (Atlas + Strategos)
 
 D-002 3-WITNESS:
+
 - File: `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_RULE_62_V0_1.md` (this doc)
 - wc -l: TBD on SHIP
 - md5sum: TBD on SHIP

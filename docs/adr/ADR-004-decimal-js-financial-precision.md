@@ -17,19 +17,21 @@ FinPlan Pro's 180+ pure calculation engines perform financial arithmetic where n
 
 ```javascript
 // Native JS float drift
-0.1 + 0.2            // = 0.30000000000000004 (NOT 0.3)
-0.1 * 0.2            // = 0.020000000000000004 (NOT 0.02)
-19.99 * 100          // = 1998.9999999999998 (NOT 1999)
-0.1 + 0.2 === 0.3    // = false (!)
+0.1 + 0.2; // = 0.30000000000000004 (NOT 0.3)
+0.1 * 0.2; // = 0.020000000000000004 (NOT 0.02)
+19.99 * 100; // = 1998.9999999999998 (NOT 1999)
+0.1 + 0.2 === 0.3; // = false (!)
 ```
 
 This drift is unacceptable for financial calculations:
+
 - Tax calculations: $0.005 drift per item × 10K items = $50 discrepancy
 - Currency conversion: $0.0001 drift per conversion × 1M conversions = $100 discrepancy
 - Percentage aggregation: $0.001 drift per cell × 255 cells = $0.255 discrepancy
 - Audit trail: Regulatory compliance (SOX, IFRS, GAAP) requires exact reproducibility
 
 Alternative precision libraries were considered:
+
 - **BigInt**: Integer-only, no decimal arithmetic — unsuitable for currency
 - **bignumber.js**: Mature but no immutable update pattern
 - **decimal.js-light**: Smaller but lacks some features
@@ -50,15 +52,16 @@ Decimal.set({ precision: 38, rounding: Decimal.ROUND_HALF_EVEN });
 // All financial calculations use Decimal.js
 const price = new Decimal('19.99');
 const quantity = new Decimal('100');
-const subtotal = price.times(quantity);  // = 1999 (exact, no drift)
-const tax = subtotal.times('0.085');     // = 169.915 (exact)
-const total = subtotal.plus(tax);        // = 2168.915 (exact)
+const subtotal = price.times(quantity); // = 1999 (exact, no drift)
+const tax = subtotal.times('0.085'); // = 169.915 (exact)
+const total = subtotal.plus(tax); // = 2168.915 (exact)
 
 // Display layer converts to number for UI
 const displayTotal = total.toNumber();
 ```
 
 **Mandated patterns (per AGENTS.md L52):**
+
 1. All 180+ engines use Decimal.js internally
 2. Store types use `Decimal | number` only when interoperating with AG Grid (which doesn't support Decimal natively)
 3. Display layer converts via `.toNumber()` with explicit precision handling
@@ -109,14 +112,14 @@ const displayTotal = total.toNumber();
 
 ## Alternatives Considered
 
-| Library | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **Decimal.js (chosen)** | Mature, comprehensive, immutable | ~10x slower than native | ✅ ACCEPT |
-| BigInt | Native, fast | Integer-only, no decimals | ❌ REJECT |
-| bignumber.js | Mature | No immutable update pattern | ❌ REJECT |
-| decimal.js-light | Smaller bundle | Limited API | ❌ REJECT |
-| Big.js | Simple | Limited API, no trig functions | ❌ REJECT |
-| Custom BigDecimal | Tailored | Reinventing wheel, untested | ❌ REJECT |
+| Library                 | Pros                             | Cons                           | Verdict   |
+| ----------------------- | -------------------------------- | ------------------------------ | --------- |
+| **Decimal.js (chosen)** | Mature, comprehensive, immutable | ~10x slower than native        | ✅ ACCEPT |
+| BigInt                  | Native, fast                     | Integer-only, no decimals      | ❌ REJECT |
+| bignumber.js            | Mature                           | No immutable update pattern    | ❌ REJECT |
+| decimal.js-light        | Smaller bundle                   | Limited API                    | ❌ REJECT |
+| Big.js                  | Simple                           | Limited API, no trig functions | ❌ REJECT |
+| Custom BigDecimal       | Tailored                         | Reinventing wheel, untested    | ❌ REJECT |
 
 ## References
 

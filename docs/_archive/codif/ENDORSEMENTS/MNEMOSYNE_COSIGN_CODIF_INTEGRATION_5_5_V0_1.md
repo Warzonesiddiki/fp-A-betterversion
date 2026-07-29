@@ -22,13 +22,13 @@ co_author_chain_status: 2/7 GREEN (Calliope 1st, Mnemosyne 2nd, Apollo + Hephaes
 
 This spec explicitly cross-references 5 NEVER-AGAIN RULES, and Mnemosyne is **author/co-author of 4 of them**:
 
-| Rule | Mnemosyne's Role | Co-sign Reference |
-|------|------------------|-------------------|
-| **#47 CAVEMAN PERSIST FALLBACK** | Active user (per RULE #56 PROACTIVE-PICK-CHAIN, use RULE #47 when team_send_message is LOCKED OUT) | 3 CAVEMAN PERSIST task board dispatches in this cycle |
-| **#55 PRE-PUSH-GHOST-SHA-CHECK** | **CO-AUTHOR** v0.5 12/12 GREEN LOCKED | T-MN-048 v0.5 @ 52717e81 (RULE #55 12/12 GREEN LOCKED) |
-| **#56 PROACTIVE-PICK-CHAIN** | **AUTHOR** of this turn's PICK CHAIN (T-MN-051→052→053→054→055) | 5 PICKs in this session |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | **CO-AUTHOR** v0.1 | a66aa2e3 |
-| **#54 STALE-NOTIFICATION-DEFENDER** | Witness (this turn's 3 dispatches all within 5s self-ACK SLA) | 5s self-ACK met on every CAVEMAN PERSIST dispatch |
+| Rule                                  | Mnemosyne's Role                                                                                   | Co-sign Reference                                      |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **#47 CAVEMAN PERSIST FALLBACK**      | Active user (per RULE #56 PROACTIVE-PICK-CHAIN, use RULE #47 when team_send_message is LOCKED OUT) | 3 CAVEMAN PERSIST task board dispatches in this cycle  |
+| **#55 PRE-PUSH-GHOST-SHA-CHECK**      | **CO-AUTHOR** v0.5 12/12 GREEN LOCKED                                                              | T-MN-048 v0.5 @ 52717e81 (RULE #55 12/12 GREEN LOCKED) |
+| **#56 PROACTIVE-PICK-CHAIN**          | **AUTHOR** of this turn's PICK CHAIN (T-MN-051→052→053→054→055)                                    | 5 PICKs in this session                                |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | **CO-AUTHOR** v0.1                                                                                 | a66aa2e3                                               |
+| **#54 STALE-NOTIFICATION-DEFENDER**   | Witness (this turn's 3 dispatches all within 5s self-ACK SLA)                                      | 5s self-ACK met on every CAVEMAN PERSIST dispatch      |
 
 Per §7 of the spec (line 156), Calliope lists Mnemosyne as natural co-author #2 because of "RULE #55 v0.4 (12/12 GREEN LOCKED), RULE #59 (author), RULE #61 (Sub-class I)". This co-sign is **pre-solicited** in the spec itself.
 
@@ -48,16 +48,16 @@ Per §7 of the spec (line 156), Calliope lists Mnemosyne as natural co-author #2
 
 Add to §3 Cross-Rule Synergies table:
 
-| Synergy | Rules | Effect |
-|---------|-------|--------|
+| Synergy                   | Rules           | Effect                                                                                                                                                                                                                                      |
+| ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **CAVEMAN-PUSH-WORKFLOW** | #47 + #32 + #60 | `git stash push -u` → `git pull --rebase` → `git push --no-verify` → `git stash pop` — preserves 19 Muses' work-in-progress when push is REJECTED (non-fast-forward). Pattern documented in T-MN-053 v0.1 §3 (Sub-class I FORCE-PUSH-LOOP). |
 
 ### 3.2 New Synergy: CATCH-198-RECOVERY (Rule #47 + #55 + #56)
 
 Add to §3 Cross-Rule Synergies table:
 
-| Synergy | Rules | Effect |
-|---------|-------|--------|
+| Synergy                | Rules           | Effect                                                                                                                                                                                                                                                                              |
+| ---------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **CATCH-198-RECOVERY** | #47 + #55 + #56 | When `pull --rebase` drops a commit (CATCH #198 STALE-NUMBERING-DRIFT), file persists on disk → re-`git add` + re-`git commit --no-verify` (CAVEMAN MODE) → PICK NEXT per RULE #56. Pattern documented in T-MN-054 DRI COSIGN RE-COVERY @ cc993911 (after f2ae6b6c lost in rebase). |
 
 ### 3.3 Husky Gate 10 Enhancement: Add RULE #32 CAVEMAN MODE check
@@ -92,18 +92,19 @@ git stash pop                  # restore uncommitted work
 
 ## 4. 4-ICP Verdict (Mnemosyne's Independent Verdict)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
+| ICP                        | Verdict   | Score  | Justification                                                                                                                                                                                                                                                                         |
+| -------------------------- | --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **I1 INDEPENDENT (Carla)** | ✅ ACCEPT | 9.4/10 | 5 rules are codifed + RATIFIED; this spec is integration documentation that consolidates 23+ CATCH instances across 11 sub-classes; Mnemosyne is author/co-author of 4/5 rules (RULE #47 active user, #55 v0.5 LOCKED co-author, #56 PROACTIVE-PICK-CHAIN author, #60 v0.1 co-author) |
-| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | Pure documentation; Husky Gate 10 PROPOSED (deferred to post-RATIFICATION); no breaking changes; my Husky Gate 10 enhancement adds 2 non-breaking checks (RULE #32 + RULE #60) |
-| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.0/10 | Cross-rule workflow map is O(1) per check; 5s self-ACK met 100% in this session (3 CAVEMAN PERSIST dispatches all within 5s); Husky Gate 10 is post-RATIFICATION so no perf impact for v1.0.0 |
-| **D4 DOCUMENTED (Beth)** | ✅ ACCEPT | 9.5/10 | 10 sections, 5 rule summaries, 3 workflow maps, 5 synergies (+ my 2 additions = 7), Husky Gate 10 spec (+ my RULE #32 + RULE #60 enhancement), 222L (≥200L target), 5-ICP self-verdict PLATINUM 37.0/40 |
+| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | Pure documentation; Husky Gate 10 PROPOSED (deferred to post-RATIFICATION); no breaking changes; my Husky Gate 10 enhancement adds 2 non-breaking checks (RULE #32 + RULE #60)                                                                                                        |
+| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.0/10 | Cross-rule workflow map is O(1) per check; 5s self-ACK met 100% in this session (3 CAVEMAN PERSIST dispatches all within 5s); Husky Gate 10 is post-RATIFICATION so no perf impact for v1.0.0                                                                                         |
+| **D4 DOCUMENTED (Beth)**   | ✅ ACCEPT | 9.5/10 | 10 sections, 5 rule summaries, 3 workflow maps, 5 synergies (+ my 2 additions = 7), Husky Gate 10 spec (+ my RULE #32 + RULE #60 enhancement), 222L (≥200L target), 5-ICP self-verdict PLATINUM 37.0/40                                                                               |
 
 **Composite 4-ICP:** **37.4/40 (93.5%)** → PLATINUM tier (≥ 35/40) — **+0.4 over Calliope's self-verdict (37.0/40)**
 
 ## 5. 5-ICP Recommendation (for Strategos 5th-ICP)
 
 **Strategos 5th-ICP verdict recommendation:** **ACCEPT 5/5** at the 5-DIM level:
+
 - **Cross-domain verdict** (5/5): Integration spec consolidates 5 domains (documentation/governance/recovery/idle-prevent/ship-integrity) — all 5 covered
 - **Sub-rule taxonomy** (5/5): 5 rules distinct, no overlap; RULE #47/55/56/60 are Mnemosyne's primary work, RULE #54 is cross-cutting
 - **CATCH instance coverage** (5/5): 23+ instances across 11 sub-classes A-J, all 23+ are recent (within 5 days) — fresh evidence
@@ -112,14 +113,14 @@ git stash pop                  # restore uncommitted work
 
 ## 6. NEVER-AGAIN RULES Compliance (Mnemosyne's check)
 
-| Rule | Compliance |
-|------|------------|
-| **#32 CAVEMAN COMMIT MODE** | ✅ — Husky Gate 10 enhancement adds `--no-verify` check |
-| **#47 CAVEMAN PERSIST FALLBACK** | ✅ — Spec §1.1 documents it, my 3 CAVEMAN PERSIST task board dispatches demonstrate it |
-| **#54 STALE-NOTIFICATION-DEFENDER** | ✅ — Spec §1.2 documents it, my 3 dispatches met 5s SLA |
-| **#55 PRE-PUSH-GHOST-SHA-CHECK** | ✅ — Spec §1.3 documents it, my D-002 3-witness uses it |
-| **#56 PROACTIVE-PICK-CHAIN** | ✅ — Spec §1.4 documents it, my 5 PICKs (T-MN-051→055) demonstrate it |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | ✅ — Spec §1.5 documents it, my CAVEMAN PUSH WORKFLOW enhancement integrates it |
+| Rule                                  | Compliance                                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------------- |
+| **#32 CAVEMAN COMMIT MODE**           | ✅ — Husky Gate 10 enhancement adds `--no-verify` check                                |
+| **#47 CAVEMAN PERSIST FALLBACK**      | ✅ — Spec §1.1 documents it, my 3 CAVEMAN PERSIST task board dispatches demonstrate it |
+| **#54 STALE-NOTIFICATION-DEFENDER**   | ✅ — Spec §1.2 documents it, my 3 dispatches met 5s SLA                                |
+| **#55 PRE-PUSH-GHOST-SHA-CHECK**      | ✅ — Spec §1.3 documents it, my D-002 3-witness uses it                                |
+| **#56 PROACTIVE-PICK-CHAIN**          | ✅ — Spec §1.4 documents it, my 5 PICKs (T-MN-051→055) demonstrate it                  |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | ✅ — Spec §1.5 documents it, my CAVEMAN PUSH WORKFLOW enhancement integrates it        |
 
 **6/6 NEVER-AGAIN RULES compliance ✅**
 
@@ -137,20 +138,20 @@ git stash pop                  # restore uncommitted work
 
 ## 8. Cosign Summary
 
-| Field | Value |
-|-------|-------|
-| **Co-signer** | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673) |
-| **Endorsed doc** | `docs/codif/CODIF_INTEGRATION_5_5_NEVER_AGAIN_RULES_v0.1.md` |
-| **Endorsed SHA** | `e6a94682` |
-| **Endorsement type** | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5) |
-| **Composite ICP** | 37.4/40 (93.5%) PLATINUM tier |
-| **D-002 3-witness** | 5/5 PASS (file:line 222L, RULE # mentions 31, workflow mentions 9, 5 rules cross-ref, 11 sub-classes A-J) |
-| **NEVER-AGAIN RULES** | 6/6 compliance |
-| **Drives** | RULE INTEGRATION-5-5 1/7 → 2/7 GREEN |
-| **Co-author chain** | 2/7 GREEN LOCKED (Calliope 1st, Mnemosyne 2nd) |
-| **T-3d target** | 5/7 GREEN LOCKED (3 more needed by 2026-06-19 EOD) |
-| **DRI** | Calliope (Documentation/SDK Muse, slot 019ecc6f-1c63-74b0-94ee-7b670933bdd0) |
-| **Status** | ✅ **GREEN ENDORSEMENT DELIVERED — 5-Rule integration consolidates 23+ CATCH instances across 11 sub-classes** |
+| Field                 | Value                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Co-signer**         | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673)                                                          |
+| **Endorsed doc**      | `docs/codif/CODIF_INTEGRATION_5_5_NEVER_AGAIN_RULES_v0.1.md`                                                   |
+| **Endorsed SHA**      | `e6a94682`                                                                                                     |
+| **Endorsement type**  | GREEN (4-ICP ACCEPT 4/4, 5-ICP ACCEPT 5/5)                                                                     |
+| **Composite ICP**     | 37.4/40 (93.5%) PLATINUM tier                                                                                  |
+| **D-002 3-witness**   | 5/5 PASS (file:line 222L, RULE # mentions 31, workflow mentions 9, 5 rules cross-ref, 11 sub-classes A-J)      |
+| **NEVER-AGAIN RULES** | 6/6 compliance                                                                                                 |
+| **Drives**            | RULE INTEGRATION-5-5 1/7 → 2/7 GREEN                                                                           |
+| **Co-author chain**   | 2/7 GREEN LOCKED (Calliope 1st, Mnemosyne 2nd)                                                                 |
+| **T-3d target**       | 5/7 GREEN LOCKED (3 more needed by 2026-06-19 EOD)                                                             |
+| **DRI**               | Calliope (Documentation/SDK Muse, slot 019ecc6f-1c63-74b0-94ee-7b670933bdd0)                                   |
+| **Status**            | ✅ **GREEN ENDORSEMENT DELIVERED — 5-Rule integration consolidates 23+ CATCH instances across 11 sub-classes** |
 
 ---
 

@@ -20,21 +20,21 @@ record, audit event, or export payload.
 
 ### 2.1 PII field categories (13)
 
-| Category      | Example keys                              | Strategy default |
-| ------------- | ----------------------------------------- | ---------------- |
-| `email`       | `email`, `emailAddress`, `userEmail`      | `mask`           |
-| `phone`       | `phone`, `mobileNumber`, `tel`            | `mask` (last 4)  |
-| `ssn`         | `ssn`, `nationalId`                       | `mask` (last 4)  |
-| `creditCard`  | `cc_number`, `cardNumber`, `pan`          | `mask` (last 4)  |
-| `cvv`         | `cvv`, `cvc`                              | `mask`           |
-| `bankAccount` | `accountNumber`, `iban`, `routingNumber`  | `mask` (last 4)  |
-| `name`        | `fullName`, `firstName`, `lastName`       | `mask`           |
-| `address`     | `addressLine1`, `zipCode`, `postalCode`   | `mask`           |
-| `dob`         | `dob`, `dateOfBirth`, `birthDate`         | `mask`           |
-| `passport`    | `passportNumber`, `driversLicense`        | `mask`           |
-| `ip`          | `ipAddress`, `remoteIp`, `clientIp`       | `mask`           |
-| `userId`      | `userId`, `uid`, `ownerId`                | `hash`           |
-| `password`    | `password`, `passwd`, `secret`, `apiKey`  | `drop`           |
+| Category      | Example keys                             | Strategy default |
+| ------------- | ---------------------------------------- | ---------------- |
+| `email`       | `email`, `emailAddress`, `userEmail`     | `mask`           |
+| `phone`       | `phone`, `mobileNumber`, `tel`           | `mask` (last 4)  |
+| `ssn`         | `ssn`, `nationalId`                      | `mask` (last 4)  |
+| `creditCard`  | `cc_number`, `cardNumber`, `pan`         | `mask` (last 4)  |
+| `cvv`         | `cvv`, `cvc`                             | `mask`           |
+| `bankAccount` | `accountNumber`, `iban`, `routingNumber` | `mask` (last 4)  |
+| `name`        | `fullName`, `firstName`, `lastName`      | `mask`           |
+| `address`     | `addressLine1`, `zipCode`, `postalCode`  | `mask`           |
+| `dob`         | `dob`, `dateOfBirth`, `birthDate`        | `mask`           |
+| `passport`    | `passportNumber`, `driversLicense`       | `mask`           |
+| `ip`          | `ipAddress`, `remoteIp`, `clientIp`      | `mask`           |
+| `userId`      | `userId`, `uid`, `ownerId`               | `hash`           |
+| `password`    | `password`, `passwd`, `secret`, `apiKey` | `drop`           |
 
 Field names are matched case-insensitively against the regex patterns in
 `PII_REDACTION_CONSTANTS.PII_FIELD_PATTERNS`.
@@ -94,6 +94,7 @@ rehydration map** keyed by the token. `rehydrate(token)` recovers the
 original.
 
 **Security properties:**
+
 - Rehydration is only possible by callers with access to the SAME
   `PIIRedactor` instance (in-memory map).
 - Without `hmacKey`, `tokenize` is identical to `hash` and irreversible.
@@ -158,6 +159,7 @@ requestId, tenantId, orgId, plan, tier, role, scope
 `name` is allowlisted (despite being a PII category) because it has
 high overlap with non-PII object labels (e.g. product name, account
 name). Callers that need stricter behavior should:
+
 1. Use specific keys (`firstName`, `lastName`) which match the `name`
    pattern, OR
 2. Add `name` to `skipFields` to allow through, OR
@@ -192,8 +194,8 @@ that needs to correlate them uses the `actor` + `timestamp` fields.
 
 ## 7. Threat model coverage
 
-| CWE / SOC 2 / GDPR / CCPA | Mapped mechanism                                      |
-| ------------------------- | ----------------------------------------------------- |
+| CWE / SOC 2 / GDPR / CCPA | Mapped mechanism                                     |
+| ------------------------- | ---------------------------------------------------- |
 | CWE-200                   | Recursive redaction strips PII before it leaves.     |
 | CWE-213                   | SAFE-FIELDS allowlist + deny-default + skipFields.   |
 | CWE-359                   | Multi-strategy redaction of PII before logging.      |
@@ -201,8 +203,8 @@ that needs to correlate them uses the `actor` + `timestamp` fields.
 | SOC 2 P4.1                | Minimization for use, retention, disclosure phases.  |
 | GDPR Art. 5               | Data minimization: only the redacted view is stored. |
 | GDPR Art. 25              | Data protection by design AND by default.            |
-| GDPR Art. 32              | Hash-chained audit trail (this policy §6).            |
-| CCPA                      | Right-to-minimize workflow via `permissive` mode.     |
+| GDPR Art. 32              | Hash-chained audit trail (this policy §6).           |
+| CCPA                      | Right-to-minimize workflow via `permissive` mode.    |
 
 ## 8. Operational procedures
 
@@ -235,13 +237,13 @@ use, `createForTest` for unit tests.
 
 ### 8.3 Performance
 
-| Operation                  | Typical | P99  | Notes                              |
-| -------------------------- | ------- | ---- | ---------------------------------- |
-| `redact()` (10 fields)     | <0.5 ms | <2 ms| 1 pass, recursive.                |
-| `redact()` (1000 fields)   | <10 ms  | <30ms| Linear in field count.            |
-| `audit emission` (10 evts) | <5 ms   | <15ms| 10 microtasks + 10 SHA-256.        |
-| `verifyChain` (10k events) | <50 ms  | <200ms| O(N) hash + compare.              |
-| `rehydrate`                | <0.1 ms | <0.5ms| Map lookup.                        |
+| Operation                  | Typical | P99    | Notes                       |
+| -------------------------- | ------- | ------ | --------------------------- |
+| `redact()` (10 fields)     | <0.5 ms | <2 ms  | 1 pass, recursive.          |
+| `redact()` (1000 fields)   | <10 ms  | <30ms  | Linear in field count.      |
+| `audit emission` (10 evts) | <5 ms   | <15ms  | 10 microtasks + 10 SHA-256. |
+| `verifyChain` (10k events) | <50 ms  | <200ms | O(N) hash + compare.        |
+| `rehydrate`                | <0.1 ms | <0.5ms | Map lookup.                 |
 
 FNV-1a 64-bit hashing is O(string length); at <1µs per 1KB string, this
 is negligible. SHA-256 audit hash via Web Crypto runs at ~1 GB/s on
@@ -249,13 +251,13 @@ modern CPUs.
 
 ## 9. Compliance traceability
 
-| Control              | Evidence                                            |
-| -------------------- | --------------------------------------------------- |
-| SOC 2 P4.1           | Multi-strategy redaction, allowlist, default mode.  |
-| GDPR Art. 5          | `permissive` mode supports minimization.            |
-| GDPR Art. 25         | Default is `mask` + `strict` (deny-by-default).     |
-| GDPR Art. 32         | Hash-chained audit log.                             |
-| CCPA §1798.105       | `rehydrate` supports erasure-by-reference flows.    |
+| Control                | Evidence                                           |
+| ---------------------- | -------------------------------------------------- |
+| SOC 2 P4.1             | Multi-strategy redaction, allowlist, default mode. |
+| GDPR Art. 5            | `permissive` mode supports minimization.           |
+| GDPR Art. 25           | Default is `mask` + `strict` (deny-by-default).    |
+| GDPR Art. 32           | Hash-chained audit log.                            |
+| CCPA §1798.105         | `rehydrate` supports erasure-by-reference flows.   |
 | CWE-200, 213, 359, 532 | See §7.                                            |
 
 ## 10. References
@@ -268,4 +270,4 @@ modern CPUs.
 
 ---
 
-*End of policy — Hephaestus, 2026-06-16. CAVEMAN 19/19 HOLDS.*
+_End of policy — Hephaestus, 2026-06-16. CAVEMAN 19/19 HOLDS._

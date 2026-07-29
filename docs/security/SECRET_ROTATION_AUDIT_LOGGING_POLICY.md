@@ -20,16 +20,17 @@ persists, or transports such a secret.
 
 ### 2.1 Frequency
 
-| Secret type     | Default TTL   | Max TTL        | Min TTL | Hard floor (rotation) |
-| --------------- | ------------- | -------------- | ------- | --------------------- |
-| `jwt`           | 24 h          | 90 d           | 1 h     | 24 h                  |
-| `hmac`          | 24 h          | 90 d           | 1 h     | 24 h                  |
-| `api-key`       | 24 h          | 90 d           | 1 h     | 24 h                  |
-| `session`       | 24 h          | 90 d           | 1 h     | 24 h                  |
-| `encryption`    | 24 h          | 90 d           | 1 h     | 24 h                  |
-| `csrf`          | 24 h          | 90 d           | 1 h     | 24 h                  |
+| Secret type  | Default TTL | Max TTL | Min TTL | Hard floor (rotation) |
+| ------------ | ----------- | ------- | ------- | --------------------- |
+| `jwt`        | 24 h        | 90 d    | 1 h     | 24 h                  |
+| `hmac`       | 24 h        | 90 d    | 1 h     | 24 h                  |
+| `api-key`    | 24 h        | 90 d    | 1 h     | 24 h                  |
+| `session`    | 24 h        | 90 d    | 1 h     | 24 h                  |
+| `encryption` | 24 h        | 90 d    | 1 h     | 24 h                  |
+| `csrf`       | 24 h        | 90 d    | 1 h     | 24 h                  |
 
 Rotation is mandatory:
+
 - **On schedule** — every TTL window, automatically.
 - **On compromise** — immediate, with `reason: 'compromised'`.
 - **On personnel change** — when an owner with access leaves the team.
@@ -49,6 +50,7 @@ when the caller's threat model is "no backward compatibility during rotation"
 ### 2.3 Revocation
 
 `revokeSecret(id, reason)` is **idempotent** and **immediate**:
+
 - `status` flips to `'revoked'`.
 - Both the primary and previous material are zero-filled in memory.
 - All subsequent `verifySecret(id, ...)` calls return `valid: false, status: 'revoked'`,
@@ -62,6 +64,7 @@ created — never "unrevoke" an old record.
 A `reason: 'compromised'` flag in `createSecret` / `rotateSecret` /
 `revokeSecret` propagates to the audit log and the surrounding runbook. A
 compromise event **must**:
+
 1. Revoke every secret in the same type-class and owner scope.
 2. Trigger incident-response playbook `IR-SEC-002` (Key Compromise).
 3. Notify the Security Lead (Hephaestus) and the Compliance Lead (Themis)
@@ -138,21 +141,21 @@ tampering without trusting the sender.
 
 ## 4. Threat model coverage
 
-| CWE / SOC 2 | Mapped mechanism                                           |
-| ----------- | ---------------------------------------------------------- |
-| CWE-200     | `getSecretMetadata()` returns fingerprint, never material. |
-| CWE-321     | `rotateSecret` always produces fresh material via CSRNG.   |
-| CWE-345     | Hash chain: any tampering detectable by `verifyChain()`.  |
-| CWE-532     | Material is held in `Uint8Array`, not in payload strings.  |
-| CWE-613     | Every secret has explicit TTL + revocation path.           |
-| CWE-778     | Every lifecycle event is audited (this policy §3.1).       |
-| CWE-779     | 64 KB payload cap; no recursive payloads.                  |
-| CWE-798     | No hardcoded fallbacks; secrets via CSRNG.                 |
-| SOC 2 CC6.1 | Logical access (rotation/revocation) is centrally controlled. |
-| SOC 2 CC6.7 | Encryption key rotation is enforced (this policy §2.1).    |
-| SOC 2 CC7.1 | System monitoring via structured audit log.                |
-| SOC 2 CC7.2 | Anomaly detection via severity + category.                 |
-| SOC 2 CC7.3 | Security event evaluation via chain integrity.             |
+| CWE / SOC 2 | Mapped mechanism                                                         |
+| ----------- | ------------------------------------------------------------------------ |
+| CWE-200     | `getSecretMetadata()` returns fingerprint, never material.               |
+| CWE-321     | `rotateSecret` always produces fresh material via CSRNG.                 |
+| CWE-345     | Hash chain: any tampering detectable by `verifyChain()`.                 |
+| CWE-532     | Material is held in `Uint8Array`, not in payload strings.                |
+| CWE-613     | Every secret has explicit TTL + revocation path.                         |
+| CWE-778     | Every lifecycle event is audited (this policy §3.1).                     |
+| CWE-779     | 64 KB payload cap; no recursive payloads.                                |
+| CWE-798     | No hardcoded fallbacks; secrets via CSRNG.                               |
+| SOC 2 CC6.1 | Logical access (rotation/revocation) is centrally controlled.            |
+| SOC 2 CC6.7 | Encryption key rotation is enforced (this policy §2.1).                  |
+| SOC 2 CC7.1 | System monitoring via structured audit log.                              |
+| SOC 2 CC7.2 | Anomaly detection via severity + category.                               |
+| SOC 2 CC7.3 | Security event evaluation via chain integrity.                           |
 | SOC 2 CC7.4 | Incident response via `export()` and `revokeSecret(..., 'compromised')`. |
 
 ## 5. Integration
@@ -189,10 +192,10 @@ should persist events out-of-band (e.g. to a durable queue) before returning.
 
 ```ts
 // Schedule a rotation
-const { newSecretId, oldSecretId, graceEndsAt } = await secretRotation.rotateSecret(
-  currentId,
-  { gracePeriodSeconds: 3600, reason: 'scheduled' }
-);
+const { newSecretId, oldSecretId, graceEndsAt } = await secretRotation.rotateSecret(currentId, {
+  gracePeriodSeconds: 3600,
+  reason: 'scheduled',
+});
 ```
 
 ### 5.3 Verifying a token
@@ -231,16 +234,16 @@ if (!valid) {
 
 ## 7. Performance
 
-| Operation                       | Typical | P99  | Notes                                 |
-| ------------------------------- | ------- | ---- | ------------------------------------- |
-| `createSecret`                  | <2 ms   | <5 ms| One SHA-256 + CSRNG bytes.            |
-| `rotateSecret`                  | <3 ms   | <8 ms| One SHA-256 + CSRNG bytes + Map swap. |
-| `verifySecret` (active)         | <0.5 ms | <2 ms| Constant-time 32-byte compare.        |
-| `verifySecret` (rotating)       | <0.5 ms | <2 ms| Constant-time 32-byte compare.        |
-| `revokeSecret`                  | <0.5 ms | <1 ms| Zero-fills material buffers.          |
-| `cleanupExpiredGrace` (1000 sec)| <5 ms   | <15ms| Linear scan over rotating records.    |
-| `AuditLogger.addEvent`          | <1 ms   | <3 ms| One SHA-256 over canonicalized body.  |
-| `AuditLogger.verifyChain` (10k) | <50 ms  | <200ms| O(N) hash + compare.                  |
+| Operation                        | Typical | P99    | Notes                                 |
+| -------------------------------- | ------- | ------ | ------------------------------------- |
+| `createSecret`                   | <2 ms   | <5 ms  | One SHA-256 + CSRNG bytes.            |
+| `rotateSecret`                   | <3 ms   | <8 ms  | One SHA-256 + CSRNG bytes + Map swap. |
+| `verifySecret` (active)          | <0.5 ms | <2 ms  | Constant-time 32-byte compare.        |
+| `verifySecret` (rotating)        | <0.5 ms | <2 ms  | Constant-time 32-byte compare.        |
+| `revokeSecret`                   | <0.5 ms | <1 ms  | Zero-fills material buffers.          |
+| `cleanupExpiredGrace` (1000 sec) | <5 ms   | <15ms  | Linear scan over rotating records.    |
+| `AuditLogger.addEvent`           | <1 ms   | <3 ms  | One SHA-256 over canonicalized body.  |
+| `AuditLogger.verifyChain` (10k)  | <50 ms  | <200ms | O(N) hash + compare.                  |
 
 CSRNG draws (16-64 bytes) are negligible on modern hardware. SHA-256 via
 Web Crypto runs at ~1 GB/s on typical CPUs.
@@ -264,17 +267,17 @@ Web Crypto runs at ~1 GB/s on typical CPUs.
 
 ## 9. Compliance traceability
 
-| Control          | Evidence                                           |
-| ---------------- | -------------------------------------------------- |
-| SOC 2 CC6.1      | `SecretRotation` class, `listSecrets()`            |
-| SOC 2 CC6.7      | TTL + rotation policy (§2.1, §2.2)                 |
-| SOC 2 CC7.1      | `AuditLogger` with category/severity fields        |
-| SOC 2 CC7.2      | Severity taxonomy (NIST SP 800-61r2)               |
-| SOC 2 CC7.3      | `eventHash` chain, `verifyChain()`                 |
-| SOC 2 CC7.4      | `export()`, `revokeSecret(..., 'compromised')`     |
-| SOC 2 P4.1      | PII redaction deferred to PATCH 13 (`PIIRedactor`)|
-| GDPR Art. 32     | SHA-256 + CSRNG + zero-fill on revoke              |
-| CWE-200, 321, 345, 532, 613, 778, 779, 798 | See §4              |
+| Control                                    | Evidence                                           |
+| ------------------------------------------ | -------------------------------------------------- |
+| SOC 2 CC6.1                                | `SecretRotation` class, `listSecrets()`            |
+| SOC 2 CC6.7                                | TTL + rotation policy (§2.1, §2.2)                 |
+| SOC 2 CC7.1                                | `AuditLogger` with category/severity fields        |
+| SOC 2 CC7.2                                | Severity taxonomy (NIST SP 800-61r2)               |
+| SOC 2 CC7.3                                | `eventHash` chain, `verifyChain()`                 |
+| SOC 2 CC7.4                                | `export()`, `revokeSecret(..., 'compromised')`     |
+| SOC 2 P4.1                                 | PII redaction deferred to PATCH 13 (`PIIRedactor`) |
+| GDPR Art. 32                               | SHA-256 + CSRNG + zero-fill on revoke              |
+| CWE-200, 321, 345, 532, 613, 778, 779, 798 | See §4                                             |
 
 ## 10. References
 
@@ -286,4 +289,4 @@ Web Crypto runs at ~1 GB/s on typical CPUs.
 
 ---
 
-*End of policy — Hephaestus, 2026-06-16. CAVEMAN 19/19 HOLDS.*
+_End of policy — Hephaestus, 2026-06-16. CAVEMAN 19/19 HOLDS._

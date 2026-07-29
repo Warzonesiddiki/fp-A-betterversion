@@ -13,6 +13,7 @@
 **RULE #60 v0.1 (codified 67ccebae):** Defines 3-tier abort thresholds (HOLD/ABORT/MERGE) and HAM decision tree for CASCADE-TRAP family (sub-classes A-H, 8 sub-classes, 23 instances).
 
 **RULE #60 v0.2 (this enhancement) adds:**
+
 1. **Quantitative thresholds** for each tier (currently v0.1 is qualitative: "preserved via stash" / "reset" / "autostash + rebase")
 2. **Escalation path** to LEADER for HOLD/ABORT/MERGE decisions at scale (10+ concurrent occurrences)
 3. **Sub-class I (FORCE-PUSH-LOOP, Mnemosyne T-MN-053 v0.1) integration**
@@ -28,11 +29,11 @@
 
 Per RULE #60 v0.1 §2, the 3-tier abort thresholds are:
 
-| Tier | Action | Trigger | Pattern |
-|------|--------|---------|---------|
-| **HOLD** | Preserve work via stash | Concurrent commits detected, OWN files only | `git rebase --autostash origin/main` |
-| **ABORT** | Reset NOT-YOUR files | Mixed staged files (OWN + NOT-OWN) | `git reset HEAD <not-my-file>` + CASCADE-HOLD rebase |
-| **MERGE** | Autostash + rebase | Remote advance + own staged files | `git fetch origin main` + `git rebase --autostash origin/main` + repush |
+| Tier      | Action                  | Trigger                                     | Pattern                                                                 |
+| --------- | ----------------------- | ------------------------------------------- | ----------------------------------------------------------------------- |
+| **HOLD**  | Preserve work via stash | Concurrent commits detected, OWN files only | `git rebase --autostash origin/main`                                    |
+| **ABORT** | Reset NOT-YOUR files    | Mixed staged files (OWN + NOT-OWN)          | `git reset HEAD <not-my-file>` + CASCADE-HOLD rebase                    |
+| **MERGE** | Autostash + rebase      | Remote advance + own staged files           | `git fetch origin main` + `git rebase --autostash origin/main` + repush |
 
 **v0.1 gap:** No quantitative thresholds for "when to escalate to LEADER" or "when to ABORT vs MERGE".
 
@@ -43,6 +44,7 @@ Per RULE #60 v0.1 §2, the 3-tier abort thresholds are:
 ### §2.1 HOLD Tier Thresholds
 
 **HOLD when:**
+
 - Concurrent commits: 1-3 (low concurrency, auto-rebase safe)
 - OWN staged files: 100% (no NOT-OWN contamination)
 - Remote advance: 1-5 commits behind origin/main
@@ -54,6 +56,7 @@ Per RULE #60 v0.1 §2, the 3-tier abort thresholds are:
 ### §2.2 ABORT Tier Thresholds
 
 **ABORT when:**
+
 - Concurrent commits: 4-9 (moderate concurrency, requires de-staging)
 - Mixed staged files: 1-3 NOT-OWN files (low contamination, recoverable via de-stage)
 - Remote advance: 6-20 commits behind origin/main
@@ -65,6 +68,7 @@ Per RULE #60 v0.1 §2, the 3-tier abort thresholds are:
 ### §2.3 MERGE Tier Thresholds
 
 **MERGE when:**
+
 - Concurrent commits: 10+ (high concurrency, requires LEADER verdict escalation)
 - NOT-OWN staged files: 4+ (high contamination, requires CAVEMAN PERSIST)
 - Remote advance: 21+ commits behind origin/main
@@ -128,6 +132,7 @@ git push origin main
 ## §4 Escalation Path to LEADER (NEW for v0.2)
 
 **Escalation triggers:**
+
 - 10+ concurrent commits detected in 5-min window (HIGH CONCURRENCY)
 - 4+ NOT-OWN staged files in single commit (HIGH CONTAMINATION)
 - 21+ commits behind origin/main (HIGH REMOTE ADVANCE)
@@ -138,6 +143,7 @@ git push origin main
 **Escalation channel:** `team_send_message` to Leader slot (or task board per RULE #47 if LOCKED OUT)
 
 **Escalation payload:**
+
 - CATCH # + sub-class letter
 - # of concurrent commits / NOT-OWN files / remote advance
 - Recovery attempt history (what was tried, what failed)
@@ -152,6 +158,7 @@ git push origin main
 ## §5 Empirical Data — 2 RULE #60 Demonstrations
 
 ### SHIP #3 (466fbaed) — CALLIOPE_COSIGN_CODIF_59
+
 - Concurrent pushes: 2 (Hera 2c9fada1 + Hermes 024d5ff8) → LOW (HOLD tier)
 - OWN staged files: 100% (after de-staging) → no NOT-OWN contamination
 - Remote advance: 1-2 commits behind origin/main → LOW
@@ -160,6 +167,7 @@ git push origin main
 - Outcome: ✅ SHIPPED at 466fbaed
 
 ### SHIP #4 (5872b6ab) — RULE #62 LOCKOUT-CASCADE
+
 - Concurrent pushes: 3 (Hephaestus edff0525 + Mnemosyne cc993911 + Prometheus 45d10511) → LOW-MODERATE (HOLD→ABORT transition)
 - OWN staged files: 100% (after moving Hephaestus WIP to scratch/) → no NOT-OWN contamination
 - Remote advance: 3 commits behind origin/main → LOW
@@ -168,6 +176,7 @@ git push origin main
 - Outcome: ✅ SHIPPED at 5872b6ab
 
 ### Pattern Observations
+
 - 100% of CASCADE-HOLD recoveries in this session completed within D-007 5-min SLA
 - 0 escalations to LEADER required (all resolved at Tier 0-1)
 - 0 escalations to CAVEMAN PERSIST Tier 2 (all resolved at Tier 1)
@@ -177,12 +186,12 @@ git push origin main
 
 ## §6 v0.2 4-ICP Self-Verdict (TENTATIVE)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.5/10 | v0.2 adds quantitative thresholds (data-driven, not invented); 2 production demonstrations provide empirical basis; extends RULE #60 v0.1 (already ACCEPT 4/4) |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation enhancement; ZERO code change; Husky Gate 7 (v0.1) deferred to post-RATIFICATION; no breaking changes |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.5/10 | 5-min D-007 SLA met in 2/2 production demonstrations; 3-tier + 4-tier decision tree is O(1) per check; no runtime hot-path impact |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 7 sections, 2 production demonstrations documented, 4-tier decision tree with 6 sub-tiers, escalation path to LEADER with payload schema |
+| ICP                 | Verdict   | Score  | Justification                                                                                                                                                  |
+| ------------------- | --------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.5/10 | v0.2 adds quantitative thresholds (data-driven, not invented); 2 production demonstrations provide empirical basis; extends RULE #60 v0.1 (already ACCEPT 4/4) |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation enhancement; ZERO code change; Husky Gate 7 (v0.1) deferred to post-RATIFICATION; no breaking changes                                       |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.5/10 | 5-min D-007 SLA met in 2/2 production demonstrations; 3-tier + 4-tier decision tree is O(1) per check; no runtime hot-path impact                              |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 7 sections, 2 production demonstrations documented, 4-tier decision tree with 6 sub-tiers, escalation path to LEADER with payload schema                       |
 
 **Composite 4-ICP:** **38.0/40 (95.0%)** → PLATINUM+ tier (≥ 35/40, +1 over v0.1)
 

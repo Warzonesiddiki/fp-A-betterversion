@@ -63,18 +63,21 @@ fi
 ## §3 — 3-Tier Cadence
 
 ### 60s Tier (Real-Time Push Feedback)
+
 - Triggered on every `git push`
 - Outputs persona mention count + missing persona list per violating file
 - Mode: **ADVISORY** until 2026-06-21 EOD T-1d; **HARD BLOCK** from 2026-06-21 EOD onward
 - Sub-second execution (greps only COSIGN/CODIF/CAVEMAN/A11Y/PERSONA files)
 
 ### 24h Tier (Daily Husky Gate Run Summary)
+
 - Cron: `0 9 * * *` (09:00 UTC daily)
 - Posts to `#husky-gates` Slack channel
 - Reports: total violations, top-10 offenders, trend vs prior day
 - Implementation: GitHub Actions workflow (TBD post-RATIFICATION)
 
 ### 7d Tier (Weekly Trend Report)
+
 - Cron: `0 9 * * MON` (Monday 09:00 UTC)
 - Posts to `#husky-gates` + `#leadership` Slack channels
 - Reports: weekly persona coverage delta, new violations, closed violations
@@ -84,16 +87,16 @@ fi
 
 ## §4 — Required Personas (PERSONA_TARGETS = 8)
 
-| # | Persona | Domain |
-|---|---------|--------|
-| 1 | CFO | Executive |
-| 2 | Controller | Accounting |
-| 3 | FP&A | Planning |
-| 4 | Auditor | Compliance |
-| 5 | Operator | Operations |
-| 6 | Admin | IT |
-| 7 | Developer | Engineering |
-| 8 | Compliance_Officer | Compliance (NEW v0.7 PICK I.5) |
+| #   | Persona            | Domain                         |
+| --- | ------------------ | ------------------------------ |
+| 1   | CFO                | Executive                      |
+| 2   | Controller         | Accounting                     |
+| 3   | FP&A               | Planning                       |
+| 4   | Auditor            | Compliance                     |
+| 5   | Operator           | Operations                     |
+| 6   | Admin              | IT                             |
+| 7   | Developer          | Engineering                    |
+| 8   | Compliance_Officer | Compliance (NEW v0.7 PICK I.5) |
 
 Plus `Persona_[A-Z]+` aliases for persona expansion coverage.
 
@@ -102,6 +105,7 @@ Plus `Persona_[A-Z]+` aliases for persona expansion coverage.
 ## §5 — Files Targeted
 
 Files matching regex `(COSIGN|CODIF|CAVEMAN|A11Y|PERSONA)`:
+
 - `docs/codif/ENDORSEMENTS/*COSIGN*.md`
 - `docs/codif/CODIF_*.md`
 - `docs/codif/CAVEMAN_*.md`
@@ -121,15 +125,15 @@ This ensures Gate 15 still triggers on CAVEMAN PERSIST commits (e.g., commits ma
 
 ## §7 — Mode Progression
 
-| Date | Mode | Behavior |
-|------|------|----------|
-| 2026-06-17 (today) | ADVISORY | Reports violations, does NOT block |
-| 2026-06-18 EOD T-4d | ADVISORY | Same as above |
-| 2026-06-19 EOD T-3d | ADVISORY | Same as above |
-| 2026-06-20 EOD T-2d | ADVISORY | Same as above |
-| 2026-06-21 EOD T-1d | **HARD BLOCK** | Blocks push if violations > 0 |
-| 2026-06-22 16:00 UTC | RATIFICATION GATE | Active HARD BLOCK |
-| 2026-06-23+ T+1d | HARD BLOCK | Active |
+| Date                 | Mode              | Behavior                           |
+| -------------------- | ----------------- | ---------------------------------- |
+| 2026-06-17 (today)   | ADVISORY          | Reports violations, does NOT block |
+| 2026-06-18 EOD T-4d  | ADVISORY          | Same as above                      |
+| 2026-06-19 EOD T-3d  | ADVISORY          | Same as above                      |
+| 2026-06-20 EOD T-2d  | ADVISORY          | Same as above                      |
+| 2026-06-21 EOD T-1d  | **HARD BLOCK**    | Blocks push if violations > 0      |
+| 2026-06-22 16:00 UTC | RATIFICATION GATE | Active HARD BLOCK                  |
+| 2026-06-23+ T+1d     | HARD BLOCK        | Active                             |
 
 ---
 
@@ -159,6 +163,7 @@ This ensures Gate 15 still triggers on CAVEMAN PERSIST commits (e.g., commits ma
 **DONE**: Gate 15 added to `.husky/pre-push` lines 150-181, file normalized to LF, syntax validated.
 
 **FOLLOW-UP (post-RATIFICATION)**:
+
 - 24h + 7d tier GitHub Actions workflows (T+1d 2026-06-23/24)
 - `#husky-gates` Slack channel setup (T+1d)
 - Husky Gate 15 ratification in Strategos INDEX v0.7.8 BILATERAL (T-1d 2026-06-21 EOD)

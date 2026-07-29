@@ -9,6 +9,7 @@
 ## 1. Overview
 
 PATCH 11 implements two critical HTTP security controls for FinPlan Pro v1.0.0:
+
 1. **SecurityHeaders** — defense-in-depth HTTP response headers
 2. **CsrfProtection** — double-submit cookie + HMAC-SHA256 CSRF defense
 
@@ -41,6 +42,7 @@ upgrade-insecure-requests
 ```
 
 **Rationale**:
+
 - `default-src 'self'` — only same-origin by default
 - `frame-ancestors 'none'` — anti-clickjacking (CSP2.0 replacement for X-Frame-Options)
 - `object-src 'none'` — block Flash/Java applets
@@ -50,6 +52,7 @@ upgrade-insecure-requests
 - No `unsafe-inline` or `unsafe-eval` (strict mode)
 
 For nonce-based scripts (recommended for production):
+
 ```
 script-src 'self' 'nonce-<random-16-byte-base64>';
 ```
@@ -156,41 +159,41 @@ camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), g
 
 ## 4. CWE Mapping
 
-| CWE | Title | Header/Control |
-|-----|-------|----------------|
-| CWE-79 | Cross-Site Scripting (XSS) | CSP (script-src, object-src) |
+| CWE      | Title                                                     | Header/Control                              |
+| -------- | --------------------------------------------------------- | ------------------------------------------- |
+| CWE-79   | Cross-Site Scripting (XSS)                                | CSP (script-src, object-src)                |
 | CWE-1021 | Improper Restriction of Rendered UI Layers (Clickjacking) | X-Frame-Options: DENY + CSP frame-ancestors |
-| CWE-319 | Cleartext Transmission of Sensitive Information | HSTS + upgrade-insecure-requests |
-| CWE-352 | Cross-Site Request Forgery (CSRF) | Double-submit cookie + HMAC |
-| CWE-693 | Protection Mechanism Failure | Defense-in-depth (multiple headers) |
+| CWE-319  | Cleartext Transmission of Sensitive Information           | HSTS + upgrade-insecure-requests            |
+| CWE-352  | Cross-Site Request Forgery (CSRF)                         | Double-submit cookie + HMAC                 |
+| CWE-693  | Protection Mechanism Failure                              | Defense-in-depth (multiple headers)         |
 
 ---
 
 ## 5. SOC 2 Trust Service Criteria
 
-| TSC | Description | Coverage |
-|-----|-------------|----------|
-| **CC6.6** | Logical access controls protect against threats from outside the system boundaries | HSTS + COOP/COEP/CORP + CSP |
-| **CC6.7** | Restricts the transmission, movement, and removal of information | HSTS + upgrade-insecure-requests |
-| **CC7.1** | System operations risk identification | CSP / CSRF threat mitigation |
-| **CC7.2** | System monitoring | All headers logged by WAF/proxy |
+| TSC       | Description                                                                        | Coverage                         |
+| --------- | ---------------------------------------------------------------------------------- | -------------------------------- |
+| **CC6.6** | Logical access controls protect against threats from outside the system boundaries | HSTS + COOP/COEP/CORP + CSP      |
+| **CC6.7** | Restricts the transmission, movement, and removal of information                   | HSTS + upgrade-insecure-requests |
+| **CC7.1** | System operations risk identification                                              | CSP / CSRF threat mitigation     |
+| **CC7.2** | System monitoring                                                                  | All headers logged by WAF/proxy  |
 
 ---
 
 ## 6. OWASP Secure Headers Project Mapping
 
-| OWASP Header | FinPlan Pro v1.0.0 Setting |
-|--------------|------------------------------|
-| Content-Security-Policy | strict preset, no unsafe-* |
-| Strict-Transport-Security | max-age=63072000, preload |
-| X-Frame-Options | DENY |
-| X-Content-Type-Options | nosniff |
-| Referrer-Policy | strict-origin-when-cross-origin |
-| Cross-Origin-Opener-Policy | same-origin |
-| Cross-Origin-Embedder-Policy | require-corp |
-| Cross-Origin-Resource-Policy | same-origin |
-| Permissions-Policy | deny-all (camera, mic, geo, etc.) |
-| Cache-Control | (set at app layer) |
+| OWASP Header                 | FinPlan Pro v1.0.0 Setting        |
+| ---------------------------- | --------------------------------- |
+| Content-Security-Policy      | strict preset, no unsafe-\*       |
+| Strict-Transport-Security    | max-age=63072000, preload         |
+| X-Frame-Options              | DENY                              |
+| X-Content-Type-Options       | nosniff                           |
+| Referrer-Policy              | strict-origin-when-cross-origin   |
+| Cross-Origin-Opener-Policy   | same-origin                       |
+| Cross-Origin-Embedder-Policy | require-corp                      |
+| Cross-Origin-Resource-Policy | same-origin                       |
+| Permissions-Policy           | deny-all (camera, mic, geo, etc.) |
+| Cache-Control                | (set at app layer)                |
 
 ---
 
@@ -222,6 +225,7 @@ if (!result.valid) {
 ## 8. Test Coverage
 
 **61/61 tests pass** in `src/services/SecurityHeaders-CsrfProtection.test.ts` across 13 test groups:
+
 1. SECURITY_HEADERS_CONSTANTS (4 tests)
 2. generateCspNonce (3 tests)
 3. isValidCspSource (6 tests)
@@ -240,15 +244,15 @@ if (!result.valid) {
 
 ## 9. 4-ICP Verdict (LOCKED v1.0)
 
-| Dimension | Verdict | Evidence |
-|-----------|---------|----------|
-| **Independence (Carla)** | ✅ I1 | Standalone service, no cross-deps at runtime |
-| **Completeness (Vera)** | ✅ C2 | 61/61 tests, OWASP Secure Headers 100%, CWE-352 mitigated |
-| **Performance (Chris)** | ✅ P3 | O(1) header generation, PBKDF2 100k iters cached, O(1) verify |
-| **Polish (Beth)** | ✅ D4 | JSDoc on all exports, error codes, presets for env-aware config |
+| Dimension                | Verdict | Evidence                                                        |
+| ------------------------ | ------- | --------------------------------------------------------------- |
+| **Independence (Carla)** | ✅ I1   | Standalone service, no cross-deps at runtime                    |
+| **Completeness (Vera)**  | ✅ C2   | 61/61 tests, OWASP Secure Headers 100%, CWE-352 mitigated       |
+| **Performance (Chris)**  | ✅ P3   | O(1) header generation, PBKDF2 100k iters cached, O(1) verify   |
+| **Polish (Beth)**        | ✅ D4   | JSDoc on all exports, error codes, presets for env-aware config |
 
 **4/4 TENTATIVE ACCEPT** — locks PATCH 11 for RATIFICATION GATE 2026-06-22 16:00 UTC.
 
 ---
 
-*Generated by Hephaestus, FinPlan Pro v1.0.0 Security domain, 2026-06-16.*
+_Generated by Hephaestus, FinPlan Pro v1.0.0 Security domain, 2026-06-16._

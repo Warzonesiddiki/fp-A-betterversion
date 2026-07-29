@@ -1,0 +1,87 @@
+import { describe, it, expect, beforeAll } from 'vitest';
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
+import app from '../index.js';
+import { JWT_SECRET } from '../config/env.js';
+import { db } from '../db/connection.js';
+
+describe('Period Close (F-0013) & Server-Side Enforcement', () => {
+  let adminToken: string;
+  let viewerToken: string;
+  let testPeriodId: string;
+
+  beforeAll(() => {
+    adminToken = jwt.sign(
+      { id: 'admin-id', email: 'admin@finplan.test', role: 'Admin' },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+    viewerToken = jwt.sign(
+      { id: 'viewer-id', email: 'viewer@finplan.test', role: 'Viewer' },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    // Ensure a test period exists in DB
+    testPeriodId = 'period-' + Date.now();
+    db.prepare(
+      `INSERT OR REPLACE INTO fiscal_periods (id, year, period_number, name, start_date, end_date, period_type, is_closed)
+       VALUES (?, 2026, 1, '2026-01', '2026-01-01', '2026-01-31', 'Monthly', 0)`
+    ).run(testPeriodId);
+  });
+
+  it('lists fiscal periods', async () => {
+    const res = await request(app).get('/api/periods').set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it('denies closing period without reason or insufficient role', async () => {
+    const resViewer = await request(app)
+      .post(`/api/periods/${testPeriodId}/close`)
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send({ reason: 'Audit close' });
+    expect(resViewer.status).toBe(403);
+
+    const resNoReason = await request(app)
+      .post(`/api/periods/${testPeriodId}/close`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({});
+    expect(resNoReason.status).toBe(400);
+  });
+
+  it('successfully closes fiscal period with reason and audit log', async () => {
+    const res = await request(app)
+      .post(`/api/periods/${testPeriodId}/close`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ reason: 'SOX monthly close requirement' });
+    expect(res.status).toBe(200);
+    expect(res.body.is_closed).toBe(1);
+  });
+
+  it('prevents posting GL entries to a closed period', async () => {
+    const res = await request(app)
+      .post('/api/gl/entries')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        account_id: '10000000-0000-0000-0000-000000000001',
+        entity_id: '20000000-0000-0000-0000-000000000001',
+        post_date: '2026-01-15',
+        amount: 1000,
+        debit: 1000,
+        credit: 0,
+        description: 'Test closed period posting',
+      });
+    expect(res.status).toBe(403);
+    expect(res.body.error).toBe('Period closed');
+  });
+
+  it('successfully reopens fiscal period with admin role and reason', async () => {
+    const res = await request(app)
+      .post(`/api/periods/${testPeriodId}/reopen`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ reason: 'Adjusting journal entry required' });
+    expect(res.status).toBe(200);
+    expect(res.body.is_closed).toBe(0);
+  });
+});

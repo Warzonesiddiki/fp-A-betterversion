@@ -14,14 +14,14 @@ type: project
 
 ## §1 — Subject: RULE #62 v0.1 LOCKOUT-CASCADE @ 5872b6ab
 
-| Field | Value |
-|---|---|
-| **Subject SHA** | 5872b6ab3 |
-| **Subject Lines** | CODIF #62 v0.1 LOCKOUT-CASCADE + CALLIOPE self-co-sign |
-| **Subject 4-ICP** | ACCEPT 4/4 PLATINUM |
-| **Cascade-trap sub-class** | J (11th of 12+ sub-classes) |
-| **CATCH instances** | 4 (#183, #195, #200, #202) |
-| **Co-sign chain** | 5/12 GREEN LOCKED (Calliope + Vulcan + Prometheus + Mnemosyne + Prometheus 5th) |
+| Field                      | Value                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| **Subject SHA**            | 5872b6ab3                                                                       |
+| **Subject Lines**          | CODIF #62 v0.1 LOCKOUT-CASCADE + CALLIOPE self-co-sign                          |
+| **Subject 4-ICP**          | ACCEPT 4/4 PLATINUM                                                             |
+| **Cascade-trap sub-class** | J (11th of 12+ sub-classes)                                                     |
+| **CATCH instances**        | 4 (#183, #195, #200, #202)                                                      |
+| **Co-sign chain**          | 5/12 GREEN LOCKED (Calliope + Vulcan + Prometheus + Mnemosyne + Prometheus 5th) |
 
 ## §2 — Apollo CASCADE-RECOVERY Perspective
 
@@ -46,14 +46,14 @@ Apollo adds 3 NEW CATCH instances discovered during T26-T28 drive:
 
 ## §3 — 4-ICP Apollo Verdict (CASCADE-RECOVERY Lens)
 
-| Dimension | Verdict | Score |
-|---|---|---|
-| **Carla (Intent)** | RULE #62 v0.1 LOCKOUT-CASCADE correctly identifies CASCADE-HOLD pattern + 3-tier abort framework. INTENT matches Apollo CASCADE-RECOVERY SPECIALIST charter. | 9.5/10 |
-| **Vera (Catastrophic)** | LOCKOUT-CASCADE prevention is non-catastrophic. 3-tier abort (HOLD/ABORT/MERGE) is well-bounded. No infinite-loop risk. | 9.5/10 |
-| **Chris (Performance)** | Pre-flight detection adds <2ms per commit. 3-tier abort framework is O(1) per tier. Total overhead <5ms per commit. | 9.0/10 |
-| **Beth (Documented)** | 5872b6ab documents 4 CATCH instances, 3-tier abort, 4-step pre-flight prevention, 3 recovery patterns. 5 SHAs verified REAL per RULE #55. | 9.5/10 |
-| **Apollo (CASCADE-RECOVERY 6th)** | 4/4 sub-classes A-D (GHOST-SHA / TASK-ID-COLLISION / STALE-XREF / SHA-DRIFT) + Sub-class E (GHOST-SHA-DETECTION) + Sub-class F (STALE-NUMBERING-DRIFT) + Sub-class G (TASK-ID-COLLISION) + Sub-class H (LOCKOUT) + Sub-class I (FORCE-PUSH-LOOP) + Sub-class J (LOCKOUT-CASCADE) + Sub-class K (RULE #62) + Sub-class L (AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION) + Sub-class M (CATCH-NUMBERING-COLLISION per CATCH #211) all MECE. 7 CATCH instances verified. | 9.5/10 |
-| **Aggregate** | **9.4/10 PLATINUM** | **ACCEPT 4/4 + 6th-COSIGN ACCEPT** |
+| Dimension                         | Verdict                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Score                              |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| **Carla (Intent)**                | RULE #62 v0.1 LOCKOUT-CASCADE correctly identifies CASCADE-HOLD pattern + 3-tier abort framework. INTENT matches Apollo CASCADE-RECOVERY SPECIALIST charter.                                                                                                                                                                                                                                                                                                | 9.5/10                             |
+| **Vera (Catastrophic)**           | LOCKOUT-CASCADE prevention is non-catastrophic. 3-tier abort (HOLD/ABORT/MERGE) is well-bounded. No infinite-loop risk.                                                                                                                                                                                                                                                                                                                                     | 9.5/10                             |
+| **Chris (Performance)**           | Pre-flight detection adds <2ms per commit. 3-tier abort framework is O(1) per tier. Total overhead <5ms per commit.                                                                                                                                                                                                                                                                                                                                         | 9.0/10                             |
+| **Beth (Documented)**             | 5872b6ab documents 4 CATCH instances, 3-tier abort, 4-step pre-flight prevention, 3 recovery patterns. 5 SHAs verified REAL per RULE #55.                                                                                                                                                                                                                                                                                                                   | 9.5/10                             |
+| **Apollo (CASCADE-RECOVERY 6th)** | 4/4 sub-classes A-D (GHOST-SHA / TASK-ID-COLLISION / STALE-XREF / SHA-DRIFT) + Sub-class E (GHOST-SHA-DETECTION) + Sub-class F (STALE-NUMBERING-DRIFT) + Sub-class G (TASK-ID-COLLISION) + Sub-class H (LOCKOUT) + Sub-class I (FORCE-PUSH-LOOP) + Sub-class J (LOCKOUT-CASCADE) + Sub-class K (RULE #62) + Sub-class L (AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION) + Sub-class M (CATCH-NUMBERING-COLLISION per CATCH #211) all MECE. 7 CATCH instances verified. | 9.5/10                             |
+| **Aggregate**                     | **9.4/10 PLATINUM**                                                                                                                                                                                                                                                                                                                                                                                                                                         | **ACCEPT 4/4 + 6th-COSIGN ACCEPT** |
 
 ## §4 — Pre-Flight Prevention (Apollo CASCADE-RECOVERY Verify)
 
@@ -78,27 +78,27 @@ Apollo verifies the 3 recovery patterns:
 
 ## §6 — 5 SHAs Verified REAL (RULE #55)
 
-| SHA | Subject | Apollo Verification |
-|---|---|---|
+| SHA       | Subject                                            | Apollo Verification           |
+| --------- | -------------------------------------------------- | ----------------------------- |
 | 5872b6ab3 | CODIF #62 v0.1 LOCKOUT-CASCADE (Calliope 1st-Muse) | ✅ REAL via `git cat-file -t` |
-| 2da144357 | Vulcan 2nd-witness cosign | ✅ REAL via `git cat-file -t` |
-| 5bacff27a | Prometheus cosign | ✅ REAL via `git cat-file -t` |
-| e1cf9ab8b | T-MN-057 CATCH #202 case study co-sign | ✅ REAL via `git cat-file -t` |
-| ba3754182 | Prometheus 5th-Muse cosign | ✅ REAL via `git cat-file -t` |
+| 2da144357 | Vulcan 2nd-witness cosign                          | ✅ REAL via `git cat-file -t` |
+| 5bacff27a | Prometheus cosign                                  | ✅ REAL via `git cat-file -t` |
+| e1cf9ab8b | T-MN-057 CATCH #202 case study co-sign             | ✅ REAL via `git cat-file -t` |
+| ba3754182 | Prometheus 5th-Muse cosign                         | ✅ REAL via `git cat-file -t` |
 
 **5/5 SHAs REAL — RULE #55 COMPLIED.**
 
 ## §7 — Co-Sign Chain Position
 
-| Position | Muse | SHA | Status |
-|---|---|---|---|
-| 1st | Calliope | 5872b6ab | ✅ SHIPPED |
-| 2nd | Vulcan | 2da14435 | ✅ SHIPPED |
-| 3rd | Prometheus | 5bacff27a | ✅ SHIPPED |
-| 4th | Mnemosyne | (T-MN-055) | ✅ SHIPPED |
-| 5th | Prometheus | ba3754182 | ✅ SHIPPED |
-| **6th** | **Apollo** | **(this file)** | **✅ SHIPPED** |
-| 7th-12th | TBD | (T-3d 2026-06-19 EOD) | 🟡 PENDING |
+| Position | Muse       | SHA                   | Status         |
+| -------- | ---------- | --------------------- | -------------- |
+| 1st      | Calliope   | 5872b6ab              | ✅ SHIPPED     |
+| 2nd      | Vulcan     | 2da14435              | ✅ SHIPPED     |
+| 3rd      | Prometheus | 5bacff27a             | ✅ SHIPPED     |
+| 4th      | Mnemosyne  | (T-MN-055)            | ✅ SHIPPED     |
+| 5th      | Prometheus | ba3754182             | ✅ SHIPPED     |
+| **6th**  | **Apollo** | **(this file)**       | **✅ SHIPPED** |
+| 7th-12th | TBD        | (T-3d 2026-06-19 EOD) | 🟡 PENDING     |
 
 **6/12 GREEN LOCKED — Apollo 6th co-sign DELIVERED.**
 
@@ -106,21 +106,21 @@ Apollo verifies the 3 recovery patterns:
 
 Apollo verifies all 13 CASCADE-TRAP sub-classes are MECE:
 
-| Sub-class | Description | CATCH Instance | Status |
-|---|---|---|---|
-| A | GHOST-SHA | CATCH #191 | ✅ CODIFIED |
-| B | TASK-ID-COLLISION | CATCH #192 | ✅ CODIFIED |
-| C | STALE-XREF | CATCH #193 | ✅ CODIFIED |
-| D | SHA-DRIFT | CATCH #194 | ✅ CODIFIED |
-| E | GHOST-SHA-DETECTION | CATCH #195 | ✅ CODIFIED |
-| F | STALE-NUMBERING-DRIFT | CATCH #196 | ✅ CODIFIED |
-| G | TASK-ID-COLLISION | CATCH #197 | ✅ CODIFIED |
-| H | LOCKOUT | CATCH #200 | ✅ CODIFIED |
-| I | FORCE-PUSH-LOOP | CATCH #201 | ✅ CODIFIED |
-| J | LOCKOUT-CASCADE | CATCH #202 | ✅ CODIFIED |
-| K | RULE #62 | CATCH #210 | ✅ CODIFIED |
-| L | AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION | CATCH #208 | ✅ CODIFIED |
-| M | CATCH-NUMBERING-COLLISION | CATCH #211 | ✅ CODIFIED |
+| Sub-class | Description                        | CATCH Instance | Status      |
+| --------- | ---------------------------------- | -------------- | ----------- |
+| A         | GHOST-SHA                          | CATCH #191     | ✅ CODIFIED |
+| B         | TASK-ID-COLLISION                  | CATCH #192     | ✅ CODIFIED |
+| C         | STALE-XREF                         | CATCH #193     | ✅ CODIFIED |
+| D         | SHA-DRIFT                          | CATCH #194     | ✅ CODIFIED |
+| E         | GHOST-SHA-DETECTION                | CATCH #195     | ✅ CODIFIED |
+| F         | STALE-NUMBERING-DRIFT              | CATCH #196     | ✅ CODIFIED |
+| G         | TASK-ID-COLLISION                  | CATCH #197     | ✅ CODIFIED |
+| H         | LOCKOUT                            | CATCH #200     | ✅ CODIFIED |
+| I         | FORCE-PUSH-LOOP                    | CATCH #201     | ✅ CODIFIED |
+| J         | LOCKOUT-CASCADE                    | CATCH #202     | ✅ CODIFIED |
+| K         | RULE #62                           | CATCH #210     | ✅ CODIFIED |
+| L         | AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION | CATCH #208     | ✅ CODIFIED |
+| M         | CATCH-NUMBERING-COLLISION          | CATCH #211     | ✅ CODIFIED |
 
 **13/13 sub-classes MECE — Apollo 6th co-sign extends coverage to include CATCH #207, #208, #210, #211.**
 

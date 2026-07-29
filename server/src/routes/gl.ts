@@ -3,11 +3,7 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
 import { authMiddleware } from '../middleware/auth.js';
-import {
-  requireEntityAccess,
-  requireEntityWriteAccess,
-  filterByEntityAccess,
-} from '../middleware/entityAuth.js';
+import { requireEntityWriteAccess, filterByEntityAccess } from '../middleware/entityAuth.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -156,6 +152,22 @@ router.post(
         reference,
         department_id,
       } = parsed.data;
+
+      // Check if fiscal period is closed
+      const closedPeriod = db
+        .prepare(
+          `SELECT id, name FROM fiscal_periods WHERE is_closed = 1 AND ? BETWEEN start_date AND end_date`
+        )
+        .get(post_date) as { id: string; name: string } | undefined;
+
+      if (closedPeriod) {
+        res.status(403).json({
+          error: 'Period closed',
+          message: `Cannot post entry to closed period: ${closedPeriod.name}`,
+        });
+        return;
+      }
+
       const id = uuidv4();
 
       db.prepare(
@@ -205,6 +217,22 @@ router.post(
         return;
       }
 
+      for (const entry of parsed.data.entries) {
+        const closedPeriod = db
+          .prepare(
+            `SELECT id, name FROM fiscal_periods WHERE is_closed = 1 AND ? BETWEEN start_date AND end_date`
+          )
+          .get(entry.post_date) as { id: string; name: string } | undefined;
+
+        if (closedPeriod) {
+          res.status(403).json({
+            error: 'Period closed',
+            message: `Cannot post entry to closed period: ${closedPeriod.name}`,
+          });
+          return;
+        }
+      }
+
       const insertStmt = db.prepare(
         `INSERT INTO gl_entries (id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
@@ -249,7 +277,9 @@ router.delete(
   requireEntityWriteAccess('gl_entries'),
   (req: Request, res: Response) => {
     try {
-      const existing = db.prepare('SELECT id FROM gl_entries WHERE id = ?').get(String(req.params.id));
+      const existing = db
+        .prepare('SELECT id FROM gl_entries WHERE id = ?')
+        .get(String(req.params.id));
 
       if (!existing) {
         res.status(404).json({ error: 'GL entry not found' });

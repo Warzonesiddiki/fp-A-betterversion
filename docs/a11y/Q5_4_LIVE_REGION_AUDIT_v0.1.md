@@ -22,12 +22,7 @@
 
 ```tsx
 // LiveRegion.tsx:14
-<div
-  role="status"
-  aria-live="polite"
-  aria-atomic="true"
-  className="sr-only"
->
+<div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
   {message}
 </div>
 ```
@@ -50,10 +45,10 @@ The `PresenceIndicator` component (Real-Time Collaboration domain) uses `LiveReg
 
 ## 3. Identified Minor Gaps (NOT ship-blockers)
 
-| # | Gap | Severity | DRI Action |
-|---|-----|----------|------------|
-| 1 | `LiveRegion` missing `aria-label` (A11Y_P0 4.1.2) | LOW | Add `aria-label="Status announcements"` |
-| 2 | No <1000ms timing test in vitest | LOW | Add test to `src/__tests__/a11y/` |
+| #   | Gap                                               | Severity | DRI Action                              |
+| --- | ------------------------------------------------- | -------- | --------------------------------------- |
+| 1   | `LiveRegion` missing `aria-label` (A11Y_P0 4.1.2) | LOW      | Add `aria-label="Status announcements"` |
+| 2   | No <1000ms timing test in vitest                  | LOW      | Add test to `src/__tests__/a11y/`       |
 
 Both gaps are improvements, not blockers. 4-ICP Beth D4 (User-Impact) accepts current state at 95%+.
 
@@ -92,6 +87,7 @@ Both gaps are improvements, not blockers. 4-ICP Beth D4 (User-Impact) accepts cu
 ---
 
 **3-witness (D-002):**
+
 1. file:line: `docs/a11y/Q5_4_LIVE_REGION_AUDIT_v0.1.md:1-80` (this commit)
 2. wc -l: 80 lines
 3. md5sum: pending commit

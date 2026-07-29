@@ -5,8 +5,15 @@ muse: Mnemosyne
 role: Skeptic / 5th-ICP / Tests & E2E
 subject: Chronos V3 e.ix.7 (Codif 35 v0.4 P7 cross-witness) AMENDED PROPOSAL
 phase: 5-ICP phase 4 of 5
-related_works: [T-MN-048 v0.3 LOCKED (299518d5), T-MN-047 v0.2 (1f823fd6f), T-MN-046 v0.2 RATIFIED (c8929935e), Apollo T19 (5a5c26380)]
-related_muses: [Chronos (V3 amendment author), Apollo (ICP4 engine impl dependency), Iris (P4+P7 amendments)]
+related_works:
+  [
+    T-MN-048 v0.3 LOCKED (299518d5),
+    T-MN-047 v0.2 (1f823fd6f),
+    T-MN-046 v0.2 RATIFIED (c8929935e),
+    Apollo T19 (5a5c26380),
+  ]
+related_muses:
+  [Chronos (V3 amendment author), Apollo (ICP4 engine impl dependency), Iris (P4+P7 amendments)]
 eta: T-2d 2026-06-20 EOD (5-ICP phase 4 deadline)
 4_icp_verdict: ACCEPT 4/4 (9.5/10 self-ICP, with 3 P2 caveats for v3 amendment)
 status: GREEN ICP5 BUSINESS witness — DELIVERED
@@ -24,12 +31,12 @@ As ICP5 BUSINESS witness for Chronos's V3 e.ix.7 AMENDMENT PROPOSAL (Codif 35 v0
 
 ## 1. 3-Witness Verification (D-002)
 
-| Witness | Source | Result |
-|---|---|---|
-| (a) Memory file | `chronos-v3-eix7-proposal.md` (191L) | ✅ Verified per Chronos message |
-| (b) Git HEAD | `c1c62a34` (per Chronos) — actual local HEAD `79543823` (Hephaestus PATCH 8) | ✅ Discrepancy noted (Chronos message sent before Hephaestus PATCH 8); not blocking |
+| Witness                    | Source                                                                             | Result                                                                                                     |
+| -------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| (a) Memory file            | `chronos-v3-eix7-proposal.md` (191L)                                               | ✅ Verified per Chronos message                                                                            |
+| (b) Git HEAD               | `c1c62a34` (per Chronos) — actual local HEAD `79543823` (Hephaestus PATCH 8)       | ✅ Discrepancy noted (Chronos message sent before Hephaestus PATCH 8); not blocking                        |
 | (c) Apollo ICP4 dependency | Engine impl files (PeriodLock, VarianceAttribution, ThreeStatement, Consolidation) | ⚠️ PARTIAL — VarianceAttribution DELETED in 019ecce-2e (Apollo CYCLE 6 PICK A); requires Apollo re-confirm |
-| (d) T-MN-048 cross-witness | 96 temporal tests in GREEN drive (per Chronos V3 e.ix.7 spec) | ✅ Confirmed via T-MN-048 v0.3 LOCKED §3 4-codif chain |
+| (d) T-MN-048 cross-witness | 96 temporal tests in GREEN drive (per Chronos V3 e.ix.7 spec)                      | ✅ Confirmed via T-MN-048 v0.3 LOCKED §3 4-codif chain                                                     |
 
 **Composite 3-witness:** 3/3 PASS (with 1 PARTIAL for Apollo ICP4 — non-blocking, requires Apollo re-confirm on engine list)
 
@@ -38,11 +45,13 @@ As ICP5 BUSINESS witness for Chronos's V3 e.ix.7 AMENDMENT PROPOSAL (Codif 35 v0
 ### 2.1 I1 (Intent) — 9.0/10 ACCEPT
 
 **Strengths:**
+
 - 5 NEW CASES × 4 engines × 4 tests = 80 tests (Chronos reports 64 with Iris P4/P7 amendments; the 16-test delta is likely overlap with T-MN-048's 96 temporal tests)
 - 5 case taxonomy is well-defined: FY 52/53-wk, Compound period, Back-dated, TZ UTC+DST, Sub-ms lock
 - Iris P4 amendments (Reg §1.441-2, IRC §442) and Iris P7 (HFT ops scenarios) add regulatory + ops realism
 
 **P1 gap (non-blocking):**
+
 - The 64 vs 80 number discrepancy needs clarification. Either (a) 22 tests overlap with T-MN-048 96 temporal tests, or (b) Iris P4/P7 are net-new but cut from 80. Suggest: Chronos annotate test IDs to disambiguate.
 
 **Composite I1:** 9.0/10 ACCEPT
@@ -50,11 +59,13 @@ As ICP5 BUSINESS witness for Chronos's V3 e.ix.7 AMENDMENT PROPOSAL (Codif 35 v0
 ### 2.2 C2 (Catastrophic) — 9.5/10 ACCEPT
 
 **Strengths:**
+
 - No destructive ops — pure test scaffolding
 - All 4 engines (PeriodLock, VarianceAttribution, ThreeStatement, Consolidation) are pure-function per G9 (Apollo T19)
 - Back-dated (#13) + sub-ms lock (#15) require clock injection, which is a TEST-ONLY concern (not production behavior)
 
 **P1 mitigation required:**
+
 - Mock strategy for #13 (back-dated) + #15 (sub-ms lock) — use `vi.useFakeTimers()` + `vi.setSystemTime()` + `vi.getRealSystemTime()` for monotonic clock, NOT `Date.now()` (which is mutable)
 - See §3.2 below for the test stub plan
 
@@ -63,11 +74,13 @@ As ICP5 BUSINESS witness for Chronos's V3 e.ix.7 AMENDMENT PROPOSAL (Codif 35 v0
 ### 2.3 P3 (Performance) — 9.5/10 ACCEPT
 
 **Strengths:**
+
 - 60s total budget for 64 tests = ~1s/test — achievable for unit tests
 - Co-location pattern: test files in `src/engines/temporal/` next to engine impl (Vitest standard)
 - Existing temporal test files (894 lines total) demonstrate the pattern works
 
 **P1 constraint:**
+
 - #15 (sub-ms lock) may exceed 1s/test budget if using real `performance.now()`. Suggest: use mocked `performance` (monotonic clock) and assert within 1ms tolerance.
 - #11 (FY 52/53-wk) Reg §1.441-2 fixture is fixed dataset, no real-time cost
 
@@ -76,11 +89,13 @@ As ICP5 BUSINESS witness for Chronos's V3 e.ix.7 AMENDMENT PROPOSAL (Codif 35 v0
 ### 2.4 D4 (Documented) — 9.5/10 ACCEPT
 
 **Strengths:**
+
 - 64 tests mapped to 5 NEW CASES + 2 Iris amendments = 7 test files
 - Each case has explicit fixture strategy (Reg §1.441-2, NRF 4-4-5, lock+audit mock, TZ fixture, monotonic clock + lamport)
 - Cross-witnessed with T-MN-048 v0.3 LOCKED (96 temporal tests in GREEN drive)
 
 **P2 caveat:**
+
 - Iris P4 (Reg §1.441-2) + Iris P7 (HFT ops) lack explicit fixture URLs. Suggest: Chronos coordinate with Iris for the §1.441-2 reg text and HFT scenario specs.
 - See §3.3 below for CI integration plan
 
@@ -152,22 +167,28 @@ export class LamportCounter {
 ```
 
 **#13 (Back-dated) test stub:**
+
 ```typescript
 // src/engines/temporal/eix7/case13_back_dated.test.ts
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setupMonotonicClock, LamportCounter } from './clockMocks';
-import { PeriodLockEngine, VarianceAttributionEngine, ThreeStatementEngine, ConsolidationEngine } from '../index';
+import {
+  PeriodLockEngine,
+  VarianceAttributionEngine,
+  ThreeStatementEngine,
+  ConsolidationEngine,
+} from '../index';
 
 describe('V3 e.ix.7 #13: Back-dated events', () => {
   let clock: ReturnType<typeof setupMonotonicClock>;
   let lamport: LamportCounter;
-  
+
   beforeEach(() => {
     clock = setupMonotonicClock(1700000000000); // 2023-11-14 baseline
     lamport = new LamportCounter();
   });
   afterEach(() => clock.teardown());
-  
+
   it('PeriodLock: back-dated event triggers lock+audit', () => {
     const event = { id: 'evt-1', timestamp: 1699900000000 }; // back-dated by 100s
     const result = PeriodLockEngine.applyBackDated(event, lamport);
@@ -179,6 +200,7 @@ describe('V3 e.ix.7 #13: Back-dated events', () => {
 ```
 
 **#15 (Sub-ms lock) test stub:**
+
 ```typescript
 // src/engines/temporal/eix7/case15_sub_ms_lock.test.ts
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -191,11 +213,11 @@ describe('V3 e.ix.7 #15: Sub-ms lock ordering', () => {
 
 ### 3.3 CI Integration Plan (Vitest Suite Assignment)
 
-| Suite | File Pattern | Runner | Timeout | Total Tests |
-|---|---|---|---|---|
-| Unit: temporal | `src/engines/temporal/**/*.test.ts` | Vitest | 30s (suite) | 64 + 96 (T-MN-048) = 160 |
-| Coverage | `vitest run --coverage` | Vitest + c8 | 60s | 64 (≥80% G6 target) |
-| CI gate | `.github/workflows/test.yml` | GitHub Actions | 90s wall clock | 64 |
+| Suite          | File Pattern                        | Runner         | Timeout        | Total Tests              |
+| -------------- | ----------------------------------- | -------------- | -------------- | ------------------------ |
+| Unit: temporal | `src/engines/temporal/**/*.test.ts` | Vitest         | 30s (suite)    | 64 + 96 (T-MN-048) = 160 |
+| Coverage       | `vitest run --coverage`             | Vitest + c8    | 60s            | 64 (≥80% G6 target)      |
+| CI gate        | `.github/workflows/test.yml`        | GitHub Actions | 90s wall clock | 64                       |
 
 **Recommendation:** Add `vitest --bail=1` to fail-fast on first temporal test failure. This catches impl errors before the 60s wall clock budget.
 
@@ -225,6 +247,7 @@ describe('V3 e.ix.7 #15: Sub-ms lock ordering', () => {
 **Status:** ✅ GREEN DELIVERED (T-2d 2026-06-20 EOD ETA, 5-ICP phase 4 of 5 complete)
 
 **Handoff to ICP6 (final, Strategos):**
+
 - 64 tests distributed across 9 new files (1 fixture + 1 mock + 5 case + 2 Iris + 1 index)
 - Mock strategy: `vi.useFakeTimers` + monotonic + Lamport counter for #13/#15
 - CI integration: `src/engines/temporal/eix7/**/*.test.ts` with 30s suite timeout + `vitest --bail=1`

@@ -13,11 +13,11 @@
 
 Hephaestus SECURITY.md v1.0.0 §4.3 (lines 204-216) defines three session-fixation/hijack defenses:
 
-| § | Defense | A11Y intersection |
-|---|---------|-------------------|
-| §4.3.1 | Session fixation defense — NEW sessionId on every privilege change (login, re-auth, MFA, role grant, scope expansion) | Q5.3 user choice (3 options) must trigger sessionId rotation + Q5.4 aria-live announcement |
-| §4.3.2 | Session-cookie binding — HMAC-SHA256(IP, User-Agent) → 128 bits, mismatch → step-up re-auth (NOT termination) | Q5.3 step-up re-auth must be keyboard-navigable + Q5.4 sub-second announcement + WCAG 2.2.4 (Interruptions deferrable) |
-| §4.3.3 | Concurrent session limits — 5 max, oldest auto-terminated, user-revocable via Settings → Security → Active Sessions | Q5.1 keyboard nav through session list + Q5.4 aria-live on auto-termination + Q5.5 reduced-motion on transitions |
+| §      | Defense                                                                                                               | A11Y intersection                                                                                                      |
+| ------ | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| §4.3.1 | Session fixation defense — NEW sessionId on every privilege change (login, re-auth, MFA, role grant, scope expansion) | Q5.3 user choice (3 options) must trigger sessionId rotation + Q5.4 aria-live announcement                             |
+| §4.3.2 | Session-cookie binding — HMAC-SHA256(IP, User-Agent) → 128 bits, mismatch → step-up re-auth (NOT termination)         | Q5.3 step-up re-auth must be keyboard-navigable + Q5.4 sub-second announcement + WCAG 2.2.4 (Interruptions deferrable) |
+| §4.3.3 | Concurrent session limits — 5 max, oldest auto-terminated, user-revocable via Settings → Security → Active Sessions   | Q5.1 keyboard nav through session list + Q5.4 aria-live on auto-termination + Q5.5 reduced-motion on transitions       |
 
 **Bidirectional cross-witness:** §4.3 closes the A11Y ↔ Security loop on the **lifecycle** dimension (vs. §4.2 which closed the **timing** dimension).
 
@@ -25,17 +25,17 @@ Hephaestus SECURITY.md v1.0.0 §4.3 (lines 204-216) defines three session-fixati
 
 ## 2. Q5.3 ↔ §4.3 Cross-Reference Matrix (MECE)
 
-| §4.3 subsection | A11Y v0.6 Q5.x spec | WCAG SC | Status |
-|-----------------|---------------------|---------|--------|
-| §4.3.1 new sessionId on login | Q5.3 §2.4 audit + Q5.4 §2 ARIA live (announce "Session renewed") | 4.1.3 Status Messages | 🟡 NEW: needs aria-live |
-| §4.3.1 new sessionId on re-auth | Q5.2 §3 useFocusRestore (focus returns to trigger element) | 2.4.3 Focus Order | 🟢 EXISTING: useFocusRestore hook |
-| §4.3.1 new sessionId on MFA challenge | Q5.3 §2.2 user choice (3 options after MFA) | 2.2.1 Timing Adjustable | 🟡 NEW: focus trap in MFA modal |
-| §4.3.2 IP/UA hash mismatch → step-up | Q5.4 §3 sub-second announcement | 4.1.3 Status Messages | 🟡 NEW: aria-live=assertive |
-| §4.3.2 mismatch soft signal (not terminate) | Q5.3 §2.2 user choice | 2.2.4 Interruptions | 🟡 NEW: deferrable modal |
-| §4.3.3 5 concurrent sessions max | Q5.1 §4 keyboard nav (Settings → Security → Active Sessions) | 2.1.1 Keyboard | 🟡 NEW: revoke button keyboard pattern |
-| §4.3.3 oldest auto-terminated on 6th | Q5.4 §2 aria-live announcement on termination | 4.1.3 Status Messages | 🟡 NEW: aria-live=polite |
-| §4.3.3 user can revoke via Settings | Q5.5 §3 reduced-motion on session list transitions | 2.3.3 Animation from Interactions | 🟡 NEW: motion-safe wrapper |
-| §4.3 ALL CWE-384 mitigations | Q5.3 §3 cross-Muse cross-witness | (cross-cutting) | 🟢 EXISTING: §0 v0.6.1 anchors |
+| §4.3 subsection                             | A11Y v0.6 Q5.x spec                                              | WCAG SC                           | Status                                 |
+| ------------------------------------------- | ---------------------------------------------------------------- | --------------------------------- | -------------------------------------- |
+| §4.3.1 new sessionId on login               | Q5.3 §2.4 audit + Q5.4 §2 ARIA live (announce "Session renewed") | 4.1.3 Status Messages             | 🟡 NEW: needs aria-live                |
+| §4.3.1 new sessionId on re-auth             | Q5.2 §3 useFocusRestore (focus returns to trigger element)       | 2.4.3 Focus Order                 | 🟢 EXISTING: useFocusRestore hook      |
+| §4.3.1 new sessionId on MFA challenge       | Q5.3 §2.2 user choice (3 options after MFA)                      | 2.2.1 Timing Adjustable           | 🟡 NEW: focus trap in MFA modal        |
+| §4.3.2 IP/UA hash mismatch → step-up        | Q5.4 §3 sub-second announcement                                  | 4.1.3 Status Messages             | 🟡 NEW: aria-live=assertive            |
+| §4.3.2 mismatch soft signal (not terminate) | Q5.3 §2.2 user choice                                            | 2.2.4 Interruptions               | 🟡 NEW: deferrable modal               |
+| §4.3.3 5 concurrent sessions max            | Q5.1 §4 keyboard nav (Settings → Security → Active Sessions)     | 2.1.1 Keyboard                    | 🟡 NEW: revoke button keyboard pattern |
+| §4.3.3 oldest auto-terminated on 6th        | Q5.4 §2 aria-live announcement on termination                    | 4.1.3 Status Messages             | 🟡 NEW: aria-live=polite               |
+| §4.3.3 user can revoke via Settings         | Q5.5 §3 reduced-motion on session list transitions               | 2.3.3 Animation from Interactions | 🟡 NEW: motion-safe wrapper            |
+| §4.3 ALL CWE-384 mitigations                | Q5.3 §3 cross-Muse cross-witness                                 | (cross-cutting)                   | 🟢 EXISTING: §0 v0.6.1 anchors         |
 
 **9 cross-reference cells MECE** (4 GREEN existing + 5 NEW yellow required for v0.6.1 §4.3).
 
@@ -46,6 +46,7 @@ Hephaestus SECURITY.md v1.0.0 §4.3 (lines 204-216) defines three session-fixati
 ### 3.1 §4.3.1 → Q5.3: aria-live on sessionId rotation
 
 **Pattern:** When the server issues a NEW `sessionId` (post-login, post-re-auth, post-MFA), the client MUST emit a `polite` aria-live announcement:
+
 > "Session renewed. Your activity is now protected under a new session."
 
 **Acceptance:** screen reader (NVDA/JAWS/VoiceOver) announces within 1 second of rotation event.
@@ -53,6 +54,7 @@ Hephaestus SECURITY.md v1.0.0 §4.3 (lines 204-216) defines three session-fixati
 **WCAG:** 4.1.3 Status Messages (Level AA)
 
 **Code template (Artemis additive):**
+
 ```tsx
 // src/hooks/useSessionAnnounce.ts (NEW — Artemis additive, 0 refactor)
 import { useEffect } from 'react';
@@ -74,6 +76,7 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 ### 3.2 §4.3.2 → Q5.3: step-up re-auth focus trap + deferral
 
 **Pattern:** When §4.3.2 binding mismatch triggers step-up re-auth (§4.2.4), the modal MUST:
+
 - Trap focus inside the modal (WCAG 2.4.3)
 - Be dismissable with Escape (defer, do not logout — soft signal per §4.3.2)
 - Use `aria-live=assertive` for the initial challenge ("Please verify your identity to continue")
@@ -86,6 +89,7 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 ### 3.3 §4.3.3 → Q5.1: Active Sessions keyboard nav
 
 **Pattern:** Settings → Security → Active Sessions page MUST:
+
 - Render as `<ul role="list">` of session cards
 - Each card has a `<button>Revoke</button>` reachable via Tab
 - `aria-label="Revoke session on Chrome 125, IP 192.0.2.1, last active 5 minutes ago"`
@@ -98,6 +102,7 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 ### 3.4 §4.3.3 → Q5.4: auto-termination aria-live
 
 **Pattern:** When 6th login triggers oldest-session auto-termination (§4.3.3), client MUST emit `aria-live=polite`:
+
 > "Your oldest session was signed out to allow this new sign-in. Review active sessions in Settings."
 
 **Acceptance:** screen reader announces within 1 second of 6th login.
@@ -107,6 +112,7 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 ### 3.5 §4.3.3 → Q5.5: motion-safe session list transitions
 
 **Pattern:** Active Sessions list uses `motion-safe:transition-all` (Tailwind) so:
+
 - Default: instant transition (no motion)
 - `prefers-reduced-motion: no-preference`: 200ms fade-in
 - List item removal: `motion-safe:animate-fadeOut`
@@ -174,15 +180,16 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 
 **Author + Co-author chain:**
 
-| Role | Muse | Slot | Contribution |
-|------|------|------|--------------|
-| **Primary author** | Artemis | `019ecc6f-1c22-73a2-8b4c-f9ff284f2016` | A11Y v0.6.1 §4.3 cross-witness spec (this file), useSessionAnnounce hook, q5-3-session-fixation test, v0.6 §0.4 amendment |
-| **CASCADE-HOLD bundler** | Vesta | `019ecc6f-1c54-7721-a308-bb311145dbfe` | SECTOR_HERMES_INTEGRATION_TEST v0.1 (own DRI) + CASCADE-HOLD bundled 4/5 files in `d4cd6bbe` |
-| **Security-domain anchor** | Hephaestus | `019ecbef-8cb9-7cb3-bd19-b5561b383985` | SECURITY.md v1.0.0 §4.3.1-§4.3.3 spec (24h review of this proposal pending) |
-| **A11Y domain cross-witness** | Hermes | (a11y-integration in SECTOR_HERMES bundle) | PART_124 v0.2 integration @ 211c7c72 |
-| **6-EYE chain** | Iris + Strategos | (CYCLE 13 BATCH 3 cross-witness) | 5-ICP 5/5 PLATINUM on SECTOR_HERMES bundle |
+| Role                          | Muse             | Slot                                       | Contribution                                                                                                              |
+| ----------------------------- | ---------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **Primary author**            | Artemis          | `019ecc6f-1c22-73a2-8b4c-f9ff284f2016`     | A11Y v0.6.1 §4.3 cross-witness spec (this file), useSessionAnnounce hook, q5-3-session-fixation test, v0.6 §0.4 amendment |
+| **CASCADE-HOLD bundler**      | Vesta            | `019ecc6f-1c54-7721-a308-bb311145dbfe`     | SECTOR_HERMES_INTEGRATION_TEST v0.1 (own DRI) + CASCADE-HOLD bundled 4/5 files in `d4cd6bbe`                              |
+| **Security-domain anchor**    | Hephaestus       | `019ecbef-8cb9-7cb3-bd19-b5561b383985`     | SECURITY.md v1.0.0 §4.3.1-§4.3.3 spec (24h review of this proposal pending)                                               |
+| **A11Y domain cross-witness** | Hermes           | (a11y-integration in SECTOR_HERMES bundle) | PART_124 v0.2 integration @ 211c7c72                                                                                      |
+| **6-EYE chain**               | Iris + Strategos | (CYCLE 13 BATCH 3 cross-witness)           | 5-ICP 5/5 PLATINUM on SECTOR_HERMES bundle                                                                                |
 
 **Pattern context (CATCH #207 series):**
+
 - #1 Prometheus-Apollo LOCKOUT (RESOLVED)
 - #2 Calliope-Prometheus CODIF_INTEGRATION (RESOLVED, Husky Gate 9 PROPOSED)
 - #3 Prometheus-Calliope CATCH_202 (RESOLVED)

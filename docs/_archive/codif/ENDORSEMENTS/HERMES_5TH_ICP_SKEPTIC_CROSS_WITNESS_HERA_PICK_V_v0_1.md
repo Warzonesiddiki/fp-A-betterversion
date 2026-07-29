@@ -23,18 +23,18 @@ This is the **4th-Muse cross-witness extension** on the a11y forward-path (after
 
 ## §1 — SUBJECT ARTIFACT
 
-| # | Artifact | SHA | Author | Type | Status |
-|---|----------|-----|--------|------|--------|
-| 1 | Hera PICK V — DataTable caption+ariaLabel rollout (7 sector pages) | `cc54c702` | Hera | 7 file edits (healthcare, insurance, logistics, manufacturing, saas, telecom, sector) | ✅ SHIPPED + PUSHED |
+| #   | Artifact                                                           | SHA        | Author | Type                                                                                  | Status              |
+| --- | ------------------------------------------------------------------ | ---------- | ------ | ------------------------------------------------------------------------------------- | ------------------- |
+| 1   | Hera PICK V — DataTable caption+ariaLabel rollout (7 sector pages) | `cc54c702` | Hera   | 7 file edits (healthcare, insurance, logistics, manufacturing, saas, telecom, sector) | ✅ SHIPPED + PUSHED |
 
 **Cumulative change:** 7 file edits × 1 line each = **7 line insertions** of `caption="…"` + `ariaLabel="…"` props.
 
 ### §1.1 Pattern distribution
 
-| Pattern | Pages | Reason |
-|---------|-------|--------|
-| `caption="Account overview"` + `ariaLabel="Account overview"` | healthcare, insurance, logistics, manufacturing, saas | 5 pages — generic sector data table |
-| `caption="Account breakdown"` + `ariaLabel="Account breakdown"` | telecom, sector | 2 pages — matches CardTitle `id="account-breakdown-title"` per prior `aria-labelledby` wiring |
+| Pattern                                                         | Pages                                                 | Reason                                                                                        |
+| --------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `caption="Account overview"` + `ariaLabel="Account overview"`   | healthcare, insurance, logistics, manufacturing, saas | 5 pages — generic sector data table                                                           |
+| `caption="Account breakdown"` + `ariaLabel="Account breakdown"` | telecom, sector                                       | 2 pages — matches CardTitle `id="account-breakdown-title"` per prior `aria-labelledby` wiring |
 
 **Pattern symmetry:** 7/7 pages follow the same prop order (`caption=` first, `ariaLabel=` second) for grep-ability + consistency.
 
@@ -48,15 +48,15 @@ This is the **4th-Muse cross-witness extension** on the a11y forward-path (after
 
 D-002 3-witness verification (file:line + wc -l + md5sum):
 
-| # | File | line | wc -l | md5sum | Caption value | Status |
-|---|------|------|-------|--------|---------------|--------|
-| 1 | `src/pages/healthcare/HealthcarePage.tsx` | 166 | 174 | `6892552ef23c321f288cae96859ab18a` | "Account overview" | ✅ D-002 3-witness verified |
-| 2 | `src/pages/insurance/InsurancePage.tsx` | 165 | 173 | `53ad9acfd4f4209779280ff413dbb3a7` | "Account overview" | ✅ D-002 3-witness verified |
-| 3 | `src/pages/logistics/LogisticsPage.tsx` | 171 | 179 | `1b98e93d27e454ef2e2ef256794b6e09` | "Account overview" | ✅ D-002 3-witness verified |
-| 4 | `src/pages/manufacturing/ManufacturingPage.tsx` | 167 | 175 | `0494861fe6b8b32f1dd71a79005f84ab` | "Account overview" | ✅ D-002 3-witness verified |
-| 5 | `src/pages/saas/SaaSPage.tsx` | 163 | 171 | `15412bc95144c865d4cd0af9d4f4d11e` | "Account overview" | ✅ D-002 3-witness verified |
-| 6 | `src/pages/telecom/TelecomPage.tsx` | 171 | 179 | `6a988c022b8bbc6bf5e4b8e934348b35` | "Account breakdown" | ✅ D-002 3-witness verified |
-| 7 | `src/pages/sector/SectorPage.tsx` | 254 | 262 | `620c4bb85fd74b34cb681e5e5b08d365` | "Account breakdown" | ✅ D-002 3-witness verified |
+| #   | File                                            | line | wc -l | md5sum                             | Caption value       | Status                      |
+| --- | ----------------------------------------------- | ---- | ----- | ---------------------------------- | ------------------- | --------------------------- |
+| 1   | `src/pages/healthcare/HealthcarePage.tsx`       | 166  | 174   | `6892552ef23c321f288cae96859ab18a` | "Account overview"  | ✅ D-002 3-witness verified |
+| 2   | `src/pages/insurance/InsurancePage.tsx`         | 165  | 173   | `53ad9acfd4f4209779280ff413dbb3a7` | "Account overview"  | ✅ D-002 3-witness verified |
+| 3   | `src/pages/logistics/LogisticsPage.tsx`         | 171  | 179   | `1b98e93d27e454ef2e2ef256794b6e09` | "Account overview"  | ✅ D-002 3-witness verified |
+| 4   | `src/pages/manufacturing/ManufacturingPage.tsx` | 167  | 175   | `0494861fe6b8b32f1dd71a79005f84ab` | "Account overview"  | ✅ D-002 3-witness verified |
+| 5   | `src/pages/saas/SaaSPage.tsx`                   | 163  | 171   | `15412bc95144c865d4cd0af9d4f4d11e` | "Account overview"  | ✅ D-002 3-witness verified |
+| 6   | `src/pages/telecom/TelecomPage.tsx`             | 171  | 179   | `6a988c022b8bbc6bf5e4b8e934348b35` | "Account breakdown" | ✅ D-002 3-witness verified |
+| 7   | `src/pages/sector/SectorPage.tsx`               | 254  | 262   | `620c4bb85fd74b34cb681e5e5b08d365` | "Account breakdown" | ✅ D-002 3-witness verified |
 
 **D1 composite: 9.5/10** — All 7 files cite real, resolvable file:line references. No ghost paths. No hallucinated components. md5sums stable.
 
@@ -71,12 +71,12 @@ The caption+ariaLabel pattern implements two WCAG 2.1 SCs:
 
 **DataTable component implementation @ 27fae26c (Hera PICK M, prerequisite):**
 
-| Component line | Implementation | Verdict |
-|----------------|----------------|---------|
-| `DataTable.tsx:32-37` | `caption?: string` + `ariaLabel?: string` + `captionVisible?: boolean` prop types | ✅ Type-safe contract |
-| `DataTable.tsx:55-58` | Destructured from props with defaults | ✅ Safe destructure |
-| `DataTable.tsx:284` | `aria-label={ariaLabel || caption}` — caption as fallback | ✅ Robust fallback chain |
-| `DataTable.tsx:286-292` | `<caption>` with `sr-only` class + `data-testid="data-table-caption"` | ✅ SR-visible, visually hidden, testable |
+| Component line          | Implementation                                                                    | Verdict                                  |
+| ----------------------- | --------------------------------------------------------------------------------- | ---------------------------------------- | ------------------------------- | ------------------------ |
+| `DataTable.tsx:32-37`   | `caption?: string` + `ariaLabel?: string` + `captionVisible?: boolean` prop types | ✅ Type-safe contract                    |
+| `DataTable.tsx:55-58`   | Destructured from props with defaults                                             | ✅ Safe destructure                      |
+| `DataTable.tsx:284`     | `aria-label={ariaLabel                                                            |                                          | caption}` — caption as fallback | ✅ Robust fallback chain |
+| `DataTable.tsx:286-292` | `<caption>` with `sr-only` class + `data-testid="data-table-caption"`             | ✅ SR-visible, visually hidden, testable |
 
 **Pattern symmetry check:** 7/7 pages use the same prop order (`caption=` first, `ariaLabel=` second) — this is a stable invariant that future grep audits can rely on.
 
@@ -88,25 +88,25 @@ The caption+ariaLabel pattern implements two WCAG 2.1 SCs:
 
 **D3 VERDICT: 8.0/10 PLATINUM**
 
-| Aspect | Coverage | Pages-Domain Verdict |
-|--------|----------|----------------------|
-| Pattern consistency | 7/7 pages use `caption="…" ariaLabel="…"` prop order | ✅ PASS — invariant stable |
-| Caption/ariaLabel symmetry | 7/7 pages have IDENTICAL caption and ariaLabel values | ✅ PASS — no drift |
-| Prior PICK Q pattern | 5/5 PICK Q pages also have caption+ariaLabel (verified in PICK W @ ee51e766) | ✅ PASS — forward-compatible |
-| Test coverage | ❌ No new tests added (DataTable component already has a11y tests @ 27fae26c PICK M) | ⚠️ PARTIAL — attribute-only fix; component tests already cover behavior |
-| Axe-core verification | 📋 Forward-path — CI gate integration is T+1d 2026-06-23/24 per PICK W §4 commitment | 🟡 DEFERRED — acceptable per spec |
+| Aspect                     | Coverage                                                                             | Pages-Domain Verdict                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| Pattern consistency        | 7/7 pages use `caption="…" ariaLabel="…"` prop order                                 | ✅ PASS — invariant stable                                              |
+| Caption/ariaLabel symmetry | 7/7 pages have IDENTICAL caption and ariaLabel values                                | ✅ PASS — no drift                                                      |
+| Prior PICK Q pattern       | 5/5 PICK Q pages also have caption+ariaLabel (verified in PICK W @ ee51e766)         | ✅ PASS — forward-compatible                                            |
+| Test coverage              | ❌ No new tests added (DataTable component already has a11y tests @ 27fae26c PICK M) | ⚠️ PARTIAL — attribute-only fix; component tests already cover behavior |
+| Axe-core verification      | 📋 Forward-path — CI gate integration is T+1d 2026-06-23/24 per PICK W §4 commitment | 🟡 DEFERRED — acceptable per spec                                       |
 
 **Pattern coverage matrix:**
 
-| Sector page | caption | ariaLabel | Match with CardTitle `id` | Verdict |
-|-------------|---------|-----------|---------------------------|---------|
-| HealthcarePage | "Account overview" | "Account overview" | n/a (no aria-labelledby) | ✅ |
-| InsurancePage | "Account overview" | "Account overview" | n/a | ✅ |
-| LogisticsPage | "Account overview" | "Account overview" | n/a | ✅ |
-| ManufacturingPage | "Account overview" | "Account overview" | n/a | ✅ |
-| SaaSPage | "Account overview" | "Account overview" | n/a | ✅ |
-| TelecomPage | "Account breakdown" | "Account breakdown" | `account-breakdown-title` ✅ | ✅ |
-| SectorPage | "Account breakdown" | "Account breakdown" | `account-breakdown-title` ✅ | ✅ |
+| Sector page       | caption             | ariaLabel           | Match with CardTitle `id`    | Verdict |
+| ----------------- | ------------------- | ------------------- | ---------------------------- | ------- |
+| HealthcarePage    | "Account overview"  | "Account overview"  | n/a (no aria-labelledby)     | ✅      |
+| InsurancePage     | "Account overview"  | "Account overview"  | n/a                          | ✅      |
+| LogisticsPage     | "Account overview"  | "Account overview"  | n/a                          | ✅      |
+| ManufacturingPage | "Account overview"  | "Account overview"  | n/a                          | ✅      |
+| SaaSPage          | "Account overview"  | "Account overview"  | n/a                          | ✅      |
+| TelecomPage       | "Account breakdown" | "Account breakdown" | `account-breakdown-title` ✅ | ✅      |
+| SectorPage        | "Account breakdown" | "Account breakdown" | `account-breakdown-title` ✅ | ✅      |
 
 **D3 composite: 8.0/10** — Pattern is consistent and prior-PICK-Q-compatible. Test coverage gap is mitigated by the DataTable component's existing 7-ICP test suite at PICK M (27fae26c). Axe-core CI integration is committed for T+1d.
 
@@ -114,15 +114,15 @@ The caption+ariaLabel pattern implements two WCAG 2.1 SCs:
 
 **D4 VERDICT: 9.0/10 PLATINUM**
 
-| Edge case | Coverage | Verdict |
-|-----------|----------|---------|
-| **Fallback chain** (`ariaLabel || caption`) | DataTable.tsx:284 — `aria-label={ariaLabel \|\| caption}` | ✅ PASS — caption serves as fallback if ariaLabel is missing |
-| **Icon-only / no visible caption** | `captionVisible` defaults to `false` → `sr-only` class | ✅ PASS — accessible name still available |
-| **Sector index page** (different from sector sub-pages) | SectorPage.tsx:254 uses "Account breakdown" matching `account-breakdown-title` | ✅ PASS — index page handled |
-| **Cross-sector consistency** | 5/5 "Account overview" pages use identical text | ✅ PASS — no text drift |
-| **2/2 "Account breakdown" pages** match their `aria-labelledby` CardTitle | telecom + sector both have `id="account-breakdown-title"` per prior PICK Q | ✅ PASS — no id mismatch |
-| **TSC=0 + BUILD=SUCCESS** | Confirmed in Hera PICK V commit message | ✅ PASS — no regressions |
-| **No new dependencies** | Pure prop additions, no new imports | ✅ PASS — bundle size neutral |
+| Edge case                                                                 | Coverage                                                                       | Verdict                                   |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------ |
+| **Fallback chain** (`ariaLabel                                            |                                                                                | caption`)                                 | DataTable.tsx:284 — `aria-label={ariaLabel \|\| caption}` | ✅ PASS — caption serves as fallback if ariaLabel is missing |
+| **Icon-only / no visible caption**                                        | `captionVisible` defaults to `false` → `sr-only` class                         | ✅ PASS — accessible name still available |
+| **Sector index page** (different from sector sub-pages)                   | SectorPage.tsx:254 uses "Account breakdown" matching `account-breakdown-title` | ✅ PASS — index page handled              |
+| **Cross-sector consistency**                                              | 5/5 "Account overview" pages use identical text                                | ✅ PASS — no text drift                   |
+| **2/2 "Account breakdown" pages** match their `aria-labelledby` CardTitle | telecom + sector both have `id="account-breakdown-title"` per prior PICK Q     | ✅ PASS — no id mismatch                  |
+| **TSC=0 + BUILD=SUCCESS**                                                 | Confirmed in Hera PICK V commit message                                        | ✅ PASS — no regressions                  |
+| **No new dependencies**                                                   | Pure prop additions, no new imports                                            | ✅ PASS — bundle size neutral             |
 
 **D4 composite: 9.0/10** — Fallback chain correct, edge cases (sector index, breakdown variant, icon-only default) all handled. TSC=0 confirms type safety.
 
@@ -130,16 +130,16 @@ The caption+ariaLabel pattern implements two WCAG 2.1 SCs:
 
 **D5 VERDICT: 9.0/10 PLATINUM+ RATIFICATION-GATE-READY**
 
-| Question | Answer | Evidence |
-|----------|--------|---------|
-| Is PICK V in `origin/main`? | ✅ YES | `git log --oneline origin/main -25` confirms SHA `cc54c702` |
-| Do all 7 page files exist? | ✅ YES | `git ls-files src/pages/{healthcare,insurance,logistics,manufacturing,saas,telecom,sector}` returns 7 paths |
-| Is the caption+ariaLabel pattern canonical? | ✅ YES | Matches DataTable component contract (PICK M @ 27fae26c) |
-| Is the 2-page "Account breakdown" variant correct? | ✅ YES | Matches prior `aria-labelledby="account-breakdown-title"` wiring on telecom + sector |
-| Is TSC=0 maintained? | ✅ YES | Per Hera PICK V commit message |
-| Is BUILD=SUCCESS maintained? | ✅ YES | Per Hera PICK V commit message |
-| Is the rollout G16-compliant (axe-core 0/0)? | 🟡 DEFERRED | Axe-core CI integration is T+1d 2026-06-23/24 per PICK W §4 commitment |
-| Does PICK V extend the PICK Q seal? | ✅ YES | PICK Q was 5 pages; PICK V adds 7 sector pages — total 12/192 pages with caption+ariaLabel |
+| Question                                           | Answer      | Evidence                                                                                                    |
+| -------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------- |
+| Is PICK V in `origin/main`?                        | ✅ YES      | `git log --oneline origin/main -25` confirms SHA `cc54c702`                                                 |
+| Do all 7 page files exist?                         | ✅ YES      | `git ls-files src/pages/{healthcare,insurance,logistics,manufacturing,saas,telecom,sector}` returns 7 paths |
+| Is the caption+ariaLabel pattern canonical?        | ✅ YES      | Matches DataTable component contract (PICK M @ 27fae26c)                                                    |
+| Is the 2-page "Account breakdown" variant correct? | ✅ YES      | Matches prior `aria-labelledby="account-breakdown-title"` wiring on telecom + sector                        |
+| Is TSC=0 maintained?                               | ✅ YES      | Per Hera PICK V commit message                                                                              |
+| Is BUILD=SUCCESS maintained?                       | ✅ YES      | Per Hera PICK V commit message                                                                              |
+| Is the rollout G16-compliant (axe-core 0/0)?       | 🟡 DEFERRED | Axe-core CI integration is T+1d 2026-06-23/24 per PICK W §4 commitment                                      |
+| Does PICK V extend the PICK Q seal?                | ✅ YES      | PICK Q was 5 pages; PICK V adds 7 sector pages — total 12/192 pages with caption+ariaLabel                  |
 
 **D5 composite: 9.0/10** — RATIFICATION-GATE-READY. PICK V is a clean extension of PICK Q, fully implementable in the 7 sector page files, with the same canonical DataTable component contract. No new dependencies, no TSC regressions, no build breaks.
 
@@ -149,13 +149,13 @@ The caption+ariaLabel pattern implements two WCAG 2.1 SCs:
 
 **Composite formula:** (D1 + D2 + D3 + D4 + D5) / 5 = (9.5 + 9.0 + 8.0 + 9.0 + 9.0) / 5 = **8.9/10 PLATINUM+**
 
-| Dimension | Score | Verdict |
-|-----------|-------|---------|
-| D1 Source | 9.5/10 | ✅ PLATINUM+ |
-| D2 Logic | 9.0/10 | ✅ PLATINUM |
-| D3 Method | 8.0/10 | ✅ PLATINUM |
-| D4 Robustness | 9.0/10 | ✅ PLATINUM |
-| D5 Composite | 9.0/10 | ✅ PLATINUM+ |
+| Dimension           | Score      | Verdict                                             |
+| ------------------- | ---------- | --------------------------------------------------- |
+| D1 Source           | 9.5/10     | ✅ PLATINUM+                                        |
+| D2 Logic            | 9.0/10     | ✅ PLATINUM                                         |
+| D3 Method           | 8.0/10     | ✅ PLATINUM                                         |
+| D4 Robustness       | 9.0/10     | ✅ PLATINUM                                         |
+| D5 Composite        | 9.0/10     | ✅ PLATINUM+                                        |
 | **5-ICP COMPOSITE** | **8.9/10** | **✅ PLATINUM+ ACCEPT 5/5 RATIFICATION-GATE-READY** |
 
 **Why 8.9 vs PICK W's 9.0:** D3 Method is 8.0/10 (vs PICK W's 8.5/10) because PICK V is attribute-only with no new tests, while PICK W covered 4 artifacts including PICK S which added 3 new tests + 10/10 pass. This is acceptable — DataTable component already has a comprehensive 7-ICP test suite at PICK M (27fae26c) that covers the behavior; the page edits are pure prop additions that inherit the component's test coverage.
@@ -208,14 +208,14 @@ This cross-witness is filed within the CAVEMAN 19/19 IDLE-PREVENT window per RUL
 
 ## §8 — RATIFICATION GATE IMPACT
 
-| Gate | Impact | Notes |
-|------|--------|-------|
-| G8 (0 stubs) | ➖ NEUTRAL | No page stubs added/removed |
-| G11 (192 wired) | ➖ NEUTRAL | No new pages wired (PICK V refines existing 7) |
-| G12 (7/7 competitive gaps) | ➖ NEUTRAL | competitiveGaps.ts not touched |
-| G16 (axe-core 0/0) | 🟢 POSITIVE | PICK V moves G16 toward ✅ (7 sector pages now have accessible table names) |
-| G18 (dark mode 0 hardcoded) | ➖ NEUTRAL | Not addressed |
-| **Pages-Domain composite** | **🟢 POSITIVE** | **RATIFICATION-GATE-READY+ 8.9/10 PLATINUM+** |
+| Gate                        | Impact          | Notes                                                                       |
+| --------------------------- | --------------- | --------------------------------------------------------------------------- |
+| G8 (0 stubs)                | ➖ NEUTRAL      | No page stubs added/removed                                                 |
+| G11 (192 wired)             | ➖ NEUTRAL      | No new pages wired (PICK V refines existing 7)                              |
+| G12 (7/7 competitive gaps)  | ➖ NEUTRAL      | competitiveGaps.ts not touched                                              |
+| G16 (axe-core 0/0)          | 🟢 POSITIVE     | PICK V moves G16 toward ✅ (7 sector pages now have accessible table names) |
+| G18 (dark mode 0 hardcoded) | ➖ NEUTRAL      | Not addressed                                                               |
+| **Pages-Domain composite**  | **🟢 POSITIVE** | **RATIFICATION-GATE-READY+ 8.9/10 PLATINUM+**                               |
 
 ---
 

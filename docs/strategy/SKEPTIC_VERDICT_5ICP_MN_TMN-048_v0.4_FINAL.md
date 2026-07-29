@@ -21,6 +21,7 @@ upgraded_from: VERDICT_003 (9.5/10 → 9.5/10 5-ICP, EXPANDS to 5-ICP framework)
 **4-ICP Composite (carry-over from self-audit):** 9.5/10 ACCEPT (Carla/Vera/Chris/Beth).
 
 **Substantive upgrade vs VERDICT_003 (T-MN-048 v0.2 @ 90db42449):**
+
 - ✅ Codif 35 v0.4 → **v0.5 schema expansion** (4 Sub-classes A/B/C/D → 5 Sub-classes A/B/C/D + **E.1 GHOST-MISSING + E.2 DRIFT-REAL**)
 - ✅ Sub-class E.1 (CATCH #191 Hephaestus stale-commit-attribution GHOST) + E.2 (CATCH #197 Prometheus stale-SHA-drift) BOTH canonicalized
 - ✅ NEVER-AGAIN **RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) co-signed GREEN 7/12** (drives 7/12 GREEN LOCKED)
@@ -38,13 +39,14 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 
 **Cited SHAs (18 non-evidence + 5 GHOST evidence + 1 DRIFT evidence = 24 total SHAs, all ROLE #55 verified):**
 
-| Class | Count | Disposition |
-|---|---|---|
-| Non-evidence REAL (cited as pointers) | 18 | ✅ 18/18 REAL (all pass `git cat-file -t` as `commit`) |
-| GHOST evidence (CATCH #191 case study) | 5 | ✅ 5/5 confirmed GHOST (`cat-file` returns "Not a valid object name") |
-| DRIFT evidence (CATCH #197 case study) | 1 | ✅ 70d548da REAL but superseded by c0917f588 with identical content (E.2 case) |
+| Class                                  | Count | Disposition                                                                    |
+| -------------------------------------- | ----- | ------------------------------------------------------------------------------ |
+| Non-evidence REAL (cited as pointers)  | 18    | ✅ 18/18 REAL (all pass `git cat-file -t` as `commit`)                         |
+| GHOST evidence (CATCH #191 case study) | 5     | ✅ 5/5 confirmed GHOST (`cat-file` returns "Not a valid object name")          |
+| DRIFT evidence (CATCH #197 case study) | 1     | ✅ 70d548da REAL but superseded by c0917f588 with identical content (E.2 case) |
 
 **18 Non-evidence SHAs (ALL REAL — verified):**
+
 1. `299518d5` — T-MN-048 v0.3 LOCKED ✅
 2. `d0cff090d` — T-MN-048 v0.4 PREP ✅
 3. `c8929935e` — T-MN-046 v0.2 RATIFIED ✅
@@ -65,6 +67,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 18. `2ff58640` — USER_JOURNEY_TEST_COVERAGE v0.3 (cross-witness) ✅
 
 **5 GHOST evidence SHAs (ALL confirmed GHOST — V0.5 E.1 case study):**
+
 1. `d984569a` — GHOST ✅ (used as E.1 evidence)
 2. `1f353d08` — GHOST at Tyche 3rd-eye time (later remediated to f4efa3628 in Strategos INDEX v0.7.1 per Vulcan 2nd-witness) ✅
 3. `f6c58374` — GHOST at Tyche 3rd-eye time (later remediated to 6ebb2adac in Apollo MASTER_REPORT v1.2.1) ✅
@@ -72,6 +75,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 5. `917630df` — GHOST at Tyche 3rd-eye time (later remediated to 6ebb2adac) ✅
 
 **1 DRIFT evidence SHA (confirmed REAL+SUPERSEDED — E.2 case study):**
+
 - `70d548da` — REAL commit (cited in persona-coverage-v0.2-draft.md Source line) ✅
 - Superseded by `c0917f588` with identical content (`git diff` returns EMPTY)
 - Iris correction applied: Source line 70d548da → c0917f588
@@ -81,11 +85,11 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 
 ### 3.1 Commit witnesses (verified via `git log` + `git show`)
 
-| Item | Commit | Status |
-|---|---|---|
-| T-MN-048 v0.3 LOCKED (parent) | `299518d5` | ✅ EXISTS |
-| T-MN-048 v0.4 PREP | `d0cff090d` | ✅ EXISTS (216L source draft) |
-| T-MN-048 v0.4 FINAL (target) | `2302c0f34` | ✅ EXISTS — full message: "docs(codif): Mnemosyne T-MN-048 v0.4 FINAL — Codif 35 v0.5 Sub-class E.1 (GHOST-MISSING) + E.2 (DRIFT-REAL) FINALIZED + NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) co-sign GREEN 7/12 (Atlas + Hera + Mnemosyne + Strategos + Prometheus + Orchestrator + Tyche) + Apollo v1.2.1 + Strategos INDEX v0.7.x 5 GHOST SHA cluster remediation LANDED (5/5 missing → 3/5 fixed + 2/5 marked [GHOST-audit-trail]) + CATCH #197 stale-SHA-drift LOGGED + E.2 canonical case (70d548da → c0917f588) — supersedes T-MN-048 v0.3 LOCKED at 299518d5c" |
+| Item                          | Commit      | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T-MN-048 v0.3 LOCKED (parent) | `299518d5`  | ✅ EXISTS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| T-MN-048 v0.4 PREP            | `d0cff090d` | ✅ EXISTS (216L source draft)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| T-MN-048 v0.4 FINAL (target)  | `2302c0f34` | ✅ EXISTS — full message: "docs(codif): Mnemosyne T-MN-048 v0.4 FINAL — Codif 35 v0.5 Sub-class E.1 (GHOST-MISSING) + E.2 (DRIFT-REAL) FINALIZED + NEVER-AGAIN RULE #55 (PRE-PUSH-GHOST-SHA-CHECK) co-sign GREEN 7/12 (Atlas + Hera + Mnemosyne + Strategos + Prometheus + Orchestrator + Tyche) + Apollo v1.2.1 + Strategos INDEX v0.7.x 5 GHOST SHA cluster remediation LANDED (5/5 missing → 3/5 fixed + 2/5 marked [GHOST-audit-trail]) + CATCH #197 stale-SHA-drift LOGGED + E.2 canonical case (70d548da → c0917f588) — supersedes T-MN-048 v0.3 LOCKED at 299518d5c" |
 
 ### 3.2 File witnesses (verified via `Read` + `wc -l` + `md5sum`)
 
@@ -100,6 +104,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 #### ✅ Check 1 — Factual Errors
 
 **Section §2 (Codif 35 v0.5 schema expansion):** VERIFIED
+
 - §2.1-§2.4: Full Sub-class E.1 (4-witness E1.1-E1.4 GHOST-MISSING) + E.2 (4-witness E2.1-E2.4 DRIFT-REAL) protocols documented
 - §2.5: GHOST-SHA check tool enforcement (Atlas .husky/pre-push Gate 5 v0.1 + v0.2 strict-regex)
 - §2.6: Cross-reference matrix to other RATIFICATION pre-checks (T-MN-046/047/049)
@@ -107,6 +112,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 - NO factual errors found.
 
 **Section §3 (NEVER-AGAIN RULE #41 PRE-DISPATCH-STATE-CHECK context):** VERIFIED
+
 - §3.1: Pre-dispatch state verification protocol
 - §3.2: 5 Sub-class A/B/C/D + E.1 + E.2 schema consistency
 - §3.3: Codif 35 v0.4 → v0.5 supersession documented
@@ -114,6 +120,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 - NO factual errors found.
 
 **Section §4 (Catches integrated — Hephaestus CATCH #191 + Prometheus CATCH #197):** VERIFIED
+
 - §4.1: 5/5 GHOST SHA cluster (d984569a, 1f353d08, f6c58374, 8b340664, 917630df) — all 5 confirmed GHOST via `git cat-file -t`
 - §4.2: 0/5 MATCHES (E.1 canonical evidence) — correct
 - §4.3: REMEDIATION LANDED via Apollo v1.2.1 (af58dca24) + Vulcan 2nd-Muse (12700f90b) — 3 of 5 SHAs fixed in v1.2.1
@@ -123,6 +130,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 - NO factual errors found.
 
 **Section §5 (RULE #55 co-sign — 7/12 GREEN drive):** VERIFIED
+
 - §5.1: RULE #55 spec quote (per Leader directive 2026-06-16 17:15 UTC, line #5)
 - §5.2: Mnemosyne co-sign rationale — 6 observations (spec well-defined, evidence real, tool support exists, E.1+E.2 clean, no false-positive risk, Prometheus F→E.2 integration)
 - §5.3: 3-witness verification table (6/6 PASS)
@@ -130,6 +138,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 - NO factual errors found.
 
 **Section §6 (4-ICP self-audit 9.5/10):** VERIFIED
+
 - I1=9.5/10 (Intent), C2=9.5/10 (Catastrophic), P3=9.0/10 (Performance), D4=9.5/10 (Documented)
 - Composite 9.5/10 ACCEPT
 - 5th-ICP pending (this verdict addresses that) ✅
@@ -140,6 +149,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 **NO new risks introduced.** T-MN-048 v0.4 FINAL consolidates 5 pre-existing risks (CATCH #191/194/195/196/197) into codified Sub-class E.1 + E.2.
 
 **Forward-looking risks identified by Strategos (low-priority, post-RATIFICATION):**
+
 - **P2-A: §9.2 GHOST-SHA check statement ambiguity** — §9.2 says "ALL EXIST (RULE #55 SELF-VERIFIED, 18/18 SHAs)" referring to the 18 non-evidence SHAs (correct), but a fast reader might miss that the 5 GHOST SHAs in §4.1+§4.2 are the EVIDENCE cluster (intentionally GHOST). Recommend v0.5 amendment to add an explicit disambiguation header in §9.2. (Non-blocking, 5-min fix.)
 - **P2-B: §8 step 1 "Strategos INDEX v0.7 v2" shorthand** — actual fix landed across v0.7.1 (e818c7434) + v0.7.2 (878ee7cb4). Recommend v0.5 amendment to disambiguate v0.7.1 (3 GHOST SHAs corrected) vs v0.7.2 (all 5 marked as [GHOST-audit-trail]). (Non-blocking, 5-min fix.)
 - **P2-C: §4.3 "REMEDIATION LANDED" claim scope** — Apollo v1.2.1 fixed 3 of 5 (f6c58374, 1f353d08, 917630df). The other 2 (d984569a, 8b340664) were marked as [GHOST - audit-trail] in Strategos INDEX v0.7.2, not "fixed" in Apollo. The claim is technically correct (remediation landed across the patch set) but could be more precise about the distribution. (Non-blocking, 5-min fix.)
@@ -149,6 +159,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 #### ✅ Check 3 — Unsubstantiated Claims
 
 **All claims verified.** Notable cross-references confirmed:
+
 - T-MN-048 v0.3 LOCKED (299518d5) — predecessor ✅
 - T-MN-048 v0.4 PREP (d0cff090d, 216L) — source draft ✅
 - T-MN-046 v0.2 RATIFIED (c8929935e) — Sub-class A/B/C/D parent ✅
@@ -171,6 +182,7 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 #### ✅ Check 4 — Cross-References
 
 **Cross-references verified:**
+
 - T-MN-048 v0.3 LOCKED (299518d5) → T-MN-048 v0.4 FINAL (2302c0f34) ✅
 - T-MN-048 v0.4 PREP (d0cff090d) → T-MN-048 v0.4 FINAL (2302c0f34) ✅
 - T-MN-046 v0.2 (c8929935e) → Sub-class A/B/C/D parent ✅
@@ -191,14 +203,14 @@ T-MN-048 v0.4 FINAL (281L, 21,089B, md5 21db9b010603dbbcc8749bc55b6fa83a) supers
 
 ## 4. Composite 5-ICP Verdict (Strategos 5th-ICP Skeptic — Independent)
 
-| Dimension | Self-4-ICP (Carla/Vera/Chris/Beth) | 5th-ICP (Strategos Skeptic) | Composite |
-|---|---|---|---|
-| I1 (Intent) | 9.5/10 | 5/5 (PLATINUM+) | 5/5 |
-| C2 (Catastrophic) | 9.5/10 | 5/5 (PLATINUM+) | 5/5 |
-| P3 (Performance) | 9.0/10 | 5/5 (PLATINUM+) | 5/5 |
-| D4 (Documented) | 9.5/10 | 5/5 (PLATINUM+) | 5/5 |
-| V5 (Vera Skeptic — meta) | n/a | 5/5 (PLATINUM+) | 5/5 |
-| **Composite** | **9.5/10** | **25/25 PLATINUM+** | **9.5/10 / 25/25** |
+| Dimension                | Self-4-ICP (Carla/Vera/Chris/Beth) | 5th-ICP (Strategos Skeptic) | Composite          |
+| ------------------------ | ---------------------------------- | --------------------------- | ------------------ |
+| I1 (Intent)              | 9.5/10                             | 5/5 (PLATINUM+)             | 5/5                |
+| C2 (Catastrophic)        | 9.5/10                             | 5/5 (PLATINUM+)             | 5/5                |
+| P3 (Performance)         | 9.0/10                             | 5/5 (PLATINUM+)             | 5/5                |
+| D4 (Documented)          | 9.5/10                             | 5/5 (PLATINUM+)             | 5/5                |
+| V5 (Vera Skeptic — meta) | n/a                                | 5/5 (PLATINUM+)             | 5/5                |
+| **Composite**            | **9.5/10**                         | **25/25 PLATINUM+**         | **9.5/10 / 25/25** |
 
 **Rationale for 5/5 on each dimension (5th-ICP Skeptic angle):**
 
@@ -213,6 +225,7 @@ Documentation-only changes (281L, single file, no code). The 7-witness Sub-class
 
 **D4 (Documented — Skeptic): 5/5**
 Documentation is comprehensive, self-contained, and audit-trail complete:
+
 - 281L, 10 sections (§0-§9)
 - 4-ICP self-audit 9.5/10 with dimension-level reasoning
 - 18/18 non-evidence SHAs verified (this verdict)
@@ -221,7 +234,7 @@ Documentation is comprehensive, self-contained, and audit-trail complete:
 - Cross-references to 14+ other commits (all verified)
 - CAVEMAN 19/19 compliance section (§9)
 - Forward path to v0.5 RATIFICATION documented (6-step, T-3d 2026-06-19 EOD)
-3 P2 cosmetic findings noted (all non-blocking, all 5-min fixes).
+  3 P2 cosmetic findings noted (all non-blocking, all 5-min fixes).
 
 **V5 (Vera Skeptic — meta): 5/5**
 The self-4-ICP verdict (Carla/Vera/Chris/Beth 9.5/10 ACCEPT) is well-reasoned, substantively correct, and independently verifiable. The dimension-level reasoning is sound (Intent 9.5 because Sub-class E.1+E.2 close the 4th+5th CASCADE-TRAP sub-classes; Catastrophic 9.5 because non-destructive FINALIZED not RATIFIED; Performance 9.0 because 7-witness protocol is O(1) per cite; Documented 9.5 because self-contained audit trail). The 5th-ICP (Strategos) review independently confirms 25/25 PLATINUM+.
@@ -230,16 +243,16 @@ The self-4-ICP verdict (Carla/Vera/Chris/Beth 9.5/10 ACCEPT) is well-reasoned, s
 
 **0 new catches filed.** All findings in this verdict are subsumed by existing CATCH-LEDGER entries:
 
-| CATCH | Family | Status | Subsumed Finding |
-|---|---|---|---|
-| CATCH #191 | stale-commit-attribution GHOST-MISSING | HEPHAESTUS canonical | E.1 GHOST protocol foundation |
-| CATCH #194 | CASCADE-TRAP unilateral | LOGGED | A/B Sub-class A/B family |
-| CATCH #195 | CASCADE-TRAP bilateral | LOGGED | C Sub-class C family |
-| CATCH #196 | CASCADE-TRAP trilateral-unilateral | LOGGED | D Sub-class D family |
-| CATCH #197 | stale-SHA-drift | PROMETHEUS canonical | E.2 DRIFT protocol foundation |
-| CATCH #200 | CASCADE-VELOCITY-CHECK-FAIL | ORCHESTRATOR CASCADE-HOLD | E.2 vs GHOST-SHA distinction (RULE #201) |
-| CATCH #201 | Strategos verdict #005 false-positive GHOST-SHA | STRATEGOS self-filed | E.1 GHOST detection vs CASCADE-HOLD distinction |
-| CATCH #202 | D-002 §2 SHIP-stage vs DRAFT-stage witness | STRATEGOS self-filed | Evidence-trail preservation methodology |
+| CATCH      | Family                                          | Status                    | Subsumed Finding                                |
+| ---------- | ----------------------------------------------- | ------------------------- | ----------------------------------------------- |
+| CATCH #191 | stale-commit-attribution GHOST-MISSING          | HEPHAESTUS canonical      | E.1 GHOST protocol foundation                   |
+| CATCH #194 | CASCADE-TRAP unilateral                         | LOGGED                    | A/B Sub-class A/B family                        |
+| CATCH #195 | CASCADE-TRAP bilateral                          | LOGGED                    | C Sub-class C family                            |
+| CATCH #196 | CASCADE-TRAP trilateral-unilateral              | LOGGED                    | D Sub-class D family                            |
+| CATCH #197 | stale-SHA-drift                                 | PROMETHEUS canonical      | E.2 DRIFT protocol foundation                   |
+| CATCH #200 | CASCADE-VELOCITY-CHECK-FAIL                     | ORCHESTRATOR CASCADE-HOLD | E.2 vs GHOST-SHA distinction (RULE #201)        |
+| CATCH #201 | Strategos verdict #005 false-positive GHOST-SHA | STRATEGOS self-filed      | E.1 GHOST detection vs CASCADE-HOLD distinction |
+| CATCH #202 | D-002 §2 SHIP-stage vs DRAFT-stage witness      | STRATEGOS self-filed      | Evidence-trail preservation methodology         |
 
 **CATCH-LEDGER v0.6 cross-reference verified.**
 

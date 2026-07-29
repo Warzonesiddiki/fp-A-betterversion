@@ -15,22 +15,22 @@ This document is the **master security policy** for FinPlan Pro v1.0.0, owned by
 
 ### §1.1 Sub-policies under this master
 
-| ID | Sub-policy | File | Patch reference |
-|---|---|---|---|
-| §2 | Security Headers (CSP/HSTS/COOP/COEP/CORP/Permissions-Policy) | `docs/security/SECURITY_HEADERS_POLICY.md` | PATCH 11 `3547f51e` |
-| §3 | CSRF Protection (Double-Submit Cookie + HMAC-SHA256) | §3 of SECURITY_HEADERS_POLICY.md | PATCH 11 `3547f51e` |
-| **§4** | **Session Management** | **§4 of this document** | **(PATCH 11 + PATCH 12 + PATCH 13)** |
-| §4.1 | Session token format & lifetime | §4.1 of this document | PATCH 12 `db1b5bfd3` |
-| **§4.2** | **Session timeout policy (Q5.3 anchor)** | **§4.2 of this document** | **PATCH 12 `db1b5bfd3` (audit), PATCH 13 `edff05258` (PII)** |
-| §4.3 | Session fixation & hijack defenses | §4.3 of this document | PATCH 11 + PATCH 12 |
-| §5 | Secret Rotation | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §2 | PATCH 12 `db1b5bfd3` |
-| §6 | Audit Logging (hash-chained) | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §3 | PATCH 12 `db1b5bfd3` |
-| §7 | PII Redaction | `docs/security/PII_REDACTION_POLICY.md` | PATCH 13 `edff05258` |
-| §8 | Threat Model | `docs/security/THREAT_MODEL.md` | PATCH 10 `d0fe9107` |
-| §9 | Incident Response | `docs/security/INCIDENT_RESPONSE.md` | PATCH 9 GHOST-SHA `d445b721` + `5223d3b5` |
-| §10 | Encryption-in-transit (TLS) | `docs/security/SECURITY_HEADERS_POLICY.md` §2 (HSTS) | PATCH 11 `3547f51e` |
-| §11 | Encryption-at-rest (Tauri IPC) | (forthcoming PATCH 15) | PATCH 15 (PICK D future) |
-| §12 | Rate Limiting & Circuit Breaking | (forthcoming PATCH 14) | PATCH 14 (PICK B current) |
+| ID       | Sub-policy                                                    | File                                                       | Patch reference                                              |
+| -------- | ------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
+| §2       | Security Headers (CSP/HSTS/COOP/COEP/CORP/Permissions-Policy) | `docs/security/SECURITY_HEADERS_POLICY.md`                 | PATCH 11 `3547f51e`                                          |
+| §3       | CSRF Protection (Double-Submit Cookie + HMAC-SHA256)          | §3 of SECURITY_HEADERS_POLICY.md                           | PATCH 11 `3547f51e`                                          |
+| **§4**   | **Session Management**                                        | **§4 of this document**                                    | **(PATCH 11 + PATCH 12 + PATCH 13)**                         |
+| §4.1     | Session token format & lifetime                               | §4.1 of this document                                      | PATCH 12 `db1b5bfd3`                                         |
+| **§4.2** | **Session timeout policy (Q5.3 anchor)**                      | **§4.2 of this document**                                  | **PATCH 12 `db1b5bfd3` (audit), PATCH 13 `edff05258` (PII)** |
+| §4.3     | Session fixation & hijack defenses                            | §4.3 of this document                                      | PATCH 11 + PATCH 12                                          |
+| §5       | Secret Rotation                                               | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §2 | PATCH 12 `db1b5bfd3`                                         |
+| §6       | Audit Logging (hash-chained)                                  | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §3 | PATCH 12 `db1b5bfd3`                                         |
+| §7       | PII Redaction                                                 | `docs/security/PII_REDACTION_POLICY.md`                    | PATCH 13 `edff05258`                                         |
+| §8       | Threat Model                                                  | `docs/security/THREAT_MODEL.md`                            | PATCH 10 `d0fe9107`                                          |
+| §9       | Incident Response                                             | `docs/security/INCIDENT_RESPONSE.md`                       | PATCH 9 GHOST-SHA `d445b721` + `5223d3b5`                    |
+| §10      | Encryption-in-transit (TLS)                                   | `docs/security/SECURITY_HEADERS_POLICY.md` §2 (HSTS)       | PATCH 11 `3547f51e`                                          |
+| §11      | Encryption-at-rest (Tauri IPC)                                | (forthcoming PATCH 15)                                     | PATCH 15 (PICK D future)                                     |
+| §12      | Rate Limiting & Circuit Breaking                              | (forthcoming PATCH 14)                                     | PATCH 14 (PICK B current)                                    |
 
 ### §1.2 Authority and supersession
 
@@ -38,13 +38,13 @@ This document supersedes any conflicting security guidance in the codebase. Wher
 
 ### §1.3 Compliance scope
 
-| Regime | Mapped sub-policies | Status |
-|---|---|---|
-| SOC 2 Type II | §2 (CC6.1), §3 (CC6.1), §4 (CC6.1, CC6.7), §5 (CC6.1, CC6.7), §6 (CC7.2, CC7.3), §7 (CC6.7, P4.1), §8 (CC7.1), §9 (CC7.4, CC8.1) | 13/13 TSC closed (CC6.1, CC6.3, CC6.6, CC6.7, CC6.8, CC7.1, CC7.2, CC7.3, CC7.4, A1.1, A1.2, CC8.1, P4.1) |
-| GDPR | §4 (Art. 5, Art. 32), §7 (Art. 5, Art. 25, Art. 32) | Art. 5/25/32 closed |
-| CCPA | §7 (§1798.105 right to erasure via redaction-on-demand) | §1798.105 closed |
-| PCI DSS (consumer financial planning app) | §4.2 (session timeout), §7 (PII redaction of card-like data) | Self-attested: out-of-scope (no card storage) |
-| NIST SP 800-63B | §4.1, §4.2 (re-auth, session lifetime) | Aligned to AAL2 |
+| Regime                                    | Mapped sub-policies                                                                                                              | Status                                                                                                    |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| SOC 2 Type II                             | §2 (CC6.1), §3 (CC6.1), §4 (CC6.1, CC6.7), §5 (CC6.1, CC6.7), §6 (CC7.2, CC7.3), §7 (CC6.7, P4.1), §8 (CC7.1), §9 (CC7.4, CC8.1) | 13/13 TSC closed (CC6.1, CC6.3, CC6.6, CC6.7, CC6.8, CC7.1, CC7.2, CC7.3, CC7.4, A1.1, A1.2, CC8.1, P4.1) |
+| GDPR                                      | §4 (Art. 5, Art. 32), §7 (Art. 5, Art. 25, Art. 32)                                                                              | Art. 5/25/32 closed                                                                                       |
+| CCPA                                      | §7 (§1798.105 right to erasure via redaction-on-demand)                                                                          | §1798.105 closed                                                                                          |
+| PCI DSS (consumer financial planning app) | §4.2 (session timeout), §7 (PII redaction of card-like data)                                                                     | Self-attested: out-of-scope (no card storage)                                                             |
+| NIST SP 800-63B                           | §4.1, §4.2 (re-auth, session lifetime)                                                                                           | Aligned to AAL2                                                                                           |
 
 ---
 
@@ -70,16 +70,16 @@ Session management covers the full lifecycle of an authenticated user session: t
 
 ### §4.1 Session token format and lifetime
 
-| Property | Value | Source |
-|---|---|---|
-| Token format | `sess_<128-bit base64url>` (256 bits entropy) | PATCH 11 `3547f51e` |
-| Storage | Tauri secure storage (OS keychain) | Tauri `tauri-plugin-store` encrypted at rest |
-| Idle TTL | 900 seconds (15 minutes) | §4.2 below |
-| Absolute TTL | 1800 seconds (30 minutes) | §4.2 below |
-| Refresh on activity | Yes (sliding window, capped at absolute TTL) | §4.2.3 below |
-| Cookie flags | `HttpOnly; Secure; SameSite=Strict; Path=/` | PATCH 11 |
-| CSRF token TTL | 3600 seconds (1 hour) | §3 above |
-| Session-cookie binding | IP + User-Agent hash (HMAC-SHA256 truncated to 128 bits) | §4.3.2 |
+| Property               | Value                                                    | Source                                       |
+| ---------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| Token format           | `sess_<128-bit base64url>` (256 bits entropy)            | PATCH 11 `3547f51e`                          |
+| Storage                | Tauri secure storage (OS keychain)                       | Tauri `tauri-plugin-store` encrypted at rest |
+| Idle TTL               | 900 seconds (15 minutes)                                 | §4.2 below                                   |
+| Absolute TTL           | 1800 seconds (30 minutes)                                | §4.2 below                                   |
+| Refresh on activity    | Yes (sliding window, capped at absolute TTL)             | §4.2.3 below                                 |
+| Cookie flags           | `HttpOnly; Secure; SameSite=Strict; Path=/`              | PATCH 11                                     |
+| CSRF token TTL         | 3600 seconds (1 hour)                                    | §3 above                                     |
+| Session-cookie binding | IP + User-Agent hash (HMAC-SHA256 truncated to 128 bits) | §4.3.2                                       |
 
 ### §4.2 Session timeout policy (Q5.3 anchor — A11Y_READINESS v0.5 v2 A11Y-P1-2)
 
@@ -124,12 +124,12 @@ This section is the authoritative source for the Q5.3 "Session timeout policy" c
 
 **Two-tier re-auth model:**
 
-| Operation class | Re-auth required after idle timeout? | Re-auth method |
-|---|---|---|
-| **Read-only** (view dashboard, view projections, view accounts) | No (auto-extend on next interaction) | N/A |
-| **Mutating low-sensitivity** (add note, edit tag, view document) | No (auto-extend on next interaction) | N/A |
-| **Mutating high-sensitivity** (transfer funds, change beneficiary, export data, change password, change MFA) | **Yes — step-up re-auth** | WebAuthn (preferred) or TOTP (fallback) |
-| **Mutating critical** (close account, delete all data, change primary email) | **Yes — step-up re-auth + re-confirmation** | WebAuthn + re-typed password OR WebAuthn + fresh TOTP within 60s |
+| Operation class                                                                                              | Re-auth required after idle timeout?        | Re-auth method                                                   |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------- | ---------------------------------------------------------------- |
+| **Read-only** (view dashboard, view projections, view accounts)                                              | No (auto-extend on next interaction)        | N/A                                                              |
+| **Mutating low-sensitivity** (add note, edit tag, view document)                                             | No (auto-extend on next interaction)        | N/A                                                              |
+| **Mutating high-sensitivity** (transfer funds, change beneficiary, export data, change password, change MFA) | **Yes — step-up re-auth**                   | WebAuthn (preferred) or TOTP (fallback)                          |
+| **Mutating critical** (close account, delete all data, change primary email)                                 | **Yes — step-up re-auth + re-confirmation** | WebAuthn + re-typed password OR WebAuthn + fresh TOTP within 60s |
 
 **Step-up re-auth window:** The server flags a session with `pendingStepUp = true` after idle timeout. Any high-sensitivity or critical request in this state returns HTTP 401 with `X-Step-Up-Required: true` header. The client then triggers the re-auth flow. On success, `pendingStepUp = false` and `lastUserActivityAt = now()`.
 
@@ -165,41 +165,41 @@ Every session event (creation, idle timeout, absolute timeout, step-up challenge
 
 #### §4.2.8 WCAG 2.2 alignment (cross-witness with Artemis)
 
-| WCAG SC | Requirement | §4.2 implementation |
-|---|---|---|
-| 2.2.1 (Timing Adjustable) | User can turn off, adjust, or extend time limits | §4.2.1.4 client-side warning with "Continue session" option; user-initiated activity extends |
-| 2.2.4 (Interruptions) | Interruptions (logout banner) can be deferred | §4.2.5.3 banner is non-modal and can be dismissed without logging out (user clicks "Log out" only if they want) |
-| 4.1.3 (Status Messages) | Status messages programmatically determinable | §4.2.5.3 `aria-live=polite` on session-ended banner |
-| 3.3.4 (Error Prevention, Legal/Financial) | Reversible, checked, or confirmed submissions | §4.2.4 step-up re-auth for high-sensitivity operations (transfer, beneficiary change) |
+| WCAG SC                                   | Requirement                                      | §4.2 implementation                                                                                             |
+| ----------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| 2.2.1 (Timing Adjustable)                 | User can turn off, adjust, or extend time limits | §4.2.1.4 client-side warning with "Continue session" option; user-initiated activity extends                    |
+| 2.2.4 (Interruptions)                     | Interruptions (logout banner) can be deferred    | §4.2.5.3 banner is non-modal and can be dismissed without logging out (user clicks "Log out" only if they want) |
+| 4.1.3 (Status Messages)                   | Status messages programmatically determinable    | §4.2.5.3 `aria-live=polite` on session-ended banner                                                             |
+| 3.3.4 (Error Prevention, Legal/Financial) | Reversible, checked, or confirmed submissions    | §4.2.4 step-up re-auth for high-sensitivity operations (transfer, beneficiary change)                           |
 
 #### §4.2.9 CWE / SOC 2 / GDPR mapping
 
-| Standard | Control | §4.2 implementation |
-|---|---|---|
-| CWE-613 | Insufficient Session Expiration | §4.2.1, §4.2.2 (idle + absolute timeouts enforced server-side, not just client-side) |
-| CWE-384 | Session Fixation | §4.3.1 (new sessionId on every privilege change) |
-| CWE-287 | Improper Authentication | §4.2.4 (step-up re-auth for high-sensitivity) |
-| CWE-384 | Cross-Site Request Forgery | §3 (CSRF token bound to session) |
-| SOC 2 CC6.1 | Logical access controls | §4.2.1, §4.2.2, §4.2.4 |
-| SOC 2 CC6.6 | Logical access — external boundary | §4.2.4, §4.2.6 |
-| SOC 2 CC6.7 | Restriction of data flow | §4.2.5, §4.2.6 (token invalidation) |
-| SOC 2 CC6.8 | Unauthorized changes prevented/detected | §4.2.4 (step-up re-auth) |
-| SOC 2 P5.2 | Privacy — choice/consent on data sharing | §4.2.5 (logout of all devices) |
-| GDPR Art. 5(1)(c) | Data minimization | §4.2.7 (PII redaction in audit) |
-| GDPR Art. 25 | Privacy by Design | §4.2.1-§4.2.7 (defaults to 15-min idle) |
-| GDPR Art. 32 | Security of processing | §4.2.4 (step-up), §4.2.5 (atomic termination) |
-| CCPA §1798.105 | Right to erasure | §4.2.5 (user-initiated session deletion cascade) |
+| Standard          | Control                                  | §4.2 implementation                                                                  |
+| ----------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
+| CWE-613           | Insufficient Session Expiration          | §4.2.1, §4.2.2 (idle + absolute timeouts enforced server-side, not just client-side) |
+| CWE-384           | Session Fixation                         | §4.3.1 (new sessionId on every privilege change)                                     |
+| CWE-287           | Improper Authentication                  | §4.2.4 (step-up re-auth for high-sensitivity)                                        |
+| CWE-384           | Cross-Site Request Forgery               | §3 (CSRF token bound to session)                                                     |
+| SOC 2 CC6.1       | Logical access controls                  | §4.2.1, §4.2.2, §4.2.4                                                               |
+| SOC 2 CC6.6       | Logical access — external boundary       | §4.2.4, §4.2.6                                                                       |
+| SOC 2 CC6.7       | Restriction of data flow                 | §4.2.5, §4.2.6 (token invalidation)                                                  |
+| SOC 2 CC6.8       | Unauthorized changes prevented/detected  | §4.2.4 (step-up re-auth)                                                             |
+| SOC 2 P5.2        | Privacy — choice/consent on data sharing | §4.2.5 (logout of all devices)                                                       |
+| GDPR Art. 5(1)(c) | Data minimization                        | §4.2.7 (PII redaction in audit)                                                      |
+| GDPR Art. 25      | Privacy by Design                        | §4.2.1-§4.2.7 (defaults to 15-min idle)                                              |
+| GDPR Art. 32      | Security of processing                   | §4.2.4 (step-up), §4.2.5 (atomic termination)                                        |
+| CCPA §1798.105    | Right to erasure                         | §4.2.5 (user-initiated session deletion cascade)                                     |
 
 #### §4.2.10 Threat model coverage
 
-| Threat (STRIDE) | Mitigation in §4.2 |
-|---|---|
-| **S**poofing (stolen token reuse) | §4.2.6 (sessionId invalidation on termination); §4.3 (session binding) |
-| **T**ampering (audit log forgery) | §4.2.7 (PATCH 12 hash chain); §4.2.5 (every termination is audited) |
-| **R**epudiation (user denies logout) | §4.2.5, §4.2.7 (audit log with actor, sessionId, timestamp) |
-| **I**nformation disclosure (PII in session) | §4.2.7 (PATCH 13 PIIRedactor on audit payloads) |
-| **D**enial of service (session-table flooding) | §4.2.1 (timeout reduces table bloat); PATCH 14 (rate limiting) forthcoming |
-| **E**levation of privilege (idle hijack → high-value op) | §4.2.4 (step-up re-auth) |
+| Threat (STRIDE)                                          | Mitigation in §4.2                                                         |
+| -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **S**poofing (stolen token reuse)                        | §4.2.6 (sessionId invalidation on termination); §4.3 (session binding)     |
+| **T**ampering (audit log forgery)                        | §4.2.7 (PATCH 12 hash chain); §4.2.5 (every termination is audited)        |
+| **R**epudiation (user denies logout)                     | §4.2.5, §4.2.7 (audit log with actor, sessionId, timestamp)                |
+| **I**nformation disclosure (PII in session)              | §4.2.7 (PATCH 13 PIIRedactor on audit payloads)                            |
+| **D**enial of service (session-table flooding)           | §4.2.1 (timeout reduces table bloat); PATCH 14 (rate limiting) forthcoming |
+| **E**levation of privilege (idle hijack → high-value op) | §4.2.4 (step-up re-auth)                                                   |
 
 ### §4.3 Session fixation and hijack defenses
 
@@ -279,20 +279,20 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 ## §13. Change Log
 
-| Date | Version | Author | Change |
-|---|---|---|---|
-| 2026-06-16 | 1.0.0 | Hephaestus | Initial master policy; §4.2 session timeout policy (Q5.3 anchor) drafted as PICK A of CAVEMAN PERSIST PICK-CHAIN 2026-06-16. Anchors A11Y_READINESS v0.6 §4.2. |
+| Date       | Version | Author     | Change                                                                                                                                                         |
+| ---------- | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-06-16 | 1.0.0   | Hephaestus | Initial master policy; §4.2 session timeout policy (Q5.3 anchor) drafted as PICK A of CAVEMAN PERSIST PICK-CHAIN 2026-06-16. Anchors A11Y_READINESS v0.6 §4.2. |
 
 ---
 
 ## §14. Cross-Muse Cross-Witness
 
-| Muse | Section | Cross-witness status |
-|---|---|---|
-| **Artemis** (A11Y) | §4.2.8 (WCAG 2.2 alignment) | PENDING — A11Y v0.6 §4.2 verification request (PICK A current); Hephaestus authored §4.2, awaits Artemis ACCEPT |
-| **Themis** (Compliance) | §1.3 (compliance scope), §4.2.9 (CWE/SOC 2/GDPR mapping) | PENDING — Themis to verify regulatory traceability |
-| **Calliope** (Documentation) | §13 (change log) | PENDING — Calliope to verify document quality |
-| **Vulcan** (Build/Deploy) | §11 (encryption-at-rest Tauri IPC) | PENDING — Vulcan to verify Tauri IPC coverage |
-| **Mnemosyne** (Memory/Persistence) | §6 (audit log retention) | PENDING — Mnemosyne to verify retention policy |
-| **Chronos** (Time) | §4.2.7 (audit chain integrity under session lifecycle), V3 e.ix.7 Edge Case #14 | LOCKED — Chronos cross-witness on PATCH 12 AuditLogger covers this |
-| **Prometheus** (Performance) | §4.2.10 (DoS — session flooding) | PENDING — Prometheus to verify timeout values are performant |
+| Muse                               | Section                                                                         | Cross-witness status                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Artemis** (A11Y)                 | §4.2.8 (WCAG 2.2 alignment)                                                     | PENDING — A11Y v0.6 §4.2 verification request (PICK A current); Hephaestus authored §4.2, awaits Artemis ACCEPT |
+| **Themis** (Compliance)            | §1.3 (compliance scope), §4.2.9 (CWE/SOC 2/GDPR mapping)                        | PENDING — Themis to verify regulatory traceability                                                              |
+| **Calliope** (Documentation)       | §13 (change log)                                                                | PENDING — Calliope to verify document quality                                                                   |
+| **Vulcan** (Build/Deploy)          | §11 (encryption-at-rest Tauri IPC)                                              | PENDING — Vulcan to verify Tauri IPC coverage                                                                   |
+| **Mnemosyne** (Memory/Persistence) | §6 (audit log retention)                                                        | PENDING — Mnemosyne to verify retention policy                                                                  |
+| **Chronos** (Time)                 | §4.2.7 (audit chain integrity under session lifecycle), V3 e.ix.7 Edge Case #14 | LOCKED — Chronos cross-witness on PATCH 12 AuditLogger covers this                                              |
+| **Prometheus** (Performance)       | §4.2.10 (DoS — session flooding)                                                | PENDING — Prometheus to verify timeout values are performant                                                    |

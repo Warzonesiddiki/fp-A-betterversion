@@ -20,14 +20,14 @@
 
 ### 2.1 v0.5 v2 baseline (5/10)
 
-| # | Component | Focus Restore | Status |
-|---|-----------|---------------|--------|
-| 1 | `Modal.tsx` (open) | ✅ focus to close button | OK |
-| 2 | `Modal.tsx` (close) | ❌ focus lost (not restored to trigger) | **GAP** |
-| 3 | `Toast.tsx` (auto-dismiss) | ❌ focus to body, not trigger | **GAP** |
-| 4 | `Dropdown.tsx` (open) | ✅ focus to first item | OK |
-| 5 | `Dropdown.tsx` (close) | ❌ focus to body | **GAP** |
-| 6 | Route navigation | ❌ focus to body, not `<h1>` | **GAP** |
+| #   | Component                  | Focus Restore                           | Status  |
+| --- | -------------------------- | --------------------------------------- | ------- |
+| 1   | `Modal.tsx` (open)         | ✅ focus to close button                | OK      |
+| 2   | `Modal.tsx` (close)        | ❌ focus lost (not restored to trigger) | **GAP** |
+| 3   | `Toast.tsx` (auto-dismiss) | ❌ focus to body, not trigger           | **GAP** |
+| 4   | `Dropdown.tsx` (open)      | ✅ focus to first item                  | OK      |
+| 5   | `Dropdown.tsx` (close)     | ❌ focus to body                        | **GAP** |
+| 6   | Route navigation           | ❌ focus to body, not `<h1>`            | **GAP** |
 
 **4-ICP Vera C2 (Logic):** 4 of 6 components have focus-restore gaps = 5/10.
 
@@ -59,6 +59,7 @@ export function useFocusRestore(): void {
 ```
 
 **Applies to:**
+
 - `Modal.tsx` (close handler calls `useFocusRestore`)
 - `Toast.tsx` (auto-dismiss hook)
 - `Dropdown.tsx` (close handler)
@@ -99,6 +100,7 @@ export function useFocusRestore(): void {
 ---
 
 **3-witness (D-002):**
+
 1. file:line: `docs/a11y/Q5_2_FOCUS_RESTORE.md:1-71` (this commit)
 2. wc -l: 71 lines
 3. md5sum: pending commit

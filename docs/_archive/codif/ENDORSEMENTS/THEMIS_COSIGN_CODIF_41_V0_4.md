@@ -95,6 +95,7 @@ Doc-focused Muses cite SHAs extensively in their deliverables (5th-ICP verdicts,
 ### 4.2 Themis (Compliance) — direct downstream beneficiary
 
 My COMPLIANCE precheck (v0.1 at `1f353d08`, v0.2 at `f6c58374`, v0.3 at `0610e56f0`) cites multiple SHAs that benefit from E.1+E.2 protection:
+
 - 657d10524 (COMPLIANCE v0.1) — REAL, canonical ✓
 - f4efa362 (COMPLIANCE v0.2) — REAL, canonical ✓
 - 1f353d08 (used in Strategos INDEX v0.7) — was GHOST, corrected in v0.7.1 ✓
@@ -130,25 +131,25 @@ My COMPLIANCE precheck (v0.1 at `1f353d08`, v0.2 at `f6c58374`, v0.3 at `0610e56
 
 **E.1 GHOST-MISSING check on all SHAs cited in this co-sign file:**
 
-| SHA | Cited As | `git rev-parse` Result | Status |
-|---|---|---|---|
-| `2302c0f34` | T-MN-048 v0.4 FINAL target | REAL (commit exists) | ✓ CANONICAL |
-| `52717e817` | T-MN-048 v0.5 RATIFIED | REAL (commit exists) | ✓ CANONICAL |
-| `2fb601a35` | Strategos 5th-ICP Verdict #010 | REAL (commit exists) | ✓ CANONICAL |
-| `19fc78d6e` | Themis V0.1 co-sign | REAL (commit exists) | ✓ CANONICAL |
-| `84daae84` | Themis V0.3 co-sign (Apollo bundle) | REAL (commit exists) | ✓ CANONICAL |
-| `9df87000d` | Apollo 11th co-sign RULE #55 | REAL (commit exists) | ✓ CANONICAL |
-| `babc6780` | Hephaestus 5th-ICP seal v0.5 | REAL (commit exists) | ✓ CANONICAL |
-| `657d10524` | COMPLIANCE v0.1 SHIP | REAL (commit exists) | ✓ CANONICAL |
-| `f4efa362` | COMPLIANCE v0.2 SHIP | REAL (commit exists) | ✓ CANONICAL |
-| `0610e56f0` | COMPLIANCE v0.3 SHIP | REAL (commit exists) | ✓ CANONICAL |
-| `70d548da` | PERSONA_UX v0.1 (DRIFT case) | REAL (commit exists) | ✓ DRIFT (superseded by c0917f588) |
-| `c0917f588` | PERSONA_UX canonical | REAL (commit exists) | ✓ CANONICAL |
-| `d984569a` | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE |
-| `1f353d08` | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE |
-| `f6c58374` | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE |
-| `8b340664` | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE |
-| `917630df` | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE |
+| SHA         | Cited As                            | `git rev-parse` Result   | Status                            |
+| ----------- | ----------------------------------- | ------------------------ | --------------------------------- |
+| `2302c0f34` | T-MN-048 v0.4 FINAL target          | REAL (commit exists)     | ✓ CANONICAL                       |
+| `52717e817` | T-MN-048 v0.5 RATIFIED              | REAL (commit exists)     | ✓ CANONICAL                       |
+| `2fb601a35` | Strategos 5th-ICP Verdict #010      | REAL (commit exists)     | ✓ CANONICAL                       |
+| `19fc78d6e` | Themis V0.1 co-sign                 | REAL (commit exists)     | ✓ CANONICAL                       |
+| `84daae84`  | Themis V0.3 co-sign (Apollo bundle) | REAL (commit exists)     | ✓ CANONICAL                       |
+| `9df87000d` | Apollo 11th co-sign RULE #55        | REAL (commit exists)     | ✓ CANONICAL                       |
+| `babc6780`  | Hephaestus 5th-ICP seal v0.5        | REAL (commit exists)     | ✓ CANONICAL                       |
+| `657d10524` | COMPLIANCE v0.1 SHIP                | REAL (commit exists)     | ✓ CANONICAL                       |
+| `f4efa362`  | COMPLIANCE v0.2 SHIP                | REAL (commit exists)     | ✓ CANONICAL                       |
+| `0610e56f0` | COMPLIANCE v0.3 SHIP                | REAL (commit exists)     | ✓ CANONICAL                       |
+| `70d548da`  | PERSONA_UX v0.1 (DRIFT case)        | REAL (commit exists)     | ✓ DRIFT (superseded by c0917f588) |
+| `c0917f588` | PERSONA_UX canonical                | REAL (commit exists)     | ✓ CANONICAL                       |
+| `d984569a`  | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE                    |
+| `1f353d08`  | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE                    |
+| `f6c58374`  | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE                    |
+| `8b340664`  | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE                    |
+| `917630df`  | GHOST SHA (audit-trailed by Themis) | GHOST (not in `git log`) | ✓ E.1 EVIDENCE                    |
 
 **E.1 GHOST check:** 12/12 non-audit-trail SHAs REAL, 5/5 GHOST audit-trail SHAs confirmed GHOST. **0 unexpected GHOST, 0 unexpected DRIFT.** ✓
 **E.2 DRIFT check:** 1/1 known DRIFT case (70d548da) properly flagged. All other SHAs canonical. ✓

@@ -11,25 +11,25 @@
 
 5th-ICP E2E/Tests cross-witness on the Themis 6th-ICP COMPLIANCE cross-witness of Hephaestus PATCH 14 (RateLimiter + CircuitBreaker). This adds the **E2E/Tests-domain lens** to the multi-muse witness chain with focus on rate limiting and circuit breaker patterns.
 
-| Eye | Muse | Lens | SHA |
-|-----|------|------|-----|
-| 1st-eye | Hephaestus | 4-ICP (I/S/C/P) | `46ab37c5c` |
-| 2nd-eye | Themis | 6th-ICP (COMPLIANCE/Audit-Trail) | `877b382e0` |
-| 3rd-eye | Sentinel | 5th-ICP (E2E/Tests) | THIS DOCUMENT |
+| Eye     | Muse       | Lens                             | SHA           |
+| ------- | ---------- | -------------------------------- | ------------- |
+| 1st-eye | Hephaestus | 4-ICP (I/S/C/P)                  | `46ab37c5c`   |
+| 2nd-eye | Themis     | 6th-ICP (COMPLIANCE/Audit-Trail) | `877b382e0`   |
+| 3rd-eye | Sentinel   | 5th-ICP (E2E/Tests)              | THIS DOCUMENT |
 
 ---
 
 ## 1. 5-ICP E2E/TESTS VERDICT: ACCEPT 8.5/10
 
-| Sub-domain | Score | Verdict |
-|------------|-------|---------|
-| Unit tests (vitest) | 9.5/10 | 52/52 tests pass; 26 test groups covering all 6 decision codes + 3 states |
-| Integration tests | 8.5/10 | Cross-service integration tested (RateLimiter + AuditLogger + CircuitBreaker) |
-| E2E tests | N/A | Service-only — no UI, no E2E applicable |
-| TypeScript | 9.5/10 | 0 errors (per Apollo P0 cascade) |
-| Test data realism | 8.5/10 | 8 default policies + 5 default breakers with realistic config |
-| Documentation tests | 9.0/10 | 10-section policy doc with cross-witness chain |
-| Load/DoS tests | 5.0/10 | Token-bucket logic tested, but not load-tested at scale |
+| Sub-domain          | Score  | Verdict                                                                       |
+| ------------------- | ------ | ----------------------------------------------------------------------------- |
+| Unit tests (vitest) | 9.5/10 | 52/52 tests pass; 26 test groups covering all 6 decision codes + 3 states     |
+| Integration tests   | 8.5/10 | Cross-service integration tested (RateLimiter + AuditLogger + CircuitBreaker) |
+| E2E tests           | N/A    | Service-only — no UI, no E2E applicable                                       |
+| TypeScript          | 9.5/10 | 0 errors (per Apollo P0 cascade)                                              |
+| Test data realism   | 8.5/10 | 8 default policies + 5 default breakers with realistic config                 |
+| Documentation tests | 9.0/10 | 10-section policy doc with cross-witness chain                                |
+| Load/DoS tests      | 5.0/10 | Token-bucket logic tested, but not load-tested at scale                       |
 
 **5-ICP weighted average**: 8.5/10 — ACCEPT (comprehensive unit + cross-service; E2E + load gaps)
 
@@ -50,6 +50,7 @@ For PATCH 14 RateLimiter + CircuitBreaker at `46ab37c5c`:
 ### 2.2 W2 real test code (semantic)
 
 26 test groups in `RateLimiter-CircuitBreaker.test.ts`:
+
 - RateLimiter: constants, init, registration, allow/deny, refill, sustained-deny, manual quarantine, cost > 1, policy disabled, global cap, backpressure, release, stats
 - CircuitBreaker: closed/open/half-open, manual ops, rolling rate, disabled policy, execute()
 - Cross-service integration: RateLimiter + CircuitBreaker + AuditLogger
@@ -111,6 +112,7 @@ The 10 AS-BUILT journeys cover 16 sector dimensions. Rate-limiting is an infrast
 ## 4. THREAT MODELING (5th-ICP E2E/Tests lens)
 
 6 CWE closed by PATCH 14:
+
 - CWE-770 (allocation of resources without limits or throttling) — RateLimiter
 - CWE-400 (uncontrolled resource consumption) — RateLimiter + CircuitBreaker
 - CWE-799 (improper control of interaction frequency) — RateLimiter
@@ -121,6 +123,7 @@ The 10 AS-BUILT journeys cover 16 sector dimensions. Rate-limiting is an infrast
 **CWE coverage score**: 9.5/10 — comprehensive
 
 **SOC 2 TSC mapping**:
+
 - CC6.6 (Logical Access Controls — Transmission): rate-limit
 - A1.1 (Availability — Capacity): circuit breaker
 - A1.2 (Availability — Environmental Protections): rate-limit + circuit breaker
@@ -153,15 +156,15 @@ Auto-quarantine on sustained-deny should trigger PATCH 9 IncidentResponse. Recom
 
 ## 6. 5-ICP VERDICT
 
-| Sub-domain | Score |
-|------------|-------|
-| Unit tests | 9.5/10 |
-| Integration | 8.5/10 |
-| E2E (N/A for service) | N/A |
-| TypeScript | 9.5/10 |
-| Test data realism | 8.5/10 |
-| Documentation tests | 9.0/10 |
-| Load/DoS tests | 5.0/10 |
+| Sub-domain             | Score      |
+| ---------------------- | ---------- |
+| Unit tests             | 9.5/10     |
+| Integration            | 8.5/10     |
+| E2E (N/A for service)  | N/A        |
+| TypeScript             | 9.5/10     |
+| Test data realism      | 8.5/10     |
+| Documentation tests    | 9.0/10     |
+| Load/DoS tests         | 5.0/10     |
 | **5-ICP weighted avg** | **8.5/10** |
 
 **Verdict**: ACCEPT — PATCH 14 RateLimiter + CircuitBreaker is a high-quality security deliverable with strong unit coverage (52/52 vitest), cross-service integration tests, and comprehensive documentation. F1 is P2 (real AuditLogger integration gap), F2-F4 are P3 minor. Not blocking RATIFICATION GATE.
@@ -170,12 +173,12 @@ Auto-quarantine on sustained-deny should trigger PATCH 9 IncidentResponse. Recom
 
 ## 7. SHAs VERIFIED (RULE #53)
 
-| SHA | Type | Status |
-|-----|------|--------|
+| SHA         | Type   | Status                                                     |
+| ----------- | ------ | ---------------------------------------------------------- |
 | `46ab37c5c` | commit | ✅ REAL (Hephaestus PATCH 14 RateLimiter + CircuitBreaker) |
-| `877b382e0` | commit | ✅ REAL (Themis 6th-ICP cross-witness) |
-| `384b8ac96` | commit | ✅ REAL (SECURITY.md v1.0.0 §12) |
-| `db1b5bfd3` | commit | ✅ REAL (PATCH 12 AuditLogger reference) |
+| `877b382e0` | commit | ✅ REAL (Themis 6th-ICP cross-witness)                     |
+| `384b8ac96` | commit | ✅ REAL (SECURITY.md v1.0.0 §12)                           |
+| `db1b5bfd3` | commit | ✅ REAL (PATCH 12 AuditLogger reference)                   |
 
 All 4 SHAs verified via `git cat-file -t` returning `commit`. No GHOST-SHAs detected.
 

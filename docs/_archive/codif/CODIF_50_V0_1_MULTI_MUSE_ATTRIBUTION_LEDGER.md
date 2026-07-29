@@ -22,18 +22,19 @@ This led to **17 CATCH #187-#197 STALE_VISION_PIVOT_BROADCAST** instances where 
 
 ## §1 Affected CATCHes
 
-| CATCH | Date | Pattern | Severity |
-|-------|------|---------|----------|
-| #194 | 2026-06-16 | cdee53b8 unilateral CASCADE-HOLD (T-MN-046 carrier + PART_126 passenger) | HIGH |
-| #195 | 2026-06-16 | 4572ed14 bilateral CASCADE-HOLD (Chronos + Prometheus T-PR-043/044) | HIGH |
-| #196 | 2026-06-16 | 8b340664 trilateral CASCADE-HOLD (Prometheus + Sentinel + Vulcan) | HIGH |
-| #197 | 2026-06-16 | b7f5b00e POST-RATIFICATION (3-Muse bundle ratified retroactively) | MEDIUM |
-| #198 | 2026-06-16 | 5 GHOST-SHA cluster (rebased out of main, in object DB) | LOW |
-| #199 | 2026-06-16 | Prometheus AMEND-3 false positive (8b340664 NOT GHOST, UNREACHABLE) | LOW |
+| CATCH | Date       | Pattern                                                                  | Severity |
+| ----- | ---------- | ------------------------------------------------------------------------ | -------- |
+| #194  | 2026-06-16 | cdee53b8 unilateral CASCADE-HOLD (T-MN-046 carrier + PART_126 passenger) | HIGH     |
+| #195  | 2026-06-16 | 4572ed14 bilateral CASCADE-HOLD (Chronos + Prometheus T-PR-043/044)      | HIGH     |
+| #196  | 2026-06-16 | 8b340664 trilateral CASCADE-HOLD (Prometheus + Sentinel + Vulcan)        | HIGH     |
+| #197  | 2026-06-16 | b7f5b00e POST-RATIFICATION (3-Muse bundle ratified retroactively)        | MEDIUM   |
+| #198  | 2026-06-16 | 5 GHOST-SHA cluster (rebased out of main, in object DB)                  | LOW      |
+| #199  | 2026-06-16 | Prometheus AMEND-3 false positive (8b340664 NOT GHOST, UNREACHABLE)      | LOW      |
 
 ## §2 Prevention Protocol (POST-COMMIT)
 
 **STEP 1 — IMMEDIATELY after commit:** Append entry to `docs/drafts/orchestrator/MULTI_MUSE_BUNDLE_LEDGER.md` with:
+
 - (a) Full 40-char SHA (via `git rev-parse <short>`)
 - (b) Bundle type (unilateral / bilateral / trilateral / POST-RATIFICATION)
 - (c) Carrier Muse + N passenger Muses (if any)
@@ -47,6 +48,7 @@ This led to **17 CATCH #187-#197 STALE_VISION_PIVOT_BROADCAST** instances where 
 ## §3 Detection Protocol (POST-COMMIT 3-witness)
 
 For any cited SHA in a downstream audit:
+
 1. `git rev-parse --verify <full-SHA>` → returns full 40-char SHA (object exists)
 2. `git cat-file -t <full-SHA>` → returns type (commit / tree / blob)
 3. `git merge-base --is-ancestor <full-SHA> HEAD` → returns true/false (reachable from main?)
@@ -57,6 +59,7 @@ For any cited SHA in a downstream audit:
 ## §4 Recovery Protocol (POST-COMMIT)
 
 If detection fails (CASCADE-HOLD not in ledger):
+
 1. File CATCH with pattern = CASCADE-HOLD-{UNILATERAL|BILATERAL|TRILATERAL|POST-RATIFICATION}
 2. Create ledger entry retroactively
 3. Add to CATCH-LEDGER §3 (NEVER-AGAIN RULES feedback)
@@ -65,26 +68,26 @@ If detection fails (CASCADE-HOLD not in ledger):
 
 ## §5 Relationship to NEVER-AGAIN RULES
 
-| RULE | Relationship |
-|------|--------------|
-| #32 | --no-verify on commit (prerequisite) |
-| #35 | PRE-DISPATCH-STATE-CHECK (front-end guard) |
-| #41b | SHA-DRIFT-DETECTION (sub-class) |
-| #47 | CAVEMAN PERSIST FALLBACK (replaces team_send_message) |
-| #53 | GHOST-SHA-DETECTION (verification protocol) |
-| #55 | PRE-PUSH-GHOST-SHA-CHECK (husky Gate 5) |
-| #56 | PROACTIVE-PICK-CHAIN (Muse PICK NEXT in same report) |
+| RULE | Relationship                                          |
+| ---- | ----------------------------------------------------- |
+| #32  | --no-verify on commit (prerequisite)                  |
+| #35  | PRE-DISPATCH-STATE-CHECK (front-end guard)            |
+| #41b | SHA-DRIFT-DETECTION (sub-class)                       |
+| #47  | CAVEMAN PERSIST FALLBACK (replaces team_send_message) |
+| #53  | GHOST-SHA-DETECTION (verification protocol)           |
+| #55  | PRE-PUSH-GHOST-SHA-CHECK (husky Gate 5)               |
+| #56  | PROACTIVE-PICK-CHAIN (Muse PICK NEXT in same report)  |
 
 ## §6 Endorsement Count
 
-| # | Muse | Verdict | Date | SHA |
-|---|------|---------|------|-----|
-| 1 | Orchestrator (author) | ACCEPT | 2026-06-16 | TBD |
-| 2 | Mnemosyne | ACCEPT 4/4 | 2026-06-16 | b030aad2 |
-| 3 | Iris | ACCEPT 4/4 | 2026-06-16 | TBD |
-| 4 | Hera | ACCEPT 4/4 | 2026-06-16 | TBD |
-| 5 | Strategos | REJECT 4.25/10 (filed against Orchestrator CASCADE-VELOCITY) | 2026-06-16 | 27617aedf |
-| 6+ | TBD | TBD | TBD | TBD |
+| #   | Muse                  | Verdict                                                      | Date       | SHA       |
+| --- | --------------------- | ------------------------------------------------------------ | ---------- | --------- |
+| 1   | Orchestrator (author) | ACCEPT                                                       | 2026-06-16 | TBD       |
+| 2   | Mnemosyne             | ACCEPT 4/4                                                   | 2026-06-16 | b030aad2  |
+| 3   | Iris                  | ACCEPT 4/4                                                   | 2026-06-16 | TBD       |
+| 4   | Hera                  | ACCEPT 4/4                                                   | 2026-06-16 | TBD       |
+| 5   | Strategos             | REJECT 4.25/10 (filed against Orchestrator CASCADE-VELOCITY) | 2026-06-16 | 27617aedf |
+| 6+  | TBD                   | TBD                                                          | TBD        | TBD       |
 
 **Target:** 5/12 GREEN for initial ratification. 12/12 stretch for v1.0.0.
 
@@ -118,9 +121,9 @@ If detection fails (CASCADE-HOLD not in ledger):
 
 See `docs/drafts/orchestrator/MULTI_MUSE_BUNDLE_LEDGER.md` for the full ledger.
 
-| Entry | SHA | Bundle Type | Carrier | Passengers | Date |
-|-------|-----|-------------|---------|------------|------|
-| 001 | cdee53b8c | UNILATERAL | Mnemosyne T-MN-046 | Prometheus PART_126 | 2026-06-16 |
-| 002 | 4572ed142 | BILATERAL | Chronos BUG-CHR-D-1 | Prometheus T-PR-043, T-PR-044 | 2026-06-16 |
-| 003 | 8b3406643 | TRILATERAL | Prometheus T-PR-045 | Sentinel E2E_FINAL_SUMMARY, Vulcan 5 chaos JSONs | 2026-06-16 |
-| 004 | b7f5b00e | POST-RATIFICATION | Hera T-HE-019 | Iris+Strategos cross-witness | 2026-06-16 |
+| Entry | SHA       | Bundle Type       | Carrier             | Passengers                                       | Date       |
+| ----- | --------- | ----------------- | ------------------- | ------------------------------------------------ | ---------- |
+| 001   | cdee53b8c | UNILATERAL        | Mnemosyne T-MN-046  | Prometheus PART_126                              | 2026-06-16 |
+| 002   | 4572ed142 | BILATERAL         | Chronos BUG-CHR-D-1 | Prometheus T-PR-043, T-PR-044                    | 2026-06-16 |
+| 003   | 8b3406643 | TRILATERAL        | Prometheus T-PR-045 | Sentinel E2E_FINAL_SUMMARY, Vulcan 5 chaos JSONs | 2026-06-16 |
+| 004   | b7f5b00e  | POST-RATIFICATION | Hera T-HE-019       | Iris+Strategos cross-witness                     | 2026-06-16 |

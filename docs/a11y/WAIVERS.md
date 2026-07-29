@@ -130,8 +130,8 @@ _None. Record rejected waivers here for institutional memory._
 > The audit trail format is clear and reviewable. I co-sign as A11Y owner."
 >
 > — **Artemis**, A11Y Domain Owner, `019ecc6f-1c22-73a2-8b4c-f9ff284f2016`
->   Witnessed: 3-witness (file:line + 3rd-Muse cross + 2nd-Muse CONDITIONAL)
->   Date: 2026-06-16 T+0:00 (T-3d 2026-06-19 EOD HARD)
+> Witnessed: 3-witness (file:line + 3rd-Muse cross + 2nd-Muse CONDITIONAL)
+> Date: 2026-06-16 T+0:00 (T-3d 2026-06-19 EOD HARD)
 
 ---
 

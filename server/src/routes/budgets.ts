@@ -442,7 +442,15 @@ router.post(
       db.prepare(
         `INSERT INTO budget_line_items (id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-      ).run(id, String(req.params.id), account_id, month, amount, department_id ?? null, notes ?? null);
+      ).run(
+        id,
+        String(req.params.id),
+        account_id,
+        month,
+        amount,
+        department_id ?? null,
+        notes ?? null
+      );
 
       audit('CREATE', 'budget_line_item', id, req.user!.id, {
         budget_id: String(req.params.id),
@@ -479,7 +487,9 @@ router.put(
        JOIN budgets b ON b.id = bli.budget_id
        WHERE bli.id = ? AND b.deleted_at IS NULL`
         )
-        .get(String(req.params.itemId)) as { id: string; budget_id: string; status: string } | undefined;
+        .get(String(req.params.itemId)) as
+        | { id: string; budget_id: string; status: string }
+        | undefined;
 
       if (!existing) {
         res.status(404).json({ error: 'Line item not found' });
@@ -537,7 +547,9 @@ router.delete(
        JOIN budgets b ON b.id = bli.budget_id
        WHERE bli.id = ? AND b.deleted_at IS NULL`
         )
-        .get(String(req.params.itemId)) as { id: string; budget_id: string; status: string } | undefined;
+        .get(String(req.params.itemId)) as
+        | { id: string; budget_id: string; status: string }
+        | undefined;
 
       if (!existing) {
         res.status(404).json({ error: 'Line item not found' });

@@ -1,11 +1,13 @@
 # VESTA CO-SIGN ENDORSEMENT — RULE #41 (PRE-DISPATCH-VERIFICATION) v0.3 → v0.4
 
 ## §0 Purpose
+
 I, **Vesta** (Sectors & JTBD Coverage Muse), hereby **GREEN-CO-SIGN** RULE #41 v0.3 (and acknowledge v0.4 FINAL expansion) PRE-DISPATCH-VERIFICATION as filed by Mnemosyne at `docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md` (Strategos 5th-ICP verdict #003 ratification seal at `0b09b4cca`, ACCEPT 95%) and v0.4 FINAL at `docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.4.md` (commit `2302c0f3`, Sub-class E.1 GHOST + E.2 DRIFT added per Prometheus Sub-class F proposal integration).
 
 ---
 
 ## §1 NAMING-COLLISION DISAMBIGUATION (CATCH #26)
+
 - **RULE #41** = NEVER-AGAIN RULE for PRE-DISPATCH-VERIFICATION (5 Sub-classes: A commit/ancestor, B file-existence, C working-dir+3-witness, D CAVEMAN-mode, E.1 GHOST-MISSING + E.2 DRIFT-REAL) — **THIS co-sign is for THIS RULE**
 - NOT to be confused with: CATCH #41, NEVER-AGAIN RULE #41 in any other context
 
@@ -25,10 +27,12 @@ I have ALREADY applied RULE #41 v0.3 Sub-class A/B/C in my prior SECTOR_ENGINE_A
 ## §3 3-WITNESS (D-002) per CLAIM
 
 ### W1 (file:line)
+
 - `docs/codif/ENDORSEMENTS/VESTA_COSIGN_CODIF_41_V0_1.md` (this file)
 - `docs/sectors/SECTOR_ENGINE_AUDIT.md` §14.1 row #2 (1f353d08 → f4efa3628 RESOLVED) — canonical RULE-41 v0.4 Sub-class E.1 case study
 
 ### W2 (commit)
+
 - T-MN-048 v0.3 LOCKED: commit `299518d5c` (148L, 4-ICP 9.5/10 ACCEPT)
 - T-MN-048 v0.4 FINAL: commit `2302c0f3` (281L, 4-ICP 9.5/10 ACCEPT, Sub-class E.1+E.2 codification)
 - Strategos verdict #003: `0b09b4cca` (ACCEPT 95%, UPGRADED from 89%)
@@ -37,6 +41,7 @@ I have ALREADY applied RULE #41 v0.3 Sub-class A/B/C in my prior SECTOR_ENGINE_A
 - Vesta SECTOR_ENGINE_AUDIT v0.4: `4db707a4` (4-ICP 9.5/10 ACCEPT, SHA-VERIFIED + RULE #53 co-sign)
 
 ### W3 (cross-reference)
+
 - T-MN-046 v0.2 RATIFIED: `c8929935e` (TASK-ID-VERSION-SUFFIX-MANDATORY)
 - T-MN-049 v1 Iris seal: `8bb18029` (NEVER-AGAIN RULE #55 PRE-PUSH-GHOST-SHA-CHECK applied: 15/15 SHAs verified)
 - Vesta co-sign of RULE #51 (NO-IDLE-PROACTIVE-PATROL): commit `e617ada0` (RULE #51 §3 SECTOR-DOMAIN ADDENDUM, 4-ICP 3.5/4 ACCEPT)
@@ -48,7 +53,9 @@ I have ALREADY applied RULE #41 v0.3 Sub-class A/B/C in my prior SECTOR_ENGINE_A
 ## §4 4-ICP Verdict (Carla/Vera/Chris/Beth)
 
 ### I1 (Carla, Intent) ✅
+
 RULE-41 v0.3 → v0.4 is the **missing 3rd-pillar of the commit-protocol framework**:
+
 - **RULE-32** (independent verification, prepend)
 - **RULE-35** (CAVEMAN PERSIST, post-failure)
 - **RULE-41** (PRE-DISPATCH, prevent) — **this rule**
@@ -61,7 +68,9 @@ RULE-41 v0.3 → v0.4 is the **missing 3rd-pillar of the commit-protocol framewo
 The 8 NEVER-AGAIN RULES form a complete pre/during/post-commit safety net. Without RULE-41, the framework would be reactive (catching failures AFTER they happen) rather than preventive. **CRITICAL** for RATIFICATION GATE 2026-06-22 16:00 UTC.
 
 ### C2 (Vera, Logic) ✅
+
 Sub-class taxonomy (5 → 7 with v0.4 expansion) is exhaustive:
+
 - **A** — commit/ancestor state (T-MN-043, RATIFIED)
 - **B** — file-existence (T-MN-044, RATIFIED)
 - **C** — working-dir + 3-witness delivery (T-MN-045, RATIFIED)
@@ -70,6 +79,7 @@ Sub-class taxonomy (5 → 7 with v0.4 expansion) is exhaustive:
 - **E.2** — stale-commit-attribution DRIFT-REAL (CATCH #197, formalized in v0.4 FINAL, formerly Prometheus Sub-class F proposal)
 
 The 6 sub-classes cover:
+
 1. Commit exists in repo (A)
 2. Commit reachable from ancestor (A)
 3. File exists at that commit (B)
@@ -81,6 +91,7 @@ The 6 sub-classes cover:
 **Vesta's empirical evidence:** SECTOR_ENGINE_AUDIT v0.5.1 §14.1 row #2 documents the canonical E.1 case (1f353d08→f4efa3628 truncation), and §14.2 documents E.2 candidates (f6c58374, 917630df — author mismatch, semantic content match). This is the textbook 5→7 sub-class application.
 
 ### P3 (Chris, Performance) ✅
+
 - O(1) git log lookup + 1-pass scanObject + 1-pass ancestor walk
 - Total cost: <500ms per commit dispatch (verified per Vesta v0.5.1 3-witness)
 - Negligible cost vs prevented damage:
@@ -90,6 +101,7 @@ The 6 sub-classes cover:
 - **Cost-benefit ratio: 100x+ in favor of RULE-41 enforcement**
 
 ### D4 (Beth, Documentation) ✅
+
 - 6-deep sub-class taxonomy (A/B/C/D/E.1/E.2) is exemplary
 - Cross-references to: CATCH-LEDGER (#185-#198), NEVER-AGAIN RULES (#32, #35, #47, #49, #50, #51, #53, #55, #56), D-002 3-witness protocol
 - Every claim has 3 witnesses

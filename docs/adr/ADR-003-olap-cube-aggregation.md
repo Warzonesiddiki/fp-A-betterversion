@@ -24,6 +24,7 @@ FinPlan Pro's 180+ pure calculation engines need OLAP-style aggregation for fina
 7. **Monte Carlo integration** — uncertainty quantification via 10K+ trial runs
 
 Standard OLAP libraries were considered:
+
 - **Apache Druid**: Heavy infrastructure dependency, not embedded
 - **ClickHouse**: External service, requires deployment
 - **Cube.js**: External service, complex setup
@@ -52,6 +53,7 @@ export class OLAPCube {
 ```
 
 **Integration with 180+ engines:**
+
 - All engines output to standard `CubeCell[]` shape
 - Aggregation functions: sum, avg, count, min, max, stddev, var
 - Web Worker pool + SharedArrayBuffer for performance (cross-ref T-PR-082)
@@ -102,14 +104,14 @@ export class OLAPCube {
 
 ## Alternatives Considered
 
-| Library | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **Custom OLAP cube (chosen)** | Embedded, TS-first, tailored to FP&A | Custom code to maintain | ✅ ACCEPT |
-| Apache Druid | Battle-tested, scales to billions | Heavy infra, not embedded | ❌ REJECT |
-| ClickHouse | Column-oriented, fast | External service, requires deploy | ❌ REJECT |
-| Cube.js | Modern, REST API | External service, complex setup | ❌ REJECT |
-| Pivottable.js | UI-focused, simple | No engine layer | ❌ REJECT |
-| Lodash aggregations | Already in stack | Not multi-dimensional, no Monte Carlo | ❌ REJECT |
+| Library                       | Pros                                 | Cons                                  | Verdict   |
+| ----------------------------- | ------------------------------------ | ------------------------------------- | --------- |
+| **Custom OLAP cube (chosen)** | Embedded, TS-first, tailored to FP&A | Custom code to maintain               | ✅ ACCEPT |
+| Apache Druid                  | Battle-tested, scales to billions    | Heavy infra, not embedded             | ❌ REJECT |
+| ClickHouse                    | Column-oriented, fast                | External service, requires deploy     | ❌ REJECT |
+| Cube.js                       | Modern, REST API                     | External service, complex setup       | ❌ REJECT |
+| Pivottable.js                 | UI-focused, simple                   | No engine layer                       | ❌ REJECT |
+| Lodash aggregations           | Already in stack                     | Not multi-dimensional, no Monte Carlo | ❌ REJECT |
 
 ## References
 

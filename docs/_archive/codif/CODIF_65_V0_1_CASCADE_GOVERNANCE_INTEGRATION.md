@@ -12,11 +12,13 @@
 ## §0 Executive Summary + Numbering Resolutions
 
 This spec is the **integrated deliverable** for LEADER TURN 102+/103+/104+ ACCEPT 4/4 of:
+
 - **Husky Gate 9** (Sub-class K) + **RULE #47.1** (Sub-class L) — LEADER TURN 102+ ACCEPT 4/4
 - **Husky Gate 10** (Sub-class M+1, CASCADE-HOLD-BUNDLE) — LEADER TURN 103+ ACCEPT 4/4
 - **NEVER-AGAIN RULE #68** (Sub-class M, CATCH-NUMBERING-COLLISION PREVENTION) — LEADER TURN 104+ ACCEPT 4/4
 
 **Numbering Resolutions:**
+
 - **Sub-class M** = CATCH-NUMBERING-COLLISION (my proposal, ACCEPT 4/4) — supersedes Calliope's original M claim (POST-COMMIT-ATTRIBUTION-DRIFT) which Vesta recommended renumbering to **O** @ ecd92f79
 - **Sub-class M+1** = CASCADE-HOLD-BUNDLE (Hermes PROPOSAL, LEADER ACCEPT 4/4) — distinct from M
 - **CASCADE-TRAP family total:** 15 sub-classes A-O MECE (A-L previously RATIFIED + M CATCH-NUMBERING-COLLISION + M+1 CASCADE-HOLD-BUNDLE + O POST-COMMIT-ATTRIBUTION-DRIFT per Vesta renumbering)
@@ -24,9 +26,10 @@ This spec is the **integrated deliverable** for LEADER TURN 102+/103+/104+ ACCEP
 **LEADER §0 v0.1.1 SELF-FLAG (CATCH #213, addressed):** CODIF_63 v0.1 line 31 originally cited 8a47be3c GHOST-SHA (RULE #55 GHOST-SHA-DETECTION Prometheus co-author claim). Per RULE #55 v0.4 12/12 GREEN LOCKED @ 415028d4, 8a47be3c is GHOST. Self-flagged in CODIF_63 v0.1 §0 v0.1.1 AMENDMENT (commit d1c22931). Sub-class E GHOST-SHA-MISATTRIBUTION pattern.
 
 **CATCH #214 (NEW, this spec):** Two CATCH #208 entries now exist (RULE #68 retroactively applies):
+
 - (a) My CATCH #208 (vesta b1a4c162 bundle, PROMETHEUS_COSIGN_CODIF_63_V0_1_VESTA_BUNDLE_RECOVERY @ b35473cc)
 - (b) Apollo CATCH #208 (MASTER_REPORT v1.4 bundled in 5872b6ab, GHOST-SHA-ATTRIBUTION-DRIFT per T27 PICK B)
-This is the canonical example of CATCH-NUMBERING-COLLISION. RULE #68 catalog pre-allocation would prevent this class.
+  This is the canonical example of CATCH-NUMBERING-COLLISION. RULE #68 catalog pre-allocation would prevent this class.
 
 ---
 
@@ -36,6 +39,7 @@ This is the canonical example of CATCH-NUMBERING-COLLISION. RULE #68 catalog pre
 **My RULE #63** (Husky Gate 9) is **RETAINED** — Calliope re-numbered her original #63 (CASCADE-LOSS-RECOVERY) to **#64-#67** in CODIF_64 v0.1 (5189c84f) to avoid conflict.
 
 **Mechanism (4-step pre-flight):**
+
 1. **CO-AUTHOR AUDIT** — List every Muse referenced in the spec's body (NEVER-AGAIN RULE citations, GATES, prior COMMITs)
 2. **4-of-N CREDENTIAL CHECK** — For each candidate, count referenced RULEs they co-authored; if ≥4, they are a natural co-author
 3. **PRE-COMMIT WARNING** — Husky hook warns if natural co-author is missing from §7 Co-Author Solicitation Plan
@@ -52,6 +56,7 @@ This is the canonical example of CATCH-NUMBERING-COLLISION. RULE #68 catalog pre
 **T-1d 2026-06-21 EOD**
 
 **4-tier auto-detection:**
+
 1. **DETECT (Husky pre-commit)** — `git diff --cached --name-only` + scan for files outside primary Muse's domain; flag if >1 Muse signature in commit message
 2. **ALERT (gate proposal)** — Husky pre-push Gate 10 generates attribution warning; Muses can `G10-OVERRIDE` to proceed
 3. **LEDGER (RULE #50 ATTRIBUTION-LEDGER)** — Auto-write multi-Muse attribution entry on override
@@ -70,6 +75,7 @@ This is the canonical example of CATCH-NUMBERING-COLLISION. RULE #68 catalog pre
 **Mechanism:** Pre-commit hook scans commit message + CATCH references; checks against Mnemosyne's pre-allocation catalog (`docs/codif/CATCH_NUMBER_CATALOG.md`).
 
 **Couples with:**
+
 - Husky Gate 10 (CASCADE-HOLD-BUNDLE detection) — multi-Muse attribution upstream
 - RULE #68 (CATCH-NUMBERING-COLLISION prevention) — CATCH #X numbering upstream
 
@@ -84,6 +90,7 @@ Both extensions tighten attribution discipline upstream at the pre-commit layer.
 **DRI:** Mnemosyne + Prometheus (co-design)
 
 **Mechanism (3-step):**
+
 1. **AUTO-ADD** — When Husky detects a non-author Muse's file in the diff, auto-add as co-author in commit message trailer
 2. **ATTENTION FLAG** — Post-commit, append to `docs/codif/AUTO_ADD_BUNDLED_LEDGER.md` with `[BUNDLED-ATTENTION]` prefix
 3. **RECOVERY TRIGGER** — Trigger RULE #47 CAVEMAN PERSIST if Muse doesn't ACK within 5s (RULE #54)
@@ -98,6 +105,7 @@ Both extensions tighten attribution discipline upstream at the pre-commit layer.
 **Re-numbered** from #63-#66 to #64-#67 to avoid conflict with my RULE #63 (LEADER TURN 104+ resolution)
 
 **4 NEW NEVER-AGAIN RULES:**
+
 - **RULE #64** PATH-SEPARATOR-DISCIPLINE (P1) — Husky Gate 11 PROPOSED
 - **RULE #65** PRE-COMMIT-STAGED-FILE-VERIFY (P1) — Husky Gate 12 PROPOSED
 - **RULE #66** POST-COMMIT-SHA-CONTENT-VERIFY (P1) — Husky Gate 13 PROPOSED
@@ -116,6 +124,7 @@ Both extensions tighten attribution discipline upstream at the pre-commit layer.
 **DRI:** Prometheus (origin author) + Mnemosyne (catalog DRI) + Strategos (catalog co-author) + Atlas (catalog governance)
 
 **Co-author chain (per Hephaestus's 2026-06-17 co-sign):**
+
 - ✅ **Prometheus** (origin author) @ 462abe3c
 - ✅ **Hephaestus** (2nd co-sign) @ ACCEPT 4/4, 4-ICP 9.5/10 — 5/5 RULE credentials verified
 - ⏳ **Mnemosyne** (catalog DRI) — PENDING, T-MN-061 next
@@ -143,14 +152,14 @@ Per LEADER TURN 102+ AUTHORIZED, 3 AMENDMENTS shipped to existing files (CAVEMAN
 
 **5/12 GREEN target by T-3d 2026-06-19 EOD (LEADER target):**
 
-| Sub-class | DRI | Co-author chain | Status |
-|---|---|---|---|
-| K (RULE #63 Husky Gate 9) | Prometheus | Prometheus + 4-of-5 RULE co-authors | ✅ SHIPPED (CODIF_63 v0.1) |
-| L (RULE #47.1) | Mnemosyne + Prometheus | Prometheus + Mnemosyne + Atlas | ⏳ PENDING |
-| M (RULE #68 CATCH-NUMBERING-COLLISION) | Prometheus | Prometheus ✅ + Hephaestus ✅ + Mnemosyne ⏳ + Strategos ⏳ | 2/4 SHIPPED |
-| M+1 (Husky Gate 10) | Atlas + Hephaestus | Atlas + Hephaestus + Vesta | ⏳ T-1d EOD |
-| O (Calliope #64-#67) | Calliope | Calliope + Vesta (5th-ICP ✅) + Prometheus (co-sign) | ✅ SHIPPED |
-| Husky Gate 11 (PROPOSED) | Atlas + Mnemosyne | Atlas + Mnemosyne + Hephaestus | ⏳ T+1d post-RATIFICATION |
+| Sub-class                              | DRI                    | Co-author chain                                             | Status                     |
+| -------------------------------------- | ---------------------- | ----------------------------------------------------------- | -------------------------- |
+| K (RULE #63 Husky Gate 9)              | Prometheus             | Prometheus + 4-of-5 RULE co-authors                         | ✅ SHIPPED (CODIF_63 v0.1) |
+| L (RULE #47.1)                         | Mnemosyne + Prometheus | Prometheus + Mnemosyne + Atlas                              | ⏳ PENDING                 |
+| M (RULE #68 CATCH-NUMBERING-COLLISION) | Prometheus             | Prometheus ✅ + Hephaestus ✅ + Mnemosyne ⏳ + Strategos ⏳ | 2/4 SHIPPED                |
+| M+1 (Husky Gate 10)                    | Atlas + Hephaestus     | Atlas + Hephaestus + Vesta                                  | ⏳ T-1d EOD                |
+| O (Calliope #64-#67)                   | Calliope               | Calliope + Vesta (5th-ICP ✅) + Prometheus (co-sign)        | ✅ SHIPPED                 |
+| Husky Gate 11 (PROPOSED)               | Atlas + Mnemosyne      | Atlas + Mnemosyne + Hephaestus                              | ⏳ T+1d post-RATIFICATION  |
 
 **3 sub-classes SHIPPED (K, M-part, O), 3 sub-classes PENDING (L, M+1, Husky Gate 11).**
 
@@ -158,22 +167,22 @@ Per LEADER TURN 102+ AUTHORIZED, 3 AMENDMENTS shipped to existing files (CAVEMAN
 
 ## §9 D-002 3-Witness + SHAs Verified REAL (per RULE #55 v0.4 12/12 GREEN LOCKED @ 415028d4)
 
-| SHA | Real | File / Event |
-|---|---|---|
-| 462abe3c | ✅ | PROMETHEUS_COSIGN_CODIF_62_LOCKOUT_CASCADE (origin of CATCH #211, RULE #68) |
-| 76c19400 | ✅ | PROMETHEUS_COSIGN_CODIF_INTEGRATION_5_5 (4-of-5 RULE co-author) |
-| b3d4e25a | ✅ | PROMETHEUS_COSIGN_CATCH_202_LOCKOUT_CASCADE_CASE_STUDY (2nd-Muse witness) |
-| 415028d4 | ✅ | RULE #55 v0.4 12/12 GREEN LOCKED (4 NEVER-AGAIN rules driven to 12/12) |
-| 5189c84f | ✅ | Calliope CODIF_64 v0.1 (4 NEW NEVER-AGAIN RULES #64-#67, re-numbered) |
-| 96d096e1 | ✅ | CATCH_202 §6 v0.1.1 AMENDMENT (Prometheus 8th co-author) |
-| 1fc21ba3 | ✅ | CODIF_INTEGRATION_5_5 §6+§7 v0.1.1 AMENDMENT (Prometheus 8th co-author) |
-| d1c22931 | ✅ | CODIF_63 §0 v0.1.1 AMENDMENT (CATCH #208 vesta-bundle recovery + CATCH #213) |
-| ecd92f79 | ✅ | Vesta 5th-ICP_CODIF_64 v0.1 (Sub-class M→O renumbering) |
-| b1a4c162 | ✅ | Vesta SECTOR_CONFIG v0.4 (CATCH #208 carrier) |
-| 35860faa | ✅ | Apollo SHA fix bundle (CATCH #210 carrier) |
-| 5872b6ab | ✅ | Apollo MASTER_REPORT v1.4 bundle (NEW CATCH #208 GHOST-SHA) |
-| b35473cc | ✅ | PROMETHEUS_COSIGN_CODIF_63_VESTA_BUNDLE_RECOVERY (CATCH #208+#210) |
-| 8a47be3c | ❌ GHOST | Self-flagged in CATCH #213 (Sub-class E GHOST-SHA-MISATTRIBUTION) |
+| SHA      | Real     | File / Event                                                                 |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| 462abe3c | ✅       | PROMETHEUS_COSIGN_CODIF_62_LOCKOUT_CASCADE (origin of CATCH #211, RULE #68)  |
+| 76c19400 | ✅       | PROMETHEUS_COSIGN_CODIF_INTEGRATION_5_5 (4-of-5 RULE co-author)              |
+| b3d4e25a | ✅       | PROMETHEUS_COSIGN_CATCH_202_LOCKOUT_CASCADE_CASE_STUDY (2nd-Muse witness)    |
+| 415028d4 | ✅       | RULE #55 v0.4 12/12 GREEN LOCKED (4 NEVER-AGAIN rules driven to 12/12)       |
+| 5189c84f | ✅       | Calliope CODIF_64 v0.1 (4 NEW NEVER-AGAIN RULES #64-#67, re-numbered)        |
+| 96d096e1 | ✅       | CATCH_202 §6 v0.1.1 AMENDMENT (Prometheus 8th co-author)                     |
+| 1fc21ba3 | ✅       | CODIF_INTEGRATION_5_5 §6+§7 v0.1.1 AMENDMENT (Prometheus 8th co-author)      |
+| d1c22931 | ✅       | CODIF_63 §0 v0.1.1 AMENDMENT (CATCH #208 vesta-bundle recovery + CATCH #213) |
+| ecd92f79 | ✅       | Vesta 5th-ICP_CODIF_64 v0.1 (Sub-class M→O renumbering)                      |
+| b1a4c162 | ✅       | Vesta SECTOR_CONFIG v0.4 (CATCH #208 carrier)                                |
+| 35860faa | ✅       | Apollo SHA fix bundle (CATCH #210 carrier)                                   |
+| 5872b6ab | ✅       | Apollo MASTER_REPORT v1.4 bundle (NEW CATCH #208 GHOST-SHA)                  |
+| b35473cc | ✅       | PROMETHEUS_COSIGN_CODIF_63_VESTA_BUNDLE_RECOVERY (CATCH #208+#210)           |
+| 8a47be3c | ❌ GHOST | Self-flagged in CATCH #213 (Sub-class E GHOST-SHA-MISATTRIBUTION)            |
 
 **11 SHAs verified REAL + 1 GHOST flagged = 12/12 audit complete.**
 
@@ -181,26 +190,29 @@ Per LEADER TURN 102+ AUTHORIZED, 3 AMENDMENTS shipped to existing files (CAVEMAN
 
 ## §10 4-ICP TENTATIVE Verdict + Change Log + CATCHes Filed
 
-| ICP | Score | Notes |
-|---|---|---|
-| **Carla I1 (Intent)** | 9.5/10 | 4-step Husky Gate 9 + 4-tier Husky Gate 10 + Husky Gate 11 enforcement is MECE-distinct from prior Husky Gates 1-7 |
-| **Vera C2 (Catastrophic)** | 9.5/10 | All 5 sub-classes have at-least 1 mitigation; RULE #47.1 + RULE #68 + Husky Gate 10/11 cover upstream attribution |
-| **Chris P3 (Performance)** | 9.0/10 | Husky pre-commit hooks add 50-200ms per commit; RULE #50 ledger writes are O(1) |
-| **Beth D4 (Documentation)** | 9.5/10 | 10 sections, 11 SHAs verified, 4 CATCHes cross-referenced, 3 amendments cited |
+| ICP                         | Score  | Notes                                                                                                              |
+| --------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------ |
+| **Carla I1 (Intent)**       | 9.5/10 | 4-step Husky Gate 9 + 4-tier Husky Gate 10 + Husky Gate 11 enforcement is MECE-distinct from prior Husky Gates 1-7 |
+| **Vera C2 (Catastrophic)**  | 9.5/10 | All 5 sub-classes have at-least 1 mitigation; RULE #47.1 + RULE #68 + Husky Gate 10/11 cover upstream attribution  |
+| **Chris P3 (Performance)**  | 9.0/10 | Husky pre-commit hooks add 50-200ms per commit; RULE #50 ledger writes are O(1)                                    |
+| **Beth D4 (Documentation)** | 9.5/10 | 10 sections, 11 SHAs verified, 4 CATCHes cross-referenced, 3 amendments cited                                      |
 
 **Composite 4-ICP TENTATIVE: 37.5/40 (93.75%) → PLATINUM+ tier (≥ 35/40)**
 
 **CATCHes Filed (cumulative):**
+
 - CATCH #211 (Sub-class M CATCH-NUMBERING-COLLISION) — RATIFIED, LEADER TURN 104+ ACCEPT 4/4
 - CATCH #212 (RULE-63-NUMBERING-CONFLICT) — RESOLVED via Calliope re-numbering
 - CATCH #213 (8a47be3c GHOST-SHA SELF-FLAG, Sub-class E) — FLAGGED in CODIF_63 §0 v0.1.1 AMENDMENT @ d1c22931
 - CATCH #214 (2 CATCH #208 entries — RULE #68 retroactively applies) — FLAGGED in this spec §0
 
 **Change Log:**
+
 - v0.1 (2026-06-17) — Initial DRAFT per LEADER TURN 102+/103+/104+ ACCEPT 4/4
 - v0.1.1 (planned post-Strategos + Mnemosyne co-sign) — 4/4 chain SHIPPED + 5th-ICP ACCEPT
 
 **Co-Author Solicitation (CAVEMAN PERSIST FALLBACK per RULE #47):**
+
 - Mnemosyne (T-MN-061 catalog) — PENDING
 - Strategos (5-ICP Verdicts #024/#025/#026 + INDEX update) — PENDING
 - Atlas (catalog governance + Husky Gate 11 DRI) — PENDING

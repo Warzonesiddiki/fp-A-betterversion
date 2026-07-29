@@ -21,6 +21,7 @@ remaining_findings_from_pick_c: F1, F2, F3, F7 (4 GHOST SHAs in §2.2, §2.4, §
 **Vulcan 2nd-Muse verdict:** ACCEPT 3.75/4. All 3 corrections verified via `git log --oneline -1 <sha>` (all 3 SHAs exist). 1 P2 finding: v0.1.1 + v0.7.1 addressed PICK B findings only, not PICK C findings (4 additional GHOST SHAs in §2.2, §2.4, §2.8, §5 L215).
 
 **Composite:** 4-ICP 9.25/10 (upgraded from PICK B 8.75/10 — corrections properly applied)
+
 - I1 (Intent): 9.5/10 — Corrections are surgical, address PICK B findings precisely
 - C2 (Catastrophic): 9.0/10 — 3 verified SHAs; 4 unaddressed PICK C findings remain
 - P3 (Performance): 9.0/10 — 8 insertions, 5 deletions; 5-min hotfix as predicted
@@ -30,20 +31,22 @@ remaining_findings_from_pick_c: F1, F2, F3, F7 (4 GHOST SHAs in §2.2, §2.4, §
 
 ### 2.1 SHA corrections — all 3 SHAs verified EXISTS
 
-| Original (GHOST) | Corrected | Status |
-|---|---|---|
-| `1f353d08` (Themis COMPLIANCE) | `f4efa3628` (Themis COMPLIANCE v0.2) + `657d10524` (1st-witness v0.1) | ✅ EXISTS (verified via `git log --oneline -1 f4efa3628` → `f4efa3628 docs(ratification): Themis COMPLIANCE pre-check v0.2`) |
-| `f6c58374` (Themis 2nd-witness) | `6ebb2adac` (Themis A11Y 2nd-witness) | ✅ EXISTS (verified via `git log --oneline -1 6ebb2adac` → `6ebb2adac docs(ratification): Themis A11Y COMPLIANCE 2nd-witness (Artemis 04ac3930)`) |
-| `917630df` (Strategos-recommended Themis 2nd-witness) | `6ebb2adac` (Themis A11Y 2nd-witness) | ✅ EXISTS (same as above) |
+| Original (GHOST)                                      | Corrected                                                             | Status                                                                                                                                            |
+| ----------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `1f353d08` (Themis COMPLIANCE)                        | `f4efa3628` (Themis COMPLIANCE v0.2) + `657d10524` (1st-witness v0.1) | ✅ EXISTS (verified via `git log --oneline -1 f4efa3628` → `f4efa3628 docs(ratification): Themis COMPLIANCE pre-check v0.2`)                      |
+| `f6c58374` (Themis 2nd-witness)                       | `6ebb2adac` (Themis A11Y 2nd-witness)                                 | ✅ EXISTS (verified via `git log --oneline -1 6ebb2adac` → `6ebb2adac docs(ratification): Themis A11Y COMPLIANCE 2nd-witness (Artemis 04ac3930)`) |
+| `917630df` (Strategos-recommended Themis 2nd-witness) | `6ebb2adac` (Themis A11Y 2nd-witness)                                 | ✅ EXISTS (same as above)                                                                                                                         |
 
 ### 2.2 Diff summary
 
 **File 1: docs/ratification/RATIFICATION_GATE_PRECHECK_INDEX.md**
+
 - L21: `f4efa362` → `f4efa3628` (1 char added — full 9-char SHA)
 - L21: Added "per Vulcan 2nd-witness `374ea4148`" attribution
 - L21: Added "Strategos verdict self-corrected via v0.1.1 hotfix to fix GHOST SHA `917630df` (actual Themis A11Y 2nd-witness = `6ebb2adac`)" — explicit P0 self-correction acknowledgment
 
 **File 2: docs/strategy/SKEPTIC_VERDICT_5ICP_IRIS_HERA_PERSONA_UX.md**
+
 - L21: `f4efa362` → `f4efa3628`
 - L81: `f4efa362` → `657d10524` (1st-witness) + `f4efa3628` (v0.2)
 - L84: `917630df` → `6ebb2adac`
@@ -77,6 +80,7 @@ My PICK C (VULCAN_2ND_WITNESS_INDEX_V07.md at `0fe172878`) was committed AFTER v
 **CATCH class:** #187 STALE_AUDIT (carry-forward) + SHA-ATTRIBUTION-DRIFT (new sub-class)
 
 **Recommendation:** Strategos to ship v0.1.2 + v0.7.2 (additional 15-30 min) with:
+
 - §2.2 L127: Replace `4572ed14` with `1be01905` (Prometheus T-PR-043 HEAD) or `df124754b` (Vulcan LOAD_TEST v0.2 if Prometheus co-authored)
 - §2.4 L141: Replace `59001411` with `4572ed14` (Chronos v0.1) — same SHA as misattributed in §2.2; both should be unified
 - §2.8 L172: Replace `8b340664` with `afb91f05` (Vulcan LOAD_TEST_RESULTS v0.1, first commit in CATCH #196 bundle) or remove CATCH #196 reference
@@ -91,6 +95,7 @@ My PICK C (VULCAN_2ND_WITNESS_INDEX_V07.md at `0fe172878`) was committed AFTER v
 - **Sentinel USER_JOURNEY v0.3** (`2ff586405`): APPLIES RULES #53 + #55 + #56.
 
 **Adoption summary:** My PICK B proposal (RULE #50 POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER) was refined by the team into:
+
 - RULE #53 (GHOST-SHA-DETECTION)
 - RULE #55 (PRE-PUSH-GHOST-SHA-CHECK)
 - RULE #56 (3-witness per SHA)
@@ -99,13 +104,13 @@ This is a successful outcome of the 2nd-Muse witness pattern: my PICK B finding 
 
 ## 5. Composite 4-ICP Verdict (Vulcan 2nd-Muse)
 
-| Dimension | Strategos v0.1.1 + v0.7.1 | Vulcan 2nd-Witness | Delta |
-|---|---|---|---|
-| I1 (Intent) | 9.5 | 9.5 | 0.0 (corrections surgical and precise) |
-| C2 (Catastrophic) | 9.0 | 9.0 | 0.0 (3 verified SHAs; 4 unaddressed PICK C findings are separate) |
-| P3 (Performance) | 9.0 | 9.0 | 0.0 (5-min hotfix as predicted) |
-| D4 (Documented) | 9.5 | 9.5 | 0.0 (explicit Vulcan attribution + P0 self-correction documented) |
-| **Composite** | **9.25/10** | **9.25/10** | **0.0** |
+| Dimension         | Strategos v0.1.1 + v0.7.1 | Vulcan 2nd-Witness | Delta                                                             |
+| ----------------- | ------------------------- | ------------------ | ----------------------------------------------------------------- |
+| I1 (Intent)       | 9.5                       | 9.5                | 0.0 (corrections surgical and precise)                            |
+| C2 (Catastrophic) | 9.0                       | 9.0                | 0.0 (3 verified SHAs; 4 unaddressed PICK C findings are separate) |
+| P3 (Performance)  | 9.0                       | 9.0                | 0.0 (5-min hotfix as predicted)                                   |
+| D4 (Documented)   | 9.5                       | 9.5                | 0.0 (explicit Vulcan attribution + P0 self-correction documented) |
+| **Composite**     | **9.25/10**               | **9.25/10**        | **0.0**                                                           |
 
 **Composite matches Strategos.** No downgrade needed.
 
@@ -128,8 +133,7 @@ This is a successful outcome of the 2nd-Muse witness pattern: my PICK B finding 
    - RULE #53 (GHOST-SHA-DETECTION)
    - RULE #55 (PRE-PUSH-GHOST-SHA-CHECK)
    - RULE #56 (3-witness per SHA)
-   - 
-   Consider codifying RULE #57 (SHA-ATTRIBUTION-VERIFICATION) explicitly: same SHA cannot be cited for 2 different Muses across versions. Audit all INDEX versions for SHA-attribution-drift.
+   - Consider codifying RULE #57 (SHA-ATTRIBUTION-VERIFICATION) explicitly: same SHA cannot be cited for 2 different Muses across versions. Audit all INDEX versions for SHA-attribution-drift.
 4. **All Muses (post-RATIFICATION GATE):** Audit v0.1 / v0.2 / v0.3 dispatch messages for SHA-ATTRIBUTION-DRIFT. Same SHA cannot be cited for 2 different Muses across versions.
 
 ## 8. Verdict Metadata
@@ -147,13 +151,13 @@ This is a successful outcome of the 2nd-Muse witness pattern: my PICK B finding 
 
 ## 9. CATCH Ledger
 
-| CATCH | Classification | Severity | Status |
-|---|---|---|---|
-| #187 STALE_AUDIT | `1f353d08` → `f4efa3628` correction | P1 | ✅ RESOLVED in v0.1.1 + v0.7.1 |
-| #187 STALE_AUDIT | `917630df` → `6ebb2adac` correction | P1 | ✅ RESOLVED in v0.1.1 + v0.7.1 |
-| #187 STALE_AUDIT | `f6c58374` → `6ebb2adac` correction | P1 | ✅ RESOLVED in v0.1.1 + v0.7.1 |
-| #187 STALE_AUDIT (carry-forward from PICK C) | 4 GHOST SHAs in §2.2, §2.4, §2.8, §5 L215 | P2 | OPEN — pending v0.1.2 + v0.7.2 |
-| SHA-ATTRIBUTION-DRIFT (new sub-class) | `4572ed14` attributed to Prometheus in §2.2 but is Chronos | P2 | OPEN — pending v0.1.2 + v0.7.2 |
+| CATCH                                        | Classification                                             | Severity | Status                         |
+| -------------------------------------------- | ---------------------------------------------------------- | -------- | ------------------------------ |
+| #187 STALE_AUDIT                             | `1f353d08` → `f4efa3628` correction                        | P1       | ✅ RESOLVED in v0.1.1 + v0.7.1 |
+| #187 STALE_AUDIT                             | `917630df` → `6ebb2adac` correction                        | P1       | ✅ RESOLVED in v0.1.1 + v0.7.1 |
+| #187 STALE_AUDIT                             | `f6c58374` → `6ebb2adac` correction                        | P1       | ✅ RESOLVED in v0.1.1 + v0.7.1 |
+| #187 STALE_AUDIT (carry-forward from PICK C) | 4 GHOST SHAs in §2.2, §2.4, §2.8, §5 L215                  | P2       | OPEN — pending v0.1.2 + v0.7.2 |
+| SHA-ATTRIBUTION-DRIFT (new sub-class)        | `4572ed14` attributed to Prometheus in §2.2 but is Chronos | P2       | OPEN — pending v0.1.2 + v0.7.2 |
 
 ---
 

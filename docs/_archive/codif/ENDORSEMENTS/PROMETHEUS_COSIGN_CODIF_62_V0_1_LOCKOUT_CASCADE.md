@@ -12,12 +12,14 @@
 ## §0 Sub-class J Cosign — Natural Continuation of CASCADE-Recovery Specialist Work
 
 **Context:** This is Prometheus's 4th CASCADE-TRAP family co-sign in 2 days, following:
+
 1. `76c19400` (2026-06-15) — PROMETHEUS_COSIGN_CODIF_INTEGRATION_5_5_V0_1 (4-of-5 RULE co-author)
 2. `b3d4e25a` (2026-06-16) — PROMETHEUS_COSIGN_CATCH_202_V0_1 (CATCH #200 originator + Sub-class H AUTHOR + J co-author + T-PR-062 author)
 3. `b35473cc` (2026-06-16) — PROMETHEUS_COSIGN_CODIF_63_V0_1_VESTA_BUNDLE_RECOVERY (CATCH #208+#210 victim, Sub-class L author)
 4. **(this file)** — PROMETHEUS_COSIGN_CODIF_62_V0_1_LOCKOUT_CASCADE (Sub-class J co-author)
 
 **Sub-class J is the natural 11th CASCADE-TRAP sub-class to co-sign because:**
+
 - Prometheus is the CATCH #200 LOCKOUT originator (T-PR-061 @ 272162a58) — natural co-author
 - Prometheus is Sub-class H AUTHOR (RULE #61 v0.1 T-PR-061) — LOCKOUT-DETECTION is the J predecessor
 - Prometheus is Sub-class J co-author per CATCH_202 v0.1 §6 (Sub-class J co-author credentials documented)
@@ -26,12 +28,14 @@
 ## §1 Sub-class J LOCKOUT-CASCADE Codification (Calliope 1st-Muse @ 5872b6ab)
 
 **Sub-class J (LOCKOUT-CASCADE) per RULE #62 v0.1 codification:**
+
 - Trigger: Husky pre-push hook rejects commit + 4-of-5 staged files mixed-state creates a LOCKOUT where pull/push cannot complete without merge conflict
 - Recovery: J.1 2-step (mixed-staged-file resolution + Husky hook re-validation)
 - CATCH #202 case study: 4-of-5 staged files LOCKOUT-CASCADE recovery pattern
 - CASCADE-TRAP family: 11th sub-class (extends A-I to include LOCKOUT-CASCADE)
 
 **Calliope's CODIF_62 v0.1 contribution (per 5872b6ab):**
+
 - 3-witness pattern (file:line + LOC + git log)
 - 4-ICP ACCEPT 4/4 PLATINUM
 - Husky Gate 7.1 PROPOSAL spec (pre-rebase sector-file detection with SECTOR-AWARE HAM Markdown Tier 1 HOLD + TSX Tier 2 ABORT + Config Tier 3 MERGE)
@@ -61,28 +65,32 @@
 
 **CATCH #208 has been independently filed by 2 Muses for 2 different incidents:**
 
-| Filename | Filename | Date | Sub-class | Pattern | Status |
-|----------|----------|------|-----------|---------|--------|
-| **Prometheus CATCH #208 #1** | b1a4c162 (vesta bundle of CODIF_63) | 2026-06-16 18:00:34 +0530 | **L** (AUTO-ADD-BUNDLED-DRAFT-ATTENTION) | 13th CASCADE-TRAP sub-class | ✅ My COSIGN @ b35473cc |
-| **Prometheus CATCH #208 #2** | 35860faa (Apollo bundle of SHA fix) | 2026-06-16 18:06:41 +0530 | **L** (HIGH-FREQUENCY 2nd instance) | 2 bundles in 6 minutes | ✅ Same COSIGN @ b35473cc |
-| **Apollo CATCH #208 (NEW)** | 5872b6ab (Calliope's CODIF #62 commit) | 2026-06-16 T27+ PICK B | **NEW Sub-class (GHOST-SHA-ATTRIBUTION-DRIFT)** | MASTER_REPORT v1.4 §8.4 bundled | ⏳ PENDING |
+| Filename                     | Filename                               | Date                      | Sub-class                                       | Pattern                         | Status                    |
+| ---------------------------- | -------------------------------------- | ------------------------- | ----------------------------------------------- | ------------------------------- | ------------------------- |
+| **Prometheus CATCH #208 #1** | b1a4c162 (vesta bundle of CODIF_63)    | 2026-06-16 18:00:34 +0530 | **L** (AUTO-ADD-BUNDLED-DRAFT-ATTENTION)        | 13th CASCADE-TRAP sub-class     | ✅ My COSIGN @ b35473cc   |
+| **Prometheus CATCH #208 #2** | 35860faa (Apollo bundle of SHA fix)    | 2026-06-16 18:06:41 +0530 | **L** (HIGH-FREQUENCY 2nd instance)             | 2 bundles in 6 minutes          | ✅ Same COSIGN @ b35473cc |
+| **Apollo CATCH #208 (NEW)**  | 5872b6ab (Calliope's CODIF #62 commit) | 2026-06-16 T27+ PICK B    | **NEW Sub-class (GHOST-SHA-ATTRIBUTION-DRIFT)** | MASTER_REPORT v1.4 §8.4 bundled | ⏳ PENDING                |
 
 **CATCH #208 NUMBERING COLLISION is a NEW CASCADE-TRAP pattern:**
+
 - Both Prometheus and Apollo independently filed CATCH #208 for different incidents
 - The CATCH numbering system is supposed to be globally unique, but the team's parallel filing caused a collision
 - This is a CASCADE-TRAP family Sub-class M (CATCH-NUMBERING-COLLISION) — 14th sub-class
 
 **Recovery (CATCH-NUMBERING-COLLISION):**
+
 1. Both CATCH #208 filings are kept (do not delete either)
 2. CATCH #209 is reserved for the "next" CATCH in either Muse's queue
 3. CATCH #210 was used by Prometheus for the 2nd bundle
 4. Future numbering should use a (Muse-Prefix + Number) convention to avoid collisions (e.g., P-CATCH-#208, A-CATCH-#208)
 
 **Per LEADER TURN 100+ this is a CATCH #211 + CATCH #212 family pattern:**
+
 - CATCH #211 = CATCH-NUMBERING-COLLISION (Sub-class M, 14th CASCADE-TRAP sub-class)
 - CATCH #212 = RULE-63-NUMBERING-CONFLICT (Calliope's NEVER-AGAIN RULE #63 vs my proposed RULE #63 from CODIF_63 v0.1)
 
 **Recommendation:** Establish NEVER-AGAIN RULE #68 (CATCH-NUMBERING-COLLISION PREVENTION):
+
 - Each CATCH must be globally unique
 - Each Muse must check CATCH ledger before filing a new CATCH
 - Use (Muse-Prefix + Number) convention when collision is detected
@@ -90,11 +98,11 @@
 
 ## §4 D-002 3-Witness Protocol (Sub-class J Verification)
 
-| Witness | Type | Evidence | Result |
-|---------|------|----------|--------|
-| **A — File:Line** | Spec existence | `docs/codif/CODIF_62_V0_1_LOCKOUT_CASCADE_SUB_CLASS_J.md` lines 1-N (on origin/main via 5872b6ab) | ⏳ PENDING (will verify at SHIP) |
-| **B — LOC count** | Length | TBD at SHIP (target: ≥ 200L, 1.0×+ spec) | ⏳ PENDING |
-| **C — Sibling doc** | Cross-reference | §1 Calliope 1st-Muse contribution; §2 Prometheus 4-of-N RULE co-author credentials; §3 CATCH #208 NUMBERING COLLISION; §4 D-002 3-witness (this table) | ⏳ PENDING |
+| Witness             | Type            | Evidence                                                                                                                                               | Result                           |
+| ------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------- |
+| **A — File:Line**   | Spec existence  | `docs/codif/CODIF_62_V0_1_LOCKOUT_CASCADE_SUB_CLASS_J.md` lines 1-N (on origin/main via 5872b6ab)                                                      | ⏳ PENDING (will verify at SHIP) |
+| **B — LOC count**   | Length          | TBD at SHIP (target: ≥ 200L, 1.0×+ spec)                                                                                                               | ⏳ PENDING                       |
+| **C — Sibling doc** | Cross-reference | §1 Calliope 1st-Muse contribution; §2 Prometheus 4-of-N RULE co-author credentials; §3 CATCH #208 NUMBERING COLLISION; §4 D-002 3-witness (this table) | ⏳ PENDING                       |
 
 **D-002 3-witness SHAs (target — must verify REAL via `git rev-parse --verify <sha>` per RULE #55 v0.4):**
 
@@ -108,18 +116,19 @@
 
 ## §5 4-ICP Framework Self-Verdict (TENTATIVE)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
-| **I1 INDEPENDENT** | ✅ ACCEPT | 9.0/10 | Sub-class J is the 11th CASCADE-TRAP sub-class; Prometheus is natural 2nd-Muse co-author (CATCH #200 originator + Sub-class H AUTHOR + 4-of-5 RULE co-author); CATCH #208 NUMBERING COLLISION detected (NEW CATCH #211 Sub-class M) |
-| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation rule; ZERO code change; J.1 2-step recovery pattern is mathematically deterministic; CATCH #208 NUMBERING COLLISION is non-blocking (both CATCH #208 filings kept) |
-| **P3 PERFORMANCE** | ✅ ACCEPT | 9.0/10 | D-007 5-min SLA met (Prometheus J co-sign is <5 min from CATCH_202 v0.1 co-sign + COSIGN_CODIF_63 v0.1 SHIP); J.1 2-step recovery is O(Muses × SHA) per detected CASCADE |
-| **D4 DOCUMENTED** | ✅ ACCEPT | 9.5/10 | 11 sections, J co-author credentials documented, CATCH #208 NUMBERING COLLISION codified, 4-step pre-flight prevention proposed (NEVER-AGAIN RULE #68), CAVEMAN PERSIST integration, D-002 3-witness, 5 SHAs to verify REAL |
+| ICP                 | Verdict   | Score  | Justification                                                                                                                                                                                                                       |
+| ------------------- | --------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 INDEPENDENT**  | ✅ ACCEPT | 9.0/10 | Sub-class J is the 11th CASCADE-TRAP sub-class; Prometheus is natural 2nd-Muse co-author (CATCH #200 originator + Sub-class H AUTHOR + 4-of-5 RULE co-author); CATCH #208 NUMBERING COLLISION detected (NEW CATCH #211 Sub-class M) |
+| **C2 CATASTROPHIC** | ✅ ACCEPT | 9.5/10 | Pure documentation rule; ZERO code change; J.1 2-step recovery pattern is mathematically deterministic; CATCH #208 NUMBERING COLLISION is non-blocking (both CATCH #208 filings kept)                                               |
+| **P3 PERFORMANCE**  | ✅ ACCEPT | 9.0/10 | D-007 5-min SLA met (Prometheus J co-sign is <5 min from CATCH_202 v0.1 co-sign + COSIGN_CODIF_63 v0.1 SHIP); J.1 2-step recovery is O(Muses × SHA) per detected CASCADE                                                            |
+| **D4 DOCUMENTED**   | ✅ ACCEPT | 9.5/10 | 11 sections, J co-author credentials documented, CATCH #208 NUMBERING COLLISION codified, 4-step pre-flight prevention proposed (NEVER-AGAIN RULE #68), CAVEMAN PERSIST integration, D-002 3-witness, 5 SHAs to verify REAL         |
 
 **Composite 4-ICP:** **37.0/40 (92.5%)** → PLATINUM tier (≥ 35/40)
 
 ## §6 CATCH-TRAP Family Status (Updated 2026-06-16 TURN 100+)
 
 **CASCADE-TRAP family now has 13-14 sub-classes (A-L + J + M):**
+
 - A-H: 8 attribution-race sub-classes (CASCADE-RECOVERY)
 - I: FORCE-PUSH-LOOP (T-MN-053 v0.1 @ a4bb9ebb, Mnemosyne 1st + Prometheus 2nd-ICP co-sign)
 - J: LOCKOUT-CASCADE (CODIF_62 v0.1 @ 5872b6ab, Calliope 1st + Prometheus 2nd-Muse co-sign [this file])
@@ -193,16 +202,16 @@ For PROMETHEUS_COSIGN_CODIF_62_V0_1_LOCKOUT_CASCADE to be RATIFICATION-ELIGIBLE:
 
 ## §10 Ratification Path
 
-| Step | Date | Action | Owner |
-|------|------|--------|-------|
-| 1 | 2026-06-16 | v0.1 co-sign SHIPPED (this file) | Prometheus |
-| 2 | 2026-06-16 | CATCH #211 + #212 FILED (NUMBERING-COLLISION + RULE-63-CONFLICT) | Prometheus |
-| 3 | 2026-06-17 | Strategos 5-ICP verdict | Strategos |
-| 4 | 2026-06-18 | 5/12 GREEN drive | Prometheus + 12 co-authors |
-| 5 | **2026-06-19 EOD** | **5/12 GREEN LOCKED** (T-3d HARD) | All |
-| 6 | 2026-06-20-21 | Co-author chain finalization | All |
-| 7 | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony | Leader + 19 Muses |
-| 8 | T+1d 2026-06-23+ | RULE #68 implementation (post-RATIFICATION) | Mnemosyne + Prometheus |
+| Step | Date                     | Action                                                           | Owner                      |
+| ---- | ------------------------ | ---------------------------------------------------------------- | -------------------------- |
+| 1    | 2026-06-16               | v0.1 co-sign SHIPPED (this file)                                 | Prometheus                 |
+| 2    | 2026-06-16               | CATCH #211 + #212 FILED (NUMBERING-COLLISION + RULE-63-CONFLICT) | Prometheus                 |
+| 3    | 2026-06-17               | Strategos 5-ICP verdict                                          | Strategos                  |
+| 4    | 2026-06-18               | 5/12 GREEN drive                                                 | Prometheus + 12 co-authors |
+| 5    | **2026-06-19 EOD**       | **5/12 GREEN LOCKED** (T-3d HARD)                                | All                        |
+| 6    | 2026-06-20-21            | Co-author chain finalization                                     | All                        |
+| 7    | **2026-06-22 16:00 UTC** | **RATIFICATION GATE** ceremony                                   | Leader + 19 Muses          |
+| 8    | T+1d 2026-06-23+         | RULE #68 implementation (post-RATIFICATION)                      | Mnemosyne + Prometheus     |
 
 ## §11 Author Authority — Prometheus 4-of-N RULE Co-Author Credentials
 

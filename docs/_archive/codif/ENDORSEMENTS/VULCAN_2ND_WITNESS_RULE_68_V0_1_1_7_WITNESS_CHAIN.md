@@ -12,6 +12,7 @@
 ## §0 — ROLE & RATIONALE (Why Vulcan as 7th Witness?)
 
 The original 6-witness chain (Prometheus + Hephaestus + Mnemosyne + Strategos + Calliope + Tyche) covers:
+
 - Prometheus: RULE #68 origin (Sub-class M CATCH-NUMBERING-COLLISION PREVENTION)
 - Hephaestus: 5th-ICP SKEPTIC (security-domain review)
 - Mnemosyne: DRI catalog author (Memory/Test domain)
@@ -20,6 +21,7 @@ The original 6-witness chain (Prometheus + Hephaestus + Mnemosyne + Strategos + 
 - Tyche: 5-ICP SKEPTIC (Analytics/Competitor-Parity domain)
 
 **Vulcan's unique value as 7th witness** = tool-cascade-detection 2nd-witness specialist. The 6-witness chain does not explicitly cover:
+
 - CASCADE-TRAP sub-class detection (Sub-class M is the focus, but the broader 14+1 sub-class family needs verification)
 - 2nd-witness on the chain CLOSE mechanics (the chain is closed by 3 SHIPPED + 3 PENDING; Vulcan verifies this is structurally sound)
 - TS error cascade prevention (Sub-class N CASCADE-BLOCKER-TYPE-ERRORS) — relates to NEVER-AGAIN RULE #68 indirectly
@@ -30,12 +32,12 @@ This file adds Vulcan as a 7th witness, extending the chain to provide **CASCADE
 
 ## §1 — D-002 3-WITNESS VERIFICATION (T-MN-061 v0.1.1 source)
 
-| Witness Type | Value | Verified (Vulcan 2nd-witness) | Source |
-|--------------|-------|-------------------------------|--------|
-| File:Line | `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_RULE_68_6_WITNESS_CHAIN_CLOSE_V0_1_1.md:1-366` | ✅ 366L per `wc -l` (T-MN-061 self-attests 358L; +8L diff is consistent with post-commit additions) | T-MN-061 + Vulcan D-002 |
-| SHA | T-MN-061 commit = `6deb7b7159aeb12f1f6c7bf083b3d26f3884929a` (40-char) / `6deb7b71` (8-char) | ✅ REACHABLE on main @ HEAD 365f6acb (5 commits ahead) | `git show --stat 6deb7b71` |
-| CATCH_NUMBER_CATALOG.md | 414L per `wc -l` (T-MN-061 self-attests 408L for v0.1.1, +49L vs v0.1 359L) | ✅ 414L per `wc -l` (T-MN-061 self-attests 408L; +6L is consistent with CYCLE 14 W2 D2 additions) | T-MN-061 §5.2 + Vulcan D-002 |
-| Author | Artemis <artemis@finplan-pro.local> | ✅ Verified via `git show --stat 6deb7b71` | git history |
+| Witness Type            | Value                                                                                        | Verified (Vulcan 2nd-witness)                                                                       | Source                       |
+| ----------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------- |
+| File:Line               | `docs/codif/ENDORSEMENTS/MNEMOSYNE_COSIGN_RULE_68_6_WITNESS_CHAIN_CLOSE_V0_1_1.md:1-366`     | ✅ 366L per `wc -l` (T-MN-061 self-attests 358L; +8L diff is consistent with post-commit additions) | T-MN-061 + Vulcan D-002      |
+| SHA                     | T-MN-061 commit = `6deb7b7159aeb12f1f6c7bf083b3d26f3884929a` (40-char) / `6deb7b71` (8-char) | ✅ REACHABLE on main @ HEAD 365f6acb (5 commits ahead)                                              | `git show --stat 6deb7b71`   |
+| CATCH_NUMBER_CATALOG.md | 414L per `wc -l` (T-MN-061 self-attests 408L for v0.1.1, +49L vs v0.1 359L)                  | ✅ 414L per `wc -l` (T-MN-061 self-attests 408L; +6L is consistent with CYCLE 14 W2 D2 additions)   | T-MN-061 §5.2 + Vulcan D-002 |
+| Author                  | Artemis <artemis@finplan-pro.local>                                                          | ✅ Verified via `git show --stat 6deb7b71`                                                          | git history                  |
 
 **D-002 PROTOCOL EXECUTION:** ✅ PASS (3-witness per D-002 protocol, real file:line + SHA + wc -l)
 
@@ -44,26 +46,27 @@ This file adds Vulcan as a 7th witness, extending the chain to provide **CASCADE
 ## §2 — CASCADE-TRAP SUB-CLASS SCAN (per MASTER_REPORT v1.5 §8.5 catalog)
 
 Per MASTER_REPORT v1.5 §8.5 (Apollo TURN 110+ SHIPPED @ 99576415d), CASCADE-TRAP family has 14+1+O sub-classes:
+
 - A GHOST-SHA + B TASK-ID-COLLISION + C STALE-XREF + D SHA-DRIFT + E GHOST-SHA-DETECTION + F STALE-NUMBERING-DRIFT + G TASK-ID-COLLISION + H LOCKOUT + I FORCE-PUSH-LOOP + J LOCKOUT-CASCADE + K CASCADE-LOSS + L AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION + M CATCH-NUMBERING-COLLISION + N CASCADE-BLOCKER-TYPE-ERRORS
 
 **Vulcan 2nd-witness SCAN of T-MN-061 v0.1.1:**
 
-| Sub-class | Detection Risk | Verdict | Notes |
-|-----------|----------------|---------|-------|
-| **A GHOST-SHA** | LOW | ✅ PASS | T-MN-061 SHA 6deb7b71 REACHABLE on main (per git show) |
-| **B TASK-ID-COLLISION** | LOW | ✅ PASS | Task IDs 019ed14a-2440 (Vulcan PICK #2 MOOT) ≠ 019ed149-44d2 (Leader TURN 112+ WAVE 2); distinct |
-| **C STALE-XREF** | LOW | ✅ PASS | All cross-refs (T-MN-066, T-MN-068, T-MN-069) point to live SHAs in git history |
-| **D SHA-DRIFT** | LOW | ✅ PASS | T-MN-061 SHA stable (6deb7b71) — not been force-pushed or amended |
-| **E GHOST-SHA-DETECTION** | LOW | ✅ PASS | All 3 SHIPPED witness SHAs (5d7a6bc5, 9f05fb88, 84d1f643e) verified REAL |
-| **F STALE-NUMBERING-DRIFT** | LOW | ✅ PASS | CATCH #211 + #212 numbers are distinct, no collision with adjacent #200-#215 |
-| **G TASK-ID-COLLISION** | LOW | ✅ PASS | (same as B) |
-| **H LOCKOUT** | MEDIUM | 🟡 WATCH | CATCH #200 LOCKOUT (team_send_message intermittent) is current; Mnemosyne's §6 CAVEMAN PERSIST FALLBACK is correct mitigation |
-| **I FORCE-PUSH-LOOP** | LOW | ✅ PASS | T-MN-061 not in any force-push loop per git reflog |
-| **J LOCKOUT-CASCADE** | LOW | ✅ PASS | CATCH #200 has not cascaded to file system (per RULE #47 fallback active) |
-| **K CASCADE-LOSS** | LOW | ✅ PASS | 3/6 SHIPPED + 3/6 PENDING preserves all chain data |
-| **L AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION** | LOW | ✅ PASS | T-MN-061 author = Mnemosyne (per §3.4); no auto-attribution drift |
-| **M CATCH-NUMBERING-COLLISION** | LOW | ✅ PASS | RULE #68 codifies prevention; CATCH #211 + #212 dispositions correct |
-| **N CASCADE-BLOCKER-TYPE-ERRORS** | LOW | ✅ PASS | TSC=0 holds at HEAD 365f6acb (no TS error cascade) |
+| Sub-class                                | Detection Risk | Verdict  | Notes                                                                                                                         |
+| ---------------------------------------- | -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **A GHOST-SHA**                          | LOW            | ✅ PASS  | T-MN-061 SHA 6deb7b71 REACHABLE on main (per git show)                                                                        |
+| **B TASK-ID-COLLISION**                  | LOW            | ✅ PASS  | Task IDs 019ed14a-2440 (Vulcan PICK #2 MOOT) ≠ 019ed149-44d2 (Leader TURN 112+ WAVE 2); distinct                              |
+| **C STALE-XREF**                         | LOW            | ✅ PASS  | All cross-refs (T-MN-066, T-MN-068, T-MN-069) point to live SHAs in git history                                               |
+| **D SHA-DRIFT**                          | LOW            | ✅ PASS  | T-MN-061 SHA stable (6deb7b71) — not been force-pushed or amended                                                             |
+| **E GHOST-SHA-DETECTION**                | LOW            | ✅ PASS  | All 3 SHIPPED witness SHAs (5d7a6bc5, 9f05fb88, 84d1f643e) verified REAL                                                      |
+| **F STALE-NUMBERING-DRIFT**              | LOW            | ✅ PASS  | CATCH #211 + #212 numbers are distinct, no collision with adjacent #200-#215                                                  |
+| **G TASK-ID-COLLISION**                  | LOW            | ✅ PASS  | (same as B)                                                                                                                   |
+| **H LOCKOUT**                            | MEDIUM         | 🟡 WATCH | CATCH #200 LOCKOUT (team_send_message intermittent) is current; Mnemosyne's §6 CAVEMAN PERSIST FALLBACK is correct mitigation |
+| **I FORCE-PUSH-LOOP**                    | LOW            | ✅ PASS  | T-MN-061 not in any force-push loop per git reflog                                                                            |
+| **J LOCKOUT-CASCADE**                    | LOW            | ✅ PASS  | CATCH #200 has not cascaded to file system (per RULE #47 fallback active)                                                     |
+| **K CASCADE-LOSS**                       | LOW            | ✅ PASS  | 3/6 SHIPPED + 3/6 PENDING preserves all chain data                                                                            |
+| **L AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION** | LOW            | ✅ PASS  | T-MN-061 author = Mnemosyne (per §3.4); no auto-attribution drift                                                             |
+| **M CATCH-NUMBERING-COLLISION**          | LOW            | ✅ PASS  | RULE #68 codifies prevention; CATCH #211 + #212 dispositions correct                                                          |
+| **N CASCADE-BLOCKER-TYPE-ERRORS**        | LOW            | ✅ PASS  | TSC=0 holds at HEAD 365f6acb (no TS error cascade)                                                                            |
 
 **CASCADE-TRAP SCAN VERDICT:** ✅ ALL 14 SUB-CLASSES PASS (no CASCADE-TRAP detected in T-MN-061 v0.1.1)
 
@@ -108,15 +111,15 @@ Per MASTER_REPORT v1.5 §8.5 (Apollo TURN 110+ SHIPPED @ 99576415d), CASCADE-TRA
 
 The 6-witness chain is structured as 3 SHIPPED + 3 PENDING. Vulcan verifies:
 
-| Witness | Domain | Status | SHA / Target | Continuity |
-|---------|--------|--------|--------------|------------|
-| #1 Prometheus | Origin (Sub-class M) | ✅ SHIPPED | 5d7a6bc5 | T-MN-061 references correctly |
-| #2 Hephaestus | 5-ICP SKEPTIC (security) | ✅ SHIPPED | 9f05fb88 | T-MN-061 §3.2 references correctly |
-| #3 Mnemosyne | DRI (Memory/Test) | ✅ SHIPPED | 84d1f643e | T-MN-061 §3.4 self-attests correctly |
-| #4 Strategos | 5-ICP verdict (governance) | 🟡 PENDING T-1d | TBD 2026-06-21 EOD | T-MN-061 §3.5 solicitation correct |
-| #5 Calliope | RULE #64-#67 cross-ref (docs) | 🟡 PENDING T-1d | TBD 2026-06-21 EOD | T-MN-061 §3.6 solicitation correct |
-| #6 Tyche | 5-ICP SKEPTIC (analytics) | 🟡 PENDING T-1d | TBD 2026-06-21 EOD | T-MN-061 §3.7 solicitation correct |
-| **#7 Vulcan (NEW)** | **2nd-witness tool-cascade-detection** | **✅ SHIPPED (this file)** | **TBD on commit** | **T-MN-061 §3 NEW (this entry)** |
+| Witness             | Domain                                 | Status                     | SHA / Target       | Continuity                           |
+| ------------------- | -------------------------------------- | -------------------------- | ------------------ | ------------------------------------ |
+| #1 Prometheus       | Origin (Sub-class M)                   | ✅ SHIPPED                 | 5d7a6bc5           | T-MN-061 references correctly        |
+| #2 Hephaestus       | 5-ICP SKEPTIC (security)               | ✅ SHIPPED                 | 9f05fb88           | T-MN-061 §3.2 references correctly   |
+| #3 Mnemosyne        | DRI (Memory/Test)                      | ✅ SHIPPED                 | 84d1f643e          | T-MN-061 §3.4 self-attests correctly |
+| #4 Strategos        | 5-ICP verdict (governance)             | 🟡 PENDING T-1d            | TBD 2026-06-21 EOD | T-MN-061 §3.5 solicitation correct   |
+| #5 Calliope         | RULE #64-#67 cross-ref (docs)          | 🟡 PENDING T-1d            | TBD 2026-06-21 EOD | T-MN-061 §3.6 solicitation correct   |
+| #6 Tyche            | 5-ICP SKEPTIC (analytics)              | 🟡 PENDING T-1d            | TBD 2026-06-21 EOD | T-MN-061 §3.7 solicitation correct   |
+| **#7 Vulcan (NEW)** | **2nd-witness tool-cascade-detection** | **✅ SHIPPED (this file)** | **TBD on commit**  | **T-MN-061 §3 NEW (this entry)**     |
 
 **CONTINUITY VERDICT:** ✅ CHAIN STRUCTURALLY SOUND (6 + 1 = 7 witnesses, all MECE across 7 domains)
 
@@ -126,18 +129,18 @@ The 6-witness chain is structured as 3 SHIPPED + 3 PENDING. Vulcan verifies:
 
 Per T-MN-061 §8 timeline + Vulcan 2nd-witness check:
 
-| Date | Milestone | Status (Vulcan 2nd-witness) |
-|------|-----------|------------------------------|
-| 2026-06-16 | T-MN-066 SHIPPED (RULE #68 3rd co-author) | ✅ DONE (per T-MN-061 §8) |
-| 2026-06-17 | T-MN-068 SHIPPED (catalog v0.1) | ✅ DONE (per T-MN-061 §8) |
-| 2026-06-17 | T-MN-061 SHIPPED (6-witness chain close) | ✅ DONE (per `git show --stat 6deb7b71`) |
-| **2026-06-17 TURN 112+** | **T-MN-061 + Vulcan 2nd-witness (this file) SHIPPED** | **✅ DONE (this turn)** |
-| 2026-06-18 EOD | T-4d — 6 CATCHes dispositioned + Husky Gate 9+10+11 spec | 🟡 PENDING (Leader TURN 112+ critical path) |
-| 2026-06-19 EOD | T-3d — 12/12 GREEN + PATCH 16 SecretsVault + 5/12 RULE #55 | 🟡 PENDING |
-| 2026-06-20 EOD | T-2d — V3 e.ix.7+#8 applied + Husky Gate 11 IMPLEMENTED | 🟡 PENDING |
-| **2026-06-21 EOD** | **T-1d — Strategos + Calliope + Tyche 6-witness chain close (6/6 → 7/7 with Vulcan)** | **🟡 PENDING (3 days runway)** |
-| **2026-06-22 16:00 UTC** | **T-0d — RATIFICATION GATE ceremony** | **🟡 PENDING (5 days runway)** |
-| 2026-06-30 23:59 UTC | T+8d — HARD SHIP v1.0.0 | 🟡 PENDING |
+| Date                     | Milestone                                                                             | Status (Vulcan 2nd-witness)                 |
+| ------------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 2026-06-16               | T-MN-066 SHIPPED (RULE #68 3rd co-author)                                             | ✅ DONE (per T-MN-061 §8)                   |
+| 2026-06-17               | T-MN-068 SHIPPED (catalog v0.1)                                                       | ✅ DONE (per T-MN-061 §8)                   |
+| 2026-06-17               | T-MN-061 SHIPPED (6-witness chain close)                                              | ✅ DONE (per `git show --stat 6deb7b71`)    |
+| **2026-06-17 TURN 112+** | **T-MN-061 + Vulcan 2nd-witness (this file) SHIPPED**                                 | **✅ DONE (this turn)**                     |
+| 2026-06-18 EOD           | T-4d — 6 CATCHes dispositioned + Husky Gate 9+10+11 spec                              | 🟡 PENDING (Leader TURN 112+ critical path) |
+| 2026-06-19 EOD           | T-3d — 12/12 GREEN + PATCH 16 SecretsVault + 5/12 RULE #55                            | 🟡 PENDING                                  |
+| 2026-06-20 EOD           | T-2d — V3 e.ix.7+#8 applied + Husky Gate 11 IMPLEMENTED                               | 🟡 PENDING                                  |
+| **2026-06-21 EOD**       | **T-1d — Strategos + Calliope + Tyche 6-witness chain close (6/6 → 7/7 with Vulcan)** | **🟡 PENDING (3 days runway)**              |
+| **2026-06-22 16:00 UTC** | **T-0d — RATIFICATION GATE ceremony**                                                 | **🟡 PENDING (5 days runway)**              |
+| 2026-06-30 23:59 UTC     | T+8d — HARD SHIP v1.0.0                                                               | 🟡 PENDING                                  |
 
 **RATIFICATION GATE ELIGIBILITY VERDICT:** ✅ T-MN-061 v0.1.1 + Vulcan 2nd-witness = RATIFICATION-READY for 2026-06-22 16:00 UTC
 
@@ -146,11 +149,13 @@ Per T-MN-061 §8 timeline + Vulcan 2nd-witness check:
 ## §6 — 7-WITNESS CHAIN CLOSE (this file as 7th witness)
 
 **7-WITNESS CHAIN STATE (post Vulcan 2nd-witness):**
+
 - 4/7 SHIPPED (Prometheus + Hephaestus + Mnemosyne + **Vulcan (NEW)**) ✅
 - 3/7 PENDING (Strategos + Calliope + Tyche, T-1d 2026-06-21 EOD) 🟡
 - 7/7 SHIPPED target: 2026-06-21 EOD (4 days runway from TURN 112+)
 
 **Vulcan 2nd-witness contribution to RULE #68 v0.1.1:**
+
 1. CASCADE-TRAP sub-class scan (14 sub-classes A-N) — ALL PASS
 2. 4-ICP framework verdict (38.0/40 = 9.5/10 PLATINUM+)
 3. Cross-witness chain continuity check (6 + 1 = 7 MECE domains)
@@ -180,6 +185,7 @@ Per T-MN-061 §8 timeline + Vulcan 2nd-witness check:
 ## §8 — CROSS-MUSE SYNERGY
 
 This Vulcan 2nd-witness complements the 6-witness chain by:
+
 - Adding CASCADE-TRAP detection lens (Sub-class A-N) to the chain
 - Providing 2nd-witness on T-MN-061 v0.1.1 chain close mechanics
 - Cross-referencing MASTER_REPORT v1.5 §8.5 (Apollo TURN 110+) for 14+1+O CASCADE-TRAP sub-class catalog
@@ -187,6 +193,7 @@ This Vulcan 2nd-witness complements the 6-witness chain by:
 - Cross-referencing NEVER-AGAIN RULE #68 (CATCH-NUMBERING-COLLISION PREVENTION) for the chain subject
 
 **CROSS-REFERENCE TABLE:**
+
 - T-MN-061 v0.1.1 @ 6deb7b71 (Mnemosyne DRI) ✅
 - MASTER_REPORT v1.5 §8.5 @ 99576415d (Apollo TURN 110+) ✅
 - NEVER-AGAIN RULE #62 v0.1 @ 158L (Vulcan STAND-BY 5th-ICP) ⏳
@@ -198,6 +205,7 @@ This Vulcan 2nd-witness complements the 6-witness chain by:
 ## §9 — CONCLUSION + SIGN-OFF
 
 **Vulcan 2nd-witness on RULE #68 v0.1.1 6-witness chain close:**
+
 - ✅ T-MN-061 v0.1.1 SHIPPED @ 6deb7b71 verified
 - ✅ CATCH #211 + #212 dispositions correct (CATCH-NUMBERING-COLLISION PREVENTION codified)
 - ✅ 6-witness chain structurally sound (3 SHIPPED + 3 PENDING)
@@ -211,6 +219,7 @@ This Vulcan 2nd-witness complements the 6-witness chain by:
 **7-WITNESS CHAIN STATUS:** 4/7 SHIPPED (Prometheus + Hephaestus + Mnemosyne + **Vulcan**) + 3/7 PENDING (Strategos + Calliope + Tyche, T-1d 2026-06-21 EOD)
 
 **NEXT ACTIONS:**
+
 1. Commit this file per RULE #32 (`--no-verify`, single-file)
 2. Update task board per RULE #47 (CAVEMAN PERSIST)
 3. Update MEMORY.md index (CAVEMAN ledger)

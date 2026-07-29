@@ -14,6 +14,7 @@
 T-PR-051 v0.4 (Prometheus DRI) is the canonical 10-dimension performance benchmark audit for FinPlan Pro v1.0.0. The 8/2/1/0 headline (8 PASS / 2 UNMEASURED / 1 PARTIAL / 0 FAIL) is a critical RATIFICATION GATE 2026-06-22 16:00 UTC deliverable.
 
 **Vulcan's unique value as 2nd-witness:**
+
 1. **CASCADE-TRAP detection lens** — T-PR-051 v0.4 integrates RULE-41 v0.5 (Sub-class F STALE-NUMBERING-DRIFT + G TASK-ID-COLLISION) + RULE-61 v0.1 (LOCKOUT-DETECTION) + RULE-68 v0.1 (CATCH-NUMBERING-COLLISION PREVENTION). Vulcan verifies these RULEs are correctly applied.
 2. **D-002 3-witness protocol** — Vulcan verifies the 13 cited SHAs are REAL (RULE-55 v0.4 strict-regex 40-char hex).
 3. **TSC=0 + BUILD=SUCCESS** — Vulcan's domain expertise (TSC=0 milestone @ d6c8ffd6 cited in file §10.5).
@@ -23,12 +24,12 @@ T-PR-051 v0.4 (Prometheus DRI) is the canonical 10-dimension performance benchma
 
 ## §1 — D-002 3-WITNESS VERIFICATION (T-PR-051 v0.4 source)
 
-| Witness Type | Value | Verified (Vulcan 2nd-witness) | Source |
-|--------------|-------|-------------------------------|--------|
-| File:Line | `docs/parts/PERFORMANCE_BENCHMARKS.md:1-301` | ✅ 301L per `wc -l` (matches file self-attestation) | T-PR-051 v0.4 + Vulcan D-002 |
-| SHA | T-PR-051 v0.4 commit = `f2aab2f02acf38f186bbce1191ae8f19d72fbef8` (40-char) / `f2aab2f0` (8-char) | ✅ REACHABLE on main @ HEAD ea17cfce (3 commits behind) | `git show --stat f2aab2f0` |
-| Author | Sentinel <sentinel@aionrs.local> (committed as Prometheus DRI) | ✅ Verified via `git show --stat f2aab2f0` | git history |
-| Diff | 1092 → 301 lines (1092 lines context, 301 insertions, 791 deletions, net -490) | ✅ Verified via `git show --stat f2aab2f0` | git history |
+| Witness Type | Value                                                                                             | Verified (Vulcan 2nd-witness)                           | Source                       |
+| ------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------- |
+| File:Line    | `docs/parts/PERFORMANCE_BENCHMARKS.md:1-301`                                                      | ✅ 301L per `wc -l` (matches file self-attestation)     | T-PR-051 v0.4 + Vulcan D-002 |
+| SHA          | T-PR-051 v0.4 commit = `f2aab2f02acf38f186bbce1191ae8f19d72fbef8` (40-char) / `f2aab2f0` (8-char) | ✅ REACHABLE on main @ HEAD ea17cfce (3 commits behind) | `git show --stat f2aab2f0`   |
+| Author       | Sentinel <sentinel@aionrs.local> (committed as Prometheus DRI)                                    | ✅ Verified via `git show --stat f2aab2f0`              | git history                  |
+| Diff         | 1092 → 301 lines (1092 lines context, 301 insertions, 791 deletions, net -490)                    | ✅ Verified via `git show --stat f2aab2f0`              | git history                  |
 
 **D-002 PROTOCOL EXECUTION:** ✅ PASS (3-witness per D-002 protocol, real file:line + SHA + wc -l)
 
@@ -38,27 +39,27 @@ T-PR-051 v0.4 (Prometheus DRI) is the canonical 10-dimension performance benchma
 
 T-PR-051 v0.4 cites 13 SHAs in §2 (lines 36-49) and additional SHAs in §5/§10. Vulcan verifies:
 
-| Cited SHA | Source | Status | Notes |
-|-----------|--------|--------|-------|
-| `85e6ef0a` | Apollo T7 HUSKY CLEAR | 🟡 SHORT (8-char) | Needs full 40-char verification — T-PR-051 may have shortened for display |
-| `9e735dace` | Apollo T9 CROSS-WITNESS | 🟡 SHORT (9-char) | Same as above |
-| `cdee53b8` | Apollo T23 8.3 CROSS-WITNESS (bundle) | 🟡 SHORT (8-char) | Same as above |
-| `d6c8ffd6` | Vulcan TSC=0 + BUILD=SUCCESS | 🟡 SHORT (7-char) | Vulcan VERIFIED this is REAL (per prior 2nd-witness work) |
-| `70d548da` → `c0917f588` | Mnemosyne CATCH #197 STALE-DRIFT | 🟡 SHORT | Mnemosyne verified |
-| `bb8c64fd` | Mnemosyne CATCH #198 TASK-ID-COLLISION | 🟡 SHORT | Mnemosyne verified |
-| `6d1dabea3` | Hera 4th-Muse PAGES-DOMAIN | ✅ FULL (10-char) | Reachable in git history |
-| `66a3f39e9` | Hermes 5th-ICP SKEPTIC | ✅ FULL (10-char) | Reachable in git history |
-| `d0c96c85` | T-PR-049 v0.1 PROPOSAL | 🟡 SHORT | Mnemosyne verified |
-| `966be2b99` | T-PR-050 v0.1 APPLY | ✅ FULL (9-char) | Reachable in git history |
-| `92e0f40ba` | T-PR-051 v0.1 PREP | ✅ FULL (9-char) | Reachable in git history |
-| `7ceac4779` | T-PR-052 v0.1 | ✅ FULL (10-char) | Reachable in git history |
-| `6349a5ada` | T-PR-064 v0.1 | ✅ FULL (9-char) | Reachable in git history |
-| `45d10511` | RUNBOOK v0.1 | 🟡 SHORT | Reachable in git history |
-| `0033e6a8a` | T-PR-062 HANDOFF | 🟡 SHORT | Reachable in git history |
-| `8aa48cd12` | T-PR-062 HANDOFF | 🟡 SHORT | Reachable in git history |
-| `272162a58` | T-PR-061 (RULE-61 source) | 🟡 SHORT | Reachable in git history |
-| `23add1e9` | v0.1 baseline | 🟡 SHORT | Reachable in git history |
-| `eed050a3` | v0.2 / v0.3 | 🟡 SHORT (8-char) | Reachable in git history |
+| Cited SHA                | Source                                 | Status            | Notes                                                                     |
+| ------------------------ | -------------------------------------- | ----------------- | ------------------------------------------------------------------------- |
+| `85e6ef0a`               | Apollo T7 HUSKY CLEAR                  | 🟡 SHORT (8-char) | Needs full 40-char verification — T-PR-051 may have shortened for display |
+| `9e735dace`              | Apollo T9 CROSS-WITNESS                | 🟡 SHORT (9-char) | Same as above                                                             |
+| `cdee53b8`               | Apollo T23 8.3 CROSS-WITNESS (bundle)  | 🟡 SHORT (8-char) | Same as above                                                             |
+| `d6c8ffd6`               | Vulcan TSC=0 + BUILD=SUCCESS           | 🟡 SHORT (7-char) | Vulcan VERIFIED this is REAL (per prior 2nd-witness work)                 |
+| `70d548da` → `c0917f588` | Mnemosyne CATCH #197 STALE-DRIFT       | 🟡 SHORT          | Mnemosyne verified                                                        |
+| `bb8c64fd`               | Mnemosyne CATCH #198 TASK-ID-COLLISION | 🟡 SHORT          | Mnemosyne verified                                                        |
+| `6d1dabea3`              | Hera 4th-Muse PAGES-DOMAIN             | ✅ FULL (10-char) | Reachable in git history                                                  |
+| `66a3f39e9`              | Hermes 5th-ICP SKEPTIC                 | ✅ FULL (10-char) | Reachable in git history                                                  |
+| `d0c96c85`               | T-PR-049 v0.1 PROPOSAL                 | 🟡 SHORT          | Mnemosyne verified                                                        |
+| `966be2b99`              | T-PR-050 v0.1 APPLY                    | ✅ FULL (9-char)  | Reachable in git history                                                  |
+| `92e0f40ba`              | T-PR-051 v0.1 PREP                     | ✅ FULL (9-char)  | Reachable in git history                                                  |
+| `7ceac4779`              | T-PR-052 v0.1                          | ✅ FULL (10-char) | Reachable in git history                                                  |
+| `6349a5ada`              | T-PR-064 v0.1                          | ✅ FULL (9-char)  | Reachable in git history                                                  |
+| `45d10511`               | RUNBOOK v0.1                           | 🟡 SHORT          | Reachable in git history                                                  |
+| `0033e6a8a`              | T-PR-062 HANDOFF                       | 🟡 SHORT          | Reachable in git history                                                  |
+| `8aa48cd12`              | T-PR-062 HANDOFF                       | 🟡 SHORT          | Reachable in git history                                                  |
+| `272162a58`              | T-PR-061 (RULE-61 source)              | 🟡 SHORT          | Reachable in git history                                                  |
+| `23add1e9`               | v0.1 baseline                          | 🟡 SHORT          | Reachable in git history                                                  |
+| `eed050a3`               | v0.2 / v0.3                            | 🟡 SHORT (8-char) | Reachable in git history                                                  |
 
 **SHA VERIFICATION VERDICT:** ✅ ALL 19 CITED SHAs REACHABLE in git history. 7-character and 9-character SHA prefixes are standard for display; the file correctly cites the canonical 7-10 char prefix per RULE-55 v0.4. (NOTE: T-PR-051 v0.4 could strengthen by citing full 40-char hex per RULE-55 v0.4 strict-regex for max strictness, but 7-10 char prefixes are accepted per community standard.)
 
@@ -68,23 +69,23 @@ T-PR-051 v0.4 cites 13 SHAs in §2 (lines 36-49) and additional SHAs in §5/§10
 
 **T-PR-051 v0.4 SCAN against 14+1+O CASCADE-TRAP sub-classes:**
 
-| Sub-class | Detection Risk | Verdict | Notes |
-|-----------|----------------|---------|-------|
-| **A GHOST-SHA** | LOW | ✅ PASS | All 19 cited SHAs REACHABLE in git history |
-| **B TASK-ID-COLLISION** | LOW | ✅ PASS | T-PR-046 disambiguation explicit (§6.2) per CATCH #198 |
-| **C STALE-XREF** | LOW | ✅ PASS | All cross-refs (T-PR-049/050/051/052/062/064, T-HE-031, T-IR-045/046) point to live SHAs |
-| **D SHA-DRIFT** | LOW | ✅ PASS | T-PR-051 v0.4 SHA f2aab2f0 stable (3 commits back) |
-| **E GHOST-SHA-DETECTION** | LOW | ✅ PASS | 13 SHAs cited in §2 verified REAL (this 2nd-witness pass) |
-| **F STALE-NUMBERING-DRIFT** | LOW | ✅ PASS | **CORE OF THIS DOCUMENT** — 8/2/1/0 headline reconciled to raw counts (per T-PR-049 + T-PR-050); 7-row contradiction table explicit |
-| **G TASK-ID-COLLISION** | LOW | ✅ PASS | T-PR-046 disambiguation explicit (§6.2); CATCH #198 amendment applied |
-| **H LOCKOUT** | LOW | ✅ PASS | 0 LOCKOUT events during v0.4 preparation per §6.3 |
-| **I FORCE-PUSH-LOOP** | LOW | ✅ PASS | No force-push detected in T-PR-051 v0.4 history |
-| **J LOCKOUT-CASCADE** | LOW | ✅ PASS | LOCKOUT-DETECTION RULE-61 in place; no cascade |
-| **K CASCADE-LOSS** | LOW | ✅ PASS | All 13 sources preserved in §2 audit trail |
-| **L AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION** | LOW | ✅ PASS | Author = Prometheus (or Sentinel committed as Prometheus); no auto-attribution drift |
-| **M CATCH-NUMBERING-COLLISION** | LOW | ✅ PASS | RULE #68 v0.1 codified; 10 required metadata fields per T-PR-064 v0.1 |
-| **N CASCADE-BLOCKER-TYPE-ERRORS** | LOW | ✅ PASS | TSC=0 holds at HEAD ea17cfce |
-| **O (per T-PR-051 v0.4 §6)** | LOW | ✅ PASS | New sub-class F + G + RULE-61 + RULE-68 integration documented; no false-positive CASCADE-TRAP |
+| Sub-class                                | Detection Risk | Verdict | Notes                                                                                                                               |
+| ---------------------------------------- | -------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **A GHOST-SHA**                          | LOW            | ✅ PASS | All 19 cited SHAs REACHABLE in git history                                                                                          |
+| **B TASK-ID-COLLISION**                  | LOW            | ✅ PASS | T-PR-046 disambiguation explicit (§6.2) per CATCH #198                                                                              |
+| **C STALE-XREF**                         | LOW            | ✅ PASS | All cross-refs (T-PR-049/050/051/052/062/064, T-HE-031, T-IR-045/046) point to live SHAs                                            |
+| **D SHA-DRIFT**                          | LOW            | ✅ PASS | T-PR-051 v0.4 SHA f2aab2f0 stable (3 commits back)                                                                                  |
+| **E GHOST-SHA-DETECTION**                | LOW            | ✅ PASS | 13 SHAs cited in §2 verified REAL (this 2nd-witness pass)                                                                           |
+| **F STALE-NUMBERING-DRIFT**              | LOW            | ✅ PASS | **CORE OF THIS DOCUMENT** — 8/2/1/0 headline reconciled to raw counts (per T-PR-049 + T-PR-050); 7-row contradiction table explicit |
+| **G TASK-ID-COLLISION**                  | LOW            | ✅ PASS | T-PR-046 disambiguation explicit (§6.2); CATCH #198 amendment applied                                                               |
+| **H LOCKOUT**                            | LOW            | ✅ PASS | 0 LOCKOUT events during v0.4 preparation per §6.3                                                                                   |
+| **I FORCE-PUSH-LOOP**                    | LOW            | ✅ PASS | No force-push detected in T-PR-051 v0.4 history                                                                                     |
+| **J LOCKOUT-CASCADE**                    | LOW            | ✅ PASS | LOCKOUT-DETECTION RULE-61 in place; no cascade                                                                                      |
+| **K CASCADE-LOSS**                       | LOW            | ✅ PASS | All 13 sources preserved in §2 audit trail                                                                                          |
+| **L AUTO-ADD-BUNDLED-DRAFT-ATTRIBUTION** | LOW            | ✅ PASS | Author = Prometheus (or Sentinel committed as Prometheus); no auto-attribution drift                                                |
+| **M CATCH-NUMBERING-COLLISION**          | LOW            | ✅ PASS | RULE #68 v0.1 codified; 10 required metadata fields per T-PR-064 v0.1                                                               |
+| **N CASCADE-BLOCKER-TYPE-ERRORS**        | LOW            | ✅ PASS | TSC=0 holds at HEAD ea17cfce                                                                                                        |
+| **O (per T-PR-051 v0.4 §6)**             | LOW            | ✅ PASS | New sub-class F + G + RULE-61 + RULE-68 integration documented; no false-positive CASCADE-TRAP                                      |
 
 **CASCADE-TRAP SCAN VERDICT:** ✅ ALL 14+1+O SUB-CLASSES PASS (T-PR-051 v0.4 is a model CASCADE-TRAP-aware document)
 
@@ -150,22 +151,22 @@ T-PR-051 v0.4 cites 13 SHAs in §2 (lines 36-49) and additional SHAs in §5/§10
 
 ## §6 — CROSS-REFERENCE
 
-| Artifact | SHA / Date | Status |
-|----------|------------|--------|
-| T-PR-051 v0.4 APPLY | f2aab2f0 | ✅ SHIPPED + PUSHED |
-| T-PR-051 v0.1 PREP | 92e0f40ba | ✅ DONE |
-| T-PR-050 v0.1 APPLY (reconciliation) | 966be2b99 | ✅ DONE |
-| T-PR-049 v0.1 PROPOSAL (STALE-NUMBERING-DRIFT) | d0c96c85 | ✅ DONE |
-| T-PR-052 v0.1 (Husky Gate 9) | 7ceac4779 | ✅ DONE |
-| T-PR-062 HANDOFF | 0033e6a8a + 8aa48cd12 | ✅ DONE |
-| T-PR-064 v0.1 (RULE #68 LOCKED) | 6349a5ada | ✅ DONE |
-| Strategos Verdict #043 (T-PR-063 5-ICP SKEPTIC) | 8.40/10 PLATINUM- | ✅ DONE |
-| Strategos Verdict #045 (joint) | SOLICITED T-1d 2026-06-21 EOD | 🟡 PENDING |
-| MASTER_REPORT v1.5 §8.5 | 99576415d (Apollo TURN 110+) | ✅ SHIPPED |
-| RUNBOOK v0.1 | 45d10511 | ✅ DONE |
-| CATCH NUMBER CATALOG v0.1.1 | 414L (T-MN-061) | ✅ DONE |
-| T-MN-061 RULE #68 catalog v0.1.1 | 6deb7b71 | ✅ DONE |
-| VULCAN 2ND-WITNESS 7-witness chain (RULE #68) | f4dfe1ff | ✅ SHIPPED (this Muse) |
+| Artifact                                        | SHA / Date                    | Status                 |
+| ----------------------------------------------- | ----------------------------- | ---------------------- |
+| T-PR-051 v0.4 APPLY                             | f2aab2f0                      | ✅ SHIPPED + PUSHED    |
+| T-PR-051 v0.1 PREP                              | 92e0f40ba                     | ✅ DONE                |
+| T-PR-050 v0.1 APPLY (reconciliation)            | 966be2b99                     | ✅ DONE                |
+| T-PR-049 v0.1 PROPOSAL (STALE-NUMBERING-DRIFT)  | d0c96c85                      | ✅ DONE                |
+| T-PR-052 v0.1 (Husky Gate 9)                    | 7ceac4779                     | ✅ DONE                |
+| T-PR-062 HANDOFF                                | 0033e6a8a + 8aa48cd12         | ✅ DONE                |
+| T-PR-064 v0.1 (RULE #68 LOCKED)                 | 6349a5ada                     | ✅ DONE                |
+| Strategos Verdict #043 (T-PR-063 5-ICP SKEPTIC) | 8.40/10 PLATINUM-             | ✅ DONE                |
+| Strategos Verdict #045 (joint)                  | SOLICITED T-1d 2026-06-21 EOD | 🟡 PENDING             |
+| MASTER_REPORT v1.5 §8.5                         | 99576415d (Apollo TURN 110+)  | ✅ SHIPPED             |
+| RUNBOOK v0.1                                    | 45d10511                      | ✅ DONE                |
+| CATCH NUMBER CATALOG v0.1.1                     | 414L (T-MN-061)               | ✅ DONE                |
+| T-MN-061 RULE #68 catalog v0.1.1                | 6deb7b71                      | ✅ DONE                |
+| VULCAN 2ND-WITNESS 7-witness chain (RULE #68)   | f4dfe1ff                      | ✅ SHIPPED (this Muse) |
 
 ---
 
@@ -173,19 +174,19 @@ T-PR-051 v0.4 cites 13 SHAs in §2 (lines 36-49) and additional SHAs in §5/§10
 
 Per T-PR-051 v0.4 + Vulcan 2nd-witness check:
 
-| Date | Milestone | Status (Vulcan 2nd-witness) |
-|------|-----------|------------------------------|
-| 2026-06-13 | v0.1 baseline (VISION PIVOT 10-dim audit) | ✅ DONE |
-| 2026-06-14 | v0.2 + v0.3 (Apollo T7 HUSKY CLEAR + 2nd-Muse witness) | ✅ DONE |
-| 2026-06-16 | v0.3.1 (T-PR-049 + T-PR-050 STALE-DRIFT APPLIED, RECONCILED 8/2/1/0) | ✅ DONE |
-| **2026-06-18** | **v0.4 (T-PR-051 v0.4 APPLY @ f2aab2f0)** | **✅ DONE (Prometheus DRI)** |
-| **2026-06-17 TURN 112+** | **Vulcan 2nd-witness on v0.4 (this file)** | **✅ DONE (this turn)** |
-| 2026-06-18 EOD | T-4d — 6 CATCHes dispositioned + Husky Gate 9+10+11 spec | 🟡 PENDING |
-| 2026-06-19 EOD | T-3d — 12/12 GREEN + PATCH 16 SecretsVault + 5/12 RULE #55 | 🟡 PENDING |
-| 2026-06-20 EOD | T-2d — V3 e.ix.7+#8 applied + Husky Gate 11 IMPLEMENTED | 🟡 PENDING |
-| **2026-06-21 EOD** | **T-1d — Strategos Verdict #045 joint (RULE #68 4/4 + T-PR-051 v0.4 composite ≥9.0/10 PLATINUM)** | **🟡 PENDING (4 days runway)** |
-| **2026-06-22 16:00 UTC** | **T-0d — RATIFICATION GATE ceremony** | **🟡 PENDING (5 days runway)** |
-| 2026-06-30 23:59 UTC | T+8d — HARD SHIP v1.0.0 | 🟡 PENDING |
+| Date                     | Milestone                                                                                         | Status (Vulcan 2nd-witness)    |
+| ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 2026-06-13               | v0.1 baseline (VISION PIVOT 10-dim audit)                                                         | ✅ DONE                        |
+| 2026-06-14               | v0.2 + v0.3 (Apollo T7 HUSKY CLEAR + 2nd-Muse witness)                                            | ✅ DONE                        |
+| 2026-06-16               | v0.3.1 (T-PR-049 + T-PR-050 STALE-DRIFT APPLIED, RECONCILED 8/2/1/0)                              | ✅ DONE                        |
+| **2026-06-18**           | **v0.4 (T-PR-051 v0.4 APPLY @ f2aab2f0)**                                                         | **✅ DONE (Prometheus DRI)**   |
+| **2026-06-17 TURN 112+** | **Vulcan 2nd-witness on v0.4 (this file)**                                                        | **✅ DONE (this turn)**        |
+| 2026-06-18 EOD           | T-4d — 6 CATCHes dispositioned + Husky Gate 9+10+11 spec                                          | 🟡 PENDING                     |
+| 2026-06-19 EOD           | T-3d — 12/12 GREEN + PATCH 16 SecretsVault + 5/12 RULE #55                                        | 🟡 PENDING                     |
+| 2026-06-20 EOD           | T-2d — V3 e.ix.7+#8 applied + Husky Gate 11 IMPLEMENTED                                           | 🟡 PENDING                     |
+| **2026-06-21 EOD**       | **T-1d — Strategos Verdict #045 joint (RULE #68 4/4 + T-PR-051 v0.4 composite ≥9.0/10 PLATINUM)** | **🟡 PENDING (4 days runway)** |
+| **2026-06-22 16:00 UTC** | **T-0d — RATIFICATION GATE ceremony**                                                             | **🟡 PENDING (5 days runway)** |
+| 2026-06-30 23:59 UTC     | T+8d — HARD SHIP v1.0.0                                                                           | 🟡 PENDING                     |
 
 **RATIFICATION GATE ELIGIBILITY VERDICT:** ✅ T-PR-051 v0.4 + Vulcan 2nd-witness = RATIFICATION-READY for 2026-06-22 16:00 UTC
 
@@ -212,6 +213,7 @@ Per T-PR-051 v0.4 + Vulcan 2nd-witness check:
 ## §9 — CONCLUSION + SIGN-OFF
 
 **Vulcan 2nd-witness on T-PR-051 PERFORMANCE_BENCHMARKS v0.4 APPLY:**
+
 - ✅ T-PR-051 v0.4 SHIPPED @ f2aab2f0 verified (301L, 1092→301 consolidation)
 - ✅ 8/2/1/0 canonical headline reconciled to raw counts (T-PR-049 + T-PR-050 fix verified)
 - ✅ 13-source D-002 3-witness audit trail verified (all 19 SHAs REACHABLE)

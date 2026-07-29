@@ -1,13 +1,13 @@
 # T-PR-062 BILATERAL-ATTRIBUTION LEDGER — Per-Muse Attribution for commit 0033e6a8a
 
-| Field | Value |
-| --- | --- |
-| Ledger ID | T-PR-062-LEDGER |
-| Pattern | Per-Muse Attribution Ledger (CATCH #195 mitigation pattern) |
-| Author | Prometheus (T-PR-062) |
-| Date | 2026-06-16 |
-| Commit | `0033e6a8a` |
-| CASCADE Pattern | BILATERAL-ATTRIBUTION-RACE (CATCH #195 family) |
+| Field              | Value                                                                    |
+| ------------------ | ------------------------------------------------------------------------ |
+| Ledger ID          | T-PR-062-LEDGER                                                          |
+| Pattern            | Per-Muse Attribution Ledger (CATCH #195 mitigation pattern)              |
+| Author             | Prometheus (T-PR-062)                                                    |
+| Date               | 2026-06-16                                                               |
+| Commit             | `0033e6a8a`                                                              |
+| CASCADE Pattern    | BILATERAL-ATTRIBUTION-RACE (CATCH #195 family)                           |
 | Audit Trail Source | CATCH #195 Themis 2-Muse bundle mitigation (per-Muse ledger @ 42ad8bd3e) |
 
 ---
@@ -20,10 +20,10 @@
 
 ## 2. File-Level Attribution (2 files bundled)
 
-| File | True Author | Domain | Lines | CASCADE Pattern |
-| --- | --- | --- | --- | --- |
-| `docs/drafts/prometheus/T-PR-062_HANDOFF_PROMETHEUS_CYCLE_13_W2_D2_MASTER_REPORT_SECTION_8_v0.1.md` | **Prometheus** (T-PR-062, 2026-06-16) | Prometheus drafts (per-Muse namespace) | 164 | Primary deliverable |
-| `docs/strategy/artemis-a11y-readiness-v0.5.md` | **Artemis** (A11Y_READINESS v0.5 amendment, 2026-06-16) | Strategy docs (cross-Muse namespace) | 158 (per pre-staged size) | Pre-staged by Artemis, auto-bundled via shared `git add -f` |
+| File                                                                                                | True Author                                             | Domain                                 | Lines                     | CASCADE Pattern                                             |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------- | ------------------------- | ----------------------------------------------------------- |
+| `docs/drafts/prometheus/T-PR-062_HANDOFF_PROMETHEUS_CYCLE_13_W2_D2_MASTER_REPORT_SECTION_8_v0.1.md` | **Prometheus** (T-PR-062, 2026-06-16)                   | Prometheus drafts (per-Muse namespace) | 164                       | Primary deliverable                                         |
+| `docs/strategy/artemis-a11y-readiness-v0.5.md`                                                      | **Artemis** (A11Y_READINESS v0.5 amendment, 2026-06-16) | Strategy docs (cross-Muse namespace)   | 158 (per pre-staged size) | Pre-staged by Artemis, auto-bundled via shared `git add -f` |
 
 ## 3. CASCADE Pattern Analysis
 
@@ -111,5 +111,5 @@ adding an audit trail.
 - **CATCH #207 LOGGED**: 2026-06-16 (added to CASCADE-TRAP family table)
 - **RULE-41 v0.5 amendment v0.3 (LESSON LEARNED)**: 2026-06-17+ (post-RATIFICATION)
   - New sub-rule: "Per-Muse attribution ledger required for any commit with
-    >1 file from different Muses" (codified from this CATCH)
+    > 1 file from different Muses" (codified from this CATCH)
 - **RATIFICATION GATE**: 2026-06-22 16:00 UTC (this CATCH is non-blocking)

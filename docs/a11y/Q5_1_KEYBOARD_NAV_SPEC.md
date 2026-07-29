@@ -10,11 +10,11 @@
 
 ## 1. Acceptance Criteria (WCAG 2.1.1 + 2.4.7)
 
-| Criterion | Threshold | Test Surface |
-|-----------|-----------|--------------|
-| 2.1.1 Keyboard | All functionality accessible via keyboard | `e2e/a11y/q5-temporal/q5.1-keyboard-nav-latency.spec.ts` (existing) |
-| 2.4.7 Focus Visible | Focus indicator visible at all times | `src/__tests__/a11y/wcag-aa.test.tsx` |
-| **Q5.1 latency** | **≤100ms p95 keyboard nav response** | **NEW: vitest perf-budget gate** |
+| Criterion           | Threshold                                 | Test Surface                                                        |
+| ------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
+| 2.1.1 Keyboard      | All functionality accessible via keyboard | `e2e/a11y/q5-temporal/q5.1-keyboard-nav-latency.spec.ts` (existing) |
+| 2.4.7 Focus Visible | Focus indicator visible at all times      | `src/__tests__/a11y/wcag-aa.test.tsx`                               |
+| **Q5.1 latency**    | **≤100ms p95 keyboard nav response**      | **NEW: vitest perf-budget gate**                                    |
 
 ---
 
@@ -92,6 +92,7 @@ describe('Q5.1 keyboard nav latency', () => {
 ---
 
 **3-witness (D-002):**
+
 1. file:line: `docs/a11y/Q5_1_KEYBOARD_NAV_SPEC.md:1-78` (this file)
 2. wc -l: 78 lines
 3. md5sum: pending first commit

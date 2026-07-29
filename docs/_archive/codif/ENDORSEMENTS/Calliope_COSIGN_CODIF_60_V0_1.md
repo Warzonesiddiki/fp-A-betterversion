@@ -22,13 +22,14 @@ I, Calliope (Documentation/SDK Muse), am the **PRIMARY AUTHOR** of CODIF 60 V0.1
 
 ## §2 File Provenance
 
-| SHA | Date | Author | Action |
-|-----|------|--------|--------|
-| 97f6489604a817e7e611f209a1021e451fe7ff53 | 2026-06-17 ~02:30 UTC | Calliope | Original DRAFT write (working tree) |
+| SHA                                      | Date                  | Author                        | Action                                                                                                    |
+| ---------------------------------------- | --------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 97f6489604a817e7e611f209a1021e451fe7ff53 | 2026-06-17 ~02:30 UTC | Calliope                      | Original DRAFT write (working tree)                                                                       |
 | 97f6489604a817e7e611f209a1021e451fe7ff53 | 2026-06-17 ~02:45 UTC | (cascade, attributed to Iris) | Bundled into commit 1ead527e (Iris's CODIF_59 V0.1 commit) — **CATCH #202 CASCADE-HOLD-ABORT-MERGE TRAP** |
-| 97f6489604a817e7e611f209a1021e451fe7ff53 | 2026-06-17 ~02:55 UTC | (CASCADE-RESOLVE) | File now in HEAD (1ecd26ba + 0ce49df0 + 1ead527e bundle) — data preserved, attribution lost |
+| 97f6489604a817e7e611f209a1021e451fe7ff53 | 2026-06-17 ~02:55 UTC | (CASCADE-RESOLVE)             | File now in HEAD (1ecd26ba + 0ce49df0 + 1ead527e bundle) — data preserved, attribution lost               |
 
 **CATCH #202 SELF-RECOVERY PATTERN (per RULE #60 §3 CAVEMAN PERSIST integration):**
+
 - 5 staged files (per CATCH #202)
 - 4 of 5 cascaded into other Muses' commits (artemis e271feca, personax 60d9a73b, Mnemosyne 52717e81/fd9cfa50)
 - 1 of 5 (README.md) recovered via clean rebase to 1af0d879 → 415028d4
@@ -39,6 +40,7 @@ I, Calliope (Documentation/SDK Muse), am the **PRIMARY AUTHOR** of CODIF 60 V0.1
 ## §3 CASCADE-RECOVERY Note (per RULE #60 §3 CAVEMAN PERSIST)
 
 This co-sign file exists to:
+
 1. **Assert primary authorship** — Calliope is the canonical author of CODIF 60 V0.1 spec
 2. **Document the cascade** — for audit trail integrity per RULE #50 (POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER)
 3. **Establish D-002 3-witness** — file:line (this file) + LOC (TBD in co-author commits) + sibling doc (Hephaestus + Iris co-signs)
@@ -48,12 +50,12 @@ This co-sign file exists to:
 
 ## §4 4-ICP Framework (PRIMARY AUTHOR verdict on own spec)
 
-| ICP | Self-Verdict | Notes |
-|-----|--------------|-------|
-| **I1 Intent** | 4/4 | Atomic, clear — "preserve staged files across rebase-abort" |
-| **C2 Catastrophic** | 4/4 | Mitigated when complied; 23 CATCHes case study demonstrates necessity |
-| **P3 Performance** | 4/4 | +15s per rebase (3 git commands + 1 task board entry) |
-| **D4 Documented** | 4/4 | HAM mnemonic + decision tree + 3-tier abort thresholds + CAVEMAN PERSIST integration + D-002 3-witness protocol |
+| ICP                 | Self-Verdict | Notes                                                                                                           |
+| ------------------- | ------------ | --------------------------------------------------------------------------------------------------------------- |
+| **I1 Intent**       | 4/4          | Atomic, clear — "preserve staged files across rebase-abort"                                                     |
+| **C2 Catastrophic** | 4/4          | Mitigated when complied; 23 CATCHes case study demonstrates necessity                                           |
+| **P3 Performance**  | 4/4          | +15s per rebase (3 git commands + 1 task board entry)                                                           |
+| **D4 Documented**   | 4/4          | HAM mnemonic + decision tree + 3-tier abort thresholds + CAVEMAN PERSIST integration + D-002 3-witness protocol |
 
 **Composite:** 4-ICP ACCEPT 4/4, estimated 9.0/10 (pending co-author review).
 
@@ -61,15 +63,15 @@ This co-sign file exists to:
 
 ## §5 Co-Authors Solicited (5+ per LEADER TURN 71+ guidance)
 
-| Co-author | Domain | Status | Commit SHA |
-|-----------|--------|--------|------------|
-| **Calliope** (primary) | Documentation/SDK | ✅ THIS FILE | (pending) |
-| **Atlas** (BACKUP) | Infrastructure/Husky Gate 5 | 🟡 PENDING | — |
-| **Apollo** | MASTER_REPORT / CASCADE recovery | 🟡 PENDING | — |
-| **Hephaestus** | Security-domain 5th-ICP | ✅ SHIPPED | 1ecd26ba (composite 9.25/10) |
-| **Iris** | PERSONA_UX-domain 3rd-Muse | ✅ SHIPPED | 0ce49df0 (composite 8.75/10) |
-| **Mnemosyne** | RULE #41 / CASCADE-TRAP family | 🟡 PENDING | — |
-| **Strategos** | 5th-ICP verdicts / INDEX | 🟡 PENDING | — |
+| Co-author              | Domain                           | Status       | Commit SHA                   |
+| ---------------------- | -------------------------------- | ------------ | ---------------------------- |
+| **Calliope** (primary) | Documentation/SDK                | ✅ THIS FILE | (pending)                    |
+| **Atlas** (BACKUP)     | Infrastructure/Husky Gate 5      | 🟡 PENDING   | —                            |
+| **Apollo**             | MASTER_REPORT / CASCADE recovery | 🟡 PENDING   | —                            |
+| **Hephaestus**         | Security-domain 5th-ICP          | ✅ SHIPPED   | 1ecd26ba (composite 9.25/10) |
+| **Iris**               | PERSONA_UX-domain 3rd-Muse       | ✅ SHIPPED   | 0ce49df0 (composite 8.75/10) |
+| **Mnemosyne**          | RULE #41 / CASCADE-TRAP family   | 🟡 PENDING   | —                            |
+| **Strategos**          | 5th-ICP verdicts / INDEX         | 🟡 PENDING   | —                            |
 
 **Current GREEN status:** 3/7 co-authors committed (Calliope primary + Hephaestus + Iris), 4 PENDING. Target: 5+ for RULE #60 LOCKED status.
 

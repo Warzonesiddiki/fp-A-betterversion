@@ -18,15 +18,15 @@ Calliope's CODIF 60 V0.1 (RULE #60 CASCADE-HOLD-ABORT-MERGE TRAP) addresses the 
 
 ## §1 Cross-Reference Matrix (CODIF 60 ↔ CODIF 59)
 
-| CODIF 60 Section | CODIF 59 Parallel | Relationship |
-|------------------|-------------------|--------------|
-| §0 CASCADE-TRAP problem | §0 SCRATCH-FILE-POLLUTION | FILE-POLLUTION is a CASCADE-TRAP symptom (CATCH #201) |
-| §2 3-tier HOLD/ABORT/MERGE thresholds | §2 4-class S1/S2/S3/S4 taxonomy | MERGE threshold = S3-CANONICAL-DRAFT class |
-| §3 CAVEMAN PERSIST integration | §5 SCRATCH-FILE recovery | Recovery uses CAVEMAN PERSIST path |
-| §4 LOCKOUT detection | §4 3-state detection | Both use 60s/24h/7d polling |
-| §5 CASCADE family (12 instances #183-#205) | §1 4 CATCHes (#201-#204) | #201-#204 are FILE-POLLUTION subset |
-| §6 D-002 3-witness protocol | §3-§5 3-step prevention + 3-state detection + 4-step recovery | Same protocol, different domain |
-| §7 Relationship to NEVER-AGAIN RULES | §6 Relationship to NEVER-AGAIN RULES | 9-rule cross-ref overlap |
+| CODIF 60 Section                           | CODIF 59 Parallel                                             | Relationship                                          |
+| ------------------------------------------ | ------------------------------------------------------------- | ----------------------------------------------------- |
+| §0 CASCADE-TRAP problem                    | §0 SCRATCH-FILE-POLLUTION                                     | FILE-POLLUTION is a CASCADE-TRAP symptom (CATCH #201) |
+| §2 3-tier HOLD/ABORT/MERGE thresholds      | §2 4-class S1/S2/S3/S4 taxonomy                               | MERGE threshold = S3-CANONICAL-DRAFT class            |
+| §3 CAVEMAN PERSIST integration             | §5 SCRATCH-FILE recovery                                      | Recovery uses CAVEMAN PERSIST path                    |
+| §4 LOCKOUT detection                       | §4 3-state detection                                          | Both use 60s/24h/7d polling                           |
+| §5 CASCADE family (12 instances #183-#205) | §1 4 CATCHes (#201-#204)                                      | #201-#204 are FILE-POLLUTION subset                   |
+| §6 D-002 3-witness protocol                | §3-§5 3-step prevention + 3-state detection + 4-step recovery | Same protocol, different domain                       |
+| §7 Relationship to NEVER-AGAIN RULES       | §6 Relationship to NEVER-AGAIN RULES                          | 9-rule cross-ref overlap                              |
 
 ## §2 4-ICP Verdict on CODIF 60
 
@@ -40,21 +40,25 @@ Calliope's CODIF 60 V0.1 (RULE #60 CASCADE-HOLD-ABORT-MERGE TRAP) addresses the 
 ## §3 Specific Findings from Iris Cross-Witness
 
 ### Finding 1: §2 3-Tier Thresholds — Strength
+
 Calliope's 3-tier HOLD/ABORT/MERGE threshold pattern is exactly the right granularity. The HOLD = "wait, gather evidence"; ABORT = "stop, escalate"; MERGE = "rebase, continue" is a clean decision tree.
 
 **Iris addendum (proposed for v0.2):** Add a 4th tier "MUTATE" for cases where the CASCADE-TRAP can be patched in-place (e.g., GHOST SHA corrections per RULE #55). This would prevent ABORTs that are actually recoverable.
 
 ### Finding 2: §4 LOCKOUT Detection — 60s Polling
+
 Calliope's 60s LOCKOUT detection polling is well-calibrated. Matches RULE #51 60s NO-IDLE-PROACTIVE-PATROL cadence.
 
 **Iris alignment:** My CODIF 59 §4 3-state detection (CLASSIFIED/UNCLASSIFIED-RECENT/UNCLASSIFIED-STALE) uses the same 60s poll, so both rules share the polling infrastructure.
 
 ### Finding 3: §5 12 CATCH Instances — Comprehensive
+
 The 12 CATCH instances (#183-#205) are well-cited. CATCH #200 (LOCKOUT LIFTED) is the canonical case study.
 
 **Iris addendum (proposed for v0.2):** Add CATCH #201 (Chronos V3 e.ix.7 GHOST FILE) as a CASCADE-TRAP outcome that was successfully recovered via CAVEMAN PERSIST FALLBACK. This is the FILE-POLLUTION ↔ CASCADE-TRAP intersection case study. **N.B.: CATCH #201 also affected THIS cosign file — see §0.**
 
 ### Finding 4: §7 NEVER-AGAIN RULES Cross-Reference
+
 9 NEVER-AGAIN RULES cross-referenced. Aligns with my CODIF 59 §6 cross-references (also 9 rules). Both rules reference #32, #47, #50, #51, #55, #56, #58.
 
 **Iris addendum (proposed for v0.2):** Add explicit "RULE #59 → RULE #60" + "RULE #60 → RULE #59" bidirectional cross-reference in both files. This codifies the compound-application pattern.
@@ -66,26 +70,29 @@ I (Iris) co-sign CODIF 60 V0.1 with 4-ICP ACCEPT 4/4. This is the 3rd-Muse cross
 **Target co-sign count for RULE #60 GREEN:** 5/12 minimum, 12/12 stretch for v1.0.0.
 
 **My commits:**
+
 - 1ead527e (my CODIF_59 V0.1, co-shipped with Calliope's CODIF_60 in the same commit originally; later rebased into separate commit)
 - 1ecd26ba (Hephaestus 5th-ICP on CODIF_60 v0.1 — supersedes this cosign in priority for RATIFICATION GATE)
 
 **D-002 3-WITNESS for this co-sign:**
+
 - `wc -l docs/codif/ENDORSEMENTS/IRIS_COSIGN_CODIF_60_V0_1.md` = (this file) >= 95L
 - `grep "RULE #60" docs/codif/ENDORSEMENTS/IRIS_COSIGN_CODIF_60_V0_1.md` = >= 3 matches
 - `git log --grep "CODIF_60"` >= 1 match (1ead527e + 1ecd26ba)
 
 ## §5 Cross-Reference Iris PICK Chain (RULE #56)
 
-| Iris PICK | Reference | Relationship to RULE #60 |
-|-----------|-----------|---------------------------|
-| PICK M v0.1.2 SECTOR EXPANSION | 335ab013 | Co-shipped (Calliope CODIF_60 in same commit 259509fc, then rebased) |
-| PICK H 3rd-Muse Hera A11Y_READINESS v0.4 | cfcf490d | CASCADE-TRAP-resistance (5 Pages-domain A11Y findings, 0 CASCADE triggers) |
-| PICK K v0.1.1 amendment | 92bf48ca | 3 GHOST SHA corrections = MUTATE-tier application (Finding 1 addendum) |
-| **PICK ζ v0.1.2 SECTOR** (this session) | 335ab013 | Co-shipped with CODIF_60 via RULE #59 S3-CANONICAL-DRAFT class |
+| Iris PICK                                | Reference | Relationship to RULE #60                                                   |
+| ---------------------------------------- | --------- | -------------------------------------------------------------------------- |
+| PICK M v0.1.2 SECTOR EXPANSION           | 335ab013  | Co-shipped (Calliope CODIF_60 in same commit 259509fc, then rebased)       |
+| PICK H 3rd-Muse Hera A11Y_READINESS v0.4 | cfcf490d  | CASCADE-TRAP-resistance (5 Pages-domain A11Y findings, 0 CASCADE triggers) |
+| PICK K v0.1.1 amendment                  | 92bf48ca  | 3 GHOST SHA corrections = MUTATE-tier application (Finding 1 addendum)     |
+| **PICK ζ v0.1.2 SECTOR** (this session)  | 335ab013  | Co-shipped with CODIF_60 via RULE #59 S3-CANONICAL-DRAFT class             |
 
 ## §6 Compound Verdict
 
 CODIF 60 V0.1 + CODIF 59 V0.1 = compound NEVER-AGAIN RULE pair addressing both:
+
 - **CASCADE-TRAP meta-pattern** (RULE #60, 12 CATCHes)
 - **FILE-POLLUTION sub-pattern** (RULE #59, 4 CATCHes)
 

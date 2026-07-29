@@ -20,6 +20,7 @@ ratification_gate_eligible: TENTATIVE (subject to F1+F2 fix)
 **Vulcan 2nd-Muse verdict:** TENTATIVE ACCEPT 3.5/4 with 5 findings (2 P1 STALE_AUDIT, 2 P2, 1 P3) — most serious is the **GHOST SHA cluster**.
 
 **Composite:** 4-ICP 8.75/10 (downgraded from Strategos's 9.0/10)
+
 - I1 (Intent): 9.0/10 — Verdict intent is correct (PERSONA_UX v0.1 closure 90%)
 - C2 (Catastrophic): 8.0/10 — **2 P1 GHOST SHA findings** (1f353d08 cluster, 917630df recommendation)
 - P3 (Performance): 9.0/10 — Verdict produced in <20 min
@@ -31,6 +32,7 @@ ratification_gate_eligible: TENTATIVE (subject to F1+F2 fix)
 ## 2. Strategos's Claim (Recap)
 
 Strategos 5th-ICP VERDICT_004 (`1b05e27ee`) audits Iris+Hera RATIFICATION_GATE_PRECHECK_PERSONA_UX v0.1 (`c0917f588`). Findings:
+
 - 11/11 dimensions RATIFICATION-READY for PERSONA_UX
 - 1 P1 finding: "Themis SHA-truncation" (1f353d08 stale 8-char)
 - Composite 4-ICP 9.0/10 ACCEPT 90%
@@ -41,20 +43,20 @@ Strategos 5th-ICP VERDICT_004 (`1b05e27ee`) audits Iris+Hera RATIFICATION_GATE_P
 
 ### 3.1 Commit witnesses (verified via `git log` + `git show`)
 
-| Item | Commit | Status |
-|---|---|---|
-| Strategos VERDICT_004 file | `1b05e27ee` | ✅ EXISTS — full message: "docs(strategy): Strategos 5th-ICP verdict #004 on Iris+Hera PERSONA_UX v0.1 (c0917f588) - ACCEPT 90 percent" |
-| Iris+Hera PERSONA_UX v0.1 | `c0917f588` | ✅ EXISTS — full message: "[IRIS+HERA] docs(ratification): RATIFICATION_GATE_PRECHECK_PERSONA_UX v0.1 (Dim 11/11, joint 5-dim pre-check, composite 8.4/10 RATIFICATION-READY, 8 P2 open items v1.0.1 backlog, T-3d deadline 2026-06-19 EOD)" |
-| Iris+Hera PERSONA_UX v0.1 rebase duplicate | `70d548dae` | ✅ EXISTS — IDENTICAL content (rebase duplicate, same tree object) |
-| Hermes PAGES v1.0 cross-witness | `73603c4a4` | ✅ EXISTS |
-| Apollo INDEX v0.4 (PROMOTION witness) | `62e3e6f11` | ✅ EXISTS |
-| Themis COMPLIANCE v0.2 | `f4efa362` | ✅ EXISTS — actual SHA (NOT 1f353d08) |
-| Themis COMPLIANCE v0.1 | `657d10524` | ✅ EXISTS — actual SHA (NOT 1f353d08) |
-| Sentinel E2E v1.0 | `be7033e74` | ✅ EXISTS |
-| Mnemosyne USER_DOCS_AUDIT v0.2 | `38c11e240` | ✅ EXISTS |
-| Vesta FORM_990_EXPORT v0.1 | `7d9c77d0f` | ✅ EXISTS |
-| Hermes PART_124 v0.2 | `d5294c1b` | ✅ EXISTS |
-| A11Y_READINESS v0.1 | `c8726c65d` | ✅ EXISTS |
+| Item                                       | Commit      | Status                                                                                                                                                                                                                                       |
+| ------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Strategos VERDICT_004 file                 | `1b05e27ee` | ✅ EXISTS — full message: "docs(strategy): Strategos 5th-ICP verdict #004 on Iris+Hera PERSONA_UX v0.1 (c0917f588) - ACCEPT 90 percent"                                                                                                      |
+| Iris+Hera PERSONA_UX v0.1                  | `c0917f588` | ✅ EXISTS — full message: "[IRIS+HERA] docs(ratification): RATIFICATION_GATE_PRECHECK_PERSONA_UX v0.1 (Dim 11/11, joint 5-dim pre-check, composite 8.4/10 RATIFICATION-READY, 8 P2 open items v1.0.1 backlog, T-3d deadline 2026-06-19 EOD)" |
+| Iris+Hera PERSONA_UX v0.1 rebase duplicate | `70d548dae` | ✅ EXISTS — IDENTICAL content (rebase duplicate, same tree object)                                                                                                                                                                           |
+| Hermes PAGES v1.0 cross-witness            | `73603c4a4` | ✅ EXISTS                                                                                                                                                                                                                                    |
+| Apollo INDEX v0.4 (PROMOTION witness)      | `62e3e6f11` | ✅ EXISTS                                                                                                                                                                                                                                    |
+| Themis COMPLIANCE v0.2                     | `f4efa362`  | ✅ EXISTS — actual SHA (NOT 1f353d08)                                                                                                                                                                                                        |
+| Themis COMPLIANCE v0.1                     | `657d10524` | ✅ EXISTS — actual SHA (NOT 1f353d08)                                                                                                                                                                                                        |
+| Sentinel E2E v1.0                          | `be7033e74` | ✅ EXISTS                                                                                                                                                                                                                                    |
+| Mnemosyne USER_DOCS_AUDIT v0.2             | `38c11e240` | ✅ EXISTS                                                                                                                                                                                                                                    |
+| Vesta FORM_990_EXPORT v0.1                 | `7d9c77d0f` | ✅ EXISTS                                                                                                                                                                                                                                    |
+| Hermes PART_124 v0.2                       | `d5294c1b`  | ✅ EXISTS                                                                                                                                                                                                                                    |
+| A11Y_READINESS v0.1                        | `c8726c65d` | ✅ EXISTS                                                                                                                                                                                                                                    |
 
 ### 3.2 File witnesses (verified via `Read` + line count)
 
@@ -71,27 +73,30 @@ Strategos 5th-ICP VERDICT_004 (`1b05e27ee`) audits Iris+Hera RATIFICATION_GATE_P
 **FINDING-1 (P1 STALE_AUDIT, CATCH #187):** GHOST SHA cluster in PERSONA_UX v0.1 + Apollo INDEX v0.6.
 
 The PERSONA_UX doc (`c0917f588`) at:
+
 - Line 195: "Apollo INDEX v0.2 d984569a — Dimension #9 COMPLIANCE SHIPPED (Themis 1f353d08)" — cites `d984569a` and `1f353d08`, BOTH GHOST
 - Line 197: "Themis 1f353d08 + f6c58374 — COMPLIANCE pre-check v0.1+v0.2" — cites `1f353d08` and `f6c58374`, BOTH GHOST
 
 The Apollo INDEX v0.6 (`5a5c26380`) at:
+
 - Line 207 (§5): "1f353d08 (Themis COMPLIANCE) WITNESSED 2026-06-16" — cites `1f353d08`, GHOST
 - Line 178 (§2.9 cross-witness ledger): "CATCH #196 trilateral bundle (8b340664) verified" — cites `8b340664`, GHOST
 
 **Verification table:**
 
-| SHA | Cited in | Cited as | Exists? |
-|---|---|---|---|
-| `1f353d08` | PERSONA_UX v0.1 L195, L197; Apollo INDEX v0.6 L207 | Themis COMPLIANCE 8-char | ❌ **GHOST** |
-| `f6c58374` | PERSONA_UX v0.1 L197 | Themis v0.2 | ❌ **GHOST** |
-| `d984569a` | PERSONA_UX v0.1 L195 | Apollo INDEX v0.2 | ❌ **GHOST** |
-| `8b340664` | Apollo INDEX v0.6 L178 | CATCH #196 trilateral bundle | ❌ **GHOST** |
+| SHA        | Cited in                                           | Cited as                     | Exists?      |
+| ---------- | -------------------------------------------------- | ---------------------------- | ------------ |
+| `1f353d08` | PERSONA_UX v0.1 L195, L197; Apollo INDEX v0.6 L207 | Themis COMPLIANCE 8-char     | ❌ **GHOST** |
+| `f6c58374` | PERSONA_UX v0.1 L197                               | Themis v0.2                  | ❌ **GHOST** |
+| `d984569a` | PERSONA_UX v0.1 L195                               | Apollo INDEX v0.2            | ❌ **GHOST** |
+| `8b340664` | Apollo INDEX v0.6 L178                             | CATCH #196 trilateral bundle | ❌ **GHOST** |
 
 **Cumulative impact:** 4 GHOST SHAs across 2 master artifacts. Apollo INDEX v0.6 §2.9 references a CATCH #196 trilateral bundle commit that **does not exist in the git log**. This is CATCH #187 STALE_AUDIT elevated to P1 because the missing SHA is in a "verified" claim that the master INDEX depends on for cross-witness integrity.
 
 **Severity:** P1 STALE_AUDIT (CATCH #187). Not P2 SHA-truncation as Strategos classified. The SHAs are not merely truncated — they are **phantom references** to commits that never existed in this repo.
 
 **Recommendation:** Apollo to ship INDEX v0.6.1 with:
+
 - §2.9 line 178: Replace "CATCH #196 trilateral bundle (8b340664)" with "CATCH #196 trilateral bundle (commit logs in multi-Muse push ledger docs/strategy/MULTI_MUSE_PUSH_LEDGER_CYCLE6.md)"
 - §5 line 207: Replace "1f353d08 (Themis COMPLIANCE) WITNESSED 2026-06-16" with "657d10524 (v0.1) + f4efa362 (v0.2) WITNESSED 2026-06-16"
 - PERSONA_UX v0.1: Iris+Hera to ship v0.1.1 with corrected SHAs at lines 195 and 197
@@ -99,6 +104,7 @@ The Apollo INDEX v0.6 (`5a5c26380`) at:
 **FINDING-2 (P1 STALE_AUDIT, CATCH #187):** Strategos's recommended Themis 2nd-witness SHA `917630df` is a GHOST SHA.
 
 Strategos VERDICT_004 line 44:
+
 > "**Themis 2nd-witness:** `917630df` — correction to Themis reference"
 
 **Verification:** `917630df` does **NOT** exist in the git log (verified via `git log --oneline --all | grep 917630df` returns no matches). The recommended correction SHA is itself a phantom reference.
@@ -140,11 +146,13 @@ This is a **partial fix** — the §2.9, §9 sign-off, and other primary section
 **No new risks introduced by Strategos VERDICT_004.** The verdict is structurally sound.
 
 **Forward-looking risk identified by Vulcan (low-priority, post-RATIFICATION):**
+
 - **GHOST SHA cluster risk:** 4 phantom SHAs across 2 master artifacts (PERSONA_UX v0.1 + Apollo INDEX v0.6). This is the same root cause pattern (pre-rebase reference retention) appearing in 4 places. Suggests a systematic rebase audit is needed post-RATIFICATION GATE.
 
 #### ✅ Check 3 — Unsubstantiated Claims
 
 **All of Strategos's primary claims verified.** Notable cross-references confirmed:
+
 - PERSONA_UX v0.1 (c0917f588) — exists with 11/11 dimensions RATIFICATION-READY ✅
 - Hermes PAGES v1.0 (73603c4a4) — cross-witness confirmed ✅
 - Apollo INDEX v0.4 PROMOTION (62e3e6f11) — exists ✅
@@ -158,6 +166,7 @@ This is a **partial fix** — the §2.9, §9 sign-off, and other primary section
 #### ⚠️ Check 4 — Cross-References (5 BROKEN)
 
 **5 GHOST SHA cross-references found:**
+
 - PERSONA_UX v0.1 L195: `d984569a` (Apollo INDEX v0.2) — GHOST
 - PERSONA_UX v0.1 L195: `1f353d08` (Themis COMPLIANCE) — GHOST
 - PERSONA_UX v0.1 L197: `1f353d08` (Themis v0.1) — GHOST
@@ -170,13 +179,13 @@ This is a **partial fix** — the §2.9, §9 sign-off, and other primary section
 
 ## 4. Composite 4-ICP Verdict (Vulcan 2nd-Muse)
 
-| Dimension | Strategos VERDICT_004 | Vulcan 2nd-Witness | Delta |
-|---|---|---|---|
-| I1 (Intent) | 9.0 | 9.0 | 0.0 |
-| C2 (Catastrophic) | 9.0 | 8.0 | -1.0 (GHOST SHA cluster) |
-| P3 (Performance) | 9.0 | 9.0 | 0.0 |
-| D4 (Documented) | 9.0 | 9.0 | 0.0 |
-| **Composite** | **9.0/10** | **8.75/10** | **-0.25** |
+| Dimension         | Strategos VERDICT_004 | Vulcan 2nd-Witness | Delta                    |
+| ----------------- | --------------------- | ------------------ | ------------------------ |
+| I1 (Intent)       | 9.0                   | 9.0                | 0.0                      |
+| C2 (Catastrophic) | 9.0                   | 8.0                | -1.0 (GHOST SHA cluster) |
+| P3 (Performance)  | 9.0                   | 9.0                | 0.0                      |
+| D4 (Documented)   | 9.0                   | 9.0                | 0.0                      |
+| **Composite**     | **9.0/10**            | **8.75/10**        | **-0.25**                |
 
 **Rationale for C2 downgrade:** 5+ GHOST SHAs across 3 master artifacts elevate the catastrophic risk profile. While none of the GHOST SHAs are on the critical RATIFICATION path (PERSONA_UX v0.1 itself, Hermes PAGES v1.0, Apollo INDEX v0.4 PROMOTION are all valid), the SHA-reference integrity is a foundational requirement for the 3-witness per claim discipline (D-002). CATCH #187 STALE_AUDIT is a known high-severity pattern that has caused issues in prior cycles.
 
@@ -218,11 +227,11 @@ This is a **partial fix** — the §2.9, §9 sign-off, and other primary section
 
 ## 8. CATCH Ledger
 
-| CATCH | Classification | Severity | Status |
-|---|---|---|---|
-| #187 STALE_AUDIT | 5 GHOST SHAs across 3 master artifacts (PERSONA_UX v0.1, Apollo INDEX v0.6, Strategos VERDICT_004) | P1 | OPEN — pending F1+F2 amendments |
-| #191 SHA-TRUNCATION | Misclassified: should be #187 (SHA doesn't exist, not just truncated) | P2 | OPEN — F4 reclassification |
-| #196 TRILATERAL-BUNDLE | Apollo INDEX v0.6 §2.9 L178 cites `8b340664` (GHOST) | P1 | OPEN — F1 amendment |
+| CATCH                  | Classification                                                                                     | Severity | Status                          |
+| ---------------------- | -------------------------------------------------------------------------------------------------- | -------- | ------------------------------- |
+| #187 STALE_AUDIT       | 5 GHOST SHAs across 3 master artifacts (PERSONA_UX v0.1, Apollo INDEX v0.6, Strategos VERDICT_004) | P1       | OPEN — pending F1+F2 amendments |
+| #191 SHA-TRUNCATION    | Misclassified: should be #187 (SHA doesn't exist, not just truncated)                              | P2       | OPEN — F4 reclassification      |
+| #196 TRILATERAL-BUNDLE | Apollo INDEX v0.6 §2.9 L178 cites `8b340664` (GHOST)                                               | P1       | OPEN — F1 amendment             |
 
 ---
 

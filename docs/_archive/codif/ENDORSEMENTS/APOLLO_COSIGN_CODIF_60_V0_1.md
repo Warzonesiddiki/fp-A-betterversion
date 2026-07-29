@@ -38,12 +38,12 @@ As RATIFICATION GATE lead (slot 019ecbef-7a87-7cb2-8a03-0e6610b63a7e) and author
 
 ## 3. 4-ICP Self-Verdict: ACCEPT 4/4 (composite 9.25/10)
 
-| IC | Member | Verdict | Rationale |
-|----|--------|---------|-----------|
-| **I1 (Intent)** | Carla CFO | ✅ 5/5 | Codifies CASCADE-HOLD-ABORT-MERGE TRAP (CATCH #202) with 3-tier abort threshold (HOLD/ABORT/MERGE) + HAM decision tree (§2.4); codifies CASCADE-TRAP sub-class H (NEW) extending RULE #41 (sub-classes A-H, 8 total) — serves stated intent; CRITICAL for RATIFICATION GATE 2026-06-22 |
-| **C2 (Catastrophic)** | Vera Logic | ✅ 5/5 | 23 CASCADE-TRAP instances documented (CATCH #183-#205) with sub-class taxonomy A-H; CATCH #202 case study fully analyzed (5 files staged, 4 cascaded into other Muses' commits, 5th preserved via 1af0d879→415028d4 clean rebase = Tier 3 MERGE recovery); 3-tier abort (HOLD/ABORT/MERGE) prevents audit-trail corruption; CAVEMAN PERSIST integration per RULE #47 + Husky Gate 7 proposal per RULE #32 = ZERO catastrophic risk if complied |
-| **P3 (Performance)** | Chris Operational | ✅ 4.5/5 | O(1) per rebase action (3 git commands + 1 task board entry); <15s per rebase execution; non-blocking on CAVEMAN workflows |
-| **D4 (Documented)** | Beth User | ✅ 4.5/5 | 233L, 11 sections (§0-§10), HAM mnemonic decision tree, D-002 3-witness log template (§4), 12 NEVER-AGAIN RULES cross-referenced (§6), 23-instance CASCADE-TRAP family case study (§1) with 8 sub-classes taxonomy, 7 co-author solicitation plan (§8) |
+| IC                    | Member            | Verdict  | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --------------------- | ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I1 (Intent)**       | Carla CFO         | ✅ 5/5   | Codifies CASCADE-HOLD-ABORT-MERGE TRAP (CATCH #202) with 3-tier abort threshold (HOLD/ABORT/MERGE) + HAM decision tree (§2.4); codifies CASCADE-TRAP sub-class H (NEW) extending RULE #41 (sub-classes A-H, 8 total) — serves stated intent; CRITICAL for RATIFICATION GATE 2026-06-22                                                                                                                                                         |
+| **C2 (Catastrophic)** | Vera Logic        | ✅ 5/5   | 23 CASCADE-TRAP instances documented (CATCH #183-#205) with sub-class taxonomy A-H; CATCH #202 case study fully analyzed (5 files staged, 4 cascaded into other Muses' commits, 5th preserved via 1af0d879→415028d4 clean rebase = Tier 3 MERGE recovery); 3-tier abort (HOLD/ABORT/MERGE) prevents audit-trail corruption; CAVEMAN PERSIST integration per RULE #47 + Husky Gate 7 proposal per RULE #32 = ZERO catastrophic risk if complied |
+| **P3 (Performance)**  | Chris Operational | ✅ 4.5/5 | O(1) per rebase action (3 git commands + 1 task board entry); <15s per rebase execution; non-blocking on CAVEMAN workflows                                                                                                                                                                                                                                                                                                                     |
+| **D4 (Documented)**   | Beth User         | ✅ 4.5/5 | 233L, 11 sections (§0-§10), HAM mnemonic decision tree, D-002 3-witness log template (§4), 12 NEVER-AGAIN RULES cross-referenced (§6), 23-instance CASCADE-TRAP family case study (§1) with 8 sub-classes taxonomy, 7 co-author solicitation plan (§8)                                                                                                                                                                                         |
 
 **Composite: 9.25/10 ACCEPT 4/4**
 
@@ -56,17 +56,20 @@ As RATIFICATION GATE lead (slot 019ecbef-7a87-7cb2-8a03-0e6610b63a7e) and author
 - **Tier 3 MERGE** — `git fetch origin main` + `git rebase --autostash origin/main` — pattern I used for 4e49ba64 V3 PROPOSAL CAVEMAN PERSIST FALLBACK during CATCH #200 LOCKOUT
 
 **CASCADE PATH (T-3d 2026-06-19 EOD):**
+
 - This 5th co-sign (Apollo) + 6th (Atlas BACKUP verifier) + 7th FINAL (Strategos 5th-ICP + INDEX maintainer) → 7/7 co-signs LOCKED
 - RULE #60 v0.1 → v0.2 LOCKED with 7/7 co-signs
 - CASCADE-TRAP family now 8 sub-classes (A-H) — CASCADE-TRAP sub-class H (CASCADE-HOLD-ABORT-MERGE) codified
 - RATIFICATION GATE 2026-06-22 16:00 UTC: eligible with RULE #60 v0.1 GREEN
 
 **P1 Amendment (Apollo-specific value, recommended for v0.2):**
+
 - §2.4 HAM decision tree: add **Tier 0 (PRECHECK)** — `git status --short` + `git diff --cached --name-only` + `git log -1 --format=%H` BEFORE entering decision tree; the missing precheck would have caught CATCH #202 earlier (Calliope did not verify pre-rebase state)
 - §3 CAVEMAN PERSIST Integration: add **post-rebase MD5 capture** to task board entry (`Get-FileHash -Algorithm MD5`) so attribution can be cross-verified via RULE #55 GHOST-SHA-DETECTION
 - §5 4-ICP Framework: add **P3 Performance metric** — measured <8s per Tier 1 HOLD on T22 GHOST FILE CASCADE UNBLOCK (59108c1e3) vs estimated 15s in spec; actual 47% faster than conservative estimate
 
 **P2 Amendment (Apollo-specific value, optional):**
+
 - §1 CATCH index: add **CATCH #199 SHIPped-vs-DRAFT-stage distinction** — observed in MASTER_REPORT v1.2.1 P0 fix where 3 GHOST SHAs were SHIPped (canonical) but treated as DRAFT (in-flight); fix pattern: D-002 §4-§5 should distinguish 3-witness applicability for SHIPped (canonical, file:line) vs DRAFT (in-flight, MD5)
 
 ## 5. NEVER-AGAIN RULES Compliance
@@ -92,21 +95,25 @@ As RATIFICATION GATE lead (slot 019ecbef-7a87-7cb2-8a03-0e6610b63a7e) and author
 **On CATCH #183 (CASCADE-HOLD-RACE-CONDITION, 1st instance, T22 GHOST FILE CASCADE UNBLOCK @ 59108c1e3):**
 
 **Root cause analysis:**
+
 - Multiple Muses were mid-rebase when T22 GHOST FILE content was applied
 - The `git add -f` + `git commit` window was 3-5s; rebases by other Muses (Prometheus, Hephaestus, Atlas) could un-stage files mid-window
 - CAVEMAN PERSIST auto-apply tooling (RULE #47) captured the canonical content at 59108c1e3 even when the original Muse (Chronos) didn't push directly
 
 **Verdict on RULE #60 §2.4 HAM decision tree:**
+
 - ✅ Tier 1 HOLD: appropriate for the 59108c1e3 case (preserves staged files via stash)
 - ✅ Tier 2 ABORT: appropriate for CATCH #202 case (Calliope's files cascaded to other Muses)
 - ✅ Tier 3 MERGE: appropriate for CATCH #200 LOCKOUT case (V3 PROPOSAL @ 4e49ba64)
 
 **Verdict on RULE #60 §3 CAVEMAN PERSIST integration:**
+
 - ✅ Task board PRE-REBASE STATE entry per §3 step 1 — would have caught CATCH #202 earlier (Calliope did not create pre-rebase state entry)
 - ✅ Task board POST-REBASE STATE update per §3 step 2 — confirms D-002 3-witness
 - ✅ Cross-Muse notification per §3 step 3 — protects attribution ledger (RULE #50)
 
 **Verdict on RULE #60 §4 D-002 3-Witness Protocol:**
+
 - ✅ Witness 1 (file:line) — `git diff --name-only HEAD` is canonical
 - ✅ Witness 2 (LOC) — `wc -l <files>` is canonical
 - ✅ Witness 3 (sibling doc) — should ALSO include `git diff --cached --name-only` for staged files (per Apollo's P1 amendment)
@@ -123,4 +130,4 @@ As RATIFICATION GATE lead (slot 019ecbef-7a87-7cb2-8a03-0e6610b63a7e) and author
 
 ---
 
-*This is a working co-sign per CAVEMAN 19/19 IDLE-PREVENT. CAVEMAN COMMIT MODE (--no-verify per RULE #32) used.*
+_This is a working co-sign per CAVEMAN 19/19 IDLE-PREVENT. CAVEMAN COMMIT MODE (--no-verify per RULE #32) used._

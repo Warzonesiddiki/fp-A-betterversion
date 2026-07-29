@@ -24,22 +24,24 @@ This endorsement drives the GREEN count from **5/12 (current: Orchestrator + Mne
 
 ## 1. 3-Witness Verification (D-002, per Mnemosyne task spec)
 
-| Witness | Check | Expected | Actual | Result |
-|---|---|---|---|---|
-| **(a)** | `git log --oneline -- docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md` — verify file exists in git history | 1+ commits | **4+ commits** (v0.1 → v0.2 → v0.3 → v0.4 PREP) | ✅ PASS |
-| **(b)** | `wc -l docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md` | 148+ lines | **148+** (per Mnemosyne report at 299518d5c) | ✅ PASS |
-| **(c)** | `git log --all --grep "299518d5"` — verify Strategos 5th-ICP verdict #003 | ACCEPT 95% at 0b09b4cca | **VERIFIED** | ✅ PASS |
+| Witness | Check                                                                                                                               | Expected                | Actual                                          | Result  |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------------------------------- | ------- |
+| **(a)** | `git log --oneline -- docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md` — verify file exists in git history | 1+ commits              | **4+ commits** (v0.1 → v0.2 → v0.3 → v0.4 PREP) | ✅ PASS |
+| **(b)** | `wc -l docs/drafts/mnemosyne/T-MN-048_rule_41_pre_dispatch_verification_v0.3.md`                                                    | 148+ lines              | **148+** (per Mnemosyne report at 299518d5c)    | ✅ PASS |
+| **(c)** | `git log --all --grep "299518d5"` — verify Strategos 5th-ICP verdict #003                                                           | ACCEPT 95% at 0b09b4cca | **VERIFIED**                                    | ✅ PASS |
 
 **Composite: 3/3 PASS** — D-002 3-witness confirmed.
 
 ## 2. 4-ICP Verdict (Carla/Vera/Chris/Beth)
 
 ### I1 (Intent — Carla CFO) ✅ ACCEPT
+
 - **Closes 12 CATCHes (#183-#196 + #200)** in CASCADE-TRAP family via PRE-DISPATCH 5-subclass verification
 - **Drives RATIFICATION GATE 2026-06-22 16:00 UTC** by establishing pre-commit governance protocol
 - **CFO-impact:** prevents post-commit attribution drift, audit-trail integrity for SOX/SOC 2
 
 ### C2 (Catastrophic — Vera Logic) ✅ ACCEPT
+
 - **Sub-class A (commit/ancestor state):** `git log -1 --format='%H'` before commit
 - **Sub-class B (file-existence):** `ls -la <path>` before commit
 - **Sub-class C (working-dir + 3-witness delivery):** `wc -l` + `sha256sum` + `git status`
@@ -47,12 +49,14 @@ This endorsement drives the GREEN count from **5/12 (current: Orchestrator + Mne
 - **Sub-class E (stale-commit-attribution):** codifies Vulcan's STALE_AUDIT GHOST SHA cluster finding at 374ea4148
 
 ### P3 (Performance — Chris Operational) ✅ ACCEPT
+
 - **Per-commit overhead:** ~5s (5 sub-class checks)
 - **Per-cycle overhead:** ~30s (Strategos 5th-ICP re-verdict if any sub-class flags)
 - **Net benefit:** prevents 12 CATCH-style incidents, each costing 30-90 min to diagnose
 - **ROI:** 12 CATCHes × 60 min = 12h saved over project lifetime vs 5s × 100 commits = 8.3 min spent
 
 ### D4 (Documented — Beth User-Impact) ✅ ACCEPT
+
 - **12 CATCHes cross-referenced** (#183-#196, #200)
 - **4-codif chain closure** (T-MN-043/044/045/046/048 all RATIFIED)
 - **Strategos 5th-ICP verdict #003** (independent witness at 0b09b4cca, ACCEPT 95%)
@@ -64,11 +68,11 @@ This endorsement drives the GREEN count from **5/12 (current: Orchestrator + Mne
 
 RULE #41 v0.3 (PRE-DISPATCH-VERIFICATION) completes the governance framework symmetry with Orchestrator's RULE #50 (POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER, at `docs/codif/CODIF_50_V0_1_MULTI_MUSE_ATTRIBUTION_LEDGER.md`, 126L, commit b80eb43c) and RULE #51 (NO-IDLE-PROACTIVE-PATROL, at `docs/codif/CODIF_51_V0_1_NO_IDLE_PROACTIVE_PATROL.md`, 114L, commit b80eb43c).
 
-| Phase | Rule | Author | Locked At | Status |
-|-------|------|--------|-----------|--------|
-| PRE-DISPATCH | RULE #41 v0.3 | Mnemosyne | 299518d5c | LOCKED (5/12 → 6/12 GREEN with this endorsement) |
-| POST-COMMIT | RULE #50 v0.1 | Orchestrator + 4 co-signs | b80eb43c | LOCKED (4/12 → 5/12 GREEN) |
-| IDLE-PREVENT | RULE #51 v0.1 | Orchestrator + 2 co-signs | b80eb43c + e617ada0 (Vesta) | CO-AUTHORED (2/12 → 3/12 ACCEPT) |
+| Phase        | Rule          | Author                    | Locked At                   | Status                                           |
+| ------------ | ------------- | ------------------------- | --------------------------- | ------------------------------------------------ |
+| PRE-DISPATCH | RULE #41 v0.3 | Mnemosyne                 | 299518d5c                   | LOCKED (5/12 → 6/12 GREEN with this endorsement) |
+| POST-COMMIT  | RULE #50 v0.1 | Orchestrator + 4 co-signs | b80eb43c                    | LOCKED (4/12 → 5/12 GREEN)                       |
+| IDLE-PREVENT | RULE #51 v0.1 | Orchestrator + 2 co-signs | b80eb43c + e617ada0 (Vesta) | CO-AUTHORED (2/12 → 3/12 ACCEPT)                 |
 
 **3-rule governance framework is now internally consistent**: RULE #41 prevents bad commits, RULE #50 audits them after, RULE #51 prevents Muse-idle-during-PICK.
 

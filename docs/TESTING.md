@@ -70,7 +70,7 @@ import { useFooStore } from '@/store/fooStore';
 
 describe('fooStore', () => {
   beforeEach(() => {
-    useFooStore.setState({ ...initialState });   // hard reset
+    useFooStore.setState({ ...initialState }); // hard reset
   });
 
   it('should add an item', () => {
@@ -153,6 +153,7 @@ src/test/__mocks__/
 ```
 
 **To add a new mock:**
+
 1. Drop the file in `src/test/__mocks__/` with a named export matching
    the real package's API.
 2. Register the alias in `vitest.config.ts` under
@@ -167,14 +168,14 @@ testing makes the test useless.
 
 Configured in `vitest.config.ts` (or `.vitest/coverage.json`):
 
-| Layer      | Target  | Rationale                                                    |
-| ---------- | ------- | ------------------------------------------------------------ |
-| Engines    | ≥ 85 %  | Pure code; cheap to test; financial correctness is critical  |
+| Layer      | Target    | Rationale                                                           |
+| ---------- | --------- | ------------------------------------------------------------------- |
+| Engines    | ≥ 85 %    | Pure code; cheap to test; financial correctness is critical         |
 | Stores     | **100 %** | State is the contract; untested transitions cause user-visible bugs |
-| Components | ≥ 70 %  | Pragmatic — focus on user-visible behaviour, not implementation |
-| Workers    | ≥ 80 %  | Heavy compute, hard to debug post-ship                       |
-| Services   | ≥ 60 %  | Network mocks are expensive; smoke-test the happy path       |
-| Hooks      | ≥ 80 %  | Logic is the value; render is tested by the consuming component |
+| Components | ≥ 70 %    | Pragmatic — focus on user-visible behaviour, not implementation     |
+| Workers    | ≥ 80 %    | Heavy compute, hard to debug post-ship                              |
+| Services   | ≥ 60 %    | Network mocks are expensive; smoke-test the happy path              |
+| Hooks      | ≥ 80 %    | Logic is the value; render is tested by the consuming component     |
 
 Coverage is reported per-PR in CI; the gate is **"no new uncovered
 lines in changed files"** (not a project-wide threshold).
@@ -210,14 +211,14 @@ The pipeline is defined in `.github/workflows/ci.yml` (4 GHA workflows
 per Atlas's `T-ATL-005`). The 6 stages run in order; **any failure
 blocks merge**:
 
-| # | Stage               | What it catches                                         | Approx time |
-| - | ------------------- | ------------------------------------------------------- | ----------- |
-| 1 | `tsc --noEmit`      | Type errors, unused locals, missing imports             | 30 s        |
-| 2 | `eslint --fix` (dry)| `react-hooks` deps, `jsx-a11y`, `no-explicit-any`       | 20 s        |
-| 3 | `vitest run`        | Pre-existing test drift, mock mismatches, flaky tests   | 3-4 min     |
-| 4 | `vite build`        | Bundle size (> 150 KB gzip main → fail), circular imports| 1 min       |
-| 5 | `npm audit`         | CVEs in transitive deps                                 | 10 s        |
-| 6 | bundle-size check   | Manual-chunk audit, dynamic-import verification         | 20 s        |
+| #   | Stage                | What it catches                                           | Approx time |
+| --- | -------------------- | --------------------------------------------------------- | ----------- |
+| 1   | `tsc --noEmit`       | Type errors, unused locals, missing imports               | 30 s        |
+| 2   | `eslint --fix` (dry) | `react-hooks` deps, `jsx-a11y`, `no-explicit-any`         | 20 s        |
+| 3   | `vitest run`         | Pre-existing test drift, mock mismatches, flaky tests     | 3-4 min     |
+| 4   | `vite build`         | Bundle size (> 150 KB gzip main → fail), circular imports | 1 min       |
+| 5   | `npm audit`          | CVEs in transitive deps                                   | 10 s        |
+| 6   | bundle-size check    | Manual-chunk audit, dynamic-import verification           | 20 s        |
 
 **Local pre-flight** (run all 6 in 6 min):
 
@@ -233,16 +234,17 @@ When the cycle's pre-push test audit found 65+ pre-existing failures,
 they clustered into 5 root-cause patterns. This is the canonical
 reference for triaging test drift:
 
-| Pattern | Count | Root cause                                  | Owner          | Status                |
-| ------- | ----- | ------------------------------------------- | -------------- | --------------------- |
-| A       | 67    | Lucide-react icon API mock missing          | Apollo         | Fixed in P0 #0        |
-| B       | 1     | TooltipContent `sideOffset` prop leaked     | Athena         | Fixed in PATTERN-1 patch |
-| C       | 5     | Router wrapper missing `MemoryRouter`       | Apollo         | Fixed in PATTERN-2 patch |
-| D1      | 1     | CubeEngine percentile: linear interp vs nearest-rank | Hephaestus | **DEFER-2026-001** (co-owned Athena+Hephaestus) |
-| D2      | 2     | SaaSMetricsEngine Infinity return + rounding | Hephaestus     | **DEFER-2026-002** (rounding) |
-| E       | 3     | Data-integrity edge cases (chunkedStorage race, etc.) | Hephaestus | **DEFER-2026-003** (chunkedStorage race) |
+| Pattern | Count | Root cause                                            | Owner      | Status                                          |
+| ------- | ----- | ----------------------------------------------------- | ---------- | ----------------------------------------------- |
+| A       | 67    | Lucide-react icon API mock missing                    | Apollo     | Fixed in P0 #0                                  |
+| B       | 1     | TooltipContent `sideOffset` prop leaked               | Athena     | Fixed in PATTERN-1 patch                        |
+| C       | 5     | Router wrapper missing `MemoryRouter`                 | Apollo     | Fixed in PATTERN-2 patch                        |
+| D1      | 1     | CubeEngine percentile: linear interp vs nearest-rank  | Hephaestus | **DEFER-2026-001** (co-owned Athena+Hephaestus) |
+| D2      | 2     | SaaSMetricsEngine Infinity return + rounding          | Hephaestus | **DEFER-2026-002** (rounding)                   |
+| E       | 3     | Data-integrity edge cases (chunkedStorage race, etc.) | Hephaestus | **DEFER-2026-003** (chunkedStorage race)        |
 
 **3-deferral ownership map** (per `docs/security-deferrals.md`):
+
 - **DEFER-2026-001** co-owned: **Athena primary** (test-infra lane) +
   **Hephaestus secondary** (data-integrity lane).
 - **DEFER-2026-002** Hephaestus sole (decimalUtils rounding).
@@ -255,15 +257,15 @@ re-assign or drop the secondary tag.
 
 ## §10 — Common Pitfalls
 
-| Symptom                                                        | Fix                                                                                    |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `Test setup was unable to find a WorkerPool mock`              | Apollo P0 #0; the mock in `src/test/setup.ts:89` is wrong. See §9 Pattern A.            |
-| `window.__TAURI__ is undefined` in component test              | Import from `@/test/__mocks__/tauri-shortcut` or stub `globalThis.__TAURI__` in `beforeEach`. |
-| `Cannot read property 'getState' of undefined` (Zustand)       | You reset state before the store was created. Use a lazy `getState()` wrapper.        |
-| `Found multiple elements with the text "X"`                    | Your `screen.getByText('X')` matches more than one. Use `getAllByText` or be more specific. |
-| `act(...)` warning in console                                  | Update the store outside the React tree. Zustand 4+ is sync — no `act()` needed.       |
-| `Timeout - Async callback was not invoked within the 5s timeout` | You're waiting on a `setTimeout`. Use `vi.useFakeTimers()` + `vi.advanceTimersByTime`. |
-| Coverage report says 0 % for a file                            | The file isn't imported by any test. Either add a test that imports it, or move it to `src/legacy/`. |
+| Symptom                                                          | Fix                                                                                                  |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `Test setup was unable to find a WorkerPool mock`                | Apollo P0 #0; the mock in `src/test/setup.ts:89` is wrong. See §9 Pattern A.                         |
+| `window.__TAURI__ is undefined` in component test                | Import from `@/test/__mocks__/tauri-shortcut` or stub `globalThis.__TAURI__` in `beforeEach`.        |
+| `Cannot read property 'getState' of undefined` (Zustand)         | You reset state before the store was created. Use a lazy `getState()` wrapper.                       |
+| `Found multiple elements with the text "X"`                      | Your `screen.getByText('X')` matches more than one. Use `getAllByText` or be more specific.          |
+| `act(...)` warning in console                                    | Update the store outside the React tree. Zustand 4+ is sync — no `act()` needed.                     |
+| `Timeout - Async callback was not invoked within the 5s timeout` | You're waiting on a `setTimeout`. Use `vi.useFakeTimers()` + `vi.advanceTimersByTime`.               |
+| Coverage report says 0 % for a file                              | The file isn't imported by any test. Either add a test that imports it, or move it to `src/legacy/`. |
 
 ## §11 — Quick Reference (one-page cheatsheet)
 

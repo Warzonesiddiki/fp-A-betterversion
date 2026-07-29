@@ -20,20 +20,21 @@ The two controls operate at **different layers** and are **complementary**:
 
 ## §2. Threat Model
 
-| Threat | CWE | Mitigation |
-|---|---|---|
-| Allocation of Resources Without Limits or Throttling | CWE-770 | §3 RateLimiter — every endpoint has identity-scoped bucket |
-| Uncontrolled Resource Consumption | CWE-400 | §3 RateLimiter (global concurrent cap) + §4 CircuitBreaker (fast-fail) |
-| Improper Control of Interaction Frequency | CWE-799 | §3.1 token bucket (per-identity) |
-| Improper Restriction of Power Consumption | CWE-920 | §3.1 long-window counter (sub-second bursts detected) |
-| Improper Check for Unusual Conditions | CWE-754 | §4.1 three-state machine (closed/open/half-open) |
-| Improper Handling of Exceptional Conditions | CWE-755 | §4.2 failure classification (consecutive + rolling rate) |
+| Threat                                               | CWE     | Mitigation                                                             |
+| ---------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
+| Allocation of Resources Without Limits or Throttling | CWE-770 | §3 RateLimiter — every endpoint has identity-scoped bucket             |
+| Uncontrolled Resource Consumption                    | CWE-400 | §3 RateLimiter (global concurrent cap) + §4 CircuitBreaker (fast-fail) |
+| Improper Control of Interaction Frequency            | CWE-799 | §3.1 token bucket (per-identity)                                       |
+| Improper Restriction of Power Consumption            | CWE-920 | §3.1 long-window counter (sub-second bursts detected)                  |
+| Improper Check for Unusual Conditions                | CWE-754 | §4.1 three-state machine (closed/open/half-open)                       |
+| Improper Handling of Exceptional Conditions          | CWE-755 | §4.2 failure classification (consecutive + rolling rate)               |
 
 ## §3. RateLimiter
 
 ### §3.1 Algorithm — token bucket with atomic refill
 
 Each policy has:
+
 - **Capacity** — burst budget (max tokens in the bucket).
 - **Refill rate** — sustained throughput (tokens added per second).
 - **Long window** — rolling window for sustained-attempt detection.
@@ -49,27 +50,27 @@ Each policy has:
 
 ### §3.2 Decision codes
 
-| Code | Reason | Action |
-|---|---|---|
-| `allow` | Tokens available | Proceed |
-| `deny-bucket-empty` | Tokens < cost | Retry after `retryAfterSeconds` |
-| `deny-global-concurrent-cap` | Global in-flight ≥ cap | Retry after 1s |
-| `deny-policy-disabled` | Operator disabled policy | Refuse (do not retry) |
-| `deny-identity-quarantined` | Identity in quarantine (auto or manual) | Refuse until `quarantineEndsAt` |
-| `backpressure` | Policy in-flight ≥ cap | Retry after 1s (operator can shed load) |
+| Code                         | Reason                                  | Action                                  |
+| ---------------------------- | --------------------------------------- | --------------------------------------- |
+| `allow`                      | Tokens available                        | Proceed                                 |
+| `deny-bucket-empty`          | Tokens < cost                           | Retry after `retryAfterSeconds`         |
+| `deny-global-concurrent-cap` | Global in-flight ≥ cap                  | Retry after 1s                          |
+| `deny-policy-disabled`       | Operator disabled policy                | Refuse (do not retry)                   |
+| `deny-identity-quarantined`  | Identity in quarantine (auto or manual) | Refuse until `quarantineEndsAt`         |
+| `backpressure`               | Policy in-flight ≥ cap                  | Retry after 1s (operator can shed load) |
 
 ### §3.3 Default policies (v1.0.0)
 
-| Policy | Capacity | Refill/s | Long window | Sustained-deny | Max concurrent | Cost |
-|---|---|---|---|---|---|---|
-| `auth.login` | 5 | 0.1 (1/10s) | 300s | 10 | 5 | 1 |
-| `auth.mfa` | 3 | 0.05 (1/20s) | 300s | 5 | 3 | 1 |
-| `auth.password-reset` | 3 | 0.0167 (1/min) | 3600s | 3 | 2 | 1 |
-| `api.finplan.read` | 60 | 10 | 60s | 100 | 50 | 1 |
-| `api.finplan.write` | 30 | 5 | 60s | 30 | 20 | 1 |
-| `api.finplan.export` | 5 | 0.05 (1/20s) | 3600s | 3 | 2 | 1 |
-| `session.heartbeat` | 1 | 0.5 (1/2s) | 60s | 30 | 100 | 0.1 |
-| `audit.query` | 10 | 0.5 (1/2s) | 60s | 5 | 3 | 1 |
+| Policy                | Capacity | Refill/s       | Long window | Sustained-deny | Max concurrent | Cost |
+| --------------------- | -------- | -------------- | ----------- | -------------- | -------------- | ---- |
+| `auth.login`          | 5        | 0.1 (1/10s)    | 300s        | 10             | 5              | 1    |
+| `auth.mfa`            | 3        | 0.05 (1/20s)   | 300s        | 5              | 3              | 1    |
+| `auth.password-reset` | 3        | 0.0167 (1/min) | 3600s       | 3              | 2              | 1    |
+| `api.finplan.read`    | 60       | 10             | 60s         | 100            | 50             | 1    |
+| `api.finplan.write`   | 30       | 5              | 60s         | 30             | 20             | 1    |
+| `api.finplan.export`  | 5        | 0.05 (1/20s)   | 3600s       | 3              | 2              | 1    |
+| `session.heartbeat`   | 1        | 0.5 (1/2s)     | 60s         | 30             | 100            | 0.1  |
+| `audit.query`         | 10       | 0.5 (1/2s)     | 60s         | 5              | 3              | 1    |
 
 (Specific values may be tuned post-RATIFICATION_GATE based on production telemetry; defaults are conservative.)
 
@@ -104,6 +105,7 @@ Every `check()` emits a `RateLimiterAuditEvent` with `category=security-incident
 ### §4.2 Failure detection
 
 The breaker uses two complementary triggers:
+
 - **Consecutive failures** (default 5) — catches repeated hard failures
 - **Rolling failure rate** (default 50% over the window) — catches intermittent flakiness
 
@@ -111,13 +113,13 @@ Either trigger opens the breaker. The rolling window is configurable (default 60
 
 ### §4.3 Default breakers (v1.0.0)
 
-| Breaker | Failure threshold | Cooldown | Success threshold | Failure rate | Window |
-|---|---|---|---|---|---|
-| `downstream.tax-api` | 5 | 30s | 2 | 50% | 60s |
-| `downstream.market-data` | 10 | 60s | 3 | 30% | 120s |
-| `downstream.bank-feed` | 3 | 120s | 2 | 50% | 60s |
-| `downstream.email-send` | 10 | 30s | 3 | 50% | 60s |
-| `downstream.audit-store` | 5 | 60s | 2 | 50% | 60s |
+| Breaker                  | Failure threshold | Cooldown | Success threshold | Failure rate | Window |
+| ------------------------ | ----------------- | -------- | ----------------- | ------------ | ------ |
+| `downstream.tax-api`     | 5                 | 30s      | 2                 | 50%          | 60s    |
+| `downstream.market-data` | 10                | 60s      | 3                 | 30%          | 120s   |
+| `downstream.bank-feed`   | 3                 | 120s     | 2                 | 50%          | 60s    |
+| `downstream.email-send`  | 10                | 30s      | 3                 | 50%          | 60s    |
+| `downstream.audit-store` | 5                 | 60s      | 2                 | 50%          | 60s    |
 
 ### §4.4 Operator override
 
@@ -136,10 +138,12 @@ If the breaker is open, `execute()` throws `CircuitOpenError` immediately withou
 ## §5. Cross-cutting: RateLimiter + CircuitBreaker
 
 **Two layers, two different failures:**
+
 - RateLimiter protects **us** (the FinPlan backend) from being overwhelmed by clients.
 - CircuitBreaker protects **us** (the FinPlan backend) from being overwhelmed by a failing downstream.
 
 A typical request flow:
+
 1. Client → RateLimiter.check(policyId, identity) — if denied, return 429.
 2. Handler executes → CircuitBreaker.beforeCall(breakerPolicyId) — if denied, return 503.
 3. Handler invokes downstream → recordOutcome(success | failure).
@@ -149,19 +153,19 @@ Both layers emit audit events that flow into the PATCH 12 `AuditLogger`. Sustain
 
 ## §6. Compliance traceability
 
-| Regime | Control | Section |
-|---|---|---|
-| SOC 2 CC6.6 | Logical access — external boundary | §3 |
-| SOC 2 A1.1 | Availability — capacity planning | §3.5, §4 |
-| SOC 2 A1.2 | Availability — environmental protections | §3.3, §4.3 |
-| SOC 2 CC7.2 | Anomaly detection | §3.5 (audit), §4.2 (rolling rate) |
-| SOC 2 CC7.3 | Anomaly evaluation | §3.4 (auto-quarantine) |
-| CWE-770 | Allocation of resources without limits | §3 |
-| CWE-400 | Uncontrolled resource consumption | §3, §4 |
-| CWE-799 | Improper control of interaction frequency | §3.1 |
-| CWE-920 | Improper restriction of power consumption | §3.1 |
-| CWE-754 | Improper check for unusual conditions | §4.1 |
-| CWE-755 | Improper handling of exceptional conditions | §4.2 |
+| Regime      | Control                                     | Section                           |
+| ----------- | ------------------------------------------- | --------------------------------- |
+| SOC 2 CC6.6 | Logical access — external boundary          | §3                                |
+| SOC 2 A1.1  | Availability — capacity planning            | §3.5, §4                          |
+| SOC 2 A1.2  | Availability — environmental protections    | §3.3, §4.3                        |
+| SOC 2 CC7.2 | Anomaly detection                           | §3.5 (audit), §4.2 (rolling rate) |
+| SOC 2 CC7.3 | Anomaly evaluation                          | §3.4 (auto-quarantine)            |
+| CWE-770     | Allocation of resources without limits      | §3                                |
+| CWE-400     | Uncontrolled resource consumption           | §3, §4                            |
+| CWE-799     | Improper control of interaction frequency   | §3.1                              |
+| CWE-920     | Improper restriction of power consumption   | §3.1                              |
+| CWE-754     | Improper check for unusual conditions       | §4.1                              |
+| CWE-755     | Improper handling of exceptional conditions | §4.2                              |
 
 ## §7. Performance
 
@@ -194,18 +198,18 @@ Both layers emit audit events that flow into the PATCH 12 `AuditLogger`. Sustain
 
 ## §9. Cross-Muse cross-witness
 
-| Muse | Section | Status |
-|---|---|---|
-| **Prometheus** (Performance) | §7 | PENDING — Prometheus to verify perf claims under load |
-| **Vulcan** (Build/Deploy) | §3.3, §4.3 (default policies/breakers) | PENDING — Vulcan to verify production config |
-| **Themis** (Compliance) | §6 | PENDING — Themis to verify regulatory traceability |
-| **Mnemosyne** (Memory) | §3.5 (audit integration) | PENDING — Mnemosyne to verify retention policy |
+| Muse                         | Section                                | Status                                                |
+| ---------------------------- | -------------------------------------- | ----------------------------------------------------- |
+| **Prometheus** (Performance) | §7                                     | PENDING — Prometheus to verify perf claims under load |
+| **Vulcan** (Build/Deploy)    | §3.3, §4.3 (default policies/breakers) | PENDING — Vulcan to verify production config          |
+| **Themis** (Compliance)      | §6                                     | PENDING — Themis to verify regulatory traceability    |
+| **Mnemosyne** (Memory)       | §3.5 (audit integration)               | PENDING — Mnemosyne to verify retention policy        |
 
 ## §10. Change log
 
-| Date | Version | Author | Change |
-|---|---|---|---|
-| 2026-06-16 | 1.0.0 | Hephaestus | Initial policy for PATCH 14 (RateLimiter + CircuitBreaker). Closes CWE-770, CWE-400, +CWE-799, +CWE-920, +CWE-754, +CWE-755. SOC 2 CC6.6, A1.1, A1.2, CC7.2, CC7.3. |
+| Date       | Version | Author     | Change                                                                                                                                                              |
+| ---------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-06-16 | 1.0.0   | Hephaestus | Initial policy for PATCH 14 (RateLimiter + CircuitBreaker). Closes CWE-770, CWE-400, +CWE-799, +CWE-920, +CWE-754, +CWE-755. SOC 2 CC6.6, A1.1, A1.2, CC7.2, CC7.3. |
 
 ---
 

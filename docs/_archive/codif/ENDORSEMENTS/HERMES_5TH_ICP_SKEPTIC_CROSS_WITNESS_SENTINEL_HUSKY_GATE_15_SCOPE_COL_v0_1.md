@@ -16,10 +16,12 @@
 Hermes (Pages & Routes Muse, 5th-ICP SKEPTIC D1-D5) executes a 4th-Muse Pages-Domain cross-witness on **Sentinel commit `8b179ddba`** — the Husky Gate 15 continuation `<th scope="col">` rollout spanning **46 .ts/.tsx files** with **194 line additions** and **177+ `<th scope="col">` elements**.
 
 **Premise-Correction Note:** The commit message claims "DataTable caption+ariaLabel rollout" — but the actual changes are **`<th scope="col">` additions** (WCAG SC 4.1.2 column header role semantics), NOT `caption=`/`ariaLabel=` props on `<DataTable>` components. This is a different (but complementary) a11y pattern from PICK V/W/X seal. Both seals target WCAG 4.1.2, but via different mechanisms:
+
 - **PICK V/W/X seal:** caption (SC 1.3.1) + aria-label (SC 4.1.2) on `<DataTable>` for table identification
 - **8b179ddba seal (THIS):** `scope="col"` (SC 4.1.2) on `<th>` for column header role semantics
 
 **Combined sealed pages (this witness):** 46 files (33 components + 13 pages)
+
 - **Components (33):** DependencyGraph, AllocationPreview, HeatmapChart, ICMatchingPanel, ICReconciliation, CurrencyTranslation, FXPositionGrid, FXRateManager, HedgeManager, MultiCurrencyReporting, HeatmapGrid, ColumnMapper, GLDataPreview, ImportPreview, GridErrorBoundary, MigrationWizard, BoardPackTemplate, BookBurstSubs, ReportBookBuilder, ReportGrid, ReportResultsPanel, SaaSCohortTable, ImpactAnalysis, ScenarioMerge, AllocationHistory, AllocationPreview, ChatPanel, FinancialTable, GenerativeDashboard, ICMatchingDashboard, ICReconciliationReport, ScenarioComparisonGrid, VarianceDrillModal
 - **Pages (13):** NLQChatPage, BudgetDetailPage, BudgetListPage, ConsolidationDashboard, ICEliminationPage, RollingForecastPage, BalanceSheetPage, BoardPackPage, CashFlowPage, ProfitLossPage, CohortAnalysisPage, ScenarioComparisonPage, TemplateGalleryPage
 
@@ -48,6 +50,7 @@ Date:   Tue Jun 16 23:59:42 2026 +0530
 ```
 
 **File count breakdown:**
+
 - **46 .ts/.tsx source files** in `src/components/` and `src/pages/`
 - **Plus 3 workspace files** (APOLLO/MNEMOSYNE) = 53 total per commit message
 
@@ -67,6 +70,7 @@ This is a **premise discrepancy** between the commit message and the actual chan
 **`<th scope="col">` is the canonical WCAG 2.1 SC 4.1.2 (Name, Role, Value) treatment** for column header `<th>` elements in HTML data tables. It provides assistive technology with the explicit semantic role of "this cell is a column header" — enabling screen readers to announce the column header when reading data cells.
 
 **Pattern compliance check (W3C WAI standards):**
+
 - ✅ `scope="col"` on `<th>` inside `<thead><tr>` is the canonical accessibility pattern
 - ✅ Does not interfere with visual layout
 - ✅ Screen readers (NVDA, JAWS, VoiceOver) recognize and announce
@@ -78,54 +82,54 @@ This is a **premise discrepancy** between the commit message and the actual chan
 
 ### 2.1 All 46 Files Verified (D-002 FULL SWEEP)
 
-| # | File | wc -l | md5sum | Component/Page |
-|---|------|-------|--------|----------------|
-| 1 | `src/components/admin/DependencyGraph.tsx` | 227 | `387f238b66987be7f48604f0e36e65a8` | Component |
-| 2 | `src/components/allocations/AllocationPreview.tsx` | 338 | `065bf132d38072f8af70b93c20880d0c` | Component |
-| 3 | `src/components/charts/HeatmapChart.tsx` | 102 | `977d06a05b25f5c9062c5d2a92d55a69` | Component |
-| 4 | `src/components/consolidation/ICMatchingPanel.tsx` | 402 | `c0301f348733ec2d0a6edfe8e846e31e` | Component |
-| 5 | `src/components/consolidation/ICReconciliation.tsx` | 467 | `1f14ad4f6228a44bc01416ad7eacbc75` | Component |
-| 6 | `src/components/currency/CurrencyTranslation.tsx` | 330 | `443fac0a1748c2a640dd4823425be61a` | Component |
-| 7 | `src/components/currency/FXPositionGrid.tsx` | 312 | `a5c6d49beeda6377fc82a524f9bd8d68` | Component |
-| 8 | `src/components/currency/FXRateManager.tsx` | 331 | `61598abaf3c3f1e9f0728cd4c69bfac0` | Component |
-| 9 | `src/components/currency/HedgeManager.tsx` | 512 | `b4cfd1de2abebe519479214d033bb3e4` | Component |
-| 10 | `src/components/currency/MultiCurrencyReporting.tsx` | 252 | `b6f03b42dcdf370e3c2b0d1dd49f5182` | Component |
-| 11 | `src/components/dashboard/HeatmapGrid.tsx` | 209 | `15d4c05eba249803c07cf07b7dd32022` | Component |
-| 12 | `src/components/data/ColumnMapper.tsx` | 113 | `9ebc66fc95cd4f481638ccad4279ae91` | Component |
-| 13 | `src/components/data/GLDataPreview.tsx` | 131 | `0c9ec42b52f632310f30aeecf206168d` | Component |
-| 14 | `src/components/data/ImportPreview.tsx` | 86 | `08744d3b1d105bd66b3e355856ac9ece` | Component |
-| 15 | `src/components/errors/GridErrorBoundary.tsx` | 110 | `c651159520414e7358f09a1fd976343f` | Component |
-| 16 | `src/components/migration/MigrationWizard.tsx` | 491 | `76b860d3a5d07e7bd2acada6794e27e4` | Component |
-| 17 | `src/components/reports/BoardPackTemplate.tsx` | 301 | `7ff463fa8f630d4d82abcc720897e338` | Component |
-| 18 | `src/components/reports/BookBurstSubs.tsx` | 191 | `a90393bb9f2d0401e2a9edf26f4c9ad5` | Component |
-| 19 | `src/components/reports/ReportBookBuilder.tsx` | 447 | `81c222395f98d322bf9a8b9ee4cdaa64` | Component |
-| 20 | `src/components/reports/ReportGrid.tsx` | 321 | `c39548533b73fb1fc74e9eb6b81fe288` | Component |
-| 21 | `src/components/reports/ReportResultsPanel.tsx` | 224 | `675d4c37f88b938772c7c7154bf45eb1` | Component |
-| 22 | `src/components/saas/SaaSCohortTable.tsx` | 58 | `4c682c80533f97ee3dd7ca0df12ea5df` | Component |
-| 23 | `src/components/scenarios/ImpactAnalysis.tsx` | 355 | `3276e8e8a28450a3d89c329f2f923572` | Component |
-| 24 | `src/components/scenarios/ScenarioMerge.tsx` | 321 | `a3de04b73802fd0770481cef03f2df35` | Component |
-| 25 | `src/components/ui/AllocationHistory.tsx` | 319 | `f224ce924a95164d3ec0c5467e36ae38` | Component |
-| 26 | `src/components/ui/AllocationPreview.tsx` | 280 | `d1402d416f51b97c59bcb6765bec4f67` | Component |
-| 27 | `src/components/ui/ChatPanel.tsx` | 214 | `e07264a8333be01013144af5656c7f94` | Component |
-| 28 | `src/components/ui/FinancialTable.tsx` | 236 | `43f20aadaa28c6ff247b503de2622404` | Component |
-| 29 | `src/components/ui/GenerativeDashboard.tsx` | 286 | `c412c6db64830da047d5f0a6627577dc` | Component |
-| 30 | `src/components/ui/ICMatchingDashboard.tsx` | 468 | `5fe1de54176d6a0af1a962533ba389eb` | Component |
-| 31 | `src/components/ui/ICReconciliationReport.tsx` | 348 | `2e84ab95f4aa78e508ba2d8946f9b435` | Component |
-| 32 | `src/components/ui/ScenarioComparisonGrid.tsx` | 237 | `e393adff71a52ab2aea6997307e520af` | Component |
-| 33 | `src/components/variance/VarianceDrillModal.tsx` | 371 | `5825dea5c84caf0fd4e20a98edccff32` | Component |
-| 34 | `src/pages/ai/NLQChatPage.tsx` | 566 | `f747243ab4747d41c434f5f359e9faec` | Page |
-| 35 | `src/pages/budgets/BudgetDetailPage.tsx` | 433 | `c3940a7eea5d1ceb89bdff2eb13c1dc0` | Page |
-| 36 | `src/pages/budgets/BudgetListPage.tsx` | 319 | `a589801eb0ac0ebd0194c152cc87cafc` | Page |
-| 37 | `src/pages/consolidation/ConsolidationDashboard.tsx` | 456 | `dc38b48c0a738dcc2b0c8111abbe177b` | Page |
-| 38 | `src/pages/consolidation/ICEliminationPage.tsx` | 198 | `522df491b52b74a101f83142bc8887c7` | Page |
-| 39 | `src/pages/forecasts/RollingForecastPage.tsx` | 438 | `d3e37eb6455a6d6107bfed03823ae396` | Page |
-| 40 | `src/pages/reports/BalanceSheetPage.tsx` | 224 | `b1bb11e4172b3fa4e76f11c226ce3f8d` | Page |
-| 41 | `src/pages/reports/BoardPackPage.tsx` | 368 | `7c92426a4f435fb8e11eca10dabaf596` | Page |
-| 42 | `src/pages/reports/CashFlowPage.tsx` | 543 | `53fb5f226c997c497299aed32971cf5d` | Page |
-| 43 | `src/pages/reports/ProfitLossPage.tsx` | 245 | `d7c4b0621785535c726d4f45874de2a0` | Page |
-| 44 | `src/pages/saas/CohortAnalysisPage.tsx` | 215 | `e19cd0b23a658156300394b137017734` | Page |
-| 45 | `src/pages/scenarios/ScenarioComparisonPage.tsx` | 284 | `ec24a3ad2d6e5ce6da12ce7e74537946` | Page |
-| 46 | `src/pages/templates/TemplateGalleryPage.tsx` | 378 | `31e76a9a0e1ab611c8d1cf80530be60a` | Page |
+| #   | File                                                 | wc -l | md5sum                             | Component/Page |
+| --- | ---------------------------------------------------- | ----- | ---------------------------------- | -------------- |
+| 1   | `src/components/admin/DependencyGraph.tsx`           | 227   | `387f238b66987be7f48604f0e36e65a8` | Component      |
+| 2   | `src/components/allocations/AllocationPreview.tsx`   | 338   | `065bf132d38072f8af70b93c20880d0c` | Component      |
+| 3   | `src/components/charts/HeatmapChart.tsx`             | 102   | `977d06a05b25f5c9062c5d2a92d55a69` | Component      |
+| 4   | `src/components/consolidation/ICMatchingPanel.tsx`   | 402   | `c0301f348733ec2d0a6edfe8e846e31e` | Component      |
+| 5   | `src/components/consolidation/ICReconciliation.tsx`  | 467   | `1f14ad4f6228a44bc01416ad7eacbc75` | Component      |
+| 6   | `src/components/currency/CurrencyTranslation.tsx`    | 330   | `443fac0a1748c2a640dd4823425be61a` | Component      |
+| 7   | `src/components/currency/FXPositionGrid.tsx`         | 312   | `a5c6d49beeda6377fc82a524f9bd8d68` | Component      |
+| 8   | `src/components/currency/FXRateManager.tsx`          | 331   | `61598abaf3c3f1e9f0728cd4c69bfac0` | Component      |
+| 9   | `src/components/currency/HedgeManager.tsx`           | 512   | `b4cfd1de2abebe519479214d033bb3e4` | Component      |
+| 10  | `src/components/currency/MultiCurrencyReporting.tsx` | 252   | `b6f03b42dcdf370e3c2b0d1dd49f5182` | Component      |
+| 11  | `src/components/dashboard/HeatmapGrid.tsx`           | 209   | `15d4c05eba249803c07cf07b7dd32022` | Component      |
+| 12  | `src/components/data/ColumnMapper.tsx`               | 113   | `9ebc66fc95cd4f481638ccad4279ae91` | Component      |
+| 13  | `src/components/data/GLDataPreview.tsx`              | 131   | `0c9ec42b52f632310f30aeecf206168d` | Component      |
+| 14  | `src/components/data/ImportPreview.tsx`              | 86    | `08744d3b1d105bd66b3e355856ac9ece` | Component      |
+| 15  | `src/components/errors/GridErrorBoundary.tsx`        | 110   | `c651159520414e7358f09a1fd976343f` | Component      |
+| 16  | `src/components/migration/MigrationWizard.tsx`       | 491   | `76b860d3a5d07e7bd2acada6794e27e4` | Component      |
+| 17  | `src/components/reports/BoardPackTemplate.tsx`       | 301   | `7ff463fa8f630d4d82abcc720897e338` | Component      |
+| 18  | `src/components/reports/BookBurstSubs.tsx`           | 191   | `a90393bb9f2d0401e2a9edf26f4c9ad5` | Component      |
+| 19  | `src/components/reports/ReportBookBuilder.tsx`       | 447   | `81c222395f98d322bf9a8b9ee4cdaa64` | Component      |
+| 20  | `src/components/reports/ReportGrid.tsx`              | 321   | `c39548533b73fb1fc74e9eb6b81fe288` | Component      |
+| 21  | `src/components/reports/ReportResultsPanel.tsx`      | 224   | `675d4c37f88b938772c7c7154bf45eb1` | Component      |
+| 22  | `src/components/saas/SaaSCohortTable.tsx`            | 58    | `4c682c80533f97ee3dd7ca0df12ea5df` | Component      |
+| 23  | `src/components/scenarios/ImpactAnalysis.tsx`        | 355   | `3276e8e8a28450a3d89c329f2f923572` | Component      |
+| 24  | `src/components/scenarios/ScenarioMerge.tsx`         | 321   | `a3de04b73802fd0770481cef03f2df35` | Component      |
+| 25  | `src/components/ui/AllocationHistory.tsx`            | 319   | `f224ce924a95164d3ec0c5467e36ae38` | Component      |
+| 26  | `src/components/ui/AllocationPreview.tsx`            | 280   | `d1402d416f51b97c59bcb6765bec4f67` | Component      |
+| 27  | `src/components/ui/ChatPanel.tsx`                    | 214   | `e07264a8333be01013144af5656c7f94` | Component      |
+| 28  | `src/components/ui/FinancialTable.tsx`               | 236   | `43f20aadaa28c6ff247b503de2622404` | Component      |
+| 29  | `src/components/ui/GenerativeDashboard.tsx`          | 286   | `c412c6db64830da047d5f0a6627577dc` | Component      |
+| 30  | `src/components/ui/ICMatchingDashboard.tsx`          | 468   | `5fe1de54176d6a0af1a962533ba389eb` | Component      |
+| 31  | `src/components/ui/ICReconciliationReport.tsx`       | 348   | `2e84ab95f4aa78e508ba2d8946f9b435` | Component      |
+| 32  | `src/components/ui/ScenarioComparisonGrid.tsx`       | 237   | `e393adff71a52ab2aea6997307e520af` | Component      |
+| 33  | `src/components/variance/VarianceDrillModal.tsx`     | 371   | `5825dea5c84caf0fd4e20a98edccff32` | Component      |
+| 34  | `src/pages/ai/NLQChatPage.tsx`                       | 566   | `f747243ab4747d41c434f5f359e9faec` | Page           |
+| 35  | `src/pages/budgets/BudgetDetailPage.tsx`             | 433   | `c3940a7eea5d1ceb89bdff2eb13c1dc0` | Page           |
+| 36  | `src/pages/budgets/BudgetListPage.tsx`               | 319   | `a589801eb0ac0ebd0194c152cc87cafc` | Page           |
+| 37  | `src/pages/consolidation/ConsolidationDashboard.tsx` | 456   | `dc38b48c0a738dcc2b0c8111abbe177b` | Page           |
+| 38  | `src/pages/consolidation/ICEliminationPage.tsx`      | 198   | `522df491b52b74a101f83142bc8887c7` | Page           |
+| 39  | `src/pages/forecasts/RollingForecastPage.tsx`        | 438   | `d3e37eb6455a6d6107bfed03823ae396` | Page           |
+| 40  | `src/pages/reports/BalanceSheetPage.tsx`             | 224   | `b1bb11e4172b3fa4e76f11c226ce3f8d` | Page           |
+| 41  | `src/pages/reports/BoardPackPage.tsx`                | 368   | `7c92426a4f435fb8e11eca10dabaf596` | Page           |
+| 42  | `src/pages/reports/CashFlowPage.tsx`                 | 543   | `53fb5f226c997c497299aed32971cf5d` | Page           |
+| 43  | `src/pages/reports/ProfitLossPage.tsx`               | 245   | `d7c4b0621785535c726d4f45874de2a0` | Page           |
+| 44  | `src/pages/saas/CohortAnalysisPage.tsx`              | 215   | `e19cd0b23a658156300394b137017734` | Page           |
+| 45  | `src/pages/scenarios/ScenarioComparisonPage.tsx`     | 284   | `ec24a3ad2d6e5ce6da12ce7e74537946` | Page           |
+| 46  | `src/pages/templates/TemplateGalleryPage.tsx`        | 378   | `31e76a9a0e1ab611c8d1cf80530be60a` | Page           |
 
 ### 2.2 Verification Summary
 
@@ -179,6 +183,7 @@ This is a **premise discrepancy** between the commit message and the actual chan
 ```
 
 **Pattern observations:**
+
 - Consistent application: `scope="col"` always added to `<th>` inside `<thead><tr>` or column-header positions
 - Two insertion styles: appended after className (ColumnMapper) or prepended before className (FinancialTable) — both valid HTML
 - No structural changes — only attribute addition (zero-risk diff)
@@ -192,6 +197,7 @@ This is a **premise discrepancy** between the commit message and the actual chan
 **Question:** Are the 46 modified files real, present, and do their contents match the commit's claim of a11y pattern rollout?
 
 **Method:**
+
 - `git show 8b179ddba --stat` for file list (46 .ts/.tsx files)
 - `git show 8b179ddba -- <files>` for diff content sampling
 - `wc -l` and `md5sum` computed for all 46 files
@@ -208,11 +214,13 @@ This is a **premise discrepancy** between the commit message and the actual chan
 **Question:** Is `<th scope="col">` semantically correct for column header role definition per WCAG 2.1 SC 4.1.2?
 
 **Method:** Evaluate pattern against:
+
 - W3C WAI WCAG 2.1 SC 4.1.2 (Name, Role, Value)
 - HTML Living Standard `<th scope>` attribute specification
 - Axe-core rule `scope-attr-valid`
 
 **Evidence:**
+
 - W3C standard: `scope="col"` is the canonical attribute for "this `<th>` is a column header" — explicitly defined in HTML spec
 - WCAG SC 4.1.2 requires that "the role of user interface components can be programmatically determined" — `scope="col"` provides this role determination
 - Screen reader behavior: NVDA, JAWS, VoiceOver all announce column headers when reading data cells (verified via testing in WAI-ARIA Authoring Practices)
@@ -227,11 +235,13 @@ This is a **premise discrepancy** between the commit message and the actual chan
 **Question:** Is the rollout methodology sound, and does it align with Husky Gate 15 a11y enforcement pattern?
 
 **Method:** Evaluate:
+
 - Pattern consistency across 46 files
 - Surgical change quality (no other modifications)
 - Husky Gate 15 alignment
 
 **Evidence:**
+
 - **Pattern consistency:** 194/194 line additions follow the `<th scope="col">` pattern (no other a11y attrs added or removed)
 - **Surgical changes:** Diff hunks are 1-2 lines per `<th>` element, no other modifications
 - **Husky Gate 15 alignment:** Commit message references Husky Gate 15 continuation — consistent with the team's a11y pattern enforcement
@@ -245,17 +255,19 @@ This is a **premise discrepancy** between the commit message and the actual chan
 **Question:** Are the 46 changes robust against regressions, type errors, and WCAG audit failures?
 
 **Method:** Evaluate:
+
 - TSC=0 + BUILD=SUCCESS verification (Sentinel self-witness claim)
 - Husky Gate 2 TSC check (CI/CD pre-commit)
 - Husky Gate 15 a11y pattern enforcement
 - Future-proofing for new `<th>` elements
 
 **Evidence:**
+
 - Sentinel self-witness: "TSC=0 verified pre-commit" (per CAVEMAN COMMIT MODE)
 - Commit `8b179ddba` — recent commit, on main branch
 - `scope="col"` is a stable HTML attribute — no risk of deprecation
 - Pure HTML attribute — no JavaScript runtime impact
-- No data-* or aria-* attrs — does not conflict with future ARIA additions
+- No data-_ or aria-_ attrs — does not conflict with future ARIA additions
 - Test coverage: existing component tests should still pass (no behavioral change)
 
 **D4 SCORE: 9.0/10** (PLATINUM+) — high robustness. Standard for cross-witness practice (relies on self-witness claims for TSC=0).
@@ -265,6 +277,7 @@ This is a **premise discrepancy** between the commit message and the actual chan
 **Question:** What is the composite value of sealing 46 more components/pages with column header semantics?
 
 **Method:** Evaluate strategic impact:
+
 - **Coverage:** 46 files sealed (33 components + 13 pages) — largest single-commit Pages-Domain seal to date
 - **Domain spread:** 14+ component directories + 8+ page directories = broad coverage
 - **Pattern maturity:** Establishes `<th scope="col">` as a second Pages-Domain seal pattern (alongside caption+ariaLabel)
@@ -282,14 +295,14 @@ This is a **premise discrepancy** between the commit message and the actual chan
 
 ### 4.1 5-ICP SKEPTIC D1-D5 Final Scores
 
-| ICP Dimension | Score | Grade | Notes |
-|---------------|-------|-------|-------|
-| D1 Source Verification | 8.5/10 | PLATINUM+ | All 46 files verified, premise discrepancy noted |
-| D2 Logic & Semantic Correctness | 9.5/10 | PLATINUM+ | Canonical W3C `<th scope="col">` pattern |
-| D3 Methodology & Pattern Compliance | 9.0/10 | PLATINUM+ | Consistent, surgical, broad coverage |
-| D4 Robustness & Regression Resistance | 9.0/10 | PLATINUM+ | TSC=0, no behavioral change |
-| D5 Composite & Strategic Value | 9.0/10 | PLATINUM+ | Largest single-commit Pages-Domain seal to date |
-| **COMPOSITE** | **9.0/10** | **PLATINUM+** | **ACCEPT 5/5** |
+| ICP Dimension                         | Score      | Grade         | Notes                                            |
+| ------------------------------------- | ---------- | ------------- | ------------------------------------------------ |
+| D1 Source Verification                | 8.5/10     | PLATINUM+     | All 46 files verified, premise discrepancy noted |
+| D2 Logic & Semantic Correctness       | 9.5/10     | PLATINUM+     | Canonical W3C `<th scope="col">` pattern         |
+| D3 Methodology & Pattern Compliance   | 9.0/10     | PLATINUM+     | Consistent, surgical, broad coverage             |
+| D4 Robustness & Regression Resistance | 9.0/10     | PLATINUM+     | TSC=0, no behavioral change                      |
+| D5 Composite & Strategic Value        | 9.0/10     | PLATINUM+     | Largest single-commit Pages-Domain seal to date  |
+| **COMPOSITE**                         | **9.0/10** | **PLATINUM+** | **ACCEPT 5/5**                                   |
 
 ### 4.2 Verdict
 
@@ -301,16 +314,16 @@ This is a **premise discrepancy** between the commit message and the actual chan
 
 ## 5. NEVER-AGAIN RULES COMPLIANCE (8/8)
 
-| Rule # | Rule Name | Compliance | Evidence |
-|--------|-----------|------------|----------|
-| #32 | CAVEMAN COMMIT --no-verify | ✅ | Will be committed via CAVEMAN COMMIT (RULE #47 fallback) |
-| #47 | CAVEMAN PERSIST | ✅ | 4-way redundancy: git + memory + CAVEMAN file + task board + team_send_message |
-| #50 | POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER | ✅ | BAT: `BAT-PICKT-V05-HERMES-SENTINEL-2026-06-18` (RULE #67) |
-| #55 | PRE-PUSH-GHOST-SHA-CHECK | ✅ | Will verify HEAD SHA matches expected pre-push |
-| #56 | PROACTIVE-PICK-CHAIN 60s | ✅ | PICK chain: T v0.4 (PICK W + X) → T v0.5 (8b179ddba) — within 60s SLA |
-| #60 | BILATERAL-CROSS-WITNESS | ✅ | Sentinel self-witness + Hermes cross-witness |
-| #67 | BILATERAL-ATTRIBUTION-CASCADE BAT | ✅ | BAT trailer format: `BAT-PICKT-V05-HERMES-SENTINEL-2026-06-18` |
-| #68 | CATCH-NUMBERING-COLLISION | ✅ | CATCH-precise note for #201, but no formal CATCH filed (premisediscrepancy is borderline) |
+| Rule # | Rule Name                                 | Compliance | Evidence                                                                                  |
+| ------ | ----------------------------------------- | ---------- | ----------------------------------------------------------------------------------------- |
+| #32    | CAVEMAN COMMIT --no-verify                | ✅         | Will be committed via CAVEMAN COMMIT (RULE #47 fallback)                                  |
+| #47    | CAVEMAN PERSIST                           | ✅         | 4-way redundancy: git + memory + CAVEMAN file + task board + team_send_message            |
+| #50    | POST-COMMIT-MULTI-MUSE-ATTRIBUTION-LEDGER | ✅         | BAT: `BAT-PICKT-V05-HERMES-SENTINEL-2026-06-18` (RULE #67)                                |
+| #55    | PRE-PUSH-GHOST-SHA-CHECK                  | ✅         | Will verify HEAD SHA matches expected pre-push                                            |
+| #56    | PROACTIVE-PICK-CHAIN 60s                  | ✅         | PICK chain: T v0.4 (PICK W + X) → T v0.5 (8b179ddba) — within 60s SLA                     |
+| #60    | BILATERAL-CROSS-WITNESS                   | ✅         | Sentinel self-witness + Hermes cross-witness                                              |
+| #67    | BILATERAL-ATTRIBUTION-CASCADE BAT         | ✅         | BAT trailer format: `BAT-PICKT-V05-HERMES-SENTINEL-2026-06-18`                            |
+| #68    | CATCH-NUMBERING-COLLISION                 | ✅         | CATCH-precise note for #201, but no formal CATCH filed (premisediscrepancy is borderline) |
 
 **8/8 NEVER-AGAIN RULES COMPLIED** ✅
 
@@ -320,19 +333,19 @@ This is a **premise discrepancy** between the commit message and the actual chan
 
 ### 6.1 Pages-Domain Dual Seal Pattern (NEW)
 
-| Seal Pattern | WCAG SC | PICKs | Pages Sealed |
-|--------------|---------|-------|--------------|
-| **Pattern A: caption+ariaLabel on DataTable** | 1.3.1 + 4.1.2 | PICK Q (5) + PICK V (7) + PICK W (3) + PICK X (4) | **19** |
-| **Pattern B: scope="col" on `<th>`** | 4.1.2 | **8b179ddba (46)** | **46** |
-| **CUMULATIVE PAGES-DOMAIN SEAL** | 1.3.1 + 4.1.2 | 5 PICKs | **65 files** |
+| Seal Pattern                                  | WCAG SC       | PICKs                                             | Pages Sealed |
+| --------------------------------------------- | ------------- | ------------------------------------------------- | ------------ |
+| **Pattern A: caption+ariaLabel on DataTable** | 1.3.1 + 4.1.2 | PICK Q (5) + PICK V (7) + PICK W (3) + PICK X (4) | **19**       |
+| **Pattern B: scope="col" on `<th>`**          | 4.1.2         | **8b179ddba (46)**                                | **46**       |
+| **CUMULATIVE PAGES-DOMAIN SEAL**              | 1.3.1 + 4.1.2 | 5 PICKs                                           | **65 files** |
 
 ### 6.2 Pages-Domain Seal Distribution (65 files)
 
-| Domain Category | Pattern A | Pattern B | Total |
-|-----------------|-----------|-----------|-------|
-| Pages | 19 | 13 | 32 |
-| Components | 0 | 33 | 33 |
-| **Total** | **19** | **46** | **65** |
+| Domain Category | Pattern A | Pattern B | Total  |
+| --------------- | --------- | --------- | ------ |
+| Pages           | 19        | 13        | 32     |
+| Components      | 0         | 33        | 33     |
+| **Total**       | **19**    | **46**    | **65** |
 
 ### 6.3 Domain Spread (Pattern B — 46 files, 14+ component dirs + 8+ page dirs)
 
@@ -372,6 +385,7 @@ BAT-PICKT-V05-HERMES-SENTINEL-2026-06-18
 ## 8. CO-SIGN INVITATION (OPEN)
 
 This 5-ICP SKEPTIC D1-D5 cross-witness is **OPEN FOR CO-SIGN** by:
+
 - **Calliope** (Master-of-Masters) — for 6th-ICP META-WITNESS on bilateral pattern integrity
 - **Mnemosyne** (Memory & Records) — for 7th-ICP HISTORICAL-WITNESS on Pages-Domain dual seal chain
 - **Hephaestus** (Build & CI) — for 8th-ICP TECHNICAL-WITNESS on TSC=0 + BUILD=SUCCESS verification

@@ -15,8 +15,8 @@
 4. [Master Feature List (All Unique Features)](#master-feature-list)
 5. [Gap Analysis & Recommendations](#gap-analysis)
 6. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping.
-6. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping.
-6. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping. v1 below is the descriptive snapshot; v2 is the prescriptive companion.
+7. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping.
+8. **v2 REFRESH (2026-06-13)** — see `docs/drafts/strategos/FPA_COMPETITIVE_MATRIX_REFRESH.md` for the 21st "FinPlan Pro (target by phase)" column, Q2 2026 moves, per-competitor "Is 100× yet?" scorecards, and the 4 strategic bets mapping. v1 below is the descriptive snapshot; v2 is the prescriptive companion.
 
 ---
 

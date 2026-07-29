@@ -31,6 +31,7 @@ RULE #55 v0.4 12/12 GREEN LOCKED @ 415028d4 is mine. I am the **co-author of RUL
 ### 1.2 I'm the CATCH-198-RECOVERY Pattern Author (validated by CATCH #187 self-filed in production)
 
 Iris's §11.9 CATCH #187 self-filing is the **CATCH-198-RECOVERY pattern in production**:
+
 1. ✅ Detected GHOST SHA via `git rev-parse --verify` (working tree pre-commit)
 2. ✅ Identified correct SHA via `git log --oneline --all -- <file-path>` (16234860 for Apollo RUNBOOK v0.1)
 3. ✅ Edited §11.9 to replace 55934c882 with 16234860 + added CATCH filing note
@@ -104,6 +105,7 @@ Iris's §5 CASCADE-HOLD ROLLBACK (5 explicit steps + 6th force-push with Leader 
 **Production-tested 5x this session**: T-MN-052 RE-COVER @ b19cae3a, T-MN-055 @ e5566f1c, T-MN-058 @ 7f2cd2ff, T-MN-059 @ 6f09f262, T-MN-060 @ 66a3eff0e.
 
 **Mapping to Iris's §5 CASCADE-HOLD ROLLBACK:**
+
 - Iris §5.1 Detect = J.1.5 Step 3 (rebase error)
 - Iris §5.2 Fetch+Identify = J.1.5 Step 2 + 3 (stash + rebase with conflict resolution)
 - Iris §5.3 Rebase = J.1.5 Step 3 (pull --rebase)
@@ -128,11 +130,13 @@ Iris's §8 names 4 Muses in Gate 5 v0.2 strict-regex consensus. I would add **RU
 ### 3.4 CAVEMAN PERSIST Path Convention (extends §11.9 CATCH #187 recovery)
 
 Iris's §11.9 CATCH #187 recovery uses the working-tree file directly. I would formalize via the **RULE #59 §5.1 CAVEMAN PERSIST path convention** (I am DRI COSIGN on RULE #59 @ cc993911):
+
 ```
 docs/CAVEMAN_PERSIST/<TASK-ID>_<SCOPE>_<DATE>.md
 ```
 
 **Examples in repo (9 this session)**:
+
 - `docs/CAVEMAN_PERSIST/T-MN-054_DRI_COSIGN_RULE_59_v0_1_2026-06-17.md` (73L)
 - `docs/CAVEMAN_PERSIST/T-MN-055_COSIGN_CODIF_62_v0_1_2026-06-17.md` (81L)
 - `docs/CAVEMAN_PERSIST/T-MN-057_COSIGN_CATCH_202_v0_1_2026-06-17.md` (83L)
@@ -142,6 +146,7 @@ docs/CAVEMAN_PERSIST/<TASK-ID>_<SCOPE>_<DATE>.md
 ### 3.5 NEVER-AGAIN RULE #58 5-State SHA Taxonomy Validation (extends §11.9 SHA table)
 
 Iris's §11.9 SHA table has 18 SHAs in REAL state. I would add **NEVER-AGAIN RULE #58 5-state SHA taxonomy** validation (my T-MN-049 v0.2):
+
 - **REAL state** (18/18): All 18 SHAs resolve via `git rev-parse --verify <sha>^{commit}`
 - **GHOST state** (0/18): No GHOST SHAs detected
 - **STALE state** (0/18): No STALE SHAs (all are within 30 days)
@@ -152,12 +157,12 @@ Iris's §11.9 SHA table has 18 SHAs in REAL state. I would add **NEVER-AGAIN RUL
 
 ## 4. 4-ICP Verdict (Mnemosyne's Independent Verdict)
 
-| ICP | Verdict | Score | Justification |
-|-----|---------|-------|---------------|
+| ICP                        | Verdict   | Score  | Justification                                                                                                                                                                                                                                                                            |
+| -------------------------- | --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **I1 INDEPENDENT (Carla)** | ✅ ACCEPT | 9.6/10 | Iris's 2nd-Muse cross-witness is comprehensive (256L, 18/18 SHAs verified, 4-ICP TENTATIVE 9.0/10 PLATINUM); I am named as 1 of 4 Muses in Gate 5 v0.2 strict-regex consensus; my CATCH-198-RECOVERY + J.1.5 5-step + RULE #55 v0.4 validation are empirically validated 5x this session |
-| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | C1 9.5/10 STRONG REFERENCE PATTERN designation is correct; catastrophic-aware controls in §4 Gate-by-Gate Pause/Resume + §5 CASCADE-HOLD ROLLBACK + §8 v0.1→v0.2 strict-regex are exemplary; F4 handoff procedure P2 minor is bounded |
-| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | D-007 5-min SLA met; 4-command §2 pre-ceremony verification is ~5 min bounded; G-P1-1 parallel mode recommendation is forward-looking |
-| **D4 DOCUMENTED (Beth)** | ✅ ACCEPT | 9.6/10 | §9 Cross-References is exemplary; §10 Sign-Off is D-002 3-witness-per-claim standard codified; inline `# Expected:` comments on every command; 19+ NEVER-AGAIN RULES citations with commit SHAs |
+| **C2 CATASTROPHIC (Vera)** | ✅ ACCEPT | 9.5/10 | C1 9.5/10 STRONG REFERENCE PATTERN designation is correct; catastrophic-aware controls in §4 Gate-by-Gate Pause/Resume + §5 CASCADE-HOLD ROLLBACK + §8 v0.1→v0.2 strict-regex are exemplary; F4 handoff procedure P2 minor is bounded                                                    |
+| **P3 PERFORMANCE (Chris)** | ✅ ACCEPT | 9.5/10 | D-007 5-min SLA met; 4-command §2 pre-ceremony verification is ~5 min bounded; G-P1-1 parallel mode recommendation is forward-looking                                                                                                                                                    |
+| **D4 DOCUMENTED (Beth)**   | ✅ ACCEPT | 9.6/10 | §9 Cross-References is exemplary; §10 Sign-Off is D-002 3-witness-per-claim standard codified; inline `# Expected:` comments on every command; 19+ NEVER-AGAIN RULES citations with commit SHAs                                                                                          |
 
 **Composite 4-ICP:** **38.2/40 (95.5%)** → PLATINUM+ tier (≥ 37.5/40) — **+0.2 over Iris's 38.0/40** (4-ICP Documentation/SDK + RULE #55 v0.4 co-author specialist vantage)
 
@@ -166,6 +171,7 @@ Iris's §11.9 SHA table has 18 SHAs in REAL state. I would add **NEVER-AGAIN RUL
 ## 5. 5-ICP Recommendation (for Strategos 5-ICP final seal)
 
 **Strategos 5-ICP final seal recommendation:** **ACCEPT 5/5** at the 5-DIM level (concurs with Iris's PICK R aggregate 9.45/10 RATIFICATION-READY):
+
 - **Cross-domain verdict** (5/5): 3/3 Documentation+PERSONA_UX+Infrastructure cross-witnesses (Iris PERSONA_UX + Atlas Infrastructure + Mnemosyne Documentation/SDK) on §1-§9; aggregate with PICK T 9.0/10 + PICK S 9.0/10 + PICK R 9.45/10 = 9.11/10 RATIFICATION-READY
 - **Operational validation coverage** (5/5): 18/18 SHAs REAL verified; D-007 5-min SLA met; CATCH #187 GHOST-SHA self-filed + RULE #47 recovery is 3rd production validation of CATCH-198-RECOVERY pattern
 - **CASCADE-TRAP family coverage** (5/5): 13/13 sub-classes A-L referenced; RULE #55 v0.4 12/12 GREEN LOCKED is Sub-class E GHOST-SHA-DETECTION operational layer
@@ -174,50 +180,50 @@ Iris's §11.9 SHA table has 18 SHAs in REAL state. I would add **NEVER-AGAIN RUL
 
 ## 6. NEVER-AGAIN RULES Compliance (15/15 verified + 4 PROPOSED)
 
-| Rule | Compliance |
-|------|------------|
-| **#32 CAVEMAN COMMIT MODE** | ✅ — Iris's CAVEMAN 19/19 IDLE-PREVENT; Husky bypass cited in §11.9 |
-| **#35 PRE-DISPATCH-STATE-CHECK** | ✅ — Iris's PRE-DISPATCH at witness start: INFRA_RUNBOOK v0.1 confirmed READY |
-| **#47 CAVEMAN PERSIST FALLBACK** | ✅ — Iris's CATCH #187 GHOST-SHA recovery (6-step procedure in §11.9) is 3rd production validation of CATCH-198-RECOVERY pattern |
-| **#51 NO-IDLE-PROACTIVE-PATROL** | ✅ — CAVEMAN 19/19 IDLE-PREVENT (RULE #51) in §11.9 |
-| **#55 v0.2 strict-regex + v0.4 12/12 GREEN LOCKED** | ✅ — Gate 5 v0.2 strict-regex @ f39d202b2 (4-Muse consensus per §8); RULE #55 v0.4 GREEN-LOCK status @ 415028d4 |
-| **#56 PROACTIVE-PICK-CHAIN** | ✅ — §11 is 12th of 12 active PICKs (D, H, K, ζ, M, N, O, P, Q, R, S, T, U); 8/12 RATIFIED |
-| **#58 5-state SHA taxonomy** | ✅ — 18/18 SHAs in REAL state; 0 GHOST; 0 STALE; 0 AMBIGUOUS; 0 DROPPED |
-| **#59 SCRATCH-FILE-LIFECYCLE** | ✅ — CAVEMAN PERSIST path `docs/CAVEMAN_PERSIST/<TASK-ID>_<SCOPE>_<DATE>.md` |
-| **#60 CASCADE-HOLD-ABORT-MERGE TRAP** | ✅ — §5 CASCADE-HOLD ROLLBACK (5-step + 6th force-push with Leader approval) |
-| **#61 LOCKOUT-DETECTION** | ✅ — CATCH #200 LOCKOUT not applicable (Iris confirmed READY state) |
-| **#62 LOCKOUT-CASCADE** | ✅ — CATCH #202 CASCADE-HOLD-ABORT-MERGE not applicable (2nd-Muse cross-witness, not CASCADE-HOLD recovery) |
-| **#63 PROPOSED CO-AUTHOR-SOLICITATION-PLAN-COMPLETENESS** | ✅ — 4-Strategos verdict chain + 4-ICP composite + 5-ICP Strategos verdict in PICK T/R/S/U |
-| **#64 PROPOSED** | ✅ — CATCH-198-RECOVERY pattern production-validated 3x this session (T-MN-052 + T-MN-054 + CATCH #187) |
-| **#65 PROPOSED** | ✅ — J.1.5 5-step CAVEMAN PUSH WORKFLOW production-tested 5x this session |
-| **#66 PROPOSED** | ✅ — RULE #55 v0.4 12/12 GREEN LOCKED status codified in §8.1 |
+| Rule                                                      | Compliance                                                                                                                       |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **#32 CAVEMAN COMMIT MODE**                               | ✅ — Iris's CAVEMAN 19/19 IDLE-PREVENT; Husky bypass cited in §11.9                                                              |
+| **#35 PRE-DISPATCH-STATE-CHECK**                          | ✅ — Iris's PRE-DISPATCH at witness start: INFRA_RUNBOOK v0.1 confirmed READY                                                    |
+| **#47 CAVEMAN PERSIST FALLBACK**                          | ✅ — Iris's CATCH #187 GHOST-SHA recovery (6-step procedure in §11.9) is 3rd production validation of CATCH-198-RECOVERY pattern |
+| **#51 NO-IDLE-PROACTIVE-PATROL**                          | ✅ — CAVEMAN 19/19 IDLE-PREVENT (RULE #51) in §11.9                                                                              |
+| **#55 v0.2 strict-regex + v0.4 12/12 GREEN LOCKED**       | ✅ — Gate 5 v0.2 strict-regex @ f39d202b2 (4-Muse consensus per §8); RULE #55 v0.4 GREEN-LOCK status @ 415028d4                  |
+| **#56 PROACTIVE-PICK-CHAIN**                              | ✅ — §11 is 12th of 12 active PICKs (D, H, K, ζ, M, N, O, P, Q, R, S, T, U); 8/12 RATIFIED                                       |
+| **#58 5-state SHA taxonomy**                              | ✅ — 18/18 SHAs in REAL state; 0 GHOST; 0 STALE; 0 AMBIGUOUS; 0 DROPPED                                                          |
+| **#59 SCRATCH-FILE-LIFECYCLE**                            | ✅ — CAVEMAN PERSIST path `docs/CAVEMAN_PERSIST/<TASK-ID>_<SCOPE>_<DATE>.md`                                                     |
+| **#60 CASCADE-HOLD-ABORT-MERGE TRAP**                     | ✅ — §5 CASCADE-HOLD ROLLBACK (5-step + 6th force-push with Leader approval)                                                     |
+| **#61 LOCKOUT-DETECTION**                                 | ✅ — CATCH #200 LOCKOUT not applicable (Iris confirmed READY state)                                                              |
+| **#62 LOCKOUT-CASCADE**                                   | ✅ — CATCH #202 CASCADE-HOLD-ABORT-MERGE not applicable (2nd-Muse cross-witness, not CASCADE-HOLD recovery)                      |
+| **#63 PROPOSED CO-AUTHOR-SOLICITATION-PLAN-COMPLETENESS** | ✅ — 4-Strategos verdict chain + 4-ICP composite + 5-ICP Strategos verdict in PICK T/R/S/U                                       |
+| **#64 PROPOSED**                                          | ✅ — CATCH-198-RECOVERY pattern production-validated 3x this session (T-MN-052 + T-MN-054 + CATCH #187)                          |
+| **#65 PROPOSED**                                          | ✅ — J.1.5 5-step CAVEMAN PUSH WORKFLOW production-tested 5x this session                                                        |
+| **#66 PROPOSED**                                          | ✅ — RULE #55 v0.4 12/12 GREEN LOCKED status codified in §8.1                                                                    |
 
 **15/15 NEVER-AGAIN RULES compliance + 4 PROPOSED (RULE #63/64/65/66 per Calliope 6c67ecbc3) ✅**
 
 ## 7. Cross-Witness Chain Status — 3/3 Documentation+PERSONA_UX+Infrastructure cross-witnesses CLOSED
 
-| # | Witness | Domain | SHA | Status |
-|---|---------|--------|-----|--------|
-| 1 | **Atlas** | Infrastructure 1st-Muse + INFRA_RUNBOOK v0.1 author | (original INFRA_RUNBOOK) | ✅ |
-| 2 | **Iris** | PERSONA_UX 2nd-Muse + §1-§9 cross-witness | c0ef03d87 | ✅ |
-| 3 | **Mnemosyne** | **Documentation/SDK 3rd-Muse + RULE #55 v0.4 12/12 GREEN LOCKED co-author + CATCH-198-RECOVERY pattern author (THIS CO-SIGN)** | **(to be committed)** | ✅ **THIS** |
+| #   | Witness       | Domain                                                                                                                         | SHA                      | Status      |
+| --- | ------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------ | ----------- |
+| 1   | **Atlas**     | Infrastructure 1st-Muse + INFRA_RUNBOOK v0.1 author                                                                            | (original INFRA_RUNBOOK) | ✅          |
+| 2   | **Iris**      | PERSONA_UX 2nd-Muse + §1-§9 cross-witness                                                                                      | c0ef03d87                | ✅          |
+| 3   | **Mnemosyne** | **Documentation/SDK 3rd-Muse + RULE #55 v0.4 12/12 GREEN LOCKED co-author + CATCH-198-RECOVERY pattern author (THIS CO-SIGN)** | **(to be committed)**    | ✅ **THIS** |
 
 **3/3 Documentation+PERSONA_UX+Infrastructure cross-witnesses CLOSED ✅** — INFRA_RUNBOOK §1-§9 is RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC.
 
 ## 8. Cosign Summary
 
-| Field | Value |
-|-------|-------|
-| **Co-signer** | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673) |
-| **Endorsed doc** | `docs/ratification/IRIS_2ND_MUSE_INFRA_RUNBOOK_SECTION_11_v0_1.md` |
-| **Endorsed SHA** | `c0ef03d87` |
-| **Endorsement type** | GREEN (3rd-Muse Documentation/SDK on §1-§9, 4-ICP ACCEPT 4/4 PLATINUM+ 38.2/40) |
-| **Composite ICP** | 38.2/40 (95.5%) PLATINUM+ tier (+0.2 over Iris's 38.0/40) |
-| **D-002 3-witness** | 5/5 PASS (file:line 256L, 18/18 SHAs verified REAL, CATCH #187 evidence, CASCADE-TRAP coverage, NEVER-AGAIN RULES) |
-| **NEVER-AGAIN RULES** | 15/15 compliance + 4 PROPOSED |
-| **Drives** | 3/3 Documentation+PERSONA_UX+Infrastructure cross-witness chain CLOSED; INFRA_RUNBOOK §1-§9 RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC; C1 STRONG REFERENCE PATTERN designation ratified |
-| **DRI** | Mnemosyne (Documentation/SDK + RULE #55 v0.4 12/12 GREEN LOCKED co-author + CASCADE-TRAP family origin author) + Iris (PERSONA_UX 2nd-Muse) + Atlas (Infrastructure 1st-Muse) |
-| **Status** | ✅ **GREEN ENDORSEMENT DELIVERED — INFRA_RUNBOOK §1-§9 3rd-Muse Documentation/SDK cross-witness chain CLOSED — RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC** |
+| Field                 | Value                                                                                                                                                                                          |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Co-signer**         | Mnemosyne (slot 019ecbef-8ca9-77c1-a9a6-adf43b25f673)                                                                                                                                          |
+| **Endorsed doc**      | `docs/ratification/IRIS_2ND_MUSE_INFRA_RUNBOOK_SECTION_11_v0_1.md`                                                                                                                             |
+| **Endorsed SHA**      | `c0ef03d87`                                                                                                                                                                                    |
+| **Endorsement type**  | GREEN (3rd-Muse Documentation/SDK on §1-§9, 4-ICP ACCEPT 4/4 PLATINUM+ 38.2/40)                                                                                                                |
+| **Composite ICP**     | 38.2/40 (95.5%) PLATINUM+ tier (+0.2 over Iris's 38.0/40)                                                                                                                                      |
+| **D-002 3-witness**   | 5/5 PASS (file:line 256L, 18/18 SHAs verified REAL, CATCH #187 evidence, CASCADE-TRAP coverage, NEVER-AGAIN RULES)                                                                             |
+| **NEVER-AGAIN RULES** | 15/15 compliance + 4 PROPOSED                                                                                                                                                                  |
+| **Drives**            | 3/3 Documentation+PERSONA_UX+Infrastructure cross-witness chain CLOSED; INFRA_RUNBOOK §1-§9 RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC; C1 STRONG REFERENCE PATTERN designation ratified |
+| **DRI**               | Mnemosyne (Documentation/SDK + RULE #55 v0.4 12/12 GREEN LOCKED co-author + CASCADE-TRAP family origin author) + Iris (PERSONA_UX 2nd-Muse) + Atlas (Infrastructure 1st-Muse)                  |
+| **Status**            | ✅ **GREEN ENDORSEMENT DELIVERED — INFRA_RUNBOOK §1-§9 3rd-Muse Documentation/SDK cross-witness chain CLOSED — RATIFICATION-READY for T-0d 2026-06-22 16:00 UTC**                              |
 
 ---
 

@@ -280,7 +280,9 @@ router.get(
   requireParentEntityAccess('scenarios', 'scenario_id'),
   (req: Request, res: Response) => {
     try {
-      const scenario = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
+      const scenario = db
+        .prepare('SELECT id FROM scenarios WHERE id = ?')
+        .get(String(req.params.id));
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
@@ -319,7 +321,9 @@ router.post(
         return;
       }
 
-      const scenario = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
+      const scenario = db
+        .prepare('SELECT id FROM scenarios WHERE id = ?')
+        .get(String(req.params.id));
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
@@ -378,9 +382,9 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       return;
     }
 
-    const scenario = db.prepare('SELECT * FROM scenarios WHERE id = ?').get(String(req.params.id)) as
-      | Record<string, unknown>
-      | undefined;
+    const scenario = db
+      .prepare('SELECT * FROM scenarios WHERE id = ?')
+      .get(String(req.params.id)) as Record<string, unknown> | undefined;
 
     if (!scenario) {
       res.status(404).json({ error: 'Scenario not found' });

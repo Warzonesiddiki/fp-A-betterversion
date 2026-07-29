@@ -25,6 +25,7 @@ FinPlan Pro is an offline-first FP&A desktop application requiring persistent st
 8. **Tauri runtime** — must work in Tauri desktop shell
 
 Standard browser localStorage is insufficient:
+
 - No encryption (data is plaintext)
 - 5-10MB size limit
 - Synchronous API (blocks main thread)
@@ -33,6 +34,7 @@ Standard browser localStorage is insufficient:
 - No schema migration built-in
 
 Standard IndexedDB is insufficient:
+
 - No encryption at rest
 - Complex API
 - No audit trail
@@ -40,6 +42,7 @@ Standard IndexedDB is insufficient:
 - No schema migration built-in
 
 Libraries considered:
+
 - **localForage**: localStorage fallback, no encryption
 - **Dexie.js**: IndexedDB wrapper, no encryption
 - **idb-keyval**: Thin IndexedDB wrapper, no encryption
@@ -50,6 +53,7 @@ Libraries considered:
 ## Decision
 
 **Build `masterStorage` in `src/utils/masterStorage.ts` with:**
+
 - **AES-GCM-256 encryption** at rest (NIST-approved AEAD cipher)
 - **90-day key rotation** with secure key derivation (PBKDF2)
 - **7-year audit retention** in append-only audit log
@@ -81,6 +85,7 @@ export const masterStorage: PersistStorage<unknown> = {
 ```
 
 **Mandated pattern (per AGENTS.md):**
+
 - All 28+ Zustand stores use `masterStorage` for persistence (cross-ref ADR-002)
 - NEVER use localStorage directly
 - NEVER use IndexedDB directly — go through masterStorage abstraction
@@ -134,14 +139,14 @@ export const masterStorage: PersistStorage<unknown> = {
 
 ## Alternatives Considered
 
-| Library | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **Custom masterStorage (chosen)** | Tailored, comprehensive, embedded | Custom code to maintain | ✅ ACCEPT |
-| localStorage | Simple | No encryption, no audit trail, sync API | ❌ REJECT |
-| IndexedDB | Standard, larger capacity | No encryption, complex API | ❌ REJECT |
-| localForage | localStorage fallback | No encryption, no audit trail | ❌ REJECT |
-| Dexie.js | IndexedDB wrapper | No encryption, complex | ❌ REJECT |
-| SQLite (WASM) | SQL queries, large capacity | Heavy bundle, complex | ❌ REJECT |
+| Library                           | Pros                              | Cons                                    | Verdict   |
+| --------------------------------- | --------------------------------- | --------------------------------------- | --------- |
+| **Custom masterStorage (chosen)** | Tailored, comprehensive, embedded | Custom code to maintain                 | ✅ ACCEPT |
+| localStorage                      | Simple                            | No encryption, no audit trail, sync API | ❌ REJECT |
+| IndexedDB                         | Standard, larger capacity         | No encryption, complex API              | ❌ REJECT |
+| localForage                       | localStorage fallback             | No encryption, no audit trail           | ❌ REJECT |
+| Dexie.js                          | IndexedDB wrapper                 | No encryption, complex                  | ❌ REJECT |
+| SQLite (WASM)                     | SQL queries, large capacity       | Heavy bundle, complex                   | ❌ REJECT |
 
 ## References
 

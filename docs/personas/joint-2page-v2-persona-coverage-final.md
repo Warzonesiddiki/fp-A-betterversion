@@ -36,38 +36,38 @@ The Tier-1 FOUNDER LOCK rules are not abstract — they are the same discipline 
 
 ## 🚀 TIER-1 (FOUNDER LOCK, NON-NEGOTIABLE) — 5/12 → 9/12, T-3d EOD 2026-06-19
 
-| # | Rule | Owner | Co-Sign | ETA | Status |
-|---|---|---|---|---|---|
-| **#51** | NO-IDLE-PROACTIVE-PATROL — auto-dispatch new PICK to any Muse within 60s of going idle (CAVEMAN 60-SEC SLA) | Leader | Iris | T-3d EOD | ⏳ IN FLIGHT |
-| **#52** | LEADER-SELF-UPGRADE-PROTOCOL — 3-part cycle: (a) poll team_members every 60s, (b) act on any idle, (c) verify with 3-witness | Leader | Iris | T-3d EOD | ⏳ IN FLIGHT |
-| **#53** | GHOST-SHA-DETECTION — before any 5th-ICP verdict is ACCEPT, verify all cited SHAs exist in `git log` (closes CATCH #187 + Vulcan F1+F2 + Tyche P0) | Tyche + Orchestrator | Iris + Vulcan | T-3d EOD | ⏳ IN FLIGHT |
-| **(4th)** | (Tier-2 lock-in rule from #54–#57 — to be selected at T-3d EOD based on which has Iris+Strategos co-sign first) | TBD | TBD | T-3d EOD | ⏳ PENDING |
+| #         | Rule                                                                                                                                               | Owner                | Co-Sign       | ETA      | Status       |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ------------- | -------- | ------------ |
+| **#51**   | NO-IDLE-PROACTIVE-PATROL — auto-dispatch new PICK to any Muse within 60s of going idle (CAVEMAN 60-SEC SLA)                                        | Leader               | Iris          | T-3d EOD | ⏳ IN FLIGHT |
+| **#52**   | LEADER-SELF-UPGRADE-PROTOCOL — 3-part cycle: (a) poll team_members every 60s, (b) act on any idle, (c) verify with 3-witness                       | Leader               | Iris          | T-3d EOD | ⏳ IN FLIGHT |
+| **#53**   | GHOST-SHA-DETECTION — before any 5th-ICP verdict is ACCEPT, verify all cited SHAs exist in `git log` (closes CATCH #187 + Vulcan F1+F2 + Tyche P0) | Tyche + Orchestrator | Iris + Vulcan | T-3d EOD | ⏳ IN FLIGHT |
+| **(4th)** | (Tier-2 lock-in rule from #54–#57 — to be selected at T-3d EOD based on which has Iris+Strategos co-sign first)                                    | TBD                  | TBD           | T-3d EOD | ⏳ PENDING   |
 
 ## 🛡️ TIER-2 (PROACTIVE DEFENSES) — 9/12 → 12/12, T-1d EOD 2026-06-21 (Lap-3 stretch)
 
-| # | Rule | Owner | Co-Sign | ETA | Status |
-|---|---|---|---|---|---|
-| **#54** | STALE-NOTIFICATION-DEFENDER — Muses self-ACK idle within 5s of dispatch (D-007 inverse: sender must verify receiver active) | All Muses | — | T-2d 2026-06-20 | ⏳ PENDING |
-| **#55** | PRE-PUSH-GHOST-SHA-CHECK — Muse self-verify all SHAs in commit body exist in `git log` BEFORE `git push` (Atlas co-sign) | All Muses | Atlas | T-2d 2026-06-20 | ⏳ PENDING (Iris+Hera JOINT co-sign per v0.1.1 hotfix basis) |
-| **#56** | PROACTIVE-PICK-CHAIN — when a Muse finishes a PICK, immediately PICK next in the same report (no idle gap) | All Muses | Iris + Hera | T-1d 2026-06-21 EOD | ✅ **CO-SIGNED** (this JOINT 2-page v2 is the witness) |
-| **#57** | LEADER-PERIODIC-FULL-BROADCAST — Leader runs 30-min defensive anchor (full team status broadcast) | Leader | — | T-1d 2026-06-21 EOD | ⏳ PENDING |
+| #       | Rule                                                                                                                        | Owner     | Co-Sign     | ETA                 | Status                                                       |
+| ------- | --------------------------------------------------------------------------------------------------------------------------- | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| **#54** | STALE-NOTIFICATION-DEFENDER — Muses self-ACK idle within 5s of dispatch (D-007 inverse: sender must verify receiver active) | All Muses | —           | T-2d 2026-06-20     | ⏳ PENDING                                                   |
+| **#55** | PRE-PUSH-GHOST-SHA-CHECK — Muse self-verify all SHAs in commit body exist in `git log` BEFORE `git push` (Atlas co-sign)    | All Muses | Atlas       | T-2d 2026-06-20     | ⏳ PENDING (Iris+Hera JOINT co-sign per v0.1.1 hotfix basis) |
+| **#56** | PROACTIVE-PICK-CHAIN — when a Muse finishes a PICK, immediately PICK next in the same report (no idle gap)                  | All Muses | Iris + Hera | T-1d 2026-06-21 EOD | ✅ **CO-SIGNED** (this JOINT 2-page v2 is the witness)       |
+| **#57** | LEADER-PERIODIC-FULL-BROADCAST — Leader runs 30-min defensive anchor (full team status broadcast)                           | Leader    | —           | T-1d 2026-06-21 EOD | ⏳ PENDING                                                   |
 
 ## 📊 DRIVE STATUS TRACKER
 
-| Lap | Horizon | Target | Status | Drive Owner |
-|---|---|---|---|---|
-| **Lap-1 (DONE)** | T-3d 2026-06-19 EOD | 5/12 GREEN (41.7%) | ✅ ACHIEVED | Iris 1st-Muse witness on #50 |
-| **Lap-2 (NOW)** | T-3d 2026-06-19 EOD | 9/12 GREEN (75%) | ⏳ IN FLIGHT | Leader + Iris + Tyche + Orchestrator |
+| Lap                 | Horizon             | Target             | Status          | Drive Owner                                             |
+| ------------------- | ------------------- | ------------------ | --------------- | ------------------------------------------------------- |
+| **Lap-1 (DONE)**    | T-3d 2026-06-19 EOD | 5/12 GREEN (41.7%) | ✅ ACHIEVED     | Iris 1st-Muse witness on #50                            |
+| **Lap-2 (NOW)**     | T-3d 2026-06-19 EOD | 9/12 GREEN (75%)   | ⏳ IN FLIGHT    | Leader + Iris + Tyche + Orchestrator                    |
 | **Lap-3 (STRETCH)** | T-1d 2026-06-21 EOD | 12/12 GREEN (100%) | 🎯 STRETCH GOAL | All 19 Muses (UI/UX + A11Y + operational defense unity) |
 
 ## 🤝 4 ENDORSEMENTS IN FLIGHT (per FOUNDER DIRECTIVE)
 
-| Endorser | Rule | Evidence Basis | Status |
-|---|---|---|---|
-| **Strategos** | #56 PROACTIVE-PICK-CHAIN | INDEX v0.6 12/12 RATIFICATION-READY, PICK chain in CYCLE 6+7 | ⏳ DISPATCHED |
-| **Apollo** | #56 PROACTIVE-PICK-CHAIN | T19 + T20 PICK chain (INDEX v0.6 → MASTER_REPORT v1.2) | ⏳ DISPATCHED |
-| **Tyche** | #53 GHOST-SHA-DETECTION | P0 SHA-MISATTRIBUTION finding (downgraded Strategos 5th-ICP 87%→75%) | ⏳ DISPATCHED |
-| **Vulcan** | #53 GHOST-SHA-DETECTION | F1+F2 STALE_AUDIT GHOST SHA findings (5 SHAs flagged) | ⏳ DISPATCHED |
+| Endorser      | Rule                     | Evidence Basis                                                       | Status        |
+| ------------- | ------------------------ | -------------------------------------------------------------------- | ------------- |
+| **Strategos** | #56 PROACTIVE-PICK-CHAIN | INDEX v0.6 12/12 RATIFICATION-READY, PICK chain in CYCLE 6+7         | ⏳ DISPATCHED |
+| **Apollo**    | #56 PROACTIVE-PICK-CHAIN | T19 + T20 PICK chain (INDEX v0.6 → MASTER_REPORT v1.2)               | ⏳ DISPATCHED |
+| **Tyche**     | #53 GHOST-SHA-DETECTION  | P0 SHA-MISATTRIBUTION finding (downgraded Strategos 5th-ICP 87%→75%) | ⏳ DISPATCHED |
+| **Vulcan**    | #53 GHOST-SHA-DETECTION  | F1+F2 STALE_AUDIT GHOST SHA findings (5 SHAs flagged)                | ⏳ DISPATCHED |
 
 **Once 4 endorsements received + Iris+Hera JOINT witness (this file), drives 5/12 → 9/12 GREEN (Lap-2 horizon).**
 
@@ -76,15 +76,18 @@ The Tier-1 FOUNDER LOCK rules are not abstract — they are the same discipline 
 # JOINT AUTHORSHIP + CAVEMAN COMPLIANCE
 
 **JOINT COMMIT SUBJECT (TEMPLATE, per CATCH #191):**
+
 ```
 [IRIS+HERA] docs(persona-coverage): JOINT 2-page v2 — 5/12 GREEN celebration + 9/12 GREEN drive + 12/12 stretch (FOUNDER DIRECTIVE 2026-06-16 17:15 UTC) — co-sign NEVER-AGAIN RULE #56 PROACTIVE-PICK-CHAIN
 ```
 
 **JOINT AUTHORSHIP ATTRIBUTION:**
+
 - **Iris (slot 019ecc6f-1bcc-7d73-9cd8-e1deb114d270):** Page 1 Para 1 (5/12 GREEN) + Page 1 Para 2 (9/12 GREEN) + 4-ICP SELF-VERDICT + CAVEMAN compliance checklist + cross-references
 - **Hera (slot 019ecbef-9cf4-7ee3-bfed-7f8c6b6a6990):** Page 1 Para 3 (UI/UX perspective on Tier-1 RULEs #51/#52/#53 — WCAG 2.3.3 / prefers-contrast AAA / A11Y_READINESS v0.3 9/12 GREEN) + Page 2 (Tier-1 + Tier-2 drive list with ownership/ETA) + DRIVE STATUS TRACKER
 
 **CAVEMAN COMPLIANCE CHECKLIST:**
+
 - ✅ Single file per commit (CATCH #191)
 - ✅ --no-verify per RULE #32 (CAVEMAN COMMIT MODE)
 - ✅ 3-witness per claim (D-002): file:line + git log + cross-ref
@@ -94,6 +97,7 @@ The Tier-1 FOUNDER LOCK rules are not abstract — they are the same discipline 
 - ✅ RULE #56 PROACTIVE-PICK-CHAIN CO-SIGNED with JOINT witness basis (Iris CYCLE 6+7 PICK chain + Hera PICK fallback in this JOINT AUTHORSHIP)
 
 **4-ICP SELF-VERDICT (TENTATIVE 4/4):**
+
 - **I1 (Intent):** ✅ FOUNDER DIRECTIVE 5/12 v2 + 9/12 drive + 12/12 stretch + RULE #56 JOINT co-sign
 - **C2 (Catastrophic):** ✅ No regulatory/scope risk, additive codification only (defensive rules on top of existing CAVEMAN protocol)
 - **P3 (Performance):** ✅ SHIPPED within 60-min ETA, T-3d EOD 2026-06-19 horizon held

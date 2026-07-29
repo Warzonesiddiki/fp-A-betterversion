@@ -6,7 +6,7 @@
 **Author:** Mnemosyne (DRI per LEADER PICK A, FOUNDER WS HYGIENE pre-approval) + Atlas (BACKUP verifier)
 **Supersedes:** FOUNDER WORKSPACE HYGIENE DIRECTIVE 2026-06-16 (50+ junk files in repo root + desktop)
 **Type:** WORKSPACE-ORGANIZATION governance protocol
-**Naming note:** Leader TURN 71+ dispatch specified `NEVER_AGAIN_RULE_59_SCRATCH_FILE_LIFECYCLE_v0.1.md`, but existing codif/ convention (CODIF_50, CODIF_51, CODIF_58) uses `CODIF_<N>_V<V>_<NAME>.md`. This file follows the **existing convention** for consistency. Rename is a quick follow-up if Leader prefers the `NEVER_AGAIN_RULE_*` pattern.
+**Naming note:** Leader TURN 71+ dispatch specified `NEVER_AGAIN_RULE_59_SCRATCH_FILE_LIFECYCLE_v0.1.md`, but existing codif/ convention (CODIF*50, CODIF_51, CODIF_58) uses `CODIF*<N>_V<V>_<NAME>.md`. This file follows the **existing convention** for consistency. Rename is a quick follow-up if Leader prefers the `NEVER*AGAIN_RULE*\*` pattern.
 
 **Trigger:** FOUNDER WORKSPACE HYGIENE DIRECTIVE 2026-06-16 — "Project location: D (Keep current + archive). Cleanup 50+ junk files: SCOPED. Prevention rules: YES — NEVER-AGAIN RULE #59 SCRATCH-FILE-LIFECYCLE." LEADER PICK A APPROVED 2026-06-16 TURN 71+.
 
@@ -35,51 +35,51 @@ When Muses produce scratch files (intermediate build outputs, debug logs, temp t
 
 ## §2 Affected CATCHes / Pre-existing Pollution
 
-| CATCH / Pattern | Date | Pattern | Severity |
-|-----------------|------|---------|----------|
-| WS-HYGIENE-001 | 2026-06-16 | 8 root-level `_<prefix>.out` files (FOUNDER directive) | MEDIUM |
-| WS-HYGIENE-002 | 2026-06-16 | `g5_results.json` in repo root (test artifacts should be `coverage/` or `.openhands/`) | MEDIUM |
-| WS-HYGIENE-003 | 2026-06-16 | `tools/verify-rule-41-e2.sh.bak-c15` in tools/ (`.bak` files should not be in tracked paths) | LOW |
-| ATLAS P0 G20 hygiene | 2026-06-15 | `/docs/drafts/*/` already gitignored (per existing .gitignore) | RESOLVED |
+| CATCH / Pattern      | Date       | Pattern                                                                                      | Severity |
+| -------------------- | ---------- | -------------------------------------------------------------------------------------------- | -------- |
+| WS-HYGIENE-001       | 2026-06-16 | 8 root-level `_<prefix>.out` files (FOUNDER directive)                                       | MEDIUM   |
+| WS-HYGIENE-002       | 2026-06-16 | `g5_results.json` in repo root (test artifacts should be `coverage/` or `.openhands/`)       | MEDIUM   |
+| WS-HYGIENE-003       | 2026-06-16 | `tools/verify-rule-41-e2.sh.bak-c15` in tools/ (`.bak` files should not be in tracked paths) | LOW      |
+| ATLAS P0 G20 hygiene | 2026-06-15 | `/docs/drafts/*/` already gitignored (per existing .gitignore)                               | RESOLVED |
 
 ## §3 Workspace Hygiene Protocol (ROOT vs FOLDER)
 
 ### §3.1 Allowed Locations (CANONICAL)
 
-| Location | Purpose | Git Status | Examples |
-|----------|---------|------------|----------|
-| `docs/` | Canonical documentation | **TRACKED** | `docs/codif/`, `docs/ratification/`, `docs/security/` |
-| `docs/drafts/<agent>/` | Muse working notes (in-flight) | **GITIGNORED** (per existing rule) | `docs/drafts/mnemosyne/`, `docs/drafts/chronos/` |
-| `src/` | Source code | **TRACKED** | `src/engines/`, `src/store/`, `src/services/` |
-| `tests/` | Test code + E2E walkthroughs | **TRACKED** | `tests/e2e/`, `tests/unit/` |
-| `.openhands/` | Build/quality-gate logs | **GITIGNORED** | `.openhands/baseline-*.log`, `.openhands/g1-baseline.log` |
-| `coverage/` | Test coverage reports | **GITIGNORED** | `coverage/lcov.info`, `coverage/html/` |
-| `scratch/<agent>/<date>/` | **NEW** — Muse scratch files (canonical) | **GITIGNORED** | `scratch/mnemosyne/2026-06-16/T-MN-051-draft.md` |
-| `dist/`, `build/`, `node_modules/` | Build output | **GITIGNORED** | `dist/`, `build/`, `node_modules/` |
+| Location                           | Purpose                                  | Git Status                         | Examples                                                  |
+| ---------------------------------- | ---------------------------------------- | ---------------------------------- | --------------------------------------------------------- |
+| `docs/`                            | Canonical documentation                  | **TRACKED**                        | `docs/codif/`, `docs/ratification/`, `docs/security/`     |
+| `docs/drafts/<agent>/`             | Muse working notes (in-flight)           | **GITIGNORED** (per existing rule) | `docs/drafts/mnemosyne/`, `docs/drafts/chronos/`          |
+| `src/`                             | Source code                              | **TRACKED**                        | `src/engines/`, `src/store/`, `src/services/`             |
+| `tests/`                           | Test code + E2E walkthroughs             | **TRACKED**                        | `tests/e2e/`, `tests/unit/`                               |
+| `.openhands/`                      | Build/quality-gate logs                  | **GITIGNORED**                     | `.openhands/baseline-*.log`, `.openhands/g1-baseline.log` |
+| `coverage/`                        | Test coverage reports                    | **GITIGNORED**                     | `coverage/lcov.info`, `coverage/html/`                    |
+| `scratch/<agent>/<date>/`          | **NEW** — Muse scratch files (canonical) | **GITIGNORED**                     | `scratch/mnemosyne/2026-06-16/T-MN-051-draft.md`          |
+| `dist/`, `build/`, `node_modules/` | Build output                             | **GITIGNORED**                     | `dist/`, `build/`, `node_modules/`                        |
 
 ### §3.2 Forbidden Locations (FORBIDDEN)
 
-| Location | Forbidden Artifacts | Why |
-|----------|---------------------|-----|
-| **Repo root** | `_<prefix>.out`, `_<prefix>.txt`, `_<prefix>.ps1`, `_<prefix>.sh`, `g5_*.json`, `verify-*.sh.bak*` | Pollutes root, confuses onboarding, accidental commit risk |
-| **Repo `src/` root** | Scratch `.ts`, `.js`, `.md` files not in `src/<feature>/` | Violates AGENTS.md file-ownership pattern |
-| **Repo `tests/` root** | Scratch `.test.ts`, `.test.ts.bak` files not in `tests/<feature>/` | Same as src/ |
-| **Desktop (`~/Desktop/`)** | ANY project-related scratch file | FOUNDER user-facing clutter |
+| Location                   | Forbidden Artifacts                                                                                | Why                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Repo root**              | `_<prefix>.out`, `_<prefix>.txt`, `_<prefix>.ps1`, `_<prefix>.sh`, `g5_*.json`, `verify-*.sh.bak*` | Pollutes root, confuses onboarding, accidental commit risk |
+| **Repo `src/` root**       | Scratch `.ts`, `.js`, `.md` files not in `src/<feature>/`                                          | Violates AGENTS.md file-ownership pattern                  |
+| **Repo `tests/` root**     | Scratch `.test.ts`, `.test.ts.bak` files not in `tests/<feature>/`                                 | Same as src/                                               |
+| **Desktop (`~/Desktop/`)** | ANY project-related scratch file                                                                   | FOUNDER user-facing clutter                                |
 
 ### §3.3 Cleanup Targets (10 files, DRI-by-DRI per FOUNDER directive)
 
-| File | Type | Disposition | Rationale |
-|------|------|-------------|-----------|
-| `_dc.out` | root scratch | **GITIGNORE** (add to `.gitignore`) | Already untracked; gitignore prevents re-occurrence |
-| `_final.out` | root scratch | **GITIGNORE** | Same |
-| `_g.out` | root scratch | **GITIGNORE** | Same |
-| `_log3.out` | root scratch | **GITIGNORE** | Same |
-| `_p.out` | root scratch | **GITIGNORE** | Same |
-| `_push2.out` | root scratch | **GITIGNORE** | Same |
-| `_r.out` | root scratch | **GITIGNORE** | Same |
-| `_rb.out` | root scratch | **GITIGNORE** | Same |
-| `g5_results.json` | test artifact | **GITIGNORE** | Move to `coverage/g5_results.json` if needed for review |
-| `tools/verify-rule-41-e2.sh.bak-c15` | backup file | **GITIGNORE** (Sentinel extension per Leader directive) | `.bak` files are backup artifacts; never canonical |
+| File                                 | Type          | Disposition                                             | Rationale                                               |
+| ------------------------------------ | ------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| `_dc.out`                            | root scratch  | **GITIGNORE** (add to `.gitignore`)                     | Already untracked; gitignore prevents re-occurrence     |
+| `_final.out`                         | root scratch  | **GITIGNORE**                                           | Same                                                    |
+| `_g.out`                             | root scratch  | **GITIGNORE**                                           | Same                                                    |
+| `_log3.out`                          | root scratch  | **GITIGNORE**                                           | Same                                                    |
+| `_p.out`                             | root scratch  | **GITIGNORE**                                           | Same                                                    |
+| `_push2.out`                         | root scratch  | **GITIGNORE**                                           | Same                                                    |
+| `_r.out`                             | root scratch  | **GITIGNORE**                                           | Same                                                    |
+| `_rb.out`                            | root scratch  | **GITIGNORE**                                           | Same                                                    |
+| `g5_results.json`                    | test artifact | **GITIGNORE**                                           | Move to `coverage/g5_results.json` if needed for review |
+| `tools/verify-rule-41-e2.sh.bak-c15` | backup file   | **GITIGNORE** (Sentinel extension per Leader directive) | `.bak` files are backup artifacts; never canonical      |
 
 **Decision per LEADER PICK A:** Gitignore all 10 files (less disruption than moving). Add global `/_*.out` pattern to `.gitignore` to cover current + future scratch outputs.
 
@@ -95,12 +95,12 @@ The Desktop (`~/Desktop/`) is the **FOUNDER's user-facing workspace**. The proje
 
 ### §4.2 Muse Responsibility
 
-| Location | Muse Action |
-|----------|-------------|
-| `C:\Users\Tahir\Desktop\` (parent) | **DO NOT WRITE** — FOUNDER's personal space |
-| `C:\Users\Tahir\Desktop\frontend that i want\fpa\` (project root) | Allowed for canonical files (e.g., `package.json`, `README.md`); **FORBIDDEN** for scratch (`_<prefix>.out`, etc.) |
-| `C:\Users\Tahir\Desktop\frontend that i want\fpa\scratch\<agent>/<date>/` | **NEW CANONICAL** location for Muse scratch files |
-| `C:\Users\Tahir\Desktop\frontend that i want\fpa\docs\drafts\<agent>/` | **EXISTING CANONICAL** for Muse working notes (gitignored) |
+| Location                                                                  | Muse Action                                                                                                        |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `C:\Users\Tahir\Desktop\` (parent)                                        | **DO NOT WRITE** — FOUNDER's personal space                                                                        |
+| `C:\Users\Tahir\Desktop\frontend that i want\fpa\` (project root)         | Allowed for canonical files (e.g., `package.json`, `README.md`); **FORBIDDEN** for scratch (`_<prefix>.out`, etc.) |
+| `C:\Users\Tahir\Desktop\frontend that i want\fpa\scratch\<agent>/<date>/` | **NEW CANONICAL** location for Muse scratch files                                                                  |
+| `C:\Users\Tahir\Desktop\frontend that i want\fpa\docs\drafts\<agent>/`    | **EXISTING CANONICAL** for Muse working notes (gitignored)                                                         |
 
 ### §4.3 Desktop Visibility Rule
 
@@ -113,11 +113,13 @@ Muses shall NOT produce artifacts that appear in `C:\Users\Tahir\Desktop\` (pare
 ### §5.1 CAVEMAN PERSIST Path Convention
 
 When CAVEMAN PERSIST is invoked (RULE #47 fallback), the persisted file MUST land in:
+
 - `scratch/<agent>/<date>/<task-id>-draft.<ext>` — primary
 - `aionrs-temp-*/<task-id>-draft.<ext>` — secondary (system temp)
 - `docs/drafts/<agent>/<task-id>-draft.<ext>` — tertiary (existing gitignored path)
 
 **FORBIDDEN CAVEMAN PERSIST paths:**
+
 - `C:\Users\Tahir\Desktop\` (parent) — FOUNDER's space
 - `C:\Users\Tahir\Desktop\frontend that i want\fpa\` (project root) — pollution
 - `src/` root — violates AGENTS.md
@@ -131,14 +133,14 @@ CAVEMAN PERSIST files older than 30 days SHALL be cleaned up (per Muse's `scratc
 
 A Muse subject to this rule performs a 6-dim audit before any PICK pickup or weekly cycle:
 
-| # | Dimension | Check | Tool |
-|---|-----------|-------|------|
-| 1 | **REPO-ROOT-POLLUTION** | Are there any new `_<prefix>.{out,txt,ps1,sh,log}` files in repo root? | `dir C:\Users\Tahir\Desktop\frontend that i want\fpa\_* /b` |
-| 2 | **DESKTOP-POLLUTION** | Are there any new project-related files in `~/Desktop/` (parent)? | `dir C:\Users\Tahir\Desktop\*.md /b` (excluding project subdir) |
-| 3 | **GIT-STATUS-CLEAN** | Is `git status --short` showing unexpected untracked files? | `git status --short` |
-| 4 | **GITIGNORE-COVERAGE** | Are scratch patterns (`/_*.out`, `/_*.txt`, etc.) in `.gitignore`? | `grep "_\*.out" .gitignore` |
-| 5 | **SCRATCH-FOLDER-EXISTS** | Does `scratch/<agent>/<date>/` exist for current PICK? | `Test-Path scratch/<agent>/<date>/` |
-| 6 | **CAVEMAN-COMPLIANCE** | Are CAVEMAN PERSIST files in `scratch/<agent>/` or `aionrs-temp-*/` (not project root)? | `dir scratch/<agent>/ /s` |
+| #   | Dimension                 | Check                                                                                   | Tool                                                            |
+| --- | ------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1   | **REPO-ROOT-POLLUTION**   | Are there any new `_<prefix>.{out,txt,ps1,sh,log}` files in repo root?                  | `dir C:\Users\Tahir\Desktop\frontend that i want\fpa\_* /b`     |
+| 2   | **DESKTOP-POLLUTION**     | Are there any new project-related files in `~/Desktop/` (parent)?                       | `dir C:\Users\Tahir\Desktop\*.md /b` (excluding project subdir) |
+| 3   | **GIT-STATUS-CLEAN**      | Is `git status --short` showing unexpected untracked files?                             | `git status --short`                                            |
+| 4   | **GITIGNORE-COVERAGE**    | Are scratch patterns (`/_*.out`, `/_*.txt`, etc.) in `.gitignore`?                      | `grep "_\*.out" .gitignore`                                     |
+| 5   | **SCRATCH-FOLDER-EXISTS** | Does `scratch/<agent>/<date>/` exist for current PICK?                                  | `Test-Path scratch/<agent>/<date>/`                             |
+| 6   | **CAVEMAN-COMPLIANCE**    | Are CAVEMAN PERSIST files in `scratch/<agent>/` or `aionrs-temp-*/` (not project root)? | `dir scratch/<agent>/ /s`                                       |
 
 **Audit frequency:** Weekly (every Monday) + pre-PICK + post-PICK.
 
@@ -154,23 +156,24 @@ For any RULE #59 attestation, 3-witness pattern:
 
 ## §8 Relationship to NEVER-AGAIN RULES
 
-| RULE | Relationship |
-|------|--------------|
-| #32 | CAVEMAN COMMIT MODE (--no-verify when committing CAVEMAN PERSIST recovery) |
-| #35 | PRE-DISPATCH-STATE-CHECK (verify scratch folder exists before PICK) |
-| #41 | PRE-DISPATCH-STATE-CHECK v0.4 (extends this rule with 12-dim state check including scratch hygiene) |
-| #47 | CAVEMAN PERSIST FALLBACK (path convention in §5.1) |
-| #50 | POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER (CASCADE prevention) |
-| #51 | NO-IDLE-PROACTIVE-PATROL (5-min SLA on workspace audit) |
-| #55 | PRE-PUSH-GHOST-SHA-CHECK (companion rule, also workspace hygiene for SHAs) |
-| #56 | PROACTIVE-PICK-CHAIN (PICK NEXT includes workspace cleanup) |
-| #58 | NAMING-COLLISION detection (e.g., never `RULE_58.md` vs `RULE_58_v2.md` — codif/ENDORSEMENTS/ pattern) |
+| RULE | Relationship                                                                                           |
+| ---- | ------------------------------------------------------------------------------------------------------ |
+| #32  | CAVEMAN COMMIT MODE (--no-verify when committing CAVEMAN PERSIST recovery)                             |
+| #35  | PRE-DISPATCH-STATE-CHECK (verify scratch folder exists before PICK)                                    |
+| #41  | PRE-DISPATCH-STATE-CHECK v0.4 (extends this rule with 12-dim state check including scratch hygiene)    |
+| #47  | CAVEMAN PERSIST FALLBACK (path convention in §5.1)                                                     |
+| #50  | POST-COMMIT MULTI-MUSE ATTRIBUTION LEDGER (CASCADE prevention)                                         |
+| #51  | NO-IDLE-PROACTIVE-PATROL (5-min SLA on workspace audit)                                                |
+| #55  | PRE-PUSH-GHOST-SHA-CHECK (companion rule, also workspace hygiene for SHAs)                             |
+| #56  | PROACTIVE-PICK-CHAIN (PICK NEXT includes workspace cleanup)                                            |
+| #58  | NAMING-COLLISION detection (e.g., never `RULE_58.md` vs `RULE_58_v2.md` — codif/ENDORSEMENTS/ pattern) |
 
 ## §9 Husky Gate 6 (PROPOSED)
 
 Per LEADER PICK A: "Husky Gate 6 (proposed): flags root-level scratch files and blocks commits that introduce them"
 
 **Gate 6 spec (PROPOSED, awaits Husky integration):**
+
 - Pre-commit hook: scan `git diff --cached` for new files matching `/_*.out`, `/_*.txt`, `/_*.ps1`, `/_*.sh` patterns
 - If matched: block commit + message "RULE #59 violation: root-level scratch file detected. Move to scratch/<agent>/<date>/ or .gitignore."
 - Bypass: `--no-verify` (CAVEMAN MODE per RULE #32) + LEADER-APPROVED exception
@@ -196,15 +199,15 @@ Per LEADER PICK A recommendation: gitignore (less disruption than moving). Add t
 
 ## §11 Endorsement Count (Co-Authors in flight)
 
-| # | Muse | Verdict | Date | SHA |
-|---|------|---------|------|-----|
-| 1 | Mnemosyne (author) | ACCEPT | 2026-06-16 | TBD (this commit) |
-| 2 | **Atlas** (BACKUP verifier per LEADER PICK A) | PENDING — co-author solicitation sent | 2026-06-16 | TBD |
-| 3 | Apollo | PENDING — co-author solicitation sent | 2026-06-16 | TBD |
-| 4 | Hephaestus | PENDING — co-author solicitation sent | 2026-06-16 | TBD |
-| 5 | Sentinel | PENDING — co-author solicitation sent (.bak extension) | 2026-06-16 | TBD |
-| 6 | Calliope | PENDING — co-author solicitation sent | 2026-06-16 | TBD |
-| 7+ | Additional Muses (TBD) | PENDING — green drive to 12/12 if T-3d allows | TBD | TBD |
+| #   | Muse                                          | Verdict                                                | Date       | SHA               |
+| --- | --------------------------------------------- | ------------------------------------------------------ | ---------- | ----------------- |
+| 1   | Mnemosyne (author)                            | ACCEPT                                                 | 2026-06-16 | TBD (this commit) |
+| 2   | **Atlas** (BACKUP verifier per LEADER PICK A) | PENDING — co-author solicitation sent                  | 2026-06-16 | TBD               |
+| 3   | Apollo                                        | PENDING — co-author solicitation sent                  | 2026-06-16 | TBD               |
+| 4   | Hephaestus                                    | PENDING — co-author solicitation sent                  | 2026-06-16 | TBD               |
+| 5   | Sentinel                                      | PENDING — co-author solicitation sent (.bak extension) | 2026-06-16 | TBD               |
+| 6   | Calliope                                      | PENDING — co-author solicitation sent                  | 2026-06-16 | TBD               |
+| 7+  | Additional Muses (TBD)                        | PENDING — green drive to 12/12 if T-3d allows          | TBD        | TBD               |
 
 **Target:** 5/12 GREEN for initial ratification (per LEADER PICK A spec). 12/12 stretch for v1.0.0.
 

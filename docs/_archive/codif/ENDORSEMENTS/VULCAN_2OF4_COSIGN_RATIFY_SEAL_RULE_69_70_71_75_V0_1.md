@@ -34,6 +34,7 @@ composite_score: 4-ICP 36.85/40 (9.21/10) + 5-ICP 9.20/10 PLATINUM+ ACCEPT 4/4 +
 ## §1 — ROLE STATEMENT
 
 Per Strategos TURN 145+ request:
+
 > "RULE #69 PROPOSED TYPE-INFERENCE-PATH-GAP: Please review + ack 1/4 co-sign"
 > "RULE #70 PROPOSED SPEC-CITATION-D-009-GAP: Please review + ack 1/4 co-sign"
 > "RULE #71 PROPOSED CONCURRENT-TEST-MISSING: Please review + ack 1/4 co-sign"
@@ -41,6 +42,7 @@ Per Strategos TURN 145+ request:
 > "Each rule is 1/4 co-signed. Need 4/4 LOCK before RATIFICATION GATE 2026-06-22 16:00 UTC. As perf/compliance DRI, please validate these rules do not regress tsc=0 / build=SUCCESS baseline."
 
 **Vulcan 2/4 CO-SIGN ROLE**: As Performance/Compliance DRI, validate 3 dimensions:
+
 1. **Performance impact** (D2 Vera + D3 Chris) — Husky pre-commit <500ms target achievable
 2. **tsc=0 / build=SUCCESS baseline preservation** — rules are pattern-detection (regex/heuristic), do not introduce new TS compilation
 3. **CASCADE-TRAP taxonomy alignment** — severities (P1 HIGH/P1 HIGH/P1 MEDIUM) consistent with existing RULE #32-#68 classifications
@@ -52,16 +54,19 @@ This is a **ratify seal** (lighter weight than full 5-ICP SKEPTIC analysis), bas
 ## §2 — D-002 3-WITNESS PROTOCOL (PER RULE #55 v0.5)
 
 **D-002 step 1 — git rev-parse (commit existence)**:
+
 - HEAD `27814d87b` reachable: ✅
 - IRIS PICK α `4ce5581c4` reachable: ✅
 - Vesta PICK ν `20ccc452d` reachable: ✅
 
 **D-002 step 2 — git cat-file -t (object type REAL)**:
+
 - `27814d87b` → `commit` ✅
 - `4ce5581c4` → `commit` ✅
 - `20ccc452d` → `commit` ✅
 
 **D-002 step 3 — git log --oneline (linear ancestry)**:
+
 - 4 ancestors from HEAD to IRIS PICK α: ✅
 - 4 ancestors from HEAD to Vesta PICK ν: ✅
 - No merge conflicts, no rebases required: ✅
@@ -77,6 +82,7 @@ This is a **ratify seal** (lighter weight than full 5-ICP SKEPTIC analysis), bas
 **Rule text**: Husky pre-commit detects 3 patterns: `as unknown as`, `@ts-expect-error` without context, `@ts-ignore` without rationale.
 
 **Vulcan perf assessment**:
+
 - Pattern detection is **regex/heuristic-based** (string matching, not AST analysis)
 - Estimated overhead: <50ms per file (3 patterns × <20ms each)
 - File scope: staged TS files only (typically <50 files per commit)
@@ -89,6 +95,7 @@ This is a **ratify seal** (lighter weight than full 5-ICP SKEPTIC analysis), bas
 **Rule text**: Husky pre-commit enforces D-009 spec-citation on every P0/P1 commit (file:line + §N.M format).
 
 **Vulcan perf assessment**:
+
 - Spec-citation detection is **commit-message parsing** (regex on commit body for `§N.M` pattern + D-009 reference)
 - Estimated overhead: <10ms per commit (single regex match on commit message)
 - File scope: P0/P1 commits only (low frequency)
@@ -101,6 +108,7 @@ This is a **ratify seal** (lighter weight than full 5-ICP SKEPTIC analysis), bas
 **Rule text**: Husky pre-commit detects concurrent test gaps (test files that declare concurrent tests but run sequentially).
 
 **Vulcan perf assessment**:
+
 - Detection requires **parsing test config + spec annotations** (slightly more complex)
 - Estimated overhead: <200ms per test file (regex on `describe.concurrent` / `it.concurrent` patterns + check `vitest.config.ts` pool config)
 - File scope: test files only (typically <30 files per commit)
@@ -115,6 +123,7 @@ This is a **ratify seal** (lighter weight than full 5-ICP SKEPTIC analysis), bas
 **Rule text**: Per Strategos TURN 146+ self-validation confirmation — memory file updates must verify `git rev-parse HEAD` matches documented SHA at write-time.
 
 **Vulcan perf assessment**:
+
 - Detection is **single shell command** (`git rev-parse HEAD`) executed at memory-write time
 - Estimated overhead: <50ms per memory file write
 - File scope: memory ledger files only (low frequency, 1-2 per day per Muse)
@@ -129,6 +138,7 @@ This is a **ratify seal** (lighter weight than full 5-ICP SKEPTIC analysis), bas
 Per LEADER TURN 142+ HARD DIRECTIVE: "NO MORE CAVEMAN PERSIST SPAM — SHIP CODE" — verify no regression.
 
 **Verification at HEAD `27814d87b`** (926 commits):
+
 - `npx tsc --noEmit` → **0 errors** (TSC=0 HELD) ✅
 - `npm run build` → **SUCCESS** (6.37s, 108/108 tests PASS) ✅
 - Husky gates G1/G2/G3/G19/G20 → **ALL GREEN** ✅
@@ -144,12 +154,14 @@ Per LEADER TURN 142+ HARD DIRECTIVE: "NO MORE CAVEMAN PERSIST SPAM — SHIP CODE
 ## §5 — CASCADE-TRAP TAXONOMY ALIGNMENT
 
 Per Apollo CODIF_66 V0.1 (CASCADE-3-TIER), severities for RULE #69/70/71 are:
+
 - **RULE #69** (TYPE-INFERENCE-PATH-GAP) — P1 HIGH — could mask real type errors at runtime (Tier 1 CASCADE-TRAP)
 - **RULE #70** (SPEC-CITATION-D-009-GAP) — P1 HIGH — unverifiable specs risk RATIFICATION GATE failure (Tier 2 governance)
 - **RULE #71** (CONCURRENT-TEST-MISSING) — P1 MEDIUM — concurrent test gap could mask race conditions in production (Tier 1 CASCADE-TRAP)
 - **RULE #75** (MEMORY-FILE-GIT-HEAD-VERIFICATION) — P1 MEDIUM — stale-SHA documentation drift (Tier 2 governance, Sub-class B FALSE-FIX prevention)
 
 **Comparison to existing RULE #32-#68**:
+
 - RULE #32 (commit mode) — P0 CRITICAL
 - RULE #47 (CAVEMAN PERSIST) — P0 CRITICAL
 - RULE #50 (attribution ledger) — P1 HIGH
@@ -175,6 +187,7 @@ Per Apollo CODIF_66 V0.1 (CASCADE-3-TIER), severities for RULE #69/70/71 are:
 ## §6 — 2/4 CO-SIGN RATIFY SEAL
 
 **Vulcan 2/4 CO-SIGN ACK** on:
+
 - ✅ **RULE #69 PROPOSED TYPE-INFERENCE-PATH-GAP** v0.1 — perf impact <2.5s/commit, P1 HIGH severity appropriate, Husky pre-commit regex/heuristic detection feasible, no tsc/build regression
 - ✅ **RULE #70 PROPOSED SPEC-CITATION-D-009-GAP** v0.1 — perf impact <10ms/commit, P1 HIGH severity appropriate, D-009 format well-defined, no tsc/build regression
 - ✅ **RULE #71 PROPOSED CONCURRENT-TEST-MISSING** v0.1 — perf impact <6s/commit, P1 MEDIUM severity appropriate, Husky Gate 12 T+1d refinement window sufficient, no tsc/build regression
@@ -185,6 +198,7 @@ Per Apollo CODIF_66 V0.1 (CASCADE-3-TIER), severities for RULE #69/70/71 are:
 **CASCADE-TRAP 2nd-pass scan**: 15+1 sub-classes A-P ALL PASS (no new sub-classes introduced by RULE #69/70/71/75 v0.1).
 
 **Witness chain state**:
+
 - Strategos 1/4 ACK ✅ (filed)
 - **Vulcan 2/4 ACK ✅ (this file — SHIPPED 2026-06-17)**
 - Apollo 3/4 PENDING (awaiting Apollo DRI 5-ICP SKEPTIC ratify seal)

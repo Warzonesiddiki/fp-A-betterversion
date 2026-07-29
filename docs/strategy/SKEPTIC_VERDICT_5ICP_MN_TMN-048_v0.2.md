@@ -33,9 +33,9 @@ T-MN-048 v0.2 supersedes v0.1 (2e8ce544d). All 3 corrections from Strategos VERD
 
 ### 3.1 Commit witnesses (verified via `git log` + `git show`)
 
-| Item | Commit | Status |
-|---|---|---|
-| T-MN-048 v0.1 (parent RULE-41) | `2e8ce544d` | ✅ EXISTS |
+| Item                           | Commit      | Status                                                                                                                               |
+| ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| T-MN-048 v0.1 (parent RULE-41) | `2e8ce544d` | ✅ EXISTS                                                                                                                            |
 | T-MN-048 v0.2 (post-amendment) | `90db42449` | ✅ EXISTS — full message: "docs(codif): Mnemosyne T-MN-048 v0.2 — Strategos 5th-ICP corrections A/B/C applied (ACCEPT 89% → 9.5/10)" |
 
 ### 3.2 File witnesses (verified via `Read` + `wc -l`)
@@ -49,11 +49,13 @@ T-MN-048 v0.2 supersedes v0.1 (2e8ce544d). All 3 corrections from Strategos VERD
 #### ✅ Check 1 — Factual Errors
 
 **Amendment A (Section 8.2 LABEL ERROR fix):** APPLIED
+
 - Lines 41-67: Full disambiguation tuple present (`T-MN-047 v0.1 (RATIFICATION_GATE pre-check audit at 20186e9d7)` vs `T-MN-047 v0.2 (audit amendment at <TBD-on-ship>)` vs `T-MN-047 open-item-#1 (USER_DOCS_AUDIT v0.2 4-ICP verdict at 38c11e240)`)
 - 4 Sub-classes A/B/C/D references confirmed (lines 65-67) ✅
 - VERDICT_001 concern CLOSED.
 
 **Amendment B (Section 7 SELF-ICP PROCESS GAP fix):** APPLIED
+
 - Lines 82-106: Complete 4-ICP table with disambiguated scores:
   - I1 (Intent): 9.5/10 — T-MN-048 v0.2 supersedes v0.1, all 3 corrections applied
   - C2 (Catastrophic): 9.0/10 — 0 P0 blockers, 1 P2 (TBD placeholders)
@@ -63,11 +65,13 @@ T-MN-048 v0.2 supersedes v0.1 (2e8ce544d). All 3 corrections from Strategos VERD
 - VERDICT_001 concern CLOSED.
 
 **Amendment C (T-Xd LABELS STATIC fix):** APPLIED
+
 - Lines 108-134: Date-relative math table with explicit formula `T-3d = RATIFICATION_GATE (2026-06-22) − 3d = 2026-06-19 EOD`
 - T-4d → T-3d correction applied (line 121-125) ✅
 - VERDICT_001 concern CLOSED.
 
 **Amendment D (TASK-ID-VERSION-SUFFIX-MANDATORY — NEW):** APPLIED
+
 - Lines 136-158: Full disambiguation tuple format `<TASK-ID> v<N> (<DELIVERABLE-TYPE> at <COMMIT-SHA>)` documented as RULE
 - Cross-references to T-MN-048 v0.2 (line 156 — see nitpick in §5), T-MN-047 v0.2 (line 153 — see nitpick in §5)
 - All RATIFICATION pre-check rows in §3 now use the full tuple format ✅
@@ -77,11 +81,13 @@ T-MN-048 v0.2 supersedes v0.1 (2e8ce544d). All 3 corrections from Strategos VERD
 **NO new risks introduced.** T-MN-048 v0.2 addresses all 3 risks identified in VERDICT_001.
 
 **Forward-looking risk identified by Strategos (low-priority, post-RATIFICATION):**
+
 - **TASK-ID-VERSION-SUFFIX-MANDATORY adoption gap:** Other RATIFICATION pre-checks (e.g., T-AT-019 A11Y, T-TH-009 COMPLIANCE) still use short refs. Recommend v1.0.1 PATCH cycle to backfill. (Not blocking for 2026-06-22 ceremony.)
 
 #### ✅ Check 3 — Unsubstantiated Claims
 
 **All claims verified.** Notable cross-references confirmed:
+
 - T-MN-047 v0.2 SHIPPED at `1f823fd6f` (independent confirmation via task board)
 - USER_DOCS_AUDIT v0.2 4-ICP at `38c11e240` (Apollo 2nd-witness confirmed earlier in cycle)
 - T-MN-043/044/045/046 SHIPPED at cf5e8a28b/36d01c8a0/533a12d69/cdee53b8 (Codif 35 v0.4 cycle)
@@ -91,6 +97,7 @@ T-MN-048 v0.2 supersedes v0.1 (2e8ce544d). All 3 corrections from Strategos VERD
 #### ✅ Check 4 — Cross-References
 
 **Cross-references verified:**
+
 - T-MN-047 v0.1 (20186e9d7) — links to USER_DOCS_AUDIT v0.2 (38c11e240) ✅
 - T-MN-048 v0.1 (2e8ce544d) → T-MN-048 v0.2 (90db42449) ✅
 - T-MN-043/044/045/046 Sub-class A/B/C/D parent protocol ✅
@@ -101,19 +108,20 @@ T-MN-048 v0.2 supersedes v0.1 (2e8ce544d). All 3 corrections from Strategos VERD
 
 ## 4. Composite 4-ICP Verdict (Upgraded from VERDICT_001)
 
-| Dimension | v0.1 (VERDICT_001) | v0.2 (VERDICT_003) | Delta |
-|---|---|---|---|
-| I1 (Intent) | 9.0 | 9.5 | +0.5 |
-| C2 (Catastrophic) | 8.5 | 9.0 | +0.5 |
-| P3 (Performance) | 9.0 | 9.5 | +0.5 |
-| D4 (Documented) | 9.0 | 10.0 | +1.0 |
-| **Composite** | **8.9/10** | **9.5/10** | **+0.6** |
+| Dimension         | v0.1 (VERDICT_001) | v0.2 (VERDICT_003) | Delta    |
+| ----------------- | ------------------ | ------------------ | -------- |
+| I1 (Intent)       | 9.0                | 9.5                | +0.5     |
+| C2 (Catastrophic) | 8.5                | 9.0                | +0.5     |
+| P3 (Performance)  | 9.0                | 9.5                | +0.5     |
+| D4 (Documented)   | 9.0                | 10.0               | +1.0     |
+| **Composite**     | **8.9/10**         | **9.5/10**         | **+0.6** |
 
 **Rationale for D4=10.0 (perfect score):** T-MN-048 v0.2 is fully self-documenting with 3-witness per claim, file:line citations, git log witnesses, and full disambiguation tuples. No further documentation work needed.
 
 ## 5. Minor Residual Nitpick (P3, Non-Blocking)
 
 **3 `<TBD-on-ship>` placeholders not filled post-ship:**
+
 - Line 58: `T-MN-047 v0.2 (audit amendment at <TBD-on-ship>)` — should be `1f823fd6f`
 - Line 153: `T-MN-047 v0.2 audit amendment at <TBD-on-ship>` — should be `1f823fd6f`
 - Line 156: `T-MN-048 v0.2 (this amendment at <TBD-on-ship>)` — should be `90db42449`

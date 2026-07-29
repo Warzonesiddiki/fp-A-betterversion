@@ -7,10 +7,10 @@ verified, what was fixed, and what genuinely remains.
 
 Two priorities could not be run here, and neither is a code problem:
 
-| Priority                     | Blocker                                                                   |
-| ---------------------------- | ------------------------------------------------------------------------- |
-| P1 Tauri desktop build       | No Rust toolchain (`cargo`/`rustc` absent) and no network to install one   |
-| P2 Playwright E2E            | Browser download from `cdn.playwright.dev` fails (`ECONNRESET`); apt fonts unavailable |
+| Priority               | Blocker                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| P1 Tauri desktop build | No Rust toolchain (`cargo`/`rustc` absent) and no network to install one               |
+| P2 Playwright E2E      | Browser download from `cdn.playwright.dev` fails (`ECONNRESET`); apt fonts unavailable |
 
 Both need an environment with a Rust toolchain and outbound network. The
 Playwright specs and `src-tauri/` were left untouched.
@@ -99,11 +99,11 @@ risk profiles:
   (`scripts/prefix-unused-params.mjs`) rather than regex, because three
   distinct shapes are involved and only the AST distinguishes them:
 
-  | Shape                  | Before              | After                  |
-  | ---------------------- | ------------------- | ---------------------- |
-  | positional             | `(value, name, p)`  | `(_value, _name, p)`   |
-  | object destructuring   | `{ period = '' }`   | `{ period: _period = '' }` |
-  | array destructuring    | `([key]) =>`        | `([_key]) =>`          |
+  | Shape                | Before             | After                      |
+  | -------------------- | ------------------ | -------------------------- |
+  | positional           | `(value, name, p)` | `(_value, _name, p)`       |
+  | object destructuring | `{ period = '' }`  | `{ period: _period = '' }` |
+  | array destructuring  | `([key]) =>`       | `([_key]) =>`              |
 
   The object case keeps the property name so callers are unaffected. The array
   case must rename in place — an earlier version of the codemod emitted
@@ -139,15 +139,15 @@ works. Added `docs/_archive/README.md` pointing at the maintained set.
 
 ## Gate status
 
-| Gate                          | Result                                   |
-| ----------------------------- | ---------------------------------------- |
-| `npx tsc --noEmit`            | 0 errors                                 |
-| `npm run lint`                | 0 errors, 9 warnings (all pre-existing)  |
-| `npm run build`               | passes, ~4s                              |
-| `node scripts/bundle-check.js`| passes (main chunk within limit)         |
-| `node scripts/csp-hash-check.js` | passes (source + dist)                |
-| `npm run test:bench`          | **13/13 files, 59/59 tests** (was 3 failing) |
-| Targeted tests                | 4,096 engine + 1,376 other, all green    |
+| Gate                             | Result                                       |
+| -------------------------------- | -------------------------------------------- |
+| `npx tsc --noEmit`               | 0 errors                                     |
+| `npm run lint`                   | 0 errors, 9 warnings (all pre-existing)      |
+| `npm run build`                  | passes, ~4s                                  |
+| `node scripts/bundle-check.js`   | passes (main chunk within limit)             |
+| `node scripts/csp-hash-check.js` | passes (source + dist)                       |
+| `npm run test:bench`             | **13/13 files, 59/59 tests** (was 3 failing) |
+| Targeted tests                   | 4,096 engine + 1,376 other, all green        |
 
 ## Suggested next steps
 
