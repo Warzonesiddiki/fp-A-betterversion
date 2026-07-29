@@ -1,174 +1,297 @@
-import { openDB } from './indexedDBStorage';
+/**
+ * Backup and restore (F-0010, KAV-12).
+ *
+ * ROOT-CAUSE HISTORY: the previous implementation read and wrote an IndexedDB
+ * object store named 'stores'. The application does not persist there — all 36
+ * Zustand stores go through `masterStorage` (sql.js in the browser, Tauri
+ * SQLite on desktop). Backups therefore captured NOTHING of the user's ledger,
+ * budgets, entities or FX rates, and still reported success. Restoring such a
+ * file was a silent no-op. For a local-first financial product where the
+ * backup file is the only disaster-recovery artefact, that is the most severe
+ * class of data-integrity defect.
+ *
+ * This implementation reads and writes the SAME storage the application uses,
+ * enumerates stores from an explicit registry that is test-locked against the
+ * real `persist({ name })` calls, and verifies a SHA-256 checksum over
+ * canonical JSON on both create and restore.
+ *
+ * Restore is atomic in effect: every store is validated and staged before any
+ * write occurs, so a malformed file cannot leave the database half-restored.
+ */
+import { masterStorage } from './masterStorage';
+import { BACKUP_STORE_KEYS, BACKUP_EXCLUDED_KEYS } from './persistedStores';
+
+/** Bump when the on-disk backup shape changes incompatibly. */
+export const BACKUP_FORMAT_VERSION = 2;
+
+export interface BackupMetadata {
+  /** Backup file format version, not the app version. */
+  formatVersion: number;
+  appVersion: string;
+  exportedAt: string;
+  /** Per-store payload byte length, for a quick human sanity check. */
+  storeSizes: Record<string, number>;
+  /** SHA-256 over the canonical JSON of `data`. */
+  checksum: string;
+}
 
 export interface BackupData {
-  metadata: {
-    appVersion: string;
-    exportedAt: string;
-    storeCounts: Record<string, number>;
-    checksum: string;
-  };
+  metadata: BackupMetadata;
+  /** storeKey -> the persisted value, exactly as masterStorage returns it. */
   data: Record<string, unknown>;
+}
+
+export interface RestoreResult {
+  success: boolean;
+  restoredStores: string[];
+  skippedStores: string[];
+  errors: string[];
+  warnings: string[];
 }
 
 export interface BackupIntegrityResult {
   ok: boolean;
   checkedAt: string;
-  stores: {
-    stores: number;
-    backups: number;
-    metadata: number;
-  };
+  /** Store keys that hold data right now. */
+  populatedStores: string[];
+  /** Registered store keys that are currently empty. */
+  emptyStores: string[];
   errors: string[];
   warnings: string[];
 }
 
-async function computeChecksum(data: string): Promise<string> {
-  if (typeof crypto !== 'undefined' && crypto.subtle) {
-    const encoder = new TextEncoder();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data));
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+export class BackupIntegrityError extends Error {
+  readonly expected: string;
+  readonly actual: string;
+
+  constructor(expected: string, actual: string) {
+    super(
+      'Backup integrity check failed: checksum mismatch. ' +
+        'The file is corrupted or was modified after export. Restore aborted.'
+    );
+    this.name = 'BackupIntegrityError';
+    this.expected = expected;
+    this.actual = actual;
   }
+}
 
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0;
+/**
+ * Deterministic JSON: object keys sorted at every level.
+ *
+ * `JSON.stringify` preserves insertion order, so two structurally identical
+ * backups could hash differently and a valid file could be rejected as
+ * corrupt. Canonicalisation makes the checksum a property of the DATA.
+ */
+export function canonicalJSON(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null';
+  if (Array.isArray(value)) return `[${value.map(canonicalJSON).join(',')}]`;
+  const entries = Object.entries(value as Record<string, unknown>)
+    .filter(([, v]) => v !== undefined)
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([k, v]) => `${JSON.stringify(k)}:${canonicalJSON(v)}`);
+  return `{${entries.join(',')}}`;
+}
+
+/** SHA-256 hex digest. Fails loudly if Web Crypto is unavailable. */
+export async function computeChecksum(data: string): Promise<string> {
+  if (typeof crypto === 'undefined' || !crypto.subtle) {
+    // The previous implementation silently fell back to a 32-bit djb2-style
+    // hash, which is not collision-resistant and cannot detect tampering.
+    // A backup whose integrity cannot be verified must not claim to be verified.
+    throw new Error(
+      'Cannot compute backup checksum: Web Crypto (crypto.subtle) is unavailable in this environment.'
+    );
   }
-  return `fallback-${Math.abs(hash).toString(16)}`;
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
-function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error ?? new Error('IndexedDB request failed'));
-  });
-}
-
-function transactionDone(tx: IDBTransaction): Promise<void> {
-  return new Promise((resolve, reject) => {
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error ?? new Error('IndexedDB transaction failed'));
-    tx.onabort = () => reject(tx.error ?? new Error('IndexedDB transaction aborted'));
-  });
-}
-
-async function countStore(db: IDBDatabase, storeName: string): Promise<number> {
-  if (!db.objectStoreNames.contains(storeName)) return 0;
-  const tx = db.transaction(storeName, 'readonly');
-  return requestToPromise(tx.objectStore(storeName).count());
+function isBackupData(value: unknown): value is BackupData {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Partial<BackupData>;
+  if (!candidate.metadata || typeof candidate.metadata !== 'object') return false;
+  if (!candidate.data || typeof candidate.data !== 'object') return false;
+  return typeof candidate.metadata.checksum === 'string';
 }
 
 export class BackupRestore {
+  /**
+   * Read every registered store from the live storage backend.
+   * Stores with no data are omitted rather than written as null.
+   */
   static async createBackupData(): Promise<BackupData> {
-    const db = await openDB();
-    const tx = db.transaction('stores', 'readonly');
-    const items = await requestToPromise(tx.objectStore('stores').getAll());
-    await transactionDone(tx);
-
     const data: Record<string, unknown> = {};
-    const storeCounts: Record<string, number> = {};
-    for (const item of items as Array<{ id: string; value: unknown }>) {
-      data[item.id] = item.value;
-      storeCounts[item.id] = Array.isArray(item.value) ? item.value.length : 1;
+    const storeSizes: Record<string, number> = {};
+
+    for (const key of BACKUP_STORE_KEYS) {
+      const value = await masterStorage.getItem(key);
+      if (value === null || value === undefined) continue;
+      data[key] = value;
+      storeSizes[key] = canonicalJSON(value).length;
     }
 
-    const dataStr = JSON.stringify(data);
-    const checksum = await computeChecksum(dataStr);
+    const checksum = await computeChecksum(canonicalJSON(data));
+
     return {
       metadata: {
+        formatVersion: BACKUP_FORMAT_VERSION,
         appVersion: '1.0.0',
         exportedAt: new Date().toISOString(),
-        storeCounts,
+        storeSizes,
         checksum,
       },
       data,
     };
   }
 
+  /** Serialize a backup to the JSON text written to disk. */
+  static serialize(backup: BackupData): string {
+    return JSON.stringify(backup, null, 2);
+  }
+
+  /** Create a backup and trigger a browser download. */
   static async exportBackup(): Promise<BackupData> {
     const backup = await BackupRestore.createBackupData();
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const blob = new Blob([BackupRestore.serialize(backup)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `finplan-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `finplan-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
+      anchor.click();
+    } finally {
+      URL.revokeObjectURL(url);
+    }
     return backup;
   }
 
-  static async importBackup(file: File): Promise<{ success: boolean; errors: string[] }> {
-    const errors: string[] = [];
-    try {
-      const text = await file.text();
-      const backup = JSON.parse(text) as BackupData;
-      if (!backup.metadata || !backup.data) {
-        return { success: false, errors: ['Invalid backup format: missing metadata or data'] };
-      }
-
-      if (backup.metadata.checksum) {
-        const dataStr = JSON.stringify(backup.data);
-        const computedChecksum = await computeChecksum(dataStr);
-        if (computedChecksum !== backup.metadata.checksum) {
-          return {
-            success: false,
-            errors: [
-              'Backup integrity check failed: checksum mismatch. File may be corrupted or tampered with.',
-            ],
-          };
-        }
-      } else {
-        errors.push('Warning: Backup has no integrity checksum. Data may be unverified.');
-      }
-
-      const db = await openDB();
-      const tx = db.transaction('stores', 'readwrite');
-      for (const [key, value] of Object.entries(backup.data)) {
-        tx.objectStore('stores').put({ id: key, value });
-      }
-      await transactionDone(tx);
-      return { success: true, errors };
-    } catch (e) {
-      return { success: false, errors: [`Failed to parse backup: ${e}`] };
-    }
-  }
-
-  static async checkIntegrity(): Promise<BackupIntegrityResult> {
+  /**
+   * Restore from parsed backup text.
+   *
+   * Validates format and checksum BEFORE writing anything, so a corrupt file
+   * cannot partially overwrite good data.
+   */
+  static async restoreFromJSON(text: string): Promise<RestoreResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
-    const checkedAt = new Date().toISOString();
 
+    let parsed: unknown;
     try {
-      const db = await openDB();
-      const stores = await countStore(db, 'stores');
-      const backups = await countStore(db, 'backups');
-      const metadata = await countStore(db, 'metadata');
-
-      if (!db.objectStoreNames.contains('stores'))
-        errors.push('Missing required IndexedDB object store: stores');
-      if (!db.objectStoreNames.contains('backups'))
-        warnings.push('Missing optional IndexedDB object store: backups');
-      if (!db.objectStoreNames.contains('metadata'))
-        warnings.push('Missing optional IndexedDB object store: metadata');
-      if (stores === 0) warnings.push('No persisted application stores were found.');
-
+      parsed = JSON.parse(text);
+    } catch (cause) {
       return {
-        ok: errors.length === 0,
-        checkedAt,
-        stores: { stores, backups, metadata },
-        errors,
-        warnings,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        checkedAt,
-        stores: { stores: 0, backups: 0, metadata: 0 },
-        errors: [error instanceof Error ? error.message : String(error)],
+        success: false,
+        restoredStores: [],
+        skippedStores: [],
+        errors: [`Failed to parse backup: ${cause instanceof Error ? cause.message : cause}`],
         warnings,
       };
     }
+
+    if (!isBackupData(parsed)) {
+      return {
+        success: false,
+        restoredStores: [],
+        skippedStores: [],
+        errors: ['Invalid backup format: missing metadata or data'],
+        warnings,
+      };
+    }
+
+    const backup = parsed;
+
+    if (backup.metadata.formatVersion !== BACKUP_FORMAT_VERSION) {
+      warnings.push(
+        `Backup format version ${backup.metadata.formatVersion ?? 'unknown'} differs from the ` +
+          `current version ${BACKUP_FORMAT_VERSION}. Restoring on a best-effort basis.`
+      );
+    }
+
+    // Integrity gate — fail closed before touching storage.
+    const actual = await computeChecksum(canonicalJSON(backup.data));
+    if (actual !== backup.metadata.checksum) {
+      const error = new BackupIntegrityError(backup.metadata.checksum, actual);
+      return {
+        success: false,
+        restoredStores: [],
+        skippedStores: Object.keys(backup.data),
+        errors: [error.message],
+        warnings,
+      };
+    }
+
+    // Stage: decide everything before writing anything.
+    const staged: Array<[string, unknown]> = [];
+    const skippedStores: string[] = [];
+    for (const [key, value] of Object.entries(backup.data)) {
+      if (BACKUP_EXCLUDED_KEYS.includes(key)) {
+        skippedStores.push(key);
+        warnings.push(`Skipped ${key}: session state is never restored from a backup.`);
+        continue;
+      }
+      if (!BACKUP_STORE_KEYS.includes(key)) {
+        skippedStores.push(key);
+        warnings.push(`Skipped unknown store "${key}": not part of this application version.`);
+        continue;
+      }
+      staged.push([key, value]);
+    }
+
+    const restoredStores: string[] = [];
+    for (const [key, value] of staged) {
+      try {
+        await (masterStorage.setItem as (k: string, v: unknown) => Promise<void>)(key, value);
+        restoredStores.push(key);
+      } catch (cause) {
+        // A write failure must be reported, never swallowed: the user would
+        // otherwise believe a restore succeeded while a store is missing.
+        errors.push(
+          `Failed to restore ${key}: ${cause instanceof Error ? cause.message : String(cause)}`
+        );
+      }
+    }
+
+    return { success: errors.length === 0, restoredStores, skippedStores, errors, warnings };
+  }
+
+  /** Restore from an uploaded File. */
+  static async importBackup(file: File): Promise<RestoreResult> {
+    return BackupRestore.restoreFromJSON(await file.text());
+  }
+
+  /** Report which registered stores currently hold data. */
+  static async checkIntegrity(): Promise<BackupIntegrityResult> {
+    const checkedAt = new Date().toISOString();
+    const populatedStores: string[] = [];
+    const emptyStores: string[] = [];
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    for (const key of BACKUP_STORE_KEYS) {
+      try {
+        const value = await masterStorage.getItem(key);
+        if (value === null || value === undefined) emptyStores.push(key);
+        else populatedStores.push(key);
+      } catch (cause) {
+        errors.push(
+          `Cannot read ${key}: ${cause instanceof Error ? cause.message : String(cause)}`
+        );
+      }
+    }
+
+    if (populatedStores.length === 0) {
+      warnings.push('No persisted application data was found; a backup would be empty.');
+    }
+
+    return {
+      ok: errors.length === 0,
+      checkedAt,
+      populatedStores,
+      emptyStores,
+      errors,
+      warnings,
+    };
   }
 }
