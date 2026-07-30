@@ -2,7 +2,15 @@
 // THREE-STATEMENT ENGINE — Auto-link P&L, Balance Sheet, Cash Flow
 // "If the three statements don't balance, the model is fiction."
 // Pure TypeScript, deterministic, testable
+//
+// MONEY PRIMITIVE: All financial amounts use decimal.js via @/utils/money.
+// IEEE-754 float arithmetic is NOT used for financial truth.
+// Number inputs are treated as DECIMAL LITERALS via their shortest round-trip
+// string form. Rounding mode: ROUND_HALF_UP for currency.
 // =============================================================================
+
+import Decimal from 'decimal.js';
+import { toDecimal, roundMoney, sumMoney, DEFAULT_CURRENCY_PLACES } from '@/utils/money';
 
 // --- Type Definitions ---
 
@@ -264,11 +272,45 @@ const ACCOUNT_CODE_MAP: Record<string, { category: AccountCategory; statement: S
 };
 
 // =============================================================================
+// INTERNAL HELPERS — Decimal-based financial arithmetic
+// =============================================================================
+
+/** Sum AccountEntry amounts using Decimal for precision. */
+function sumEntries(entries: readonly AccountEntry[]): Decimal {
+  return sumMoney(entries.map((e) => e.amount));
+}
+
+/** Sum CashFlowLineItem amounts using Decimal for precision. */
+function sumCashFlowItems(items: readonly CashFlowLineItem[]): Decimal {
+  return sumMoney(items.map((i) => i.amount));
+}
+
+/** Sum DividendEntry amounts using Decimal for precision. */
+function sumDividends(dividends: readonly DividendEntry[]): Decimal {
+  return sumMoney(dividends.map((d) => d.amount));
+}
+
+/** Convert Decimal to a display string with 2 decimal places. */
+function fmt(value: Decimal | number): string {
+  return roundMoney(value, DEFAULT_CURRENCY_PLACES).toFixed(DEFAULT_CURRENCY_PLACES);
+}
+
+/** Check if a Decimal is within tolerance of zero. */
+function isWithinTolerance(value: Decimal): boolean {
+  return value.abs().lte(new Decimal('0.01'));
+}
+
+/** Absolute value of a Decimal. */
+function absDecimal(value: Decimal): Decimal {
+  return value.abs();
+}
+
+// =============================================================================
 // THREE-STATEMENT ENGINE
 // =============================================================================
 
 export class ThreeStatementEngine {
-  private static readonly BALANCE_TOLERANCE = 0.01;
+  private static readonly BALANCE_TOLERANCE_DECIMAL = new Decimal('0.01');
 
   /**
    * Main entry point — link P&L, Balance Sheet, and Cash Flow statements
@@ -375,23 +417,28 @@ export class ThreeStatementEngine {
     const cashFlowValidation = this.validateCashFlowConsistency(cashFlow);
     validationErrors.push(...cashFlowValidation.errors);
 
-    // --- Calculate Retained Earnings Roll-Forward ---
-    const totalDividends = dividends.reduce((sum, d) => sum + d.amount, 0);
-    const endingRetainedEarnings =
-      beginningRetainedEarnings + incomeStatement.netIncome - totalDividends;
+    // --- Calculate Retained Earnings Roll-Forward (Decimal) ---
+    const totalDividendsDecimal = sumDividends(dividends);
+    const beginningRE = toDecimal(beginningRetainedEarnings, 'beginningRetainedEarnings');
+    const netIncomeDecimal = toDecimal(incomeStatement.netIncome, 'netIncome');
+    const endingRetainedEarningsDecimal = beginningRE
+      .plus(netIncomeDecimal)
+      .minus(totalDividendsDecimal);
 
     // --- Validate Balance Sheet Balance ---
     if (!balanceCheck.isBalanced) {
       validationErrors.push(
-        `Balance sheet does not balance. Assets (${balanceCheck.totalAssets.toFixed(2)}) ≠ Liabilities + Equity (${balanceCheck.totalLiabilitiesAndEquity.toFixed(2)}). Imbalance: ${balanceCheck.imbalance.toFixed(2)}`
+        `Balance sheet does not balance. Assets (${fmt(toDecimal(balanceCheck.totalAssets))}) ≠ Liabilities + Equity (${fmt(toDecimal(balanceCheck.totalLiabilitiesAndEquity))}). Imbalance: ${fmt(toDecimal(balanceCheck.imbalance))}`
       );
     }
 
-    // --- Validate Cash Flow Ending Cash = BS Cash ---
-    const cashDiscrepancy = Math.abs(cashFlow.endingCash - balanceSheet.cash);
-    if (cashDiscrepancy > this.BALANCE_TOLERANCE) {
+    // --- Validate Cash Flow Ending Cash = BS Cash (Decimal) ---
+    const cashDiscrepancy = toDecimal(cashFlow.endingCash, 'endingCash').minus(
+      toDecimal(balanceSheet.cash, 'cash')
+    );
+    if (!isWithinTolerance(cashDiscrepancy)) {
       validationErrors.push(
-        `Cash flow ending cash (${cashFlow.endingCash.toFixed(2)}) does not match balance sheet cash (${balanceSheet.cash.toFixed(2)}). Discrepancy: ${cashDiscrepancy.toFixed(2)}`
+        `Cash flow ending cash (${fmt(toDecimal(cashFlow.endingCash))}) does not match balance sheet cash (${fmt(toDecimal(balanceSheet.cash))}). Discrepancy: ${fmt(cashDiscrepancy)}`
       );
     }
 
@@ -402,8 +449,8 @@ export class ThreeStatementEngine {
       retainedEarningsFromPL: incomeStatement.netIncome,
       netIncome: incomeStatement.netIncome,
       beginningRetainedEarnings,
-      dividendsDeclared: totalDividends,
-      endingRetainedEarnings,
+      dividendsDeclared: totalDividendsDecimal.toNumber(),
+      endingRetainedEarnings: endingRetainedEarningsDecimal.toNumber(),
       cashFromOperations: cashFlow.netCashFromOperations,
       cashFromInvesting: cashFlow.netCashFromInvesting,
       cashFromFinancing: cashFlow.netCashFromFinancing,
@@ -422,6 +469,7 @@ export class ThreeStatementEngine {
   /**
    * Link 1: Net Income → Retained Earnings
    * P&L net income flows into BS retained earnings
+   * Uses Decimal arithmetic for financial truth.
    */
   private static linkNetIncomeToRetainedEarnings(
     income: IncomeStatementData,
@@ -429,9 +477,13 @@ export class ThreeStatementEngine {
     beginningRE: number,
     dividends: DividendEntry[]
   ): { linkedAccount: LinkedAccount; discrepancy: Discrepancy | null } {
-    const totalDividends = dividends.reduce((sum, d) => sum + d.amount, 0);
-    const expectedEndingRE = beginningRE + income.netIncome - totalDividends;
-    const discrepancy = bs.retainedEarnings - expectedEndingRE;
+    const totalDividendsDecimal = sumDividends(dividends);
+    const beginningREDecimal = toDecimal(beginningRE, 'beginningRE');
+    const netIncomeDecimal = toDecimal(income.netIncome, 'netIncome');
+    const bsRetainedEarnings = toDecimal(bs.retainedEarnings, 'retainedEarnings');
+
+    const expectedEndingRE = beginningREDecimal.plus(netIncomeDecimal).minus(totalDividendsDecimal);
+    const discrepancy = bsRetainedEarnings.minus(expectedEndingRE);
 
     const linkedAccount: LinkedAccount = {
       accountCode: '3300',
@@ -440,116 +492,115 @@ export class ThreeStatementEngine {
       bsAmount: bs.retainedEarnings,
       cfAmount: 0,
       linkType: 'net_income_to_retained_earnings',
-      isLinked: Math.abs(discrepancy) <= this.BALANCE_TOLERANCE,
-      discrepancy,
+      isLinked: isWithinTolerance(discrepancy),
+      discrepancy: discrepancy.toNumber(),
     };
 
-    const discrepancyEntry: Discrepancy | null =
-      Math.abs(discrepancy) > this.BALANCE_TOLERANCE
-        ? {
-            linkType: 'net_income_to_retained_earnings',
-            description: `Retained Earnings mismatch: Expected ${expectedEndingRE.toFixed(2)} (Beg RE ${beginningRE.toFixed(2)} + Net Income ${income.netIncome.toFixed(2)} - Dividends ${totalDividends.toFixed(2)}), Actual ${bs.retainedEarnings.toFixed(2)}`,
-            plAmount: income.netIncome,
-            bsAmount: bs.retainedEarnings,
-            cfAmount: 0,
-            discrepancy,
-            severity: Math.abs(discrepancy) > 1 ? 'error' : 'warning',
-          }
-        : null;
+    const discrepancyEntry: Discrepancy | null = !isWithinTolerance(discrepancy)
+      ? {
+          linkType: 'net_income_to_retained_earnings',
+          description: `Retained Earnings mismatch: Expected ${fmt(expectedEndingRE)} (Beg RE ${fmt(beginningREDecimal)} + Net Income ${fmt(netIncomeDecimal)} - Dividends ${fmt(totalDividendsDecimal)}), Actual ${fmt(bsRetainedEarnings)}`,
+          plAmount: income.netIncome,
+          bsAmount: bs.retainedEarnings,
+          cfAmount: 0,
+          discrepancy: discrepancy.toNumber(),
+          severity: absDecimal(discrepancy).greaterThan(1) ? 'error' : 'warning',
+        }
+      : null;
 
     return { linkedAccount, discrepancy: discrepancyEntry };
   }
 
   /**
    * Link 2: Depreciation → Accumulated Depreciation → CF Operating
-   * P&L depreciation expense → BS accumulated depreciation (contra-asset) → CF add-back
+   * Uses Decimal arithmetic for financial truth.
    */
   private static linkDepreciation(
     income: IncomeStatementData,
     bs: BalanceSheetData,
     cf: CashFlowData
   ): { linkedAccount: LinkedAccount; discrepancy: Discrepancy | null } {
-    const plDepreciation = income.depreciation.reduce((sum, d) => sum + d.amount, 0);
+    const plDepreciation = sumEntries(income.depreciation);
 
     // Find depreciation in CF operating activities (should be a positive add-back)
-    const cfDepreciation = cf.operatingActivities
-      .filter(
+    const cfDepreciation = sumCashFlowItems(
+      cf.operatingActivities.filter(
         (item) =>
           item.accountName.toLowerCase().includes('depreciation') || item.accountCode === '6810'
       )
-      .reduce((sum, item) => sum + item.amount, 0);
+    );
 
-    // Accumulated depreciation on BS should increase by depreciation expense
-    // BS shows accumulated depreciation as negative (contra-asset)
-    const bsAccumDepreciation = bs.accumulatedDepreciation;
+    const _bsAccumDepreciation = toDecimal(bs.accumulatedDepreciation, 'accumulatedDepreciation');
+    const cfPlDiff = cfDepreciation.minus(plDepreciation);
 
     const linkedAccount: LinkedAccount = {
       accountCode: '6810',
       accountName: 'Depreciation',
-      plAmount: plDepreciation,
-      bsAmount: bsAccumDepreciation,
-      cfAmount: cfDepreciation,
+      plAmount: plDepreciation.toNumber(),
+      bsAmount: bs.accumulatedDepreciation,
+      cfAmount: cfDepreciation.toNumber(),
       linkType: 'depreciation_to_accumulated_depreciation',
-      isLinked: Math.abs(cfDepreciation - plDepreciation) <= this.BALANCE_TOLERANCE,
-      discrepancy: cfDepreciation - plDepreciation,
+      isLinked: isWithinTolerance(cfPlDiff),
+      discrepancy: cfPlDiff.toNumber(),
     };
 
-    const discrepancy: Discrepancy | null =
-      Math.abs(cfDepreciation - plDepreciation) > this.BALANCE_TOLERANCE
-        ? {
-            linkType: 'depreciation_to_accumulated_depreciation',
-            description: `Depreciation mismatch: P&L ${plDepreciation.toFixed(2)}, CF Operating ${cfDepreciation.toFixed(2)}`,
-            plAmount: plDepreciation,
-            bsAmount: bsAccumDepreciation,
-            cfAmount: cfDepreciation,
-            discrepancy: cfDepreciation - plDepreciation,
-            severity: 'warning',
-          }
-        : null;
+    const discrepancy: Discrepancy | null = !isWithinTolerance(cfPlDiff)
+      ? {
+          linkType: 'depreciation_to_accumulated_depreciation',
+          description: `Depreciation mismatch: P&L ${fmt(plDepreciation)}, CF Operating ${fmt(cfDepreciation)}`,
+          plAmount: plDepreciation.toNumber(),
+          bsAmount: bs.accumulatedDepreciation,
+          cfAmount: cfDepreciation.toNumber(),
+          discrepancy: cfPlDiff.toNumber(),
+          severity: 'warning',
+        }
+      : null;
 
     return { linkedAccount, discrepancy };
   }
 
   /**
    * Link 3: Amortization → Intangible Assets → CF Operating
+   * Uses Decimal arithmetic for financial truth.
    */
   private static linkAmortization(
     income: IncomeStatementData,
     bs: BalanceSheetData,
     cf: CashFlowData
   ): { linkedAccount: LinkedAccount; discrepancy: Discrepancy | null } {
-    const plAmortization = income.amortization.reduce((sum, a) => sum + a.amount, 0);
+    const plAmortization = sumEntries(income.amortization);
 
-    const cfAmortization = cf.operatingActivities
-      .filter(
+    const cfAmortization = sumCashFlowItems(
+      cf.operatingActivities.filter(
         (item) =>
           item.accountName.toLowerCase().includes('amortization') || item.accountCode === '6820'
       )
-      .reduce((sum, item) => sum + item.amount, 0);
+    );
+
+    const cfPlDiff = cfAmortization.minus(plAmortization);
 
     const linkedAccount: LinkedAccount = {
       accountCode: '6820',
       accountName: 'Amortization',
-      plAmount: plAmortization,
+      plAmount: plAmortization.toNumber(),
       bsAmount: bs.intangibleAssets,
-      cfAmount: cfAmortization,
+      cfAmount: cfAmortization.toNumber(),
       linkType: 'amortization_to_intangibles',
-      isLinked: Math.abs(cfAmortization - plAmortization) <= this.BALANCE_TOLERANCE,
-      discrepancy: cfAmortization - plAmortization,
+      isLinked: isWithinTolerance(cfPlDiff),
+      discrepancy: cfPlDiff.toNumber(),
     };
 
-    const discrepancy: Discrepancy | null =
-      Math.abs(cfAmortization - plAmortization) > this.BALANCE_TOLERANCE
-        ? {
-            linkType: 'amortization_to_intangibles',
-            description: `Amortization mismatch: P&L ${plAmortization.toFixed(2)}, CF Operating ${cfAmortization.toFixed(2)}`,
-            plAmount: plAmortization,
-            bsAmount: bs.intangibleAssets,
-            cfAmount: cfAmortization,
-            discrepancy: cfAmortization - plAmortization,
-            severity: 'warning',
-          }
-        : null;
+    const discrepancy: Discrepancy | null = !isWithinTolerance(cfPlDiff)
+      ? {
+          linkType: 'amortization_to_intangibles',
+          description: `Amortization mismatch: P&L ${fmt(plAmortization)}, CF Operating ${fmt(cfAmortization)}`,
+          plAmount: plAmortization.toNumber(),
+          bsAmount: bs.intangibleAssets,
+          cfAmount: cfAmortization.toNumber(),
+          discrepancy: cfPlDiff.toNumber(),
+          severity: 'warning',
+        }
+      : null;
 
     return { linkedAccount, discrepancy };
   }
@@ -563,25 +614,24 @@ export class ThreeStatementEngine {
     cf: CashFlowData
   ): { linkedAccount: LinkedAccount; discrepancy: Discrepancy | null } {
     // CapEx appears as negative in CF Investing (cash outflow)
-    const cfCapEx = cf.investingActivities
-      .filter(
+    const cfCapEx = sumCashFlowItems(
+      cf.investingActivities.filter(
         (item) =>
           item.accountName.toLowerCase().includes('capital expenditure') ||
           item.accountName.toLowerCase().includes('capex') ||
           item.accountName.toLowerCase().includes('purchase of') ||
           item.accountCode === '1600'
       )
-      .reduce((sum, item) => sum + item.amount, 0);
+    );
 
-    // CapEx increases gross PP&E on BS
-    const bsGrossPPAndE = bs.propertyPlantEquipment;
+    const _bsGrossPPAndE = toDecimal(bs.propertyPlantEquipment, 'propertyPlantEquipment');
 
     const linkedAccount: LinkedAccount = {
       accountCode: '1600',
       accountName: 'Capital Expenditures',
       plAmount: 0,
-      bsAmount: bsGrossPPAndE,
-      cfAmount: cfCapEx,
+      bsAmount: bs.propertyPlantEquipment,
+      cfAmount: cfCapEx.toNumber(),
       linkType: 'capex_to_fixed_assets',
       isLinked: true, // CapEx relationship is directional, not always equal
       discrepancy: 0,
@@ -683,6 +733,7 @@ export class ThreeStatementEngine {
   /**
    * Link 6: Debt → CF Financing
    * CF Financing debt proceeds/payments → BS debt balances
+   * Uses Decimal arithmetic for debt totals.
    */
   private static linkDebt(
     bs: BalanceSheetData,
@@ -696,16 +747,18 @@ export class ThreeStatementEngine {
         item.accountName.toLowerCase().includes('loan') ||
         item.accountName.toLowerCase().includes('note')
     );
-    const cfDebtTotal = cfDebtItems.reduce((sum, item) => sum + item.amount, 0);
+    const cfDebtTotal = sumCashFlowItems(cfDebtItems);
 
-    const bsTotalDebt = bs.shortTermDebt + bs.longTermDebt + bs.currentPortionLongTermDebt;
+    const bsTotalDebt = toDecimal(bs.shortTermDebt, 'shortTermDebt')
+      .plus(toDecimal(bs.longTermDebt, 'longTermDebt'))
+      .plus(toDecimal(bs.currentPortionLongTermDebt, 'currentPortionLongTermDebt'));
 
     const linkedAccount: LinkedAccount = {
       accountCode: '2500',
       accountName: 'Long-term Debt',
       plAmount: 0,
-      bsAmount: bsTotalDebt,
-      cfAmount: cfDebtTotal,
+      bsAmount: bsTotalDebt.toNumber(),
+      cfAmount: cfDebtTotal.toNumber(),
       linkType: 'debt_to_financing',
       isLinked: cfDebtItems.length > 0,
       discrepancy: 0,
@@ -717,6 +770,7 @@ export class ThreeStatementEngine {
   /**
    * Link 7: Equity → CF Financing
    * CF Financing equity transactions → BS equity accounts
+   * Uses Decimal arithmetic for equity totals.
    */
   private static linkEquity(
     bs: BalanceSheetData,
@@ -731,16 +785,18 @@ export class ThreeStatementEngine {
         item.accountName.toLowerCase().includes('buyback') ||
         item.accountName.toLowerCase().includes('repurchase')
     );
-    const cfEquityTotal = cfEquityItems.reduce((sum, item) => sum + item.amount, 0);
+    const cfEquityTotal = sumCashFlowItems(cfEquityItems);
 
-    const bsTotalEquity = bs.commonStock + bs.additionalPaidInCapital - bs.treasuryStock;
+    const bsTotalEquity = toDecimal(bs.commonStock, 'commonStock')
+      .plus(toDecimal(bs.additionalPaidInCapital, 'additionalPaidInCapital'))
+      .minus(toDecimal(bs.treasuryStock, 'treasuryStock'));
 
     const linkedAccount: LinkedAccount = {
       accountCode: '3000',
       accountName: 'Equity',
       plAmount: 0,
-      bsAmount: bsTotalEquity,
-      cfAmount: cfEquityTotal,
+      bsAmount: bsTotalEquity.toNumber(),
+      cfAmount: cfEquityTotal.toNumber(),
       linkType: 'equity_to_financing',
       isLinked: cfEquityItems.length > 0,
       discrepancy: 0,
@@ -752,30 +808,31 @@ export class ThreeStatementEngine {
   /**
    * Link 8: Interest → CF Operating
    * P&L interest expense → CF Operating
+   * Uses Decimal arithmetic for interest totals.
    */
   private static linkInterest(
     income: IncomeStatementData,
     cf: CashFlowData
   ): { linkedAccount: LinkedAccount; discrepancy: Discrepancy | null } {
-    const plInterest = income.interestExpense.reduce((sum, i) => sum + i.amount, 0);
-    const plInterestIncome = income.interestIncome.reduce((sum, i) => sum + i.amount, 0);
-    const netPLInterest = plInterest - plInterestIncome;
+    const plInterest = sumEntries(income.interestExpense);
+    const plInterestIncome = sumEntries(income.interestIncome);
+    const netPLInterest = plInterest.minus(plInterestIncome);
 
-    const cfInterest = cf.operatingActivities
-      .filter(
+    const cfInterest = sumCashFlowItems(
+      cf.operatingActivities.filter(
         (item) =>
           item.accountName.toLowerCase().includes('interest') ||
           item.accountCode === '7000' ||
           item.accountCode === '7100'
       )
-      .reduce((sum, item) => sum + item.amount, 0);
+    );
 
     const linkedAccount: LinkedAccount = {
       accountCode: '7000',
       accountName: 'Interest',
-      plAmount: netPLInterest,
+      plAmount: netPLInterest.toNumber(),
       bsAmount: 0,
-      cfAmount: cfInterest,
+      cfAmount: cfInterest.toNumber(),
       linkType: 'interest_to_operations',
       isLinked: true,
       discrepancy: 0,
@@ -787,28 +844,29 @@ export class ThreeStatementEngine {
   /**
    * Link 9: Tax → CF Operating
    * P&L tax expense → CF Operating tax paid
+   * Uses Decimal arithmetic for tax totals.
    */
   private static linkTax(
     income: IncomeStatementData,
     cf: CashFlowData
   ): { linkedAccount: LinkedAccount; discrepancy: Discrepancy | null } {
-    const plTax = income.taxExpense.reduce((sum, t) => sum + t.amount, 0);
+    const plTax = sumEntries(income.taxExpense);
 
-    const cfTax = cf.operatingActivities
-      .filter(
+    const cfTax = sumCashFlowItems(
+      cf.operatingActivities.filter(
         (item) =>
           item.accountName.toLowerCase().includes('tax') ||
           item.accountCode === '8000' ||
           item.accountCode === '8100'
       )
-      .reduce((sum, item) => sum + item.amount, 0);
+    );
 
     const linkedAccount: LinkedAccount = {
       accountCode: '8000',
       accountName: 'Income Tax',
-      plAmount: plTax,
+      plAmount: plTax.toNumber(),
       bsAmount: 0,
-      cfAmount: cfTax,
+      cfAmount: cfTax.toNumber(),
       linkType: 'tax_to_operations',
       isLinked: true,
       discrepancy: 0,
@@ -819,6 +877,7 @@ export class ThreeStatementEngine {
 
   /**
    * Link 10: Dividends → Retained Earnings → CF Financing
+   * Uses Decimal arithmetic for dividend totals and retained earnings.
    */
   private static linkDividends(
     dividends: DividendEntry[],
@@ -829,98 +888,111 @@ export class ThreeStatementEngine {
   ): { linkedAccount: LinkedAccount | null; discrepancy: Discrepancy | null } {
     if (dividends.length === 0) return { linkedAccount: null, discrepancy: null };
 
-    const totalDividends = dividends.reduce((sum, d) => sum + d.amount, 0);
+    const totalDividendsDecimal = sumDividends(dividends);
 
-    const cfDividends = cf.financingActivities
-      .filter(
+    const cfDividends = sumCashFlowItems(
+      cf.financingActivities.filter(
         (item) =>
           item.accountName.toLowerCase().includes('dividend') ||
           item.accountName.toLowerCase().includes('distribution')
       )
-      .reduce((sum, item) => sum + item.amount, 0);
+    );
 
-    const expectedEndingRE = beginningRE + netIncome - totalDividends;
-    const reDiscrepancy = bs.retainedEarnings - expectedEndingRE;
+    const expectedEndingRE = toDecimal(beginningRE, 'beginningRE')
+      .plus(toDecimal(netIncome, 'netIncome'))
+      .minus(totalDividendsDecimal);
+    const bsRetainedEarnings = toDecimal(bs.retainedEarnings, 'retainedEarnings');
+    const reDiscrepancy = bsRetainedEarnings.minus(expectedEndingRE);
 
     const linkedAccount: LinkedAccount = {
       accountCode: '3300',
       accountName: 'Dividends → Retained Earnings',
       plAmount: 0,
       bsAmount: bs.retainedEarnings,
-      cfAmount: cfDividends,
+      cfAmount: cfDividends.toNumber(),
       linkType: 'dividends_to_retained_earnings',
-      isLinked: Math.abs(reDiscrepancy) <= this.BALANCE_TOLERANCE,
-      discrepancy: reDiscrepancy,
+      isLinked: isWithinTolerance(reDiscrepancy),
+      discrepancy: reDiscrepancy.toNumber(),
     };
 
-    const discrepancy: Discrepancy | null =
-      Math.abs(cfDividends - totalDividends) > this.BALANCE_TOLERANCE
-        ? {
-            linkType: 'dividends_to_retained_earnings',
-            description: `Dividends mismatch: Declared ${totalDividends.toFixed(2)}, CF Financing ${cfDividends.toFixed(2)}`,
-            plAmount: 0,
-            bsAmount: bs.retainedEarnings,
-            cfAmount: cfDividends,
-            discrepancy: cfDividends - totalDividends,
-            severity: 'warning',
-          }
-        : null;
+    const cfDividendDiff = cfDividends.minus(totalDividendsDecimal);
+    const discrepancy: Discrepancy | null = !isWithinTolerance(cfDividendDiff)
+      ? {
+          linkType: 'dividends_to_retained_earnings',
+          description: `Dividends mismatch: Declared ${fmt(totalDividendsDecimal)}, CF Financing ${fmt(cfDividends)}`,
+          plAmount: 0,
+          bsAmount: bs.retainedEarnings,
+          cfAmount: cfDividends.toNumber(),
+          discrepancy: cfDividendDiff.toNumber(),
+          severity: 'warning',
+        }
+      : null;
 
     return { linkedAccount, discrepancy };
   }
 
   // =============================================================================
-  // BALANCE CHECK
+  // BALANCE CHECK — Decimal-based
   // =============================================================================
 
   /**
    * Verify Assets = Liabilities + Equity
+   * Uses Decimal arithmetic for financial truth.
    */
   static verifyBalance(bs: BalanceSheetData): BalanceCheck {
-    const totalAssets = bs.totalAssets;
-    const totalLiabilities = bs.totalLiabilities;
-    const totalEquity = bs.totalEquity;
-    const totalLiabilitiesAndEquity = totalLiabilities + totalEquity;
-    const imbalance = totalAssets - totalLiabilitiesAndEquity;
+    const totalAssets = toDecimal(bs.totalAssets, 'totalAssets');
+    const totalLiabilities = toDecimal(bs.totalLiabilities, 'totalLiabilities');
+    const totalEquity = toDecimal(bs.totalEquity, 'totalEquity');
+    const totalLiabilitiesAndEquity = totalLiabilities.plus(totalEquity);
+    const imbalance = totalAssets.minus(totalLiabilitiesAndEquity);
 
     return {
-      isBalanced: Math.abs(imbalance) <= this.BALANCE_TOLERANCE,
-      totalAssets,
-      totalLiabilities,
-      totalEquity,
-      totalLiabilitiesAndEquity,
-      imbalance,
-      tolerance: this.BALANCE_TOLERANCE,
+      isBalanced: isWithinTolerance(imbalance),
+      totalAssets: totalAssets.toNumber(),
+      totalLiabilities: totalLiabilities.toNumber(),
+      totalEquity: totalEquity.toNumber(),
+      totalLiabilitiesAndEquity: totalLiabilitiesAndEquity.toNumber(),
+      imbalance: imbalance.toNumber(),
+      tolerance: this.BALANCE_TOLERANCE_DECIMAL.toNumber(),
     };
   }
 
   // =============================================================================
-  // CASH FLOW VALIDATION
+  // CASH FLOW VALIDATION — Decimal-based
   // =============================================================================
 
   /**
    * Validate cash flow statement consistency
+   * Uses Decimal arithmetic for financial truth.
    */
   private static validateCashFlowConsistency(cf: CashFlowData): { errors: string[] } {
     const errors: string[] = [];
 
-    // Verify: Operating + Investing + Financing = Net Change in Cash
-    const calculatedNetChange =
-      cf.netCashFromOperations + cf.netCashFromInvesting + cf.netCashFromFinancing;
+    // Verify: Operating + Investing + Financing = Net Change in Cash (Decimal)
+    const operating = toDecimal(cf.netCashFromOperations, 'netCashFromOperations');
+    const investing = toDecimal(cf.netCashFromInvesting, 'netCashFromInvesting');
+    const financing = toDecimal(cf.netCashFromFinancing, 'netCashFromFinancing');
+    const calculatedNetChange = operating.plus(investing).plus(financing);
+    const netChangeInCash = toDecimal(cf.netChangeInCash, 'netChangeInCash');
 
-    if (Math.abs(calculatedNetChange - cf.netChangeInCash) > this.BALANCE_TOLERANCE) {
+    const netChangeDiff = calculatedNetChange.minus(netChangeInCash);
+    if (!isWithinTolerance(netChangeDiff)) {
       errors.push(
         `Cash flow sections do not sum to net change in cash. ` +
-          `Operating (${cf.netCashFromOperations.toFixed(2)}) + Investing (${cf.netCashFromInvesting.toFixed(2)}) + Financing (${cf.netCashFromFinancing.toFixed(2)}) = ${calculatedNetChange.toFixed(2)}, ` +
-          `but Net Change = ${cf.netChangeInCash.toFixed(2)}`
+          `Operating (${fmt(operating)}) + Investing (${fmt(investing)}) + Financing (${fmt(financing)}) = ${fmt(calculatedNetChange)}, ` +
+          `but Net Change = ${fmt(netChangeInCash)}`
       );
     }
 
-    // Verify: Beginning Cash + Net Change = Ending Cash
-    const calculatedEndingCash = cf.beginningCash + cf.netChangeInCash;
-    if (Math.abs(calculatedEndingCash - cf.endingCash) > this.BALANCE_TOLERANCE) {
+    // Verify: Beginning Cash + Net Change = Ending Cash (Decimal)
+    const beginningCash = toDecimal(cf.beginningCash, 'beginningCash');
+    const calculatedEndingCash = beginningCash.plus(netChangeInCash);
+    const endingCash = toDecimal(cf.endingCash, 'endingCash');
+
+    const endingDiff = calculatedEndingCash.minus(endingCash);
+    if (!isWithinTolerance(endingDiff)) {
       errors.push(
-        `Beginning cash (${cf.beginningCash.toFixed(2)}) + Net change (${cf.netChangeInCash.toFixed(2)}) = ${calculatedEndingCash.toFixed(2)}, but Ending cash = ${cf.endingCash.toFixed(2)}`
+        `Beginning cash (${fmt(beginningCash)}) + Net change (${fmt(netChangeInCash)}) = ${fmt(calculatedEndingCash)}, but Ending cash = ${fmt(endingCash)}`
       );
     }
 

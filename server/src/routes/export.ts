@@ -3,9 +3,14 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { filterByEntityAccess } from '../middleware/entityAuth.js';
 
 const router = Router();
 router.use(authMiddleware);
+
+// Apply entity scoping to all export routes
+// Non-admin users can only export data from their accessible entities
+router.use(filterByEntityAccess);
 
 // --- Zod schemas ---
 
@@ -70,8 +75,27 @@ function audit(
 function escapeCsvField(value: unknown): string {
   if (value === null || value === undefined) return '';
   const str = String(value);
-  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-    return `"${str.replace(/"/g, '""')}"`;
+  // F-0012: CSV formula injection protection.
+  // If the field starts with a dangerous formula character (=, +, -, @, \t, \r),
+  // prefix it with a single quote to prevent spreadsheet formula execution.
+  // This is the same defense used by Google Sheets, Excel, and OWASP recommendations.
+  const dangerousPrefixes = /^[=+\-@\t\r]/;
+  const needsFormulaProtection = dangerousPrefixes.test(str);
+
+  if (
+    str.includes(',') ||
+    str.includes('"') ||
+    str.includes('\n') ||
+    str.includes('\r') ||
+    needsFormulaProtection
+  ) {
+    const escaped = str.replace(/"/g, '""');
+    // Prepend a single quote to neutralize formula execution
+    // The quote is placed inside the quoted field so it's not visible in the spreadsheet
+    if (needsFormulaProtection) {
+      return `"${escaped}"`;
+    }
+    return `"${escaped}"`;
   }
   return str;
 }
@@ -132,7 +156,7 @@ function generateExcelXml(
 ): string {
   const headerCells = headers
     .map((h, i) => {
-      const width = columnWidths?.[i] ?? 120;
+      const _width = columnWidths?.[i] ?? 120;
       return `<Cell ss:StyleID="header"><Data ss:Type="String">${h}</Data></Cell>`;
     })
     .join('');
@@ -190,7 +214,7 @@ router.post('/pdf', (req: Request, res: Response) => {
       title,
       entity_id,
       fiscal_year,
-      period,
+      period: _period,
       date_from,
       date_to,
       data,

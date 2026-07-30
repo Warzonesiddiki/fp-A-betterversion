@@ -3,10 +3,10 @@
  * Regenerate with: node scripts/generate-engine-manifest.mjs
  *
  * Maps every engine id to a dynamic import (N-0013). Hand-maintaining this
- * list is exactly how EngineRegistry ended up knowing only 40 of 178
+ * list is exactly how EngineRegistry ended up knowing only 40 of 180
  * engines while the rest were unreachable at runtime.
  *
- * Engines: 178
+ * Engines: 180
  */
 
 export type EngineId =
@@ -91,6 +91,7 @@ export type EngineId =
   | 'FinancialCloseEngine'
   | 'FinancialInstrumentsEngine'
   | 'FiscalCalendar'
+  | 'FiscalCalendarEngine'
   | 'ForecastMethodEngine'
   | 'ForecastReconciliationEngine'
   | 'FormulaAutoCompleteEngine'
@@ -123,6 +124,7 @@ export type EngineId =
   | 'OperationalDriverEngine'
   | 'OptionPricingEngine'
   | 'PeriodCloseEngine'
+  | 'PeriodCloseStateMachine'
   | 'PeriodLockEngine'
   | 'PivotTableEngine'
   | 'PluginEngine'
@@ -274,6 +276,7 @@ export const ENGINE_MANIFEST: Record<EngineId, () => Promise<EngineModule>> = {
   FinancialCloseEngine: () => import('./FinancialCloseEngine'),
   FinancialInstrumentsEngine: () => import('./FinancialInstrumentsEngine'),
   FiscalCalendar: () => import('./FiscalCalendar'),
+  FiscalCalendarEngine: () => import('./FiscalCalendarEngine'),
   ForecastMethodEngine: () => import('./ForecastMethodEngine'),
   ForecastReconciliationEngine: () => import('./ForecastReconciliationEngine'),
   FormulaAutoCompleteEngine: () => import('./FormulaAutoCompleteEngine'),
@@ -306,6 +309,7 @@ export const ENGINE_MANIFEST: Record<EngineId, () => Promise<EngineModule>> = {
   OperationalDriverEngine: () => import('./OperationalDriverEngine'),
   OptionPricingEngine: () => import('./OptionPricingEngine'),
   PeriodCloseEngine: () => import('./PeriodCloseEngine'),
+  PeriodCloseStateMachine: () => import('./PeriodCloseStateMachine'),
   PeriodLockEngine: () => import('./PeriodLockEngine'),
   PivotTableEngine: () => import('./PivotTableEngine'),
   PluginEngine: () => import('./PluginEngine'),

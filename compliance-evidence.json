@@ -1,0 +1,137 @@
+{
+  "timestamp": "2026-07-30T11:03:55.417Z",
+  "checks": [
+    {
+      "id": "MONEY-001",
+      "label": "Money primitive exists",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "MONEY-002",
+      "label": "Money primitive uses decimal.js",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "MONEY-003",
+      "label": "Money primitive has ROUND_HALF_UP",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "MONEY-004",
+      "label": "InvalidMoneyError defined",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "MONEY-005",
+      "label": "ThreeStatementEngine uses money primitive",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "AUTH-001",
+      "label": "Auth middleware exists",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "AUTH-002",
+      "label": "JWT auth middleware",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "AUTH-003",
+      "label": "Entity auth middleware exists",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "AUTH-004",
+      "label": "filterByEntityAccess defined",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "AUDIT-001",
+      "label": "Audit trail store exists",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "AUDIT-002",
+      "label": "Hash-chained audit trail",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "BACKUP-001",
+      "label": "Backup/restore utility exists",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "BACKUP-002",
+      "label": "SHA-256 checksum on backup",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "PERIOD-001",
+      "label": "Period close state machine exists",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "PERIOD-002",
+      "label": "State machine has open→soft-close→hard-close→locked",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "PERIOD-003",
+      "label": "Server periods route uses state machine",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "CI-001",
+      "label": "CI workflow exists",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "CI-002",
+      "label": "CI has sharded tests",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "CI-003",
+      "label": "A11y gate is blocking",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "CI-004",
+      "label": "Actions are SHA-pinned",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "SEC-001",
+      "label": "Export has CSV injection protection",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "SEC-002",
+      "label": "Export has entity scoping",
+      "status": "PASS",
+      "details": null
+    }
+  ]
+}

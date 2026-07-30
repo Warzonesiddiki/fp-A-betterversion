@@ -3,6 +3,12 @@ import Decimal from 'decimal.js';
 // =============================================================================
 // SAFEMATHPARSER — Bulletproof recursive descent math expression parser
 // NO eval(), NO new Function(), NO dynamic code execution
+//
+// MONEY PRIMITIVE: All financial functions (NPV, IRR, PMT, PV, FV, CAGR,
+// MIRR, XNPV, XIRR, CUMIPMT, CUMPRINC, etc.) use Decimal.js for arithmetic.
+// This eliminates IEEE-754 float drift in financial calculations.
+// Non-financial functions (trig, statistics, etc.) may still use native Math
+// where Decimal precision is not required.
 // =============================================================================
 
 // --- Security Limits ---
@@ -89,59 +95,95 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   AND: (args) => (args.every((a) => a !== 0) ? 1 : 0),
   OR: (args) => (args.some((a) => a !== 0) ? 1 : 0),
   NPV: (args) => {
+    // Decimal-based NPV: eliminates IEEE-754 drift in present value sums
     const rate = args[0]!;
     const cashflows = args.slice(1);
-    return cashflows.reduce((acc, cf, i) => acc + cf / Math.pow(1 + rate, i + 1), 0);
+    const rateD = new Decimal(rate);
+    let acc = new Decimal(0);
+    for (let i = 0; i < cashflows.length; i++) {
+      acc = acc.plus(new Decimal(cashflows[i]!).dividedBy(rateD.plus(1).pow(i + 1)));
+    }
+    return acc.toNumber();
   },
   CAGR: (args) => {
+    // Decimal-based CAGR: eliminates float drift in compound growth
     const ev = args[0]!;
     const bv = args[1]!;
     const n = args[2]!;
     if (bv <= 0 || n <= 0) return 0;
-    return Math.pow(ev / bv, 1 / n) - 1;
+    return new Decimal(ev).div(bv).pow(new Decimal(1).div(n)).minus(1).toNumber();
   },
   IRR: (args) => {
-    // Newton-Raphson IRR
+    // Newton-Raphson IRR with Decimal arithmetic for financial truth
     const cashflows = args;
     if (cashflows.length < 2) return 0;
-    let guess = 0.1;
+    let guess = new Decimal('0.1');
     for (let iter = 0; iter < 100; iter++) {
-      let npv = 0;
-      let dnpv = 0;
+      let npv = new Decimal(0);
+      let dnpv = new Decimal(0);
       for (let i = 0; i < cashflows.length; i++) {
-        const d = Math.pow(1 + guess, i);
-        npv += cashflows[i]! / d;
-        if (i > 0) dnpv -= (i * cashflows[i]!) / (d * (1 + guess));
+        const d = guess.plus(1).pow(i);
+        npv = npv.plus(new Decimal(cashflows[i]!).dividedBy(d));
+        if (i > 0)
+          dnpv = dnpv.minus(new Decimal(i).times(cashflows[i]!).dividedBy(d.times(guess.plus(1))));
       }
-      if (Math.abs(dnpv) < 1e-12) break;
-      const newGuess = guess - npv / dnpv;
-      if (Math.abs(newGuess - guess) < 1e-10) return newGuess;
+      if (dnpv.abs().lt(new Decimal('1e-12'))) break;
+      const newGuess = guess.minus(npv.dividedBy(dnpv));
+      if (newGuess.minus(guess).abs().lt(new Decimal('1e-10'))) return newGuess.toNumber();
       guess = newGuess;
     }
-    return guess;
+    return guess.toNumber();
   },
   PMT: (args) => {
+    // Decimal-based PMT: eliminates float drift in loan payment calculations
     const rate = args[0]!;
     const nper = args[1]!;
     const pv = args[2]!;
-    if (rate === 0) return -pv / nper;
-    return (-pv * rate * Math.pow(1 + rate, nper)) / (Math.pow(1 + rate, nper) - 1);
+    if (rate === 0) return new Decimal(-pv).div(nper).toNumber();
+    const rateD = new Decimal(rate);
+    const nperD = new Decimal(nper);
+    const pvD = new Decimal(pv);
+    return pvD
+      .negated()
+      .times(rateD)
+      .times(rateD.plus(1).pow(nperD))
+      .dividedBy(rateD.plus(1).pow(nperD).minus(1))
+      .toNumber();
   },
   PV: (args) => {
+    // Decimal-based PV: eliminates float drift in present value calculations
     const rate = args[0]!;
     const nper = args[1]!;
     const pmt = args[2]!;
     const fv = args[3]! ?? 0;
-    if (rate === 0) return -(fv + pmt * nper);
-    return -(fv + pmt * ((Math.pow(1 + rate, nper) - 1) / rate)) / Math.pow(1 + rate, nper);
+    if (rate === 0) return new Decimal(-(fv + pmt * nper)).toNumber();
+    const rateD = new Decimal(rate);
+    const nperD = new Decimal(nper);
+    const pmtD = new Decimal(pmt);
+    const fvD = new Decimal(fv);
+    return fvD
+      .plus(pmtD.times(rateD.plus(1).pow(nperD).minus(1).dividedBy(rateD)))
+      .negated()
+      .dividedBy(rateD.plus(1).pow(nperD))
+      .toNumber();
   },
   FV: (args) => {
+    // Decimal-based FV: eliminates float drift in future value calculations
     const rate = args[0]!;
     const nper = args[1]!;
     const pmt = args[2]!;
     const pv = args[3]! ?? 0;
-    if (rate === 0) return -(pv + pmt * nper);
-    return -(pv * Math.pow(1 + rate, nper) + pmt * ((Math.pow(1 + rate, nper) - 1) / rate));
+    if (rate === 0) return new Decimal(-(pv + pmt * nper)).toNumber();
+    const rateD = new Decimal(rate);
+    const nperD = new Decimal(nper);
+    const pmtD = new Decimal(pmt);
+    const pvD = new Decimal(pv);
+    return pvD
+      .negated()
+      .times(rateD.plus(1).pow(nperD))
+      .plus(pmtD.times(rateD.plus(1).pow(nperD).minus(1).dividedBy(rateD)))
+      .negated()
+      .toNumber();
   },
 
   // =========================================================================
@@ -597,74 +639,108 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   // FINANCIAL (50+)
   // =========================================================================
   MIRR: (args) => {
+    // Decimal-based MIRR: eliminates float drift in modified IRR
     const values = args.slice(0, -2);
     const financeRate = args[args.length - 2]!;
     const reinvestRate = args[args.length - 1]!;
     const n = values.length;
-    let negNpv = 0,
-      posNpv = 0;
+    let negNpv = new Decimal(0);
+    let posNpv = new Decimal(0);
+    const financeRateD = new Decimal(financeRate);
+    const reinvestRateD = new Decimal(reinvestRate);
     for (let i = 0; i < n; i++) {
-      if (values[i]! < 0) negNpv += values[i]! / Math.pow(1 + financeRate, i);
-      else posNpv += values[i]! / Math.pow(1 + reinvestRate, i);
+      const val = new Decimal(values[i]!);
+      if (values[i]! < 0) negNpv = negNpv.plus(val.dividedBy(financeRateD.plus(1).pow(i)));
+      else posNpv = posNpv.plus(val.dividedBy(reinvestRateD.plus(1).pow(i)));
     }
-    if (negNpv === 0 || posNpv === 0) return 0;
-    return Math.pow(-posNpv / negNpv, 1 / (n - 1)) - 1;
+    if (negNpv.isZero() || posNpv.isZero()) return 0;
+    return posNpv
+      .negated()
+      .dividedBy(negNpv)
+      .pow(new Decimal(1).div(n - 1))
+      .minus(1)
+      .toNumber();
   },
   XNPV: (args) => {
+    // Decimal-based XNPV: eliminates float drift in date-based NPV
     const rate = args[0]!;
     const half = Math.floor((args.length - 1) / 2);
     const values = args.slice(1, 1 + half);
     const dates = args.slice(1 + half);
     const baseDate = dates[0]!;
-    let npv = 0;
+    const rateD = new Decimal(rate);
+    let npv = new Decimal(0);
     for (let i = 0; i < values.length; i++) {
-      const days = (dates[i]! - baseDate) / 86400000; // ms to days
-      npv += values[i]! / Math.pow(1 + rate, days / 365);
+      const days = new Decimal(dates[i]! - baseDate).div(86400000);
+      npv = npv.plus(new Decimal(values[i]!).dividedBy(rateD.plus(1).pow(days.div(365))));
     }
-    return npv;
+    return npv.toNumber();
   },
   XIRR: (args) => {
+    // Decimal-based XIRR: Newton-Raphson with Decimal arithmetic
     const half = Math.floor(args.length / 2);
     const values = args.slice(0, half);
     const dates = args.slice(half);
     const baseDate = dates[0]!;
-    let guess = 0.1;
+    let guess = new Decimal('0.1');
     for (let iter = 0; iter < 100; iter++) {
-      let npv = 0,
-        dnpv = 0;
+      let npv = new Decimal(0);
+      let dnpv = new Decimal(0);
       for (let i = 0; i < values.length; i++) {
-        const days = (dates[i]! - baseDate) / 86400000;
-        const df = Math.pow(1 + guess, days / 365);
-        npv += values[i]! / df;
-        dnpv -= ((days / 365) * values[i]!) / (df * (1 + guess));
+        const days = new Decimal(dates[i]! - baseDate).div(86400000);
+        const df = guess.plus(1).pow(days.div(365));
+        npv = npv.plus(new Decimal(values[i]!).dividedBy(df));
+        dnpv = dnpv.minus(
+          days
+            .div(365)
+            .times(values[i]!)
+            .dividedBy(df.times(guess.plus(1)))
+        );
       }
-      if (Math.abs(dnpv) < 1e-12) break;
-      const newGuess = guess - npv / dnpv;
-      if (Math.abs(newGuess - guess) < 1e-10) return newGuess;
+      if (dnpv.abs().lt(new Decimal('1e-12'))) break;
+      const newGuess = guess.minus(npv.dividedBy(dnpv));
+      if (newGuess.minus(guess).abs().lt(new Decimal('1e-10'))) return newGuess.toNumber();
       guess = newGuess;
     }
-    return guess;
+    return guess.toNumber();
   },
   SLN: (args) => {
+    // Decimal-based straight-line depreciation
     const [cost = 0, salvage = 0, life = 0] = args;
 
-    return (cost - salvage) / life;
+    return new Decimal(cost).minus(salvage).div(life).toNumber();
   },
   SYD: (args) => {
+    // Decimal-based sum-of-years-digits depreciation
     const [cost = 0, salvage = 0, life = 0, per = 0] = args;
 
-    return ((cost - salvage) * (life - per + 1)) / ((life * (life + 1)) / 2);
+    const costD = new Decimal(cost);
+    const salvageD = new Decimal(salvage);
+    const lifeD = new Decimal(life);
+    const perD = new Decimal(per);
+    return costD
+      .minus(salvageD)
+      .times(lifeD.minus(perD).plus(1))
+      .dividedBy(lifeD.times(lifeD.plus(1)).div(2))
+      .toNumber();
   },
   DDB: (args) => {
+    // Decimal-based double-declining balance depreciation
     const [cost = 0, salvage = 0, life = 0, per = 0, factor = 0] = args;
 
     const f = factor ?? 2;
-    let totalDep = 0;
+    const costD = new Decimal(cost);
+    const salvageD = new Decimal(salvage);
+    const lifeD = new Decimal(life);
+    let totalDep = new Decimal(0);
     for (let i = 1; i <= per; i++) {
-      const dep = Math.min((cost - totalDep) * (f / life), cost - salvage - totalDep);
-      totalDep += Math.max(dep, 0);
+      const dep = Decimal.min(
+        costD.minus(totalDep).times(new Decimal(f).div(lifeD)),
+        costD.minus(salvageD).minus(totalDep)
+      );
+      totalDep = totalDep.plus(Decimal.max(dep, 0));
     }
-    return Math.max((cost - totalDep) * (f / life), 0);
+    return Decimal.max(costD.minus(totalDep).times(new Decimal(f).div(lifeD)), 0).toNumber();
   },
   VDB: (args) => {
     const [cost = 0, salvage = 0, life = 0, startPer = 0, endPer = 0, factor = 0, noSwitch = 0] =
@@ -796,33 +872,50 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return Math.ceil(years * frequency);
   },
   YIELD: (args) => {
+    // Decimal-based YIELD: eliminates float drift in bond yield calculation
     const [price = 0, par = 0, couponRate = 0, periods = 0] = args;
 
-    const annualCoupon = par * couponRate;
-    return (annualCoupon + (par - price) / periods) / ((par + price) / 2);
+    const priceD = new Decimal(price);
+    const parD = new Decimal(par);
+    const couponRateD = new Decimal(couponRate);
+    const annualCoupon = parD.times(couponRateD);
+    return annualCoupon
+      .plus(parD.minus(priceD).div(periods))
+      .dividedBy(parD.plus(priceD).div(2))
+      .toNumber();
   },
   PRICE: (args) => {
+    // Decimal-based PRICE: eliminates float drift in bond price calculation
     const [faceValue = 0, couponRate = 0, yieldRate = 0, periods = 0] = args;
 
-    const coupon = faceValue * couponRate;
-    let pvCoupons = 0;
-    for (let i = 1; i <= periods; i++) pvCoupons += coupon / Math.pow(1 + yieldRate, i);
-    const pvFace = faceValue / Math.pow(1 + yieldRate, periods);
-    return pvCoupons + pvFace;
+    const faceValueD = new Decimal(faceValue);
+    const couponRateD = new Decimal(couponRate);
+    const yieldRateD = new Decimal(yieldRate);
+    const coupon = faceValueD.times(couponRateD);
+    let pvCoupons = new Decimal(0);
+    for (let i = 1; i <= periods; i++) {
+      pvCoupons = pvCoupons.plus(coupon.dividedBy(yieldRateD.plus(1).pow(i)));
+    }
+    const pvFace = faceValueD.dividedBy(yieldRateD.plus(1).pow(periods));
+    return pvCoupons.plus(pvFace).toNumber();
   },
   DURATION: (args) => {
+    // Decimal-based DURATION: eliminates float drift in Macaulay duration
     const [faceValue = 0, couponRate = 0, yieldRate = 0, periods = 0] = args;
 
-    const coupon = faceValue * couponRate;
-    let weightedSum = 0,
-      priceSum = 0;
+    const faceValueD = new Decimal(faceValue);
+    const couponRateD = new Decimal(couponRate);
+    const yieldRateD = new Decimal(yieldRate);
+    const coupon = faceValueD.times(couponRateD);
+    let weightedSum = new Decimal(0);
+    let priceSum = new Decimal(0);
     for (let i = 1; i <= periods; i++) {
-      const cf = i === periods ? coupon + faceValue : coupon;
-      const pv = cf / Math.pow(1 + yieldRate, i);
-      weightedSum += i * pv;
-      priceSum += pv;
+      const cf = i === periods ? coupon.plus(faceValueD) : coupon;
+      const pv = cf.dividedBy(yieldRateD.plus(1).pow(i));
+      weightedSum = weightedSum.plus(new Decimal(i).times(pv));
+      priceSum = priceSum.plus(pv);
     }
-    return priceSum === 0 ? 0 : weightedSum / priceSum;
+    return priceSum.isZero() ? 0 : weightedSum.dividedBy(priceSum).toNumber();
   },
   ACCRINT: (args) => {
     const [issue = 0, firstInterest = 0, settlement = 0, rate = 0, par = 0, frequency = 0] = args;
@@ -853,9 +946,10 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return Math.pow(1 + nominalRate / npery, npery) - 1;
   },
   ISPMT: (args) => {
+    // Decimal-based ISPMT: interest paid during a specific period
     const [rate = 0, per = 0, nper = 0, pv = 0] = args;
 
-    return pv * rate * (per / nper - 1);
+    return new Decimal(pv).times(rate).times(new Decimal(per).div(nper).minus(1)).toNumber();
   },
   DISCOUNTPAYBACK: (args) => {
     const rate = args[0]!;
@@ -1472,38 +1566,52 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return investment / (1 - (discount * days) / 360);
   },
   CUMIPMT: (args) => {
+    // Decimal-based cumulative interest payment
     const [rate = 0, nper = 0, pv = 0, startPeriod = 0, endPeriod = 0, type = 0] = args;
 
-    let totalInterest = 0;
-    let balance = pv;
-    const pmt =
-      rate === 0
-        ? -pv / nper
-        : (-pv * rate * Math.pow(1 + rate, nper)) / (Math.pow(1 + rate, nper) - 1);
+    const rateD = new Decimal(rate);
+    const nperD = new Decimal(nper);
+    const pvD = new Decimal(pv);
+    let totalInterest = new Decimal(0);
+    let balance = pvD;
+    const pmtD = rateD.isZero()
+      ? pvD.negated().div(nperD)
+      : pvD
+          .negated()
+          .times(rateD)
+          .times(rateD.plus(1).pow(nperD))
+          .dividedBy(rateD.plus(1).pow(nperD).minus(1));
     for (let i = 1; i <= endPeriod; i++) {
-      const interest = -balance * rate;
-      const principal = pmt - interest;
-      balance += principal;
-      if (i >= startPeriod) totalInterest += interest;
+      const interest = balance.negated().times(rateD);
+      const principal = pmtD.minus(interest);
+      balance = balance.plus(principal);
+      if (i >= startPeriod) totalInterest = totalInterest.plus(interest);
     }
-    return totalInterest;
+    return totalInterest.toNumber();
   },
   CUMPRINC: (args) => {
+    // Decimal-based cumulative principal payment
     const [rate = 0, nper = 0, pv = 0, startPeriod = 0, endPeriod = 0, type = 0] = args;
 
-    let totalPrincipal = 0;
-    let balance = pv;
-    const pmt =
-      rate === 0
-        ? -pv / nper
-        : (-pv * rate * Math.pow(1 + rate, nper)) / (Math.pow(1 + rate, nper) - 1);
+    const rateD = new Decimal(rate);
+    const nperD = new Decimal(nper);
+    const pvD = new Decimal(pv);
+    let totalPrincipal = new Decimal(0);
+    let balance = pvD;
+    const pmtD = rateD.isZero()
+      ? pvD.negated().div(nperD)
+      : pvD
+          .negated()
+          .times(rateD)
+          .times(rateD.plus(1).pow(nperD))
+          .dividedBy(rateD.plus(1).pow(nperD).minus(1));
     for (let i = 1; i <= endPeriod; i++) {
-      const interest = -balance * rate;
-      const principal = pmt - interest;
-      balance += principal;
-      if (i >= startPeriod) totalPrincipal += principal;
+      const interest = balance.negated().times(rateD);
+      const principal = pmtD.minus(interest);
+      balance = balance.plus(principal);
+      if (i >= startPeriod) totalPrincipal = totalPrincipal.plus(principal);
     }
-    return totalPrincipal;
+    return totalPrincipal.toNumber();
   },
   ODDFPRICE: (args) => {
     const [faceValue = 0, couponRate = 0, yieldRate = 0, firstPeriod = 0, periods = 0] = args;
@@ -1524,40 +1632,64 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return pv;
   },
   RRI: (args) => {
+    // Decimal-based RRI: equivalent interest rate for investment growth
     const [nper = 0, pv = 0, fv = 0] = args;
 
     if (pv === 0 || nper === 0) return 0;
-    return Math.pow(fv / pv, 1 / nper) - 1;
+    return new Decimal(fv).div(pv).pow(new Decimal(1).div(nper)).minus(1).toNumber();
   },
   NPER: (args) => {
+    // Decimal-based NPER: number of periods for an investment
     const [rate = 0, pmt = 0, pv = 0, fv = 0] = args;
 
-    if (rate === 0) return -(pv + fv) / pmt;
-    return Math.log((pmt - fv * rate) / (pmt + pv * rate)) / Math.log(1 + rate);
+    if (rate === 0) return new Decimal(-(pv + fv)).div(pmt).toNumber();
+    const rateD = new Decimal(rate);
+    return new Decimal(pmt)
+      .minus(new Decimal(fv).times(rateD))
+      .dividedBy(new Decimal(pmt).plus(new Decimal(pv).times(rateD)))
+      .ln()
+      .dividedBy(rateD.plus(1).ln())
+      .toNumber();
   },
   RATE: (args) => {
+    // Decimal-based RATE: Newton-Raphson with Decimal arithmetic
     const [nper = 0, pmt = 0, pv = 0, fv = 0] = args;
 
-    let guess = 0.1;
+    let guess = new Decimal('0.1');
+    const nperD = new Decimal(nper);
+    const pmtD = new Decimal(pmt);
+    const pvD = new Decimal(pv);
+    const fvD = new Decimal(fv);
     for (let i = 0; i < 100; i++) {
-      const f =
-        pv * Math.pow(1 + guess, nper) + (pmt * (Math.pow(1 + guess, nper) - 1)) / guess + fv;
-      const df =
-        nper * pv * Math.pow(1 + guess, nper - 1) +
-        (pmt * (nper * Math.pow(1 + guess, nper - 1) * guess - (Math.pow(1 + guess, nper) - 1))) /
-          (guess * guess);
-      if (Math.abs(df) < 1e-12) break;
-      const newGuess = guess - f / df;
-      if (Math.abs(newGuess - guess) < 1e-10) return newGuess;
+      const f = pvD
+        .times(guess.plus(1).pow(nperD))
+        .plus(pmtD.times(guess.plus(1).pow(nperD).minus(1).dividedBy(guess)))
+        .plus(fvD);
+      const df = nperD
+        .times(pvD)
+        .times(guess.plus(1).pow(nperD.minus(1)))
+        .plus(
+          pmtD
+            .times(
+              nperD
+                .times(guess.plus(1).pow(nperD.minus(1)).times(guess))
+                .minus(guess.plus(1).pow(nperD).minus(1))
+            )
+            .dividedBy(guess.times(guess))
+        );
+      if (df.abs().lt(new Decimal('1e-12'))) break;
+      const newGuess = guess.minus(f.dividedBy(df));
+      if (newGuess.minus(guess).abs().lt(new Decimal('1e-10'))) return newGuess.toNumber();
       guess = newGuess;
     }
-    return guess;
+    return guess.toNumber();
   },
   PDURATION: (args) => {
+    // Decimal-based PDURATION: number of periods for present to future value
     const [rate = 0, pv = 0, fv = 0] = args;
 
     if (rate <= 0 || pv <= 0 || fv <= 0) return 0;
-    return Math.log(fv / pv) / Math.log(1 + rate);
+    return new Decimal(fv).div(pv).ln().dividedBy(new Decimal(rate).plus(1).ln()).toNumber();
   },
 
   // =========================================================================

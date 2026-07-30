@@ -25,8 +25,8 @@ describe('Period Close (F-0013) & Server-Side Enforcement', () => {
     // Ensure a test period exists in DB
     testPeriodId = 'period-' + Date.now();
     db.prepare(
-      `INSERT OR REPLACE INTO fiscal_periods (id, year, period_number, name, start_date, end_date, period_type, is_closed)
-       VALUES (?, 2026, 1, '2026-01', '2026-01-01', '2026-01-31', 'Monthly', 0)`
+      `INSERT OR REPLACE INTO fiscal_periods (id, year, period_number, name, start_date, end_date, period_type, is_closed, close_state)
+       VALUES (?, 2026, 1, '2026-01', '2026-01-01', '2026-01-31', 'Monthly', 0, 'open')`
     ).run(testPeriodId);
   });
 
@@ -83,5 +83,41 @@ describe('Period Close (F-0013) & Server-Side Enforcement', () => {
       .send({ reason: 'Adjusting journal entry required' });
     expect(res.status).toBe(200);
     expect(res.body.is_closed).toBe(0);
+  });
+
+  it('gets period close state', async () => {
+    const res = await request(app)
+      .get(`/api/periods/${testPeriodId}/state`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.closeState).toBe('open');
+    expect(res.body.canPost).toBe(true);
+    expect(res.body.validTransitions).toContain('soft-close');
+  });
+
+  it('gets period close audit trail', async () => {
+    const res = await request(app)
+      .get(`/api/periods/${testPeriodId}/audit`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it('rejects invalid state transitions', async () => {
+    // Try to go from open directly to locked (invalid)
+    const res = await request(app)
+      .post(`/api/periods/${testPeriodId}/transition`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ targetState: 'locked', reason: 'Invalid jump' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid transition');
+  });
+
+  it('rejects non-Manager role for transition endpoint', async () => {
+    const res = await request(app)
+      .post(`/api/periods/${testPeriodId}/transition`)
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send({ targetState: 'soft-close', reason: 'Should not work' });
+    expect(res.status).toBe(403);
   });
 });
