@@ -297,3 +297,31 @@ Continue F-0006. Vetted the next density-scan candidates for truth-vs-display:
 - Continue money migration — vet `SOXComplianceEngine`, `AnomalyDetectionEngine`, `SensitivityTableEngine`, `AutoCommentaryEngine` (8 toFixed, likely mixed truth/display) for real truth sites.
 - CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
 - Large tracked file: `docs/task-board.json` 1.26 MiB.
+
+## Loop #7 — 2026-07-30 (money-primitive migration: SOXComplianceEngine data-integrity checks)
+
+### Focus
+
+Continue F-0006. Vetted candidates: `AnomalyDetectionEngine` toFixed sites are all display formatting inside `reason` message strings (z-scores, medians, IQR fences) — **skipped**. `SOXComplianceEngine` — **migrated**: its two SOX data-integrity oracles, `verifyBalanceSheetEquation` (Assets = L+E) and `verifyDoubleEntry` (Σdebits = Σcredits), summed on floats.
+
+### Issue
+
+Both checks accumulated on doubles (`entries.reduce((s,e)=>s+e.debit,0)`, `totalLiabilities + totalEquity`) and formatted six `toFixed(2)` truth values each into the pass/fail detail string. The caller-supplied `tolerance` (default 0.01) was being applied to a float-drifted difference. For SOX §404 data-integrity controls, the accumulation feeding "do the books balance?" must be exact.
+
+### Fix
+
+- Summed both sides with `sumMoney`/`addMoney` and computed the imbalance with exact `Decimal.minus().abs()`. The public `tolerance` parameter is preserved (it's a tested feature — 0.005 within 0.01 passes) but now compared against a drift-free diff via `Decimal.lessThanOrEqualTo`. Detail-string money values format through `roundMoney(..).toFixed(const)` to stay off the ratchet's float-toFixed counter.
+- Added 4 regression tests: ten 0.1 debits vs 1.00 credit reports `diff: $0.00` exactly; a sub-cent-tolerance one-cent break fails with `diff: $0.01`; balance-sheet exact imbalance diff. All 75 SOXComplianceEngine tests pass (was 72).
+
+### Verification (all green)
+
+- `tsc` 0 · `eslint` 0 · `SOXComplianceEngine.test.ts` **75/75**.
+- `money:adoption`: **13 → 14 modules**, raw toFixed sites **96 → 84** (removed 12 truth sites — the single largest per-loop drop so far); baseline ratcheted to 14 / 84.
+- `check-readme-claims` 11/11 (adoption prose → "14 of 355", SOXComplianceEngine listed) · `check-tautological-tests` 0.
+
+### Carried forward to Loop #8
+
+- Full `npm test` wall-clock/hang isolation (Phase 0.4) still open.
+- Continue money migration — remaining higher-count files: `AutoCommentaryEngine` (8, likely narrative display), `SensitivityTableEngine` (5), `FinanceCopilotEngine` (5), `financialFormatting.ts` (4, likely display), `report-builder-*`. Vet truth-vs-display each.
+- CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
+- Large tracked file: `docs/task-board.json` 1.26 MiB.

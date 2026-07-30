@@ -9,6 +9,7 @@
 import { AuditLogEngine, type AuditEntry, type AuditAction } from './AuditLogEngine';
 import { WorkflowEngine, type ApprovalRequest, type ApprovalState } from './WorkflowEngine';
 import { RBACEngine, type Role, type UserRole } from './RBACEngine';
+import { addMoney, sumMoney, roundMoney, toDecimal } from '../utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -822,9 +823,16 @@ export class SOXComplianceEngine {
     totalEquity: number,
     tolerance: number = 0.01
   ): DataIntegrityResult {
-    const expected = totalLiabilities + totalEquity;
-    const diff = Math.abs(totalAssets - expected);
-    const passed = diff <= tolerance;
+    // Compute L+E and the imbalance with exact decimal arithmetic so the check
+    // reflects the true difference; the caller-supplied `tolerance` (default one
+    // cent) is then applied to a drift-free number rather than to a float sum.
+    const expectedD = addMoney(totalLiabilities, totalEquity);
+    const expected = expectedD.toNumber();
+    const diffD = toDecimal(totalAssets).minus(expectedD).abs();
+    const diff = diffD.toNumber();
+    const passed = diffD.lessThanOrEqualTo(toDecimal(tolerance));
+    const DP = 2;
+    const m = (v: number | typeof diffD): string => roundMoney(v, DP).toFixed(DP);
 
     const result: DataIntegrityResult = {
       checkId: 'DI-001',
@@ -833,8 +841,8 @@ export class SOXComplianceEngine {
       expected,
       actual: totalAssets,
       details: passed
-        ? `Balance sheet balanced: Assets ($${totalAssets.toFixed(2)}) = L+E ($${expected.toFixed(2)}), diff: $${diff.toFixed(2)}`
-        : `IMBALANCE: Assets ($${totalAssets.toFixed(2)}) != L+E ($${expected.toFixed(2)}), diff: $${diff.toFixed(2)}`,
+        ? `Balance sheet balanced: Assets ($${m(totalAssets)}) = L+E ($${m(expected)}), diff: $${m(diffD)}`
+        : `IMBALANCE: Assets ($${m(totalAssets)}) != L+E ($${m(expected)}), diff: $${m(diffD)}`,
       timestamp: new Date().toISOString(),
     };
 
@@ -847,10 +855,16 @@ export class SOXComplianceEngine {
     entries: Array<{ debit: number; credit: number }>,
     tolerance: number = 0.01
   ): DataIntegrityResult {
-    const totalDebits = entries.reduce((sum, e) => sum + e.debit, 0);
-    const totalCredits = entries.reduce((sum, e) => sum + e.credit, 0);
-    const diff = Math.abs(totalDebits - totalCredits);
-    const passed = diff <= tolerance;
+    // Sum both sides with exact decimal arithmetic (no float accumulation
+    // drift), then apply the caller-supplied `tolerance` to the true diff.
+    const totalDebitsD = sumMoney(entries.map((e) => e.debit));
+    const totalCreditsD = sumMoney(entries.map((e) => e.credit));
+    const totalDebits = totalDebitsD.toNumber();
+    const totalCredits = totalCreditsD.toNumber();
+    const diffD = totalDebitsD.minus(totalCreditsD).abs();
+    const passed = diffD.lessThanOrEqualTo(toDecimal(tolerance));
+    const DP = 2;
+    const m = (v: number | typeof diffD): string => roundMoney(v, DP).toFixed(DP);
 
     const result: DataIntegrityResult = {
       checkId: 'DI-002',
@@ -859,8 +873,8 @@ export class SOXComplianceEngine {
       expected: totalDebits,
       actual: totalCredits,
       details: passed
-        ? `Debits ($${totalDebits.toFixed(2)}) = Credits ($${totalCredits.toFixed(2)}), diff: $${diff.toFixed(2)}`
-        : `MISMATCH: Debits ($${totalDebits.toFixed(2)}) != Credits ($${totalCredits.toFixed(2)}), diff: $${diff.toFixed(2)}`,
+        ? `Debits ($${m(totalDebits)}) = Credits ($${m(totalCredits)}), diff: $${m(diffD)}`
+        : `MISMATCH: Debits ($${m(totalDebits)}) != Credits ($${m(totalCredits)}), diff: $${m(diffD)}`,
       timestamp: new Date().toISOString(),
     };
 

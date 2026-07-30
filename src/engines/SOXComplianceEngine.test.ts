@@ -391,6 +391,39 @@ describe('SOXComplianceEngine', () => {
       expect(result.passed).toBe(true);
     });
 
+    it('verifyDoubleEntry() sums many cent amounts exactly (no float drift)', () => {
+      // Ten 0.1 debits vs one 1.00 credit. A naive float sum of ten 0.1s is
+      // 0.9999999999999999, a 1e-16 imbalance — well inside the 0.01 tolerance,
+      // so this would pass either way; the stronger guarantee is the reported
+      // diff is exactly 0.00, not a float artifact.
+      const entries = Array.from({ length: 10 }, () => ({ debit: 0.1, credit: 0 }));
+      entries.push({ debit: 0, credit: 1.0 });
+      const result = engine.verifyDoubleEntry(entries);
+      expect(result.passed).toBe(true);
+      expect(result.details).toContain('diff: $0.00');
+      expect(result.details).toContain('Debits ($1.00)');
+    });
+
+    it('verifyDoubleEntry() catches a true one-cent break beyond tolerance', () => {
+      const result = engine.verifyDoubleEntry(
+        [
+          { debit: 100.0, credit: 0 },
+          { debit: 0, credit: 99.99 },
+        ],
+        0.001
+      );
+      expect(result.passed).toBe(false);
+      expect(result.details).toContain('diff: $0.01');
+    });
+
+    it('verifyBalanceSheetEquation() reports an exact imbalance diff', () => {
+      // diff is exactly 0.01; with a sub-cent tolerance it must fail, and the
+      // reported diff must be the exact $0.01 (not a float artifact like 0.0100001).
+      const result = engine.verifyBalanceSheetEquation(1000.0, 600.0, 399.99, 0.001);
+      expect(result.passed).toBe(false);
+      expect(result.details).toContain('diff: $0.01');
+    });
+
     it('computeDataHash() is deterministic for same input', () => {
       const data = { foo: 'bar', n: 42 };
       const h1 = engine.computeDataHash(data);
