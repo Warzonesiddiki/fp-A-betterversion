@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { sumMoney } from '@/utils/money';
 
 export interface Employee {
   id: string;
@@ -116,9 +117,11 @@ export const useWorkforceStore = create<WorkforceState>()(
           get().employees.filter((e) => e.department === deptId),
 
         getTotalPayroll: () =>
-          get()
-            .employees.filter((e) => e.status === 'active')
-            .reduce((sum, e) => sum + e.salary, 0),
+          sumMoney(
+            get()
+              .employees.filter((e) => e.status === 'active')
+              .map((e) => e.salary)
+          ).toNumber(),
 
         getHeadcountByDepartment: () =>
           get()

@@ -357,3 +357,35 @@ Adoption has climbed **7 → 16 engine/store modules** and raw float-truth `toFi
 - Money migration: remaining candidates are increasingly display-heavy; next pass should scan `src/store` and `src/services` (not just engines) for float truth, and re-vet `AutoCommentaryEngine`/`AssumptionEngine`.
 - CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
 - Large tracked file: `docs/task-board.json` 1.26 MiB.
+
+## Loop #9 — 2026-07-30 (money-primitive migration: store-layer money totals)
+
+### Focus
+
+Per the Loop #8 carry-forward, shifted the migration scan from engines to the **store layer** (`src/store`), which the ratchet also measures but prior loops hadn't touched. Grepped for money-typed float accumulation (`reduce`/`+=` over amount/total/balance/salary/revenue fields).
+
+### Issue
+
+Three stores computed money totals with float `reduce((s,x)=>s+x,0)`:
+
+- `glTrialBalanceStore` — `totalDebits`, `totalCredits`, `netBalance` selectors, i.e. the **trial-balance footer totals** shown under the GL trial balance grid. Summing a full ledger in floats drifts, so the displayed totals can disagree with the entries.
+- `capexStore` — `getTotalBudget`, `getTotalActual` (CapEx portfolio rollups).
+- `workforceStore` — `getTotalPayroll` (sum of active-employee salaries).
+
+### Fix
+
+- All five selectors now use `sumMoney(rows.map(...)).toNumber()` — exact decimal aggregation. No signature or shape change.
+- Added footer-total selector tests to `glTrialBalanceStore.test.ts` (which previously had **no** coverage of these selectors): an exact multi-row case and a fractional 0.1+0.2+0.3+0.4 → 1.0 no-drift case. Put them in a self-contained describe with its own privileged-user `beforeEach` (the store's `setRows` is RBAC-guarded). All 20 tests pass.
+
+### Verification (all green)
+
+- `tsc` 0 · `eslint` 0 · store suites **glTrialBalanceStore 20, capexStore + workforceStore** all green (51+ combined).
+- `money:adoption`: **16 → 19 modules** (first store-layer additions beyond `glStore`); toFixed sites unchanged at 84 (these were `+=`, not toFixed); baseline ratcheted to 19.
+- `check-readme-claims` 11/11 (adoption prose → "19 of 355", stores listed) · `check-tautological-tests` 0.
+
+### Carried forward to Loop #10
+
+- Full `npm test` wall-clock/hang isolation (Phase 0.4) still open — candidate focus for a non-money loop.
+- Money migration: more store rollups exist (`retailStore`, `governmentStore`, `educationStore`, `esgStore`) — vet whether their sums are money (revenue) vs counts (enrollment) before migrating.
+- CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
+- Large tracked file: `docs/task-board.json` 1.26 MiB.

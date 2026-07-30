@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { TrialBalanceRow } from '@/types';
 import { masterStorage } from '@/utils/masterStorage';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { sumMoney } from '@/utils/money';
 
 export type SortDirection = 'asc' | 'desc';
 export type TBFilterType = 'accountCode' | 'accountName' | 'accountType' | 'period';
@@ -199,10 +200,13 @@ export const glTrialBalanceSelectors = {
     const start = state.currentPage * state.pageSize;
     return state.filteredRows.slice(start, start + state.pageSize);
   },
+  // Trial-balance footer totals are summed with exact decimal arithmetic so
+  // that a ledger of many rows cannot accumulate IEEE-754 drift and make the
+  // displayed debit/credit totals disagree with the underlying entries.
   totalDebits: (state: GLTrialBalanceState) =>
-    state.filteredRows.reduce((sum, r) => sum + r.debit, 0),
+    sumMoney(state.filteredRows.map((r) => r.debit)).toNumber(),
   totalCredits: (state: GLTrialBalanceState) =>
-    state.filteredRows.reduce((sum, r) => sum + r.credit, 0),
+    sumMoney(state.filteredRows.map((r) => r.credit)).toNumber(),
   netBalance: (state: GLTrialBalanceState) =>
-    state.filteredRows.reduce((sum, r) => sum + r.netChange, 0),
+    sumMoney(state.filteredRows.map((r) => r.netChange)).toNumber(),
 };

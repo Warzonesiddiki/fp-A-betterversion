@@ -3,6 +3,7 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { sumMoney } from '@/utils/money';
 
 export interface CapExProject {
   id: string;
@@ -132,9 +133,9 @@ export const useCapExStore = create<CapExState>()(
 
         getProjectsByStatus: (status) => get().projects.filter((p) => p.status === status),
 
-        getTotalBudget: () => get().projects.reduce((sum, p) => sum + p.budget, 0),
+        getTotalBudget: () => sumMoney(get().projects.map((p) => p.budget)).toNumber(),
 
-        getTotalActual: () => get().projects.reduce((sum, p) => sum + p.actual, 0),
+        getTotalActual: () => sumMoney(get().projects.map((p) => p.actual)).toNumber(),
 
         getAssetsByCategory: (category) => get().assets.filter((a) => a.category === category),
       })),
