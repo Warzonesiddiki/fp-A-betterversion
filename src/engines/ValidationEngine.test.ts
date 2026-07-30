@@ -183,6 +183,52 @@ describe('ValidationEngine', () => {
       const result = ValidationEngine.validateRule(rule, data);
       expect(result.passed).toBe(true);
     });
+
+    it('sums many cent amounts exactly (no IEEE-754 drift)', () => {
+      // Three 0.1 debits vs one 0.3 credit: naive float summation gives
+      // 0.30000000000000004 on the debit side. Exact decimal makes this balance.
+      const rule = makeRule({
+        id: 'bal-exact',
+        config: {
+          type: 'balance',
+          debitAccounts: ['d1', 'd2', 'd3'],
+          creditAccounts: ['c1'],
+          cube: 'GL',
+          period: '2024-Q1',
+          measure: 'amount',
+        } satisfies BalanceCheckConfig,
+      });
+      const data: CellData = makeCellData([
+        { cube: 'GL', row: '2024-Q1', col: 'd1', measure: 'amount', value: 0.1 },
+        { cube: 'GL', row: '2024-Q1', col: 'd2', measure: 'amount', value: 0.1 },
+        { cube: 'GL', row: '2024-Q1', col: 'd3', measure: 'amount', value: 0.1 },
+        { cube: 'GL', row: '2024-Q1', col: 'c1', measure: 'amount', value: 0.3 },
+      ]);
+      const result = ValidationEngine.validateRule(rule, data);
+      expect(result.passed).toBe(true);
+      expect(result.message).toContain('Balanced');
+    });
+
+    it('flags a genuine one-cent imbalance (tolerance is now exact)', () => {
+      const rule = makeRule({
+        id: 'bal-penny',
+        config: {
+          type: 'balance',
+          debitAccounts: ['d1'],
+          creditAccounts: ['c1'],
+          cube: 'GL',
+          period: '2024-Q1',
+          measure: 'amount',
+        } satisfies BalanceCheckConfig,
+      });
+      const data: CellData = makeCellData([
+        { cube: 'GL', row: '2024-Q1', col: 'd1', measure: 'amount', value: 100.0 },
+        { cube: 'GL', row: '2024-Q1', col: 'c1', measure: 'amount', value: 99.99 },
+      ]);
+      const result = ValidationEngine.validateRule(rule, data);
+      expect(result.passed).toBe(false);
+      expect(result.message).toContain('Out of balance by 0.01');
+    });
   });
 
   // ===========================================================================

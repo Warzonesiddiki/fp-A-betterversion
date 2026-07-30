@@ -5,6 +5,7 @@
 // =============================================================================
 
 import { safeMathParser } from './SafeMathParser';
+import { addMoney, moneyEquals, roundMoney, toDecimal } from '../utils/money';
 
 // --- Type Definitions ---
 
@@ -208,14 +209,14 @@ export class ValidationEngine {
       return this.fail(rule, `Period "${cfg.period}" not found in cube "${cfg.cube}"`, []);
     }
 
-    let debitTotal = 0;
-    let creditTotal = 0;
+    let debitTotal = toDecimal(0);
+    let creditTotal = toDecimal(0);
 
     for (const acct of cfg.debitAccounts) {
       const cell = periodData[acct];
       if (cell && cfg.measure in cell) {
         const val = cell[cfg.measure]!;
-        debitTotal += val;
+        debitTotal = addMoney(debitTotal, val);
         if (val !== 0) {
           affectedCells.push({
             cube: cfg.cube,
@@ -231,7 +232,7 @@ export class ValidationEngine {
       const cell = periodData[acct];
       if (cell && cfg.measure in cell) {
         const val = cell[cfg.measure]!;
-        creditTotal += val;
+        creditTotal = addMoney(creditTotal, val);
         if (val !== 0) {
           affectedCells.push({
             cube: cfg.cube,
@@ -243,16 +244,20 @@ export class ValidationEngine {
       }
     }
 
-    const diff = Math.abs(debitTotal - creditTotal);
-    const tolerance = 0.005; // half-cent tolerance for floating point
-    const passed = diff <= tolerance;
+    // Debits and credits are summed with exact decimal arithmetic, so the
+    // balance test is exact equality — no "half-cent tolerance for floating
+    // point" fudge is required (or correct) any more.
+    const diff = debitTotal.minus(creditTotal).abs();
+    const passed = moneyEquals(debitTotal, creditTotal);
+    const DP = 2;
+    const money2 = (d: typeof diff): string => roundMoney(d, DP).toFixed(DP);
 
     return {
       ruleId: rule.id,
       passed,
       message: passed
-        ? `Balanced: debits (${debitTotal}) = credits (${creditTotal})`
-        : `Out of balance by ${diff.toFixed(2)}: debits=${debitTotal.toFixed(2)}, credits=${creditTotal.toFixed(2)}`,
+        ? `Balanced: debits (${debitTotal.toString()}) = credits (${creditTotal.toString()})`
+        : `Out of balance by ${money2(diff)}: debits=${money2(debitTotal)}, credits=${money2(creditTotal)}`,
       severity: rule.severity,
       affectedCells,
       timestamp: Date.now(),

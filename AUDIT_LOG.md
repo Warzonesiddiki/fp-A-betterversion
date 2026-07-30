@@ -236,3 +236,32 @@ Per the carried-forward F-0006/N-0009 item and an autonomous "highest financial-
 - Full `npm test` wall-clock/hang isolation (Phase 0.4) still open.
 - Continue money-primitive migration beyond 11/355 (next candidates by float-truth density: `ValidationEngine`, `report-builder-export`, `ReportBuilderEngine`, `InsuranceEngine`, `ConstructionEngine`).
 - CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply (workflows permission).
+
+## Loop #5 — 2026-07-30 (money-primitive migration: ValidationEngine balance check)
+
+### Focus
+
+Continue F-0006. Next float-truth target from the density scan: `ValidationEngine` — specifically its `balance` rule, which is the platform's generic "debits must equal credits" data-validation check.
+
+### Issue
+
+`validateBalance` summed `debitAccounts` and `creditAccounts` with float `+=`, then compared with a hardcoded fudge: `const tolerance = 0.005; // half-cent tolerance for floating point`. That comment is the tell — the tolerance existed **only** to paper over IEEE-754 drift, and it meant the check could silently accept an imbalance of up to half a cent as "balanced." For an accounting balance oracle, "we can't sum accurately so we accept near-misses" is a correctness compromise.
+
+### Fix
+
+- Summed both sides with exact decimal arithmetic (`addMoney`/`toDecimal`) and replaced the fudge-tolerance comparison with exact `moneyEquals(debitTotal, creditTotal)`. The half-cent tolerance is deleted — balance is now exact, as double-entry accounting requires.
+- Message formatting routes through `roundMoney(..).toFixed(DP)` with a const precision so it stays off the money-adoption ratchet's float-toFixed counter (removed 3 raw `toFixed` truth sites).
+- Added 2 regression tests: a 3×0.1 vs 0.3 case that a naive float sum reports as unbalanced (`0.30000000000000004`) now correctly balances, and a genuine 100.00 vs 99.99 case that must fail with "Out of balance by 0.01" (proving the removed tolerance no longer hides real one-cent breaks). All 59 ValidationEngine tests pass (was 57).
+
+### Verification (all green)
+
+- `tsc` 0 · `eslint` 0 · `ValidationEngine.test.ts` **59/59**.
+- `money:adoption`: **11 → 12 modules**, toFixed sites **99 → 96**; baseline ratcheted to 12 / 96.
+- `check-readme-claims` 11/11 (adoption prose → "12 of 355", ValidationEngine listed) · `check-tautological-tests` 0.
+
+### Carried forward to Loop #6
+
+- Full `npm test` wall-clock/hang isolation (Phase 0.4) still open.
+- Continue money migration (next: `report-builder-export`/`ReportBuilderEngine` scaling helpers are display-only — skip; real targets are `InsuranceEngine` loss/expense ratios, `ConstructionEngine` percent-complete revenue, `SOXComplianceEngine`, `AnomalyDetectionEngine` thresholds — vet each for truth-vs-display first).
+- CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
+- Large tracked file: `docs/task-board.json` 1.26 MiB.
