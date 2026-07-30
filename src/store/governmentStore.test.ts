@@ -162,6 +162,15 @@ describe('governmentStore', () => {
     expect(useGovernmentStore.getState().getTotalUtilization()).toBe(0);
   });
 
+  it('sums fund amounts exactly before computing the utilization ratio', () => {
+    useGovernmentStore.getState().setFunds([
+      { id: 'f1', fund: 'A', department: 'D1', allocated: 0.1, utilized: 0.05, status: 'On Track' },
+      { id: 'f2', fund: 'B', department: 'D2', allocated: 0.2, utilized: 0.1, status: 'On Track' },
+    ]);
+    // allocated 0.1+0.2=0.3, utilized 0.05+0.1=0.15 → exactly 50% (float sums drift).
+    expect(useGovernmentStore.getState().getTotalUtilization()).toBe(50);
+  });
+
   it('should filter funds by status', () => {
     useGovernmentStore.getState().setFunds([
       { id: 'f1', fund: 'A', department: 'D1', allocated: 100, utilized: 50, status: 'On Track' },

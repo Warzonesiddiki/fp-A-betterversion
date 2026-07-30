@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { sumMoney } from '@/utils/money';
 
 export interface RetailProduct {
   id: string;
@@ -107,7 +108,7 @@ export const useRetailStore = create<RetailState>()(
         getTopStores: (count) =>
           [...get().stores].sort((a, b) => b.revenue - a.revenue).slice(0, count),
 
-        getTotalRevenue: () => get().stores.reduce((sum, s) => sum + s.revenue, 0),
+        getTotalRevenue: () => sumMoney(get().stores.map((s) => s.revenue)).toNumber(),
       })),
       {
         name: 'retail-store',

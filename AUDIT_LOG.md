@@ -389,3 +389,31 @@ Three stores computed money totals with float `reduce((s,x)=>s+x,0)`:
 - Money migration: more store rollups exist (`retailStore`, `governmentStore`, `educationStore`, `esgStore`) — vet whether their sums are money (revenue) vs counts (enrollment) before migrating.
 - CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
 - Large tracked file: `docs/task-board.json` 1.26 MiB.
+
+## Loop #10 — 2026-07-30 (money-primitive migration: retail & government store rollups)
+
+### Focus
+
+Continue F-0006 in the store layer. Vetted the remaining sector-store rollups for money-vs-count: `educationStore.getTotalEnrollment` is an integer headcount and `esgStore.getOverallScore` averages percentages — both **skipped** (not money). `retailStore.getTotalRevenue` (store revenue) and `governmentStore.getTotalUtilization` (fund allocated/utilized amounts) are real money — **migrated**.
+
+### Fix
+
+- `retailStore.getTotalRevenue` now sums store revenue with `sumMoney(...).toNumber()`.
+- `governmentStore.getTotalUtilization` sums allocated and utilized amounts exactly, then computes the ratio with `Decimal.div().times(100)`; the zero-allocated guard is preserved via `Decimal.lessThanOrEqualTo(0)`.
+- Added fractional no-drift regression tests to both (retail 0.1+0.2 → exactly 0.3; government allocated 0.3 / utilized 0.15 → exactly 50%). Both suites green (33 tests).
+
+### Verification (all green)
+
+- `tsc` 0 · `eslint` 0 · `retailStore.test.ts` + `governmentStore.test.ts` **33/33**.
+- `money:adoption`: **19 → 21 modules**; toFixed sites unchanged at 84 (these were `+=`); baseline ratcheted to 21.
+- `check-readme-claims` 11/11 (adoption prose → "21 of 355", stores listed) · `check-tautological-tests` 0.
+
+### Money-migration progress (loops 3–10)
+
+Adoption **7 → 21 engine/store modules**; raw float-truth `toFixed` sites **100 → 84**. Every step ratcheted; every migration shipped with regression tests that fail against the pre-migration float code.
+
+### Carried forward to Loop #11
+
+- Full `npm test` wall-clock/hang isolation (Phase 0.4) still open — good candidate for a non-money loop.
+- CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
+- Large tracked file: `docs/task-board.json` 1.26 MiB.
