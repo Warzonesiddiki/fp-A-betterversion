@@ -33,13 +33,13 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 10 of
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 11 of
   190 engine/store modules** (`AllocationEngine`, `ConsolidationEngine`, `FXEngine`,
-  `FiscalCalendarEngine`, `PeriodCloseStateMachine`, `ReconciliationEngine`,
-  `SignConventionEngine`, `ThreeStatementEngine`, `WorkingCapitalEngine`, `glStore`) plus
-  `SafeMathParser`. Across all financial paths (`src/engines`, `src/store`, `src/utils`,
-  `src/services`) adoption is 10 of 355 modules with 100 raw `toFixed(n)` sites remaining —
-  run `npm run money:adoption` for the current measurement. The remaining financial paths
+  `FiscalCalendarEngine`, `IntercompanyMatchingEngine`, `PeriodCloseStateMachine`,
+  `ReconciliationEngine`, `SignConventionEngine`, `ThreeStatementEngine`, `WorkingCapitalEngine`,
+  `glStore`) plus `SafeMathParser`. Across all financial paths (`src/engines`, `src/store`,
+  `src/utils`, `src/services`) adoption is 11 of 355 modules with 99 raw `toFixed(n)` sites
+  remaining — run `npm run money:adoption` for the current measurement. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
   CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
 - **Background Web Workers (4):** `consolidation`, `monte-carlo`, `batch-calc` and `storage`
