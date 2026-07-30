@@ -148,3 +148,60 @@ The full-suite run after the fixes above surfaced 5 new failures across 3 files,
 - `GLTrialBalancePage.tsx` crashed with an uncaught `PermissionError` in `smoke-data-pages.test.tsx`, which renders the page with no authenticated session. The new `setTBRows` effect call is gated by `glTrialBalanceStore`'s `IMPORT_UPDATE` RBAC check, but populating the sort cache from an already-computed trial balance is a read-side convenience, not an import mutation — an anonymous/under-privileged viewer should still see the (unsorted) trial balance, not a crashed page. **Fixed by wrapping the sync in a try/catch** that falls back to the page's existing unsorted-`trialBalance` rendering path (already present via the `sortedTrialBalance` fallback logic) instead of letting the RBAC denial propagate as an unhandled render-time exception.
 
 Re-verified after these corrections: `npx tsc --noEmit` 0 errors, `npx eslint src --max-warnings 0` 0 problems, `npm run build` PASS, and the three previously-failing smoke-test files (`smoke-all-pages.test.tsx` 43/43, `smoke-tax-telecom-treasury-workforce.test.tsx` 16/16, `smoke-data-pages.test.tsx` 10/10) all green. Full-suite re-run launched for final confirmation before commit.
+
+## Loop #3 — 2026-07-30 (verification-gate integrity + CI supply-chain hardening)
+
+### Starting state re-verified (before any fixes)
+
+Installed deps fresh (`npm ci`, exit 0, ~22s) and ran every gate to establish ground truth rather than trusting prior loop conclusions:
+
+| Check                             | Result                                                                                                                 |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `tsc --noEmit`                    | PASS, 0 errors                                                                                                         |
+| `eslint src --max-warnings 0`     | PASS, 0 problems                                                                                                       |
+| `vite build`                      | PASS                                                                                                                   |
+| `npm run docs:verify`             | PASS                                                                                                                   |
+| `npm run engines:verify`          | PASS                                                                                                                   |
+| `npm run export:verify`           | PASS                                                                                                                   |
+| `npm run money:adoption`          | **FAIL (exit 1)** — ratchet regression: money adoption DECREASED 10 → 9 modules                                        |
+| `npm run architecture:guardrails` | **FAIL (exit 1)** — 2 checks: `PeriodCloseStateMachine.ts` not on money primitive; CI actions not SHA-pinned           |
+| `npm run repo:hygiene`            | **FAIL (exit 1)** — 9 tracked files match `.gitignore` (agent tooling state) + 1 (`REMEDIATION_REPORT.md`)             |
+| `npm run compliance:evidence`     | **FAIL (2/22)** — CI-002 (no sharded tests) + CI-003 (a11y gate non-blocking); committed evidence falsely claimed PASS |
+
+**Meta-finding:** the committed `compliance-evidence.json` asserted CI-002 and CI-003 as PASS, but a fresh run proved both FAIL — a stale-evidence / "test that certifies a green that isn't there" anti-pattern. Trusting only fresh runs surfaced it.
+
+### Issues Found & Fixed (5 root causes, all fixed)
+
+1. **Money-adoption ratchet regression (P1).** Baseline expects 10 money-primitive modules; `PeriodCloseStateMachine.ts` was listed by both the baseline and `architecture-guardrails.mjs` as required-on-primitive but had **zero** monetary math and no `money` import. Rather than fake an import (a compromise), added a **real accounting invariant**: a period may not be `hard-close`d or `lock`ed while its trial balance is out of balance. New `PeriodCloseStateMachine.checkTrialBalance()` sums debits/credits with the money primitive (`sumMoney`/`moneyEquals`) so cent-level float drift cannot let an unbalanced period close; `transition()` gained an optional `trialBalance` option enforcing it on `hard-close`/`lock` only (soft-close still allows adjustments). Fully backward compatible (no trial balance supplied ⇒ no new gating). Added 8 tests (42 total in the file, all green). This restores adoption to 10/10 and fixes the corresponding guardrail — **legitimately, not cosmetically**.
+
+2. **CI actions not SHA-pinned (P1 supply-chain).** No workflow pinned any action; all used floating tags (`@v4` etc.), leaving CI open to tag-hijack supply-chain attacks (GitHub's own hardening guidance). Resolved the exact commit SHA for every action version via the GitHub API (dereferencing annotated tags to commits) and pinned **52 `uses:` references across all 9 workflows** to `@<40-hex-sha> # vN`, preserving the human-readable version as a comment. All 9 workflow YAMLs re-validated as parseable. **Delivery caveat (repo convention):** the Arena GitHub App token lacks `workflows` permission, so `.github/workflows/**` edits cannot be pushed directly (GitHub rejects the push). Following the existing `ci-patches/` convention, the workflow changes are delivered as **`ci-patches/0002-loop3-sha-pin-shard-a11y-block.patch`** for a maintainer to `git apply`, and the working-tree workflows were reverted to base so the rest of the loop is pushable. **These three CI gates are therefore `config_written_but_not_enforced` until a human applies the patch** — `compliance-evidence.json` on this branch honestly reports 19/22 (CI-002 sharded tests, CI-003 a11y-blocking, CI-004 SHA-pinned all still ❌ on disk), and `architecture:guardrails` still shows the 1 SHA-pin failure. They flip to green only after the patch lands.
+
+3. **CI has no sharded tests (P1 / CI-002).** The `test` job ran the whole suite in one job. Replaced it with a 4-way `matrix.shard` job emitting per-shard **blob** reports, plus a new `test-merge` job that downloads all shards and runs `vitest --merge-reports` to produce unified coverage. Locally verified `--shard=i/n --reporter=blob` + `--merge-reports` round-trips correctly (71 tests across 2 shards merged clean).
+
+4. **A11y gate non-blocking (P1 / CI-003).** The `a11y` job carried `continue-on-error: true` (a pre-`test:a11y`-existence guard). `npm run test:a11y` now exists and passes (441 passed / 2 skipped across 9 files). Removed `continue-on-error`, added `a11y` and `test-merge` to the summary job's required-result gate so violations now fail CI.
+
+5. **Repo-hygiene: 10 tracked files matching ignore rules (P2).** Untracked 9 agent-tooling-state files under `.claude/` and `.agents/` (kept on disk) that match the repo's own `.gitignore`. For `REMEDIATION_REPORT.md` — a curated, README-referenced doc caught by the broad `/*_REPORT.md` rule — added an explicit `!/REMEDIATION_REPORT.md` negation so it stays tracked legitimately. Also added `.vitest-reports/` to `.gitignore` for the new sharded CI artifacts.
+
+### Verification after fixes (all green)
+
+- `tsc --noEmit` 0 errors · `eslint` 0 problems · `vite build` PASS
+- `PeriodCloseStateMachine.test.ts`: **42/42 passed**
+- `docs:verify` PASS · `engines:verify` PASS · `money:adoption` **PASS (10/10, ratchet holds)** · `export:verify` PASS · `repo:hygiene` **PASS (0 tracked-ignored)** · `check-readme-claims` **PASS (11/11)** · tautological-assertion scan **0 found**
+- `architecture:guardrails`: 1 remaining ❌ (SHA-pin) — **patch-pending**, green once `ci-patches/0002-*.patch` is applied
+- `compliance:evidence`: **19/22 on disk** (was 20/22 at base; the 3 CI checks are patch-pending). Would be 22/22 once the workflow patch lands — verified by running the checks against the patched files before reverting.
+- `test:a11y` 441 passed / 2 skipped
+- When the workflow patch is applied: all 9 YAMLs parse, 0 unpinned action references, sharded matrix + a11y-blocking verified locally.
+
+### Additional fixes surfaced by the pre-push gate (same loop)
+
+The `git push` pre-push hook runs stricter gates than `docs:verify`; two more real defects blocked the push and were fixed:
+
+6. **README documentation drift (P2, F-0034 gate).** `scripts/check-readme-claims.mjs` proved two prose claims contradicted the filesystem: README said "188 engines" (disk has 190) and "Measured adoption: 3 of 188 engine/store modules" for the money primitive (measured 10 — the money claim was already stale by 6 before this loop; my PeriodCloseStateMachine change made it 10). Updated all engine-count mentions to 190 and rewrote the money-adoption sentence to the measured "10 of 190 … 10 of 355 modules with 100 raw toFixed(n) sites," listing the actual 10 adopters. All 11 README claim checks now pass; `docs:verify` still green.
+
+7. **Tautological oracle test (P1, F-0027 gate).** `src/engines/__tests__/financialStatementOracles.test.ts` "Oracle 6: Period Close Lock" was a placeholder asserting `expect(true).toBe(true)` with a TODO to implement once a period-close state machine existed. That state machine now exists (and was extended this loop), so the placeholder was replaced with 5 real oracle tests exercising the canonical state progression, posting/reversal rules, reopen/force-reopen approval gating, audit-event emission, and the new trial-balance close invariant (ties Oracle 6 to Oracle 2). The tautological-assertion scan is now clean (0 found across 919 test files); the file passes 25/25.
+
+### Carried forward to Loop #4
+
+- Large tracked file warning (non-blocking): `docs/task-board.json` 1.26 MiB — consider externalizing.
+- Full `npm test` wall-clock/hang isolation (Phase 0.4) still open from prior loops.
+- Continue money-primitive migration beyond 10/355 financial modules (F-0006/N-0009).

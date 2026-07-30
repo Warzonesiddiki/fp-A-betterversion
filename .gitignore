@@ -3,6 +3,7 @@ node_modules/
 dist/
 build/
 coverage/
+.vitest-reports/
 bundle-report/
 stats.html
 graphify-out/
@@ -82,6 +83,9 @@ __pycache__/
 /AI_AGENT*.md
 /AI_CONTINUATION*.md
 /*_REPORT.md
+# REMEDIATION_REPORT.md is a curated, README-referenced remediation record, not
+# a one-off agent progress dump — keep it tracked despite the /*_REPORT.md rule.
+!/REMEDIATION_REPORT.md
 /tsc_plan.md
 /batch_summary.json
 /data_validation_report.md

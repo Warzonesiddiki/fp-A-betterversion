@@ -32,6 +32,35 @@ git commit -m "ci: apply audit ZCFA-2026-07-29-002 gate hardening"
 | N-0013  | `docs` job also runs `npm run engines:verify`                                                                                    | Prevents the engine manifest going stale, which is how the old loader ended up knowing only 40 of 181 engines. |
 | —       | `summary` job now requires e2e, a11y, audit, server and docs                                                                     | The summary previously ignored these jobs, so the overall check could be green while they failed.              |
 
+## Loop #3 patch: `0002-loop3-sha-pin-shard-a11y-block.patch`
+
+Delivered 2026-07-30. Same `workflows`-permission constraint as above. Apply with:
+
+```bash
+git apply ci-patches/0002-loop3-sha-pin-shard-a11y-block.patch
+git add .github/workflows/
+git commit -m "ci: apply loop-3 hardening (SHA-pin, shard tests, block a11y gate)"
+```
+
+### What this patch changes
+
+| Finding | Change                                                                                                       | Why                                                                                                |
+| ------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| CI-004  | SHA-pin **all 52 `uses:` action refs across all 9 workflows** to 40-hex commit SHAs with `# vN` comments     | Floating tags (`@v4`) are hijackable; commit-pinning is GitHub's supply-chain hardening guidance.  |
+| CI-002  | `ci.yml` `test` job becomes a 4-way `matrix.shard` (blob reports) + new `test-merge` job merging coverage    | Whole suite ran in one job; sharding gives wall-clock speed + isolation with unified coverage.     |
+| CI-003  | Remove stale `continue-on-error: true` from the a11y job; add `a11y` + `test-merge` to the summary hard-gate | `test:a11y` now exists and passes (441 tests); the gate can and must block on critical violations. |
+
+### Enforcement status
+
+Until applied, these three gates are `config_written_but_not_enforced`.
+`compliance-evidence.json` on the branch honestly reports **19/22** (CI-002,
+CI-003, CI-004 ❌) and `architecture:guardrails` reports the SHA-pin failure.
+All three flip green once the patch lands. Each change was verified locally
+before being written into the patch: `--shard=i/n --reporter=blob` +
+`--merge-reports` round-trips clean, `npm run test:a11y` exits 0 (441 passed),
+and every pinned SHA was resolved from the GitHub API (annotated tags
+dereferenced to commits).
+
 ## Verified locally
 
 Each gate was executed on this branch before being written into the workflow:
