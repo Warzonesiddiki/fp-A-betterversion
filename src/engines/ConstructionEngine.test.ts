@@ -51,6 +51,31 @@ describe('ConstructionEngine', () => {
       expect(stats.avgGrossMargin).toBeGreaterThan(0);
     });
 
+    it('computes each account-class total and derived metrics exactly', () => {
+      const stats = ConstructionEngine.calculateStats(mockEntries);
+      // costs 56xx: 200k + 150k + 100k = 450k; wip 13xx: 600k; billings 46xx: 0.
+      // avgGrossMargin = (1,000,000 - 450,000) / 1,000,000 * 100 = 55.
+      expect(stats.avgGrossMargin).toBe(55);
+      expect(stats.wipValue).toBe(600000);
+      expect(stats.billings).toBe(0);
+      // overUnderBilled = billings - wipValue = -600,000.
+      expect(stats.overUnderBilled).toBe(-600000);
+      // totalBacklog = wip + revenue*1.5 = 600,000 + 1,500,000 = 2,100,000.
+      expect(stats.totalBacklog).toBe(2100000);
+    });
+
+    it('sums fractional GL amounts without IEEE-754 drift', () => {
+      const centEntries = [
+        gl('4500', 0, 0.1, 0.1, 'rev a', '2024-01'),
+        gl('4500', 0, 0.2, 0.2, 'rev b', '2024-01'),
+        gl('5600', 0.3, 0, 0.3, 'cost', '2024-01'),
+      ];
+      const stats = ConstructionEngine.calculateStats(centEntries);
+      // 0.1 + 0.2 must be exactly 0.30, and margin (0.30-0.30)/0.30 = 0%.
+      expect(stats.revenueYTD).toBe(0.3);
+      expect(stats.avgGrossMargin).toBe(0);
+    });
+
     it('should handle empty entries', () => {
       const stats = ConstructionEngine.calculateStats([]);
       expect(stats.revenueYTD).toBe(0);

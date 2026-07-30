@@ -251,3 +251,62 @@ describe('glTrialBalanceStore — negative authorization (F-0026)', () => {
     );
   });
 });
+
+describe('glTrialBalanceStore — footer total selectors (exact decimal)', () => {
+  beforeEach(() => {
+    authenticateTBUser();
+    useGLTrialBalanceStore.setState({
+      rows: [],
+      filteredRows: [],
+      isLoading: false,
+      sortConfig: null,
+      filters: [],
+      selectedRowId: null,
+      pageSize: 50,
+      currentPage: 0,
+    });
+  });
+
+  const row = (
+    accountId: string,
+    debit: number,
+    credit: number,
+    netChange: number
+  ): TrialBalanceRow => ({
+    accountId,
+    accountCode: `${accountId}000`,
+    accountName: `Acct ${accountId}`,
+    accountType: 'Asset',
+    beginningBalance: 0,
+    debit,
+    credit,
+    netChange,
+    endingBalance: netChange,
+  });
+
+  it('sums debit/credit/netChange across rows', () => {
+    useGLTrialBalanceStore
+      .getState()
+      .setRows([
+        row('1', 5000, 2000, 3000),
+        row('2', 1000, 3000, -2000),
+        row('3', 0, 10000, -10000),
+      ]);
+    const state = useGLTrialBalanceStore.getState();
+    // debits 5000 + 1000 + 0 = 6000; credits 2000 + 3000 + 10000 = 15000;
+    // net 3000 - 2000 - 10000 = -9000.
+    expect(glTrialBalanceSelectors.totalDebits(state)).toBe(6000);
+    expect(glTrialBalanceSelectors.totalCredits(state)).toBe(15000);
+    expect(glTrialBalanceSelectors.netBalance(state)).toBe(-9000);
+  });
+
+  it('sums fractional cent amounts without IEEE-754 drift', () => {
+    useGLTrialBalanceStore
+      .getState()
+      .setRows([0.1, 0.2, 0.3, 0.4].map((v, i) => row(`f${i}`, v, 0, v)));
+    const state = useGLTrialBalanceStore.getState();
+    // 0.1 + 0.2 + 0.3 + 0.4 = 1.0 exactly (naive float gives 0.9999999999999999).
+    expect(glTrialBalanceSelectors.totalDebits(state)).toBe(1);
+    expect(glTrialBalanceSelectors.netBalance(state)).toBe(1);
+  });
+});

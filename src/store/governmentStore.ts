@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { sumMoney } from '@/utils/money';
 
 export interface FundAllocation {
   id: string;
@@ -98,10 +99,11 @@ export const useGovernmentStore = create<GovernmentState>()(
           }),
         getTotalUtilization: () => {
           const { funds } = get();
-          const totalAllocated = funds.reduce((s, f) => s + f.allocated, 0);
-          return totalAllocated > 0
-            ? (funds.reduce((s, f) => s + f.utilized, 0) / totalAllocated) * 100
-            : 0;
+          // Sum the money amounts exactly, then compute the utilization ratio.
+          const totalAllocated = sumMoney(funds.map((f) => f.allocated));
+          if (totalAllocated.lessThanOrEqualTo(0)) return 0;
+          const totalUtilized = sumMoney(funds.map((f) => f.utilized));
+          return totalUtilized.div(totalAllocated).times(100).toNumber();
         },
         getFundsByStatus: (status) => get().funds.filter((f) => f.status === status),
       })),

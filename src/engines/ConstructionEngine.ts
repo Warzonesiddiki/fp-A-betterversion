@@ -9,6 +9,7 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { GLEntry } from '@/types';
+import { addMoney, subtractMoney, sumMoney, roundTo, toDecimal } from '../utils/money';
 
 export interface ConstructionStats {
   totalBacklog: number;
@@ -48,27 +49,29 @@ export class ConstructionEngine {
    */
   static calculateStats(entries: GLEntry[]): ConstructionStats {
     const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    // Sum each account class with exact decimal arithmetic so many GL lines do
+    // not accumulate IEEE-754 drift. `sumMoney` over absolute amounts.
+    const sumAbs = (prefix: string): number =>
+      roundTo(
+        sumMoney(
+          entries
+            .filter((e) => e.accountCode.startsWith(prefix))
+            .map((e) => toDecimal(getAmount(e)).abs())
+        )
+      );
 
-    const revenueYTD = entries
-      .filter((e) => e.accountCode.startsWith('45'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const revenueYTD = sumAbs('45');
+    const billings = sumAbs('46');
+    const constructionCosts = sumAbs('56');
+    const wipValue = sumAbs('13');
 
-    const billings = entries
-      .filter((e) => e.accountCode.startsWith('46'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const constructionCosts = entries
-      .filter((e) => e.accountCode.startsWith('56'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const wipValue = entries
-      .filter((e) => e.accountCode.startsWith('13'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const totalBacklog = wipValue + revenueYTD * 1.5; // Estimate backlog from WIP
+    // totalBacklog = wipValue + revenueYTD * 1.5 (WIP-based backlog estimate).
+    const totalBacklog = roundTo(addMoney(wipValue, toDecimal(revenueYTD).times(1.5)));
     const avgGrossMargin =
-      revenueYTD > 0 ? ((revenueYTD - constructionCosts) / revenueYTD) * 100 : 0;
-    const overUnderBilled = billings - wipValue;
+      revenueYTD > 0
+        ? roundTo(subtractMoney(revenueYTD, constructionCosts).div(revenueYTD).times(100), 4)
+        : 0;
+    const overUnderBilled = roundTo(subtractMoney(billings, wipValue));
 
     return {
       totalBacklog,
@@ -93,10 +96,11 @@ export class ConstructionEngine {
       if (!e.accountCode.startsWith('45') && !e.accountCode.startsWith('56')) continue;
       const key = e.departmentId ?? e.entityId ?? 'default';
       const existing = projectMap.get(key) ?? { revenue: 0, costs: 0 };
+      const amt = toDecimal(getAmount(e)).abs();
       if (e.accountCode.startsWith('45')) {
-        existing.revenue += Math.abs(getAmount(e));
+        existing.revenue = addMoney(existing.revenue, amt).toNumber();
       } else {
-        existing.costs += Math.abs(getAmount(e));
+        existing.costs = addMoney(existing.costs, amt).toNumber();
       }
       projectMap.set(key, existing);
     }
@@ -114,9 +118,14 @@ export class ConstructionEngine {
         name: `Project ${idx + 1}`,
         client: 'Imported',
       };
-      const margin = data.revenue > 0 ? ((data.revenue - data.costs) / data.revenue) * 100 : 0;
+      const margin =
+        data.revenue > 0
+          ? roundTo(subtractMoney(data.revenue, data.costs).div(data.revenue).times(100), 1)
+          : 0;
       const pct =
-        data.revenue > 0 ? Math.min(100, Math.round((data.costs / data.revenue) * 100)) : 0;
+        data.revenue > 0
+          ? Math.min(100, Math.round(toDecimal(data.costs).div(data.revenue).times(100).toNumber()))
+          : 0;
       projects.push({
         id: def.id,
         name: def.name,

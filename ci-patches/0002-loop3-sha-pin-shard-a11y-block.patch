@@ -1,0 +1,495 @@
+diff --git a/.github/workflows/build.yml b/.github/workflows/build.yml
+index 8b9cd85..c2ecafb 100644
+--- a/.github/workflows/build.yml
++++ b/.github/workflows/build.yml
+@@ -38,10 +38,10 @@ jobs:
+       matrix:
+         os: [ubuntu-latest, windows-latest, macos-latest]
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js ${{ env.NODE_VERSION }}
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -75,7 +75,7 @@ jobs:
+ 
+       - name: Upload dist artifact (7-day retention)
+         if: success()
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+           name: dist-${{ matrix.os }}
+           path: dist/
+diff --git a/.github/workflows/cascade-hold-check.yml b/.github/workflows/cascade-hold-check.yml
+index cb38f4e..bbb4cbb 100644
+--- a/.github/workflows/cascade-hold-check.yml
++++ b/.github/workflows/cascade-hold-check.yml
+@@ -17,7 +17,7 @@ jobs:
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout
+-        uses: actions/checkout@v4
++        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+         with:
+           fetch-depth: 0
+ 
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 6befee3..478aed2 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -23,10 +23,10 @@ jobs:
+     name: Type Check
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -41,10 +41,10 @@ jobs:
+     name: Lint
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -56,13 +56,19 @@ jobs:
+         run: npx eslint src
+ 
+   test:
+-    name: Unit Tests
++    name: Unit Tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
+     runs-on: ubuntu-latest
++    strategy:
++      fail-fast: false
++      matrix:
++        # Split the unit suite across parallel shards for wall-clock speed and
++        # isolation. Coverage blobs from each shard are merged in `test-merge`.
++        shard: [1, 2, 3, 4]
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -70,12 +76,52 @@ jobs:
+       - name: Install dependencies
+         run: npm ci
+ 
+-      - name: Run tests with coverage
+-        run: node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --coverage --reporter=default
++      - name: Run tests with coverage (shard ${{ matrix.shard }})
++        run: >-
++          node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run
++          --shard=${{ matrix.shard }}/4
++          --coverage
++          --reporter=blob
++          --outputFile=.vitest-reports/blob-${{ matrix.shard }}.json
++
++      - name: Upload shard blob report
++        if: always()
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
++        with:
++          name: blob-report-${{ matrix.shard }}
++          path: .vitest-reports/blob-${{ matrix.shard }}.json
++          retention-days: 14
++
++  test-merge:
++    name: Unit Tests (merge coverage)
++    needs: [test]
++    if: always()
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
++
++      - name: Setup Node.js
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++
++      - name: Install dependencies
++        run: npm ci
++
++      - name: Download shard blob reports
++        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
++        with:
++          pattern: blob-report-*
++          path: .vitest-reports
++          merge-multiple: true
++
++      - name: Merge shard reports and emit coverage
++        run: node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --merge-reports=.vitest-reports --coverage
+ 
+       - name: Upload coverage report
+         if: always()
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+           name: coverage-report
+           path: coverage/
+@@ -86,10 +132,10 @@ jobs:
+     runs-on: ubuntu-latest
+     needs: [typecheck, lint]
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -169,7 +215,7 @@ jobs:
+ 
+       - name: Upload build artifacts
+         if: success()
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+           name: dist
+           path: dist/
+@@ -180,10 +226,10 @@ jobs:
+     needs: [build]
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -195,7 +241,7 @@ jobs:
+         run: npx playwright install --with-deps chromium
+ 
+       - name: Download build
+-        uses: actions/download-artifact@v4
++        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+         with:
+           name: dist
+           path: dist/
+@@ -205,7 +251,7 @@ jobs:
+ 
+       - name: Upload E2E report
+         if: always()
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+           name: playwright-report
+           path: playwright-report/
+@@ -227,12 +273,13 @@ jobs:
+     name: A11Y (axe-core)
+     needs: [build]
+     runs-on: ubuntu-latest
+-    continue-on-error: true  # Pre-Mnemosyne A11Y-P0-3: allow merge
++    # A11Y-P0-3 has shipped: `test:a11y` is defined and green, so the gate is
++    # now BLOCKING (NEVER-AGAIN RULE #50). Critical a11y violations fail CI.
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -241,7 +288,7 @@ jobs:
+         run: npm ci
+ 
+       - name: Download build
+-        uses: actions/download-artifact@v4
++        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+         with:
+           name: dist
+           path: dist/
+@@ -264,7 +311,7 @@ jobs:
+ 
+       - name: Upload A11Y report
+         if: always() && steps.detect.outputs.runner == 'present'
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+           name: a11y-report
+           path: |
+@@ -275,8 +322,9 @@ jobs:
+   summary:
+     name: CI Summary
+     if: always()
+-    needs: [typecheck, lint, test, build, e2e, a11y]
++    needs: [typecheck, lint, test, test-merge, build, e2e, a11y]
+     runs-on: ubuntu-latest
++    if: always()
+     steps:
+       - name: Check results
+         run: |
+@@ -286,14 +334,17 @@ jobs:
+           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+           echo "| Type Check | ${{ needs.typecheck.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Lint | ${{ needs.lint.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+-          echo "| Unit Tests | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Unit Tests (sharded) | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Coverage Merge | ${{ needs.test-merge.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
+-          echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped (A11Y-P0-3 pending)' || ':warning: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped' || ':x: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
+ 
+           if [ "${{ needs.typecheck.result }}" != "success" ] || \
+              [ "${{ needs.lint.result }}" != "success" ] || \
+              [ "${{ needs.test.result }}" != "success" ] || \
++             [ "${{ needs.test-merge.result }}" != "success" ] || \
++             [ "${{ needs.a11y.result }}" != "success" ] || \
+              [ "${{ needs.build.result }}" != "success" ]; then
+             echo ""
+             echo ":x: **CI FAILED** - One or more required checks did not pass."
+diff --git a/.github/workflows/deploy.yml b/.github/workflows/deploy.yml
+index d1abc39..e76c8fa 100644
+--- a/.github/workflows/deploy.yml
++++ b/.github/workflows/deploy.yml
+@@ -16,10 +16,10 @@ jobs:
+       name: github-pages
+       url: ${{ steps.deployment.outputs.page_url }}
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: 22
+           cache: npm
+@@ -31,13 +31,13 @@ jobs:
+         run: npm run build
+ 
+       - name: Setup Pages
+-        uses: actions/configure-pages@v4
++        uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4
+ 
+       - name: Upload artifact
+-        uses: actions/upload-pages-artifact@v3
++        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+         with:
+           path: dist
+ 
+       - name: Deploy to GitHub Pages
+         id: deployment
+-        uses: actions/deploy-pages@v4
++        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+diff --git a/.github/workflows/lint.yml b/.github/workflows/lint.yml
+index 761624d..8b7e716 100644
+--- a/.github/workflows/lint.yml
++++ b/.github/workflows/lint.yml
+@@ -30,10 +30,10 @@ jobs:
+     runs-on: ubuntu-latest
+     timeout-minutes: 5
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js ${{ env.NODE_VERSION }}
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+diff --git a/.github/workflows/release.yml b/.github/workflows/release.yml
+index 216828c..7903f52 100644
+--- a/.github/workflows/release.yml
++++ b/.github/workflows/release.yml
+@@ -41,7 +41,7 @@ jobs:
+       tag: ${{ steps.version.outputs.tag }}
+       release_notes: ${{ steps.notes.outputs.notes }}
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+         with:
+           fetch-depth: 0
+ 
+@@ -84,7 +84,7 @@ jobs:
+           echo "EOF" >> "$GITHUB_OUTPUT"
+ 
+       - name: Verify build works
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -116,20 +116,20 @@ jobs:
+     runs-on: ${{ matrix.platform }}
+     timeout-minutes: 30
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+-      - uses: actions/setup-node@v4
++      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+ 
+       - name: Install Rust toolchain
+-        uses: dtolnay/rust-toolchain@stable
++        uses: dtolnay/rust-toolchain@4cda84d5c5c54efe2404f9d843567869ab1699d4 # stable
+         with:
+           targets: ${{ matrix.rust_target }}
+ 
+       - name: Rust cache
+-        uses: Swatinem/rust-cache@v2
++        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+         with:
+           workspaces: src-tauri
+ 
+@@ -162,7 +162,7 @@ jobs:
+           sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" src-tauri/Cargo.toml
+ 
+       - name: Build Tauri app
+-        uses: tauri-apps/tauri-action@v0
++        uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
+         env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+@@ -176,7 +176,7 @@ jobs:
+           args: "--target ${{ matrix.rust_target }}"
+ 
+       - name: Upload installers
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+           name: installers-${{ matrix.target }}
+           path: |
+@@ -204,9 +204,9 @@ jobs:
+       name: github-pages
+       url: ${{ steps.deployment.outputs.page_url }}
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+-      - uses: actions/setup-node@v4
++      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -217,16 +217,16 @@ jobs:
+           npx vite build
+ 
+       - name: Setup Pages
+-        uses: actions/configure-pages@v4
++        uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4
+ 
+       - name: Upload artifact
+-        uses: actions/upload-pages-artifact@v3
++        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+         with:
+           path: dist
+ 
+       - name: Deploy to GitHub Pages
+         id: deployment
+-        uses: actions/deploy-pages@v4
++        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+ 
+   # ---------------------------------------------------------------------------
+   # Step 4: Finalize release
+@@ -238,10 +238,10 @@ jobs:
+     runs-on: ubuntu-latest
+     timeout-minutes: 5
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Mark release as ready
+-        uses: actions/github-script@v7
++        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+         with:
+           script: |
+             const tag = '${{ needs.prepare.outputs.tag }}';
+diff --git a/.github/workflows/sentry-self-test.yml b/.github/workflows/sentry-self-test.yml
+index de9babf..946f3a4 100644
+--- a/.github/workflows/sentry-self-test.yml
++++ b/.github/workflows/sentry-self-test.yml
+@@ -14,8 +14,8 @@ jobs:
+   sdk-init-and-capture:               # items a + b share setup (saves ~90s)
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v4
+-      - uses: actions/setup-node@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
++      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: '20'
+       - name: Install deps
+diff --git a/.github/workflows/test-unit.yml b/.github/workflows/test-unit.yml
+index 86677d4..2f24a62 100644
+--- a/.github/workflows/test-unit.yml
++++ b/.github/workflows/test-unit.yml
+@@ -31,10 +31,10 @@ jobs:
+     runs-on: ubuntu-latest
+     timeout-minutes: 15
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js ${{ env.NODE_VERSION }}
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm
+@@ -50,7 +50,7 @@ jobs:
+ 
+       - name: Upload coverage report (artifact, 14-day retention)
+         if: always()
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+           name: coverage-report
+           path: coverage/
+@@ -59,7 +59,7 @@ jobs:
+ 
+       - name: Upload coverage to Codecov
+         if: success()
+-        uses: codecov/codecov-action@v4
++        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+         with:
+           token: ${{ secrets.CODECOV_TOKEN }}
+           files: ./coverage/coverage-final.json
+diff --git a/.github/workflows/tsc.yml b/.github/workflows/tsc.yml
+index e43b011..e14e0df 100644
+--- a/.github/workflows/tsc.yml
++++ b/.github/workflows/tsc.yml
+@@ -29,10 +29,10 @@ jobs:
+     runs-on: ubuntu-latest
+     timeout-minutes: 8
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+       - name: Setup Node.js ${{ env.NODE_VERSION }}
+-        uses: actions/setup-node@v4
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+           node-version: ${{ env.NODE_VERSION }}
+           cache: npm

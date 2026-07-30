@@ -272,6 +272,91 @@ describe('F-0004: Period Close State Machine', () => {
   });
 
   // -------------------------------------------------------------------------
+  // Trial-balance invariant on close (money primitive)
+  // -------------------------------------------------------------------------
+  describe('trial-balance invariant', () => {
+    it('checkTrialBalance reports a balanced set exactly', () => {
+      const check = PeriodCloseStateMachine.checkTrialBalance([
+        { accountId: '1000', debit: '100.10', credit: 0 },
+        { accountId: '4000', debit: 0, credit: '100.10' },
+      ]);
+      expect(check.balanced).toBe(true);
+      expect(check.totalDebits).toBe('100.10');
+      expect(check.totalCredits).toBe('100.10');
+      expect(check.difference).toBe('0.00');
+    });
+
+    it('checkTrialBalance detects cent-level imbalance without float drift', () => {
+      // Three thirds of a cent: naive float addition can misreport this.
+      const check = PeriodCloseStateMachine.checkTrialBalance([
+        { accountId: '1000', debit: '0.10', credit: 0 },
+        { accountId: '1001', debit: '0.20', credit: 0 },
+        { accountId: '4000', debit: 0, credit: '0.30' },
+      ]);
+      expect(check.balanced).toBe(true);
+      expect(check.difference).toBe('0.00');
+    });
+
+    it('blocks hard-close when trial balance is out of balance', () => {
+      const entry: PeriodCloseEntry = { ...BASE_ENTRY, state: 'soft-close' };
+      const result = PeriodCloseStateMachine.transition(entry, 'hard-close', 'user-1', {
+        trialBalance: [
+          { accountId: '1000', debit: '100.00', credit: 0 },
+          { accountId: '4000', debit: 0, credit: '99.99' },
+        ],
+      });
+      expect(result.success).toBe(false);
+      expect(result.newState).toBe('soft-close');
+      expect(result.error).toContain('out of balance');
+      expect(result.error).toContain('0.01');
+    });
+
+    it('allows hard-close when trial balance is balanced', () => {
+      const entry: PeriodCloseEntry = { ...BASE_ENTRY, state: 'soft-close' };
+      const result = PeriodCloseStateMachine.transition(entry, 'hard-close', 'user-1', {
+        trialBalance: [
+          { accountId: '1000', debit: '100.00', credit: 0 },
+          { accountId: '4000', debit: 0, credit: '100.00' },
+        ],
+      });
+      expect(result.success).toBe(true);
+      expect(result.newState).toBe('hard-close');
+      expect(result.auditEvent).toBeDefined();
+    });
+
+    it('blocks lock when trial balance is out of balance', () => {
+      const entry: PeriodCloseEntry = { ...BASE_ENTRY, state: 'hard-close' };
+      const result = PeriodCloseStateMachine.transition(entry, 'lock', 'user-1', {
+        trialBalance: [
+          { accountId: '1000', debit: '50.00', credit: 0 },
+          { accountId: '4000', debit: 0, credit: '49.50' },
+        ],
+      });
+      expect(result.success).toBe(false);
+      expect(result.newState).toBe('hard-close');
+      expect(result.error).toContain('out of balance');
+    });
+
+    it('does not require balance for soft-close (adjustments still allowed)', () => {
+      const result = PeriodCloseStateMachine.transition(BASE_ENTRY, 'soft-close', 'user-1', {
+        trialBalance: [
+          { accountId: '1000', debit: '10.00', credit: 0 },
+          { accountId: '4000', debit: 0, credit: '9.00' },
+        ],
+      });
+      expect(result.success).toBe(true);
+      expect(result.newState).toBe('soft-close');
+    });
+
+    it('does not enforce balance when no trial balance is supplied (backward compatible)', () => {
+      const entry: PeriodCloseEntry = { ...BASE_ENTRY, state: 'soft-close' };
+      const result = PeriodCloseStateMachine.transition(entry, 'hard-close', 'user-1');
+      expect(result.success).toBe(true);
+      expect(result.newState).toBe('hard-close');
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // Helper methods
   // -------------------------------------------------------------------------
   describe('helper methods', () => {

@@ -20,7 +20,7 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 - **Multi-Entity Consolidation** — Automate inter-company eliminations, minority interest calculations, and FX translation
 - **Scenario Analysis** — What-if modeling, Monte Carlo simulations, and driver-based planning
 - **Financial Reporting** — P&L, Balance Sheet, Cash Flow statements, Variance Analysis, and Board Reports
-- **Financial Engines** — 188 top-level engine modules (215 including subdirectories) covering
+- **Financial Engines** — 190 top-level engine modules (215 including subdirectories) covering
   SaaS metrics, CapEx planning, lease accounting (IFRS 16/ASC 842), tax optimization and more.
   A 2026-07-28 audit found 105 of 181 engines unreferenced by any page, store or service;
   the wire-or-remove inventory is tracked as F-0028, so treat the count as inventory, not
@@ -33,11 +33,16 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 3 of
-  188 engine/store modules** (`ConsolidationEngine`, `FXEngine`, `glStore`) plus
-  `SafeMathParser`. Across all financial paths (`src/engines`, `src/store`, `src/utils`,
-  `src/services`) adoption is 3 of 352 modules with 134 raw `toFixed(n)` sites remaining —
-  run `npm run money:adoption` for the current measurement. The remaining financial paths
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 21 of
+  190 engine/store modules** spanning the engines and store layers (`AllocationEngine`,
+  `ConsolidationEngine`, `ConstructionEngine`, `FXEngine`, `FiscalCalendarEngine`,
+  `IntercompanyMatchingEngine`, `PeriodCloseStateMachine`, `ReconciliationEngine`,
+  `ReportBuilderEngine`, `SOXComplianceEngine`, `SignConventionEngine`, `ThreeStatementEngine`,
+  `ValidationEngine`, `WorkingCapitalEngine`, `report-builder-formulas`, and the `glStore`,
+  `glTrialBalanceStore`, `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores)
+  plus `SafeMathParser`. Across all financial paths (`src/engines`, `src/store`, `src/utils`,
+  `src/services`) adoption is 21 of 355 modules with 84 raw `toFixed(n)` sites remaining — run
+  `npm run money:adoption` for the current measurement. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
   CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
 - **Background Web Workers (4):** `consolidation`, `monte-carlo`, `batch-calc` and `storage`
@@ -73,7 +78,7 @@ FinPlan Pro follows a **strictly decoupled architecture** separating business lo
 │  └─ Immer Middleware (immutable updates)   │
 ├─────────────────────────────────────────────┤
 │  Business Logic Layer                       │
-│  └─ Financial Engines (188 modules)        │
+│  └─ Financial Engines (190 modules)        │
 │  └─ Calculation Services                   │
 ├─────────────────────────────────────────────┤
 │  Infrastructure Layer                       │
@@ -86,7 +91,7 @@ FinPlan Pro follows a **strictly decoupled architecture** separating business lo
 
 | Directory            | Purpose                                     | Statistics                                            |
 | -------------------- | ------------------------------------------- | ----------------------------------------------------- |
-| `src/engines/`       | Financial calculation engines               | 188 top-level modules (105/181 unreferenced — F-0028) |
+| `src/engines/`       | Financial calculation engines               | 190 top-level modules (105/181 unreferenced — F-0028) |
 | `src/store/`         | Zustand state stores with persistence       | 38 stores                                             |
 | `src/pages/`         | Route-level containers (lazy-loaded)        | 195 page modules, 78 sector dirs                      |
 | `src/components/ui/` | Atomic UI primitives (barrel-exported)      | 128 components                                        |
@@ -828,7 +833,7 @@ npm run build -- --analyze  # Vite visualization
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Primary Language**  | TypeScript (64.1%)                                                                                                                            |
 | **Total Stores**      | 38                                                                                                                                            |
-| **Financial Engines** | 188 top-level (105/181 unreferenced)                                                                                                          |
+| **Financial Engines** | 190 top-level (105/181 unreferenced)                                                                                                          |
 | **Pages/Routes**      | 195 page modules                                                                                                                              |
 | **Industry Sectors**  | 78 sector directories (depth varies)                                                                                                          |
 | **Dashboard Count**   | 23                                                                                                                                            |

@@ -27,6 +27,7 @@ import {
   divideMoney,
   multiplyMoney,
 } from '@/utils/money';
+import { PeriodCloseStateMachine } from '@/engines/PeriodCloseStateMachine';
 
 // ---------------------------------------------------------------------------
 // Oracle 1: Balance Sheet Equation
@@ -237,22 +238,79 @@ describe('F-0011 Oracle 5: Rounding and Allocation', () => {
 // ---------------------------------------------------------------------------
 
 describe('F-0011 Oracle 6: Period Close Lock', () => {
-  it('period close state machine must be defined', () => {
-    // This oracle documents the requirement that a period close state machine
-    // must exist. The PeriodCloseEngine currently only manages task checklists.
-    // A proper period close state machine must have:
-    //   - states: open, soft-close, hard-close, locked
-    //   - transitions: open→soft-close→hard-close→locked
-    //   - reopen requires approval
-    //   - corrections to closed periods are reversal-only
-    //   - every state transition emits an audit event
-    //
-    // This test will fail until the state machine is implemented.
-    // Unskipping this test is a requirement for closing F-0004.
+  // F-0004 is now implemented: PeriodCloseStateMachine exists. This oracle
+  // verifies the invariants the placeholder used to only describe in prose.
 
-    // Placeholder assertion — the state machine types must be created.
-    // When PeriodCloseStateMachine is implemented, this test should import it
-    // and verify the state transitions.
-    expect(true).toBe(true); // TODO: Replace with actual state machine test
+  it('enforces the canonical state progression open→soft-close→hard-close→locked', () => {
+    expect(PeriodCloseStateMachine.canTransition('open', 'soft-close')).toBe(true);
+    expect(PeriodCloseStateMachine.canTransition('soft-close', 'hard-close')).toBe(true);
+    expect(PeriodCloseStateMachine.canTransition('hard-close', 'lock')).toBe(true);
+    // Illegal skips are rejected.
+    expect(PeriodCloseStateMachine.canTransition('open', 'hard-close')).toBe(false);
+    expect(PeriodCloseStateMachine.canTransition('open', 'lock')).toBe(false);
+  });
+
+  it('blocks posting to hard-closed and locked periods (reversal-only corrections)', () => {
+    expect(PeriodCloseStateMachine.canPost('open').allowed).toBe(true);
+    expect(PeriodCloseStateMachine.canPost('hard-close').allowed).toBe(false);
+    expect(PeriodCloseStateMachine.canPost('locked').allowed).toBe(false);
+    // Corrections to a hard-closed period are reversal-only; a locked period
+    // allows nothing at all.
+    expect(PeriodCloseStateMachine.canReverse('hard-close').allowed).toBe(true);
+    expect(PeriodCloseStateMachine.canReverse('locked').allowed).toBe(false);
+  });
+
+  it('requires approval to reopen and admin role to force-reopen a locked period', () => {
+    const softClosed = PeriodCloseStateMachine.createEntry('2026-Q2', 'entity-1');
+    const reopenNoApproval = PeriodCloseStateMachine.transition(
+      { ...softClosed, state: 'soft-close' },
+      'reopen',
+      'user-1'
+    );
+    expect(reopenNoApproval.success).toBe(false);
+
+    const forceReopenNonAdmin = PeriodCloseStateMachine.transition(
+      { ...softClosed, state: 'locked' },
+      'force-reopen',
+      'user-1',
+      { approvalId: 'apr-1', actorRole: 'viewer' }
+    );
+    expect(forceReopenNonAdmin.success).toBe(false);
+  });
+
+  it('emits an audit event on every successful transition', () => {
+    const entry = PeriodCloseStateMachine.createEntry('2026-Q2', 'entity-1');
+    const result = PeriodCloseStateMachine.transition(entry, 'soft-close', 'user-1');
+    expect(result.success).toBe(true);
+    expect(result.auditEvent).toBeDefined();
+    expect(result.auditEvent!.fromState).toBe('open');
+    expect(result.auditEvent!.toState).toBe('soft-close');
+    expect(result.auditEvent!.actorId).toBe('user-1');
+  });
+
+  it('refuses to hard-close or lock a period whose trial balance does not tie out', () => {
+    const entry = {
+      ...PeriodCloseStateMachine.createEntry('2026-Q2', 'entity-1'),
+      state: 'soft-close' as const,
+    };
+    // Unbalanced: debits 100.00 vs credits 99.99.
+    const unbalanced = PeriodCloseStateMachine.transition(entry, 'hard-close', 'user-1', {
+      trialBalance: [
+        { accountId: '1000', debit: '100.00', credit: 0 },
+        { accountId: '4000', debit: 0, credit: '99.99' },
+      ],
+    });
+    expect(unbalanced.success).toBe(false);
+    expect(unbalanced.error).toContain('out of balance');
+
+    // Balanced (Oracle 2 invariant: debits = credits) → close allowed.
+    const balanced = PeriodCloseStateMachine.transition(entry, 'hard-close', 'user-1', {
+      trialBalance: [
+        { accountId: '1000', debit: '100.00', credit: 0 },
+        { accountId: '4000', debit: 0, credit: '100.00' },
+      ],
+    });
+    expect(balanced.success).toBe(true);
+    expect(balanced.newState).toBe('hard-close');
   });
 });

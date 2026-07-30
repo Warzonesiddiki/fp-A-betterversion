@@ -259,4 +259,13 @@ describe('retailStore', () => {
   it('should return 0 total revenue for empty stores', () => {
     expect(useRetailStore.getState().getTotalRevenue()).toBe(0);
   });
+
+  it('sums fractional store revenue without IEEE-754 drift', () => {
+    useRetailStore.getState().setStores([
+      { id: 's1', name: 'A', location: 'L1', revenue: 0.1, footTraffic: 1, conversionRate: 0.1 },
+      { id: 's2', name: 'B', location: 'L2', revenue: 0.2, footTraffic: 2, conversionRate: 0.2 },
+    ]);
+    // 0.1 + 0.2 = 0.3 exactly (naive float gives 0.30000000000000004).
+    expect(useRetailStore.getState().getTotalRevenue()).toBe(0.3);
+  });
 });

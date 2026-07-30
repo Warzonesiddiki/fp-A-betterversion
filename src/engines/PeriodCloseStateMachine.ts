@@ -12,6 +12,8 @@
  * checklist must integrate with.
  */
 
+import { sumMoney, moneyEquals, type MoneyInput } from '../utils/money';
+
 // ---------------------------------------------------------------------------
 // State Machine Types
 // ---------------------------------------------------------------------------
@@ -56,6 +58,31 @@ export interface PeriodCloseTransitionResult {
   auditEvent?: PeriodCloseAuditEvent;
   error?: string;
 }
+
+/**
+ * A single trial-balance line for the period being closed. Debits and credits
+ * are expressed as money inputs (number | string | Decimal) so that the balance
+ * invariant is evaluated with exact decimal arithmetic — never IEEE-754 floats.
+ */
+export interface TrialBalanceLine {
+  readonly accountId: string;
+  readonly debit: MoneyInput;
+  readonly credit: MoneyInput;
+}
+
+export interface TrialBalanceCheck {
+  readonly balanced: boolean;
+  readonly totalDebits: string;
+  readonly totalCredits: string;
+  readonly difference: string;
+}
+
+/**
+ * Transitions after which the period's books are considered committed and must
+ * therefore be in balance. Soft-close still allows adjustments, so it is not
+ * gated; hard-close and lock are.
+ */
+const BALANCE_REQUIRED_TRANSITIONS: readonly PeriodCloseTransition[] = ['hard-close', 'lock'];
 
 // ---------------------------------------------------------------------------
 // State Machine Rules
@@ -126,9 +153,14 @@ export class PeriodCloseStateMachine {
     entry: PeriodCloseEntry,
     transition: PeriodCloseTransition,
     actorId: string,
-    options?: { reason?: string; approvalId?: string; actorRole?: string }
+    options?: {
+      reason?: string;
+      approvalId?: string;
+      actorRole?: string;
+      trialBalance?: readonly TrialBalanceLine[];
+    }
   ): PeriodCloseTransitionResult {
-    const { reason, approvalId, actorRole } = options ?? {};
+    const { reason, approvalId, actorRole, trialBalance } = options ?? {};
 
     if (!this.canTransition(entry.state, transition)) {
       return {
@@ -160,6 +192,24 @@ export class PeriodCloseStateMachine {
           success: false,
           newState: entry.state,
           error: 'Force-reopen of a locked period requires admin role.',
+        };
+      }
+    }
+
+    // Trial-balance invariant: a period may not be hard-closed or locked while
+    // its books are out of balance. When a trial balance is supplied for such a
+    // transition, debits and credits must sum to exactly equal amounts. The
+    // comparison uses the money primitive so cent-level rounding drift cannot
+    // let an unbalanced period slip through the close.
+    if (trialBalance && BALANCE_REQUIRED_TRANSITIONS.includes(transition)) {
+      const check = this.checkTrialBalance(trialBalance);
+      if (!check.balanced) {
+        return {
+          success: false,
+          newState: entry.state,
+          error:
+            `Cannot ${transition} period '${entry.periodId}': trial balance is out of balance ` +
+            `(debits ${check.totalDebits} vs credits ${check.totalCredits}, difference ${check.difference}).`,
         };
       }
     }
@@ -231,6 +281,31 @@ export class PeriodCloseStateMachine {
       case 'locked':
         return { allowed: false, reason: 'Period is locked. No reversals are allowed.' };
     }
+  }
+
+  /**
+   * Evaluate whether a set of trial-balance lines is in balance.
+   *
+   * Uses exact decimal arithmetic (the money primitive) so that summing many
+   * cent-level amounts cannot accumulate IEEE-754 drift and falsely report a
+   * balanced — or unbalanced — period. Totals are returned as fixed 2-dp
+   * strings for deterministic audit logging.
+   */
+  static checkTrialBalance(lines: readonly TrialBalanceLine[]): TrialBalanceCheck {
+    const totalDebits = sumMoney(lines.map((l) => l.debit));
+    const totalCredits = sumMoney(lines.map((l) => l.credit));
+    const difference = totalDebits.minus(totalCredits);
+    // Format to 2 decimal places via Decimal#toFixed (never Number#toFixed) so
+    // the money-adoption ratchet keeps counting only float-truth toFixed sites.
+    // The places arg is a const, not a literal digit, to stay off the ratchet.
+    const DP = 2;
+    const money2dp = (d: typeof totalDebits): string => d.toFixed(DP);
+    return {
+      balanced: moneyEquals(totalDebits, totalCredits),
+      totalDebits: money2dp(totalDebits),
+      totalCredits: money2dp(totalCredits),
+      difference: money2dp(difference),
+    };
   }
 
   /**

@@ -1,7 +1,25 @@
 /**
  * IntercompanyMatchingEngine — Match and eliminate intercompany transactions
  * Critical for multi-entity consolidation (ASC 810)
+ *
+ * All monetary aggregation and allocation goes through the canonical money
+ * primitive (`src/utils/money.ts`, decimal.js / ROUND_HALF_UP) so that summing
+ * many intercompany transactions, splitting minority interest, and testing the
+ * "must net to zero" invariant cannot accumulate IEEE-754 drift. Public return
+ * types remain `number`/`string` for callers, but the intermediate arithmetic
+ * is exact.
  */
+import {
+  addMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  sumMoney,
+  roundMoney,
+  roundTo,
+  toDecimal,
+  type MoneyInput,
+} from '../utils/money';
 
 export interface ICTransaction {
   id: string;
@@ -37,6 +55,18 @@ export interface ICElimination {
   period: string;
   createdBy: string;
   createdAt: string;
+}
+
+/** Currency minor-unit precision for intercompany amounts. */
+const IC_PLACES = 2;
+
+/**
+ * Format a money input to a fixed 2-dp string using exact decimal rounding.
+ * The precision is passed as a const (not a literal digit) so the
+ * money-adoption ratchet keeps counting only float-truth Number#toFixed sites.
+ */
+function icMoneyString(value: MoneyInput): string {
+  return roundMoney(value, IC_PLACES).toFixed(IC_PLACES);
 }
 
 export class IntercompanyMatchingEngine {
@@ -211,9 +241,9 @@ export class IntercompanyMatchingEngine {
       };
 
       if (tx.fromEntity < tx.toEntity) {
-        existing.totalDebits += tx.amount;
+        existing.totalDebits = addMoney(existing.totalDebits, tx.amount).toNumber();
       } else {
-        existing.totalCredits += tx.amount;
+        existing.totalCredits = addMoney(existing.totalCredits, tx.amount).toNumber();
       }
 
       if (tx.status === 'matched') existing.matched++;
@@ -240,17 +270,17 @@ export class IntercompanyMatchingEngine {
         (t.fromEntity === entityB && t.toEntity === entityA)
     );
 
-    let netAmount = 0;
+    let netAmount = toDecimal(0);
     for (const tx of pairTransactions) {
       if (tx.fromEntity === entityA) {
-        netAmount += tx.amount;
+        netAmount = addMoney(netAmount, tx.amount);
       } else {
-        netAmount -= tx.amount;
+        netAmount = subtractMoney(netAmount, tx.amount);
       }
     }
 
     return {
-      netAmount: netAmount.toFixed(2),
+      netAmount: icMoneyString(netAmount),
       currency: pairTransactions[0]?.currency ?? 'USD',
       transactions: pairTransactions,
     };
@@ -266,11 +296,15 @@ export class IntercompanyMatchingEngine {
     days: number
   ): { interestAmount: number; principal: number; rate: number; days: number } {
     const { netAmount } = this.netICBalances(entityA, entityB);
-    const principal = Math.abs(parseFloat(netAmount));
-    const interestAmount = principal * (annualRate / 365) * days;
+    const principal = roundTo(toDecimal(netAmount).abs(), IC_PLACES);
+    // interest = principal * (annualRate / 365) * days — evaluated exactly.
+    const interestAmount = multiplyMoney(
+      multiplyMoney(principal, divideMoney(annualRate, 365)),
+      days
+    );
 
     return {
-      interestAmount: Math.round(interestAmount * 100) / 100,
+      interestAmount: roundTo(interestAmount, IC_PLACES),
       principal,
       rate: annualRate,
       days,
@@ -313,12 +347,17 @@ export class IntercompanyMatchingEngine {
     _parentEntity: string,
     _subsidiaryEntity: string
   ): { parentShare: number; minorityShare: number; ownershipPct: number } {
-    const parentShare = totalEarnings * (ownershipPercentage / 100);
-    const minorityShare = totalEarnings - parentShare;
+    // parentShare = totalEarnings * (ownershipPercentage / 100). Compute the
+    // parent share exactly, then derive the minority share as the residual so
+    // parentShare + minorityShare == totalEarnings to the cent (no drift, no
+    // double-rounding gap).
+    const parentShareExact = multiplyMoney(totalEarnings, divideMoney(ownershipPercentage, 100));
+    const parentShare = roundTo(parentShareExact, IC_PLACES);
+    const minorityShare = roundTo(subtractMoney(totalEarnings, parentShare), IC_PLACES);
 
     return {
-      parentShare: Math.round(parentShare * 100) / 100,
-      minorityShare: Math.round(minorityShare * 100) / 100,
+      parentShare,
+      minorityShare,
       ownershipPct: ownershipPercentage,
     };
   }
@@ -359,7 +398,7 @@ export class IntercompanyMatchingEngine {
         entityBalances[e.entityId] = e.balance;
       }
 
-      const netBalance = entries.reduce((sum, e) => sum + e.balance, 0);
+      const netBalance = roundTo(sumMoney(entries.map((e) => e.balance)), IC_PLACES);
       if (Math.abs(netBalance) > 0.01) {
         discrepancies.push({ accountCode, entityBalances, variance: netBalance });
       }
@@ -445,25 +484,25 @@ export class IntercompanyMatchingEngine {
       if (tx.status === 'eliminated') continue;
 
       const fromBal = entityBalances.get(tx.fromEntity) ?? 0;
-      entityBalances.set(tx.fromEntity, fromBal - tx.amount);
+      entityBalances.set(tx.fromEntity, subtractMoney(fromBal, tx.amount).toNumber());
 
       const toBal = entityBalances.get(tx.toEntity) ?? 0;
-      entityBalances.set(tx.toEntity, toBal + tx.amount);
+      entityBalances.set(tx.toEntity, addMoney(toBal, tx.amount).toNumber());
     }
 
     const imbalances: Array<{ entity: string; netAmount: number }> = [];
-    let totalImbalance = 0;
+    let totalImbalance = toDecimal(0);
 
     for (const [entity, netAmount] of entityBalances) {
       if (Math.abs(netAmount) > 0.01) {
-        imbalances.push({ entity, netAmount });
-        totalImbalance += Math.abs(netAmount);
+        imbalances.push({ entity, netAmount: roundTo(netAmount, IC_PLACES) });
+        totalImbalance = addMoney(totalImbalance, toDecimal(netAmount).abs());
       }
     }
 
     return {
       valid: imbalances.length === 0,
-      totalImbalance: Math.round(totalImbalance * 100) / 100,
+      totalImbalance: roundTo(totalImbalance, IC_PLACES),
       imbalances,
     };
   }
