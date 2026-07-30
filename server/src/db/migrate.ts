@@ -15,6 +15,54 @@ function runSqlFile(filePath: string): void {
   db.exec(sql);
 }
 
+/**
+ * F-0004: Period close state machine.
+ *
+ * Creates the period_close_state table and adds a close_state column to
+ * fiscal_periods if it doesn't exist. Existing is_closed=1 rows are migrated
+ * to close_state='hard-close'; is_closed=0 rows become 'open'.
+ */
+function createPeriodCloseStateTable(): void {
+  // Create period close audit events table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS period_close_audit (
+      id TEXT PRIMARY KEY,
+      period_id TEXT NOT NULL,
+      from_state TEXT NOT NULL,
+      to_state TEXT NOT NULL,
+      actor_id TEXT NOT NULL,
+      reason TEXT,
+      approval_id TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (period_id) REFERENCES fiscal_periods(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_period_close_audit_period
+      ON period_close_audit(period_id);
+    CREATE INDEX IF NOT EXISTS idx_period_close_audit_actor
+      ON period_close_audit(actor_id);
+  `);
+
+  // Add close_state column to fiscal_periods if it doesn't exist
+  const columns = db.prepare('PRAGMA table_info(fiscal_periods)').all() as { name: string }[];
+  const hasCloseState = columns.some((c) => c.name === 'close_state');
+
+  if (!hasCloseState) {
+    db.exec(`
+      ALTER TABLE fiscal_periods ADD COLUMN close_state TEXT NOT NULL DEFAULT 'open'
+        CHECK (close_state IN ('open', 'soft-close', 'hard-close', 'locked'));
+    `);
+
+    // Migrate existing is_closed values to close_state
+    db.exec(`
+      UPDATE fiscal_periods SET close_state = 'hard-close' WHERE is_closed = 1;
+      UPDATE fiscal_periods SET close_state = 'open' WHERE is_closed = 0 OR is_closed IS NULL;
+    `);
+
+    console.log('[migrate] Migrated fiscal_periods.is_closed → close_state');
+  }
+}
+
 function createAuthTables(): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -84,6 +132,11 @@ export function runMigrations(): void {
   // Create audit logging tables
   console.log('[migrate] Creating audit tables...');
   createAuditTables();
+
+  // F-0004: Period close state machine — add close_state column
+  // Migration: is_closed (boolean) → close_state (enum: open/soft-close/hard-close/locked)
+  console.log('[migrate] Applying period close state machine migration...');
+  createPeriodCloseStateTable();
 
   console.log('[migrate] All migrations complete.');
 }

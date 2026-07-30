@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { db } from '../db/connection.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
-import { validate } from '../middleware/validate.js';
+import { filterByEntityAccess } from '../middleware/entityAuth.js';
 import { auditService } from '../services/AuditService.js';
 import type { AuditCategory, AuditSeverity, AuditAction } from '../services/AuditService.js';
 
@@ -14,11 +13,15 @@ router.use(authMiddleware);
 // Only Admin and Manager can access audit logs
 router.use(requireRole('Admin', 'Manager'));
 
+// Apply entity scoping to all audit routes
+// Admin sees all entities; non-admin sees only their entity's audit data
+router.use(filterByEntityAccess);
+
 // ---------------------------------------------------------------------------
 // Schemas
 // ---------------------------------------------------------------------------
 
-const querySchema = z.object({
+const _querySchema = z.object({
   category: z
     .enum(['user_action', 'data_change', 'login_attempt', 'permission_change', 'system_event'])
     .optional(),
@@ -33,8 +36,9 @@ const querySchema = z.object({
   limit: z.coerce.number().int().min(1).max(1000).optional(),
   offset: z.coerce.number().int().min(0).optional(),
 });
+type QueryFilter = z.infer<typeof _querySchema>;
 
-const loginAttemptsSchema = z.object({
+const _loginAttemptsSchema = z.object({
   email: z.string().optional(),
   ipAddress: z.string().optional(),
   success: z.coerce.boolean().optional(),
@@ -42,8 +46,9 @@ const loginAttemptsSchema = z.object({
   endDate: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(1000).optional(),
 });
+type LoginAttemptsFilter = z.infer<typeof _loginAttemptsSchema>;
 
-const permissionChangesSchema = z.object({
+const _permissionChangesSchema = z.object({
   targetUserId: z.string().optional(),
   changedByUserId: z.string().optional(),
   changeType: z
@@ -61,8 +66,9 @@ const permissionChangesSchema = z.object({
   endDate: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(1000).optional(),
 });
+type PermissionChangesFilter = z.infer<typeof _permissionChangesSchema>;
 
-const dataChangesSchema = z.object({
+const _dataChangesSchema = z.object({
   tableName: z.string().optional(),
   recordId: z.string().optional(),
   userId: z.string().optional(),
@@ -71,8 +77,9 @@ const dataChangesSchema = z.object({
   endDate: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(1000).optional(),
 });
+type DataChangesFilter = z.infer<typeof _dataChangesSchema>;
 
-const exportSchema = z.object({
+const _exportSchema = z.object({
   format: z.enum(['csv', 'json']).default('csv'),
   category: z
     .enum(['user_action', 'data_change', 'login_attempt', 'permission_change', 'system_event'])
@@ -81,6 +88,7 @@ const exportSchema = z.object({
   endDate: z.string().optional(),
   userId: z.string().optional(),
 });
+type ExportFilter = z.infer<typeof _exportSchema>;
 
 // ---------------------------------------------------------------------------
 // GET / — Query audit log entries
@@ -88,7 +96,7 @@ const exportSchema = z.object({
 
 router.get('/', (req, res) => {
   try {
-    const filter = req.query as z.infer<typeof querySchema>;
+    const filter = req.query as QueryFilter;
     const result = auditService.query({
       category: filter.category as AuditCategory | undefined,
       action: filter.action as AuditAction | undefined,
@@ -139,7 +147,7 @@ router.get('/stats', (req, res) => {
 
 router.get('/login-attempts', (req, res) => {
   try {
-    const filter = req.query as z.infer<typeof loginAttemptsSchema>;
+    const filter = req.query as LoginAttemptsFilter;
     const entries = auditService.getLoginAttempts({
       email: filter.email,
       ipAddress: filter.ipAddress,
@@ -162,7 +170,7 @@ router.get('/login-attempts', (req, res) => {
 
 router.get('/permission-changes', (req, res) => {
   try {
-    const filter = req.query as z.infer<typeof permissionChangesSchema>;
+    const filter = req.query as PermissionChangesFilter;
     const entries = auditService.getPermissionChanges({
       targetUserId: filter.targetUserId,
       changedByUserId: filter.changedByUserId,
@@ -186,7 +194,7 @@ router.get('/permission-changes', (req, res) => {
 
 router.get('/data-changes', (req, res) => {
   try {
-    const filter = req.query as z.infer<typeof dataChangesSchema>;
+    const filter = req.query as DataChangesFilter;
     const entries = auditService.getDataChanges({
       tableName: filter.tableName,
       recordId: filter.recordId,
@@ -273,7 +281,7 @@ router.get('/retention', (req, res) => {
 
 router.post('/export', (req, res) => {
   try {
-    const { format, ...filter } = req.body as z.infer<typeof exportSchema>;
+    const { format, ...filter } = req.body as ExportFilter;
 
     if (format === 'csv') {
       const csv = auditService.exportCSV({

@@ -37,18 +37,11 @@ pub fn run_with_builder(builder: tauri::Builder<tauri::Wry>) {
                 .add_migrations("sqlite:finplan.db", migrations)
                 .build(),
         )
-        .plugin(tauri_plugin_updater::Builder::new().build())
+        // F-0007 fix: updater plugin is registered but disabled in tauri.conf.json.
+        // The stale startup check (handle.updater().check().await) has been removed.
+        // Re-enable the updater check only when controlled update infrastructure
+        // (endpoints + signing key + tests) is in place (F-0020).
         .invoke_handler(tauri::generate_handler![get_app_info])
-        .setup(|app| {
-            // Check for updates on startup
-            let handle = app.handle().clone();
-            std::thread::spawn(move || {
-                tauri::async_runtime::block_on(async move {
-                    let _ = handle.updater().check().await;
-                });
-            });
-            Ok(())
-        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

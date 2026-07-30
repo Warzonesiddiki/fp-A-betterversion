@@ -23,10 +23,10 @@ jobs:
     name: Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -41,10 +41,10 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -53,16 +53,23 @@ jobs:
         run: npm ci
 
       - name: ESLint
-        run: npx eslint src
+        run: npx eslint src --max-warnings 0
 
+  # F-0002: Sharded test execution to avoid CI timeout.
+  # 8 shards run in parallel; each has its own timeout and artifact output.
+  # The aggregate job requires all shards to pass.
   test:
-    name: Unit Tests
+    name: Unit Tests (shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -70,26 +77,60 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests with coverage
-        run: node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --coverage --reporter=default
+      - name: Run test shard
+        run: node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --shard=${{ matrix.shard }}/8 --reporter=default --reporter=json --outputFile=./test-results-shard-${{ matrix.shard }}.json
+        timeout-minutes: 10
+        env:
+          VITEST_TIMEOUT: 60000
 
-      - name: Upload coverage report
+      - name: Upload shard results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4
         with:
-          name: coverage-report
-          path: coverage/
+          name: test-results-shard-${{ matrix.shard }}
+          path: test-results-shard-${{ matrix.shard }}.json
           retention-days: 14
+
+  test-aggregate:
+    name: Unit Tests (aggregate)
+    if: always()
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all shards passed
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "::error::One or more test shards failed"
+            exit 1
+          fi
+          echo "All test shards passed"
 
   build:
     name: Build & Bundle Check
     runs-on: ubuntu-latest
-    needs: [typecheck, lint]
+    needs: [typecheck, lint, server-test]
+
+  server-test:
+    name: Server Tests
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install server dependencies
+        run: cd server && npm ci
+
+      - name: Run server tests
+        run: cd server && npm test
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -169,7 +210,7 @@ jobs:
 
       - name: Upload build artifacts
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4
         with:
           name: dist
           path: dist/
@@ -180,10 +221,10 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -195,7 +236,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Download build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4
         with:
           name: dist
           path: dist/
@@ -205,34 +246,26 @@ jobs:
 
       - name: Upload E2E report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
 
   a11y:
-    # A11Y-P0-4: NEVER-AGAIN RULE #50 (A11Y-CI-ENFORCEMENT, proposed by Artemis)
-    # Critical a11y violations MUST fail CI. The actual a11y runner is
-    # Mnemosyne-owned (A11Y-P0-3: install @axe-core/playwright or equivalent
-    # and define `test:a11y` in package.json).
-    #
-    # Gates:
-    # - Skipped if `npm run test:a11y` is not defined (pre-A11Y-P0-3 state)
-    #   so this PR can merge without blocking on the runner install.
-    # - Once Mnemosyne ships A11Y-P0-3 (defines test:a11y), this job
-    #   auto-activates and enforces.
-    # - Waivers: documented in docs/a11y/WAIVERS.md (90-day auto-expiry).
-    #   CI does NOT auto-apply waivers; PRs must cite the waiver ID.
+    # A11Y-P0-4: NEVER-AGAIN RULE #50 (A11Y-CI-ENFORCEMENT)
+    # Critical a11y violations MUST fail CI. The `test:a11y` script is
+    # defined in package.json. This gate is now BLOCKING.
+    # Waivers: documented in docs/a11y/WAIVERS.md (90-day auto-expiry).
+    # CI does NOT auto-apply waivers; PRs must cite the waiver ID.
     name: A11Y (axe-core)
     needs: [build]
     runs-on: ubuntu-latest
-    continue-on-error: true  # Pre-Mnemosyne A11Y-P0-3: allow merge
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -241,7 +274,7 @@ jobs:
         run: npm ci
 
       - name: Download build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4
         with:
           name: dist
           path: dist/
@@ -264,7 +297,7 @@ jobs:
 
       - name: Upload A11Y report
         if: always() && steps.detect.outputs.runner == 'present'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4
         with:
           name: a11y-report
           path: |
@@ -275,7 +308,7 @@ jobs:
   summary:
     name: CI Summary
     if: always()
-    needs: [typecheck, lint, test, build, e2e, a11y]
+    needs: [typecheck, lint, test-aggregate, build, e2e, a11y, server-test]
     runs-on: ubuntu-latest
     steps:
       - name: Check results
@@ -286,14 +319,14 @@ jobs:
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Type Check | ${{ needs.typecheck.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Lint | ${{ needs.lint.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Unit Tests | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests (sharded) | ${{ needs.test-aggregate.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
           echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped (A11Y-P0-3 pending)' || ':warning: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ needs.typecheck.result }}" != "success" ] || \
              [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.test-aggregate.result }}" != "success" ] || \
              [ "${{ needs.build.result }}" != "success" ]; then
             echo ""
             echo ":x: **CI FAILED** - One or more required checks did not pass."

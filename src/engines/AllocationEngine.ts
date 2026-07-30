@@ -2,6 +2,11 @@
 // ALLOCATION ENGINE — Cost/Revenue Allocation for FP&A
 // Supports direct, driver-based, step-down, and reciprocal allocation methods
 // Pure TypeScript, deterministic, testable, no external dependencies
+//
+// MONEY PRIMITIVE: All financial calculations use Decimal.js via @/utils/money.
+// The hand-rolled round2() function has been replaced with roundMoney() which
+// uses Decimal.js ROUND_HALF_UP for exact penny precision. Rounding correction
+// uses allocateMoney() to ensure parts always sum exactly to the parent.
 // =============================================================================
 
 /**
@@ -11,9 +16,10 @@
  * @category allocation
  * @sector 16 (all)
  * @since 1.0.0
- * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 20th engine)
- * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
+
+import Decimal from 'decimal.js';
+import { toDecimal, roundTo, allocateMoney, DEFAULT_CURRENCY_PLACES } from '@/utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -75,17 +81,21 @@ export interface ReciprocalConfig {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Helpers — Decimal-based
 // ---------------------------------------------------------------------------
 
-const EPSILON = 0.01;
+const EPSILON = new Decimal('0.01');
 
-function round2(n: number): number {
-  return Math.round(n * 100) / 100;
+/** Round to 2 decimal places using Decimal.js ROUND_HALF_UP (replaces hand-rolled round2). */
+function r2(n: number | Decimal): number {
+  return roundTo(n, DEFAULT_CURRENCY_PLACES);
 }
 
-function sumArray(arr: number[]): number {
-  return arr.reduce((a, b) => a + b, 0);
+/** Decimal-based sum that avoids float drift. */
+function dSum(arr: number[]): Decimal {
+  let acc = new Decimal(0);
+  for (const v of arr) acc = acc.plus(v);
+  return acc;
 }
 
 function generateTimestamp(): string {
@@ -97,7 +107,7 @@ function generateTimestamp(): string {
 // ---------------------------------------------------------------------------
 
 export class AllocationEngine {
-  // --- Direct Allocation ---
+  // --- Direct Allocation (Decimal-based) ---
 
   static allocateDirect(rule: AllocationRule, amount: number): AllocationResult {
     AllocationEngine.validateDirectRule(rule);
@@ -116,28 +126,15 @@ export class AllocationEngine {
       };
     }
 
-    const allocations: AllocationEntry[] = rule.targets.map((target) => {
-      const allocated = round2(amount * (target.percentage / 100));
-      return {
-        target: target.dimensionMember,
-        amount: allocated,
-        percentage: target.percentage,
-      };
-    });
+    const amountD = toDecimal(amount, 'amount');
+    const weights = rule.targets.map((t) => t.percentage);
+    const allocatedDecimals = allocateMoney(amountD, weights);
 
-    const totalAllocated = round2(sumArray(allocations.map((a) => a.amount)));
-    const roundingDiff = round2(amount - totalAllocated);
-
-    // Apply rounding correction to the largest allocation target
-    if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
-      const largestIdx = allocations.reduce(
-        (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
-        0
-      );
-      if (allocations[largestIdx]!) {
-        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
-      }
-    }
+    const allocations: AllocationEntry[] = rule.targets.map((target, i) => ({
+      target: target.dimensionMember,
+      amount: allocatedDecimals[i]!.toNumber(),
+      percentage: target.percentage,
+    }));
 
     return {
       ruleId: rule.id,
@@ -148,7 +145,7 @@ export class AllocationEngine {
     };
   }
 
-  // --- Driver-Based Allocation ---
+  // --- Driver-Based Allocation (Decimal-based) ---
 
   static allocateByDriver(
     rule: AllocationRule,
@@ -173,9 +170,9 @@ export class AllocationEngine {
       throw new Error(`Allocation rule "${rule.name}": must have at least one target.`);
     }
 
-    // Compute weighted driver values
-    const weightedDrivers: Array<{ target: string; weightedValue: number }> = [];
-    let totalWeightedDriver = 0;
+    // Compute weighted driver values using Decimal
+    const weightedDrivers: Array<{ target: string; weightedValue: Decimal }> = [];
+    let totalWeightedDriver = new Decimal(0);
 
     for (const target of rule.targets) {
       const rawDriver = driverValues[target.dimensionMember] ?? 0;
@@ -184,39 +181,30 @@ export class AllocationEngine {
           `Allocation rule "${rule.name}": driver value for "${target.dimensionMember}" cannot be negative.`
         );
       }
-      const weighted = rawDriver * target.driverWeight;
+      const weighted = new Decimal(rawDriver).times(target.driverWeight);
       weightedDrivers.push({ target: target.dimensionMember, weightedValue: weighted });
-      totalWeightedDriver += weighted;
+      totalWeightedDriver = totalWeightedDriver.plus(weighted);
     }
 
-    if (totalWeightedDriver === 0) {
+    if (totalWeightedDriver.isZero()) {
       throw new Error(
         `Allocation rule "${rule.name}": total weighted driver value is zero. Cannot allocate.`
       );
     }
 
-    const allocations: AllocationEntry[] = weightedDrivers.map((wd) => {
-      const pct = (wd.weightedValue / totalWeightedDriver) * 100;
-      const allocated = round2(amount * (wd.weightedValue / totalWeightedDriver));
+    // Use Decimal for allocation weights
+    const weights = weightedDrivers.map((wd) => wd.weightedValue.toNumber());
+    const amountD = toDecimal(amount, 'amount');
+    const allocatedDecimals = allocateMoney(amountD, weights);
+
+    const allocations: AllocationEntry[] = weightedDrivers.map((wd, i) => {
+      const pct = wd.weightedValue.div(totalWeightedDriver).times(100);
       return {
         target: wd.target,
-        amount: allocated,
-        percentage: round2(pct),
+        amount: allocatedDecimals[i]!.toNumber(),
+        percentage: r2(pct),
       };
     });
-
-    // Rounding correction
-    const totalAllocated = round2(sumArray(allocations.map((a) => a.amount)));
-    const roundingDiff = round2(amount - totalAllocated);
-    if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
-      const largestIdx = allocations.reduce(
-        (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
-        0
-      );
-      if (allocations[largestIdx]!) {
-        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
-      }
-    }
 
     return {
       ruleId: rule.id,
@@ -227,7 +215,7 @@ export class AllocationEngine {
     };
   }
 
-  // --- Step-Down Allocation ---
+  // --- Step-Down Allocation (Decimal-based) ---
 
   static allocateStepDown(config: StepDownConfig): AllocationResult[] {
     const { serviceDepartments, productionDepartments, serviceCosts, servicePercentages } = config;
@@ -239,37 +227,39 @@ export class AllocationEngine {
       throw new Error('Step-down allocation requires at least one production department.');
     }
 
-    // Validate percentages for each service department
+    // Validate percentages for each service department using Decimal
     for (const svcDept of serviceDepartments) {
       const percentages = servicePercentages[svcDept] ?? {};
       const allReceivers = [
         ...serviceDepartments.filter((d) => d !== svcDept),
         ...productionDepartments,
       ];
-      const totalPct = sumArray(allReceivers.map((d) => percentages[d] ?? 0));
-      if (Math.abs(totalPct - 100) > EPSILON) {
+      const totalPct = dSum(allReceivers.map((d) => percentages[d] ?? 0));
+      if (totalPct.minus(100).abs().greaterThan(EPSILON)) {
         throw new Error(
-          `Step-down allocation: percentages for "${svcDept}" sum to ${totalPct}%, expected 100%.`
+          `Step-down allocation: percentages for "${svcDept}" sum to ${totalPct.toNumber()}%, expected 100%.`
         );
       }
     }
 
-    // Track remaining costs for all departments
-    const remainingCosts: Record<string, number> = { ...serviceCosts };
+    // Track remaining costs using Decimal
+    const remainingCosts: Record<string, Decimal> = {};
+    for (const [dept, cost] of Object.entries(serviceCosts)) {
+      remainingCosts[dept] = toDecimal(cost, `serviceCosts[${dept}]`);
+    }
     for (const prodDept of productionDepartments) {
       if (remainingCosts[prodDept] === undefined) {
-        remainingCosts[prodDept] = 0;
+        remainingCosts[prodDept] = new Decimal(0);
       }
     }
 
     const results: AllocationResult[] = [];
     const processedServices: string[] = [];
 
-    // Process each service department in order
     for (const svcDept of serviceDepartments) {
-      const costToAllocate = remainingCosts[svcDept] ?? 0;
+      const costToAllocate = remainingCosts[svcDept] ?? new Decimal(0);
 
-      if (costToAllocate === 0) {
+      if (costToAllocate.isZero()) {
         results.push({
           ruleId: `step-down-${svcDept}`,
           allocations: [],
@@ -282,53 +272,45 @@ export class AllocationEngine {
       }
 
       const percentages = servicePercentages[svcDept] ?? {};
-      // Allocate to remaining service departments and all production departments
       const receivers = [
         ...serviceDepartments.filter((d) => !processedServices.includes(d) && d !== svcDept),
         ...productionDepartments,
       ];
 
+      const weights = receivers.map((r) => percentages[r] ?? 0);
+      const allocatedDecimals = allocateMoney(costToAllocate, weights);
+
       const allocations: AllocationEntry[] = [];
-      for (const receiver of receivers) {
+      for (let i = 0; i < receivers.length; i++) {
+        const receiver = receivers[i]!;
         const pct = percentages[receiver] ?? 0;
         if (pct > 0) {
-          const allocated = round2(costToAllocate * (pct / 100));
+          const allocated = allocatedDecimals[i]!;
           allocations.push({
             target: receiver,
-            amount: allocated,
+            amount: allocated.toNumber(),
             percentage: pct,
           });
-          remainingCosts[receiver] = round2((remainingCosts[receiver] ?? 0) + allocated);
+          remainingCosts[receiver] = (remainingCosts[receiver] ?? new Decimal(0)).plus(allocated);
         }
       }
 
-      // Rounding correction
-      const totalAllocated = round2(sumArray(allocations.map((a) => a.amount)));
-      const roundingDiff = round2(costToAllocate - totalAllocated);
-      if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
-        const largestIdx = allocations.reduce(
-          (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
-          0
-        );
-        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
-      }
-
-      remainingCosts[svcDept] = 0;
+      remainingCosts[svcDept] = new Decimal(0);
       processedServices.push(svcDept);
 
       results.push({
         ruleId: `step-down-${svcDept}`,
         allocations,
-        totalAllocated: costToAllocate,
+        totalAllocated: costToAllocate.toNumber(),
         timestamp: generateTimestamp(),
-        auditComment: `Step-down allocation for "${svcDept}": allocated ${costToAllocate} to ${allocations.length} receivers.`,
+        auditComment: `Step-down allocation for "${svcDept}": allocated ${costToAllocate.toNumber()} to ${allocations.length} receivers.`,
       });
     }
 
     return results;
   }
 
-  // --- Reciprocal Allocation ---
+  // --- Reciprocal Allocation (Decimal-based Gauss-Seidel) ---
 
   static allocateReciprocal(config: ReciprocalConfig): AllocationResult[] {
     const { departments, departmentCosts, servicePercentages } = config;
@@ -337,60 +319,59 @@ export class AllocationEngine {
       throw new Error('Reciprocal allocation requires at least one department.');
     }
 
-    // Validate: each department's outgoing percentages should sum to <= 100
+    // Validate using Decimal
     for (const dept of departments) {
       const percentages = servicePercentages[dept] ?? {};
-      const totalPct = sumArray(
-        departments.filter((d) => d !== dept).map((d) => percentages[d] ?? 0)
-      );
-      if (totalPct > 100 + EPSILON) {
+      const totalPct = dSum(departments.filter((d) => d !== dept).map((d) => percentages[d] ?? 0));
+      if (totalPct.greaterThan(100 + EPSILON.toNumber())) {
         throw new Error(
-          `Reciprocal allocation: service percentages from "${dept}" sum to ${totalPct}%, exceeds 100%.`
+          `Reciprocal allocation: service percentages from "${dept}" sum to ${totalPct.toNumber()}%, exceeds 100%.`
         );
       }
     }
 
-    // Solve simultaneous equations using iterative approximation (Gauss-Seidel)
-    // For each department i: totalCost_i = directCost_i + sum_j(pct_ji * totalCost_j)
-    const totalCosts: Record<string, number> = {};
+    // Gauss-Seidel with Decimal arithmetic for financial truth
+    const totalCosts: Record<string, Decimal> = {};
     for (const dept of departments) {
-      totalCosts[dept] = departmentCosts[dept] ?? 0;
+      totalCosts[dept] = toDecimal(departmentCosts[dept] ?? 0, `departmentCosts[${dept}]`);
     }
 
     const MAX_ITERATIONS = 1000;
-    const CONVERGENCE_THRESHOLD = 0.001;
+    const CONVERGENCE_THRESHOLD = new Decimal('0.001');
 
     for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
-      let maxDelta = 0;
+      let maxDelta = new Decimal(0);
 
       for (const dept of departments) {
-        const directCost = departmentCosts[dept] ?? 0;
-        let allocatedFromOthers = 0;
+        const directCost = toDecimal(departmentCosts[dept] ?? 0, `directCost[${dept}]`);
+        let allocatedFromOthers = new Decimal(0);
 
         for (const otherDept of departments) {
           if (otherDept === dept) continue;
           const pct = (servicePercentages[otherDept] ?? {})[dept] ?? 0;
-          allocatedFromOthers += totalCosts![otherDept]! * (pct / 100);
+          allocatedFromOthers = allocatedFromOthers.plus(
+            totalCosts[otherDept]!.times(pct).div(100)
+          );
         }
 
-        const newTotal = directCost + allocatedFromOthers;
-        const delta = Math.abs(newTotal - totalCosts![dept]!);
-        if (delta > maxDelta) maxDelta = delta;
+        const newTotal = directCost.plus(allocatedFromOthers);
+        const delta = newTotal.minus(totalCosts[dept]!).abs();
+        if (delta.greaterThan(maxDelta)) maxDelta = delta;
         totalCosts[dept] = newTotal;
       }
 
-      if (maxDelta < CONVERGENCE_THRESHOLD) break;
+      if (maxDelta.lessThan(CONVERGENCE_THRESHOLD)) break;
     }
 
-    // Generate results for each department
+    // Generate results
     const results: AllocationResult[] = [];
 
     for (const dept of departments) {
       const percentages = servicePercentages[dept] ?? {};
-      const costToAllocate = totalCosts[dept];
+      const costToAllocate = totalCosts[dept]!;
       const receivers = departments.filter((d) => d !== dept);
 
-      if (costToAllocate === 0) {
+      if (costToAllocate.isZero()) {
         results.push({
           ruleId: `reciprocal-${dept}`,
           allocations: [],
@@ -401,36 +382,42 @@ export class AllocationEngine {
         continue;
       }
 
-      const allocations: AllocationEntry[] = [];
-      for (const receiver of receivers) {
-        const pct = percentages[receiver] ?? 0;
-        if (pct > 0) {
-          const allocated = round2(costToAllocate! * (pct / 100));
-          allocations.push({
-            target: receiver,
-            amount: allocated,
-            percentage: round2(pct),
-          });
-        }
+      const weights = receivers.map((r) => percentages[r] ?? 0);
+      const hasPositiveWeights = weights.some((w) => w > 0);
+
+      // If no positive weights, department has no outgoing services — skip allocation
+      if (!hasPositiveWeights) {
+        results.push({
+          ruleId: `reciprocal-${dept}`,
+          allocations: [],
+          totalAllocated: r2(costToAllocate),
+          timestamp: generateTimestamp(),
+          auditComment: `Reciprocal allocation for "${dept}": total cost ${r2(costToAllocate)}, no outgoing service percentages.`,
+        });
+        continue;
       }
 
-      // Rounding correction
-      const totalAllocated = round2(sumArray(allocations.map((a) => a.amount)));
-      const roundingDiff = round2(costToAllocate! - totalAllocated);
-      if (Math.abs(roundingDiff) > 0 && allocations.length > 0) {
-        const largestIdx = allocations.reduce(
-          (maxIdx, a, idx, arr) => (a.amount > arr[maxIdx]!.amount ? idx : maxIdx),
-          0
-        );
-        allocations[largestIdx]!.amount = round2(allocations[largestIdx]!.amount + roundingDiff);
+      const allocatedDecimals = allocateMoney(costToAllocate, weights);
+
+      const allocations: AllocationEntry[] = [];
+      for (let i = 0; i < receivers.length; i++) {
+        const receiver = receivers[i]!;
+        const pct = percentages[receiver] ?? 0;
+        if (pct > 0) {
+          allocations.push({
+            target: receiver,
+            amount: allocatedDecimals[i]!.toNumber(),
+            percentage: r2(pct),
+          });
+        }
       }
 
       results.push({
         ruleId: `reciprocal-${dept}`,
         allocations,
-        totalAllocated: round2(costToAllocate!),
+        totalAllocated: r2(costToAllocate),
         timestamp: generateTimestamp(),
-        auditComment: `Reciprocal allocation for "${dept}": total cost ${round2(costToAllocate!)} (direct + reciprocal), allocated to ${allocations.length} receivers.`,
+        auditComment: `Reciprocal allocation for "${dept}": total cost ${r2(costToAllocate)} (direct + reciprocal), allocated to ${allocations.length} receivers.`,
       });
     }
 
@@ -472,10 +459,10 @@ export class AllocationEngine {
       throw new Error(`Allocation rule "${rule.name}": must have at least one target.`);
     }
 
-    const totalPercentage = round2(sumArray(rule.targets.map((t) => t.percentage)));
-    if (Math.abs(totalPercentage - 100) > EPSILON) {
+    const totalPercentage = dSum(rule.targets.map((t) => t.percentage));
+    if (totalPercentage.minus(100).abs().greaterThan(EPSILON)) {
       throw new Error(
-        `Allocation rule "${rule.name}": target percentages sum to ${totalPercentage}%, expected 100%.`
+        `Allocation rule "${rule.name}": target percentages sum to ${totalPercentage.toNumber()}%, expected 100%.`
       );
     }
 
@@ -515,21 +502,28 @@ export class AllocationEngine {
     totalAmount: number
   ): Record<string, number> {
     if (totalAmount === 0) return {};
+    const totalD = toDecimal(totalAmount, 'totalAmount');
     const result: Record<string, number> = {};
     for (const alloc of allocations) {
-      result[alloc.target] = round2((alloc.amount / totalAmount) * 100);
+      result[alloc.target] = r2(toDecimal(alloc.amount, 'amount').div(totalD).times(100));
     }
     return result;
   }
 
   static mergeAllocationResults(results: AllocationResult[]): Record<string, number> {
-    const merged: Record<string, number> = {};
+    const merged: Record<string, Decimal> = {};
     for (const result of results) {
       for (const alloc of result.allocations) {
-        merged[alloc.target] = round2((merged[alloc.target] ?? 0) + alloc.amount);
+        merged[alloc.target] = (merged[alloc.target] ?? new Decimal(0)).plus(
+          toDecimal(alloc.amount, 'amount')
+        );
       }
     }
-    return merged;
+    const result: Record<string, number> = {};
+    for (const [key, value] of Object.entries(merged)) {
+      result[key] = r2(value);
+    }
+    return result;
   }
 
   static detectCircularReferences(

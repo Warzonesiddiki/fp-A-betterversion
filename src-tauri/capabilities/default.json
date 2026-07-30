@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-capability.json",
   "identifier": "default",
-  "description": "Default capabilities for the FinPlan Pro application (least-privilege, F-0019)",
+  "description": "Default capabilities for the FinPlan Pro application (least-privilege, F-0019). Scoped to app data only — no desktop, document, or download access (F-0005 fix).",
   "windows": ["main"],
   "permissions": [
     "core:default",
@@ -11,9 +11,6 @@
     "fs:scope-applocaldata-recursive",
     "fs:scope-appconfig-recursive",
     "fs:scope-applog-recursive",
-    "fs:scope-document-recursive",
-    "fs:scope-download-recursive",
-    "fs:scope-desktop-recursive",
     "dialog:default",
     "sql:allow-load",
     "sql:allow-select",

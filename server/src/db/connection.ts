@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +13,6 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let db: any;
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -56,6 +56,7 @@ try {
             rowObj.end_date = params[5];
             rowObj.period_type = params[6];
             rowObj.is_closed = params[7] ?? 0;
+            rowObj.close_state = params[8] ?? 'open';
           }
           const existingIdx = tables
             .get(tableName)!
@@ -71,14 +72,59 @@ try {
         if (match) {
           const tableName = match[1]!;
           const rows = tables.get(tableName) || [];
+          // Filter by WHERE id = ? if present
+          const whereMatch = this.sql.match(/WHERE\s+id\s*=\s*\?/i);
           for (const r of rows) {
+            // If WHERE id = ? is present, only update matching rows
+            if (whereMatch && r.id !== params[params.length - 1]) continue;
+
             if (tableName === 'fiscal_periods') {
-              if (lower.includes('is_closed = 1')) {
+              // For parameterized updates with close_state = ?, is_closed = ?
+              if (
+                lower.includes('close_state') &&
+                lower.includes('is_closed') &&
+                params.length >= 2
+              ) {
+                // Parse the SET clause to determine param order
+                const setClause = this.sql.match(/SET\s+(.*?)\s+WHERE/i)?.[1] ?? '';
+                const setParts = setClause.split(',').map((p: string) => p.trim());
+                const closeStateIdx = setParts.findIndex((p: string) =>
+                  p.toLowerCase().startsWith('close_state')
+                );
+                const isClosedIdx = setParts.findIndex((p: string) =>
+                  p.toLowerCase().startsWith('is_closed')
+                );
+
+                // Check if close_state is parameterized (has ?) or literal
+                if (closeStateIdx >= 0 && setParts[closeStateIdx]!.includes('?')) {
+                  r.close_state = params[closeStateIdx] ?? 'open';
+                } else if (lower.includes("close_state = 'open'")) {
+                  r.close_state = 'open';
+                }
+
+                // Check if is_closed is parameterized or literal
+                if (isClosedIdx >= 0 && setParts[isClosedIdx]!.includes('?')) {
+                  r.is_closed = params[isClosedIdx] ?? 0;
+                  r[7] = r.is_closed;
+                } else if (lower.includes('is_closed = 1')) {
+                  r.is_closed = 1;
+                  r[7] = 1;
+                } else if (lower.includes('is_closed = 0')) {
+                  r.is_closed = 0;
+                  r[7] = 0;
+                }
+              } else if (lower.includes('is_closed = 1')) {
                 r.is_closed = 1;
                 r[7] = 1;
+                if (lower.includes('close_state')) {
+                  const csMatch = this.sql.match(/close_state\s*=\s*'([^']+)'/);
+                  if (csMatch) r.close_state = csMatch[1];
+                }
+                if (!r.close_state) r.close_state = 'soft-close';
               } else if (lower.includes('is_closed = 0')) {
                 r.is_closed = 0;
                 r[7] = 0;
+                r.close_state = 'open';
               }
             }
           }
@@ -92,17 +138,23 @@ try {
         const rows = tables.get('fiscal_periods') || [];
         if (lower.includes('is_closed = 1')) {
           const found = rows.find(
-            (r: any) =>
-              r !== null &&
-              (Number(r.is_closed) === 1 || Number(r[7]) === 1)
+            (r: any) => r !== null && (Number(r.is_closed) === 1 || Number(r[7]) === 1)
           );
           return found || null;
         }
         const matchId = params[0];
         const found = rows.find((r: any) => r.id === matchId || r[0] === matchId);
-        return found || rows[rows.length - 1] || null;
+        const result = found || rows[rows.length - 1] || null;
+        // Ensure close_state is always present on fiscal_periods
+        if (result && !result.close_state) {
+          result.close_state = result.is_closed === 1 ? 'soft-close' : 'open';
+        }
+        return result;
       }
-      if (lower.includes('select checksum') || (lower.includes('from audit_log') && lower.includes('where id ='))) {
+      if (
+        lower.includes('select checksum') ||
+        (lower.includes('from audit_log') && lower.includes('where id ='))
+      ) {
         const id = params[0];
         const rows = tables.get('audit_log') || [];
         const found = rows.find((r: any) => r.id === id || r[0] === id);
@@ -117,7 +169,9 @@ try {
         }
         if (lower.includes('where') && params.length > 0) {
           const id = params[0];
-          const found = rows.find((r: any) => r.id === id || r[0] === id || params.includes(r.id) || params.includes(r[0]));
+          const found = rows.find(
+            (r: any) => r.id === id || r[0] === id || params.includes(r.id) || params.includes(r[0])
+          );
           if (found) return found;
         }
         return rows[rows.length - 1] || null;

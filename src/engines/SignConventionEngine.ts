@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { AccountType } from '../types';
+import Decimal from 'decimal.js';
+import { toDecimal, roundTo, DEFAULT_CURRENCY_PLACES } from '@/utils/money';
 
 export interface VarianceResult {
   absolute: number;
@@ -56,9 +58,6 @@ export class SignConventionEngine {
    * Revenue positive = good. Expense negative = good for comparison.
    */
   static formatForDisplay(value: number, accountType: AccountType): number {
-    const naturalSign = SignConventionEngine.getNaturalSign(accountType);
-    // Revenue, Liability, Equity: show as-is (positive = credit balance)
-    // Expense, Asset: show as-is (positive = debit balance)
     // For variance display, expenses are inverted so "under budget" shows positive
     if (accountType === 'COGS' || accountType === 'OpEx' || accountType === 'CapEx') {
       return -value; // Invert so under-budget = positive
@@ -67,7 +66,7 @@ export class SignConventionEngine {
   }
 
   /**
-   * Calculate variance with correct sign convention.
+   * Calculate variance with correct sign convention using Decimal.
    * For revenue: favorable = actual > budget
    * For expenses: favorable = actual < budget (under budget)
    */
@@ -76,14 +75,16 @@ export class SignConventionEngine {
     budget: number,
     accountType: AccountType
   ): VarianceResult {
-    const absolute = actual - budget;
-    const percentage = budget !== 0 ? (absolute / Math.abs(budget)) * 100 : 0;
-    const isFavorable = SignConventionEngine.isFavorable(absolute, accountType);
+    const actualD = toDecimal(actual, 'actual');
+    const budgetD = toDecimal(budget, 'budget');
+    const absolute = actualD.minus(budgetD);
+    const percentage = budgetD.isZero() ? new Decimal(0) : absolute.div(budgetD.abs()).times(100);
+    const isFavorable = SignConventionEngine.isFavorable(absolute.toNumber(), accountType);
 
     let direction: 'favorable' | 'unfavorable' | 'neutral';
     let className: string;
 
-    if (Math.abs(percentage) < 0.01) {
+    if (percentage.abs().lessThan('0.01')) {
       direction = 'neutral';
       className = 'text-gray-600';
     } else if (isFavorable) {
@@ -94,7 +95,13 @@ export class SignConventionEngine {
       className = 'text-red-600';
     }
 
-    return { absolute, percentage, isFavorable, direction, className };
+    return {
+      absolute: absolute.toNumber(),
+      percentage: roundTo(percentage, 1),
+      isFavorable,
+      direction,
+      className,
+    };
   }
 
   /**
@@ -114,7 +121,7 @@ export class SignConventionEngine {
   }
 
   /**
-   * Get variance display text with correct formatting.
+   * Get variance display text with correct formatting using Decimal.
    */
   static formatVarianceText(
     actual: number,
@@ -126,7 +133,7 @@ export class SignConventionEngine {
     const sign = result.absolute >= 0 ? '+' : '';
     return {
       text: `${sign}${formatCurrency(result.absolute)}`,
-      percentText: `(${result.percentage >= 0 ? '+' : ''}${result.percentage.toFixed(1)}%)`,
+      percentText: `(${result.percentage >= 0 ? '+' : ''}${roundTo(result.percentage, 1)}%)`,
       className: result.className,
     };
   }
@@ -137,8 +144,6 @@ export class SignConventionEngine {
    * For P&L display, we want expenses as positive numbers.
    */
   static normalizeForDisplay(storedValue: number, _accountType: AccountType): number {
-    // In most accounting systems, values are stored with their natural sign
-    // This function ensures consistent display regardless of storage convention
     return storedValue;
   }
 
