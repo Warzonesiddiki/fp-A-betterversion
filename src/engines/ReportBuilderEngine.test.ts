@@ -1854,6 +1854,17 @@ describe('ReportBuilderEngine', () => {
       const sum = ReportBuilderEngine.calculateColumnSum(resolved, 0, 0, 100);
       expect(sum).toBe(100);
     });
+
+    it('sums fractional values exactly (no IEEE-754 drift)', () => {
+      // 0.1 + 0.2 + 0.3 is 0.6000000000000001 in floats; exact decimal → 0.6.
+      const resolved: ResolvedCell[][] = [
+        [{ cellId: 'a', rawValue: 0.1, formattedValue: '0.1', binding: null }],
+        [{ cellId: 'b', rawValue: 0.2, formattedValue: '0.2', binding: null }],
+        [{ cellId: 'c', rawValue: 0.3, formattedValue: '0.3', binding: null }],
+      ];
+      const sum = ReportBuilderEngine.calculateColumnSum(resolved, 0, 0, 2);
+      expect(sum).toBe(0.6);
+    });
   });
 
   describe('identifySectionRanges', () => {

@@ -33,14 +33,15 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 14 of
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 16 of
   190 engine/store modules** (`AllocationEngine`, `ConsolidationEngine`, `ConstructionEngine`,
   `FXEngine`, `FiscalCalendarEngine`, `IntercompanyMatchingEngine`, `PeriodCloseStateMachine`,
-  `ReconciliationEngine`, `SOXComplianceEngine`, `SignConventionEngine`, `ThreeStatementEngine`,
-  `ValidationEngine`, `WorkingCapitalEngine`, `glStore`) plus `SafeMathParser`. Across all
-  financial paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 14 of 355
-  modules with 84 raw `toFixed(n)` sites remaining — run `npm run money:adoption` for the current
-  measurement. The remaining financial paths
+  `ReconciliationEngine`, `ReportBuilderEngine`, `SOXComplianceEngine`, `SignConventionEngine`,
+  `ThreeStatementEngine`, `ValidationEngine`, `WorkingCapitalEngine`, `glStore`,
+  `report-builder-formulas`) plus `SafeMathParser`. Across all financial paths (`src/engines`,
+  `src/store`, `src/utils`, `src/services`) adoption is 16 of 355 modules with 84 raw `toFixed(n)`
+  sites remaining — run `npm run money:adoption` for the current measurement. The remaining
+  financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
   CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
 - **Background Web Workers (4):** `consolidation`, `monte-carlo`, `batch-calc` and `storage`

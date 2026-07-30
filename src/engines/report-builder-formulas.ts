@@ -19,6 +19,7 @@ import {
   type ReportDefinition,
 } from './report-builder-types';
 import { generateReportId } from './report-builder-templates';
+import { sumMoney } from '../utils/money';
 
 // ---------------------------------------------------------------------------
 // Formula Parsing
@@ -361,14 +362,17 @@ export function calculateColumnSum(
   startRow: number,
   endRow: number
 ): number {
-  let sum = 0;
+  // Collect finite numeric cell values and sum them with exact decimal
+  // arithmetic so report subtotal/total rows do not accumulate IEEE-754 drift
+  // over long columns.
+  const values: number[] = [];
   for (let i = startRow; i <= endRow && i < resolvedCells.length; i++) {
     const cell = resolvedCells[i]?.[columnIndex];
     if (cell && typeof cell.rawValue === 'number' && Number.isFinite(cell.rawValue)) {
-      sum += cell.rawValue;
+      values.push(cell.rawValue);
     }
   }
-  return sum;
+  return sumMoney(values).toNumber();
 }
 
 export function identifySectionRanges(layout: ReportLayout): Array<{

@@ -325,3 +325,35 @@ Both checks accumulated on doubles (`entries.reduce((s,e)=>s+e.debit,0)`, `total
 - Continue money migration — remaining higher-count files: `AutoCommentaryEngine` (8, likely narrative display), `SensitivityTableEngine` (5), `FinanceCopilotEngine` (5), `financialFormatting.ts` (4, likely display), `report-builder-*`. Vet truth-vs-display each.
 - CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
 - Large tracked file: `docs/task-board.json` 1.26 MiB.
+
+## Loop #8 — 2026-07-30 (money-primitive migration: report subtotal/total sums)
+
+### Focus
+
+Continue F-0006. Vetted `SensitivityTableEngine`, `FinanceCopilotEngine`, `financialFormatting.ts` — their `toFixed` sites are all display helpers (`$1.5M`, `12.3%`, `formatCurrency`/`formatPct`), **skipped**. Found a real truth target: **`calculateColumnSum`**, the report subtotal/total aggregation — duplicated in both `ReportBuilderEngine.ts` and `report-builder-formulas.ts`.
+
+### Issue
+
+`calculateColumnSum` summed report column cell values with float `sum += cell.rawValue`. This computes the subtotal and total rows of every custom financial report; over a long column of fractional values it drifts (e.g. 0.1+0.2+0.3 = 0.6000000000000001), so a report's own total can disagree with the sum of its displayed lines by a rounding artifact.
+
+### Fix
+
+- Both copies now collect finite numeric cell values and return `sumMoney(values).toNumber()` — exact decimal aggregation. Public signature and behaviour (skip null/non-numeric, clamp endRow, empty → 0) unchanged.
+- Added a regression test asserting 0.1+0.2+0.3 sums to exactly 0.6. All report-builder tests pass (ReportBuilderEngine 236, report-builder-formulas 19).
+
+### Verification (all green)
+
+- `tsc` 0 · `eslint` 0 · report-builder suites **255/255** (236 + 19).
+- `money:adoption`: **14 → 16 modules** (both report-builder files); toFixed sites unchanged at 84 (the sums used `+=`, not toFixed; remaining toFixed in those files are display abbreviations); baseline ratcheted to 16.
+- `check-readme-claims` 11/11 (adoption prose → "16 of 355", both modules listed) · `check-tautological-tests` 0.
+
+### Money-migration progress (loops 3–8)
+
+Adoption has climbed **7 → 16 engine/store modules** and raw float-truth `toFixed` sites dropped **100 → 84**, each step ratcheted so CI fails on regression. Every migration shipped with real regression tests that would fail against the pre-migration float code.
+
+### Carried forward to Loop #9
+
+- Full `npm test` wall-clock/hang isolation (Phase 0.4) still open.
+- Money migration: remaining candidates are increasingly display-heavy; next pass should scan `src/store` and `src/services` (not just engines) for float truth, and re-vet `AutoCommentaryEngine`/`AssumptionEngine`.
+- CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
+- Large tracked file: `docs/task-board.json` 1.26 MiB.

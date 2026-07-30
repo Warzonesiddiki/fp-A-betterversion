@@ -4,6 +4,8 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
+import { sumMoney } from '../utils/money';
+
 // --- Cell Type Definitions ---
 
 export type CellType = 'metric' | 'formula' | 'text' | 'chart' | 'table';
@@ -1912,14 +1914,16 @@ export class ReportBuilderEngine {
     startRow: number,
     endRow: number
   ): number {
-    let sum = 0;
+    // Sum finite numeric cell values with exact decimal arithmetic so report
+    // subtotal/total rows do not accumulate IEEE-754 drift over long columns.
+    const values: number[] = [];
     for (let i = startRow; i <= endRow && i < resolvedCells.length; i++) {
       const cell = resolvedCells[i]?.[columnIndex];
       if (cell && typeof cell.rawValue === 'number' && Number.isFinite(cell.rawValue)) {
-        sum += cell.rawValue;
+        values.push(cell.rawValue);
       }
     }
-    return sum;
+    return sumMoney(values).toNumber();
   }
 
   /**
