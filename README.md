@@ -33,12 +33,12 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 12 of
-  190 engine/store modules** (`AllocationEngine`, `ConsolidationEngine`, `FXEngine`,
-  `FiscalCalendarEngine`, `IntercompanyMatchingEngine`, `PeriodCloseStateMachine`,
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 13 of
+  190 engine/store modules** (`AllocationEngine`, `ConsolidationEngine`, `ConstructionEngine`,
+  `FXEngine`, `FiscalCalendarEngine`, `IntercompanyMatchingEngine`, `PeriodCloseStateMachine`,
   `ReconciliationEngine`, `SignConventionEngine`, `ThreeStatementEngine`, `ValidationEngine`,
   `WorkingCapitalEngine`, `glStore`) plus `SafeMathParser`. Across all financial paths
-  (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 12 of 355 modules with
+  (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 13 of 355 modules with
   96 raw `toFixed(n)` sites remaining — run `npm run money:adoption` for the current measurement.
   The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a

@@ -265,3 +265,35 @@ Continue F-0006. Next float-truth target from the density scan: `ValidationEngin
 - Continue money migration (next: `report-builder-export`/`ReportBuilderEngine` scaling helpers are display-only — skip; real targets are `InsuranceEngine` loss/expense ratios, `ConstructionEngine` percent-complete revenue, `SOXComplianceEngine`, `AnomalyDetectionEngine` thresholds — vet each for truth-vs-display first).
 - CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
 - Large tracked file: `docs/task-board.json` 1.26 MiB.
+
+## Loop #6 — 2026-07-30 (money-primitive migration: ConstructionEngine)
+
+### Focus
+
+Continue F-0006. Vetted the next density-scan candidates for truth-vs-display:
+
+- `InsuranceEngine` loss/expense ratios — **skipped**: values come from a seeded pseudo-random generator (mock trend data), not real financial truth.
+- `report-builder-export` / `ReportBuilderEngine` `toFixed(1)` sites — **skipped**: `$1.5M`/`$1.5K` abbreviation formatting, i.e. display.
+- `ConstructionEngine` — **migrated**: `calculateStats` and `getProjectPortfolio` aggregate real GL revenue/cost/billings/WIP amounts in floats.
+
+### Issue
+
+`ConstructionEngine.calculateStats` summed each account class with float `reduce((s,e)=>s+Math.abs(...),0)`, then derived `overUnderBilled = billings - wipValue`, `avgGrossMargin`, and `totalBacklog` on doubles. `getProjectPortfolio` accumulated per-project `revenue`/`costs` with float `+=`. These feed the Construction sector dashboard; summing many GL lines drifts. Existing tests only asserted `revenueYTD` and array shapes — `overUnderBilled`, `avgGrossMargin`, `wipValue`, `billings`, and `totalBacklog` were entirely unverified.
+
+### Fix
+
+- Aggregation routed through `sumMoney`/`addMoney`/`subtractMoney`/`toDecimal`/`roundTo`; a `sumAbs(prefix)` helper sums absolute GL amounts exactly. Derived metrics (margin, backlog, over/under-billed) computed with exact decimal then rounded once. `getProjectPortfolio` per-project accumulation and margin/percent-complete likewise exact. The two remaining `toFixed(1)` calls are genuine display formatting (`$1.5M` budget label, `12.3%` margin label) and were intentionally left.
+- Strengthened tests from 4 → 6: added an exact-metrics assertion (avgGrossMargin 55, overUnderBilled −600,000, totalBacklog 2,100,000, wipValue 600,000, billings 0) and a fractional no-drift case (0.1+0.2 → exactly 0.30, margin 0%).
+
+### Verification (all green)
+
+- `tsc` 0 · `eslint` 0 · `ConstructionEngine.test.ts` **6/6** · `ConstructionDashboardPage.test.tsx` 2/2 (consumer unaffected).
+- `money:adoption`: **12 → 13 modules** (toFixed sites unchanged at 96 — 3 truth accumulations became money calls, 2 display toFixed remain); baseline ratcheted to 13.
+- `check-readme-claims` 11/11 (adoption prose → "13 of 355", ConstructionEngine listed) · `check-tautological-tests` 0.
+
+### Carried forward to Loop #7
+
+- Full `npm test` wall-clock/hang isolation (Phase 0.4) still open.
+- Continue money migration — vet `SOXComplianceEngine`, `AnomalyDetectionEngine`, `SensitivityTableEngine`, `AutoCommentaryEngine` (8 toFixed, likely mixed truth/display) for real truth sites.
+- CI hardening patch `ci-patches/0002-*.patch` still awaiting maintainer apply.
+- Large tracked file: `docs/task-board.json` 1.26 MiB.
