@@ -120,6 +120,7 @@ const DebtSchedulePage = lazy(() => import('./pages/cash/DebtSchedulePage') as a
 const WorkingCapitalPage = lazy(() => import('./pages/cash/WorkingCapitalPage') as any);
 const InvestmentPage = lazy(() => import('./pages/treasury/InvestmentPage') as any);
 const FXExposurePage = lazy(() => import('./pages/treasury/FXExposurePage') as any);
+const LoanAmortizationPage = lazy(() => import('./pages/treasury/LoanAmortizationPage') as any);
 
 // Workforce
 const HeadcountPlanPage = lazy(() => import('./pages/workforce/HeadcountPlanPage') as any);
@@ -567,6 +568,7 @@ export default function App() {
                 <Route path="/cash/working-capital" element={<WorkingCapitalPage />} />
                 <Route path="/treasury/investments" element={<InvestmentPage />} />
                 <Route path="/treasury/fx-exposure" element={<FXExposurePage />} />
+                <Route path="/treasury/loan-amortization" element={<LoanAmortizationPage />} />
               </Route>
 
               {/* Reports Group */}

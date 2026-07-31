@@ -38,7 +38,7 @@ export default defineConfig({
     // Bench runs are slow; allow generous per-test timeout
     testTimeout: 60_000,
     hookTimeout: 60_000,
-    // Memory-bounded concurrency (--max-old-space-size=81920 in package.json)
+    // Memory-bounded concurrency (--max-old-space-size=8192 in package.json)
     pool: 'threads',
     // Vitest 4: poolOptions moved to top-level, not under test.
     // Omit here; CLI flags / defaults apply.

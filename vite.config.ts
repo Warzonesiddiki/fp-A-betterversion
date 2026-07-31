@@ -243,12 +243,10 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     environment: 'jsdom',
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        maxThreads: 4,
-        minThreads: 2,
-      },
-    },
+    // Vitest 4 removed `poolOptions` — worker limits are now top-level and
+    // `minWorkers`/`minThreads` was dropped (only `maxWorkers` has effect).
+    // See https://vitest.dev/guide/migration#pool-rework
+    maxWorkers: 4,
     testTimeout: 30000,
     hookTimeout: 30000,
     env: {

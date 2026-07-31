@@ -31,7 +31,7 @@ npm run tauri:build      # Tauri desktop build (NSIS/DMG/AppImage)
 
 npm run lint             # ESLint --fix on src/
 npm run format           # Prettier --write on src/**/*.{ts,tsx,css,md}
-npm run test             # Vitest single run (80GB heap: --max-old-space-size=81920)
+npm run test             # Vitest single run (8GB heap: --max-old-space-size=8192)
 npm run test:watch       # Vitest watch mode
 npm run test:e2e         # Playwright (auto-starts dev server)
 
@@ -45,25 +45,25 @@ CI order: `tsc --noEmit → lint → test → build → bundle size check`.
 
 Entry: `src/main.tsx` → `src/App.tsx` (all routes defined here, all lazy-loaded via `React.lazy`).
 
-| Directory | Purpose |
-|-----------|---------|
-| `src/store/` | Zustand stores (`{domain}Store.ts`), colocated `.test.ts` |
-| `src/engines/` | Pure calculation engines — financial logic, no side effects (Consolidation, FX, Scenario, Tax, SaaS Metrics, Monte Carlo, …) |
-| `src/pages/` | Route pages, 30+ domain subdirs, all `React.lazy` |
-| `src/components/ui/` | 80+ atomic UI primitives, barrel-exported via `index.ts` |
-| `src/components/` | Domain components (budget/, reports/, analytics/, allocations/, ai/, …) |
-| `src/hooks/` | 40+ custom hooks (`use` prefix) |
-| `src/workers/` | Web Workers (Monte Carlo, consolidation, formula, batch-calc, storage) |
-| `src/services/` | API layer, WebSocket, collaboration, mock data |
-| `src/plugins/` | Plugin system (registry, sandbox, marketplace) |
-| `src/utils/` | Formatters, calculations, `masterStorage`, encryption |
-| `src/config/` | Design tokens, keyboard shortcuts, sector configs |
-| `src/types/` | Shared TS types |
-| `src/templates/` | Report/budget templates |
-| `src/i18n/` | i18next setup + locale resources |
-| `src/test/` | Setup (`setup.ts`), mocks, `testUtils.tsx` (BrowserRouter render helper) |
-| `src-tauri/` | Tauri desktop shell (Rust) |
-| `tests/` | Playwright E2E specs |
+| Directory            | Purpose                                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `src/store/`         | Zustand stores (`{domain}Store.ts`), colocated `.test.ts`                                                                    |
+| `src/engines/`       | Pure calculation engines — financial logic, no side effects (Consolidation, FX, Scenario, Tax, SaaS Metrics, Monte Carlo, …) |
+| `src/pages/`         | Route pages, 30+ domain subdirs, all `React.lazy`                                                                            |
+| `src/components/ui/` | 80+ atomic UI primitives, barrel-exported via `index.ts`                                                                     |
+| `src/components/`    | Domain components (budget/, reports/, analytics/, allocations/, ai/, …)                                                      |
+| `src/hooks/`         | 40+ custom hooks (`use` prefix)                                                                                              |
+| `src/workers/`       | Web Workers (Monte Carlo, consolidation, formula, batch-calc, storage)                                                       |
+| `src/services/`      | API layer, WebSocket, collaboration, mock data                                                                               |
+| `src/plugins/`       | Plugin system (registry, sandbox, marketplace)                                                                               |
+| `src/utils/`         | Formatters, calculations, `masterStorage`, encryption                                                                        |
+| `src/config/`        | Design tokens, keyboard shortcuts, sector configs                                                                            |
+| `src/types/`         | Shared TS types                                                                                                              |
+| `src/templates/`     | Report/budget templates                                                                                                      |
+| `src/i18n/`          | i18next setup + locale resources                                                                                             |
+| `src/test/`          | Setup (`setup.ts`), mocks, `testUtils.tsx` (BrowserRouter render helper)                                                     |
+| `src-tauri/`         | Tauri desktop shell (Rust)                                                                                                   |
+| `tests/`             | Playwright E2E specs                                                                                                         |
 
 **Decoupling rule**: Engines (pure) ← Stores (state) ← Pages/Components (presentation). No fetch in components — use services/ or store actions.
 
@@ -83,9 +83,12 @@ Required middleware order:
 
 ```typescript
 export const useSomeStore = create<State>()(
-  subscribeWithSelector(     // outermost — fine-grained subscriptions
-    persist(                 // middle — for auth/settings/UI prefs; skip for transient data
-      immer((set, get) => ({ // innermost — immutable updates via drafts
+  subscribeWithSelector(
+    // outermost — fine-grained subscriptions
+    persist(
+      // middle — for auth/settings/UI prefs; skip for transient data
+      immer((set, get) => ({
+        // innermost — immutable updates via drafts
         // state + actions
       })),
       { name: 'store-name', storage: masterStorage }

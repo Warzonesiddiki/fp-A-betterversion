@@ -3,26 +3,6 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    trialBalance: [],
-    accountAnalysis: null,
-    columnMappings: [],
-    isLoading: false,
-    importResult: null,
-    setEntries: vi.fn(),
-    setAccounts: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-    setColumnMappings: vi.fn(),
-    importData: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-  })),
-}));
-
 vi.mock('@/engines/ExportEngine', () => ({
   ExportEngine: { exportToPDF: vi.fn() },
 }));
@@ -54,7 +34,6 @@ vi.mock('lucide-react', () => {
     FileText: makeIcon(),
     Calendar: makeIcon(),
     DollarSign: makeIcon(),
-    TrendingUp: makeIcon(),
     Clock: makeIcon(),
     ArrowRight: makeIcon(),
   };
@@ -62,7 +41,7 @@ vi.mock('lucide-react', () => {
 
 import LeaseDashboard from '@/pages/lease/LeaseDashboard';
 
-describe('LeaseDashboard smoke test', () => {
+describe('LeaseDashboard (BATCH-011 — rewire to LeaseEngine)', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <MemoryRouter>
@@ -72,12 +51,15 @@ describe('LeaseDashboard smoke test', () => {
     expect(container).toBeTruthy();
   });
 
-  it('displays no-data state when entries are empty', () => {
-    const { getByText } = render(
+  it('shows real lease liability computed by LeaseEngine (not mock data)', () => {
+    const { getByText, getByTestId } = render(
       <MemoryRouter>
         <LeaseDashboard />
       </MemoryRouter>
     );
-    expect(getByText(/No Lease Data/i)).toBeInTheDocument();
+    expect(getByText(/Lease Portfolio Dashboard/i)).toBeInTheDocument();
+    // Each row's liability is the engine-computed present value (LeaseEngine
+    // is NOT mocked, so this exercises the real PV path).
+    expect(getByTestId('liability-L001')).toBeInTheDocument();
   });
 });

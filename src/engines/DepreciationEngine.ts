@@ -16,6 +16,18 @@
  * sum-of-years-digits, impairment testing, disposal, and revaluation.
  */
 
+import Decimal from 'decimal.js';
+import {
+  allocateMoney,
+  moneyEquals,
+  roundTo,
+  splitMoneyEvenly,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
+import { assertInvariant } from '@/utils/invariants';
+
 export interface Asset {
   id: string;
   name: string;
@@ -49,7 +61,7 @@ export class DepreciationEngine {
 
   static straightLine(cost: number, salvage: number, life: number): number {
     if (life <= 0) return 0;
-    return (cost - salvage) / life;
+    return roundTo(subtractMoney(cost, salvage).div(life));
   }
 
   // ─── Declining Balance ────────────────────────────────────────
@@ -124,7 +136,11 @@ export class DepreciationEngine {
   static sumOfYearsDigits(cost: number, salvage: number, life: number, year: number): number {
     if (life <= 0 || year < 1 || year > life) return 0;
     const sum = (life * (life + 1)) / 2;
-    return ((cost - salvage) * (life - year + 1)) / sum;
+    return roundTo(
+      subtractMoney(cost, salvage)
+        .times(life - year + 1)
+        .div(sum)
+    );
   }
 
   static sumOfYearsDigitsSchedule(
@@ -132,18 +148,32 @@ export class DepreciationEngine {
     salvage: number,
     life: number
   ): DepreciationEntry[] {
-    const sum = (life * (life + 1)) / 2;
-    let accumulated = 0;
+    if (life <= 0) return [];
+    const base = subtractMoney(cost, salvage);
+    // Weights life, life-1, ..., 1 — a weighted allocation that sums EXACTLY to
+    // the depreciable base (largest-remainder), avoiding IEEE-754 drift from
+    // `(cost - salvage) * w / sum` per period.
+    const weights = Array.from({ length: life }, (_, i) => life - i);
+    const parts: Decimal[] = base.gt(0)
+      ? allocateMoney(base, weights)
+      : weights.map(() => new Decimal(0));
+    assertInvariant(
+      moneyEquals(sumMoney(parts), base),
+      'DEP-1',
+      'SYD depreciation must sum to the depreciable base (cost - salvage)'
+    );
+    let accumulated = new Decimal(0);
     const schedule: DepreciationEntry[] = [];
     for (let year = 1; year <= life; year++) {
-      const dep = ((cost - salvage) * (life - year + 1)) / sum;
-      accumulated += dep;
+      const dep = parts[year - 1]!;
+      const beginningValue = toDecimal(cost).minus(accumulated);
+      accumulated = accumulated.plus(dep);
       schedule.push({
         period: year,
-        beginningValue: cost - (accumulated - dep),
-        depreciation: dep,
-        accumulated,
-        endingValue: cost - accumulated,
+        beginningValue: roundTo(beginningValue),
+        depreciation: roundTo(dep),
+        accumulated: roundTo(accumulated),
+        endingValue: roundTo(toDecimal(cost).minus(accumulated)),
       });
     }
     return schedule;
@@ -219,16 +249,28 @@ export class DepreciationEngine {
   ): DepreciationEntry[] {
     switch (method) {
       case 'straightLine': {
-        const dep = this.straightLine(cost, salvage, life);
-        let accumulated = 0;
-        return Array.from({ length: life }, (_, i) => {
-          accumulated += dep;
+        if (life <= 0) return [];
+        const base = subtractMoney(cost, salvage);
+        // Equal split of the depreciable base across the life — parts sum
+        // exactly to (cost - salvage), so the final period lands on salvage.
+        const parts: Decimal[] = base.gt(0)
+          ? splitMoneyEvenly(base, life)
+          : Array.from({ length: life }, () => new Decimal(0));
+        assertInvariant(
+          moneyEquals(sumMoney(parts), base),
+          'DEP-2',
+          'straight-line depreciation must sum to the depreciable base (cost - salvage)'
+        );
+        let accumulated = new Decimal(0);
+        return parts.map((dep, i) => {
+          const beginningValue = toDecimal(cost).minus(accumulated);
+          accumulated = accumulated.plus(dep);
           return {
             period: i + 1,
-            beginningValue: cost - (accumulated - dep),
-            depreciation: dep,
-            accumulated,
-            endingValue: cost - accumulated,
+            beginningValue: roundTo(beginningValue),
+            depreciation: roundTo(dep),
+            accumulated: roundTo(accumulated),
+            endingValue: roundTo(toDecimal(cost).minus(accumulated)),
           };
         });
       }

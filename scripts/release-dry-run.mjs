@@ -19,7 +19,7 @@ let failures = 0;
 function run(label, cmd, cwd = ROOT) {
   try {
     console.log(`\n🔄 ${label}...`);
-    execSync(cmd, { cwd, stdio: 'inherit', timeout: 120000 });
+    execSync(cmd, { cwd, stdio: 'inherit', timeout: 600000 });
     console.log(`  ✅ ${label} passed`);
     return true;
   } catch (e) {

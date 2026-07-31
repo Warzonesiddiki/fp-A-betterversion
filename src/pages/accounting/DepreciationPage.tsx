@@ -13,20 +13,74 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { TrendingDown, Calculator, Download, Settings } from 'lucide-react';
+import { DepreciationEngine, type DepreciationEntry } from '@/engines/DepreciationEngine';
 
-interface Asset {
+type DisplayMethod = 'Straight-Line' | 'Declining Balance' | 'MACRS' | 'Units of Production';
+type EngineMethod = 'straightLine' | 'decliningBalance' | 'macrs' | 'unitsOfProduction';
+
+interface AssetInput {
   id: string;
   name: string;
   cost: number;
   salvage: number;
   life: number;
-  method: 'Straight-Line' | 'Declining Balance' | 'MACRS' | 'Units of Production';
+  method: DisplayMethod;
   acquired: string;
-  accumulated: number;
-  currentValue: number;
 }
 
-const MOCK_ASSETS: Asset[] = [
+/** Fixed as-of year so accumulated depreciation / NBV are deterministic. */
+const AS_OF_YEAR = 2026;
+
+function toEngineMethod(m: DisplayMethod): EngineMethod {
+  switch (m) {
+    case 'Declining Balance':
+      return 'decliningBalance';
+    case 'MACRS':
+      return 'macrs';
+    case 'Units of Production':
+      return 'unitsOfProduction';
+    default:
+      return 'straightLine';
+  }
+}
+
+interface Asset extends AssetInput {
+  /** REAL schedule from DepreciationEngine (money-migrated; sums to cost−salvage). */
+  schedule: DepreciationEntry[];
+  /** Real accumulated depreciation through the as-of year. */
+  accumulated: number;
+  /** Real net book value = cost − accumulated (never below salvage). */
+  currentValue: number;
+  annualDepreciation: number;
+}
+
+function computeAsset(a: AssetInput): Asset {
+  let schedule = DepreciationEngine.generateSchedule(
+    toEngineMethod(a.method),
+    a.cost,
+    a.salvage,
+    a.life
+  );
+  // unitsOfProduction / unsupported MACRS recovery periods return [] — fall back
+  // to straight-line so every asset shows a real computed schedule.
+  if (schedule.length === 0) {
+    schedule = DepreciationEngine.generateSchedule('straightLine', a.cost, a.salvage, a.life);
+  }
+  const yearsElapsed = Math.max(
+    0,
+    Math.min(a.life, AS_OF_YEAR - new Date(a.acquired).getFullYear())
+  );
+  const accumulated = schedule.slice(0, yearsElapsed).reduce((sum, e) => sum + e.depreciation, 0);
+  return {
+    ...a,
+    schedule,
+    accumulated,
+    currentValue: Math.max(a.salvage, a.cost - accumulated),
+    annualDepreciation: schedule[0]?.depreciation ?? 0,
+  };
+}
+
+const ASSET_INPUTS: AssetInput[] = [
   {
     id: '1',
     name: 'Manufacturing Equipment',
@@ -35,8 +89,6 @@ const MOCK_ASSETS: Asset[] = [
     life: 10,
     method: 'Straight-Line',
     acquired: '2020-01-01',
-    accumulated: 225000,
-    currentValue: 275000,
   },
   {
     id: '2',
@@ -46,8 +98,6 @@ const MOCK_ASSETS: Asset[] = [
     life: 30,
     method: 'Straight-Line',
     acquired: '2015-06-15',
-    accumulated: 373333,
-    currentValue: 1626667,
   },
   {
     id: '3',
@@ -57,8 +107,6 @@ const MOCK_ASSETS: Asset[] = [
     life: 5,
     method: 'Declining Balance',
     acquired: '2022-03-01',
-    accumulated: 189000,
-    currentValue: 111000,
   },
   {
     id: '4',
@@ -68,36 +116,45 @@ const MOCK_ASSETS: Asset[] = [
     life: 3,
     method: 'MACRS',
     acquired: '2023-09-15',
-    accumulated: 90000,
-    currentValue: 60000,
   },
 ];
 
+const ASSETS: Asset[] = ASSET_INPUTS.map(computeAsset);
+
 export default function DepreciationPage() {
   const [method, setMethod] = useState<string>('all');
-  const assets = MOCK_ASSETS;
+  const assets = ASSETS;
 
   const filtered = method === 'all' ? assets : assets.filter((a) => a.method === method);
   const totalCost = filtered.reduce((s, a) => s + a.cost, 0);
   const totalAccumulated = filtered.reduce((s, a) => s + a.accumulated, 0);
   const totalValue = filtered.reduce((s, a) => s + a.currentValue, 0);
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  // REAL aggregate book value per year, from each asset's engine schedule.
+
   const scheduleData = useMemo(() => {
-    return Array.from({ length: 10 }, (_, i) => ({
-      year: `Y${i + 1}`,
-      book: Math.max(0, totalCost - (totalCost * (i + 1)) / 10),
-      tax: Math.max(0, totalCost - (totalCost * (i + 1)) / 5),
-    }));
-    // eslint-disable-next-line react-hooks/preserve-manual-memoization
-  }, [totalCost]);
+    const maxYears = 10;
+    return Array.from({ length: maxYears }, (_, i) => {
+      const year = i + 1;
+      let book = 0;
+      for (const a of filtered) {
+        const idx = Math.min(year, a.schedule.length) - 1;
+        const entry = a.schedule[idx];
+        book += entry ? entry.endingValue : a.salvage;
+      }
+      return { year: `Y${year}`, book };
+    });
+  }, [filtered]);
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Depreciation & Amortization</h1>
-          <p className="text-muted-foreground">Asset depreciation schedules and methods</p>
+          <p className="text-muted-foreground">
+            Asset depreciation schedules — values computed live by DepreciationEngine (not mock
+            data)
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
@@ -162,7 +219,7 @@ export default function DepreciationPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Depreciation Schedule</CardTitle>
+            <CardTitle className="text-sm">Book Value Over Time (computed)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -172,13 +229,6 @@ export default function DepreciationPage() {
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(v: any) => `$${(v / 1000).toFixed(0)}K`} />
                 <Line dataKey="book" name="Book Value" stroke="#3B82F6" strokeWidth={2} />
-                <Line
-                  dataKey="tax"
-                  name="Tax Value"
-                  stroke="#F59E0B"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -231,7 +281,7 @@ export default function DepreciationPage() {
                     <td className="px-3 py-2 text-right font-mono">
                       ${(asset.cost / 1000).toFixed(0)}K
                     </td>
-                    <td className="px-3 py-2 text-right font-mono">
+                    <td className="px-3 py-2 text-right font-mono" data-testid={`nbv-${asset.id}`}>
                       ${(asset.currentValue / 1000).toFixed(0)}K
                     </td>
                     <td className="px-3 py-2 text-center text-xs">{asset.method}</td>

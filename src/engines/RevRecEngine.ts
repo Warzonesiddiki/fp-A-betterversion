@@ -1,3 +1,6 @@
+import Decimal from 'decimal.js';
+import { allocateMoney, multiplyMoney, roundTo } from '@/utils/money';
+
 export interface PerformanceObligation {
   id: string;
   description: string;
@@ -64,18 +67,33 @@ export class RevRecEngine {
     // Allocate transaction price across obligations first
     const allocatedPOs = RevRecEngine.allocateTransactionPrice(contract);
 
-    const totalContractValue = contract.totalValue;
-    let totalRecognizedSoFar = 0;
+    // ASC 606 transaction-price allocation done EXACTLY: per-PO values sum to
+    // totalContractValue to the cent (largest-remainder). The previous
+    // `totalContractValue * allocationPercentage` used IEEE-754 doubles, so e.g.
+    // 120000 * (80000/120000) evaluated to 79999.99999999999 and the per-PO
+    // allocations did not reconcile to the contract total. All running totals
+    // stay in Decimal; we round only when emitting numbers.
+    const totalContractValue = new Decimal(contract.totalValue);
+    const weights = allocatedPOs.map((po) =>
+      Number.isFinite(po.standalonePrice) ? po.standalonePrice : 0
+    );
+    const totalStandalone = weights.reduce((a, b) => a + b, 0);
+    const allocated: Decimal[] =
+      totalStandalone > 0 && contract.totalValue > 0
+        ? allocateMoney(contract.totalValue, weights)
+        : weights.map(() => new Decimal(0));
 
-    const poRecognitionState = new Map<string, number>(); // poId -> recognizedAmount
+    let totalRecognizedSoFar = new Decimal(0);
+
+    const poRecognitionState = new Map<string, Decimal>(); // poId -> recognizedAmount
     const poCompletionHistory = new Map<string, number[]>(); // poId -> completion metrics per period
 
     periods.forEach((period, _periodIndex) => {
-      let periodAmount = 0;
+      let periodAmount = new Decimal(0);
 
-      allocatedPOs.forEach((po) => {
-        const allocatedValue = totalContractValue * po.allocationPercentage;
-        const alreadyRecognized = poRecognitionState.get(po.id) || 0;
+      allocatedPOs.forEach((po, i) => {
+        const allocatedValue = allocated[i]!;
+        const alreadyRecognized = poRecognitionState.get(po.id) ?? new Decimal(0);
 
         if (po.recognitionMethod === 'point_in_time') {
           // Point-in-Time: Recognize full allocated value when recognitionDate is reached AND completionMetric is 1
@@ -85,10 +103,9 @@ export class RevRecEngine {
           // Require explicit completion (completionMetric must be exactly 1, not undefined)
           const isCompleted = po.completionMetric !== undefined && po.completionMetric >= 1;
 
-          if (period === recognitionPeriod && isCompleted && alreadyRecognized === 0) {
-            const amountToRecognize = allocatedValue;
-            periodAmount += amountToRecognize;
-            poRecognitionState.set(po.id, alreadyRecognized + amountToRecognize);
+          if (period === recognitionPeriod && isCompleted && alreadyRecognized.isZero()) {
+            periodAmount = periodAmount.plus(allocatedValue);
+            poRecognitionState.set(po.id, alreadyRecognized.plus(allocatedValue));
           }
         } else if (po.recognitionMethod === 'over_time') {
           const pattern = po.recognitionPattern || 'straight_line';
@@ -99,42 +116,49 @@ export class RevRecEngine {
 
             if (period >= startPeriod && period <= endPeriod) {
               const contractPeriods = periods.filter((p) => p >= startPeriod && p <= endPeriod);
-              const monthlyAmount = allocatedValue / Math.max(1, contractPeriods.length);
+              const monthlyAmount = allocatedValue.div(Math.max(1, contractPeriods.length));
 
-              // Ensure we don't over-recognize
-              const amountToRecognize = Math.min(monthlyAmount, allocatedValue - alreadyRecognized);
-              if (amountToRecognize > 0) {
-                periodAmount += amountToRecognize;
-                poRecognitionState.set(po.id, alreadyRecognized + amountToRecognize);
+              // Ensure we don't over-recognize (exact remainder in the final period)
+              const amountToRecognize = Decimal.min(
+                monthlyAmount,
+                allocatedValue.minus(alreadyRecognized)
+              );
+              if (amountToRecognize.gt(0)) {
+                periodAmount = periodAmount.plus(amountToRecognize);
+                poRecognitionState.set(po.id, alreadyRecognized.plus(amountToRecognize));
               }
             }
           } else if (pattern === 'output' || pattern === 'input') {
             // Percentage of Completion (POC) — cumulative method
-            // Track completion metrics over time for proper cumulative recognition
             const currentMetric = po.completionMetric || 0;
             const history = poCompletionHistory.get(po.id) || [];
             history.push(currentMetric);
             poCompletionHistory.set(po.id, history);
 
-            // Use the highest completion metric seen so far (cumulative, non-decreasing)
+            // Cumulative, non-decreasing
             const cumulativeCompletion = Math.max(...history);
-            const targetTotalRecognition = allocatedValue * cumulativeCompletion;
-            const amountToRecognize = Math.max(0, targetTotalRecognition - alreadyRecognized);
+            const targetTotalRecognition = allocatedValue.times(cumulativeCompletion);
+            const amountToRecognize = Decimal.max(
+              new Decimal(0),
+              targetTotalRecognition.minus(alreadyRecognized)
+            );
 
-            if (amountToRecognize > 0) {
-              periodAmount += amountToRecognize;
-              poRecognitionState.set(po.id, alreadyRecognized + amountToRecognize);
+            if (amountToRecognize.gt(0)) {
+              periodAmount = periodAmount.plus(amountToRecognize);
+              poRecognitionState.set(po.id, alreadyRecognized.plus(amountToRecognize));
             }
           }
         }
       });
 
-      totalRecognizedSoFar += periodAmount;
+      totalRecognizedSoFar = totalRecognizedSoFar.plus(periodAmount);
       schedules.push({
         period,
-        amount: periodAmount,
-        recognizedToDate: totalRecognizedSoFar,
-        remainingToRecognize: Math.max(0, totalContractValue - totalRecognizedSoFar),
+        amount: roundTo(periodAmount),
+        recognizedToDate: roundTo(totalRecognizedSoFar),
+        remainingToRecognize: roundTo(
+          Decimal.max(new Decimal(0), totalContractValue.minus(totalRecognizedSoFar))
+        ),
       });
     });
 
@@ -218,7 +242,9 @@ export class RevRecEngine {
     if (probabilityOfReversal >= constraintThreshold) {
       return 0; // Constrain — don't include in transaction price
     }
-    return variableAmount * (1 - probabilityOfReversal);
+    // Money × reversal ratio — use the canonical primitive so the constrained
+    // consideration is rounded to the cent (ROUND_HALF_UP), not a raw float.
+    return roundTo(multiplyMoney(variableAmount, 1 - probabilityOfReversal));
   }
 
   static getDeferredRevenue(schedules: RevenueSchedule[], asOfDate: string): number {

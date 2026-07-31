@@ -12,7 +12,7 @@ npm run tauri:dev        # Tauri dev mode
 npm run tauri:build      # Tauri production build
 npm run lint             # ESLint with --fix
 npm run format           # Prettier --write
-npm run test             # Vitest single run (80GB heap — node --max-old-space-size=81920)
+npm run test             # Vitest single run (8GB heap — node --max-old-space-size=8192)
 npm run test:watch       # Vitest watch mode (same heap)
 npm run test:e2e         # Playwright (tests/ dir, chromium only, auto-starts dev server)
 npx vitest run src/path/to/file.test.ts   # Single test file

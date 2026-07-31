@@ -37,4 +37,12 @@ describe('DepreciationPage', () => {
       screen.getByRole('heading', { name: /Depreciation & Amortization/i, level: 1 })
     ).toBeTruthy();
   });
+
+  it('computes net book value from the real DepreciationEngine (not mock data)', () => {
+    render(<DepreciationPage />);
+    // Manufacturing Equipment: $500K cost, $50K salvage, 10yr straight-line,
+    // acquired 2020. By AS_OF 2026 (6 years elapsed): accumulated = 6 × $45K,
+    // NBV = $500K − $270K = $230K — exact (money-migrated straight-line).
+    expect(screen.getByTestId('nbv-1')).toHaveTextContent('$230K');
+  });
 });

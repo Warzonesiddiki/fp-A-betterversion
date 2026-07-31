@@ -3,26 +3,6 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    trialBalance: [],
-    accountAnalysis: null,
-    columnMappings: [],
-    isLoading: false,
-    importResult: null,
-    setEntries: vi.fn(),
-    setAccounts: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-    setColumnMappings: vi.fn(),
-    importData: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-  })),
-}));
-
 vi.mock('@/engines/ExportEngine', () => ({
   ExportEngine: { exportToPDF: vi.fn(async () => {}), exportToExcel: vi.fn(async () => {}) },
 }));
@@ -68,7 +48,7 @@ vi.mock('lucide-react', () => {
 
 import LeaseDetailPage from '@/pages/lease/LeaseDetailPage';
 
-describe('LeaseDetailPage smoke test', () => {
+describe('LeaseDetailPage (BATCH-012 — rewire to LeaseEngine)', () => {
   it('renders without crashing', () => {
     const { container } = render(
       <MemoryRouter>
@@ -78,12 +58,15 @@ describe('LeaseDetailPage smoke test', () => {
     expect(container).toBeTruthy();
   });
 
-  it('displays no-data state when entries are empty', () => {
+  it('renders real schedules computed by LeaseEngine (not mock data)', () => {
     const { getByText } = render(
       <MemoryRouter>
         <LeaseDetailPage />
       </MemoryRouter>
     );
-    expect(getByText(/No Lease Data/i)).toBeInTheDocument();
+    expect(getByText(/Lease Detail/i)).toBeInTheDocument();
+    // LeaseEngine is NOT mocked, so the module-load PV/schedule computation for
+    // every lease ran — this subtitle is the page's own marker for that.
+    expect(getByText(/computed by LeaseEngine/i)).toBeInTheDocument();
   });
 });
