@@ -33,15 +33,15 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 21 of
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 24 of
   190 engine/store modules** spanning the engines and store layers (`AllocationEngine`,
-  `ConsolidationEngine`, `ConstructionEngine`, `FXEngine`, `FiscalCalendarEngine`,
-  `IntercompanyMatchingEngine`, `PeriodCloseStateMachine`, `ReconciliationEngine`,
+  `ConsolidationEngine`, `ConstructionEngine`, `DepreciationEngine`, `FXEngine`, `FiscalCalendarEngine`,
+  `IntercompanyMatchingEngine`, `LoanAmortizationEngine`, `PeriodCloseStateMachine`, `ReconciliationEngine`, `RevRecEngine`,
   `ReportBuilderEngine`, `SOXComplianceEngine`, `SignConventionEngine`, `ThreeStatementEngine`,
   `ValidationEngine`, `WorkingCapitalEngine`, `report-builder-formulas`, and the `glStore`,
   `glTrialBalanceStore`, `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores)
   plus `SafeMathParser`. Across all financial paths (`src/engines`, `src/store`, `src/utils`,
-  `src/services`) adoption is 21 of 355 modules with 84 raw `toFixed(n)` sites remaining — run
+  `src/services`) adoption is 24 of 355 modules with 84 raw `toFixed(n)` sites remaining — run
   `npm run money:adoption` for the current measurement. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
   CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
@@ -74,7 +74,7 @@ FinPlan Pro follows a **strictly decoupled architecture** separating business lo
 │  └─ Components (284 non-test .tsx)         │
 ├─────────────────────────────────────────────┤
 │  State Management Layer                     │
-│  └─ Zustand Stores (38 stores)             │
+│  └─ Zustand Stores (39 stores)             │
 │  └─ Immer Middleware (immutable updates)   │
 ├─────────────────────────────────────────────┤
 │  Business Logic Layer                       │
@@ -92,7 +92,7 @@ FinPlan Pro follows a **strictly decoupled architecture** separating business lo
 | Directory            | Purpose                                     | Statistics                                            |
 | -------------------- | ------------------------------------------- | ----------------------------------------------------- |
 | `src/engines/`       | Financial calculation engines               | 190 top-level modules (105/181 unreferenced — F-0028) |
-| `src/store/`         | Zustand state stores with persistence       | 38 stores                                             |
+| `src/store/`         | Zustand state stores with persistence       | 39 stores                                             |
 | `src/pages/`         | Route-level containers (lazy-loaded)        | 195 page modules, 78 sector dirs                      |
 | `src/components/ui/` | Atomic UI primitives (barrel-exported)      | 128 components                                        |
 | `src/components/`    | Domain-specific components                  | 284 non-test components in total                      |
@@ -159,8 +159,7 @@ cd fp-A-betterversion
 npm ci
 
 # Development
-npm run dev              # Start Vite dev server @ http://localhost:5173
-npm run dev:watch       # Watch mode for rapid iteration
+npm run dev              # Start Vite dev server @ http://localhost:5173 (HMR watch)
 
 # Build
 npm run build           # Production bundle
@@ -804,11 +803,13 @@ chore: Update dependencies
 npm run dev -- --port 3000
 ```
 
-**Q: Tests timeout with "80GB heap"?**
+**Q: Tests timeout or run out of memory?**
 
 ```bash
-# The test script uses 80GB virtual heap for large datasets
-node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run
+# The test script uses an 8GB heap (node --max-old-space-size=8192),
+# proven sufficient for the full ~900-file suite. If you genuinely OOM,
+# a real defect is masking itself — do not paper over it with a larger heap.
+node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run
 ```
 
 **Q: Tauri build fails on Linux?**
@@ -832,7 +833,7 @@ npm run build -- --analyze  # Vite visualization
 | Metric                | Value                                                                                                                                         |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Primary Language**  | TypeScript (64.1%)                                                                                                                            |
-| **Total Stores**      | 38                                                                                                                                            |
+| **Total Stores**      | 39                                                                                                                                            |
 | **Financial Engines** | 190 top-level (105/181 unreferenced)                                                                                                          |
 | **Pages/Routes**      | 195 page modules                                                                                                                              |
 | **Industry Sectors**  | 78 sector directories (depth varies)                                                                                                          |

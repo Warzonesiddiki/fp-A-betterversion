@@ -57,5 +57,15 @@ describe('LoanAmortizationEngine', () => {
         expect(result!.schedule[i]!.principal).toBeGreaterThan(result!.schedule[i - 1]!.principal);
       }
     });
+
+    it('reconciles to a zero balance and repays the principal exactly (no float drift)', () => {
+      // 360-month loan: raw-float amortization never lands the balance on exactly
+      // 0 (it is Math.max(0, drift)). Decimal + a final-period payoff sets the
+      // last balance to 0.00 exactly and repays the principal to the cent.
+      const result = LoanAmortizationEngine.schedule(100000, 0.06, 360);
+      const totalPrincipal = result.schedule.reduce((sum, row) => sum + row.principal, 0);
+      expect(result!.schedule[359]!.balance).toBe(0); // exact payoff — the discriminator
+      expect(totalPrincipal).toBeCloseTo(100000, 2); // to the cent (float-sum of 360 rows)
+    });
   });
 });

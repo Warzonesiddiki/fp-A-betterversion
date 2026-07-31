@@ -70,4 +70,29 @@ describe('DepreciationEngine', () => {
       expect(result.isGain).toBe(false);
     });
   });
+
+  describe('depreciation sum-preservation (Omega §1 invariants DEP-1/DEP-2)', () => {
+    it('straight-line schedule depreciates exactly cost-salvage and lands on salvage', () => {
+      // cost=1000, salvage=0, life=3: raw (1000/3)*3 drifts to 999.99999, so the
+      // ending value is ~0.0001 not 0. Decimal split lands on exactly 0.
+      const sched = DepreciationEngine.generateSchedule('straightLine', 1000, 0, 3);
+      const total = sched.reduce((s, e) => s + e.depreciation, 0);
+      expect(sched[sched.length - 1]!.endingValue).toBe(0);
+      expect(total).toBeCloseTo(1000, 2);
+    });
+
+    it('sum-of-years-digits schedule depreciates exactly cost-salvage', () => {
+      // life=7 yields repeating-decimal weights (÷28) — raw float drifts; the
+      // largest-remainder allocation reconciles exactly to the depreciable base.
+      const sched = DepreciationEngine.sumOfYearsDigitsSchedule(1000, 0, 7);
+      const total = sched.reduce((s, e) => s + e.depreciation, 0);
+      expect(sched[sched.length - 1]!.endingValue).toBe(0);
+      expect(total).toBeCloseTo(1000, 2);
+    });
+
+    it('straight-line respects salvage value', () => {
+      const sched = DepreciationEngine.generateSchedule('straightLine', 10000, 1000, 5);
+      expect(sched[sched.length - 1]!.endingValue).toBe(1000); // never below salvage
+    });
+  });
 });

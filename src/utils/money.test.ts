@@ -162,3 +162,46 @@ describe('Decimal passthrough', () => {
     expect(() => toDecimal(new Decimal(NaN))).toThrow(InvalidMoneyError);
   });
 });
+
+/**
+ * Property/fuzz proof — self-contained (no fast-check dependency).
+ *
+ * The hand-picked vectors above cover specific cases; this proves the
+ * foundational invariant — Σ allocations === original, to the cent — across
+ * thousands of randomized inputs. RevRecEngine and LoanAmortizationEngine both
+ * rely on allocateMoney never stranding a penny, so this is the load-bearing
+ * correctness property of the money migration.
+ */
+describe('property/fuzz: allocateMoney sum-preservation', () => {
+  // Deterministic LCG — any failure is reproducible from the seed.
+  let seed = 0x0badf00d;
+  const rand = () => {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    return seed / 0x100000000;
+  };
+
+  it('allocations always sum exactly to the original (zero penny drift) over 5000 random inputs', () => {
+    const RUNS = 5000;
+    for (let i = 0; i < RUNS; i++) {
+      const amount = Math.floor(rand() * 1_000_000_000); // $0 .. ~$1e9, integer (cents-exact)
+      const n = 1 + Math.floor(rand() * 12); // 1..12 shares
+      const shares = Array.from({ length: n }, () => Math.floor(rand() * 100)); // weights 0..99
+
+      // allocateMoney's CONTRACT rejects all-zero weights on a non-zero amount;
+      // that is a usage error, not an invariant failure, so it is out of scope.
+      if (amount > 0 && shares.every((w) => w === 0)) continue;
+
+      const parts = allocateMoney(amount, shares);
+      const reconstructed = sumMoney(parts);
+      const whole = toDecimal(amount);
+
+      // INVARIANT 1: the parts reconcile to the original, to the cent.
+      expect(moneyEquals(reconstructed, amount)).toBe(true);
+      // INVARIANT 2: every part is a non-negative slice, none larger than the whole.
+      for (const p of parts) {
+        expect(p.gte(0)).toBe(true);
+        expect(p.lte(whole)).toBe(true);
+      }
+    }
+  });
+});

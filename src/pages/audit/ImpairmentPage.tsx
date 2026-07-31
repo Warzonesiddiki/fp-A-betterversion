@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { AlertTriangle, TrendingDown, Download, CheckCircle } from 'lucide-react';
+import { ImpairmentEngine } from '@/engines/ImpairmentEngine';
+import { DepreciationEngine } from '@/engines/DepreciationEngine';
 
 interface Asset {
   id: string;
@@ -15,56 +17,91 @@ interface Asset {
   testDate: string;
 }
 
-const MOCK_ASSETS: Asset[] = [
+interface AssetInput {
+  id: string;
+  name: string;
+  carryingAmount: number;
+  /** Fair value less costs to sell (observed market value — input). */
+  fairValueLessCostsToSell: number;
+  /** Cash flows for the value-in-use DCF (IAS 36). */
+  cashFlows: number[];
+  discountRate: number;
+  testDate: string;
+}
+
+const ASSET_INPUTS: AssetInput[] = [
   {
     id: '1',
     name: 'Manufacturing Plant A',
     carryingAmount: 5000000,
-    recoverableAmount: 4200000,
-    impairmentLoss: 800000,
-    status: 'impaired',
+    fairValueLessCostsToSell: 4200000,
+    cashFlows: [900000, 900000, 900000, 900000, 900000],
+    discountRate: 0.08,
     testDate: '2026-03-31',
   },
   {
     id: '2',
     name: 'Office Building B',
     carryingAmount: 3000000,
-    recoverableAmount: 3200000,
-    impairmentLoss: 0,
-    status: 'not_impaired',
+    fairValueLessCostsToSell: 3200000,
+    cashFlows: [700000, 700000, 700000, 700000, 700000],
+    discountRate: 0.08,
     testDate: '2026-03-31',
   },
   {
     id: '3',
     name: 'IT Equipment',
     carryingAmount: 800000,
-    recoverableAmount: 600000,
-    impairmentLoss: 200000,
-    status: 'impaired',
+    fairValueLessCostsToSell: 600000,
+    cashFlows: [150000, 150000, 150000, 150000, 150000],
+    discountRate: 0.1,
     testDate: '2026-03-31',
   },
   {
     id: '4',
     name: 'Goodwill',
     carryingAmount: 2000000,
-    recoverableAmount: 1800000,
-    impairmentLoss: 200000,
-    status: 'impaired',
+    fairValueLessCostsToSell: 1800000,
+    cashFlows: [400000, 400000, 400000, 400000, 400000],
+    discountRate: 0.1,
     testDate: '2026-03-31',
   },
   {
     id: '5',
     name: 'Delivery Fleet',
     carryingAmount: 450000,
-    recoverableAmount: 470000,
-    impairmentLoss: 0,
-    status: 'not_impaired',
+    fairValueLessCostsToSell: 470000,
+    cashFlows: [110000, 110000, 110000, 110000, 110000],
+    discountRate: 0.08,
     testDate: '2026-03-31',
   },
 ];
 
+// REAL impairment test (IAS 36): recoverable amount = max(value-in-use DCF, fair
+// value less costs to sell) via ImpairmentEngine; verdict + loss via
+// DepreciationEngine.impairmentTest (pure). The stateful
+// ImpairmentEngine.testImpairment is intentionally avoided at module load (no
+// global history mutation in a read-only page).
+const ASSETS: Asset[] = ASSET_INPUTS.map((input) => {
+  const valueInUse = ImpairmentEngine.calculateValueInUse(input.cashFlows, input.discountRate);
+  const recoverableAmount = ImpairmentEngine.calculateRecoverableAmount(
+    valueInUse,
+    input.fairValueLessCostsToSell
+  );
+  const verdict = DepreciationEngine.impairmentTest(input.carryingAmount, recoverableAmount);
+  return {
+    id: input.id,
+    name: input.name,
+    carryingAmount: input.carryingAmount,
+    recoverableAmount: Math.round(recoverableAmount),
+    impairmentLoss: verdict.impairmentLoss,
+    status: verdict.isImpaired ? ('impaired' as const) : ('not_impaired' as const),
+    testDate: input.testDate,
+  };
+});
+
 export default function ImpairmentPage() {
-  const assets = MOCK_ASSETS;
+  const assets = ASSETS;
   const impaired = assets.filter((a) => a.status === 'impaired');
   const totalCarrying = assets.reduce((s, a) => s + a.carryingAmount, 0);
   const totalRecoverable = assets.reduce((s, a) => s + a.recoverableAmount, 0);

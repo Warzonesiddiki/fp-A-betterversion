@@ -13,7 +13,7 @@
   [@testing-library/react](https://testing-library.com/) on `jsdom`.
   Configured for **threads pool** with **4 max workers** (per
   `vitest.config.ts`); full-suite heap is **80 GB** via
-  `node --max-old-space-size=81920` in the `npm test` script.
+  `node --max-old-space-size=8192` in the `npm test` script.
 - **E2E:** [Playwright](https://playwright.dev/) in `tests/`,
   **chromium only**, 60 s per-test timeout, auto-starts the dev server.
 - **Total tests in repo:** 8,334+ across ~1,000 test files (colocated

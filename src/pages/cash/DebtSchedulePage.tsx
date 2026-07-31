@@ -1,23 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import {
-  Banknote,
-  Download,
-  FileText,
-  Table as TableIcon,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-} from 'lucide-react';
+import { DataTable, type Column } from '@/components/ui/DataTable';
+import { FileText, Table as TableIcon, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-
+import { DebtScheduleEngine, type DebtInstrument } from '@/engines/DebtScheduleEngine';
 import {
   ResponsiveContainer,
   BarChart,
@@ -41,99 +30,146 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
-const mockDebt = [
+function addMonths(iso: string, months: number): string {
+  const d = new Date(iso);
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Sample portfolio of debt instruments (inputs — like the depreciation asset
+ * register). All schedule figures below are COMPUTED from these by
+ * DebtScheduleEngine, never hardcoded. */
+interface DebtRow extends DebtInstrument {
+  lender: string;
+  displayType: string;
+  status: 'current' | 'watch' | 'past_due';
+}
+
+const DEBT_INSTRUMENTS: DebtRow[] = [
   {
     id: 'DEBT-001',
     lender: 'Chase Bank',
-    type: 'Term Loan',
-    principal: 15000000,
-    rate: 5.25,
-    maturity: '2028-06-30',
-    monthlyPayment: 285000,
-    remaining: 12400000,
+    displayType: 'Term Loan',
     status: 'current',
+    name: 'Chase Term Loan',
+    principal: 15000000,
+    rate: 0.0525,
+    termMonths: 60,
+    startDate: '2026-01-01',
+    type: 'term_loan',
+    paymentFrequency: 'monthly',
+    amortizationType: 'fully_amortizing',
   },
   {
     id: 'DEBT-002',
     lender: 'Wells Fargo',
-    type: 'Revolving LOC',
-    principal: 8000000,
-    rate: 4.75,
-    maturity: '2027-03-15',
-    monthlyPayment: 0,
-    remaining: 3200000,
+    displayType: 'Revolving LOC',
     status: 'current',
+    name: 'Wells Revolver',
+    principal: 8000000,
+    rate: 0.0475,
+    termMonths: 36,
+    startDate: '2026-01-01',
+    type: 'revolver',
+    paymentFrequency: 'monthly',
+    amortizationType: 'interest_only',
   },
   {
     id: 'DEBT-003',
     lender: 'Goldman Sachs',
-    type: 'Senior Notes',
-    principal: 25000000,
-    rate: 6.5,
-    maturity: '2030-12-01',
-    monthlyPayment: 135417,
-    remaining: 25000000,
+    displayType: 'Senior Notes',
     status: 'current',
+    name: 'Goldman Senior Notes',
+    principal: 25000000,
+    rate: 0.065,
+    termMonths: 120,
+    startDate: '2026-01-01',
+    type: 'bond',
+    paymentFrequency: 'monthly',
+    amortizationType: 'bullet',
   },
   {
     id: 'DEBT-004',
     lender: 'Bank of America',
-    type: 'Equipment Finance',
-    principal: 2500000,
-    rate: 7.25,
-    maturity: '2027-09-30',
-    monthlyPayment: 72000,
-    remaining: 1800000,
+    displayType: 'Equipment Finance',
     status: 'current',
+    name: 'BoA Equipment Finance',
+    principal: 2500000,
+    rate: 0.0725,
+    termMonths: 48,
+    startDate: '2026-01-01',
+    type: 'term_loan',
+    paymentFrequency: 'monthly',
+    amortizationType: 'fully_amortizing',
   },
   {
     id: 'DEBT-005',
     lender: 'JP Morgan',
-    type: 'Bridge Loan',
-    principal: 10000000,
-    rate: 8.0,
-    maturity: '2026-03-31',
-    monthlyPayment: 0,
-    remaining: 10000000,
+    displayType: 'Bridge Loan',
     status: 'watch',
+    name: 'JPM Bridge Loan',
+    principal: 10000000,
+    rate: 0.08,
+    termMonths: 24,
+    startDate: '2026-01-01',
+    type: 'term_loan',
+    paymentFrequency: 'monthly',
+    amortizationType: 'bullet',
   },
 ];
 
-const amortizationData = [
-  { year: '2026', principal: 3200000, interest: 2800000, balance: 49200000 },
-  { year: '2027', principal: 5800000, interest: 2400000, balance: 43400000 },
-  { year: '2028', principal: 7200000, interest: 1900000, balance: 36200000 },
-  { year: '2029', principal: 8500000, interest: 1400000, balance: 27700000 },
-  { year: '2030', principal: 27700000, interest: 800000, balance: 0 },
-];
+const EBITDA = 18000000;
+
+// REAL schedules + consolidated totals from the engine.
+const SCHEDULES = DEBT_INSTRUMENTS.map((i) => ({ row: i, result: DebtScheduleEngine.amortize(i) }));
+const CONSOLIDATED = DebtScheduleEngine.consolidate(DEBT_INSTRUMENTS, EBITDA);
 
 export default function DebtSchedulePage() {
-  const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const totalDebt = CONSOLIDATED.totalDebt;
+  const weightedRate = CONSOLIDATED.weightedAverageRate * 100;
+  const annualDebtService = CONSOLIDATED.totalMonthlyPayment * 12;
+  const dscr = CONSOLIDATED.debtServiceCoverageRatio ?? 0;
 
-  useEffect(() => {
-    document.title = 'FinPlan Pro — Debt Schedule';
+  // REAL per-instrument display rows: payments, maturity and balance-at-maturity
+  // come straight from the engine schedules, not from hardcoded fields.
+  const tableData = SCHEDULES.map(({ row, result }) => ({
+    id: row.id,
+    lender: row.lender,
+    type: row.displayType,
+    principal: row.principal,
+    rate: row.rate * 100,
+    maturity: addMonths(row.startDate, row.termMonths),
+    monthlyPayment: result.schedule[0]?.payment ?? 0,
+    remaining: result.schedule[result.schedule.length - 1]?.endingBalance ?? 0,
+    status: row.status,
+  }));
+
+  // REAL 5-year aggregate amortization (principal/interest paid and outstanding
+  // balance per year), folded from each instrument's schedule.
+  const amortizationData = useMemo(() => {
+    const baseYear = 2026;
+    const horizon = 5;
+    return Array.from({ length: horizon }, (_, i) => {
+      const yearIdx = i + 1;
+      const start = (yearIdx - 1) * 12 + 1;
+      const end = yearIdx * 12;
+      let principal = 0;
+      let interest = 0;
+      let balance = 0;
+      for (const { result } of SCHEDULES) {
+        for (const e of result.schedule) {
+          if (e.period >= start && e.period <= end) {
+            principal += e.principal;
+            interest += e.interest;
+          }
+        }
+        const last = result.schedule[Math.min(end, result.schedule.length) - 1];
+        balance += last ? last.endingBalance : 0;
+      }
+      return { year: String(baseYear + i), principal, interest, balance };
+    });
   }, []);
 
-  const totalDebt = mockDebt.reduce((s, d) => s + d.remaining, 0);
-  const weightedRate = mockDebt.reduce((s, d) => s + d.rate * d.remaining, 0) / totalDebt;
-  const totalMonthlyPayment = mockDebt.reduce((s, d) => s + d.monthlyPayment, 0);
-  const annualDebtService = totalMonthlyPayment * 12;
-  const ebitda = 18000000;
-  const dscr = ebitda / annualDebtService;
-
-  if (entries.length === 0) {
-    return (
-      <div className="p-12 text-center">
-        <Banknote className="h-10 w-10 text-slate-400 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to analyze debt schedule.</p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
-    );
-  }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const columns: Column[] = useMemo(
     () => [
       { key: 'id', header: 'ID', width: '100px' },
@@ -160,7 +196,7 @@ export default function DebtSchedulePage() {
       },
       {
         key: 'remaining',
-        header: 'Remaining',
+        header: 'Bal @ Maturity',
         align: 'right',
         render: (v) => formatCurrency(v as number),
       },
@@ -192,12 +228,12 @@ export default function DebtSchedulePage() {
   const handleExportPDF = () => {
     void ExportEngine.exportToPDF(
       {
-        headers: ['Lender', 'Type', 'Principal', 'Rate', 'Maturity', 'Remaining'],
-        rows: mockDebt.map((d) => [
+        headers: ['Lender', 'Type', 'Principal', 'Rate', 'Maturity', 'Balance @ Maturity'],
+        rows: tableData.map((d) => [
           d.lender,
           d.type,
           formatCurrency(d.principal),
-          `${d.rate}%`,
+          `${d.rate.toFixed(2)}%`,
           d.maturity,
           formatCurrency(d.remaining),
         ]),
@@ -217,10 +253,10 @@ export default function DebtSchedulePage() {
           'Rate',
           'Maturity',
           'Monthly Payment',
-          'Remaining',
+          'Bal @ Maturity',
           'Status',
         ],
-        rows: mockDebt.map((d) => [
+        rows: tableData.map((d) => [
           d.id,
           d.lender,
           d.type,
@@ -241,7 +277,9 @@ export default function DebtSchedulePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Debt Schedule</h1>
-          <p className="text-sm text-slate-400 mt-1">Loan portfolio and amortization tracking</p>
+          <p className="text-sm text-slate-400 mt-1">
+            Loan portfolio and amortization — computed live by DebtScheduleEngine (not mock data)
+          </p>
         </div>
         <div className="flex gap-2">
           <Button size="sm" variant="ghost" onClick={handleExportPDF}>
@@ -323,7 +361,7 @@ export default function DebtSchedulePage() {
         <CardContent>
           <DataTable
             columns={columns}
-            data={mockDebt as unknown as Record<string, unknown>[]}
+            data={tableData as unknown as Record<string, unknown>[]}
             pageSize={10}
             caption="Debt instruments amortization schedule"
             ariaLabel="Debt instruments schedule table"

@@ -124,12 +124,30 @@ check('Backup manifest includes all persisted stores', () => {
   return content?.includes('persistedStores') ?? false;
 });
 
-// 7. CI workflow has SHA-pinned actions
-check('CI workflow uses SHA-pinned actions', () => {
-  const content = readIfExists('.github/workflows/ci.yml');
-  if (!content) return false;
-  // Check that at least one action is SHA-pinned
-  return content.includes('# v4') && content.includes('@');
+// 7. GitHub Actions are SHA-pinned (not tag-pinned) — supply-chain hardening.
+// Tag refs like @v4 / @stable are mutable; a 40-hex commit SHA is immutable.
+// This catches a compromised action tag from silently changing CI behavior.
+check('GitHub Actions are SHA-pinned (no mutable @vN/@stable/@main tags)', () => {
+  const wfDir = join(ROOT, '.github', 'workflows');
+  if (!existsSync(wfDir)) return false;
+  const files = readdirSync(wfDir).filter((f) => /\.ya?ml$/.test(f));
+  // external action uses look like `uses: org/repo@ref`; skip local `./` and `docker://`
+  const usesRe = /(?:^|\s)uses:\s+([A-Za-z0-9._-]+\/[A-Za-z0-9._-]+)@([A-Za-z0-9._-]+)/g;
+  const unpinned = [];
+  for (const f of files) {
+    const text = readFileSync(join(wfDir, f), 'utf8');
+    let m;
+    while ((m = usesRe.exec(text)) !== null) {
+      if (!/^[0-9a-f]{40}$/.test(m[2])) unpinned.push(`${f}: ${m[1]}@${m[2]}`);
+    }
+  }
+  if (unpinned.length) {
+    console.error(
+      `     unpinned actions:\n${unpinned.map((u) => `       - ${u}`).join('\n')}`
+    );
+    return false;
+  }
+  return true;
 });
 
 console.log(`\n${failures === 0 ? '✅ All architecture guardrails passed' : '❌ ' + failures + ' guardrail check(s) failed'}`);

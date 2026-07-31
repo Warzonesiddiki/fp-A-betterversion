@@ -11,6 +11,9 @@
 
 // Loan Amortization Engine — Full schedules, balloon payments, prepayment
 
+import Decimal from 'decimal.js';
+import { roundMoney, roundTo, toDecimal } from '@/utils/money';
+
 export interface AmortizationRow {
   month: number;
   payment: number;
@@ -27,10 +30,18 @@ export interface AmortizationResult {
 }
 
 export class LoanAmortizationEngine {
+  /** Decimal monthly payment — kept in Decimal so the schedule never round-trips
+   * the payment through a JS number (which would reintroduce IEEE-754 drift). */
+  private static pmtDecimal(principal: number, annualRate: number, months: number): Decimal {
+    if (annualRate === 0) return toDecimal(principal).div(months);
+    const r = toDecimal(annualRate).div(12);
+    const pow = new Decimal(1).plus(r).pow(months); // (1 + r)^months
+    return toDecimal(principal).times(r).times(pow).div(pow.minus(1));
+  }
+
   static monthlyPayment(principal: number, annualRate: number, months: number): number {
-    if (annualRate === 0) return principal / months;
-    const r = annualRate / 12;
-    return (principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+    // P = principal * r * (1+r)^n / ((1+r)^n - 1)  — Decimal, paid in cents
+    return roundTo(LoanAmortizationEngine.pmtDecimal(principal, annualRate, months));
   }
 
   static schedule(
@@ -39,21 +50,45 @@ export class LoanAmortizationEngine {
     months: number,
     _startDate?: string
   ): AmortizationResult {
-    const pmt = this.monthlyPayment(principal, annualRate, months);
-    const r = annualRate / 12;
+    const pmt = roundMoney(LoanAmortizationEngine.pmtDecimal(principal, annualRate, months));
+    const r = annualRate === 0 ? new Decimal(0) : toDecimal(annualRate).div(12);
     const rows: AmortizationRow[] = [];
-    let balance = principal;
-    let totalInterest = 0;
+    let balance = toDecimal(principal);
+    let totalInterest = new Decimal(0);
 
     for (let m = 1; m <= months; m++) {
-      const interest = balance * r;
-      const principalPaid = pmt - interest;
-      balance = Math.max(0, balance - principalPaid);
-      totalInterest += interest;
-      rows.push({ month: m, payment: pmt, principal: principalPaid, interest, balance });
+      // Interest is rounded to the cent each period (ROUND_HALF_UP) — real loans
+      // accrue in cents, and this is where IEEE-754 drift otherwise accumulates.
+      const interest = roundMoney(balance.times(r));
+      let principalPaid: Decimal;
+      let payment: Decimal;
+      if (m === months) {
+        // Final period: pay off the exact remaining balance so it lands on 0.00,
+        // rather than letting 360 periods of float drift strand a few cents.
+        principalPaid = balance;
+        payment = interest.plus(principalPaid);
+      } else {
+        payment = pmt;
+        principalPaid = payment.minus(interest);
+      }
+      balance = Decimal.max(new Decimal(0), balance.minus(principalPaid));
+      totalInterest = totalInterest.plus(interest);
+      rows.push({
+        month: m,
+        payment: roundTo(payment),
+        principal: roundTo(principalPaid),
+        interest: roundTo(interest),
+        balance: roundTo(balance),
+      });
     }
 
-    return { schedule: rows, totalInterest, totalPayment: pmt * months, monthlyPayment: pmt };
+    const totalPayment = rows.reduce((sum, row) => sum + row.payment, 0);
+    return {
+      schedule: rows,
+      totalInterest: roundTo(totalInterest),
+      totalPayment: roundTo(totalPayment),
+      monthlyPayment: roundTo(pmt),
+    };
   }
 
   static totalInterest(schedule: AmortizationRow[]): number {

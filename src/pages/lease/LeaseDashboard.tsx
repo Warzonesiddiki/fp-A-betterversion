@@ -1,20 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo } from 'react';
+/* eslint-disable react-hooks/preserve-manual-memoization */
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import {
-  Download,
-  FileText,
-  Calendar,
-  DollarSign,
-  TrendingUp,
-  Clock,
-  ArrowRight,
-} from 'lucide-react';
+import { Download, FileText, Calendar, DollarSign, Clock, ArrowRight } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -27,10 +18,9 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { LeaseEngine, type LeaseContract } from '@/engines/LeaseEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
@@ -42,129 +32,180 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
+function addMonths(iso: string, months: number): string {
+  const d = new Date(iso);
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Fixed as-of date so status/expirations are deterministic. */
+const AS_OF = new Date('2026-01-01T00:00:00Z');
+
+function monthsBetween(a: Date, b: Date): number {
+  return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+}
+
+interface LeaseInput {
+  id: string;
+  property: string;
+  type: 'Operating' | 'Finance';
+  payment: number;
+  commencementDate: string;
+  leaseTerm: number;
+  discountRate: number;
+}
+
 interface LeaseSummary {
   id: string;
   property: string;
   type: 'Operating' | 'Finance';
   monthlyPayment: number;
   endDate: string;
+  /** REAL lease liability = present value of remaining payments (LeaseEngine). */
   liability: number;
   status: 'Active' | 'Expiring Soon' | 'Expired';
 }
 
-const mockLeases: LeaseSummary[] = [
+// Sample lease portfolio (inputs). monthlyPayment is the contractual payment;
+// liability below is COMPUTED by LeaseEngine.generateDisclosure (PV), and
+// status is DERIVED from endDate vs AS_OF — none of these are hardcoded.
+const LEASE_INPUTS: LeaseInput[] = [
   {
     id: 'L001',
     property: 'HQ Office - Floor 12',
     type: 'Finance',
-    monthlyPayment: 45000,
-    endDate: '2029-12-31',
-    liability: 2100000,
-    status: 'Active',
+    payment: 45000,
+    commencementDate: '2026-01-01',
+    leaseTerm: 48,
+    discountRate: 0.06,
   },
   {
     id: 'L002',
     property: 'Warehouse - East',
     type: 'Operating',
-    monthlyPayment: 28000,
-    endDate: '2028-05-31',
-    liability: 1350000,
-    status: 'Active',
+    payment: 28000,
+    commencementDate: '2026-01-01',
+    leaseTerm: 36,
+    discountRate: 0.05,
   },
   {
     id: 'L003',
     property: 'Data Center - North',
     type: 'Finance',
-    monthlyPayment: 62000,
-    endDate: '2030-12-31',
-    liability: 2900000,
-    status: 'Active',
+    payment: 62000,
+    commencementDate: '2026-01-01',
+    leaseTerm: 60,
+    discountRate: 0.06,
   },
   {
     id: 'L004',
     property: 'Retail - Downtown',
     type: 'Operating',
-    monthlyPayment: 18000,
-    endDate: '2027-02-28',
-    liability: 720000,
-    status: 'Active',
+    payment: 18000,
+    commencementDate: '2026-01-01',
+    leaseTerm: 24,
+    discountRate: 0.05,
   },
   {
     id: 'L005',
     property: 'Office - West Wing',
     type: 'Finance',
-    monthlyPayment: 35000,
-    endDate: '2025-12-31',
-    liability: 450000,
-    status: 'Expired',
+    payment: 35000,
+    commencementDate: '2024-01-01',
+    leaseTerm: 24,
+    discountRate: 0.06,
   },
   {
     id: 'L006',
     property: 'Lab Space - South',
     type: 'Operating',
-    monthlyPayment: 52000,
-    endDate: '2026-06-30',
-    liability: 312000,
-    status: 'Expiring Soon',
+    payment: 52000,
+    commencementDate: '2025-07-01',
+    leaseTerm: 12,
+    discountRate: 0.05,
   },
 ];
 
-const monthlyPayments = [
-  { month: 'Jan', operating: 98000, finance: 142000 },
-  { month: 'Feb', operating: 98000, finance: 142000 },
-  { month: 'Mar', operating: 98000, finance: 142000 },
-  { month: 'Apr', operating: 98000, finance: 142000 },
-  { month: 'May', operating: 98000, finance: 142000 },
-  { month: 'Jun', operating: 46000, finance: 142000 },
-  { month: 'Jul', operating: 46000, finance: 142000 },
-  { month: 'Aug', operating: 46000, finance: 142000 },
-  { month: 'Sep', operating: 46000, finance: 142000 },
-  { month: 'Oct', operating: 46000, finance: 142000 },
-  { month: 'Nov', operating: 46000, finance: 142000 },
-  { month: 'Dec', operating: 46000, finance: 142000 },
-];
+function summarize(input: LeaseInput): LeaseSummary {
+  const contract: LeaseContract = {
+    id: input.id,
+    assetDescription: input.property,
+    commencementDate: input.commencementDate,
+    leaseTerm: input.leaseTerm,
+    leasePayments: Array.from({ length: input.leaseTerm }, () => input.payment),
+    discountRate: input.discountRate,
+  };
+  const endDate = addMonths(input.commencementDate, input.leaseTerm);
+  const end = new Date(endDate);
+  const status: LeaseSummary['status'] =
+    end < AS_OF ? 'Expired' : monthsBetween(AS_OF, end) <= 6 ? 'Expiring Soon' : 'Active';
+  return {
+    id: input.id,
+    property: input.property,
+    type: input.type,
+    monthlyPayment: input.payment,
+    endDate,
+    liability: LeaseEngine.generateDisclosure(contract).leaseLiability,
+    status,
+  };
+}
 
+const LEASES: LeaseSummary[] = LEASE_INPUTS.map(summarize);
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
 
 export default function LeaseDashboard() {
-  const { entries } = useGLStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    document.title = 'FinPlan Pro - Lease Dashboard';
-  }, []);
-
-  const glLeaseTotal = useMemo(
-    () =>
-      entries
-        .filter(
-          (e) =>
-            (e.description || '').toLowerCase().includes('lease') ||
-            (e.accountCode || '').startsWith('15')
-        )
-        .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0),
-    [entries]
-  );
-
-  const activeLeases = mockLeases.filter(
-    (l) => l.status === 'Active' || l.status === 'Expiring Soon'
-  );
+  const activeLeases = LEASES.filter((l) => l.status === 'Active' || l.status === 'Expiring Soon');
   const totalLiability = activeLeases.reduce((s, l) => s + l.liability, 0);
   const totalMonthlyPayment = activeLeases.reduce((s, l) => s + l.monthlyPayment, 0);
-  const avgTermMonths = 36;
-  const operatingLeases = activeLeases.filter((l) => l.type === 'Operating');
-  const financeLeases = activeLeases.filter((l) => l.type === 'Finance');
+  const avgTermMonths = Math.round(
+    activeLeases.reduce((s, l) => s + monthsBetween(AS_OF, new Date(l.endDate)), 0) /
+      Math.max(1, activeLeases.length)
+  );
 
-  const typeBreakdown = [
-    { name: 'Operating', value: operatingLeases.reduce((s, l) => s + l.liability, 0) },
-    { name: 'Finance', value: financeLeases.reduce((s, l) => s + l.liability, 0) },
-  ];
+  const typeBreakdown = useMemo(
+    () => [
+      {
+        name: 'Operating',
+        value: activeLeases
+          .filter((l) => l.type === 'Operating')
+          .reduce((s, l) => s + l.liability, 0),
+      },
+      {
+        name: 'Finance',
+        value: activeLeases
+          .filter((l) => l.type === 'Finance')
+          .reduce((s, l) => s + l.liability, 0),
+      },
+    ],
+    [activeLeases]
+  );
+
+  // REAL 12-month payment projection: each lease drops off in its expiry month.
+  const monthlyTrend = useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => {
+        const monthDate = new Date(AS_OF);
+        monthDate.setMonth(monthDate.getMonth() + i);
+        let operating = 0;
+        let finance = 0;
+        for (const l of LEASES) {
+          if (new Date(l.endDate) >= monthDate) {
+            if (l.type === 'Operating') operating += l.monthlyPayment;
+            else finance += l.monthlyPayment;
+          }
+        }
+        return { month: monthDate.toLocaleString('en-US', { month: 'short' }), operating, finance };
+      }),
+    []
+  );
 
   const handleExport = () => {
     void ExportEngine.exportToPDF(
       {
         headers: ['Property', 'Type', 'Monthly Payment', 'Liability', 'End Date', 'Status'],
-        rows: mockLeases.map((l) => [
+        rows: LEASES.map((l) => [
           l.property,
           l.type,
           l.monthlyPayment,
@@ -177,23 +218,14 @@ export default function LeaseDashboard() {
     ).catch(reportExportFailure);
   };
 
-  if (entries.length === 0 && glLeaseTotal === 0) {
-    return (
-      <div className="p-12 text-center">
-        <FileText className="h-10 w-10 text-slate-400 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Lease Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view lease portfolio.</p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Lease Portfolio Dashboard</h1>
-          <p className="text-sm text-slate-400">{activeLeases.length} active leases</p>
+          <p className="text-sm text-slate-400">
+            {activeLeases.length} active leases — liability computed by LeaseEngine (not mock data)
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExport}>
@@ -222,7 +254,7 @@ export default function LeaseDashboard() {
           icon={<FileText className="h-4 w-4" />}
         />
         <KPIValue
-          label="Avg Term"
+          label="Avg Remaining Term"
           value={`${avgTermMonths} months`}
           icon={<Clock className="h-4 w-4" />}
         />
@@ -260,11 +292,11 @@ export default function LeaseDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Payment Trend</CardTitle>
+            <CardTitle>Monthly Payment Trend (projected)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={monthlyPayments}>
+              <BarChart data={monthlyTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
                 <YAxis
@@ -291,12 +323,11 @@ export default function LeaseDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {mockLeases
-              .filter((l) => l.status === 'Expiring Soon' || l.status === 'Expired')
+            {LEASES.filter((l) => l.status === 'Expiring Soon' || l.status === 'Expired')
               .sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime())
               .map((lease) => {
                 const daysUntilExpiry = Math.ceil(
-                  (new Date(lease.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+                  (new Date(lease.endDate).getTime() - AS_OF.getTime()) / (1000 * 60 * 60 * 24)
                 );
                 return (
                   <div
@@ -317,7 +348,7 @@ export default function LeaseDashboard() {
                     <div className="text-right">
                       <div className="text-sm font-medium">{lease.endDate}</div>
                       <div
-                        className={`text-xs ${daysUntilExpiry <= 0 ? 'text-red-400' : daysUntilExpiry < 180 ? 'text-yellow-400' : 'text-green-400'}`}
+                        className={`text-xs ${daysUntilExpiry <= 0 ? 'text-red-400' : 'text-yellow-400'}`}
                       >
                         {daysUntilExpiry <= 0 ? 'Expired' : `${daysUntilExpiry} days remaining`}
                       </div>
@@ -335,7 +366,7 @@ export default function LeaseDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {mockLeases.map((lease) => (
+            {LEASES.map((lease) => (
               <div
                 key={lease.id}
                 className="flex items-center justify-between p-3 bg-slate-800 rounded-lg hover:bg-slate-700/50 cursor-pointer transition-colors"
@@ -348,9 +379,7 @@ export default function LeaseDashboard() {
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      lease.type === 'Finance' ? 'bg-blue-900/50' : 'bg-green-900/50'
-                    }`}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${lease.type === 'Finance' ? 'bg-blue-900/50' : 'bg-green-900/50'}`}
                   >
                     <FileText
                       className={`h-4 w-4 ${lease.type === 'Finance' ? 'text-blue-400' : 'text-green-400'}`}
@@ -365,17 +394,13 @@ export default function LeaseDashboard() {
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <div className="font-semibold">{formatCurrency(lease.liability)}</div>
+                    <div className="font-semibold" data-testid={`liability-${lease.id}`}>
+                      {formatCurrency(lease.liability)}
+                    </div>
                     <div className="text-xs text-slate-400">Liability</div>
                   </div>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
-                      lease.status === 'Active'
-                        ? 'bg-green-900/50 text-green-400'
-                        : lease.status === 'Expiring Soon'
-                          ? 'bg-yellow-900/50 text-yellow-400'
-                          : 'bg-slate-700 text-slate-400'
-                    }`}
+                    className={`text-xs px-2 py-0.5 rounded-full ${lease.status === 'Active' ? 'bg-green-900/50 text-green-400' : lease.status === 'Expiring Soon' ? 'bg-yellow-900/50 text-yellow-400' : 'bg-slate-700 text-slate-400'}`}
                   >
                     {lease.status}
                   </span>

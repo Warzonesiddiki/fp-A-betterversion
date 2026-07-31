@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
+import { DataTable, type Column } from '@/components/ui/DataTable';
 import { Download, FileText, Calendar, DollarSign, Percent, ArrowLeft } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -20,6 +20,7 @@ import {
   Bar,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { LeaseEngine, type LeaseContract } from '@/engines/LeaseEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 function formatCurrency(n: number): string {
@@ -31,6 +32,23 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
+function monthsBetween(a: Date, b: Date): number {
+  return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+}
+
+const AS_OF = new Date('2026-01-01T00:00:00Z');
+
+interface LeaseInput {
+  id: string;
+  property: string;
+  lessee: string;
+  startDate: string;
+  endDate: string;
+  monthlyPayment: number;
+  interestRatePct: number;
+  leaseType: 'Operating' | 'Finance';
+}
+
 interface LeaseRecord {
   id: string;
   property: string;
@@ -40,12 +58,15 @@ interface LeaseRecord {
   monthlyPayment: number;
   interestRate: number;
   leaseType: 'Operating' | 'Finance';
+  /** REAL right-of-use asset = PV of payments (LeaseEngine.generateDisclosure). */
   rouAsset: number;
+  /** REAL lease liability = PV of payments. */
   liability: number;
   status: 'Active' | 'Expired' | 'Terminated';
+  contract: LeaseContract;
 }
 
-const mockLeases: LeaseRecord[] = [
+const LEASE_INPUTS: LeaseInput[] = [
   {
     id: 'L001',
     property: 'HQ Office - Floor 12',
@@ -53,11 +74,8 @@ const mockLeases: LeaseRecord[] = [
     startDate: '2024-01-01',
     endDate: '2029-12-31',
     monthlyPayment: 45000,
-    interestRate: 5.2,
+    interestRatePct: 5.2,
     leaseType: 'Finance',
-    rouAsset: 2400000,
-    liability: 2100000,
-    status: 'Active',
   },
   {
     id: 'L002',
@@ -66,11 +84,8 @@ const mockLeases: LeaseRecord[] = [
     startDate: '2023-06-01',
     endDate: '2028-05-31',
     monthlyPayment: 28000,
-    interestRate: 4.8,
+    interestRatePct: 4.8,
     leaseType: 'Operating',
-    rouAsset: 1500000,
-    liability: 1350000,
-    status: 'Active',
   },
   {
     id: 'L003',
@@ -79,11 +94,8 @@ const mockLeases: LeaseRecord[] = [
     startDate: '2025-01-01',
     endDate: '2030-12-31',
     monthlyPayment: 62000,
-    interestRate: 5.5,
+    interestRatePct: 5.5,
     leaseType: 'Finance',
-    rouAsset: 3200000,
-    liability: 2900000,
-    status: 'Active',
   },
   {
     id: 'L004',
@@ -92,11 +104,8 @@ const mockLeases: LeaseRecord[] = [
     startDate: '2022-03-01',
     endDate: '2027-02-28',
     monthlyPayment: 18000,
-    interestRate: 4.5,
+    interestRatePct: 4.5,
     leaseType: 'Operating',
-    rouAsset: 950000,
-    liability: 720000,
-    status: 'Active',
   },
   {
     id: 'L005',
@@ -105,97 +114,113 @@ const mockLeases: LeaseRecord[] = [
     startDate: '2021-01-01',
     endDate: '2025-12-31',
     monthlyPayment: 35000,
-    interestRate: 5.0,
+    interestRatePct: 5.0,
     leaseType: 'Finance',
-    rouAsset: 1800000,
-    liability: 450000,
-    status: 'Expired',
   },
 ];
 
-function generateAmortizationSchedule(lease: LeaseRecord) {
-  const months = Math.ceil(
-    (new Date(lease.endDate).getTime() - new Date(lease.startDate).getTime()) /
-      (1000 * 60 * 60 * 24 * 30)
-  );
-  const schedule = [];
-  let balance = lease.liability;
-  const monthlyRate = lease.interestRate / 100 / 12;
-
-  for (let i = 0; i < Math.min(months, 12); i++) {
-    const interest = balance * monthlyRate;
-    const principal = lease.monthlyPayment - interest;
-    balance = Math.max(0, balance - principal);
-    schedule.push({
-      month: `Month ${i + 1}`,
-      payment: lease.monthlyPayment,
-      principal: Math.round(principal),
-      interest: Math.round(interest),
-      balance: Math.round(balance),
-    });
-  }
-  return schedule;
+function buildRecord(input: LeaseInput): LeaseRecord {
+  const leaseTerm = Math.max(1, monthsBetween(new Date(input.startDate), new Date(input.endDate)));
+  const contract: LeaseContract = {
+    id: input.id,
+    assetDescription: input.property,
+    commencementDate: input.startDate,
+    leaseTerm,
+    leasePayments: Array.from({ length: leaseTerm }, () => input.monthlyPayment),
+    discountRate: input.interestRatePct / 100,
+  };
+  const disclosure = LeaseEngine.generateDisclosure(contract);
+  const status: LeaseRecord['status'] = new Date(input.endDate) < AS_OF ? 'Expired' : 'Active';
+  return {
+    ...input,
+    interestRate: input.interestRatePct,
+    rouAsset: disclosure.rightOfUseAsset,
+    liability: disclosure.leaseLiability,
+    status,
+    contract,
+  };
 }
 
-function generateDepreciationData(lease: LeaseRecord) {
-  const years = Math.ceil(
-    (new Date(lease.endDate).getTime() - new Date(lease.startDate).getTime()) /
-      (1000 * 60 * 60 * 24 * 365)
-  );
-  const annualDep = lease.rouAsset / years;
-  const data = [];
-  let bookValue = lease.rouAsset;
+const LEASES: LeaseRecord[] = LEASE_INPUTS.map(buildRecord);
 
-  for (let i = 0; i < Math.min(years, 8); i++) {
-    bookValue = Math.max(0, bookValue - annualDep);
-    data.push({
+interface AmortRow {
+  month: string;
+  payment: number;
+  principal: number;
+  interest: number;
+  balance: number;
+}
+
+// REAL liability amortization from LeaseEngine (first 12 periods). Replaces the
+// old local raw-float generator that started from a hardcoded liability.
+function liabilityAmortization(contract: LeaseContract): AmortRow[] {
+  return LeaseEngine.calculateLeaseLiability(contract)
+    .slice(0, 12)
+    .map((e) => ({
+      month: e.period,
+      payment: Math.round(e.payment),
+      principal: Math.round(e.reduction),
+      interest: Math.round(e.interest),
+      balance: Math.round(e.closingBalance),
+    }));
+}
+
+interface DepRow {
+  year: string;
+  bookValue: number;
+  depreciation: number;
+  accumulated: number;
+}
+
+// REAL ROU-asset depreciation from LeaseEngine.calculateROUAsset, aggregated to
+// annual. Replaces the old local straight-line-on-a-fake-asset generator.
+function rouDepreciation(contract: LeaseContract, rouAsset: number): DepRow[] {
+  const sched = LeaseEngine.calculateROUAsset(contract);
+  const years = Math.min(8, Math.ceil(sched.length / 12));
+  return Array.from({ length: years }, (_, i) => {
+    const endMonth = (i + 1) * 12;
+    const entry = sched[Math.min(endMonth, sched.length) - 1];
+    const bookValue = entry ? entry.closingBalance : 0;
+    const depreciation = sched.slice(i * 12, endMonth).reduce((s, e) => s + e.depreciation, 0);
+    return {
       year: `Year ${i + 1}`,
       bookValue: Math.round(bookValue),
-      depreciation: Math.round(annualDep),
-      accumulated: Math.round(lease.rouAsset - bookValue),
-    });
-  }
-  return data;
+      depreciation: Math.round(depreciation),
+      accumulated: Math.round(rouAsset - bookValue),
+    };
+  });
 }
 
 export default function LeaseDetailPage() {
-  const { entries } = useGLStore();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [selectedLease, setSelectedLease] = useState<LeaseRecord>(mockLeases[0]!);
+  const [selectedLease, setSelectedLease] = useState<LeaseRecord>(LEASES[0]!);
 
   useEffect(() => {
     document.title = 'FinPlan Pro - Lease Detail';
     if (id) {
-      const found = mockLeases.find((l) => l.id === id);
-      if (found && found.id !== selectedLease.id) {
-        setSelectedLease(found);
-      }
+      const found = LEASES.find((l) => l.id === id);
+      if (found && found.id !== selectedLease.id) setSelectedLease(found);
     }
   }, [id, selectedLease.id]);
 
-  const glLeaseTotal = useMemo(
-    () =>
-      entries
-        .filter((e) => (e.description || '').toLowerCase().includes('lease'))
-        .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0),
-    [entries]
+  const amortization = useMemo(
+    () => liabilityAmortization(selectedLease.contract),
+    [selectedLease]
+  );
+  const depreciation = useMemo(
+    () => rouDepreciation(selectedLease.contract, selectedLease.rouAsset),
+    [selectedLease]
   );
 
-  const amortization = useMemo(() => generateAmortizationSchedule(selectedLease), [selectedLease]);
-  const depreciation = useMemo(() => generateDepreciationData(selectedLease), [selectedLease]);
+  const active = LEASES.filter((l) => l.status === 'Active');
+  const totalLiability = active.reduce((s, l) => s + l.liability, 0);
+  const totalRouAsset = active.reduce((s, l) => s + l.rouAsset, 0);
+  const avgRate = active.length
+    ? active.reduce((s, l) => s + l.interestRate, 0) / active.length
+    : 0;
 
-  const totalLiability = mockLeases
-    .filter((l) => l.status === 'Active')
-    .reduce((s, l) => s + l.liability, 0);
-  const totalRouAsset = mockLeases
-    .filter((l) => l.status === 'Active')
-    .reduce((s, l) => s + l.rouAsset, 0);
-  const avgRate =
-    mockLeases.filter((l) => l.status === 'Active').reduce((s, l) => s + l.interestRate, 0) /
-    mockLeases.filter((l) => l.status === 'Active').length;
-
-  const amortColumns: Column<(typeof amortization)[0]>[] = [
+  const amortColumns: Column<AmortRow>[] = [
     { key: 'month', header: 'Month', sortable: true },
     { key: 'payment', header: 'Payment', render: (r) => formatCurrency(r.payment) },
     { key: 'principal', header: 'Principal', render: (r) => formatCurrency(r.principal) },
@@ -223,17 +248,6 @@ export default function LeaseDetailPage() {
     ).catch(reportExportFailure);
   };
 
-  if (entries.length === 0 && glLeaseTotal === 0) {
-    return (
-      <div className="p-12 text-center">
-        <FileText className="h-10 w-10 text-slate-400 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Lease Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data with lease entries to view details.</p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -248,7 +262,9 @@ export default function LeaseDetailPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Lease Detail</h1>
-            <p className="text-sm text-slate-400">{selectedLease.property}</p>
+            <p className="text-sm text-slate-400">
+              {selectedLease.property} — schedules computed by LeaseEngine (not mock data)
+            </p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -279,7 +295,7 @@ export default function LeaseDetailPage() {
         />
         <KPIValue
           label="Active Leases"
-          value={String(mockLeases.filter((l) => l.status === 'Active').length)}
+          value={String(active.length)}
           icon={<Calendar className="h-4 w-4" />}
         />
       </div>
@@ -359,7 +375,7 @@ export default function LeaseDetailPage() {
             data={amortization}
             columns={amortColumns}
             pageSize={6}
-            caption="Lease amortization schedule: opening balance, interest, payment, and closing balance for each period"
+            caption="Lease amortization schedule: payment, principal, interest, and closing balance for each period"
             ariaLabel="Lease amortization schedule"
           />
         </CardContent>
@@ -380,7 +396,9 @@ export default function LeaseDetailPage() {
             </div>
             <div className="p-4 bg-slate-800 rounded-lg">
               <div className="text-sm text-slate-400 mb-1">ROU Asset</div>
-              <div className="text-lg font-semibold">{formatCurrency(selectedLease.rouAsset)}</div>
+              <div className="text-lg font-semibold" data-testid={`rou-${selectedLease.id}`}>
+                {formatCurrency(selectedLease.rouAsset)}
+              </div>
               <div className="text-xs text-green-400 mt-1">Recognized on balance sheet</div>
             </div>
             <div className="p-4 bg-slate-800 rounded-lg">
@@ -398,7 +416,7 @@ export default function LeaseDetailPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {mockLeases.map((lease) => (
+            {LEASES.map((lease) => (
               <div
                 key={lease.id}
                 className={`p-3 rounded-lg cursor-pointer transition-colors ${
@@ -423,11 +441,7 @@ export default function LeaseDetailPage() {
                   <div className="text-right">
                     <div className="font-semibold">{formatCurrency(lease.monthlyPayment)}/mo</div>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        lease.status === 'Active'
-                          ? 'bg-green-900/50 text-green-400'
-                          : 'bg-slate-700 text-slate-400'
-                      }`}
+                      className={`text-xs px-2 py-0.5 rounded-full ${lease.status === 'Active' ? 'bg-green-900/50 text-green-400' : 'bg-slate-700 text-slate-400'}`}
                     >
                       {lease.status}
                     </span>

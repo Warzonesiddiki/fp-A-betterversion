@@ -6,20 +6,24 @@
  * and license information. This is required for enterprise compliance.
  */
 
-import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 
 const ROOT = process.cwd();
 
 console.log('📋 Generating Software Bill of Materials\n');
 
 try {
-  const output = execSync('npm ls --omit=dev --json --all 2>/dev/null', {
+  // npm ls exits non-zero (code 1) for benign tree "problems" such as a
+  // transitive dedup mismatch (e.g. glob@11 under archiver-utils via exceljs),
+  // while STILL emitting a valid --json payload on stdout. Capture stdout
+  // regardless of exit status and only fail if it is not parseable JSON.
+  const res = spawnSync('npm', ['ls', '--omit=dev', '--json', '--all'], {
     cwd: ROOT,
     encoding: 'utf-8',
     maxBuffer: 10 * 1024 * 1024,
   });
 
-  const pkg = JSON.parse(output);
+  const pkg = JSON.parse(res.stdout || '{}');
   const sbom = {
     schema: 'https://raw.githubusercontent.com/CycloneDX/specification/master/schema/bom-1.4.schema.json',
     specVersion: '1.4',

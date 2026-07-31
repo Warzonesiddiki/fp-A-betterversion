@@ -126,6 +126,51 @@ describe('RevRecEngine', () => {
       expect(result![1]!.amount).toBe(0);
       expect(result![0]!.remainingToRecognize).toBe(0);
     });
+
+    it('recognizes the full transaction price exactly — no IEEE-754 drift (ASC 606)', () => {
+      // Three equal performance obligations on a $100 contract. allocateMoney
+      // splits this 33.34 / 33.33 / 33.33 (sum = 100.00). The previous raw-float
+      // path computed 100 * (1/3) per PO = 33.33333... and recognized 99.99999,
+      // stranding a penny so the contract never fully recognized.
+      const contract: Contract = {
+        ...baseContract,
+        totalValue: 100,
+        startDate: '2024-01-01',
+        endDate: '2024-01-31',
+        performanceObligations: [
+          {
+            id: 'a',
+            description: 'a',
+            standalonePrice: 1,
+            allocationPercentage: 0,
+            recognitionMethod: 'point_in_time',
+            completionMetric: 1,
+            recognitionDate: '2024-01-15',
+          },
+          {
+            id: 'b',
+            description: 'b',
+            standalonePrice: 1,
+            allocationPercentage: 0,
+            recognitionMethod: 'point_in_time',
+            completionMetric: 1,
+            recognitionDate: '2024-01-15',
+          },
+          {
+            id: 'c',
+            description: 'c',
+            standalonePrice: 1,
+            allocationPercentage: 0,
+            recognitionMethod: 'point_in_time',
+            completionMetric: 1,
+            recognitionDate: '2024-01-15',
+          },
+        ],
+      };
+      const result = RevRecEngine.calculateRevenueSchedule(contract, ['2024-01']);
+      expect(result![0]!.recognizedToDate).toBe(100);
+      expect(result![0]!.remainingToRecognize).toBe(0);
+    });
   });
 
   describe('handleContractModification', () => {

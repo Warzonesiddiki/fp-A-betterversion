@@ -15,6 +15,7 @@ import {
   Cell,
 } from 'recharts';
 import { Scale, TrendingUp, Download, Filter } from 'lucide-react';
+import { FairValueEngine } from '@/engines/FairValueEngine';
 
 interface FairValueItem {
   id: string;
@@ -27,72 +28,114 @@ interface FairValueItem {
   method: string;
 }
 
-const MOCK_ITEMS: FairValueItem[] = [
+interface FairValueInput {
+  id: string;
+  name: string;
+  category: string;
+  bookValue: number;
+  method: string;
+  hasQuotedPrice: boolean;
+  hasObservableInputs: boolean;
+  /** Observed fair value for Level 1/2 (quoted price or observable-input priced). */
+  observedValue?: number;
+  /** Level 3 model inputs — fair value is COMPUTED via DCF. */
+  cashFlows?: number[];
+  discountRate?: number;
+}
+
+const ITEM_INPUTS: FairValueInput[] = [
   {
     id: '1',
     name: 'US Treasury Bonds',
     category: 'Fixed Income',
-    level: 1,
     bookValue: 1000000,
-    fairValue: 1020000,
-    gain: 20000,
     method: 'Quoted Market Price',
+    hasQuotedPrice: true,
+    hasObservableInputs: false,
+    observedValue: 1020000,
   },
   {
     id: '2',
     name: 'Corporate Bonds',
     category: 'Fixed Income',
-    level: 2,
     bookValue: 500000,
-    fairValue: 485000,
-    gain: -15000,
     method: 'Yield Curve',
+    hasQuotedPrice: false,
+    hasObservableInputs: true,
+    observedValue: 485000,
   },
   {
     id: '3',
     name: 'Private Equity Fund',
     category: 'Equity',
-    level: 3,
     bookValue: 2000000,
-    fairValue: 2400000,
-    gain: 400000,
     method: 'DCF Model',
+    hasQuotedPrice: false,
+    hasObservableInputs: false,
+    cashFlows: [400000, 500000, 600000, 700000, 800000],
+    discountRate: 0.12,
   },
   {
     id: '4',
     name: 'Real Estate Holdings',
     category: 'Real Assets',
-    level: 3,
     bookValue: 3000000,
-    fairValue: 3200000,
-    gain: 200000,
-    method: 'Comparable Sales',
+    method: 'DCF (income approach)',
+    hasQuotedPrice: false,
+    hasObservableInputs: false,
+    cashFlows: [700000, 750000, 800000, 850000, 900000],
+    discountRate: 0.08,
   },
   {
     id: '5',
     name: 'Listed Equities',
     category: 'Equity',
-    level: 1,
     bookValue: 800000,
-    fairValue: 850000,
-    gain: 50000,
     method: 'Stock Exchange Price',
+    hasQuotedPrice: true,
+    hasObservableInputs: false,
+    observedValue: 850000,
   },
   {
     id: '6',
     name: 'Derivative Contracts',
     category: 'Derivatives',
-    level: 2,
     bookValue: 150000,
-    fairValue: 160000,
-    gain: 10000,
-    method: 'Black-Scholes',
+    method: 'Black-Scholes (observable vol)',
+    hasQuotedPrice: false,
+    hasObservableInputs: true,
+    observedValue: 160000,
   },
 ];
 
+// REAL items: level is CLASSIFIED by the engine from inputs; Level 3 fair value
+// is COMPUTED via DCF (calculateDCF); Level 1/2 use the observed value; gain is
+// derived. Nothing here is fabricated.
+const ITEMS: FairValueItem[] = ITEM_INPUTS.map((input) => {
+  const level = FairValueEngine.classifyByLevel(
+    {},
+    input.hasQuotedPrice,
+    input.hasObservableInputs
+  );
+  const fairValue =
+    level === 3 && input.cashFlows && input.discountRate !== undefined
+      ? FairValueEngine.calculateDCF(input.cashFlows, input.discountRate)
+      : (input.observedValue ?? 0);
+  return {
+    id: input.id,
+    name: input.name,
+    category: input.category,
+    level,
+    bookValue: input.bookValue,
+    fairValue: Math.round(fairValue),
+    gain: Math.round(fairValue - input.bookValue),
+    method: input.method,
+  };
+});
+
 export default function FairValuePage() {
   const [levelFilter, setLevelFilter] = useState<number | null>(null);
-  const items = levelFilter ? MOCK_ITEMS.filter((i) => i.level === levelFilter) : MOCK_ITEMS;
+  const items = levelFilter ? ITEMS.filter((i) => i.level === levelFilter) : ITEMS;
 
   const levelColors = { 1: '#10B981', 2: '#F59E0B', 3: '#EF4444' };
   const levelLabels = { 1: 'Quoted Prices', 2: 'Observable Inputs', 3: 'Unobservable' };
