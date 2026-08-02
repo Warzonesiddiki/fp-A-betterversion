@@ -1,4 +1,18 @@
 import type { CohortData } from '@/types/sector-types';
+import { roundTo, sumMoney, multiplyMoney, divideMoney } from '../utils/money';
+
+/**
+ * SaaS revenue metrics are reported figures, so MRR/ARR arithmetic runs through
+ * the canonical money primitive (decimal.js, ROUND_HALF_UP) instead of raw
+ * IEEE-754 math. Currency amounts round to cents; ratios keep more precision.
+ *
+ * NOTE: the documented Infinity returns (zero churn => infinite LTV, zero S&M
+ * spend => infinite magic number) are a deliberate part of this API's contract
+ * and are preserved exactly. They are guarded BEFORE any division, so no
+ * division by zero ever reaches the money primitive.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
 
 export interface MRRData {
   period: string;
@@ -17,7 +31,7 @@ export class SaaSMetricsEngine {
    * @param monthlyMRR Current Monthly Recurring Revenue
    */
   static calculateARR(monthlyMRR: number): number {
-    return monthlyMRR * 12;
+    return roundTo(multiplyMoney(monthlyMRR, 12), CURRENCY_PLACES);
   }
 
   /**
@@ -33,8 +47,10 @@ export class SaaSMetricsEngine {
     if (openingMRR < 0) throw new Error('Opening MRR cannot be negative');
     if (openingMRR === 0) return 0; // Technically undefined for the cohort, but 0 is common for empty start
 
-    const netRetention = openingMRR + expansionMRR - contractionMRR - churnMRR;
-    return (netRetention / openingMRR) * 100;
+    const netRetention = sumMoney([openingMRR, expansionMRR]).minus(
+      sumMoney([contractionMRR, churnMRR])
+    );
+    return roundTo(divideMoney(netRetention, openingMRR).times(100), RATIO_PLACES);
   }
 
   /**
@@ -43,7 +59,7 @@ export class SaaSMetricsEngine {
   static calculateChurnRate(lostCustomers: number, totalAtStart: number): number {
     if (totalAtStart < 0) throw new Error('Total customers at start cannot be negative');
     if (totalAtStart === 0) return lostCustomers > 0 ? Infinity : 0;
-    return (lostCustomers / totalAtStart) * 100;
+    return roundTo(divideMoney(lostCustomers, totalAtStart).times(100), RATIO_PLACES);
   }
 
   /**
@@ -70,8 +86,13 @@ export class SaaSMetricsEngine {
       return avgRevenue > 0 ? Infinity : 0;
     }
 
-    const ltv = (avgRevenue * (grossMargin / 100)) / (churnRate / 100);
-    return ltv / cac;
+    // LTV = (ARPU x gross margin %) / churn %. Both rates are divided by 100 in
+    // exact decimals, so the ratio does not inherit binary drift.
+    const ltv = divideMoney(
+      multiplyMoney(avgRevenue, divideMoney(grossMargin, 100)),
+      divideMoney(churnRate, 100)
+    );
+    return roundTo(divideMoney(ltv, cac), RATIO_PLACES);
   }
 
   static buildCohortTable(data: MRRData[]): CohortData[] {
@@ -79,7 +100,10 @@ export class SaaSMetricsEngine {
       cohort: d.period,
       periods: [d.openingMRR, d.newMRR, d.expansionMRR, d.contractionMRR, d.churnMRR, d.closingMRR],
       customerCount: d.customerCount,
-      averageRevenuePerCustomer: d.customerCount > 0 ? d.closingMRR / d.customerCount : 0,
+      averageRevenuePerCustomer:
+        d.customerCount > 0
+          ? roundTo(divideMoney(d.closingMRR, d.customerCount), CURRENCY_PLACES)
+          : 0,
     }));
   }
 
@@ -92,7 +116,7 @@ export class SaaSMetricsEngine {
     if (priorQuarterSAndM === 0) {
       return netNewARR > 0 ? Infinity : 0;
     }
-    return netNewARR / priorQuarterSAndM;
+    return roundTo(divideMoney(netNewARR, priorQuarterSAndM), RATIO_PLACES);
   }
 
   /**
@@ -105,16 +129,16 @@ export class SaaSMetricsEngine {
     contractionMRR: number,
     churnMRR: number
   ): number {
-    const churnTotal = contractionMRR + churnMRR;
-    const growthTotal = newMRR + expansionMRR;
+    const churnTotal = sumMoney([contractionMRR, churnMRR]);
+    const growthTotal = sumMoney([newMRR, expansionMRR]);
 
-    if (churnTotal < 0) throw new Error('Churn/Contraction MRR cannot be negative');
-    if (growthTotal < 0) throw new Error('New/Expansion MRR cannot be negative');
+    if (churnTotal.isNegative()) throw new Error('Churn/Contraction MRR cannot be negative');
+    if (growthTotal.isNegative()) throw new Error('New/Expansion MRR cannot be negative');
 
-    if (churnTotal === 0) {
-      return growthTotal > 0 ? Infinity : 0;
+    if (churnTotal.isZero()) {
+      return growthTotal.gt(0) ? Infinity : 0;
     }
 
-    return growthTotal / churnTotal;
+    return roundTo(divideMoney(growthTotal, churnTotal), RATIO_PLACES);
   }
 }
