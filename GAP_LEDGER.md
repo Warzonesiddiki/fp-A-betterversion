@@ -16,7 +16,7 @@ testable. Evidence = literal command output with date.
 | -------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | **GAP-7** (CI SHA-pinning) | **VERIFIED_DONE**                          | **FALSE — was NOT on `main`.** `architecture:guardrails` exited **1** with 52 unpinned refs | Literal (guardrails exit 1 on a clean checkout)        | Re-pinned via new reproducible script; **still unpushable** (see Blocker #1). Status honestly downgraded to BLOCKED. |
 | **GAP-3** (orphan engines) | IN_PROGRESS — "105/183 engines orphaned"   | **PREMISE WAS WRONG — 0 real orphans.** 103 of 105 reachable via the routed engine catalog  | Literal (corrected classifier + pre-existing suite)    | Fixed the measuring script, added 7 regression tests, closed the gap                                                 |
-| **GAP-1** (money)          | IN_PROGRESS — 13.06%, ~145 files remaining | **CONFIRMED OPEN** — genuine, now 15.83%                                                    | Literal (`money:adoption`, 183 new known-answer tests) | 10 more reachable engines migrated; every migration proven against the old float code                                |
+| **GAP-1** (money)          | IN_PROGRESS — 13.06%, ~145 files remaining | **CONFIRMED OPEN** — genuine, now 16.39%                                                    | Literal (`money:adoption`, 214 new known-answer tests) | 12 more reachable engines migrated; every migration proven against the old float code                                |
 | **GAP-4** (period close)   | IN_PROGRESS — "E2E chain unproven"         | **CONFIRMED, now CLOSED** — and the mock DB was hiding weak assertions                      | Literal (24 new lifecycle tests, server 71→95)         | Full-lifecycle test + 4 mock-DB fidelity fixes that make existing tests STRICTER                                     |
 | **GAP-NEW-A** (lease)      | PARTIAL — data-entry form remaining        | **CONFIRMED, now CLOSED**                                                                   | Literal (29 new tests incl. 9 UI→store→dashboard)      | Real form + validation; page rewired to the store                                                                    |
 | **GAP-2** (server auth)    | VERIFIED_DONE                              | **RE-VERIFIED** — still green, and now stricter                                             | Literal (server suite 95 tests, exit 0)                | Mock-DB fixes removed vacuous WHERE-less assertions underneath it                                                    |
@@ -38,7 +38,7 @@ testable. Evidence = literal command output with date.
   - No raw `+ - * /` on currency-bearing values in engines/stores/services.
   - Every migrated function has a known-answer unit test (fixed inputs → exact decimals).
   - `npm run money:adoption` ratchet never regresses.
-- **progress this session:** adoption **13.06% → 15.83%** (47 → 57 modules); raw `toFixed` sites
+- **progress this session:** adoption **13.06% → 16.39%** (47 → 59 modules); raw `toFixed` sites
   remain **0**. Baseline lowered (ratcheted down, never up).
 - **engines migrated this session** (all REACHABLE — i.e. wired into real pages, so the drift was
   user-visible):

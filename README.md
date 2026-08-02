@@ -33,20 +33,21 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 51 of
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 53 of
   261 engine/store modules** spanning the engines and store layers (e.g. `AllocationEngine`,
   `BankingEngine`, `BreakEvenEngine`, `COGSVarianceEngine`, `CapExEngine`, `CashEngine`,
   `CashFlowWaterfallEngine`, `ConsolidationEngine`, `ConstructionEngine`, `CreditRiskEngine`,
   `DebtScheduleEngine`, `DepreciationEngine`, `FXEngine`, `FiscalCalendarEngine`,
   `ICMatchingEngine`, `IntercompanyMatchingEngine`, `InventoryEngine`, `LeaseEngine`,
   `LoanAmortizationEngine`, `MultiCurrencyEngine`,
-  `PeriodCloseStateMachine`, `ReconciliationEngine`, `ReportBuilderEngine`, `SOXComplianceEngine`,
+  `PeriodCloseStateMachine`, `RealEstateEngine`, `ReconciliationEngine`, `ReportBuilderEngine`,
+  `RetailEngine`, `SOXComplianceEngine`,
   `SaaSMetricsEngine`, `SafeMathParser`, `ScenarioEngine`, `SensitivityTableEngine`,
   `SignConventionEngine`, `ThreeStatementEngine`, `ValidationEngine`,
   `VarianceDecompositionEngine`, `WorkingCapitalEngine`,
   `report-builder-formulas`, `report-builder-export`, and the `glStore`, `glTrialBalanceStore`,
   `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores). Across all financial
-  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 57 of 360 modules
+  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 59 of 360 modules
   with **0** raw `toFixed(n)` sites remaining — run
   `npm run money:adoption` for the current measurement. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
