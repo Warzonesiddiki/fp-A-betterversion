@@ -9,7 +9,16 @@ import type { GLEntry } from '@/types';
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 19th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03): revenue, operating cost and net income are
+ * money and flow through the canonical money primitive (src/utils/money.ts,
+ * decimal.js, ROUND_HALF_UP), cent-rounded. productionVolume (MWh proxy),
+ * avgMarketPrice ($/MWh), carbonIntensity and the getRevenueTrend mock
+ * generator are unit-conversion/metric values, not currency — their raw
+ * arithmetic is preserved. No raw + - * / on currency values remains.
  */
+
+import { divideMoney, roundTo, subtractMoney, sumMoney } from '../utils/money';
 
 export interface EnergyStats {
   totalRevenue: number;
@@ -57,18 +66,24 @@ export class EnergyEngine {
   static calculateStats(entries: GLEntry[]): EnergyStats {
     const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
 
-    const totalRevenue = entries
-      .filter((e) => e.accountCode.startsWith('4'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const totalRevenueDec = sumMoney(
+      entries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(getAmount(e)))
+    );
+    const totalRevenue = roundTo(totalRevenueDec);
 
-    const operatingCost = entries
-      .filter((e) => e.accountCode.startsWith('5'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const operatingCostDec = sumMoney(
+      entries.filter((e) => e.accountCode.startsWith('5')).map((e) => Math.abs(getAmount(e)))
+    );
+    const operatingCost = roundTo(operatingCostDec);
 
-    const productionVolume = totalRevenue > 0 ? Math.round(totalRevenue / 170) : 0; // $/MWh avg
-    const avgMarketPrice = productionVolume > 0 ? totalRevenue / productionVolume : 0;
+    // $/MWh average — a unit conversion (money per MWh), not currency rounding.
+    const productionVolume = totalRevenueDec.greaterThan(0)
+      ? Math.round(totalRevenueDec.div(170).toNumber())
+      : 0;
+    const avgMarketPrice =
+      productionVolume > 0 ? divideMoney(totalRevenueDec, productionVolume).toNumber() : 0;
     const carbonIntensity = 240 - Math.min(100, productionVolume / 50);
-    const netIncome = totalRevenue - operatingCost;
+    const netIncome = roundTo(subtractMoney(totalRevenueDec, operatingCostDec));
 
     return {
       totalRevenue,
@@ -96,13 +111,16 @@ export class EnergyEngine {
 
     return sources
       .map((src) => {
-        const value = entries
-          .filter((e) => e.accountCode.startsWith(src.code))
-          .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+        const valueDec = sumMoney(
+          entries
+            .filter((e) => e.accountCode.startsWith(src.code))
+            .map((e) => Math.abs(getAmount(e)))
+        );
 
         return {
           name: src.name,
-          value: value > 0 ? Math.round(value / 10000) : 0, // Convert to MWh proxy
+          // Convert to MWh proxy (unit conversion, not currency rounding).
+          value: valueDec.greaterThan(0) ? Math.round(valueDec.div(10000).toNumber()) : 0,
           color: SOURCE_COLORS[src.name] ?? '#94a3b8',
         };
       })
