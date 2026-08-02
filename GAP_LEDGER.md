@@ -68,10 +68,11 @@ testable. Evidence = literal command output with date.
   - No raw `+ - * /` on currency-bearing values in engines/stores/services.
   - Every migrated function has a known-answer unit test (fixed inputs → exact decimals).
   - `npm run money:adoption` ratchet never regresses.
-- **progress this session (2026-08-03):** adoption **16.67% → 21.11%** (59 → 76 modules); raw
-  `toFixed` sites remain **0**. Baseline lowered (ratcheted down, never up). 14 more reachable
-  engines migrated, every one falsified against the old float code first — **83 drift cases
-  caught** (see table below).
+- **progress this session (2026-08-03):** adoption **16.67% → 21.67%** (59 → 78 modules); raw
+  `toFixed` sites remain **0**. Baseline lowered (ratcheted down, never up). **16 more reachable
+  engines migrated**, every one falsified against the old float code first — **107 drift cases
+  caught** (83 in the table below + 24 in `formula-functions/financial.ts` + 3 in
+  `RollingForecastEngine`; see the two follow-up entries).
 - **engines migrated this session (2026-08-03)** (all REACHABLE — direct page imports unless
   noted):
 
@@ -98,6 +99,28 @@ testable. Evidence = literal command output with date.
   All of the above were previously listed in the handover as already-migrated — they were NOT.
   Their money headers said "migrated" but the files had no money import (the same class of
   documentation drift found in `FinancialInstrumentsEngine`).
+
+- **follow-up migrations (later same session):**
+  - `formula-functions/financial.ts` — the spreadsheet formula engine's financial functions
+    (registered via `FormulaFunctionRegistry`, consumed by `FormulaEngine`): P&L lines,
+    NPV/PV/FV/PMT/XNPV/IPMT/PPMT/CUMIPMT/CUMPRINC, depreciation (SLN/DB/SYD/DDB/VDB/AMOR*),
+    YTD/QTD/MTD/ITD/PERIOD_TO_DATE/CUMULATIVE, WEIGHTED_AVERAGE/ROLLING, currency functions
+    (CONVERT_CURRENCY/TRANSLATE/ELIMINATE/FX_GAIN_LOSS/HYPERINFLATION_ADJUST), bond money
+    functions (ACCRINT/PRICE/PRICEDISC/RECEIVED/TBILLPRICE/PRICEMAT/ODD*PRICE/DOLLAR\*).
+    Allocation functions keep FULL Decimal precision (the registry's `toEqual([1000/6, ...])`
+    contract). Metrics (IRR/XIRR/RATE/CAGR/YIELD/DURATION/day-counts/PERCENTILE/TREND) keep
+    float. Falsified: **21 of 28** new known-answer tests failed on the old code (e.g.
+    PV -10000.002291262748 vs -10000, PMT -536.8216230121398 vs -536.82,
+    CUMIPMT 303.9049202497849 vs 303.89); 123 formula tests + 268 FormulaEngine tests pass.
+  - `RollingForecastEngine` — weighted blends, trend adjustments and driver-based forecast
+    generation are money (cent-rounded); the old float code also cent-rounded, but its error
+    crossed cent boundaries in 3 pinned cases (0.5 vs 0.51 blend; 0.31 vs 0.3 and 0.61 vs 0.6
+    driver forecasts). 24/24 tests pass.
+  - **screened and REJECTED (not currency):** `AuditLogEngine` (audit bookkeeping),
+    `ImportEngine` (CSV/Excel parsing), `ReportBookEngine` (report assembly; currency is a
+    display string), `FinancialCloseEngine` (task lists), `PeriodLockEngine` (date locks),
+    `RegulatoryReportingEngine` (rule-based report validation), `templates/*` (static driver
+    config), `formula-functions/{statistical,math}.ts` (generic measure-agnostic math).
 
 - **engines migrated this session** (all REACHABLE — i.e. wired into real pages, so the drift was
   user-visible):
