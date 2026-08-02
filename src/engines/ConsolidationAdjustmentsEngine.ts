@@ -1,7 +1,17 @@
 /**
  * ConsolidationAdjustmentsEngine — Consolidation adjustments
  * Handles goodwill, NCI, eliminations, and consolidation entries
+ *
+ * MONEY MIGRATION (2026-08-02): All adjustment amounts now use src/utils/money.ts.
+ * Results are cent-rounded. No raw + - * / on amounts.
  */
+import {
+  addMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  toDecimal,
+} from '../utils/money';
 
 interface ConsolidationEntry {
   id: string;
@@ -39,7 +49,7 @@ export class ConsolidationAdjustmentsEngine {
       description: 'Intercompany elimination',
       debitAccount,
       creditAccount,
-      amount,
+      amount: roundTo(amount),
       entityId,
       period,
       status: 'pending',
@@ -52,7 +62,7 @@ export class ConsolidationAdjustmentsEngine {
     entityId: string,
     period: string
   ): ConsolidationEntry {
-    const goodwill = purchasePrice - fairValueOfNetAssets;
+    const goodwill = roundTo(subtractMoney(purchasePrice, fairValueOfNetAssets));
     return this.addEntry({
       type: 'goodwill',
       description: 'Goodwill on acquisition',
@@ -71,7 +81,7 @@ export class ConsolidationAdjustmentsEngine {
     entityId: string,
     period: string
   ): ConsolidationEntry {
-    const nciAmount = subsidiaryEquity * nciPercentage;
+    const nciAmount = roundTo(multiplyMoney(subsidiaryEquity, nciPercentage));
     return this.addEntry({
       type: 'nci',
       description: 'Non-controlling interest',
@@ -97,7 +107,7 @@ export class ConsolidationAdjustmentsEngine {
       description,
       debitAccount,
       creditAccount,
-      amount,
+      amount: roundTo(amount),
       entityId,
       period,
       status: 'pending',
@@ -106,21 +116,37 @@ export class ConsolidationAdjustmentsEngine {
 
   static getConsolidationSummary(period: string): ConsolidationResult {
     const periodEntries = this.entries.filter((e) => e.period === period);
-    return {
-      totalEliminations: periodEntries
+    const totalEliminations = roundTo(
+      periodEntries
         .filter((e) => e.type === 'elimination')
-        .reduce((s, e) => s + e.amount, 0),
-      totalGoodwill: periodEntries
+        .reduce((s, e) => addMoney(s, e.amount), toDecimal(0))
+    );
+    const totalGoodwill = roundTo(
+      periodEntries
         .filter((e) => e.type === 'goodwill')
-        .reduce((s, e) => s + e.amount, 0),
-      totalNCI: periodEntries.filter((e) => e.type === 'nci').reduce((s, e) => s + e.amount, 0),
-      totalAdjustments: periodEntries
+        .reduce((s, e) => addMoney(s, e.amount), toDecimal(0))
+    );
+    const totalNCI = roundTo(
+      periodEntries.filter((e) => e.type === 'nci').reduce((s, e) => addMoney(s, e.amount), toDecimal(0))
+    );
+    const totalAdjustments = roundTo(
+      periodEntries
         .filter((e) => e.type === 'adjustment')
-        .reduce((s, e) => s + e.amount, 0),
-      netEffect: periodEntries.reduce(
-        (s, e) => s + (e.type === 'elimination' ? -e.amount : e.amount),
-        0
-      ),
+        .reduce((s, e) => addMoney(s, e.amount), toDecimal(0))
+    );
+    const netEffect = roundTo(
+      periodEntries.reduce(
+        (s, e) => addMoney(s, e.type === 'elimination' ? subtractMoney(0, e.amount) : e.amount),
+        toDecimal(0)
+      )
+    );
+
+    return {
+      totalEliminations,
+      totalGoodwill,
+      totalNCI,
+      totalAdjustments,
+      netEffect,
       entries: periodEntries,
     };
   }

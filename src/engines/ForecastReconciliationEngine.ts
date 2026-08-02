@@ -7,7 +7,18 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 30th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-02): All forecast amounts and variance calculations now use src/utils/money.ts.
+ * Results are cent-rounded. No raw + - * / on amounts.
  */
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  toDecimal,
+} from '../utils/money';
 
 export interface ForecastSource {
   name: string;
@@ -76,12 +87,19 @@ export class ForecastReconciliationEngine {
       for (const [period, sourceAmounts] of periodMap) {
         if (sourceAmounts.length < 2) continue;
 
-        const amounts = sourceAmounts.map((s) => s.amount);
-        const max = Math.max(...amounts);
-        const min = Math.min(...amounts);
-        const avg = amounts.reduce((s, a) => s + a, 0) / amounts.length;
-        const maxVariance = max - min;
-        const maxVariancePercent = avg !== 0 ? (maxVariance / Math.abs(avg)) * 100 : 0;
+        const amountsDec = sourceAmounts.map((s) => toDecimal(s.amount));
+        const maxDec = amountsDec.reduce((a, b) => (a.toNumber() > b.toNumber() ? a : b));
+        const minDec = amountsDec.reduce((a, b) => (a.toNumber() < b.toNumber() ? a : b));
+        const avgDec = divideMoney(
+          amountsDec.reduce((s, a) => addMoney(s, a), toDecimal(0)),
+          amountsDec.length
+        );
+        const maxVarianceDec = subtractMoney(maxDec, minDec);
+        const maxVariance = roundTo(maxVarianceDec);
+        const maxVariancePercent =
+          avgDec.toNumber() !== 0
+            ? roundTo(multiplyMoney(divideMoney(maxVarianceDec, Math.abs(avgDec.toNumber())), 100)).toNumber()
+            : 0;
 
         let flag: 'low' | 'medium' | 'high' | 'critical';
         if (maxVariancePercent < 5) flag = 'low';
@@ -141,32 +159,44 @@ export class ForecastReconciliationEngine {
 
     for (const [accountCode, periodMap] of accountMap) {
       for (const [period, amounts] of periodMap) {
-        let merged: number;
+        let mergedDec: any;
         switch (strategy) {
           case 'average':
-            merged = amounts.reduce((s, a) => s + a, 0) / amounts.length;
+            mergedDec = divideMoney(
+              amounts.reduce((s, a) => addMoney(s, a), toDecimal(0)),
+              amounts.length
+            );
             break;
           case 'weighted':
             if (weights && weights.length === amounts.length) {
               const totalWeight = weights.reduce((s, w) => s + w, 0);
-              merged = amounts.reduce((s, a, i) => s + a * weights![i]!, 0) / totalWeight;
+              mergedDec = divideMoney(
+                amounts.reduce((s, a, i) => addMoney(s, multiplyMoney(a, weights![i]!)), toDecimal(0)),
+                totalWeight
+              );
             } else {
-              merged = amounts.reduce((s, a) => s + a, 0) / amounts.length;
+              mergedDec = divideMoney(
+                amounts.reduce((s, a) => addMoney(s, a), toDecimal(0)),
+                amounts.length
+              );
             }
             break;
           case 'top_down_priority':
-            merged = amounts[0] ?? 0;
+            mergedDec = toDecimal(amounts[0] ?? 0);
             break;
           case 'bottom_up_priority':
-            merged = amounts[amounts.length - 1] ?? 0;
+            mergedDec = toDecimal(amounts[amounts.length - 1] ?? 0);
             break;
           case 'most_recent':
-            merged = amounts[amounts.length - 1] ?? 0;
+            mergedDec = toDecimal(amounts[amounts.length - 1] ?? 0);
             break;
           default:
-            merged = amounts.reduce((s, a) => s + a, 0) / amounts.length;
+            mergedDec = divideMoney(
+              amounts.reduce((s, a) => addMoney(s, a), toDecimal(0)),
+              amounts.length
+            );
         }
-        result.push({ accountCode, accountName: '', period, amount: merged });
+        result.push({ accountCode, accountName: '', period, amount: roundTo(mergedDec) });
       }
     }
 
