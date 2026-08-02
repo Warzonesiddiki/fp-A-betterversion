@@ -1,4 +1,19 @@
 import type { GLEntry } from '@/types';
+import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+
+/**
+ * REIT and property-portfolio figures (NOI, cap rate, FFO/AFFO, NAV, LTV) are
+ * reported metrics, so all arithmetic runs through the canonical money
+ * primitive (decimal.js, ROUND_HALF_UP). Amounts round to cents; percentages
+ * and per-share figures keep more precision but derive from exact decimals.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
+
+/** Exact sum of `amount` over entries whose account code matches `prefix`. */
+function sumByPrefix(entries: readonly GLEntry[], prefix: string) {
+  return sumMoney(entries.filter((e) => e.accountCode.startsWith(prefix)).map((e) => e.amount));
+}
 
 export interface PropertyStats {
   costBasis: number;
@@ -44,52 +59,37 @@ export class RealEstateEngine {
    * - 25xx: Real Estate Debt (Liability)
    */
   static calculatePortfolioStats(entries: GLEntry[]): PropertyStats {
-    const costBasis = entries
-      .filter((e) => e.accountCode.startsWith('15'))
-      .reduce((acc, e) => acc + e.amount, 0);
-
-    const marketValue = entries
-      .filter((e) => e.accountCode.startsWith('16'))
-      .reduce((acc, e) => acc + e.amount, 0);
-
-    const totalDebt = Math.abs(
-      entries.filter((e) => e.accountCode.startsWith('25')).reduce((acc, e) => acc + e.amount, 0)
-    );
-
-    const unrealizedGain = marketValue - costBasis;
-    const ltv = marketValue > 0 ? (totalDebt / marketValue) * 100 : 0;
+    const costBasis = sumByPrefix(entries, '15');
+    const marketValue = sumByPrefix(entries, '16');
+    const totalDebt = sumByPrefix(entries, '25').abs();
 
     // Count unique entities as properties
     const totalProperties = new Set(entries.map((e) => e.entityId)).size;
 
     return {
-      costBasis,
-      marketValue,
-      unrealizedGain,
-      ltv,
+      costBasis: roundTo(costBasis, CURRENCY_PLACES),
+      marketValue: roundTo(marketValue, CURRENCY_PLACES),
+      unrealizedGain: roundTo(marketValue.minus(costBasis), CURRENCY_PLACES),
+      ltv: marketValue.lte(0)
+        ? 0
+        : roundTo(divideMoney(totalDebt, marketValue).times(100), RATIO_PLACES),
       totalProperties,
       avgHoldingPeriod: 4.2, // Mocked for now
     };
   }
 
   static calculateDashboardStats(entries: GLEntry[]): RealEstateDashboardStats {
-    const rentalIncome = entries
-      .filter((e) => e.accountCode.startsWith('40'))
-      .reduce((acc, e) => acc + e.amount, 0);
-    const opex = entries
-      .filter((e) => e.accountCode.startsWith('50'))
-      .reduce((acc, e) => acc + e.amount, 0);
-
-    const noi = rentalIncome - opex;
+    const noi = subtractMoney(sumByPrefix(entries, '40'), sumByPrefix(entries, '50'));
     const portfolio = this.calculatePortfolioStats(entries);
-
-    const capRate = portfolio.marketValue > 0 ? (noi / portfolio.marketValue) * 100 : 0;
 
     return {
       fairValue: portfolio.marketValue,
-      noi,
+      noi: roundTo(noi, CURRENCY_PLACES),
       occupancy: 94.8, // Mocked
-      capRate,
+      capRate:
+        portfolio.marketValue > 0
+          ? roundTo(divideMoney(noi, portfolio.marketValue).times(100), RATIO_PLACES)
+          : 0,
     };
   }
 
@@ -103,44 +103,29 @@ export class RealEstateEngine {
    * - 80xx: Dividends Paid
    */
   static calculateREITStats(entries: GLEntry[]): REITStats {
-    const rentalIncome = entries
-      .filter((e) => e.accountCode.startsWith('40'))
-      .reduce((acc, e) => acc + e.amount, 0);
-    const opex = entries
-      .filter((e) => e.accountCode.startsWith('50'))
-      .reduce((acc, e) => acc + e.amount, 0);
-    const depAmort = entries
-      .filter((e) => e.accountCode.startsWith('60'))
-      .reduce((acc, e) => acc + e.amount, 0);
-    const interest = entries
-      .filter((e) => e.accountCode.startsWith('70'))
-      .reduce((acc, e) => acc + e.amount, 0);
-    const dividends = Math.abs(
-      entries.filter((e) => e.accountCode.startsWith('80')).reduce((acc, e) => acc + e.amount, 0)
-    );
+    const rentalIncome = sumByPrefix(entries, '40');
+    const opex = sumByPrefix(entries, '50');
+    const depAmort = sumByPrefix(entries, '60');
+    const interest = sumByPrefix(entries, '70');
+    const dividends = sumByPrefix(entries, '80').abs();
 
-    const netIncome = rentalIncome - opex - depAmort - interest;
+    const netIncome = rentalIncome.minus(opex).minus(depAmort).minus(interest);
 
     // FFO = Net Income + Depreciation + Amortization
-    const ffo = netIncome + depAmort;
+    const ffo = netIncome.plus(depAmort);
 
     // AFFO = FFO - Maintenance CapEx (assuming 10% of revenue as mock CapEx)
-    const affo = ffo - rentalIncome * 0.1;
-
-    const payoutRatio = ffo > 0 ? (dividends / ffo) * 100 : 0;
+    const affo = ffo.minus(multiplyMoney(rentalIncome, '0.1'));
 
     // NAV = (Market Value - Total Debt) / Shares
     const portfolio = this.calculatePortfolioStats(entries);
-    const totalDebt = Math.abs(
-      entries.filter((e) => e.accountCode.startsWith('25')).reduce((acc, e) => acc + e.amount, 0)
-    );
-    const nav = portfolio.marketValue - totalDebt;
+    const nav = subtractMoney(portfolio.marketValue, sumByPrefix(entries, '25').abs());
 
     return {
-      ffo,
-      affo,
-      navPerShare: nav / 1000000, // Assuming 1M shares for scale
-      payoutRatio,
+      ffo: roundTo(ffo, CURRENCY_PLACES),
+      affo: roundTo(affo, CURRENCY_PLACES),
+      navPerShare: roundTo(divideMoney(nav, 1_000_000), RATIO_PLACES), // Assuming 1M shares for scale
+      payoutRatio: ffo.lte(0) ? 0 : roundTo(divideMoney(dividends, ffo).times(100), RATIO_PLACES),
       dividendYield: 5.42, // Mocked
     };
   }
@@ -156,13 +141,8 @@ export class RealEstateEngine {
         const eEntries = entries.filter((e) => e.entityId === id);
         const name = eEntries[0]?.accountName || 'Unknown Property';
 
-        const cost = eEntries
-          .filter((e) => e.accountCode.startsWith('15'))
-          .reduce((acc, e) => acc + e.amount, 0);
-
-        const market = eEntries
-          .filter((e) => e.accountCode.startsWith('16'))
-          .reduce((acc, e) => acc + e.amount, 0);
+        const cost = roundTo(sumByPrefix(eEntries, '15'), CURRENCY_PLACES);
+        const market = roundTo(sumByPrefix(eEntries, '16'), CURRENCY_PLACES);
 
         return {
           id,
