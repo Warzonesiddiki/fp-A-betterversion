@@ -2,7 +2,16 @@
 // ROLLING FORECAST ENGINE — Auto-extending rolling forecasts
 // Blends actuals with forecast model, maintains rolling windows
 // Pure TypeScript, deterministic, testable
+//
+// MONEY MIGRATION (2026-08-03): forecast/actual VALUES are financial amounts.
+// Weighted blends, trend adjustments and driver-based forecast generation now
+// flow through the canonical money primitive (src/utils/money.ts, decimal.js,
+// ROUND_HALF_UP) and round to cents. Weights, growth rates and confidence are
+// metrics (not money) and keep float math. No raw + - * / on currency values
+// remains.
 // =============================================================================
+
+import { addMoney, multiplyMoney, roundTo, toDecimal } from '../utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -166,11 +175,14 @@ export class RollingForecastEngine {
 
       // For transition periods, apply blend method
       if (config.blendMethod === 'weighted' && p.value !== 0) {
-        const blended = actualValue * config.recentWeight + p.value * config.forecastWeight;
+        const blended = addMoney(
+          multiplyMoney(actualValue, config.recentWeight),
+          multiplyMoney(p.value, config.forecastWeight)
+        );
         blendWeights[p.period] = config.recentWeight;
         return {
           ...p,
-          value: Math.round(blended * 100) / 100,
+          value: roundTo(blended),
           isActual: true,
           confidence: undefined,
         };
@@ -251,9 +263,12 @@ export class RollingForecastEngine {
 
       switch (config.blendMethod) {
         case 'weighted': {
-          const blended = actualValue * config.recentWeight + p.value * config.forecastWeight;
+          const blended = addMoney(
+            multiplyMoney(actualValue, config.recentWeight),
+            multiplyMoney(p.value, config.forecastWeight)
+          );
           blendWeights[p.period] = config.recentWeight;
-          return { ...p, value: Math.round(blended * 100) / 100 };
+          return { ...p, value: roundTo(blended) };
         }
 
         case 'full-replace': {
@@ -264,9 +279,9 @@ export class RollingForecastEngine {
         case 'trend': {
           // Use trend from recent actuals to adjust forecast
           const trend = this.calculateTrend(actuals, p.period);
-          const adjusted = p.value * (1 + trend);
+          const adjusted = multiplyMoney(p.value, 1 + trend);
           blendWeights[p.period] = config.recentWeight;
-          return { ...p, value: Math.round(adjusted * 100) / 100 };
+          return { ...p, value: roundTo(adjusted) };
         }
 
         default:
@@ -350,16 +365,17 @@ export class RollingForecastEngine {
     const results = new Map<string, number>();
 
     for (const [account, base] of baseValues) {
-      let adjusted = base;
+      let adjusted = toDecimal(base);
 
       for (const rule of cascadeRules) {
         if (rule.account === account) {
           const driverValue = drivers.get(rule.driverName) ?? 0;
-          adjusted *= 1 + (driverValue / 100) * rule.weight;
+          // driverValue is a percentage (metric); the growth factor is a ratio.
+          adjusted = multiplyMoney(adjusted, 1 + (driverValue / 100) * rule.weight);
         }
       }
 
-      results.set(account, Math.round(adjusted * 100) / 100);
+      results.set(account, roundTo(adjusted));
     }
 
     return results;
