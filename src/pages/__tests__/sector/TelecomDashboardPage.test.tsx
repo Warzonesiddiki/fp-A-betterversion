@@ -40,6 +40,7 @@ describe('TelecomDashboardPage', () => {
           debit: 0,
           credit: 100000,
           netChange: -100000,
+          amount: -100000,
           date: '2024-01-01',
         },
         {
@@ -49,6 +50,7 @@ describe('TelecomDashboardPage', () => {
           debit: 40000,
           credit: 0,
           netChange: 40000,
+          amount: 40000,
           date: '2024-01-01',
         },
       ],

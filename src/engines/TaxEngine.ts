@@ -1,3 +1,25 @@
+/**
+ * TaxEngine — Tax provisioning (ASC 740 / IAS 12)
+ *
+ * MONEY MIGRATION (2026-08-03): pretax income, permanent/temporary
+ * differences, credits, loss carryforwards, tax expense, DTA/DTL and the
+ * valuation allowance are money and flow through the canonical money
+ * primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP), cent-rounded.
+ * taxRate and valuationAllowanceRate are rates; effectiveTaxRate is a rate
+ * rounded to 4 decimal places (unchanged contract). No raw + - * / on
+ * currency values remains.
+ */
+
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '../utils/money';
+
 export interface TaxProvisionInput {
   pretaxIncome: number;
   permanentDifferences: { description: string; amount: number }[];
@@ -41,31 +63,33 @@ export class TaxEngine {
     if (typeof input.taxRate !== 'number' || !Number.isFinite(input.taxRate)) {
       throw new Error('taxRate must be a finite number');
     }
-    const permDiff = input.permanentDifferences.reduce(
-      (acc, d) => acc + (Number.isFinite(d.amount) ? d.amount : 0),
-      0
+    const permDiff = sumMoney(
+      input.permanentDifferences.map((d) => (Number.isFinite(d.amount) ? d.amount : 0))
     );
-    const tempDiff = input.temporaryDifferences.reduce(
-      (acc, d) => acc + (Number.isFinite(d.amount) ? d.amount : 0),
-      0
+    const tempDiff = sumMoney(
+      input.temporaryDifferences.map((d) => (Number.isFinite(d.amount) ? d.amount : 0))
     );
-    let taxableIncome = input.pretaxIncome + permDiff + tempDiff;
-    const credits = input.taxCredits.reduce((acc, c) => acc + c.amount, 0);
+    let taxableIncome = addMoney(addMoney(input.pretaxIncome, permDiff), tempDiff);
+    const credits = sumMoney(input.taxCredits.map((c) => c.amount));
 
     // Apply loss carryforward
-    let lossCarryforwardRemaining = input.lossCarryforward ?? 0;
-    if (lossCarryforwardRemaining > 0 && taxableIncome > 0) {
-      const offset = Math.min(lossCarryforwardRemaining, taxableIncome);
-      taxableIncome -= offset;
-      lossCarryforwardRemaining -= offset;
+    let lossCarryforwardRemaining = toDecimal(input.lossCarryforward ?? 0);
+    if (lossCarryforwardRemaining.greaterThan(0) && taxableIncome.greaterThan(0)) {
+      const offset = lossCarryforwardRemaining.lte(taxableIncome)
+        ? lossCarryforwardRemaining
+        : taxableIncome;
+      taxableIncome = subtractMoney(taxableIncome, offset);
+      lossCarryforwardRemaining = subtractMoney(lossCarryforwardRemaining, offset);
     }
 
-    const currentTaxExpense = Math.max(
-      0,
-      Math.round((taxableIncome * input.taxRate - credits) * 100) / 100
-    );
+    const grossTax = subtractMoney(multiplyMoney(taxableIncome, input.taxRate), credits);
+    const currentTaxExpense = grossTax.greaterThan(0) ? roundTo(grossTax) : 0;
 
-    return { currentTaxExpense, taxableIncome, lossCarryforwardRemaining };
+    return {
+      currentTaxExpense,
+      taxableIncome: roundTo(taxableIncome),
+      lossCarryforwardRemaining: roundTo(lossCarryforwardRemaining),
+    };
   }
 
   static calculateDeferredTax(input: TaxProvisionInput): {
@@ -75,23 +99,24 @@ export class TaxEngine {
     netDeferredTaxAsset: number;
     valuationAllowance: number;
   } {
-    let deferredTaxAsset = 0;
-    let deferredTaxLiability = 0;
+    let deferredTaxAsset = toDecimal(0);
+    let deferredTaxLiability = toDecimal(0);
 
     input.temporaryDifferences.forEach((d) => {
-      const amount = Math.round(d.amount * input.taxRate * 100) / 100;
-      if (amount > 0) deferredTaxAsset += amount;
-      else deferredTaxLiability += Math.abs(amount);
+      const amount = roundTo(multiplyMoney(d.amount, input.taxRate));
+      if (amount > 0) deferredTaxAsset = addMoney(deferredTaxAsset, amount);
+      else deferredTaxLiability = addMoney(deferredTaxLiability, Math.abs(amount));
     });
 
     const valuationRate = input.valuationAllowanceRate ?? 0;
-    const valuationAllowance = Math.round(deferredTaxAsset * valuationRate * 100) / 100;
-    const netDeferredTaxAsset = Math.round((deferredTaxAsset - valuationAllowance) * 100) / 100;
+    const valuationAllowance = roundTo(multiplyMoney(deferredTaxAsset, valuationRate));
+    const netDeferredTaxAsset = roundTo(subtractMoney(deferredTaxAsset, valuationAllowance));
+    const deferredTaxExpense = roundTo(subtractMoney(deferredTaxLiability, netDeferredTaxAsset));
 
     return {
-      deferredTaxExpense: Math.round((deferredTaxLiability - netDeferredTaxAsset) * 100) / 100,
-      deferredTaxAsset: Math.round(deferredTaxAsset * 100) / 100,
-      deferredTaxLiability: Math.round(deferredTaxLiability * 100) / 100,
+      deferredTaxExpense,
+      deferredTaxAsset: roundTo(deferredTaxAsset),
+      deferredTaxLiability: roundTo(deferredTaxLiability),
       netDeferredTaxAsset,
       valuationAllowance,
     };
@@ -99,8 +124,9 @@ export class TaxEngine {
 
   static calculateEffectiveRate(pretaxIncome: number, totalTaxExpense: number): number {
     if (pretaxIncome === 0) return 0;
-    // For negative income (loss), compute benefit rate
-    return Math.round((totalTaxExpense / pretaxIncome) * 10000) / 10000;
+    // For negative income (loss), compute benefit rate — a RATE rounded to 4
+    // decimal places, not a currency amount.
+    return divideMoney(totalTaxExpense, pretaxIncome).toDecimalPlaces(4).toNumber();
   }
 
   static computeProvision(input: TaxProvisionInput): TaxProvisionResult {
@@ -113,7 +139,7 @@ export class TaxEngine {
       netDeferredTaxAsset,
       valuationAllowance,
     } = this.calculateDeferredTax(input);
-    const totalTaxExpense = Math.round((currentTaxExpense + deferredTaxExpense) * 100) / 100;
+    const totalTaxExpense = roundTo(addMoney(currentTaxExpense, deferredTaxExpense));
 
     return {
       currentTaxExpense,

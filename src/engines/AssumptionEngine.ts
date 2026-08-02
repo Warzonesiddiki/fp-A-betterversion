@@ -1,7 +1,15 @@
 /**
  * Assumption Engine — Track financial model assumptions separately from calculations
  * Supports versioning, locking, impact analysis, and history
+ *
+ * MONEY MIGRATION (2026-08-03): for assumptions whose unit is 'currency',
+ * impact deltas and estimated impacts flow through the canonical money
+ * primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP) and round to
+ * cents. percent/ratio/count assumptions are not currency and keep float
+ * arithmetic. No raw + - * / on currency values remains.
  */
+
+import { roundTo, subtractMoney } from '../utils/money';
 
 export interface Assumption {
   id: string;
@@ -103,8 +111,20 @@ export class AssumptionEngine {
     const assumption = this.assumptions.get(assumptionId);
     if (!assumption) throw new Error(`Assumption ${assumptionId} not found`);
 
-    const delta = newValue - assumption.value;
     const affectedCells: string[] = [];
+    if (assumption.unit === 'currency') {
+      const deltaDec = subtractMoney(newValue, assumption.value);
+      const estimatedImpact = roundTo(deltaDec);
+      return {
+        assumptionId,
+        oldValue: assumption.value,
+        newValue,
+        delta: deltaDec.toNumber(),
+        affectedCells,
+        estimatedImpact,
+      };
+    }
+    const delta = newValue - assumption.value;
     const estimatedImpact = delta * (assumption.unit === 'percent' ? 0.01 : 1);
 
     return {

@@ -4,34 +4,45 @@
 // =============================================================================
 import type { FormulaFunction } from './helpers';
 import { flattenNums } from './helpers';
+import {
+  addMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  sumMoney,
+  toDecimal,
+  roundTo,
+} from '../../utils/money';
 
 // =============================================================================
 // FINANCIAL FUNCTIONS
 // =============================================================================
 
 export function EBITDA(r: number, c: number, o: number): number {
-  return r - c - o;
+  return roundTo(subtractMoney(subtractMoney(r, c), o));
 }
 export function EBIT(e: number, d: number): number {
-  return e - d;
+  return roundTo(subtractMoney(e, d));
 }
 export function NOPAT(e: number, t: number): number {
-  return e * (1 - t);
+  return roundTo(multiplyMoney(e, 1 - t));
 }
 export function FCFF(n: number, d: number, c: number, w: number): number {
-  return n + d - c - w;
+  return roundTo(subtractMoney(subtractMoney(addMoney(n, d), c), w));
 }
 export function FCFE(f: number, b: number): number {
-  return f + b;
+  return roundTo(addMoney(f, b));
 }
 export function WACC(ew: number, ce: number, dw: number, cd: number, t: number): number {
   return ew * ce + dw * cd * (1 - t);
 }
 export function NPV(rate: number, cf: number): number {
-  let npv = 0;
   const cfs = Array.isArray(cf) ? cf : [cf];
-  for (let i = 0; i < cfs.length; i++) npv += cfs[i] / Math.pow(1 + rate, i);
-  return npv;
+  let npv = toDecimal(0);
+  // Cash flows are money; discount factors are ratios (float preserved).
+  for (let i = 0; i < cfs.length; i++)
+    npv = addMoney(npv, divideMoney(cfs[i], Math.pow(1 + rate, i)));
+  return roundTo(npv);
 }
 export function IRR(cf: number, guess = 0.1): number {
   const cfs = Array.isArray(cf) ? cf : [cf];
@@ -53,19 +64,23 @@ export function IRR(cf: number, guess = 0.1): number {
   return rate;
 }
 export function PV(r: number, n: number, pmt: number, fv = 0): number {
-  return r === 0
-    ? -(fv + pmt * n)
-    : -(fv + pmt * ((Math.pow(1 + r, n) - 1) / r)) / Math.pow(1 + r, n);
+  if (r === 0) return roundTo(addMoney(fv, multiplyMoney(pmt, n)).negated());
+  const annuityFactor = (Math.pow(1 + r, n) - 1) / r; // ratio, not money
+  const numerator = addMoney(fv, multiplyMoney(pmt, annuityFactor)).negated();
+  return roundTo(divideMoney(numerator, Math.pow(1 + r, n)));
 }
 export function FV(r: number, n: number, pmt: number, pv = 0): number {
-  return r === 0
-    ? -(pv + pmt * n)
-    : -(pv * Math.pow(1 + r, n) + pmt * ((Math.pow(1 + r, n) - 1) / r));
+  if (r === 0) return roundTo(addMoney(pv, multiplyMoney(pmt, n)).negated());
+  const compound = multiplyMoney(pv, Math.pow(1 + r, n));
+  const annuity = multiplyMoney(pmt, (Math.pow(1 + r, n) - 1) / r);
+  return roundTo(addMoney(compound, annuity).negated());
 }
 export function PMT(r: number, n: number, pv: number, fv = 0): number {
-  return r === 0
-    ? -(pv + fv) / n
-    : (-(pv * Math.pow(1 + r, n) + fv) * r) / (Math.pow(1 + r, n) - 1);
+  if (r === 0) return roundTo(divideMoney(addMoney(pv, fv).negated(), n));
+  const base = multiplyMoney(pv, Math.pow(1 + r, n))
+    .plus(fv)
+    .negated();
+  return roundTo(divideMoney(multiplyMoney(base, r), Math.pow(1 + r, n) - 1));
 }
 export function CAGR(bv: number, ev: number, y: number): number {
   return bv <= 0 || y <= 0 ? 0 : Math.pow(ev / bv, 1 / y) - 1;
@@ -80,13 +95,13 @@ export function PAYBACK(cf: number): number {
   return -1;
 }
 export function DPO(c: number, ap: number, d = 365): number {
-  return c === 0 ? 0 : (ap / c) * d;
+  return c === 0 ? 0 : divideMoney(ap, c).times(d).toNumber();
 }
 export function DSI(inv: number, c: number, d = 365): number {
-  return c === 0 ? 0 : (inv / c) * d;
+  return c === 0 ? 0 : divideMoney(inv, c).times(d).toNumber();
 }
 export function DSO(r: number, ar: number, d = 365): number {
-  return r === 0 ? 0 : (ar / r) * d;
+  return r === 0 ? 0 : divideMoney(ar, r).times(d).toNumber();
 }
 export function XIRR(cfs: number, dates: number, guess = 0.1): number {
   const flows = Array.isArray(cfs) ? cfs : [cfs];
@@ -114,15 +129,18 @@ export function XNPV(rate: number, cfs: number, dates: number): number {
   const flows = Array.isArray(cfs) ? cfs : [cfs];
   const dts = Array.isArray(dates) ? dates : [dates];
   const d0 = dts[0];
-  return flows.reduce((s, f, i) => s + f / Math.pow(1 + rate, (dts[i] - d0) / 365.25), 0);
+  let total = toDecimal(0);
+  for (let i = 0; i < flows.length; i++)
+    total = addMoney(total, divideMoney(flows[i], Math.pow(1 + rate, (dts[i]! - d0) / 365.25)));
+  return roundTo(total);
 }
 export function IPMT(r: number, per: number, n: number, pv: number, fv = 0): number {
   const pmt = PMT(r, n, pv, fv);
   const bal = PV(r, per - 1, pmt, fv);
-  return bal * r;
+  return roundTo(multiplyMoney(bal, r));
 }
 export function PPMT(r: number, per: number, n: number, pv: number, fv = 0): number {
-  return PMT(r, n, pv, fv) - IPMT(r, per, n, pv, fv);
+  return roundTo(subtractMoney(PMT(r, n, pv, fv), IPMT(r, per, n, pv, fv)));
 }
 export function NPER(r: number, pmt: number, pv: number, fv = 0): number {
   if (r === 0) return -(pv + fv) / pmt;
@@ -145,26 +163,34 @@ export function RATE(n: number, pmt: number, pv: number, fv = 0, guess = 0.1): n
   return r;
 }
 export function SLN(cost: number, salvage: number, life: number): number {
-  return (cost - salvage) / life;
+  return roundTo(divideMoney(subtractMoney(cost, salvage), life));
 }
 export function DB(cost: number, salvage: number, life: number, per: number): number {
-  const rate = 1 - Math.pow(salvage / cost, 1 / life);
-  let dep = cost * rate;
-  for (let i = 1; i < per; i++) dep -= (cost - dep) * rate;
-  return dep;
+  const rate = 1 - Math.pow(salvage / cost, 1 / life); // depreciation rate (metric)
+  let dep = toDecimal(cost).times(rate);
+  for (let i = 1; i < per; i++)
+    dep = subtractMoney(dep, multiplyMoney(subtractMoney(cost, dep), rate));
+  return roundTo(dep);
 }
 export function SYD(cost: number, salvage: number, life: number, per: number): number {
-  return ((cost - salvage) * (life - per + 1)) / ((life * (life + 1)) / 2);
+  return roundTo(
+    divideMoney(
+      multiplyMoney(subtractMoney(cost, salvage), life - per + 1),
+      (life * (life + 1)) / 2
+    )
+  );
 }
 export function DDB(cost: number, salvage: number, life: number, per: number): number {
-  const rate = 2 / life;
-  let bv = cost,
-    dep = 0;
+  const rate = 2 / life; // depreciation rate (metric)
+  let bv = toDecimal(cost);
+  let dep = toDecimal(0);
   for (let i = 1; i <= per; i++) {
-    dep = Math.min(bv * rate, bv - salvage);
-    bv -= dep;
+    const byRate = toDecimal(bv).times(rate);
+    const toSalvage = subtractMoney(bv, salvage);
+    dep = byRate.lte(toSalvage) ? byRate : toSalvage;
+    bv = subtractMoney(bv, dep);
   }
-  return dep;
+  return roundTo(dep);
 }
 export function VDB(
   cost: number,
@@ -173,9 +199,10 @@ export function VDB(
   start: number,
   end: number
 ): number {
-  let total = 0;
-  for (let i = Math.ceil(start); i <= Math.floor(end); i++) total += DDB(cost, salvage, life, i);
-  return total;
+  let total = toDecimal(0);
+  for (let i = Math.ceil(start); i <= Math.floor(end); i++)
+    total = addMoney(total, DDB(cost, salvage, life, i));
+  return roundTo(total);
 }
 export function EFFECT(nom: number, npery: number): number {
   return Math.pow(1 + nom / npery, npery) - 1;
@@ -218,9 +245,9 @@ export function CUMIPMT(
   end: number,
   _type: number
 ): number {
-  let total = 0;
-  for (let i = start; i <= end; i++) total += IPMT(rate, i, nper, pv);
-  return total;
+  let total = toDecimal(0);
+  for (let i = start; i <= end; i++) total = addMoney(total, IPMT(rate, i, nper, pv));
+  return roundTo(total);
 }
 export function CUMPRINC(
   rate: number,
@@ -230,9 +257,9 @@ export function CUMPRINC(
   end: number,
   _type: number
 ): number {
-  let total = 0;
-  for (let i = start; i <= end; i++) total += PPMT(rate, i, nper, pv);
-  return total;
+  let total = toDecimal(0);
+  for (let i = start; i <= end; i++) total = addMoney(total, PPMT(rate, i, nper, pv));
+  return roundTo(total);
 }
 
 // =============================================================================
@@ -250,25 +277,20 @@ export function MOM(c: number, p: number): number {
 }
 export function YTD(v: unknown, m: number): number {
   const vals = Array.isArray(v) ? v : [v];
-  let s = 0;
-  for (let i = 0; i <= Math.min(m, vals.length - 1); i++) s += vals[i];
-  return s;
+  const upto = Math.min(m, vals.length - 1);
+  return roundTo(sumMoney(vals.slice(0, upto + 1)));
 }
 export function QTD(v: unknown, q: number): number {
   const vals = Array.isArray(v) ? v : [v];
   const st = q * 3;
-  let s = 0;
-  for (let i = st; i < Math.min(st + 3, vals.length); i++) s += vals[i];
-  return s;
+  return roundTo(sumMoney(vals.slice(st, Math.min(st + 3, vals.length))));
 }
 export function ROLLING(v: unknown, w: number): number[] {
   const vals = Array.isArray(v) ? v : [v];
   if (w <= 0 || vals.length < w) return [];
   const r: number[] = [];
   for (let i = 0; i <= vals.length - w; i++) {
-    let s = 0;
-    for (let j = i; j < i + w; j++) s += vals[j];
-    r.push(s / w);
+    r.push(divideMoney(sumMoney(vals.slice(i, i + w)), w).toNumber());
   }
   return r;
 }
@@ -297,13 +319,13 @@ export function WEIGHTED_AVERAGE(v: number, w: number): number {
   const vals = Array.isArray(v) ? v : [v];
   const wgts = Array.isArray(w) ? w : [w];
   if (vals.length !== wgts.length) throw new Error('Values and weights must match');
-  let s = 0,
-    ws = 0;
+  let s = toDecimal(0);
+  let ws = 0;
   for (let i = 0; i < vals.length; i++) {
-    s += vals[i] * wgts[i];
+    s = addMoney(s, multiplyMoney(vals[i], wgts[i]));
     ws += wgts[i];
   }
-  return ws === 0 ? 0 : s / ws;
+  return ws === 0 ? 0 : divideMoney(s, ws).toNumber();
 }
 export function PERCENTILE(v: unknown, p: number): number {
   const valid = flattenNums(Array.isArray(v) ? v : [v]);
@@ -322,23 +344,27 @@ export function PERCENTILE(v: unknown, p: number): number {
 export function ALLOCATE(a: number, w: number): number[] {
   const wgts = Array.isArray(w) ? w : [w];
   const t = wgts.reduce((s: number, v: number) => s + v, 0);
-  return t === 0 ? wgts.map(() => 0) : wgts.map((v) => (v / t) * a);
+  if (t === 0) return wgts.map(() => 0);
+  // Full-precision shares (parts sum exactly to the parent in Decimal space).
+  return wgts.map((v) => multiplyMoney(toDecimal(a), toDecimal(v).div(t)).toNumber());
 }
 export function SPREAD(a: number, p: number): number[] {
-  return p <= 0 ? [] : Array.from({ length: p }, () => a / p);
+  return p <= 0 ? [] : Array.from({ length: p }, () => divideMoney(a, p).toNumber());
 }
 export function DISTRIBUTE(a: number, d: number): number[] {
   const dist = Array.isArray(d) ? d : [d];
   const t = dist.reduce((s: number, v: number) => s + v, 0);
-  return t === 0 ? dist.map(() => 0) : dist.map((v) => (v / t) * a);
+  if (t === 0) return dist.map(() => 0);
+  return dist.map((v) => multiplyMoney(toDecimal(a), toDecimal(v).div(t)).toNumber());
 }
 export function SPLIT(a: number, r: number): number[] {
   const rats = Array.isArray(r) ? r : [r];
   const t = rats.reduce((s: number, v: number) => s + v, 0);
-  return t === 0 ? rats.map(() => 0) : rats.map((v) => (v / t) * a);
+  if (t === 0) return rats.map(() => 0);
+  return rats.map((v) => multiplyMoney(toDecimal(a), toDecimal(v).div(t)).toNumber());
 }
 export function PRO_RATA(a: number, b: number, t: number): number {
-  return t === 0 ? 0 : (b / t) * a;
+  return t === 0 ? 0 : multiplyMoney(toDecimal(a), divideMoney(b, t)).toNumber();
 }
 
 // =============================================================================
@@ -346,19 +372,19 @@ export function PRO_RATA(a: number, b: number, t: number): number {
 // =============================================================================
 
 export function CONVERT_CURRENCY(a: number, r: number): number {
-  return a * r;
+  return roundTo(multiplyMoney(a, r));
 }
 export function TRANSLATE(a: number, r: number): number {
-  return a * r;
+  return roundTo(multiplyMoney(a, r));
 }
 export function ELIMINATE(a: number, p: number): number {
-  return a * (1 - p);
+  return roundTo(multiplyMoney(a, 1 - p));
 }
 export function FX_GAIN_LOSS(a: number, or: number, cr: number): number {
-  return a * (cr - or);
+  return roundTo(multiplyMoney(a, cr - or));
 }
 export function HYPERINFLATION_ADJUST(a: number, ic: number, ib: number): number {
-  return ib === 0 ? 0 : a * (ic / ib);
+  return ib === 0 ? 0 : roundTo(multiplyMoney(a, divideMoney(ic, ib)));
 }
 
 // =============================================================================
@@ -645,7 +671,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
         _freq: number
       ) => {
         const days = (_settlement - _issue) / 365.25;
-        return _par * _rate * days;
+        return roundTo(multiplyMoney(_par, _rate * days));
       }
     ),
   });
@@ -666,10 +692,10 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
       ) => {
         const n = ((_maturity - _settlement) / 365.25) * _freq;
         const c = (_rate * _redemption) / _freq;
-        let p = 0;
-        for (let i = 1; i <= n; i++) p += c / Math.pow(1 + _yld / _freq, i);
-        p += _redemption / Math.pow(1 + _yld / _freq, n);
-        return p;
+        let p = toDecimal(0);
+        for (let i = 1; i <= n; i++) p = addMoney(p, divideMoney(c, Math.pow(1 + _yld / _freq, i)));
+        p = addMoney(p, divideMoney(_redemption, Math.pow(1 + _yld / _freq, n)));
+        return roundTo(p);
       }
     ),
   });
@@ -700,7 +726,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     maxArgs: 4,
     impl: impl((_settlement: number, _maturity: number, _discount: number, _redemption: number) => {
       const n = (_maturity - _settlement) / 365.25;
-      return _redemption * (1 - _discount * n);
+      return roundTo(multiplyMoney(_redemption, 1 - _discount * n));
     }),
   });
   r({
@@ -711,7 +737,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     maxArgs: 4,
     impl: impl((_settlement: number, _maturity: number, _investment: number, _discount: number) => {
       const n = (_maturity - _settlement) / 365.25;
-      return _investment / (1 - _discount * n);
+      return roundTo(divideMoney(_investment, 1 - _discount * n));
     }),
   });
   r({
@@ -746,7 +772,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     maxArgs: 3,
     impl: impl((_settlement: number, _maturity: number, _discount: number) => {
       const n = (_maturity - _settlement) / 365.25;
-      return 100 * (1 - _discount * n);
+      return roundTo(multiplyMoney(100, 1 - _discount * n));
     }),
   });
   r({
@@ -841,7 +867,8 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     description: 'Interest for specified period',
     minArgs: 4,
     maxArgs: 4,
-    impl: (rate: number, per: number, nper: number, pv: number) => pv * rate * (per / nper - 1),
+    impl: (rate: number, per: number, nper: number, pv: number) =>
+      roundTo(multiplyMoney(multiplyMoney(pv, rate), per / nper - 1)),
   });
   r({
     name: 'ACCRINTM',
@@ -851,7 +878,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     maxArgs: 4,
     impl: (_issue: number, _settlement: number, _rate: number, _par: number) => {
       const days = (_settlement - _issue) / 365.25;
-      return _par * _rate * days;
+      return roundTo(multiplyMoney(_par, _rate * days));
     },
   });
   r({
@@ -870,8 +897,10 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
         rate: number
       ) => {
         const coeff = period <= 1 ? 1 : period <= 3 ? 1.5 : period <= 5 ? 2 : 2.5;
-        const dep = cost * rate * coeff;
-        return Math.max(0, Math.min(dep, cost - salvage));
+        const dep = multiplyMoney(multiplyMoney(cost, rate), coeff);
+        const cap = subtractMoney(cost, salvage);
+        const capped = dep.lte(cap) ? dep : cap;
+        return roundTo(capped.isNegative() ? toDecimal(0) : capped);
       }
     ),
   });
@@ -891,8 +920,9 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
         rate: number
       ) => {
         const life = 1 / rate;
-        const depPerPeriod = (cost - salvage) / life;
-        return Math.min(depPerPeriod, cost - salvage);
+        const depPerPeriod = divideMoney(subtractMoney(cost, salvage), life);
+        const cap = subtractMoney(cost, salvage);
+        return roundTo(depPerPeriod.lte(cap) ? depPerPeriod : cap);
       }
     ),
   });
@@ -932,7 +962,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     impl: impl((fractional: number, fraction: number) => {
       const d = Math.floor(fractional);
       const f = fractional - d;
-      return d + (f * 100) / fraction;
+      return roundTo(addMoney(d, divideMoney(multiplyMoney(f, 100), fraction)));
     }),
   });
   r({
@@ -944,7 +974,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     impl: impl((decimal: number, fraction: number) => {
       const d = Math.floor(decimal);
       const f = decimal - d;
-      return d + (f * fraction) / 100;
+      return roundTo(addMoney(d, divideMoney(multiplyMoney(f, fraction), 100)));
     }),
   });
   r({
@@ -966,10 +996,10 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
       ) => {
         const n = ((_maturity - _settlement) / 365.25) * _freq;
         const c = (_rate * _redemption) / _freq;
-        let p = 0;
-        for (let i = 1; i <= n; i++) p += c / Math.pow(1 + _yld / _freq, i);
-        p += _redemption / Math.pow(1 + _yld / _freq, n);
-        return p;
+        let p = toDecimal(0);
+        for (let i = 1; i <= n; i++) p = addMoney(p, divideMoney(c, Math.pow(1 + _yld / _freq, i)));
+        p = addMoney(p, divideMoney(_redemption, Math.pow(1 + _yld / _freq, n)));
+        return roundTo(p);
       }
     ),
   });
@@ -1009,10 +1039,10 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     ) => {
       const n = ((_maturity - _settlement) / 365.25) * _freq;
       const c = (_rate * _redemption) / _freq;
-      let p = 0;
-      for (let i = 1; i <= n; i++) p += c / Math.pow(1 + _yld / _freq, i);
-      p += _redemption / Math.pow(1 + _yld / _freq, n);
-      return p;
+      let p = toDecimal(0);
+      for (let i = 1; i <= n; i++) p = addMoney(p, divideMoney(c, Math.pow(1 + _yld / _freq, i)));
+      p = addMoney(p, divideMoney(_redemption, Math.pow(1 + _yld / _freq, n)));
+      return roundTo(p);
     },
   });
   r({
@@ -1043,7 +1073,9 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
       const ds = (_settlement - _issue) / 365.25;
       const dm = (_maturity - _settlement) / 365.25;
       const b = ds / (ds + dm);
-      return 100 + _rate * 100 * ds - _yld * 100 * dm * b;
+      const interest = multiplyMoney(_rate, 100 * ds);
+      const discount = multiplyMoney(_yld, 100 * dm * b);
+      return roundTo(subtractMoney(addMoney(100, interest), discount));
     },
   });
   r({
@@ -1162,9 +1194,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     impl: impl((v: unknown, m: number) => {
       const vals = Array.isArray(v) ? v : [v as number];
       const monthStart = m - (m % 30);
-      let s = 0;
-      for (let i = monthStart; i <= Math.min(m, vals.length - 1); i++) s += vals[i];
-      return s;
+      return roundTo(sumMoney(vals.slice(monthStart, Math.min(m, vals.length - 1) + 1)));
     }),
   });
   r({
@@ -1175,9 +1205,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     maxArgs: 2,
     impl: impl((v: unknown, m: number) => {
       const vals = Array.isArray(v) ? v : [v as number];
-      let s = 0;
-      for (let i = 0; i <= Math.min(m, vals.length - 1); i++) s += vals[i];
-      return s;
+      return roundTo(sumMoney(vals.slice(0, Math.min(m, vals.length - 1) + 1)));
     }),
   });
   r({
@@ -1234,9 +1262,7 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     maxArgs: 3,
     impl: impl((v: unknown, start: number, end: number) => {
       const vals = Array.isArray(v) ? v : [v as number];
-      let s = 0;
-      for (let i = Math.max(0, start); i <= Math.min(end, vals.length - 1); i++) s += vals[i];
-      return s;
+      return roundTo(sumMoney(vals.slice(Math.max(0, start), Math.min(end, vals.length - 1) + 1)));
     }),
   });
   r({
@@ -1272,10 +1298,10 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     impl: impl((v: unknown) => {
       const vals = Array.isArray(v) ? v : [v as number];
       const result: number[] = [];
-      let s = 0;
+      let s = toDecimal(0);
       for (const x of vals) {
-        s += x;
-        result.push(s);
+        s = addMoney(s, x);
+        result.push(roundTo(s));
       }
       return result;
     }),

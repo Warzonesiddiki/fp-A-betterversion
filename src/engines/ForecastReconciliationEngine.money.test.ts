@@ -17,11 +17,11 @@ const sources: ForecastSource[] = [
 describe('ForecastReconciliationEngine (money migration)', () => {
   it('reconcile returns exact cents on variances', () => {
     const result = ForecastReconciliationEngine.reconcile(sources);
-    expect(result.variances[0].maxVariance).toBe(20000.00);
+    expect(result.variances[0].maxVariance).toBe(20000.0);
   });
 
   it('merge average returns exact cents', () => {
     const merged = ForecastReconciliationEngine.merge(sources, 'average');
-    expect(merged[0].amount).toBe(1190000.00);
+    expect(merged[0].amount).toBe(1190000.0);
   });
 });

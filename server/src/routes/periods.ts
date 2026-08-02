@@ -89,8 +89,18 @@ function _getCloseState(periodId: string): CloseState {
   return row.close_state as CloseState;
 }
 
+/**
+ * PRODUCT DECISION (2026-08-03, GAP-4): a SOFT close permits adjusting
+ * entries. That is its accounting purpose — it marks the books as closed for
+ * routine entry while still allowing authorized adjustments until the hard
+ * close. Therefore the binary `is_closed` gate (which the GL route checks)
+ * is 1 ONLY for hard-close and locked; soft-close keeps the period open to
+ * posting. `canPost()` and `isClosedState()` are the two sides of the same
+ * policy and must stay in sync:
+ *   canPost(state)     === !isClosedState(state)
+ */
 function isClosedState(state: CloseState): boolean {
-  return state !== 'open';
+  return state === 'hard-close' || state === 'locked';
 }
 
 function canPost(state: CloseState): boolean {
@@ -312,9 +322,13 @@ router.post(
       }
 
       // Execute transition
+      const isClosed = isClosedState(targetState);
+      const closedAt = isClosed ? "datetime('now')" : 'NULL';
+      const closedBy = isClosed ? req.user!.id : 'NULL';
+
       db.prepare(
-        `UPDATE fiscal_periods SET close_state = ?, is_closed = 1, closed_at = datetime('now'), closed_by = ?, updated_at = datetime('now') WHERE id = ?`
-      ).run(targetState, req.user!.id, periodId);
+        `UPDATE fiscal_periods SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ${closedBy}, updated_at = datetime('now') WHERE id = ?`
+      ).run(targetState, isClosed ? 1 : 0, periodId);
 
       // Audit the transition
       auditPeriodClose(periodId, currentState, targetState, req.user!.id, parsed.data.reason);

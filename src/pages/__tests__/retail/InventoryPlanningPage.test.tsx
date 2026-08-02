@@ -76,6 +76,7 @@ describe('InventoryPlanningPage', () => {
           accountName: 'Inventory',
           debit: 50000,
           credit: 0,
+          amount: 50000,
           date: '2024-01-01',
         },
       ],

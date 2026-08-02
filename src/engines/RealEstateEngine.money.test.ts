@@ -13,15 +13,15 @@ const entries: GLEntry[] = [
 describe('RealEstateEngine (money migration)', () => {
   it('calculatePortfolioStats returns exact cents', () => {
     const stats = RealEstateEngine.calculatePortfolioStats(entries);
-    expect(stats.costBasis).toBe(12000000.00);
-    expect(stats.marketValue).toBe(18500000.00);
-    expect(stats.unrealizedGain).toBe(6500000.00);
+    expect(stats.costBasis).toBe(12000000.0);
+    expect(stats.marketValue).toBe(18500000.0);
+    expect(stats.unrealizedGain).toBe(6500000.0);
     expect(stats.ltv).toBe(40.5405405405);
   });
 
   it('calculateREITStats returns exact cents on FFO/AFFO', () => {
     const stats = RealEstateEngine.calculateREITStats(entries);
-    expect(stats.ffo).toBe(1480000.00);
-    expect(stats.affo).toBe(1240000.00);
+    expect(stats.ffo).toBe(1480000.0);
+    expect(stats.affo).toBe(1240000.0);
   });
 });

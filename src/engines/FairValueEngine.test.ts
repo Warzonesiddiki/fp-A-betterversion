@@ -37,9 +37,11 @@ describe('FairValueEngine', () => {
 
     it('handles zero discount rate', () => {
       // With discount rate 0, PV = sum of cash flows, but 0 causes division by zero in terminal calc
-      // So just test with a very small rate
+      // So just test with a very small rate.
+      // Money migration: DCF is now exact to cents — 100/1.001 + 200/1.002001
+      // = 299.5004995... rounds to 299.5 (old float returned the raw 299.5004995).
       const result = FairValueEngine.calculateDCF([100, 200], 0.001);
-      expect(result).toBeCloseTo(300, 0);
+      expect(result).toBe(299.5);
     });
   });
 

@@ -19,6 +19,7 @@ import {
   subtractMoney,
   toDecimal,
 } from '../utils/money';
+import type Decimal from 'decimal.js';
 
 export interface ForecastSource {
   name: string;
@@ -98,7 +99,7 @@ export class ForecastReconciliationEngine {
         const maxVariance = roundTo(maxVarianceDec);
         const maxVariancePercent =
           avgDec.toNumber() !== 0
-            ? roundTo(multiplyMoney(divideMoney(maxVarianceDec, Math.abs(avgDec.toNumber())), 100)).toNumber()
+            ? roundTo(multiplyMoney(divideMoney(maxVarianceDec, Math.abs(avgDec.toNumber())), 100))
             : 0;
 
         let flag: 'low' | 'medium' | 'high' | 'critical';
@@ -159,7 +160,7 @@ export class ForecastReconciliationEngine {
 
     for (const [accountCode, periodMap] of accountMap) {
       for (const [period, amounts] of periodMap) {
-        let mergedDec: any;
+        let mergedDec: Decimal;
         switch (strategy) {
           case 'average':
             mergedDec = divideMoney(
@@ -171,7 +172,10 @@ export class ForecastReconciliationEngine {
             if (weights && weights.length === amounts.length) {
               const totalWeight = weights.reduce((s, w) => s + w, 0);
               mergedDec = divideMoney(
-                amounts.reduce((s, a, i) => addMoney(s, multiplyMoney(a, weights![i]!)), toDecimal(0)),
+                amounts.reduce(
+                  (s, a, i) => addMoney(s, multiplyMoney(a, weights![i]!)),
+                  toDecimal(0)
+                ),
                 totalWeight
               );
             } else {

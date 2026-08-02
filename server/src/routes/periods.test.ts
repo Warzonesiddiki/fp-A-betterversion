@@ -50,13 +50,23 @@ describe('Period Close (F-0013) & Server-Side Enforcement', () => {
     expect(resNoReason.status).toBe(400);
   });
 
-  it('successfully closes fiscal period with reason and audit log', async () => {
-    const res = await request(app)
+  it('closes fiscal period with reason and audit log (soft then hard)', async () => {
+    // Legacy /close defaults to soft-close. Under the GAP-4 product decision
+    // (2026-08-03) a soft-close keeps is_closed = 0 so adjusting entries stay
+    // possible; the books only lock on hard-close/locked.
+    const soft = await request(app)
       .post(`/api/periods/${testPeriodId}/close`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ reason: 'SOX monthly close requirement' });
-    expect(res.status).toBe(200);
-    expect(res.body.is_closed).toBe(1);
+    expect(soft.status).toBe(200);
+    expect(soft.body.is_closed).toBe(0);
+
+    const hard = await request(app)
+      .post(`/api/periods/${testPeriodId}/transition`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ targetState: 'hard-close', reason: 'Books final' });
+    expect(hard.status).toBe(200);
+    expect(hard.body.is_closed).toBe(1);
   });
 
   it('prevents posting GL entries to a closed period', async () => {

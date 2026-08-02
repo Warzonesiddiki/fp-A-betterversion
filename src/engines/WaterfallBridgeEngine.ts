@@ -2,7 +2,15 @@
 // WATERFALL BRIDGE ENGINE — Revenue/cost bridge analysis
 // Start → Components → End visualization
 // Pure TypeScript, deterministic, testable
+//
+// MONEY MIGRATION (2026-08-03): bridge values (start, components, running
+// totals, increases/decreases, net change) are money and flow through the
+// canonical money primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP),
+// cent-rounded on output. percentChange is a metric (not money). No raw
+// + - * / on currency values remains.
 // =============================================================================
+
+import { addMoney, divideMoney, roundTo, subtractMoney, sumMoney, toDecimal } from '../utils/money';
 
 export interface BridgeItem {
   label: string;
@@ -39,43 +47,47 @@ export class WaterfallBridgeEngine {
     components: Array<{ label: string; value: number; category?: string }>,
     endLabel: string
   ): BridgeResult {
-    const items: BridgeItem[] = [{ label: startLabel, value: startValue, type: 'start' }];
+    const items: BridgeItem[] = [{ label: startLabel, value: roundTo(startValue), type: 'start' }];
 
-    let running = startValue;
-    let totalIncrease = 0;
-    let totalDecrease = 0;
+    let running = toDecimal(startValue);
+    let totalIncrease = toDecimal(0);
+    let totalDecrease = toDecimal(0);
 
     for (const comp of components) {
       if (comp.value > 0) {
         items.push({
           label: comp.label,
-          value: comp.value,
+          value: roundTo(comp.value),
           type: 'increase',
           category: comp.category,
         });
-        totalIncrease += comp.value;
+        totalIncrease = addMoney(totalIncrease, comp.value);
       } else if (comp.value < 0) {
         items.push({
           label: comp.label,
-          value: Math.abs(comp.value),
+          value: roundTo(Math.abs(comp.value)),
           type: 'decrease',
           category: comp.category,
         });
-        totalDecrease += Math.abs(comp.value);
+        totalDecrease = addMoney(totalDecrease, Math.abs(comp.value));
       }
-      running += comp.value;
+      running = addMoney(running, comp.value);
     }
 
-    items.push({ label: endLabel, value: running, type: 'end' });
+    const endValue = running;
+    items.push({ label: endLabel, value: roundTo(endValue), type: 'end' });
+
+    const netChange = subtractMoney(endValue, startValue);
 
     return {
       items,
-      startValue,
-      endValue: running,
-      totalIncrease,
-      totalDecrease,
-      netChange: running - startValue,
-      percentChange: startValue !== 0 ? ((running - startValue) / Math.abs(startValue)) * 100 : 0,
+      startValue: roundTo(startValue),
+      endValue: roundTo(endValue),
+      totalIncrease: roundTo(totalIncrease),
+      totalDecrease: roundTo(totalDecrease),
+      netChange: roundTo(netChange),
+      percentChange:
+        startValue !== 0 ? divideMoney(netChange, Math.abs(startValue)).times(100).toNumber() : 0,
     };
   }
 
@@ -90,43 +102,43 @@ export class WaterfallBridgeEngine {
     priorCogs?: number,
     priorOpex?: number
   ): ProfitBridgeResult {
-    const gp = revenue - cogs;
-    const ebitda = gp - opex;
+    const gp = subtractMoney(revenue, cogs);
+    const ebitda = subtractMoney(gp, opex);
 
-    const items: BridgeItem[] = [{ label: 'Revenue', value: revenue, type: 'start' }];
+    const items: BridgeItem[] = [{ label: 'Revenue', value: roundTo(revenue), type: 'start' }];
 
     if (priorCogs != null) {
-      const cogsDelta = cogs - priorCogs;
-      if (cogsDelta !== 0) {
+      const cogsDelta = subtractMoney(cogs, priorCogs);
+      if (!cogsDelta.isZero()) {
         items.push({
           label: 'COGS Change',
-          value: cogsDelta,
-          type: cogsDelta > 0 ? 'decrease' : 'increase',
+          value: roundTo(cogsDelta),
+          type: cogsDelta.greaterThan(0) ? 'decrease' : 'increase',
         });
       }
     }
-    items.push({ label: 'Gross Profit', value: gp, type: 'subtotal' });
+    items.push({ label: 'Gross Profit', value: roundTo(gp), type: 'subtotal' });
 
     if (priorOpex != null) {
-      const opexDelta = opex - priorOpex;
-      if (opexDelta !== 0) {
+      const opexDelta = subtractMoney(opex, priorOpex);
+      if (!opexDelta.isZero()) {
         items.push({
           label: 'OpEx Change',
-          value: opexDelta,
-          type: opexDelta > 0 ? 'decrease' : 'increase',
+          value: roundTo(opexDelta),
+          type: opexDelta.greaterThan(0) ? 'decrease' : 'increase',
         });
       }
     }
-    items.push({ label: 'EBITDA', value: ebitda, type: 'end' });
+    items.push({ label: 'EBITDA', value: roundTo(ebitda), type: 'end' });
 
     return {
       items,
-      startValue: revenue,
-      endValue: ebitda,
+      startValue: roundTo(revenue),
+      endValue: roundTo(ebitda),
       totalIncrease: 0,
-      totalDecrease: cogs + opex,
-      netChange: ebitda - revenue,
-      percentChange: revenue !== 0 ? (ebitda / revenue) * 100 : 0,
+      totalDecrease: roundTo(addMoney(cogs, opex)),
+      netChange: roundTo(subtractMoney(ebitda, revenue)),
+      percentChange: revenue !== 0 ? divideMoney(ebitda, revenue).times(100).toNumber() : 0,
     };
   }
 
@@ -138,31 +150,34 @@ export class WaterfallBridgeEngine {
     variances: Array<{ label: string; amount: number }>,
     actual: number
   ): BridgeResult {
-    const items: BridgeItem[] = [{ label: 'Budget', value: budget, type: 'start' }];
+    const items: BridgeItem[] = [{ label: 'Budget', value: roundTo(budget), type: 'start' }];
 
     for (const v of variances) {
       items.push({
         label: v.label,
-        value: Math.abs(v.amount),
+        value: roundTo(Math.abs(v.amount)),
         type: v.amount >= 0 ? 'increase' : 'decrease',
       });
     }
 
-    items.push({ label: 'Actual', value: actual, type: 'end' });
+    items.push({ label: 'Actual', value: roundTo(actual), type: 'end' });
 
-    const totalIncrease = variances.filter((v) => v.amount > 0).reduce((s, v) => s + v.amount, 0);
-    const totalDecrease = Math.abs(
-      variances.filter((v) => v.amount < 0).reduce((s, v) => s + v.amount, 0)
+    const totalIncrease = sumMoney(variances.filter((v) => v.amount > 0).map((v) => v.amount));
+    const totalDecrease = sumMoney(
+      variances.filter((v) => v.amount < 0).map((v) => Math.abs(v.amount))
     );
 
     return {
       items,
-      startValue: budget,
-      endValue: actual,
-      totalIncrease,
-      totalDecrease,
-      netChange: actual - budget,
-      percentChange: budget !== 0 ? ((actual - budget) / Math.abs(budget)) * 100 : 0,
+      startValue: roundTo(budget),
+      endValue: roundTo(actual),
+      totalIncrease: roundTo(totalIncrease),
+      totalDecrease: roundTo(totalDecrease),
+      netChange: roundTo(subtractMoney(actual, budget)),
+      percentChange:
+        budget !== 0
+          ? divideMoney(subtractMoney(actual, budget), Math.abs(budget)).times(100).toNumber()
+          : 0,
     };
   }
 }

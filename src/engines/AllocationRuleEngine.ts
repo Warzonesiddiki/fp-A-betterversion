@@ -1,7 +1,15 @@
 /**
  * AllocationRuleEngine — Rule-based cost allocation
  * Distributes costs across departments, products, or regions based on configurable rules
+ *
+ * MONEY MIGRATION (2026-08-03): source amounts, per-target allocation amounts,
+ * totalAllocated and variance are money and flow through the canonical money
+ * primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Allocation shares
+ * keep full Decimal precision (they reconcile by construction); percentages
+ * are ratios. No raw + - * / on currency values remains.
  */
+
+import { addMoney, divideMoney, multiplyMoney, subtractMoney, toDecimal } from '../utils/money';
 
 export interface AllocationRule {
   id: string;
@@ -114,34 +122,34 @@ export class AllocationRuleEngine {
     }
 
     const allocations: AllocationResult['allocations'] = [];
-    let totalAllocated = 0;
+    let totalAllocated = toDecimal(0);
 
     switch (rule.method) {
       case 'percentage': {
         for (const target of rule.targets) {
           const pct = target.percentage ?? 0;
-          const amount = sourceAmount * (pct / 100);
+          const amount = multiplyMoney(toDecimal(sourceAmount), pct / 100);
           allocations.push({
             targetAccount: target.accountCode,
             targetDepartment: target.departmentId,
-            amount,
+            amount: amount.toNumber(),
             percentage: pct,
           });
-          totalAllocated += amount;
+          totalAllocated = addMoney(totalAllocated, amount);
         }
         break;
       }
 
       case 'equal': {
-        const perTarget = sourceAmount / rule.targets.length;
+        const perTarget = divideMoney(sourceAmount, rule.targets.length);
         for (const target of rule.targets) {
           allocations.push({
             targetAccount: target.accountCode,
             targetDepartment: target.departmentId,
-            amount: perTarget,
+            amount: perTarget.toNumber(),
             percentage: 100 / rule.targets.length,
           });
-          totalAllocated += perTarget;
+          totalAllocated = addMoney(totalAllocated, perTarget);
         }
         break;
       }
@@ -152,15 +160,15 @@ export class AllocationRuleEngine {
           : 1;
         for (const target of rule.targets) {
           const revenue = context?.revenueByTarget?.get(target.accountCode) ?? 0;
-          const pct = totalRevenue > 0 ? (revenue / totalRevenue) * 100 : 0;
-          const amount = sourceAmount * (pct / 100);
+          const share = totalRevenue > 0 ? toDecimal(revenue).div(totalRevenue) : toDecimal(0);
+          const amount = multiplyMoney(toDecimal(sourceAmount), share);
           allocations.push({
             targetAccount: target.accountCode,
             targetDepartment: target.departmentId,
-            amount,
-            percentage: pct,
+            amount: amount.toNumber(),
+            percentage: share.times(100).toNumber(),
           });
-          totalAllocated += amount;
+          totalAllocated = addMoney(totalAllocated, amount);
         }
         break;
       }
@@ -171,15 +179,15 @@ export class AllocationRuleEngine {
           : 1;
         for (const target of rule.targets) {
           const hc = context?.headcountByTarget?.get(target.accountCode) ?? 0;
-          const pct = totalHeadcount > 0 ? (hc / totalHeadcount) * 100 : 0;
-          const amount = sourceAmount * (pct / 100);
+          const share = totalHeadcount > 0 ? toDecimal(hc).div(totalHeadcount) : toDecimal(0);
+          const amount = multiplyMoney(toDecimal(sourceAmount), share);
           allocations.push({
             targetAccount: target.accountCode,
             targetDepartment: target.departmentId,
-            amount,
-            percentage: pct,
+            amount: amount.toNumber(),
+            percentage: share.times(100).toNumber(),
           });
-          totalAllocated += amount;
+          totalAllocated = addMoney(totalAllocated, amount);
         }
         break;
       }
@@ -190,15 +198,15 @@ export class AllocationRuleEngine {
           : 1;
         for (const target of rule.targets) {
           const sqft = context?.squarefootByTarget?.get(target.accountCode) ?? 0;
-          const pct = totalSqft > 0 ? (sqft / totalSqft) * 100 : 0;
-          const amount = sourceAmount * (pct / 100);
+          const share = totalSqft > 0 ? toDecimal(sqft).div(totalSqft) : toDecimal(0);
+          const amount = multiplyMoney(toDecimal(sourceAmount), share);
           allocations.push({
             targetAccount: target.accountCode,
             targetDepartment: target.departmentId,
-            amount,
-            percentage: pct,
+            amount: amount.toNumber(),
+            percentage: share.times(100).toNumber(),
           });
-          totalAllocated += amount;
+          totalAllocated = addMoney(totalAllocated, amount);
         }
         break;
       }
@@ -207,15 +215,15 @@ export class AllocationRuleEngine {
         const totalDriver = rule.targets.reduce((sum, t) => sum + (t.driverValue ?? 0), 0);
         for (const target of rule.targets) {
           const driverVal = target.driverValue ?? 0;
-          const pct = totalDriver > 0 ? (driverVal / totalDriver) * 100 : 0;
-          const amount = sourceAmount * (pct / 100);
+          const share = totalDriver > 0 ? toDecimal(driverVal).div(totalDriver) : toDecimal(0);
+          const amount = multiplyMoney(toDecimal(sourceAmount), share);
           allocations.push({
             targetAccount: target.accountCode,
             targetDepartment: target.departmentId,
-            amount,
-            percentage: pct,
+            amount: amount.toNumber(),
+            percentage: share.times(100).toNumber(),
           });
-          totalAllocated += amount;
+          totalAllocated = addMoney(totalAllocated, amount);
         }
         break;
       }
@@ -225,8 +233,8 @@ export class AllocationRuleEngine {
       ruleId,
       sourceAmount,
       allocations,
-      totalAllocated,
-      variance: sourceAmount - totalAllocated,
+      totalAllocated: totalAllocated.toNumber(),
+      variance: subtractMoney(sourceAmount, totalAllocated).toNumber(),
       timestamp: new Date().toISOString(),
     };
   }

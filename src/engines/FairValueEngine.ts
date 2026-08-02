@@ -8,11 +8,18 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 12th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03): measurement values, hierarchy totals and DCF
+ * valuations are money and flow through the canonical money primitive
+ * (src/utils/money.ts, decimal.js, ROUND_HALF_UP), cent-rounded. No raw
+ * + - * / on currency values remains.
  */
 /**
  * FairValueEngine — Fair value hierarchy (ASC 820 / IFRS 13)
  * Classifies and calculates fair value measurements
  */
+
+import { addMoney, divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
 
 interface FairValueMeasurement {
   id: string;
@@ -60,17 +67,26 @@ export class FairValueEngine {
     discountRate: number,
     terminalGrowthRate?: number
   ): number {
-    const pv = futureCashFlows.reduce(
-      (sum, cf, i) => sum + cf / Math.pow(1 + discountRate, i + 1),
-      0
-    );
-    if (terminalGrowthRate !== undefined && futureCashFlows.length > 0) {
-      const lastCF = futureCashFlows[futureCashFlows.length - 1];
-      const terminalValue =
-        (lastCF! * (1 + terminalGrowthRate)) / (discountRate - terminalGrowthRate);
-      return pv + terminalValue / Math.pow(1 + discountRate, futureCashFlows.length);
+    let pv = toDecimal(0);
+    for (let i = 0; i < futureCashFlows.length; i++) {
+      // Cash flows are money; discount factors are ratios (float is preserved).
+      pv = addMoney(pv, divideMoney(futureCashFlows[i]!, Math.pow(1 + discountRate, i + 1)));
     }
-    return pv;
+    if (terminalGrowthRate !== undefined && futureCashFlows.length > 0) {
+      const lastCF = toDecimal(futureCashFlows[futureCashFlows.length - 1]!);
+      // Terminal value = lastCF * (1+g) / (r - g). r and g are RATES (not
+      // money), so the denominator is a float ratio. divideMoney throws loudly
+      // when r === g instead of returning Infinity as float math did.
+      const terminalValue = divideMoney(
+        lastCF.times(1 + terminalGrowthRate),
+        discountRate - terminalGrowthRate
+      );
+      pv = addMoney(
+        pv,
+        divideMoney(terminalValue, Math.pow(1 + discountRate, futureCashFlows.length))
+      );
+    }
+    return roundTo(pv);
   }
 
   static getHierarchy(assetId: string): FairValueHierarchy {
@@ -79,7 +95,7 @@ export class FairValueEngine {
       level1: measurements.filter((m) => m.level === 1),
       level2: measurements.filter((m) => m.level === 2),
       level3: measurements.filter((m) => m.level === 3),
-      total: measurements.reduce((sum, m) => sum + m.value, 0),
+      total: roundTo(sumMoney(measurements.map((m) => m.value))),
     };
   }
 

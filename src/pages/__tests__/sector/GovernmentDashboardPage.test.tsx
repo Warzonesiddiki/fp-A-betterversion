@@ -40,6 +40,7 @@ describe('GovernmentDashboardPage', () => {
           debit: 0,
           credit: 50000,
           netChange: -50000,
+          amount: -50000,
           date: '2024-01-01',
         },
       ],

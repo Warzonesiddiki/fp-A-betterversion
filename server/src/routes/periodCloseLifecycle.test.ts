@@ -84,7 +84,7 @@ describe('GAP-4: period close full lifecycle (UI contract -> server -> durable s
   const setState = (id: string, state: string) =>
     db
       .prepare('UPDATE fiscal_periods SET close_state = ?, is_closed = ? WHERE id = ?')
-      .run(state, state === 'open' ? 0 : 1, id);
+      .run(state, state === 'hard-close' || state === 'locked' ? 1 : 0, id);
 
   beforeAll(() => {
     admin = token('Admin');
@@ -168,7 +168,10 @@ describe('GAP-4: period close full lifecycle (UI contract -> server -> durable s
         .set('Authorization', `Bearer ${admin}`);
       expect(res.status).toBe(200);
       expect(res.body.closeState).toBe('soft-close');
-      expect(res.body.isClosed).toBe(true);
+      // Product decision (GAP-4, 2026-08-03): soft-close permits adjusting
+      // entries, so isClosed is false and canPost is true.
+      expect(res.body.isClosed).toBe(false);
+      expect(res.body.canPost).toBe(true);
       expect(res.body.validTransitions.sort()).toEqual(['hard-close', 'open']);
     });
   });
@@ -378,16 +381,13 @@ describe('GAP-4: period close full lifecycle (UI contract -> server -> durable s
       expect(res.body.error).toMatch(/Period closed/i);
     });
 
-    it('DOCUMENTED INCONSISTENCY: soft-close advertises canPost=true but GL blocks the post', async () => {
-      // GET /state derives canPost from the close_state ('open' | 'soft-close'),
-      // but the transition writes is_closed = 1 for ANY non-open state and the
-      // GL route gates on is_closed. So the API tells a client it may post to a
-      // soft-closed period while the GL route refuses it.
-      //
-      // This is pinned rather than silently "fixed" because soft-close semantics
-      // are an accounting-policy decision (does soft-close permit adjusting
-      // entries?), not a code cleanup. Whichever way that policy lands, this
-      // test must be updated deliberately — it cannot drift unnoticed.
+    it('SOFT-CLOSE POLICY (2026-08-03): soft-close permits adjusting entries', async () => {
+      // Product decision, GAP-4: a soft close exists to allow authorized
+      // adjusting entries until the hard close. So canPost() is true for
+      // soft-close AND the GL route must accept the post. The old code set
+      // is_closed = 1 for ANY non-open state, so the API advertised
+      // canPost=true while GL refused with 403 — that inconsistency was
+      // pinned here and is now resolved by the policy.
       setState(periodId, 'soft-close');
 
       const state = await request(app)
@@ -395,13 +395,26 @@ describe('GAP-4: period close full lifecycle (UI contract -> server -> durable s
         .set('Authorization', `Bearer ${admin}`);
       expect(state.body.closeState).toBe('soft-close');
       expect(state.body.canPost).toBe(true);
+      expect(state.body.isClosed).toBe(false);
 
+      // Adjusting entry to a soft-closed period is ALLOWED under the policy.
       const post = await request(app)
         .post('/api/gl/entries')
         .set('Authorization', `Bearer ${admin}`)
-        .send(glEntryPayload('Soft-close posting attempt', postDate));
-      expect(post.status).toBe(403);
-      expect(post.body.error).toMatch(/Period closed/i);
+        .send(glEntryPayload('Soft-close adjusting entry', postDate));
+      expect(post.status).not.toBe(403);
+    });
+
+    it('hard-close still blocks GL posting (is_closed = 1)', async () => {
+      setState(periodId, 'hard-close');
+      const res = await request(app)
+        .post('/api/gl/entries')
+        .set('Authorization', `Bearer ${admin}`)
+        .send(glEntryPayload('Should be blocked', postDate));
+      // 403 = blocked by the period lock (400 would mean the payload never
+      // reached the lock check, which would make this assertion meaningless).
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/Period closed/i);
     });
 
     it('allows a GL post once the period is reopened', async () => {

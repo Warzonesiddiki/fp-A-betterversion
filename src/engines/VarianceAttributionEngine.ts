@@ -12,8 +12,17 @@
  * PURE-FN: All methods are static, no side effects, no I/O. Safe for
  * worker offloading. Deterministic given the same inputs.
  *
+ * MONEY MIGRATION (2026-08-03): budget/actual amounts, variances, attributed
+ * variances, margins and residual figures are money and flow through the
+ * canonical money primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP).
+ * Attribution shares keep full Decimal precision (they reconcile by
+ * construction); percentages and significance tests are ratios and compare in
+ * Decimal space. No raw + - * / on currency values remains.
+ *
  * @module engines/VarianceAttributionEngine
  */
+
+import { divideMoney, multiplyMoney, subtractMoney, sumMoney, toDecimal } from '../utils/money';
 
 // ============================================================================
 // TYPES
@@ -89,8 +98,8 @@ export class VarianceAttributionEngine {
    * unfavorable for cost. Caller specifies sign convention via signFlipped flag.
    */
   static computeSegmentVariance(segment: Segment, signFlipped = false): number {
-    const raw = segment.actualAmount - segment.budgetAmount;
-    return signFlipped ? -raw : raw;
+    const raw = subtractMoney(segment.actualAmount, segment.budgetAmount);
+    return signFlipped ? raw.negated().toNumber() : raw.toNumber();
   }
 
   /**
@@ -106,20 +115,24 @@ export class VarianceAttributionEngine {
     consolidatedVariance?: number
   ): readonly VarianceAttribution[] {
     const variances = segments.map((s) => this.computeSegmentVariance(s));
-    const totalAbs = variances.reduce((acc, v) => acc + Math.abs(v), 0);
-    const totalNet = consolidatedVariance ?? variances.reduce((acc, v) => acc + v, 0);
+    const totalAbs = sumMoney(variances.map((v) => Math.abs(v)));
+    const totalNet =
+      consolidatedVariance !== undefined ? toDecimal(consolidatedVariance) : sumMoney(variances);
 
     const ranked = segments
       .map((s, i) => {
         const v = variances[i]!;
         const absV = Math.abs(v);
+        const share = totalAbs.isZero() ? toDecimal(0) : toDecimal(absV).div(totalAbs);
         return {
           segmentId: s.id,
           segmentName: s.name,
           absoluteVariance: absV,
-          attributedVariance: totalAbs === 0 ? 0 : (absV / totalAbs) * totalNet,
-          attributionPercentage: totalAbs === 0 ? 0 : (absV / totalAbs) * 100,
-          significant: totalAbs > 0 && absV / totalAbs >= this.SIGNIFICANCE_THRESHOLD,
+          attributedVariance: totalAbs.isZero() ? 0 : multiplyMoney(share, totalNet).toNumber(),
+          attributionPercentage: totalAbs.isZero() ? 0 : share.times(100).toNumber(),
+          significant:
+            totalAbs.greaterThan(0) &&
+            toDecimal(absV).div(totalAbs).gte(this.SIGNIFICANCE_THRESHOLD),
           rank: 0,
         };
       })
@@ -138,21 +151,20 @@ export class VarianceAttributionEngine {
     totalVariance: number,
     segments: readonly Segment[]
   ): readonly VarianceAttribution[] {
-    const totalBase = segments.reduce(
-      (acc, s) => acc + Math.abs(s.actualAmount) + Math.abs(s.budgetAmount),
-      0
+    const totalBase = sumMoney(
+      segments.map((s) => toDecimal(Math.abs(s.actualAmount)).plus(Math.abs(s.budgetAmount)))
     );
     return segments
       .map((s) => {
-        const segmentBase = Math.abs(s.actualAmount) + Math.abs(s.budgetAmount);
-        const weight = totalBase === 0 ? 0 : segmentBase / totalBase;
+        const segmentBase = toDecimal(Math.abs(s.actualAmount)).plus(Math.abs(s.budgetAmount));
+        const weight = totalBase.isZero() ? toDecimal(0) : segmentBase.div(totalBase);
         return {
           segmentId: s.id,
           segmentName: s.name,
           absoluteVariance: Math.abs(this.computeSegmentVariance(s)),
-          attributedVariance: totalVariance * weight,
-          attributionPercentage: weight * 100,
-          significant: weight >= this.SIGNIFICANCE_THRESHOLD,
+          attributedVariance: multiplyMoney(toDecimal(totalVariance), weight).toNumber(),
+          attributionPercentage: weight.times(100).toNumber(),
+          significant: weight.gte(this.SIGNIFICANCE_THRESHOLD),
           rank: 0, // rank filled in by rankSegmentsByVariance
         };
       })
@@ -166,7 +178,7 @@ export class VarianceAttributionEngine {
    */
   static computeAttributionPercentage(segmentVariance: number, totalVariance: number): number {
     if (totalVariance === 0) return 0;
-    return (segmentVariance / totalVariance) * 100;
+    return divideMoney(segmentVariance, totalVariance).times(100).toNumber();
   }
 
   /**
@@ -185,32 +197,35 @@ export class VarianceAttributionEngine {
     consolidated: { revenue: number; profit: number; assets: number }
   ): SignificanceResult {
     const attributions = this.attributeBySegment(segments);
-    const totalExternalRevenue = segments.reduce((acc, s) => acc + s.externalRevenue, 0);
+    const totalExternalRevenue = sumMoney(segments.map((s) => s.externalRevenue));
 
     const tenPercentTests = segments.flatMap((s) => {
-      const segRevenue = s.actualAmount;
-      const segVariance = this.computeSegmentVariance(s);
+      const segRevenue = toDecimal(s.actualAmount);
+      const segVariance = subtractMoney(s.actualAmount, s.budgetAmount);
+      const consolidatedRevenue = toDecimal(consolidated.revenue);
+      const consolidatedProfit = toDecimal(consolidated.profit);
+      const consolidatedAssets = toDecimal(consolidated.assets);
       return [
         {
           segmentId: s.id,
           test: 'revenue' as const,
           passed:
-            consolidated.revenue !== 0 &&
-            Math.abs(segRevenue) / Math.abs(consolidated.revenue) >= this.SIGNIFICANCE_THRESHOLD,
+            !consolidatedRevenue.isZero() &&
+            segRevenue.abs().div(consolidatedRevenue.abs()).gte(this.SIGNIFICANCE_THRESHOLD),
         },
         {
           segmentId: s.id,
           test: 'profit' as const,
           passed:
-            consolidated.profit !== 0 &&
-            Math.abs(segVariance) / Math.abs(consolidated.profit) >= this.SIGNIFICANCE_THRESHOLD,
+            !consolidatedProfit.isZero() &&
+            segVariance.abs().div(consolidatedProfit.abs()).gte(this.SIGNIFICANCE_THRESHOLD),
         },
         {
           segmentId: s.id,
           test: 'assets' as const,
           passed:
-            consolidated.assets !== 0 &&
-            Math.abs(segRevenue) / Math.abs(consolidated.assets) >= this.SIGNIFICANCE_THRESHOLD,
+            !consolidatedAssets.isZero() &&
+            segRevenue.abs().div(consolidatedAssets.abs()).gte(this.SIGNIFICANCE_THRESHOLD),
         },
       ];
     });
@@ -221,14 +236,13 @@ export class VarianceAttributionEngine {
     const significant = attributions.filter((a) => significantSegmentIds.has(a.segmentId));
     const nonSignificant = attributions.filter((a) => !significantSegmentIds.has(a.segmentId));
 
-    const significantExternalRevenue = segments
-      .filter((s) => significantSegmentIds.has(s.id))
-      .reduce((acc, s) => acc + s.externalRevenue, 0);
+    const significantExternalRevenue = sumMoney(
+      segments.filter((s) => significantSegmentIds.has(s.id)).map((s) => s.externalRevenue)
+    );
 
-    const seventyFivePercentTest =
-      totalExternalRevenue === 0
-        ? true
-        : significantExternalRevenue / totalExternalRevenue >= this.SEVENTY_FIVE_PERCENT;
+    const seventyFivePercentTest = totalExternalRevenue.isZero()
+      ? true
+      : significantExternalRevenue.div(totalExternalRevenue).gte(this.SEVENTY_FIVE_PERCENT);
 
     return {
       significant,
@@ -246,20 +260,20 @@ export class VarianceAttributionEngine {
     const top = attributions.slice(0, topN);
     const rest = attributions.slice(topN);
 
-    const totalNetVariance = segments.reduce((acc, s) => acc + this.computeSegmentVariance(s), 0);
-    const totalAbsoluteVariance = attributions.reduce((acc, a) => acc + a.absoluteVariance, 0);
-    const restVariance = rest.reduce((acc, r) => acc + r.attributedVariance, 0);
-    const topAttributed = top.reduce((acc, t) => acc + t.attributedVariance, 0);
-    const residual = totalNetVariance - topAttributed - restVariance;
+    const totalNetVariance = sumMoney(segments.map((s) => this.computeSegmentVariance(s)));
+    const totalAbsoluteVariance = sumMoney(attributions.map((a) => a.absoluteVariance));
+    const restVariance = sumMoney(rest.map((r) => r.attributedVariance));
+    const topAttributed = sumMoney(top.map((t) => t.attributedVariance));
+    const residual = subtractMoney(subtractMoney(totalNetVariance, topAttributed), restVariance);
 
     return {
-      totalAbsoluteVariance,
-      totalNetVariance,
+      totalAbsoluteVariance: totalAbsoluteVariance.toNumber(),
+      totalNetVariance: totalNetVariance.toNumber(),
       topN: top,
       restCount: rest.length,
-      restVariance,
-      reconciled: Math.abs(residual) < this.RECONCILIATION_TOLERANCE,
-      residual,
+      restVariance: restVariance.toNumber(),
+      reconciled: residual.abs().lt(this.RECONCILIATION_TOLERANCE),
+      residual: residual.toNumber(),
     };
   }
 
@@ -270,13 +284,13 @@ export class VarianceAttributionEngine {
     attributed: readonly VarianceAttribution[],
     consolidatedVariance: number
   ): ReconciliationResult {
-    const attributedTotal = attributed.reduce((acc, a) => acc + a.attributedVariance, 0);
-    const residual = consolidatedVariance - attributedTotal;
+    const attributedTotal = sumMoney(attributed.map((a) => a.attributedVariance));
+    const residual = subtractMoney(consolidatedVariance, attributedTotal);
     return {
-      attributed: attributedTotal,
+      attributed: attributedTotal.toNumber(),
       consolidated: consolidatedVariance,
-      residual,
-      reconciled: Math.abs(residual) < this.RECONCILIATION_TOLERANCE,
+      residual: residual.toNumber(),
+      reconciled: residual.abs().lt(this.RECONCILIATION_TOLERANCE),
     };
   }
 
@@ -284,13 +298,15 @@ export class VarianceAttributionEngine {
    * Compute segment margin (revenue - cost) and margin percent.
    */
   static computeSegmentMargin(segment: Segment): SegmentMargin {
-    const margin = segment.actualAmount - segment.budgetAmount;
-    const marginPercent =
-      segment.actualAmount === 0 ? 0 : (margin / Math.abs(segment.actualAmount)) * 100;
+    const margin = subtractMoney(segment.actualAmount, segment.budgetAmount);
+    const actual = toDecimal(segment.actualAmount);
+    const marginPercent = actual.isZero()
+      ? 0
+      : divideMoney(margin, actual.abs()).times(100).toNumber();
     return {
       segmentId: segment.id,
       revenue: segment.actualAmount,
-      margin,
+      margin: margin.toNumber(),
       marginPercent,
     };
   }

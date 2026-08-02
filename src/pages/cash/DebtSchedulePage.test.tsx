@@ -83,6 +83,9 @@ vi.mock('lucide-react', () => {
     AlertCircle: makeIcon(),
     CheckCircle: makeIcon(),
     Clock: makeIcon(),
+    Plus: makeIcon(),
+    Pencil: makeIcon(),
+    Trash2: makeIcon(),
   };
 });
 

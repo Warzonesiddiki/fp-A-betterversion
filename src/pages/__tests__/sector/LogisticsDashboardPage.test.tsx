@@ -40,6 +40,7 @@ describe('LogisticsDashboardPage', () => {
           debit: 0,
           credit: 80000,
           netChange: -80000,
+          amount: -80000,
           date: '2024-01-01',
         },
         {
@@ -49,6 +50,7 @@ describe('LogisticsDashboardPage', () => {
           debit: 20000,
           credit: 0,
           netChange: 20000,
+          amount: 20000,
           date: '2024-01-01',
         },
       ],
