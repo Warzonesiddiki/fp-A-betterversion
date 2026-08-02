@@ -387,6 +387,24 @@ testable. Evidence = literal command output with date.
 
 ---
 
+## CI note — bundle gate has zero headroom (surfaced 2026-08-03, PR #25)
+
+`ci.yml` gates **Total JS ≤ 2048KB gzip** over `dist/assets/*.js`. Measured on clean builds:
+
+- `main` @ `aa98b72`: 2,097,893 bytes → **2048KB** (integer division) — headroom **~740 bytes**.
+  The check was SKIPPED on `main` (the build itself fails there: tsc 79 errors), so the gate was
+  never actually green-verified on `main`.
+- this branch: 2,101,985 bytes → **2052KB** — **4KB over**. The delta is this session's shipped
+  work (14 engine migrations + DebtForm/page + Phase 2 fixture fields); the chunk list is
+  byte-for-byte the same shape (DataGrid/excel/pdf vendors unchanged), and tests never enter the
+  bundle. There is no duplication to remove.
+
+This is a **workflow-limit condition, not a code regression**: the gate needs ~16KB of headroom
+(`TOTAL_JS_LIMIT: 2048 → 2064` in `ci.yml`), which is a `.github/workflows/**` edit — blocked by
+the never-touch rule and by GAP-7 (a workflow commit poisons the branch). Evidence: literal build
+measurements above (reproducible with `gzip -c dist/assets/*.js | wc -c`). Unblock: raise
+`TOTAL_JS_LIMIT` once the App has `workflows` permission, or shrink a vendor chunk.
+
 ## True Blockers (valid escalation only)
 
 1. **`workflows` GitHub App permission — blocks GAP-7 from landing.** Reproduced 2026-08-02; see
