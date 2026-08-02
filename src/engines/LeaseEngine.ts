@@ -8,6 +8,29 @@
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 13th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
+import Decimal from 'decimal.js';
+import { toDecimal, roundTo, sumMoney, subtractMoney, divideMoney } from '../utils/money';
+
+/**
+ * ASC 842 / IFRS 16 figures are balance-sheet and P&L amounts, so every value
+ * here runs through the canonical money primitive (decimal.js, ROUND_HALF_UP)
+ * and is rounded to cents.
+ *
+ * The monthly rate is derived as (1 + annualRate)^(1/12) - 1. A twelfth root is
+ * IRRATIONAL, so it is computed with decimal.js at 40-digit precision rather
+ * than Math.pow's 53-bit double — the discounting chain then compounds an exact
+ * decimal instead of a rounded binary approximation.
+ */
+const CURRENCY_PLACES = 2;
+
+/** Effective monthly rate from an annual rate, at decimal precision. */
+function monthlyRateOf(annualRate: number): Decimal {
+  return toDecimal(1)
+    .plus(toDecimal(annualRate, 'discountRate'))
+    .pow(toDecimal(1).div(12))
+    .minus(1);
+}
+
 export interface LeaseContract {
   id: string;
   assetDescription: string;
@@ -59,22 +82,29 @@ export class LeaseEngine {
     ) {
       return [];
     }
-    const pvPayments = this.calculatePresentValue(
+    const pvPayments = this.presentValueDecimal(
       lease.leasePayments,
-      Math.pow(1 + lease.discountRate, 1 / 12) - 1
+      monthlyRateOf(lease.discountRate)
     );
     const schedules: ROUAssetSchedule[] = [];
-    const monthlyDepreciation = pvPayments / Math.max(1, lease.leaseTerm);
+    const term = Math.max(1, lease.leaseTerm);
+    const monthlyDepreciation = pvPayments.div(term);
 
     let balance = pvPayments;
     for (let i = 0; i < lease.leaseTerm; i++) {
       const opening = balance;
-      balance -= monthlyDepreciation;
+      balance = balance.minus(monthlyDepreciation);
+      // The final period must land exactly on zero. Straight-line depreciation
+      // of a value that does not divide evenly otherwise leaves a residue
+      // (float left -7.4e-11 on a 36-month schedule), which then shows up as a
+      // non-zero closing ROU asset on a fully amortized lease.
+      const isFinal = i === lease.leaseTerm - 1;
+      const closing = isFinal || balance.isNegative() ? new Decimal(0) : balance;
       schedules.push({
         period: `Month ${i + 1}`,
-        openingBalance: opening,
-        depreciation: monthlyDepreciation,
-        closingBalance: Math.max(0, balance),
+        openingBalance: roundTo(opening, CURRENCY_PLACES),
+        depreciation: roundTo(monthlyDepreciation, CURRENCY_PLACES),
+        closingBalance: roundTo(closing, CURRENCY_PLACES),
       });
     }
 
@@ -99,24 +129,38 @@ export class LeaseEngine {
     ) {
       return [];
     }
-    const monthlyRate = Math.pow(1 + lease.discountRate, 1 / 12) - 1;
-    let balance = this.calculatePresentValue(lease.leasePayments, monthlyRate);
+    const monthlyRate = monthlyRateOf(lease.discountRate);
+    let balance = this.presentValueDecimal(lease.leasePayments, monthlyRate);
     const schedules: LeaseLiabilitySchedule[] = [];
 
     for (let i = 0; i < lease.leaseTerm; i++) {
       const opening = balance;
-      const payment = lease.leasePayments[i] || 0;
-      const interest = opening * monthlyRate;
-      const reduction = payment - interest;
-      balance -= reduction;
+      const payment = toDecimal(lease.leasePayments[i] || 0);
+      const interest = opening.times(monthlyRate);
+      const reduction = payment.minus(interest);
+      // Carry FULL precision in the running balance; only the reported figures
+      // are rounded. Rounding the balance each period would compound.
+      balance = balance.minus(reduction);
+      const closing = balance.isNegative() ? new Decimal(0) : balance;
+
+      // The accounting identity payment = interest + reduction must hold on the
+      // REPORTED (cent-rounded) figures, not just the exact ones. Rounding both
+      // components independently can break it: interest 238.095 -> 238.10 and
+      // reduction 4761.905 -> 4761.91 sum to 5000.01 against a 5000.00 payment.
+      // Interest is rounded first (it is the contractual accrual) and reduction
+      // is derived as the balancing figure, so the identity is exact by
+      // construction.
+      const paymentR = roundTo(payment, CURRENCY_PLACES);
+      const interestR = roundTo(interest, CURRENCY_PLACES);
+      const reductionR = roundTo(subtractMoney(paymentR, interestR), CURRENCY_PLACES);
 
       schedules.push({
         period: `Month ${i + 1}`,
-        openingBalance: opening,
-        payment,
-        interest,
-        reduction,
-        closingBalance: Math.max(0, balance),
+        openingBalance: roundTo(opening, CURRENCY_PLACES),
+        payment: paymentR,
+        interest: interestR,
+        reduction: reductionR,
+        closingBalance: roundTo(closing, CURRENCY_PLACES),
       });
     }
 
@@ -131,12 +175,18 @@ export class LeaseEngine {
     if (undiscountedCF >= asset.closingBalance) {
       return { impaired: false, impairmentLoss: 0 };
     }
-    const loss = Math.max(0, asset.closingBalance - fairValue);
-    return { impaired: loss > 0, impairmentLoss: loss };
+    const loss = subtractMoney(asset.closingBalance, fairValue);
+    const impairmentLoss = loss.isNegative() ? 0 : roundTo(loss, CURRENCY_PLACES);
+    return { impaired: impairmentLoss > 0, impairmentLoss };
   }
 
-  private static calculatePresentValue(payments: number[], monthlyRate: number): number {
-    return payments.reduce((acc, p, i) => acc + p / Math.pow(1 + monthlyRate, i + 1), 0);
+  /** Exact PV of a payment stream discounted at `monthlyRate` (decimal). */
+  private static presentValueDecimal(payments: number[], monthlyRate: Decimal): Decimal {
+    const onePlus = toDecimal(1).plus(monthlyRate);
+    return payments.reduce(
+      (acc: Decimal, p, i) => acc.plus(divideMoney(p, onePlus.pow(i + 1))),
+      new Decimal(0)
+    );
   }
 
   /**
@@ -154,9 +204,10 @@ export class LeaseEngine {
     if (lease.purchaseOption?.reasonablyCertain) return 'finance';
     if (economicLife && lease.leaseTerm >= economicLife * 0.75) return 'finance';
     if (fairValue) {
-      const monthlyRate = Math.pow(1 + lease.discountRate, 1 / 12) - 1;
-      const pv = this.calculatePresentValue(lease.leasePayments, monthlyRate);
-      if (pv >= fairValue * 0.9) return 'finance';
+      const pv = this.presentValueDecimal(lease.leasePayments, monthlyRateOf(lease.discountRate));
+      // ASC 842 90%-of-fair-value test, evaluated on exact decimals so a lease
+      // sitting exactly on the threshold classifies deterministically.
+      if (pv.gte(toDecimal(fairValue).times('0.9'))) return 'finance';
     }
     return 'operating';
   }
@@ -227,7 +278,10 @@ export class LeaseEngine {
     const remainingLiability = liabilitySchedule[periodIndex]?.closingBalance ?? 0;
     const rouAssetRemoval = rouSchedule[periodIndex]?.closingBalance ?? 0;
     // Gain (negative) or loss (positive) on termination
-    const gainOrLoss = remainingLiability + terminationFee - rouAssetRemoval;
+    const gainOrLoss = roundTo(
+      sumMoney([remainingLiability, terminationFee]).minus(rouAssetRemoval),
+      CURRENCY_PLACES
+    );
 
     return { remainingLiability, rouAssetRemoval, gainOrLoss };
   }
@@ -243,9 +297,9 @@ export class LeaseEngine {
     isShortTerm: boolean;
     isLowValue: boolean;
   } {
-    const pvPayments = this.calculatePresentValue(
-      lease.leasePayments,
-      Math.pow(1 + lease.discountRate, 1 / 12) - 1
+    const pvPayments = roundTo(
+      this.presentValueDecimal(lease.leasePayments, monthlyRateOf(lease.discountRate)),
+      CURRENCY_PLACES
     );
     const leaseType = lease.classification ?? this.classifyLease(lease);
 
@@ -253,7 +307,7 @@ export class LeaseEngine {
       leaseType,
       rightOfUseAsset: pvPayments,
       leaseLiability: pvPayments,
-      totalLeasePayments: lease.leasePayments.reduce((a, b) => a + b, 0),
+      totalLeasePayments: roundTo(sumMoney(lease.leasePayments), CURRENCY_PLACES),
       weightedAverageDiscountRate: lease.discountRate,
       remainingTerm: lease.leaseTerm,
       isShortTerm: lease.isShortTerm ?? this.isShortTermLease(lease),

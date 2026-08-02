@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import Decimal from 'decimal.js';
 import { LeaseEngine, type LeaseContract } from './LeaseEngine';
 
 describe('LeaseEngine', () => {
@@ -59,10 +60,28 @@ describe('LeaseEngine', () => {
     });
 
     it('should calculate interest correctly', () => {
+      // Interest is a REPORTED currency figure, so it is rounded to cents
+      // (GAP-1 / F-0006). The engine derives the monthly rate with decimal.js at
+      // 40-digit precision rather than Math.pow's 53-bit double, so recomputing
+      // the expectation in floats here would assert the OLD drift, not the
+      // contract. Assert against the exact decimal expectation instead.
       const result = LeaseEngine.calculateLeaseLiability(baseLease);
-      const monthlyRate = Math.pow(1 + 0.05, 1 / 12) - 1;
-      const expectedInterest = result![0]!.openingBalance * monthlyRate;
-      expect(result![0]!.interest).toBeCloseTo(expectedInterest, 6);
+      const monthlyRate = new Decimal(1.05).pow(new Decimal(1).div(12)).minus(1);
+      const expectedInterest = new Decimal(result![0]!.openingBalance)
+        .times(monthlyRate)
+        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+        .toNumber();
+      expect(result![0]!.interest).toBe(expectedInterest);
+    });
+
+    it('keeps the accounting identity payment = interest + reduction on the REPORTED cents', () => {
+      // Rounding interest and reduction independently can break this: interest
+      // 238.095 -> 238.10 and reduction 4761.905 -> 4761.91 sum to 5000.01
+      // against a 5000.00 payment. Reduction is derived as the balancing figure.
+      const result = LeaseEngine.calculateLeaseLiability(baseLease);
+      for (const period of result) {
+        expect(period.interest + period.reduction).toBe(period.payment);
+      }
     });
 
     it('should have payment = interest + reduction', () => {
