@@ -43,6 +43,12 @@ vi.mock('lucide-react', () => {
     DollarSign: makeIcon(),
     Percent: makeIcon(),
     ArrowLeft: makeIcon(),
+    Plus: makeIcon(),
+    Pencil: makeIcon(),
+    Trash2: makeIcon(),
+    ChevronDown: makeIcon(),
+    ChevronUp: makeIcon(),
+    Check: makeIcon(),
   };
 });
 

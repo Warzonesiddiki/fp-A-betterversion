@@ -1,12 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
-import { Download, FileText, Calendar, DollarSign, Percent, ArrowLeft } from 'lucide-react';
+import {
+  Download,
+  FileText,
+  Calendar,
+  DollarSign,
+  Percent,
+  ArrowLeft,
+  Plus,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -22,6 +32,8 @@ import {
 import { ExportEngine } from '@/engines/ExportEngine';
 import { LeaseEngine, type LeaseContract } from '@/engines/LeaseEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useLeaseStore, type LeaseInput } from '@/store/leaseStore';
+import { LeaseForm } from '@/components/lease/LeaseForm';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -32,27 +44,11 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
-function monthsBetween(a: Date, b: Date): number {
-  return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-}
-
 const AS_OF = new Date('2026-01-01T00:00:00Z');
-
-interface LeaseInput {
-  id: string;
-  property: string;
-  lessee: string;
-  startDate: string;
-  endDate: string;
-  monthlyPayment: number;
-  interestRatePct: number;
-  leaseType: 'Operating' | 'Finance';
-}
 
 interface LeaseRecord {
   id: string;
   property: string;
-  lessee: string;
   startDate: string;
   endDate: string;
   monthlyPayment: number;
@@ -66,82 +62,47 @@ interface LeaseRecord {
   contract: LeaseContract;
 }
 
-const LEASE_INPUTS: LeaseInput[] = [
-  {
-    id: 'L001',
-    property: 'HQ Office - Floor 12',
-    lessee: 'FinPlan Corp',
-    startDate: '2024-01-01',
-    endDate: '2029-12-31',
-    monthlyPayment: 45000,
-    interestRatePct: 5.2,
-    leaseType: 'Finance',
-  },
-  {
-    id: 'L002',
-    property: 'Warehouse - East',
-    lessee: 'FinPlan Logistics',
-    startDate: '2023-06-01',
-    endDate: '2028-05-31',
-    monthlyPayment: 28000,
-    interestRatePct: 4.8,
-    leaseType: 'Operating',
-  },
-  {
-    id: 'L003',
-    property: 'Data Center - North',
-    lessee: 'FinPlan Tech',
-    startDate: '2025-01-01',
-    endDate: '2030-12-31',
-    monthlyPayment: 62000,
-    interestRatePct: 5.5,
-    leaseType: 'Finance',
-  },
-  {
-    id: 'L004',
-    property: 'Retail - Downtown',
-    lessee: 'FinPlan Retail',
-    startDate: '2022-03-01',
-    endDate: '2027-02-28',
-    monthlyPayment: 18000,
-    interestRatePct: 4.5,
-    leaseType: 'Operating',
-  },
-  {
-    id: 'L005',
-    property: 'Office - West Wing',
-    lessee: 'FinPlan Corp',
-    startDate: '2021-01-01',
-    endDate: '2025-12-31',
-    monthlyPayment: 35000,
-    interestRatePct: 5.0,
-    leaseType: 'Finance',
-  },
-];
+/** Derive the lease end date from commencement + term (store schema has no endDate). */
+function addMonths(iso: string, months: number): string {
+  const d = new Date(iso);
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().slice(0, 10);
+}
 
+/**
+ * Build the display/schedule record from a stored lease. The store is the
+ * single source of truth (GAP-NEW-A) — this page no longer keeps its own
+ * hardcoded array with a divergent schema. endDate, ROU asset, liability and
+ * status are all DERIVED, never entered.
+ */
 function buildRecord(input: LeaseInput): LeaseRecord {
-  const leaseTerm = Math.max(1, monthsBetween(new Date(input.startDate), new Date(input.endDate)));
+  const leaseTerm = Math.max(1, input.leaseTerm);
   const contract: LeaseContract = {
     id: input.id,
     assetDescription: input.property,
-    commencementDate: input.startDate,
+    commencementDate: input.commencementDate,
     leaseTerm,
-    leasePayments: Array.from({ length: leaseTerm }, () => input.monthlyPayment),
-    discountRate: input.interestRatePct / 100,
+    leasePayments: Array.from({ length: leaseTerm }, () => input.payment),
+    discountRate: input.discountRate,
   };
   const disclosure = LeaseEngine.generateDisclosure(contract);
-  const status: LeaseRecord['status'] = new Date(input.endDate) < AS_OF ? 'Expired' : 'Active';
+  const endDate = addMonths(input.commencementDate, leaseTerm);
+  const status: LeaseRecord['status'] = new Date(endDate) < AS_OF ? 'Expired' : 'Active';
   return {
-    ...input,
-    interestRate: input.interestRatePct,
+    id: input.id,
+    property: input.property,
+    startDate: input.commencementDate,
+    endDate,
+    monthlyPayment: input.payment,
+    // Stored as a rate (0.06); displayed as a percentage (6.0).
+    interestRate: input.discountRate * 100,
+    leaseType: input.type,
     rouAsset: disclosure.rightOfUseAsset,
     liability: disclosure.leaseLiability,
     status,
     contract,
   };
 }
-
-const LEASES: LeaseRecord[] = LEASE_INPUTS.map(buildRecord);
 
 interface AmortRow {
   month: string;
@@ -193,23 +154,74 @@ function rouDepreciation(contract: LeaseContract, rouAsset: number): DepRow[] {
 
 export default function LeaseDetailPage() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const [selectedLease, setSelectedLease] = useState<LeaseRecord>(LEASES[0]!);
+  const { id: routeId } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  // The dashboard links with ?id=..., the route may also carry /:id.
+  const requestedId = routeId ?? searchParams.get('id') ?? undefined;
+
+  // Single source of truth: the persisted, RBAC-gated lease store.
+  const leaseInputs = useLeaseStore((s) => s.leases);
+  const addLease = useLeaseStore((s) => s.addLease);
+  const updateLease = useLeaseStore((s) => s.updateLease);
+  const removeLease = useLeaseStore((s) => s.removeLease);
+
+  const LEASES = useMemo(() => leaseInputs.map(buildRecord), [leaseInputs]);
+
+  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+  const [formMode, setFormMode] = useState<'closed' | 'add' | 'edit'>('closed');
 
   useEffect(() => {
     document.title = 'FinPlan Pro - Lease Detail';
-    if (id) {
-      const found = LEASES.find((l) => l.id === id);
-      if (found && found.id !== selectedLease.id) setSelectedLease(found);
-    }
-  }, [id, selectedLease.id]);
+  }, []);
+
+  // Resolve the selection against live store data so a deleted lease cannot
+  // leave the page pointing at a record that no longer exists.
+  const selectedLease = useMemo(
+    () =>
+      LEASES.find((l) => l.id === selectedId) ??
+      LEASES.find((l) => l.id === requestedId) ??
+      LEASES[0],
+    [LEASES, selectedId, requestedId]
+  );
+
+  const editingInput = useMemo(
+    () => leaseInputs.find((l) => l.id === selectedLease?.id),
+    [leaseInputs, selectedLease]
+  );
+
+  const handleAdd = useCallback(
+    (lease: LeaseInput) => {
+      addLease(lease);
+      setSelectedId(lease.id);
+      setFormMode('closed');
+    },
+    [addLease]
+  );
+
+  const handleEdit = useCallback(
+    (lease: LeaseInput) => {
+      updateLease(lease.id, lease);
+      setSelectedId(lease.id);
+      setFormMode('closed');
+    },
+    [updateLease]
+  );
+
+  const handleRemove = useCallback(
+    (id: string) => {
+      removeLease(id);
+      setSelectedId(undefined);
+      setFormMode('closed');
+    },
+    [removeLease]
+  );
 
   const amortization = useMemo(
-    () => liabilityAmortization(selectedLease.contract),
+    () => (selectedLease ? liabilityAmortization(selectedLease.contract) : []),
     [selectedLease]
   );
   const depreciation = useMemo(
-    () => rouDepreciation(selectedLease.contract, selectedLease.rouAsset),
+    () => (selectedLease ? rouDepreciation(selectedLease.contract, selectedLease.rouAsset) : []),
     [selectedLease]
   );
 
@@ -229,6 +241,7 @@ export default function LeaseDetailPage() {
   ];
 
   const handleExportPDF = () => {
+    if (!selectedLease) return;
     void ExportEngine.exportToPDF(
       {
         headers: ['Month', 'Payment', 'Principal', 'Interest', 'Balance'],
@@ -239,6 +252,7 @@ export default function LeaseDetailPage() {
   };
 
   const handleExportExcel = () => {
+    if (!selectedLease) return;
     void ExportEngine.exportToExcel(
       {
         headers: ['Month', 'Payment', 'Principal', 'Interest', 'Balance'],
@@ -247,6 +261,62 @@ export default function LeaseDetailPage() {
       { title: `Lease_Amortization_${selectedLease.id}` }
     ).catch(reportExportFailure);
   };
+
+  const leaseForm = (
+    <Card>
+      <CardHeader>
+        <CardTitle>{formMode === 'edit' ? 'Edit Lease' : 'Add Lease'}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <LeaseForm
+          initialValue={formMode === 'edit' ? editingInput : undefined}
+          existingIds={leaseInputs.map((l) => l.id)}
+          onSubmit={formMode === 'edit' ? handleEdit : handleAdd}
+          onCancel={() => setFormMode('closed')}
+        />
+      </CardContent>
+    </Card>
+  );
+
+  // Reachable empty state: the portfolio can legitimately be empty (a user can
+  // delete every lease), and the only sensible action is to add one.
+  if (!selectedLease) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/lease/dashboard')}
+            aria-label="Back to lease dashboard"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Lease Detail</h1>
+            <p className="text-sm text-slate-400">No leases in the portfolio yet</p>
+          </div>
+        </div>
+
+        {formMode === 'closed' ? (
+          <Card>
+            <CardContent>
+              <div className="py-10 text-center space-y-3">
+                <p className="text-slate-400">
+                  No Lease Data — add a lease to compute its ASC 842 / IFRS 16 schedules.
+                </p>
+                <Button size="sm" onClick={() => setFormMode('add')}>
+                  <Plus className="h-4 w-4 mr-1" /> Add Lease
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          leaseForm
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -268,6 +338,20 @@ export default function LeaseDetailPage() {
           </div>
         </div>
         <div className="flex gap-2">
+          <Button size="sm" onClick={() => setFormMode('add')}>
+            <Plus className="h-4 w-4 mr-1" /> Add Lease
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFormMode('edit')}>
+            <Pencil className="h-4 w-4 mr-1" /> Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleRemove(selectedLease.id)}
+            aria-label={`Delete lease ${selectedLease.property}`}
+          >
+            <Trash2 className="h-4 w-4 mr-1" /> Delete
+          </Button>
           <Button variant="outline" size="sm" onClick={handleExportPDF}>
             <Download className="h-4 w-4 mr-1" /> PDF
           </Button>
@@ -276,6 +360,8 @@ export default function LeaseDetailPage() {
           </Button>
         </div>
       </div>
+
+      {formMode !== 'closed' && leaseForm}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
@@ -424,18 +510,18 @@ export default function LeaseDetailPage() {
                     ? 'bg-blue-900/30 border border-blue-500/30'
                     : 'bg-slate-800 hover:bg-slate-700'
                 }`}
-                onClick={() => setSelectedLease(lease)}
+                onClick={() => setSelectedId(lease.id)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') setSelectedLease(lease);
+                  if (e.key === 'Enter' || e.key === ' ') setSelectedId(lease.id);
                 }}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">{lease.property}</div>
                     <div className="text-xs text-slate-400">
-                      {lease.lessee} | {lease.startDate} to {lease.endDate}
+                      {lease.leaseType} | {lease.startDate} to {lease.endDate}
                     </div>
                   </div>
                   <div className="text-right">
