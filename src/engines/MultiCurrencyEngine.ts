@@ -9,6 +9,16 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { ExchangeRate } from '@/types';
+import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+
+/**
+ * ASC 830 translation and remeasurement produce reported balance-sheet and P&L
+ * figures, so all arithmetic runs through the canonical money primitive
+ * (decimal.js, ROUND_HALF_UP) and rounds to cents. Exchange RATES are not
+ * currency and keep full precision.
+ */
+const CURRENCY_PLACES = 2;
+const RATE_PLACES = 10;
 
 export interface TranslationResult {
   translatedAmount: number;
@@ -36,7 +46,13 @@ export class MultiCurrencyEngine {
     }
     if (fromCurrency === toCurrency) return amount;
     if (rate === 0) return 0;
-    return amount * rate;
+    // Deliberately NOT rounded to cents. `translate` is a general-purpose
+    // conversion primitive that also feeds further computation, and not every
+    // currency has 2 minor units (JPY has 0, KWD has 3). Premature rounding
+    // here would bake a USD assumption into every downstream figure. The
+    // multiplication is exact, so callers round once at their own reporting
+    // boundary (see convertIncomeStatement / translateBalanceSheet, which do).
+    return roundTo(multiplyMoney(amount, rate), RATE_PLACES);
   }
 
   static calculateTranslationGainLoss(amount: number, oldRate: number, newRate: number): number {
@@ -54,7 +70,9 @@ export class MultiCurrencyEngine {
       throw new Error('rates cannot be negative');
     }
     if (oldRate === 0) return 0;
-    return amount * (newRate - oldRate);
+    // The rate DELTA is taken in exact decimals first: in floats
+    // 1000 * (1.15 - 1.10) === 49.99999999999982 rather than 50.
+    return roundTo(multiplyMoney(amount, subtractMoney(newRate, oldRate)), CURRENCY_PLACES);
   }
 
   static getWeightedAverageRate(rates: ExchangeRate[]): number {
@@ -71,8 +89,8 @@ export class MultiCurrencyEngine {
         throw new Error('Exchange rates cannot be negative');
       }
     }
-    const total = rates.reduce((acc, r) => acc + r.rate, 0);
-    return total / rates.length;
+    const total = sumMoney(rates.map((r) => r.rate));
+    return roundTo(divideMoney(total, rates.length), RATE_PLACES);
   }
 
   static convertIncomeStatement(
@@ -97,15 +115,15 @@ export class MultiCurrencyEngine {
     if (avgRate < 0 || closeRate < 0) {
       throw new Error('rates cannot be negative');
     }
-    const revenueUSD = revenue * avgRate;
-    const expensesUSD = expenses * avgRate;
-    const netIncomeLocal = revenue - expenses;
-    const translationGainLoss = netIncomeLocal * (closeRate - avgRate);
+    const netIncomeLocal = subtractMoney(revenue, expenses);
 
     return {
-      revenueUSD,
-      expensesUSD,
-      translationGainLoss,
+      revenueUSD: roundTo(multiplyMoney(revenue, avgRate), CURRENCY_PLACES),
+      expensesUSD: roundTo(multiplyMoney(expenses, avgRate), CURRENCY_PLACES),
+      translationGainLoss: roundTo(
+        netIncomeLocal.times(subtractMoney(closeRate, avgRate)),
+        CURRENCY_PLACES
+      ),
     };
   }
 
@@ -153,14 +171,17 @@ export class MultiCurrencyEngine {
         default:
           rate = closingRate;
       }
-      const translatedAmount = item.localAmount * rate;
-      const atHistorical = item.localAmount * historicalRate;
-      const ctaAdjustment = item.type === 'equity' ? 0 : translatedAmount - atHistorical;
+      const translatedAmount = multiplyMoney(item.localAmount, rate);
+      const atHistorical = multiplyMoney(item.localAmount, historicalRate);
+      // CTA is derived from the SAME exact decimals as the translated amount,
+      // so the adjustment reconciles instead of carrying a float residue.
+      const ctaAdjustment =
+        item.type === 'equity' ? 0 : roundTo(translatedAmount.minus(atHistorical), CURRENCY_PLACES);
       return {
         name: item.name,
         type: item.type,
         localAmount: item.localAmount,
-        translatedAmount,
+        translatedAmount: roundTo(translatedAmount, CURRENCY_PLACES),
         ctaAdjustment,
       };
     });
@@ -171,7 +192,7 @@ export class MultiCurrencyEngine {
    */
   static calculateTotalCTA(translatedItems: Array<{ ctaAdjustment: number }>): number {
     if (!Array.isArray(translatedItems)) return 0;
-    return translatedItems.reduce((sum, item) => sum + item.ctaAdjustment, 0);
+    return roundTo(sumMoney(translatedItems.map((i) => i.ctaAdjustment)), CURRENCY_PLACES);
   }
 
   /**
@@ -197,14 +218,13 @@ export class MultiCurrencyEngine {
 
     return items.map((item) => {
       const rate = item.monetary ? closingRate : historicalRate;
-      const functionalAmount = item.localAmount * rate;
       const gainLoss = item.monetary
         ? this.calculateTranslationGainLoss(item.localAmount, historicalRate, closingRate)
         : 0;
       return {
         name: item.name,
         localAmount: item.localAmount,
-        functionalAmount,
+        functionalAmount: roundTo(multiplyMoney(item.localAmount, rate), CURRENCY_PLACES),
         gainLoss,
       };
     });
