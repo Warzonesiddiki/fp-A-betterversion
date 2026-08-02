@@ -43,15 +43,20 @@ testable. Evidence = literal command output with date.
 - **engines migrated this session** (all REACHABLE — i.e. wired into real pages, so the drift was
   user-visible):
 
-  | Engine                        | Sites | Surface                                         |
-  | ----------------------------- | ----- | ----------------------------------------------- |
-  | `ScenarioEngine`              | 29    | WhatIfSandbox                                   |
-  | `BankingEngine`               | 28    | Banking dashboards (Basel III capital adequacy) |
-  | `SaaSMetricsEngine`           | 8     | ARRDashboard, ChurnAnalysisPage                 |
-  | `VarianceDecompositionEngine` | 9     | VarianceDashboardPage, BudgetVsActualPage       |
-  | `COGSVarianceEngine`          | 7     | COGSVariancePage                                |
-  | `InventoryEngine`             | 7     | InventoryDashboard, InventoryPlanningPage       |
-  | `CreditRiskEngine`            | 5     | credit-risk provisioning                        |
+  | Engine                        | Sites | Surface                                          |
+  | ----------------------------- | ----- | ------------------------------------------------ |
+  | `ScenarioEngine`              | 29    | WhatIfSandbox                                    |
+  | `BankingEngine`               | 28    | Banking dashboards (Basel III capital adequacy)  |
+  | `SaaSMetricsEngine`           | 8     | ARRDashboard, ChurnAnalysisPage                  |
+  | `VarianceDecompositionEngine` | 9     | VarianceDashboardPage, BudgetVsActualPage        |
+  | `COGSVarianceEngine`          | 7     | COGSVariancePage                                 |
+  | `InventoryEngine`             | 7     | InventoryDashboard, InventoryPlanningPage        |
+  | `CreditRiskEngine`            | 5     | credit-risk provisioning                         |
+  | `LeaseEngine`                 | 10    | ASC 842 / IFRS 16 — backs the GAP-NEW-A lease UI |
+  | `ICMatchingEngine`            | 16    | intercompany reconciliation / elimination        |
+  | `MultiCurrencyEngine`         | 10    | ASC 830 FX translation + remeasurement           |
+  | `RealEstateEngine`            | 19    | REIT metrics — NOI, cap rate, FFO/AFFO, NAV, LTV |
+  | `RetailEngine`                | 17    | store-level P&L, rankings, margin reporting      |
 
 - **evidence — every migration was falsified against the OLD code before being accepted.** Each
   new `*.money.test.ts` was run against the pre-migration implementation and had to FAIL:
@@ -63,7 +68,11 @@ testable. Evidence = literal command output with date.
   | `COGSVarianceEngine` + `InventoryEngine`      | 19 failed / 10 ✓  | **29/29 ✓**     |
   | `SaaSMetricsEngine` + `VarianceDecomposition` | 14 failed / 14 ✓  | **28/28 ✓**     |
   | `CreditRiskEngine.money.test.ts`              | 5 failed / 10 ✓   | **15/15 ✓**     |
-  | **total**                                     | **63 caught**     | **129 passing** |
+  | `LeaseEngine.money.test.ts`                   | 10 failed / 13 ✓  | **23/23 ✓**     |
+  | `ICMatchingEngine` + `MultiCurrencyEngine`    | 17 failed / 14 ✓  | **31/31 ✓**     |
+  | `RealEstateEngine.money.test.ts`              | 8 failed / 9 ✓    | **17/17 ✓**     |
+  | `RetailEngine.money.test.ts`                  | 7 failed / 7 ✓    | **14/14 ✓**     |
+  | **total**                                     | **105 caught**    | **214 passing** |
 
 - **real defects found and fixed (not just rounding):**
   - `ScenarioEngine.sensitivityAnalysis` emitted **`Infinity`** as a financial figure when a
