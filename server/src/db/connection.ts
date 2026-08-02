@@ -57,6 +57,17 @@ try {
             rowObj.period_type = params[6];
             rowObj.is_closed = params[7] ?? 0;
             rowObj.close_state = params[8] ?? 'open';
+          } else if (tableName === 'period_close_audit') {
+            // Named columns so the close-audit trail is assertable in tests
+            // (GAP-4). Positional-only rows made every audit assertion vacuous.
+            rowObj.id = params[0];
+            rowObj.period_id = params[1];
+            rowObj.from_state = params[2];
+            rowObj.to_state = params[3];
+            rowObj.actor_id = params[4];
+            rowObj.reason = params[5] ?? null;
+            rowObj.approval_id = params[6] ?? null;
+            rowObj.created_at = new Date().toISOString();
           }
           const existingIdx = tables
             .get(tableName)!
@@ -137,14 +148,30 @@ try {
       if (lower.includes('from fiscal_periods')) {
         const rows = tables.get('fiscal_periods') || [];
         if (lower.includes('is_closed = 1')) {
-          const found = rows.find(
-            (r: any) => r !== null && (Number(r.is_closed) === 1 || Number(r[7]) === 1)
-          );
+          // The GL period-lock query is
+          //   WHERE is_closed = 1 AND ? BETWEEN start_date AND end_date
+          // so the DATE RANGE must be honoured. Ignoring it made any single
+          // closed period anywhere block posting to every other period, and
+          // made "posting is allowed after reopen" impossible to assert.
+          const postDate = lower.includes('between') ? params[0] : undefined;
+          const found = rows.find((r: any) => {
+            if (r === null) return false;
+            if (!(Number(r.is_closed) === 1 || Number(r[7]) === 1)) return false;
+            if (postDate === undefined) return true;
+            const start = r.start_date ?? r[4];
+            const end = r.end_date ?? r[5];
+            if (start === undefined || end === undefined) return true;
+            return String(postDate) >= String(start) && String(postDate) <= String(end);
+          });
           return found || null;
         }
         const matchId = params[0];
         const found = rows.find((r: any) => r.id === matchId || r[0] === matchId);
-        const result = found || rows[rows.length - 1] || null;
+        // A lookup BY ID that misses must return null, not "some other row".
+        // Falling back to the last row made every not-found path untestable:
+        // `GET /periods/no-such-id` answered 200 with an unrelated period.
+        const looksUpById = /where[\s\S]*\bid\s*=\s*\?/i.test(this.sql);
+        const result = found || (looksUpById ? null : (rows[rows.length - 1] ?? null));
         // Ensure close_state is always present on fiscal_periods
         if (result && !result.close_state) {
           result.close_state = result.is_closed === 1 ? 'soft-close' : 'open';
@@ -173,19 +200,40 @@ try {
             (r: any) => r.id === id || r[0] === id || params.includes(r.id) || params.includes(r[0])
           );
           if (found) return found;
+          // An explicit id lookup that misses is a genuine "not found".
+          if (/where[\s\S]*\bid\s*=\s*\?/i.test(this.sql)) return null;
         }
         return rows[rows.length - 1] || null;
       }
       return null;
     }
-    all(..._params: unknown[]): unknown[] {
+    all(...params: unknown[]): unknown[] {
       const lower = this.sql.trim().toLowerCase();
       const match = lower.match(/from\s+(\w+)/);
-      if (match) {
-        const tableName = match[1]!;
-        return tables.get(tableName) || [];
+      if (!match) return [];
+      const tableName = match[1]!;
+      let rows = tables.get(tableName) || [];
+
+      // Honour simple `WHERE <col> = ?` / `AND <col> = ?` equality filters.
+      // Previously all() ignored WHERE entirely and returned the whole table,
+      // which silently made scoped queries (and the assertions built on them)
+      // meaningless — a period's audit trail returned EVERY period's rows.
+      const eqFilters = [...this.sql.matchAll(/(?:where|and)\s+(\w+)\s*=\s*\?/gi)].map((m) =>
+        m[1]!.toLowerCase()
+      );
+      if (eqFilters.length && params.length) {
+        eqFilters.forEach((col, i) => {
+          if (i >= params.length) return;
+          const expected = params[i];
+          rows = rows.filter((r: any) => {
+            // Unknown columns are not filterable in the mock; do not silently
+            // drop the row on a column we never recorded.
+            if (!(col in r)) return true;
+            return String(r[col]) === String(expected);
+          });
+        });
       }
-      return [];
+      return rows;
     }
   }
   db = {
