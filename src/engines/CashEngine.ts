@@ -8,6 +8,7 @@
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 1st engine REMEDIATED after D-007 8th SHL CATCH)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
+import { toDecimal, roundTo, sumMoney, subtractMoney, divideMoney, addMoney } from '../utils/money';
 export interface WeeklyCashFlow {
   week: string;
   openingBalance: number;
@@ -29,27 +30,28 @@ export class CashEngine {
       new Set([...inflows.map((i) => i.week), ...outflows.map((o) => o.week)])
     ).sort();
     const forecast: WeeklyCashFlow[] = [];
-    let balance = startingBalance;
+    let balance = toDecimal(startingBalance);
+    const minimumTargetD = toDecimal(minimumTarget);
 
     weeks.forEach((week) => {
-      const openingBalance = balance;
-      const weeklyInflows = inflows
-        .filter((i) => i.week === week)
-        .reduce((acc, i) => acc + i.amount, 0);
-      const weeklyOutflows = outflows
-        .filter((o) => o.week === week)
-        .reduce((acc, o) => acc + o.amount, 0);
-      const netCashFlow = weeklyInflows - weeklyOutflows;
-      balance += netCashFlow;
+      const openingBalance = balance.toNumber();
+      const weeklyInflows = sumMoney(
+        inflows.filter((i) => i.week === week).map((i) => i.amount)
+      ).toNumber();
+      const weeklyOutflows = sumMoney(
+        outflows.filter((o) => o.week === week).map((o) => o.amount)
+      ).toNumber();
+      const netCashFlow = subtractMoney(weeklyInflows, weeklyOutflows);
+      balance = balance.plus(netCashFlow);
 
       forecast.push({
         week,
         openingBalance,
         inflows: weeklyInflows,
         outflows: weeklyOutflows,
-        netCashFlow,
-        closingBalance: balance,
-        isBelowTarget: balance < minimumTarget,
+        netCashFlow: roundTo(netCashFlow),
+        closingBalance: roundTo(balance),
+        isBelowTarget: balance.lt(minimumTargetD),
       });
     });
 
@@ -58,20 +60,20 @@ export class CashEngine {
 
   static calculateDSO(receivables: number, revenue: number, days: number): number {
     if (revenue <= 0) return 0;
-    return (receivables / revenue) * days;
+    return roundTo(divideMoney(receivables, revenue).times(days), 4);
   }
 
   static calculateDPO(payables: number, cogs: number, days: number): number {
     if (cogs <= 0) return 0;
-    return (payables / cogs) * days;
+    return roundTo(divideMoney(payables, cogs).times(days), 4);
   }
 
   static calculateDIO(inventory: number, cogs: number, days: number): number {
     if (cogs <= 0) return 0;
-    return (inventory / cogs) * days;
+    return roundTo(divideMoney(inventory, cogs).times(days), 4);
   }
 
   static calculateCCC(dso: number, dio: number, dpo: number): number {
-    return dso + dio - dpo;
+    return roundTo(addMoney(dso, dio).minus(dpo), 4);
   }
 }

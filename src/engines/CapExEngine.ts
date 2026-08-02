@@ -9,43 +9,45 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { AssetInput, DepreciationSchedule } from '@/types/sector-types';
+import { toDecimal, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 
 export class CapExEngine {
   static calculateDepreciation(asset: AssetInput): DepreciationSchedule[] {
     const schedules: DepreciationSchedule[] = [];
-    let accumulatedDepreciation = 0;
-    let bookValue = asset.cost;
-    const depreciableAmount = asset.cost - asset.salvageValue;
+    // Exact-decimal book value / depreciation (money primitive).
+    let accumulatedDepreciation = toDecimal(0);
+    let bookValue = toDecimal(asset.cost);
+    const depreciableAmount = subtractMoney(asset.cost, asset.salvageValue);
 
     for (let i = 1; i <= asset.usefulLife; i++) {
-      let expense = 0;
+      let expense = toDecimal(0);
       switch (asset.depreciationMethod) {
         case 'straight_line':
-          expense = depreciableAmount / asset.usefulLife;
+          expense = depreciableAmount.div(asset.usefulLife);
           break;
         case 'double_declining': {
-          const rate = 2 / asset.usefulLife;
-          expense = bookValue * rate;
-          if (bookValue - expense < asset.salvageValue) {
-            expense = bookValue - asset.salvageValue;
+          const rate = toDecimal(2).div(asset.usefulLife);
+          expense = bookValue.times(rate);
+          if (bookValue.minus(expense).lt(asset.salvageValue)) {
+            expense = bookValue.minus(asset.salvageValue);
           }
           break;
         }
         case 'sum_of_years': {
           const sum = (asset.usefulLife * (asset.usefulLife + 1)) / 2;
-          expense = depreciableAmount * ((asset.usefulLife - i + 1) / sum);
+          expense = depreciableAmount.times(asset.usefulLife - i + 1).div(sum);
           break;
         }
       }
 
-      accumulatedDepreciation += expense;
-      bookValue -= expense;
+      accumulatedDepreciation = accumulatedDepreciation.plus(expense);
+      bookValue = bookValue.minus(expense);
 
       schedules.push({
         period: `Year ${i}`,
-        depreciationExpense: expense,
-        accumulatedDepreciation,
-        bookValue: Math.max(asset.salvageValue, bookValue),
+        depreciationExpense: roundTo(expense),
+        accumulatedDepreciation: roundTo(accumulatedDepreciation),
+        bookValue: Math.max(asset.salvageValue, roundTo(bookValue)),
       });
     }
 
@@ -53,7 +55,11 @@ export class CapExEngine {
   }
 
   static calculateNPV(cashFlows: number[], discountRate: number): number {
-    return cashFlows.reduce((acc, cf, i) => acc + cf / Math.pow(1 + discountRate, i), 0);
+    // Discount each cash flow with decimal-exact present-value computation and
+    // sum them exactly; avoids float drift on accumulated discounted value.
+    return sumMoney(
+      cashFlows.map((cf, i) => toDecimal(cf).div(toDecimal(1 + discountRate).pow(i)))
+    ).toNumber();
   }
 
   static calculateIRR(cashFlows: number[]): number {
@@ -89,6 +95,6 @@ export class CapExEngine {
 
   static calculateROI(totalBenefit: number, totalCost: number): number {
     if (totalCost <= 0) return 0;
-    return (totalBenefit - totalCost) / totalCost;
+    return subtractMoney(totalBenefit, totalCost).div(totalCost).toNumber();
   }
 }

@@ -2,6 +2,7 @@
 // FORMULA FUNCTION REGISTRY — Text & Date Functions
 // =============================================================================
 import type { FormulaFunction } from './helpers';
+import { roundTo } from '../../utils/money';
 
 // =============================================================================
 // TEXT FUNCTIONS
@@ -37,10 +38,10 @@ export function LOWER(v: number): number {
 export function TEXT(v: number, fmt: number): number {
   const f = String(fmt);
   if (f.includes('%')) return Number(String(v) + '%');
-  if (f.includes('$') || f.includes('#,##0')) return Number(v.toFixed(2));
+  if (f.includes('$') || f.includes('#,##0')) return roundTo(v, 2);
   if (f.includes('0.')) {
     const decimals = (f.split('.')[1] || '').replace(/[^0]/g, '').length;
-    return Number(v.toFixed(decimals));
+    return roundTo(v, decimals);
   }
   return Number(String(v));
 }
@@ -396,7 +397,7 @@ export function registerTextFunctions(r: (fn: FormulaFunction) => void): void {
     description: 'Format as currency',
     minArgs: 1,
     maxArgs: 2,
-    impl: (v: number, decimals = 2) => Number(v.toFixed(decimals)),
+    impl: (v: number, decimals = 2) => roundTo(v, decimals),
   });
   r({
     name: 'FIXED',
@@ -404,7 +405,7 @@ export function registerTextFunctions(r: (fn: FormulaFunction) => void): void {
     description: 'Format as fixed decimal',
     minArgs: 1,
     maxArgs: 2,
-    impl: (v: number, decimals = 2) => Number(v.toFixed(decimals)),
+    impl: (v: number, decimals = 2) => roundTo(v, decimals),
   });
   r({
     name: 'JIS',
@@ -465,10 +466,10 @@ export function registerTextFunctions(r: (fn: FormulaFunction) => void): void {
       const s = String(v);
       // Handle common Excel format patterns
       if (f.includes('%')) return Number(s + '%');
-      if (f.includes('$') || f.includes('#,##0')) return Number(v.toFixed(2));
+      if (f.includes('$') || f.includes('#,##0')) return roundTo(v, 2);
       if (f.includes('0.')) {
         const decimals = (f.split('.')[1] || '').replace(/[^0]/g, '').length;
-        return Number(v.toFixed(decimals));
+        return roundTo(v, decimals);
       }
       return Number(s);
     },

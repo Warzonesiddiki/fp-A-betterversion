@@ -2,6 +2,8 @@
  * Anomaly Explainer — Context-aware anomaly explanation
  */
 
+import { formatMoney } from '../utils/money';
+
 export interface Anomaly {
   id: string;
   type: 'variance' | 'spike' | 'drop' | 'trend_break' | 'outlier';
@@ -102,12 +104,12 @@ export class AnomalyExplainer {
         context.priorPeriods.reduce((s, p) => s + p.value, 0) / context.priorPeriods.length;
       if (Math.abs(anomaly.value - avg) / avg > 0.2) {
         causes.push(
-          `Value is ${((anomaly.value / avg - 1) * 100).toFixed(0)}% different from historical average`
+          `Value is ${formatMoney((anomaly.value / avg - 1) * 100, { places: 0 })}% different from historical average`
         );
       }
     }
 
-    const summary = `${anomaly.metric} of ${anomaly.value.toFixed(0)} in ${anomaly.period} is ${Math.abs(anomaly.deviation).toFixed(1)}% ${anomaly.deviation > 0 ? 'above' : 'below'} expected (${anomaly.expected.toFixed(0)}).`;
+    const summary = `${anomaly.metric} of ${formatMoney(anomaly.value, { places: 0 })} in ${anomaly.period} is ${formatMoney(Math.abs(anomaly.deviation), { places: 1 })}% ${anomaly.deviation > 0 ? 'above' : 'below'} expected (${formatMoney(anomaly.expected, { places: 0 })}).`;
 
     return {
       anomalyId: anomaly.id,

@@ -1,3 +1,5 @@
+import { formatMoney } from '../utils/money';
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * ChartAnnotationEngine — Annotations for financial charts
@@ -123,7 +125,7 @@ export class ChartAnnotationEngine {
             chartId,
             type: 'marker',
             position: { x: item.name, y: item.actual },
-            content: `${pct > 0 ? '+' : ''}${pct.toFixed(0)}% vs budget`,
+            content: `${pct > 0 ? '+' : ''}${formatMoney(pct, { places: 0 })}% vs budget`,
             color: pct > 0 ? '#10B981' : '#EF4444',
             createdBy: 'auto',
           })

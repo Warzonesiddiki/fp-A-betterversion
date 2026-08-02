@@ -7,6 +7,7 @@
  */
 
 import type { GLState, BudgetState } from '@/types';
+import { formatMoney } from '../utils/money';
 
 interface CopilotAnswer {
   answer: string;
@@ -27,13 +28,13 @@ const CASH_CODES = /^10\d{2}/;
 
 function formatCurrency(amount: number): string {
   const abs = Math.abs(amount);
-  if (abs >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
-  return `$${amount.toFixed(0)}`;
+  if (abs >= 1_000_000) return `$${formatMoney(amount / 1_000_000, { places: 1 })}M`;
+  if (abs >= 1_000) return `$${formatMoney(amount / 1_000, { places: 0 })}K`;
+  return `$${formatMoney(amount, { places: 0 })}`;
 }
 
 function formatPct(value: number): string {
-  return `${(value * 100).toFixed(1)}%`;
+  return `${formatMoney(value * 100, { places: 1 })}%`;
 }
 
 function groupBy<T>(items: T[], key: (item: T) => string): Record<string, T[]> {
@@ -269,7 +270,7 @@ export class FinanceCopilotEngine {
 
     if (cashBalance > 0 && runwayMonths < Infinity) {
       parts.push(
-        `Runway: ${runwayMonths.toFixed(1)} months at current spend (${formatCurrency(cashBalance)} cash)`
+        `Runway: ${formatMoney(runwayMonths, { places: 1 })} months at current spend (${formatCurrency(cashBalance)} cash)`
       );
     }
 

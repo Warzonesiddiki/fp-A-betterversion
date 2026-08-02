@@ -1375,7 +1375,9 @@ describe('SafeMathParser', () => {
       expect(parser.evaluate('CHAR(65)')).toBe('A');
     });
     it('DOLLAR', () => {
-      expect(parser.evaluate('DOLLAR(1234.567,2)')).toBe('$1234.57');
+      // Routed through the canonical money primitive (formatMoney) which groups
+      // thousands, matching Excel's DOLLAR format ($#,##0.00).
+      expect(parser.evaluate('DOLLAR(1234.567,2)')).toBe('$1,234.57');
     });
     it('FIXED', () => {
       expect(parser.evaluate('FIXED(1234.567,2)')).toBe('1,234.57');

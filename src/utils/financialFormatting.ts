@@ -3,6 +3,8 @@
  * Used across ALL grids, charts, KPI cards, reports
  */
 
+import { formatMoney } from './money';
+
 interface FormatConfig {
   locale: string;
   currency: string;
@@ -54,15 +56,15 @@ export function formatCompact(value: number | null | undefined, currency = 'USD'
   if (value == null || value === 0) return '—';
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
-  if (abs >= 1_000_000_000) return `${sign}$${(abs / 1_000_000_000).toFixed(1)}B`;
-  if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000) return `${sign}$${(abs / 1_000).toFixed(0)}K`;
+  if (abs >= 1_000_000_000) return `${sign}$${formatMoney(abs / 1_000_000_000, { places: 1 })}B`;
+  if (abs >= 1_000_000) return `${sign}$${formatMoney(abs / 1_000_000, { places: 1 })}M`;
+  if (abs >= 1_000) return `${sign}$${formatMoney(abs / 1_000, { places: 0 })}K`;
   return formatCurrency(value, { currency });
 }
 
 export function formatPercent(value: number | null | undefined, decimals = 1): string {
   if (value == null) return '—';
-  return `${value.toFixed(decimals)}%`;
+  return `${formatMoney(value, { places: decimals })}%`;
 }
 
 export function formatNumber(value: number | null | undefined, decimals = 0): string {
@@ -80,7 +82,7 @@ export function formatVariance(
   const diff = actual - budget;
   const pct = budget !== 0 ? (diff / Math.abs(budget)) * 100 : 0;
   const text = formatCurrency(diff, { negativeStyle: 'minus' });
-  const percentage = `(${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)`;
+  const percentage = `(${pct >= 0 ? '+' : ''}${formatMoney(pct, { places: 1 })}%)`;
   let className = 'fin-neutral';
   if (Math.abs(pct) > 0.01) {
     className = pct > 0 ? 'fin-positive font-medium' : 'fin-negative font-medium';

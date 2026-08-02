@@ -342,9 +342,14 @@ describe('Page Smoke Tests (Batch 3 — 5 Untested Pages)', () => {
       expect(screen.getByText(/Debt Schedule/i)).toBeInTheDocument();
     });
 
-    it('displays the empty state when no GL entries', () => {
+    // NOTE: DebtSchedulePage renders a demo debt portfolio (hardcoded sample
+    // instruments whose schedules are computed live by DebtScheduleEngine — see
+    // its own dedicated DebtSchedulePage.test.tsx). It is NOT yet backed by a
+    // debt data store, so no empty state is reachable today. Tracked as a GAP
+    // (debt store wiring) in GAP_LEDGER.md; assert the real rendered behavior.
+    it('renders the computed debt schedule dashboard', () => {
       renderPage(DebtSchedulePage, '/cash/debt', '/cash/debt');
-      expect(screen.getByText(/No Data/i)).toBeInTheDocument();
+      expect(screen.getByText(/computed live by DebtScheduleEngine/i)).toBeInTheDocument();
     });
   });
 

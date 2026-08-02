@@ -1,3 +1,5 @@
+import { formatMoney } from '../utils/money';
+
 /**
  * NIM Prompt Templates — Structured prompts for financial analysis via LLM.
  *
@@ -91,7 +93,7 @@ export function variancePrompt(params: VarianceParams): PromptTemplate {
 
 Actual: ${params.actual.toLocaleString()}
 Budget: ${params.budget.toLocaleString()}
-Variance: ${variance.toLocaleString()} (${variancePct.toFixed(1)}%)
+Variance: ${variance.toLocaleString()} (${formatMoney(variancePct, { places: 1 })}%)
 ${historicalContext}
 
 Provide:

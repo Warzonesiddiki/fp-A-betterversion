@@ -9,7 +9,7 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { GLEntry } from '@/types';
-import { addMoney, subtractMoney, sumMoney, roundTo, toDecimal } from '../utils/money';
+import { addMoney, subtractMoney, sumMoney, roundTo, toDecimal, formatMoney } from '../utils/money';
 
 export interface ConstructionStats {
   totalBacklog: number;
@@ -131,9 +131,9 @@ export class ConstructionEngine {
         name: def.name,
         client: def.client,
         status: pct >= 100 ? 'Completed' : pct >= 50 ? 'In Progress' : 'In Progress',
-        budget: `$${(data.revenue / 1000000).toFixed(1)}M`,
+        budget: `$${formatMoney(data.revenue / 1000000, { places: 1 })}M`,
         percentComplete: `${pct}%`,
-        margin: `${margin.toFixed(1)}%`,
+        margin: `${formatMoney(margin, { places: 1 })}%`,
       });
       idx++;
     }

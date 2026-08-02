@@ -17,6 +17,8 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
+import { toDecimal, roundTo, sumMoney } from '../utils/money';
+
 export interface DebtInstrument {
   id: string;
   name: string;
@@ -67,12 +69,13 @@ export class DebtScheduleEngine {
   static amortize(instrument: DebtInstrument): DebtScheduleResult {
     const schedule: AmortizationEntry[] = [];
     const periodsPerYear = this.getPeriodsPerYear(instrument.paymentFrequency);
-    const periodicRate = instrument.rate / periodsPerYear;
+    // Decimal-exact periodic rate (rate / periodsPerYear).
+    const periodicRate = toDecimal(instrument.rate).div(periodsPerYear);
     const totalPayments = instrument.termMonths;
 
-    let balance = instrument.principal;
-    let cumulativePrincipal = 0;
-    let cumulativeInterest = 0;
+    let balance = toDecimal(instrument.principal);
+    let cumulativePrincipal = toDecimal(0);
+    let cumulativeInterest = toDecimal(0);
 
     const monthlyPayment = this.calculatePayment(
       instrument.principal,
@@ -83,45 +86,45 @@ export class DebtScheduleEngine {
     );
 
     for (let period = 1; period <= totalPayments; period++) {
-      const interest = balance * periodicRate;
-      let principal: number;
-      let payment: number;
+      const interest = balance.times(periodicRate);
+      let principal: ReturnType<typeof toDecimal>;
+      let payment: ReturnType<typeof toDecimal>;
 
       if (instrument.amortizationType === 'interest_only') {
         payment = interest;
-        principal = 0;
+        principal = toDecimal(0);
       } else if (instrument.amortizationType === 'balloon' && period === totalPayments) {
-        payment = balance + interest;
+        payment = balance.plus(interest);
         principal = balance;
       } else if (instrument.amortizationType === 'bullet' && period === totalPayments) {
-        payment = instrument.principal + interest;
-        principal = instrument.principal;
+        payment = toDecimal(instrument.principal).plus(interest);
+        principal = toDecimal(instrument.principal);
       } else {
         payment = monthlyPayment;
-        principal = payment - interest;
+        principal = payment.minus(interest);
       }
 
-      balance = Math.max(0, balance - principal);
-      cumulativePrincipal += principal;
-      cumulativeInterest += interest;
+      balance = balance.minus(principal).gte(0) ? balance.minus(principal) : toDecimal(0);
+      cumulativePrincipal = cumulativePrincipal.plus(principal);
+      cumulativeInterest = cumulativeInterest.plus(interest);
 
       const date = this.addMonths(instrument.startDate, period);
       schedule.push({
         period,
         date,
-        beginningBalance: balance + principal,
-        payment,
-        principal,
-        interest,
-        endingBalance: balance,
-        cumulativePrincipal,
-        cumulativeInterest,
+        beginningBalance: roundTo(balance.plus(principal)),
+        payment: roundTo(payment),
+        principal: roundTo(principal),
+        interest: roundTo(interest),
+        endingBalance: roundTo(balance),
+        cumulativePrincipal: roundTo(cumulativePrincipal),
+        cumulativeInterest: roundTo(cumulativeInterest),
       });
     }
 
-    const totalPaid = schedule.reduce((s, e) => s + e.payment, 0);
-    const totalPrinc = schedule.reduce((s, e) => s + e.principal, 0);
-    const totalInt = schedule.reduce((s, e) => s + e.interest, 0);
+    const totalPaid = sumMoney(schedule.map((e) => e.payment)).toNumber();
+    const totalPrinc = sumMoney(schedule.map((e) => e.principal)).toNumber();
+    const totalInt = sumMoney(schedule.map((e) => e.interest)).toNumber();
 
     return {
       instrument,
@@ -131,7 +134,7 @@ export class DebtScheduleEngine {
       totalInterest: totalInt,
       effectiveRate:
         instrument.principal > 0
-          ? (totalInt / instrument.principal) * (12 / instrument.termMonths)
+          ? roundTo(totalInt / instrument.principal, 6) * (12 / instrument.termMonths)
           : 0,
     };
   }
@@ -141,7 +144,7 @@ export class DebtScheduleEngine {
    */
   static consolidate(instruments: DebtInstrument[], ebitda?: number): ConsolidatedDebtSchedule {
     const results = instruments.map((i) => this.amortize(i));
-    const totalDebt = instruments.reduce((s, i) => s + i.principal, 0);
+    const totalDebt = sumMoney(instruments.map((i) => i.principal)).toNumber();
     const totalMonthlyPayment = results.reduce((s, r) => {
       const firstPayment = r.schedule[0]?.payment ?? 0;
       return s + firstPayment;
@@ -194,14 +197,17 @@ export class DebtScheduleEngine {
 
   private static calculatePayment(
     principal: number,
-    rate: number,
+    rate: import('decimal.js').Decimal,
     periods: number,
     type: DebtInstrument['amortizationType'],
     _balloon?: number
-  ): number {
-    if (type === 'interest_only' || type === 'bullet') return principal * rate;
-    if (rate === 0) return principal / periods;
-    return (principal * (rate * Math.pow(1 + rate, periods))) / (Math.pow(1 + rate, periods) - 1);
+  ): import('decimal.js').Decimal {
+    const p = toDecimal(principal);
+    if (type === 'interest_only' || type === 'bullet') return p.times(rate);
+    if (rate.isZero()) return p.div(periods);
+    // PMT = P * r * (1+r)^n / ((1+r)^n - 1), computed in exact decimal.
+    const factor = rate.plus(1).pow(periods);
+    return p.times(rate).times(factor).div(factor.minus(1));
   }
 
   private static getPeriodsPerYear(freq: DebtInstrument['paymentFrequency']): number {

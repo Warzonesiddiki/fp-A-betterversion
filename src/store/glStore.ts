@@ -10,7 +10,7 @@ import type {
   ImportResult,
 } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
-import { toCents } from '../utils/money';
+import { toCents, fromCents, formatMoney } from '../utils/money';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
@@ -547,10 +547,10 @@ export const useGLStore = create<GLState>()(
             if (imbalanceCents !== 0) {
               const label =
                 journalId === '__import_batch__' ? 'Import batch' : `Journal '${journalId}'`;
-              const imbalance = (Math.abs(imbalanceCents) / 100).toFixed(2);
+              const imbalance = formatMoney(fromCents(Math.abs(imbalanceCents)));
               errors.push(
-                `${label}: debits (${(group.debitCents / 100).toFixed(2)}) do not equal credits ` +
-                  `(${(group.creditCents / 100).toFixed(2)}); imbalance ${imbalance} ` +
+                `${label}: debits (${formatMoney(fromCents(group.debitCents))}) do not equal credits ` +
+                  `(${formatMoney(fromCents(group.creditCents))}); imbalance ${imbalance} ` +
                   `(rows ${group.rows.join(', ')})`
               );
               for (const row of group.rows) invalidRows.add(row - 1);

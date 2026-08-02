@@ -9,6 +9,7 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { GLEntry } from '@/types';
+import { roundTo } from '../utils/money';
 
 export interface InsuranceStats {
   grossWrittenPremium: number;
@@ -147,9 +148,9 @@ export class InsuranceEngine {
       const expenseRatio = 26 + sr(i * 3 + 1) * 3;
       return {
         month,
-        lossRatio: Number(lossRatio.toFixed(1)),
-        expenseRatio: Number(expenseRatio.toFixed(1)),
-        combined: Number((lossRatio + expenseRatio).toFixed(1)),
+        lossRatio: roundTo(lossRatio, 1),
+        expenseRatio: roundTo(expenseRatio, 1),
+        combined: roundTo(lossRatio + expenseRatio, 1),
       };
     });
   }

@@ -33,15 +33,17 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 24 of
-  190 engine/store modules** spanning the engines and store layers (`AllocationEngine`,
-  `ConsolidationEngine`, `ConstructionEngine`, `DepreciationEngine`, `FXEngine`, `FiscalCalendarEngine`,
-  `IntercompanyMatchingEngine`, `LoanAmortizationEngine`, `PeriodCloseStateMachine`, `ReconciliationEngine`, `RevRecEngine`,
-  `ReportBuilderEngine`, `SOXComplianceEngine`, `SignConventionEngine`, `ThreeStatementEngine`,
-  `ValidationEngine`, `WorkingCapitalEngine`, `report-builder-formulas`, and the `glStore`,
-  `glTrialBalanceStore`, `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores)
-  plus `SafeMathParser`. Across all financial paths (`src/engines`, `src/store`, `src/utils`,
-  `src/services`) adoption is 24 of 355 modules with 84 raw `toFixed(n)` sites remaining — run
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 41 of
+  261 engine/store modules** spanning the engines and store layers (e.g. `AllocationEngine`,
+  `BreakEvenEngine`, `CapExEngine`, `CashEngine`, `CashFlowWaterfallEngine`, `ConsolidationEngine`,
+  `ConstructionEngine`, `DebtScheduleEngine`, `DepreciationEngine`, `FXEngine`, `FiscalCalendarEngine`,
+  `IntercompanyMatchingEngine`, `LoanAmortizationEngine`, `PeriodCloseStateMachine`, `ReconciliationEngine`,
+  `ReportBuilderEngine`, `SOXComplianceEngine`, `SafeMathParser`, `SensitivityTableEngine`,
+  `SignConventionEngine`, `ThreeStatementEngine`, `ValidationEngine`, `WorkingCapitalEngine`,
+  `report-builder-formulas`, `report-builder-export`, and the `glStore`, `glTrialBalanceStore`,
+  `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores). Across all financial
+  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 47 of 360 modules
+  with **0** raw `toFixed(n)` sites remaining — run
   `npm run money:adoption` for the current measurement. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
   CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
@@ -74,7 +76,7 @@ FinPlan Pro follows a **strictly decoupled architecture** separating business lo
 │  └─ Components (284 non-test .tsx)         │
 ├─────────────────────────────────────────────┤
 │  State Management Layer                     │
-│  └─ Zustand Stores (39 stores)             │
+│  └─ Zustand Stores (41 stores)             │
 │  └─ Immer Middleware (immutable updates)   │
 ├─────────────────────────────────────────────┤
 │  Business Logic Layer                       │
@@ -92,7 +94,7 @@ FinPlan Pro follows a **strictly decoupled architecture** separating business lo
 | Directory            | Purpose                                     | Statistics                                            |
 | -------------------- | ------------------------------------------- | ----------------------------------------------------- |
 | `src/engines/`       | Financial calculation engines               | 190 top-level modules (105/181 unreferenced — F-0028) |
-| `src/store/`         | Zustand state stores with persistence       | 39 stores                                             |
+| `src/store/`         | Zustand state stores with persistence       | 41 stores                                             |
 | `src/pages/`         | Route-level containers (lazy-loaded)        | 195 page modules, 78 sector dirs                      |
 | `src/components/ui/` | Atomic UI primitives (barrel-exported)      | 128 components                                        |
 | `src/components/`    | Domain-specific components                  | 284 non-test components in total                      |

@@ -3,6 +3,8 @@
  * Part 6 #2: Turns report production from days to hours
  */
 
+import { formatMoney } from '../utils/money';
+
 interface LineItem {
   name: string;
   actual: number;
@@ -52,10 +54,10 @@ export class AutoCommentaryEngine {
     // Skip commentary for immaterial variances
     const threshold = context?.threshold ?? this.SIGNIFICANCE_THRESHOLD;
     if (absPct < threshold) {
-      return `${category} for ${period} was broadly in line with budget at ${fmt(actual)}, representing a ${absPct.toFixed(1)}% variance.`;
+      return `${category} for ${period} was broadly in line with budget at ${fmt(actual)}, representing a ${formatMoney(absPct, { places: 1 })}% variance.`;
     }
 
-    let commentary = `${category} for ${period} was ${fmt(actual)}, ${direction} budget by ${fmt(absVariance)} (${absPct.toFixed(1)}%).`;
+    let commentary = `${category} for ${period} was ${fmt(actual)}, ${direction} budget by ${fmt(absVariance)} (${formatMoney(absPct, { places: 1 })}%).`;
 
     // Add driver context if available
     if (context?.drivers && context.drivers.length > 0) {
@@ -71,7 +73,7 @@ export class AutoCommentaryEngine {
       const yoyChange = actual - context.priorYear;
       const yoyPct = context.priorYear !== 0 ? (yoyChange / Math.abs(context.priorYear)) * 100 : 0;
       const yoyDirection = yoyChange >= 0 ? 'increase' : 'decrease';
-      commentary += ` Compared to prior year (${fmt(context.priorYear)}), this represents a ${yoyDirection} of ${fmt(Math.abs(yoyChange))} (${Math.abs(yoyPct).toFixed(1)}%).`;
+      commentary += ` Compared to prior year (${fmt(context.priorYear)}), this represents a ${yoyDirection} of ${fmt(Math.abs(yoyChange))} (${formatMoney(Math.abs(yoyPct), { places: 1 })}%).`;
     }
 
     return commentary;
@@ -109,7 +111,7 @@ export class AutoCommentaryEngine {
 
     const topVariances = sortedByVariance.slice(0, 3).filter((v) => Math.abs(v.variancePct) > 3);
 
-    let narrative = `Total ${section} for ${period} was ${fmt(totalActual)}, ${direction} budget by ${fmt(Math.abs(totalVariance))} (${Math.abs(totalVariancePct).toFixed(1)}%).`;
+    let narrative = `Total ${section} for ${period} was ${fmt(totalActual)}, ${direction} budget by ${fmt(Math.abs(totalVariance))} (${formatMoney(Math.abs(totalVariancePct), { places: 1 })}%).`;
 
     if (topVariances.length > 0) {
       const varianceLines = topVariances.map((v) => {
@@ -126,7 +128,7 @@ export class AutoCommentaryEngine {
       const yoyChange = totalActual - totalPY;
       const yoyPct = totalPY !== 0 ? (yoyChange / Math.abs(totalPY)) * 100 : 0;
       const yoyDir = yoyChange >= 0 ? 'increase' : 'decrease';
-      narrative += ` Year-over-year, ${section} showed a ${yoyDir} of ${fmt(Math.abs(yoyChange))} (${Math.abs(yoyPct).toFixed(1)}%).`;
+      narrative += ` Year-over-year, ${section} showed a ${yoyDir} of ${fmt(Math.abs(yoyChange))} (${formatMoney(Math.abs(yoyPct), { places: 1 })}%).`;
     }
 
     return narrative;
@@ -244,14 +246,14 @@ export class AutoCommentaryEngine {
     const projectedPct =
       fullYearBudget !== 0 ? (projectedVariance / Math.abs(fullYearBudget)) * 100 : 0;
 
-    let outlook = `Based on year-to-date performance of ${fmt(ytdActual)} (${Math.abs(ytdPct).toFixed(1)}% ${ytdVariance >= 0 ? 'above' : 'below'} budget), `;
+    let outlook = `Based on year-to-date performance of ${fmt(ytdActual)} (${formatMoney(Math.abs(ytdPct), { places: 1 })}% ${ytdVariance >= 0 ? 'above' : 'below'} budget), `;
 
     if (Math.abs(projectedPct) < 3) {
       outlook += `${category} is expected to finish broadly in line with the full-year budget of ${fmt(fullYearBudget)}.`;
     } else if (projectedPct > 0) {
-      outlook += `${category} is projected to outperform budget by approximately ${fmt(Math.abs(projectedVariance))} (${Math.abs(projectedPct).toFixed(1)}%) for the full year.`;
+      outlook += `${category} is projected to outperform budget by approximately ${fmt(Math.abs(projectedVariance))} (${formatMoney(Math.abs(projectedPct), { places: 1 })}%) for the full year.`;
     } else {
-      outlook += `${category} is at risk of underperforming budget by approximately ${fmt(Math.abs(projectedVariance))} (${Math.abs(projectedPct).toFixed(1)}%) for the full year.`;
+      outlook += `${category} is at risk of underperforming budget by approximately ${fmt(Math.abs(projectedVariance))} (${formatMoney(Math.abs(projectedPct), { places: 1 })}%) for the full year.`;
     }
 
     if (drivers && drivers.length > 0) {

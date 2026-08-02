@@ -9,6 +9,8 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 
+import { toDecimal, roundTo, sumMoney, addMoney, subtractMoney, divideMoney } from '../utils/money';
+
 export interface CashFlowCategory {
   name: string;
   items: CashFlowItem[];
@@ -53,22 +55,25 @@ export class CashFlowWaterfallEngine {
     financing: CashFlowCategory,
     monthlyOpEx?: number
   ): CashFlowWaterfallResult {
+    // Money totals summed exactly with the money primitive (no float drift).
     const calcTotal = (cat: CashFlowCategory) =>
-      cat.items.reduce(
-        (sum, item) => sum + (item.type === 'inflow' ? item.amount : -item.amount),
-        0
-      );
+      sumMoney(
+        cat.items.map((item) =>
+          item.type === 'inflow' ? toDecimal(item.amount) : toDecimal(item.amount).neg()
+        )
+      ).toNumber();
 
     const operatingTotal = calcTotal(operating);
     const investingTotal = calcTotal(investing);
     const financingTotal = calcTotal(financing);
-    const netChange = operatingTotal + investingTotal + financingTotal;
-    const closingCash = openingCash + netChange;
-    const freeCashFlow = operatingTotal + investingTotal;
+    const netChange = roundTo(addMoney(addMoney(operatingTotal, investingTotal), financingTotal));
+    const closingCash = roundTo(addMoney(openingCash, netChange));
+    const freeCashFlow = roundTo(addMoney(operatingTotal, investingTotal));
 
     const operatingCashFlowRatio =
-      monthlyOpEx && monthlyOpEx > 0 ? operatingTotal / monthlyOpEx : 0;
-    const monthsOfCash = monthlyOpEx && monthlyOpEx > 0 ? closingCash / monthlyOpEx : 0;
+      monthlyOpEx && monthlyOpEx > 0 ? divideMoney(operatingTotal, monthlyOpEx).toNumber() : 0;
+    const monthsOfCash =
+      monthlyOpEx && monthlyOpEx > 0 ? divideMoney(closingCash, monthlyOpEx).toNumber() : 0;
     const burnRate = netChange < 0 ? Math.abs(netChange) : 0;
 
     return {
@@ -93,18 +98,18 @@ export class CashFlowWaterfallEngine {
     periods: Array<{ inflows: number; outflows: number }>
   ): CashFlowProjection[] {
     const projections: CashFlowProjection[] = [];
-    let balance = openingBalance;
+    let balance = toDecimal(openingBalance);
 
     periods.forEach((p, i) => {
-      const netFlow = p.inflows - p.outflows;
-      const closingBalance = balance + netFlow;
+      const netFlow = subtractMoney(p.inflows, p.outflows);
+      const closingBalance = balance.plus(netFlow);
       projections.push({
         period: `Period ${i + 1}`,
-        openingBalance: balance,
+        openingBalance: roundTo(balance),
         inflows: p.inflows,
         outflows: p.outflows,
-        netFlow,
-        closingBalance,
+        netFlow: roundTo(netFlow),
+        closingBalance: roundTo(closingBalance),
       });
       balance = closingBalance;
     });

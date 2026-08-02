@@ -1,3 +1,5 @@
+import { formatMoney } from './money';
+
 const EPSILON = 1e-9;
 
 /**
@@ -61,7 +63,7 @@ export function roundToTotal(
 }
 
 export function toFixedSafe(value: number, decimals: number): string {
-  return roundToDecimals(value, decimals).toFixed(decimals);
+  return formatMoney(value, { places: decimals });
 }
 
 export function parseFinite(value: string, fallback: number = 0): number {

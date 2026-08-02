@@ -22,6 +22,7 @@ import { createLogger } from '@/utils/logger';
 
 const pluginEngineLogger = createLogger('PluginEngine');
 
+import { formatMoney } from '../utils/money';
 import { storageGet, storageSet, storageRemove, storageAdapter } from '@/utils/storageAdapter';
 
 const CURRENT_VERSION = '1.0.0';
@@ -56,7 +57,7 @@ class PluginStorage {
     const sizeMb = new Blob([serialized]).size / (1024 * 1024);
     if (sizeMb > MAX_PLUGIN_STORAGE_MB) {
       throw new Error(
-        `Plugin storage limit exceeded: ${sizeMb.toFixed(1)}MB > ${MAX_PLUGIN_STORAGE_MB}MB`
+        `Plugin storage limit exceeded: ${formatMoney(sizeMb, { places: 1 })}MB > ${MAX_PLUGIN_STORAGE_MB}MB`
       );
     }
     storageSet(fullKey, serialized);

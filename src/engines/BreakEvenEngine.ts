@@ -13,6 +13,8 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
+import { addMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+
 export interface CostStructure {
   fixedCosts: number;
   variableCostPerUnit: number;
@@ -58,8 +60,11 @@ export class BreakEvenEngine {
     cost: CostStructure,
     actualUnits?: number
   ): BreakEvenResult {
-    const contributionMargin = pricePerUnit - cost.variableCostPerUnit;
-    const contributionMarginRatio = pricePerUnit > 0 ? contributionMargin / pricePerUnit : 0;
+    // All monetary arithmetic is routed through the canonical money primitive
+    // (decimal.js-backed) to avoid IEEE-754 drift on currency values.
+    const contributionMargin = subtractMoney(pricePerUnit, cost.variableCostPerUnit).toNumber();
+    const contributionMarginRatio =
+      pricePerUnit > 0 ? divideMoney(contributionMargin, pricePerUnit).toNumber() : 0;
 
     if (contributionMargin <= 0) {
       return {
@@ -74,16 +79,25 @@ export class BreakEvenEngine {
       };
     }
 
-    const breakEvenUnits = cost.fixedCosts / contributionMargin;
-    const breakEvenRevenue = breakEvenUnits * pricePerUnit;
+    const breakEvenUnits = divideMoney(cost.fixedCosts, contributionMargin).toNumber();
+    const breakEvenRevenue = multiplyMoney(breakEvenUnits, pricePerUnit).toNumber();
 
-    const marginOfSafetyUnits = actualUnits != null ? actualUnits - breakEvenUnits : 0;
+    const marginOfSafetyUnits =
+      actualUnits != null ? subtractMoney(actualUnits, breakEvenUnits).toNumber() : 0;
     const marginOfSafetyPercent =
-      actualUnits != null && actualUnits > 0 ? (marginOfSafetyUnits / actualUnits) * 100 : 0;
+      actualUnits != null && actualUnits > 0
+        ? divideMoney(marginOfSafetyUnits, actualUnits).times(100).toNumber()
+        : 0;
 
     const operatingLeverage =
       actualUnits != null && marginOfSafetyUnits !== 0
-        ? (actualUnits * contributionMargin) / (actualUnits * contributionMargin - cost.fixedCosts)
+        ? divideMoney(
+            multiplyMoney(actualUnits, contributionMargin).toNumber(),
+            subtractMoney(
+              multiplyMoney(actualUnits, contributionMargin).toNumber(),
+              cost.fixedCosts
+            ).toNumber()
+          ).toNumber()
         : 0;
 
     return {
@@ -106,12 +120,19 @@ export class BreakEvenEngine {
     cost: CostStructure,
     targetProfit: number
   ): ProfitTargetResult {
-    const contributionMargin = pricePerUnit - cost.variableCostPerUnit;
+    const contributionMargin = subtractMoney(pricePerUnit, cost.variableCostPerUnit).toNumber();
     if (contributionMargin <= 0) {
       return { requiredUnits: 0, requiredRevenue: 0, valid: false };
     }
-    const requiredUnits = (cost.fixedCosts + targetProfit) / contributionMargin;
-    return { requiredUnits, requiredRevenue: requiredUnits * pricePerUnit, valid: true };
+    const requiredUnits = divideMoney(
+      addMoney(cost.fixedCosts, targetProfit).toNumber(),
+      contributionMargin
+    ).toNumber();
+    return {
+      requiredUnits,
+      requiredRevenue: multiplyMoney(requiredUnits, pricePerUnit).toNumber(),
+      valid: true,
+    };
   }
 
   /**

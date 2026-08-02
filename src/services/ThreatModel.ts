@@ -1,3 +1,5 @@
+import { formatMoney } from '../utils/money';
+
 /**
  * ThreatModel — PATCH 10 (Hephaestus, FinPlan Pro v1.0.0, 2026-06-16)
  *
@@ -797,7 +799,7 @@ export class ThreatModel {
     lines.push('|---|---|---|---|---|---|---|---|');
     for (const t of allThreats) {
       lines.push(
-        `| ${t.id} | ${t.title} | ${t.category} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[t.category]}) | ${t.asset} | ${t.dreadMean.toFixed(2)} | ${t.riskLevel} | ${t.status} | ${t.mitigatedBy.join(', ') || '—'} |`
+        `| ${t.id} | ${t.title} | ${t.category} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[t.category]}) | ${t.asset} | ${formatMoney(t.dreadMean)} | ${t.riskLevel} | ${t.status} | ${t.mitigatedBy.join(', ') || '—'} |`
       );
     }
     lines.push('');
@@ -810,7 +812,7 @@ export class ThreatModel {
       for (const t of allThreats) {
         const s = t.dreadScore;
         lines.push(
-          `| ${t.id} | ${s.damage} | ${s.reproducibility} | ${s.exploitability} | ${s.affectedUsers} | ${s.discoverability} | ${t.dreadMean.toFixed(2)} |`
+          `| ${t.id} | ${s.damage} | ${s.reproducibility} | ${s.exploitability} | ${s.affectedUsers} | ${s.discoverability} | ${formatMoney(t.dreadMean)} |`
         );
       }
       lines.push('');
@@ -835,8 +837,8 @@ export class ThreatModel {
       lines.push(`**Total threats**: ${gap.totalThreats}`);
       lines.push(`**Total controls**: ${gap.totalControls}`);
       lines.push(`**Total mitigated**: ${gap.totalMitigated}`);
-      lines.push(`**Mitigation coverage**: ${(gap.coverage * 100).toFixed(1)}%`);
-      lines.push(`**Mean residual risk (DREAD)**: ${gap.meanResidualRisk.toFixed(2)}`);
+      lines.push(`**Mitigation coverage**: ${formatMoney(gap.coverage * 100, { places: 1 })}%`);
+      lines.push(`**Mean residual risk (DREAD)**: ${formatMoney(gap.meanResidualRisk)}`);
       lines.push('');
       lines.push('### Unmitigated Threats');
       lines.push('');
@@ -844,7 +846,9 @@ export class ThreatModel {
         lines.push('_None_');
       } else {
         for (const t of gap.unmitigatedThreats) {
-          lines.push(`- **${t.id}** (${t.riskLevel}, DREAD ${t.dreadMean.toFixed(2)}): ${t.title}`);
+          lines.push(
+            `- **${t.id}** (${t.riskLevel}, DREAD ${formatMoney(t.dreadMean)}): ${t.title}`
+          );
         }
       }
       lines.push('');
@@ -865,7 +869,7 @@ export class ThreatModel {
       } else {
         for (const t of gap.singleDefenseThreats) {
           lines.push(
-            `- **${t.id}** (${t.riskLevel}, DREAD ${t.dreadMean.toFixed(2)}): mitigated only by ${t.mitigatedBy[0]}`
+            `- **${t.id}** (${t.riskLevel}, DREAD ${formatMoney(t.dreadMean)}): mitigated only by ${t.mitigatedBy[0]}`
           );
         }
       }
@@ -877,7 +881,7 @@ export class ThreatModel {
       for (const cat of ['S', 'T', 'R', 'I', 'D', 'E'] as ThreatCategory[]) {
         const r = gap.riskByCategory[cat];
         lines.push(
-          `| ${cat} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[cat]}) | ${r.count} | ${r.meanDread.toFixed(2)} | ${r.maxDread.toFixed(2)} |`
+          `| ${cat} (${THREAT_MODEL_CONSTANTS.STRIDE_LABELS[cat]}) | ${r.count} | ${formatMoney(r.meanDread)} | ${formatMoney(r.maxDread)} |`
         );
       }
       lines.push('');
