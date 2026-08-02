@@ -5,6 +5,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
+import { useDebtStore } from '@/store/debtStore';
+import { actAs } from '@/test/rbacFixtures';
 
 // ---------------------------------------------------------------------------
 // Mock stores
@@ -148,5 +150,16 @@ describe('DebtSchedulePage smoke test', () => {
       </MemoryRouter>
     );
     expect(getByText(/Debt Schedule/i)).toBeInTheDocument();
+  });
+
+  it('displays the empty state when the debt store has no instruments (GAP-NEW-A)', () => {
+    actAs('Admin');
+    useDebtStore.getState().setInstruments([]);
+    const { getByText } = render(
+      <MemoryRouter>
+        <DebtSchedulePage />
+      </MemoryRouter>
+    );
+    expect(getByText(/No Data/i)).toBeInTheDocument();
   });
 });

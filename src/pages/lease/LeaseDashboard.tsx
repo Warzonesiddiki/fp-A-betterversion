@@ -22,6 +22,7 @@ import {
 import { ExportEngine } from '@/engines/ExportEngine';
 import { LeaseEngine, type LeaseContract } from '@/engines/LeaseEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useLeaseStore, type LeaseInput } from '@/store/leaseStore';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -45,16 +46,6 @@ function monthsBetween(a: Date, b: Date): number {
   return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
 }
 
-interface LeaseInput {
-  id: string;
-  property: string;
-  type: 'Operating' | 'Finance';
-  payment: number;
-  commencementDate: string;
-  leaseTerm: number;
-  discountRate: number;
-}
-
 interface LeaseSummary {
   id: string;
   property: string;
@@ -66,66 +57,11 @@ interface LeaseSummary {
   status: 'Active' | 'Expiring Soon' | 'Expired';
 }
 
-// Sample lease portfolio (inputs). monthlyPayment is the contractual payment;
-// liability below is COMPUTED by LeaseEngine.generateDisclosure (PV), and
-// status is DERIVED from endDate vs AS_OF — none of these are hardcoded.
-const LEASE_INPUTS: LeaseInput[] = [
-  {
-    id: 'L001',
-    property: 'HQ Office - Floor 12',
-    type: 'Finance',
-    payment: 45000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 48,
-    discountRate: 0.06,
-  },
-  {
-    id: 'L002',
-    property: 'Warehouse - East',
-    type: 'Operating',
-    payment: 28000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 36,
-    discountRate: 0.05,
-  },
-  {
-    id: 'L003',
-    property: 'Data Center - North',
-    type: 'Finance',
-    payment: 62000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 60,
-    discountRate: 0.06,
-  },
-  {
-    id: 'L004',
-    property: 'Retail - Downtown',
-    type: 'Operating',
-    payment: 18000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 24,
-    discountRate: 0.05,
-  },
-  {
-    id: 'L005',
-    property: 'Office - West Wing',
-    type: 'Finance',
-    payment: 35000,
-    commencementDate: '2024-01-01',
-    leaseTerm: 24,
-    discountRate: 0.06,
-  },
-  {
-    id: 'L006',
-    property: 'Lab Space - South',
-    type: 'Operating',
-    payment: 52000,
-    commencementDate: '2025-07-01',
-    leaseTerm: 12,
-    discountRate: 0.05,
-  },
-];
-
+// Lease inputs now live in the persisted leaseStore (useLeaseStore) so the
+// portfolio is real, editable user data with a reachable empty state. Each
+// lease's monthlyPayment is the contractual payment; liability is COMPUTED by
+// LeaseEngine.generateDisclosure (PV) and status is DERIVED from endDate vs
+// AS_OF — none are hardcoded at render time.
 function summarize(input: LeaseInput): LeaseSummary {
   const contract: LeaseContract = {
     id: input.id,
@@ -150,12 +86,12 @@ function summarize(input: LeaseInput): LeaseSummary {
   };
 }
 
-const LEASES: LeaseSummary[] = LEASE_INPUTS.map(summarize);
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
 
 export default function LeaseDashboard() {
   const navigate = useNavigate();
-
+  const leaseInputs = useLeaseStore((s) => s.leases);
+  const LEASES = useMemo(() => leaseInputs.map(summarize), [leaseInputs]);
   const activeLeases = LEASES.filter((l) => l.status === 'Active' || l.status === 'Expiring Soon');
   const totalLiability = activeLeases.reduce((s, l) => s + l.liability, 0);
   const totalMonthlyPayment = activeLeases.reduce((s, l) => s + l.monthlyPayment, 0);
@@ -198,8 +134,31 @@ export default function LeaseDashboard() {
         }
         return { month: monthDate.toLocaleString('en-US', { month: 'short' }), operating, finance };
       }),
-    []
+    [LEASES]
   );
+
+  if (leaseInputs.length === 0) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Lease Portfolio Dashboard</h1>
+            <p className="text-sm text-slate-400">Lease portfolio</p>
+          </div>
+          <Button size="sm" onClick={() => navigate('/lease/detail')}>
+            Add Lease <ArrowRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+        <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
+          <FileText className="h-10 w-10 mx-auto mb-3 text-slate-500" />
+          <p className="text-lg font-medium text-slate-300">No Lease Data</p>
+          <p className="text-sm text-slate-400 mt-1">
+            Add your first lease to see liability, payment and expiry analytics.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleExport = () => {
     void ExportEngine.exportToPDF(

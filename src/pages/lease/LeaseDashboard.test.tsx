@@ -40,6 +40,8 @@ vi.mock('lucide-react', () => {
 });
 
 import LeaseDashboard from '@/pages/lease/LeaseDashboard';
+import { useLeaseStore } from '@/store/leaseStore';
+import { actAs } from '@/test/rbacFixtures';
 
 describe('LeaseDashboard (BATCH-011 — rewire to LeaseEngine)', () => {
   it('renders without crashing', () => {
@@ -61,5 +63,16 @@ describe('LeaseDashboard (BATCH-011 — rewire to LeaseEngine)', () => {
     // Each row's liability is the engine-computed present value (LeaseEngine
     // is NOT mocked, so this exercises the real PV path).
     expect(getByTestId('liability-L001')).toBeInTheDocument();
+  });
+
+  it('displays the empty state when the lease store has no leases (GAP-NEW-A)', () => {
+    actAs('Admin');
+    useLeaseStore.getState().setLeases([]);
+    const { getByText } = render(
+      <MemoryRouter>
+        <LeaseDashboard />
+      </MemoryRouter>
+    );
+    expect(getByText(/No Lease Data/i)).toBeInTheDocument();
   });
 });

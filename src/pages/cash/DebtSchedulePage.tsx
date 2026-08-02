@@ -6,7 +6,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import { FileText, Table as TableIcon, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { DebtScheduleEngine, type DebtInstrument } from '@/engines/DebtScheduleEngine';
+import { DebtScheduleEngine } from '@/engines/DebtScheduleEngine';
 import {
   ResponsiveContainer,
   BarChart,
@@ -20,6 +20,7 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useDebtStore } from '@/store/debtStore';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -36,95 +37,25 @@ function addMonths(iso: string, months: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-/** Sample portfolio of debt instruments (inputs — like the depreciation asset
- * register). All schedule figures below are COMPUTED from these by
- * DebtScheduleEngine, never hardcoded. */
-interface DebtRow extends DebtInstrument {
-  lender: string;
-  displayType: string;
-  status: 'current' | 'watch' | 'past_due';
-}
-
-const DEBT_INSTRUMENTS: DebtRow[] = [
-  {
-    id: 'DEBT-001',
-    lender: 'Chase Bank',
-    displayType: 'Term Loan',
-    status: 'current',
-    name: 'Chase Term Loan',
-    principal: 15000000,
-    rate: 0.0525,
-    termMonths: 60,
-    startDate: '2026-01-01',
-    type: 'term_loan',
-    paymentFrequency: 'monthly',
-    amortizationType: 'fully_amortizing',
-  },
-  {
-    id: 'DEBT-002',
-    lender: 'Wells Fargo',
-    displayType: 'Revolving LOC',
-    status: 'current',
-    name: 'Wells Revolver',
-    principal: 8000000,
-    rate: 0.0475,
-    termMonths: 36,
-    startDate: '2026-01-01',
-    type: 'revolver',
-    paymentFrequency: 'monthly',
-    amortizationType: 'interest_only',
-  },
-  {
-    id: 'DEBT-003',
-    lender: 'Goldman Sachs',
-    displayType: 'Senior Notes',
-    status: 'current',
-    name: 'Goldman Senior Notes',
-    principal: 25000000,
-    rate: 0.065,
-    termMonths: 120,
-    startDate: '2026-01-01',
-    type: 'bond',
-    paymentFrequency: 'monthly',
-    amortizationType: 'bullet',
-  },
-  {
-    id: 'DEBT-004',
-    lender: 'Bank of America',
-    displayType: 'Equipment Finance',
-    status: 'current',
-    name: 'BoA Equipment Finance',
-    principal: 2500000,
-    rate: 0.0725,
-    termMonths: 48,
-    startDate: '2026-01-01',
-    type: 'term_loan',
-    paymentFrequency: 'monthly',
-    amortizationType: 'fully_amortizing',
-  },
-  {
-    id: 'DEBT-005',
-    lender: 'JP Morgan',
-    displayType: 'Bridge Loan',
-    status: 'watch',
-    name: 'JPM Bridge Loan',
-    principal: 10000000,
-    rate: 0.08,
-    termMonths: 24,
-    startDate: '2026-01-01',
-    type: 'term_loan',
-    paymentFrequency: 'monthly',
-    amortizationType: 'bullet',
-  },
-];
-
+/** Debt instruments live in the persisted debtStore (useDebtStore) so the
+ * portfolio is real, editable user data with a reachable empty state. All
+ * schedule figures are COMPUTED by DebtScheduleEngine, never hardcoded. */
 const EBITDA = 18000000;
 
-// REAL schedules + consolidated totals from the engine.
-const SCHEDULES = DEBT_INSTRUMENTS.map((i) => ({ row: i, result: DebtScheduleEngine.amortize(i) }));
-const CONSOLIDATED = DebtScheduleEngine.consolidate(DEBT_INSTRUMENTS, EBITDA);
-
 export default function DebtSchedulePage() {
+  const instruments = useDebtStore((s) => s.instruments);
+
+  // REAL schedules + consolidated totals from the engine, over the store's
+  // instrument portfolio.
+  const SCHEDULES = useMemo(
+    () => instruments.map((i) => ({ row: i, result: DebtScheduleEngine.amortize(i) })),
+    [instruments]
+  );
+  const CONSOLIDATED = useMemo(
+    () => DebtScheduleEngine.consolidate(instruments, EBITDA),
+    [instruments]
+  );
+
   const totalDebt = CONSOLIDATED.totalDebt;
   const weightedRate = CONSOLIDATED.weightedAverageRate * 100;
   const annualDebtService = CONSOLIDATED.totalMonthlyPayment * 12;
@@ -168,7 +99,7 @@ export default function DebtSchedulePage() {
       }
       return { year: String(baseYear + i), principal, interest, balance };
     });
-  }, []);
+  }, [SCHEDULES]);
 
   const columns: Column[] = useMemo(
     () => [
@@ -224,6 +155,26 @@ export default function DebtSchedulePage() {
     ],
     []
   );
+
+  if (instruments.length === 0) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Debt Schedule</h1>
+            <p className="text-sm text-slate-400 mt-1">Debt portfolio</p>
+          </div>
+        </div>
+        <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
+          <TableIcon className="h-10 w-10 mx-auto mb-3 text-slate-500" />
+          <p className="text-lg font-medium text-slate-300">No Data</p>
+          <p className="text-sm text-slate-400 mt-1">
+            Add debt instruments to see amortization, balance and DSCR analytics.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleExportPDF = () => {
     void ExportEngine.exportToPDF(
