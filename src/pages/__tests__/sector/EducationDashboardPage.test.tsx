@@ -40,6 +40,7 @@ describe('EducationDashboardPage', () => {
           debit: 0,
           credit: 100000,
           netChange: -100000,
+          amount: -100000,
           date: '2024-01-01',
         },
       ],

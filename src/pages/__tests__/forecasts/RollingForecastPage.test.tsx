@@ -65,6 +65,7 @@ describe('RollingForecastPage', () => {
           accountName: 'Revenue',
           debit: 0,
           credit: 10000,
+          amount: -10000,
           date: '2024-01-01',
           period: '2024-01',
         },

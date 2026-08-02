@@ -41,6 +41,7 @@ vi.mock('@/store/glStore', () => ({
         accountName: 'Salaries',
         debit: 100000,
         credit: 0,
+        amount: 100000,
         period: '2026-01',
         department: 'Engineering',
       },

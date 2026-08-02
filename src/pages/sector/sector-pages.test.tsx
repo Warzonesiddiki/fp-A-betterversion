@@ -1,9 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import type { GLEntry } from '@/types';
 
-// Mock entries — enough to bypass the empty-state early return
-const mockEntries = [
+// Mock entries — enough to bypass the empty-state early return. Typed as
+// GLEntry so the compiler rejects any fixture that omits the required
+// `amount` field (the $NaN class of defect — FIX-8).
+const mockEntries: GLEntry[] = [
   {
     id: '1',
     accountId: 'a1',
@@ -14,6 +17,7 @@ const mockEntries = [
     debit: 50000,
     credit: 0,
     netChange: 50000,
+    amount: 50000,
     date: '2026-01-15',
     description: 'Revenue',
     reference: 'REF-001',
@@ -28,6 +32,7 @@ const mockEntries = [
     debit: 0,
     credit: 120000,
     netChange: 120000,
+    amount: 120000,
     date: '2026-01-15',
     description: 'Revenue',
     reference: 'REF-002',
@@ -42,6 +47,7 @@ const mockEntries = [
     debit: 30000,
     credit: 0,
     netChange: 30000,
+    amount: 30000,
     date: '2026-01-15',
     description: 'COGS',
     reference: 'REF-003',
@@ -56,6 +62,7 @@ const mockEntries = [
     debit: 20000,
     credit: 0,
     netChange: 20000,
+    amount: 20000,
     date: '2026-01-15',
     description: 'OpEx',
     reference: 'REF-004',

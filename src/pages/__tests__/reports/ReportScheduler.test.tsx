@@ -30,6 +30,7 @@ vi.mock('@/store/glStore', () => ({
         debit: 0,
         credit: 10000,
         netChange: -10000,
+          amount: -10000,
         date: '2024-01-01',
       },
     ],

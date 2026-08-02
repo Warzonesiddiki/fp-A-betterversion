@@ -35,6 +35,7 @@ describe('ReportBookBuilder', () => {
           debit: 50000,
           credit: 0,
           netChange: 50000,
+            amount: 50000,
           date: '2024-01-01',
         },
       ],
