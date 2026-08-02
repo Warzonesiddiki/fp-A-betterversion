@@ -16,7 +16,7 @@ testable. Evidence = literal command output with date.
 | -------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | **GAP-7** (CI SHA-pinning) | **VERIFIED_DONE**                          | **FALSE — was NOT on `main`.** `architecture:guardrails` exited **1** with 52 unpinned refs | Literal (guardrails exit 1 on a clean checkout)        | Re-pinned via new reproducible script; **still unpushable** (see Blocker #1). Status honestly downgraded to BLOCKED. |
 | **GAP-3** (orphan engines) | IN_PROGRESS — "105/183 engines orphaned"   | **PREMISE WAS WRONG — 0 real orphans.** 103 of 105 reachable via the routed engine catalog  | Literal (corrected classifier + pre-existing suite)    | Fixed the measuring script, added 7 regression tests, closed the gap                                                 |
-| **GAP-1** (money)          | IN_PROGRESS — 13.06%, ~145 files remaining | **CONFIRMED OPEN** — genuine, now 15.0%                                                     | Literal (`money:adoption`, 129 new known-answer tests) | 7 more reachable engines migrated; every migration proven against the old float code                                 |
+| **GAP-1** (money)          | IN_PROGRESS — 13.06%, ~145 files remaining | **CONFIRMED OPEN** — genuine, now 15.83%                                                    | Literal (`money:adoption`, 183 new known-answer tests) | 10 more reachable engines migrated; every migration proven against the old float code                                |
 | **GAP-4** (period close)   | IN_PROGRESS — "E2E chain unproven"         | **CONFIRMED, now CLOSED** — and the mock DB was hiding weak assertions                      | Literal (24 new lifecycle tests, server 71→95)         | Full-lifecycle test + 4 mock-DB fidelity fixes that make existing tests STRICTER                                     |
 | **GAP-NEW-A** (lease)      | PARTIAL — data-entry form remaining        | **CONFIRMED, now CLOSED**                                                                   | Literal (29 new tests incl. 9 UI→store→dashboard)      | Real form + validation; page rewired to the store                                                                    |
 | **GAP-2** (server auth)    | VERIFIED_DONE                              | **RE-VERIFIED** — still green, and now stricter                                             | Literal (server suite 95 tests, exit 0)                | Mock-DB fixes removed vacuous WHERE-less assertions underneath it                                                    |
@@ -38,7 +38,7 @@ testable. Evidence = literal command output with date.
   - No raw `+ - * /` on currency-bearing values in engines/stores/services.
   - Every migrated function has a known-answer unit test (fixed inputs → exact decimals).
   - `npm run money:adoption` ratchet never regresses.
-- **progress this session:** adoption **13.06% → 15.00%** (47 → 54 modules); raw `toFixed` sites
+- **progress this session:** adoption **13.06% → 15.83%** (47 → 57 modules); raw `toFixed` sites
   remain **0**. Baseline lowered (ratcheted down, never up).
 - **engines migrated this session** (all REACHABLE — i.e. wired into real pages, so the drift was
   user-visible):
@@ -71,6 +71,15 @@ testable. Evidence = literal command output with date.
   - `COGSVarianceEngine` reported a **phantom unexplained variance of `-5.55e-17`** and flipped
     `accountedFor` to `false` — a spurious "unreconciled COGS" alarm caused purely by binary
     representation.
+  - **Intercompany balances that reconciled perfectly reported a residual difference.** In floats
+    `0.10 + 0.20` against `-0.30` left `5.551115123125783e-17`, so a clean IC position was flagged
+    out of balance — and an exactly offsetting match pair could be downgraded from `matched` to
+    `partial`.
+  - **A fully amortized lease did not close at zero.** Straight-line ROU depreciation left
+    `2.7e-12` on the final period, so a fully depreciated asset reported a non-zero balance.
+    `LeaseEngine` also now guarantees `payment = interest + reduction` on the REPORTED cents —
+    rounding both components independently breaks it (238.095 → 238.10 and 4761.905 → 4761.91 sum
+    to 5000.01 against a 5000.00 payment), so reduction is derived as the balancing figure.
   - `InventoryDashboard` rendered **`$NaN`** to users because its GLEntry test fixtures omitted the
     required `amount` field; the old float code summed `undefined` silently and every assertion
     passed anyway. The money primitive turned it into a loud `InvalidMoneyError` (LAW-3), which is
@@ -79,9 +88,12 @@ testable. Evidence = literal command output with date.
   `299.99999999999994` (should be exactly 300%), ARR `1201.1999999999998`, expected-loss provision
   `9000.000000000002`, weighted runway `19.799999999999997`.
 - **next_action:** continue engine-by-engine on the remaining ~34 reachable engines with raw
-  currency arithmetic (`ExportTemplateEngine`, `RealEstateEngine`, `ICMatchingEngine`,
-  `RetailEngine`, `MultiCurrencyEngine`, `LeaseEngine`, `DriverCascadeEngine`, `BondPricingEngine`
-  are the largest). Reachable engines first — their drift is user-visible.
+  currency arithmetic. Largest remaining: `FinancialInstrumentsEngine` (22), `RealEstateEngine`
+  (19), `RetailEngine` (17), `VarianceAttributionEngine` (11), `RatioAnalysisEngine` (11),
+  `ManufacturingEngine` (11), `TaxEngine` (10), `HealthcareEngine` (10). Reachable engines first —
+  their drift is user-visible.
+  Note: `ExportTemplateEngine` was screened and REJECTED as a false positive — its
+  arithmetic is PDF page geometry (margins, column widths), not money.
 - **known adjacent risk (logged, not yet fixed):** ~37 test files build `GLEntry` fixtures without
   the required `amount` field, the same class of defect fixed in `InventoryDashboard`. Most feed
   engines that do not read `amount`, so they are latent rather than active. They should be typed
@@ -243,28 +255,6 @@ testable. Evidence = literal command output with date.
 | FIX-12 | mock DB GL lock ignored the period date range                             | `allows a GL post once the period is reopened` test passes                         | 2026-08-02 |
 
 ---
-
-## PENDING PUSH (auth expired mid-session — do not lose)
-
-The GitHub token expired PART-WAY THROUGH this session. Commits `13cce1b`,
-`1cbff2e` and everything up to `f076fa0` pushed successfully; the token then went
-invalid (`gh auth status` → "The github.com token in GH_TOKEN is no longer valid";
-`git push` → "could not read Username ... terminal prompts disabled"). All quality
-gates PASSED before the push was attempted — only the network/auth step failed.
-
-Local commits on `arena/019fc250-fp-a-betterversion` not yet on the remote:
-
-- `b0b7da1` GAP-1: migrate COGSVarianceEngine + InventoryEngine
-- `5878b5f` GAP-1: migrate SaaSMetricsEngine + VarianceDecompositionEngine
-- `07c5e7f` GAP-3: correct the engine-reachability classifier
-- `678cc37` GAP-NEW-A: real lease data-entry path
-- `08794f0` GAP-4: period-close lifecycle test + mock-DB fidelity fixes
-- `976fb9b` GAP-1: migrate CreditRiskEngine
-- `d80b6c4` GAP_LEDGER: honest re-verification
-- `f134f88` docs: sync README money-adoption claim
-
-**Unblock:** reconnect GitHub in Arena, then
-`git push origin arena/019fc250-fp-a-betterversion`.
 
 ## True Blockers (valid escalation only)
 
