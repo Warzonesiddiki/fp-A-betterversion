@@ -8,7 +8,41 @@
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 14th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
+import type Decimal from 'decimal.js';
 import type { GLEntry } from '@/types';
+import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+
+/**
+ * Basel III capital adequacy and loan-loss figures are regulatory reporting
+ * outputs, so all arithmetic runs through the canonical money primitive
+ * (decimal.js, ROUND_HALF_UP). Balances round to cents; ratios are percentages
+ * rather than settleable money and keep more precision, but are still derived
+ * from exact decimals so they carry no IEEE-754 drift.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
+
+/** Exact sum of `amount` over the entries whose account code matches `prefix`. */
+function sumByPrefix(entries: readonly GLEntry[], prefix: string) {
+  return sumMoney(entries.filter((e) => e.accountCode.startsWith(prefix)).map((e) => e.amount));
+}
+
+/** Percentage `numerator / denominator × 100`, or 0 when the base is non-positive. */
+function ratioPct(numerator: Decimal, denominator: Decimal): number {
+  if (denominator.lte(0)) return 0;
+  return roundTo(divideMoney(numerator, denominator).times(100), RATIO_PLACES);
+}
+
+/**
+ * Basel III standardised risk weight for an asset account code.
+ * 11xx cash and 12xx government bonds are 0%; 131x mortgages are 50%;
+ * everything else defaults to the 100% corporate-exposure weight.
+ */
+function riskWeight(accountCode: string): string {
+  if (accountCode.startsWith('11') || accountCode.startsWith('12')) return '0';
+  if (accountCode.startsWith('131')) return '0.5';
+  return '1';
+}
 
 export interface BankingStats {
   reserveBalance: number;
@@ -41,33 +75,19 @@ export class BankingEngine {
    * - 92xx: Non-Performing Loan indicator accounts (off-balance sheet or sub-accounts)
    */
   static calculateLoanLossStats(entries: GLEntry[]): BankingStats {
-    const grossLoans = entries
-      .filter((e) => e.accountCode.startsWith('13'))
-      .reduce((acc, e) => acc + e.amount, 0);
-
-    const reserveBalance = Math.abs(
-      entries.filter((e) => e.accountCode.startsWith('215')).reduce((acc, e) => acc + e.amount, 0)
-    );
-
-    const nplBalance = entries
-      .filter((e) => e.accountCode.startsWith('92'))
-      .reduce((acc, e) => acc + e.amount, 0);
-
-    const provisionExpense = entries
-      .filter((e) => e.accountCode.startsWith('65'))
-      .reduce((acc, e) => acc + e.amount, 0);
-
-    const nplRatio = grossLoans > 0 ? (nplBalance / grossLoans) * 100 : 0;
-    const coverageRatio = nplBalance > 0 ? (reserveBalance / nplBalance) * 100 : 0;
+    const grossLoans = sumByPrefix(entries, '13');
+    const reserveBalance = sumByPrefix(entries, '215').abs();
+    const nplBalance = sumByPrefix(entries, '92');
+    const provisionExpense = sumByPrefix(entries, '65');
 
     return {
-      reserveBalance,
-      grossLoans,
-      nplBalance,
-      nplRatio,
-      coverageRatio,
+      reserveBalance: roundTo(reserveBalance, CURRENCY_PLACES),
+      grossLoans: roundTo(grossLoans, CURRENCY_PLACES),
+      nplBalance: roundTo(nplBalance, CURRENCY_PLACES),
+      nplRatio: ratioPct(nplBalance, grossLoans),
+      coverageRatio: ratioPct(reserveBalance, nplBalance),
       netChargeOffs: 0, // Needs specific transaction type detection
-      provisionExpense,
+      provisionExpense: roundTo(provisionExpense, CURRENCY_PLACES),
     };
   }
 
@@ -84,43 +104,23 @@ export class BankingEngine {
    *   - Corporate Loans (132x): 100%
    */
   static calculateCapitalStats(entries: GLEntry[]): CapitalStats {
-    const cet1 = entries
-      .filter((e) => e.accountCode.startsWith('31'))
-      .reduce((acc, e) => acc + e.amount, 0);
+    const cet1 = sumByPrefix(entries, '31');
+    const at1 = sumByPrefix(entries, '32');
+    const tier2 = sumByPrefix(entries, '33');
 
-    const at1 = entries
-      .filter((e) => e.accountCode.startsWith('32'))
-      .reduce((acc, e) => acc + e.amount, 0);
+    const tier1Capital = cet1.plus(at1);
+    const totalCapital = tier1Capital.plus(tier2);
 
-    const tier2 = entries
-      .filter((e) => e.accountCode.startsWith('33'))
-      .reduce((acc, e) => acc + e.amount, 0);
+    // Risk Weighted Assets (RWA) — Basel III standardised risk weights.
+    const assetEntries = entries.filter((e) => e.accountCode.startsWith('1'));
+    const totalAssets = sumMoney(assetEntries.map((e) => e.amount));
+    const rwa = sumMoney(
+      assetEntries.map((e) => multiplyMoney(e.amount, riskWeight(e.accountCode)))
+    );
 
-    const tier1Capital = cet1 + at1;
-    const totalCapital = tier1Capital + tier2;
-
-    // Calculate Risk Weighted Assets (RWA)
-    let rwa = 0;
-    let totalAssets = 0;
-
-    entries.forEach((e) => {
-      const amount = e.amount;
-      if (e.accountCode.startsWith('1')) {
-        totalAssets += amount;
-
-        if (e.accountCode.startsWith('11') || e.accountCode.startsWith('12')) {
-          rwa += amount * 0; // 0% weight
-        } else if (e.accountCode.startsWith('131')) {
-          rwa += amount * 0.5; // 50% weight
-        } else {
-          rwa += amount * 1.0; // 100% default weight
-        }
-      }
-    });
-
-    const tier1Ratio = rwa > 0 ? (tier1Capital / rwa) * 100 : 0;
-    const totalRatio = rwa > 0 ? (totalCapital / rwa) * 100 : 0;
-    const leverageRatio = totalAssets > 0 ? (tier1Capital / totalAssets) * 100 : 0;
+    const tier1Ratio = ratioPct(tier1Capital, rwa);
+    const totalRatio = ratioPct(totalCapital, rwa);
+    const leverageRatio = ratioPct(tier1Capital, totalAssets);
 
     // Generate trend data from monthly entries (recursive call handled carefully)
     const periods = Array.from(new Set(entries.map((e) => e.date.substring(0, 7)))).sort();
@@ -128,39 +128,26 @@ export class BankingEngine {
       const pEntries = entries.filter((e) => e.date.startsWith(period));
 
       // Manual calc to avoid infinite recursion
-      const pCet1 = pEntries
-        .filter((e) => e.accountCode.startsWith('31'))
-        .reduce((acc, e) => acc + e.amount, 0);
-      const pAt1 = pEntries
-        .filter((e) => e.accountCode.startsWith('32'))
-        .reduce((acc, e) => acc + e.amount, 0);
-      const pTier2 = pEntries
-        .filter((e) => e.accountCode.startsWith('33'))
-        .reduce((acc, e) => acc + e.amount, 0);
-      const pT1 = pCet1 + pAt1;
-      const pTotal = pT1 + pTier2;
-
-      let pRwa = 0;
-      pEntries.forEach((e) => {
-        if (e.accountCode.startsWith('1')) {
-          if (e.accountCode.startsWith('11') || e.accountCode.startsWith('12')) pRwa += 0;
-          else if (e.accountCode.startsWith('131')) pRwa += e.amount * 0.5;
-          else pRwa += e.amount;
-        }
-      });
+      const pT1 = sumByPrefix(pEntries, '31').plus(sumByPrefix(pEntries, '32'));
+      const pTotal = pT1.plus(sumByPrefix(pEntries, '33'));
+      const pRwa = sumMoney(
+        pEntries
+          .filter((e) => e.accountCode.startsWith('1'))
+          .map((e) => multiplyMoney(e.amount, riskWeight(e.accountCode)))
+      );
 
       return {
         name: period,
-        tier1: pRwa > 0 ? (pT1 / pRwa) * 100 : 0,
-        total: pRwa > 0 ? (pTotal / pRwa) * 100 : 0,
+        tier1: ratioPct(pT1, pRwa),
+        total: ratioPct(pTotal, pRwa),
       };
     });
 
     return {
-      tier1Capital,
-      tier2Capital: tier2,
-      totalCapital,
-      rwa,
+      tier1Capital: roundTo(tier1Capital, CURRENCY_PLACES),
+      tier2Capital: roundTo(tier2, CURRENCY_PLACES),
+      totalCapital: roundTo(totalCapital, CURRENCY_PLACES),
+      rwa: roundTo(rwa, CURRENCY_PLACES),
       tier1Ratio,
       totalRatio,
       leverageRatio,
@@ -185,35 +172,21 @@ export class BankingEngine {
     costOfFunds: number;
     trend: number[];
   } {
-    const interestInc = entries
-      .filter((e) => e.accountCode.startsWith('41'))
-      .reduce((s, e) => s + e.amount, 0);
+    const interestInc = sumByPrefix(entries, '41');
+    const interestExp = sumByPrefix(entries, '61').abs();
+    const avgEarningAssets = sumByPrefix(entries, '1');
+    const avgInterestLiabilities = sumByPrefix(entries, '2').abs();
 
-    const interestExp = Math.abs(
-      entries.filter((e) => e.accountCode.startsWith('61')).reduce((s, e) => s + e.amount, 0)
-    );
-
-    const avgEarningAssets = entries
-      .filter((e) => e.accountCode.startsWith('1'))
-      .reduce((acc, e) => acc + e.amount, 0);
-
-    const avgInterestLiabilities = Math.abs(
-      entries.filter((e) => e.accountCode.startsWith('2')).reduce((acc, e) => acc + e.amount, 0)
-    );
-
-    const nim =
-      avgEarningAssets > 0 ? (((interestInc - interestExp) * 12) / avgEarningAssets) * 100 : 0;
-    const yieldOnAssets = avgEarningAssets > 0 ? ((interestInc * 12) / avgEarningAssets) * 100 : 0;
-    const costOfFunds =
-      avgInterestLiabilities > 0 ? ((interestExp * 12) / avgInterestLiabilities) * 100 : 0;
+    // Annualised (×12) margin and yield figures.
+    const netInterest = subtractMoney(interestInc, interestExp);
 
     return {
-      interestIncome: interestInc,
-      interestExpense: interestExp,
-      netInterestMargin: nim,
-      earningAssets: avgEarningAssets,
-      yieldOnAssets,
-      costOfFunds,
+      interestIncome: roundTo(interestInc, CURRENCY_PLACES),
+      interestExpense: roundTo(interestExp, CURRENCY_PLACES),
+      netInterestMargin: ratioPct(netInterest.times(12), avgEarningAssets),
+      earningAssets: roundTo(avgEarningAssets, CURRENCY_PLACES),
+      yieldOnAssets: ratioPct(interestInc.times(12), avgEarningAssets),
+      costOfFunds: ratioPct(interestExp.times(12), avgInterestLiabilities),
       trend: [3.12, 3.18, 3.25, 3.31],
     };
   }
