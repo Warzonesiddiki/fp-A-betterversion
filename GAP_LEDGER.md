@@ -48,13 +48,15 @@ testable. Evidence = literal command output with date.
     ValidationEngine, SensitivityTableEngine, financialFormatting, AutoCommentaryEngine,
     InsuranceEngine, ReportBuilderEngine, AnomalyDetectionEngine, FinanceCopilotEngine,
     AnomalyExplainer, ExcelImportEngine, SafeMathParser, decimalUtils, ThreatModel, etc.
-    **Raw `toFixed` sites in production financial paths: 84 → 0.** Adoption **6.7% → 12.01%**
-    (24 → 43 modules). Known-answer tests added (ConstructionEngine, BreakEvenEngine). Surfaced +
-    fixed a real NaN bug in VarianceCommentaryPanel (LAW-3). Full client suite green
-    (911 files / 10989 tests, exit 0). **Remaining GAP-1 work:** migrate raw arithmetic operators
-    on currency values — audit found **~152 files** doing `+ - * /` on currency-bearing values
-    without the money primitive (ratchet tracks toFixed only). BreakEvenEngine migrated as a
-    model; full coverage is a multi-week effort.
+    **Raw `toFixed` sites in production financial paths: 84 → 0.** Adoption **6.7% → 12.5%**
+    (24 → 45 modules). Known-answer tests added (ConstructionEngine, BreakEvenEngine,
+    DebtScheduleEngine cents-exact). Surfaced + fixed a real NaN bug in VarianceCommentaryPanel
+    (LAW-3). Migrated raw currency arithmetic to the money primitive in: BreakEvenEngine,
+    DebtScheduleEngine (amortization, decimal-exact), DepreciationEngine, CapExEngine. Full
+    client suite green (913 files / 11002 tests, exit 0). **Remaining GAP-1 work:** migrate raw
+    arithmetic operators on currency values — audit found **~150 files** doing `+ - * /` on
+    currency-bearing values without the money primitive (ratchet tracks toFixed only). Full
+    coverage is a multi-week effort.
 - **next_action:** Continue migrating raw currency arithmetic engine-by-engine (model:
   BreakEvenEngine) with known-answer tests; re-run money:adoption per file.
 
