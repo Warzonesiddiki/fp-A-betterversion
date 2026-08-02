@@ -13,7 +13,14 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 23rd engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03): budget line-item amounts, submission totals
+ * and consolidation sums flow through the canonical money primitive
+ * (src/utils/money.ts, decimal.js, ROUND_HALF_UP), cent-rounded. No raw
+ * + - * / on currency values remains.
  */
+
+import { roundTo, sumMoney } from '../utils/money';
 
 export type CollectionStatus =
   | 'pending'
@@ -86,7 +93,7 @@ export class BudgetCollectionEngine {
 
   submit(data: Omit<BudgetSubmission, 'id' | 'status' | 'totalAmount'>): BudgetSubmission {
     const id = `sub-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    const totalAmount = data.lineItems.reduce((s, l) => s + l.amount, 0);
+    const totalAmount = roundTo(sumMoney(data.lineItems.map((l) => l.amount)));
     const submission: BudgetSubmission = {
       ...data,
       id,
@@ -164,7 +171,8 @@ export class BudgetCollectionEngine {
     const merged = new Map<string, number>();
     for (const s of subs) {
       for (const item of s.lineItems) {
-        merged.set(item.accountCode, (merged.get(item.accountCode) || 0) + item.amount);
+        const prev = merged.get(item.accountCode) ?? 0;
+        merged.set(item.accountCode, roundTo(sumMoney([prev, item.amount])));
       }
     }
     return Array.from(merged.entries()).map(([code, amount]) => ({
