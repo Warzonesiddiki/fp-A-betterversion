@@ -5,13 +5,7 @@
  * MONEY MIGRATION (2026-08-02): All adjustment amounts now use src/utils/money.ts.
  * Results are cent-rounded. No raw + - * / on amounts.
  */
-import {
-  addMoney,
-  multiplyMoney,
-  roundTo,
-  subtractMoney,
-  toDecimal,
-} from '../utils/money';
+import { addMoney, multiplyMoney, roundTo, subtractMoney, toDecimal } from '../utils/money';
 
 interface ConsolidationEntry {
   id: string;
@@ -127,7 +121,9 @@ export class ConsolidationAdjustmentsEngine {
         .reduce((s, e) => addMoney(s, e.amount), toDecimal(0))
     );
     const totalNCI = roundTo(
-      periodEntries.filter((e) => e.type === 'nci').reduce((s, e) => addMoney(s, e.amount), toDecimal(0))
+      periodEntries
+        .filter((e) => e.type === 'nci')
+        .reduce((s, e) => addMoney(s, e.amount), toDecimal(0))
     );
     const totalAdjustments = roundTo(
       periodEntries

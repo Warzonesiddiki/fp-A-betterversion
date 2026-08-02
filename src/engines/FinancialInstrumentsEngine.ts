@@ -14,6 +14,15 @@
  * accruedInterest/expectedLoss are money and are cent-rounded. No raw + - * / on amounts.
  */
 
+import {
+  addMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  toDecimal,
+  roundTo,
+} from '../utils/money';
+
 export interface BondPricingResult {
   price: number;
   yield: number;
@@ -310,7 +319,10 @@ export class FinancialInstrumentsEngine {
     const nd = toDecimal(netDebt);
     const shares = toDecimal(sharesOutstanding);
 
-    const terminalValueDec = divideMoney(multiplyMoney(lastFCF, addMoney(1, g)), subtractMoney(r, g));
+    const terminalValueDec = divideMoney(
+      multiplyMoney(lastFCF, addMoney(1, g)),
+      subtractMoney(r, g)
+    );
     const terminalValue = roundTo(terminalValueDec);
 
     let pvFCFsDec = toDecimal(0);
@@ -318,9 +330,10 @@ export class FinancialInstrumentsEngine {
       const fcf = toDecimal(freeCashFlows[i]!);
       pvFCFsDec = addMoney(pvFCFsDec, divideMoney(fcf, Math.pow(1 + r.toNumber(), i + 1)));
     }
-    const pvFCFs = roundTo(pvFCFsDec);
 
-    const pvTerminal = roundTo(divideMoney(terminalValueDec, Math.pow(1 + r.toNumber(), freeCashFlows.length)));
+    const pvTerminal = roundTo(
+      divideMoney(terminalValueDec, Math.pow(1 + r.toNumber(), freeCashFlows.length))
+    );
     const enterpriseValueDec = addMoney(pvFCFsDec, pvTerminal);
     const enterpriseValue = roundTo(enterpriseValueDec);
     const equityValue = roundTo(subtractMoney(enterpriseValueDec, nd)) / shares.toNumber(); // equity per share

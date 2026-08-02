@@ -6,7 +6,6 @@ import {
   roundTo,
   subtractMoney,
   sumMoney,
-  toDecimal,
 } from '../utils/money';
 
 /**
@@ -139,7 +138,9 @@ export class RealEstateEngine {
       ffo: roundTo(ffo, CURRENCY_PLACES),
       affo: roundTo(affo, CURRENCY_PLACES),
       navPerShare: roundTo(divideMoney(nav, 1_000_000), RATIO_PLACES), // Assuming 1M shares for scale
-      payoutRatio: ffo.lte(0) ? 0 : roundTo(multiplyMoney(divideMoney(dividends, ffo), 100), RATIO_PLACES),
+      payoutRatio: ffo.lte(0)
+        ? 0
+        : roundTo(multiplyMoney(divideMoney(dividends, ffo), 100), RATIO_PLACES),
       dividendYield: 5.42, // Mocked
     };
   }
