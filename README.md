@@ -33,8 +33,8 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 76 of
-  360 financial-path modules** spanning the engines and store layers (e.g. `AllocationEngine`,
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 70 of
+  226 engine/store modules** spanning the engines and store layers (e.g. `AllocationEngine`,
   `BankingEngine`, `BreakEvenEngine`, `COGSVarianceEngine`, `CapExEngine`, `CashEngine`,
   `CashFlowWaterfallEngine`, `ConsolidationEngine`, `ConstructionEngine`, `CreditRiskEngine`,
   `DebtScheduleEngine`, `DepreciationEngine`, `FXEngine`, `FiscalCalendarEngine`,
