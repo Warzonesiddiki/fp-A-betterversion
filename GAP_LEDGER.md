@@ -38,7 +38,7 @@ testable. Evidence = literal command output with date.
   - No raw `+ - * /` on currency-bearing values in engines/stores/services.
   - Every migrated function has a known-answer unit test (fixed inputs → exact decimals).
   - `npm run money:adoption` ratchet never regresses.
-- **progress this session:** adoption **13.06% → 16.39%** (47 → 59 modules); raw `toFixed` sites
+- **progress this session:** adoption **16.39% → 16.67%** (59 → 60 modules); raw `toFixed` sites
   remain **0**. Baseline lowered (ratcheted down, never up).
 - **engines migrated this session** (all REACHABLE — i.e. wired into real pages, so the drift was
   user-visible):
@@ -57,6 +57,7 @@ testable. Evidence = literal command output with date.
   | `MultiCurrencyEngine`         | 10    | ASC 830 FX translation + remeasurement           |
   | `RealEstateEngine`            | 19    | REIT metrics — NOI, cap rate, FFO/AFFO, NAV, LTV |
   | `RetailEngine`                | 17    | store-level P&L, rankings, margin reporting      |
+  | `FinancialInstrumentsEngine`  | 22    | Bond/loan pricing, DCF, expected loss            |
 
 - **evidence — every migration was falsified against the OLD code before being accepted.** Each
   new `*.money.test.ts` was run against the pre-migration implementation and had to FAIL:

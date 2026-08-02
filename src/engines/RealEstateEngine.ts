@@ -1,11 +1,22 @@
 import type { GLEntry } from '@/types';
-import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '../utils/money';
 
 /**
  * REIT and property-portfolio figures (NOI, cap rate, FFO/AFFO, NAV, LTV) are
  * reported metrics, so all arithmetic runs through the canonical money
  * primitive (decimal.js, ROUND_HALF_UP). Amounts round to cents; percentages
  * and per-share figures keep more precision but derive from exact decimals.
+ *
+ * MONEY MIGRATION (2026-08-02): Fully migrated — all currency paths now use
+ * src/utils/money.ts with cent rounding. No raw + - * / on amounts.
  */
 const CURRENCY_PLACES = 2;
 const RATIO_PLACES = 10;
@@ -69,10 +80,10 @@ export class RealEstateEngine {
     return {
       costBasis: roundTo(costBasis, CURRENCY_PLACES),
       marketValue: roundTo(marketValue, CURRENCY_PLACES),
-      unrealizedGain: roundTo(marketValue.minus(costBasis), CURRENCY_PLACES),
+      unrealizedGain: roundTo(subtractMoney(marketValue, costBasis), CURRENCY_PLACES),
       ltv: marketValue.lte(0)
         ? 0
-        : roundTo(divideMoney(totalDebt, marketValue).times(100), RATIO_PLACES),
+        : roundTo(multiplyMoney(divideMoney(totalDebt, marketValue), 100), RATIO_PLACES),
       totalProperties,
       avgHoldingPeriod: 4.2, // Mocked for now
     };
@@ -88,7 +99,7 @@ export class RealEstateEngine {
       occupancy: 94.8, // Mocked
       capRate:
         portfolio.marketValue > 0
-          ? roundTo(divideMoney(noi, portfolio.marketValue).times(100), RATIO_PLACES)
+          ? roundTo(multiplyMoney(divideMoney(noi, portfolio.marketValue), 100), RATIO_PLACES)
           : 0,
     };
   }
@@ -109,13 +120,16 @@ export class RealEstateEngine {
     const interest = sumByPrefix(entries, '70');
     const dividends = sumByPrefix(entries, '80').abs();
 
-    const netIncome = rentalIncome.minus(opex).minus(depAmort).minus(interest);
+    const netIncome = subtractMoney(
+      subtractMoney(subtractMoney(rentalIncome, opex), depAmort),
+      interest
+    );
 
     // FFO = Net Income + Depreciation + Amortization
-    const ffo = netIncome.plus(depAmort);
+    const ffo = addMoney(netIncome, depAmort);
 
     // AFFO = FFO - Maintenance CapEx (assuming 10% of revenue as mock CapEx)
-    const affo = ffo.minus(multiplyMoney(rentalIncome, '0.1'));
+    const affo = subtractMoney(ffo, multiplyMoney(rentalIncome, '0.1'));
 
     // NAV = (Market Value - Total Debt) / Shares
     const portfolio = this.calculatePortfolioStats(entries);
@@ -125,7 +139,7 @@ export class RealEstateEngine {
       ffo: roundTo(ffo, CURRENCY_PLACES),
       affo: roundTo(affo, CURRENCY_PLACES),
       navPerShare: roundTo(divideMoney(nav, 1_000_000), RATIO_PLACES), // Assuming 1M shares for scale
-      payoutRatio: ffo.lte(0) ? 0 : roundTo(divideMoney(dividends, ffo).times(100), RATIO_PLACES),
+      payoutRatio: ffo.lte(0) ? 0 : roundTo(multiplyMoney(divideMoney(dividends, ffo), 100), RATIO_PLACES),
       dividendYield: 5.42, // Mocked
     };
   }

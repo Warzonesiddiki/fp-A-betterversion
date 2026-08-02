@@ -7,6 +7,11 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 29th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-02): ALL currency arithmetic now uses src/utils/money.ts.
+ * All results are rounded to cents (ROUND_HALF_UP). Ratios (yield, duration, convexity, etc.)
+ * are left as high-precision floats — they are not money. DCF/loan/bond prices and
+ * accruedInterest/expectedLoss are money and are cent-rounded. No raw + - * / on amounts.
  */
 
 export interface BondPricingResult {
@@ -59,16 +64,21 @@ export class FinancialInstrumentsEngine {
     periodsToMaturity: number,
     periodsPerYear: number = 2
   ): number {
-    const coupon = (faceValue * couponRate) / periodsPerYear;
-    const ytm = yieldToMaturity / periodsPerYear;
-    const n = periodsToMaturity * periodsPerYear;
+    const face = toDecimal(faceValue);
+    const cpnRate = toDecimal(couponRate);
+    const ytmRate = toDecimal(yieldToMaturity);
+    const periods = toDecimal(periodsPerYear);
 
-    let price = 0;
+    const coupon = divideMoney(multiplyMoney(face, cpnRate), periods);
+    const ytm = divideMoney(ytmRate, periods);
+    const n = Number(multiplyMoney(toDecimal(periodsToMaturity), periods));
+
+    let price = toDecimal(0);
     for (let t = 1; t <= n; t++) {
-      price += coupon / Math.pow(1 + ytm, t);
+      price = addMoney(price, divideMoney(coupon, Math.pow(1 + ytm.toNumber(), t)));
     }
-    price += faceValue / Math.pow(1 + ytm, n);
-    return price;
+    price = addMoney(price, divideMoney(face, Math.pow(1 + ytm.toNumber(), n)));
+    return roundTo(price);
   }
 
   static bondYTM(
@@ -166,7 +176,12 @@ export class FinancialInstrumentsEngine {
     daysInCouponPeriod: number,
     periodsPerYear: number = 2
   ): number {
-    return ((faceValue * couponRate) / periodsPerYear) * (daysSinceLastCoupon / daysInCouponPeriod);
+    const face = toDecimal(faceValue);
+    const cpnRate = toDecimal(couponRate);
+    const periods = toDecimal(periodsPerYear);
+    const couponPerPeriod = divideMoney(multiplyMoney(face, cpnRate), periods);
+    const fraction = toDecimal(daysSinceLastCoupon).div(toDecimal(daysInCouponPeriod));
+    return roundTo(multiplyMoney(couponPerPeriod, fraction));
   }
 
   // ---------------------------------------------------------------------------
@@ -179,25 +194,30 @@ export class FinancialInstrumentsEngine {
     termMonths: number,
     _startDate?: Date
   ): AmortizationEntry[] {
-    const monthlyRate = annualRate / 12;
-    const payment =
-      (principal * (monthlyRate * Math.pow(1 + monthlyRate, termMonths))) /
-      (Math.pow(1 + monthlyRate, termMonths) - 1);
+    const p = toDecimal(principal);
+    const r = divideMoney(toDecimal(annualRate), 12);
+    const n = toDecimal(termMonths);
+    const onePlusR = toDecimal(1).plus(r);
+    const factor = multiplyMoney(r, onePlusR.pow(n.toNumber()));
+    const denom = subtractMoney(onePlusR.pow(n.toNumber()), 1);
+    const paymentDec = divideMoney(multiplyMoney(p, factor), denom);
+    const payment = roundTo(paymentDec);
 
     const schedule: AmortizationEntry[] = [];
-    let balance = principal;
+    let balance = p;
 
     for (let period = 1; period <= termMonths; period++) {
-      const interest = balance * monthlyRate;
-      const principalPaid = payment - interest;
-      balance -= principalPaid;
+      const interestDec = multiplyMoney(balance, r);
+      const interest = roundTo(interestDec);
+      const principalPaid = roundTo(subtractMoney(paymentDec, interestDec));
+      balance = subtractMoney(balance, principalPaid);
 
       schedule.push({
         period,
         payment,
         principal: principalPaid,
         interest,
-        balance: Math.max(0, balance),
+        balance: Math.max(0, roundTo(balance)),
       });
     }
 
@@ -205,11 +225,14 @@ export class FinancialInstrumentsEngine {
   }
 
   static loanPayment(principal: number, annualRate: number, termMonths: number): number {
-    const monthlyRate = annualRate / 12;
-    return (
-      (principal * (monthlyRate * Math.pow(1 + monthlyRate, termMonths))) /
-      (Math.pow(1 + monthlyRate, termMonths) - 1)
-    );
+    const p = toDecimal(principal);
+    const r = divideMoney(toDecimal(annualRate), 12);
+    const n = toDecimal(termMonths);
+    const onePlusR = toDecimal(1).plus(r);
+    const factor = multiplyMoney(r, onePlusR.pow(n.toNumber()));
+    const denom = subtractMoney(onePlusR.pow(n.toNumber()), 1);
+    const payment = divideMoney(multiplyMoney(p, factor), denom);
+    return roundTo(payment);
   }
 
   // ---------------------------------------------------------------------------
@@ -281,23 +304,32 @@ export class FinancialInstrumentsEngine {
     netDebt: number,
     sharesOutstanding: number
   ): DCFResult {
-    const lastFCF = freeCashFlows[freeCashFlows.length - 1];
-    const terminalValue = (lastFCF! * (1 + terminalGrowthRate)) / (wacc - terminalGrowthRate);
+    const lastFCF = toDecimal(freeCashFlows[freeCashFlows.length - 1]!);
+    const g = toDecimal(terminalGrowthRate);
+    const r = toDecimal(wacc);
+    const nd = toDecimal(netDebt);
+    const shares = toDecimal(sharesOutstanding);
 
-    let pvFCFs = 0;
+    const terminalValueDec = divideMoney(multiplyMoney(lastFCF, addMoney(1, g)), subtractMoney(r, g));
+    const terminalValue = roundTo(terminalValueDec);
+
+    let pvFCFsDec = toDecimal(0);
     for (let i = 0; i < freeCashFlows.length; i++) {
-      pvFCFs += freeCashFlows![i]! / Math.pow(1 + wacc, i + 1);
+      const fcf = toDecimal(freeCashFlows[i]!);
+      pvFCFsDec = addMoney(pvFCFsDec, divideMoney(fcf, Math.pow(1 + r.toNumber(), i + 1)));
     }
+    const pvFCFs = roundTo(pvFCFsDec);
 
-    const pvTerminal = terminalValue / Math.pow(1 + wacc, freeCashFlows.length);
-    const enterpriseValue = pvFCFs + pvTerminal;
-    const equityValue = (enterpriseValue - netDebt) / sharesOutstanding;
+    const pvTerminal = roundTo(divideMoney(terminalValueDec, Math.pow(1 + r.toNumber(), freeCashFlows.length)));
+    const enterpriseValueDec = addMoney(pvFCFsDec, pvTerminal);
+    const enterpriseValue = roundTo(enterpriseValueDec);
+    const equityValue = roundTo(subtractMoney(enterpriseValueDec, nd)) / shares.toNumber(); // equity per share
 
     return {
       freeCashFlows,
       terminalValue,
       enterpriseValue,
-      equityValue,
+      equityValue: roundTo(equityValue),
       wacc,
     };
   }
@@ -358,6 +390,9 @@ export class FinancialInstrumentsEngine {
     lossGivenDefault: number,
     exposureAtDefault: number
   ): number {
-    return probabilityOfDefault * lossGivenDefault * exposureAtDefault;
+    const pd = toDecimal(probabilityOfDefault);
+    const lgd = toDecimal(lossGivenDefault);
+    const ead = toDecimal(exposureAtDefault);
+    return roundTo(multiplyMoney(multiplyMoney(pd, lgd), ead));
   }
 }
