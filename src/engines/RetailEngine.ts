@@ -1,11 +1,22 @@
 import type { GLEntry } from '@/types';
-import { roundTo, sumMoney, subtractMoney, divideMoney } from '../utils/money';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '../utils/money';
 
 /**
  * Store-level P&L figures (revenue, COGS, gross/net profit) are reported
  * amounts, so all arithmetic runs through the canonical money primitive
  * (decimal.js, ROUND_HALF_UP) and rounds to cents. Margin percentages keep more
  * precision but derive from exact decimals.
+ *
+ * MONEY MIGRATION (2026-08-02): Fully migrated — all currency paths now use
+ * src/utils/money.ts with cent rounding. No raw + - * / on amounts.
  */
 const CURRENCY_PLACES = 2;
 const RATIO_PLACES = 10;
