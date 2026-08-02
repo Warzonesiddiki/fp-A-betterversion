@@ -66,6 +66,12 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
   );
 }
 
+// NOTE (GAP-1): `amount` is REQUIRED on GLEntry and is the field
+// InventoryEngine reads. This fixture previously omitted it, so the engine
+// summed `undefined` and the page rendered "$NaN" — the assertions passed
+// anyway because none of them looked at the number. The money-primitive
+// migration turned that silent NaN into a loud InvalidMoneyError, which is
+// how the defective fixture was found. Amounts below mirror netChange.
 const mockEntries = [
   {
     id: '1',
@@ -74,6 +80,7 @@ const mockEntries = [
     debit: 50000,
     credit: 0,
     netChange: 50000,
+    amount: 50000,
     period: '2023-01',
     description: 'desc',
     currency: 'USD',
@@ -87,6 +94,7 @@ const mockEntries = [
     debit: 10000,
     credit: 0,
     netChange: 10000,
+    amount: 10000,
     period: '2023-01',
     description: 'desc2',
     currency: 'USD',
@@ -100,6 +108,7 @@ const mockEntries = [
     debit: 0,
     credit: 20000,
     netChange: -20000,
+    amount: -20000,
     period: '2023-01',
     description: 'desc3',
     currency: 'USD',

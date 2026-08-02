@@ -109,15 +109,17 @@ describe('MultiCurrencyEngine', () => {
     });
 
     it('should calculate translation gain when close rate > avg rate', () => {
+      // Net income 4,000 x a 0.05 rate move = exactly 200.00.
+      // The previous expectation recomputed `4000 * (1.25 - 1.2)` in floats,
+      // which is 200.00000000000017 — it asserted the drift, not the answer.
       const result = MultiCurrencyEngine.convertIncomeStatement(10000, 6000, 1.2, 1.25);
-      const netIncomeLocal = 4000;
-      expect(result.translationGainLoss).toBe(netIncomeLocal * (1.25 - 1.2));
+      expect(result.translationGainLoss).toBe(200);
     });
 
     it('should calculate translation loss when close rate < avg rate', () => {
+      // Float `4000 * (1.15 - 1.2)` is -200.00000000000017.
       const result = MultiCurrencyEngine.convertIncomeStatement(10000, 6000, 1.2, 1.15);
-      const netIncomeLocal = 4000;
-      expect(result.translationGainLoss).toBe(netIncomeLocal * (1.15 - 1.2));
+      expect(result.translationGainLoss).toBe(-200);
     });
 
     it('should handle zero revenue and expenses', () => {

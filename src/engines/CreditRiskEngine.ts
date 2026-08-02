@@ -10,6 +10,21 @@
  */
 // Credit Risk Engine — PD, LGD, EAD, expected loss, credit scoring
 
+import { roundTo, subtractMoney, multiplyMoney, divideMoney, addMoney } from '../utils/money';
+
+/**
+ * Expected loss and exposure at default are provisioning amounts that post to
+ * the P&L, so they run through the canonical money primitive (decimal.js,
+ * ROUND_HALF_UP) and round to cents. LGD is a ratio in [0,1] and keeps more
+ * precision, but is still derived from exact decimals.
+ *
+ * The credit SCORE is a heuristic index, not money — it deliberately stays in
+ * float arithmetic, and scoreToPD is a logistic function whose Math.exp is
+ * irrational by nature.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
+
 export interface CreditScore {
   score: number;
   rating: string;
@@ -26,18 +41,23 @@ export interface Financials {
 }
 
 export class CreditRiskEngine {
+  /** Expected loss = PD x LGD x EAD, rounded to cents (it is a provision). */
   static expectedLoss(pd: number, lgd: number, ead: number): number {
-    return pd * lgd * ead;
+    return roundTo(multiplyMoney(pd, lgd).times(ead), CURRENCY_PLACES);
   }
 
+  /** Loss given default = 1 - recovery rate, clamped to [0, 1]. */
   static lossGivenDefault(collateralValue: number, exposure: number): number {
     if (exposure <= 0) return 0;
-    const recovery = Math.min(collateralValue, exposure) / exposure;
-    return Math.max(0, 1 - recovery);
+    const recovery = divideMoney(Math.min(collateralValue, exposure), exposure);
+    const lgd = subtractMoney(1, recovery);
+    return lgd.isNegative() ? 0 : roundTo(lgd, RATIO_PLACES);
   }
 
+  /** Exposure at default = drawn + undrawn x credit conversion factor. */
   static exposureAtDefault(commitment: number, drawn: number, ccf: number): number {
-    return drawn + (commitment - drawn) * ccf;
+    const undrawn = subtractMoney(commitment, drawn);
+    return roundTo(addMoney(drawn, undrawn.times(ccf)), CURRENCY_PLACES);
   }
 
   static probabilityOfDefault(financials: Financials): number {

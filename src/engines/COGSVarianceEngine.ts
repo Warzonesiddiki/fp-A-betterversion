@@ -9,6 +9,16 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { GLEntry } from '@/types';
+import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+
+/**
+ * Standard-costing variances settle against the GL, so every figure here is
+ * money and runs through the canonical money primitive (decimal.js,
+ * ROUND_HALF_UP) rather than raw IEEE-754 arithmetic. Amounts round to cents;
+ * the variance percentage keeps more precision because it is a ratio.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
 
 export class COGSVarianceEngine {
   static computePurchasePriceVariance(
@@ -16,7 +26,10 @@ export class COGSVarianceEngine {
     actualPrice: number,
     actualQuantity: number
   ): number {
-    return (standardPrice - actualPrice) * actualQuantity;
+    return roundTo(
+      multiplyMoney(subtractMoney(standardPrice, actualPrice), actualQuantity),
+      CURRENCY_PLACES
+    );
   }
 
   static computeUsageVariance(
@@ -24,7 +37,10 @@ export class COGSVarianceEngine {
     actualQuantity: number,
     standardPrice: number
   ): number {
-    return (standardQuantity - actualQuantity) * standardPrice;
+    return roundTo(
+      multiplyMoney(subtractMoney(standardQuantity, actualQuantity), standardPrice),
+      CURRENCY_PLACES
+    );
   }
 
   static computeEfficiencyVariance(
@@ -32,7 +48,10 @@ export class COGSVarianceEngine {
     standardHours: number,
     standardRate: number
   ): number {
-    return (standardHours - actualHours) * standardRate;
+    return roundTo(
+      multiplyMoney(subtractMoney(standardHours, actualHours), standardRate),
+      CURRENCY_PLACES
+    );
   }
 
   static computeVolumeVariance(
@@ -40,7 +59,10 @@ export class COGSVarianceEngine {
     budgetedVolume: number,
     standardOverheadRate: number
   ): number {
-    return (actualVolume - budgetedVolume) * standardOverheadRate;
+    return roundTo(
+      multiplyMoney(subtractMoney(actualVolume, budgetedVolume), standardOverheadRate),
+      CURRENCY_PLACES
+    );
   }
 
   static computeTotalCOGSVariance(params: {
@@ -51,18 +73,21 @@ export class COGSVarianceEngine {
     efficiencyVariance: number;
     volumeVariance: number;
   }): { totalVariance: number; accountedFor: boolean; unexplained: number } {
-    const totalVariance = params.standardCost - params.actualCost;
-    const identified =
-      params.priceVariance +
-      params.usageVariance +
-      params.efficiencyVariance +
-      params.volumeVariance;
-    const unexplained = totalVariance - identified;
+    const totalVariance = subtractMoney(params.standardCost, params.actualCost);
+    const identified = sumMoney([
+      params.priceVariance,
+      params.usageVariance,
+      params.efficiencyVariance,
+      params.volumeVariance,
+    ]);
+    const unexplained = totalVariance.minus(identified);
 
     return {
-      totalVariance,
-      accountedFor: Math.abs(unexplained) < 0.01,
-      unexplained,
+      totalVariance: roundTo(totalVariance, CURRENCY_PLACES),
+      // "Fully accounted for" means the residual is below half a cent, i.e. it
+      // disappears at the precision the ledger actually settles at.
+      accountedFor: unexplained.abs().lt('0.01'),
+      unexplained: roundTo(unexplained, CURRENCY_PLACES),
     };
   }
 
@@ -80,31 +105,33 @@ export class COGSVarianceEngine {
     totalVariance: number;
     breakdown: Array<{ name: string; value: number }>;
   } {
-    const actualCOGS = Math.abs(
-      entries.filter((e) => e.accountCode.startsWith('5')).reduce((acc, e) => acc + e.amount, 0)
-    );
-    const standardCOGS = actualCOGS * 0.95; // Assuming 5% unfavorable variance default
+    const actualCOGS = sumMoney(
+      entries.filter((e) => e.accountCode.startsWith('5')).map((e) => e.amount)
+    ).abs();
+    const standardCOGS = multiplyMoney(actualCOGS, '0.95'); // Assuming 5% unfavorable variance default
 
-    // Decompose mock variances for UI
-    const priceVar = -actualCOGS * 0.02;
-    const usageVar = -actualCOGS * 0.015;
-    const efficiencyVar = actualCOGS * 0.005;
-    const volumeVar = standardCOGS - actualCOGS - (priceVar + usageVar + efficiencyVar);
-
-    const variance = standardCOGS - actualCOGS;
-    const variancePercent = standardCOGS > 0 ? (variance / standardCOGS) * 100 : 0;
+    // Decompose mock variances for UI. Volume is the balancing figure, so it is
+    // derived from the exact decimals — that keeps the four components summing
+    // back to the total variance instead of leaving a float residue.
+    const priceVar = multiplyMoney(actualCOGS, '-0.02');
+    const usageVar = multiplyMoney(actualCOGS, '-0.015');
+    const efficiencyVar = multiplyMoney(actualCOGS, '0.005');
+    const variance = standardCOGS.minus(actualCOGS);
+    const volumeVar = variance.minus(sumMoney([priceVar, usageVar, efficiencyVar]));
 
     return {
-      actualCOGS,
-      standardCOGS,
-      variance,
-      variancePercent,
-      totalVariance: variance,
+      actualCOGS: roundTo(actualCOGS, CURRENCY_PLACES),
+      standardCOGS: roundTo(standardCOGS, CURRENCY_PLACES),
+      variance: roundTo(variance, CURRENCY_PLACES),
+      variancePercent: standardCOGS.lte(0)
+        ? 0
+        : roundTo(divideMoney(variance, standardCOGS).times(100), RATIO_PLACES),
+      totalVariance: roundTo(variance, CURRENCY_PLACES),
       breakdown: [
-        { name: 'Price', value: priceVar },
-        { name: 'Usage', value: usageVar },
-        { name: 'Efficiency', value: efficiencyVar },
-        { name: 'Volume', value: volumeVar },
+        { name: 'Price', value: roundTo(priceVar, CURRENCY_PLACES) },
+        { name: 'Usage', value: roundTo(usageVar, CURRENCY_PLACES) },
+        { name: 'Efficiency', value: roundTo(efficiencyVar, CURRENCY_PLACES) },
+        { name: 'Volume', value: roundTo(volumeVar, CURRENCY_PLACES) },
       ],
     };
   }

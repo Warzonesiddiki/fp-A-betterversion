@@ -1,6 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { GLEntry } from '@/types';
 import type { ICPair, EliminationEntry } from './ConsolidationEngine';
+import { toDecimal, roundTo, sumMoney, subtractMoney, divideMoney } from '../utils/money';
+
+/**
+ * Intercompany balances must eliminate to ZERO on consolidation, so every
+ * amount here runs through the canonical money primitive (decimal.js,
+ * ROUND_HALF_UP). Amounts round to cents; percentage differences keep more
+ * precision but derive from exact decimals.
+ *
+ * This matters more than usual: in floats a PERFECTLY reconciled pair
+ * (0.10 + 0.20 against -0.30) reported a residual difference of 5.55e-17, so a
+ * clean intercompany position looked out of balance.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
 
 // =============================================================================
 // INTERCOMPANY MATCHING ENGINE
@@ -186,8 +200,9 @@ export class ICMatchingEngine {
 
         const absSource = Math.abs(source.amount);
         const absTarget = Math.abs(target.amount);
-        const amountDiff = Math.abs(absSource - absTarget);
-        const pctDiff = absSource > 0 ? (amountDiff / absSource) * 100 : 0;
+        const amountDiff = roundTo(subtractMoney(absSource, absTarget).abs(), CURRENCY_PLACES);
+        const pctDiff =
+          absSource > 0 ? roundTo(divideMoney(amountDiff, absSource).times(100), RATIO_PLACES) : 0;
         const dateDiff = Math.abs(
           Math.floor((new Date(source.date).getTime() - new Date(target.date).getTime()) / 86400000)
         );
@@ -215,9 +230,12 @@ export class ICMatchingEngine {
       if (bestMatch) {
         const absSource = Math.abs(source.amount);
         const absTarget = Math.abs(bestMatch.target.amount);
-        const amountDiff = Math.abs(absSource - absTarget);
-        const pctDiff = absSource > 0 ? (amountDiff / absSource) * 100 : 0;
+        const amountDiff = roundTo(subtractMoney(absSource, absTarget).abs(), CURRENCY_PLACES);
+        const pctDiff =
+          absSource > 0 ? roundTo(divideMoney(amountDiff, absSource).times(100), RATIO_PLACES) : 0;
 
+        // `amountDiff === 0` is now a MEANINGFUL test: in floats an exactly
+        // offsetting pair could differ by ~1e-13 and be downgraded to 'partial'.
         const status: MatchStatus = amountDiff === 0 ? 'matched' : 'partial';
 
         matches.push({
@@ -253,8 +271,9 @@ export class ICMatchingEngine {
   manualMatch(source: ICTransaction, target: ICTransaction): MatchPair {
     const absSource = Math.abs(source.amount);
     const absTarget = Math.abs(target.amount);
-    const amountDiff = Math.abs(absSource - absTarget);
-    const pctDiff = absSource > 0 ? (amountDiff / absSource) * 100 : 0;
+    const amountDiff = roundTo(subtractMoney(absSource, absTarget).abs(), CURRENCY_PLACES);
+    const pctDiff =
+      absSource > 0 ? roundTo(divideMoney(amountDiff, absSource).times(100), RATIO_PLACES) : 0;
     const dateDiff = Math.abs(
       Math.floor((new Date(source.date).getTime() - new Date(target.date).getTime()) / 86400000)
     );
@@ -305,10 +324,17 @@ export class ICMatchingEngine {
       matchedCount: matched.length,
       partiallyMatchedCount: partial.length,
       unmatchedCount,
-      matchedAmount: matched.reduce((s, m) => s + Math.abs(m.source.amount), 0),
-      partiallyMatchedAmount: partial.reduce((s, m) => s + Math.abs(m.source.amount), 0),
+      matchedAmount: roundTo(
+        sumMoney(matched.map((m) => toDecimal(m.source.amount).abs())),
+        CURRENCY_PLACES
+      ),
+      partiallyMatchedAmount: roundTo(
+        sumMoney(partial.map((m) => toDecimal(m.source.amount).abs())),
+        CURRENCY_PLACES
+      ),
       unmatchedAmount: 0, // computed from unmatched transactions
-      matchRate: total > 0 ? (matchedIds.size / total) * 100 : 0,
+      matchRate:
+        total > 0 ? roundTo(divideMoney(matchedIds.size, total).times(100), RATIO_PLACES) : 0,
     };
   }
 
@@ -338,10 +364,17 @@ export class ICMatchingEngine {
         .find((e) => e.entityId === entityB)!
         .entries.filter((e) => e.accountCode === accountCode && e.entityId === entityB);
 
-      const balanceA = entriesA.reduce((s, e) => s + (e.amount ?? e.netChange ?? 0), 0);
-      const balanceB = entriesB.reduce((s, e) => s + (e.amount ?? e.netChange ?? 0), 0);
-      const diff = Math.abs(balanceA + balanceB); // IC should net to 0
-      const pctDiff = Math.abs(balanceA) > 0 ? (diff / Math.abs(balanceA)) * 100 : 0;
+      const balanceAD = sumMoney(entriesA.map((e) => e.amount ?? e.netChange ?? 0));
+      const balanceBD = sumMoney(entriesB.map((e) => e.amount ?? e.netChange ?? 0));
+      const balanceA = roundTo(balanceAD, CURRENCY_PLACES);
+      const balanceB = roundTo(balanceBD, CURRENCY_PLACES);
+      // IC should net to 0. Computed on exact decimals so a genuinely balanced
+      // pair reports 0 rather than a float residue.
+      const diffD = balanceAD.plus(balanceBD).abs();
+      const diff = roundTo(diffD, CURRENCY_PLACES);
+      const pctDiff = balanceAD.isZero()
+        ? 0
+        : roundTo(divideMoney(diffD, balanceAD.abs()).times(100), RATIO_PLACES);
       const withinTolerance =
         diff <= this.tolerance.amountTolerance && pctDiff <= this.tolerance.percentageTolerance;
 

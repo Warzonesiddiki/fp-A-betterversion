@@ -1,4 +1,22 @@
+import type Decimal from 'decimal.js';
 import type { ScenarioMetrics, GLEntry } from '@/types';
+import {
+  toDecimal,
+  roundTo,
+  sumMoney,
+  addMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+} from '../utils/money';
+
+/**
+ * Currency amounts are rounded to cents; ratio/margin/percentage outputs keep
+ * more precision (they are ratios, not settleable money) but are still produced
+ * by exact decimal arithmetic so they do not inherit IEEE-754 drift.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
 
 export interface Distribution {
   name: string;
@@ -41,32 +59,38 @@ export interface ScenarioDriver {
 
 export class ScenarioEngine {
   static calculateBaseMetrics(entries: GLEntry[]): ScenarioMetrics {
-    const revenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
+    // All monetary arithmetic is routed through the canonical money primitive
+    // (decimal.js-backed) so GL sums and derived metrics carry no IEEE-754 drift.
+    const netOf = (prefix: string) =>
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith(prefix))
+          .map((e) => subtractMoney(e.debit, e.credit))
+      );
 
-    const cogs = entries
-      .filter((e) => (e.accountCode || '').startsWith('5'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    const revenue = netOf('4');
+    const cogs = netOf('5').abs();
+    const opex = netOf('6').abs();
 
-    const opex = entries
-      .filter((e) => (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-
-    const grossProfit = revenue - cogs;
-    const ebitda = grossProfit - opex;
+    const grossProfit = revenue.minus(cogs);
+    const ebitda = grossProfit.minus(opex);
     const netIncome = ebitda; // Simplified for scenario modeling
 
     return {
-      revenue: Math.abs(revenue),
-      ebitda: ebitda,
-      netIncome: netIncome,
-      cashFlow: ebitda * 0.8, // Simplified cash conversion
+      revenue: roundTo(revenue.abs(), CURRENCY_PLACES),
+      ebitda: roundTo(ebitda, CURRENCY_PLACES),
+      netIncome: roundTo(netIncome, CURRENCY_PLACES),
+      // Simplified cash conversion (80% of EBITDA).
+      cashFlow: roundTo(multiplyMoney(ebitda, '0.8'), CURRENCY_PLACES),
       headcount: 100, // Mocked base headcount
-      burnRate: opex / 12,
+      burnRate: roundTo(divideMoney(opex, 12), CURRENCY_PLACES),
       runway: 18,
-      grossMargin: revenue !== 0 ? (grossProfit / revenue) * 100 : 0,
-      ebitdaMargin: revenue !== 0 ? (ebitda / revenue) * 100 : 0,
+      grossMargin: revenue.isZero()
+        ? 0
+        : roundTo(divideMoney(grossProfit, revenue).times(100), RATIO_PLACES),
+      ebitdaMargin: revenue.isZero()
+        ? 0
+        : roundTo(divideMoney(ebitda, revenue).times(100), RATIO_PLACES),
     };
   }
 
@@ -100,32 +124,46 @@ export class ScenarioEngine {
       }
     }
 
-    const result = { ...base };
+    // Accumulate in exact decimals; round to cents once at the end so a chain
+    // of driver applications cannot compound float error.
+    let revenue = toDecimal(base.revenue, 'base.revenue');
+    let ebitda = toDecimal(base.ebitda, 'base.ebitda');
+    let grossMargin = toDecimal(base.grossMargin, 'base.grossMargin');
+    const baseRevenue = toDecimal(base.revenue, 'base.revenue');
 
     drivers
       .filter((d) => d.isActive)
       .forEach((driver) => {
-        const multiplier = driver.impactType === 'percentage' ? 1 + driver.value / 100 : 1;
-        const absolute = driver.impactType === 'absolute' ? driver.value : 0;
+        const multiplier =
+          driver.impactType === 'percentage'
+            ? addMoney(1, divideMoney(driver.value, 100))
+            : toDecimal(1);
+        const absolute = driver.impactType === 'absolute' ? toDecimal(driver.value) : toDecimal(0);
 
         switch (driver.type) {
           case 'revenue':
-            result.revenue = result.revenue * multiplier + absolute;
+            revenue = revenue.times(multiplier).plus(absolute);
             break;
           case 'expense':
-            result.ebitda -= base.revenue * (multiplier - 1) + absolute;
+            ebitda = ebitda.minus(baseRevenue.times(multiplier.minus(1)).plus(absolute));
             break;
           case 'margin':
-            result.grossMargin = result.grossMargin + driver.value;
+            grossMargin = grossMargin.plus(toDecimal(driver.value));
             break;
         }
       });
 
     // Recalculate margins and net income based on adjusted revenue/ebitda
-    result.netIncome = result.ebitda;
-    result.ebitdaMargin = result.revenue !== 0 ? (result.ebitda / result.revenue) * 100 : 0;
-
-    return result;
+    return {
+      ...base,
+      revenue: roundTo(revenue, CURRENCY_PLACES),
+      ebitda: roundTo(ebitda, CURRENCY_PLACES),
+      netIncome: roundTo(ebitda, CURRENCY_PLACES),
+      grossMargin: roundTo(grossMargin, RATIO_PLACES),
+      ebitdaMargin: revenue.isZero()
+        ? 0
+        : roundTo(divideMoney(ebitda, revenue).times(100), RATIO_PLACES),
+    };
   }
 
   static monteCarlo(
@@ -232,17 +270,19 @@ export class ScenarioEngine {
     inputs: SensitivityInput[]
   ): { name: string; lowImpact: ScenarioMetrics; highImpact: ScenarioMetrics }[] {
     return inputs.map((input) => {
-      const ratioLow = input.baseValue === 0 ? 1 : input.lowValue / input.baseValue;
-      const ratioHigh = input.baseValue === 0 ? 1 : input.highValue / input.baseValue;
+      const base = toDecimal(input.baseValue, 'baseValue');
+      const ratioLow = base.isZero() ? toDecimal(1) : divideMoney(input.lowValue, base);
+      const ratioHigh = base.isZero() ? toDecimal(1) : divideMoney(input.highValue, base);
 
-      const apply = (metrics: ScenarioMetrics, ratio: number): ScenarioMetrics => ({
-        revenue: metrics.revenue * ratio,
-        ebitda: metrics.ebitda * ratio,
-        netIncome: metrics.netIncome * ratio,
-        cashFlow: metrics.cashFlow * ratio,
-        headcount: Math.round(metrics.headcount * ratio),
-        burnRate: metrics.burnRate * ratio,
-        runway: metrics.runway / ratio,
+      const apply = (metrics: ScenarioMetrics, ratio: Decimal): ScenarioMetrics => ({
+        revenue: roundTo(multiplyMoney(metrics.revenue, ratio), CURRENCY_PLACES),
+        ebitda: roundTo(multiplyMoney(metrics.ebitda, ratio), CURRENCY_PLACES),
+        netIncome: roundTo(multiplyMoney(metrics.netIncome, ratio), CURRENCY_PLACES),
+        cashFlow: roundTo(multiplyMoney(metrics.cashFlow, ratio), CURRENCY_PLACES),
+        headcount: Math.round(multiplyMoney(metrics.headcount, ratio).toNumber()),
+        burnRate: roundTo(multiplyMoney(metrics.burnRate, ratio), CURRENCY_PLACES),
+        // A zero ratio makes runway undefined; surface it rather than emitting Infinity.
+        runway: ratio.isZero() ? 0 : roundTo(divideMoney(metrics.runway, ratio), RATIO_PLACES),
         grossMargin: metrics.grossMargin,
         ebitdaMargin: metrics.ebitdaMargin,
       });
@@ -283,35 +323,49 @@ export class ScenarioEngine {
       };
     }
 
-    const totalProb = scenarios.reduce((acc, s) => acc + s.probability, 0);
-    const weight = totalProb === 0 ? 0 : 1 / totalProb;
+    const totalProb = sumMoney(scenarios.map((s) => s.probability));
 
-    const result = {
-      revenue: 0,
-      ebitda: 0,
-      netIncome: 0,
-      cashFlow: 0,
-      headcount: 0,
-      burnRate: 0,
-      runway: 0,
-      grossMargin: 0,
-      ebitdaMargin: 0,
+    // Probability-weighted expectation. Weights are normalised by the exact
+    // probability total, so scenarios that do not sum to 1 still combine
+    // correctly and the parts sum back to the whole without float residue.
+    const acc = {
+      revenue: toDecimal(0),
+      ebitda: toDecimal(0),
+      netIncome: toDecimal(0),
+      cashFlow: toDecimal(0),
+      headcount: toDecimal(0),
+      burnRate: toDecimal(0),
+      runway: toDecimal(0),
+      grossMargin: toDecimal(0),
+      ebitdaMargin: toDecimal(0),
     };
 
-    scenarios.forEach((s) => {
-      const p = s.probability * weight;
-      result.revenue += s.metrics.revenue * p;
-      result.ebitda += s.metrics.ebitda * p;
-      result.netIncome += s.metrics.netIncome * p;
-      result.cashFlow += s.metrics.cashFlow * p;
-      result.headcount += s.metrics.headcount * p;
-      result.burnRate += s.metrics.burnRate * p;
-      result.runway += s.metrics.runway * p;
-      result.grossMargin += s.metrics.grossMargin * p;
-      result.ebitdaMargin += s.metrics.ebitdaMargin * p;
-    });
+    if (!totalProb.isZero()) {
+      scenarios.forEach((s) => {
+        const p = divideMoney(s.probability, totalProb);
+        acc.revenue = acc.revenue.plus(multiplyMoney(s.metrics.revenue, p));
+        acc.ebitda = acc.ebitda.plus(multiplyMoney(s.metrics.ebitda, p));
+        acc.netIncome = acc.netIncome.plus(multiplyMoney(s.metrics.netIncome, p));
+        acc.cashFlow = acc.cashFlow.plus(multiplyMoney(s.metrics.cashFlow, p));
+        acc.headcount = acc.headcount.plus(multiplyMoney(s.metrics.headcount, p));
+        acc.burnRate = acc.burnRate.plus(multiplyMoney(s.metrics.burnRate, p));
+        acc.runway = acc.runway.plus(multiplyMoney(s.metrics.runway, p));
+        acc.grossMargin = acc.grossMargin.plus(multiplyMoney(s.metrics.grossMargin, p));
+        acc.ebitdaMargin = acc.ebitdaMargin.plus(multiplyMoney(s.metrics.ebitdaMargin, p));
+      });
+    }
 
-    return result;
+    return {
+      revenue: roundTo(acc.revenue, CURRENCY_PLACES),
+      ebitda: roundTo(acc.ebitda, CURRENCY_PLACES),
+      netIncome: roundTo(acc.netIncome, CURRENCY_PLACES),
+      cashFlow: roundTo(acc.cashFlow, CURRENCY_PLACES),
+      headcount: roundTo(acc.headcount, RATIO_PLACES),
+      burnRate: roundTo(acc.burnRate, CURRENCY_PLACES),
+      runway: roundTo(acc.runway, RATIO_PLACES),
+      grossMargin: roundTo(acc.grossMargin, RATIO_PLACES),
+      ebitdaMargin: roundTo(acc.ebitdaMargin, RATIO_PLACES),
+    };
   }
 
   static mergeScenarios(
@@ -319,19 +373,23 @@ export class ScenarioEngine {
     other: ScenarioMetrics,
     weight: number
   ): ScenarioMetrics {
-    const w = Math.max(0, Math.min(1, weight));
-    const invW = 1 - w;
+    const w = toDecimal(Math.max(0, Math.min(1, weight)), 'weight');
+    const invW = subtractMoney(1, w);
+
+    // Exact linear blend: base×(1−w) + other×w. Because (1−w) is computed in
+    // decimal, the two weights sum to exactly 1 and the blend is unbiased.
+    const blend = (a: number, b: number) => multiplyMoney(a, invW).plus(multiplyMoney(b, w));
 
     return {
-      revenue: base.revenue * invW + other.revenue * w,
-      ebitda: base.ebitda * invW + other.ebitda * w,
-      netIncome: base.netIncome * invW + other.netIncome * w,
-      cashFlow: base.cashFlow * invW + other.cashFlow * w,
-      headcount: Math.round(base.headcount * invW + other.headcount * w),
-      burnRate: base.burnRate * invW + other.burnRate * w,
-      runway: base.runway * invW + other.runway * w,
-      grossMargin: base.grossMargin * invW + other.grossMargin * w,
-      ebitdaMargin: base.ebitdaMargin * invW + other.ebitdaMargin * w,
+      revenue: roundTo(blend(base.revenue, other.revenue), CURRENCY_PLACES),
+      ebitda: roundTo(blend(base.ebitda, other.ebitda), CURRENCY_PLACES),
+      netIncome: roundTo(blend(base.netIncome, other.netIncome), CURRENCY_PLACES),
+      cashFlow: roundTo(blend(base.cashFlow, other.cashFlow), CURRENCY_PLACES),
+      headcount: Math.round(blend(base.headcount, other.headcount).toNumber()),
+      burnRate: roundTo(blend(base.burnRate, other.burnRate), CURRENCY_PLACES),
+      runway: roundTo(blend(base.runway, other.runway), RATIO_PLACES),
+      grossMargin: roundTo(blend(base.grossMargin, other.grossMargin), RATIO_PLACES),
+      ebitdaMargin: roundTo(blend(base.ebitdaMargin, other.ebitdaMargin), RATIO_PLACES),
     };
   }
 
