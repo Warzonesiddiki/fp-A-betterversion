@@ -68,12 +68,17 @@ export class DepreciationEngine {
 
   static decliningBalance(cost: number, salvage: number, life: number, rate: number): number[] {
     const schedule: number[] = [];
-    let bookValue = cost;
+    let bookValue = toDecimal(cost);
+    const salvageD = toDecimal(salvage);
+    const rateD = toDecimal(rate);
     for (let year = 0; year < life; year++) {
-      const dep = Math.min(bookValue * rate, bookValue - salvage);
-      schedule.push(dep > 0 ? dep : 0);
-      bookValue -= dep;
-      if (bookValue <= salvage) break;
+      // dep = min(bookValue*rate, bookValue - salvage), exact decimal.
+      const capped = bookValue.minus(salvageD);
+      const dep = bookValue.times(rateD).lte(capped) ? bookValue.times(rateD) : capped;
+      const depNum = dep.toNumber();
+      schedule.push(depNum > 0 ? roundTo(dep) : 0);
+      bookValue = bookValue.minus(dep);
+      if (bookValue.lte(salvageD)) break;
     }
     return schedule;
   }
@@ -99,22 +104,25 @@ export class DepreciationEngine {
   static macrs(cost: number, life: number, year: number): number {
     const rates = this.MACRS_RATES[life];
     if (!rates || year < 1 || year > rates.length) return 0;
-    return cost * rates![year - 1]!;
+    return roundTo(toDecimal(cost).times(rates![year - 1]!));
   }
 
   static macrsSchedule(cost: number, life: number): DepreciationEntry[] {
     const rates = this.MACRS_RATES[life];
     if (!rates) return [];
-    let accumulated = 0;
+    let accumulated = toDecimal(0);
+    const costD = toDecimal(cost);
     return rates.map((rate, i) => {
-      const dep = cost * rate;
-      accumulated += dep;
+      const dep = roundTo(costD.times(rate));
+      accumulated = accumulated.plus(dep);
+      const accumulatedNum = accumulated.toNumber();
+      const depNum = dep;
       return {
         period: i + 1,
-        beginningValue: cost - (accumulated - dep),
-        depreciation: dep,
-        accumulated,
-        endingValue: cost - accumulated,
+        beginningValue: roundTo(costD.minus(accumulated.minus(depNum))),
+        depreciation: depNum,
+        accumulated: accumulatedNum,
+        endingValue: roundTo(costD.minus(accumulated)),
       };
     });
   }
@@ -128,7 +136,7 @@ export class DepreciationEngine {
     currentUnits: number
   ): number {
     if (totalUnits <= 0) return 0;
-    return ((cost - salvage) / totalUnits) * currentUnits;
+    return roundTo(subtractMoney(cost, salvage).div(totalUnits).times(currentUnits));
   }
 
   // ─── Sum-of-Years-Digits ─────────────────────────────────────
