@@ -11,17 +11,17 @@ testable. Evidence = literal command output with date.
 
 ## Brutal Honesty Scorecard (RATCHET Step 6)
 
-| Gap ID                      | Claimed Status (pre-audit)        | Actual Verified Status (post-audit)                                    | Evidence Quality                     | Corrective Action Taken                                    |
-| --------------------------- | --------------------------------- | ---------------------------------------------------------------------- | ------------------------------------ | ---------------------------------------------------------- |
-| GAP-1 (money migration)     | "100% adoption" (hypothesis)      | **NOT_DONE** — 6.7% adoption, 84 raw toFixed sites                     | Literal (`npm run money:adoption`)   | Marked NOT_STARTED → IN_PROGRESS; real baseline recorded   |
-| GAP-2 (server auth)         | "all routes secured" (hypothesis) | **VERIFIED_DONE** — matrix covers 401/403/2xx/write+audit/cross-entity | Literal (server suite 71 tests)      | Added + completed `authorizationMatrix.test.ts` (33 tests) |
-| GAP-3 (orphan engines)      | assumed wired                     | **CONFIRMED OPEN** — 105/183 orphaned (all tested)                     | Literal (engine-reachability --json) | Marked IN_PROGRESS                                         |
-| GAP-4 (period close)        | assumed complete                  | **PARTIAL** — server+engine+audit tested; E2E chain unproven           | Literal (server tests)               | Marked IN_PROGRESS                                         |
-| GAP-5 (suite integrity)     | assumed green                     | **VERIFIED_DONE** — two consecutive green runs (10988 tests)           | Literal (2 full runs)                | Fixed all test-level causes; verified 2x                   |
-| GAP-7 (CI SHA-pinning)      | assumed enforced                  | **VERIFIED_DONE** — guardrails exit 0 after SHA-pinning                | Literal (`architecture:guardrails`)  | SHA-pinned all 12 actions; commit `cb0db92`                |
-| (new) Lease/Debt demo pages | not in hypothesis                 | **CONFIRMED** — hardcoded inputs, no store, no empty state             | Literal (source read + smoke tests)  | Corrected false smoke assertions; logged real gap          |
-| (new) test:native-db config | not in hypothesis                 | **CONFIRMED DEFECT** — excluded the files it targets                   | Literal (`npm run test:native-db`)   | FIXED + verified (see RESOLVED)                            |
-| (new) no PROJECT.md exists  | assumed present                   | **CONFIRMED** — referenced §13/16/17 cannot be located                 | Literal (ls)                         | Documented; do not fabricate §13/16/17                     |
+| Gap ID                      | Claimed Status (pre-audit)        | Actual Verified Status (post-audit)                                       | Evidence Quality                            | Corrective Action Taken                                      |
+| --------------------------- | --------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| GAP-1 (money migration)     | "100% adoption" (hypothesis)      | **NOT_DONE** — 6.7% adoption, 84 raw toFixed sites                        | Literal (`npm run money:adoption`)          | Marked NOT_STARTED → IN_PROGRESS; real baseline recorded     |
+| GAP-2 (server auth)         | "all routes secured" (hypothesis) | **VERIFIED_DONE** — matrix covers 401/403/2xx/write+audit/cross-entity    | Literal (server suite 71 tests)             | Added + completed `authorizationMatrix.test.ts` (33 tests)   |
+| GAP-3 (orphan engines)      | assumed wired                     | **CONFIRMED OPEN** — 105/183 orphaned (all tested)                        | Literal (engine-reachability --json)        | Marked IN_PROGRESS                                           |
+| GAP-4 (period close)        | assumed complete                  | **PARTIAL** — server+engine+audit tested; E2E chain unproven              | Literal (server tests)                      | Marked IN_PROGRESS                                           |
+| GAP-5 (suite integrity)     | assumed green                     | **VERIFIED_DONE** — two consecutive green runs (10988 tests)              | Literal (2 full runs)                       | Fixed all test-level causes; verified 2x                     |
+| GAP-7 (CI SHA-pinning)      | assumed enforced                  | **VERIFIED_DONE** — guardrails exit 0 after SHA-pinning                   | Literal (`architecture:guardrails`)         | SHA-pinned all 12 actions; commit `cb0db92`                  |
+| (new) Lease/Debt demo pages | not in hypothesis                 | **PARTIAL** — dashboard+stores+empty states DONE; data-entry form remains | Literal (store/page tests 52 + suite 11001) | Added leaseStore/debtStore + wired dashboards + empty states |
+| (new) test:native-db config | not in hypothesis                 | **CONFIRMED DEFECT** — excluded the files it targets                      | Literal (`npm run test:native-db`)          | FIXED + verified (see RESOLVED)                              |
+| (new) no PROJECT.md exists  | assumed present                   | **CONFIRMED** — referenced §13/16/17 cannot be located                    | Literal (ls)                                | Documented; do not fabricate §13/16/17                       |
 
 > Governing principle honored: "Confident and wrong" is worse than "slow and honest." Items whose
 > earlier evidence was an assertion (GAP-1, GAP-2, GAP-3) have been downgraded to their verified
@@ -132,16 +132,25 @@ guardrails passed`, **exit 0** (2026-08-01).
 
 ### GAP-NEW-A — Lease/Debt pages are demo-input-backed, no store, no empty state
 
-- **status:** IN_PROGRESS
+- **status:** IN_PROGRESS (dashboard + stores DONE; UI data-entry form REMAINING)
 - **discovery_confirmed:** true
-- **owner_modules:** `src/pages/lease/LeaseDashboard.tsx`, `src/pages/cash/DebtSchedulePage.tsx`
+- **owner_modules:** `src/pages/lease/LeaseDashboard.tsx`, `src/pages/cash/DebtSchedulePage.tsx`,
+  `src/store/leaseStore.ts`, `src/store/debtStore.ts`
 - **acceptance_criteria:** Pages read from a real, typed store; real data-entry path; reachable
   empty state; dedicated tests for empty and populated states.
-- **evidence:** Source read (hardcoded `LEASE_INPUTS` / `DEBT_INSTRUMENTS` arrays, subtitle "not
-  mock data"), plus the two false empty-state smoke tests that this session corrected to assert
-  actual behavior (2026-08-01).
-- **next_action:** Introduce `leaseStore` + `debtStore` (reuse existing zustand/masterStorage
-  patterns), wire pages, implement empty states.
+- **evidence:**
+  - Before: hardcoded `LEASE_INPUTS` / `DEBT_INSTRUMENTS` arrays, no empty state (2026-08-01).
+  - After (2026-08-01): introduced `leaseStore` + `debtStore` (zustand + subscribeWithSelector +
+    persist + immer + masterStorage + enforce() RBAC), registered in `persistedStores.ts`
+    (backup/restore). `LeaseDashboard` and `DebtSchedulePage` now read from the stores with
+    reachable empty states ("No Lease Data" / "No Data"). Full client suite green (913 files /
+    11001 tests). Store CRUD + page empty/populated tests pass (52 tests); backupRestore registry
+    guard passes (19).
+  - **Not yet done:** a UI form that writes add/update/remove via the store. The dashboard's
+    "Add Lease" navigates to `LeaseDetailPage`, which still uses its own hardcoded `LEASE_INPUTS`
+    (different schema). Full end-to-end data entry is the remaining half.
+- **next_action:** Align `LeaseDetailPage`/`LeaseAccountingPage` to the leaseStore schema and wire
+  add/update/remove UI actions so a lease entered in the UI persists and appears on the dashboard.
 
 ---
 
