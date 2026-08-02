@@ -1,4 +1,19 @@
 import type { GLEntry } from '@/types';
+import { roundTo, sumMoney, subtractMoney, divideMoney } from '../utils/money';
+
+/**
+ * Store-level P&L figures (revenue, COGS, gross/net profit) are reported
+ * amounts, so all arithmetic runs through the canonical money primitive
+ * (decimal.js, ROUND_HALF_UP) and rounds to cents. Margin percentages keep more
+ * precision but derive from exact decimals.
+ */
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
+
+/** Exact sum of `amount` over entries whose account code matches `prefix`. */
+function sumByPrefix(entries: readonly GLEntry[], prefix: string) {
+  return sumMoney(entries.filter((e) => e.accountCode.startsWith(prefix)).map((e) => e.amount));
+}
 
 export interface StoreStats {
   id: string;
@@ -40,35 +55,29 @@ export class RetailEngine {
         const eEntries = entries.filter((e) => e.entityId === id);
         const name = eEntries[0]?.accountName || `Store ${id}`;
 
-        const revenue = eEntries
-          .filter((e) => e.accountCode.startsWith('4'))
-          .reduce((acc, e) => acc + e.amount, 0);
-        const cogs = eEntries
-          .filter((e) => e.accountCode.startsWith('50'))
-          .reduce((acc, e) => acc + e.amount, 0);
-        const labor = eEntries
-          .filter((e) => e.accountCode.startsWith('51'))
-          .reduce((acc, e) => acc + e.amount, 0);
-        const occupancy = eEntries
-          .filter((e) => e.accountCode.startsWith('52'))
-          .reduce((acc, e) => acc + e.amount, 0);
+        const revenue = sumByPrefix(eEntries, '4');
+        const cogs = sumByPrefix(eEntries, '50');
+        const labor = sumByPrefix(eEntries, '51');
+        const occupancy = sumByPrefix(eEntries, '52');
 
-        const grossProfit = revenue - cogs;
-        const netProfit = revenue - cogs - labor - occupancy;
-        const margin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
-        const laborPercent = revenue > 0 ? (labor / revenue) * 100 : 0;
+        const netProfit = revenue.minus(cogs).minus(labor).minus(occupancy);
+        const hasRevenue = revenue.gt(0);
 
         return {
           id,
           name,
-          revenue,
-          labor,
-          cogs,
-          occupancy,
-          grossProfit,
-          netProfit,
-          margin,
-          laborPercent,
+          revenue: roundTo(revenue, CURRENCY_PLACES),
+          labor: roundTo(labor, CURRENCY_PLACES),
+          cogs: roundTo(cogs, CURRENCY_PLACES),
+          occupancy: roundTo(occupancy, CURRENCY_PLACES),
+          grossProfit: roundTo(revenue.minus(cogs), CURRENCY_PLACES),
+          netProfit: roundTo(netProfit, CURRENCY_PLACES),
+          margin: hasRevenue
+            ? roundTo(divideMoney(netProfit, revenue).times(100), RATIO_PLACES)
+            : 0,
+          laborPercent: hasRevenue
+            ? roundTo(divideMoney(labor, revenue).times(100), RATIO_PLACES)
+            : 0,
           rank: 0,
         };
       })
@@ -83,12 +92,17 @@ export class RetailEngine {
     if (stores.length === 0)
       return { avgRevenuePerStore: 0, avgNetMargin: 0, salesPerLaborHour: 0, avgCustSat: 92.8 };
 
-    const totalRevenue = stores.reduce((acc, s) => acc + s.revenue, 0);
-    const totalProfit = stores.reduce((acc, s) => acc + s.netProfit, 0);
+    const totalRevenue = sumMoney(stores.map((s) => s.revenue));
+    const totalProfit = sumMoney(stores.map((s) => s.netProfit));
 
     return {
-      avgRevenuePerStore: totalRevenue / stores.length,
-      avgNetMargin: (totalProfit / totalRevenue) * 100,
+      avgRevenuePerStore: roundTo(divideMoney(totalRevenue, stores.length), CURRENCY_PLACES),
+      // getStoreBreakdown only keeps stores with revenue > 0, so totalRevenue
+      // cannot be zero here; the guard is kept so the invariant is explicit
+      // rather than assumed.
+      avgNetMargin: totalRevenue.isZero()
+        ? 0
+        : roundTo(divideMoney(totalProfit, totalRevenue).times(100), RATIO_PLACES),
       salesPerLaborHour: 254, // Needs operational data
       avgCustSat: 92.8,
     };
@@ -103,21 +117,14 @@ export class RetailEngine {
     const periods = Array.from(new Set(entries.map((e) => e.date.substring(0, 7)))).sort();
     return periods.slice(-6).map((period) => {
       const pEntries = entries.filter((e) => e.date.startsWith(period));
-      const revenue = pEntries
-        .filter((e) => e.accountCode.startsWith('4'))
-        .reduce((acc, e) => acc + e.amount, 0);
-      const cogs = pEntries
-        .filter((e) => e.accountCode.startsWith('50'))
-        .reduce((acc, e) => acc + e.amount, 0);
-      const labor = pEntries
-        .filter((e) => e.accountCode.startsWith('51'))
-        .reduce((acc, e) => acc + e.amount, 0);
+      const revenue = sumByPrefix(pEntries, '4');
+      const cogs = sumByPrefix(pEntries, '50');
 
       return {
         month: period,
-        revenue,
-        grossProfit: revenue - cogs,
-        labor,
+        revenue: roundTo(revenue, CURRENCY_PLACES),
+        grossProfit: roundTo(subtractMoney(revenue, cogs), CURRENCY_PLACES),
+        labor: roundTo(sumByPrefix(pEntries, '51'), CURRENCY_PLACES),
       };
     });
   }
