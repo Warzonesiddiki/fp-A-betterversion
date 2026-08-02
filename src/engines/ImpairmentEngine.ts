@@ -1,7 +1,22 @@
 /**
  * ImpairmentEngine — Asset impairment testing (IAS 36)
  * Tests assets for impairment and calculates impairment loss
+ *
+ * MONEY MIGRATION (2026-08-03): carrying amounts, recoverable amounts,
+ * impairment losses, reversals and DCF values are money and flow through the
+ * canonical money primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP),
+ * cent-rounded. No raw + - * / on currency values remains.
  */
+
+import {
+  addMoney,
+  compareMoney,
+  divideMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '../utils/money';
 
 interface Asset {
   id: string;
@@ -34,8 +49,10 @@ export class ImpairmentEngine {
   private static impairmentHistory: Map<string, ImpairmentResult[]> = new Map();
 
   static testImpairment(asset: Asset): ImpairmentResult {
-    const isImpaired = asset.carryingAmount > asset.recoverableAmount;
-    const impairmentLoss = isImpaired ? asset.carryingAmount - asset.recoverableAmount : 0;
+    const isImpaired = compareMoney(asset.carryingAmount, asset.recoverableAmount) > 0;
+    const impairmentLoss = isImpaired
+      ? roundTo(subtractMoney(asset.carryingAmount, asset.recoverableAmount))
+      : 0;
 
     const result: ImpairmentResult = {
       assetId: asset.id,
@@ -44,7 +61,7 @@ export class ImpairmentEngine {
       recoverableAmount: asset.recoverableAmount,
       impairmentLoss,
       isImpaired,
-      newCarryingAmount: isImpaired ? asset.recoverableAmount : asset.carryingAmount,
+      newCarryingAmount: isImpaired ? roundTo(asset.recoverableAmount) : asset.carryingAmount,
     };
 
     // Store history
@@ -60,13 +77,18 @@ export class ImpairmentEngine {
   }
 
   static calculateRecoverableAmount(valueInUse: number, fairValueLessCostsToSell: number): number {
-    return Math.max(valueInUse, fairValueLessCostsToSell);
+    return compareMoney(valueInUse, fairValueLessCostsToSell) >= 0
+      ? roundTo(valueInUse)
+      : roundTo(fairValueLessCostsToSell);
   }
 
   static calculateValueInUse(futureCashFlows: number[], discountRate: number): number {
-    return futureCashFlows.reduce((pv, cf, i) => {
-      return pv + cf / Math.pow(1 + discountRate, i + 1);
-    }, 0);
+    let pv = toDecimal(0);
+    for (let i = 0; i < futureCashFlows.length; i++) {
+      // Cash flows are money; discount factors are ratios (float is preserved).
+      pv = addMoney(pv, divideMoney(futureCashFlows[i]!, Math.pow(1 + discountRate, i + 1)));
+    }
+    return roundTo(pv);
   }
 
   static reverseImpairment(
@@ -76,20 +98,23 @@ export class ImpairmentEngine {
     originalCost: number
   ): ReversalResult {
     const history = this.impairmentHistory.get(assetId) ?? [];
-    const previousImpairment = history
-      .filter((r) => r.isImpaired)
-      .reduce((sum, r) => sum + r.impairmentLoss, 0);
+    const previousImpairment = roundTo(
+      sumMoney(history.filter((r) => r.isImpaired).map((r) => r.impairmentLoss))
+    );
 
-    const maxReversal = originalCost - currentCarryingAmount;
-    const desiredReversal = newRecoverableAmount - currentCarryingAmount;
-    const reversalAmount = Math.min(desiredReversal, maxReversal);
+    const maxReversalDec = subtractMoney(originalCost, currentCarryingAmount);
+    const desiredReversalDec = subtractMoney(newRecoverableAmount, currentCarryingAmount);
+    const reversalAmountDec = desiredReversalDec.lte(maxReversalDec)
+      ? desiredReversalDec
+      : maxReversalDec;
+    const reversalAmount = roundTo(reversalAmountDec);
 
     return {
       assetId,
       previousImpairment,
       reversalAmount,
-      newCarryingAmount: currentCarryingAmount + reversalAmount,
-      maxReversal,
+      newCarryingAmount: roundTo(addMoney(currentCarryingAmount, reversalAmount)),
+      maxReversal: roundTo(maxReversalDec),
     };
   }
 
