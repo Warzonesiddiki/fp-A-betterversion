@@ -712,6 +712,16 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  '/treasury/loan-amortization': {
+    title: 'Loan Amortization',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Compute a loan amortization schedule from principal, annual rate, and term. Payments, interest, and ending balance are calculated by the LoanAmortizationEngine using exact-decimal arithmetic, so the loan pays off to $0.00.',
+      },
+    ],
+  },
 
   // ── Reports ───────────────────────────────────────────────────────────────
   '/reports': {

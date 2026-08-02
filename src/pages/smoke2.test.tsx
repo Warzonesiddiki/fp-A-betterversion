@@ -403,9 +403,14 @@ describe('Page Smoke Tests (Batch 2)', () => {
       expect(container).toBeTruthy();
     });
 
-    it('displays the empty state', () => {
+    // NOTE: LeaseDashboard renders a demo lease portfolio (hardcoded sample
+    // inputs whose outputs are computed live by LeaseEngine — see its own
+    // dedicated LeaseDashboard.test.tsx). It is NOT yet backed by a lease
+    // data store, so no empty state is reachable today. Tracked as GAP (lease
+    // store wiring) in GAP_LEDGER.md; assert the real rendered behavior.
+    it('renders the computed lease portfolio dashboard', () => {
       renderPage(LeaseDashboard, '/lease', '/lease');
-      expect(screen.getByText(/No Lease Data/i)).toBeInTheDocument();
+      expect(screen.getByText(/Lease Portfolio Dashboard/i)).toBeInTheDocument();
     });
   });
 
