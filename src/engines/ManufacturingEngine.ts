@@ -7,8 +7,20 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 16th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03): revenue, COGS, material/labor/overhead cost
+ * and the gross-margin derivation flow through the canonical money primitive
+ * (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Amounts round to cents;
+ * grossMargin is a percentage rounded to 10 places. OEE and the
+ * production-line/trend mocks are operational metrics, not currency. No raw
+ * + - * / on currency values remains.
  */
 import type { GLEntry } from '@/types';
+
+import { addMoney, divideMoney, roundTo, subtractMoney, sumMoney } from '../utils/money';
+
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 10;
 
 export interface ManufacturingStats {
   revenue: number;
@@ -47,55 +59,65 @@ export class ManufacturingEngine {
   static calculateStats(entries: GLEntry[]): ManufacturingStats {
     const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
 
-    const revenue = entries
-      .filter(
-        (e) =>
-          e.accountCode.startsWith('4') &&
-          !e.accountCode.startsWith('40') &&
-          !e.accountCode.startsWith('41') &&
-          !e.accountCode.startsWith('42') &&
-          !e.accountCode.startsWith('43') &&
-          !e.accountCode.startsWith('44') &&
-          !e.accountCode.startsWith('45') &&
-          !e.accountCode.startsWith('46')
-      )
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const revenueDec = sumMoney(
+      entries
+        .filter(
+          (e) =>
+            e.accountCode.startsWith('4') &&
+            !e.accountCode.startsWith('40') &&
+            !e.accountCode.startsWith('41') &&
+            !e.accountCode.startsWith('42') &&
+            !e.accountCode.startsWith('43') &&
+            !e.accountCode.startsWith('44') &&
+            !e.accountCode.startsWith('45') &&
+            !e.accountCode.startsWith('46')
+        )
+        .map((e) => Math.abs(getAmount(e)))
+    );
 
     // Fallback: use 4xxx revenue if specific codes don't match
-    const totalRevenue =
-      revenue > 0
-        ? revenue
-        : entries
-            .filter((e) => e.accountCode.startsWith('4'))
-            .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const totalRevenue = revenueDec.greaterThan(0)
+      ? revenueDec
+      : sumMoney(
+          entries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(getAmount(e)))
+        );
 
-    const materialCost = entries
-      .filter((e) => e.accountCode.startsWith('57'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const materialCostDec = sumMoney(
+      entries.filter((e) => e.accountCode.startsWith('57')).map((e) => Math.abs(getAmount(e)))
+    );
 
-    const laborCost = entries
-      .filter((e) => e.accountCode.startsWith('58'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const laborCostDec = sumMoney(
+      entries.filter((e) => e.accountCode.startsWith('58')).map((e) => Math.abs(getAmount(e)))
+    );
 
-    const overheadCost = entries
-      .filter((e) => e.accountCode.startsWith('59'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const overheadCostDec = sumMoney(
+      entries.filter((e) => e.accountCode.startsWith('59')).map((e) => Math.abs(getAmount(e)))
+    );
 
-    const cogs = entries
-      .filter((e) => e.accountCode.startsWith('5') || e.accountCode.startsWith('6'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const cogsDec = sumMoney(
+      entries
+        .filter((e) => e.accountCode.startsWith('5') || e.accountCode.startsWith('6'))
+        .map((e) => Math.abs(getAmount(e)))
+    );
 
-    const cogsTotal = cogs > 0 ? cogs : materialCost + laborCost + overheadCost;
-    const grossMargin = totalRevenue > 0 ? ((totalRevenue - cogsTotal) / totalRevenue) * 100 : 0;
+    const cogsTotal = cogsDec.greaterThan(0)
+      ? cogsDec
+      : addMoney(addMoney(materialCostDec, laborCostDec), overheadCostDec);
+    const grossMargin = totalRevenue.greaterThan(0)
+      ? roundTo(
+          divideMoney(subtractMoney(totalRevenue, cogsTotal), totalRevenue).times(100),
+          RATIO_PLACES
+        )
+      : 0;
     const oee = 85 + Math.min(10, grossMargin / 5); // Derive OEE from margin
 
     return {
-      revenue: totalRevenue,
-      cogs: cogsTotal,
+      revenue: roundTo(totalRevenue, CURRENCY_PLACES),
+      cogs: roundTo(cogsTotal, CURRENCY_PLACES),
       grossMargin,
-      materialCost,
-      laborCost,
-      overheadCost,
+      materialCost: roundTo(materialCostDec, CURRENCY_PLACES),
+      laborCost: roundTo(laborCostDec, CURRENCY_PLACES),
+      overheadCost: roundTo(overheadCostDec, CURRENCY_PLACES),
       oee: Math.min(99, oee),
     };
   }
@@ -106,9 +128,9 @@ export class ManufacturingEngine {
   static getProductionLines(entries: GLEntry[]): ProductionLine[] {
     const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
 
-    const totalCost = entries
-      .filter((e) => e.accountCode.startsWith('5'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+    const totalCost = sumMoney(
+      entries.filter((e) => e.accountCode.startsWith('5')).map((e) => Math.abs(getAmount(e)))
+    );
 
     const sr = (s: number) => {
       const x = Math.sin(s * 9301 + 49297) * 49297;
@@ -116,7 +138,7 @@ export class ManufacturingEngine {
     };
 
     // Derive line statuses from cost distribution
-    const baseOutput = totalCost > 0 ? Math.round(totalCost / 500) : 10000;
+    const baseOutput = totalCost.greaterThan(0) ? Math.round(totalCost.div(500).toNumber()) : 10000;
     return [
       {
         line: 'Line A - Assembly',
