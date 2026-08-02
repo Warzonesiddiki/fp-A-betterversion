@@ -85,5 +85,29 @@ describe('DebtScheduleEngine', () => {
         expect(p).toBeCloseTo(firstPayment, 0);
       });
     });
+
+    it('known-answer (money primitive): cents-exact schedule that reconciles to $0.00', () => {
+      // 12-mo fully-amortizing $100,000 @ 6% APR (monthly 0.005).
+      const result = DebtScheduleEngine.amortize({
+        id: 'loan1',
+        name: 'Term Loan',
+        principal: 100000,
+        rate: 0.06,
+        termMonths: 12,
+        startDate: '2026-01-01',
+        type: 'term_loan',
+        paymentFrequency: 'monthly',
+        amortizationType: 'fully_amortizing',
+      });
+      // First period: interest = 100000*0.005 = 500.00; payment 8606.64; principal 8106.64.
+      expect(result.schedule[0]!.interest).toBe(500);
+      expect(result.schedule[0]!.payment).toBe(8606.64);
+      expect(result.schedule[0]!.principal).toBe(8106.64);
+      // Fully amortized: exact $0.00 remaining balance at term end.
+      expect(result.schedule[11]!.endingBalance).toBe(0);
+      // Total interest is cents-exact and reconciles: totalPayment - principal.
+      expect(result.totalInterest).toBe(3279.73);
+      expect(result.totalPayments - result.totalPrincipal).toBeCloseTo(result.totalInterest, 0);
+    });
   });
 });
