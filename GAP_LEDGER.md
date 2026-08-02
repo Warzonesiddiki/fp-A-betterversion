@@ -244,6 +244,28 @@ testable. Evidence = literal command output with date.
 
 ---
 
+## PENDING PUSH (auth expired mid-session — do not lose)
+
+The GitHub token expired PART-WAY THROUGH this session. Commits `13cce1b`,
+`1cbff2e` and everything up to `f076fa0` pushed successfully; the token then went
+invalid (`gh auth status` → "The github.com token in GH_TOKEN is no longer valid";
+`git push` → "could not read Username ... terminal prompts disabled"). All quality
+gates PASSED before the push was attempted — only the network/auth step failed.
+
+Local commits on `arena/019fc250-fp-a-betterversion` not yet on the remote:
+
+- `b0b7da1` GAP-1: migrate COGSVarianceEngine + InventoryEngine
+- `5878b5f` GAP-1: migrate SaaSMetricsEngine + VarianceDecompositionEngine
+- `07c5e7f` GAP-3: correct the engine-reachability classifier
+- `678cc37` GAP-NEW-A: real lease data-entry path
+- `08794f0` GAP-4: period-close lifecycle test + mock-DB fidelity fixes
+- `976fb9b` GAP-1: migrate CreditRiskEngine
+- `d80b6c4` GAP_LEDGER: honest re-verification
+- `f134f88` docs: sync README money-adoption claim
+
+**Unblock:** reconnect GitHub in Arena, then
+`git push origin arena/019fc250-fp-a-betterversion`.
+
 ## True Blockers (valid escalation only)
 
 1. **`workflows` GitHub App permission — blocks GAP-7 from landing.** Reproduced 2026-08-02; see
