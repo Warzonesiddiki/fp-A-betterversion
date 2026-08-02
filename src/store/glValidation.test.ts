@@ -53,7 +53,7 @@ describe('glStore.validateEntries — F-0004 double-entry invariant', () => {
       ]);
     expect(result.isValid).toBe(false);
     expect(result.errors.some((e) => e.includes('imbalance 0.01'))).toBe(true);
-    expect(result.errors.some((e) => e.includes('1000.00') && e.includes('999.99'))).toBe(true);
+    expect(result.errors.some((e) => e.includes('1,000.00') && e.includes('999.99'))).toBe(true);
   });
 
   it('accepts a balanced pair', () => {

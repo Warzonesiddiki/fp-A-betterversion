@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { safeMathParser } from './SafeMathParser';
-import { addMoney, moneyEquals, roundMoney, toDecimal } from '../utils/money';
+import { addMoney, moneyEquals, roundMoney, toDecimal, roundTo } from '../utils/money';
 
 // --- Type Definitions ---
 
@@ -362,7 +362,7 @@ export class ValidationEngine {
           measure: cfg.measure,
         });
         violations.push(
-          `${cfg.account}/${currPeriod}: ${growthPct.toFixed(1)}% (max ${cfg.maxGrowthPct}%)`
+          `${cfg.account}/${currPeriod}: ${roundTo(growthPct, 1)}% (max ${cfg.maxGrowthPct}%)`
         );
       }
     }
@@ -445,7 +445,7 @@ export class ValidationEngine {
           }
         );
         violations.push(
-          `${period}: ratio=${(actualRatio * 100).toFixed(1)}%, expected=${(cfg.expectedRatio * 100).toFixed(1)}% (diff=${diffPct.toFixed(1)}%)`
+          `${period}: ratio=${roundTo(actualRatio * 100, 1)}%, expected=${roundTo(cfg.expectedRatio * 100, 1)}% (diff=${roundTo(diffPct, 1)}%)`
         );
       }
     }
@@ -456,7 +456,7 @@ export class ValidationEngine {
       ruleId: rule.id,
       passed,
       message: passed
-        ? `Cross-check passed: ratio within ${cfg.tolerancePct}% of ${(cfg.expectedRatio * 100).toFixed(1)}%`
+        ? `Cross-check passed: ratio within ${cfg.tolerancePct}% of ${roundTo(cfg.expectedRatio * 100, 1)}%`
         : `${violations.length} period(s) failed cross-check: ${violations.slice(0, 5).join('; ')}${violations.length > 5 ? '...' : ''}`,
       severity: rule.severity,
       affectedCells,

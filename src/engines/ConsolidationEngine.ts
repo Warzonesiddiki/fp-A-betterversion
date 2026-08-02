@@ -1,6 +1,6 @@
 import type { GLEntry } from '@/types';
 import { MissingFXRateError } from './FXEngine';
-import { toCents } from '@/utils/money';
+import { toCents, formatMoney } from '@/utils/money';
 
 // =============================================================================
 // CONSOLIDATION ENGINE — ASC 810 Compliant
@@ -450,7 +450,7 @@ export class ConsolidationEngine {
       throw new ConsolidationFailedError([
         {
           stage: 'balance-check',
-          message: `Consolidated statements do not balance. Imbalance: ${result.imbalanceAmount.toFixed(2)}`,
+          message: `Consolidated statements do not balance. Imbalance: ${formatMoney(result.imbalanceAmount)}`,
         },
       ]);
     }
@@ -959,7 +959,7 @@ export class ConsolidationEngine {
     // Check balance
     if (!result.isBalanced) {
       errors.push(
-        `Consolidation does not balance. Imbalance: ${result.imbalanceAmount.toFixed(2)}`
+        `Consolidation does not balance. Imbalance: ${formatMoney(result.imbalanceAmount)}`
       );
     }
 

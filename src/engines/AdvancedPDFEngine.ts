@@ -5,6 +5,7 @@
  */
 
 import jsPDF from 'jspdf';
+import { formatMoney } from '../utils/money';
 import { createCanvas, createImage } from '@/utils/canvasFactory';
 
 interface TOCEntry {
@@ -184,7 +185,9 @@ export class AdvancedPDFEngine {
             break;
           case 'percent':
             formatted =
-              typeof value === 'number' ? `${(value * 100).toFixed(1)}%` : String(value ?? '');
+              typeof value === 'number'
+                ? `${formatMoney(value * 100, { places: 1 })}%`
+                : String(value ?? '');
             break;
           case 'number':
             formatted =

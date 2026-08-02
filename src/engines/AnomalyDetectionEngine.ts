@@ -10,6 +10,8 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 
+import { roundTo } from '../utils/money';
+
 /**
  * Severity level for detected anomalies.
  */
@@ -320,7 +322,7 @@ export class AnomalyDetectionEngine {
           method: 'zscore',
           severity: this.classifySeverity(score),
           score,
-          reason: `Z-score ${zScore.toFixed(2)} exceeds threshold ${this.config.zScoreThreshold} (mean=${stats.mean.toFixed(2)}, std=${stats.stdDev.toFixed(2)})`,
+          reason: `Z-score ${roundTo(zScore, 2)} exceeds threshold ${this.config.zScoreThreshold} (mean=${roundTo(stats.mean, 2)}, std=${roundTo(stats.stdDev, 2)})`,
           expectedRange: [
             stats.mean - this.config.zScoreThreshold * stats.stdDev,
             stats.mean + this.config.zScoreThreshold * stats.stdDev,
@@ -353,7 +355,7 @@ export class AnomalyDetectionEngine {
           method: 'modified-zscore',
           severity: this.classifySeverity(score),
           score,
-          reason: `Modified Z-score ${modifiedZScore.toFixed(2)} exceeds threshold ${this.config.modifiedZScoreThreshold} (median=${stats.median.toFixed(2)}, MAD=${stats.mad.toFixed(2)})`,
+          reason: `Modified Z-score ${roundTo(modifiedZScore, 2)} exceeds threshold ${this.config.modifiedZScoreThreshold} (median=${roundTo(stats.median, 2)}, MAD=${roundTo(stats.mad, 2)})`,
           expectedRange: [stats.median - threshold, stats.median + threshold],
         });
       }
@@ -383,7 +385,7 @@ export class AnomalyDetectionEngine {
           method: 'iqr',
           severity: this.classifySeverity(score),
           score,
-          reason: `Value ${dp.value.toFixed(2)} is outside IQR fences [${lowerFence.toFixed(2)}, ${upperFence.toFixed(2)}] (Q1=${stats.q1.toFixed(2)}, Q3=${stats.q3.toFixed(2)}, IQR=${stats.iqr.toFixed(2)})`,
+          reason: `Value ${roundTo(dp.value, 2)} is outside IQR fences [${roundTo(lowerFence, 2)}, ${roundTo(upperFence, 2)}] (Q1=${roundTo(stats.q1, 2)}, Q3=${roundTo(stats.q3, 2)}, IQR=${roundTo(stats.iqr, 2)})`,
           expectedRange: [lowerFence, upperFence],
         });
       }
@@ -518,7 +520,7 @@ export class AnomalyDetectionEngine {
           method: 'trend-break',
           severity: this.classifySeverity(score),
           score,
-          reason: `Value deviates from trend by ${score_mad.toFixed(2)} MAD units (expected=${expected.toFixed(2)}, actual=${dp.value.toFixed(2)})`,
+          reason: `Value deviates from trend by ${roundTo(score_mad, 2)} MAD units (expected=${roundTo(expected, 2)}, actual=${roundTo(dp.value, 2)})`,
           expectedRange: [expected - ciWidth, expected + ciWidth],
         });
       }
@@ -567,7 +569,7 @@ export class AnomalyDetectionEngine {
           method: 'seasonal',
           severity: this.classifySeverity(score),
           score,
-          reason: `Seasonal position ${pos}: value ${dataPoints[i]!.value.toFixed(2)} deviates ${zScore.toFixed(2)} standard deviations from seasonal mean ${stats!.mean.toFixed(2)}`,
+          reason: `Seasonal position ${pos}: value ${roundTo(dataPoints[i]!.value, 2)} deviates ${roundTo(zScore, 2)} standard deviations from seasonal mean ${roundTo(stats!.mean, 2)}`,
           expectedRange: [
             stats!.mean - this.config.zScoreThreshold * stats!.stdDev,
             stats!.mean + this.config.zScoreThreshold * stats!.stdDev,

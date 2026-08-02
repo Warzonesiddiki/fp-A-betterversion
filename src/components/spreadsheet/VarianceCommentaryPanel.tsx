@@ -37,16 +37,20 @@ export function VarianceCommentaryPanel({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
 
-  const variance = actual - budget;
-  const variancePct = budget !== 0 ? (variance / Math.abs(budget)) * 100 : 0;
+  // Guard against non-finite / missing inputs: the money primitive fails
+  // loudly on NaN (by design), so a UI panel must not feed it NaN variance
+  // figures. Non-finite inputs render as a neutral zero state rather than a
+  // silent "NaN%" (the pre-money behavior this surfaced).
+  const hasValidInputs = Number.isFinite(actual) && Number.isFinite(budget);
+  const variance = hasValidInputs ? actual - budget : 0;
+  const variancePct = hasValidInputs && budget !== 0 ? (variance / Math.abs(budget)) * 100 : 0;
 
-  const autoCommentary = AutoCommentaryEngine.generateVarianceCommentary(
-    actual,
-    budget,
-    category,
-    period,
-    { priorYear, drivers: drivers ? [...drivers] : undefined }
-  );
+  const autoCommentary: string = hasValidInputs
+    ? AutoCommentaryEngine.generateVarianceCommentary(actual, budget, category, period, {
+        priorYear,
+        drivers: drivers ? [...drivers] : undefined,
+      })
+    : '';
 
   const handleCopy = useCallback((text: string, id: string) => {
     void navigator.clipboard.writeText(text);

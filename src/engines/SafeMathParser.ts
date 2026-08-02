@@ -1,4 +1,5 @@
 import Decimal from 'decimal.js';
+import { formatMoney } from '../utils/money';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // SAFEMATHPARSER — Bulletproof recursive descent math expression parser
@@ -1093,17 +1094,15 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   DOLLAR: (args) => {
     const val = args[0]!;
     const decimals = args[1]! ?? 2;
-    return `$${val.toFixed(decimals)}` as unknown as number;
+    return `$${formatMoney(val, { places: decimals })}` as unknown as number;
   },
   FIXED: (args) => {
     const val = args[0]!;
     const decimals = args[1]! ?? 2;
     const noCommas = args[2]! ?? 0;
-    const formatted = val.toFixed(decimals);
-    if (noCommas) return formatted as unknown as number;
-    const parts = formatted.split('.');
-    parts[0] = parts[0]!.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.') as unknown as number;
+    const grouped = formatMoney(val, { places: decimals });
+    if (noCommas) return grouped.replace(/,/g, '') as unknown as number;
+    return grouped as unknown as number;
   },
   EXACT: (args) => (String(args[0]!) === String(args[1]!) ? 1 : 0),
   T: (args) =>

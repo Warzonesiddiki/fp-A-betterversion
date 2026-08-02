@@ -8,6 +8,7 @@
 import ExcelJS from 'exceljs';
 import { parseCSVRecords } from '@/utils/csv';
 import { sanitizeForDisplay } from '@/utils/security';
+import { formatMoney } from '@/utils/money';
 
 export type FileFormat = 'xlsx' | 'csv';
 
@@ -293,7 +294,7 @@ export class ExcelImportEngine {
         if (score > bestConfidence) {
           bestConfidence = score;
           bestField = field;
-          reason = `Keyword match: "${header}" → ${field} (${(score * 100).toFixed(0)}%)`;
+          reason = `Keyword match: "${header}" → ${field} (${formatMoney(score * 100, { places: 0 })}%)`;
         }
       }
 
@@ -457,7 +458,7 @@ export class ExcelImportEngine {
         row: 0,
         column: 'balance',
         value: imbalance,
-        message: `Debits ($${totalDebit.toFixed(2)}) and Credits ($${totalCredit.toFixed(2)}) are imbalanced by $${imbalance.toFixed(2)}`,
+        message: `Debits ($${formatMoney(totalDebit)}) and Credits ($${formatMoney(totalCredit)}) are imbalanced by $${formatMoney(imbalance)}`,
       });
     }
 

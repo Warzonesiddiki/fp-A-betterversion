@@ -3,6 +3,8 @@
  * Part 4 #5: Critical financial domain gap
  */
 
+import { roundTo } from '../utils/money';
+
 export interface SensitivityConfig {
   rowVariable: string;
   rowValues: number[];
@@ -130,7 +132,7 @@ export class SensitivityTableEngine {
         }).format(v);
       }
       if (format === 'percent') {
-        return `${(v * 100).toFixed(1)}%`;
+        return `${roundTo(v * 100, 1)}%`;
       }
       return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(v);
     };
@@ -179,9 +181,9 @@ export class SensitivityTableEngine {
   }
 
   private static formatValue(value: number): string {
-    if (Math.abs(value) < 1) return `${(value * 100).toFixed(0)}%`;
-    if (Math.abs(value) >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (Math.abs(value) >= 1000) return `${(value / 1000).toFixed(0)}K`;
-    return value.toFixed(0);
+    if (Math.abs(value) < 1) return `${roundTo(value * 100, 0)}%`;
+    if (Math.abs(value) >= 1000000) return `${roundTo(value / 1000000, 1)}M`;
+    if (Math.abs(value) >= 1000) return `${roundTo(value / 1000, 0)}K`;
+    return `${roundTo(value, 0)}`;
   }
 }

@@ -87,6 +87,14 @@ describe('ConstructionEngine', () => {
       const projects = ConstructionEngine.getProjectPortfolio(mockEntries);
       expect(Array.isArray(projects)).toBe(true);
     });
+
+    it('known-answer: formats budget (millions, 1dp) and margin via the money primitive', () => {
+      // mockEntries: revenue 1,000,000 (45xx), costs 450,000 (56xx) under 'default'.
+      // budget = $1.0M; margin = (1,000,000 - 450,000)/1,000,000*100 = 55.0%.
+      const [project] = ConstructionEngine.getProjectPortfolio(mockEntries);
+      expect(project.budget).toBe('$1.0M');
+      expect(project.margin).toBe('55.0%');
+    });
   });
 
   describe('getBacklogTrend', () => {

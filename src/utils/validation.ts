@@ -3,6 +3,8 @@
 // Pure TypeScript, deterministic, zero external dependencies
 // =============================================================================
 
+import { formatMoney } from './money';
+
 // ---------------------------------------------------------------------------
 // Type Guards
 // ---------------------------------------------------------------------------
@@ -297,7 +299,10 @@ export function validateAllocationRule(rule: unknown): ValidationResult {
     }, 0);
 
     if (Math.abs(totalPct - 100) > 0.01) {
-      addError(result, `Target percentages must sum to 100%, got ${totalPct.toFixed(2)}%`);
+      addError(
+        result,
+        `Target percentages must sum to 100%, got ${formatMoney(totalPct, { places: 2 })}%`
+      );
     }
   }
 

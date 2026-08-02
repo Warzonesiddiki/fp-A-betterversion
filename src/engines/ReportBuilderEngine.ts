@@ -4,7 +4,7 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
-import { sumMoney } from '../utils/money';
+import { sumMoney, formatMoney } from '../utils/money';
 
 // --- Cell Type Definitions ---
 
@@ -780,27 +780,28 @@ export class ReportBuilderEngine {
 
     switch (format) {
       case 'currency': {
-        const formatted = Math.abs(value).toFixed(decimals);
-        const withCommas = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        return value < 0 ? `($${withCommas})` : `$${withCommas}`;
+        const abs = formatMoney(Math.abs(value), { places: decimals });
+        return value < 0 ? `($${abs})` : `$${abs}`;
       }
       case 'percentage':
-        return `${(value * 100).toFixed(decimals)}%`;
+        return `${formatMoney(value * 100, { places: decimals })}%`;
       case 'compact': {
         const absValue = Math.abs(value);
         const sign = value < 0 ? '(' : '';
         const end = value < 0 ? ')' : '';
         if (absValue >= 1_000_000_000)
-          return `${sign}$${(absValue / 1_000_000_000).toFixed(1)}B${end}`;
-        if (absValue >= 1_000_000) return `${sign}$${(absValue / 1_000_000).toFixed(1)}M${end}`;
-        if (absValue >= 1_000) return `${sign}$${(absValue / 1_000).toFixed(1)}K${end}`;
-        return `${sign}$${absValue.toFixed(decimals)}${end}`;
+          return `${sign}$${formatMoney(absValue / 1_000_000_000, { places: 1 })}B${end}`;
+        if (absValue >= 1_000_000)
+          return `${sign}$${formatMoney(absValue / 1_000_000, { places: 1 })}M${end}`;
+        if (absValue >= 1_000)
+          return `${sign}$${formatMoney(absValue / 1_000, { places: 1 })}K${end}`;
+        return `${sign}$${formatMoney(absValue, { places: decimals })}${end}`;
       }
       case 'wholenumber':
         return Math.round(value).toLocaleString('en-US');
       case 'decimal':
       default:
-        return value.toFixed(decimals);
+        return formatMoney(value, { places: decimals });
     }
   }
 
