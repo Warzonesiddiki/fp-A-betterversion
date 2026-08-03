@@ -5,8 +5,8 @@
 testable. Evidence = literal command output with date.
 
 - **Date of latest re-verification:** 2026-08-03 (UTC)
-- **Current continuation branch:** `arena/019fc910-fp-a-betterversion` (post-PR-#27 session)
-- **Current base:** `b1d5452` (PR #27 merge commit on `main`)
+- **Current continuation branch:** `arena/019fc970-fp-a-betterversion` (post-PR-#28 session)
+- **Current base:** `cb42a65` (PR #28 merge commit on `main`)
 
 ---
 
@@ -335,6 +335,28 @@ repair financial gates`), created after the staged ESLint, TypeScript, Prettier,
   genuine currency, requires the same protocol. `NetSuiteConnector` and `XeroConnector` were
   scanned and show no raw currency arithmetic (OAuth/HMAC/base64 and passthrough only); re-screen
   if their data contracts change.
+- **`QuickBooksConnector.mapInvoice` — MIGRATED (genuine financial integration service):**
+  screened strictly — `mapInvoice` computes `subtotal` with a raw `+` reduce over real QuickBooks
+  line-item `Amount` values (currency). Rejected as non-money: `mapAccount`'s `CurrentBalance`
+  and transaction `Amount` passthroughs (no arithmetic applied), the `Balance >= 0` debit/credit
+  sign comparison, `getBudgets`' `parseFloat` report-cell parsing (measure-agnostic string
+  parsing, same class as `ExcelImportEngine.parseNumeric`), token-expiry timestamps, pagination
+  offsets, record counts, and rate-limit values. Added the money header/import (`roundTo`,
+  `sumMoney`); subtotal is now `roundTo(sumMoney(lineItem amounts))` — exact decimal summation,
+  half-up to cents. Line amounts, unit prices, `TotalAmt`, and `Balance` stay unrounded
+  passthroughs (no arithmetic on them), consistent with DynamicsConnector's `tax`/`total`
+  passthroughs. New `QuickBooksConnector.money.test.ts` has **8 exact `toBe`** answers. Its old
+  code failed **5/8** (`0.30000000000000004`, `0.6000000000000001`, `0.7000000000000001`,
+  `1234.6299999999999`, and `1.005` vs `1.01` half-up cents — the control, empty-list, and
+  passthrough-contract cases passed); restored code passes **8/8**, existing suite **9/9**. Full
+  `src/services/api-integration` directory: **14 files / 210 tests pass**; `npx tsc --noEmit`
+  exit 0; `npx eslint src --max-warnings 0` exit 0; full suite **968 files / 11,513 tests, exit
+  0**. Adoption ratcheted **91 → 92 modules (25.28% → 25.56%)** with **0** raw `toFixed(n)`
+  sites; `npm run money:adoption -- --update` re-recorded the floor at 92. README updated to
+  **92/360**; while in the README, also repaired a **pre-existing** stale claim found on clean
+  `main` at `cb42a65`: "Store Architecture (38 Stores)" vs measured 41 top-level store modules —
+  `npm run docs:verify` failed before this change (verified via `git stash`) and passes after
+  (`41 Stores`).
 
 ### GAP-3 — Orphan engines (F-0028)
 
