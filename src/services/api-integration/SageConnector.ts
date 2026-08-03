@@ -35,8 +35,14 @@
  *
  * PATCH 23 — SAGE CONNECTOR (Prometheus T-3.17/T-4.6, 2026-06-18)
  * FP&A GL integration for ERP connectors (P0A-04 H2 #2 of 3).
+ *
+ * MONEY MIGRATION (2026-08-03): Imported Sage GL debit, credit, and net-change
+ * aggregates use the canonical money primitive (`src/utils/money.ts`). Each
+ * external amount is rounded with declared decimal half-up semantics before
+ * the period totals and net change are calculated.
  */
 
+import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { BaseConnector } from './BaseConnector';
 import type {
   ConnectorConfig,
@@ -710,21 +716,18 @@ export class SageConnector extends BaseConnector {
     netChange: number;
     entryCount: number;
   } {
-    // SECURITY FIX (C-06): Currency calculations must use fixed-point decimal
-    // arithmetic (integer-cents or decimal.js) to avoid floating-point errors.
-    // All amounts are rounded to 2 decimal places for reporting; production
-    // should store amounts as integer-cents (e.g., 15000 = $150.00).
-    let totalDebits = 0;
-    let totalCredits = 0;
-    for (const e of entries) {
-      totalDebits += Math.round((e.DEBITAMOUNT ?? 0) * 100) / 100;
-      totalCredits += Math.round((e.CREDITAMOUNT ?? 0) * 100) / 100;
-    }
-    const netChange = Math.round((totalDebits - totalCredits) * 100) / 100;
+    // External journal rows are monetary values. Round each imported amount
+    // first, then aggregate and subtract with decimal.js-backed helpers.
+    const debitAmounts = entries.map((entry) => roundTo(entry.DEBITAMOUNT ?? 0));
+    const creditAmounts = entries.map((entry) => roundTo(entry.CREDITAMOUNT ?? 0));
+    const totalDebits = roundTo(sumMoney(debitAmounts));
+    const totalCredits = roundTo(sumMoney(creditAmounts));
+    const netChange = roundTo(subtractMoney(totalDebits, totalCredits));
+
     return {
       accountId: accountId ?? null,
-      totalDebits: Math.round(totalDebits * 100) / 100,
-      totalCredits: Math.round(totalCredits * 100) / 100,
+      totalDebits,
+      totalCredits,
       netChange,
       entryCount: entries.length,
     };

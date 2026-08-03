@@ -6,13 +6,7 @@
  */
 
 import type { HeadcountInput, AttritionForecast } from '@/types/sector-types';
-import {
-  addMoney,
-  multiplyMoney,
-  sumMoney,
-  roundTo,
-  toDecimal,
-} from '@/utils/money';
+import { addMoney, multiplyMoney, sumMoney, roundTo, toDecimal } from '@/utils/money';
 
 export interface CompInput {
   salary: number;

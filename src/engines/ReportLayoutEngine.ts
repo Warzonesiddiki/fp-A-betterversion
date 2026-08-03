@@ -11,7 +11,14 @@
  * - Indented line items
  * - Group headers with collapse toggle
  * - Spacing between sections
+ *
+ * MONEY MIGRATION (2026-08-03): P&L revenue, COGS, operating expenses,
+ * profit, and balance-sheet asset/liability/equity totals use the canonical
+ * money primitive (`src/utils/money.ts`). Financial report totals are rounded
+ * to cents; layout geometry and HTML display formatting remain non-money.
  */
+
+import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
 
 export interface ReportSection {
   id: string;
@@ -71,10 +78,10 @@ function makeTotal(
 
 function sumValues(...sections: Record<string, number | null>[]): Record<string, number | null> {
   const result: Record<string, number | null> = {};
-  for (const section of sections) {
-    for (const [key, val] of Object.entries(section)) {
-      result[key] = (result[key] ?? 0) + (val ?? 0);
-    }
+  const periods = new Set(sections.flatMap((section) => Object.keys(section)));
+
+  for (const period of periods) {
+    result[period] = roundTo(sumMoney(sections.map((section) => section[period] ?? 0)));
   }
   return result;
 }
@@ -85,7 +92,7 @@ function subtractValues(
 ): Record<string, number | null> {
   const result: Record<string, number | null> = {};
   for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) {
-    result[key] = (a[key] ?? 0) - (b[key] ?? 0);
+    result[key] = roundTo(subtractMoney(a[key] ?? 0, b[key] ?? 0));
   }
   return result;
 }

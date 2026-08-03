@@ -233,6 +233,15 @@ function getAccountCategory(accountCode: string): AccountCategory {
   return ACCOUNT_CATEGORY_MAP[prefix] ?? 'expense';
 }
 
+/** Direction-independent key: an IC pair is the same relationship either way. */
+function intercompanyPairKey(
+  fromEntityId: string,
+  toEntityId: string,
+  accountCode: string
+): string {
+  return [fromEntityId, toEntityId].sort().join(':') + `:${accountCode}`;
+}
+
 // =============================================================================
 // CONSOLIDATION ENGINE
 // =============================================================================
@@ -564,7 +573,7 @@ export class ConsolidationEngine {
 
     // Process manual IC pairs
     for (const pair of icPairs) {
-      const pairKey = `${pair.fromEntityId}:${pair.toEntityId}:${pair.accountCode}`;
+      const pairKey = intercompanyPairKey(pair.fromEntityId, pair.toEntityId, pair.accountCode);
       if (processedPairs.has(pairKey)) continue;
       processedPairs.add(pairKey);
 
@@ -606,7 +615,7 @@ export class ConsolidationEngine {
             const eliminate = roundTo(multiplyMoney(matchedAmount, direction));
 
             if (eliminate !== 0) {
-              const autoPairKey = `${fromId}:${toId}:${accountCode}`;
+              const autoPairKey = intercompanyPairKey(fromId, toId, accountCode);
               if (!processedPairs.has(autoPairKey)) {
                 processedPairs.add(autoPairKey);
                 eliminations.push({

@@ -79,17 +79,18 @@ function createICPair(
 
 describe('ConsolidationEngine — money known answers (GAP-1 / F-0006)', () => {
   describe('eliminateIntercompany + sums', () => {
-    it('eliminates exact IC amounts (float gave 0.30000000000000004 on smalls)', () => {
+    it('eliminates exact matched IC amounts (float gave 0.30000000000000004 on smalls)', () => {
       const entries = [
-        createEntry('e1', '9001', 'IC Rev', 0.1, 'S1'),
-        createEntry('e2', '9001', 'IC Rev', 0.2, 'S1'),
+        createEntry('e1', '9001', 'IC Revenue', 0.1, 'S1'),
+        createEntry('e2', '9001', 'IC Revenue', 0.2, 'S1'),
+        createEntry('e3', '9001', 'IC Expense', -0.3, 'P'),
       ];
       const ic: ICPair[] = [createICPair('S1', 'P', '9001', 0.3, 'revenue')];
-      const elims = ConsolidationEngine.eliminateIntercompany(entries, ic, [], new Map());
-      // auto or manual elim should capture exact 0.3 (pre: drift)
-      expect(elims.length).toBeGreaterThan(0);
-      const totalElim = elims.reduce((s, e) => s + Math.abs(e.eliminatedAmount), 0);
-      expect(totalElim).toBe(0.3);
+      const eliminations = ConsolidationEngine.eliminateIntercompany(entries, ic, [], new Map());
+
+      // Both sides must be present: S1's 0.1 + 0.2 exactly offsets P's -0.3.
+      expect(eliminations).toHaveLength(1);
+      expect(eliminations[0]!.eliminatedAmount).toBe(-0.3);
     });
   });
 
@@ -156,21 +157,31 @@ describe('ConsolidationEngine — money known answers (GAP-1 / F-0006)', () => {
   });
 
   describe('consolidate full flow + balance (money sums)', () => {
-    it('full consolidate yields exact totals (float drift on multi sums + elims)', () => {
-      const parent = createParent([createEntry('p1', '4000', 'Rev', 5000, 'P')]);
-      const sub = createSubsidiary('S1', 'Sub', [
-        createEntry('s1', '4000', 'Rev', 2000, 'S1'),
-        createEntry('s2', '5000', 'Exp', -800, 'S1'),
+    it('full consolidate yields exact totals and a cent-balanced worksheet', () => {
+      const parent = createParent([
+        createEntry('p-cash', '1000', 'Cash', 5000, 'P'),
+        createEntry('p-equity', '3000', 'Equity', -5000, 'P'),
+        createEntry('p-revenue', '4000', 'Revenue', 5000, 'P'),
+        createEntry('p-ic', '9001', 'IC Expense', -0.3, 'P'),
       ]);
-      const ic: ICPair[] = [createICPair('S1', 'P', '9001', 300)];
-      const own = createOwnership('P', 'S1', 75);
+      const sub = createSubsidiary('S1', 'Sub', [
+        createEntry('s-cash', '1000', 'Cash', 2000, 'S1'),
+        createEntry('s-equity', '3000', 'Equity', -2000, 'S1'),
+        createEntry('s-revenue', '4000', 'Revenue', 2000, 'S1'),
+        createEntry('s-expense', '5000', 'Expense', -800, 'S1'),
+        createEntry('s-ic', '9001', 'IC Revenue', 0.3, 'S1'),
+      ]);
+      const ic: ICPair[] = [createICPair('S1', 'P', '9001', 0.3, 'revenue')];
+      const ownership = createOwnership('P', 'S1', 100);
 
-      const result = ConsolidationEngine.consolidate([parent, sub], [own], ic, []);
+      const result = ConsolidationEngine.consolidate([parent, sub], [ownership], ic, []);
       expect(result.status).toBe('success');
-      // netIncome = 5000 + (2000-800) = 6200; minority 25% of 1200 = 300; etc.
-      expect(result.netIncome).toBe(6200); // simplified exact
-      expect(result.totalMinorityInterest).toBeGreaterThanOrEqual(0); // money exact
-      expect(result.isBalanced).toBe(true); // within tolerance
+      expect(result.eliminations).toHaveLength(1);
+      expect(result.eliminations[0]!.eliminatedAmount).toBe(-0.3);
+      // Revenue = 5000 + 2000; expense = -800; matched IC entries are eliminated.
+      expect(result.netIncome).toBe(6200);
+      expect(result.minorityInterest).toBe(0);
+      expect(result.isBalanced).toBe(true);
     });
   });
 });
