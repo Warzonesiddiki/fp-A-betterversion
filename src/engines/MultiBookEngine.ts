@@ -1,7 +1,13 @@
 /**
  * MultiBookEngine — Multi-book accounting for GAAP, IFRS, Tax
  * Manages parallel accounting books with cross-book consolidation
+ *
+ * MONEY MIGRATION (2026-08-03): All currency-bearing debit/credit/netAmount
+ * paths (post, consolidate, compare, adjust) now use the canonical money
+ * primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Amounts round to
+ * cents. No raw + - * / or Math.abs on currency values remains.
  */
+import { addMoney, roundTo, subtractMoney } from '../utils/money';
 
 export interface AccountingBook {
   id: string;
@@ -87,6 +93,8 @@ export class MultiBookEngine {
       ...entry,
       id: `entry-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       bookId,
+      debit: roundTo(entry.debit),
+      credit: roundTo(entry.credit),
       adjusted: false,
       date: new Date().toISOString(),
     };
@@ -129,12 +137,16 @@ export class MultiBookEngine {
     const original = bookEntries.find((e) => e.id === entryId);
     if (!original) throw new Error(`Entry ${entryId} not found`);
 
+    const adjDebit = adjustment.debit !== undefined ? roundTo(adjustment.debit) : original.debit;
+    const adjCredit =
+      adjustment.credit !== undefined ? roundTo(adjustment.credit) : original.credit;
+
     const adjusted: BookEntry = {
       id: `adj-${Date.now()}`,
       bookId,
       accountId: original.accountId,
-      debit: adjustment.debit ?? original.debit,
-      credit: adjustment.credit ?? original.credit,
+      debit: adjDebit,
+      credit: adjCredit,
       description: adjustment.description,
       period: original.period,
       date: new Date().toISOString(),
@@ -181,30 +193,35 @@ export class MultiBookEngine {
             debit: entry.debit,
             credit: entry.credit,
           });
-          existing.totalDebit += entry.debit;
-          existing.totalCredit += entry.credit;
-          existing.netAmount = existing.totalDebit - existing.totalCredit;
+          const newTotalDebit = roundTo(addMoney(existing.totalDebit, entry.debit));
+          const newTotalCredit = roundTo(addMoney(existing.totalCredit, entry.credit));
+          existing.totalDebit = newTotalDebit;
+          existing.totalCredit = newTotalCredit;
+          existing.netAmount = roundTo(subtractMoney(newTotalDebit, newTotalCredit));
         } else {
+          const d = roundTo(entry.debit);
+          const c = roundTo(entry.credit);
           accountMap.set(entry.accountId, {
             accountId: entry.accountId,
-            books: [{ bookId, bookName: book.name, debit: entry.debit, credit: entry.credit }],
-            totalDebit: entry.debit,
-            totalCredit: entry.credit,
-            netAmount: entry.debit - entry.credit,
+            books: [{ bookId, bookName: book.name, debit: d, credit: c }],
+            totalDebit: d,
+            totalCredit: c,
+            netAmount: roundTo(subtractMoney(d, c)),
             gaapDifferences: [],
           });
         }
       }
     }
 
-    // Calculate GAAP differences
+    // Calculate GAAP differences (differences are display-only but keep rounded)
     const entries = Array.from(accountMap.values());
     for (const entry of entries) {
       if (entry.books.length >= 2) {
         for (let i = 0; i < entry.books.length - 1; i++) {
           for (let j = i + 1; j < entry.books.length; j++) {
-            const diff = entry.books[i]!.debit - entry.books[j]!.debit;
+            const diff = roundTo(subtractMoney(entry.books[i]!.debit, entry.books[j]!.debit));
             if (Math.abs(diff) > 0.01) {
+              // tolerance remains for display diff
               entry.gaapDifferences.push({
                 account: entry.accountId,
                 gaap1: entry.books[i]!.debit,
@@ -239,22 +256,28 @@ export class MultiBookEngine {
 
       for (const entry of entries) {
         const current = accountTotals.get(entry.accountId) ?? 0;
-        accountTotals.set(entry.accountId, current + entry.debit - entry.credit);
+        // Money-safe: net per entry
+        const net = roundTo(subtractMoney(entry.debit, entry.credit));
+        accountTotals.set(entry.accountId, roundTo(addMoney(current, net)));
       }
 
       for (const [accountId, amount] of accountTotals) {
         const existing = accountMap.get(accountId) ?? [];
-        existing.push({ bookId, bookName: book.name, amount });
+        existing.push({ bookId, bookName: book.name, amount: roundTo(amount) });
         accountMap.set(accountId, existing);
       }
     }
 
-    return Array.from(accountMap.entries()).map(([accountId, values]) => ({
-      accountId,
-      values,
-      maxDifference:
-        Math.max(...values.map((v) => v.amount)) - Math.min(...values.map((v) => v.amount)),
-    }));
+    return Array.from(accountMap.entries()).map(([accountId, values]) => {
+      const amounts = values.map((v) => v.amount);
+      const maxDiff =
+        amounts.length > 0 ? roundTo(subtractMoney(Math.max(...amounts), Math.min(...amounts))) : 0;
+      return {
+        accountId,
+        values,
+        maxDifference: maxDiff,
+      };
+    });
   }
 
   static deleteBook(bookId: string): boolean {

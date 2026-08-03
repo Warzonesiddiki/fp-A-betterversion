@@ -4,10 +4,25 @@
  *
  * Enhanced: margin, cash, burn rate, top expenses, period comparison,
  * variance calculation, department breakdown, budget utilization.
+ *
+ * MONEY MIGRATION (2026-08-03, GAP-1 F-0006): All currency-bearing values
+ * (revenue, cogs, opex, cash, expenses, netIncome, budget totals, variances,
+ * burn/runway etc.) now use the canonical money primitive
+ * (src/utils/money.ts / ../utils/money, decimal.js, ROUND_HALF_UP).
+ * Raw + - * / on currency values eliminated. Ratios/percentages remain float.
+ * Use greaterThan(0) for >0 guards on money. roundTo(x,2) for cents.
  */
 
 import type { GLState, BudgetState } from '@/types';
-import { formatMoney } from '../utils/money';
+import {
+  addMoney,
+  subtractMoney,
+  divideMoney,
+  sumMoney,
+  roundTo,
+  toDecimal,
+  formatMoney,
+} from '../utils/money';
 
 interface CopilotAnswer {
   answer: string;
@@ -181,28 +196,32 @@ export class FinanceCopilotEngine {
       };
     }
 
-    const revenue = entries
-      .filter((e) => REVENUE_CODES.test(e.accountCode))
-      .reduce((sum, e) => sum + e.credit, 0);
+    const revenueEntries = entries.filter((e) => REVENUE_CODES.test(e.accountCode));
+    const revenue = roundTo(sumMoney(revenueEntries.map((e) => e.credit)));
 
-    const cogs = entries
-      .filter((e) => COGS_CODES.test(e.accountCode))
-      .reduce((sum, e) => sum + e.debit, 0);
+    const cogsEntries = entries.filter((e) => COGS_CODES.test(e.accountCode));
+    const cogs = roundTo(sumMoney(cogsEntries.map((e) => e.debit)));
 
-    const opex = entries
-      .filter((e) => EXPENSE_CODES.test(e.accountCode))
-      .reduce((sum, e) => sum + e.debit, 0);
+    const opexEntries = entries.filter((e) => EXPENSE_CODES.test(e.accountCode));
+    const opex = roundTo(sumMoney(opexEntries.map((e) => e.debit)));
 
-    const grossMargin = revenue > 0 ? (revenue - cogs) / revenue : 0;
-    const netMargin = revenue > 0 ? (revenue - cogs - opex) / revenue : 0;
+    const grossProfit = subtractMoney(revenue, cogs);
+    const grossMargin = toDecimal(revenue).greaterThan(0)
+      ? divideMoney(grossProfit, revenue).toNumber()
+      : 0;
+
+    const netProfit = subtractMoney(grossProfit, opex);
+    const netMargin = toDecimal(revenue).greaterThan(0)
+      ? divideMoney(netProfit, revenue).toNumber()
+      : 0;
 
     const parts = [
-      `Gross margin: ${formatPct(grossMargin)} (${formatCurrency(revenue - cogs)} on ${formatCurrency(revenue)} revenue)`,
+      `Gross margin: ${formatPct(grossMargin)} (${formatCurrency(grossProfit.toNumber())} on ${formatCurrency(revenue)} revenue)`,
     ];
 
-    if (opex > 0) {
+    if (toDecimal(opex).greaterThan(0)) {
       parts.push(
-        `Net margin: ${formatPct(netMargin)} (${formatCurrency(revenue - cogs - opex)} after OpEx)`
+        `Net margin: ${formatPct(netMargin)} (${formatCurrency(netProfit.toNumber())} after OpEx)`
       );
     }
 
@@ -228,7 +247,12 @@ export class FinanceCopilotEngine {
     }
 
     const cashEntries = entries.filter((e) => CASH_CODES.test(e.accountCode));
-    const cashBalance = cashEntries.reduce((sum, e) => sum + e.credit - e.debit, 0);
+    let cashBal = toDecimal(0);
+    for (const e of cashEntries) {
+      cashBal = addMoney(cashBal, e.credit);
+      cashBal = subtractMoney(cashBal, e.debit);
+    }
+    const cashBalance = roundTo(cashBal);
 
     return {
       answer: `Cash position: ${formatCurrency(cashBalance)} across ${cashEntries.length} entries.`,
@@ -250,25 +274,32 @@ export class FinanceCopilotEngine {
       };
     }
 
-    const expenseEntries = entries.filter((e) => e.debit > 0);
-    const totalExpenses = expenseEntries.reduce((sum, e) => sum + e.debit, 0);
+    const expenseEntries = entries.filter((e) => toDecimal(e.debit).greaterThan(0));
+    const totalExpenses = roundTo(sumMoney(expenseEntries.map((e) => e.debit)));
 
     // Find unique periods to calculate monthly average
     const periods = [...new Set(entries.map((e) => e.period))].sort();
     const monthCount = Math.max(periods.length, 1);
-    const monthlyBurn = totalExpenses / monthCount;
+    const monthlyBurn = roundTo(divideMoney(totalExpenses, monthCount));
 
     // Cash for runway calculation
     const cashEntries = entries.filter((e) => CASH_CODES.test(e.accountCode));
-    const cashBalance = cashEntries.reduce((sum, e) => sum + e.credit - e.debit, 0);
-    const runwayMonths = monthlyBurn > 0 ? cashBalance / monthlyBurn : Infinity;
+    let cashBal = toDecimal(0);
+    for (const e of cashEntries) {
+      cashBal = addMoney(cashBal, e.credit);
+      cashBal = subtractMoney(cashBal, e.debit);
+    }
+    const cashBalance = roundTo(cashBal);
+    const runwayMonths = toDecimal(monthlyBurn).greaterThan(0)
+      ? divideMoney(cashBalance, monthlyBurn).toNumber()
+      : Infinity;
 
     const parts = [
       `Monthly burn rate: ${formatCurrency(monthlyBurn)}`,
       `Based on ${monthCount} period(s) of data`,
     ];
 
-    if (cashBalance > 0 && runwayMonths < Infinity) {
+    if (toDecimal(cashBalance).greaterThan(0) && runwayMonths < Infinity) {
       parts.push(
         `Runway: ${formatMoney(runwayMonths, { places: 1 })} months at current spend (${formatCurrency(cashBalance)} cash)`
       );
@@ -294,7 +325,7 @@ export class FinanceCopilotEngine {
       };
     }
 
-    const expenseEntries = entries.filter((e) => e.debit > 0);
+    const expenseEntries = entries.filter((e) => toDecimal(e.debit).greaterThan(0));
     if (expenseEntries.length === 0) {
       return {
         answer: 'No expense entries found in GL data.',
@@ -305,14 +336,13 @@ export class FinanceCopilotEngine {
 
     // Group by account and sum
     const byAccount = groupBy(expenseEntries, (e) => e.accountName || e.accountCode);
-    const ranked = Object.entries(byAccount)
-      .map(([name, items]) => ({
-        label: name,
-        value: items.reduce((sum, e) => sum + e.debit, 0),
-      }))
-      .sort((a, b) => b.value - a.value);
+    const rankedRaw = Object.entries(byAccount).map(([name, items]) => ({
+      label: name,
+      value: roundTo(sumMoney(items.map((e) => e.debit))),
+    }));
+    const ranked = [...rankedRaw].sort((a, b) => b.value - a.value);
 
-    const total = ranked.reduce((sum, r) => sum + r.value, 0);
+    const total = roundTo(sumMoney(ranked.map((r) => r.value)));
     const top5 = ranked.slice(0, 5);
 
     const lines = top5.map(
@@ -351,12 +381,15 @@ export class FinanceCopilotEngine {
     }
 
     const byDept = groupBy(withDept, (e) => e.department || e.departmentId || 'Unknown');
-    const deptSummary = Object.entries(byDept)
-      .map(([dept, items]) => ({
-        label: dept,
-        value: items.reduce((sum, e) => sum + e.debit - e.credit, 0),
-      }))
-      .sort((a, b) => b.value - a.value);
+    const deptSummaryRaw = Object.entries(byDept).map(([dept, items]) => {
+      let net = toDecimal(0);
+      for (const e of items) {
+        net = addMoney(net, e.credit);
+        net = subtractMoney(net, e.debit);
+      }
+      return { label: dept, value: roundTo(net) };
+    });
+    const deptSummary = [...deptSummaryRaw].sort((a, b) => b.value - a.value);
 
     const lines = deptSummary.map((d) => `${d.label}: ${formatCurrency(d.value)} net`);
 
@@ -396,14 +429,18 @@ export class FinanceCopilotEngine {
     const lastEntries = entries.filter((e) => e.period === lastPeriod);
     const prevEntries = entries.filter((e) => e.period === prevPeriod);
 
-    const lastRevenue = lastEntries.reduce((sum, e) => sum + e.credit, 0);
-    const prevRevenue = prevEntries.reduce((sum, e) => sum + e.credit, 0);
+    const lastRevenue = roundTo(sumMoney(lastEntries.map((e) => e.credit)));
+    const prevRevenue = roundTo(sumMoney(prevEntries.map((e) => e.credit)));
 
-    const lastExpense = lastEntries.reduce((sum, e) => sum + e.debit, 0);
-    const prevExpense = prevEntries.reduce((sum, e) => sum + e.debit, 0);
+    const lastExpense = roundTo(sumMoney(lastEntries.map((e) => e.debit)));
+    const prevExpense = roundTo(sumMoney(prevEntries.map((e) => e.debit)));
 
-    const revenueChange = prevRevenue > 0 ? (lastRevenue - prevRevenue) / prevRevenue : 0;
-    const expenseChange = prevExpense > 0 ? (lastExpense - prevExpense) / prevExpense : 0;
+    const revenueChange = toDecimal(prevRevenue).greaterThan(0)
+      ? divideMoney(subtractMoney(lastRevenue, prevRevenue), prevRevenue).toNumber()
+      : 0;
+    const expenseChange = toDecimal(prevExpense).greaterThan(0)
+      ? divideMoney(subtractMoney(lastExpense, prevExpense), prevExpense).toNumber()
+      : 0;
 
     const parts = [
       `Comparing ${lastPeriod} vs ${prevPeriod}:`,
@@ -451,13 +488,13 @@ export class FinanceCopilotEngine {
       const budgetByAccount = new Map<string, number>();
       for (const item of lineItems) {
         const current = budgetByAccount.get(item.accountId) ?? 0;
-        budgetByAccount.set(item.accountId, current + item.amount);
+        budgetByAccount.set(item.accountId, roundTo(addMoney(current, item.amount)));
       }
 
       const actualByAccount = new Map<string, number>();
       for (const entry of entries) {
         const current = actualByAccount.get(entry.accountId) ?? 0;
-        actualByAccount.set(entry.accountId, current + entry.netChange);
+        actualByAccount.set(entry.accountId, roundTo(addMoney(current, entry.netChange)));
       }
 
       const variances: Array<{
@@ -470,8 +507,10 @@ export class FinanceCopilotEngine {
 
       for (const [accountId, budgetAmount] of budgetByAccount) {
         const actualAmount = actualByAccount.get(accountId) ?? 0;
-        const variance = actualAmount - budgetAmount;
-        const pct = budgetAmount !== 0 ? variance / budgetAmount : 0;
+        const variance = roundTo(subtractMoney(actualAmount, budgetAmount));
+        const pct = toDecimal(budgetAmount).greaterThan(0)
+          ? divideMoney(variance, budgetAmount).toNumber()
+          : 0;
         const accountName =
           lineItems.find((i) => i.accountId === accountId)?.accountName ?? accountId;
         variances.push({
@@ -535,7 +574,7 @@ export class FinanceCopilotEngine {
       };
     }
 
-    const totalBudget = budgets.reduce((sum, b) => sum + b.totalAmount, 0);
+    const totalBudget = roundTo(sumMoney(budgets.map((b) => b.totalAmount)));
     const activeBudgets = budgets.filter((b) => b.status === 'Draft' || b.status === 'InReview');
 
     const parts = [
@@ -547,10 +586,10 @@ export class FinanceCopilotEngine {
       const budgetByAccount = new Map<string, number>();
       for (const item of lineItems) {
         const current = budgetByAccount.get(item.accountId) ?? 0;
-        budgetByAccount.set(item.accountId, current + item.amount);
+        budgetByAccount.set(item.accountId, roundTo(addMoney(current, item.amount)));
       }
 
-      const totalLineItems = lineItems.reduce((sum, i) => sum + i.amount, 0);
+      const totalLineItems = roundTo(sumMoney(lineItems.map((i) => i.amount)));
       parts.push(`${lineItems.length} line items totaling ${formatCurrency(totalLineItems)}`);
     }
 
@@ -574,14 +613,18 @@ export class FinanceCopilotEngine {
       };
     }
 
-    const revenueEntries = entries.filter((e) => REVENUE_CODES.test(e.accountCode) || e.credit > 0);
-    const total = revenueEntries.reduce((sum, e) => sum + e.credit, 0);
+    const revenueEntries = entries.filter(
+      (e) => REVENUE_CODES.test(e.accountCode) || toDecimal(e.credit).greaterThan(0)
+    );
+    const total = roundTo(sumMoney(revenueEntries.map((e) => e.credit)));
 
     // Breakdown by account if available
     const byAccount = groupBy(revenueEntries, (e) => e.accountName || e.accountCode);
-    const ranked = Object.entries(byAccount)
-      .map(([name, items]) => ({ label: name, value: items.reduce((sum, e) => sum + e.credit, 0) }))
-      .sort((a, b) => b.value - a.value);
+    const rankedRaw = Object.entries(byAccount).map(([name, items]) => ({
+      label: name,
+      value: roundTo(sumMoney(items.map((e) => e.credit))),
+    }));
+    const ranked = [...rankedRaw].sort((a, b) => b.value - a.value);
 
     const parts = [
       `Total revenue: ${formatCurrency(total)} across ${revenueEntries.length} entries.`,
@@ -613,14 +656,18 @@ export class FinanceCopilotEngine {
       };
     }
 
-    const expenseEntries = entries.filter((e) => EXPENSE_CODES.test(e.accountCode) || e.debit > 0);
-    const total = expenseEntries.reduce((sum, e) => sum + e.debit, 0);
+    const expenseEntries = entries.filter(
+      (e) => EXPENSE_CODES.test(e.accountCode) || toDecimal(e.debit).greaterThan(0)
+    );
+    const total = roundTo(sumMoney(expenseEntries.map((e) => e.debit)));
 
     // Breakdown by account
     const byAccount = groupBy(expenseEntries, (e) => e.accountName || e.accountCode);
-    const ranked = Object.entries(byAccount)
-      .map(([name, items]) => ({ label: name, value: items.reduce((sum, e) => sum + e.debit, 0) }))
-      .sort((a, b) => b.value - a.value);
+    const rankedRaw = Object.entries(byAccount).map(([name, items]) => ({
+      label: name,
+      value: roundTo(sumMoney(items.map((e) => e.debit))),
+    }));
+    const ranked = [...rankedRaw].sort((a, b) => b.value - a.value);
 
     const parts = [
       `Total expenses: ${formatCurrency(total)} across ${expenseEntries.length} entries.`,
@@ -657,7 +704,7 @@ export class FinanceCopilotEngine {
       .map(([status, items]) => `${items.length} ${status}`)
       .join(', ');
 
-    const totalAmount = budgets.reduce((sum, b) => sum + b.totalAmount, 0);
+    const totalAmount = roundTo(sumMoney(budgets.map((b) => b.totalAmount)));
 
     return {
       answer: `${budgets.length} budget(s) loaded (${statusSummary}). Total: ${formatCurrency(totalAmount)}.`,
@@ -679,11 +726,11 @@ export class FinanceCopilotEngine {
       };
     }
 
-    const totalCredit = entries.reduce((sum, e) => sum + e.credit, 0);
-    const totalDebit = entries.reduce((sum, e) => sum + e.debit, 0);
-    const netIncome = totalCredit - totalDebit;
+    const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)));
+    const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)));
+    const netIncome = roundTo(subtractMoney(totalCredit, totalDebit));
 
-    const label = netIncome >= 0 ? 'Net income' : 'Net loss';
+    const label = toDecimal(netIncome).greaterThanOrEqualTo(0) ? 'Net income' : 'Net loss';
 
     return {
       answer: `${label}: ${formatCurrency(netIncome)} (${formatCurrency(totalCredit)} revenue - ${formatCurrency(totalDebit)} expenses).`,

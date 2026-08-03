@@ -40,7 +40,21 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 24th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03): All currency-bearing amounts (IC eliminations,
+ * NCI, FX impact, ownership-weighted amounts) now use the canonical money
+ * primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Amounts round to
+ * cents; ownership % and rates use higher precision via multiplyMoney/divideMoney.
+ * No raw + - * / on currency values remains.
  */
+import {
+  addMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  sumMoney,
+  roundTo,
+} from '../utils/money';
 
 // --- Type Definitions ---
 
@@ -189,12 +203,15 @@ export class CascadeCalculationEngine {
   }
 
   // 7. Compute cumulative ownership from ultimate parent (multiplicative)
+  // Money migration: use multiplyMoney / divideMoney + roundTo( , 4) for % chain precision
+  // (avoids binary float drift across multi-level ownership e.g. 80 * 0.5)
   static computeCumulativeOwnership(entities: OwnershipNode[], entityId: string): number {
     const map = CascadeCalculationEngine.buildOwnershipMap(entities);
     let cumulative = 100;
     let current = map.get(entityId);
     while (current && current.parentId) {
-      cumulative = cumulative * (current.ownershipPct / 100);
+      const frac = divideMoney(current.ownershipPct, 100);
+      cumulative = roundTo(multiplyMoney(cumulative, frac), 4);
       const parent = map.get(current.parentId);
       if (!parent) break;
       current = parent;
@@ -208,13 +225,16 @@ export class CascadeCalculationEngine {
     cumulativeOwnershipPct: number,
     depth: number
   ): number {
-    if (depth === 0) return icPair.amount;
-    return icPair.amount * (cumulativeOwnershipPct / 100);
+    if (depth === 0) return roundTo(icPair.amount);
+    // ownership fraction = pct / 100 (pct treated as MoneyInput for precision)
+    const frac = divideMoney(cumulativeOwnershipPct, 100);
+    return roundTo(multiplyMoney(icPair.amount, frac));
   }
 
   // 9. Compute NCI (Non-Controlling Interest) for one entity
   static computeNCI(netIncome: number, minorityPct: number): number {
-    return netIncome * (minorityPct / 100);
+    const frac = divideMoney(minorityPct, 100);
+    return roundTo(multiplyMoney(netIncome, frac));
   }
 
   // 10. Compute FX impact per ASC 830 (current-rate for monetary items)
@@ -223,7 +243,7 @@ export class CascadeCalculationEngine {
     rate: CascadeFXRate,
     _method: 'current-rate' | 'temporal'
   ): number {
-    return amount * rate.rate; // simplified; full impl needs isMonetary flag
+    return roundTo(multiplyMoney(amount, rate.rate));
   }
 
   // 11. Run full cascade end-to-end
@@ -257,12 +277,10 @@ export class CascadeCalculationEngine {
         entities,
         entity.entityId
       );
-      const icElim = icPairs
+      const icElimList = icPairs
         .filter((p) => p.fromEntityId === entity.entityId)
-        .reduce(
-          (sum, p) => sum + CascadeCalculationEngine.computeICElimination(p, cumOwnership, i),
-          0
-        );
+        .map((p) => CascadeCalculationEngine.computeICElimination(p, cumOwnership, i));
+      const icElim = icElimList.length > 0 ? roundTo(sumMoney(icElimList)) : 0;
       const ni = netIncomeByEntity.get(entity.entityId) ?? 0;
       const nciPct = 100 - cumOwnership;
       const nci = CascadeCalculationEngine.computeNCI(ni, nciPct);
@@ -273,9 +291,9 @@ export class CascadeCalculationEngine {
         );
         if (rate) fxImpact = CascadeCalculationEngine.computeFXImpact(ni, rate, 'current-rate');
       }
-      cumulativeNCI += nci;
-      cumulativeElim += icElim;
-      totalFX += fxImpact;
+      cumulativeNCI = roundTo(addMoney(cumulativeNCI, nci));
+      cumulativeElim = roundTo(addMoney(cumulativeElim, icElim));
+      totalFX = roundTo(addMoney(totalFX, fxImpact));
       steps.push({
         level: i,
         entityId: entity.entityId,
@@ -289,13 +307,14 @@ export class CascadeCalculationEngine {
         cumulativeElimination: cumulativeElim,
       });
     }
-    const totalNI = Array.from(netIncomeByEntity.values()).reduce((a, b) => a + b, 0);
+    const totalNIValues = Array.from(netIncomeByEntity.values());
+    const totalNI = totalNIValues.length > 0 ? roundTo(sumMoney(totalNIValues)) : 0;
     return {
       steps,
       totalElimination: cumulativeElim,
       totalNCI: cumulativeNCI,
       totalFXImpact: totalFX,
-      consolidatedNI: totalNI - cumulativeNCI,
+      consolidatedNI: roundTo(subtractMoney(totalNI, cumulativeNCI)),
       validated: true,
       errors: [],
     };
@@ -310,10 +329,11 @@ export class CascadeCalculationEngine {
     if (steps.length === 0) return { totalElim: 0, totalNCI: 0, totalFX: 0 };
     const last = steps[steps.length - 1];
     if (!last) return { totalElim: 0, totalNCI: 0, totalFX: 0 };
+    const fxValues = steps.map((st) => st.fxImpact);
     return {
       totalElim: last.cumulativeElimination,
       totalNCI: last.cumulativeNCI,
-      totalFX: steps.reduce((s, st) => s + st.fxImpact, 0),
+      totalFX: roundTo(sumMoney(fxValues)),
     };
   }
 }

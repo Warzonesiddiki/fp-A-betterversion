@@ -19,6 +19,7 @@ import type {
   SensitivityScenario,
 } from '@/types/operational-drivers';
 import { toPrecise, fromPrecise, preciseMul } from '@/utils/precisionMath';
+import { multiplyMoney, addMoney, subtractMoney, roundTo, toDecimal, sumMoney } from '../utils/money';
 
 // ─── Driver Creation ───────────────────────────────────────────────────────
 
@@ -66,7 +67,8 @@ export function evaluateChain(
 ): { result: number; driverValues: Record<string, number>; errors: string[] } {
   const driverValues: Record<string, number> = {};
   const errors: string[] = [];
-  let product = 1;
+  // Money migration: use money multiply for currency products (financial outputs)
+  let product = toDecimal(1);
 
   for (const driverId of chain.driverIds) {
     const driver = drivers.get(driverId);
@@ -77,11 +79,11 @@ export function evaluateChain(
 
     const value = driver.values.get(period) ?? driver.forecasts.get(period) ?? 0;
     driverValues[driverId] = value;
-    product *= value;
+    product = multiplyMoney(product, value);
   }
 
   return {
-    result: product,
+    result: roundTo(product),
     driverValues,
     errors,
   };
@@ -195,7 +197,9 @@ export function analyzeSensitivity(
     const targetDriver = modifiedDrivers.get(targetDriverId);
     if (targetDriver) {
       const originalValue = targetDriver.values.get(period) ?? 0;
-      const newValue = originalValue * (1 + pct / 100);
+      // Money migration: * for sensitivity use multiplyMoney (currency)
+      const newValueDec = multiplyMoney(originalValue, (1 + pct / 100));
+      const newValue = roundTo(newValueDec);
       const modifiedDriver: OperationalDriver = {
         ...targetDriver,
         values: new Map(targetDriver.values).set(period, newValue),
@@ -204,7 +208,7 @@ export function analyzeSensitivity(
     }
 
     const { result: newValue } = evaluateChain(chain, modifiedDrivers, period);
-    const delta = newValue - baseValue;
+    const delta = roundTo(subtractMoney(newValue, baseValue));
 
     return {
       changePercent: pct,
@@ -262,13 +266,11 @@ export function createMatrix(
 
 /**
  * Get a column (period) total from a driver matrix.
+ * Money migration: use sumMoney + roundTo when values are currency.
  */
 export function getColumnTotal(matrix: DriverMatrix, periodIndex: number): number {
-  let total = 0;
-  for (const row of matrix.values) {
-    total += row[periodIndex] ?? 0;
-  }
-  return total;
+  const vals = matrix.values.map((row) => row[periodIndex] ?? 0);
+  return roundTo(sumMoney(vals));
 }
 
 /**
@@ -277,5 +279,5 @@ export function getColumnTotal(matrix: DriverMatrix, periodIndex: number): numbe
 export function getRowTotal(matrix: DriverMatrix, entityIndex: number): number {
   const row = matrix.values[entityIndex];
   if (!row) return 0;
-  return row.reduce((sum, val) => sum + val, 0);
+  return roundTo(sumMoney(row));
 }

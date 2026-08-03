@@ -1,6 +1,11 @@
 /**
  * Driver Library — Pre-built financial drivers for driver-based planning
+ *
+ * MONEY MIGRATION (2026-08-03, GAP-1 F-0006): cascadeChange scaling on
+ * linkedLineItems (currency units e.g. revenue/cost) now uses the canonical
+ * money primitive (src/utils/money.ts). Raw * eliminated. roundTo for results.
  */
+import { multiplyMoney, roundTo } from '../utils/money';
 
 export interface Driver {
   id: string;
@@ -153,7 +158,8 @@ export class DriverLibrary {
     const result = { ...lineItems };
     for (const item of driver.linkedLineItems) {
       if (result[item] !== undefined) {
-        result[item] = result[item] * (1 + driver.defaultValue / 100);
+        // Money migration: use multiplyMoney + roundTo for currency scaling
+        result[item] = roundTo(multiplyMoney(result[item], (1 + driver.defaultValue / 100)));
       }
     }
     return result;

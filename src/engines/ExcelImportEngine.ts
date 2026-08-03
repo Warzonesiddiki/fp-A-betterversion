@@ -8,7 +8,7 @@
 import ExcelJS from 'exceljs';
 import { parseCSVRecords } from '@/utils/csv';
 import { sanitizeForDisplay } from '@/utils/security';
-import { formatMoney } from '@/utils/money';
+import { subtractMoney, sumMoney, roundTo, toDecimal, formatMoney } from '@/utils/money';
 
 export type FileFormat = 'xlsx' | 'csv';
 
@@ -407,7 +407,8 @@ export class ExcelImportEngine {
 
       // Warn if both debit/credit and amount are provided and inconsistent
       if (debitVal !== undefined && creditVal !== undefined && amountVal !== undefined) {
-        if (Math.abs(debit - credit - amount) > 0.01 && Math.abs(amount) > 0.01) {
+        const diff = roundTo(subtractMoney(subtractMoney(debit, credit), amount));
+        if (toDecimal(Math.abs(diff)).greaterThan(0.01) && toDecimal(amount).greaterThan(0.01)) {
           warnings.push({
             row: rowNum,
             column: 'amount',
@@ -417,13 +418,19 @@ export class ExcelImportEngine {
         }
       }
 
+      const mappedDebit = roundTo(Math.abs(debit));
+      const mappedCredit = roundTo(Math.abs(credit));
+      const mappedAmount = columnMap.has('amount')
+        ? roundTo(amount)
+        : roundTo(subtractMoney(debit, credit));
+
       mapped.push({
         date: formatValue(dateVal),
         accountCode: sanitizeForDisplay(String(accountCodeVal).trim()),
         accountName: sanitizeForDisplay(String(getVal('accountName') ?? '')),
-        debit: Math.abs(debit),
-        credit: Math.abs(credit),
-        amount: columnMap.has('amount') ? amount : debit - credit,
+        debit: mappedDebit,
+        credit: mappedCredit,
+        amount: mappedAmount,
         description: sanitizeForDisplay(String(getVal('description') ?? '')),
         reference: sanitizeForDisplay(String(getVal('reference') ?? '')),
         department: sanitizeForDisplay(String(getVal('department') ?? '')),
@@ -448,12 +455,17 @@ export class ExcelImportEngine {
       return { valid: false, errors, warnings, mappedRowCount: 0 };
     }
 
-    // Check for balanced debits/credits
-    const totalDebit = rows.reduce((s, r) => s + r.debit, 0);
-    const totalCredit = rows.reduce((s, r) => s + r.credit, 0);
-    const imbalance = Math.abs(totalDebit - totalCredit);
+    // Check for balanced debits/credits — money migrated
+    const totalDebit = roundTo(sumMoney(rows.map((r) => r.debit)));
+    const totalCredit = roundTo(sumMoney(rows.map((r) => r.credit)));
+    const imbalanceDec = subtractMoney(totalDebit, totalCredit);
+    const imbalance = Math.abs(roundTo(imbalanceDec));
 
-    if (imbalance > 0.01 && totalDebit > 0 && totalCredit > 0) {
+    if (
+      toDecimal(imbalance).greaterThan(0.01) &&
+      toDecimal(totalDebit).greaterThan(0) &&
+      toDecimal(totalCredit).greaterThan(0)
+    ) {
       warnings.push({
         row: 0,
         column: 'balance',

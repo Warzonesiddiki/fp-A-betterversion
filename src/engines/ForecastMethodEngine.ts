@@ -8,7 +8,25 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 27th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03, GAP-1 F-0006): All currency-bearing forecast values
+ * (historical data series, fitted, forecast arrays in simple/weighted/exponential/holt-winters/
+ * linear-regression/seasonal/ensemble) now use the canonical money primitive
+ * (src/utils/money.ts / ../utils/money, decimal.js, ROUND_HALF_UP). Amounts round to cents.
+ * Raw + - * / on currency values eliminated. Metrics (MAPE/RMSE/MAE/R2) and alphas/periods
+ * remain float as they are ratios/indices. Use greaterThan(0) for currency >0 guards.
  */
+import {
+  addMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  sumMoney,
+  roundTo,
+  toDecimal,
+} from '../utils/money';
+import Decimal from 'decimal.js';
+
 export interface ForecastResult {
   forecast: number[];
   fitted: number[];
@@ -62,7 +80,9 @@ export interface HoltWintersResult extends ForecastResult {
 // ─── Internal helpers ───────────────────────────────────────────────────────────
 
 function mean(values: number[]): number {
-  return values.reduce((a, b) => a + b, 0) / values.length;
+  if (values.length === 0) return 0;
+  // Money migration: use sumMoney + divideMoney for average of currency series
+  return roundTo(divideMoney(sumMoney(values), values.length));
 }
 
 function standardDeviation(values: number[]): number {
@@ -144,11 +164,10 @@ export class ForecastMethodEngine {
 
     const fitted: number[] = new Array(data.length).fill(NaN);
     for (let i = window - 1; i < data.length; i++) {
-      let sum = 0;
-      for (let j = i - window + 1; j <= i; j++) {
-        sum += data[j]!;
-      }
-      fitted[i] = sum / window;
+      // Money migration: use sumMoney + divideMoney + roundTo for window sum/avg (currency)
+      const windowSlice = data.slice(i - window + 1, i + 1);
+      const sum = sumMoney(windowSlice);
+      fitted[i] = roundTo(divideMoney(sum, window));
     }
 
     const forecast: number[] = [];
@@ -181,20 +200,23 @@ export class ForecastMethodEngine {
 
     const fitted: number[] = new Array(data.length).fill(NaN);
     for (let i = window - 1; i < data.length; i++) {
-      let sum = 0;
+      // Money migration: weighted sum using multiplyMoney + addMoney + roundTo
+      let s = toDecimal(0);
       for (let j = 0; j < window; j++) {
-        sum += data[i - window + 1 + j]! * normalizedWeights[j]!;
+        const term = multiplyMoney(data[i - window + 1 + j]!, normalizedWeights[j]!);
+        s = addMoney(s, term);
       }
-      fitted[i] = sum;
+      fitted[i] = roundTo(s);
     }
 
     const forecast: number[] = [];
     const lastWindow = data.slice(-window);
-    let fSum = 0;
+    let fSum = toDecimal(0);
     for (let j = 0; j < window; j++) {
-      fSum += lastWindow[j]! * normalizedWeights[j]!;
+      const term = multiplyMoney(lastWindow[j]!, normalizedWeights[j]!);
+      fSum = addMoney(fSum, term);
     }
-    forecast.push(fSum);
+    forecast.push(roundTo(fSum));
 
     const validFitted = fitted.filter((v) => !isNaN(v));
     const correspondingActual = data.slice(window - 1);
@@ -220,7 +242,12 @@ export class ForecastMethodEngine {
 
     const fitted: number[] = [data[0]!];
     for (let i = 1; i < data.length; i++) {
-      fitted.push(alpha * data[i]! + (1 - alpha) * fitted[i - 1]!);
+      // Money migration: alpha * data[i] + (1-alpha) * prev using multiply/add/roundTo
+      const prev = fitted[i - 1]!;
+      const aTerm = multiplyMoney(alpha, data[i]!);
+      const oneMinusA = subtractMoney(1, alpha);
+      const bTerm = multiplyMoney(oneMinusA, prev);
+      fitted.push(roundTo(addMoney(aTerm, bTerm)));
     }
 
     const lastFitted = fitted[fitted.length - 1]!;
@@ -267,6 +294,7 @@ export class ForecastMethodEngine {
     let ssXY = 0;
     let ssXX = 0;
     for (let i = 0; i < n; i++) {
+      // keep raw for ss (x is index, yMean from money round; residuals/metrics stay float)
       ssXY += (i - xMean) * (data[i]! - yMean);
       ssXX += (i - xMean) ** 2;
     }
@@ -276,8 +304,8 @@ export class ForecastMethodEngine {
 
     const predict = (x: number) => intercept + slope * x;
 
-    const fitted = Array.from({ length: n }, (_, i) => predict(i));
-    const forecast = Array.from({ length: periodsToForecast }, (_, i) => predict(n + i));
+    const fitted = Array.from({ length: n }, (_, i) => roundTo(predict(i)));
+    const forecast = Array.from({ length: periodsToForecast }, (_, i) => roundTo(predict(n + i)));
     const residuals = data.map((v, i) => v - fitted[i]!);
 
     const metrics = buildMetrics(data, fitted);
@@ -308,16 +336,14 @@ export class ForecastMethodEngine {
 
     const n = data.length;
 
-    // Step 1: Compute trend via centered moving average
+    // Step 1: Compute trend via centered moving average (money migrated)
     const trend: number[] = new Array(n).fill(NaN);
     const halfP = Math.floor(period / 2);
 
     for (let i = halfP; i < n - halfP; i++) {
-      let sum = 0;
-      for (let j = i - halfP; j <= i + halfP; j++) {
-        sum += data[j]!;
-      }
-      trend[i] = sum / period;
+      const windowSlice = data.slice(i - halfP, i + halfP + 1);
+      const s = sumMoney(windowSlice);
+      trend[i] = roundTo(divideMoney(s, period));
     }
 
     // Fill edges by extending nearest valid trend value
@@ -328,7 +354,7 @@ export class ForecastMethodEngine {
       trend[i] = trend[n - halfP - 1]!;
     }
 
-    // Step 2: Detrend to get seasonal component
+    // Step 2: Detrend to get seasonal component (raw ok for ratio/indices)
     const detrended: number[] = [];
     for (let i = 0; i < n; i++) {
       if (mode === 'additive') {
@@ -369,7 +395,7 @@ export class ForecastMethodEngine {
     // Step 4: Build full seasonal array
     const seasonal: number[] = Array.from({ length: n }, (_, i) => seasonalIndices[i % period]!);
 
-    // Step 5: Compute residual
+    // Step 5: Compute residual (add/sub for additive)
     const residual: number[] = [];
     for (let i = 0; i < n; i++) {
       if (mode === 'additive') {
@@ -390,7 +416,7 @@ export class ForecastMethodEngine {
       }
     }
 
-    // Reconstruct for metrics
+    // Reconstruct for metrics (add/mult)
     const reconstructed: number[] = [];
     for (let i = 0; i < n; i++) {
       if (mode === 'additive') {
@@ -430,12 +456,8 @@ export class ForecastMethodEngine {
 
     const n = data.length;
 
-    // Initialize level as mean of first season
-    let levelInit = 0;
-    for (let i = 0; i < period; i++) {
-      levelInit += data[i]!;
-    }
-    levelInit /= period;
+    // Initialize level as mean of first season (money)
+    const levelInit = roundTo(divideMoney(sumMoney(data.slice(0, period)), period));
 
     // Initialize trend as average slope across first two seasons
     let trendInit = 0;
@@ -468,16 +490,20 @@ export class ForecastMethodEngine {
 
     const fitted: number[] = new Array(n).fill(NaN);
 
-    // First season: use initial values
+    // First season: use initial values (add/mul for additive, mul for mult)
     for (let i = 0; i < period; i++) {
       if (mode === 'additive') {
-        fitted[i] = levelInit + trendInit * 0 + seasonalInit[i]!;
+        fitted[i] = roundTo(
+          addMoney(levelInit, addMoney(multiplyMoney(trendInit, 0), seasonalInit[i]!))
+        );
       } else {
-        fitted[i] = levelInit * trendInit ** 0 * seasonalInit[i]!;
+        fitted[i] = roundTo(
+          multiplyMoney(multiplyMoney(levelInit, Math.pow(trendInit, 0)), seasonalInit[i]!)
+        );
       }
     }
 
-    // Run HW from period onwards
+    // Run HW from period onwards — migrate forecastVal / level / trend updates where additive (currency)
     for (let i = period; i < n; i++) {
       const prevLevel = level[level.length - 1]!;
       const prevTrend = trend[trend.length - 1]!;
@@ -490,19 +516,44 @@ export class ForecastMethodEngine {
       let forecastVal: number;
 
       if (mode === 'additive') {
-        forecastVal = prevLevel + prevTrend + seasonalInit[seasonIdx]!;
-        newLevel =
-          alpha * (data[i]! - seasonal[seasonIdx]!) + (1 - alpha) * (prevLevel + prevTrend);
-        newTrend = beta * (newLevel - prevLevel) + (1 - beta) * prevTrend;
-        newSeason = gamma * (data[i]! - newLevel) + (1 - gamma) * seasonal[seasonIdx]!;
+        forecastVal = roundTo(addMoney(addMoney(prevLevel, prevTrend), seasonalInit[seasonIdx]!));
+        const diffTerm = subtractMoney(data[i]!, seasonal[seasonIdx]!);
+        const aScaled = multiplyMoney(alpha, diffTerm);
+        const oneMinusA = subtractMoney(1, alpha);
+        const bScaled = multiplyMoney(oneMinusA, addMoney(prevLevel, prevTrend));
+        newLevel = roundTo(addMoney(aScaled, bScaled));
+        newTrend = roundTo(
+          addMoney(
+            multiplyMoney(beta, subtractMoney(newLevel, prevLevel)),
+            multiplyMoney(subtractMoney(1, beta), prevTrend)
+          )
+        );
+        newSeason = roundTo(
+          addMoney(
+            multiplyMoney(gamma, subtractMoney(data[i]!, newLevel)),
+            multiplyMoney(subtractMoney(1, gamma), seasonal[seasonIdx]!)
+          )
+        );
       } else {
-        forecastVal = prevLevel * prevTrend * seasonal[seasonIdx]!;
-        newLevel =
-          alpha * (seasonal[seasonIdx] !== 0 ? data[i]! / seasonal[seasonIdx]! : data[i]!) +
-          (1 - alpha) * (prevLevel * prevTrend);
-        newTrend = beta * (prevLevel !== 0 ? newLevel / prevLevel : 1) + (1 - beta) * prevTrend;
-        newSeason =
-          gamma * (newLevel !== 0 ? data[i]! / newLevel : 1) + (1 - gamma) * seasonal[seasonIdx]!;
+        forecastVal = roundTo(
+          multiplyMoney(multiplyMoney(prevLevel, prevTrend), seasonal[seasonIdx]!)
+        );
+        const denom = seasonal[seasonIdx] !== 0 ? data[i]! / seasonal[seasonIdx]! : data[i]!;
+        const aScaled = multiplyMoney(alpha, denom);
+        const oneMinusA = subtractMoney(1, alpha);
+        const bScaled = multiplyMoney(oneMinusA, multiplyMoney(prevLevel, prevTrend));
+        newLevel = roundTo(addMoney(aScaled, bScaled));
+        const denom2 = prevLevel !== 0 ? newLevel / prevLevel : 1;
+        newTrend = roundTo(
+          addMoney(multiplyMoney(beta, denom2), multiplyMoney(subtractMoney(1, beta), prevTrend))
+        );
+        const denom3 = newLevel !== 0 ? data[i]! / newLevel : 1;
+        newSeason = roundTo(
+          addMoney(
+            multiplyMoney(gamma, denom3),
+            multiplyMoney(subtractMoney(1, gamma), seasonal[seasonIdx]!)
+          )
+        );
       }
 
       level.push(newLevel);
@@ -519,9 +570,15 @@ export class ForecastMethodEngine {
     for (let h = 1; h <= periodsToForecast; h++) {
       const seasonIdx = (n + h - 1) % period;
       if (mode === 'additive') {
-        forecast.push(lastLevel + lastTrend * h + seasonal[seasonIdx]!);
+        forecast.push(
+          roundTo(addMoney(addMoney(lastLevel, multiplyMoney(lastTrend, h)), seasonal[seasonIdx]!))
+        );
       } else {
-        forecast.push(lastLevel * lastTrend ** h * seasonal[seasonIdx]!);
+        forecast.push(
+          roundTo(
+            multiplyMoney(multiplyMoney(lastLevel, Math.pow(lastTrend, h)), seasonal[seasonIdx]!)
+          )
+        );
       }
     }
 
@@ -661,37 +718,33 @@ export class ForecastMethodEngine {
       fittedArrays.push(method!.fitted(data, data));
     }
 
-    // Weighted ensemble
+    // Weighted ensemble (money migrated)
     const forecast: number[] = [];
     for (let h = 0; h < periodsToForecast; h++) {
-      let sum = 0;
+      let s = toDecimal(0);
       for (let m = 0; m < top.length; m++) {
         const f = forecasts[m]!;
-        sum += (f[h] ?? f[f.length - 1]!) * weights[m]!;
+        const val = f[h] ?? f[f.length - 1]!;
+        const w = weights[m]!;
+        s = addMoney(s, multiplyMoney(val, w));
       }
-      forecast.push(sum);
+      forecast.push(roundTo(s));
     }
 
     const fitted: number[] = [];
     for (let i = 0; i < data.length; i++) {
-      let sum = 0;
+      let s = toDecimal(0);
+      let weightAcc = toDecimal(0);
       let validCount = 0;
       for (let m = 0; m < top.length; m++) {
         const val = fittedArrays[m]![i];
         if (val !== undefined && isFinite(val)) {
-          sum += val * weights[m]!;
+          s = addMoney(s, multiplyMoney(val, weights[m]!));
+          weightAcc = addMoney(weightAcc, weights[m]!);
           validCount++;
         }
       }
-      fitted.push(
-        validCount > 0
-          ? sum /
-              weights.slice(0, top.length).reduce((a, _, j) => {
-                const val = fittedArrays[j]![i];
-                return val !== undefined && isFinite(val) ? a + weights[j]! : a;
-              }, 0)
-          : NaN
-      );
+      fitted.push(validCount > 0 ? roundTo(divideMoney(s, weightAcc)) : NaN);
     }
 
     // Compute residuals on valid fitted values
