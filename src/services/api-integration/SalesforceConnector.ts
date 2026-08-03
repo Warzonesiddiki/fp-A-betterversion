@@ -14,8 +14,17 @@
  * Auth: OAuth 2.0 Web Server Flow (refresh tokens valid until revoked).
  * API docs: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm
  * SOQL docs: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
+ *
+ * MONEY MIGRATION (2026-08-03): Opportunity revenue aggregation
+ * (pipeline/bestCase/commit/closed/omitted, total, and the probability-
+ * weighted forecast) uses the canonical money primitive (`src/utils/money.ts`).
+ * External Amount values are rounded with declared decimal half-up semantics
+ * before aggregation; weighted contributions are summed at full decimal
+ * precision and the aggregate is cent-rounded. Probability percentages and
+ * record counts are not currency.
  */
 
+import { percentOf, roundTo, sumMoney } from '@/utils/money';
 import { BaseConnector } from './BaseConnector';
 import type {
   ConnectorConfig,
@@ -367,40 +376,52 @@ export class SalesforceConnector extends BaseConnector {
     total: number;
     weightedForecast: number;
   } {
-    let pipeline = 0;
-    let bestCase = 0;
-    let commit = 0;
-    let closed = 0;
-    let omitted = 0;
-    let total = 0;
-    let weightedForecast = 0;
+    const pipelineValues: number[] = [];
+    const bestCaseValues: number[] = [];
+    const commitValues: number[] = [];
+    const closedValues: number[] = [];
+    const omittedValues: number[] = [];
+    const totalValues: number[] = [];
+    const weightedValues: ReturnType<typeof percentOf>[] = [];
 
     for (const opp of opps) {
-      const amount = opp.Amount ?? 0;
+      // External opportunity amounts are currency; round each imported value
+      // with declared decimal half-up semantics before aggregation.
+      const amount = roundTo(opp.Amount ?? 0);
       const category =
         opp.ForecastCategoryName ?? DEFAULT_FORECAST_CATEGORIES[opp.StageName] ?? 'Pipeline';
-      total += amount;
-      weightedForecast += amount * ((opp.Probability ?? 0) / 100);
+      totalValues.push(amount);
+      // Weighted forecast = amount × probability% / 100 (exact decimal
+      // product); the aggregate is cent-rounded below.
+      weightedValues.push(percentOf(amount, opp.Probability ?? 0));
       switch (category) {
         case 'Pipeline':
-          pipeline += amount;
+          pipelineValues.push(amount);
           break;
         case 'BestCase':
-          bestCase += amount;
+          bestCaseValues.push(amount);
           break;
         case 'Commit':
-          commit += amount;
+          commitValues.push(amount);
           break;
         case 'Closed':
-          closed += amount;
+          closedValues.push(amount);
           break;
         case 'Omitted':
-          omitted += amount;
+          omittedValues.push(amount);
           break;
       }
     }
 
-    return { pipeline, bestCase, commit, closed, omitted, total, weightedForecast };
+    return {
+      pipeline: roundTo(sumMoney(pipelineValues)),
+      bestCase: roundTo(sumMoney(bestCaseValues)),
+      commit: roundTo(sumMoney(commitValues)),
+      closed: roundTo(sumMoney(closedValues)),
+      omitted: roundTo(sumMoney(omittedValues)),
+      total: roundTo(sumMoney(totalValues)),
+      weightedForecast: roundTo(sumMoney(weightedValues)),
+    };
   }
 
   // ── Accounts (customers) ─────────────────────────────────────────────────

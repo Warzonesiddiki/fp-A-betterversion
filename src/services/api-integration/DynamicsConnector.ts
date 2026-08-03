@@ -36,8 +36,17 @@
  *
  * PATCH 24 — DYNAMICS 365 CONNECTOR (Prometheus T-3.18/T-4.7, 2026-06-18)
  * Dataverse integration for ERP/CRM (P0A-04 H2 #3 of 3).
+ *
+ * MONEY MIGRATION (2026-08-03): Opportunity revenue aggregation
+ * (openPipeline, weightedForecast, closedRevenue, currencyBreakdown) and the
+ * invoice subtotal (total − tax) use the canonical money primitive
+ * (`src/utils/money.ts`). External amounts are rounded with declared decimal
+ * half-up semantics before aggregation; weighted contributions are summed at
+ * full decimal precision and the aggregate is cent-rounded. Probability
+ * percentages, stage weights, record counts, and timestamps are not currency.
  */
 
+import { multiplyMoney, percentOf, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { BaseConnector } from './BaseConnector';
 import type {
   ConnectorConfig,
@@ -490,7 +499,9 @@ export class DynamicsConnector extends BaseConnector {
       date: inv.invoiceid_date ?? inv.createdon,
       dueDate: inv.duedate ?? inv.createdon,
       status: INVOICE_STATUS_MAP[inv.statuscode] ?? 'draft',
-      subtotal: (inv.totalamount ?? 0) - (inv.totaltax ?? 0),
+      // Subtotal = total − tax is currency arithmetic: exact decimal
+      // subtraction, half-up to cents.
+      subtotal: roundTo(subtractMoney(inv.totalamount ?? 0, inv.totaltax ?? 0)),
       tax: inv.totaltax ?? 0,
       total: inv.totalamount ?? 0,
       currency: inv._transactioncurrencyid_value ?? 'USD',
@@ -587,32 +598,46 @@ export class DynamicsConnector extends BaseConnector {
     let openCount = 0;
     let wonCount = 0;
     let lostCount = 0;
-    let openPipeline = 0;
-    let weightedForecast = 0;
-    let closedRevenue = 0;
-    const currencyBreakdown: Record<string, number> = {};
+    const openPipelineValues: number[] = [];
+    const weightedValues: ReturnType<typeof percentOf>[] = [];
+    const closedRevenueValues: number[] = [];
+    const currencyValues: Record<string, number[]> = {};
 
     for (const opp of opportunities) {
-      const value = opp.estimatedvalue ?? 0;
+      // External opportunity values are currency; round each imported amount
+      // with declared decimal half-up semantics before aggregation.
+      const value = roundTo(opp.estimatedvalue ?? 0);
       const currency = opp._transactioncurrencyid_value ?? 'USD';
 
       if (opp.statecode === 1) {
         // Won
         wonCount += 1;
-        closedRevenue += value;
-        currencyBreakdown[currency] = (currencyBreakdown[currency] ?? 0) + value;
+        closedRevenueValues.push(value);
+        (currencyValues[currency] ??= []).push(value);
       } else if (opp.statecode === 2) {
         // Lost
         lostCount += 1;
       } else {
         // Open
         openCount += 1;
-        openPipeline += value;
-        const prob = (opp.closeprobability ?? 0) / 100;
+        openPipelineValues.push(value);
+        const probPct = opp.closeprobability ?? 0;
         const stageWeight = OPPORTUNITY_STAGE_WEIGHT[opp.salesstagecode ?? 0] ?? 0;
-        const effectiveProb = prob > 0 ? prob : stageWeight;
-        weightedForecast += value * effectiveProb;
+        // Weighted forecast = value × probability% / 100, or value × stage
+        // weight when no probability is set. Both are currency products at
+        // full decimal precision; the aggregate is cent-rounded below.
+        weightedValues.push(
+          probPct > 0 ? percentOf(value, probPct) : multiplyMoney(value, stageWeight)
+        );
       }
+    }
+
+    const openPipeline = roundTo(sumMoney(openPipelineValues));
+    const weightedForecast = roundTo(sumMoney(weightedValues));
+    const closedRevenue = roundTo(sumMoney(closedRevenueValues));
+    const currencyBreakdown: Record<string, number> = {};
+    for (const [curr, values] of Object.entries(currencyValues)) {
+      currencyBreakdown[curr] = roundTo(sumMoney(values));
     }
 
     return {

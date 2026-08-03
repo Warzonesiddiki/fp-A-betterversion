@@ -5,8 +5,8 @@
 testable. Evidence = literal command output with date.
 
 - **Date of latest re-verification:** 2026-08-03 (UTC)
-- **Current continuation branch:** `arena/019fc804-fp-a-betterversion`
-- **Current base:** `091b086` (PR #26 merge commit on `main`)
+- **Current continuation branch:** `arena/019fc910-fp-a-betterversion` (post-PR-#27 session)
+- **Current base:** `b1d5452` (PR #27 merge commit on `main`)
 
 ---
 
@@ -301,6 +301,40 @@ repair financial gates`), created after the staged ESLint, TypeScript, Prettier,
   and `SalesforceConnector.aggregateForecast` aggregate real imported revenue amounts and require
   their own strict screen → migration → exact-test → stash-falsification protocol. Do not migrate
   the screened stores or generic engines above merely to raise a count.
+- **`DynamicsConnector` — MIGRATED (genuine financial integration service):** screened strictly —
+  `aggregateDynamicsRevenue` aggregates real Dataverse opportunity revenue (open pipeline,
+  probability/stage-weighted forecast, closed revenue, per-currency breakdown) with raw `+`/`*`,
+  and `mapInvoice` computes `subtotal = totalamount - totaltax` with raw `-`. Both are currency.
+  Rejected as non-money: `closeprobability`/`OPPORTUNITY_STAGE_WEIGHT` (probability ratios),
+  pagination skip/counts, token expiry timestamps. Added the money header/import
+  (`percentOf`, `multiplyMoney`, `roundTo`, `subtractMoney`, `sumMoney`); external values are
+  `roundTo`'d on import (declared half-up), buckets and the currency breakdown use `sumMoney`,
+  subtotal uses `subtractMoney`, weighted contributions are exact decimal products
+  (`percentOf(value, probPct)` or `multiplyMoney(value, stageWeight)`) summed at full precision
+  and cent-rounded once. New `DynamicsConnector.money.test.ts` has **8 exact `toBe`** answers.
+  Its old code failed **7/8** (`0.30000000000000004`, `1.005` vs `1.01`, `0.15000000000000002`,
+  `0.030000000000000006`, `0.5025` vs `0.51`, `0.6000000000000001`, `0.19999999999999998` —
+  only the empty-list case passed); restored code passes **8/8**, existing suite **19/19**.
+- **`SalesforceConnector.aggregateForecast` — MIGRATED (genuine financial integration service):**
+  screened strictly — pipeline/bestCase/commit/closed/omitted/total and the probability-weighted
+  forecast operate on real `Opportunity.Amount` currency with raw `+`/`*`. Rejected as non-money:
+  `Probability` percentages, rate-limit counts, timestamps. Added the money header/import
+  (`percentOf`, `roundTo`, `sumMoney`); each imported amount is `roundTo`'d on import, buckets and
+  total use `sumMoney`, weighted contributions are `percentOf(amount, probability)` at full decimal
+  precision, cent-rounded once. New `SalesforceConnector.money.test.ts` has **6 exact `toBe`**
+  answers. Its old code failed **5/6** (`0.30000000000000004`, `1.005` vs `1.01`,
+  `0.15000000000000002`, `0.375` vs `0.38` half-up cents, `0.6000000000000001`); restored code
+  passes **6/6**, existing suite **13/13**.
+- **Stash falsification (both connectors, literal):** with the two migrated sources stashed the new
+  suites fail **12/14**; after `git stash pop` they pass **14/14**. Adoption ratcheted **89 → 91
+  modules (24.72% → 25.28%)** with **0** raw `toFixed(n)` sites; `npm run money:adoption -- --update`
+  re-recorded the floor at 91. Full `src/services/api-integration` directory: **13 files / 202
+  tests pass**; `npx tsc --noEmit` exit 0; staged ESLint (`--max-warnings 0`) and Prettier pass.
+- **Next candidates (screened from the fresh scan):** `QuickBooksConnector.mapInvoice` computes
+  `subtotal: lineItems.reduce((sum, li) => sum + li.amount, 0)` over real invoice line-item amounts —
+  genuine currency, requires the same protocol. `NetSuiteConnector` and `XeroConnector` were
+  scanned and show no raw currency arithmetic (OAuth/HMAC/base64 and passthrough only); re-screen
+  if their data contracts change.
 
 ### GAP-3 — Orphan engines (F-0028)
 
@@ -551,9 +585,13 @@ only Phase-5 gate failure.
 
 ## Next Action
 
-Continue **GAP-1** with a fresh screen, not the stale candidate list above. Highest-priority genuine
-paths now visible are the financial API aggregators in `DynamicsConnector` and `SalesforceConnector`;
-screen their imported revenue amounts first, then use the full
-migration → exact known-answer → stash-falsification → ratchet protocol. The stores and generic
-engines explicitly rejected in the 2026-08-03 continuation must remain rejected unless their data
-contract changes. Keep `.github/workflows/**` untouched while GAP-7 is blocked.
+Continue **GAP-1** with a fresh screen, not the stale candidate list above. The financial API
+aggregators in `DynamicsConnector` and `SalesforceConnector` were migrated in this session
+(2026-08-03, adoption 89 → 91). Highest-priority genuine path now visible is
+`QuickBooksConnector.mapInvoice` (`subtotal: lineItems.reduce((sum, li) => sum + li.amount, 0)`
+over real invoice line-item amounts) — run the full
+screen → migration → exact known-answer → stash-falsification → ratchet protocol on it.
+`NetSuiteConnector`/`XeroConnector` screened clean; re-screen if their data contracts change.
+The stores and generic engines explicitly rejected in the 2026-08-03 continuation must remain
+rejected unless their data contract changes. Keep `.github/workflows/**` untouched while GAP-7 is
+blocked.
