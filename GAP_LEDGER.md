@@ -4,33 +4,34 @@
 [DISCOVERY_REPORT.md](./DISCOVERY_REPORT.md) — never from assumption. Each entry is atomic and
 testable. Evidence = literal command output with date.
 
-- **Date of this re-verification:** 2026-08-03 (UTC)
-- **Branch:** `arena/019fc3c6-fp-a-betterversion`
-- **Base:** `aa98b72` (PR #24 merge commit on `main`)
+- **Date of latest re-verification:** 2026-08-03 (UTC)
+- **Current continuation branch:** `arena/019fc804-fp-a-betterversion`
+- **Current base:** `091b086` (PR #26 merge commit on `main`)
 
 ---
 
 ## Brutal Honesty Scorecard (2026-08-03 session)
 
-| Gap / Phase                    | Claimed Status (handover)                | Actual Verified Status (after re-check)                                                       | Evidence Quality                                                        | Corrective Action Taken                                                                                                                     |
-| ------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Baseline gates on `main`**   | "Verified green"                         | **FALSE — `main` was RED.** `tsc --noEmit` exit 2 with **79 errors** (78 in                   | Literal (tsc exit 2, eslint exit 1 on a clean checkout of `aa98b72`)    | Restored the dropped money import in `FinancialInstrumentsEngine`, fixed a stray                                                            |
-|                                |                                          | `FinancialInstrumentsEngine` — arithmetic migrated but the import line deleted; 1 in          |                                                                         | `.toNumber()` on a number in `ForecastReconciliationEngine`; removed unused imports                                                         |
-|                                |                                          | `ForecastReconciliationEngine`); `eslint src --max-warnings 0` exit 1 (21 prettier errors     |                                                                         | and re-ran prettier on 7 PR#24 files. After: tsc exit 0, eslint exit 0.                                                                     |
-|                                |                                          | + 4 unused-import warnings across 7 files)                                                    |                                                                         |                                                                                                                                             |
-| **GAP-1** (money)              | IN_PROGRESS — 13 engines migrated        | **CONFIRMED OPEN.** 19 reachable engines migrated this session (see table below)         | Literal (`money:adoption` 16.67% → 24.17%, 59 → 87 modules; 58+10+6+1 new | Every migration falsified against the old float code first (92+ drift cases caught                                                          |
-|                                |                                          |                                                                                               | known-answer tests added)                                               | and recorded; NLQEngine +7, AggregateTable +5, MultiBook +2 falsifiers). `ExportTemplateEngine`, `WhatIfSandboxEngine`, `YieldCurveEngine`, |
-|                                |                                          |                                                                                               |                                                                         | `ESGEngine`, `DriverCascadeEngine`, `SolverEngine` screened and REJECTED as non-money.                                                      |
-| **GAP-4** (period close)       | IN_PROGRESS — "product decision pending" | **DECISION MADE + ALIGNED.** Soft-close **permits adjusting entries** (its accounting         | Literal (server suite 96 tests exit 0; decision test renamed)           | `isClosedState()` now returns true only for hard-close/locked; legacy `/close`                                                              |
-|                                |                                          | purpose); `canPost`/`is_closed`/GL route now agree. The pinned inconsistency test is now      |                                                                         | honours it; the pinned DOCUMENTED-INCONSISTENCY test became the SOFT-CLOSE POLICY                                                           |
-|                                |                                          | the SOFT-CLOSE POLICY test.                                                                   |                                                                         | test (post succeeds) + a new hard-close 403 test. The frontend state machine already                                                        |
-|                                |                                          |                                                                                               |                                                                         | implemented this policy — server now matches it.                                                                                            |
-| **Phase 2** (GLEntry fixture   | "known adjacent risk, ~37 files"         | **CLOSED.** 20 fixture files fixed (25 `amount` fields added + 3 manual); `sector-pages`      | Literal (tsc exit 0; 83 tests in 17 page-test files; 4-test regression  | New regression test `gleEntryAmountInvariant.test.ts` pins LAW-3: undefined `amount`                                                        |
-| debt)                          |                                          | entries typed `GLEntry[]` so the compiler rejects any future omission.                        | suite)                                                                  | now throws `InvalidMoneyError` instead of rendering `$NaN`.                                                                                 |
-| **Phase 4** (DebtSchedulePage) | "follow-up"                              | **DONE.** Real validated form + debtStore wiring (LeaseForm pattern), 10 integration tests +  | Literal (31 tests pass: 18 form + 10 integration + 3 smoke)             | `DebtForm` (blocking validation, exact 6.25% → 0.0625, round-trip real-date check),                                                         |
-|                                |                                          | 18 form unit tests.                                                                           |                                                                         | add/edit/delete through the persisted RBAC-gated store, reachable empty state.                                                              |
-| **GAP-2** (server auth)        | VERIFIED_DONE                            | **RE-VERIFIED** — 96 tests exit 0 (was 95; +1 new hard-close blocking test).                  | Literal (server suite exit 0)                                           | none needed                                                                                                                                 |
-| **GAP-5** (suite)              | VERIFIED_DONE                            | **RE-VERIFIED** — full suite 945 files / 11332 tests, exit 0 (was 913 files at last session). | Literal (full `npm run test`)                                           | none needed                                                                                                                                 |
+| Gap / Phase                    | Claimed Status (handover)                | Actual Verified Status (after re-check)                                                             | Evidence Quality                                                        | Corrective Action Taken                                                                                                                   |
+| ------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Baseline gates on `main`**   | "Verified green"                         | **FALSE — `main` was RED.** `tsc --noEmit` exit 2 with **79 errors** (78 in                         | Literal (tsc exit 2, eslint exit 1 on a clean checkout of `aa98b72`)    | Restored the dropped money import in `FinancialInstrumentsEngine`, fixed a stray                                                          |
+|                                |                                          | `FinancialInstrumentsEngine` — arithmetic migrated but the import line deleted; 1 in                |                                                                         | `.toNumber()` on a number in `ForecastReconciliationEngine`; removed unused imports                                                       |
+|                                |                                          | `ForecastReconciliationEngine`); `eslint src --max-warnings 0` exit 1 (21 prettier errors           |                                                                         | and re-ran prettier on 7 PR#24 files. After: tsc exit 0, eslint exit 0.                                                                   |
+|                                |                                          | + 4 unused-import warnings across 7 files)                                                          |                                                                         |                                                                                                                                           |
+| **GAP-1** (money)              | IN_PROGRESS — 13 engines migrated        | **CONFIRMED OPEN.** 20 reachable engines plus the Sage GL integration service now use the           | Literal (`money:adoption` 16.67% → 24.72%, 59 → 89 modules; 0 `toFixed` | ReportLayout and SageConnector were newly migrated and falsified. The PR #26 baseline also had broken                                     |
+|                                |                                          | primitive; current full suite is 965 files / 11,491 tests passing (see continuation evidence below) | sites; full Vitest exit 0)                                              | money tests, a SaaS churn defect, directional IC double-elimination and lint drift; all repaired and re-verified.                         |
+|                                |                                          |                                                                                                     |                                                                         | `ExportTemplateEngine`, `WhatIfSandboxEngine`, `YieldCurveEngine`, `ESGEngine`, `DriverCascadeEngine`, and `SolverEngine` remain rejected |
+|                                |                                          |                                                                                                     |                                                                         | as non-money after strict screening.                                                                                                      |
+| **GAP-4** (period close)       | IN_PROGRESS — "product decision pending" | **DECISION MADE + ALIGNED.** Soft-close **permits adjusting entries** (its accounting               | Literal (server suite 96 tests exit 0; decision test renamed)           | `isClosedState()` now returns true only for hard-close/locked; legacy `/close`                                                            |
+|                                |                                          | purpose); `canPost`/`is_closed`/GL route now agree. The pinned inconsistency test is now            |                                                                         | honours it; the pinned DOCUMENTED-INCONSISTENCY test became the SOFT-CLOSE POLICY                                                         |
+|                                |                                          | the SOFT-CLOSE POLICY test.                                                                         |                                                                         | test (post succeeds) + a new hard-close 403 test. The frontend state machine already                                                      |
+|                                |                                          |                                                                                                     |                                                                         | implemented this policy — server now matches it.                                                                                          |
+| **Phase 2** (GLEntry fixture   | "known adjacent risk, ~37 files"         | **CLOSED.** 20 fixture files fixed (25 `amount` fields added + 3 manual); `sector-pages`            | Literal (tsc exit 0; 83 tests in 17 page-test files; 4-test regression  | New regression test `gleEntryAmountInvariant.test.ts` pins LAW-3: undefined `amount`                                                      |
+| debt)                          |                                          | entries typed `GLEntry[]` so the compiler rejects any future omission.                              | suite)                                                                  | now throws `InvalidMoneyError` instead of rendering `$NaN`.                                                                               |
+| **Phase 4** (DebtSchedulePage) | "follow-up"                              | **DONE.** Real validated form + debtStore wiring (LeaseForm pattern), 10 integration tests +        | Literal (31 tests pass: 18 form + 10 integration + 3 smoke)             | `DebtForm` (blocking validation, exact 6.25% → 0.0625, round-trip real-date check),                                                       |
+|                                |                                          | 18 form unit tests.                                                                                 |                                                                         | add/edit/delete through the persisted RBAC-gated store, reachable empty state.                                                            |
+| **GAP-2** (server auth)        | VERIFIED_DONE                            | **RE-VERIFIED** — 96 tests exit 0 (was 95; +1 new hard-close blocking test).                        | Literal (server suite exit 0)                                           | none needed                                                                                                                               |
+| **GAP-5** (suite)              | VERIFIED_DONE                            | **RE-VERIFIED** — full suite 945 files / 11332 tests, exit 0 (was 913 files at last session).       | Literal (full `npm run test`)                                           | none needed                                                                                                                               |
 
 > The most important line above is the first: the handover's baseline claims did not survive a
 > clean re-check — `main` after PR #24 did not even typecheck. This session opened by restoring
@@ -190,7 +191,7 @@ testable. Evidence = literal command output with date.
   `DriverCascadeEngine`, `RollingForecastEngine`, `FinancialCloseEngine`,
   `RegulatoryReportingEngine`, `PeriodLockEngine`, `GoalSeekEngine`, `SpreadEngine`, `XBRLEngine`,
   `templates/*`, `formula-functions/financial.ts`. (NLQEngine completed 2026-08-03.)
-  **WorkforceEngine migration (2026-08-03):** genuine (compensation salary/bonus/equity/benefits/taxes/totalCost/costPerFTE are currency; headcount/attrition stay float). Reachable via manifest. Raw +/* on salary/bonus screened (no money import).
+  **WorkforceEngine migration (2026-08-03):** genuine (compensation salary/bonus/equity/benefits/taxes/totalCost/costPerFTE are currency; headcount/attrition stay float). Reachable via manifest. Raw +/\* on salary/bonus screened (no money import).
   Falsified 3/4 money tests vs old float (drifts e.g. 0.30000000000000004, 0.28400000000000003, 0.15000000000000002). Post: 4/4 exact toBe; money header + import; all currency paths use addMoney/multiplyMoney/sumMoney/roundTo. Adoption +1 to 87/360 (24.17%). Falsify (stash → OLD FAILs on exact toBe → pop → PASS). `money:adoption --update` ratchet holds. Commit follows.
   Screen each first — several are measure-agnostic cell math or unit conversions rather than currency.
   Screened and REJECTED this session as non-money: `ExportTemplateEngine` (PDF page geometry),
@@ -220,6 +221,83 @@ testable. Evidence = literal command output with date.
     the same entries yield exact figures once `amount` is present.
     Evidence: `tsc --noEmit` exit 0; 17 affected page-test files → 83 tests passed; regression
     suite 4/4.
+
+#### GAP-1 continuation — 2026-08-03 (current branch `arena/019fc804-fp-a-betterversion`)
+
+- **Fresh evidence before work:** `node scripts/money-adoption.mjs` reported **87/360 (24.17%)**
+  modules on the primitive and **0** raw `toFixed(n)` sites; `node scripts/engine-reachability.mjs`
+  reported **180/180 reachable** (77 direct, 103 lazy, 0 orphans). The post-work ratchet is
+  **88/360 (24.44%)**, still **0** `toFixed(n)` sites.
+- **Strict store screening — rejected, no migration:** `budgetStore`, `forecastStore`, `debtStore`,
+  `leaseStore`, `glUploadStore`, `cubeStore`, `constructionStore`, and `analyticsStore` are
+  persistence/CRUD, undo/cache, generic OLAP, or string-display paths with no amount arithmetic.
+  `esgStore` calculates a compliance-score percentage from physical ESG metrics, not currency.
+  `IterativeCalculationEngine` was also rejected: its values/tolerance are measure-agnostic
+  spreadsheet convergence inputs, despite debt being mentioned in a comment. These are not
+  candidates under the currency-only rule.
+- **`ReportLayoutEngine` — MIGRATED (genuine, reachable through the lazy engine manifest):** P&L
+  revenue/COGS/operating expense/profit plus balance-sheet asset/liability/equity totals were raw
+  `+`/`-` over actual financial-report values. Added the money header/import and replaced both
+  aggregators with `sumMoney`, `subtractMoney`, and cent `roundTo`; display geometry remains
+  non-money. New `ReportLayoutEngine.money.test.ts` has **7 exact `toBe`** answers. Its old code
+  failed **7/7** (`0.30000000000000004`, `0.10000000000000003`, and unrounded `0.202` among the
+  received values); restored code passes **7/7**, and the existing layout suite passes **8/8**.
+  Adoption increased **87 → 88**.
+- **`SageConnector.aggregateGLBalance` — MIGRATED (genuine financial integration service):**
+  imported Sage Intacct `DEBITAMOUNT`, `CREDITAMOUNT`, totals, and `netChange` were raw
+  `Math.round`/`+`/`-` currency arithmetic. Added the money header/import and now rounds each
+  imported GL row with `roundTo`, aggregates with `sumMoney`, and calculates net with
+  `subtractMoney`. New `SageConnector.money.test.ts` has **4 exact `toBe`** answers. Its old
+  `Math.round` path failed **2/4**, returning **1.00** where decimal half-up requires **1.01** for
+  imported `1.005`; restored code passes **4/4**, and the existing Sage suite passes **16/16**.
+  Adoption increased **88 → 89 (24.72%)** with **0** raw `toFixed(n)` sites. Implementation commit:
+  `d25ce0d` (`fix: use decimal money math for Sage GL balances`), with staged ESLint, TypeScript,
+  Prettier, and secret-scan pre-commit gates passing.
+- **PR #26 verification repair (do not repeat the handover's unsupported “green” claim):** the
+  first specified phase-gate run stopped at global ESLint with **12 errors + 1 warning** in inherited
+  money-migration files. Targeted Prettier-only repairs and removal of an unused import made
+  `npx eslint src --max-warnings 0` exit 0. The next full-suite attempt exposed inherited invalid
+  money tests: a missing `beforeEach` import in `DriverLibrary.money.test.ts`; invalid linked-item
+  and cent-rounding expectations in that file; invalid one-sided IC fixtures/stale
+  `totalMinorityInterest` access in `ConsolidationEngine.money.test.ts`; and a stale Workforce
+  expectation of `0.284` despite documented cent rounding to `0.28`. Tests were corrected to pin
+  real contracts rather than weaken behavior.
+- **`OperationalDriverEngine` repair (genuine financial behavior):** the documented SaaS formula
+  was `customers × ARPU × (1 - churn)`, but the engine multiplied raw churn. Added typed optional
+  per-driver `valueTransforms`, rendered the formula as `(1 - [churn])`, and applied the transform
+  with Decimal/precise arithmetic in both evaluation paths. Pre-fix the known-answer path returned
+  **60,025** instead of **1,140,475**; stash falsification failed **1/4** (old formula lacked the
+  complement), restored code passes **4/4** exact checks plus both existing OperationalDriver suites
+  (**9/9**). Sensitivity assertions now correctly test `PreciseAmount` BigInt values.
+- **`ConsolidationEngine` repair (genuine financial behavior):** manually declared IC pairs and
+  auto-detection used directional dedupe keys, so the same S1↔P account was eliminated twice when
+  input order differed. Keys are now direction-independent. Stash falsification on the full
+  financial worksheet failed with **2 eliminations vs exact 1**; restored code passes **6/6** money,
+  **75/75** unit, and **19/19** integration tests. The repaired fixture also proves exact `0.1 +
+0.2 → 0.3` IC matching and a cent-balanced full worksheet.
+- **Current verified gate evidence:** `npx tsc --noEmit` exit 0; `npx eslint src --max-warnings 0`
+  exit 0; `npm run test` exit 0 (**965 files passed, 1 skipped; 11,491 tests passed, 8 skipped**);
+  `npm run build` exit 0; `npm run bundle-check` exit 0 (2,036.85KB gzip / 2,248KB limit, warning
+  only); `npm run audit:prod` exit 0; financial oracles **25/25**; export verifier clean; server
+  suite **96/96**; manifest and reachability both clean. `check-readme-claims` initially caught the
+  stale 71-adopter claim; README now records **81 engine/store importers** and **89/360** all-path
+  adoption, and all **11** README checks pass.
+- **Only current Phase-5 failure:** `npm run architecture:guardrails` exits 1 solely because **52
+  GitHub Actions refs are unpinned**. This is the known GAP-7 blocker. No `.github/workflows/**`
+  file was touched.
+- **Continuation implementation commit:** `407fd78` (`fix: migrate report layout money totals and
+repair financial gates`), created after the staged ESLint, TypeScript, Prettier, and secret-scan
+  pre-commit gates all passed.
+- **Remote delivery status (2026-08-03):** `git push origin arena/019fc804-fp-a-betterversion`
+  completed every local pre-push quality gate (TypeScript, ESLint, 808-test P0 shard, build,
+  bundle check, README check, production audit, and tautological-assertion scan), then failed at
+  GitHub transport with `fatal: could not read Username for 'https://github.com': terminal prompts
+disabled`. The local commits are intact; Arena's GitHub connection must be reconnected before a
+  later push. No credential was requested or stored.
+- **Next genuine GAP-1 candidates from the fresh scan:** `DynamicsConnector.aggregateDynamicsRevenue`
+  and `SalesforceConnector.aggregateForecast` aggregate real imported revenue amounts and require
+  their own strict screen → migration → exact-test → stash-falsification protocol. Do not migrate
+  the screened stores or generic engines above merely to raise a count.
 
 ### GAP-3 — Orphan engines (F-0028)
 
@@ -448,6 +526,14 @@ the never-touch rule and by GAP-7 (a workflow commit poisons the branch). Eviden
 measurements above (reproducible with `gzip -c dist/assets/*.js | wc -c`). Unblock: raise
 `TOTAL_JS_LIMIT` once the App has `workflows` permission, or shrink a vendor chunk.
 
+### CI note update — 2026-08-03 continuation
+
+The historical 2,048KB build-limit paragraph above describes an earlier checkout. On the current
+PR #26 base, without touching any workflow, `npm run build && npm run bundle-check` measured
+**2,036.85KB gzip against a 2,248KB limit** and exited **0** (one 90%-threshold warning). Bundle
+size is therefore **not** a current blocker; the workflow SHA-pinning guardrail below remains the
+only Phase-5 gate failure.
+
 ## True Blockers (valid escalation only)
 
 1. **`workflows` GitHub App permission — blocks GAP-7 from landing.** Reproduced 2026-08-02; see
@@ -462,8 +548,9 @@ measurements above (reproducible with `gzip -c dist/assets/*.js | wc -c`). Unblo
 
 ## Next Action
 
-Continue **GAP-1** on the next reachable engine with raw currency arithmetic (`AuditLogEngine`,
-`NLQEngine`, `RollingForecastEngine`, `FinancialCloseEngine`, `RegulatoryReportingEngine`,
-`PeriodLockEngine`, `templates/*`, `formula-functions/financial.ts` — screen each first) using the
-established pattern: migrate → write known-answer tests → **prove they fail against the old
-implementation** → re-run the gate → lower the ratchet. Then Phase 6: final PR from this branch.
+Continue **GAP-1** with a fresh screen, not the stale candidate list above. Highest-priority genuine
+paths now visible are the financial API aggregators in `DynamicsConnector` and `SalesforceConnector`;
+screen their imported revenue amounts first, then use the full
+migration → exact known-answer → stash-falsification → ratchet protocol. The stores and generic
+engines explicitly rejected in the 2026-08-03 continuation must remain rejected unless their data
+contract changes. Keep `.github/workflows/**` untouched while GAP-7 is blocked.

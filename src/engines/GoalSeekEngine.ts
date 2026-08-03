@@ -168,7 +168,7 @@ export class GoalSeekEngine {
     };
   }
 
-  /** 
+  /**
    * Find break-even point where revenue equals cost.
    * Money migration: contributionMargin, units, revenue use money primitives.
    */

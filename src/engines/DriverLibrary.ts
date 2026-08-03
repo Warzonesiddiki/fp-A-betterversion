@@ -159,7 +159,7 @@ export class DriverLibrary {
     for (const item of driver.linkedLineItems) {
       if (result[item] !== undefined) {
         // Money migration: use multiplyMoney + roundTo for currency scaling
-        result[item] = roundTo(multiplyMoney(result[item], (1 + driver.defaultValue / 100)));
+        result[item] = roundTo(multiplyMoney(result[item], 1 + driver.defaultValue / 100));
       }
     }
     return result;

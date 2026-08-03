@@ -1,21 +1,25 @@
 /**
  * GAP-1 (F-0006) known-answer tests for OperationalDriverEngine's money migration.
  *
- * Driver chain products (total compensation, SaaS revenue, etc.) are currency.
- * Each case is a FIXED input -> EXACT expected decimal asserted with `toBe`;
- * the pre-migration float literal is recorded inline where it differed.
+ * Driver-chain products (total compensation and recurring revenue) and
+ * sensitivity deltas are currency. Counts, rates, and factors remain
+ * non-money inputs. Each fixed case asserts an exact `toBe` answer.
  */
-import { describe, it, expect } from 'vitest';
+
+import { fromPrecise } from '@/utils/precisionMath';
+import { describe, expect, it } from 'vitest';
 import {
+  analyzeSensitivity,
+  createChain,
   createDriver,
   createHeadcountChain,
   createSaaSRevenueChain,
   evaluateChain,
-  analyzeSensitivity,
+  evaluateChainPrecise,
 } from './OperationalDriverEngine';
 
 describe('OperationalDriverEngine — money known answers (GAP-1 / F-0006)', () => {
-  it('evaluates headcount chain exactly (float may have had 16200000.000000002)', () => {
+  it('evaluates headcount compensation exactly (float could produce 16200000.000000002)', () => {
     const fte = createDriver('fte-count', 'FTE', 'count', 'headcount');
     const salary = createDriver('avg-salary', 'Avg Salary', 'USD', 'headcount');
     const benefits = createDriver('benefits-multiplier', 'Benefits', 'x', 'headcount');
@@ -32,48 +36,51 @@ describe('OperationalDriverEngine — money known answers (GAP-1 / F-0006)', () 
     ]);
 
     const { result } = evaluateChain(chain, drivers, '2026-01');
-    // 100 * 120000 * 1.35 = 16200000 exactly
     expect(result).toBe(16200000);
   });
 
-  it('evaluates SaaS revenue chain exactly', () => {
-    const cust = createDriver('customers', 'Customers', 'count', 'revenue');
-    const arpu = createDriver('arpu', 'ARPU', 'USD', 'revenue');
-    const churn = createDriver('churn', 'Churn', 'pct', 'revenue');
+  it('applies churn as a retained share before exact recurring-revenue multiplication (pre-fix: 60025)', () => {
+    const customers = createDriver('customer-count', 'Customers', 'count', 'customer-success');
+    const arpu = createDriver('custom-metric', 'ARPU', 'USD', 'customer-success');
+    const churn = createDriver('churn-rate', 'Churn', 'decimal rate', 'customer-success');
 
-    cust.values.set('2026-01', 1000);
+    customers.values.set('2026-01', 1000);
     arpu.values.set('2026-01', 1200.5);
     churn.values.set('2026-01', 0.05);
 
-    const chain = createSaaSRevenueChain(cust.id, arpu.id, churn.id, '2026-01');
+    const chain = createSaaSRevenueChain(customers.id, arpu.id, churn.id, '2026-01');
     const drivers = new Map([
-      [cust.id, cust],
+      [customers.id, customers],
       [arpu.id, arpu],
       [churn.id, churn],
     ]);
 
-    const { result } = evaluateChain(chain, drivers, '2026-01');
-    // 1000 * 1200.5 * 0.95 = 1140475
-    expect(result).toBe(1140475);
+    expect(chain.formula).toBe(`[${customers.id}] × [${arpu.id}] × (1 - [${churn.id}])`);
+    expect(evaluateChain(chain, drivers, '2026-01').result).toBe(1140475);
+    expect(evaluateChainPrecise(chain, drivers, '2026-01').result).toBe(11404750000n);
   });
 
-  it('sensitivity delta exact (money path)', () => {
-    const fte = createDriver('fte', 'FTE', 'count', 'headcount');
-    const sal = createDriver('sal', 'Salary', 'USD', 'headcount');
+  it('returns a sensitivity delta as an exact PreciseAmount', () => {
+    const fte = createDriver('fte-count', 'FTE', 'count', 'headcount');
+    const salary = createDriver('avg-salary', 'Salary', 'USD', 'headcount');
     fte.values.set('2026-01', 10);
-    sal.values.set('2026-01', 50000);
+    salary.values.set('2026-01', 50000);
 
-    const chain = createHeadcountChain(fte.id, sal.id, 'dummy', '2026-01');
-    const drivers = new Map([[fte.id, fte], [sal.id, sal]]);
+    const chain = createChain('Total salary', [fte.id, salary.id], 'total-salary', '2026-01');
+    const drivers = new Map([
+      [fte.id, fte],
+      [salary.id, salary],
+    ]);
 
-    const sens = analyzeSensitivity(chain, drivers, fte.id, '2026-01', [10]);
-    expect(sens.scenarios[0].delta.value).toBe(50000);
+    const sensitivity = analyzeSensitivity(chain, drivers, fte.id, '2026-01', [10]);
+    expect(sensitivity.scenarios[0]!.delta).toBe(500000000n);
+    expect(fromPrecise(sensitivity.scenarios[0]!.delta)).toBe(50000);
   });
 
-  it('returns exact 0 for missing period', () => {
-    const drv = createDriver('x', 'X', 'count', 'op');
-    const chain = createHeadcountChain(drv.id, 'dummy', 'dummy', '2026-99');
-    const { result } = evaluateChain(chain, new Map([[drv.id, drv]]), '2026-99');
-    expect(result).toBe(0);
+  it('returns exact zero for a missing period', () => {
+    const driver = createDriver('server-count', 'Servers', 'count', 'infrastructure');
+    const chain = createChain('Infrastructure', [driver.id], 'infrastructure-cost', '2026-99');
+
+    expect(evaluateChain(chain, new Map([[driver.id, driver]]), '2026-99').result).toBe(0);
   });
 });

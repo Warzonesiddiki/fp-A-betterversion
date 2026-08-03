@@ -22,9 +22,9 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 - **Financial Reporting** — P&L, Balance Sheet, Cash Flow statements, Variance Analysis, and Board Reports
 - **Financial Engines** — 190 top-level engine modules (215 including subdirectories) covering
   SaaS metrics, CapEx planning, lease accounting (IFRS 16/ASC 842), tax optimization and more.
-  A 2026-07-28 audit found 105 of 181 engines unreferenced by any page, store or service;
-  the wire-or-remove inventory is tracked as F-0028, so treat the count as inventory, not
-  shipped capability.
+  The generated engine manifest exposes 180 runtime engines; the reachability check verifies all
+  180 through direct imports or lazy manifest loading (0 orphans). Treat the higher source-file
+  count as inventory, not a claim that every file is a distinct runtime capability.
 - **Industry Verticals** — Pre-configured templates for 40+ sectors including Energy, Healthcare, Real Estate, Construction, Retail, Insurance, and Banking
 - **Dashboard Suite** — interactive dashboards across 195 page modules
 - **Desktop & Web** — Native desktop app via Tauri + responsive web interface
@@ -33,7 +33,7 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 71 of
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 81 of
   226 engine/store modules** spanning the engines and store layers (e.g. `AllocationEngine`,
   `BankingEngine`, `BreakEvenEngine`, `COGSVarianceEngine`, `CapExEngine`, `CashEngine`,
   `CashFlowWaterfallEngine`, `ConsolidationEngine`, `ConstructionEngine`, `CreditRiskEngine`,
@@ -47,7 +47,7 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
   `VarianceDecompositionEngine`, `WorkingCapitalEngine`,
   `report-builder-formulas`, `report-builder-export`, and the `glStore`, `glTrialBalanceStore`,
   `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores). Across all financial
-  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 76 of 360 modules
+  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 89 of 360 modules
   with **0** raw `toFixed(n)` sites remaining — run
   `npm run money:adoption` for the current measurement. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
@@ -96,23 +96,23 @@ FinPlan Pro follows a **strictly decoupled architecture** separating business lo
 
 ### Directory Structure
 
-| Directory            | Purpose                                     | Statistics                                            |
-| -------------------- | ------------------------------------------- | ----------------------------------------------------- |
-| `src/engines/`       | Financial calculation engines               | 190 top-level modules (105/181 unreferenced — F-0028) |
-| `src/store/`         | Zustand state stores with persistence       | 41 stores                                             |
-| `src/pages/`         | Route-level containers (lazy-loaded)        | 195 page modules, 78 sector dirs                      |
-| `src/components/ui/` | Atomic UI primitives (barrel-exported)      | 128 components                                        |
-| `src/components/`    | Domain-specific components                  | 284 non-test components in total                      |
-| `src/hooks/`         | Custom React hooks with business logic      | 44 hooks                                              |
-| `src/utils/`         | Formatters, calculations, storage utilities | Core utilities                                        |
-| `src/services/`      | API layer, WebSocket, collaboration         | Network layer                                         |
-| `src/workers/`       | Web Workers for intensive tasks             | 4 workers                                             |
-| `src/plugins/`       | Plugin system with registry & sandbox       | Plugin framework                                      |
-| `src/config/`        | Design tokens, shortcuts, sector configs    | Configuration                                         |
-| `src/types/`         | Shared TypeScript type definitions          | Type system                                           |
-| `src/templates/`     | Pre-built report & budget templates         | Templates                                             |
-| `src/test/`          | Test setup, mocks, utilities                | Testing infrastructure                                |
-| `src-tauri/`         | Tauri desktop shell (Rust)                  | Desktop integration                                   |
+| Directory            | Purpose                                     | Statistics                                                       |
+| -------------------- | ------------------------------------------- | ---------------------------------------------------------------- |
+| `src/engines/`       | Financial calculation engines               | 190 top-level modules (180 runtime engines reachable; 0 orphans) |
+| `src/store/`         | Zustand state stores with persistence       | 41 stores                                                        |
+| `src/pages/`         | Route-level containers (lazy-loaded)        | 195 page modules, 78 sector dirs                                 |
+| `src/components/ui/` | Atomic UI primitives (barrel-exported)      | 128 components                                                   |
+| `src/components/`    | Domain-specific components                  | 284 non-test components in total                                 |
+| `src/hooks/`         | Custom React hooks with business logic      | 44 hooks                                                         |
+| `src/utils/`         | Formatters, calculations, storage utilities | Core utilities                                                   |
+| `src/services/`      | API layer, WebSocket, collaboration         | Network layer                                                    |
+| `src/workers/`       | Web Workers for intensive tasks             | 4 workers                                                        |
+| `src/plugins/`       | Plugin system with registry & sandbox       | Plugin framework                                                 |
+| `src/config/`        | Design tokens, shortcuts, sector configs    | Configuration                                                    |
+| `src/types/`         | Shared TypeScript type definitions          | Type system                                                      |
+| `src/templates/`     | Pre-built report & budget templates         | Templates                                                        |
+| `src/test/`          | Test setup, mocks, utilities                | Testing infrastructure                                           |
+| `src-tauri/`         | Tauri desktop shell (Rust)                  | Desktop integration                                              |
 
 ---
 
@@ -201,7 +201,7 @@ npm run tauri:build    # Build installers (NSIS/DMG/AppImage)
 
 ## 🧪 Testing
 
-### Test Infrastructure (928 test files; ~8,500 tests counted across shards)
+### Test Infrastructure (965 passing test files; 11,491 passing tests in the latest full run)
 
 ```bash
 # Single run with coverage
@@ -232,7 +232,7 @@ npm run test:e2e                 # Playwright E2E suite
 
 ### Build Configuration
 
-- **Bundler**: Vite 7 with manual chunks:
+- **Bundler**: Vite 8 with manual chunks:
   - `react-vendor` — React & DOM
   - `chart-vendor` — Recharts & dependencies
   - `grid-vendor` — AG Grid
@@ -247,7 +247,7 @@ npm run test:e2e                 # Playwright E2E suite
 ### Size Limits (CI Enforced)
 
 - Main chunk: ≤150KB gzip
-- Total JavaScript: ≤2MB gzip
+- Total JavaScript: ≤2248KB gzip
 - Check with: `npm run bundle-check`
 
 ### CI/CD Pipeline (GitHub Actions)

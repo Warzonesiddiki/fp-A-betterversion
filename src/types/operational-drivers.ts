@@ -117,6 +117,12 @@ export interface OperationalDriver {
 // ─── Driver Chain (Dependency) ─────────────────────────────────────────────
 
 /**
+ * Per-driver transform applied before a driver participates in a chain.
+ * `one-minus` turns a rate such as churn into its retained share.
+ */
+export type DriverValueTransform = 'identity' | 'one-minus';
+
+/**
  * A driver chain represents the dependency path from operational inputs
  * to financial outputs. Enables "what-if" tracing.
  *
@@ -132,6 +138,11 @@ export interface DriverChain {
   readonly driverIds: readonly string[];
   /** The formula combining all drivers */
   readonly formula: string;
+  /**
+   * Optional per-driver transform. Generic chains multiply raw values;
+   * specialised chains can turn a rate into its complement before use.
+   */
+  readonly valueTransforms?: Readonly<Record<string, DriverValueTransform>>;
   /** The output account code (where the result lands) */
   readonly outputAccountCode: string;
   /** The output period (YYYY-MM) */

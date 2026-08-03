@@ -53,10 +53,7 @@ describe('ConstructionEngine — money known answers (GAP-1 / F-0006)', () => {
     });
 
     it('computes avg gross margin exactly (float gave 33.333333333333336 etc)', () => {
-      const entries = [
-        entry('4501', 3000, 'rev'),
-        entry('5601', 2000, 'cogs'),
-      ];
+      const entries = [entry('4501', 3000, 'rev'), entry('5601', 2000, 'cogs')];
       const stats = ConstructionEngine.calculateStats(entries);
       // (3000 - 2000) / 3000 * 100 = 33.3333333333 (4dp in code)
       expect(stats.avgGrossMargin).toBe(33.3333);
@@ -71,10 +68,7 @@ describe('ConstructionEngine — money known answers (GAP-1 / F-0006)', () => {
 
   describe('getProjectPortfolio', () => {
     it('derives margins exactly from GL (float drift on division)', () => {
-      const entries = [
-        entry('4501', 1000.1, 'r1', 'P1'),
-        entry('5601', 600.05, 'c1', 'P1'),
-      ];
+      const entries = [entry('4501', 1000.1, 'r1', 'P1'), entry('5601', 600.05, 'c1', 'P1')];
       const projects = ConstructionEngine.getProjectPortfolio(entries);
       expect(projects.length).toBeGreaterThan(0);
       // margin = (1000.1 - 600.05) / 1000.1 * 100 ≈ 40.004

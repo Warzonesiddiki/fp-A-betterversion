@@ -18,8 +18,8 @@ import type {
   DriverSensitivity,
   SensitivityScenario,
 } from '@/types/operational-drivers';
-import { toPrecise, fromPrecise, preciseMul } from '@/utils/precisionMath';
-import { multiplyMoney, addMoney, subtractMoney, roundTo, toDecimal, sumMoney } from '../utils/money';
+import { toPrecise, fromPrecise, preciseMul, preciseSub } from '@/utils/precisionMath';
+import { multiplyMoney, subtractMoney, roundTo, toDecimal, sumMoney } from '../utils/money';
 
 // ─── Driver Creation ───────────────────────────────────────────────────────
 
@@ -55,6 +55,18 @@ export function createDriver(
 // ─── Driver Chain Evaluation ───────────────────────────────────────────────
 
 /**
+ * Resolve a chain multiplier without sending the financial output through
+ * IEEE-754 arithmetic. `one-minus` is for non-money rates (for example,
+ * churn → retention); the resulting factor feeds a currency-bearing product.
+ */
+function resolveDriverMultiplier(chain: DriverChain, driverId: string, value: number) {
+  const decimalValue = toDecimal(value, `driver:${driverId}`);
+  return chain.valueTransforms?.[driverId] === 'one-minus'
+    ? toDecimal(1).minus(decimalValue)
+    : decimalValue;
+}
+
+/**
  * Evaluate a driver chain — compute the financial output from operational inputs.
  *
  * The formula multiplies all driver values together (with optional adjustments).
@@ -79,7 +91,7 @@ export function evaluateChain(
 
     const value = driver.values.get(period) ?? driver.forecasts.get(period) ?? 0;
     driverValues[driverId] = value;
-    product = multiplyMoney(product, value);
+    product = multiplyMoney(product, resolveDriverMultiplier(chain, driverId, value));
   }
 
   return {
@@ -108,7 +120,10 @@ export function evaluateChainPrecise(
     }
 
     const value = driver.values.get(period) ?? driver.forecasts.get(period) ?? 0;
-    const preciseValue = toPrecise(value);
+    const preciseValue =
+      chain.valueTransforms?.[driverId] === 'one-minus'
+        ? preciseSub(toPrecise(1), toPrecise(value)).value
+        : toPrecise(value);
     product = preciseMul(product, preciseValue).value;
   }
 
@@ -124,13 +139,17 @@ export function createChain(
   name: string,
   driverIds: readonly string[],
   outputAccountCode: string,
-  outputPeriod: string
+  outputPeriod: string,
+  valueTransforms: NonNullable<DriverChain['valueTransforms']> = {}
 ): DriverChain {
   return {
     id: `chain-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     name,
     driverIds,
-    formula: driverIds.map((id) => `[${id}]`).join(' × '),
+    formula: driverIds
+      .map((id) => (valueTransforms[id] === 'one-minus' ? `(1 - [${id}])` : `[${id}]`))
+      .join(' × '),
+    valueTransforms,
     outputAccountCode,
     outputPeriod,
     result: null,
@@ -172,7 +191,8 @@ export function createSaaSRevenueChain(
     'SaaS Recurring Revenue',
     [customerDriverId, arpuDriverId, churnDriverId],
     'recurring-revenue',
-    outputPeriod
+    outputPeriod,
+    { [churnDriverId]: 'one-minus' }
   );
 }
 
@@ -198,7 +218,7 @@ export function analyzeSensitivity(
     if (targetDriver) {
       const originalValue = targetDriver.values.get(period) ?? 0;
       // Money migration: * for sensitivity use multiplyMoney (currency)
-      const newValueDec = multiplyMoney(originalValue, (1 + pct / 100));
+      const newValueDec = multiplyMoney(originalValue, 1 + pct / 100);
       const newValue = roundTo(newValueDec);
       const modifiedDriver: OperationalDriver = {
         ...targetDriver,
