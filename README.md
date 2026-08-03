@@ -47,7 +47,7 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
   `VarianceDecompositionEngine`, `WorkingCapitalEngine`,
   `report-builder-formulas`, `report-builder-export`, and the `glStore`, `glTrialBalanceStore`,
   `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores). Across all financial
-  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 89 of 360 modules
+  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 91 of 360 modules
   with **0** raw `toFixed(n)` sites remaining — run
   `npm run money:adoption` for the current measurement. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
