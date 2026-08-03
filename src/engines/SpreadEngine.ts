@@ -1,3 +1,11 @@
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+} from '@/utils/money';
 import type { AccountType } from '../types';
 
 export type SpreadMethod =
@@ -37,8 +45,9 @@ export class SpreadEngine {
    */
   static even(annual: number, periods: number): number[] {
     if (periods <= 0) return [];
-    const perPeriod = annual / periods;
-    return Array.from({ length: periods }, () => perPeriod);
+    // Annual budget / period count is currency division: exact decimal.
+    const perPeriod = divideMoney(annual, periods);
+    return Array.from({ length: periods }, () => perPeriod.toNumber());
   }
 
   /**
@@ -49,7 +58,7 @@ export class SpreadEngine {
     if (periods <= 0) return [];
     const quarterly = [0.35, 0.25, 0.22, 0.18];
     const weights = SpreadEngine.expandToPeriods(quarterly, periods);
-    return weights.map((w) => annual * w);
+    return weights.map((w) => multiplyMoney(annual, w).toNumber());
   }
 
   /**
@@ -60,7 +69,7 @@ export class SpreadEngine {
     if (periods <= 0) return [];
     const quarterly = [0.18, 0.22, 0.25, 0.35];
     const weights = SpreadEngine.expandToPeriods(quarterly, periods);
-    return weights.map((w) => annual * w);
+    return weights.map((w) => multiplyMoney(annual, w).toNumber());
   }
 
   /**
@@ -69,9 +78,12 @@ export class SpreadEngine {
    */
   static seasonal(annual: number, weights: number[]): number[] {
     if (weights.length === 0) return [];
-    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-    if (totalWeight === 0) return SpreadEngine.even(annual, weights.length);
-    return weights.map((w) => annual * (w / totalWeight));
+    // Weights are unitless ratios (non-money), but summing them in float
+    // would leak drift into the currency share (0.3+0.3+0.3 → 0.89999…), so
+    // the total is an exact decimal sum of the literal weights.
+    const totalWeight = sumMoney(weights);
+    if (totalWeight.isZero()) return SpreadEngine.even(annual, weights.length);
+    return weights.map((w) => divideMoney(multiplyMoney(annual, w), totalWeight).toNumber());
   }
 
   /**
@@ -80,9 +92,11 @@ export class SpreadEngine {
    */
   static driverBased(annual: number, driverValues: number[]): number[] {
     if (driverValues.length === 0) return [];
-    const totalDriver = driverValues.reduce((sum, v) => sum + v, 0);
-    if (totalDriver === 0) return SpreadEngine.even(annual, driverValues.length);
-    return driverValues.map((v) => annual * (v / totalDriver));
+    // Driver values are operational counts (non-money), but their total is
+    // summed as an exact decimal to keep the currency share drift-free.
+    const totalDriver = sumMoney(driverValues);
+    if (totalDriver.isZero()) return SpreadEngine.even(annual, driverValues.length);
+    return driverValues.map((v) => divideMoney(multiplyMoney(annual, v), totalDriver).toNumber());
   }
 
   /**
@@ -91,9 +105,11 @@ export class SpreadEngine {
    */
   static custom(annual: number, percentages: number[]): number[] {
     if (percentages.length === 0) return [];
-    const total = percentages.reduce((sum, p) => sum + p, 0);
-    if (total === 0) return SpreadEngine.even(annual, percentages.length);
-    return percentages.map((p) => annual * (p / total));
+    // Percentages are unitless ratios (non-money), but their total is
+    // summed as an exact decimal to keep the currency share drift-free.
+    const total = sumMoney(percentages);
+    if (total.isZero()) return SpreadEngine.even(annual, percentages.length);
+    return percentages.map((p) => divideMoney(multiplyMoney(annual, p), total).toNumber());
   }
 
   /**
@@ -106,7 +122,8 @@ export class SpreadEngine {
     return {
       periods: periodLabels,
       amounts,
-      total: amounts.reduce((sum, a) => sum + a, 0),
+      // Total = Σ period amounts is currency: exact decimal sum, cent-rounded.
+      total: roundTo(sumMoney(amounts)),
     };
   }
 
@@ -158,13 +175,15 @@ export class SpreadEngine {
   }
 
   /**
-   * Round amounts to avoid floating point issues while preserving total
+   * Round amounts to cents (declared half-up) while preserving total.
+   * Currency arithmetic via the canonical money primitive (F-0006).
    */
   static roundToTotal(amounts: number[], targetTotal: number): number[] {
-    const rounded = amounts.map((a) => Math.round(a * 100) / 100);
-    const diff = Math.round((targetTotal - rounded.reduce((s, a) => s + a, 0)) * 100) / 100;
+    const rounded = amounts.map((a) => roundTo(a));
+    // Residual = target − Σ rounded parts, itself cent-quantized.
+    const diff = roundTo(subtractMoney(targetTotal, sumMoney(rounded)));
     if (diff !== 0 && rounded.length > 0) {
-      rounded![rounded.length - 1]! += diff;
+      rounded[rounded.length - 1] = roundTo(addMoney(rounded[rounded.length - 1]!, diff));
     }
     return rounded;
   }

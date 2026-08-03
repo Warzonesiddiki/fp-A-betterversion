@@ -358,6 +358,72 @@ repair financial gates`), created after the staged ESLint, TypeScript, Prettier,
   `npm run docs:verify` failed before this change (verified via `git stash`) and passes after
   (`41 Stores`).
 
+#### GAP-1 continuation — 2026-08-04 (current branch `arena/019fc970-fp-a-betterversion`)
+
+- **Fresh evidence before work:** ratchet at **92/360 (25.56%)**, **0** `toFixed(n)` sites;
+  full suite 968 files / 11,513 tests. A fresh scan of all 360 financial-path modules (regex +
+  manual screen) confirmed the handover's `NetSuiteConnector`/`XeroConnector` screening: their
+  only `total +=` sites count **records synced** (`items.length`), not currency. Re-screened and
+  REJECTED as non-money: `competitiveGaps.ts`/`TemplateEngine.ts` (measure-agnostic SUM/AVG over
+  cells), `WorkflowEngine` (hours), `MasterDataEngine` (record counters), `mockData/*` (fixture
+  synthesis, not financial truth), `SmartImportMapper`/`StreamImportEngine` (parsing patterns,
+  row counters), `SpreadEngine`'s weights/driver values (unitless ratios/counts — see below),
+  `glStore`'s validation cent-integers (exact integer cents via `toCents`/`fromCents`), and
+  `precisionMath.ts` (measure-agnostic bigint quantization; its `toFixed(FINANCIAL_SCALE)` uses a
+  variable, escaping the ratchet counter — noted, not currency).
+- **`glAnalysis.ts` — MIGRATED (genuine utility, user-visible via `GLAccountAnalysisPage`):**
+  `computeMonthlyTrend` (`debit +=`, `credit +=`, `net: debit − credit`), `computeRunningBalance`
+  (`runningBalance +=`), and `getAccountSummary` (`reduce +`, `totalDebit − totalCredit`,
+  `(totalDebit − totalCredit) / months`) aggregate real GL debit/credit amounts. Now accumulates
+  at full decimal precision (`addMoney`/`sumMoney`), nets with `subtractMoney`, averages with
+  `divideMoney`, and cent-rounds once at the output boundary (`roundTo`). New
+  `glAnalysis.money.test.ts` has **6 exact `toBe`** answers; old code failed **5/6**
+  (`0.30000000000000004`, `0.19999999999999998`, `0.6000000000000001`,
+  `0.6000000000000001`/`0.5000000000000001`/`0.25000000000000006`, `1.005` vs `1.01`); restored
+  code passes **6/6**, existing suite **5/5**.
+- **`glStore` `generateTrialBalance` + `analyzeAccount` — MIGRATED (drift found INSIDE an
+  already-adopted module):** glStore imports money primitives (toCents/fromCents/formatMoney) but
+  its trial-balance aggregation (`debit − credit`, `+=`, `beginningBalance + netChange`) and
+  account analysis (monthly `+=`, `reduce +`, `(totalDebit − totalCredit) / months`) still used
+  raw float arithmetic — a second, parallel GL aggregation path with identical drift. Both now
+  accumulate Decimals (`addMoney`/`subtractMoney`/`sumMoney`/`divideMoney`, defensive
+  `toFiniteNumber` retained) and cent-round at the output boundary. New `glStore.money.test.ts`
+  has **5 exact `toBe`** answers; old code failed **4/5** (`0.30000000000000004`,
+  `0.09999999999999998`, `0.6000000000000001`/`0.5000000000000001`/`0.25000000000000006`,
+  `1.005` vs `1.01`); restored code passes **5/5**, existing glStore suites (unit/smoke/cube)
+  pass **57/57**, GL page tests **11/11**.
+- **`SpreadEngine` — MIGRATED (genuine engine, reachable via manifest):** annual budget amounts
+  spread across periods were raw `*`, `/`, `+`, and `Math.round(a*100)/100` (in `roundToTotal`).
+  Now: `divideMoney` for even spreads, `multiplyMoney` for loaded/weighted methods,
+  `divideMoney(multiplyMoney(annual, share), total)` for seasonal/driver/custom — and the
+  weight/driver/percentage totals are summed with `sumMoney` because a float reduce leaks drift
+  into the currency share (0.3+0.3+0.3 → 0.89999…). `applyToLineItem.total` = `roundTo(sumMoney)`;
+  `roundToTotal` cent-rounds via `roundTo` and resolves the residual with
+  `addMoney`/`subtractMoney` — negative halves now round half-up (away from zero) per the
+  declared mode, where `Math.round` rounded half toward +∞ (pinned by test). New
+  `SpreadEngine.money.test.ts` has **8 exact `toBe`** answers; old code failed **7/8**
+  (`0.30000000000000004`, `0.049999999999999996`/`0.09999999999999999`/`0.14999999999999997`,
+  `0.034999999999999996`/`0.022000000000000002`, `0.010000000000000002`/`0.020000000000000004`/
+  `0.04000000000000001`, `0.9000000000000001`, `[33.33, 33.33, 33.339999999999996]`,
+  `[-0.05, -0.060000000000000005]` — even the positive "control" failed on the old float
+  residual); restored code passes **8/8**, existing suite **15/15**.
+- **Stash falsification (all three, literal):** with the three migrated sources stashed, the new
+  suites fail **16/19**; after `git stash pop` they pass **19/19**. Adoption ratcheted **92 → 94
+  modules (25.56% → 26.11%)** with **0** raw `toFixed(n)` sites; `npm run money:adoption
+-- --update` re-recorded the floor at 94 (glStore was already an adopter — its count does not
+  move, but two drift sites inside it are now on the primitive). `npx tsc --noEmit` exit 0;
+  `npx eslint src --max-warnings 0` exit 0; Prettier clean; full suite **971 files / 11,532
+  tests, exit 0** (was 968 / 11,513). README updated to **94/360**.
+- **Remaining GAP-1 candidates after this pass:** the long-tail screen list is now: audit/
+  bookkeeping and measure-agnostic engines (`AuditLogEngine`, `CellAuditTrailEngine`,
+  `ImportEngine`, `ReportBookEngine`, `XBRLEngine`, `ExportTemplateEngine`,
+  `WhatIfSandboxEngine`, `DriverCascadeEngine`, `SolverEngine`, `FinancialCloseEngine`,
+  `RegulatoryReportingEngine`, `PeriodLockEngine`, `formula-functions/*`), `templates/*`
+  (static driver config), `mockData/*` (fixture synthesis), and `precisionMath.ts` (generic
+  quantization). None show raw currency arithmetic under strict re-screen; re-screen if their
+  data contracts change. The remaining reachable money surface is the `IterativeCalculationEngine`
+  (rejected: measure-agnostic convergence inputs) and any new code added after this commit.
+
 ### GAP-3 — Orphan engines (F-0028)
 
 - **status:** **VERIFIED_DONE — the gap's premise was a measurement defect**

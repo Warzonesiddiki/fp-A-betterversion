@@ -10,7 +10,17 @@ import type {
   ImportResult,
 } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
-import { toCents, fromCents, formatMoney } from '../utils/money';
+import {
+  addMoney,
+  divideMoney,
+  formatMoney,
+  fromCents,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toCents,
+  toDecimal,
+} from '../utils/money';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
@@ -29,6 +39,26 @@ interface GLSnapshot {
   accounts: GLAccount[];
   trialBalance: TrialBalanceRow[];
   accountAnalysis: AccountAnalysis | null;
+}
+
+/** Trial-balance accumulator holding Decimal currency values (F-0006). */
+interface TrialRowAccum {
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  accountType: TrialBalanceRow['accountType'];
+  beginningBalance: ReturnType<typeof toDecimal>;
+  debit: ReturnType<typeof toDecimal>;
+  credit: ReturnType<typeof toDecimal>;
+  netChange: ReturnType<typeof toDecimal>;
+  endingBalance: ReturnType<typeof toDecimal>;
+}
+
+/** Account-analysis month accumulator holding Decimal currency values (F-0006). */
+interface MonthGroupAccum {
+  debit: ReturnType<typeof addMoney>;
+  credit: ReturnType<typeof addMoney>;
+  count: number;
 }
 
 const undoEngine = new UndoRedoEngine<GLSnapshot>(100);
@@ -274,7 +304,7 @@ export const useGLStore = create<GLState>()(
             accountMap.set(account.code, account);
           }
 
-          const balanceMap = new Map<string, TrialBalanceRow>();
+          const balanceMap = new Map<string, TrialRowAccum>();
           for (const entry of entries) {
             const key = entry.accountId || entry.accountCode;
             const account = accountMap.get(key) ?? accountMap.get(entry.accountCode);
@@ -283,25 +313,37 @@ export const useGLStore = create<GLState>()(
               accountCode: entry.accountCode,
               accountName: entry.accountName,
               accountType: account?.type ?? 'Unknown',
-              beginningBalance: 0,
-              debit: 0,
-              credit: 0,
-              netChange: 0,
-              endingBalance: 0,
+              beginningBalance: toDecimal(0),
+              debit: toDecimal(0),
+              credit: toDecimal(0),
+              netChange: toDecimal(0),
+              endingBalance: toDecimal(0),
             };
-            const debit = toFiniteNumber(entry.debit);
-            const credit = toFiniteNumber(entry.credit);
-            const netChange = debit - credit;
-            existing.debit += debit;
-            existing.credit += credit;
-            existing.netChange += netChange;
-            existing.endingBalance = existing.beginningBalance + existing.netChange;
+            // GL debit/credit amounts are currency: exact decimal
+            // accumulation, cent-rounded once at the output boundary (F-0006).
+            const debit = toDecimal(toFiniteNumber(entry.debit));
+            const credit = toDecimal(toFiniteNumber(entry.credit));
+            const netChange = subtractMoney(debit, credit);
+            existing.debit = addMoney(existing.debit, debit);
+            existing.credit = addMoney(existing.credit, credit);
+            existing.netChange = addMoney(existing.netChange, netChange);
+            existing.endingBalance = addMoney(existing.beginningBalance, existing.netChange);
             balanceMap.set(key, existing);
           }
 
-          const balance = Array.from(balanceMap.values()).sort((a, b) =>
-            a.accountCode.localeCompare(b.accountCode)
-          );
+          const balance: TrialBalanceRow[] = Array.from(balanceMap.values())
+            .map((row) => ({
+              accountId: row.accountId,
+              accountCode: row.accountCode,
+              accountName: row.accountName,
+              accountType: row.accountType,
+              beginningBalance: roundTo(row.beginningBalance),
+              debit: roundTo(row.debit),
+              credit: roundTo(row.credit),
+              netChange: roundTo(row.netChange),
+              endingBalance: roundTo(row.endingBalance),
+            }))
+            .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
 
           set({ trialBalance: balance, isLoading: false });
         },
@@ -313,12 +355,16 @@ export const useGLStore = create<GLState>()(
             (e) => e.accountId === accountId || e.accountCode === accountId
           );
 
-          const monthGroups = new Map<string, { debit: number; credit: number; count: number }>();
+          const monthGroups = new Map<string, MonthGroupAccum>();
           for (const entry of filtered) {
             const month = entry.period;
-            const g = monthGroups.get(month) ?? { debit: 0, credit: 0, count: 0 };
-            g.debit += entry.debit;
-            g.credit += entry.credit;
+            const g = monthGroups.get(month) ?? {
+              debit: toDecimal(0),
+              credit: toDecimal(0),
+              count: 0,
+            };
+            g.debit = addMoney(g.debit, toFiniteNumber(entry.debit));
+            g.credit = addMoney(g.credit, toFiniteNumber(entry.credit));
             g.count += 1;
             monthGroups.set(month, g);
           }
@@ -326,14 +372,16 @@ export const useGLStore = create<GLState>()(
           const monthlyTotals = Array.from(monthGroups.entries())
             .map(([month, g]) => ({
               month,
-              debit: g.debit,
-              credit: g.credit,
-              net: g.debit - g.credit,
+              debit: roundTo(g.debit),
+              credit: roundTo(g.credit),
+              net: roundTo(subtractMoney(g.debit, g.credit)),
             }))
             .sort((a, b) => a.month.localeCompare(b.month));
 
-          const totalDebit = monthlyTotals.reduce((s, m) => s + m.debit, 0);
-          const totalCredit = monthlyTotals.reduce((s, m) => s + m.credit, 0);
+          const totalDebitDec = sumMoney(monthlyTotals.map((m) => m.debit));
+          const totalCreditDec = sumMoney(monthlyTotals.map((m) => m.credit));
+          const totalDebit = roundTo(totalDebitDec);
+          const totalCredit = roundTo(totalCreditDec);
 
           set({
             accountAnalysis: {
@@ -344,7 +392,14 @@ export const useGLStore = create<GLState>()(
               totalDebit,
               totalCredit,
               averageBalance:
-                monthlyTotals.length > 0 ? (totalDebit - totalCredit) / monthlyTotals.length : 0,
+                monthlyTotals.length > 0
+                  ? roundTo(
+                      divideMoney(
+                        subtractMoney(totalDebitDec, totalCreditDec),
+                        monthlyTotals.length
+                      )
+                    )
+                  : 0,
               transactionCount: filtered.length,
             },
             isLoading: false,
