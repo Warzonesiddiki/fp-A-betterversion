@@ -288,12 +288,15 @@ testable. Evidence = literal command output with date.
 - **Continuation implementation commit:** `407fd78` (`fix: migrate report layout money totals and
 repair financial gates`), created after the staged ESLint, TypeScript, Prettier, and secret-scan
   pre-commit gates all passed.
-- **Remote delivery status (2026-08-03):** `git push origin arena/019fc804-fp-a-betterversion`
-  completed every local pre-push quality gate (TypeScript, ESLint, 808-test P0 shard, build,
-  bundle check, README check, production audit, and tautological-assertion scan), then failed at
-  GitHub transport with `fatal: could not read Username for 'https://github.com': terminal prompts
-disabled`. The local commits are intact; Arena's GitHub connection must be reconnected before a
-  later push. No credential was requested or stored.
+- **Remote delivery status (2026-08-03):** an earlier push attempt completed its local quality
+  gates but failed at GitHub transport because terminal credentials were unavailable. This checkout
+  later verified `gh auth status` with the Arena bot token; delivery is retried after the security
+  repair below. No credential was requested or stored.
+- **Pre-push security repair (2026-08-03):** the retried pre-push gate surfaced newly disclosed
+  high-severity GHSA-rgw5-rvv9-x895 in production `brace-expansion@5.0.8`, despite an earlier clean
+  audit. The scoped `minimatch@10.2.6` and `archiver-utils` overrides now require `^5.0.9`, with
+  the lockfile resolved to `5.0.9`. A clean `npm ci` followed by `node scripts/check-dependency-audit.mjs` reports
+  critical=0, high=0, moderate=0, low=0; no risk was allowlisted.
 - **Next genuine GAP-1 candidates from the fresh scan:** `DynamicsConnector.aggregateDynamicsRevenue`
   and `SalesforceConnector.aggregateForecast` aggregate real imported revenue amounts and require
   their own strict screen → migration → exact-test → stash-falsification protocol. Do not migrate
