@@ -7,7 +7,13 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 28th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03): All currency-bearing debit/credit/net aggregations now
+ * use the canonical money primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP).
+ * Amounts round to cents. No raw + - * / on currency values remains.
  */
+import { addMoney, roundTo, subtractMoney } from '../utils/money';
+
 /**
  * Aggregate Table Engine — Pre-aggregate data at different granularity levels
  */
@@ -59,17 +65,22 @@ export class AggregateTableEngine {
       const mapKey = this.makeKey(key);
       const existing = this.aggregates.get(mapKey);
       if (existing) {
-        existing.debit += row.debit;
-        existing.credit += row.credit;
-        existing.net = existing.debit - existing.credit;
+        // Money migration: use addMoney + roundTo for currency (debit/credit/net)
+        const newDebit = roundTo(addMoney(existing.debit, row.debit));
+        const newCredit = roundTo(addMoney(existing.credit, row.credit));
+        existing.debit = newDebit;
+        existing.credit = newCredit;
+        existing.net = roundTo(subtractMoney(newDebit, newCredit));
         existing.count++;
         existing.lastUpdated = Date.now();
       } else {
+        const d = roundTo(row.debit);
+        const c = roundTo(row.credit);
         this.aggregates.set(mapKey, {
           key,
-          debit: row.debit,
-          credit: row.credit,
-          net: row.debit - row.credit,
+          debit: d,
+          credit: c,
+          net: roundTo(subtractMoney(d, c)),
           count: 1,
           lastUpdated: Date.now(),
         });

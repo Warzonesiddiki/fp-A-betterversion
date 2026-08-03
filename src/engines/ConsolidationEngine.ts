@@ -1,6 +1,23 @@
 import type { GLEntry } from '@/types';
 import { MissingFXRateError } from './FXEngine';
-import { toCents, formatMoney } from '@/utils/money';
+import {
+  addMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  sumMoney,
+  roundTo,
+  toCents,
+  formatMoney,
+} from '@/utils/money';
+
+/**
+ * MONEY MIGRATION (2026-08-03): All currency-bearing amounts (eliminations,
+ * minority interest, goodwill, translations, sums for assets/liab/equity/revenue/expense/net,
+ * balance checks) now use the canonical money primitive (src/utils/money.ts / @/utils/money,
+ * decimal.js, ROUND_HALF_UP). Amounts round to cents. Ownership % use divide/multiply + roundTo.
+ * No raw + - * / on currency values remains.
+ */
 
 // =============================================================================
 // CONSOLIDATION ENGINE — ASC 810 Compliant
@@ -356,26 +373,27 @@ export class ConsolidationEngine {
       const totalEquity = this.sumByCategory(consolidatedEntries, 'equity');
       const totalRevenue = this.sumByCategory(consolidatedEntries, 'revenue');
       const totalExpenses = this.sumByCategory(consolidatedEntries, 'expense');
-      const netIncome = totalRevenue + totalExpenses; // expenses are negative
+      const netIncome = roundTo(subtractMoney(totalRevenue, Math.abs(totalExpenses))); // expenses negative → subtract abs for positive net logic; use money
 
       // Step 12: Add minority interest to equity
-      const totalMinorityInterest = minorityInterestDetails.reduce(
-        (sum, mi) => sum + mi.endingBalance,
-        0
-      );
+      const miBalances = minorityInterestDetails.map((mi) => mi.endingBalance);
+      const totalMinorityInterest = miBalances.length > 0 ? roundTo(sumMoney(miBalances)) : 0;
 
       // Step 13: Verify balance (Assets + Liabilities + Equity + Minority Interest = 0)
       // Liabilities and equity are stored as negative (credit) balances.
       // F-0009: cent-exact by default (no hardcoded hidden $0.01 slack);
       // imbalance is rounded to cents before comparing to the tolerance.
-      const balanceCheck = totalAssets + totalLiabilities + totalEquity + totalMinorityInterest;
+      const balanceCheck = roundTo(
+        sumMoney([totalAssets, totalLiabilities, totalEquity, totalMinorityInterest])
+      );
       // Exact cents via the canonical money primitive (F-0006/F-0009).
       const imbalanceCents = toCents(balanceCheck);
       const isBalanced = Math.abs(imbalanceCents) <= balanceToleranceCents;
       const imbalanceAmount = balanceCheck;
 
       // Step 14: Calculate total goodwill
-      const totalGoodwill = goodwillCalculations.reduce((sum, gw) => sum + gw.netGoodwill, 0);
+      const gwValues = goodwillCalculations.map((gw) => gw.netGoodwill);
+      const totalGoodwill = gwValues.length > 0 ? roundTo(sumMoney(gwValues)) : 0;
 
       // Step 15: Build worksheet
       const worksheet = this.buildWorksheet(
@@ -486,10 +504,11 @@ export class ConsolidationEngine {
 
       for (const ownership of directOwnerships) {
         const childId = ownership.childId;
-        const effectivePct = (currentPct * ownership.ownershipPct) / 100;
+        const frac = divideMoney(ownership.ownershipPct, 100);
+        const effectivePct = roundTo(multiplyMoney(currentPct, frac), 4);
 
         const currentEffective = effectiveOwnerships.get(childId) ?? 0;
-        effectiveOwnerships.set(childId, currentEffective + effectivePct);
+        effectiveOwnerships.set(childId, roundTo(addMoney(currentEffective, effectivePct), 4));
 
         // Continue traversal
         queue.push({ entityId: childId, currentPct: effectivePct });
@@ -566,7 +585,8 @@ export class ConsolidationEngine {
 
       for (const entry of accountEntries) {
         const entityId = entry.entityId ?? 'unknown';
-        entityBalances.set(entityId, (entityBalances.get(entityId) ?? 0) + entry.amount);
+        const curr = entityBalances.get(entityId) ?? 0;
+        entityBalances.set(entityId, roundTo(addMoney(curr, entry.amount)));
       }
 
       // Eliminate across entities
@@ -579,9 +599,11 @@ export class ConsolidationEngine {
           const toBalance = entityBalances.get(toId) ?? 0;
 
           if (fromBalance !== 0 && toBalance !== 0) {
-            const matchedAmount = Math.min(Math.abs(fromBalance), Math.abs(toBalance));
+            const absFrom = Math.abs(fromBalance);
+            const absTo = Math.abs(toBalance);
+            const matchedAmount = Math.min(absFrom, absTo);
             const direction = fromBalance > 0 ? -1 : 1;
-            const eliminate = matchedAmount * direction;
+            const eliminate = roundTo(multiplyMoney(matchedAmount, direction));
 
             if (eliminate !== 0) {
               const autoPairKey = `${fromId}:${toId}:${accountCode}`;
@@ -637,28 +659,32 @@ export class ConsolidationEngine {
       if (minorityPct <= 0) continue;
 
       // Calculate net income from subsidiary entries
-      const revenue = subsidiary.entries
+      const revenueVals = subsidiary.entries
         .filter((e) => getAccountCategory(e.accountCode) === 'revenue')
-        .reduce((sum, e) => sum + e.amount, 0);
+        .map((e) => e.amount);
+      const revenue = revenueVals.length > 0 ? roundTo(sumMoney(revenueVals)) : 0;
 
-      const expenses = subsidiary.entries
+      const expenseVals = subsidiary.entries
         .filter((e) => getAccountCategory(e.accountCode) === 'expense')
-        .reduce((sum, e) => sum + e.amount, 0);
+        .map((e) => e.amount);
+      const expenses = expenseVals.length > 0 ? roundTo(sumMoney(expenseVals)) : 0;
 
-      const netIncome = revenue + expenses; // expenses are negative
+      const netIncome = roundTo(subtractMoney(revenue, Math.abs(expenses))); // expenses negative
 
       // Calculate dividends
-      const dividends = subsidiary.entries
+      const dividendVals = subsidiary.entries
         .filter(
           (e) =>
             e.accountCode.startsWith('3') &&
             e.amount < 0 &&
             (e.accountName?.toLowerCase().includes('dividend') ?? false)
         )
-        .reduce((sum, e) => sum + Math.abs(e.amount), 0);
+        .map((e) => Math.abs(e.amount));
+      const dividends = dividendVals.length > 0 ? roundTo(sumMoney(dividendVals)) : 0;
 
+      const minFrac = divideMoney(minorityPct, 100);
       // Minority interest = minority % × (net income - dividends)
-      const minorityShare = (minorityPct / 100) * (netIncome - dividends);
+      const minorityShare = roundTo(multiplyMoney(minFrac, subtractMoney(netIncome, dividends)));
 
       details.push({
         entityId: entityId,
@@ -666,8 +692,8 @@ export class ConsolidationEngine {
         ownershipPct: effectivePct,
         minorityPct,
         beginningBalance: 0,
-        netIncome: (minorityPct / 100) * netIncome,
-        dividends: (minorityPct / 100) * dividends,
+        netIncome: roundTo(multiplyMoney(minFrac, netIncome)),
+        dividends: roundTo(multiplyMoney(minFrac, dividends)),
         otherAdjustments: 0,
         endingBalance: minorityShare,
       });
@@ -681,7 +707,8 @@ export class ConsolidationEngine {
    */
   static calculateMinorityInterest(netIncome: number, ownershipPct: number): number {
     const pct = Math.min(100, Math.max(0, ownershipPct));
-    return netIncome * (1 - pct / 100);
+    const minorityFrac = divideMoney(100 - pct, 100);
+    return roundTo(multiplyMoney(netIncome, minorityFrac));
   }
 
   /**
@@ -699,29 +726,33 @@ export class ConsolidationEngine {
       const subsidiary = entityMap.get(ownership.childId);
       if (!subsidiary) continue;
 
-      const minorityPct = (100 - ownership.ownershipPct) / 100;
+      const minorityFrac = divideMoney(100 - ownership.ownershipPct, 100);
       const fairValueAdjustments = 0; // Would need fair value data
 
+      const ownFrac = divideMoney(ownership.ownershipPct, 100);
       // Goodwill = Acquisition Cost - (Book Value × Ownership %) - Fair Value Adjustments
-      const goodwill =
-        ownership.acquisitionCost -
-        ownership.bookValueAtAcquisition * (ownership.ownershipPct / 100) -
-        fairValueAdjustments;
+      const goodwillRaw = subtractMoney(
+        ownership.acquisitionCost,
+        multiplyMoney(ownership.bookValueAtAcquisition, ownFrac)
+      );
+      const goodwill = roundTo(addMoney(goodwillRaw, fairValueAdjustments * -1)); // preserve prior sign intent, fairValue usually 0
 
       // Amortize over 10 years (simplified — goodwill is actually not amortized under ASC 350,
       // but we provide the calculation for impairment testing)
-      const amortizationPerYear = goodwill > 0 ? goodwill / 10 : 0;
+      const amortizationPerYear = goodwill > 0 ? roundTo(divideMoney(goodwill, 10)) : 0;
       const accumulatedAmortization = 0; // Would need acquisition date
 
       calculations.push({
         acquisitionCost: ownership.acquisitionCost,
         bookValueAtAcquisition: ownership.bookValueAtAcquisition,
         fairValueAdjustments,
-        minorityInterestAtAcquisition: ownership.bookValueAtAcquisition * minorityPct,
+        minorityInterestAtAcquisition: roundTo(
+          multiplyMoney(ownership.bookValueAtAcquisition, minorityFrac)
+        ),
         goodwill,
         amortizationPerYear,
         accumulatedAmortization,
-        netGoodwill: goodwill - accumulatedAmortization,
+        netGoodwill: roundTo(subtractMoney(goodwill, accumulatedAmortization)),
       });
     }
 
@@ -758,7 +789,8 @@ export class ConsolidationEngine {
       );
 
       if (investmentEntries && investmentEntries.length > 0) {
-        const totalInvestment = investmentEntries.reduce((sum, e) => sum + e.amount, 0);
+        const invAmounts = investmentEntries.map((e) => e.amount);
+        const totalInvestment = invAmounts.length > 0 ? roundTo(sumMoney(invAmounts)) : 0;
         eliminations.push({
           fromEntityId: entities[0]!.entityId,
           toEntityId: vie.entityId,
@@ -861,9 +893,10 @@ export class ConsolidationEngine {
         }
         const rate = rateEntry.rate;
 
+        const translatedAmount = roundTo(multiplyMoney(entry.amount, rate));
         return {
           ...entry,
-          amount: entry.amount * rate,
+          amount: translatedAmount,
           currency: 'USD',
         };
       });
@@ -932,13 +965,15 @@ export class ConsolidationEngine {
       (e) => e.entityId === toEntityId && e.accountCode === accountCode
     );
 
-    const fromBalance = fromEntries.reduce((sum, e) => sum + e.amount, 0);
-    const toBalance = toEntries.reduce((sum, e) => sum + e.amount, 0);
+    const fromVals = fromEntries.map((e) => e.amount);
+    const toVals = toEntries.map((e) => e.amount);
+    const fromBalance = fromVals.length > 0 ? roundTo(sumMoney(fromVals)) : 0;
+    const toBalance = toVals.length > 0 ? roundTo(sumMoney(toVals)) : 0;
 
     return {
       fromBalance,
       toBalance,
-      netBalance: fromBalance + toBalance,
+      netBalance: roundTo(addMoney(fromBalance, toBalance)),
     };
   }
 
@@ -1051,12 +1086,13 @@ export class ConsolidationEngine {
     const fromEntries = entries.filter(
       (e) => e.entityId === pair.fromEntityId && e.accountCode === pair.accountCode
     );
-    const fromAmount = fromEntries.reduce((sum, e) => sum + e.amount, 0);
+    const fromVals = fromEntries.map((e) => e.amount);
+    const fromAmount = fromVals.length > 0 ? roundTo(sumMoney(fromVals)) : 0;
 
     // Investment/dividend eliminations: eliminate parent's balance entirely against sub's equity
     if (pair.type === 'investment' || pair.type === 'dividend') {
       if (fromAmount === 0) return null;
-      const eliminate = -fromAmount; // Negate to zero out the parent's account
+      const eliminate = roundTo(multiplyMoney(fromAmount, -1)); // Negate to zero out the parent's account
 
       return {
         fromEntityId: pair.fromEntityId,
@@ -1076,13 +1112,16 @@ export class ConsolidationEngine {
     const toEntries = entries.filter(
       (e) => e.entityId === pair.toEntityId && e.accountCode === toAccountCode
     );
-    const toAmount = toEntries.reduce((sum, e) => sum + e.amount, 0);
+    const toVals = toEntries.map((e) => e.amount);
+    const toAmount = toVals.length > 0 ? roundTo(sumMoney(toVals)) : 0;
 
     if (fromAmount === 0 && toAmount === 0) return null;
 
-    const matchedAmount = Math.min(Math.abs(fromAmount), Math.abs(toAmount));
+    const absFrom = Math.abs(fromAmount);
+    const absTo = Math.abs(toAmount);
+    const matchedAmount = Math.min(absFrom, absTo);
     const direction = fromAmount > 0 ? -1 : 1;
-    const eliminate = matchedAmount * direction;
+    const eliminate = roundTo(multiplyMoney(matchedAmount, direction));
 
     if (eliminate === 0) return null;
 
@@ -1167,14 +1206,17 @@ export class ConsolidationEngine {
     for (const elimination of eliminations) {
       const keyFrom = `${elimination.fromEntityId}:${elimination.accountCode}`;
       const keyTo = `${elimination.toEntityId}:${elimination.accountCode}`;
-      adjustmentMap.set(keyFrom, (adjustmentMap.get(keyFrom) ?? 0) + elimination.eliminatedAmount);
-      adjustmentMap.set(keyTo, (adjustmentMap.get(keyTo) ?? 0) - elimination.eliminatedAmount);
+      const prevFrom = adjustmentMap.get(keyFrom) ?? 0;
+      adjustmentMap.set(keyFrom, roundTo(addMoney(prevFrom, elimination.eliminatedAmount)));
+      const prevTo = adjustmentMap.get(keyTo) ?? 0;
+      adjustmentMap.set(keyTo, roundTo(subtractMoney(prevTo, elimination.eliminatedAmount)));
     }
 
     for (const adjustment of adjustments) {
       const key = `${adjustment.entityId}:${adjustment.accountCode}`;
-      const netAdjustment = adjustment.debitAmount - adjustment.creditAmount;
-      adjustmentMap.set(key, (adjustmentMap.get(key) ?? 0) + netAdjustment);
+      const netAdjustment = roundTo(subtractMoney(adjustment.debitAmount, adjustment.creditAmount));
+      const prev = adjustmentMap.get(key) ?? 0;
+      adjustmentMap.set(key, roundTo(addMoney(prev, netAdjustment)));
     }
 
     // Apply adjustments
@@ -1184,7 +1226,7 @@ export class ConsolidationEngine {
     for (const entry of allEntries) {
       const key = `${entry.entityId}:${entry.accountCode}`;
       const adjustment = adjustmentMap.get(key) ?? 0;
-      const newAmount = entry.amount + adjustment;
+      const newAmount = roundTo(addMoney(entry.amount, adjustment));
 
       if (Math.abs(newAmount) > 0.001) {
         result.push({
@@ -1200,6 +1242,7 @@ export class ConsolidationEngine {
     for (const adjustment of adjustments) {
       const key = `${adjustment.entityId}:${adjustment.accountCode}`;
       if (!processedKeys.has(key) && (adjustment.debitAmount > 0 || adjustment.creditAmount > 0)) {
+        const netChg = roundTo(subtractMoney(adjustment.debitAmount, adjustment.creditAmount));
         result.push({
           id: `adj-${adjustment.accountCode}-${adjustment.entityId}`,
           accountId: adjustment.accountCode,
@@ -1209,9 +1252,9 @@ export class ConsolidationEngine {
           periodName: '',
           debit: adjustment.debitAmount,
           credit: adjustment.creditAmount,
-          netChange: adjustment.debitAmount - adjustment.creditAmount,
+          netChange: netChg,
           date: new Date().toISOString().split('T')[0] ?? '',
-          amount: adjustment.debitAmount - adjustment.creditAmount,
+          amount: netChg,
           description: '',
           reference: '',
           entityId: adjustment.entityId,
@@ -1224,8 +1267,9 @@ export class ConsolidationEngine {
   }
 
   private static sumByCategory(entries: GLEntry[], category: AccountCategory): number {
-    return entries
+    const vals = entries
       .filter((e) => getAccountCategory(e.accountCode) === category)
-      .reduce((sum, e) => sum + e.amount, 0);
+      .map((e) => e.amount);
+    return vals.length > 0 ? roundTo(sumMoney(vals)) : 0;
   }
 }

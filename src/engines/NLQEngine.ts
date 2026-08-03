@@ -9,6 +9,17 @@
  */
 
 import type { GLEntry, GLAccount } from '@/types';
+import { addMoney, divideMoney, roundTo, subtractMoney, sumMoney, toDecimal } from '../utils/money';
+
+/**
+ * MONEY MIGRATION (2026-08-03): All currency-bearing paths (netChange, debit,
+ * credit, revenue/expense/profit aggregations from GL) now use the canonical
+ * money primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Amounts
+ * round to cents (2 dp); no raw + - * / or Math.abs on currency values.
+ * Ratios/aggregations that are not money (e.g. counts) remain numeric.
+ * >0 guards use Decimal.greaterThan(0) (decimal.js isPositive() returns true for 0).
+ */
+const CURRENCY_PLACES = 2;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -87,6 +98,8 @@ const METRIC_PATTERNS: Record<string, string[]> = {
   churn: ['churn', 'attrition', 'retention', 'logo churn'],
   customers: ['customers', 'accounts', 'clients', 'subscribers'],
   pipeline: ['pipeline', 'deal value', 'bookings'],
+  debit: ['debit'],
+  credit: ['credit'],
 };
 
 const DIMENSION_PATTERNS: Record<string, string[]> = {
@@ -550,43 +563,63 @@ export class NLQEngine {
     const useMetric = metrics[0] || 'revenue';
 
     for (const [key, entries] of grouped) {
+      // Map metric to entry field using money-safe extraction.
+      // All currency values go through toDecimal + roundTo(2); non-currency
+      // (count) stay as-is. Use greaterThan(0) for sign guards (decimal.js
+      // isPositive() is true for 0).
       const values = entries.map((e) => {
-        // Map metric to entry field
+        let raw: number;
         switch (useMetric) {
           case 'revenue':
           case 'sales':
           case 'income':
-            return e.netChange > 0 ? e.netChange : 0;
+            raw = toDecimal(e.netChange).greaterThan(0) ? toDecimal(e.netChange).toNumber() : 0;
+            return roundTo(raw, CURRENCY_PLACES);
           case 'expenses':
           case 'costs':
-            return e.netChange < 0 ? Math.abs(e.netChange) : 0;
+            raw = toDecimal(e.netChange).lessThan(0) ? toDecimal(e.netChange).abs().toNumber() : 0;
+            return roundTo(raw, CURRENCY_PLACES);
           case 'profit':
-            return e.netChange;
+            return roundTo(e.netChange, CURRENCY_PLACES);
           case 'debit':
-            return e.debit;
+            return roundTo(e.debit, CURRENCY_PLACES);
           case 'credit':
-            return e.credit;
+            return roundTo(e.credit, CURRENCY_PLACES);
           default:
-            return e.netChange;
+            return roundTo(e.netChange, CURRENCY_PLACES);
         }
       });
 
       let value: number;
       switch (aggregation) {
         case 'sum':
-          value = values.reduce((a, b) => a + b, 0);
+          value = roundTo(sumMoney(values), CURRENCY_PLACES);
           break;
         case 'avg':
-          value = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+          if (values.length === 0) {
+            value = 0;
+          } else {
+            const sum = sumMoney(values);
+            value = roundTo(divideMoney(sum, values.length), CURRENCY_PLACES);
+          }
           break;
         case 'count':
           value = values.length;
           break;
         case 'min':
-          value = values.length > 0 ? Math.min(...values) : 0;
+          if (values.length === 0) {
+            value = 0;
+          } else {
+            // min of already-rounded cents is still safe as number for display
+            value = Math.min(...values.map((v) => roundTo(v, CURRENCY_PLACES)));
+          }
           break;
         case 'max':
-          value = values.length > 0 ? Math.max(...values) : 0;
+          if (values.length === 0) {
+            value = 0;
+          } else {
+            value = Math.max(...values.map((v) => roundTo(v, CURRENCY_PLACES)));
+          }
           break;
       }
 
@@ -601,7 +634,8 @@ export class NLQEngine {
   private static generateSummary(query: NLQQuery, data: readonly NLQDataPoint[]): string {
     if (data.length === 0) return 'No data found for this query.';
 
-    const total = data.reduce((sum, d) => sum + d.value, 0);
+    // Total is a money sum; use sumMoney + roundTo to keep exact cents.
+    const total = roundTo(sumMoney(data.map((d) => d.value)), CURRENCY_PLACES);
     const metric = query.entities.metrics[0] || 'value';
     const top = data[0];
 

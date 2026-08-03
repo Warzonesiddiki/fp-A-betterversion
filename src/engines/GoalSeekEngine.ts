@@ -8,11 +8,19 @@
  * @since 1.0.0
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 10th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * MONEY MIGRATION (2026-08-03, GAP-1 F-0006): breakEven (fixedCosts, pricePerUnit,
+ * variableCostPerUnit → contributionMargin, units, revenue) now uses the canonical
+ * money primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Raw - / * on
+ * currency values eliminated. roundTo(x,2) for results. Solvers remain generic
+ * numeric (operate on whatever fn returns, including money values).
  */
 // =============================================================================
 // GOAL SEEK ENGINE — Find input value that produces a target output
 // Pure TypeScript, deterministic, testable
 // =============================================================================
+
+import { subtractMoney, multiplyMoney, divideMoney, roundTo, toDecimal } from '../utils/money';
 
 export interface GoalSeekConfig {
   fn: (x: number) => number;
@@ -160,19 +168,21 @@ export class GoalSeekEngine {
     };
   }
 
-  /**
+  /** 
    * Find break-even point where revenue equals cost.
+   * Money migration: contributionMargin, units, revenue use money primitives.
    */
   static breakEven(
     fixedCosts: number,
     pricePerUnit: number,
     variableCostPerUnit: number
   ): { units: number; revenue: number; valid: boolean } {
-    const contributionMargin = pricePerUnit - variableCostPerUnit;
-    if (contributionMargin <= 0) {
+    const contributionMargin = roundTo(subtractMoney(pricePerUnit, variableCostPerUnit));
+    if (toDecimal(contributionMargin).lte(0)) {
       return { units: 0, revenue: 0, valid: false };
     }
-    const units = fixedCosts / contributionMargin;
-    return { units, revenue: units * pricePerUnit, valid: true };
+    const units = roundTo(divideMoney(fixedCosts, contributionMargin));
+    const revenue = roundTo(multiplyMoney(units, pricePerUnit));
+    return { units, revenue, valid: true };
   }
 }

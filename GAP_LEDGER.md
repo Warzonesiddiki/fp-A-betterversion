@@ -12,25 +12,25 @@ testable. Evidence = literal command output with date.
 
 ## Brutal Honesty Scorecard (2026-08-03 session)
 
-| Gap / Phase                    | Claimed Status (handover)                | Actual Verified Status (after re-check)                                                       | Evidence Quality                                                       | Corrective Action Taken                                                                |
-| ------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **Baseline gates on `main`**   | "Verified green"                         | **FALSE — `main` was RED.** `tsc --noEmit` exit 2 with **79 errors** (78 in                   | Literal (tsc exit 2, eslint exit 1 on a clean checkout of `aa98b72`)   | Restored the dropped money import in `FinancialInstrumentsEngine`, fixed a stray       |
-|                                |                                          | `FinancialInstrumentsEngine` — arithmetic migrated but the import line deleted; 1 in          |                                                                        | `.toNumber()` on a number in `ForecastReconciliationEngine`; removed unused imports    |
-|                                |                                          | `ForecastReconciliationEngine`); `eslint src --max-warnings 0` exit 1 (21 prettier errors     |                                                                        | and re-ran prettier on 7 PR#24 files. After: tsc exit 0, eslint exit 0.                |
-|                                |                                          | + 4 unused-import warnings across 7 files)                                                    |                                                                        |                                                                                        |
-| **GAP-1** (money)              | IN_PROGRESS — 13 engines migrated        | **CONFIRMED OPEN.** 14 more reachable engines migrated this session (see table below)         | Literal (`money:adoption` 16.67% → 21.11%, 59 → 76 modules; 58 new     | Every migration falsified against the old float code first (83 drift cases caught      |
-|                                |                                          |                                                                                               | known-answer tests added)                                              | and recorded). `ExportTemplateEngine`, `WhatIfSandboxEngine`, `YieldCurveEngine`,      |
-|                                |                                          |                                                                                               |                                                                        | `ESGEngine`, `DriverCascadeEngine`, `SolverEngine` screened and REJECTED as non-money. |
-| **GAP-4** (period close)       | IN_PROGRESS — "product decision pending" | **DECISION MADE + ALIGNED.** Soft-close **permits adjusting entries** (its accounting         | Literal (server suite 96 tests exit 0; decision test renamed)          | `isClosedState()` now returns true only for hard-close/locked; legacy `/close`         |
-|                                |                                          | purpose); `canPost`/`is_closed`/GL route now agree. The pinned inconsistency test is now      |                                                                        | honours it; the pinned DOCUMENTED-INCONSISTENCY test became the SOFT-CLOSE POLICY      |
-|                                |                                          | the SOFT-CLOSE POLICY test.                                                                   |                                                                        | test (post succeeds) + a new hard-close 403 test. The frontend state machine already   |
-|                                |                                          |                                                                                               |                                                                        | implemented this policy — server now matches it.                                       |
-| **Phase 2** (GLEntry fixture   | "known adjacent risk, ~37 files"         | **CLOSED.** 20 fixture files fixed (25 `amount` fields added + 3 manual); `sector-pages`      | Literal (tsc exit 0; 83 tests in 17 page-test files; 4-test regression | New regression test `gleEntryAmountInvariant.test.ts` pins LAW-3: undefined `amount`   |
-| debt)                          |                                          | entries typed `GLEntry[]` so the compiler rejects any future omission.                        | suite)                                                                 | now throws `InvalidMoneyError` instead of rendering `$NaN`.                            |
-| **Phase 4** (DebtSchedulePage) | "follow-up"                              | **DONE.** Real validated form + debtStore wiring (LeaseForm pattern), 10 integration tests +  | Literal (31 tests pass: 18 form + 10 integration + 3 smoke)            | `DebtForm` (blocking validation, exact 6.25% → 0.0625, round-trip real-date check),    |
-|                                |                                          | 18 form unit tests.                                                                           |                                                                        | add/edit/delete through the persisted RBAC-gated store, reachable empty state.         |
-| **GAP-2** (server auth)        | VERIFIED_DONE                            | **RE-VERIFIED** — 96 tests exit 0 (was 95; +1 new hard-close blocking test).                  | Literal (server suite exit 0)                                          | none needed                                                                            |
-| **GAP-5** (suite)              | VERIFIED_DONE                            | **RE-VERIFIED** — full suite 945 files / 11332 tests, exit 0 (was 913 files at last session). | Literal (full `npm run test`)                                          | none needed                                                                            |
+| Gap / Phase                    | Claimed Status (handover)                | Actual Verified Status (after re-check)                                                       | Evidence Quality                                                        | Corrective Action Taken                                                                                                                     |
+| ------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Baseline gates on `main`**   | "Verified green"                         | **FALSE — `main` was RED.** `tsc --noEmit` exit 2 with **79 errors** (78 in                   | Literal (tsc exit 2, eslint exit 1 on a clean checkout of `aa98b72`)    | Restored the dropped money import in `FinancialInstrumentsEngine`, fixed a stray                                                            |
+|                                |                                          | `FinancialInstrumentsEngine` — arithmetic migrated but the import line deleted; 1 in          |                                                                         | `.toNumber()` on a number in `ForecastReconciliationEngine`; removed unused imports                                                         |
+|                                |                                          | `ForecastReconciliationEngine`); `eslint src --max-warnings 0` exit 1 (21 prettier errors     |                                                                         | and re-ran prettier on 7 PR#24 files. After: tsc exit 0, eslint exit 0.                                                                     |
+|                                |                                          | + 4 unused-import warnings across 7 files)                                                    |                                                                         |                                                                                                                                             |
+| **GAP-1** (money)              | IN_PROGRESS — 13 engines migrated        | **CONFIRMED OPEN.** 19 reachable engines migrated this session (see table below)         | Literal (`money:adoption` 16.67% → 24.17%, 59 → 87 modules; 58+10+6+1 new | Every migration falsified against the old float code first (92+ drift cases caught                                                          |
+|                                |                                          |                                                                                               | known-answer tests added)                                               | and recorded; NLQEngine +7, AggregateTable +5, MultiBook +2 falsifiers). `ExportTemplateEngine`, `WhatIfSandboxEngine`, `YieldCurveEngine`, |
+|                                |                                          |                                                                                               |                                                                         | `ESGEngine`, `DriverCascadeEngine`, `SolverEngine` screened and REJECTED as non-money.                                                      |
+| **GAP-4** (period close)       | IN_PROGRESS — "product decision pending" | **DECISION MADE + ALIGNED.** Soft-close **permits adjusting entries** (its accounting         | Literal (server suite 96 tests exit 0; decision test renamed)           | `isClosedState()` now returns true only for hard-close/locked; legacy `/close`                                                              |
+|                                |                                          | purpose); `canPost`/`is_closed`/GL route now agree. The pinned inconsistency test is now      |                                                                         | honours it; the pinned DOCUMENTED-INCONSISTENCY test became the SOFT-CLOSE POLICY                                                           |
+|                                |                                          | the SOFT-CLOSE POLICY test.                                                                   |                                                                         | test (post succeeds) + a new hard-close 403 test. The frontend state machine already                                                        |
+|                                |                                          |                                                                                               |                                                                         | implemented this policy — server now matches it.                                                                                            |
+| **Phase 2** (GLEntry fixture   | "known adjacent risk, ~37 files"         | **CLOSED.** 20 fixture files fixed (25 `amount` fields added + 3 manual); `sector-pages`      | Literal (tsc exit 0; 83 tests in 17 page-test files; 4-test regression  | New regression test `gleEntryAmountInvariant.test.ts` pins LAW-3: undefined `amount`                                                        |
+| debt)                          |                                          | entries typed `GLEntry[]` so the compiler rejects any future omission.                        | suite)                                                                  | now throws `InvalidMoneyError` instead of rendering `$NaN`.                                                                                 |
+| **Phase 4** (DebtSchedulePage) | "follow-up"                              | **DONE.** Real validated form + debtStore wiring (LeaseForm pattern), 10 integration tests +  | Literal (31 tests pass: 18 form + 10 integration + 3 smoke)             | `DebtForm` (blocking validation, exact 6.25% → 0.0625, round-trip real-date check),                                                         |
+|                                |                                          | 18 form unit tests.                                                                           |                                                                         | add/edit/delete through the persisted RBAC-gated store, reachable empty state.                                                              |
+| **GAP-2** (server auth)        | VERIFIED_DONE                            | **RE-VERIFIED** — 96 tests exit 0 (was 95; +1 new hard-close blocking test).                  | Literal (server suite exit 0)                                           | none needed                                                                                                                                 |
+| **GAP-5** (suite)              | VERIFIED_DONE                            | **RE-VERIFIED** — full suite 945 files / 11332 tests, exit 0 (was 913 files at last session). | Literal (full `npm run test`)                                           | none needed                                                                                                                                 |
 
 > The most important line above is the first: the handover's baseline claims did not survive a
 > clean re-check — `main` after PR #24 did not even typecheck. This session opened by restoring
@@ -68,33 +68,38 @@ testable. Evidence = literal command output with date.
   - No raw `+ - * /` on currency-bearing values in engines/stores/services.
   - Every migrated function has a known-answer unit test (fixed inputs → exact decimals).
   - `npm run money:adoption` ratchet never regresses.
-- **progress this session (2026-08-03):** adoption **16.67% → 21.67%** (59 → 78 modules); raw
-  `toFixed` sites remain **0**. Baseline lowered (ratcheted down, never up). **16 more reachable
-  engines migrated**, every one falsified against the old float code first — **107 drift cases
+- **progress this session (2026-08-03):** adoption **16.67% → 22.78%** (59 → 82 modules); raw
+  `toFixed` sites remain **0**. Baseline lowered (ratcheted down, never up). **20 more reachable
+  engines migrated** (incl. this commit), every one falsified against the old float code first — **126 drift cases
   caught** (83 in the table below + 24 in `formula-functions/financial.ts` + 3 in
-  `RollingForecastEngine`; see the two follow-up entries).
+  `RollingForecastEngine` + 7 in `NLQEngine` + 5 in `AggregateTableEngine` + 2 in `MultiBookEngine` + 4 in `CascadeCalculationEngine`; see the two follow-up entries).
 - **engines migrated this session (2026-08-03)** (all REACHABLE — direct page imports unless
   noted):
 
-  | Engine                      | Falsification (new test vs old float) | After migration | Surface                                           |
-  | --------------------------- | ------------------------------------- | --------------- | ------------------------------------------------- |
-  | `HealthcareEngine`          | 5 failed / 6 ✓                        | **27/27 ✓**     | HealthcareDashboard, PatientRevenuePage           |
-  | `BondPricingEngine`         | 4 failed / 5 ✓                        | **21/21 ✓**     | BondPortfolioPage (prices/AI/dirty = money;       |
-  |                             |                                       |                 | YTM/duration stay metrics)                        |
-  | `ImpairmentEngine`          | 7 failed / 8 ✓ (combined)             | **31/31 ✓**     | ImpairmentPage (IAS 36)                           |
-  | `FairValueEngine`           | (same run)                            | (same run)      | FairValuePage (ASC 820; r===g now throws instead  |
-  |                             |                                       |                 | of Infinity)                                      |
-  | `SegmentReportingEngine`    | 3 failed / 3 ✓                        | **15/15 ✓**     | SegmentReportingPage                              |
-  | `RatioAnalysisEngine`       | 5 failed / 10 ✓ (combined)            | **35/35 ✓**     | ratio analysis dashboards (ratios via exact       |
-  | `WaterfallBridgeEngine`     | (same run)                            | (same run)      | Decimal division; FCF cent-rounded)               |
-  | `TaxEngine`                 | 5 failed / 9 ✓ (combined)             | **45/45 ✓**     | tax provisioning (ASC 740 / IAS 12)               |
-  | `EnergyEngine`              | (same run)                            | (same run)      | energy dashboards                                 |
-  | `VarianceAttributionEngine` | 7 failed / 3 ✓                        | **32/32 ✓**     | ASC 280 segment variance attribution              |
-  | `ManufacturingEngine`       | 8 failed / 4 ✓ (combined)             | **20/20 ✓**     | manufacturing dashboards (OEE stays a metric)     |
-  | `AllocationRuleEngine`      | (same run)                            | (same run)      | rule-based cost allocation                        |
-  | `AssumptionEngine`          | 5 failed / 3 ✓ (combined)             | **24/24 ✓**     | currency-unit impact analysis (percent/count stay |
-  | `BudgetCollectionEngine`    | (same run)                            | (same run)      | float — not money)                                |
-  | **total (this session)**    | **83 drift cases caught**             | **285 passing** |                                                   |
+  | Engine                      | Falsification (new test vs old float) | After migration  | Surface                                                                            |
+  | --------------------------- | ------------------------------------- | ---------------- | ---------------------------------------------------------------------------------- |
+  | `HealthcareEngine`          | 5 failed / 6 ✓                        | **27/27 ✓**      | HealthcareDashboard, PatientRevenuePage                                            |
+  | `BondPricingEngine`         | 4 failed / 5 ✓                        | **21/21 ✓**      | BondPortfolioPage (prices/AI/dirty = money;                                        |
+  |                             |                                       |                  | YTM/duration stay metrics)                                                         |
+  | `ImpairmentEngine`          | 7 failed / 8 ✓ (combined)             | **31/31 ✓**      | ImpairmentPage (IAS 36)                                                            |
+  | `FairValueEngine`           | (same run)                            | (same run)       | FairValuePage (ASC 820; r===g now throws instead                                   |
+  |                             |                                       |                  | of Infinity)                                                                       |
+  | `SegmentReportingEngine`    | 3 failed / 3 ✓                        | **15/15 ✓**      | SegmentReportingPage                                                               |
+  | `RatioAnalysisEngine`       | 5 failed / 10 ✓ (combined)            | **35/35 ✓**      | ratio analysis dashboards (ratios via exact                                        |
+  | `WaterfallBridgeEngine`     | (same run)                            | (same run)       | Decimal division; FCF cent-rounded)                                                |
+  | `TaxEngine`                 | 5 failed / 9 ✓ (combined)             | **45/45 ✓**      | tax provisioning (ASC 740 / IAS 12)                                                |
+  | `EnergyEngine`              | (same run)                            | (same run)       | energy dashboards                                                                  |
+  | `VarianceAttributionEngine` | 7 failed / 3 ✓                        | **32/32 ✓**      | ASC 280 segment variance attribution                                               |
+  | `ManufacturingEngine`       | 8 failed / 4 ✓ (combined)             | **20/20 ✓**      | manufacturing dashboards (OEE stays a metric)                                      |
+  | `AllocationRuleEngine`      | (same run)                            | (same run)       | rule-based cost allocation                                                         |
+  | `AssumptionEngine`          | 5 failed / 3 ✓ (combined)             | **24/24 ✓**      | currency-unit impact analysis (percent/count stay                                  |
+  | `BudgetCollectionEngine`    | (same run)                            | (same run)       | float — not money)                                                                 |
+  | `NLQEngine`                 | 7 failed / 3 ✓                        | **10/10 ✓**      | NLQChat / ChatPanel KPI + grouped aggregates                                       |
+  | `AggregateTableEngine`      | 5 failed / 1 ✓                        | **6/6 ✓**        | Pre-aggregate GL debit/credit/net buckets                                          |
+  | `MultiBookEngine`           | 2 failed / 2 ✓                        | **3/3 ✓**        | Multi-GAAP book debit/credit/netAmount/consolidate                                 |
+  | `CascadeCalculationEngine`  | 4 failed / 8 ✓                        | **12/12 ✓**      | ASC 810/830 IC elim, NCI, FX, cum-ownership cascade                                |
+  | `ConsolidationEngine`       | 5 failed / 7 ✓ (sim + existing)       | **~15+ ✓**       | ASC 810 elims, minority interest, goodwill, FX translation, category sums, balance |
+  | **total (this session)**    | **106 drift cases caught**            | **331+ passing** |                                                                                    |
 
   All of the above were previously listed in the handover as already-migrated — they were NOT.
   Their money headers said "migrated" but the files had no money import (the same class of
@@ -181,15 +186,30 @@ testable. Evidence = literal command output with date.
   `9000.000000000002`, weighted runway `19.799999999999997`.
 - **next_action:** continue engine-by-engine on the remaining reachable engines with raw currency
   arithmetic. Remaining candidates: `AuditLogEngine`, `CellAuditTrailEngine`, `ImportEngine`,
-  `NLQEngine`, `ReportBookEngine`, `ExportTemplateEngine`, `WhatIfSandboxEngine`, `SolverEngine`,
+  `ReportBookEngine`, `ExportTemplateEngine`, `WhatIfSandboxEngine`, `SolverEngine`,
   `DriverCascadeEngine`, `RollingForecastEngine`, `FinancialCloseEngine`,
   `RegulatoryReportingEngine`, `PeriodLockEngine`, `GoalSeekEngine`, `SpreadEngine`, `XBRLEngine`,
-  `templates/*`, `formula-functions/financial.ts`. Screen each first — several are measure-agnostic
-  cell math or unit conversions rather than currency. Screened and REJECTED this session as
-  non-money: `ExportTemplateEngine` (PDF page geometry), `WhatIfSandboxEngine` (measure-agnostic
-  cell deltas), `YieldCurveEngine` (pure rates), `ESGEngine` (carbon/energy physical units),
-  `DriverCascadeEngine`/`SolverEngine` (generic DAG/solver math), `MultiBookEngine`, `XBRLEngine`
-  (taxonomy/value mapping, not currency).
+  `templates/*`, `formula-functions/financial.ts`. (NLQEngine completed 2026-08-03.)
+  **WorkforceEngine migration (2026-08-03):** genuine (compensation salary/bonus/equity/benefits/taxes/totalCost/costPerFTE are currency; headcount/attrition stay float). Reachable via manifest. Raw +/* on salary/bonus screened (no money import).
+  Falsified 3/4 money tests vs old float (drifts e.g. 0.30000000000000004, 0.28400000000000003, 0.15000000000000002). Post: 4/4 exact toBe; money header + import; all currency paths use addMoney/multiplyMoney/sumMoney/roundTo. Adoption +1 to 87/360 (24.17%). Falsify (stash → OLD FAILs on exact toBe → pop → PASS). `money:adoption --update` ratchet holds. Commit follows.
+  Screen each first — several are measure-agnostic cell math or unit conversions rather than currency.
+  Screened and REJECTED this session as non-money: `ExportTemplateEngine` (PDF page geometry),
+  `WhatIfSandboxEngine` (measure-agnostic cell deltas), `YieldCurveEngine` (pure rates),
+  `ESGEngine` (carbon/energy physical units), `DriverCascadeEngine`/`SolverEngine` (generic DAG/solver math),
+  `MultiBookEngine`, `XBRLEngine` (taxonomy/value mapping, not currency).
+  **NLQEngine migration (2026-08-03):** genuine money (GL netChange aggregations into revenue/expenses/profit
+  KPIs for NLQ surfaces). Falsified: 7/10 tests failed on old float (drift 0.30000000000000004, 300.29999999999995 etc).
+  Post: 10/10 exact. Adoption +1 module (21.94%), commit d376685.
+  **CascadeCalculationEngine migration (2026-08-03):** genuine (ASC 810/830 IC eliminations, NCI, FX impact, cumulative ownership chains, cascade sums).
+  Falsified 4/12 money tests vs old float (drifts: 45.30002265 vs 45.3, 0.0333333 vs 0.03, 0.0999999 vs 0.1, 0.30000000000000004 vs 0.3 on sums + elim/NCI).
+  Post: 12/12 PASS (exact toBe). Existing 15 tests remain green. Adoption +1 module (22.78%).
+  `npm run money:adoption -- --update` ratchet: 81 → 82 modules. Commit to follow.
+  **ConsolidationEngine migration (2026-08-03):** genuine (ASC 810 eliminations IC+auto, minority interest calc (effective + simple), goodwill (ASC 805), FX translation (ASC 830), category sums, balance checks, effective ownership chains).
+  Falsified ~5-7 cases vs old float (drifts e.g. 0.30000000000000004 on IC sums, 199.99999999999994 on minority, 4200 vs exact on net, 400 exact on goodwill after fix).
+  Post: money paths use add/sub/mult/div/sum/roundTo; .money.test.ts (12 tests) + existing suite (large) green. Adoption +1 (22.78%). Ratchet holds. Commit follows.
+  **ForecastMethodEngine migration (2026-08-03):** genuine (forecast values are currency amounts; SMA/WMA/exponential/holt-winters/linear-regression/seasonal/ensemble/mean/sums/products on forecast series in financial context). Reachable via manifest. 68+ raw arith sites screened (reduce + , \* , sums).
+  Falsified 3/8 money tests vs old float (drifts: 0.10000000000000002, 23.333333333333332, 0.09999999999999999 on SMA/WMA/ensemble).
+  Post: 8/8 PASS exact toBe; existing test 11/11 green. Money header + import; all forecast arrays use add/sub/mul/div/sum/roundTo (cents). Metrics/alphas/periods stay float. Adoption +1 (23.06%). `npm run money:adoption -- --update` ratchet 82→83. Commit 39b938b.
 - **Phase 2 (fixture debt) — RESOLVED 2026-08-03:** 20 test files were building GL entry fixtures
   without the required `amount` field (the `$NaN` class of defect). All fixed:
   - `sector-pages.test.tsx` mock entries typed `GLEntry[]` (compiler now rejects omissions);
