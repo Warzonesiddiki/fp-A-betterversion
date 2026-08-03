@@ -1,4 +1,18 @@
+/**
+ * MONEY MIGRATION (2026-08-03): All currency-bearing compensation costs
+ * (salary, bonus, benefits, taxes, totalCost, equity) now use the canonical
+ * money primitive (`src/utils/money.ts`) so that totalCost = salary + bonus + equity + benefits + taxes
+ * cannot accumulate IEEE-754 drift. Headcount/attrition counts and percentages stay float.
+ */
+
 import type { HeadcountInput, AttritionForecast } from '@/types/sector-types';
+import {
+  addMoney,
+  multiplyMoney,
+  sumMoney,
+  roundTo,
+  toDecimal,
+} from '@/utils/money';
 
 export interface CompInput {
   salary: number;
@@ -44,19 +58,23 @@ export class WorkforceEngine {
     benefits: number;
     taxes: number;
   } {
-    const bonus = input.salary * (input.bonusPct / 100);
-    const benefits = input.salary * (input.benefitsPct / 100);
-    const taxes = (input.salary + bonus) * (input.taxPct / 100);
-    const totalCost = input.salary + bonus + input.equityValue + benefits + taxes;
+    // Money migration: use addMoney/multiplyMoney/sumMoney/roundTo for currency values
+    const salaryD = toDecimal(input.salary, 'salary');
+    const bonusD = multiplyMoney(salaryD, input.bonusPct / 100);
+    const benefitsD = multiplyMoney(salaryD, input.benefitsPct / 100);
+    const preTax = addMoney(salaryD, bonusD);
+    const taxesD = multiplyMoney(preTax, input.taxPct / 100);
+    const equityD = toDecimal(input.equityValue, 'equityValue');
+    const totalCostD = sumMoney([salaryD, bonusD, equityD, benefitsD, taxesD]);
 
     return {
-      totalCost,
-      costPerFTE: totalCost,
-      salary: input.salary,
-      bonus,
-      equity: input.equityValue,
-      benefits,
-      taxes,
+      totalCost: roundTo(totalCostD),
+      costPerFTE: roundTo(totalCostD),
+      salary: roundTo(salaryD),
+      bonus: roundTo(bonusD),
+      equity: roundTo(equityD),
+      benefits: roundTo(benefitsD),
+      taxes: roundTo(taxesD),
     };
   }
 
