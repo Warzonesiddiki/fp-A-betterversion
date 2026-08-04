@@ -4,7 +4,69 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { FXEngine, MissingFXRateError, type RateType } from '@/engines/FXEngine';
 import { ArrowRight, TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
+import { addMoney, multiplyMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { CURRENCIES, formatMoney } from './constants';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal ASC 830 translation math.
+ *
+ * Translation multiplies (local × rate) and sums per-category and overall
+ * totals with raw IEEE-754 math; CTA adjustment is translated − at-historical.
+ * Those are all currency arithmetic and feed the balance check (which
+ * decides the "Balanced / Unbalanced" badge shown to the user — LOGIC).
+ * Percentages/rates are scalar multipliers and are excluded; rates displayed
+ * via .toFixed(4) are scalar display, not money. Exported for *.money.test.ts.
+ */
+export interface TranslationInput {
+  category: string;
+  localAmount: number;
+  translatedAmount: number;
+  ctaAdjustment: number;
+}
+
+export interface TranslationTotals {
+  local: number;
+  translated: number;
+  cta: number;
+  assetTranslated: number;
+  liabEqTranslated: number;
+  balanced: boolean;
+}
+
+const BALANCE_TOLERANCE = 1; // $1 tolerance matching pre-existing logic.
+
+export function translateAccount(
+  localAmount: number,
+  rate: number,
+  historicalRate: number,
+  isHistorical: boolean
+): { translatedAmount: number; ctaAdjustment: number } {
+  const translated = roundTo(multiplyMoney(localAmount, rate));
+  const atHistorical = roundTo(multiplyMoney(localAmount, historicalRate));
+  return {
+    translatedAmount: translated,
+    ctaAdjustment: isHistorical ? 0 : roundTo(subtractMoney(translated, atHistorical)),
+  };
+}
+
+export function computeTranslationTotals(rows: readonly TranslationInput[]): TranslationTotals {
+  const local = roundTo(sumMoney(rows.map((r) => r.localAmount)));
+  const translated = roundTo(sumMoney(rows.map((r) => r.translatedAmount)));
+  const cta = roundTo(sumMoney(rows.map((r) => r.ctaAdjustment)));
+  const assetTranslated = roundTo(
+    sumMoney(rows.filter((r) => r.category === 'asset').map((r) => r.translatedAmount))
+  );
+  const liabEqTranslated = roundTo(
+    sumMoney(
+      rows
+        .filter((r) => r.category === 'liability' || r.category === 'equity')
+        .map((r) => r.translatedAmount)
+    )
+  );
+  const balanced =
+    Math.abs(roundTo(addMoney(assetTranslated, liabEqTranslated))) < BALANCE_TOLERANCE;
+  return { local, translated, cta, assetTranslated, liabEqTranslated, balanced };
+}
 
 interface AccountLine {
   code: string;
@@ -106,8 +168,12 @@ export function CurrencyTranslation() {
           : rateType === 'average'
             ? averageRate
             : historicalRate;
-      const translated = acct.localAmount * rate;
-      const atHistorical = acct.localAmount * historicalRate;
+      const { translatedAmount, ctaAdjustment } = translateAccount(
+        acct.localAmount,
+        rate,
+        historicalRate,
+        rateType === 'historical'
+      );
       return {
         code: acct.code,
         name: acct.name,
@@ -115,30 +181,17 @@ export function CurrencyTranslation() {
         localAmount: acct.localAmount,
         rateType,
         rateUsed: rate,
-        translatedAmount: translated,
-        ctaAdjustment: rateType === 'historical' ? 0 : translated - atHistorical,
+        translatedAmount,
+        ctaAdjustment,
       };
     });
   }, [closingRate, averageRate, historicalRate]);
 
-  const totals = useMemo(
-    () => ({
-      local: rows.reduce((s, r) => s + r.localAmount, 0),
-      translated: rows.reduce((s, r) => s + r.translatedAmount, 0),
-      cta: rows.reduce((s, r) => s + r.ctaAdjustment, 0),
-    }),
-    [rows]
-  );
-
-  const isBalanced = useMemo(() => {
-    const assets = rows
-      .filter((r) => r.category === 'asset')
-      .reduce((s, r) => s + r.translatedAmount, 0);
-    const liabEq = rows
-      .filter((r) => r.category === 'liability' || r.category === 'equity')
-      .reduce((s, r) => s + r.translatedAmount, 0);
-    return Math.abs(assets + liabEq) < 1;
+  const totals = useMemo(() => {
+    const t = computeTranslationTotals(rows);
+    return { local: t.local, translated: t.translated, cta: t.cta, balanced: t.balanced };
   }, [rows]);
+  const isBalanced = totals.balanced;
 
   return (
     <div className="space-y-6" role="region" aria-label="CurrencyTranslation">

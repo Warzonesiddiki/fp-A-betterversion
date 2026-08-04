@@ -46,6 +46,21 @@ const FINANCIAL_DIRS = [
   'src/services',
   'src/workers',
   'src/components/ai',
+  // 2026-08-04 (post-PR-#30 session): UI-layer GAP-1 backlog screened
+  // area-by-area. A directory is added to FINANCIAL_DIRS ONLY after every
+  // non-test module has been audited: raw currency arithmetic is migrated
+  // to @/utils/money, and 0 value-producing .toFixed(n) sites on money
+  // remain. Rate/percent/match-score toFixed is permitted but must be
+  // explicitly excluded here by class; before a directory is added its
+  // percentage/rate sites are rewritten to go through a clearly-named
+  // display helper so the ratchet's simple regex still sees 0.
+  'src/components/variance',
+  // src/components/{consolidation,currency,spreadsheet,pages/banking} are
+  // PARTIALLY migrated this session (see GAP_LEDGER.md) but retain rate/
+  // percentage .toFixed(n) sites (rate.toFixed(4), pct.toFixed(1), etc.)
+  // that are non-currency by GAP-1 policy; they will join FINANCIAL_DIRS
+  // in a follow-up pass that routes %/rate display through shared helpers
+  // so the simple ratchet counter does not false-positive on them.
 ];
 
 /**

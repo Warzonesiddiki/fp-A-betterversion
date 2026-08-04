@@ -1,5 +1,6 @@
 import { Layers, FileText, BookOpen, ArrowRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { roundTo, sumMoney } from '@/utils/money';
 import type { SummaryRow, DetailRow, JournalEntry } from './DrillThroughChain';
 
 // --- Helpers ---
@@ -10,6 +11,23 @@ export function formatCurrency(value: number): string {
     currency: 'USD',
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+/**
+ * GAP-1 (F-0006) — exact-decimal journal-entry totals.
+ *
+ * Previously `data.reduce((sum, e) => sum + e.debit, 0)` — raw IEEE-754 float
+ * addition. Debit/credit totals feed the footer `Total` row rendered to users
+ * as financial truth (a balanced journal requires totalDebit === totalCredit
+ * to the cent). Exported so *.money.test.ts can pin exact known answers.
+ */
+export function computeJournalTotals(data: readonly Pick<JournalEntry, 'debit' | 'credit'>[]): {
+  totalDebit: number;
+  totalCredit: number;
+} {
+  const totalDebit = roundTo(sumMoney(data.map((e) => e.debit)));
+  const totalCredit = roundTo(sumMoney(data.map((e) => e.credit)));
+  return { totalDebit, totalCredit };
 }
 
 function varianceColor(value: number): string {
@@ -229,8 +247,7 @@ export function JournalEntryTable({
   data: readonly JournalEntry[];
   lineItem: string;
 }) {
-  const totalDebit = data.reduce((sum, e) => sum + e.debit, 0);
-  const totalCredit = data.reduce((sum, e) => sum + e.credit, 0);
+  const { totalDebit, totalCredit } = computeJournalTotals(data);
 
   return (
     <div className="space-y-3">

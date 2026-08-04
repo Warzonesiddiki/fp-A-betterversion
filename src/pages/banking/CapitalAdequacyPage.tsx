@@ -21,6 +21,47 @@ import { Landmark, ShieldCheck, Download } from 'lucide-react';
 import { BankingEngine } from '@/engines/BankingEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { multiplyMoney, roundTo, sumMoney } from '@/utils/money';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal RWA breakdown.
+ *
+ * Per-asset-class balance was a raw float reduce; risk-weighted amount and
+ * capital charge were float multiplies of that balance. They feed the RWA
+ * DataGrid that drives the Basel III calculation view. Percent fields
+ * (tier1Ratio, totalRatio, leverageRatio) stay percentage metrics.
+ */
+export interface RWABreakdownRow {
+  category: string;
+  amount: number;
+  weight: string;
+  charge: number;
+  [key: string]: unknown;
+}
+export interface AssetClass {
+  prefix: string;
+  name: string;
+  weight: number;
+}
+export function computeRWABreakdown(
+  entries: readonly { accountCode: string; amount: number }[],
+  assetClasses: readonly AssetClass[]
+): RWABreakdownRow[] {
+  return assetClasses
+    .map((ac) => {
+      const catEntries = entries.filter((e) => e.accountCode.startsWith(ac.prefix));
+      const balance = roundTo(sumMoney(catEntries.map((e) => e.amount)));
+      const rwa = roundTo(multiplyMoney(balance, ac.weight));
+      const charge = roundTo(multiplyMoney(rwa, 0.08));
+      return {
+        category: ac.name,
+        amount: balance,
+        weight: `${ac.weight * 100}%`,
+        charge,
+      };
+    })
+    .filter((a) => a.amount !== 0);
+}
 
 export default function CapitalAdequacyPage() {
   const { pathname } = useLocation();
@@ -40,29 +81,13 @@ export default function CapitalAdequacyPage() {
 
   const rwaBreakdown = useMemo(() => {
     // Break down RWA by asset class
-    const assetClasses = [
+    const assetClasses: AssetClass[] = [
       { prefix: '11', name: 'Cash & Equivalents', weight: 0 },
       { prefix: '12', name: 'Government Securities', weight: 0 },
       { prefix: '131', name: 'Residential Mortgages', weight: 0.5 },
       { prefix: '132', name: 'Corporate Loans', weight: 1.0 },
     ];
-
-    return assetClasses
-      .map((ac) => {
-        const balance = entries
-          .filter((e) => e.accountCode.startsWith(ac.prefix))
-          .reduce((acc, e) => acc + e.amount, 0);
-
-        const rwa = balance * ac.weight;
-
-        return {
-          category: ac.name,
-          amount: balance,
-          weight: `${ac.weight * 100}%`,
-          charge: rwa * 0.08, // 8% minimum capital charge
-        };
-      })
-      .filter((a) => a.amount !== 0);
+    return computeRWABreakdown(entries, assetClasses);
   }, [entries]);
 
   const columns = [

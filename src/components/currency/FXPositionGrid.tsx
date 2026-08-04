@@ -7,7 +7,90 @@ import { Modal } from '@/components/ui/Modal';
 import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { TrendingUp, TrendingDown, Eye, EyeOff, AlertTriangle, BarChart3 } from 'lucide-react';
+import Decimal from 'decimal.js';
+import { addMoney, multiplyMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { CURRENCIES, formatMoney } from './constants';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal FX exposure aggregations.
+ *
+ * Per-currency long/short/net/usdValue were accumulated with raw `+=` and
+ * `netLocal * rate` float products, feeding the KPI cards and the
+ * large-exposure alert (`> $10M notional`) — display and LOGIC.
+ * Percentages (concentration) stay float. Exported for *.money.test.ts.
+ */
+export interface PositionLike {
+  currency: string;
+  longAmount: number;
+  shortAmount: number;
+  entityCurrency?: string;
+}
+
+export interface ExposureRow {
+  currency: string;
+  long: number;
+  short: number;
+  net: number;
+  usdValue: number;
+}
+
+export interface ExposureTotals {
+  totalLong: number;
+  totalShort: number;
+  totalNet: number;
+}
+
+export function aggregateFXExposure(
+  positions: readonly PositionLike[],
+  rateFor: (entityCurrency: string, ccy: string) => number | null
+): { rows: ExposureRow[]; missingRates: string[] } {
+  const agg = new Map<string, { long: Decimal; short: Decimal; net: Decimal; usdValue: Decimal }>();
+  const missingRates: string[] = [];
+  for (const p of positions) {
+    const entCcy = p.entityCurrency ?? 'USD';
+    const rate = rateFor(entCcy, p.currency);
+    if (rate == null) {
+      const key = `${entCcy}_${p.currency}`;
+      if (!missingRates.includes(key)) missingRates.push(key);
+      continue;
+    }
+    const netLocal = subtractMoney(p.longAmount, p.shortAmount);
+    const usdValue = multiplyMoney(netLocal, rate);
+    const existing = agg.get(p.currency) ?? {
+      long: new Decimal(0),
+      short: new Decimal(0),
+      net: new Decimal(0),
+      usdValue: new Decimal(0),
+    };
+    existing.long = existing.long.plus(p.longAmount);
+    existing.short = existing.short.plus(p.shortAmount);
+    existing.net = existing.net.plus(netLocal);
+    existing.usdValue = existing.usdValue.plus(usdValue);
+    agg.set(p.currency, existing);
+  }
+  const rows = Array.from(agg.entries())
+    .map(([currency, data]) => ({
+      currency,
+      long: roundTo(data.long),
+      short: roundTo(data.short),
+      net: roundTo(data.net),
+      usdValue: roundTo(data.usdValue),
+    }))
+    .sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
+  return { rows, missingRates };
+}
+
+export function totalFXExposure(rows: readonly ExposureRow[]): ExposureTotals {
+  return {
+    totalLong: roundTo(sumMoney(rows.map((r) => r.long))),
+    totalShort: roundTo(sumMoney(rows.map((r) => r.short))),
+    totalNet: roundTo(sumMoney(rows.map((r) => r.net))),
+  };
+}
+
+export function netPosition(p: { longAmount: number; shortAmount: number }): number {
+  return roundTo(subtractMoney(p.longAmount, p.shortAmount));
+}
 
 interface FXPosition {
   id: string;
@@ -94,46 +177,25 @@ export function FXPositionGrid() {
   // values and reported via a blocking banner. The old code silently valued
   // them at their LOCAL amount as if it were USD (`rate > 0 ? ... : netLocal`).
   const exposureResult = useMemo(() => {
-    const net = new Map<string, { long: number; short: number; net: number; usdValue: number }>();
-    const missingRates: string[] = [];
-    for (const p of positions) {
-      const key = `${p.entityCurrency}_${p.currency}`;
-      let rate = ratesMap.get(key);
-      if (rate === undefined) {
-        try {
-          rate = FXEngine.getRate(p.entityCurrency, p.currency);
-        } catch (e) {
-          if (e instanceof MissingFXRateError) {
-            if (!missingRates.includes(key)) missingRates.push(key);
-            continue;
-          }
-          throw e;
-        }
+    const rateFor = (entityCurrency: string, ccy: string): number | null => {
+      const key = `${entityCurrency}_${ccy}`;
+      const r = ratesMap.get(key);
+      if (r !== undefined) return r;
+      try {
+        return FXEngine.getRate(entityCurrency, ccy);
+      } catch (e) {
+        if (e instanceof MissingFXRateError) return null;
+        throw e;
       }
-      const netLocal = p.longAmount - p.shortAmount;
-      const usdValue = netLocal * rate;
-      const existing = net.get(p.currency) ?? { long: 0, short: 0, net: 0, usdValue: 0 };
-      existing.long += p.longAmount;
-      existing.short += p.shortAmount;
-      existing.net += netLocal;
-      existing.usdValue += usdValue;
-      net.set(p.currency, existing);
-    }
-    const rows = Array.from(net.entries())
-      .map(([currency, data]) => ({ currency, ...data }))
-      .filter((e) => !hideZero || e.net !== 0)
-      .sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
-    return { rows, missingRates };
+    };
+    const result = aggregateFXExposure(positions, rateFor);
+    result.rows = result.rows.filter((e) => !hideZero || e.net !== 0);
+    return result;
   }, [positions, ratesMap, hideZero]);
   const exposure = exposureResult.rows;
   const missingRatePairs = exposureResult.missingRates;
 
-  const totals = useMemo(() => {
-    const totalLong = exposure.reduce((s, e) => s + e.long, 0);
-    const totalShort = exposure.reduce((s, e) => s + e.short, 0);
-    const totalNet = exposure.reduce((s, e) => s + e.net, 0);
-    return { totalLong, totalShort, totalNet };
-  }, [exposure]);
+  const totals = useMemo(() => totalFXExposure(exposure), [exposure]);
 
   const currencyDetail = useMemo(
     () => positions.filter((p) => p.currency === selectedCurrency),
@@ -315,7 +377,7 @@ export function FXPositionGrid() {
             </thead>
             <tbody className="divide-y divide-slate-800">
               {currencyDetail.map((p) => {
-                const netLocal = p.longAmount - p.shortAmount;
+                const netLocal = netPosition(p);
                 return (
                   <tr key={p.id}>
                     <td className="px-2 py-2">{p.counterparty}</td>

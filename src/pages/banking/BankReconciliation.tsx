@@ -6,41 +6,71 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
+import Decimal from 'decimal.js';
+import { addMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
 import { CheckCircle, AlertTriangle, Clock, DollarSign } from 'lucide-react';
 import type { GLEntry } from '@/types';
 
-function computeReconciliationStats(entries: readonly GLEntry[]) {
-  const totalDebit = entries.reduce((s, e) => s + e.debit, 0);
-  const totalCredit = entries.reduce((s, e) => s + e.credit, 0);
-  const netChange = entries.reduce((s, e) => s + e.netChange, 0);
+export interface AccountReconciliationRow {
+  accountCode: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+  netChange: number;
+  transactions: number;
+}
+
+export interface ReconciliationStats {
+  totalDebit: number;
+  totalCredit: number;
+  netChange: number;
+  uniqueAccounts: number;
+  accountBreakdown: AccountReconciliationRow[];
+}
+
+/**
+ * GAP-1 (F-0006) — exact-decimal bank reconciliation totals.
+ *
+ * Previously raw float `reduce +` / `+=` over `debit`/`credit`/`netChange`
+ * drove the "Bank Balance" / "Net Change" KPIs and the per-account
+ * reconciliation table. Those figures are financial truth for bank rec
+ * (a balanced book requires totalDebit === totalCredit to the cent), so
+ * they now accumulate at full decimal precision via `addMoney`/`sumMoney`
+ * and cent-round once at the output boundary with `roundTo`.
+ * `transactions`/`uniqueAccounts` are counts (non-money) and stay integers.
+ */
+export function computeReconciliationStats(entries: readonly GLEntry[]): ReconciliationStats {
+  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)));
+  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)));
+  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)));
   const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
 
   const accountMap = new Map<
     string,
-    { name: string; debit: number; credit: number; net: number; count: number }
+    { name: string; debit: Decimal; credit: Decimal; net: Decimal; count: number }
   >();
   for (const e of entries) {
     const existing = accountMap.get(e.accountCode) ?? {
       name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
+      debit: toDecimal(0),
+      credit: toDecimal(0),
+      net: toDecimal(0),
       count: 0,
     };
-    existing.debit += e.debit;
-    existing.credit += e.credit;
-    existing.net += e.netChange;
+    existing.debit = addMoney(existing.debit, e.debit);
+    existing.credit = addMoney(existing.credit, e.credit);
+    existing.net = addMoney(existing.net, e.netChange);
     existing.count += 1;
     accountMap.set(e.accountCode, existing);
   }
 
-  const accountBreakdown = Array.from(accountMap.entries())
+  const accountBreakdown: AccountReconciliationRow[] = Array.from(accountMap.entries())
     .map(([code, data]) => ({
       accountCode: code,
       accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
+      debit: roundTo(data.debit),
+      credit: roundTo(data.credit),
+      netChange: roundTo(data.net),
       transactions: data.count,
     }))
     .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));

@@ -20,6 +20,8 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import Decimal from 'decimal.js';
+import { divideMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -28,6 +30,56 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+/**
+ * GAP-1 (F-0006) — exact-decimal depreciation forecast totals.
+ *
+ * totalCost/totalNBV/totalAnnualDep were raw float reduces over the asset
+ * list; avgAge divides accumulated depreciation (cost-nbv) by annualDep
+ * and is a time-in-years metric (divides currency/currency → unitless
+ * years), accumulated on Decimal for precision then emitted as a number
+ * at 1 decimal place. The _glTotal cross-check over GL 14xx/15xx entries
+ * is migrated identically.
+ */
+export interface DeprAssetLike {
+  cost: number;
+  nbv: number;
+  annualDep: number;
+}
+export interface DeprForecastTotals {
+  totalCost: number;
+  totalNBV: number;
+  totalAnnualDep: number;
+  avgAge: number;
+}
+export function computeDeprForecastTotals(assets: readonly DeprAssetLike[]): DeprForecastTotals {
+  const totalCost = roundTo(sumMoney(assets.map((a) => a.cost)));
+  const totalNBV = roundTo(sumMoney(assets.map((a) => a.nbv)));
+  const totalAnnualDep = roundTo(sumMoney(assets.map((a) => a.annualDep)));
+  let ageSum = new Decimal(0);
+  for (const a of assets) {
+    const accumulated = subtractMoney(a.cost, a.nbv); // cost - nbv
+    ageSum = ageSum.add(divideMoney(accumulated, a.annualDep));
+  }
+  const avgAge = assets.length > 0 ? roundTo(divideMoney(ageSum, assets.length), 1) : 0;
+  return { totalCost, totalNBV, totalAnnualDep, avgAge };
+}
+
+export function sumGLFixedAssetMovement(
+  entries: readonly { accountCode?: string; debit: number; credit: number }[]
+): number {
+  const fixed = entries.filter(
+    (e) => (e.accountCode || '').startsWith('14') || (e.accountCode || '').startsWith('15')
+  );
+  return roundTo(
+    sumMoney(
+      fixed.map((e) =>
+        // absolute net movement per entry
+        new Decimal(e.debit).sub(e.credit).abs().toNumber()
+      )
+    )
+  );
 }
 
 const ASSETS = [
@@ -124,23 +176,9 @@ export default function DepreciationForecastPage() {
     [method]
   );
 
-  const totals = useMemo(
-    () => ({
-      totalCost: filteredAssets.reduce((s, a) => s + a.cost, 0),
-      totalNBV: filteredAssets.reduce((s, a) => s + a.nbv, 0),
-      totalAnnualDep: filteredAssets.reduce((s, a) => s + a.annualDep, 0),
-      avgAge:
-        filteredAssets.length > 0
-          ? filteredAssets.reduce((s, a) => s + (a.cost - a.nbv) / a.annualDep, 0) /
-            filteredAssets.length
-          : 0,
-    }),
-    [filteredAssets]
-  );
+  const totals = useMemo(() => computeDeprForecastTotals(filteredAssets), [filteredAssets]);
 
-  const _glTotal = entries
-    .filter((e) => (e.accountCode || '').startsWith('14') || (e.accountCode || '').startsWith('15'))
-    .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+  const _glTotal = useMemo(() => sumGLFixedAssetMovement(entries), [entries]);
 
   const handleExport = () => {
     void ExportEngine.exportToExcel(

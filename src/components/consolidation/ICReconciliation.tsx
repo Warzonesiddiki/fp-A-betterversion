@@ -5,11 +5,61 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/utils/cn';
+import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import type {
   ReconciliationReport,
   ReconciliationLine,
   ToleranceSettings,
 } from '@/engines/ICMatchingEngine';
+
+// =============================================================================
+// GAP-1 (F-0006) — exact-decimal IC reconciliation totals
+//
+// Previously raw float `reduce +` / `+` aggregated `difference`, `balanceA`,
+// `balanceB` and the per-row `balanceA + balanceB` net. These feed the "Total
+// Differences" metric card (which changes the warning/success variant), the
+// footer totals row, and the expanded-row "Net (A+B)" detail — display AND
+// logic. Percentages are a metric (%) and stay float per GAP-1 exclusions.
+// =============================================================================
+
+export interface ICFooterView {
+  totalBalanceA: number;
+  totalBalanceB: number;
+  totalDifference: number;
+  avgPercentageDifference: number;
+}
+
+export function computeICTotals(
+  lines: readonly Pick<
+    ReconciliationLine,
+    'balanceA' | 'balanceB' | 'difference' | 'percentageDifference'
+  >[]
+): ICFooterView {
+  if (lines.length === 0) {
+    return {
+      totalBalanceA: 0,
+      totalBalanceB: 0,
+      totalDifference: 0,
+      avgPercentageDifference: 0,
+    };
+  }
+  const totalBalanceA = roundTo(sumMoney(lines.map((l) => l.balanceA)));
+  const totalBalanceB = roundTo(sumMoney(lines.map((l) => l.balanceB)));
+  const totalDifference = roundTo(sumMoney(lines.map((l) => l.difference)));
+  const avgPercentageDifference =
+    lines.reduce((s, l) => s + l.percentageDifference, 0) / lines.length;
+  return { totalBalanceA, totalBalanceB, totalDifference, avgPercentageDifference };
+}
+
+export function computeICPairNet(line: Pick<ReconciliationLine, 'balanceA' | 'balanceB'>): number {
+  return roundTo(addMoney(line.balanceA, line.balanceB));
+}
+
+export function computeICGrandTotalDifference(
+  lines: readonly Pick<ReconciliationLine, 'difference'>[]
+): number {
+  return roundTo(sumMoney(lines.map((l) => l.difference)));
+}
 
 // =============================================================================
 // IC RECONCILIATION
@@ -70,7 +120,7 @@ export function ICReconciliation({
 
   // Stats
   const totalDifference = useMemo(
-    () => report.entityPairs.reduce((s, l) => s + l.difference, 0),
+    () => computeICGrandTotalDifference(report.entityPairs),
     [report.entityPairs]
   );
 
@@ -240,30 +290,28 @@ export function ICReconciliation({
                   </tr>
                 )}
               </tbody>
-              {displayLines.length > 0 && (
-                <tfoot>
-                  <tr className="border-t-2 font-semibold">
-                    <td colSpan={3} className="p-2">
-                      Totals ({displayLines.length} pairs)
-                    </td>
-                    <td className="p-2 text-right">
-                      {formatCurrency(displayLines.reduce((s, l) => s + l.balanceA, 0))}
-                    </td>
-                    <td className="p-2 text-right">
-                      {formatCurrency(displayLines.reduce((s, l) => s + l.balanceB, 0))}
-                    </td>
-                    <td className="p-2 text-right">{formatCurrency(totalDifference)}</td>
-                    <td className="p-2 text-right">
-                      {(
-                        displayLines.reduce((s, l) => s + l.percentageDifference, 0) /
-                        (displayLines.length || 1)
-                      ).toFixed(1)}
-                      %
-                    </td>
-                    <td />
-                  </tr>
-                </tfoot>
-              )}
+              {displayLines.length > 0 &&
+                (() => {
+                  const footers = computeICTotals(displayLines);
+                  return (
+                    <tfoot>
+                      <tr className="border-t-2 font-semibold">
+                        <td colSpan={3} className="p-2">
+                          Totals ({displayLines.length} pairs)
+                        </td>
+                        <td className="p-2 text-right">{formatCurrency(footers.totalBalanceA)}</td>
+                        <td className="p-2 text-right">{formatCurrency(footers.totalBalanceB)}</td>
+                        <td className="p-2 text-right">
+                          {formatCurrency(footers.totalDifference)}
+                        </td>
+                        <td className="p-2 text-right">
+                          {footers.avgPercentageDifference.toFixed(1)}%
+                        </td>
+                        <td />
+                      </tr>
+                    </tfoot>
+                  );
+                })()}
             </table>
           </div>
         </CardContent>
@@ -379,7 +427,7 @@ function ReconciliationRow({
               </div>
               <div>
                 <span className="text-muted-foreground">Net (A+B):</span>{' '}
-                {formatCurrency(line.balanceA + line.balanceB)}
+                {formatCurrency(computeICPairNet(line))}
               </div>
               <div>
                 <span className="text-muted-foreground">Abs Diff:</span>{' '}

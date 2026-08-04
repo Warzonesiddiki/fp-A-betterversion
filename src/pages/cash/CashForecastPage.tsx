@@ -17,6 +17,14 @@ import {
   Flame,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+} from '@/utils/money';
 
 const getRandom = () => Math.random();
 
@@ -53,6 +61,55 @@ interface CategoryRow {
   net: number;
 }
 
+/**
+ * GAP-1 (F-0006) — exact-decimal 13-week cash flow totals.
+ *
+ * inflows/outflows/net were raw float reduces/nets over GL net
+ * (debit-credit) movement; the heuristic category splits (Revenue 70%,
+ * Other Income 30%, Payroll 40%, etc.) multiply those totals by a
+ * weight and are also currency-valued. weekInflow/weekOutflow use
+ * Math.round and getRandom() — forecasting noise, not financial truth;
+ * left as integer rounding. burnRate is currency/time.
+ */
+export interface CashNetEntry {
+  debit: number;
+  credit: number;
+}
+export interface CashSummary {
+  inflows: number;
+  outflows: number;
+  net: number;
+}
+export function computeCashTotals(entries: readonly CashNetEntry[]): CashSummary {
+  const nets = entries.map((e) => e.debit - e.credit);
+  const inflows = roundTo(sumMoney(nets.filter((n) => n > 0)));
+  const outflows = roundTo(sumMoney(nets.filter((n) => n < 0).map((n) => Math.abs(n))));
+  const net = roundTo(subtractMoney(inflows, outflows));
+  return { inflows, outflows, net };
+}
+
+export function buildCashCategorySplit(summary: CashSummary): CategoryRow[] {
+  const { inflows, outflows } = summary;
+  const rev = roundTo(multiplyMoney(inflows, 0.7));
+  const otherInc = roundTo(subtractMoney(inflows, rev)); // residual to keep exact sum
+  const payroll = roundTo(multiplyMoney(outflows, 0.4));
+  const opex = roundTo(multiplyMoney(outflows, 0.35));
+  const capex = roundTo(multiplyMoney(outflows, 0.15));
+  const debt = roundTo(subtractMoney(outflows, addMoney(payroll, addMoney(opex, capex))));
+  return [
+    { category: 'Revenue', inflows: rev, outflows: 0, net: rev },
+    { category: 'Other Income', inflows: otherInc, outflows: 0, net: otherInc },
+    { category: 'Payroll', inflows: 0, outflows: payroll, net: -payroll },
+    { category: 'Operating Expenses', inflows: 0, outflows: opex, net: -opex },
+    { category: 'Capital Expenditures', inflows: 0, outflows: capex, net: -capex },
+    { category: 'Debt Service', inflows: 0, outflows: debt, net: -debt },
+  ];
+}
+
+export function burnRateMonthly(outflows: number): number {
+  return roundTo(divideMoney(outflows, 4));
+}
+
 export default function CashForecastPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
@@ -63,33 +120,12 @@ export default function CashForecastPage() {
 
   const data = useMemo(() => {
     if (entries.length === 0) return null;
-    const inflows = entries
-      .filter((e) => e.debit - e.credit > 0)
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const outflows = entries
-      .filter((e) => e.debit - e.credit < 0)
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const net = inflows - outflows;
-    const categories: CategoryRow[] = [
-      { category: 'Revenue', inflows: inflows * 0.7, outflows: 0, net: inflows * 0.7 },
-      { category: 'Other Income', inflows: inflows * 0.3, outflows: 0, net: inflows * 0.3 },
-      { category: 'Payroll', inflows: 0, outflows: outflows * 0.4, net: -outflows * 0.4 },
-      {
-        category: 'Operating Expenses',
-        inflows: 0,
-        outflows: outflows * 0.35,
-        net: -outflows * 0.35,
-      },
-      {
-        category: 'Capital Expenditures',
-        inflows: 0,
-        outflows: outflows * 0.15,
-        net: -outflows * 0.15,
-      },
-      { category: 'Debt Service', inflows: 0, outflows: outflows * 0.1, net: -outflows * 0.1 },
-    ];
+    const { inflows, outflows, net } = computeCashTotals(entries);
+    const categories: CategoryRow[] = buildCashCategorySplit({ inflows, outflows, net });
     const weeks = Array.from({ length: 13 }, (_, i) => `W${i + 1}`);
-    const balance = inflows - outflows;
+    // Forecast weeks use getRandom() jitter and Math.round — stochastic projection,
+    // not financial truth; left as JS number arithmetic (integer rounding of random
+    // variates cannot drift).
     const forecast = weeks.map((w, i) => {
       const weekInflow = (inflows / 13) * (0.8 + getRandom() * 0.4);
       const weekOutflow = (outflows / 13) * (0.8 + getRandom() * 0.4);
@@ -98,11 +134,11 @@ export default function CashForecastPage() {
         inflows: Math.round(weekInflow),
         outflows: Math.round(weekOutflow),
         net: Math.round(weekInflow - weekOutflow),
-        balance: Math.round(balance + (weekInflow - weekOutflow) * (i + 1)),
+        balance: Math.round(net + (weekInflow - weekOutflow) * (i + 1)),
       };
     });
-    const burnRate = outflows / 4;
-    const endingCash = forecast![forecast.length - 1]!.balance;
+    const burnRate = burnRateMonthly(outflows);
+    const endingCash = forecast[forecast.length - 1]!.balance;
     return { inflows, outflows, net, categories, forecast, burnRate, endingCash };
   }, [entries]);
 

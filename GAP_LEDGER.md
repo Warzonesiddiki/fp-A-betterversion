@@ -5,8 +5,34 @@
 testable. Evidence = literal command output with date.
 
 - **Date of latest re-verification:** 2026-08-04 (UTC)
-- **Current continuation branch:** `arena/019fcc6c-fp-a-betterversion` (post-PR-#29 session)
-- **Current base:** `d1f22de` (PR #29 merge commit on `main`)
+- **Current continuation branch:** `arena/019fccd4-fp-a-betterversion` (post-PR-#30 session — this session)
+- **Current base:** `729da51` (PR #30 merge commit on `main`; full-suite baseline 979 files / 11,572 tests green; ratchet 97/377 frontend, 2/23 server, 0 raw `toFixed`)
+
+## PR #30 — MERGED (2026-08-04, merge commit `729da51` on `main`)
+
+PR #30 (\"fix: migrate AI copilot alert layer; harden executive briefing report;
+enforce canonical @/utils/money imports\") is MERGED. Highlights (from the merge
+commit):
+
+- AI copilot alert layer migrated (see session-6 entry): `CopilotTypes.generateAlerts`
+  and `CopilotAlertsTab` quick stats use `sumMoney`/`compareMoney`/`multiplyMoney`/
+  `subtractMoney`/`compactThousandsMoney`; 8 exact-known-answer tests falsified
+  against the old float code (6/8 failed on floats, including a false \"expenses
+  exceed revenue\" alert on cent-equal books).
+- Float-math false alerts fixed: threshold comparisons use exact decimal
+  `compareMoney` so expenses exactly at threshold are no longer flagged, and
+  the `$-0K` compact-thousands label is now half-up away from zero.
+- Executive Briefing report totals routed through the money primitive.
+- Canonical `@/utils/money` imports enforced so README/ratchet adopter counts
+  are accurate.
+- Ratchet baseline re-recorded at **97/377 (25.73%)**, server **2/23**, **0**
+  raw `toFixed(n)` sites. `FINANCIAL_DIRS` extended to `src/components/ai`
+  (10 modules scanned; 2 adopters, 8 clean).
+
+Baseline re-verification on `main` @ `729da51` (this session): full suite
+**979 files passed / 1 skipped (11,572 tests passed / 8 skipped)**, tsc/ESLint/
+Prettier/`money:adoption`/`docs:verify` all green. (Handover document cited
+\"972/11,540\"; tests grew with PR #30 itself.)
 
 ---
 
@@ -1020,3 +1046,149 @@ already-shipped `QuickBooksConnector.mapInvoice`.)
 4. **Other backlog:** GAP-7 (the legacy 2048KB CI bundle cap — the only red check;
    `.github/workflows/**` is reserved for it and must stay untouched until the `workflows`
    App permission blocker is resolved).
+
+#### GAP-1 continuation — 2026-08-04 (session 7, post-PR-#30, branch `arena/019fccd4-fp-a-betterversion`)
+
+- **Baseline re-verified on `main` @ `729da51` (literal, this session):** fresh
+  `npm ci` + `npm test` = **979 files / 11,572 tests passed / 8 skipped**, full
+  suite green; `tsc --noEmit` exit 0; `money:adoption` = **97/377**, server **2/23**,
+  **0** raw `toFixed(n)` sites; `docs:verify` ✓. (The handover doc cited
+  972/11,540; PR #30 shipped additional tests/cases during the merge.)
+- **README rewritten to "wow first-impression" standard (user request):** the
+  executive briefing at `reports/FinPlanPro-Executive-Investor-Report-2026-08-04.html`
+  is a gorgeous board-grade HTML document, but GitHub renders `README.md`, not
+  HTML, so the same tone/stat-strip/hero/philosophy was ported into a polished
+  Markdown README at the repo root (previous README preserved as
+  `README.legacy.md`). `docs:verify` passes against the new file. It uses
+  shields.io badges, centered hero, 4-up big-number strip, problem/solution
+  table, 5-step flow, capability map, quality-gate scorecard, gap-ledger link,
+  quick start, and the project's "brutal honesty engineering" philosophy
+  section.
+- **GAP-1 UI backlog — first wave migrated (GL/bank/IC/FX/variance totals):**
+  seven files that feed user-visible financial truth were screened and routed
+  through the canonical `@/utils/money` primitive:
+
+  | File                                                      | Surface                                                                                                 | Helper exported                                                        | Tests | Falsified (old → fail)         |
+  | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----- | ------------------------------ |
+  | `src/components/spreadsheet/DrillTables.tsx`              | `JournalEntryTable` debit/credit footer totals                                                          | `computeJournalTotals`                                                 | 5     | 3/5 fail vs raw reduce         |
+  | `src/pages/banking/BankReconciliation.tsx`                | Bank Rec KPIs + per-account debit/credit/net                                                            | `computeReconciliationStats`                                           | 5     | 3/5 fail vs `+=` floats        |
+  | `src/components/consolidation/ICReconciliation.tsx`       | "Total Differences" metric, footer totals, expanded Net(A+B)                                            | `computeICTotals`, `computeICPairNet`, `computeICGrandTotalDifference` | 6     | 3/6 fail vs raw `+`/reduce     |
+  | `src/components/consolidation/ConsolidationWorksheet.tsx` | IC Eliminations total, NCI ending-balance total                                                         | `totalEliminations`, `totalNCI`                                        | 3     | 2/3 fail vs reduce             |
+  | `src/components/currency/MultiCurrencyReporting.tsx`      | FX translation × rate, consolidated revenue/expenses/net/assets                                         | `translateEntityAmounts`, `computeConsolidatedTotals`                  | 5     | 3/5 fail vs `*`/reduce floats  |
+  | `src/components/currency/CurrencyTranslation.tsx`         | ASC 830 temporal-method translate + CTA + category totals + balance check                               | `translateAccount`, `computeTranslationTotals`                         | 5     | 3/5 fail vs raw `*`/`-`/reduce |
+  | `src/components/currency/FXPositionGrid.tsx`              | Per-currency long/short/net/usdValue aggregation, totals                                                | `aggregateFXExposure`, `totalFXExposure`, `netPosition`                | 5     | 3/5 fail vs `+=` floats        |
+  | `src/components/currency/HedgeManager.tsx`                | Active-hedge total notional and per-type notionals (P&L already on primitive via `MultiCurrencyEngine`) | `sumNotionals`                                                         | 3     | 2/3 fail vs reduce             |
+  | `src/components/variance/VarianceDrillModal.tsx`          | Department group totals + `amount ?? debit − credit` fallback                                           | `deriveDrillAmount`, `computeDepartmentTotals`                         | 5     | 3/5 fail vs raw `−`/reduce     |
+
+  **Real defect classes fixed in the UI layer (same family as the engine drift
+  already fixed sessions 1–6):** GL debit/credit footers showing
+  `$0.30000000000000004` out of balance on perfectly balanced journals;
+  three `$0.335` IC pairs under-footing by a cent (displaying `$1.00`);
+  `0.3 − (0.1+0.2)` producing `−5.55e-17` net, flipping the red/green sign on
+  zero amounts; FX-rate × local-currency products drifting at the cent
+  boundary on non-trivial rates (100 × 1.0853).
+
+- **Ratchet extended to `src/components/variance` (the first fully-clean UI
+  area):** the two non-test modules in that directory are now fully on the
+  primitive (`VarianceDrillModal`) or clean (`VarianceTable` — no currency
+  math), 0 raw `toFixed(n)` sites. Baseline re-recorded: **98/380 (25.79%)**,
+  server **2/23**, **0** raw `toFixed(n)**. `src/components/{consolidation,
+  currency,spreadsheet}`and`src/pages/banking/`are partially migrated this
+session but NOT yet added to`FINANCIAL_DIRS`: their remaining
+`.toFixed(n)`sites are on ownership %, diff %, match-rate %, FX rate
+display, and concentration % (percentages/rates — non-currency under GAP-1
+policy), and need to be routed through shared display helpers in a
+follow-up so the simple ratchet counter (regex on`.toFixed(n)`) doesn't
+false-positive. Documented in-line in `scripts/money-adoption.mjs`.
+- **Quality gates (this session):** `tsc --noEmit` exit 0; `eslint --max-warnings 0`
+  clean on every changed file; `prettier` clean; all new and existing tests
+  in the touched dirs pass (35 files / 96 tests in
+  spreadsheet/consolidation/currency/variance/banking); `money:adoption`
+  holds; `docs:verify` passes with the new README. Full-suite re-run is
+  available on demand; targeted suite above is the verification for this
+  session's changes.
+- **Exclusions reaffirmed by screen (still non-money):** `formatCurrency`
+  local helpers in DrillTables/ICReconciliation/ConsolidationWorksheet are
+  display-only Intl formatters (no arithmetic) and stay in place; percentage
+  averages (`matchRate`, `avgPercentageDifference`, `concentration`,
+  `diffPct`, `ownershipPct`, `minorityPct`) stay float; FX `rate.toFixed(4/6)`
+  is rate display, not money; `VarianceCommentaryPanel` generates narration
+  display text (ledger-screened in session 5); counts/transactions/pairs are
+  integers.
+- **Next GAP-1 UI candidates (same protocol):** GL debit/credit table totals
+  in `BankStatements`, `BudgetApproval`, `ICReconciliationReport`
+  (`src/components/ui/`); page totals on `CapexTracker`, `DepreciationPage`,
+  `BudgetDetailPage`, `LoanLossPage`, and other `src/pages/*` surfaces. The
+  0.1+0.2 and three-0.335 test cases remain the canonical falsification
+  pairs for every UI total.
+
+- **GAP-1 UI backlog — second wave migrated (bank/budget/capex/depreciation/IC report/loan-loss page totals):** seven more UI surfaces feeding user-visible totals/segments were screened and routed through the canonical primitive:
+
+  | File                                           | Surface                                                                                        | Helper exported                                                                                                                    | Tests | Falsified (old → fail)                                               |
+  | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------- |
+  | `src/components/ui/ICReconciliationReport.tsx` | IC reconciliation report footer totals, grand-total difference                                 | `computeICReportTotals`, `computeICReportGrandTotalDifference`                                                                     | 5     | 3/5 fail vs raw `+`/reduce/Math.abs                                  |
+  | `src/pages/capex/CapexTracker.tsx`             | Project budget/actual totals, per-project variance, asset costs/NBV totals                     | `sumProjectBudgets`, `sumProjectActuals`, `projectVariance`, `sumAssetCosts`, `sumAssetNBV`                                        | 5     | 4/5 fail vs raw `+`/`−`/reduce                                       |
+  | `src/pages/accounting/DepreciationPage.tsx`    | Schedule totals (depreciation/accumulated/NBV), year-by-year book value Decimal accumulator    | `sumDepreciationCost`, `sumAccumulatedDepreciation`, `sumNetBookValue`, `computeAccumulatedFromSchedule`, `computeBookValueByYear` | 5     | ≥1 fail vs `+=` floats (0.335 half-up)                               |
+  | `src/pages/budgets/BudgetDetailPage.tsx`       | Per-account group totals, month-column footer totals                                           | `sumLineItems`, `computeMonthColumnTotal`                                                                                          | 5     | 5/5 fail vs raw `+`/reduce                                           |
+  | `src/pages/banking/LoanLossPage.tsx`           | CECL per-category balance/reserve/npl segments (ACL chart + Portfolio Credit Quality grid)     | `sumEntriesAmount`, `computeLoanSegments`                                                                                          | 5     | 4/5 fail vs raw reduce; NPL% stays a percentage metric (sanity-only) |
+  | `src/pages/banking/BankStatements.tsx`         | Statement KPIs + per-account debit/credit/net (Decimal per-account accumulator via `addMoney`) | `computeStatementStats`                                                                                                            | 4     | 2/4 fail vs raw reduce / `+=`                                        |
+  | `src/pages/budgets/BudgetApproval.tsx`         | Approval KPI totals + per-account aggregates (same shape as BankStatements)                    | `computeApprovalStats`                                                                                                             | 4     | 2/4 fail vs raw `+=`                                                 |
+
+  **Real defect classes fixed (same families as wave 1):** three 0.1 deposits summing to
+  `$0.30` on statements instead of `$0.30000000000000004`; three 0.335-month
+  depreciation charges accumulating to `$1.01` (half-up) not `$1.00`; per-loan-
+  category CECL balances rounding to the cent correctly across multiple GL entries;
+  CapEx project budget-minus-actual variance computed via Decimal subtraction so
+  `100.00 − 99.99` is always `$0.01` not `$0.010000000000005116`.
+
+- **Falsification harness:** `scripts/falsify-wave2.mjs` added (dev-only,
+  not part of production code) — uses a cascade of regex devolution rules
+  (`sumMoney→reduce`, `addMoney→+`, `subtractMoney→−`, `Decimal.add→+=`,
+  `new Decimal(0)→0`, `roundTo→Math.round(x*100)/100`) to mechanically
+  revert each migrated file back to the old float baseline and confirms a
+  configurable number of known-answer tests fail. Applied to all 7 wave-2
+  files post-migration: every file has ≥1 failing assertion under the
+  devolved float baseline, 0 failures restored after re-applying the money
+  primitive.
+
+- **Full test baseline re-verified (literal):** `npm test` (vitest run,
+  8GB heap) = **995 files / 11,647 tests passed / 8 skipped**; full suite
+  green; **+16 files / +75 tests** over the session-start baseline (all new
+  `*.money.test.ts` colocated with migrated sources, plus PR #30 post-merge
+  churn). `tsc --noEmit` exit 0; `eslint src --max-warnings 0` exit 0
+  (prettier auto-fixed a formatting-only issue introduced in
+  `BudgetDetailPage.money.test.ts` — sparse-array literal replaced with
+  an explicit `undefined` cast to satisfy the `no-sparse-arrays` rule,
+  behaviour identical because the source uses `?? 0`).
+
+- **Money-adoption ratchet** holds at **98/380 (25.79%)**, server **2/23**,
+  **0** raw `toFixed(n)` sites (re-recorded after wave 1; wave 2 lives in
+  dirs that are NOT yet added to `FINANCIAL_DIRS`, so the ratchet number
+  does not yet move). The same blocker identified in wave 1 still applies
+  to `src/components/{consolidation,currency,spreadsheet,ui}` and
+  `src/pages/{banking,budgets,capex,accounting}`: every dir retains
+  display-only `.toFixed(n)` calls on rates/percentages/FX rates/bytes/
+  years/`/1000→K`/`/1e6→M` axis labels that are non-currency under GAP-1
+  policy but trip the simple regex. They will join `FINANCIAL_DIRS` in a
+  follow-up pass that routes those display paths through clearly-named
+  helpers (e.g., `formatPercent`, `formatAxisUsdMillions`) so the ratchet
+  can be tightened without false positives. In-line commentary in
+  `scripts/money-adoption.mjs` updated accordingly.
+
+- **GAP-1 UI backlog — third wave migrated (capital/NIM/depreciation-forecast/cash-flow/working-capital totals):** five more UI surfaces were screened and routed through the canonical primitive:
+
+  | File                                           | Surface                                                                                                                                                                                                                 | Helper exported                                                                               | Tests | Falsified (old → fail)                                             |
+  | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------ |
+  | `src/pages/banking/CapitalAdequacyPage.tsx`    | Basel III RWA breakdown: per-asset-class exposure, RWA (× weight), 8% capital charge                                                                                                                                    | `computeRWABreakdown`, `AssetClass`, `RWABreakdownRow`                                        | 4     | 3/4 fail vs `*`/reduce floats                                      |
+  | `src/pages/banking/NIMDashboardPage.tsx`       | Per-loan-category earning-asset balances and interest-income for the NIM income breakdown grid                                                                                                                          | `computeNIMComponents`, `NIMCategory`, `NIMComponentRow`                                      | 5     | 1/5 fail (0.1+0.2 drift); yields stay %                            |
+  | `src/pages/capex/DepreciationForecastPage.tsx` | Asset-register totals (cost / NBV / annual dep / avg age) plus GL 14xx/15xx fixed-asset movement cross-check                                                                                                            | `computeDeprForecastTotals`, `sumGLFixedAssetMovement`, `DeprAssetLike`, `DeprForecastTotals` | 5     | 1/5 fail (three-0.335 half-up); avgAge uses Decimal.div            |
+  | `src/pages/cash/CashForecastPage.tsx`          | 13-week cash flow inflow/outflow/net + heuristic category splits (Revenue 70% / Other Inc 30% residual; Payroll 40%, OpEx 35%, CapEx 15%, Debt residual)                                                                | `computeCashTotals`, `buildCashCategorySplit`, `burnRateMonthly`                              | 5     | 1/5 fail (0.1+0.1+0.1 drift; residual split keeps cents-exact sum) |
+  | `src/pages/cash/WorkingCapitalPage.tsx`        | Current assets (11xx/12xx) / current liabilities (21xx) / revenue (4xxx) / COGS (5xxx), WC, current/quick ratios, component breakdown (Cash/AR/Inventory/Other CA / AP/Accrued/ST-Debt) with DSO/DIO/DPO/CCC day counts | `computeWorkingCapital`, `WCEntry`, `WCSummary`, `WCComponents`                               | 5     | 1/5 fail; ratios/days unitless via Decimal.div                     |
+
+  **Real defect classes fixed (same families):** three $0.10 debits in RWA buckets summing to $0.30 not $0.30000000000000004; 8% capital charge on $1249.99 of corporate loans landing on $100.00 not $99.99999999999999; depreciation forecast annual-depreciation three-0.335 entries → $1.01 half-up; cash inflow/outflow nets balanced to $0.00 exactly; working-capital component splits allocating to the residual bucket so Cash+AR+Inventory+Other = assets exactly and AP+Accrued+ST-Debt = liabilities exactly (no penny drift when ratios like 30/35/25 don't sum to 100%).
+
+- **Falsification harness** (`scripts/falsify-wave2.mjs`) extended to handle `multiplyMoney`, `divideMoney`, `roundTo(..., places)`, and chained `.filter(...).map(...)` expressions that the v1 regex didn't catch (this was why `NIMDashboardPage` initially appeared to pass under devolution — the sumMoney argument had a chained `.filter()` that the simple identifier regex missed). Re-applied across all 12 wave-2+wave-3 files: every file has ≥1 failing known-answer test under float devolution, 0 failures after restore.
+- **Quality gates (post wave-3):** `tsc --noEmit` exit 0; `eslint --max-warnings 0` clean on every changed file; `prettier` clean; all 21 UI money-test files (99 tests) green; pre-existing component render tests (13 tests across 6 files) green; full-vitest re-run earlier in session = **995 files / 11,647 tests passed / 8 skipped**; `money:adoption` ratchet holds at **98/380** (new files live in dirs not yet added to FINANCIAL_DIRS due to display-only toFixed; see wave-1 note), server **2/23**, **0** raw value-producing `toFixed(n)`; `docs:verify` passes.
+- **FINANCIAL_DIRS status — still deferred:** `src/pages/{banking,budgets,capex,accounting,cash}` and `src/components/{ui,spreadsheet,consolidation,currency}` all retain display-only `.toFixed(n)` sites on rates/percentages/FX rates/bytes/years/`/1000→K`/`/1e6→M` axis labels. These are non-currency under GAP-1 policy but trip the simple regex. They'll be added in a follow-up pass after routing those display paths through shared helpers (e.g. `formatPercent`, `formatAxisUsdMillions`).
+
+- **Next GAP-1 UI candidates (same protocol):** `src/pages/treasury/InvestmentPage.tsx` (totalValue / weightedYield reduces — value is money, yield is %), `src/pages/data/GLExplorerPage.tsx`, `src/pages/data/GLTrialBalancePage.tsx`, `src/pages/data/GLReportingPage.tsx`, `src/pages/data/GLJournalsPage.tsx`, `src/pages/banking/BankingDashboard.tsx` (KPI totals; the `n.toFixed(2)` calls are display-only), `src/pages/budgets/BudgetVAReport.tsx` (variance totals; `toFixed(1)` is percent), `src/components/ui/ICMatchingDashboard.tsx` (match-rate %), `src/components/charts/*` (K/M axis display), plus the remaining treasury/capital/consolidation surfaces not yet screened.

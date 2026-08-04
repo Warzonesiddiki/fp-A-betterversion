@@ -9,7 +9,39 @@ import { DataTable, Column } from '@/components/ui/DataTable';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
+import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { Truck, DollarSign, Layers, TrendingUp, HelpCircle, Plus } from 'lucide-react';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal CapEx page totals.
+ *
+ * The KPI cards (Total Budget, Total Actual, Net Asset Value) and per-row
+ * variance were raw float reduce / subtraction. Budget/actual/cost/NBV are
+ * currency. IRR/payback/useful-life are metrics and stay float.
+ */
+export interface CapExProjectLike {
+  budget: number;
+  actual: number;
+}
+export interface CapExAssetLike {
+  cost: number;
+  nbv: number;
+}
+export function sumProjectBudgets(projects: readonly CapExProjectLike[]): number {
+  return roundTo(sumMoney(projects.map((p) => p.budget)));
+}
+export function sumProjectActuals(projects: readonly CapExProjectLike[]): number {
+  return roundTo(sumMoney(projects.map((p) => p.actual)));
+}
+export function projectVariance(p: CapExProjectLike): number {
+  return roundTo(subtractMoney(p.budget, p.actual));
+}
+export function sumAssetCosts(assets: readonly CapExAssetLike[]): number {
+  return roundTo(sumMoney(assets.map((a) => a.cost)));
+}
+export function sumAssetNBV(assets: readonly CapExAssetLike[]): number {
+  return roundTo(sumMoney(assets.map((a) => a.nbv)));
+}
 
 const HELP_SECTIONS = [
   {
@@ -80,14 +112,14 @@ export function CapexTracker() {
     document.title = 'FinPlan Pro — CapEx Tracker';
   }, []);
 
-  const totalBudget = useMemo(() => projects.reduce((s, p) => s + p.budget, 0), [projects]);
-  const totalActual = useMemo(() => projects.reduce((s, p) => s + p.actual, 0), [projects]);
+  const totalBudget = useMemo(() => sumProjectBudgets(projects), [projects]);
+  const totalActual = useMemo(() => sumProjectActuals(projects), [projects]);
   const activeProjects = useMemo(
     () => projects.filter((p) => p.status !== 'cancelled'),
     [projects]
   );
-  const totalAssetCost = useMemo(() => assets.reduce((s, a) => s + a.cost, 0), [assets]);
-  const totalNBV = useMemo(() => assets.reduce((s, a) => s + a.nbv, 0), [assets]);
+  const totalAssetCost = useMemo(() => sumAssetCosts(assets), [assets]);
+  const totalNBV = useMemo(() => sumAssetNBV(assets), [assets]);
 
   const projectData = useMemo(
     () =>
@@ -96,7 +128,7 @@ export function CapexTracker() {
         category: p.category,
         budget: formatCurrency(p.budget),
         actual: formatCurrency(p.actual),
-        variance: formatCurrency(p.budget - p.actual),
+        variance: formatCurrency(projectVariance(p)),
         status: (
           <span
             className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[p.status] || 'bg-slate-600'}`}

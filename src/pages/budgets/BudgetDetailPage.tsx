@@ -20,6 +20,27 @@ import {
   XCircle,
   History,
 } from 'lucide-react';
+import { roundTo, sumMoney } from '@/utils/money';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal budget-detail totals.
+ *
+ * Per-account-group totals, the grand total, and per-month column totals
+ * were raw float reduce; they feed the header grand total, the per-group
+ * "Total" column, and the tfoot row. Counts/flags stay integer.
+ */
+export interface BudgetLineLike {
+  amount: number;
+}
+export function sumLineItems<T extends BudgetLineLike>(items: readonly T[]): number {
+  return roundTo(sumMoney(items.map((li) => li.amount)));
+}
+export function computeMonthColumnTotal(
+  groups: readonly { items: readonly BudgetLineLike[] }[],
+  monthIdx: number
+): number {
+  return roundTo(sumMoney(groups.map((g) => g.items[monthIdx]?.amount ?? 0)));
+}
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -80,18 +101,21 @@ export default function BudgetDetailPage() {
       existing.push(li);
       map.set(li.accountId, existing);
     }
-    return Array.from(map.entries()).map(([accountId, items]) => ({
-      accountId,
-      accountName:
-        items[0]?.accountName || accounts.find((a) => a.id === accountId)?.name || accountId,
-      accountCode: items[0]?.accountCode || accounts.find((a) => a.id === accountId)?.code || '',
-      items: items.sort((a, b) => a.month - b.month),
-      total: items.reduce((s, li) => s + li.amount, 0),
-    }));
+    return Array.from(map.entries()).map(([accountId, items]) => {
+      const sorted = items.sort((a, b) => a.month - b.month);
+      return {
+        accountId,
+        accountName:
+          sorted[0]?.accountName || accounts.find((a) => a.id === accountId)?.name || accountId,
+        accountCode: sorted[0]?.accountCode || accounts.find((a) => a.id === accountId)?.code || '',
+        items: sorted,
+        total: sumLineItems(sorted),
+      };
+    });
   }, [budgetLineItems, accounts]);
 
   const grandTotal = useMemo(
-    () => groupedByAccount.reduce((s, g) => s + g.total, 0),
+    () => roundTo(sumMoney(groupedByAccount.map((g) => g.total))),
     [groupedByAccount]
   );
 
@@ -368,10 +392,7 @@ export default function BudgetDetailPage() {
               <tr className="font-bold text-sm">
                 <td className="px-4 py-3 sticky left-0 bg-slate-900 z-10">Total</td>
                 {months.map((m, idx) => {
-                  const monthTotal = groupedByAccount.reduce(
-                    (s, g) => s + (g.items[idx]?.amount || 0),
-                    0
-                  );
+                  const monthTotal = computeMonthColumnTotal(groupedByAccount, idx);
                   return (
                     <td key={m} className="px-2 py-3 text-right tabular-nums">
                       {formatCurrency(monthTotal)}
