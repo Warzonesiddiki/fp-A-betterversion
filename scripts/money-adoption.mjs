@@ -28,7 +28,11 @@ const BASELINE_PATH = join(ROOT, 'scripts', 'money-adoption-baseline.json');
 const isTest = (f) => /\.(test|bench|benchmark|spec)\.[tj]sx?$/.test(f);
 
 /** Directories whose arithmetic is considered a FINANCIAL path. */
-const FINANCIAL_DIRS = ['src/engines', 'src/store', 'src/utils', 'src/services'];
+// 2026-08-04: src/workers added — the consolidation worker ran ASC 810 math
+// (FX translation, eliminations, minority interest) on raw floats entirely
+// outside the previous scan; financial workers are first-class financial
+// paths and must be guarded like engines/stores/services.
+const FINANCIAL_DIRS = ['src/engines', 'src/store', 'src/utils', 'src/services', 'src/workers'];
 
 function walk(dir, out = []) {
   if (!existsSync(dir)) return out;

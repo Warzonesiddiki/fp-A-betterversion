@@ -424,6 +424,57 @@ repair financial gates`), created after the staged ESLint, TypeScript, Prettier,
   data contracts change. The remaining reachable money surface is the `IterativeCalculationEngine`
   (rejected: measure-agnostic convergence inputs) and any new code added after this commit.
 
+#### GAP-1 continuation — 2026-08-04 (session 2, branch `arena/019fc970-fp-a-betterversion`)
+
+- **Sandbox recovery note (literal):** the environment re-clone lost the local git objects for
+  `02c9d2f`/`325a164` (fresh clone at `cb42a65`, working tree preserved). Verified `git diff
+FETCH_HEAD` matched every tracked file byte-for-byte and the four new test files matched
+  `git show FETCH_HEAD:<path>`; `git reset --hard FETCH_HEAD` restored the branch to `325a164`
+  exactly, clean tree. Remote was the source of truth throughout.
+- **`src/workers/consolidation.worker.ts` — MIGRATED (genuine, and OUTSIDE the ratchet's old
+  coverage):** the ASC 810 consolidation worker ran raw float math on currency everywhere —
+  FX translation (`entry.amount * rate`), intercompany elimination (`reduce +`,
+  `Math.min(Math.abs(...))`, `totalEliminated +=`), minority interest (`revenue + expenses`,
+  `minorityPct * netIncome`), adjustment nets (`debitAmount - creditAmount`,
+  `entry.amount + adj`), category totals (`reduce +`), and the balance check
+  (`assets + liab + equity + MI`, `Math.abs(...) < 0.01`). All currency paths now use
+  `addMoney`/`subtractMoney`/`multiplyMoney`/`sumMoney`/`percentOf`/`compareMoney` with
+  cent-rounding at the output boundary (translated and adjusted entry amounts are `roundTo`'d —
+  imported-value convention); ownership percentages, elimination counts, and the progress
+  percentage stay non-money. New `consolidation.worker.money.test.ts` has **8 exact `toBe`**
+  answers; old code failed **6/8** (`0.11000000000000001`, `[-0.20000000000000004, …]`,
+  `0.04000000000000001`, `0.39999999999999997`, `5.551115123125783e-17` phantom imbalance,
+  `0.6000000000000001`); restored code passes **8/8**, existing worker suites **82/82** (all
+  10 worker test files / 90 tests green).
+- **Ratchet guard extension (this is the headline):** the worker drift existed precisely
+  because `scripts/money-adoption.mjs` scanned only engines/stores/utils/services. Financial
+  **workers are first-class financial paths** — `FINANCIAL_DIRS` now includes `src/workers`, so
+  the guard covers the class of drift it missed. Baseline re-recorded: **360 → 367 modules,
+  94 → 95 adopters (25.89%)**, still **0** raw `toFixed(n)` sites.
+- **`server/src/routes/gl.ts` trial-balance totals — MIGRATED (genuine, separate package):**
+  `totalDebit += Number(row.total_debit)` / `difference = totalDebit - totalCredit` /
+  `Math.abs(...) < 0.01` over currency were raw float. Per-account SQLite sums are treated as
+  imported values — cent-rounded with declared ROUND_HALF_UP — then aggregated at exact
+  decimal precision. Package boundary: the server cannot import `src/utils/money.ts` (its
+  tsconfig `rootDir` is `server/src`), so it uses `decimal.js` directly — the same canonical
+  engine behind the wrapper — with identical semantics, documented in the file. `decimal.js`
+  added to `server/package.json` + lock. The aggregation was extracted to an exported pure
+  function `computeTrialBalanceTotals(rows)` (the mock-DB fallback cannot aggregate SQL SUM,
+  so the money behavior is pinned at the function level). New `server/src/routes/gl.money.test.ts`
+  has **5 exact `toBe`** answers (old inline code produced `0.6000000000000001`,
+  `5.551115123125783e-17`, `1.005` vs `1.01`, `0.30000000000000004`); restored code passes
+  **5/5**, server suite **101/101** (was 96), `server` tsc exit 0. Also **observed, not fixed**
+  (out of GAP-1 scope): the empty-filter branch of the endpoint returns keys
+  `debits/credits/balance` while the main branch returns `debit/credit/difference/balanced` —
+  flagged for a future contract pass.
+- **Flaky note (honesty):** the first full-suite run after these changes reported **1 failed
+  test / 1 file**; two consecutive full re-runs then passed **972 files / 11,540 tests, 0
+  failures** (11,540 passed / 8 skipped). The transient did not reproduce and is not attributed
+  to this change.
+- **Gates:** root `tsc --noEmit` exit 0; `eslint src --max-warnings 0` exit 0 (server files
+  lint clean under the root flat config); Prettier clean; `vite build` exit 0 (worker bundles
+  with `@/utils/money`); `bundle-check` exit 0 (warning only); README updated to **95/367**.
+
 ### GAP-3 — Orphan engines (F-0028)
 
 - **status:** **VERIFIED_DONE — the gap's premise was a measurement defect**

@@ -3,8 +3,25 @@
 // CONSOLIDATION WEB WORKER
 // Runs multi-entity consolidation off the main thread.
 // ASC 810 compliant: eliminations, minority interest, FX translation.
+//
+// MONEY MIGRATION (2026-08-04): every currency-bearing computation — FX
+// translation (amount × rate), intercompany elimination sums, minority
+// interest, adjustment nets, category totals, and the balance check — uses
+// the canonical money primitive (`src/utils/money.ts`, F-0006). Entry
+// amounts are cent-rounded (`roundTo`, declared half-up) at the output
+// boundary; progress percentages and record counts are not currency.
 // =============================================================================
 
+import {
+  addMoney,
+  compareMoney,
+  multiplyMoney,
+  percentOf,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 import type {
   WorkerMessage,
   WorkerResponse,
@@ -80,7 +97,8 @@ function translateForeignEntities(
           rate = closingRate?.rate ?? 1;
       }
 
-      return { ...entry, amount: entry.amount * rate, currency: 'USD' };
+      // Currency × FX rate is an exact decimal product, cent-rounded.
+      return { ...entry, amount: roundTo(multiplyMoney(entry.amount, rate)), currency: 'USD' };
     });
 
     return { ...entity, entries: translatedEntries, currency: 'USD', isForeign: false };
@@ -94,7 +112,7 @@ function eliminateIntercompany(
   icPairs: ConsolidationICPair[],
   _ownerships: ConsolidationOwnership[]
 ): { eliminatedAmount: number; count: number } {
-  let totalEliminated = 0;
+  let totalEliminated = toDecimal(0);
   let count = 0;
   const processedPairs = new Set<string>();
 
@@ -106,17 +124,18 @@ function eliminateIntercompany(
     const fromEntries = allEntries.filter(
       (e) => e.entityId === pair.fromEntityId && e.accountCode === pair.accountCode
     );
-    const fromAmount = fromEntries.reduce((sum, e) => sum + e.amount, 0);
+    const fromAmount = sumMoney(fromEntries.map((e) => e.amount));
 
     const toAccountCode = pair.toAccountCode ?? pair.accountCode;
     const toEntries = allEntries.filter(
       (e) => e.entityId === pair.toEntityId && e.accountCode === toAccountCode
     );
-    const toAmount = toEntries.reduce((sum, e) => sum + e.amount, 0);
+    const toAmount = sumMoney(toEntries.map((e) => e.amount));
 
-    if (fromAmount !== 0 || toAmount !== 0) {
-      const matchedAmount = Math.min(Math.abs(fromAmount), Math.abs(toAmount));
-      totalEliminated += matchedAmount;
+    if (!fromAmount.isZero() || !toAmount.isZero()) {
+      const matchedAmount =
+        compareMoney(fromAmount.abs(), toAmount.abs()) <= 0 ? fromAmount.abs() : toAmount.abs();
+      totalEliminated = totalEliminated.plus(matchedAmount);
       count++;
     }
   }
@@ -128,23 +147,30 @@ function eliminateIntercompany(
 
   for (const accountCode of icAccounts) {
     const accountEntries = allEntries.filter((e) => e.accountCode === accountCode);
-    const entityBalances = new Map<string, number>();
+    const entityBalances = new Map<string, ReturnType<typeof toDecimal>>();
 
     for (const entry of accountEntries) {
-      entityBalances.set(entry.entityId, (entityBalances.get(entry.entityId) ?? 0) + entry.amount);
+      entityBalances.set(
+        entry.entityId,
+        (entityBalances.get(entry.entityId) ?? toDecimal(0)).plus(entry.amount)
+      );
     }
 
     const entityIds = Array.from(entityBalances.keys());
     for (let i = 0; i < entityIds.length; i++) {
       for (let j = i + 1; j < entityIds.length; j++) {
-        const fromBalance = entityBalances.get(entityIds[i]!) ?? 0;
-        const toBalance = entityBalances.get(entityIds[j]!) ?? 0;
+        const fromBalance = entityBalances.get(entityIds[i]!) ?? toDecimal(0);
+        const toBalance = entityBalances.get(entityIds[j]!) ?? toDecimal(0);
 
-        if (fromBalance !== 0 && toBalance !== 0) {
+        if (!fromBalance.isZero() && !toBalance.isZero()) {
           const autoKey = `${entityIds[i]}:${entityIds[j]}:${accountCode}`;
           if (!processedPairs.has(autoKey)) {
             processedPairs.add(autoKey);
-            totalEliminated += Math.min(Math.abs(fromBalance), Math.abs(toBalance));
+            totalEliminated = totalEliminated.plus(
+              compareMoney(fromBalance.abs(), toBalance.abs()) <= 0
+                ? fromBalance.abs()
+                : toBalance.abs()
+            );
             count++;
           }
         }
@@ -152,7 +178,7 @@ function eliminateIntercompany(
     }
   }
 
-  return { eliminatedAmount: totalEliminated, count };
+  return { eliminatedAmount: roundTo(totalEliminated), count };
 }
 
 // --- Minority interest calculation ---
@@ -160,8 +186,8 @@ function eliminateIntercompany(
 function calculateMinorityInterest(
   entities: ConsolidationEntityData[],
   ownerships: ConsolidationOwnership[]
-): number {
-  let totalMI = 0;
+): ReturnType<typeof toDecimal> {
+  let totalMI = toDecimal(0);
 
   for (const ownership of ownerships) {
     if (ownership.method !== 'full') continue;
@@ -172,16 +198,21 @@ function calculateMinorityInterest(
     const subsidiary = entities.find((e) => e.entityId === ownership.childId);
     if (!subsidiary) continue;
 
-    const revenue = subsidiary.entries
-      .filter((e) => getAccountCategory(e.accountCode) === 'revenue')
-      .reduce((sum, e) => sum + e.amount, 0);
+    const revenue = sumMoney(
+      subsidiary.entries
+        .filter((e) => getAccountCategory(e.accountCode) === 'revenue')
+        .map((e) => e.amount)
+    );
 
-    const expenses = subsidiary.entries
-      .filter((e) => getAccountCategory(e.accountCode) === 'expense')
-      .reduce((sum, e) => sum + e.amount, 0);
+    const expenses = sumMoney(
+      subsidiary.entries
+        .filter((e) => getAccountCategory(e.accountCode) === 'expense')
+        .map((e) => e.amount)
+    );
 
-    const netIncome = revenue + expenses;
-    totalMI += minorityPct * netIncome;
+    const netIncome = addMoney(revenue, expenses);
+    // Minority share = netIncome × (100 − ownershipPct) / 100 (exact decimal).
+    totalMI = totalMI.plus(percentOf(netIncome, 100 - ownership.ownershipPct));
   }
 
   return totalMI;
@@ -194,37 +225,37 @@ function applyEliminationsAndAdjustments(
   icPairs: ConsolidationICPair[],
   adjustments: ConsolidationAdjustment[]
 ): ConsolidationGLEntry[] {
-  const adjustmentMap = new Map<string, number>();
+  const adjustmentMap = new Map<string, ReturnType<typeof toDecimal>>();
 
   // Process IC pairs into adjustments
   for (const pair of icPairs) {
     const fromEntries = allEntries.filter(
       (e) => e.entityId === pair.fromEntityId && e.accountCode === pair.accountCode
     );
-    const fromAmount = fromEntries.reduce((sum, e) => sum + e.amount, 0);
+    const fromAmount = sumMoney(fromEntries.map((e) => e.amount));
 
-    if (fromAmount !== 0) {
+    if (!fromAmount.isZero()) {
       const keyFrom = `${pair.fromEntityId}:${pair.accountCode}`;
-      adjustmentMap.set(keyFrom, (adjustmentMap.get(keyFrom) ?? 0) - fromAmount);
+      adjustmentMap.set(keyFrom, (adjustmentMap.get(keyFrom) ?? toDecimal(0)).minus(fromAmount));
     }
 
     const toAccountCode = pair.toAccountCode ?? pair.accountCode;
     const toEntries = allEntries.filter(
       (e) => e.entityId === pair.toEntityId && e.accountCode === toAccountCode
     );
-    const toAmount = toEntries.reduce((sum, e) => sum + e.amount, 0);
+    const toAmount = sumMoney(toEntries.map((e) => e.amount));
 
-    if (toAmount !== 0) {
+    if (!toAmount.isZero()) {
       const keyTo = `${pair.toEntityId}:${toAccountCode}`;
-      adjustmentMap.set(keyTo, (adjustmentMap.get(keyTo) ?? 0) - toAmount);
+      adjustmentMap.set(keyTo, (adjustmentMap.get(keyTo) ?? toDecimal(0)).minus(toAmount));
     }
   }
 
   // Process manual adjustments
   for (const adj of adjustments) {
     const key = `${adj.entityId}:${adj.accountCode}`;
-    const net = adj.debitAmount - adj.creditAmount;
-    adjustmentMap.set(key, (adjustmentMap.get(key) ?? 0) + net);
+    const net = subtractMoney(adj.debitAmount, adj.creditAmount);
+    adjustmentMap.set(key, (adjustmentMap.get(key) ?? toDecimal(0)).plus(net));
   }
 
   // Apply adjustments to entries
@@ -233,11 +264,11 @@ function applyEliminationsAndAdjustments(
 
   for (const entry of allEntries) {
     const key = `${entry.entityId}:${entry.accountCode}`;
-    const adj = adjustmentMap.get(key) ?? 0;
-    const newAmount = entry.amount + adj;
+    const adj = adjustmentMap.get(key) ?? toDecimal(0);
+    const newAmount = addMoney(entry.amount, adj);
 
-    if (Math.abs(newAmount) > 0.001) {
-      result.push({ ...entry, amount: newAmount });
+    if (newAmount.abs().gt('0.001')) {
+      result.push({ ...entry, amount: roundTo(newAmount) });
     }
     processedKeys.add(key);
   }
@@ -250,7 +281,7 @@ function applyEliminationsAndAdjustments(
         id: `adj-${adj.accountCode}-${adj.entityId}`,
         accountCode: adj.accountCode,
         accountName: adj.accountName,
-        amount: adj.debitAmount - adj.creditAmount,
+        amount: roundTo(subtractMoney(adj.debitAmount, adj.creditAmount)),
         currency: 'USD',
         date: new Date().toISOString().split('T')[0]!,
         entityId: adj.entityId,
@@ -263,10 +294,13 @@ function applyEliminationsAndAdjustments(
 
 // --- Sum by category ---
 
-function sumByCategory(entries: ConsolidationGLEntry[], category: AccountCategory): number {
-  return entries
-    .filter((e) => getAccountCategory(e.accountCode) === category)
-    .reduce((sum, e) => sum + e.amount, 0);
+function sumByCategory(
+  entries: ConsolidationGLEntry[],
+  category: AccountCategory
+): ReturnType<typeof sumMoney> {
+  return sumMoney(
+    entries.filter((e) => getAccountCategory(e.accountCode) === category).map((e) => e.amount)
+  );
 }
 
 // --- Core consolidation ---
@@ -317,31 +351,36 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
   // Step 5: Apply eliminations and adjustments
   const consolidatedEntries = applyEliminationsAndAdjustments(allEntries, icPairs, adjustments);
 
-  // Calculate totals
-  const totalAssets = sumByCategory(consolidatedEntries, 'asset');
-  const totalLiabilities = sumByCategory(consolidatedEntries, 'liability');
-  const totalEquity = sumByCategory(consolidatedEntries, 'equity');
-  const totalRevenue = sumByCategory(consolidatedEntries, 'revenue');
-  const totalExpenses = sumByCategory(consolidatedEntries, 'expense');
-  const netIncome = totalRevenue + totalExpenses;
+  // Calculate totals at full decimal precision; cent-round at the boundary.
+  const totalAssetsDec = sumByCategory(consolidatedEntries, 'asset');
+  const totalLiabilitiesDec = sumByCategory(consolidatedEntries, 'liability');
+  const totalEquityDec = sumByCategory(consolidatedEntries, 'equity');
+  const totalRevenueDec = sumByCategory(consolidatedEntries, 'revenue');
+  const totalExpensesDec = sumByCategory(consolidatedEntries, 'expense');
+  const netIncomeDec = addMoney(totalRevenueDec, totalExpensesDec);
 
-  const balanceCheck = totalAssets + totalLiabilities + totalEquity + minorityInterest;
-  const isBalanced = Math.abs(balanceCheck) < 0.01;
+  const balanceCheck = sumMoney([
+    totalAssetsDec,
+    totalLiabilitiesDec,
+    totalEquityDec,
+    minorityInterest,
+  ]);
+  const isBalanced = balanceCheck.abs().lt('0.01');
 
   postProgress(5, 5);
 
   return {
     consolidatedEntries,
-    totalAssets,
-    totalLiabilities,
-    totalEquity,
-    totalRevenue,
-    totalExpenses,
-    netIncome,
+    totalAssets: roundTo(totalAssetsDec),
+    totalLiabilities: roundTo(totalLiabilitiesDec),
+    totalEquity: roundTo(totalEquityDec),
+    totalRevenue: roundTo(totalRevenueDec),
+    totalExpenses: roundTo(totalExpensesDec),
+    netIncome: roundTo(netIncomeDec),
     isBalanced,
-    imbalanceAmount: balanceCheck,
+    imbalanceAmount: roundTo(balanceCheck),
     eliminationCount: eliminationResult.count,
-    minorityInterest,
+    minorityInterest: roundTo(minorityInterest),
   };
 }
 
