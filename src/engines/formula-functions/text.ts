@@ -2,7 +2,7 @@
 // FORMULA FUNCTION REGISTRY — Text & Date Functions
 // =============================================================================
 import type { FormulaFunction } from './helpers';
-import { roundTo } from '../../utils/money';
+import { roundTo } from '@/utils/money';
 
 // =============================================================================
 // TEXT FUNCTIONS

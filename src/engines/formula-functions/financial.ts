@@ -12,7 +12,7 @@ import {
   sumMoney,
   toDecimal,
   roundTo,
-} from '../../utils/money';
+} from '@/utils/money';
 
 // =============================================================================
 // FINANCIAL FUNCTIONS

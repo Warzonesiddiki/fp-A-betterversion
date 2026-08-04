@@ -1,6 +1,8 @@
 import { AlertTriangle, BarChart3, Check, DollarSign, TrendingUp } from 'lucide-react';
 import type { CopilotAlert } from './CopilotTypes';
+import { compactThousandsMoney } from './CopilotTypes';
 import type { GLState, BudgetState } from '@/types';
+import { sumMoney } from '@/utils/money';
 
 function AlertCard({ alert }: { alert: CopilotAlert }) {
   const severityColors = {
@@ -91,18 +93,14 @@ export function AlertsTab({
           icon={<DollarSign className="h-3.5 w-3.5" />}
           label="Revenue"
           value={
-            gl?.entries
-              ? `$${(gl.entries.reduce((s, e) => s + e.credit, 0) / 1000).toFixed(0)}K`
-              : '—'
+            gl?.entries ? compactThousandsMoney(sumMoney(gl.entries.map((e) => e.credit))) : '—'
           }
         />
         <QuickStat
           icon={<BarChart3 className="h-3.5 w-3.5" />}
           label="Expenses"
           value={
-            gl?.entries
-              ? `$${(gl.entries.reduce((s, e) => s + e.debit, 0) / 1000).toFixed(0)}K`
-              : '—'
+            gl?.entries ? compactThousandsMoney(sumMoney(gl.entries.map((e) => e.debit))) : '—'
           }
         />
         <QuickStat
