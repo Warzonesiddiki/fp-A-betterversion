@@ -13,7 +13,11 @@
  * pre-migration IEEE-754 output is recorded inline.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
+import app from '../index.js';
+import { JWT_SECRET } from '../config/env.js';
 import { computeTrialBalanceTotals } from './gl.js';
 
 function row(debit: number, credit: number): Record<string, unknown> {
@@ -60,5 +64,36 @@ describe('computeTrialBalanceTotals — money known answers (GAP-1 / F-0006)', (
     expect(totals.credit).toBe(0);
     expect(totals.difference).toBe(0);
     expect(totals.balanced).toBe(true);
+  });
+});
+
+describe('GET /api/gl/trial-balance — totals contract (GAP-1 / F-0006)', () => {
+  let viewerToken: string;
+
+  beforeAll(() => {
+    viewerToken = jwt.sign(
+      { id: 'viewer-id', email: 'viewer@finplan.test', role: 'Viewer' },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+  });
+
+  it('returns the same totals shape on the no-visible-entities branch as the populated path', async () => {
+    // A Viewer with no entity rows gets entityFilter = [] — the route's
+    // early-return branch. It previously answered `debits/credits/balance`;
+    // it must answer `debit/credit/difference/balanced` like the main path
+    // (contract inconsistency flagged in GAP_LEDGER 2026-08-04, fixed).
+    const res = await request(app)
+      .get('/api/gl/trial-balance')
+      .set('Authorization', `Bearer ${viewerToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.accounts).toEqual([]);
+    expect(res.body.totals).toEqual({
+      debit: 0,
+      credit: 0,
+      difference: 0,
+      balanced: true,
+    });
   });
 });

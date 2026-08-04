@@ -527,7 +527,10 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
       conditions.push(`ge.entity_id IN (${entityFilter.map(() => '?').join(', ')})`);
       params.push(...entityFilter);
     } else if (entityFilter !== null && entityFilter.length === 0) {
-      res.json({ accounts: [], totals: { debits: 0, credits: 0, balance: 0 } });
+      // Contract consistency: the no-visible-entities branch returns the same
+      // totals shape as the populated path (previously `debits/credits/balance`
+      // vs `debit/credit/difference/balanced` — flagged in GAP_LEDGER 2026-08-04).
+      res.json({ accounts: [], totals: computeTrialBalanceTotals([]) });
       return;
     }
 

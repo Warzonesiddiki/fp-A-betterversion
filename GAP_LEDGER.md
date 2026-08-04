@@ -475,6 +475,45 @@ FETCH_HEAD` matched every tracked file byte-for-byte and the four new test files
   lint clean under the root flat config); Prettier clean; `vite build` exit 0 (worker bundles
   with `@/utils/money`); `bundle-check` exit 0 (warning only); README updated to **95/367**.
 
+#### GAP-1 continuation — 2026-08-04 (session 3, branch `arena/019fc970-fp-a-betterversion`)
+
+- **Sandbox recovery note (second occurrence, literal):** the environment re-cloned again,
+  dropping local git objects; recovered exactly as before — `git fetch origin
+arena/019fc970-fp-a-betterversion`, `git reset --hard FETCH_HEAD` → `9923ed8`, clean tree,
+  remote as source of truth. Reinstalled root + server deps (`npm ci`).
+- **`server/src/routes/export.ts` report arithmetic — MIGRATED (genuine, SQL-side currency):**
+  the PDF report builder computed currency inside SQL on IEEE-754 REALs: trial-balance
+  `COALESCE(SUM(ge.debit),0) - COALESCE(SUM(ge.credit),0) AS "Balance"` and budget-vs-actual
+  `COALESCE(SUM(ge.debit - ge.credit),0) AS "Actual Amount"` plus
+  `SUM(bli.amount) - COALESCE(...) AS "Variance"`. The queries now return raw component sums
+  (`Total Debit`/`Total Credit`, `Budget Amount`/`Actual Debit`/`Actual Credit`) and the
+  derived figures are computed in JS at exact decimal precision via decimal.js (canonical
+  engine; server package boundary — documented in-file), cent-rounded ROUND_HALF_UP at the
+  output boundary. Extracted pure functions `buildTrialBalanceReportRows` and
+  `buildBudgetVsActualReportRows` (the mock-DB fallback cannot aggregate SQL SUM, so the money
+  behavior is pinned at the function level). New `server/src/routes/export.money.test.ts` has
+  **5 exact `toBe`** answers (old SQL path produced `0.20000000000000004`,
+  `1.005` vs `1.01`, `0.39999999999999997`, `0.49999999999999994`); stash falsification: old
+  code failed **5/5** (functions absent — the drift was inline and untestable), restored code
+  passes **5/5**. Report headers/row shape unchanged — the exported PDF contract is identical.
+- **`server/src/routes/gl.ts` contract fix (flagged last session, now closed):** the
+  no-visible-entities branch of `GET /api/gl/trial-balance` returned `totals:
+{ debits, credits, balance }` while the populated path returns
+  `{ debit, credit, difference, balanced }`. Both branches now share
+  `computeTrialBalanceTotals([])` — same shape, exact zeros. Pinned by a new supertest case in
+  `gl.money.test.ts` (Viewer token → entityFilter `[]` → 200 with the unified shape).
+- **Re-screened and REJECTED this session (documented for the record):** `MonteCarloEngine`/
+  `monte-carlo.worker` (statistical distribution sampling and mean/variance/skewness/kurtosis/
+  percentiles — measure-agnostic statistics, same class as `formula-functions/statistical.ts`;
+  `probabilityOfProfit` is a ratio), `SensitivityEngine` (`(value − base)/base × 100` is a
+  percentage metric), `batch-calc.worker`/`storage.worker` (cell graph + serialization),
+  `server/src/routes/budgets.ts`/`forecasts.ts` (CRUD + error strings only), `AuditService`
+  (`totalPruned += changes` is a record count). None show raw currency arithmetic.
+- **Gates:** server suite **107/107** (9 files; was 101), server `tsc --noEmit` exit 0, root
+  ESLint clean on the changed files, Prettier clean. Root suite untouched this session (no
+  `src/` changes) — previous full-suite evidence (972 files / 11,540 tests) stands. README
+  unchanged (ratchet still **95/367, 0 toFixed**).
+
 ### GAP-3 — Orphan engines (F-0028)
 
 - **status:** **VERIFIED_DONE — the gap's premise was a measurement defect**
