@@ -3,5 +3,8 @@
   "modulesUsingMoneyPrimitive": 95,
   "adoptionPercent": 25.89,
   "rawToFixedSites": 0,
-  "recordedAt": "2026-08-03T23:25:04.950Z"
+  "serverFinancialModules": 23,
+  "serverModulesUsingMoneyPrimitive": 2,
+  "serverRawToFixedSites": 0,
+  "recordedAt": "2026-08-04T01:24:54.727Z"
 }

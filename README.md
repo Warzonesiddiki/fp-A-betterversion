@@ -49,7 +49,10 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
   `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores). Across all financial
   paths (`src/engines`, `src/store`, `src/utils`, `src/services`, `src/workers`) adoption is 95
   of 367 modules with **0** raw `toFixed(n)` sites remaining — run
-  `npm run money:adoption` for the current measurement. The remaining financial paths
+  `npm run money:adoption` for the current measurement. The server package is covered by the
+  same ratchet: **2 of 23 financial modules** use `decimal.js` (the canonical engine; the
+  server cannot import `src/utils/money.ts` across the package boundary) with **0** raw
+  `toFixed(n)` sites. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
   CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
 - **Background Web Workers (4):** `consolidation`, `monte-carlo`, `batch-calc` and `storage`

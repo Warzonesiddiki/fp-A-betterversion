@@ -514,6 +514,38 @@ arena/019fc970-fp-a-betterversion`, `git reset --hard FETCH_HEAD` → `9923ed8`,
   `src/` changes) — previous full-suite evidence (972 files / 11,540 tests) stands. README
   unchanged (ratchet still **95/367, 0 toFixed**).
 
+#### GAP-1 continuation — 2026-08-04 (session 4, branch `arena/019fc970-fp-a-betterversion`)
+
+- **Money-surface sweep complete:** re-screened the last unexamined files — `ComplianceEngine`,
+  `MigrationEngine`, `PeriodCloseEngine`, `ProfessionalExportEngine`,
+  `RegulatoryReportingEngine` (all clean of currency arithmetic), `templates/*` (hits are
+  template id strings like `bank-net-interest-income`, not math), `esgStore`
+  (`(value/target) × 100` averaged is a physical-metric compliance score, not currency),
+  `WorkflowEngine` (`totalHours` — hours), `auditTrailStore`/`tokenRotation` (timestamps),
+  `RestApiClient` (token expiry/backoff). All remain REJECTED as non-money, consistent with
+  the ledger. **No genuine currency surface remains un-migrated in `src/`** — the adoption
+  ceiling for the current file set is reached; future adopters come from new code.
+- **Ratchet hardened to cover the server (this session's change):** the server has done money
+  math via decimal.js since session 3 (`gl.ts`, `export.ts`) but the guard scanned only
+  `src/{engines,store,utils,services,workers}` — the same class of blind spot that let the
+  consolidation worker drift. `scripts/money-adoption.mjs` now also scans **`server/src`**
+  (23 financial modules): server adoption = modules importing `decimal.js` (the canonical
+  engine; the server package cannot import `src/utils/money.ts` across the package boundary —
+  documented in the migrated routes), and the same raw value-producing `toFixed(n)` counter
+  applies. Baseline re-recorded with `serverFinancialModules: 23`,
+  `serverModulesUsingMoneyPrimitive: 2` (`export.ts`, `gl.ts`), `serverRawToFixedSites: 0`.
+- **Guard self-tested both directions (literal):** injecting `serverRawToFixedSites: 1` in the
+  baseline made check mode exit 1 ("raw toFixed() sites in server financial paths INCREASED");
+  raising the baseline to 3 server adopters made check mode exit 1 ("decimal.js adoption in
+  server DECREASED: 3 -> 2 modules"). Restored baseline → `✓ Ratchet holds (baseline: 95
+modules, 0 toFixed sites; server: 2 modules, 0 toFixed sites)`. (First drop-test attempt set
+  the baseline BELOW measured — 2 < 1 is false — which is correct guard semantics; retested
+  properly with baseline above measured.)
+- **README** updated: the money paragraph now records the server coverage ("2 of 23 financial
+  modules use decimal.js ... 0 raw toFixed(n) sites"). Root `tsc`, ESLint, Prettier, and the
+  full root suite are untouched by this session's change (scripts/README/ledger/baseline only);
+  server tsc + 107/107 server tests verified in session 3 remain standing.
+
 ### GAP-3 — Orphan engines (F-0028)
 
 - **status:** **VERIFIED_DONE — the gap's premise was a measurement defect**
