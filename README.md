@@ -33,8 +33,8 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 82 of
-  226 engine/store modules** spanning the engines and store layers (e.g. `AllocationEngine`,
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 84 of
+  256 engine/store modules** spanning the engines and store layers (e.g. `AllocationEngine`,
   `BankingEngine`, `BreakEvenEngine`, `COGSVarianceEngine`, `CapExEngine`, `CashEngine`,
   `CashFlowWaterfallEngine`, `ConsolidationEngine`, `ConstructionEngine`, `CreditRiskEngine`,
   `DebtScheduleEngine`, `DepreciationEngine`, `FXEngine`, `FiscalCalendarEngine`,
@@ -47,8 +47,9 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
   `VarianceDecompositionEngine`, `WorkingCapitalEngine`,
   `report-builder-formulas`, `report-builder-export`, and the `glStore`, `glTrialBalanceStore`,
   `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores). Across all financial
-  paths (`src/engines`, `src/store`, `src/utils`, `src/services`, `src/workers`) adoption is 95
-  of 367 modules with **0** raw `toFixed(n)` sites remaining — run
+  paths (`src/engines`, `src/store`, `src/utils`, `src/services`, `src/workers`, and the AI
+  copilot components in `src/components/ai`) adoption is 97
+  of 377 modules with **0** raw `toFixed(n)` sites remaining — run
   `npm run money:adoption` for the current measurement. The server package is covered by the
   same ratchet: **2 of 23 financial modules** use `decimal.js` (the canonical engine; the
   server cannot import `src/utils/money.ts` across the package boundary) with **0** raw
@@ -843,8 +844,8 @@ npm run build -- --analyze  # Vite visualization
 | Metric                | Value                                                                                                                                         |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Primary Language**  | TypeScript (64.1%)                                                                                                                            |
-| **Total Stores**      | 39                                                                                                                                            |
-| **Financial Engines** | 190 top-level (105/181 unreferenced)                                                                                                          |
+| **Total Stores**      | 41                                                                                                                                            |
+| **Financial Engines** | 190 top-level (183 shipped, 7 orphaned)                                                                                                       |
 | **Pages/Routes**      | 195 page modules                                                                                                                              |
 | **Industry Sectors**  | 78 sector directories (depth varies)                                                                                                          |
 | **Dashboard Count**   | 23                                                                                                                                            |

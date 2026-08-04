@@ -4,9 +4,67 @@
 [DISCOVERY_REPORT.md](./DISCOVERY_REPORT.md) — never from assumption. Each entry is atomic and
 testable. Evidence = literal command output with date.
 
-- **Date of latest re-verification:** 2026-08-03 (UTC)
-- **Current continuation branch:** `arena/019fc970-fp-a-betterversion` (post-PR-#28 session)
-- **Current base:** `cb42a65` (PR #28 merge commit on `main`)
+- **Date of latest re-verification:** 2026-08-04 (UTC)
+- **Current continuation branch:** `arena/019fcc6c-fp-a-betterversion` (post-PR-#29 session)
+- **Current base:** `d1f22de` (PR #29 merge commit on `main`)
+
+---
+
+## PR #29 — MERGED (2026-08-04, merge commit `d1f22de` on `main`)
+
+PR #29 ("fix: migrate remaining currency math to the money primitive; extend ratchet to
+workers and server") is MERGED. Six commits, 34 files, +2,317/−246:
+
+1. `02c9d2f` — `QuickBooksConnector` invoice subtotal `reduce +` → `roundTo(sumMoney(...))`;
+   8 tests (falsified 5/8).
+2. `325a164` — `glAnalysis.ts` + `glStore` (`generateTrialBalance`, `analyzeAccount` — drift
+   INSIDE an already-adopted module) + `SpreadEngine` annual budget spreading incl.
+   `roundToTotal` (negative halves now half-up, not `Math.round`); 19 tests (falsified 16/19).
+3. `9923ed8` — `src/workers/consolidation.worker.ts` (ASC 810: FX translation, IC
+   eliminations, minority interest, adjustments, category totals, balance check — raw float
+   AND entirely outside the old ratchet scan) + server `gl.ts` trial-balance totals via
+   decimal.js; **ratchet `FINANCIAL_DIRS` now includes `src/workers`**; 13 tests
+   (falsified 6/8 worker + 5/5 server).
+4. `a053f97` — server `export.ts` + `gl.ts` contract fix: trial-balance `Balance` and
+   budget-vs-actual `Actual Amount`/`Variance` moved out of SQL float into exact decimal
+   (`buildTrialBalanceReportRows`, `buildBudgetVsActualReportRows`); the no-visible-entities
+   branch of `GET /api/gl/trial-balance` now returns the same totals shape as the populated
+   path (`debit/credit/difference/balanced` — was `debits/credits/balance`); 5 tests
+   (falsified 5/5) + 1 integration test.
+5. `962064d` — **ratchet guard extended to `server/src`** (server adoption = modules
+   importing `decimal.js`; the server package cannot import `src/utils/money.ts` across the
+   package boundary); guard self-tested both directions (toFixed bump → exit 1,
+   adoption-drop baseline → exit 1).
+6. `8dbfadd` — drift-inside-adopters sweep (8 files): `FXEngine` (translateForConsolidation,
+   calculateCTA), `LoanAmortizationEngine` (withPrepayment, balloonPayment, totalInterest),
+   `RevRecEngine.handleContractModification` (ASC 606), `DepreciationEngine` (impairment,
+   disposal, revaluation, declining-balance wrapper), `DebtScheduleEngine` (consolidate,
+   refinance), `BreakEvenEngine.multiProduct`, `ConsolidationEngine` (equity + minority
+   interest), `glStore` (normalizeGLEntry netChange, checkDuplicates fallback key); 25 tests
+   (falsified 20/35).
+
+**Real defects found and fixed (not just rounding):**
+`DepreciationEngine.assetRevaluation` `Math.round(0.05 × 1.5)` → **0** in IEEE-754
+(0.075 stored as 0.074999…), wiping revaluation accumulated depreciation (declared half-up
+now yields 0.08) · `glStore.checkDuplicates` stored `0.2` vs re-imported `0.3 − 0.1` produced
+fallback dedupe keys `0.19999999999999998` ≠ `0.2` → duplicate journal entries went
+UNDETECTED · `consolidation.worker` reported a `5.551115123125783e-17` phantom imbalance on
+perfectly offsetting books · `BreakEvenEngine.multiProduct` break-even revenue
+`1.6721311475409835` vs exact `1.7`.
+
+**Landed state:** ratchet baseline **95/367 (25.89%)** + server **2/23**, **0** `toFixed`
+sites (`scripts/money-adoption-baseline.json`, re-recorded at each commit, never raised) ·
+full suite 972 files / 11,540 tests · server suite 107/107 · `tsc --noEmit`, ESLint,
+Prettier, `vite build`, `bundle-check` (warning only), `docs:verify` all green on the merge
+base. CI: all required checks green; the `Build & Bundle Check` failure is the pre-existing
+legacy **2048KB workflow cap** (see "CI note" below) — not caused by the PR, not a required
+check, and `.github/workflows/**` stays untouched (reserved for GAP-7).
+
+**Ledger drift note (repaired 2026-08-04, post-merge session):** the merged ledger carried
+the session entries above but still pointed at base `cb42a65` (PR #28), had no merged-status
+section, and its "Next Action" still nominated `QuickBooksConnector.mapInvoice` — already
+shipped in commit `02c9d2f`. All three repaired in the post-PR-#29 session; see the session-6
+continuation entry below.
 
 ---
 
@@ -69,6 +127,12 @@ testable. Evidence = literal command output with date.
   - No raw `+ - * /` on currency-bearing values in engines/stores/services.
   - Every migrated function has a known-answer unit test (fixed inputs → exact decimals).
   - `npm run money:adoption` ratchet never regresses.
+- **current measurement (2026-08-04, session 6):** frontend **97/377** financial modules on
+  the money primitive (scanned dirs: `src/{engines,store,utils,services,workers}` +
+  `src/components/ai`), **0** raw `toFixed(n)` sites; server **2/23** on `decimal.js`.
+  Scanned dirs are at the adoption ceiling; the remaining genuine surface is the UI-layer
+  backlog in `src/components`/`src/pages` (~80 files, session-6 entry) — unscreened in
+  detail, deliberately outside the ratchet until screened.
 - **progress this session (2026-08-03):** adoption **16.67% → 22.78%** (59 → 82 modules); raw
   `toFixed` sites remain **0**. Baseline lowered (ratcheted down, never up). **20 more reachable
   engines migrated** (incl. this commit), every one falsified against the old float code first — **126 drift cases
@@ -611,6 +675,77 @@ credit`. Both now exact decimal. **Real defect found:** a stored entry with amou
   `SalesforceConnector` (`total += items.length` record counts). Each is either non-currency or
   display/formatting-only.
 
+#### GAP-1 continuation — 2026-08-04 (session 6, post-PR-#29, branch `arena/019fcc6c-fp-a-betterversion`)
+
+- **Baseline re-verified on clean `main` @ `d1f22de` (literal evidence, this session):**
+  `npm run money:adoption` → 95/367 (25.89%), **0** raw `toFixed(n)` sites, server 2/23,
+  `✓ Ratchet holds` · `npx tsc --noEmit` exit 0 · `npx eslint src --max-warnings 0` exit 0 ·
+  `npm run docs:verify` ✓ (stores measured 41) · server suite **107/107** (9 files) ·
+  full `src/components/ai` suite green. The handover's ceiling claim — every genuine currency
+  surface INSIDE the ratchet's scanned dirs (`src/{engines,store,utils,services,workers}` +
+  `server/src`) screened and migrated — **CONFIRMS for those dirs**.
+- **NEW BLIND SPOT FOUND (the worker class, again):** the ratchet's `FINANCIAL_DIRS` never
+  covered `src/components` or `src/pages`. A fresh repo-wide grep found **~80 files there with
+  raw float `reduce +` over currency fields** (`amount`/`debit`/`credit`/`budget`/`cost`/…),
+  plus literal `.toFixed(n)` on money in several. The handover's "no remaining genuine
+  currency surface in the current file set" holds only for the scanned dirs; the UI layer was
+  never screened in sessions 1–5 (the ledger's exclusions cover engines/stores/services/utils/
+  workers/server only). Documented, not assumed.
+- **MIGRATED this session: the AI copilot alert layer (logic-level currency math, reachable
+  from every page via `CopilotSidebar`):**
+  - `CopilotTypes.generateAlerts` — GL revenue/expense totals (`reduce +` over `credit`/
+    `debit`) drive alert LOGIC: the expense-exceeds comparison, the large-entries threshold
+    filter (`amount > totalRevenue * threshold`), severity, and the `value:` payload consumed
+    downstream. Now `sumMoney` + `compareMoney` + `multiplyMoney` + `subtractMoney`, with
+    `roundTo` only at the output boundary (comparisons stay unrounded for exact old-vs-new
+    decision semantics). The `threshold * 100` message label stays float (a percentage metric,
+    documented display class).
+  - `CopilotAlertsTab` quick stats — Revenue/Expenses "$Nk" figures now
+    `compactThousandsMoney(sumMoney(...))` (new display helper in `CopilotTypes`: exact
+    `divideMoney(total, 1000)` + half-up round at the boundary).
+  - **Falsified (stash → old code → run):** `CopilotTypes.money.test.ts` has **8 exact
+    `toBe`/known-answer assertions**; with the migrated sources stashed, **6 FAIL** against
+    the old float code, restored **8/8 pass**. Defects proven: 1. cent-equal books fired a false "Expenses exceed revenue" alert (revenue `0.1 + 0.2 =
+0.30000000000000004 > 0.3`); 2. expenses sitting EXACTLY on the threshold were mis-flagged as exceeding it when the
+    float product undershot (`1.15 × 0.1 = 0.11499999999999999`, so `0.115 > limit` fired;
+    also `0.57 × 0.1 = 0.056999999999999995` vs `0.057`); 3. the −$500 net-loss detail rendered **"Net: $-0K"** (`Math.round`-style half toward +∞);
+       half-up away from zero gives "$-1K".
+- **Ratchet extended to `src/components/ai` (narrow, deliberate):** same class of blind spot
+  that session 3 fixed for `src/workers` ("financial workers are first-class financial
+  paths") — the copilot alert layer is first-class financial LOGIC. `FINANCIAL_DIRS` now
+  includes `src/components/ai` (10 non-test modules scanned; 2 adopters: `CopilotTypes`,
+  `CopilotAlertsTab`; the other 8 files screened clean of currency arithmetic: chat/insights/
+  formula/NLQ UI, prompt strings, no money math). Baseline re-recorded **95 → 97 modules**,
+  367 → **377 financial modules (25.73%)**, **0** `toFixed` sites, server unchanged 2/23 —
+  the adoption floor went UP (never lowered); the percent dip is denominator growth from
+  extending the scan, exactly as in sessions 3–4. The remaining `src/components` / `src/pages`
+  surface is NOT scanned yet (see backlog below) — extending further would sweep hundreds of
+  display-only `.toFixed` sites into the counter and needs its own screening pass first.
+- **README repairs (docs drift found on clean `main` @ `d1f22de`, same class as the
+  session-2 "38 Stores" repair):** the money paragraph still claimed "**82 of 226**
+  engine/store modules" — stale since before PR #29 (measured now: **84 of 256** in
+  `src/engines` + `src/store`); the financial-paths sentence now records **97 of 377** incl.
+  `src/components/ai`. Project Statistics table: "Total Stores **39**" → **41** (matches
+  `docs:verify` measurement and the "Store Architecture (41 Stores)" claim repaired in
+  PR #29) and "Financial Engines … (**105/181 unreferenced**)" → "**183 shipped, 7
+  orphaned**" (the GAP-3 correction from 2026-08-02 had never reached this row).
+  `docs:verify` green before and after.
+- **Ledger/handover repairs:** header updated (base `d1f22de`, this branch); missing
+  "PR #29 — MERGED" section added; stale "Next Action" (nominated the already-shipped
+  `QuickBooksConnector.mapInvoice`) rewritten — see the Next Action section below.
+- **GAP-1 UI-layer backlog (new, documented, unscreened in detail):** ~80 files in
+  `src/components` + `src/pages` with raw float sums over currency fields. Strict screening
+  has NOT been applied file-by-file yet; a pattern-level triage says most are display totals
+  (chart tooltips, table footer totals via `formatCurrency(reduce …)`, "/1000 → K" labels —
+  the documented display-only class), but at least the following subclasses need full
+  screening before any ratchet extension: GL debit/credit table totals (`DrillTables`,
+  `BankReconciliation`, `BankStatements`, `BudgetApproval`), IC reconciliation totals
+  (`ICReconciliation`, `ICReconciliationReport`), multi-currency translation sums
+  (`MultiCurrencyReporting`), variance drill totals (`VarianceDrillModal`), budget/capex/
+  depreciation page totals. Protocol: strict-screen → migrate → exact known-answer tests →
+  stash-falsify → extend `FINANCIAL_DIRS` per screened area → re-record baseline (floor only
+  ever up).
+
 ### GAP-3 — Orphan engines (F-0028)
 
 - **status:** **VERIFIED_DONE — the gap's premise was a measurement defect**
@@ -860,13 +995,28 @@ only Phase-5 gate failure.
 
 ## Next Action
 
-Continue **GAP-1** with a fresh screen, not the stale candidate list above. The financial API
-aggregators in `DynamicsConnector` and `SalesforceConnector` were migrated in this session
-(2026-08-03, adoption 89 → 91). Highest-priority genuine path now visible is
-`QuickBooksConnector.mapInvoice` (`subtotal: lineItems.reduce((sum, li) => sum + li.amount, 0)`
-over real invoice line-item amounts) — run the full
-screen → migration → exact known-answer → stash-falsification → ratchet protocol on it.
-`NetSuiteConnector`/`XeroConnector` screened clean; re-screen if their data contracts change.
-The stores and generic engines explicitly rejected in the 2026-08-03 continuation must remain
-rejected unless their data contract changes. Keep `.github/workflows/**` untouched while GAP-7 is
-blocked.
+(Updated 2026-08-04, session 6, post-PR-#29 — supersedes the stale text that nominated the
+already-shipped `QuickBooksConnector.mapInvoice`.)
+
+1. **Scanned dirs are at the adoption ceiling.** Every genuine currency surface inside
+   `src/{engines,store,utils,services,workers}`, `src/components/ai`, and `server/src` has
+   been screened and migrated (ratchet: **97/377**, server 2/23, **0** `toFixed`). Only NEW
+   code can move the numerator; the ratchet catches regressions either way. Rejections in
+   sessions 1–6 stand unless a module's data contract changes
+   (`NetSuiteConnector`/`XeroConnector` re-screen only on contract change).
+2. **Highest-priority genuine path now visible: the GAP-1 UI-layer backlog.** ~80 files in
+   `src/components` + `src/pages` still do raw float `reduce +` over currency fields (see the
+   session-6 entry for the triage). Start with logic-feeding totals (GL drill/bank/budget
+   tables, IC reconciliation, `MultiCurrencyReporting`), applying the full
+   screen → migrate → exact known-answer → stash-falsify protocol, then extend
+   `FINANCIAL_DIRS` per screened area (baseline floor only ever goes UP; display-only
+   `.toFixed` sites must be screened out or migrated before each area joins the scan).
+3. **Standard migration protocol** (any future candidate): strict screen with decisions in
+   this ledger → migrate via `@/utils/money` (frontend) / `decimal.js` (server package) →
+   `*.money.test.ts` with exact `toBe` answers and inline old-float records → stash-falsify
+   (old code must fail, new must pass) → `npm run money:adoption -- --update` (never raise
+   the baseline) → all local gates (tsc, eslint, prettier, targeted + full suites,
+   docs:verify) → ledger entry with literal evidence.
+4. **Other backlog:** GAP-7 (the legacy 2048KB CI bundle cap — the only red check;
+   `.github/workflows/**` is reserved for it and must stay untouched until the `workflows`
+   App permission blocker is resolved).

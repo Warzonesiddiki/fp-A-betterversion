@@ -32,7 +32,21 @@ const isTest = (f) => /\.(test|bench|benchmark|spec)\.[tj]sx?$/.test(f);
 // (FX translation, eliminations, minority interest) on raw floats entirely
 // outside the previous scan; financial workers are first-class financial
 // paths and must be guarded like engines/stores/services.
-const FINANCIAL_DIRS = ['src/engines', 'src/store', 'src/utils', 'src/services', 'src/workers'];
+// 2026-08-04 (post-PR-#29 session): src/components/ai added — the copilot
+// alert layer (generateAlerts + alerts-tab quick stats) aggregated GL
+// debit/credit amounts with raw float reduce and drove alert LOGIC
+// (threshold comparisons, severity, value payloads) entirely outside the
+// previous scan; the same class of blind spot as the consolidation worker.
+// The rest of src/components and src/pages remains unscreened and is
+// tracked in GAP_LEDGER.md (GAP-1 UI-layer backlog).
+const FINANCIAL_DIRS = [
+  'src/engines',
+  'src/store',
+  'src/utils',
+  'src/services',
+  'src/workers',
+  'src/components/ai',
+];
 
 /**
  * Server financial paths (2026-08-04). The server is a separate package that
