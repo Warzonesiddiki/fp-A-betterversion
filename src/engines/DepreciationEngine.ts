@@ -19,7 +19,9 @@
 import Decimal from 'decimal.js';
 import {
   allocateMoney,
+  divideMoney,
   moneyEquals,
+  multiplyMoney,
   roundTo,
   splitMoneyEvenly,
   subtractMoney,
@@ -200,7 +202,8 @@ export class DepreciationEngine {
     const isImpaired = carryingAmount > recoverableAmount;
     return {
       isImpaired,
-      impairmentLoss: isImpaired ? carryingAmount - recoverableAmount : 0,
+      // Currency: exact decimal subtraction, cent-rounded (F-0006).
+      impairmentLoss: isImpaired ? roundTo(subtractMoney(carryingAmount, recoverableAmount)) : 0,
       adjustedValue: isImpaired ? recoverableAmount : carryingAmount,
     };
   }
@@ -208,8 +211,9 @@ export class DepreciationEngine {
   // ─── Asset Disposal ──────────────────────────────────────────
 
   static assetDisposal(cost: number, accumulatedDep: number, salePrice: number): DisposalResult {
-    const bookValue = cost - accumulatedDep;
-    const gainLoss = salePrice - bookValue;
+    // Book value and gain/loss are currency: exact decimal (F-0006).
+    const bookValue = roundTo(subtractMoney(cost, accumulatedDep));
+    const gainLoss = roundTo(subtractMoney(salePrice, bookValue));
     return {
       cost,
       accumulatedDep,
@@ -231,13 +235,17 @@ export class DepreciationEngine {
     adjustedCost: number;
     adjustedAccumDep: number;
   } {
-    const bookValue = originalCost - accumulatedDep;
-    const revaluationSurplus = newValue - bookValue;
-    const ratio = newValue / originalCost;
+    // Currency: exact decimal (F-0006). The revaluation ratio is a unitless
+    // metric; the accumulated-depreciation adjustment is its currency
+    // product, cent-rounded with declared half-up — NOT Math.round, which
+    // rounds 0.075 (binary 0.074999…) to 0 instead of 0.08.
+    const bookValue = roundTo(subtractMoney(originalCost, accumulatedDep));
+    const revaluationSurplus = roundTo(subtractMoney(newValue, bookValue));
+    const ratio = divideMoney(newValue, originalCost);
     return {
       revaluationSurplus,
       adjustedCost: newValue,
-      adjustedAccumDep: Math.round(accumulatedDep * ratio),
+      adjustedAccumDep: roundTo(multiplyMoney(accumulatedDep, ratio)),
     };
   }
 
@@ -285,13 +293,16 @@ export class DepreciationEngine {
       case 'decliningBalance':
         return this.decliningBalance(cost, salvage, life, options?.rate ?? 2 / life).map(
           (dep, i, arr) => {
-            const acc = arr.slice(0, i + 1).reduce((a, b) => a + b, 0);
+            // Accumulated/beginning/ending values are currency: exact
+            // decimal sums and differences, cent-rounded (F-0006).
+            const acc = roundTo(sumMoney(arr.slice(0, i + 1)));
+            const depDec = toDecimal(dep);
             return {
               period: i + 1,
-              beginningValue: cost - (acc - dep),
+              beginningValue: roundTo(subtractMoney(cost, subtractMoney(acc, depDec))),
               depreciation: dep,
               accumulated: acc,
-              endingValue: cost - acc,
+              endingValue: roundTo(subtractMoney(cost, acc)),
             };
           }
         );

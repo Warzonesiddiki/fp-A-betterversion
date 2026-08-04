@@ -546,6 +546,71 @@ modules, 0 toFixed sites; server: 2 modules, 0 toFixed sites)`. (First drop-test
   full root suite are untouched by this session's change (scripts/README/ledger/baseline only);
   server tsc + 107/107 server tests verified in session 3 remain standing.
 
+#### GAP-1 continuation — 2026-08-04 (session 5, branch `arena/019fc970-fp-a-betterversion`)
+
+- **Drift-inside-adopters sweep (the glStore class of bug, done systematically):** scanned every
+  one of the 95 modules already on the money primitive for raw currency arithmetic remaining
+  outside the migrated paths. Found and MIGRATED **8 files**; every migration falsified against
+  the old code first (stash → new tests fail → pop → pass):
+  - **`FXEngine`** — `translateForConsolidation` (`amount * rate`) and `calculateCTA` (ASC 830:
+    `amount * (current − historical)`) were raw float products. Now `roundTo(multiplyMoney(...))`
+    with `subtractMoney` on the rate spread. Falsified: 3/4 (`0.11000000000000001`,
+    `0.030000000000000027`, and even the clean control `1000 × (1.2 − 1.1)` returned
+    `99.99999999999987`).
+  - **`LoanAmortizationEngine`** — `withPrepayment` (interest on the prepaid balance via
+    `balance * (row.interest / row.balance)`), `balloonPayment` (`balance * r`, `pmt − interest`,
+    `balance + interest`, `+=` total interest), `totalInterest` (raw reduce). Now exact decimal
+    with cent-rounding per row and `sumMoney` totals; zero-balance source rows explicitly imply
+    no accrual (mirrors the old `|| 0` guard without hiding divide-by-zero). Falsified: 3/4
+    (`4.594650000000001`, `2.799374513190423`, `0.6000000000000001`).
+  - **`RevRecEngine.handleContractModification`** (ASC 606) — `totalValue + mod.value` / `+=`
+    with `Math.max(0, …)` clamp. Now `addMoney` + `roundTo` + `Decimal.max(0, …)`. Falsified:
+    4/4 (`0.30000000000000004`, `0.09999999999999998`, …).
+  - **`DepreciationEngine`** — `impairmentTest` (`carrying − recoverable`), `assetDisposal`
+    (`cost − accumulatedDep`, `salePrice − bookValue`), `assetRevaluation` (surplus + **raw
+    `Math.round(accumulatedDep × ratio)` — a REAL DEFECT: ratio 1.5 × 0.05 = 0.075 rounds to
+    **0** in IEEE-754, wiping accumulated depreciation entirely; declared half-up gives 0.08**),
+    and the declining-balance schedule wrapper (accumulated reduce, `cost − acc`). All now exact
+    decimal. Falsified: 4/4 including the 0 → 0.08 defect.
+  - **`DebtScheduleEngine`** — `consolidate` (monthly-payment reduce, total-interest reduce,
+    `annualDebtService = monthly × 12`) and `refinance` (savings `-` chains). Now `sumMoney`/
+    `multiplyMoney`/`subtractMoney`. Falsified: 2/2 (`0.30000000000000004`,
+    `3.6000000000000005`, `0.04000000000000001`, `0.01999999999999999`).
+  - **`BreakEvenEngine.multiProduct`** — contribution margins, weighted CM, price-weighted sum,
+    break-even revenue, per-product revenue all raw float. Now exact decimal (mixes/units stay
+    metrics). Falsified: 2/2 (`0.19999999999999996`, `1.6721311475409835` vs exact 1.7).
+  - **`ConsolidationEngine`** — `totalEquity + totalMinorityInterest` in the worksheet and the
+    returned `totalEquity` (cent-rounded values summed in float drift). Now
+    `roundTo(addMoney(...))`. Falsified via a new minority-interest case: `−0.1 + 0.02` →
+    `−0.08000000000000002` old vs exact `−0.08`.
+  - **`glStore`** — `normalizeGLEntry`'s `netChange = debit − credit` (the stored amount feeding
+    every downstream GL aggregation) and `checkDuplicates`' fallback key `amount ?? debit −
+credit`. Both now exact decimal. **Real defect found:** a stored entry with amount 0.2 vs a
+    re-imported entry with no amount (0.3 − 0.1) had fallback keys `0.19999999999999998` ≠ `0.2`
+    → the duplicate went **UNDETECTED**; falsified as `expected +0 to be 1`. Now both keys are
+    exactly `0.2` and the duplicate is caught.
+- **Evidence:** 35 new/extended tests, **20 failed** against the old code (7/8 files), all pass
+  after migration; existing suites (FXEngine, LoanAmortization, RevRec, Depreciation,
+  DebtSchedule, BreakEven, Consolidation, glStore unit/smoke/cube) all green — **267 tests
+  across 18 files**. `tsc --noEmit` exit 0; `eslint src --max-warnings 0` exit 0; ratchet holds
+  (95 modules — these are all inside already-adopted files, so the count does not move; the
+  drift was inside the guarded set all along). README unchanged.
+- **Remaining known float sites in adopters (documented, not currency):** `AutoCommentaryEngine`
+  (narrative `totalActual − totalBudget` on display text — variance narration, same class as
+  mock data), `AnomalyDetectionEngine`/`AnomalyExplainer` (z-scores, fences, residual ratios —
+  statistics), `AdvancedPDFEngine`/`ConstructionEngine`/`FinanceCopilotEngine`/
+  `SensitivityTableEngine`/`report-builder-export` (display formatting `value * 100` for % or
+  `value / 1000` for K/M — display-only, formatMoney'd at the boundary), `ICMatchingEngine`/
+  `IntercompanyMatchingEngine` (match scores/tolerances — ratios), `ManufacturingEngine` (OEE
+  derivation), `RollingForecastEngine` (growth-rate averages), `SafeMathParser` (formula
+  functions — measure-agnostic, consistent with the `formula-functions/*` rejection),
+  `CreditRiskEngine` (score caps), `InsuranceEngine` (underwriting approximations),
+  `SOXComplianceEngine` (test counts), `retailStore` (ranking sort), `decimalUtils` (generic
+  rounding helpers — measure-agnostic, no production importers beyond its own test),
+  `nim-prompts` (prompt text), `DynamicsConnector`/`QuickBooksConnector`/`SageConnector`/
+  `SalesforceConnector` (`total += items.length` record counts). Each is either non-currency or
+  display/formatting-only.
+
 ### GAP-3 — Orphan engines (F-0028)
 
 - **status:** **VERIFIED_DONE — the gap's premise was a measurement defect**

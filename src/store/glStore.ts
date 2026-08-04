@@ -81,7 +81,9 @@ function normalizeGLEntry(
     0,
     entry.credit !== undefined ? toFiniteNumber(entry.credit) : Math.max(-sourceAmount, 0)
   );
-  const netChange = debit - credit;
+  // Net change = debit − credit is currency: exact decimal, cent-rounded
+  // (F-0006) — the stored amount feeds every downstream GL aggregation.
+  const netChange = roundTo(subtractMoney(debit, credit));
   const date = String(entry.date || entry.postDate || '');
   const period = String(entry.period || date.slice(0, 7) || 'unknown');
   const accountCode = String(entry.accountCode || entry.accountId || '').trim();
@@ -505,16 +507,18 @@ export const useGLStore = create<GLState>()(
 
         checkDuplicates: (entries) => {
           const state = get();
-          const existingKeys = new Set(
-            state.entries.map(
-              (e) => `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? e.debit - e.credit}`
-            )
-          );
+          // The amount fallback (debit − credit) is currency: exact decimal
+          // so the dedupe key matches the normalized stored amount (F-0006).
+          const entryKey = (
+            e: Pick<GLEntry, 'accountCode' | 'postDate' | 'date' | 'amount' | 'debit' | 'credit'>
+          ) =>
+            `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? roundTo(subtractMoney(e.debit, e.credit))}`;
+          const existingKeys = new Set(state.entries.map(entryKey));
           const duplicates: GLEntry[] = [];
           const newEntries: GLEntry[] = [];
 
           entries.forEach((e) => {
-            const key = `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? e.debit - e.credit}`;
+            const key = entryKey(e);
             if (existingKeys.has(key)) {
               duplicates.push(e);
             } else {

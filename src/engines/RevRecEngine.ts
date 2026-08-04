@@ -1,5 +1,5 @@
 import Decimal from 'decimal.js';
-import { allocateMoney, multiplyMoney, roundTo } from '@/utils/money';
+import { addMoney, allocateMoney, multiplyMoney, roundTo, toDecimal } from '@/utils/money';
 
 export interface PerformanceObligation {
   id: string;
@@ -175,25 +175,28 @@ export class RevRecEngine {
     // - 'discount': reduce value (prospective or cumulative catch-up)
     // - 'additional_goods': treat as separate contract if priced at standalone selling price
     // - 'extension': treat as termination of old + creation of new contract (prospective)
+    // Contract total value is currency: exact decimal adjustment, clamped at
+    // zero (F-0006).
+    const adjusted = addMoney(updatedContract.totalValue, mod.value);
     switch (mod.type) {
       case 'termination':
-        updatedContract.totalValue = Math.max(0, updatedContract.totalValue + mod.value);
+        updatedContract.totalValue = roundTo(Decimal.max(toDecimal(0), adjusted));
         break;
       case 'discount':
         // Apply discount (mod.value should be negative for discounts)
-        updatedContract.totalValue = Math.max(0, updatedContract.totalValue + mod.value);
+        updatedContract.totalValue = roundTo(Decimal.max(toDecimal(0), adjusted));
         break;
       case 'additional_goods':
         // If priced at standalone selling price, treat as separate contract
         // Otherwise, treat as modification of existing contract (cumulative catch-up)
-        updatedContract.totalValue += mod.value;
+        updatedContract.totalValue = roundTo(adjusted);
         break;
       case 'extension':
         // Extend contract and add value
-        updatedContract.totalValue += mod.value;
+        updatedContract.totalValue = roundTo(adjusted);
         break;
       default:
-        updatedContract.totalValue += mod.value;
+        updatedContract.totalValue = roundTo(adjusted);
     }
 
     return updatedContract;

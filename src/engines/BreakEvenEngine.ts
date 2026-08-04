@@ -13,7 +13,14 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
-import { addMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+} from '../utils/money';
 
 export interface CostStructure {
   fixedCosts: number;
@@ -142,12 +149,17 @@ export class BreakEvenEngine {
     products: Array<{ name: string; price: number; variableCost: number; salesMix: number }>,
     totalFixedCosts: number
   ): MultiProductBreakEven {
+    // Contribution margins, weighted sums, break-even revenue, and
+    // per-product revenue are currency: exact decimal (F-0006). Sales mixes
+    // are unitless ratios; units are counts.
     const enriched = products.map((p) => ({
       ...p,
-      contributionMargin: p.price - p.variableCost,
+      contributionMargin: roundTo(subtractMoney(p.price, p.variableCost)),
     }));
 
-    const weightedCM = enriched.reduce((sum, p) => sum + p.contributionMargin * p.salesMix, 0);
+    const weightedCM = roundTo(
+      sumMoney(enriched.map((p) => multiplyMoney(p.contributionMargin, p.salesMix)))
+    );
     if (weightedCM <= 0) {
       return {
         products: enriched,
@@ -158,11 +170,19 @@ export class BreakEvenEngine {
       };
     }
 
-    const breakEvenRevenue =
-      totalFixedCosts / (weightedCM / enriched.reduce((s, p) => s + p.price * p.salesMix, 0));
+    const priceWeighted = roundTo(
+      sumMoney(enriched.map((p) => multiplyMoney(p.price, p.salesMix)))
+    );
+    const breakEvenRevenue = roundTo(
+      divideMoney(totalFixedCosts, divideMoney(weightedCM, priceWeighted))
+    );
     const breakEvenByProduct = enriched.map((p) => {
-      const revenue = breakEvenRevenue * p.salesMix;
-      return { name: p.name, units: p.price > 0 ? revenue / p.price : 0, revenue };
+      const revenue = roundTo(multiplyMoney(breakEvenRevenue, p.salesMix));
+      return {
+        name: p.name,
+        units: p.price > 0 ? divideMoney(revenue, p.price).toNumber() : 0,
+        revenue,
+      };
     });
 
     return {

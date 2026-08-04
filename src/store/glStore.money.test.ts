@@ -148,4 +148,45 @@ describe('glStore — money known answers (GAP-1 / F-0006)', () => {
     expect(analysis?.monthlyTotals).toEqual([]);
     expect(analysis?.transactionCount).toBe(0);
   });
+
+  it('normalizes netChange with exact decimal subtraction (old float: 0.19999999999999998)', () => {
+    useGLStore.getState().setEntries([
+      createEntry({
+        id: 'e1',
+        accountId: 'acct-1',
+        debit: 0.3,
+        credit: 0.1,
+        amount: undefined as unknown as number,
+      }),
+    ]);
+
+    const entry = useGLStore.getState().entries[0];
+    expect(entry?.netChange).toBe(0.2);
+    expect(entry?.amount).toBe(0.2);
+  });
+
+  it('detects duplicates via the exact debit-minus-credit fallback key (old float: 0 duplicates)', () => {
+    // A stored entry with amount 0.2 and a re-imported entry with no amount
+    // (debit 0.3 − credit 0.1) are the same journal entry. The old float
+    // fallback key was '…|0.19999999999999998' ≠ '…|0.2', so the duplicate
+    // went UNDETECTED. Exact decimal: both keys are '…|0.2'.
+    useGLStore.setState({
+      entries: [
+        createEntry({ id: 'e1', accountId: 'acct-1', amount: 0.2, debit: 0.3, credit: 0.1 }),
+      ],
+    });
+
+    const result = useGLStore.getState().checkDuplicates([
+      createEntry({
+        id: 'e2',
+        accountId: 'acct-1',
+        amount: undefined as unknown as number,
+        debit: 0.3,
+        credit: 0.1,
+      }),
+    ]);
+
+    expect(result.duplicates).toBe(1);
+    expect(result.newEntries).toHaveLength(0);
+  });
 });

@@ -12,7 +12,15 @@
 // Loan Amortization Engine — Full schedules, balloon payments, prepayment
 
 import Decimal from 'decimal.js';
-import { roundMoney, roundTo, toDecimal } from '@/utils/money';
+import {
+  addMoney,
+  divideMoney,
+  roundMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 
 export interface AmortizationRow {
   month: number;
@@ -92,7 +100,8 @@ export class LoanAmortizationEngine {
   }
 
   static totalInterest(schedule: AmortizationRow[]): number {
-    return schedule.reduce((sum, row) => sum + row.interest, 0);
+    // Interest rows are currency: exact decimal sum (F-0006).
+    return roundTo(sumMoney(schedule.map((row) => row.interest)));
   }
 
   static withPrepayment(
@@ -101,23 +110,29 @@ export class LoanAmortizationEngine {
     month: number
   ): AmortizationRow[] {
     const result: AmortizationRow[] = [];
-    let balance = schedule[0]!.balance + schedule[0]!.principal;
+    let balance = addMoney(schedule[0]!.balance, schedule[0]!.principal);
     for (const row of schedule) {
       if (row.month === month) {
-        balance = Math.max(0, row.balance - prepaymentAmount);
+        balance = Decimal.max(toDecimal(0), subtractMoney(row.balance, prepaymentAmount));
       }
       if (row.month < month) {
         result.push({ ...row });
       } else {
-        const interest = balance * (row.interest / row.balance || 0);
-        const principalPaid = row.payment - interest;
-        balance = Math.max(0, balance - principalPaid);
+        // Interest accrues on the (possibly prepaid) balance at the row's
+        // implicit rate — exact decimal product, cent-rounded like the main
+        // schedule path. A zero-balance source row (final amortized row)
+        // implies no accrual (mirrors the old `|| 0` guard, without silently
+        // hiding a real divide-by-zero elsewhere).
+        const ratio = row.balance !== 0 ? divideMoney(row.interest, row.balance) : toDecimal(0);
+        const interest = roundMoney(balance.times(ratio));
+        const principalPaid = subtractMoney(row.payment, interest);
+        balance = Decimal.max(toDecimal(0), subtractMoney(balance, principalPaid));
         result.push({
           month: row.month,
           payment: row.payment,
-          principal: principalPaid,
-          interest,
-          balance,
+          principal: roundTo(principalPaid),
+          interest: roundTo(interest),
+          balance: roundTo(balance),
         });
       }
     }
@@ -130,30 +145,32 @@ export class LoanAmortizationEngine {
     months: number,
     balloonMonth: number
   ): AmortizationResult {
-    const r = annualRate / 12;
+    // Monthly rate = annual/12 — a unitless ratio; the balance × rate
+    // product is currency (exact decimal, cent-rounded).
+    const r = toDecimal(annualRate).div(12);
     const pmt = this.monthlyPayment(principal, annualRate, months);
     const rows: AmortizationRow[] = [];
-    let balance = principal;
-    let totalInterest = 0;
+    let balance = toDecimal(principal);
+    let totalInterest = toDecimal(0);
 
     for (let m = 1; m <= balloonMonth; m++) {
-      const interest = balance * r;
-      const principalPaid = pmt - interest;
-      balance = Math.max(0, balance - principalPaid);
-      totalInterest += interest;
+      const interest = roundMoney(balance.times(r));
+      const principalPaid = subtractMoney(pmt, interest);
+      balance = Decimal.max(toDecimal(0), subtractMoney(balance, principalPaid));
+      totalInterest = totalInterest.plus(interest);
       rows.push({
         month: m,
-        payment: m === balloonMonth ? balance + interest : pmt,
-        principal: m === balloonMonth ? balance : principalPaid,
-        interest,
-        balance: m === balloonMonth ? 0 : balance,
+        payment: m === balloonMonth ? roundTo(addMoney(balance, interest)) : pmt,
+        principal: m === balloonMonth ? roundTo(balance) : roundTo(principalPaid),
+        interest: roundTo(interest),
+        balance: m === balloonMonth ? 0 : roundTo(balance),
       });
     }
 
     return {
       schedule: rows,
-      totalInterest,
-      totalPayment: rows.reduce((s, r) => s + r.payment, 0),
+      totalInterest: roundTo(totalInterest),
+      totalPayment: roundTo(sumMoney(rows.map((r) => r.payment))),
       monthlyPayment: pmt,
     };
   }
