@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/utils/cn';
+import { roundTo, sumMoney } from '@/utils/money';
 import { ConsolidationEngine } from '@/engines/ConsolidationEngine';
 import type {
   EntityData,
@@ -16,6 +17,22 @@ import type {
   FXRate,
   VIENotification,
 } from '@/engines/ConsolidationEngine';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal totals for the consolidation worksheet UI.
+ *
+ * The Summary tab and NCI tab show eliminated-amount and ending-balance
+ * totals derived in-component with raw `reduce +`. These are financial
+ * totals rendered to users; they now route through `sumMoney`/`roundTo`.
+ * Ownership percentages are metric (%) and stay float per GAP-1 exclusions.
+ */
+export function totalEliminations(entries: readonly { eliminatedAmount: number }[]): number {
+  return roundTo(sumMoney(entries.map((e) => e.eliminatedAmount)));
+}
+
+export function totalNCI(details: readonly { endingBalance: number }[]): number {
+  return roundTo(sumMoney(details.map((d) => d.endingBalance)));
+}
 
 export interface ConsolidationWorksheetProps {
   entities: EntityData[];
@@ -238,11 +255,7 @@ function SummaryView({ r }: { r: ConsolidatedResult }) {
             <tbody className="divide-y divide-[var(--border-subtle)]">
               <TR l="Combined Revenue" v={r.totalRevenue} />
               <TR l="Combined Expenses" v={r.totalExpenses} neg />
-              <TR
-                l="IC Eliminations"
-                v={r.eliminations.reduce((s, e) => s + e.eliminatedAmount, 0)}
-                neg
-              />
+              <TR l="IC Eliminations" v={totalEliminations(r.eliminations)} neg />
               <TR l="Goodwill Adjustments" v={r.goodwill} />
               <TR l="Minority Interest (NCI)" v={r.minorityInterest} />
               <tr className="font-bold bg-[var(--bg-muted)]">
@@ -354,7 +367,7 @@ function NCIView({ details }: { details: MinorityInterestDetail[] }) {
         </CardContent>
       </Card>
     );
-  const total = details.reduce((s, d) => s + d.endingBalance, 0);
+  const total = totalNCI(details);
   return (
     <div className="space-y-4">
       <Card>

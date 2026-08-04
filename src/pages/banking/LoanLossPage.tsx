@@ -23,6 +23,43 @@ import {
   Cell,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal loan-loss segment aggregates.
+ *
+ * The per-category outstanding balance, reserve, and NPL balance were raw
+ * float reduces over GL entry amounts. They feed the bar chart and the
+ * Portfolio Credit Quality DataGrid; NPL % stays a percentage metric.
+ */
+export function sumEntriesAmount(entries: readonly { amount: number }[]): number {
+  return roundTo(sumMoney(entries.map((e) => e.amount)));
+}
+
+export function computeLoanSegments(
+  entries: readonly { accountCode: string; amount: number }[],
+  categories: readonly { prefix: string; name: string; color: string }[]
+): { type: string; balance: number; reserve: number; npl: number; color: string }[] {
+  return categories
+    .map((cat) => {
+      const catEntries = entries.filter((e) => e.accountCode.startsWith(cat.prefix));
+      const balance = sumEntriesAmount(catEntries);
+      const reserveCode = `215${cat.prefix.substring(2)}`;
+      const reserve = Math.abs(
+        sumEntriesAmount(entries.filter((e) => e.accountCode === reserveCode))
+      );
+      const nplCode = `92${cat.prefix.substring(2)}`;
+      const nplAbs = Math.abs(sumEntriesAmount(entries.filter((e) => e.accountCode === nplCode)));
+      return {
+        type: cat.name,
+        balance,
+        reserve,
+        npl: balance > 0 ? (nplAbs / balance) * 100 : 0,
+        color: cat.color,
+      };
+    })
+    .filter((s) => s.balance !== 0);
+}
 
 export default function LoanLossPage() {
   const { entries } = useGLStore();
@@ -64,30 +101,7 @@ export default function LoanLossPage() {
       { prefix: '133', name: 'Consumer Loans', color: '#f59e0b' },
       { prefix: '134', name: 'Small Business (SBA)', color: '#ef4444' },
     ];
-
-    return categories
-      .map((cat) => {
-        const catEntries = entries.filter((e) => e.accountCode.startsWith(cat.prefix));
-        const balance = catEntries.reduce((acc, e) => acc + e.amount, 0);
-        const reserve = Math.abs(
-          entries
-            .filter((e) => e.accountCode === `215${cat.prefix.substring(2)}`)
-            .reduce((acc, e) => acc + e.amount, 0)
-        );
-
-        const npl = entries
-          .filter((e) => e.accountCode === `92${cat.prefix.substring(2)}`)
-          .reduce((acc, e) => acc + e.amount, 0);
-
-        return {
-          type: cat.name,
-          balance,
-          reserve,
-          npl: balance > 0 ? (npl / balance) * 100 : 0,
-          color: cat.color,
-        };
-      })
-      .filter((s) => s.balance !== 0);
+    return computeLoanSegments(entries, categories);
   }, [entries]);
 
   const columns = [

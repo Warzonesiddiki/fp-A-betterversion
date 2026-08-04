@@ -7,40 +7,67 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
 import { FileText, DollarSign, Calendar, TrendingUp } from 'lucide-react';
+import Decimal from 'decimal.js';
+import { addMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
 import type { GLEntry } from '@/types';
 
-function computeStatementStats(entries: readonly GLEntry[]) {
-  const totalDebit = entries.reduce((s, e) => s + e.debit, 0);
-  const totalCredit = entries.reduce((s, e) => s + e.credit, 0);
-  const netChange = entries.reduce((s, e) => s + e.netChange, 0);
+/**
+ * GAP-1 (F-0006) — exact-decimal bank statement totals.
+ *
+ * This is the same shape as BankReconciliation.computeReconciliationStats
+ * (which was migrated earlier this session) but for the statements view:
+ * KPI totals (Deposits/Withdrawals/Net Change) and per-account aggregates
+ * were raw float `reduce +` / `+=`. They now accumulate at full Decimal
+ * precision and cent-round at the boundary.
+ */
+export interface StatementAccountRow {
+  accountCode: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+  netChange: number;
+  transactions: number;
+}
+export interface StatementStats {
+  totalDebit: number;
+  totalCredit: number;
+  netChange: number;
+  uniqueAccounts: number;
+  accountBreakdown: StatementAccountRow[];
+}
+
+export function computeStatementStats(entries: readonly GLEntry[]): StatementStats {
+  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)));
+  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)));
+  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)));
   const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
 
   const accountMap = new Map<
     string,
-    { name: string; debit: number; credit: number; net: number; count: number }
+    { name: string; debit: Decimal; credit: Decimal; net: Decimal; count: number }
   >();
   for (const e of entries) {
     const existing = accountMap.get(e.accountCode) ?? {
       name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
+      debit: toDecimal(0),
+      credit: toDecimal(0),
+      net: toDecimal(0),
       count: 0,
     };
-    existing.debit += e.debit;
-    existing.credit += e.credit;
-    existing.net += e.netChange;
+    existing.debit = addMoney(existing.debit, e.debit);
+    existing.credit = addMoney(existing.credit, e.credit);
+    existing.net = addMoney(existing.net, e.netChange);
     existing.count += 1;
     accountMap.set(e.accountCode, existing);
   }
 
-  const accountBreakdown = Array.from(accountMap.entries())
+  const accountBreakdown: StatementAccountRow[] = Array.from(accountMap.entries())
     .map(([code, data]) => ({
       accountCode: code,
       accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
+      debit: roundTo(data.debit),
+      credit: roundTo(data.credit),
+      netChange: roundTo(data.net),
       transactions: data.count,
     }))
     .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));

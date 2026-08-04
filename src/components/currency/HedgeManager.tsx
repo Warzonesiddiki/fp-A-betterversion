@@ -5,6 +5,19 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { MultiCurrencyEngine } from '@/engines/MultiCurrencyEngine';
+import { roundTo, sumMoney } from '@/utils/money';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal hedge notional aggregation.
+ *
+ * totalNotional and per-type notionals previously used raw `reduce +` and
+ * feed the KPI cards + ASC 815 effectiveness breakdown. Per-hedge P&L is
+ * already on the money primitive via MultiCurrencyEngine (migrated
+ * previously). Counts are integers and stay float.
+ */
+export function sumNotionals(hedges: readonly { notionalAmount: number }[]): number {
+  return roundTo(sumMoney(hedges.map((h) => h.notionalAmount)));
+}
 import {
   Shield,
   Plus,
@@ -111,22 +124,26 @@ export const HedgeManager = memo(function HedgeManager() {
 
   const metrics = useMemo(() => {
     const active = hedges.filter((h) => h.status === 'Active');
-    const totalNotional = active.reduce((s, h) => s + h.notionalAmount, 0);
-    const totalFairValue = active.reduce(
-      (s, h) =>
-        s +
-        MultiCurrencyEngine.calculateTranslationGainLoss(
-          h.notionalAmount,
-          h.contractedRate,
-          h.currentRate
-        ),
-      0
+    const totalNotional = sumNotionals(active);
+    const totalFairValue = roundTo(
+      sumMoney(
+        active.map((h) =>
+          MultiCurrencyEngine.calculateTranslationGainLoss(
+            h.notionalAmount,
+            h.contractedRate,
+            h.currentRate
+          )
+        )
+      )
     );
-    const byType = HEDGE_TYPES.map((t) => ({
-      type: t,
-      count: active.filter((h) => h.hedgeType === t).length,
-      notional: active.filter((h) => h.hedgeType === t).reduce((s, h) => s + h.notionalAmount, 0),
-    }));
+    const byType = HEDGE_TYPES.map((t) => {
+      const inType = active.filter((h) => h.hedgeType === t);
+      return {
+        type: t,
+        count: inType.length,
+        notional: sumNotionals(inType),
+      };
+    });
     return { activeCount: active.length, totalNotional, totalFairValue, byType };
   }, [hedges]);
 

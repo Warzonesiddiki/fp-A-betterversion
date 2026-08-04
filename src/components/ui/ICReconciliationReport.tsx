@@ -3,11 +3,50 @@ import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';
 import { Badge } from './Badge';
 import { cn } from '@/utils/cn';
+import { roundTo, sumMoney } from '@/utils/money';
 import {
   type ReconciliationReport,
   type ReconciliationLine,
   type ToleranceSettings,
 } from '@/engines/ICMatchingEngine';
+
+// =============================================================================
+// GAP-1 (F-0006) — exact-decimal IC reconciliation report totals.
+//
+// This is a near-duplicate surface to ICReconciliation.tsx but ships as a
+// report-oriented variant in src/components/ui. The same raw-float reduce
+// over balanceA/balanceB/difference fed the "Total Differences" metric
+// card and footer totals row. Those totals now route through sumMoney +
+// roundTo. The average diff-% is a percentage metric and stays float.
+// =============================================================================
+
+export function computeICReportTotals(
+  lines: readonly Pick<
+    ReconciliationLine,
+    'balanceA' | 'balanceB' | 'difference' | 'percentageDifference'
+  >[]
+): {
+  totalBalanceA: number;
+  totalBalanceB: number;
+  totalDifference: number;
+  avgPercentageDifference: number;
+} {
+  if (lines.length === 0) {
+    return { totalBalanceA: 0, totalBalanceB: 0, totalDifference: 0, avgPercentageDifference: 0 };
+  }
+  return {
+    totalBalanceA: roundTo(sumMoney(lines.map((l) => l.balanceA))),
+    totalBalanceB: roundTo(sumMoney(lines.map((l) => l.balanceB))),
+    totalDifference: roundTo(sumMoney(lines.map((l) => l.difference))),
+    avgPercentageDifference: lines.reduce((s, l) => s + l.percentageDifference, 0) / lines.length,
+  };
+}
+
+export function computeICReportGrandTotalDifference(
+  lines: readonly Pick<ReconciliationLine, 'difference'>[]
+): number {
+  return roundTo(sumMoney(lines.map((l) => l.difference)));
+}
 
 // =============================================================================
 // IC RECONCILIATION REPORT
@@ -61,7 +100,10 @@ export function ICReconciliationReport({
 
   // Summary stats
   const unmatchedLines = report.entityPairs.filter((l) => !l.withinTolerance && l.difference > 0);
-  const totalDifference = report.entityPairs.reduce((s, l) => s + l.difference, 0);
+  const totalDifference = useMemo(
+    () => computeICReportGrandTotalDifference(report.entityPairs),
+    [report.entityPairs]
+  );
 
   return (
     <div className={cn('space-y-6', className)} role="region" aria-label="ICReconciliationReport">
@@ -197,34 +239,26 @@ export function ICReconciliationReport({
                 )}
               </tbody>
               {/* Totals Row */}
-              {displayLines.length > 0 && (
-                <tfoot>
-                  <tr className="border-t-2 font-semibold">
-                    <td colSpan={3} className="p-2">
-                      Totals ({displayLines.length} pairs)
-                    </td>
-                    <td className="p-2 text-right">
-                      {formatAmount(displayLines.reduce((s, l) => s + l.balanceA, 0))}
-                    </td>
-                    <td className="p-2 text-right">
-                      {formatAmount(displayLines.reduce((s, l) => s + l.balanceB, 0))}
-                    </td>
-                    <td className="p-2 text-right">
-                      {formatAmount(displayLines.reduce((s, l) => s + l.difference, 0))}
-                    </td>
-                    <td className="p-2 text-right">
-                      {displayLines.length > 0
-                        ? (
-                            displayLines.reduce((s, l) => s + l.percentageDifference, 0) /
-                            displayLines.length
-                          ).toFixed(1)
-                        : 0}
-                      %
-                    </td>
-                    <td colSpan={2} />
-                  </tr>
-                </tfoot>
-              )}
+              {displayLines.length > 0 &&
+                (() => {
+                  const footers = computeICReportTotals(displayLines);
+                  return (
+                    <tfoot>
+                      <tr className="border-t-2 font-semibold">
+                        <td colSpan={3} className="p-2">
+                          Totals ({displayLines.length} pairs)
+                        </td>
+                        <td className="p-2 text-right">{formatAmount(footers.totalBalanceA)}</td>
+                        <td className="p-2 text-right">{formatAmount(footers.totalBalanceB)}</td>
+                        <td className="p-2 text-right">{formatAmount(footers.totalDifference)}</td>
+                        <td className="p-2 text-right">
+                          {footers.avgPercentageDifference.toFixed(1)}%
+                        </td>
+                        <td colSpan={2} />
+                      </tr>
+                    </tfoot>
+                  );
+                })()}
             </table>
           </div>
         </CardContent>

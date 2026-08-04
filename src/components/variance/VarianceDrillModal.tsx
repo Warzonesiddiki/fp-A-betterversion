@@ -8,6 +8,62 @@ import {
   type DrillContext,
 } from '@/engines/DrillThroughEngine';
 import { ChevronRight, ArrowLeft, Layers, Building2, FileText } from 'lucide-react';
+import Decimal from 'decimal.js';
+import { roundTo, subtractMoney } from '@/utils/money';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal variance-drill department totals.
+ *
+ * The modal filters GL entries by account prefix, derives `amount = debit
+ * - credit` (when the row has no explicit amount), groups by department,
+ * and totals each group with `ents.reduce((s, e) => s + e.amount, 0)` —
+ * then sorts groups by absolute total to surface the biggest contributors.
+ * Those totals drive which department appears first AND are rendered to
+ * the user as the "Total Amount" they click to drill further; logic +
+ * display. Exported for *.money.test.ts.
+ */
+export interface DrillEntryLike {
+  amount: number;
+}
+
+export interface DepartmentTotal {
+  department: string;
+  total: number;
+  count: number;
+}
+
+export function deriveDrillAmount(entry: {
+  amount?: number | null;
+  debit?: number;
+  credit?: number;
+}): number {
+  // Prefer `amount` when set; fall back to debit - credit through the
+  // money primitive so a 0.3 debit vs 0.1 + 0.2 credit pair nets to
+  // exactly 0 (not 5.55e-17).
+  if (entry.amount != null) return entry.amount;
+  const d = entry.debit ?? 0;
+  const c = entry.credit ?? 0;
+  return roundTo(subtractMoney(d, c));
+}
+
+export function computeDepartmentTotals(
+  entries: readonly { department: string; amount: number }[]
+): DepartmentTotal[] {
+  const map = new Map<string, { total: Decimal; count: number }>();
+  for (const entry of entries) {
+    const existing = map.get(entry.department) ?? { total: new Decimal(0), count: 0 };
+    existing.total = existing.total.plus(entry.amount);
+    existing.count += 1;
+    map.set(entry.department, existing);
+  }
+  return Array.from(map.entries())
+    .map(([department, { total, count }]) => ({
+      department,
+      total: roundTo(total),
+      count,
+    }))
+    .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
+}
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -88,7 +144,7 @@ export function VarianceDrillModal({
         id: e.id,
         date: e.postDate || e.date,
         description: e.description || '—',
-        amount: e.amount ?? e.debit - e.credit,
+        amount: deriveDrillAmount(e),
         department: e.departmentId || 'Unassigned',
         accountCode: e.accountCode,
         accountName: e.accountName,
@@ -96,19 +152,20 @@ export function VarianceDrillModal({
   }, [entries, accountPrefix]);
 
   const departmentGroups = useMemo((): DepartmentGroup[] => {
+    const totals = computeDepartmentTotals(
+      filteredEntries.map((e) => ({ department: e.department, amount: e.amount }))
+    );
     const map = new Map<string, DrillRow[]>();
     for (const entry of filteredEntries) {
       const list = map.get(entry.department) ?? [];
       list.push(entry);
       map.set(entry.department, list);
     }
-    return Array.from(map.entries())
-      .map(([dept, ents]) => ({
-        department: dept,
-        entries: ents.sort((a, b) => b.date.localeCompare(a.date)),
-        total: ents.reduce((s, e) => s + e.amount, 0),
-      }))
-      .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
+    return totals.map(({ department, total }) => ({
+      department,
+      entries: (map.get(department) ?? []).sort((a, b) => b.date.localeCompare(a.date)),
+      total,
+    }));
   }, [filteredEntries]);
 
   const selectedEntries = useMemo(() => {

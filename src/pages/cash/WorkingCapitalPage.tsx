@@ -17,6 +17,14 @@ import {
   Clock,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+} from '@/utils/money';
 
 const getRandom = () => Math.random();
 
@@ -48,6 +56,117 @@ interface ComponentRow {
   days: number;
 }
 
+/**
+ * GAP-1 (F-0006) — exact-decimal working-capital component totals.
+ *
+ * Current assets (11xx/12xx net) and current liabilities (21xx contra-net),
+ * revenue (4xxx net), and COGS (5xxx |net|) were raw float reduces. WC =
+ * assets - liabilities; ratios (currentRatio, quickRatio) and days (DSO/DIO/
+ * DPO) are unitless ratios/integers — computed via Decimal for drift-free
+ * division but emitted as plain numbers. Component amounts split by
+ * heuristic percentage weights are currency-valued and migrated to
+ * multiplyMoney; DSO/DIO/DPO use Math.round (integer days).
+ */
+export interface WCEntry {
+  accountCode?: string;
+  debit: number;
+  credit: number;
+}
+export interface WCComponents {
+  cash: number;
+  ar: number;
+  inventory: number;
+  otherCa: number;
+  ap: number;
+  accrued: number;
+  stDebt: number;
+}
+export interface WCSummary {
+  assets: number;
+  liabilities: number;
+  wc: number;
+  currentRatio: number;
+  quickRatio: number;
+  revenue: number;
+  cogs: number;
+  components: ComponentRow[];
+  dso: number;
+  dpo: number;
+  dio: number;
+  ccc: number;
+}
+export function computeWorkingCapital(entries: readonly WCEntry[]): WCSummary {
+  const assets = roundTo(
+    sumMoney(
+      entries
+        .filter(
+          (e) => (e.accountCode || '').startsWith('11') || (e.accountCode || '').startsWith('12')
+        )
+        .map((e) => e.debit - e.credit)
+    )
+  );
+  const liabilities = roundTo(
+    sumMoney(
+      entries.filter((e) => (e.accountCode || '').startsWith('21')).map((e) => e.credit - e.debit)
+    )
+  );
+  const wc = roundTo(subtractMoney(assets, liabilities));
+  const currentRatio = liabilities > 0 ? roundTo(divideMoney(assets, liabilities), 4) : 0;
+  const quickRatio =
+    liabilities > 0 ? roundTo(divideMoney(multiplyMoney(assets, 0.7), liabilities), 4) : 0;
+  const revenue = roundTo(
+    sumMoney(
+      entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.debit - e.credit)
+    )
+  );
+  const cogs = roundTo(
+    sumMoney(
+      entries
+        .filter((e) => (e.accountCode || '').startsWith('5'))
+        .map((e) => Math.abs(e.debit - e.credit))
+    )
+  );
+
+  const cash = roundTo(multiplyMoney(assets, 0.3));
+  const ar = roundTo(multiplyMoney(assets, 0.35));
+  const inventory = roundTo(multiplyMoney(assets, 0.25));
+  const otherCa = roundTo(subtractMoney(assets, addMoney(cash, addMoney(ar, inventory))));
+  const ap = roundTo(multiplyMoney(liabilities, 0.4));
+  const accrued = roundTo(multiplyMoney(liabilities, 0.35));
+  const stDebt = roundTo(subtractMoney(liabilities, addMoney(ap, accrued)));
+
+  const arDays =
+    revenue > 0 ? Math.round(roundTo(divideMoney(multiplyMoney(ar, 365), revenue))) : 0;
+  const apDays = cogs > 0 ? Math.round(roundTo(divideMoney(multiplyMoney(ap, 365), cogs))) : 0;
+  const invDays =
+    cogs > 0 ? Math.round(roundTo(divideMoney(multiplyMoney(inventory, 365), cogs))) : 0;
+
+  const components: ComponentRow[] = [
+    { component: 'Cash & Equivalents', amount: cash, ratio: 'Current Asset', days: 0 },
+    { component: 'Accounts Receivable', amount: ar, ratio: 'Current Asset', days: arDays },
+    { component: 'Inventory', amount: inventory, ratio: 'Current Asset', days: invDays },
+    { component: 'Other Current Assets', amount: otherCa, ratio: 'Current Asset', days: 0 },
+    { component: 'Accounts Payable', amount: ap, ratio: 'Current Liability', days: apDays },
+    { component: 'Accrued Expenses', amount: accrued, ratio: 'Current Liability', days: 0 },
+    { component: 'Short-term Debt', amount: stDebt, ratio: 'Current Liability', days: 0 },
+  ];
+  const ccc = arDays + invDays - apDays;
+  return {
+    assets,
+    liabilities,
+    wc,
+    currentRatio,
+    quickRatio,
+    revenue,
+    cogs,
+    components,
+    dso: arDays,
+    dpo: apDays,
+    dio: invDays,
+    ccc,
+  };
+}
+
 export default function WorkingCapitalPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
@@ -58,81 +177,18 @@ export default function WorkingCapitalPage() {
 
   const data = useMemo(() => {
     if (entries.length === 0) return null;
-    const assets = entries
-      .filter(
-        (e) => (e.accountCode || '').startsWith('11') || (e.accountCode || '').startsWith('12')
-      )
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const liabilities = entries
-      .filter((e) => (e.accountCode || '').startsWith('21'))
-      .reduce((s, e) => s + (e.credit - e.debit), 0);
-    const wc = assets - liabilities;
-    const currentRatio = liabilities > 0 ? assets / liabilities : 0;
-    const quickRatio = liabilities > 0 ? (assets * 0.7) / liabilities : 0;
+    const base = computeWorkingCapital(entries);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    // trend series is a stochastic projection with Math.round + getRandom()
+    // jitter — integer rounding of random variates cannot produce float
+    // drift, left as JS number math.
     const trend = months.map((m, i) => ({
       month: m,
-      assets: Math.round(assets * (0.9 + i * 0.02 + getRandom() * 0.05)),
-      liabilities: Math.round(liabilities * (0.9 + i * 0.02 + getRandom() * 0.05)),
-      wc: Math.round(wc * (0.85 + i * 0.03 + getRandom() * 0.1)),
+      assets: Math.round(base.assets * (0.9 + i * 0.02 + getRandom() * 0.05)),
+      liabilities: Math.round(base.liabilities * (0.9 + i * 0.02 + getRandom() * 0.05)),
+      wc: Math.round(base.wc * (0.85 + i * 0.03 + getRandom() * 0.1)),
     }));
-    const revenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const cogs = entries
-      .filter((e) => (e.accountCode || '').startsWith('5'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const components: ComponentRow[] = [
-      { component: 'Cash & Equivalents', amount: assets * 0.3, ratio: 'Current Asset', days: 0 },
-      {
-        component: 'Accounts Receivable',
-        amount: assets * 0.35,
-        ratio: 'Current Asset',
-        days: revenue > 0 ? Math.round(((assets * 0.35) / revenue) * 365) : 0,
-      },
-      {
-        component: 'Inventory',
-        amount: assets * 0.25,
-        ratio: 'Current Asset',
-        days: cogs > 0 ? Math.round(((assets * 0.25) / cogs) * 365) : 0,
-      },
-      { component: 'Other Current Assets', amount: assets * 0.1, ratio: 'Current Asset', days: 0 },
-      {
-        component: 'Accounts Payable',
-        amount: liabilities * 0.4,
-        ratio: 'Current Liability',
-        days: cogs > 0 ? Math.round(((liabilities * 0.4) / cogs) * 365) : 0,
-      },
-      {
-        component: 'Accrued Expenses',
-        amount: liabilities * 0.35,
-        ratio: 'Current Liability',
-        days: 0,
-      },
-      {
-        component: 'Short-term Debt',
-        amount: liabilities * 0.25,
-        ratio: 'Current Liability',
-        days: 0,
-      },
-    ];
-    const dso = components.find((c) => c.component === 'Accounts Receivable')?.days || 0;
-    const dpo = components.find((c) => c.component === 'Accounts Payable')?.days || 0;
-    const dio = components.find((c) => c.component === 'Inventory')?.days || 0;
-    const ccc = dso + dio - dpo;
-    return {
-      assets,
-      liabilities,
-      wc,
-      currentRatio,
-      quickRatio,
-      trend,
-      components,
-      dso,
-      dpo,
-      dio,
-      ccc,
-    };
+    return { ...base, trend };
   }, [entries]);
 
   const handleExportPDF = () => {

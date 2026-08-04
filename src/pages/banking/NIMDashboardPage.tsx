@@ -10,6 +10,52 @@ import { Activity, ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import { BankingEngine } from '@/engines/BankingEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { divideMoney, multiplyMoney, roundTo, sumMoney } from '@/utils/money';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal NIM component income/asset aggregates.
+ *
+ * Per-loan-category average earning-assets and interest income were raw
+ * float reduces; they feed the Interest Income Breakdown DataGrid. Yield
+ * (catIncome/catAssets * 12 * 100) stays a percentage metric and is not
+ * placed on the money primitive.
+ */
+export interface NIMCategory {
+  prefix: string;
+  name: string;
+}
+export interface NIMComponentRow {
+  id: string;
+  source: string;
+  income: number;
+  yield: number;
+  [key: string]: unknown;
+}
+export function computeNIMComponents(
+  entries: readonly { accountCode: string; amount: number }[],
+  categories: readonly NIMCategory[]
+): NIMComponentRow[] {
+  return categories
+    .map((cat) => {
+      const catAssets = roundTo(
+        sumMoney(entries.filter((e) => e.accountCode.startsWith(cat.prefix)).map((e) => e.amount))
+      );
+      const incomeCode = `41${cat.prefix.substring(1)}`;
+      const catIncome = roundTo(
+        sumMoney(entries.filter((e) => e.accountCode === incomeCode).map((e) => e.amount))
+      );
+      // yield is a % ratio — compute in Decimal to avoid drift, then emit plain number
+      const yieldPct =
+        catAssets > 0 ? roundTo(multiplyMoney(divideMoney(catIncome, catAssets), 1200), 4) : 0;
+      return {
+        id: cat.prefix,
+        source: cat.name,
+        income: catIncome,
+        yield: yieldPct,
+      };
+    })
+    .filter((c) => c.income !== 0 || c.yield !== 0);
+}
 
 export default function NIMDashboardPage() {
   const { entries } = useGLStore();
@@ -20,30 +66,12 @@ export default function NIMDashboardPage() {
   }, [entries]);
 
   const components = useMemo(() => {
-    // Break down interest income by loan type
-    const categories = [
+    const categories: NIMCategory[] = [
       { prefix: '131', name: 'Commercial Real Estate' },
       { prefix: '132', name: 'Residential Mortgage' },
       { prefix: '133', name: 'Consumer Portfolio' },
     ];
-
-    return categories
-      .map((cat) => {
-        const catAssets = entries
-          .filter((e) => e.accountCode.startsWith(cat.prefix))
-          .reduce((acc, e) => acc + e.amount, 0);
-        const catIncome = entries
-          .filter((e) => e.accountCode === `41${cat.prefix.substring(1)}`)
-          .reduce((acc, e) => acc + e.amount, 0);
-
-        return {
-          id: cat.prefix,
-          source: cat.name,
-          income: catIncome,
-          yield: catAssets > 0 ? ((catIncome * 12) / catAssets) * 100 : 0,
-        };
-      })
-      .filter((c) => c.income !== 0 || c.yield !== 0);
+    return computeNIMComponents(entries, categories);
   }, [entries]);
 
   const columns = [

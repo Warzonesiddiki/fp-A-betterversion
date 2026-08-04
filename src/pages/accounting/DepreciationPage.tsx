@@ -14,6 +14,62 @@ import {
 } from 'recharts';
 import { TrendingDown, Calculator, Download, Settings } from 'lucide-react';
 import { DepreciationEngine, type DepreciationEntry } from '@/engines/DepreciationEngine';
+import Decimal from 'decimal.js';
+import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal depreciation page totals.
+ *
+ * The per-asset accumulated depreciation is summed with raw reduce over
+ * engine-computed depreciation entries, and totalCost/totalValue (NBV)
+ * are summed with raw reduce too. Those feed the Total Assets / Accumulated
+ * / Net Book Value KPI cards and the chart aggregation; they now accumulate
+ * at full Decimal precision with a single cent-round at the boundary. The
+ * depreciation-rate percentage stays float per GAP-1 exclusions. Exported
+ * for *.money.test.ts.
+ */
+export interface DepreciationAssetLike {
+  cost: number;
+  salvage: number;
+  accumulated: number;
+  currentValue: number;
+}
+export function sumDepreciationCost(assets: readonly DepreciationAssetLike[]): number {
+  return roundTo(sumMoney(assets.map((a) => a.cost)));
+}
+export function sumAccumulatedDepreciation(assets: readonly DepreciationAssetLike[]): number {
+  return roundTo(sumMoney(assets.map((a) => a.accumulated)));
+}
+export function sumNetBookValue(assets: readonly DepreciationAssetLike[]): number {
+  return roundTo(sumMoney(assets.map((a) => a.currentValue)));
+}
+export function computeAccumulatedFromSchedule(
+  schedule: readonly Pick<DepreciationEntry, 'depreciation'>[],
+  yearsElapsed: number
+): number {
+  const take = Math.max(0, Math.min(schedule.length, yearsElapsed));
+  let total = new Decimal(0);
+  for (let i = 0; i < take; i++) total = total.plus(schedule[i]!.depreciation);
+  return roundTo(total);
+}
+export function computeBookValueByYear(
+  assets: readonly {
+    schedule: readonly { endingValue: number }[];
+    salvage: number;
+  }[],
+  maxYears: number
+): { year: string; book: number }[] {
+  return Array.from({ length: maxYears }, (_, i) => {
+    const year = i + 1;
+    let book = new Decimal(0);
+    for (const a of assets) {
+      const idx = Math.min(year, a.schedule.length) - 1;
+      const entry = a.schedule[idx];
+      book = book.plus(entry ? entry.endingValue : a.salvage);
+    }
+    return { year: `Y${year}`, book: roundTo(book) };
+  });
+}
 
 type DisplayMethod = 'Straight-Line' | 'Declining Balance' | 'MACRS' | 'Units of Production';
 type EngineMethod = 'straightLine' | 'decliningBalance' | 'macrs' | 'unitsOfProduction';
@@ -70,12 +126,12 @@ function computeAsset(a: AssetInput): Asset {
     0,
     Math.min(a.life, AS_OF_YEAR - new Date(a.acquired).getFullYear())
   );
-  const accumulated = schedule.slice(0, yearsElapsed).reduce((sum, e) => sum + e.depreciation, 0);
+  const accumulated = computeAccumulatedFromSchedule(schedule, yearsElapsed);
   return {
     ...a,
     schedule,
     accumulated,
-    currentValue: Math.max(a.salvage, a.cost - accumulated),
+    currentValue: Math.max(a.salvage, roundTo(subtractMoney(a.cost, accumulated))),
     annualDepreciation: schedule[0]?.depreciation ?? 0,
   };
 }
@@ -126,25 +182,12 @@ export default function DepreciationPage() {
   const assets = ASSETS;
 
   const filtered = method === 'all' ? assets : assets.filter((a) => a.method === method);
-  const totalCost = filtered.reduce((s, a) => s + a.cost, 0);
-  const totalAccumulated = filtered.reduce((s, a) => s + a.accumulated, 0);
-  const totalValue = filtered.reduce((s, a) => s + a.currentValue, 0);
+  const totalCost = useMemo(() => sumDepreciationCost(filtered), [filtered]);
+  const totalAccumulated = useMemo(() => sumAccumulatedDepreciation(filtered), [filtered]);
+  const totalValue = useMemo(() => sumNetBookValue(filtered), [filtered]);
 
   // REAL aggregate book value per year, from each asset's engine schedule.
-
-  const scheduleData = useMemo(() => {
-    const maxYears = 10;
-    return Array.from({ length: maxYears }, (_, i) => {
-      const year = i + 1;
-      let book = 0;
-      for (const a of filtered) {
-        const idx = Math.min(year, a.schedule.length) - 1;
-        const entry = a.schedule[idx];
-        book += entry ? entry.endingValue : a.salvage;
-      }
-      return { year: `Y${year}`, book };
-    });
-  }, [filtered]);
+  const scheduleData = useMemo(() => computeBookValueByYear(filtered, 10), [filtered]);
 
   return (
     <div className="p-6 space-y-6">

@@ -6,7 +6,80 @@ import { Badge } from '@/components/ui/Badge';
 import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { TrendingUp, TrendingDown, Globe } from 'lucide-react';
+import { multiplyMoney, roundTo, sumMoney } from '@/utils/money';
 import { CURRENCIES, formatMoney } from './constants';
+
+/**
+ * GAP-1 (F-0006) — exact-decimal multi-currency translation and totals.
+ *
+ * Previously `e.revenue * rate` and `translated.reduce((s, e) => s +
+ * e.revenueUSD, 0)` used raw IEEE-754 float math. FX rates and local-currency
+ * amounts are currency inputs; translated values feed the consolidated
+ * revenue/expenses/net-income/assets KPI cards and footer row. Multiplication
+ * is now exact-decimal via `multiplyMoney`, sums via `sumMoney`, with a
+ * single cent-round at the output boundary (`roundTo`). Exported for
+ * *.money.test.ts.
+ */
+export interface TranslatedEntityInput {
+  code: string;
+  revenue: number;
+  expenses: number;
+  netIncome: number;
+  totalAssets: number;
+}
+
+export interface TranslatedEntityOutput extends TranslatedEntityInput {
+  name: string;
+  currency: string;
+  rate: number;
+  revenueUSD: number;
+  expensesUSD: number;
+  netIncomeUSD: number;
+  assetsUSD: number;
+}
+
+export interface ConsolidatedTotals {
+  revenue: number;
+  expenses: number;
+  netIncome: number;
+  assets: number;
+}
+
+export function translateEntityAmounts(
+  e: TranslatedEntityInput & { name: string; currency: string },
+  rate: number
+): TranslatedEntityOutput {
+  // FX-translated entity values are cent-rounded at the per-entity display
+  // boundary (row-level); consolidated totals sum those rounded values at
+  // full Decimal precision then round once at the output, matching the
+  // "imported value" convention used in DynamicsConnector/QuickBooksConnector.
+  return {
+    ...e,
+    name: e.name,
+    currency: e.currency,
+    rate,
+    revenueUSD: roundTo(multiplyMoney(e.revenue, rate)),
+    expensesUSD: roundTo(multiplyMoney(e.expenses, rate)),
+    netIncomeUSD: roundTo(multiplyMoney(e.netIncome, rate)),
+    assetsUSD: roundTo(multiplyMoney(e.totalAssets, rate)),
+  };
+}
+
+export function computeConsolidatedTotals(
+  rows: readonly Pick<
+    TranslatedEntityOutput,
+    'revenueUSD' | 'expensesUSD' | 'netIncomeUSD' | 'assetsUSD'
+  >[]
+): ConsolidatedTotals {
+  // Sum at full Decimal precision over the already-rounded per-entity
+  // values, then cent-round once at the output boundary.
+  return {
+    revenue: roundTo(sumMoney(rows.map((r) => r.revenueUSD))),
+    expenses: roundTo(sumMoney(rows.map((r) => r.expensesUSD))),
+    netIncome: roundTo(sumMoney(rows.map((r) => r.netIncomeUSD))),
+    assets: roundTo(sumMoney(rows.map((r) => r.assetsUSD))),
+  };
+}
 
 interface EntityRow {
   code: string;
@@ -113,29 +186,14 @@ export function MultiCurrencyReporting() {
           }
         }
       }
-      rows.push({
-        ...e,
-        rate,
-        revenueUSD: e.revenue * rate,
-        expensesUSD: e.expenses * rate,
-        netIncomeUSD: e.netIncome * rate,
-        assetsUSD: e.totalAssets * rate,
-      });
+      rows.push(translateEntityAmounts(e, rate));
     }
     return { rows, missingRates };
   }, [parentCurrency, ratesMap]);
   const translated = translationResult.rows;
   const missingRateEntities = translationResult.missingRates;
 
-  const consolidated = useMemo(
-    () => ({
-      revenue: translated.reduce((s, e) => s + e.revenueUSD, 0),
-      expenses: translated.reduce((s, e) => s + e.expensesUSD, 0),
-      netIncome: translated.reduce((s, e) => s + e.netIncomeUSD, 0),
-      assets: translated.reduce((s, e) => s + e.assetsUSD, 0),
-    }),
-    [translated]
-  );
+  const consolidated = useMemo(() => computeConsolidatedTotals(translated), [translated]);
 
   return (
     <div className="space-y-6">
