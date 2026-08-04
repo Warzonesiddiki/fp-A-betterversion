@@ -17,7 +17,7 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
-import { toDecimal, roundTo, sumMoney } from '../utils/money';
+import { multiplyMoney, roundTo, subtractMoney, sumMoney, toDecimal } from '../utils/money';
 
 export interface DebtInstrument {
   id: string;
@@ -145,15 +145,19 @@ export class DebtScheduleEngine {
   static consolidate(instruments: DebtInstrument[], ebitda?: number): ConsolidatedDebtSchedule {
     const results = instruments.map((i) => this.amortize(i));
     const totalDebt = sumMoney(instruments.map((i) => i.principal)).toNumber();
-    const totalMonthlyPayment = results.reduce((s, r) => {
-      const firstPayment = r.schedule[0]?.payment ?? 0;
-      return s + firstPayment;
-    }, 0);
-    const totalInterest = results.reduce((s, r) => s + r.totalInterest, 0);
+    // Payments and interest are currency: exact decimal aggregation (F-0006).
+    const totalMonthlyPayment = roundTo(sumMoney(results.map((r) => r.schedule[0]?.payment ?? 0)));
+    const totalInterest = roundTo(sumMoney(results.map((r) => r.totalInterest)));
+    // Weighted average rate: rate × principal is a currency-weighted
+    // intermediate; the ratio itself stays a metric.
     const weightedAverageRate =
-      totalDebt > 0 ? instruments.reduce((s, i) => s + i.rate * i.principal, 0) / totalDebt : 0;
+      totalDebt > 0
+        ? sumMoney(instruments.map((i) => multiplyMoney(i.rate, i.principal))).toNumber() /
+          totalDebt
+        : 0;
 
-    const annualDebtService = totalMonthlyPayment * 12;
+    // Annual debt service = monthly × 12 is currency (exact decimal).
+    const annualDebtService = roundTo(multiplyMoney(totalMonthlyPayment, 12));
     const dscr = ebitda != null && annualDebtService > 0 ? ebitda / annualDebtService : undefined;
 
     return {
@@ -186,8 +190,14 @@ export class DebtScheduleEngine {
 
     const currentPayment = currentResult.schedule[0]?.payment ?? 0;
     const refiPayment = refiResult.schedule[0]?.payment ?? 0;
-    const monthlySavings = currentPayment - refiPayment;
-    const totalSavings = currentResult.totalPayments - refiResult.totalPayments - refinancingCosts;
+    // Savings are currency: exact decimal (F-0006).
+    const monthlySavings = roundTo(subtractMoney(currentPayment, refiPayment));
+    const totalSavings = roundTo(
+      subtractMoney(
+        subtractMoney(currentResult.totalPayments, refiResult.totalPayments),
+        refinancingCosts
+      )
+    );
     const breakEvenMonths =
       monthlySavings > 0 ? Math.ceil(refinancingCosts / monthlySavings) : Infinity;
     const npv = totalSavings; // Simplified NPV

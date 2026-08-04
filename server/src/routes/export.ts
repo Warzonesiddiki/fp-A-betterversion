@@ -1,9 +1,22 @@
 import { Router, Response, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
+import { Decimal } from 'decimal.js';
 import { db } from '../db/connection.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { filterByEntityAccess } from '../middleware/entityAuth.js';
+
+/**
+ * MONEY MIGRATION (2026-08-04, GAP-1 / F-0006): report figures are currency.
+ * The trial-balance `Balance` and budget-vs-actual `Actual Amount`/`Variance`
+ * were previously computed inside SQL on IEEE-754 REALs (`SUM(ge.debit) -
+ * SUM(ge.credit)`, `SUM(bli.amount) - SUM(ge.debit - ge.credit)`). Raw
+ * component sums are now returned from SQL and the derived currency figures
+ * are computed here at exact decimal precision via decimal.js (the same
+ * canonical engine behind `src/utils/money.ts`; the server package cannot
+ * import across the repo's package boundary). Values are cent-rounded with
+ * declared ROUND_HALF_UP at the output boundary.
+ */
 
 const router = Router();
 router.use(authMiddleware);
@@ -11,6 +24,61 @@ router.use(authMiddleware);
 // Apply entity scoping to all export routes
 // Non-admin users can only export data from their accessible entities
 router.use(filterByEntityAccess);
+
+/** Imported SQL REAL → decimal-literal Decimal. */
+function toDecimalAmount(value: unknown): Decimal {
+  return new Decimal(String(Number(value) || 0));
+}
+
+/** Cent-round with the declared ROUND_HALF_UP mode. */
+function roundAmount(value: Decimal): number {
+  return value.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
+}
+
+/**
+ * Trial-balance report rows: `Balance = Total Debit − Total Credit` at exact
+ * decimal precision (old SQL float path: `0.20000000000000004`-class drift).
+ */
+export function buildTrialBalanceReportRows(
+  rows: readonly Record<string, unknown>[]
+): Record<string, unknown>[] {
+  return rows.map((row) => {
+    const debit = toDecimalAmount(row['Total Debit']);
+    const credit = toDecimalAmount(row['Total Credit']);
+    return {
+      'Account Code': row['Account Code'],
+      'Account Name': row['Account Name'],
+      Type: row['Type'],
+      'Total Debit': roundAmount(debit),
+      'Total Credit': roundAmount(credit),
+      Balance: roundAmount(debit.minus(credit)),
+    };
+  });
+}
+
+/**
+ * Budget-vs-actual report rows: `Actual Amount = Actual Debit − Actual
+ * Credit` and `Variance = Budget Amount − Actual Amount` at exact decimal
+ * precision (old SQL float path: `0.49999999999999994`-class drift).
+ */
+export function buildBudgetVsActualReportRows(
+  rows: readonly Record<string, unknown>[]
+): Record<string, unknown>[] {
+  return rows.map((row) => {
+    const budget = toDecimalAmount(row['Budget Amount']);
+    const actual = toDecimalAmount(row['Actual Debit']).minus(
+      toDecimalAmount(row['Actual Credit'])
+    );
+    return {
+      'Account Code': row['Account Code'],
+      'Account Name': row['Account Name'],
+      Budget: row['Budget'],
+      'Budget Amount': roundAmount(budget),
+      'Actual Amount': roundAmount(actual),
+      Variance: roundAmount(budget.minus(actual)),
+    };
+  });
+}
 
 // --- Zod schemas ---
 
@@ -244,18 +312,19 @@ router.post('/pdf', (req: Request, res: Response) => {
           }
           const joinCond = conditions.length > 0 ? `AND ${conditions.join(' AND ')}` : '';
 
-          reportData = db
-            .prepare(
-              `SELECT a.code AS "Account Code", a.name AS "Account Name", a.type AS "Type",
-                    COALESCE(SUM(ge.debit), 0) AS "Total Debit",
-                    COALESCE(SUM(ge.credit), 0) AS "Total Credit",
-                    COALESCE(SUM(ge.debit), 0) - COALESCE(SUM(ge.credit), 0) AS "Balance"
-             FROM accounts a
-             LEFT JOIN gl_entries ge ON ge.account_id = a.id ${joinCond}
-             GROUP BY a.id, a.code, a.name, a.type
-             ORDER BY a.code`
-            )
-            .all(...params) as Record<string, unknown>[];
+          reportData = buildTrialBalanceReportRows(
+            db
+              .prepare(
+                `SELECT a.code AS "Account Code", a.name AS "Account Name", a.type AS "Type",
+                      COALESCE(SUM(ge.debit), 0) AS "Total Debit",
+                      COALESCE(SUM(ge.credit), 0) AS "Total Credit"
+               FROM accounts a
+               LEFT JOIN gl_entries ge ON ge.account_id = a.id ${joinCond}
+               GROUP BY a.id, a.code, a.name, a.type
+               ORDER BY a.code`
+              )
+              .all(...params) as Record<string, unknown>[]
+          );
           headers = [
             'Account Code',
             'Account Name',
@@ -279,24 +348,26 @@ router.post('/pdf', (req: Request, res: Response) => {
           }
           const whereCond = `WHERE ${conditions.join(' AND ')}`;
 
-          reportData = db
-            .prepare(
-              `SELECT a.code AS "Account Code", a.name AS "Account Name",
-                    b.name AS "Budget",
-                    SUM(bli.amount) AS "Budget Amount",
-                    COALESCE(SUM(ge.debit - ge.credit), 0) AS "Actual Amount",
-                    SUM(bli.amount) - COALESCE(SUM(ge.debit - ge.credit), 0) AS "Variance"
-             FROM budget_line_items bli
-             JOIN budgets b ON b.id = bli.budget_id
-             JOIN accounts a ON a.id = bli.account_id
-             LEFT JOIN gl_entries ge ON ge.account_id = bli.account_id
-               AND ge.post_date >= date(b.fiscal_year || '-01-01')
-               AND ge.post_date <= date(b.fiscal_year || '-12-31')
-             ${whereCond}
-             GROUP BY a.code, a.name, b.name
-             ORDER BY a.code`
-            )
-            .all(...params) as Record<string, unknown>[];
+          reportData = buildBudgetVsActualReportRows(
+            db
+              .prepare(
+                `SELECT a.code AS "Account Code", a.name AS "Account Name",
+                      b.name AS "Budget",
+                      SUM(bli.amount) AS "Budget Amount",
+                      COALESCE(SUM(ge.debit), 0) AS "Actual Debit",
+                      COALESCE(SUM(ge.credit), 0) AS "Actual Credit"
+               FROM budget_line_items bli
+               JOIN budgets b ON b.id = bli.budget_id
+               JOIN accounts a ON a.id = bli.account_id
+               LEFT JOIN gl_entries ge ON ge.account_id = bli.account_id
+                 AND ge.post_date >= date(b.fiscal_year || '-01-01')
+                 AND ge.post_date <= date(b.fiscal_year || '-12-31')
+               ${whereCond}
+               GROUP BY a.code, a.name, b.name
+               ORDER BY a.code`
+              )
+              .all(...params) as Record<string, unknown>[]
+          );
           headers = [
             'Account Code',
             'Account Name',

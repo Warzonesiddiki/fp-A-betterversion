@@ -415,7 +415,7 @@ export class ConsolidationEngine {
         minorityInterestDetails,
         totalAssets,
         totalLiabilities,
-        totalEquity + totalMinorityInterest,
+        roundTo(addMoney(totalEquity, totalMinorityInterest)),
         totalRevenue,
         totalExpenses,
         netIncome,
@@ -429,7 +429,8 @@ export class ConsolidationEngine {
         adjustments: allAdjustments,
         minorityInterest: totalMinorityInterest,
         minorityInterestDetails,
-        totalEquity: totalEquity + totalMinorityInterest,
+        // Equity + minority interest is currency: exact decimal (F-0006).
+        totalEquity: roundTo(addMoney(totalEquity, totalMinorityInterest)),
         totalAssets,
         totalLiabilities,
         totalRevenue,

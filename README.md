@@ -33,7 +33,7 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
 
 - **Extremely Optimized Build:** The critical rendering path is compressed via Brotli to a lightning-fast <150KB (down from 722KB).
 - **Canonical money primitive (partial rollout):** `src/utils/money.ts` wraps `decimal.js`
-  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 81 of
+  with explicit ROUND_HALF_UP and deterministic penny allocation. **Measured adoption: 82 of
   226 engine/store modules** spanning the engines and store layers (e.g. `AllocationEngine`,
   `BankingEngine`, `BreakEvenEngine`, `COGSVarianceEngine`, `CapExEngine`, `CashEngine`,
   `CashFlowWaterfallEngine`, `ConsolidationEngine`, `ConstructionEngine`, `CreditRiskEngine`,
@@ -47,9 +47,12 @@ FinPlan Pro is an enterprise-grade Financial Planning & Analysis (FP&A) platform
   `VarianceDecompositionEngine`, `WorkingCapitalEngine`,
   `report-builder-formulas`, `report-builder-export`, and the `glStore`, `glTrialBalanceStore`,
   `capexStore`, `workforceStore`, `retailStore`, `governmentStore` stores). Across all financial
-  paths (`src/engines`, `src/store`, `src/utils`, `src/services`) adoption is 91 of 360 modules
-  with **0** raw `toFixed(n)` sites remaining — run
-  `npm run money:adoption` for the current measurement. The remaining financial paths
+  paths (`src/engines`, `src/store`, `src/utils`, `src/services`, `src/workers`) adoption is 95
+  of 367 modules with **0** raw `toFixed(n)` sites remaining — run
+  `npm run money:adoption` for the current measurement. The server package is covered by the
+  same ratchet: **2 of 23 financial modules** use `decimal.js` (the canonical engine; the
+  server cannot import `src/utils/money.ts` across the package boundary) with **0** raw
+  `toFixed(n)` sites. The remaining financial paths
   still use IEEE-754 doubles; migration is tracked as F-0006 / N-0009 and is guarded by a
   CI ratchet that fails if adoption regresses. Do not rely on repo-wide decimal exactness yet.
 - **Background Web Workers (4):** `consolidation`, `monte-carlo`, `batch-calc` and `storage`
@@ -343,7 +346,7 @@ import { Button } from '@/components/ui/Button';
 
 ## 🔄 State Management Deep Dive
 
-### Store Architecture (38 Stores)
+### Store Architecture (41 Stores)
 
 Each store follows a standard pattern for consistency:
 

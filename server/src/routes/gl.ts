@@ -1,12 +1,70 @@
 import { Router, Response, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
+import { Decimal } from 'decimal.js';
 import { db } from '../db/connection.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { requireEntityWriteAccess, filterByEntityAccess } from '../middleware/entityAuth.js';
 
+/**
+ * MONEY MIGRATION (2026-08-04, GAP-1 / F-0006): trial-balance totals are
+ * currency. Per-account SQL sums are treated as imported values — each is
+ * cent-rounded with declared ROUND_HALF_UP semantics — then aggregated at
+ * exact decimal precision via decimal.js (the same canonical engine behind
+ * `src/utils/money.ts`; the server package cannot import across the repo's
+ * package boundary, so the primitive is used directly with identical
+ * semantics). Raw float `+=`/`-` over currency values are gone; the
+ * `balanced` tolerance threshold (0.01) is unchanged policy.
+ */
+
 const router = Router();
 router.use(authMiddleware);
+
+/**
+ * Trial-balance totals over per-account SQL rows (GAP-1 / F-0006).
+ *
+ * Each per-account `total_debit`/`total_credit` is an imported value from
+ * SQLite (IEEE-754 REAL): cent-round with declared ROUND_HALF_UP, then
+ * aggregate at exact decimal precision. Exported separately so the money
+ * behavior is directly unit-testable.
+ */
+export interface TrialBalanceTotals {
+  debit: number;
+  credit: number;
+  difference: number;
+  balanced: boolean;
+}
+
+export function computeTrialBalanceTotals(
+  rows: readonly Record<string, unknown>[]
+): TrialBalanceTotals {
+  let totalDebit = new Decimal(0);
+  let totalCredit = new Decimal(0);
+  for (const row of rows) {
+    // Imported per-account sums: cent-round with declared half-up.
+    const debit = new Decimal(String(Number(row.total_debit) || 0)).toDecimalPlaces(
+      2,
+      Decimal.ROUND_HALF_UP
+    );
+    const credit = new Decimal(String(Number(row.total_credit) || 0)).toDecimalPlaces(
+      2,
+      Decimal.ROUND_HALF_UP
+    );
+    totalDebit = totalDebit.plus(debit);
+    totalCredit = totalCredit.plus(credit);
+  }
+
+  const difference = totalDebit.minus(totalCredit);
+
+  return {
+    debit: totalDebit.toNumber(),
+    credit: totalCredit.toNumber(),
+    difference: difference.toNumber(),
+    // Tolerance threshold is unchanged policy (a cent-level residual after
+    // exact decimal aggregation is a rounding artefact, not an imbalance).
+    balanced: difference.abs().lt('0.01'),
+  };
+}
 
 // --- Zod schemas ---
 
@@ -469,7 +527,10 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
       conditions.push(`ge.entity_id IN (${entityFilter.map(() => '?').join(', ')})`);
       params.push(...entityFilter);
     } else if (entityFilter !== null && entityFilter.length === 0) {
-      res.json({ accounts: [], totals: { debits: 0, credits: 0, balance: 0 } });
+      // Contract consistency: the no-visible-entities branch returns the same
+      // totals shape as the populated path (previously `debits/credits/balance`
+      // vs `debit/credit/difference/balanced` — flagged in GAP_LEDGER 2026-08-04).
+      res.json({ accounts: [], totals: computeTrialBalanceTotals([]) });
       return;
     }
 
@@ -505,21 +566,9 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
       )
       .all(...params) as Record<string, unknown>[];
 
-    let totalDebit = 0;
-    let totalCredit = 0;
-    for (const row of rows) {
-      totalDebit += Number(row.total_debit);
-      totalCredit += Number(row.total_credit);
-    }
-
     res.json({
       accounts: rows,
-      totals: {
-        debit: totalDebit,
-        credit: totalCredit,
-        difference: totalDebit - totalCredit,
-        balanced: Math.abs(totalDebit - totalCredit) < 0.01,
-      },
+      totals: computeTrialBalanceTotals(rows),
     });
   } catch (err) {
     console.error('GET /gl/trial-balance error:', err);

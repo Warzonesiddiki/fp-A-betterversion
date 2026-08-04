@@ -9,8 +9,18 @@
  * - Budgets (via Reports API)
  *
  * API docs: https://developer.intuit.com/app/developer/qbo/docs/api/accounting/most-commonly-used/account
+ *
+ * MONEY MIGRATION (2026-08-03): `mapInvoice`'s subtotal aggregates real
+ * QuickBooks line-item `Amount` values (currency) via the canonical money
+ * primitive (`src/utils/money.ts`) — exact decimal summation (`sumMoney`),
+ * cent-rounded (`roundTo`) with declared half-up semantics. External line
+ * amounts, unit prices, invoice totals, account balances, and transaction
+ * amounts are passed through unrounded (no arithmetic is applied to them);
+ * record counts, rate-limit values, pagination offsets, and token-expiry
+ * timestamps are not currency.
  */
 
+import { roundTo, sumMoney } from '@/utils/money';
 import { BaseConnector } from './BaseConnector';
 import type {
   ConnectorConfig,
@@ -362,7 +372,9 @@ export class QuickBooksConnector extends BaseConnector {
       date: qb.TxnDate,
       dueDate: qb.DueDate,
       status,
-      subtotal: lineItems.reduce((sum, li) => sum + li.amount, 0),
+      // Subtotal = Σ line-item amounts is currency arithmetic: exact decimal
+      // summation, half-up to cents.
+      subtotal: roundTo(sumMoney(lineItems.map((li) => li.amount))),
       tax: 0, // QB tax is on separate lines
       total: qb.TotalAmt,
       currency: qb.CurrencyRef?.value ?? 'USD',

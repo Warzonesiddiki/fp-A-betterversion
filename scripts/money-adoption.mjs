@@ -28,7 +28,20 @@ const BASELINE_PATH = join(ROOT, 'scripts', 'money-adoption-baseline.json');
 const isTest = (f) => /\.(test|bench|benchmark|spec)\.[tj]sx?$/.test(f);
 
 /** Directories whose arithmetic is considered a FINANCIAL path. */
-const FINANCIAL_DIRS = ['src/engines', 'src/store', 'src/utils', 'src/services'];
+// 2026-08-04: src/workers added — the consolidation worker ran ASC 810 math
+// (FX translation, eliminations, minority interest) on raw floats entirely
+// outside the previous scan; financial workers are first-class financial
+// paths and must be guarded like engines/stores/services.
+const FINANCIAL_DIRS = ['src/engines', 'src/store', 'src/utils', 'src/services', 'src/workers'];
+
+/**
+ * Server financial paths (2026-08-04). The server is a separate package that
+ * cannot import src/utils/money.ts across the package boundary, so its
+ * canonical money usage is decimal.js directly (same engine, documented in
+ * the migrated routes). It still gets the same ratchet treatment: adoption
+ * must never drop and raw value-producing toFixed() must never appear.
+ */
+const SERVER_DIR = 'server/src';
 
 function walk(dir, out = []) {
   if (!existsSync(dir)) return out;
@@ -42,6 +55,7 @@ function walk(dir, out = []) {
 }
 
 const files = FINANCIAL_DIRS.flatMap((d) => walk(join(ROOT, d)));
+const serverFiles = walk(join(ROOT, SERVER_DIR));
 
 let usesMoney = 0;
 const toFixedSites = [];
@@ -63,6 +77,23 @@ for (const f of files) {
   if (matches) toFixedSites.push({ file: rel, count: matches.length });
 }
 
+let serverUsesMoney = 0;
+let serverToFixed = 0;
+const serverMoneyModules = [];
+
+for (const f of serverFiles) {
+  const text = readFileSync(f, 'utf8');
+  const rel = relative(ROOT, f).replace(/\\/g, '/');
+
+  if (/from\s+['"]decimal\.js['"]/.test(text)) {
+    serverUsesMoney += 1;
+    serverMoneyModules.push(rel);
+  }
+
+  const matches = text.match(/\.toFixed\(\s*\d\s*\)/g);
+  if (matches) serverToFixed += matches.length;
+}
+
 const totalToFixed = toFixedSites.reduce((a, b) => a + b.count, 0);
 
 const measured = {
@@ -70,6 +101,9 @@ const measured = {
   modulesUsingMoneyPrimitive: usesMoney,
   adoptionPercent: Number(((usesMoney / files.length) * 100).toFixed(2)),
   rawToFixedSites: totalToFixed,
+  serverFinancialModules: serverFiles.length,
+  serverModulesUsingMoneyPrimitive: serverUsesMoney,
+  serverRawToFixedSites: serverToFixed,
 };
 
 console.log('Money primitive adoption (financial paths only):');
@@ -83,6 +117,15 @@ if (moneyModules.length) {
   for (const m of moneyModules) console.log(`    - ${m}`);
   console.log('');
 }
+console.log('Server financial paths (decimal.js — canonical engine):');
+console.log(`  financial modules scanned     ${measured.serverFinancialModules}`);
+console.log(`  modules using decimal.js      ${measured.serverModulesUsingMoneyPrimitive}`);
+console.log(`  raw toFixed(n) sites          ${measured.serverRawToFixedSites}`);
+if (serverMoneyModules.length) {
+  console.log('  Server modules on decimal.js:');
+  for (const m of serverMoneyModules) console.log(`    - ${m}`);
+}
+console.log('');
 
 if (process.argv.includes('--update')) {
   writeFileSync(
@@ -114,6 +157,19 @@ if (measured.modulesUsingMoneyPrimitive < baseline.modulesUsingMoneyPrimitive) {
   );
 }
 
+if (measured.serverRawToFixedSites > (baseline.serverRawToFixedSites ?? Infinity)) {
+  failures.push(
+    `raw toFixed() sites in server financial paths INCREASED: ${baseline.serverRawToFixedSites} -> ${measured.serverRawToFixedSites}. ` +
+      'Use decimal.js (canonical engine) instead of float rounding in the server.'
+  );
+}
+
+if (measured.serverModulesUsingMoneyPrimitive < (baseline.serverModulesUsingMoneyPrimitive ?? -1)) {
+  failures.push(
+    `decimal.js adoption in server DECREASED: ${baseline.serverModulesUsingMoneyPrimitive} -> ${measured.serverModulesUsingMoneyPrimitive} modules.`
+  );
+}
+
 if (failures.length) {
   console.error('MONEY ADOPTION RATCHET FAILED:\n');
   for (const f of failures) console.error(`  ✗ ${f}`);
@@ -122,5 +178,7 @@ if (failures.length) {
 
 console.log(
   `✓ Ratchet holds (baseline: ${baseline.modulesUsingMoneyPrimitive} modules, ` +
-    `${baseline.rawToFixedSites} toFixed sites).`
+    `${baseline.rawToFixedSites} toFixed sites; server: ` +
+    `${baseline.serverModulesUsingMoneyPrimitive ?? measured.serverModulesUsingMoneyPrimitive} modules, ` +
+    `${baseline.serverRawToFixedSites ?? measured.serverRawToFixedSites} toFixed sites).`
 );

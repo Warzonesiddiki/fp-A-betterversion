@@ -1,7 +1,10 @@
 import type Decimal from 'decimal.js';
 import type { ExchangeRate } from '@/types';
 // N-0009: currency translation must not use raw IEEE-754 multiplication.
-import { multiplyMoney, toDecimal } from '@/utils/money';
+// 2026-08-04: translateForConsolidation and calculateCTA (residual drift)
+// now also route through the canonical money primitive — exact decimal
+// products, cent-rounded at the output boundary.
+import { multiplyMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
 
 export type RateType = 'closing' | 'average' | 'historical' | 'transaction';
 
@@ -273,7 +276,7 @@ export class FXEngine {
     }
 
     return {
-      translated: amount * rate,
+      translated: roundTo(multiplyMoney(amount, rate)),
       rateUsed: rate,
       rateType,
     };
@@ -446,7 +449,8 @@ export class FXEngine {
         'must be finite'
       );
     }
-    return amount * (currentRate - historicalRate);
+    // CTA = amount × (current − historical): exact decimal product, cent-rounded.
+    return roundTo(multiplyMoney(amount, subtractMoney(currentRate, historicalRate)));
   }
 
   /**

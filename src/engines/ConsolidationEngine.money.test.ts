@@ -183,5 +183,27 @@ describe('ConsolidationEngine — money known answers (GAP-1 / F-0006)', () => {
       expect(result.minorityInterest).toBe(0);
       expect(result.isBalanced).toBe(true);
     });
+
+    it('adds minority interest into equity exactly (old float: -0.08000000000000002)', () => {
+      // Equity −0.1 (credit) + 20% minority interest on net income 0.1
+      // (revenue 1.0 − expenses −0.9) = −0.1 + 0.02. Old float:
+      // −0.1 + 0.02 = −0.08000000000000002; exact decimal: −0.08.
+      const parent = createParent([
+        createEntry('p-asset', '1000', 'Cash', 0.08, 'P'),
+        createEntry('p-equity', '3000', 'Equity', -0.1, 'P'),
+      ]);
+      const sub = createSubsidiary('S1', 'Sub', [
+        createEntry('s-revenue', '4000', 'Revenue', 1.0, 'S1'),
+        createEntry('s-expense', '5000', 'Expense', -0.9, 'S1'),
+      ]);
+      const ownership = createOwnership('P', 'S1', 80);
+
+      const result = ConsolidationEngine.consolidate([parent, sub], [ownership], [], []);
+
+      expect(result.status).toBe('success');
+      expect(result.minorityInterest).toBe(0.02);
+      expect(result.totalEquity).toBe(-0.08);
+      expect(result.isBalanced).toBe(true);
+    });
   });
 });
