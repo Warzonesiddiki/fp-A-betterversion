@@ -1,5 +1,6 @@
 import { memo, useCallback, useState } from 'react';
 import { cn } from '@/utils/cn';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { Button } from './Button';
 import { Modal } from './Modal';
@@ -99,9 +100,9 @@ export const ScenarioLocking = memo(function ScenarioLocking({
           ['Cash Flow', formatCurrency(metrics.cashFlow)],
           ['Headcount', metrics.headcount.toString()],
           ['Burn Rate', formatCurrency(metrics.burnRate)],
-          ['Runway', `${metrics.runway.toFixed(1)} months`],
-          ['Gross Margin', `${metrics.grossMargin.toFixed(1)}%`],
-          ['EBITDA Margin', `${metrics.ebitdaMargin.toFixed(1)}%`],
+          ['Runway', `${formatNumber(metrics.runway, 1)} months`],
+          ['Gross Margin', formatPercent(metrics.grossMargin, 1)],
+          ['EBITDA Margin', formatPercent(metrics.ebitdaMargin, 1)],
         ];
         for (const [k, v] of rows) {
           const tr = doc.createElement('tr');
@@ -172,13 +173,13 @@ export const ScenarioLocking = memo(function ScenarioLocking({
                 Gross Margin
               </span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
-                {metrics.grossMargin.toFixed(1)}%
+                {formatPercent(metrics.grossMargin, 1)}
               </div>
             </div>
             <div className="rounded bg-[var(--bg-surface)] dark:bg-gray-800 p-2">
               <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">Runway</span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
-                {metrics.runway.toFixed(1)} mo
+                {formatNumber(metrics.runway, 1)} mo
               </div>
             </div>
           </div>

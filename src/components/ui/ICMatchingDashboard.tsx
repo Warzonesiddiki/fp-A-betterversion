@@ -7,6 +7,7 @@ import { Select } from './Select';
 import { Input } from './Input';
 
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   ICMatchingEngine,
   type ICTransaction,
@@ -160,7 +161,7 @@ export function ICMatchingDashboard({
           label="Match Rate"
           count={null}
           amount={null}
-          value={`${summary.matchRate.toFixed(1)}%`}
+          value={`formatPercent(summary.matchRate, 1)`}
           variant="info"
         />
       </div>
@@ -321,7 +322,7 @@ export function ICMatchingDashboard({
                     <td className="p-2 text-right font-mono">
                       {formatAmount(match.amountDifference)}
                     </td>
-                    <td className="p-2 text-right">{(match.confidence * 100).toFixed(0)}%</td>
+                    <td className="p-2 text-right">{formatPercent(match.confidence * 100, 0)}</td>
                     <td className="p-2 text-xs capitalize">{match.method.replace('_', ' ')}</td>
                     <td className="p-2">
                       <Button variant="ghost" size="sm" onClick={() => handleUnmatch(match.id)}>

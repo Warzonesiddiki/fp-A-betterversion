@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { LoanAmortizationEngine } from '@/engines/LoanAmortizationEngine';
 import { FEATURE_FLAGS, isFeatureActive, type FeatureFlagKey } from '@/utils/feature-flags';
 import { Button } from '@/components/ui/Button';
+import { sumMoney, roundTo } from '@/utils/money';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 
 const FLAG: FeatureFlagKey = 'treasury.loan-amortization';
@@ -99,8 +100,12 @@ export default function LoanAmortizationPage() {
     setSchedule(LoanAmortizationEngine.schedule(principal, annualRatePct / 100, months));
   };
 
-  const totalInterest = schedule ? schedule.schedule.reduce((s, r) => s + r.interest, 0) : 0;
-  const totalPrincipal = schedule ? schedule.schedule.reduce((s, r) => s + r.principal, 0) : 0;
+  const totalInterest = schedule
+    ? roundTo(sumMoney(schedule.schedule.map((r) => r.interest)), 2)
+    : 0;
+  const totalPrincipal = schedule
+    ? roundTo(sumMoney(schedule.schedule.map((r) => r.principal)), 2)
+    : 0;
 
   return (
     <div className="p-6 space-y-6">

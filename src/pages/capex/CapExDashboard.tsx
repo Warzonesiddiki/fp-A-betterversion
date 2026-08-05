@@ -32,6 +32,8 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -153,14 +155,19 @@ export default function CapExDashboard() {
 
   const _glCapex = useMemo(() => {
     if (entries.length === 0) return 0;
-    return entries
-      .filter((e) => (e.accountCode || '').startsWith('1'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    return roundTo(
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('1'))
+          .map((e) => Math.abs(e.debit - e.credit))
+      ),
+      2
+    );
   }, [entries]);
 
-  const totalBudget = mockProjects.reduce((s, p) => s + p.budget, 0);
-  const totalActual = mockProjects.reduce((s, p) => s + p.actual, 0);
-  const totalVariance = totalBudget - totalActual;
+  const totalBudget = roundTo(sumMoney(mockProjects.map((p) => p.budget)), 2);
+  const totalActual = roundTo(sumMoney(mockProjects.map((p) => p.actual)), 2);
+  const totalVariance = roundTo(subtractMoney(totalBudget, totalActual), 2);
   const ytdSpend = totalActual;
   const budgetUtilization = totalBudget > 0 ? (totalActual / totalBudget) * 100 : 0;
   const pendingCount = mockProjects.filter((p) => p.status === 'Pending').length;
@@ -216,7 +223,7 @@ export default function CapExDashboard() {
           p.category,
           p.budget,
           p.actual,
-          p.budget - p.actual,
+          roundTo(subtractMoney(p.budget, p.actual), 2),
           p.status,
         ]),
       },
@@ -269,7 +276,7 @@ export default function CapExDashboard() {
         />
         <KPIValue
           label="Budget Utilization"
-          value={`${budgetUtilization.toFixed(1)}%`}
+          value={formatPercent(budgetUtilization)}
           icon={<Building2 className="h-4 w-4" />}
         />
         <KPIValue
@@ -298,7 +305,7 @@ export default function CapExDashboard() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`}
+                  tickFormatter={(v) => `$${Math.round(v / 100000) / 10}M`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -380,7 +387,7 @@ export default function CapExDashboard() {
                           />
                         </div>
                         <div className="text-xs text-slate-400 mt-1">
-                          {((project.actual / project.budget) * 100).toFixed(0)}% spent
+                          {Math.round((project.actual / project.budget) * 100)}% spent
                         </div>
                       </div>
                     )}

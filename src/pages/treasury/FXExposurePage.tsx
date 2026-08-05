@@ -9,6 +9,8 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { formatPercent } from '@/utils/financialFormatting';
+import { sumMoney, roundTo } from '@/utils/money';
 import {
   ResponsiveContainer,
   BarChart,
@@ -109,9 +111,9 @@ export default function FXExposurePage() {
     document.title = 'FinPlan Pro — FX Exposure';
   }, []);
 
-  const totalExposure = mockExposures.reduce((s, e) => s + e.exposure, 0);
-  const totalHedged = mockExposures.reduce((s, e) => s + e.hedged, 0);
-  const totalUnrealizedGL = mockExposures.reduce((s, e) => s + e.unrealizedGL, 0);
+  const totalExposure = roundTo(sumMoney(mockExposures.map((e) => e.exposure)), 2);
+  const totalHedged = roundTo(sumMoney(mockExposures.map((e) => e.hedged)), 2);
+  const totalUnrealizedGL = roundTo(sumMoney(mockExposures.map((e) => e.unrealizedGL)), 2);
   const overallHedgeRatio = totalExposure > 0 ? (totalHedged / totalExposure) * 100 : 0;
 
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -125,7 +127,12 @@ export default function FXExposurePage() {
         align: 'right',
         render: (v) => formatCurrency(v as number),
       },
-      { key: 'rate', header: 'Spot Rate', align: 'right', render: (v) => (v as number).toFixed(4) },
+      {
+        key: 'rate',
+        header: 'Spot Rate',
+        align: 'right',
+        render: (v) => String(Math.round((v as number) * 10000) / 10000),
+      },
       {
         key: 'hedged',
         header: 'Hedged Amount',
@@ -232,7 +239,7 @@ export default function FXExposurePage() {
         <KPIValue label="Total Hedged" value={formatCurrency(totalHedged)} />
         <KPIValue
           label="Hedge Ratio"
-          value={`${overallHedgeRatio.toFixed(0)}%`}
+          value={formatPercent(overallHedgeRatio, 0)}
           trend={overallHedgeRatio >= 60 ? 'up' : 'down'}
           changeLabel="Target: 60%"
         />
@@ -256,7 +263,7 @@ export default function FXExposurePage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => `$${v.toFixed(1)}M`}
+                  formatter={(v: any) => `$${Math.round(v * 10) / 10}M`}
                 />
                 <Legend />
                 <Bar dataKey="hedged" stackId="a" fill="#10b981" name="Hedged" />

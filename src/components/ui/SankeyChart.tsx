@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export interface SankeyLink {
   source: string;
@@ -177,7 +178,7 @@ export const SankeyChart: React.FC<SankeyChartProps> = React.memo(
                     alignmentBaseline="middle"
                     fill="#64748b"
                   >
-                    {name} ({((val / totalValue) * 100).toFixed(0)}%)
+                    {name} ({formatPercent((val / totalValue) * 100, 0)})
                   </text>
                 </g>
               );

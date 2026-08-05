@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/utils/cn';
 import { roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 import { ConsolidationEngine } from '@/engines/ConsolidationEngine';
 import type {
   EntityData,
@@ -406,8 +407,8 @@ function NCIView({ details }: { details: MinorityInterestDetail[] }) {
                 {details.map((d) => (
                   <tr key={d.entityId} className="hover:bg-[var(--bg-muted)]">
                     <td className="p-2 font-medium">{d.entityName}</td>
-                    <td className="p-2 text-right">{d.ownershipPct.toFixed(1)}%</td>
-                    <td className="p-2 text-right">{d.minorityPct.toFixed(1)}%</td>
+                    <td className="p-2 text-right">{formatPercent(d.ownershipPct, 1)}</td>
+                    <td className="p-2 text-right">{formatPercent(d.minorityPct, 1)}</td>
                     <td className="p-2 text-right font-mono">{fmt(d.beginningBalance)}</td>
                     <td className="p-2 text-right font-mono">{fmt(d.netIncome)}</td>
                     <td className="p-2 text-right font-mono">{fmt(d.dividends)}</td>

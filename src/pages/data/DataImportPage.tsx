@@ -9,6 +9,7 @@ import {
   type ColumnMapping,
 } from '@/engines/MigrationEngine';
 import { parseCSV } from '@/utils/csv';
+import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
 
 import { FileDropZone } from '@/components/ui/FileDropZone';
 import { Button } from '@/components/ui/Button';
@@ -31,6 +32,80 @@ import {
 const migrationEngine = new MigrationEngine();
 
 type WizardStep = 'upload' | 'analyze' | 'map' | 'import' | 'verify';
+
+/** Money-primitive data import summary (GAP-1 F-0006). */
+export interface DataImportSummary {
+  totalEntries: number;
+  totalAccounts: number;
+  totalDebit: number;
+  totalCredit: number;
+  lastImport: { filename: string; timestamp: string } | null;
+}
+
+/** Money-primitive reconciliation result row (GAP-1 F-0006). */
+export interface RecDetailRow {
+  key: string;
+  expected: number;
+  actual: number;
+  diff: number;
+}
+
+/** Money-primitive reconciliation result (GAP-1 F-0006). */
+export interface RecResult {
+  matching: number;
+  mismatches: number;
+  missing: number;
+  details: RecDetailRow[];
+}
+
+export function computeDataImportSummary(
+  entries: readonly { debit: number; credit: number }[],
+  accounts: readonly unknown[],
+  importHistory: readonly { filename: string; timestamp: string }[]
+): DataImportSummary | null {
+  if (entries.length === 0) return null;
+  return {
+    totalEntries: entries.length,
+    totalAccounts: accounts.length,
+    totalDebit: roundTo(sumMoney(entries.map((e) => e.debit)), 2),
+    totalCredit: roundTo(sumMoney(entries.map((e) => e.credit)), 2),
+    lastImport: importHistory[0] || null,
+  };
+}
+
+export function computeReconciliation(
+  entries: readonly { accountId: string; accountCode: string; debit: number; credit: number }[],
+  recData: readonly Record<string, string>[],
+  recKeyCol: string,
+  recValCol: string,
+  tolerance: number
+): RecResult {
+  const expectedMap = new Map<string, ReturnType<typeof toDecimal>>();
+  for (const e of entries) {
+    const key = e.accountCode || e.accountId;
+    const prev = expectedMap.get(key) ?? toDecimal(0);
+    expectedMap.set(key, prev.plus(toDecimal(e.debit)).minus(toDecimal(e.credit)));
+  }
+  let matching = 0,
+    mismatches = 0,
+    missing = 0;
+  const details: RecDetailRow[] = [];
+  for (const row of recData) {
+    const key = row[recKeyCol]!;
+    const actual = parseFloat(row[recValCol]!) || 0;
+    const expected = expectedMap.has(key) ? roundTo(expectedMap.get(key)!, 2) : 0;
+    const diff = roundTo(subtractMoney(actual, expected), 2);
+    if (expected === 0) {
+      missing++;
+    } else if (Math.abs(diff) <= tolerance) {
+      matching++;
+    } else {
+      mismatches++;
+    }
+    details.push({ key, expected, actual, diff });
+  }
+  return { matching, mismatches, missing, details };
+}
 
 export default function DataImportPage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -66,18 +141,10 @@ export default function DataImportPage() {
   const [recError, setRecError] = useState<string | null>(null);
   const [_recLoading, setRecLoading] = useState(false);
 
-  const currentSummary = useMemo(() => {
-    if (entries.length === 0) return null;
-    const totalDebit = entries.reduce((s, e) => s + e.debit, 0);
-    const totalCredit = entries.reduce((s, e) => s + e.credit, 0);
-    return {
-      totalEntries: entries.length,
-      totalAccounts: accounts.length,
-      totalDebit,
-      totalCredit,
-      lastImport: importHistory[0] || null,
-    };
-  }, [entries, accounts, importHistory]);
+  const currentSummary = useMemo(
+    () => computeDataImportSummary(entries, accounts, importHistory),
+    [entries, accounts, importHistory]
+  );
 
   // Migration wizard handlers
   const handleMigrationFile = useCallback(async (file: File) => {
@@ -189,29 +256,8 @@ export default function DataImportPage() {
 
   const runReconciliation = useCallback(() => {
     if (!recKeyCol || !recValCol || recData.length === 0 || entries.length === 0) return;
-    const expectedMap = new Map<string, number>();
-    entries.forEach((e) => {
-      const key = e.accountCode || e.accountId;
-      expectedMap.set(key, (expectedMap.get(key) || 0) + (e.debit - e.credit));
-    });
-    let matching = 0,
-      mismatches = 0,
-      missing = 0;
-    const details: { key: string; expected: number; actual: number; diff: number }[] = [];
-    recData.forEach((row) => {
-      const key = row[recKeyCol]!;
-      const actual = parseFloat(row[recValCol]!) || 0;
-      const expected = expectedMap.get(key) || 0;
-      if (expected === 0) {
-        missing++;
-      } else if (Math.abs(expected - actual) < 0.01) {
-        matching++;
-      } else {
-        mismatches++;
-      }
-      details.push({ key, expected, actual, diff: actual - expected });
-    });
-    setRecResult({ matching, mismatches, missing, details });
+    const result = computeReconciliation(entries, recData, recKeyCol, recValCol, 0.01);
+    setRecResult(result);
   }, [recKeyCol, recValCol, recData, entries]);
 
   const csvHeaders = recData.length > 0 ? Object.keys(recData[0]!) : [];

@@ -39,6 +39,7 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -275,12 +276,12 @@ export default function WorkingCapitalPage() {
         />
         <KPIValue
           label="Current Ratio"
-          value={data.currentRatio.toFixed(2)}
+          value={formatPercent(data.currentRatio, 2)}
           icon={<Scale className="h-4 w-4" />}
         />
         <KPIValue
           label="Quick Ratio"
-          value={data.quickRatio.toFixed(2)}
+          value={formatPercent(data.quickRatio, 2)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
@@ -331,7 +332,7 @@ export default function WorkingCapitalPage() {
               <YAxis
                 stroke="#94a3b8"
                 fontSize={12}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
                 formatter={(v: any) => formatCurrency(v)}

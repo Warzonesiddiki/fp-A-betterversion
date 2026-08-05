@@ -5,6 +5,7 @@ import type {
   IterativeConfig,
 } from '@/engines/IterativeCalculationEngine';
 import { DEFAULT_ITERATIVE_CONFIG } from '@/engines/IterativeCalculationEngine';
+import { formatNumber } from '@/utils/financialFormatting';
 
 // =============================================================================
 // CircularReferenceWarning — Banner for circular reference detection
@@ -178,7 +179,7 @@ export function CircularReferenceWarning({
               <span className="ml-1 font-mono font-medium">
                 {convergenceResult.maxChange < 0.01
                   ? convergenceResult.maxChange.toExponential(2)
-                  : convergenceResult.maxChange.toFixed(4)}
+                  : formatNumber(convergenceResult.maxChange, 4)}
               </span>
             </div>
             <div>
@@ -209,7 +210,7 @@ export function CircularReferenceWarning({
                           : 'bg-current opacity-40'
                       }`}
                       style={{ height: `${height}%` }}
-                      title={`Iter ${i + 1}: ${val.toFixed(6)}`}
+                      title={`Iter ${i + 1}: ${formatNumber(val, 6)}`}
                     />
                   );
                 })}

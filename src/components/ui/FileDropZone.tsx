@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { formatNumber } from '@/utils/financialFormatting';
 import {
   Upload as UploadIcon,
   FileUp,
@@ -142,7 +143,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
                   {currentFile.name}
                 </span>
                 <span className="text-[10px] text-[var(--text-secondary)] font-medium mt-1">
-                  {(currentFile.size / 1024).toFixed(1)} KB
+                  {formatNumber(currentFile.size / 1024, 1)} KB
                 </span>
               </div>
               <button

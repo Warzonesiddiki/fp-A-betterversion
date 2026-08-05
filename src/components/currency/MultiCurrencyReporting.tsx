@@ -7,6 +7,7 @@ import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { TrendingUp, TrendingDown, Globe } from 'lucide-react';
 import { multiplyMoney, roundTo, sumMoney } from '@/utils/money';
+import { formatNumber } from '@/utils/financialFormatting';
 import { CURRENCIES, formatMoney } from './constants';
 
 /**
@@ -310,7 +311,7 @@ export function MultiCurrencyReporting() {
                   </td>
                   <td className="px-4 py-3 font-mono">{e.currency}</td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums">
-                    {e.rate.toFixed(4)}
+                    {formatNumber(e.rate, 4)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {formatMoney(e.revenueUSD, parentCurrency)}

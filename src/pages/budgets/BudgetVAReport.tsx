@@ -29,13 +29,16 @@ import {
   TrendingUp,
   DollarSign,
 } from 'lucide-react';
+import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
+import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 }
 
+/** Local formatPercent delegates to financialFormatting (GAP-1 F-0006). */
 function formatPercent(n: number): string {
-  return n.toFixed(1) + '%';
+  return formatPercentDisplay(n);
 }
 
 export default function BudgetVAReport() {
@@ -53,24 +56,26 @@ export default function BudgetVAReport() {
   const reportData = useMemo(() => {
     if (!selectedBudget) return [];
 
-    // Group actuals by account code
-    const actualsMap = new Map<string, number>();
+    // Group actuals by account code (money-primitive accumulation)
+    const actualsMap = new Map<string, ReturnType<typeof toDecimal>>();
     entries.forEach((e) => {
-      const current = actualsMap.get(e.accountCode || '') || 0;
+      const key = e.accountCode || '';
+      const prev = actualsMap.get(key) ?? toDecimal(0);
       // Budget is usually positive for both revenue/expense in simple models
       // Actuals need to be normalized
       const amt = (e.accountCode || '').startsWith('4')
-        ? e.credit - e.debit // Revenue is credit - debit
-        : e.debit - e.credit; // Expense is debit - credit
-      actualsMap.set(e.accountCode || '', current + amt);
+        ? toDecimal(e.credit).minus(toDecimal(e.debit)) // Revenue is credit - debit
+        : toDecimal(e.debit).minus(toDecimal(e.credit)); // Expense is debit - credit
+      actualsMap.set(key, prev.plus(amt));
     });
 
     return lineItems
       .filter((li) => li.budgetId === selectedBudgetId)
       .map((item) => {
-        const actual = actualsMap.get(item.accountCode) || 0;
+        const actualDec = actualsMap.get(item.accountCode);
+        const actual = actualDec ? roundTo(actualDec, 2) : 0;
         const budget = item.amount;
-        const variance = actual - budget;
+        const variance = roundTo(subtractMoney(actual, budget), 2);
         const variancePct = budget !== 0 ? (variance / budget) * 100 : 0;
 
         return {
@@ -87,13 +92,11 @@ export default function BudgetVAReport() {
   }, [selectedBudget, entries]);
 
   const totals = useMemo(() => {
-    const t = { budget: 0, actual: 0, variance: 0 };
-    reportData.forEach((d) => {
-      t.budget += d.budget;
-      t.actual += d.actual;
-      t.variance += d.variance;
-    });
-    return t;
+    return {
+      budget: roundTo(sumMoney(reportData.map((d) => d.budget)), 2),
+      actual: roundTo(sumMoney(reportData.map((d) => d.actual)), 2),
+      variance: roundTo(sumMoney(reportData.map((d) => d.variance)), 2),
+    };
   }, [reportData]);
 
   const waterfallData = useMemo<WaterfallItem[]>(() => {
@@ -108,7 +111,10 @@ export default function BudgetVAReport() {
       (a, b) => Math.abs(b.variance) - Math.abs(a.variance)
     );
     const topVariances = sortedVariances.slice(0, 5);
-    const otherVariance = sortedVariances.slice(5).reduce((acc, curr) => acc + curr.variance, 0);
+    const otherVariance = roundTo(
+      sumMoney(sortedVariances.slice(5).map((curr) => curr.variance)),
+      2
+    );
 
     topVariances.forEach((v) => {
       items.push({
@@ -143,19 +149,19 @@ export default function BudgetVAReport() {
   }, [reportData]);
 
   const pieChartData = useMemo(() => {
-    let favorable = 0;
-    let unfavorable = 0;
+    let favorable = toDecimal(0);
+    let unfavorable = toDecimal(0);
     reportData.forEach((d) => {
-      const variance = d.budget - d.actual;
-      if (variance >= 0) {
-        favorable += variance;
+      const variance = toDecimal(d.budget).minus(toDecimal(d.actual));
+      if (variance.greaterThanOrEqualTo(0)) {
+        favorable = favorable.plus(variance);
       } else {
-        unfavorable += Math.abs(variance);
+        unfavorable = unfavorable.plus(variance.abs());
       }
     });
     return [
-      { name: 'Favorable', value: favorable, color: '#16A34A' },
-      { name: 'Unfavorable', value: unfavorable, color: '#DC2626' },
+      { name: 'Favorable', value: roundTo(favorable, 2), color: '#16A34A' },
+      { name: 'Unfavorable', value: roundTo(unfavorable, 2), color: '#DC2626' },
     ];
   }, [reportData]);
 

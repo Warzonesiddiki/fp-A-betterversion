@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { BookTemplate, ChevronDown, Copy, Check } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { AutoCommentaryEngine } from '@/engines/AutoCommentaryEngine';
 
 interface VarianceCommentaryPanelProps {
@@ -72,7 +73,7 @@ export function VarianceCommentaryPanel({
       actual,
       budget,
       amount: formatCurrency(Math.abs(variance)),
-      variance: Math.abs(variancePct).toFixed(1),
+      variance: formatNumber(Math.abs(variancePct), 1),
       drivers: drivers?.join(', ') ?? '',
       fiscal_year: period,
       periods: '3',
@@ -110,7 +111,7 @@ export function VarianceCommentaryPanel({
             )}
           >
             {variancePct >= 0 ? '+' : ''}
-            {variancePct.toFixed(1)}%
+            {formatPercent(variancePct, 1)}
           </span>
         </div>
         <ChevronDown

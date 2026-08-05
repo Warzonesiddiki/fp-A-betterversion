@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/utils/cn';
+import { formatNumber } from '@/utils/financialFormatting';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import type { WorkflowStats } from '@/engines/WorkflowEngine';
 
@@ -67,7 +68,7 @@ export const ApprovalDashboard = memo(function ApprovalDashboard({ stats, classN
             {stats.avgApprovalTimeHours > 0
               ? stats.avgApprovalTimeHours < 1
                 ? `${Math.round(stats.avgApprovalTimeHours * 60)}m`
-                : `${stats.avgApprovalTimeHours.toFixed(1)}h`
+                : `${formatNumber(stats.avgApprovalTimeHours, 1)}h`
               : 'N/A'}
           </p>
           <p className="text-xs text-[var(--text-muted)]">

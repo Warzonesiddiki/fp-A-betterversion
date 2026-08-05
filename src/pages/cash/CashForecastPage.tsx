@@ -279,7 +279,7 @@ export default function CashForecastPage() {
               <YAxis
                 stroke="#94a3b8"
                 fontSize={12}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
                 formatter={(v: any) => formatCurrency(v)}

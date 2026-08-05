@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import MigrationWizard from '@/components/migration/MigrationWizard';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   ArrowLeft,
   Database,
@@ -228,7 +229,7 @@ export default function MigrationPage() {
                     : 'text-red-400'
               }`}
             >
-              {stats.successRate.toFixed(1)}%
+              {formatPercent(stats.successRate)}
             </div>
           </CardContent>
         </Card>

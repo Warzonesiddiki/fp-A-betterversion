@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export interface FunnelStage {
   label: string;
@@ -68,7 +69,7 @@ export const FunnelChart: React.FC<FunnelChartProps> = React.memo(
         {stages.map((stage, i) => {
           const width = (stage.value / maxValue) * 100;
           const conversionRate =
-            i > 0 ? ((stage.value / stages![i - 1]!.value) * 100).toFixed(1) : null;
+            i > 0 ? formatPercent((stage.value / stages![i - 1]!.value) * 100, 1) : null;
 
           return (
             <div
@@ -102,7 +103,7 @@ export const FunnelChart: React.FC<FunnelChartProps> = React.memo(
                 <span className="ml-2 text-sm font-medium">{format(stage.value)}</span>
               </div>
               {conversionRate && (
-                <div className="w-16 text-xs text-[var(--text-muted)]">{conversionRate}%</div>
+                <div className="w-16 text-xs text-[var(--text-muted)]">{conversionRate}</div>
               )}
             </div>
           );

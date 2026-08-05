@@ -7,6 +7,7 @@ import { Modal } from '@/components/ui/Modal';
 import { FXEngine, type FXRateEntry } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { Plus, TrendingUp, TrendingDown, History, Trash2 } from 'lucide-react';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { CURRENCIES, SOURCE_LABEL, SOURCE_VARIANT, formatMoney } from './constants';
 
 interface RateForm {
@@ -179,7 +180,7 @@ export function FXRateManager() {
                         {p.from}/{p.to}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums">
-                        {p.latest?.rate.toFixed(4)}
+                        {formatNumber(p.latest?.rate, 4)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span
@@ -192,7 +193,7 @@ export function FXRateManager() {
                             <TrendingDown className="h-3 w-3" />
                           )}
                           {p.change >= 0 ? '+' : ''}
-                          {p.change.toFixed(2)}%
+                          {formatPercent(p.change, 2)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right text-slate-400">{p.count}</td>
@@ -231,7 +232,9 @@ export function FXRateManager() {
                   >
                     <div>
                       <div className="text-xs text-slate-400">{r.date}</div>
-                      <div className="font-mono text-sm tabular-nums">{r.rate.toFixed(6)}</div>
+                      <div className="font-mono text-sm tabular-nums">
+                        {formatNumber(r.rate, 6)}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={SOURCE_VARIANT[r.source]}>{SOURCE_LABEL[r.source]}</Badge>

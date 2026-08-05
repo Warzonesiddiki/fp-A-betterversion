@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import { FXEngine, MissingFXRateError, type RateType } from '@/engines/FXEngine';
 import { ArrowRight, TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
 import { addMoney, multiplyMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import { formatNumber } from '@/utils/financialFormatting';
 import { CURRENCIES, formatMoney } from './constants';
 
 /**
@@ -15,7 +16,7 @@ import { CURRENCIES, formatMoney } from './constants';
  * Those are all currency arithmetic and feed the balance check (which
  * decides the "Balanced / Unbalanced" badge shown to the user — LOGIC).
  * Percentages/rates are scalar multipliers and are excluded; rates displayed
- * via .toFixed(4) are scalar display, not money. Exported for *.money.test.ts.
+ * via toFixed(4) are scalar display, not money. Exported for *.money.test.ts.
  */
 export interface TranslationInput {
   category: string;
@@ -287,19 +288,19 @@ export function CurrencyTranslation() {
               <div>
                 <span className="text-slate-500">Closing</span>
                 <span className="ml-2 font-mono">
-                  {closingRate === null ? '— missing' : closingRate.toFixed(4)}
+                  {closingRate === null ? '— missing' : formatNumber(closingRate, 4)}
                 </span>
               </div>
               <div>
                 <span className="text-slate-500">Average</span>
                 <span className="ml-2 font-mono">
-                  {averageRate === null ? '— missing' : averageRate.toFixed(4)}
+                  {averageRate === null ? '— missing' : formatNumber(averageRate, 4)}
                 </span>
               </div>
               <div>
                 <span className="text-slate-500">Historical</span>
                 <span className="ml-2 font-mono">
-                  {historicalRate === null ? '— missing' : historicalRate.toFixed(4)}
+                  {historicalRate === null ? '— missing' : formatNumber(historicalRate, 4)}
                 </span>
               </div>
             </div>
@@ -394,7 +395,7 @@ export function CurrencyTranslation() {
                       <Badge variant="outline">{r.rateType}</Badge>
                     </td>
                     <td className="px-4 py-2 text-right font-mono tabular-nums">
-                      {r.rateUsed.toFixed(4)}
+                      {formatNumber(r.rateUsed, 4)}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums font-medium">
                       {formatMoney(r.translatedAmount, parentCurrency)}

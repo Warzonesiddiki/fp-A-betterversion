@@ -9,6 +9,8 @@ import { ReconciliationResults } from './ReconciliationResults';
 import { Download, RefreshCw, ArrowLeftRight, FileText } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import { parseCSV } from '@/utils/csv';
+import { subtractMoney, roundTo, toDecimal, formatMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 interface RecResult {
   matching: number;
@@ -30,14 +32,17 @@ export default function ReconciliationPage() {
   const [tolerance, setTolerance] = useState(0.01); // 1% default
   const [isRunning, setIsRunning] = useState(false);
 
-  // Build GL account balances from current entries
+  // Build GL account balances from current entries (money-primitive)
   const glBalances = useMemo(() => {
-    const map = new Map<string, number>();
+    const map = new Map<string, ReturnType<typeof toDecimal>>();
     entries.forEach((e) => {
       const key = (e.accountCode || e.accountId || '').toUpperCase().trim();
       if (!key) return;
-      const net = (e.debit || 0) - (e.credit || 0) || e.amount || 0;
-      map.set(key, (map.get(key) || 0) + net);
+      const prev = map.get(key) ?? toDecimal(0);
+      // Original logic: (debit - credit) || amount (fallback when net is zero)
+      const dc = toDecimal(e.debit || 0).minus(toDecimal(e.credit || 0));
+      const net = dc.isZero() ? toDecimal(e.amount || 0) : dc;
+      map.set(key, prev.plus(net));
     });
     return map;
   }, [entries]);
@@ -119,8 +124,9 @@ export default function ReconciliationPage() {
         const rawVal = parseFloat(row[recValCol] || '0');
         const actual = isNaN(rawVal) ? 0 : rawVal;
 
-        const expected = glBalances.get(key) || 0;
-        const diff = expected - actual;
+        const expectedDec = glBalances.get(key);
+        const expected = expectedDec ? roundTo(expectedDec, 2) : 0;
+        const diff = roundTo(subtractMoney(expected, actual), 2);
 
         const pctDiff = expected !== 0 ? Math.abs(diff) / Math.abs(expected) : actual === 0 ? 0 : 1;
         const isMatch = Math.abs(diff) <= tolerance || pctDiff <= tolerance;
@@ -139,7 +145,8 @@ export default function ReconciliationPage() {
       });
 
       // Detect GL-only items (missing from file)
-      glBalances.forEach((expected, key) => {
+      glBalances.forEach((expectedDec, key) => {
+        const expected = roundTo(expectedDec, 2);
         if (!seenKeys.has(key) && expected !== 0) {
           missing++;
           details.push({ key, expected, actual: 0, diff: expected });
@@ -171,9 +178,13 @@ export default function ReconciliationPage() {
       .map((d) => {
         const status =
           d.expected === 0 ? 'missing' : Math.abs(d.diff) <= tolerance ? 'match' : 'mismatch';
-        return [d.key, d.expected.toFixed(2), d.actual.toFixed(2), d.diff.toFixed(2), status].join(
-          ','
-        );
+        return [
+          d.key,
+          formatMoney(d.expected, { places: 2 }),
+          formatMoney(d.actual, { places: 2 }),
+          formatMoney(d.diff, { places: 2 }),
+          status,
+        ].join(',');
       })
       .join('\n');
 
@@ -204,7 +215,7 @@ export default function ReconciliationPage() {
           </h1>
           <p className="text-slate-400 mt-1">
             Compare imported GL data against external source files with{' '}
-            {(tolerance * 100).toFixed(1)}% tolerance matching.
+            {formatPercent(tolerance * 100)} tolerance matching.
           </p>
         </div>
         <div className="flex gap-2">
@@ -247,7 +258,7 @@ export default function ReconciliationPage() {
                 }}
                 className="w-24"
               />
-              <span className="text-xs text-slate-500">({(tolerance * 100).toFixed(1)}%)</span>
+              <span className="text-xs text-slate-500">({formatPercent(tolerance * 100)})</span>
             </div>
             <p className="text-[10px] text-slate-500 mt-1">
               Absolute or relative difference allowed
@@ -313,7 +324,7 @@ export default function ReconciliationPage() {
           ) : (
             <>
               <ArrowLeftRight className="h-4 w-4 mr-2" /> Run Reconciliation (
-              {(tolerance * 100).toFixed(0)}% tolerance)
+              {formatPercent(tolerance * 100, 0)} tolerance)
             </>
           )}
         </Button>

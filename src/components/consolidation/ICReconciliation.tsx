@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import type {
   ReconciliationReport,
@@ -182,7 +183,7 @@ export function ICReconciliation({
           value={formatCurrency(totalDifference)}
           variant={totalDifference > 0 ? 'warning' : 'success'}
         />
-        <MetricCard label="Match Rate" value={`${matchRate.toFixed(1)}%`} variant="info" />
+        <MetricCard label="Match Rate" value={formatPercent(matchRate, 1)} variant="info" />
       </div>
 
       {/* Tolerance Controls */}
@@ -305,7 +306,7 @@ export function ICReconciliation({
                           {formatCurrency(footers.totalDifference)}
                         </td>
                         <td className="p-2 text-right">
-                          {footers.avgPercentageDifference.toFixed(1)}%
+                          {formatPercent(footers.avgPercentageDifference, 1)}
                         </td>
                         <td />
                       </tr>
@@ -351,7 +352,7 @@ export function ICReconciliation({
                         {formatCurrency(line.difference)} difference
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {line.percentageDifference.toFixed(2)}% off
+                        {formatPercent(line.percentageDifference, 2)} off
                       </div>
                     </div>
                   </div>
@@ -405,7 +406,7 @@ function ReconciliationRow({
           {formatCurrency(line.difference)}
         </td>
         <td className="p-2 text-right font-mono text-xs">
-          {line.percentageDifference.toFixed(2)}%
+          {formatPercent(line.percentageDifference, 2)}
         </td>
         <td className="p-2 text-center">
           <Badge variant={line.withinTolerance ? 'default' : 'destructive'}>
@@ -435,7 +436,7 @@ function ReconciliationRow({
               </div>
               <div>
                 <span className="text-muted-foreground">Diff %:</span>{' '}
-                {line.percentageDifference.toFixed(2)}%
+                {formatPercent(line.percentageDifference, 2)}
               </div>
               <div>
                 <span className="text-muted-foreground">Tolerance:</span>{' '}

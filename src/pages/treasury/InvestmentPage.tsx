@@ -23,6 +23,8 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { sumMoney, roundTo } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -117,6 +119,23 @@ const YIELD_CURVE = [
 
 const COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#6b7280'];
 
+/** Money-primitive investment portfolio totals (GAP-1 F-0006). */
+export interface InvestmentTotals {
+  totalValue: number;
+  weightedYield: number;
+}
+
+export function computeInvestmentTotals(
+  investments: readonly { value: number; yield: number }[]
+): InvestmentTotals {
+  const totalValue = roundTo(sumMoney(investments.map((i) => i.value)), 2);
+  // weightedYield is a percentage ratio — computed via money to avoid drift
+  // in the numerator (yield × value), then divided
+  const weightedSum = roundTo(sumMoney(investments.map((i) => i.yield * i.value)), 2);
+  const weightedYield = totalValue !== 0 ? weightedSum / totalValue : 0;
+  return { totalValue, weightedYield };
+}
+
 export default function InvestmentPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
@@ -124,8 +143,7 @@ export default function InvestmentPage() {
     document.title = 'FinPlan Pro — Investment Dashboard';
   }, []);
 
-  const totalValue = INVESTMENTS.reduce((s, i) => s + i.value, 0);
-  const weightedYield = INVESTMENTS.reduce((s, i) => s + i.yield * i.value, 0) / totalValue;
+  const { totalValue, weightedYield } = computeInvestmentTotals(INVESTMENTS);
 
   const handleExport = () => {
     void ExportEngine.exportToExcel(
@@ -176,7 +194,7 @@ export default function InvestmentPage() {
         />
         <KPIValue
           label="Weighted Avg Yield"
-          value={`${weightedYield.toFixed(2)}%`}
+          value={formatPercent(weightedYield)}
           icon={<TrendingUp className="h-4 w-4" />}
           trend="up"
         />
@@ -204,7 +222,7 @@ export default function InvestmentPage() {
                   outerRadius={100}
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${Math.round((percent ?? 0) * 100)}%`}
                 >
                   {ALLOCATION.map((_, i) => (
                     <Cell key={i} fill={COLORS[i]} />
@@ -264,7 +282,7 @@ export default function InvestmentPage() {
             <BarChart data={MATURITY_LADDER}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
               <XAxis dataKey="bucket" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 100000) / 10}M`} />
               <Tooltip
                 contentStyle={{
                   background: '#1e293b',
@@ -317,7 +335,9 @@ export default function InvestmentPage() {
                     <td className="py-2 px-3 font-medium">{inv.instrument}</td>
                     <td className="py-2 px-3">{inv.issuer}</td>
                     <td className="py-2 px-3">{inv.maturity}</td>
-                    <td className="text-right py-2 px-3 text-green-400">{inv.yield.toFixed(2)}%</td>
+                    <td className="text-right py-2 px-3 text-green-400">
+                      {formatPercent(inv.yield)}
+                    </td>
                     <td className="text-right py-2 px-3">{formatCurrency(inv.value)}</td>
                     <td className="text-right py-2 px-3">
                       <span className="px-2 py-0.5 rounded text-xs bg-blue-900/50 text-blue-300">

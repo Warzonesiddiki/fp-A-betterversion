@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { FileText, Download, Calendar } from 'lucide-react';
+import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -15,6 +16,86 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+/** Money-primitive GL reporting account-type totals (GAP-1 F-0006). */
+export interface AccountTypeTotalRow {
+  debit: number;
+  credit: number;
+  count: number;
+  [key: string]: unknown;
+}
+
+/** Money-primitive GL reporting summary (GAP-1 F-0006). */
+export interface GLReportingSummary {
+  totalEntries: number;
+  totalAccounts: number;
+  accountsWithEntries: number;
+  dateRange: { start: string; end: string } | null;
+  typeBreakdown: Record<string, number>;
+  accountTypeTotals: Record<string, AccountTypeTotalRow>;
+  trialBalanceBalanced: boolean;
+}
+
+export function computeGLReportingSummary(
+  entries: readonly {
+    date: string;
+    accountId?: string;
+    accountCode: string;
+    debit: number;
+    credit: number;
+  }[],
+  accounts: readonly { id: string; code: string; type: string }[],
+  trialBalance: readonly { debit: number; credit: number }[]
+): GLReportingSummary | null {
+  if (entries.length === 0) return null;
+  const dates = entries
+    .map((e) => e.date)
+    .filter(Boolean)
+    .sort();
+  const accountsWithEntries = new Set(entries.map((e) => e.accountId || e.accountCode));
+  // typeBreakdown is a COUNT (not money) — stays as raw number
+  const typeBreakdown = accounts.reduce(
+    (acc, a) => {
+      acc[a.type] = (acc[a.type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+  // accountTypeTotals accumulates money (debit/credit) via toDecimal and count separately
+  const accBuf: Record<
+    string,
+    { debit: ReturnType<typeof toDecimal>; credit: ReturnType<typeof toDecimal>; count: number }
+  > = {};
+  for (const e of entries) {
+    const acct = accounts.find((a) => a.id === e.accountId || a.code === e.accountCode);
+    const type = acct?.type || 'Unknown';
+    if (!accBuf[type]) accBuf[type] = { debit: toDecimal(0), credit: toDecimal(0), count: 0 };
+    accBuf[type]!.debit = accBuf[type]!.debit.plus(toDecimal(e.debit));
+    accBuf[type]!.credit = accBuf[type]!.credit.plus(toDecimal(e.credit));
+    accBuf[type]!.count++;
+  }
+  const accountTypeTotals: Record<string, AccountTypeTotalRow> = {};
+  for (const [type, buf] of Object.entries(accBuf)) {
+    accountTypeTotals[type] = {
+      debit: roundTo(buf.debit, 2),
+      credit: roundTo(buf.credit, 2),
+      count: buf.count,
+    };
+  }
+  const totalDebits = roundTo(sumMoney(trialBalance.map((r) => r.debit)), 2);
+  const totalCredits = roundTo(sumMoney(trialBalance.map((r) => r.credit)), 2);
+  const diff = roundTo(subtractMoney(totalDebits, totalCredits), 2);
+  const lastDate = dates[dates.length - 1];
+  return {
+    totalEntries: entries.length,
+    totalAccounts: accounts.length,
+    accountsWithEntries: accountsWithEntries.size,
+    dateRange: dates.length >= 2 && lastDate ? { start: dates[0]!, end: lastDate } : null,
+    typeBreakdown,
+    accountTypeTotals,
+    trialBalanceBalanced: trialBalance.length > 0 && Math.abs(diff) < 0.01,
+  };
 }
 
 export default function GLReportingPage() {
@@ -36,47 +117,10 @@ export default function GLReportingPage() {
   });
   const [_typeFilter, _setTypeFilter] = useState('all');
 
-  const summary = useMemo(() => {
-    if (entries.length === 0) return null;
-    const dates = entries
-      .map((e) => e.date)
-      .filter(Boolean)
-      .sort();
-    const accountsWithEntries = new Set(entries.map((e) => e.accountId || e.accountCode));
-    const typeBreakdown = accounts.reduce(
-      (acc, a) => {
-        acc[a.type] = (acc[a.type] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-    const accountTypeTotals = entries.reduce(
-      (acc, e) => {
-        const acct = accounts.find((a) => a.id === e.accountId || a.code === e.accountCode);
-        const type = acct?.type || 'Unknown';
-        if (!acc[type]!) acc[type] = { debit: 0, credit: 0, count: 0 };
-        acc[type]!.debit += e.debit;
-        acc[type]!.credit += e.credit;
-        acc[type]!.count++;
-        return acc;
-      },
-      {} as Record<string, { debit: number; credit: number; count: number }>
-    );
-    return {
-      totalEntries: entries.length,
-      totalAccounts: accounts.length,
-      accountsWithEntries: accountsWithEntries.size,
-      dateRange: dates.length >= 2 ? { start: dates[0]!, end: dates[dates.length - 1] } : null,
-      typeBreakdown,
-      accountTypeTotals,
-      trialBalanceBalanced:
-        trialBalance.length > 0 &&
-        Math.abs(
-          trialBalance.reduce((s, r) => s + r.debit, 0) -
-            trialBalance.reduce((s, r) => s + r.credit, 0)
-        ) < 0.01,
-    };
-  }, [entries, accounts, trialBalance]);
+  const summary = useMemo(
+    () => computeGLReportingSummary(entries, accounts, trialBalance),
+    [entries, accounts, trialBalance]
+  );
 
   if (entries.length === 0) {
     return (
@@ -198,7 +242,7 @@ export default function GLReportingPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-800">
                     {Object.entries(summary.accountTypeTotals).map(([type, data]) => {
-                      const net = data.debit - data.credit;
+                      const net = roundTo(subtractMoney(data.debit, data.credit), 2);
                       const typeCount = summary.typeBreakdown[type] || 0;
                       return (
                         <tr key={type} className="hover:bg-slate-900/50">

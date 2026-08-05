@@ -11,6 +11,7 @@ import { BankingEngine } from '@/engines/BankingEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { divideMoney, multiplyMoney, roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 /**
  * GAP-1 (F-0006) — exact-decimal NIM component income/asset aggregates.
@@ -83,7 +84,7 @@ export default function NIMDashboardPage() {
   const handleExport = () => {
     const data = {
       headers: ['Interest Source', 'Interest Income', 'Weighted Yield'],
-      rows: components.map((c) => [c.source, c.income, `${c.yield.toFixed(2)}%`]),
+      rows: components.map((c) => [c.source, c.income, formatPercent(c.yield)]),
     };
     void ExportEngine.exportToExcel(data, { title: 'NIM_Analysis_Report' }).catch(
       reportExportFailure

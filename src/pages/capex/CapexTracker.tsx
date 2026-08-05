@@ -10,6 +10,7 @@ import { HelpPanel } from '@/components/ui/HelpPanel';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
 import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 import { Truck, DollarSign, Layers, TrendingUp, HelpCircle, Plus } from 'lucide-react';
 
 /**
@@ -136,8 +137,8 @@ export function CapexTracker() {
             {p.status}
           </span>
         ),
-        paybackPeriod: p.paybackPeriod > 0 ? p.paybackPeriod.toFixed(1) : '-',
-        irr: p.irr > 0 ? `${p.irr.toFixed(1)}%` : '-',
+        paybackPeriod: p.paybackPeriod > 0 ? formatPercent(p.paybackPeriod) : '-',
+        irr: p.irr > 0 ? formatPercent(p.irr) : '-',
       })),
     [projects]
   );
