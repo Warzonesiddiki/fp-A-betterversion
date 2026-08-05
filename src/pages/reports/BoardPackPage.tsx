@@ -10,6 +10,8 @@ import { FileText, Table as TableIcon, FileText as FileIcon } from 'lucide-react
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
+import { roundTo, sumMoney, subtractMoney, divideMoney } from '@/utils/money';
+import type { GLEntry } from '@/types';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -18,6 +20,73 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+export interface BoardPackReport {
+  revenue: number;
+  expenses: number;
+  netIncome: number;
+  assets: number;
+  liabilities: number;
+  equity: number;
+  grossMargin: number;
+  totalBudget: number;
+  budgetCount: number;
+  entryCount: number;
+}
+
+export function sumByAccountPrefix(
+  entries: readonly GLEntry[],
+  prefixes: readonly string[],
+  mode: 'debit' | 'credit' | 'abs'
+): number {
+  const matched = entries.filter((e) => {
+    const code = e.accountCode || '';
+    return prefixes.some((p) => code.startsWith(p));
+  });
+  const values = matched.map((e) => {
+    if (mode === 'credit') {
+      return subtractMoney(e.credit, e.debit);
+    } else if (mode === 'debit') {
+      return subtractMoney(e.debit, e.credit);
+    } else {
+      return Math.abs(roundTo(subtractMoney(e.debit, e.credit), 2));
+    }
+  });
+  return roundTo(sumMoney(values), 2);
+}
+
+export function computeBoardPackReport(
+  entries: readonly GLEntry[],
+  budgets: readonly { totalAmount?: number }[]
+): BoardPackReport | null {
+  if (entries.length === 0) return null;
+  const revenue = sumByAccountPrefix(entries, ['4'], 'credit');
+  const expenses = sumByAccountPrefix(entries, ['5', '6'], 'abs');
+  const assets = sumByAccountPrefix(entries, ['1'], 'debit');
+  const liabilities = sumByAccountPrefix(entries, ['2'], 'credit');
+  const equity = sumByAccountPrefix(entries, ['3'], 'credit');
+  const netIncome = roundTo(subtractMoney(revenue, expenses), 2);
+  const totalBudget = roundTo(
+    sumMoney(budgets.map((b) => b.totalAmount || 0)),
+    2
+  );
+  const grossMargin =
+    revenue > 0
+      ? roundTo(divideMoney(subtractMoney(revenue, expenses), revenue).times(100), 2)
+      : 0;
+  return {
+    revenue,
+    expenses,
+    netIncome,
+    assets,
+    liabilities,
+    equity,
+    grossMargin,
+    totalBudget,
+    budgetCount: budgets.length,
+    entryCount: entries.length,
+  };
 }
 
 export default function BoardPackPage() {
@@ -32,36 +101,7 @@ export default function BoardPackPage() {
   const navigate = useNavigate();
 
   const report = useMemo(() => {
-    if (entries.length === 0) return null;
-    const revenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const expenses = entries
-      .filter((e) => (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const assets = entries
-      .filter((e) => (e.accountCode || '').startsWith('1'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const liabilities = entries
-      .filter((e) => (e.accountCode || '').startsWith('2'))
-      .reduce((s, e) => s + (e.credit - e.debit), 0);
-    const equity = entries
-      .filter((e) => (e.accountCode || '').startsWith('3'))
-      .reduce((s, e) => s + (e.credit - e.debit), 0);
-    const netIncome = revenue - expenses;
-    const totalBudget = budgets.reduce((s, b) => s + (b.totalAmount || 0), 0);
-    return {
-      revenue,
-      expenses,
-      netIncome,
-      assets,
-      liabilities,
-      equity,
-      grossMargin: revenue > 0 ? ((revenue - expenses) / revenue) * 100 : 0,
-      totalBudget,
-      budgetCount: budgets.length,
-      entryCount: entries.length,
-    };
+    return computeBoardPackReport(entries, budgets);
   }, [entries, budgets]);
 
   const handleExportPDF = () => {

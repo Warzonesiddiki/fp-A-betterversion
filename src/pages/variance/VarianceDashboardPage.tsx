@@ -33,7 +33,8 @@ import { VarianceChart } from '@/components/charts/VarianceChart';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney } from '@/utils/money';
+import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
+import type { GLEntry } from '@/types';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
@@ -81,6 +82,26 @@ const CATEGORY_DEFS: ReadonlyArray<{
   },
 ];
 
+export function computeCategoryActual(
+  entries: readonly GLEntry[],
+  prefixes: readonly string[],
+  sign: 1 | -1 = 1
+): number {
+  const matched = entries.filter((e) => prefixes.some((p) => (e.accountCode || '').startsWith(p)));
+  const values = matched.map((e) => {
+    return sign === 1 ? subtractMoney(e.credit, e.debit) : subtractMoney(e.debit, e.credit);
+  });
+  return roundTo(sumMoney(values), 2);
+}
+
+export function computeCategoryBudget(
+  lineItems: readonly { accountCode: string; amount: number }[],
+  prefixes: readonly string[]
+): number {
+  const matched = lineItems.filter((li) => prefixes.some((p) => li.accountCode.startsWith(p)));
+  return roundTo(sumMoney(matched.map((li) => li.amount)), 2);
+}
+
 export default function VarianceDashboardPage() {
   const { entries } = useGLStore();
   // Defensive default: some legacy test doubles for useBudgetStore mock only
@@ -124,21 +145,9 @@ export default function VarianceDashboardPage() {
     const budgetByCategory = new Map<string, number>();
 
     for (const cat of CATEGORY_DEFS) {
-      const inCategory = (code: string) => cat.prefixes.some((p) => code.startsWith(p));
-
-      const actual = entries
-        .filter((e) => inCategory(e.accountCode || ''))
-        .reduce((s, e) => {
-          const amt =
-            cat.key === 'Revenue'
-              ? e.credit - e.debit // revenue: credit-normal
-              : e.debit - e.credit; // COGS/opex: debit-normal, expressed as a positive cost
-          return s + amt;
-        }, 0);
-
-      const budget = approvedLineItems
-        .filter((li) => inCategory(li.accountCode))
-        .reduce((s, li) => s + li.amount, 0);
+      const sign: 1 | -1 = cat.key === 'Revenue' ? 1 : -1;
+      const actual = computeCategoryActual(entries, cat.prefixes, sign);
+      const budget = computeCategoryBudget(approvedLineItems, cat.prefixes);
 
       actualByCategory.set(cat.key, actual);
       budgetByCategory.set(cat.key, budget);
@@ -166,10 +175,14 @@ export default function VarianceDashboardPage() {
     const totalBudget = roundTo(sumMoney(rows.map((r) => r.budget)), 2);
     const totalActual = roundTo(sumMoney(rows.map((r) => r.actual)), 2);
     const totalVar = roundTo(sumMoney(rows.map((r) => r.variance)), 2);
-    const favorable = rows.filter((r) => r.variance >= 0).reduce((s, r) => s + r.variance, 0);
-    const unfavorable = rows
-      .filter((r) => r.variance < 0)
-      .reduce((s, r) => s + Math.abs(r.variance), 0);
+    const favorable = roundTo(
+      sumMoney(rows.filter((r) => r.variance >= 0).map((r) => r.variance)),
+      2
+    );
+    const unfavorable = roundTo(
+      sumMoney(rows.filter((r) => r.variance < 0).map((r) => Math.abs(r.variance))),
+      2
+    );
     const chartData = rows.map((r) => ({
       name: r.account,
       favorable: r.variance >= 0 ? r.variance : 0,

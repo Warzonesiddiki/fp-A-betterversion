@@ -17,6 +17,8 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
+import type { GLEntry } from '@/types';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -54,6 +56,22 @@ interface ContractRow {
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
 
+export function computeRevRecRevenue(entries: readonly GLEntry[]): number {
+  const revEntries = entries.filter((e) => (e.accountCode || '').startsWith('4'));
+  const values = revEntries.map((e) => subtractMoney(e.credit, e.debit));
+  return roundTo(sumMoney(values), 2);
+}
+
+export function computeRevRecDeferred(entries: readonly GLEntry[]): number {
+  const defEntries = entries.filter((e) => (e.accountCode || '').startsWith('23'));
+  const values = defEntries.map((e) => Math.abs(roundTo(subtractMoney(e.credit, e.debit), 2)));
+  return roundTo(sumMoney(values), 2);
+}
+
+export function computeRevRecRecognized(revenue: number, deferred: number): number {
+  return roundTo(subtractMoney(revenue, deferred), 2);
+}
+
 export default function RevRecDashboard() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
@@ -64,13 +82,9 @@ export default function RevRecDashboard() {
 
   const data = useMemo(() => {
     if (entries.length === 0) return null;
-    const revenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const deferred = entries
-      .filter((e) => (e.accountCode || '').startsWith('23'))
-      .reduce((s, e) => s + Math.abs(e.credit - e.debit), 0);
-    const recognized = revenue - deferred;
+    const revenue = computeRevRecRevenue(entries);
+    const deferred = computeRevRecDeferred(entries);
+    const recognized = computeRevRecRecognized(revenue, deferred);
     const contracts: ContractRow[] = [
       {
         contract: 'Acme Corp — SaaS License',
@@ -126,17 +140,24 @@ export default function RevRecDashboard() {
     const methods = [
       {
         name: 'Ratable',
-        value: contracts.filter((c) => c.method === 'Ratable').reduce((s, c) => s + c.total, 0),
+        value: roundTo(
+          sumMoney(contracts.filter((c) => c.method === 'Ratable').map((c) => c.total)),
+          2
+        ),
       },
       {
         name: 'Point-in-Time',
-        value: contracts
-          .filter((c) => c.method === 'Point-in-Time')
-          .reduce((s, c) => s + c.total, 0),
+        value: roundTo(
+          sumMoney(contracts.filter((c) => c.method === 'Point-in-Time').map((c) => c.total)),
+          2
+        ),
       },
       {
         name: 'Milestone',
-        value: contracts.filter((c) => c.method === 'Milestone').reduce((s, c) => s + c.total, 0),
+        value: roundTo(
+          sumMoney(contracts.filter((c) => c.method === 'Milestone').map((c) => c.total)),
+          2
+        ),
       },
     ];
     return { revenue, deferred, recognized, contracts, timeline, methods };

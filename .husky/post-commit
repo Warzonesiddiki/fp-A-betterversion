@@ -7,6 +7,11 @@
 
 set -e
 
+if [ "$HUSKY_SKIP_POST_COMMIT" = "1" ]; then
+  exit 0
+fi
+export HUSKY_SKIP_POST_COMMIT=1
+
 if [ -f scripts/update-tracker.mjs ] && [ -f PROGRESS_TRACKER.html ]; then
   if node scripts/update-tracker.mjs >/dev/null 2>&1; then
     if ! git diff --quiet PROGRESS_TRACKER.html 2>/dev/null; then
