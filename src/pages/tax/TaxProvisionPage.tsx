@@ -17,6 +17,8 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
+import type { GLEntry } from '@/types';
 
 const getRandom = () => Math.random();
 
@@ -54,6 +56,18 @@ interface JurisdictionRow {
   current: number;
 }
 
+export function computeTaxRevenue(entries: readonly GLEntry[]): number {
+  const revEntries = entries.filter((e) => (e.accountCode || '').startsWith('4'));
+  const values = revEntries.map((e) => subtractMoney(e.credit, e.debit));
+  return roundTo(sumMoney(values), 2);
+}
+
+export function computeTaxExpenses(entries: readonly GLEntry[]): number {
+  const expEntries = entries.filter((e) => (e.accountCode || '').startsWith('6'));
+  const values = expEntries.map((e) => Math.abs(roundTo(subtractMoney(e.debit, e.credit), 2)));
+  return roundTo(sumMoney(values), 2);
+}
+
 export default function TaxProvisionPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
@@ -64,12 +78,8 @@ export default function TaxProvisionPage() {
 
   const data = useMemo(() => {
     if (entries.length === 0) return null;
-    const revenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const expenses = entries
-      .filter((e) => (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    const revenue = computeTaxRevenue(entries);
+    const expenses = computeTaxExpenses(entries);
     const pretaxIncome = revenue - expenses;
     const jurisdictions: JurisdictionRow[] = [
       {
@@ -105,8 +115,8 @@ export default function TaxProvisionPage() {
         current: pretaxIncome * 0.05 * 0.105,
       },
     ];
-    const totalProvision = jurisdictions.reduce((s, j) => s + j.provision, 0);
-    const totalDeferred = jurisdictions.reduce((s, j) => s + j.deferred, 0);
+    const totalProvision = roundTo(sumMoney(jurisdictions.map((j) => j.provision)), 2);
+    const totalDeferred = roundTo(sumMoney(jurisdictions.map((j) => j.deferred)), 2);
     const effectiveRate = pretaxIncome > 0 ? (totalProvision / pretaxIncome) * 100 : 0;
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
     const trend = quarters.map((q, _i) => ({
@@ -121,7 +131,7 @@ export default function TaxProvisionPage() {
       jurisdictions,
       totalProvision,
       totalDeferred,
-      totalCurrent: jurisdictions.reduce((s, j) => s + j.current, 0),
+      totalCurrent: roundTo(sumMoney(jurisdictions.map((j) => j.current)), 2),
       effectiveRate,
       trend,
       chartData: jurisdictions.map((j) => ({

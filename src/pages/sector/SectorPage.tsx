@@ -10,7 +10,7 @@ import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/forma
 import { Layers } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import type { SectorKPI } from '@/config/sectors';
-import { roundTo, sumMoney } from '@/utils/money';
+import { roundTo, sumMoney, subtractMoney, divideMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 
 function computeSectorStats(entries: readonly GLEntry[]) {
@@ -65,6 +65,32 @@ function computeSectorStats(entries: readonly GLEntry[]) {
   };
 }
 
+export function computeSectorKPIDefaults(entries: readonly GLEntry[]): {
+  gross_margin: number;
+  revenue: number;
+  net_income: number;
+} {
+  const totalRevenue = roundTo(
+    sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+    2
+  );
+  const totalExpenses = roundTo(
+    sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
+    2
+  );
+  const net_income = roundTo(subtractMoney(totalRevenue, totalExpenses), 2);
+  const gross_margin =
+    totalRevenue > 0
+      ? roundTo(divideMoney(subtractMoney(totalRevenue, totalExpenses), totalRevenue).times(100), 2)
+      : 0;
+
+  return {
+    gross_margin,
+    revenue: totalRevenue,
+    net_income,
+  };
+}
+
 function formatKPIValue(kpi: SectorKPI, value: number): string {
   switch (kpi.format) {
     case 'currency':
@@ -112,19 +138,7 @@ export default function SectorPage() {
   const kpiActuals = useMemo(() => {
     if (!sectorConfig) return {};
 
-    const totalRevenue = entries
-      .filter((e) => e.credit > e.debit)
-      .reduce((s, e) => s + e.credit, 0);
-    const totalExpenses = entries
-      .filter((e) => e.debit > e.credit)
-      .reduce((s, e) => s + e.debit, 0);
-    const margin = totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue) * 100 : 0;
-
-    const defaults: Record<string, number> = {
-      gross_margin: margin,
-      revenue: totalRevenue,
-      net_income: totalRevenue - totalExpenses,
-    };
+    const defaults: Record<string, number> = computeSectorKPIDefaults(entries);
 
     return sectorConfig.defaultKPIs.reduce(
       (acc, kpi) => {

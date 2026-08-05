@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { SaaSMetricsEngine } from '@/engines/SaaSMetricsEngine';
-import { roundTo } from '@/utils/money';
+import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
 import { Users, TrendingDown, AlertTriangle, Download, RefreshCw, BarChart4 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -60,6 +60,17 @@ interface AtRiskCustomer {
   lastLogin: string;
 }
 
+export function computeSubscriptionMRR(
+  entries: readonly { credit: number; debit: number }[]
+): number {
+  const values = entries.map((e) => subtractMoney(e.credit, e.debit));
+  return roundTo(sumMoney(values), 2);
+}
+
+export function computeMRRDelta(currentMRR: number, prevMRR: number): number {
+  return roundTo(subtractMoney(currentMRR, prevMRR), 2);
+}
+
 function buildChurnTrend(
   entries: ReturnType<typeof useGLStore.getState>['entries']
 ): ChurnTrendPoint[] {
@@ -72,15 +83,15 @@ function buildChurnTrend(
 
   return periods.slice(-6).map((period, i) => {
     const pEntries = subscriptionEntries.filter((e) => e.date.startsWith(period));
-    const currentMRR = pEntries.reduce((sum, e) => sum + (e.credit - e.debit), 0);
+    const currentMRR = computeSubscriptionMRR(pEntries);
 
     const prevPeriod = i > 0 ? periods[periods.length - 6 + i - 1] : null;
     const prevEntries = prevPeriod
       ? subscriptionEntries.filter((e) => e.date.startsWith(prevPeriod))
       : [];
-    const prevMRR = prevEntries.reduce((sum, e) => sum + (e.credit - e.debit), 0);
+    const prevMRR = computeSubscriptionMRR(prevEntries);
 
-    const delta = currentMRR - prevMRR;
+    const delta = computeMRRDelta(currentMRR, prevMRR);
     const churnMRR = delta < 0 ? Math.abs(delta) * 0.6 : 0;
     const customerCount = Math.max(10, Math.round(currentMRR / 850));
     const lostCustomers = delta < 0 ? Math.max(1, Math.round(customerCount * 0.03)) : 0;
@@ -107,9 +118,7 @@ function buildSegmentChurn(
 
   return entities.slice(0, 4).map((entityId) => {
     const eEntries = entries.filter((e) => e.entityId === entityId);
-    const revenue = eEntries
-      .filter((e) => e.accountCode?.startsWith('41'))
-      .reduce((sum, e) => sum + (e.credit - e.debit), 0);
+    const revenue = computeSubscriptionMRR(eEntries.filter((e) => e.accountCode?.startsWith('41')));
     const customerCount = Math.max(5, Math.round(revenue / 1200));
     const churn = 1.5 + Math.random() * 4;
 
@@ -134,9 +143,7 @@ function buildAtRiskCustomers(
   return entities.slice(0, 5).map((entityId, i) => {
     const eEntries = entries.filter((e) => e.entityId === entityId);
     const name = eEntries[0]?.accountName || `Account ${entityId}`;
-    const mrr = eEntries
-      .filter((e) => e.accountCode?.startsWith('41'))
-      .reduce((sum, e) => sum + (e.credit - e.debit), 0);
+    const mrr = computeSubscriptionMRR(eEntries.filter((e) => e.accountCode?.startsWith('41')));
 
     const segments = ['Enterprise', 'Mid-Market', 'SMB', 'Startup'];
     const riskScores = [85, 72, 68, 91, 78];
@@ -176,7 +183,7 @@ export default function ChurnAnalysisPage() {
     }
 
     const latest = churnTrend[churnTrend.length - 1];
-    const totalAtRiskMRR = atRiskCustomers.reduce((s, c) => s + c.mrr, 0);
+    const totalAtRiskMRR = roundTo(sumMoney(atRiskCustomers.map((c) => c.mrr)), 2);
 
     return {
       customerChurn: latest!.customerChurn,
