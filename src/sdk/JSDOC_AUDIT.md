@@ -13,16 +13,16 @@ incrementally without re-auditing the whole surface.
 
 ## TL;DR
 
-| Metric | Value |
-|--------|-------|
-| Files in scope | 36 |
-| Total LOC | 11_676 |
-| Total JSDoc lines | 153 |
-| Overall JSDoc density | **1.31 %** (target: ≥5 % for SDK-style public surface) |
-| Files with **0** JSDoc | 18 / 36 (50 %) |
-| Files with **good** JSDoc (≥10 lines) | 6 / 36 (17 %) |
-| Files with **excellent** JSDoc (≥20 lines) | 4 / 36 (11 %) |
-| **SDK surface (this PR)** | 4 files / 867 LOC / **116 JSDoc lines (13.4 %)** ✅ |
+| Metric                                     | Value                                                  |
+| ------------------------------------------ | ------------------------------------------------------ |
+| Files in scope                             | 36                                                     |
+| Total LOC                                  | 11_676                                                 |
+| Total JSDoc lines                          | 153                                                    |
+| Overall JSDoc density                      | **1.31 %** (target: ≥5 % for SDK-style public surface) |
+| Files with **0** JSDoc                     | 18 / 36 (50 %)                                         |
+| Files with **good** JSDoc (≥10 lines)      | 6 / 36 (17 %)                                          |
+| Files with **excellent** JSDoc (≥20 lines) | 4 / 36 (11 %)                                          |
+| **SDK surface (this PR)**                  | 4 files / 867 LOC / **116 JSDoc lines (13.4 %)** ✅    |
 
 **Verdict:** the plugin surface is **under-documented**; the new
 `src/sdk/*` is the documented exception and is the model the rest should
@@ -38,44 +38,44 @@ Columns: `total` = LOC, `jsdoc` = `^\s*\*` lines, `exports` = `^\s*export `
 count. Verdict codes: ✅ good, ⚠ partial, ❌ missing, ➖ non-source (no
 exports worth documenting).
 
-| File | total | jsdoc | exports | verdict | gap |
-|------|------:|------:|--------:|---------|-----|
-| `src/App.tsx` | 588 | 4 | 1 | ❌ | 1 class |
-| `src/components/dashboard/DashboardTemplate.tsx` | 383 | 0 | 4 | ❌ | 4 exports |
-| `src/components/dashboard/WidgetLibrary.tsx` | 244 | 0 | 5 | ❌ | 5 exports |
-| `src/components/dashboard/index.ts` | 11 | 0 | 11 | ➖ | barrel |
-| `src/components/errors/PluginErrorBoundary.tsx` | 79 | 0 | 1 | ❌ | 1 class |
-| `src/components/plugins/PluginCard.tsx` | 170 | 3 | 1 | ⚠ | 1 class |
-| `src/components/plugins/PluginDetail.tsx` | 294 | 3 | 1 | ⚠ | 1 class |
-| `src/components/plugins/index.ts` | 6 | 2 | 2 | ✅ | — |
-| `src/components/ui/FileDropZone.tsx` | 229 | 0 | 2 | ❌ | 2 exports |
-| `src/engines/CubeEnginePersistence.ts` | 855 | 0 | 1 | ❌ | 1 class |
-| `src/engines/DashboardBuilderEngine.ts` | 273 | 0 | 6 | ❌ | 6 exports |
-| `src/engines/ImportEngine.ts` | 636 | 29 | 8 | ✅ | — |
-| `src/engines/PluginEngine.ts` | 454 | 0 | 2 | ❌ | 2 exports |
-| `src/engines/RevRecEngine.ts` | 232 | 0 | 6 | ❌ | 6 exports |
-| `src/engines/RollingForecastEngine.ts` | 392 | 0 | 8 | ❌ | 8 exports |
-| `src/engines/index.ts` | 336 | 0 | 145 | ➖ | barrel |
-| `src/hooks/useTauriGlobalShortcuts.ts` | 49 | 0 | 1 | ❌ | 1 hook |
-| `src/hooks/useTauriMenu.ts` | 142 | 0 | 2 | ❌ | 2 hooks |
-| `src/pages/_docs.ts` | 1144 | 6 | 2 | ⚠ | — |
-| `src/pages/_routeHelpMap.ts` | 618 | 15 | 4 | ✅ | — |
-| `src/pages/analytics/DashboardBuilderPage.tsx` | 189 | 0 | 1 | ❌ | 1 page |
-| `src/pages/plugins/PluginMarketplacePage.tsx` | 245 | 3 | 1 | ⚠ | 1 page |
-| `src/plugins/PluginAPI.ts` | 333 | 6 | 2 | ⚠ | 1 class |
-| `src/plugins/PluginLoader.ts` | 211 | 17 | 4 | ✅ | — |
-| `src/plugins/PluginManager.ts` | 171 | 3 | 2 | ⚠ | 1 class |
-| `src/plugins/PluginMarketplace.ts` | 334 | 5 | 3 | ⚠ | 3 exports |
-| `src/plugins/PluginRegistry.ts` | 277 | 2 | 3 | ❌ | 3 exports |
-| `src/plugins/PluginSandbox.ts` | 598 | 53 | 3 | ✅ | exemplar |
-| `src/plugins/index.ts` | 57 | 2 | 12 | ⚠ | barrel |
-| `src/plugins/test-sandbox.ts` | 8 | 0 | 0 | ➖ | test util |
-| `src/plugins/types.ts` | 323 | 3 | 34 | ❌ | 34 type exports |
-| `src/store/dashboardStore.ts` | 205 | 0 | 8 | ❌ | 8 exports |
-| `src/store/uiStore.ts` | 95 | 0 | 1 | ❌ | 1 store |
-| `src/types/index.ts` | 855 | 0 | 66 | ➖ | barrel + ambient types |
-| `src/types/plugin.ts` | 189 | 0 | 17 | ❌ | 17 type exports |
-| `src/utils/tauriSqlStorage.ts` | 55 | 0 | 2 | ❌ | 2 exports |
+| File                                             | total | jsdoc | exports | verdict | gap                    |
+| ------------------------------------------------ | ----: | ----: | ------: | ------- | ---------------------- |
+| `src/App.tsx`                                    |   588 |     4 |       1 | ❌      | 1 class                |
+| `src/components/dashboard/DashboardTemplate.tsx` |   383 |     0 |       4 | ❌      | 4 exports              |
+| `src/components/dashboard/WidgetLibrary.tsx`     |   244 |     0 |       5 | ❌      | 5 exports              |
+| `src/components/dashboard/index.ts`              |    11 |     0 |      11 | ➖      | barrel                 |
+| `src/components/errors/PluginErrorBoundary.tsx`  |    79 |     0 |       1 | ❌      | 1 class                |
+| `src/components/plugins/PluginCard.tsx`          |   170 |     3 |       1 | ⚠       | 1 class                |
+| `src/components/plugins/PluginDetail.tsx`        |   294 |     3 |       1 | ⚠       | 1 class                |
+| `src/components/plugins/index.ts`                |     6 |     2 |       2 | ✅      | —                      |
+| `src/components/ui/FileDropZone.tsx`             |   229 |     0 |       2 | ❌      | 2 exports              |
+| `src/engines/CubeEnginePersistence.ts`           |   855 |     0 |       1 | ❌      | 1 class                |
+| `src/engines/DashboardBuilderEngine.ts`          |   273 |     0 |       6 | ❌      | 6 exports              |
+| `src/engines/ImportEngine.ts`                    |   636 |    29 |       8 | ✅      | —                      |
+| `src/engines/PluginEngine.ts`                    |   454 |     0 |       2 | ❌      | 2 exports              |
+| `src/engines/RevRecEngine.ts`                    |   232 |     0 |       6 | ❌      | 6 exports              |
+| `src/engines/RollingForecastEngine.ts`           |   392 |     0 |       8 | ❌      | 8 exports              |
+| `src/engines/index.ts`                           |   336 |     0 |     145 | ➖      | barrel                 |
+| `src/hooks/useTauriGlobalShortcuts.ts`           |    49 |     0 |       1 | ❌      | 1 hook                 |
+| `src/hooks/useTauriMenu.ts`                      |   142 |     0 |       2 | ❌      | 2 hooks                |
+| `src/pages/_docs.ts`                             |  1144 |     6 |       2 | ⚠       | —                      |
+| `src/pages/_routeHelpMap.ts`                     |   618 |    15 |       4 | ✅      | —                      |
+| `src/pages/analytics/DashboardBuilderPage.tsx`   |   189 |     0 |       1 | ❌      | 1 page                 |
+| `src/pages/plugins/PluginMarketplacePage.tsx`    |   245 |     3 |       1 | ⚠       | 1 page                 |
+| `src/plugins/PluginAPI.ts`                       |   333 |     6 |       2 | ⚠       | 1 class                |
+| `src/plugins/PluginLoader.ts`                    |   211 |    17 |       4 | ✅      | —                      |
+| `src/plugins/PluginManager.ts`                   |   171 |     3 |       2 | ⚠       | 1 class                |
+| `src/plugins/PluginMarketplace.ts`               |   334 |     5 |       3 | ⚠       | 3 exports              |
+| `src/plugins/PluginRegistry.ts`                  |   277 |     2 |       3 | ❌      | 3 exports              |
+| `src/plugins/PluginSandbox.ts`                   |   598 |    53 |       3 | ✅      | exemplar               |
+| `src/plugins/index.ts`                           |    57 |     2 |      12 | ⚠       | barrel                 |
+| `src/plugins/test-sandbox.ts`                    |     8 |     0 |       0 | ➖      | test util              |
+| `src/plugins/types.ts`                           |   323 |     3 |      34 | ❌      | 34 type exports        |
+| `src/store/dashboardStore.ts`                    |   205 |     0 |       8 | ❌      | 8 exports              |
+| `src/store/uiStore.ts`                           |    95 |     0 |       1 | ❌      | 1 store                |
+| `src/types/index.ts`                             |   855 |     0 |      66 | ➖      | barrel + ambient types |
+| `src/types/plugin.ts`                            |   189 |     0 |      17 | ❌      | 17 type exports        |
+| `src/utils/tauriSqlStorage.ts`                   |    55 |     0 |       2 | ❌      | 2 exports              |
 
 **Totals:** 11_676 LOC, 153 JSDoc lines (1.31 %), 388 exports.
 
@@ -83,18 +83,18 @@ exports worth documenting).
 
 ## Coverage by directory
 
-| Directory | Files | JSDoc density | Verdict |
-|-----------|------:|---------------:|---------|
-| `src/sdk/` (NEW, this PR) | 4 | **13.4 %** | ✅ **exemplar** |
-| `src/plugins/` (core) | 11 | 7.2 % | ⚠ partial |
-| `src/components/plugins/` | 3 | 7.6 % | ⚠ partial |
-| `src/engines/` (plugin-related) | 7 | 2.2 % | ❌ under |
-| `src/store/` (plugin-related) | 2 | 0.0 % | ❌ missing |
-| `src/hooks/` (Tauri plugin bridges) | 2 | 0.0 % | ❌ missing |
-| `src/types/` (plugin types) | 2 | 0.0 % | ❌ missing |
-| `src/pages/` (plugin pages) | 3 | 2.0 % | ❌ under |
-| `src/utils/` (tauri storage) | 1 | 0.0 % | ❌ missing |
-| `src/components/{dashboard,errors,ui}/` | 5 | 0.0 % | ❌ missing |
+| Directory                               | Files | JSDoc density | Verdict         |
+| --------------------------------------- | ----: | ------------: | --------------- |
+| `src/sdk/` (NEW, this PR)               |     4 |    **13.4 %** | ✅ **exemplar** |
+| `src/plugins/` (core)                   |    11 |         7.2 % | ⚠ partial       |
+| `src/components/plugins/`               |     3 |         7.6 % | ⚠ partial       |
+| `src/engines/` (plugin-related)         |     7 |         2.2 % | ❌ under        |
+| `src/store/` (plugin-related)           |     2 |         0.0 % | ❌ missing      |
+| `src/hooks/` (Tauri plugin bridges)     |     2 |         0.0 % | ❌ missing      |
+| `src/types/` (plugin types)             |     2 |         0.0 % | ❌ missing      |
+| `src/pages/` (plugin pages)             |     3 |         2.0 % | ❌ under        |
+| `src/utils/` (tauri storage)            |     1 |         0.0 % | ❌ missing      |
+| `src/components/{dashboard,errors,ui}/` |     5 |         0.0 % | ❌ missing      |
 
 ---
 

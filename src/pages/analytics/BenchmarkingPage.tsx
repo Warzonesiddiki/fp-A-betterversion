@@ -161,8 +161,7 @@ export default function BenchmarkingPage() {
       'debt-to-equity': roundTo(divideMoney(liabilities, equity), 4),
       'gross-margin':
         revenue > 0 ? roundTo(divideMoney(subtractMoney(revenue, cogs), revenue).times(100), 2) : 0,
-      'net-margin':
-        revenue > 0 ? roundTo(divideMoney(netIncome, revenue).times(100), 2) : 0,
+      'net-margin': revenue > 0 ? roundTo(divideMoney(netIncome, revenue).times(100), 2) : 0,
       roa: assets > 0 ? roundTo(divideMoney(netIncome, assets).times(100), 2) : 0,
       roe: equity > 0 ? roundTo(divideMoney(netIncome, equity).times(100), 2) : 0,
       'asset-turnover': assets > 0 ? roundTo(divideMoney(revenue, assets), 4) : 0,

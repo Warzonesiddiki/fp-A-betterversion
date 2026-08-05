@@ -144,7 +144,7 @@
 }
 
 /* High-contrast mode (WCAG 2.1 AAA 7:1) */
-[data-high-contrast="true"] {
+[data-high-contrast='true'] {
   --border-subtle: #ffffff;
   --text-muted: #ffffff;
   --text-primary: #ffffff;
@@ -154,22 +154,22 @@
   background-color: #000000;
 }
 
-[data-high-contrast="true"] button,
-[data-high-contrast="true"] [role="button"],
-[data-high-contrast="true"] input,
-[data-high-contrast="true"] select,
-[data-high-contrast="true"] textarea {
+[data-high-contrast='true'] button,
+[data-high-contrast='true'] [role='button'],
+[data-high-contrast='true'] input,
+[data-high-contrast='true'] select,
+[data-high-contrast='true'] textarea {
   border: 3px solid #ffffff !important;
   background-color: #000000 !important;
   color: #ffffff !important;
 }
 
-[data-high-contrast="true"] *:focus-visible {
+[data-high-contrast='true'] *:focus-visible {
   outline: 3px solid #fbbf24 !important;
   outline-offset: 2px !important;
 }
 
-[data-high-contrast="true"] a {
+[data-high-contrast='true'] a {
   text-decoration: underline;
   text-underline-offset: 2px;
   color: #fbbf24;

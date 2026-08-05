@@ -52,41 +52,31 @@ function deriveFinancialsFromGL(entries: GLEntry[]): Array<{
       // Derive financial ratios from GL account codes
       const assets = roundTo(
         sumMoney(
-          entityEntries
-            .filter((e) => e.accountCode.startsWith('1'))
-            .map((e) => Math.abs(e.amount))
+          entityEntries.filter((e) => e.accountCode.startsWith('1')).map((e) => Math.abs(e.amount))
         ),
         2
       );
       const liabilities = roundTo(
         sumMoney(
-          entityEntries
-            .filter((e) => e.accountCode.startsWith('2'))
-            .map((e) => Math.abs(e.amount))
+          entityEntries.filter((e) => e.accountCode.startsWith('2')).map((e) => Math.abs(e.amount))
         ),
         2
       );
       const equity = roundTo(
         sumMoney(
-          entityEntries
-            .filter((e) => e.accountCode.startsWith('3'))
-            .map((e) => Math.abs(e.amount))
+          entityEntries.filter((e) => e.accountCode.startsWith('3')).map((e) => Math.abs(e.amount))
         ),
         2
       );
       const revenue = roundTo(
         sumMoney(
-          entityEntries
-            .filter((e) => e.accountCode.startsWith('4'))
-            .map((e) => Math.abs(e.amount))
+          entityEntries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(e.amount))
         ),
         2
       );
       const opex = roundTo(
         sumMoney(
-          entityEntries
-            .filter((e) => e.accountCode.startsWith('5'))
-            .map((e) => Math.abs(e.amount))
+          entityEntries.filter((e) => e.accountCode.startsWith('5')).map((e) => Math.abs(e.amount))
         ),
         2
       );

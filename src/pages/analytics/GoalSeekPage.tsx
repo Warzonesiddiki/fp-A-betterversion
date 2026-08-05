@@ -37,9 +37,7 @@ export default function GoalSeekPage() {
     if (entries.length === 0) return null;
     const revenue = roundTo(
       sumMoney(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('4'))
-          .map((e) => e.credit - e.debit)
+        entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.credit - e.debit)
       ),
       2
     );
@@ -47,8 +45,7 @@ export default function GoalSeekPage() {
       sumMoney(
         entries
           .filter(
-            (e) =>
-              (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
+            (e) => (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
           )
           .map((e) => Math.abs(e.debit - e.credit))
       ),

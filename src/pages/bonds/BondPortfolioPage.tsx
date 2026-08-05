@@ -30,10 +30,7 @@ function deriveBondsFromGL(entries: GLEntry[]) {
     .map((id) => {
       const entityEntries = entries.filter((e) => e.entityId === id);
       const name = entityEntries[0]?.accountName || 'Unknown Instrument';
-      const faceValue = roundTo(
-        sumMoney(entityEntries.map((e) => Math.abs(e.amount))),
-        2
-      );
+      const faceValue = roundTo(sumMoney(entityEntries.map((e) => Math.abs(e.amount))), 2);
 
       if (faceValue === 0) return null;
 
@@ -162,24 +159,13 @@ export default function BondPortfolioPage() {
       };
     }
 
-    const totalFaceValue = roundTo(
-      sumMoney(enrichedBonds.map((b) => b.faceValue)),
-      2
-    );
-    const totalMarketValue = roundTo(
-      sumMoney(enrichedBonds.map((b) => b.price)),
-      2
-    );
+    const totalFaceValue = roundTo(sumMoney(enrichedBonds.map((b) => b.faceValue)), 2);
+    const totalMarketValue = roundTo(sumMoney(enrichedBonds.map((b) => b.price)), 2);
     const weightedDuration =
       totalMarketValue > 0
         ? roundTo(
             divideMoney(
-              roundTo(
-                sumMoney(
-                  enrichedBonds.map((b) => b.modifiedDuration * b.price)
-                ),
-                6
-              ),
+              roundTo(sumMoney(enrichedBonds.map((b) => b.modifiedDuration * b.price)), 6),
               totalMarketValue
             ),
             4
@@ -189,10 +175,7 @@ export default function BondPortfolioPage() {
       totalMarketValue > 0
         ? roundTo(
             divideMoney(
-              roundTo(
-                sumMoney(enrichedBonds.map((b) => b.convexity * b.price)),
-                6
-              ),
+              roundTo(sumMoney(enrichedBonds.map((b) => b.convexity * b.price)), 6),
               totalMarketValue
             ),
             4
@@ -208,10 +191,7 @@ export default function BondPortfolioPage() {
             4
           )
         : 0;
-    const totalAccrued = roundTo(
-      sumMoney(enrichedBonds.map((b) => b.accruedInterest)),
-      2
-    );
+    const totalAccrued = roundTo(sumMoney(enrichedBonds.map((b) => b.accruedInterest)), 2);
     const avgCoupon =
       totalFaceValue > 0
         ? roundTo(

@@ -72,25 +72,25 @@ That's the full happy path. Everything below is reference.
 
 ## Configuration — `FpaClientConfig`
 
-| Field | Type | Default | Notes |
-|-------|------|---------|-------|
-| `baseUrl` | `string` | `DEFAULT_BASE_URL` (`https://api.finplanpro.dev/v1`) | REST base URL. |
-| `auth` | `AuthConfig` | — (required) | Discriminated union — see below. |
-| `timeoutMs` | `number` | `30_000` | Per-request timeout. |
-| `retryCount` | `number` | `3` | Retries on 5xx / 429 (idempotent verbs only). |
-| `connector` | `ConnectorId` | — | Default connector namespace. |
-| `headers` | `Record<string,string>` | `{}` | Static headers on every request. |
-| `realtimeUrl` | `string` | derived | Override WebSocket URL. |
-| `onAuthRefresh` | `(a) => Promise<AuthConfig>` | — | Hook for token persistence. |
+| Field           | Type                         | Default                                              | Notes                                         |
+| --------------- | ---------------------------- | ---------------------------------------------------- | --------------------------------------------- |
+| `baseUrl`       | `string`                     | `DEFAULT_BASE_URL` (`https://api.finplanpro.dev/v1`) | REST base URL.                                |
+| `auth`          | `AuthConfig`                 | — (required)                                         | Discriminated union — see below.              |
+| `timeoutMs`     | `number`                     | `30_000`                                             | Per-request timeout.                          |
+| `retryCount`    | `number`                     | `3`                                                  | Retries on 5xx / 429 (idempotent verbs only). |
+| `connector`     | `ConnectorId`                | —                                                    | Default connector namespace.                  |
+| `headers`       | `Record<string,string>`      | `{}`                                                 | Static headers on every request.              |
+| `realtimeUrl`   | `string`                     | derived                                              | Override WebSocket URL.                       |
+| `onAuthRefresh` | `(a) => Promise<AuthConfig>` | —                                                    | Hook for token persistence.                   |
 
 ### `AuthConfig` (discriminated union)
 
-| `type` | Required fields | Notes |
-|--------|-----------------|-------|
-| `oauth2` | `client` (`OAuth2ClientConfig`), `tokens` (`OAuth2TokenState`) | `client` is the OAuth2 *flow* config (`clientId`/`clientSecret`/`tokenUrl`/optional `authorizationUrl`/`redirectUri`/`scopes`). `tokens` is the *runtime* token state (`accessToken`/`refreshToken`/`expiresAt`/optional `scope`/`tokenType`). The SDK seeds both on the underlying `RestApiClient` for you. |
-| `apiKey`  | `apiKey`, `headerName?` (default `X-API-Key`) | |
-| `bearer`  | `token` | Static; no refresh. |
-| `basic`   | `username`, `password` | Not recommended for WebSocket. |
+| `type`   | Required fields                                                | Notes                                                                                                                                                                                                                                                                                                        |
+| -------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `oauth2` | `client` (`OAuth2ClientConfig`), `tokens` (`OAuth2TokenState`) | `client` is the OAuth2 _flow_ config (`clientId`/`clientSecret`/`tokenUrl`/optional `authorizationUrl`/`redirectUri`/`scopes`). `tokens` is the _runtime_ token state (`accessToken`/`refreshToken`/`expiresAt`/optional `scope`/`tokenType`). The SDK seeds both on the underlying `RestApiClient` for you. |
+| `apiKey` | `apiKey`, `headerName?` (default `X-API-Key`)                  |                                                                                                                                                                                                                                                                                                              |
+| `bearer` | `token`                                                        | Static; no refresh.                                                                                                                                                                                                                                                                                          |
+| `basic`  | `username`, `password`                                         | Not recommended for WebSocket.                                                                                                                                                                                                                                                                               |
 
 ---
 
@@ -104,13 +104,15 @@ hatch. Each namespace contains a `ResourceCollection<T>` per resource
 
 ```ts
 const accounts = await client.qbo.accounts.list();
-const account  = await client.qbo.accounts.get('35');
-const created  = await client.qbo.accounts.create({ Name: 'New', AccountType: 'Expense' });
-const updated  = await client.qbo.accounts.update('35', { Name: 'Renamed' });
+const account = await client.qbo.accounts.get('35');
+const created = await client.qbo.accounts.create({ Name: 'New', AccountType: 'Expense' });
+const updated = await client.qbo.accounts.update('35', { Name: 'Renamed' });
 await client.qbo.accounts.remove('35');
 
 // Tenant-scoped read:
-const tenantInvoices = await client.qbo.invoices.list(undefined, { tenantId: '4620816365114594805' });
+const tenantInvoices = await client.qbo.invoices.list(undefined, {
+  tenantId: '4620816365114594805',
+});
 ```
 
 Resources: `accounts`, `invoices`, `customers`, `vendors`, `items`.
@@ -133,11 +135,11 @@ await client.custom.delete<void>('/api/foo');
 Every `ResourceCollection` method accepts an optional
 `ConnectorOptions` second argument:
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `tenantId` | `string` | Forwarded as a path segment. |
-| `minorVersion` | `string` | Force a connector API minor version. |
-| `sandbox` | `boolean` | QBO sandbox mode. |
+| Field          | Type      | Notes                                |
+| -------------- | --------- | ------------------------------------ |
+| `tenantId`     | `string`  | Forwarded as a path segment.         |
+| `minorVersion` | `string`  | Force a connector API minor version. |
+| `sandbox`      | `boolean` | QBO sandbox mode.                    |
 
 ---
 
@@ -173,18 +175,18 @@ client.realtime.disconnect(); // idempotent
 
 ### Event taxonomy (10 types)
 
-| Type | Payload |
-|------|---------|
-| `cell:edit` | `{ sheetId, cell, value, userId, ts }` |
-| `sheet:created` | `{ sheetId, userId }` |
-| `cell:formatted` | `{ range, style }` |
-| `cursor:moved` | `{ userId, cell }` |
-| `comment:added` | `{ cell, author, text }` |
-| `selection:changed` | `{ userId, range }` |
-| `presence:joined` | `{ userId, name }` |
-| `presence:left` | `{ userId }` |
-| `data:imported` | `{ source, rows }` |
-| `formula:recalculated` | `{ sheetId, durationMs }` |
+| Type                   | Payload                                |
+| ---------------------- | -------------------------------------- |
+| `cell:edit`            | `{ sheetId, cell, value, userId, ts }` |
+| `sheet:created`        | `{ sheetId, userId }`                  |
+| `cell:formatted`       | `{ range, style }`                     |
+| `cursor:moved`         | `{ userId, cell }`                     |
+| `comment:added`        | `{ cell, author, text }`               |
+| `selection:changed`    | `{ userId, range }`                    |
+| `presence:joined`      | `{ userId, name }`                     |
+| `presence:left`        | `{ userId }`                           |
+| `data:imported`        | `{ source, rows }`                     |
+| `formula:recalculated` | `{ sheetId, durationMs }`              |
 
 ---
 
@@ -195,9 +197,7 @@ For callers that prefer not to use `try/catch`, the SDK exposes
 returning `SdkResult<T, SdkError>` (mirrors `API_REFERENCE.md §10`):
 
 ```ts
-type SdkResult<T, E = SdkError> =
-  | { ok: true;  value: T }
-  | { ok: false; error: E };
+type SdkResult<T, E = SdkError> = { ok: true; value: T } | { ok: false; error: E };
 
 const r = await client.getResult<Account[]>('/qbo/accounts');
 if (r.ok) {
@@ -226,10 +226,10 @@ const res = await client.request<{ ok: boolean }>({
 
 ```ts
 interface SdkError {
-  code: string;       // 'HTTP_429' | 'HTTP_500' | 'SDK_ERROR' | …
+  code: string; // 'HTTP_429' | 'HTTP_500' | 'SDK_ERROR' | …
   message: string;
-  status?: number;    // HTTP status, when applicable
-  cause?: unknown;    // Original error
+  status?: number; // HTTP status, when applicable
+  cause?: unknown; // Original error
 }
 ```
 
@@ -248,17 +248,17 @@ migration note to `docs/parts/API_REFERENCE.md §11`.
 
 ## Architecture & internals
 
-The SDK is a *thin* wrapper. It does **not** implement HTTP, WebSocket,
+The SDK is a _thin_ wrapper. It does **not** implement HTTP, WebSocket,
 OAuth, or retry logic — those live in:
 
-| Internal | Path | Role |
-|----------|------|------|
-| `RestApiClient` | `src/services/api-integration/RestApiClient.ts` | axios + auth + 429 + retry |
-| `WebSocketManager` | `src/services/WebSocketManager.ts` | reconnect + heartbeat + queue |
-| `ConnectorRegistry` | `src/services/api-integration/ConnectorRegistry.ts` | per-connector OAuth flows |
-| `ApiError` | `src/services/api-integration/types.ts` | error normalization |
+| Internal            | Path                                                | Role                          |
+| ------------------- | --------------------------------------------------- | ----------------------------- |
+| `RestApiClient`     | `src/services/api-integration/RestApiClient.ts`     | axios + auth + 429 + retry    |
+| `WebSocketManager`  | `src/services/WebSocketManager.ts`                  | reconnect + heartbeat + queue |
+| `ConnectorRegistry` | `src/services/api-integration/ConnectorRegistry.ts` | per-connector OAuth flows     |
+| `ApiError`          | `src/services/api-integration/types.ts`             | error normalization           |
 
-The SDK is a *façade* — if a fix lands in `RestApiClient`, the SDK
+The SDK is a _façade_ — if a fix lands in `RestApiClient`, the SDK
 inherits it without re-implementation. The new file structure is:
 
 ```
@@ -282,11 +282,11 @@ npx vitest run src/sdk/
 
 Coverage (57 tests, ~3s wall clock):
 
-| Spec | File | Tests | What it covers |
-|---|---|---|---|
-| `types.test.ts` | `src/sdk/types.test.ts` | 20 | AuthConfig 4-way union, OAuth2 client/tokens split, FpaClientConfig defaults, ConnectorOptions, SdkResult, SDK_VERSION, realtime event taxonomy (10 types), ConnectionState (6 states) |
-| `RealtimeChannel.test.ts` | `src/sdk/realtime/RealtimeChannel.test.ts` | 15 | state machine (idle->connecting->connected->closed), subscribe() idempotent unsubscribe, onState() immediate + change emit, send() routing to WebSocketManager, 3-witness pattern drops malformed events |
-| `FpaClient.test.ts` | `src/sdk/FpaClient.test.ts` | 22 | construction with all 4 auth variants, namespace shape (qbo 5 / xero 4 / custom), RealtimeFactory.connect() singleton, getResult/postResult/putResult/patchResult/deleteResult SdkResult shape, setAuth() + onAuthRefresh hook |
+| Spec                      | File                                       | Tests | What it covers                                                                                                                                                                                                                 |
+| ------------------------- | ------------------------------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `types.test.ts`           | `src/sdk/types.test.ts`                    | 20    | AuthConfig 4-way union, OAuth2 client/tokens split, FpaClientConfig defaults, ConnectorOptions, SdkResult, SDK_VERSION, realtime event taxonomy (10 types), ConnectionState (6 states)                                         |
+| `RealtimeChannel.test.ts` | `src/sdk/realtime/RealtimeChannel.test.ts` | 15    | state machine (idle->connecting->connected->closed), subscribe() idempotent unsubscribe, onState() immediate + change emit, send() routing to WebSocketManager, 3-witness pattern drops malformed events                       |
+| `FpaClient.test.ts`       | `src/sdk/FpaClient.test.ts`                | 22    | construction with all 4 auth variants, namespace shape (qbo 5 / xero 4 / custom), RealtimeFactory.connect() singleton, getResult/postResult/putResult/patchResult/deleteResult SdkResult shape, setAuth() + onAuthRefresh hook |
 
 Tests use a `MockWebSocket` (same pattern as `WebSocketManager.test.ts`) -- no
 network calls, no real timers (fake setTimeout for state-machine transitions).
