@@ -7,6 +7,8 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { Button } from '@/components/ui/Button';
 import { useGovernmentStore } from '@/store/governmentStore';
 import { Landmark, Users, DollarSign, Shield, TrendingUp, BarChart3 } from 'lucide-react';
+import { formatCompact } from '@/utils/financialFormatting';
+import { roundTo } from '@/utils/money';
 import {
   ResponsiveContainer,
   BarChart,
@@ -44,7 +46,7 @@ export function GovernmentDashboardPage() {
         department: l.category,
         allocated: l.budgeted,
         spent: l.actual,
-        pct: l.budgeted > 0 ? +((l.actual / l.budgeted) * 100).toFixed(1) : 0,
+        pct: l.budgeted > 0 ? roundTo((l.actual / l.budgeted) * 100, 1) : 0,
       }))
     : mockDepartmentBudget;
 
@@ -160,7 +162,7 @@ export function GovernmentDashboardPage() {
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} />
               <YAxis
                 tick={{ fontSize: 11, fill: 'var(--text-secondary)' }}
-                tickFormatter={(v: number) => `$${(v / 1000).toFixed(1)}B`}
+                tickFormatter={(v: number) => formatCompact(v)}
               />
               <Tooltip
                 formatter={((value: number) => [`$${value.toLocaleString()}M`, 'Amount']) as any}
@@ -264,13 +266,13 @@ export function GovernmentDashboardPage() {
                       className="py-2 text-right font-mono"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      ${(dept.allocated / 1000).toFixed(1)}B
+                      {formatCompact(dept.allocated)}
                     </td>
                     <td
                       className="py-2 text-right font-mono"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      ${(dept.spent / 1000).toFixed(1)}B
+                      {formatCompact(dept.spent)}
                     </td>
                     <td className="py-2 text-right font-mono">
                       <span

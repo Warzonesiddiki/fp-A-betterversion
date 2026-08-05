@@ -21,6 +21,8 @@ import {
 import { useGLStore } from '@/store/glStore';
 import { YieldCurveEngine, type CurvePoint } from '@/engines/YieldCurveEngine';
 import type { GLEntry } from '@/types';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { roundTo } from '@/utils/money';
 
 /** Build a yield curve from GL entries by mapping entity account codes to maturities. */
 function buildCurveFromGL(entries: GLEntry[]): CurvePoint[] {
@@ -93,8 +95,8 @@ export default function YieldCurvePage() {
       }
       points.push({
         maturity: t,
-        spot: parseFloat(spot.toFixed(3)),
-        forward: parseFloat(fwd.toFixed(3)),
+        spot: roundTo(spot, 3),
+        forward: roundTo(fwd, 3),
       });
     }
     return points;
@@ -186,17 +188,17 @@ export default function YieldCurvePage() {
         <KPIValue
           label="Curve Shape"
           value={curveShape}
-          changeLabel={`Slope: ${slope >= 0 ? '+' : ''}${slope.toFixed(0)} bps`}
+          changeLabel={`Slope: ${slope >= 0 ? '+' : ''}${formatNumber(slope, 0)} bps`}
           trend={slope > 0 ? 'up' : slope < 0 ? 'down' : 'neutral'}
         />
         <KPIValue
           label="Short Rate (1Y)"
-          value={`${(YieldCurveEngine.interpolate(1, curve) * 100).toFixed(2)}%`}
+          value={`${formatPercent(YieldCurveEngine.interpolate(1, curve) * 100, 2)}`}
           trend="neutral"
         />
         <KPIValue
           label="Long Rate (30Y)"
-          value={`${(YieldCurveEngine.interpolate(30, curve) * 100).toFixed(2)}%`}
+          value={`${formatPercent(YieldCurveEngine.interpolate(30, curve) * 100, 2)}`}
           trend="neutral"
         />
         <KPIValue
@@ -238,7 +240,7 @@ export default function YieldCurvePage() {
                   tickFormatter={(v) => `${v}%`}
                   domain={['auto', 'auto']}
                 />
-                <Tooltip formatter={(v: any) => `${v.toFixed(3)}%`} />
+                <Tooltip formatter={(v: any) => `${formatPercent(v, 3)}`} />
                 <Legend verticalAlign="top" align="right" />
                 <Line
                   type="monotone"
@@ -293,14 +295,18 @@ export default function YieldCurvePage() {
               </div>
               <div className="flex flex-col justify-end">
                 <div className="text-xs text-slate-500">Spot Rate</div>
-                <div className="text-2xl font-black text-blue-600">{spotRate.toFixed(3)}%</div>
+                <div className="text-2xl font-black text-blue-600">
+                  {formatPercent(spotRate, 3)}
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div />
               <div>
                 <div className="text-xs text-slate-500">Par Rate</div>
-                <div className="text-2xl font-black text-emerald-600">{parRate.toFixed(3)}%</div>
+                <div className="text-2xl font-black text-emerald-600">
+                  {formatPercent(parRate, 3)}
+                </div>
               </div>
             </div>
 
@@ -343,7 +349,9 @@ export default function YieldCurvePage() {
                 </div>
                 <div>
                   <div className="text-xs text-slate-500">Forward Rate</div>
-                  <div className="text-2xl font-black text-amber-600">{fwdRate.toFixed(3)}%</div>
+                  <div className="text-2xl font-black text-amber-600">
+                    {formatPercent(fwdRate, 3)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -391,10 +399,10 @@ export default function YieldCurvePage() {
                     >
                       <td className="py-2 px-3 font-medium">{point.maturity}Y</td>
                       <td className="py-2 px-3 text-right font-mono">
-                        {(point.rate * 100).toFixed(3)}%
+                        {formatPercent(point.rate * 100, 3)}
                       </td>
                       <td className="py-2 px-3 text-right font-mono">
-                        {(YieldCurveEngine.parRate(curve, point.maturity) * 100).toFixed(3)}%
+                        {formatPercent(YieldCurveEngine.parRate(curve, point.maturity) * 100, 3)}
                       </td>
                     </tr>
                   ))}

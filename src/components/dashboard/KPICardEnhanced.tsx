@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { Sparkline } from '@/components/ui/Sparkline';
 import { cn } from '@/utils/cn';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 export type VarianceType = 'favorable' | 'unfavorable' | 'neutral';
 
@@ -30,12 +31,9 @@ function formatValue(value: number, format: string): string {
         maximumFractionDigits: 0,
       }).format(value);
     case 'percent':
-      return `${value.toFixed(1)}%`;
+      return `${formatPercent(value, 1)}`;
     case 'compact':
-      if (Math.abs(value) >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
-      if (Math.abs(value) >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
-      if (Math.abs(value) >= 1e3) return `$${(value / 1e3).toFixed(1)}K`;
-      return `$${value.toFixed(0)}`;
+      return formatCompact(value);
     default:
       return value.toLocaleString();
   }
@@ -129,7 +127,7 @@ export const KPICardEnhanced = memo(function KPICardEnhanced({
               colors.text
             )}
           >
-            {trendArrow[varianceType]} {Math.abs(variancePercent).toFixed(1)}%
+            {trendArrow[varianceType]} {formatPercent(Math.abs(variancePercent), 1)}
           </span>
         )}
       </div>
@@ -164,7 +162,7 @@ export const KPICardEnhanced = memo(function KPICardEnhanced({
         <div className="mb-2">
           <div className="flex justify-between text-xs text-[var(--text-muted)] mb-0.5">
             <span>Target progress</span>
-            <span className="font-medium">{targetProgress.toFixed(0)}%</span>
+            <span className="font-medium">{formatPercent(targetProgress, 0)}</span>
           </div>
           <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
             <div

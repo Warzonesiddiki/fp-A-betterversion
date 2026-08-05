@@ -4,6 +4,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { Button } from '@/components/ui/Button';
 import { ESGEngine, CarbonActivity } from '@/engines/ESGEngine';
 import { Leaf, Plus, Trash2, Factory, Zap, Truck } from 'lucide-react';
+import { formatNumber } from '@/utils/financialFormatting';
 
 interface ActivityEntry {
   id: string;
@@ -74,7 +75,7 @@ export function CarbonFootprintTracker({ className }: CarbonFootprintTrackerProp
     setResult(carbonResult);
   }, [activities]);
 
-  const formatTons = (n: number): string => `${n.toFixed(2)} tCO2e`;
+  const formatTons = (n: number): string => `${formatNumber(n, 2)} tCO2e`;
 
   return (
     <div className={className} role="region" aria-label="CarbonFootprintTracker">

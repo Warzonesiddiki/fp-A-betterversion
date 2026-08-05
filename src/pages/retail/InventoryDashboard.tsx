@@ -8,6 +8,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { InventoryEngine } from '@/engines/InventoryEngine';
 import { RetailEngine } from '@/engines/RetailEngine';
+import { formatNumber } from '@/utils/financialFormatting';
 import {
   Package,
   TrendingUp,
@@ -32,6 +33,8 @@ import {
   Cell,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -88,7 +91,7 @@ export default function InventoryDashboard() {
     () =>
       storeBreakdown.length > 0
         ? InventoryEngine.calculateGMROI(
-            storeBreakdown.reduce((s, st) => s + st.grossProfit, 0),
+            roundTo(sumMoney(storeBreakdown.map((st) => st.grossProfit)), 2),
             stats.totalValue
           )
         : 0,
@@ -164,7 +167,7 @@ export default function InventoryDashboard() {
         />
         <KPIValue
           label="Inventory Turnover"
-          value={`${stats.turnover.toFixed(1)}x`}
+          value={`${formatNumber(stats.turnover, 1)}x`}
           icon={<TrendingUp className="h-4 w-4" />}
           trend={stats.turnover > 4 ? 'up' : 'down'}
         />
@@ -176,7 +179,7 @@ export default function InventoryDashboard() {
         />
         <KPIValue
           label="GMROI"
-          value={gmroi > 0 ? `${gmroi.toFixed(1)}x` : 'N/A'}
+          value={gmroi > 0 ? `${formatNumber(gmroi, 1)}x` : 'N/A'}
           icon={<DollarSign className="h-4 w-4" />}
           trend={gmroi > 2 ? 'up' : 'neutral'}
         />
@@ -200,7 +203,7 @@ export default function InventoryDashboard() {
                   <YAxis
                     yAxisId="left"
                     stroke="#94a3b8"
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                    tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                   />
                   <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" />
                   <Tooltip
@@ -210,7 +213,7 @@ export default function InventoryDashboard() {
                       borderRadius: 8,
                     }}
                     formatter={(v: any, name: any) =>
-                      name === 'Value' ? formatCurrency(v) : `${v.toFixed(1)}x`
+                      name === 'Value' ? formatCurrency(v) : `${formatNumber(v, 1)}x`
                     }
                   />
                   <Legend />

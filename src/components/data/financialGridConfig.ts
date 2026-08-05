@@ -1,5 +1,10 @@
 import type { ColDef, ColGroupDef } from 'ag-grid-community';
-import { formatCurrency, formatPercent, formatVariance } from '@/utils/financialFormatting';
+import {
+  formatCompact,
+  formatCurrency,
+  formatPercent,
+  formatVariance,
+} from '@/utils/financialFormatting';
 
 /**
  * Pre-configured AG Grid column types for financial data.
@@ -36,10 +41,7 @@ export const financialColumnTypes: Record<string, ColDef> = {
       const num = Number(params.value);
       if (!Number.isFinite(num)) return '—';
       const abs = Math.abs(num);
-      const sign = num < 0 ? '-' : '';
-      if (abs >= 1_000_000_000) return `${sign}$${(abs / 1_000_000_000).toFixed(1)}B`;
-      if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(1)}M`;
-      if (abs >= 1_000) return `${sign}$${(abs / 1_000).toFixed(0)}K`;
+      if (abs >= 1_000) return formatCompact(num);
       return formatCurrency(num);
     },
     filter: 'agNumberColumnFilter',

@@ -50,6 +50,28 @@ interface FormState {
 
 const DEFAULTS: FormState = { principal: '100000', annualRatePct: '6', months: '360' };
 
+/** Money-primitive totals (GAP-1 F-0006). The page renders the actual
+ *  per-row schedule from LoanAmortizationEngine (already exact-decimal),
+ *  but the headline KPIs (total interest, total principal) were raw
+ *  reduce + before; we route them through sumMoney+roundTo so the
+ *  schedule's exact cents are preserved through the aggregation. */
+export interface LoanScheduleTotals {
+  totalInterest: number;
+  totalPrincipal: number;
+  totalPayment: number;
+}
+
+export function computeLoanScheduleTotals(
+  schedule: ReadonlyArray<{ interest: number; principal: number }>
+): LoanScheduleTotals {
+  const totalInterest = schedule.length ? roundTo(sumMoney(schedule.map((r) => r.interest)), 2) : 0;
+  const totalPrincipal = schedule.length
+    ? roundTo(sumMoney(schedule.map((r) => r.principal)), 2)
+    : 0;
+  // totalPayment is the gross cash that flowed through — interest + principal.
+  return { totalInterest, totalPrincipal, totalPayment: totalInterest + totalPrincipal };
+}
+
 export default function LoanAmortizationPage() {
   const [form, setForm] = useState<FormState>(DEFAULTS);
   const [schedule, setSchedule] = useState<ReturnType<
@@ -100,12 +122,9 @@ export default function LoanAmortizationPage() {
     setSchedule(LoanAmortizationEngine.schedule(principal, annualRatePct / 100, months));
   };
 
-  const totalInterest = schedule
-    ? roundTo(sumMoney(schedule.schedule.map((r) => r.interest)), 2)
-    : 0;
-  const totalPrincipal = schedule
-    ? roundTo(sumMoney(schedule.schedule.map((r) => r.principal)), 2)
-    : 0;
+  const { totalInterest, totalPrincipal } = schedule
+    ? computeLoanScheduleTotals(schedule.schedule)
+    : { totalInterest: 0, totalPrincipal: 0 };
 
   return (
     <div className="p-6 space-y-6">

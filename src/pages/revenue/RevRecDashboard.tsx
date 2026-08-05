@@ -32,6 +32,7 @@ import {
 } from 'recharts';
 import { GaugeChart } from '@/components/charts/GaugeChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -275,7 +276,7 @@ export default function RevRecDashboard() {
             max={data.revenue}
             target={data.revenue * 0.9}
             label="Recognized"
-            formatValue={(v) => `$${(v / 1000).toFixed(0)}K`}
+            formatValue={(v) => `$${v ? formatCompact(v) : '—'}`}
             ariaLabel="Revenue recognition gauge"
           />
         </CardContent>
@@ -293,7 +294,7 @@ export default function RevRecDashboard() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -335,7 +336,7 @@ export default function RevRecDashboard() {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={100}
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${formatPercent(percent ?? 0, 0)}`}
                 >
                   {data.methods.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />

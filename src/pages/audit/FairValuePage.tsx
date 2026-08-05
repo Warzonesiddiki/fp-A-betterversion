@@ -16,6 +16,8 @@ import {
 } from 'recharts';
 import { Scale, TrendingUp, Download, Filter } from 'lucide-react';
 import { FairValueEngine } from '@/engines/FairValueEngine';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact } from '@/utils/financialFormatting';
 
 interface FairValueItem {
   id: string;
@@ -140,9 +142,9 @@ export default function FairValuePage() {
   const levelColors = { 1: '#10B981', 2: '#F59E0B', 3: '#EF4444' };
   const levelLabels = { 1: 'Quoted Prices', 2: 'Observable Inputs', 3: 'Unobservable' };
 
-  const totalBook = items.reduce((s, i) => s + i.bookValue, 0);
-  const totalFair = items.reduce((s, i) => s + i.fairValue, 0);
-  const totalGain = items.reduce((s, i) => s + i.gain, 0);
+  const totalBook = roundTo(sumMoney(items.map((i) => i.bookValue)), 2);
+  const totalFair = roundTo(sumMoney(items.map((i) => i.fairValue)), 2);
+  const totalGain = roundTo(sumMoney(items.map((i) => i.gain)), 2);
 
   const levelData = [1, 2, 3].map((level) => ({
     name: levelLabels[level as keyof typeof levelLabels],
@@ -238,7 +240,7 @@ export default function FairValuePage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: any) => `$${(v / 1000).toFixed(0)}K`} />
+                <Tooltip formatter={(v: any) => `$${v ? formatCompact(v) : '—'}`} />
                 <Bar dataKey="value" name="Fair Value">
                   {levelData.map((d, i) => (
                     <Cell key={i} fill={d.color} />
@@ -262,7 +264,7 @@ export default function FairValuePage() {
                     <div key={item} className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">{item}</span>
                       <span className={`font-mono ${i === 4 ? 'font-bold' : ''}`}>
-                        ${(values[i]! / 1000).toFixed(0)}K
+                        ${values[i]! ? formatCompact(values[i]!) : '—'}
                       </span>
                     </div>
                   );
@@ -342,15 +344,15 @@ export default function FairValuePage() {
                     </span>
                   </td>
                   <td className="px-3 py-2 text-right font-mono">
-                    ${(item.bookValue / 1000).toFixed(0)}K
+                    ${item.bookValue ? formatCompact(item.bookValue) : '—'}
                   </td>
                   <td className="px-3 py-2 text-right font-mono">
-                    ${(item.fairValue / 1000).toFixed(0)}K
+                    ${item.fairValue ? formatCompact(item.fairValue) : '—'}
                   </td>
                   <td
                     className={`px-3 py-2 text-right font-mono ${item.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
-                    {item.gain >= 0 ? '+' : ''}${(item.gain / 1000).toFixed(0)}K
+                    {item.gain >= 0 ? '+' : ''}${item.gain ? formatCompact(item.gain) : '—'}
                   </td>
                   <td className="px-3 py-2 text-center text-xs">{item.method}</td>
                 </tr>

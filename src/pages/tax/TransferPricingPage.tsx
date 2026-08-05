@@ -28,6 +28,8 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -128,7 +130,7 @@ export default function TransferPricingPage() {
     return mockTransactions.filter((t) => t.method === methodFilter);
   }, [methodFilter]);
 
-  const totalIntercompany = mockTransactions.reduce((s, t) => s + t.amount, 0);
+  const totalIntercompany = roundTo(sumMoney(mockTransactions.map((t) => t.amount)), 2);
   const compliantCount = mockTransactions.filter((t) => t.status === 'compliant').length;
   const complianceRate = (compliantCount / mockTransactions.length) * 100;
 
@@ -149,7 +151,7 @@ export default function TransferPricingPage() {
         key: 'margin',
         header: 'Margin %',
         align: 'right',
-        render: (v) => `${(v as number).toFixed(1)}%`,
+        render: (v) => `${formatPercent(v as number, 1)}`,
       },
       { key: 'armRange', header: "Arm's Range", align: 'center' },
       {
@@ -246,7 +248,7 @@ export default function TransferPricingPage() {
         <KPIValue label="Transactions" value={String(mockTransactions.length)} />
         <KPIValue
           label="Compliance Rate"
-          value={`${complianceRate.toFixed(0)}%`}
+          value={`${formatPercent(complianceRate, 0)}`}
           trend={complianceRate >= 80 ? 'up' : 'down'}
         />
         <KPIValue label="Methods Used" value="4" changeLabel="TNMM, CUP, RPM, CPM" />
@@ -274,7 +276,7 @@ export default function TransferPricingPage() {
             <BarChart data={methodDistribution}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
               <XAxis dataKey="method" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(1)}M`} />
+              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 formatter={(v: any) => formatCurrency(v)}

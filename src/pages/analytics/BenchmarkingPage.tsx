@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { BarChart3 } from 'lucide-react';
+import { formatPercent } from '@/utils/financialFormatting';
+import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 
 function _formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -72,56 +74,97 @@ export default function BenchmarkingPage() {
     if (entries.length === 0) return null;
     const revenue =
       Math.abs(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('4'))
-          .reduce((s, e) => s + (e.debit - e.credit), 0)
+        roundTo(
+          sumMoney(
+            entries
+              .filter((e) => (e.accountCode || '').startsWith('4'))
+              .map((e) => e.credit - e.debit)
+          ),
+          2
+        )
       ) || 1;
-    const cogs = entries
-      .filter((e) => (e.accountCode || '').startsWith('5'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const expenses = entries
-      .filter((e) => (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    const cogs = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('5'))
+          .map((e) => Math.abs(e.debit - e.credit))
+      ),
+      2
+    );
+    const expenses = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('6'))
+          .map((e) => Math.abs(e.debit - e.credit))
+      ),
+      2
+    );
     const assets =
       Math.abs(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('1'))
-          .reduce((s, e) => s + (e.debit - e.credit), 0)
+        roundTo(
+          sumMoney(
+            entries
+              .filter((e) => (e.accountCode || '').startsWith('1'))
+              .map((e) => e.debit - e.credit)
+          ),
+          2
+        )
       ) || 1;
     const liabilities =
       Math.abs(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('2'))
-          .reduce((s, e) => s + (e.credit - e.debit), 0)
+        roundTo(
+          sumMoney(
+            entries
+              .filter((e) => (e.accountCode || '').startsWith('2'))
+              .map((e) => e.credit - e.debit)
+          ),
+          2
+        )
       ) || 1;
     const equity =
       Math.abs(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('3'))
-          .reduce((s, e) => s + (e.credit - e.debit), 0)
+        roundTo(
+          sumMoney(
+            entries
+              .filter((e) => (e.accountCode || '').startsWith('3'))
+              .map((e) => e.credit - e.debit)
+          ),
+          2
+        )
       ) || 1;
     const currentAssets =
       Math.abs(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('11'))
-          .reduce((s, e) => s + (e.debit - e.credit), 0)
+        roundTo(
+          sumMoney(
+            entries
+              .filter((e) => (e.accountCode || '').startsWith('11'))
+              .map((e) => e.debit - e.credit)
+          ),
+          2
+        )
       ) || 1;
     const currentLiabs =
       Math.abs(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('21'))
-          .reduce((s, e) => s + (e.credit - e.debit), 0)
+        roundTo(
+          sumMoney(
+            entries
+              .filter((e) => (e.accountCode || '').startsWith('21'))
+              .map((e) => e.credit - e.debit)
+          ),
+          2
+        )
       ) || 1;
-    const netIncome = revenue - cogs - expenses;
+    const netIncome = roundTo(subtractMoney(subtractMoney(revenue, cogs), expenses), 2);
     return {
-      current: currentAssets / currentLiabs,
-      quick: (currentAssets - 0) / currentLiabs,
-      'debt-to-equity': liabilities / equity,
-      'gross-margin': revenue > 0 ? ((revenue - cogs) / revenue) * 100 : 0,
-      'net-margin': revenue > 0 ? (netIncome / revenue) * 100 : 0,
-      roa: assets > 0 ? (netIncome / assets) * 100 : 0,
-      roe: equity > 0 ? (netIncome / equity) * 100 : 0,
-      'asset-turnover': assets > 0 ? revenue / assets : 0,
+      current: roundTo(divideMoney(currentAssets, currentLiabs), 4),
+      quick: roundTo(divideMoney(currentAssets, currentLiabs), 4),
+      'debt-to-equity': roundTo(divideMoney(liabilities, equity), 4),
+      'gross-margin':
+        revenue > 0 ? roundTo(divideMoney(subtractMoney(revenue, cogs), revenue).times(100), 2) : 0,
+      'net-margin': revenue > 0 ? roundTo(divideMoney(netIncome, revenue).times(100), 2) : 0,
+      roa: assets > 0 ? roundTo(divideMoney(netIncome, assets).times(100), 2) : 0,
+      roe: equity > 0 ? roundTo(divideMoney(netIncome, equity).times(100), 2) : 0,
+      'asset-turnover': assets > 0 ? roundTo(divideMoney(revenue, assets), 4) : 0,
     };
   }, [entries]);
 
@@ -148,7 +191,7 @@ export default function BenchmarkingPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {RATIOS.map((r) => {
           const val = ratios[r.id as keyof typeof ratios];
-          const formatted = r.type === 'percent' ? val.toFixed(1) + '%' : val.toFixed(2);
+          const formatted = r.type === 'percent' ? formatPercent(val, 1) : val.toFixed(2);
           return (
             <Card key={r.id}>
               <CardContent className="p-4">

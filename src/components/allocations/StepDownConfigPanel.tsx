@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { cn } from '@/utils/cn';
 import type { StepDownConfig } from '@/engines/AllocationEngine';
+import { formatPercent } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -56,7 +57,7 @@ export function StepDownConfigPanel({
                   Math.abs(total - 100) < 0.01 ? 'text-green-600' : 'text-red-600'
                 )}
               >
-                {total.toFixed(1)}%
+                {formatPercent(total, 1)}
               </span>
             </div>
             <div className="grid grid-cols-2 gap-1.5">

@@ -13,6 +13,15 @@ import { Alert } from '@/components/ui/Alert';
 import { ArrowLeft, ArrowRight, Check, DollarSign } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
 
+/** Money-primitive per-account annual total (GAP-1 F-0006).
+ *  The BudgetCreate wizard sums 12 monthly cells into a per-account
+ *  annual figure. The previous implementation was raw reduce `+`
+ *  which drifted on 0.1+0.2-style inputs. We expose this so the
+ *  12-month sum can be tested exactly. */
+export function sumMonthlyAmounts(monthly: ReadonlyArray<number | undefined>): number {
+  return roundTo(sumMoney(monthly.map((m) => (m == null ? 0 : m))), 2);
+}
+
 export default function BudgetCreatePage() {
   const [_helpOpen, setHelpOpen] = useState(false);
 
@@ -354,11 +363,8 @@ export default function BudgetCreatePage() {
                         currency: 'USD',
                         minimumFractionDigits: 0,
                       }).format(
-                        roundTo(
-                          sumMoney(
-                            Array.from({ length: 12 }, (_, m) => amounts[id + '-' + m] || 0)
-                          ),
-                          2
+                        sumMonthlyAmounts(
+                          Array.from({ length: 12 }, (_, m) => amounts[id + '-' + m])
                         )
                       )}
                     </div>

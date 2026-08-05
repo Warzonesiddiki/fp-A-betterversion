@@ -34,6 +34,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { RealEstateEngine } from '@/engines/RealEstateEngine';
+import { formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data for UI structure
 const mockPeriods: FiscalPeriod[] = [
@@ -191,7 +192,7 @@ export default function PropertyPortfolioPage() {
         />
         <KPIValue
           label="Loan-to-Value (LTV)"
-          value={`${stats.ltv.toFixed(1)}%`}
+          value={`${formatPercent(stats.ltv, 1)}`}
           change={-2.1}
           changeLabel="Deleveraging on track"
           trend="up" // Up is good (lower risk)

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatNumber } from '@/utils/financialFormatting';
 
 export interface HeatmapDataPoint {
   x: string;
@@ -18,7 +19,7 @@ interface HeatmapChartProps {
 export function HeatmapChart({
   data = [],
   cellSize = 40,
-  formatValue = (v) => v.toFixed(1),
+  formatValue = (v) => formatNumber(v, 1),
   colorScale = ['#EFF6FF', '#1D4ED8'],
   ariaLabel = 'Heatmap chart',
 }: HeatmapChartProps) {

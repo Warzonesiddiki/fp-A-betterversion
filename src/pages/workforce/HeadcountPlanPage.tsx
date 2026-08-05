@@ -16,6 +16,7 @@ import {
   TrendingDown,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { roundTo } from '@/utils/money';
 
 const getRandom = () => Math.random();
 
@@ -83,7 +84,7 @@ export default function HeadcountPlanPage() {
     const trend = months.map((m, i) => ({
       month: m,
       headcount: Math.floor(80 + i * 5 + getRandom() * 10),
-      attrition: +(2 + getRandom() * 3).toFixed(1),
+      attrition: roundTo(2 + getRandom() * 3, 1),
     }));
     return {
       totalCost,

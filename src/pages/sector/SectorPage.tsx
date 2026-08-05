@@ -10,11 +10,13 @@ import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/forma
 import { Layers } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import type { SectorKPI } from '@/config/sectors';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function computeSectorStats(entries: readonly GLEntry[]) {
-  const totalDebit = entries.reduce((s, e) => s + e.debit, 0);
-  const totalCredit = entries.reduce((s, e) => s + e.credit, 0);
-  const netChange = entries.reduce((s, e) => s + e.netChange, 0);
+  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
+  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
+  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
 
   const accountMap = new Map<
     string,
@@ -37,7 +39,7 @@ function computeSectorStats(entries: readonly GLEntry[]) {
 
   const uniqueAccounts = accountMap.size;
   const revenueAccounts = Array.from(accountMap.values()).filter((a) => a.credit > a.debit);
-  const totalRevenue = revenueAccounts.reduce((s, a) => s + a.credit, 0);
+  const totalRevenue = roundTo(sumMoney(revenueAccounts.map((a) => a.credit)), 2);
   const revenueShare = totalCredit > 0 ? (totalRevenue / totalCredit) * 100 : 0;
 
   const accountBreakdown = Array.from(accountMap.entries())
@@ -48,7 +50,7 @@ function computeSectorStats(entries: readonly GLEntry[]) {
       credit: data.credit,
       netChange: data.net,
       transactions: data.count,
-      share: totalDebit > 0 ? ((data.debit / totalDebit) * 100).toFixed(1) + '%' : '0%',
+      share: totalDebit > 0 ? formatPercent((data.debit / totalDebit) * 100, 1) : '0%',
     }))
     .sort((a, b) => Math.abs(b.netChange) - Math.abs(a.netChange));
 
@@ -68,7 +70,7 @@ function formatKPIValue(kpi: SectorKPI, value: number): string {
     case 'currency':
       return formatCurrency(value);
     case 'percent':
-      return `${value.toFixed(1)}%`;
+      return `${formatPercent(value, 1)}`;
     case 'number':
       return formatNumber(value);
     default:
@@ -234,7 +236,7 @@ export default function SectorPage() {
       {/* GL Summary */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="GL Summary">
         <KPIValue label="Accounts Tracked" value={formatNumber(stats.uniqueAccounts)} />
-        <KPIValue label="Revenue Share" value={`${stats.revenueShare.toFixed(1)}%`} />
+        <KPIValue label="Revenue Share" value={`${formatPercent(stats.revenueShare, 1)}`} />
         <KPIValue label="Total Revenue" value={formatCompactNumber(stats.totalRevenue)} />
         <KPIValue
           label="Net Change"

@@ -6,6 +6,7 @@ import { WaterfallChart } from '@/components/charts/WaterfallChart';
 import { VarianceChart } from '@/components/charts/VarianceChart';
 import { SparklineChart } from '@/components/charts/SparklineChart';
 import { GaugeChart } from '@/components/charts/GaugeChart';
+import { formatPercent } from '@/utils/financialFormatting';
 
 // Define what AI can use
 const catalog = defineCatalog({
@@ -72,7 +73,7 @@ const registry = defineRegistry({
       format === 'currency'
         ? `$${numValue.toLocaleString()}`
         : format === 'percent'
-          ? `${numValue.toFixed(1)}%`
+          ? formatPercent(numValue, 1)
           : numValue.toLocaleString();
     return <KPIValue label={label ?? ''} value={formattedValue} change={change} />;
   },

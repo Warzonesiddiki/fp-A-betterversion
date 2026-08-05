@@ -32,6 +32,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { RealEstateEngine } from '@/engines/RealEstateEngine';
+import { formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = [
   {
@@ -100,7 +101,7 @@ const valuationColumns: Column[] = [
       return (
         <span className={num >= 0 ? 'text-green-600' : 'text-red-600'}>
           {num >= 0 ? '+' : ''}
-          {num.toFixed(1)}%
+          {formatPercent(num, 1)}
         </span>
       );
     },
@@ -109,7 +110,7 @@ const valuationColumns: Column[] = [
     key: 'capRate',
     header: 'Implied Cap Rate',
     align: 'right',
-    render: (v) => `${(v as number).toFixed(2)}%`,
+    render: (v) => `${formatPercent(v as number, 2)}`,
   },
 ];
 
@@ -231,14 +232,14 @@ export default function ValuationPage() {
         />
         <KPIValue
           label="Avg. Appreciation"
-          value={`${summaryMetrics.avgAppreciation.toFixed(1)}%`}
+          value={`${formatPercent(summaryMetrics.avgAppreciation, 1)}`}
           change={2.1}
           changeLabel="above market avg"
           trend="up"
         />
         <KPIValue
           label="Weighted Cap Rate"
-          value={`${summaryMetrics.weightedCapRate.toFixed(2)}%`}
+          value={`${formatPercent(summaryMetrics.weightedCapRate, 2)}`}
           change={-0.15}
           changeLabel="compression"
           trend="neutral"
@@ -338,7 +339,7 @@ export default function ValuationPage() {
               <div className="text-xs text-slate-500 uppercase tracking-wider">
                 Loan-to-Value Ratio
               </div>
-              <div className="text-xl font-bold">{portfolioStats.ltv.toFixed(1)}%</div>
+              <div className="text-xl font-bold">{formatPercent(portfolioStats.ltv, 1)}</div>
             </div>
             <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
               <div className="text-xs text-blue-700 font-bold uppercase tracking-wider mb-1">

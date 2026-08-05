@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Scale, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -16,6 +17,58 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+/** Money-primitive Balance Sheet totals (GAP-1 F-0006).
+ *  Assets/liabilities/equity roll up from GL entries grouped by account-code
+ *  prefix. The "is balanced" check verifies the fundamental accounting
+ *  identity Assets = Liabilities + Equity. Float drift on this identity
+ *  produces a false "books don't balance" error on a perfectly balanced
+ *  ledger; routing through sumMoney/subtractMoney+roundTo keeps the
+ *  check exact. */
+export interface BalanceSheetReport {
+  totalAssets: number;
+  totalLiabilities: number;
+  totalEquity: number;
+  isBalanced: boolean;
+  diff: number;
+  entryCount: number;
+}
+
+export function computeBalanceSheet(
+  entries: readonly { accountCode?: string; debit: number; credit: number; date: string }[],
+  asOfDate?: string
+): BalanceSheetReport {
+  const filtered = asOfDate
+    ? entries.filter((e) => e.date <= asOfDate)
+    : entries;
+  const totalAssets = roundTo(
+    sumMoney(
+      filtered
+        .filter((e) => (e.accountCode || '').startsWith('1'))
+        .map((e) => e.debit - e.credit)
+    ),
+    2
+  );
+  const totalLiabilities = roundTo(
+    sumMoney(
+      filtered
+        .filter((e) => (e.accountCode || '').startsWith('2'))
+        .map((e) => e.credit - e.debit)
+    ),
+    2
+  );
+  const totalEquity = roundTo(
+    sumMoney(
+      filtered
+        .filter((e) => (e.accountCode || '').startsWith('3'))
+        .map((e) => e.credit - e.debit)
+    ),
+    2
+  );
+  const diff = roundTo(subtractMoney(totalAssets, totalLiabilities + totalEquity), 2);
+  const isBalanced = Math.abs(diff) < 0.01;
+  return { totalAssets, totalLiabilities, totalEquity, isBalanced, diff, entryCount: filtered.length };
 }
 
 export default function BalanceSheetPage() {
@@ -31,26 +84,7 @@ export default function BalanceSheetPage() {
 
   const report = useMemo(() => {
     if (entries.length === 0) return null;
-    const filtered = entries.filter((e) => e.date <= asOfDate);
-    const totalAssets = filtered
-      .filter((e) => (e.accountCode || '').startsWith('1'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const totalLiabilities = filtered
-      .filter((e) => (e.accountCode || '').startsWith('2'))
-      .reduce((s, e) => s + (e.credit - e.debit), 0);
-    const totalEquity = filtered
-      .filter((e) => (e.accountCode || '').startsWith('3'))
-      .reduce((s, e) => s + (e.credit - e.debit), 0);
-    const isBalanced = Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01;
-    const diff = totalAssets - (totalLiabilities + totalEquity);
-    return {
-      totalAssets,
-      totalLiabilities,
-      totalEquity,
-      isBalanced,
-      diff,
-      entryCount: filtered.length,
-    };
+    return computeBalanceSheet(entries, asOfDate);
   }, [entries, asOfDate]);
 
   const handleExportPDF = () => {

@@ -20,6 +20,7 @@ import {
   Pie,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
+import { formatCompact } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = [
   {
@@ -235,7 +236,7 @@ export default function ClaimsAnalyticsPage() {
                     orientation="right"
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={(v) => `$${(v / 1000000).toFixed(0)}M`}
+                    tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
                   <Legend verticalAlign="top" align="right" />

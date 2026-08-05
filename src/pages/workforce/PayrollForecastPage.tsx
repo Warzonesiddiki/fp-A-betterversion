@@ -23,6 +23,8 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -162,13 +164,13 @@ export default function PayrollForecastPage() {
         (e.accountCode || '').startsWith('71') ||
         (e.description || '').toLowerCase().includes('salary')
     );
-    return payrollEntries.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    return roundTo(sumMoney(payrollEntries.map((e) => Math.abs(e.debit - e.credit))), 2);
   }, [entries]);
 
-  const totalPayroll = mockDepartments.reduce((s, d) => s + d.totalCost, 0);
-  const totalHeadcount = mockDepartments.reduce((s, d) => s + d.headcount, 0);
+  const totalPayroll = roundTo(sumMoney(mockDepartments.map((d) => d.totalCost)), 2);
+  const totalHeadcount = roundTo(sumMoney(mockDepartments.map((d) => d.headcount)), 2);
   const avgCostPerHead = totalHeadcount > 0 ? totalPayroll / totalHeadcount : 0;
-  const totalBenefits = mockDepartments.reduce((s, d) => s + d.benefits, 0);
+  const totalBenefits = roundTo(sumMoney(mockDepartments.map((d) => d.benefits)), 2);
   const benefitsRatio = totalPayroll > 0 ? (totalBenefits / totalPayroll) * 100 : 0;
 
   const deptColumns: Column<DepartmentPayroll>[] = [
@@ -287,7 +289,7 @@ export default function PayrollForecastPage() {
         />
         <KPIValue
           label="Benefits Ratio"
-          value={`${benefitsRatio.toFixed(1)}%`}
+          value={`${formatPercent(benefitsRatio, 1)}`}
           icon={<Percent className="h-4 w-4" />}
         />
       </div>
@@ -305,7 +307,7 @@ export default function PayrollForecastPage() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`}
+                  tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -335,7 +337,7 @@ export default function PayrollForecastPage() {
                   orientation="right"
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                  tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
@@ -375,7 +377,7 @@ export default function PayrollForecastPage() {
               <YAxis
                 stroke="#94a3b8"
                 fontSize={12}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
               />
               <Tooltip
                 formatter={(v: any) => formatCurrency(v)}

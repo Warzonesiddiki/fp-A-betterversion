@@ -33,6 +33,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { RealEstateEngine } from '@/engines/RealEstateEngine';
+import { formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data
 const mockPeriods: FiscalPeriod[] = [
@@ -216,7 +217,7 @@ export default function REITDashboardPage() {
         />
         <KPIValue
           label="Payout Ratio"
-          value={`${stats.payoutRatio.toFixed(1)}%`}
+          value={`${formatPercent(stats.payoutRatio, 1)}`}
           changeLabel="Safe coverage margin"
           trend="neutral"
         />

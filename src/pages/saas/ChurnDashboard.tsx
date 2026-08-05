@@ -20,6 +20,7 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -30,7 +31,7 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 function formatPct(n: number): string {
-  return `${n.toFixed(1)}%`;
+  return `${formatPercent(n, 1)}`;
 }
 
 const MONTHLY_CHURN = [

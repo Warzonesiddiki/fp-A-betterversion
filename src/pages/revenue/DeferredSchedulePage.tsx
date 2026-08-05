@@ -29,6 +29,7 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -284,7 +285,7 @@ export default function DeferredSchedulePage() {
         />
         <KPIValue
           label="Recognition Rate"
-          value={`${recognitionRate.toFixed(1)}%`}
+          value={`${formatPercent(recognitionRate, 1)}`}
           icon={<TrendingUp className="h-4 w-4" />}
         />
       </div>
@@ -302,7 +303,7 @@ export default function DeferredSchedulePage() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`}
+                  tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -333,7 +334,7 @@ export default function DeferredSchedulePage() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                  tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -431,7 +432,10 @@ export default function DeferredSchedulePage() {
                       <div>
                         <div className="text-xs text-slate-400">% Recognized</div>
                         <div className="font-medium">
-                          {((contract.recognizedYTD / contract.contractValue) * 100).toFixed(1)}%
+                          {formatPercent(
+                            (contract.recognizedYTD / contract.contractValue) * 100,
+                            1
+                          )}
                         </div>
                       </div>
                       <div>

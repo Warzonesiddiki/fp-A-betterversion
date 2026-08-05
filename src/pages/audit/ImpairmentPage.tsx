@@ -6,6 +6,8 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { AlertTriangle, TrendingDown, Download, CheckCircle } from 'lucide-react';
 import { ImpairmentEngine } from '@/engines/ImpairmentEngine';
 import { DepreciationEngine } from '@/engines/DepreciationEngine';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact } from '@/utils/financialFormatting';
 
 interface Asset {
   id: string;
@@ -103,9 +105,9 @@ const ASSETS: Asset[] = ASSET_INPUTS.map((input) => {
 export default function ImpairmentPage() {
   const assets = ASSETS;
   const impaired = assets.filter((a) => a.status === 'impaired');
-  const totalCarrying = assets.reduce((s, a) => s + a.carryingAmount, 0);
-  const totalRecoverable = assets.reduce((s, a) => s + a.recoverableAmount, 0);
-  const totalLoss = assets.reduce((s, a) => s + a.impairmentLoss, 0);
+  const totalCarrying = roundTo(sumMoney(assets.map((a) => a.carryingAmount)), 2);
+  const totalRecoverable = roundTo(sumMoney(assets.map((a) => a.recoverableAmount)), 2);
+  const totalLoss = roundTo(sumMoney(assets.map((a) => a.impairmentLoss)), 2);
 
   return (
     <div className="p-6 space-y-6">
@@ -213,16 +215,16 @@ export default function ImpairmentPage() {
                 >
                   <td className="px-3 py-2">{asset.name}</td>
                   <td className="px-3 py-2 text-right font-mono">
-                    ${(asset.carryingAmount / 1000).toFixed(0)}K
+                    ${asset.carryingAmount ? formatCompact(asset.carryingAmount) : '—'}
                   </td>
                   <td className="px-3 py-2 text-right font-mono">
-                    ${(asset.recoverableAmount / 1000).toFixed(0)}K
+                    ${asset.recoverableAmount ? formatCompact(asset.recoverableAmount) : '—'}
                   </td>
                   <td
                     className={`px-3 py-2 text-right font-mono ${asset.impairmentLoss > 0 ? 'text-red-600' : 'text-green-600'}`}
                   >
                     {asset.impairmentLoss > 0
-                      ? `($${(asset.impairmentLoss / 1000).toFixed(0)}K)`
+                      ? `($${asset.impairmentLoss ? formatCompact(asset.impairmentLoss) : '—'})`
                       : '—'}
                   </td>
                   <td className="px-3 py-2 text-center">

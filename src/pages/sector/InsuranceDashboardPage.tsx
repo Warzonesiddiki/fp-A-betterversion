@@ -7,6 +7,8 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { insuranceConfig } from '@/config/sectors/insurance';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Shield } from 'lucide-react';
+import { sumMoney, roundTo, divideMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export default function InsuranceDashboardPage() {
   const { entries } = useGLStore();
@@ -17,15 +19,26 @@ export default function InsuranceDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const revenue = entries.filter((e) => e.credit > e.debit).reduce((s, e) => s + e.credit, 0);
-    const claims = entries
-      .filter((e) => e.accountName.toLowerCase().includes('claim'))
-      .reduce((s, e) => s + e.debit, 0);
-    const expenses = entries
-      .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('claim'))
-      .reduce((s, e) => s + e.debit, 0);
-    const lossRatio = revenue > 0 ? (claims / revenue) * 100 : 0;
-    const expenseRatio = revenue > 0 ? (expenses / revenue) * 100 : 0;
+    const revenue = roundTo(
+      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      2
+    );
+    const claims = roundTo(
+      sumMoney(
+        entries.filter((e) => e.accountName.toLowerCase().includes('claim')).map((e) => e.debit)
+      ),
+      2
+    );
+    const expenses = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('claim'))
+          .map((e) => e.debit)
+      ),
+      2
+    );
+    const lossRatio = revenue > 0 ? roundTo(divideMoney(claims, revenue).times(100), 2) : 0;
+    const expenseRatio = revenue > 0 ? roundTo(divideMoney(expenses, revenue).times(100), 2) : 0;
     return {
       revenue,
       claims,
@@ -68,9 +81,9 @@ export default function InsuranceDashboardPage() {
       <section className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <KPIValue label="GWP" value={formatCurrency(stats.revenue)} />
         <KPIValue label="Claims Paid" value={formatCurrency(stats.claims)} />
-        <KPIValue label="Combined Ratio" value={`${stats.combinedRatio.toFixed(1)}%`} />
-        <KPIValue label="Loss Ratio" value={`${stats.lossRatio.toFixed(1)}%`} />
-        <KPIValue label="Expense Ratio" value={`${stats.expenseRatio.toFixed(1)}%`} />
+        <KPIValue label="Combined Ratio" value={`${formatPercent(stats.combinedRatio, 1)}`} />
+        <KPIValue label="Loss Ratio" value={`${formatPercent(stats.lossRatio, 1)}`} />
+        <KPIValue label="Expense Ratio" value={`${formatPercent(stats.expenseRatio, 1)}`} />
         <KPIValue label="Accounts" value={formatNumber(entries.length)} />
       </section>
 
@@ -86,19 +99,19 @@ export default function InsuranceDashboardPage() {
                 <span
                   className={`font-mono ${stats.lossRatio < 65 ? 'text-green-600' : 'text-red-600'}`}
                 >
-                  {stats.lossRatio.toFixed(1)}%
+                  {formatPercent(stats.lossRatio, 1)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Expense Ratio</span>
-                <span className="font-mono">{stats.expenseRatio.toFixed(1)}%</span>
+                <span className="font-mono">{formatPercent(stats.expenseRatio, 1)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Combined Ratio</span>
                 <span
                   className={`font-mono ${stats.combinedRatio < 100 ? 'text-green-600' : 'text-red-600'}`}
                 >
-                  {stats.combinedRatio.toFixed(1)}%
+                  {formatPercent(stats.combinedRatio, 1)}
                 </span>
               </div>
               <div className="flex justify-between items-center">

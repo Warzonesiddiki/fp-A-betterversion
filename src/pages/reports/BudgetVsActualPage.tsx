@@ -21,6 +21,8 @@ import { BudgetVsActualSummary } from './components/BudgetVsActualSummary';
 import { BudgetVsActualTable, type VarianceDataRow } from './components/BudgetVsActualTable';
 import { PAGE_HELP } from '../_docs';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { sumMoney, subtractMoney, roundTo, divideMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';;
 
 const MATERIAL_THRESHOLD = 10;
 const PERIOD_OPTIONS = ['Monthly', 'Quarterly', 'Annual'] as const;
@@ -235,11 +237,13 @@ export default function BudgetVsActualPage() {
       return Math.abs(b.variancePct) - Math.abs(a.variancePct);
     });
 
-    const totalBudget = filteredRows.reduce((s, r) => s + r.budget, 0);
-    const totalActual = filteredRows.reduce((s, r) => s + r.actual, 0);
-    const totalVar = totalActual - totalBudget;
+    const totalBudget = roundTo(sumMoney(filteredRows.map((r) => r.budget)), 2);
+    const totalActual = roundTo(sumMoney(filteredRows.map((r) => r.actual)), 2);
+    const totalVar = roundTo(subtractMoney(totalActual, totalBudget), 2);
     const isTotalFavorable = totalVar >= 0;
-    const totalUtilization = totalBudget > 0 ? (totalActual / totalBudget) * 100 : 0;
+    // Exact-decimal division so 1/3 * 100 = 33.33 (not 33.33333…).
+    const totalUtilization =
+      totalBudget > 0 ? roundTo(divideMoney(totalActual, totalBudget).times(100), 2) : 0;
 
     const topUnfavorable = [...filteredRows]
       .filter((r) => !r.isFavorable && !r.isUnbudgeted && isFinite(r.variancePct))
@@ -281,7 +285,7 @@ export default function BudgetVsActualPage() {
       budget: formatCurrency(r.budget),
       actual: formatCurrency(r.actual),
       variance: formatCurrencyFull(r.variance),
-      percentVar: !isFinite(r.variancePct) ? '\u221E' : `${r.variancePct.toFixed(1)}%`,
+      percentVar: !isFinite(r.variancePct) ? '\u221E' : `${formatPercent(r.variancePct, 1)}`,
       isFavorable: r.isFavorable,
       isMaterial: r.isMaterial,
       isUnbudgeted: r.isUnbudgeted,
@@ -653,7 +657,7 @@ export default function BudgetVsActualPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold text-red-400">
-                          {row.variancePct.toFixed(1)}%
+                          {formatPercent(row.variancePct, 1)}
                         </p>
                         <p className="text-[10px] text-slate-500">
                           {formatCurrencyFull(row.variance)}

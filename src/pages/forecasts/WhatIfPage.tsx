@@ -20,6 +20,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { WhatIfSandboxEngine, type Sandbox } from '@/engines/WhatIfSandboxEngine';
 import { BreakEvenEngine } from '@/engines/BreakEvenEngine';
 import { SolverEngine } from '@/engines/SolverEngine';
+import { sumMoney, roundTo } from '@/utils/money';
 import { type SandboxModification, type SandboxComparison } from '@/engines/WhatIfSandboxEngine';
 import {
   BarChart,
@@ -31,6 +32,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -39,10 +41,6 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
-}
-
-function formatPercent(n: number): string {
-  return `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
 }
 
 // Default assumptions for demo
@@ -188,9 +186,9 @@ export default function WhatIfPage() {
 
   const totalImpact = useMemo(() => {
     if (!activeSandbox) return 0;
-    return activeSandbox.modifications.reduce(
-      (sum, m) => sum + (m.modifiedValue - m.originalValue),
-      0
+    return roundTo(
+      sumMoney(activeSandbox.modifications.map((m) => m.modifiedValue - m.originalValue)),
+      2
     );
   }, [activeSandbox]);
 

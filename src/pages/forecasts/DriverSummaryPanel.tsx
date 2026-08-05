@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { HeatmapChart } from '@/components/charts/HeatmapChart';
 import type { Driver, CascadeRule } from '@/engines/DriverCascadeEngine';
 import { formatImpact } from './DriverCard';
+import { formatNumber } from '@/utils/financialFormatting';
 
 export interface DriverSummaryPanelProps {
   drivers: Driver[];
@@ -113,7 +114,7 @@ export function DriverSummaryPanel({
             <div className="flex justify-between">
               <span style={{ color: 'var(--text-secondary)' }}>Duration</span>
               <span style={{ color: 'var(--text-primary)' }}>
-                {lastCascadeResult.duration.toFixed(2)}ms
+                {formatNumber(lastCascadeResult.duration, 2)}ms
               </span>
             </div>
           </CardContent>
@@ -136,7 +137,7 @@ export function DriverSummaryPanel({
                 }))
               )}
               cellSize={32}
-              formatValue={(v) => `${v.toFixed(1)}x`}
+              formatValue={(v) => `${formatNumber(v, 1)}x`}
               ariaLabel="Driver impact heatmap"
             />
             {allRules.length === 0 && (

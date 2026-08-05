@@ -18,6 +18,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 const COLORS = [
   'var(--accent-primary)',
@@ -88,13 +89,13 @@ export function TelecomDashboardPage() {
     () => [
       {
         label: 'Total Subscribers',
-        value: totalSubscribers > 0 ? `${(totalSubscribers / 1_000_000).toFixed(1)}M` : '92.5M',
+        value: totalSubscribers > 0 ? `${formatCompact(totalSubscribers)}` : '92.5M',
         change: 2.5,
         icon: Users,
       },
       {
         label: 'ARPU',
-        value: avgARPU > 0 ? `$${avgARPU.toFixed(2)}` : '$45.50',
+        value: avgARPU > 0 ? `$${formatNumber(avgARPU, 2)}` : '$45.50',
         change: 1.8,
         icon: DollarSign,
       },
@@ -162,7 +163,7 @@ export function TelecomDashboardPage() {
                 outerRadius={100}
                 paddingAngle={3}
                 dataKey="value"
-                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${name} ${formatPercent(percent ?? 0, 0)}`}
               >
                 {capexDistribution.map((_, index) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
@@ -195,7 +196,7 @@ export function TelecomDashboardPage() {
                       }}
                     />
                     <span className="font-mono text-sm w-14 text-right">
-                      {row.subscribers.toFixed(1)}M
+                      {formatNumber(row.subscribers / 1_000_000, 1)}M
                     </span>
                   </div>
                 </div>
@@ -224,7 +225,9 @@ export function TelecomDashboardPage() {
                       }}
                     />
                   </div>
-                  <span className="font-mono text-sm w-14 text-right">${row.arpu.toFixed(2)}</span>
+                  <span className="font-mono text-sm w-14 text-right">
+                    ${formatNumber(row.arpu, 2)}
+                  </span>
                 </div>
               ))}
             </div>

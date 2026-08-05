@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { FileText, Table as TableIcon, FileText as FileIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -185,7 +186,7 @@ export default function BoardPackPage() {
               Gross Margin
             </div>
             <div className="text-xl font-black tabular-nums">
-              {report ? report.grossMargin.toFixed(1) + '%' : '-'}
+              {report ? formatPercent(report.grossMargin, 1) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -308,8 +309,7 @@ export default function BoardPackPage() {
                 </div>
                 <p className="text-[10px] text-center font-bold text-slate-500 uppercase">
                   {report && report.totalBudget > 0
-                    ? ((report.expenses / report.totalBudget) * 100).toFixed(1) +
-                      '% budget utilization'
+                    ? `${formatPercent((report.expenses / report.totalBudget) * 100, 1)} budget utilization`
                     : '0% utilization'}
                 </p>
               </div>

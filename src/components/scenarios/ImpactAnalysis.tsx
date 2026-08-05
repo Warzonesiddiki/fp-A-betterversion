@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import type { Scenario, ScenarioMetrics } from '@/types';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   CATEGORIZED_METRICS,
   CATEGORY_LABELS,
@@ -196,7 +197,7 @@ export function ImpactAnalysis({
                 </div>
                 <p className="text-xs text-[var(--text-secondary)]">
                   {pctDelta >= 0 ? '+' : ''}
-                  {pctDelta.toFixed(1)}% revenue impact
+                  {formatPercent(pctDelta, 1)} revenue impact
                 </p>
               </CardContent>
             </Card>
@@ -310,7 +311,7 @@ export function ImpactAnalysis({
                                     className={`ml-1 rounded px-1 py-0.5 text-[10px] ${severityColor(change.severity)}`}
                                   >
                                     {change.pctChange >= 0 ? '+' : ''}
-                                    {change.pctChange.toFixed(1)}%
+                                    {formatPercent(change.pctChange, 1)}
                                   </span>
                                 </div>
                               </td>

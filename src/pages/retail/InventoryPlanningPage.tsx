@@ -33,6 +33,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { InventoryEngine } from '@/engines/InventoryEngine';
+import { formatCompact, formatNumber } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = [
   {
@@ -179,7 +180,7 @@ export default function InventoryPlanningPage() {
         />
         <KPIValue
           label="Inventory Turnover"
-          value={`${stats.turnover.toFixed(1)}x`}
+          value={`${formatNumber(stats.turnover, 1)}x`}
           change={8.2}
           changeLabel="annualized rate"
           trend="up"
@@ -267,7 +268,7 @@ export default function InventoryPlanningPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold">${(cat.value / 1000000).toFixed(1)}M</div>
+                  <div className="text-sm font-bold">${formatCompact(cat.value)}</div>
                   <div className="text-[10px] text-green-600">{cat.margin} margin</div>
                 </div>
               </div>

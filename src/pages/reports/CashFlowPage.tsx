@@ -9,6 +9,7 @@ import { HelpPanel } from '@/components/ui/HelpPanel';
 import { DollarSign, HelpCircle, FileText, Table as TableIcon, AlertTriangle } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -80,49 +81,73 @@ export default function CashFlowPage() {
     const balance = (arr: typeof entries, prefix: string, isLiability = false) => {
       const filtered = arr.filter((e) => (e.accountCode || '').startsWith(prefix));
       if (isLiability) {
-        return filtered.reduce((s, e) => s + (e.credit - e.debit), 0);
+        return roundTo(sumMoney(filtered.map((e) => e.credit - e.debit)), 2);
       }
-      return filtered.reduce((s, e) => s + (e.debit - e.credit), 0);
+      return roundTo(sumMoney(filtered.map((e) => e.debit - e.credit)), 2);
     };
 
     const netIncome = (() => {
-      const rev = periodEntries
-        .filter((e) => (e.accountCode || '').startsWith('4'))
-        .reduce((s, e) => s + (e.credit - e.debit), 0);
-      const exp = periodEntries
-        .filter(
-          (e) => (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
-        )
-        .reduce((s, e) => s + (e.debit - e.credit), 0);
-      return rev - exp;
+      const rev = roundTo(
+        sumMoney(
+          periodEntries
+            .filter((e) => (e.accountCode || '').startsWith('4'))
+            .map((e) => e.credit - e.debit)
+        ),
+        2
+      );
+      const exp = roundTo(
+        sumMoney(
+          periodEntries
+            .filter(
+              (e) =>
+                (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
+            )
+            .map((e) => e.debit - e.credit)
+        ),
+        2
+      );
+      return roundTo(subtractMoney(rev, exp), 2);
     })();
 
-    const depreciation = periodEntries
-      .filter(
-        (e) =>
-          (e.accountCode || '').startsWith('6') &&
-          (e.description || '').toLowerCase().includes('deprec')
-      )
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
+    const depreciation = roundTo(
+      sumMoney(
+        periodEntries
+          .filter(
+            (e) =>
+              (e.accountCode || '').startsWith('6') &&
+              (e.description || '').toLowerCase().includes('deprec')
+          )
+          .map((e) => e.debit - e.credit)
+      ),
+      2
+    );
 
-    const deltaAR = balance(priorEntries, '12') - balance(currentEntries, '12');
-    const deltaInventory = balance(priorEntries, '13') - balance(currentEntries, '13');
-    const deltaAP = balance(currentEntries, '21', true) - balance(priorEntries, '21', true);
-    const deltaPrepaids = balance(priorEntries, '14') - balance(currentEntries, '14');
+    const deltaAR = roundTo(subtractMoney(balance(priorEntries, '12'), balance(currentEntries, '12')), 2);
+    const deltaInventory = roundTo(subtractMoney(balance(priorEntries, '13'), balance(currentEntries, '13')), 2);
+    const deltaAP = roundTo(subtractMoney(balance(currentEntries, '21', true), balance(priorEntries, '21', true)), 2);
+    const deltaPrepaids = roundTo(subtractMoney(balance(priorEntries, '14'), balance(currentEntries, '14')), 2);
 
-    const operating = netIncome + depreciation + deltaAR + deltaInventory + deltaAP + deltaPrepaids;
+    const operating = roundTo(
+      sumMoney([netIncome, depreciation, deltaAR, deltaInventory, deltaAP, deltaPrepaids]),
+      2
+    );
 
-    const capex = balance(priorEntries, '15') - balance(currentEntries, '15');
+    const capex = roundTo(subtractMoney(balance(priorEntries, '15'), balance(currentEntries, '15')), 2);
     const investing = capex;
 
-    const debtChange = balance(currentEntries, '22', true) - balance(priorEntries, '22', true);
-    const dividends = periodEntries
-      .filter((e) => (e.accountCode || '').startsWith('31'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
+    const debtChange = roundTo(subtractMoney(balance(currentEntries, '22', true), balance(priorEntries, '22', true)), 2);
+    const dividends = roundTo(
+      sumMoney(
+        periodEntries
+          .filter((e) => (e.accountCode || '').startsWith('31'))
+          .map((e) => e.debit - e.credit)
+      ),
+      2
+    );
 
-    const financing = debtChange - dividends;
+    const financing = roundTo(subtractMoney(debtChange, dividends), 2);
 
-    const netChange = operating + investing + financing;
+    const netChange = roundTo(sumMoney([operating, investing, financing]), 2);
     const beginningCash = balance(priorEntries, '11');
     const endingCash = balance(currentEntries, '11');
 

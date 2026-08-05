@@ -8,6 +8,7 @@ import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import type { MarketplacePlugin } from '@/plugins/PluginMarketplace';
+import { formatCompact } from '@/utils/financialFormatting';
 
 interface PluginCardProps {
   plugin: MarketplacePlugin;
@@ -60,8 +61,8 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 function formatDownloads(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  if (n >= 1_000_000) return `${formatCompact(n)}`;
+  if (n >= 1_000) return `${formatCompact(n)}`;
   return String(n);
 }
 

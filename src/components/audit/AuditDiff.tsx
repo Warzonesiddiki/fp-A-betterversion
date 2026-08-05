@@ -5,6 +5,7 @@
 
 import { memo, type JSX } from 'react';
 import { auditDiffTokens } from './auditTokens';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -51,9 +52,9 @@ function lcsWords(a: string[], b: string[]): string[][] {
   return result;
 }
 
-const formatNumber = (n: number): string => {
+const formatAuditNumber = (n: number): string => {
   if (Number.isInteger(n)) return n.toString();
-  return n.toFixed(2);
+  return formatNumber(n, 2);
 };
 
 const formatDate = (ms: number): string => {
@@ -96,7 +97,9 @@ function AuditDiffBase({
     const isIncrease = delta > 0;
     return (
       <span className="font-mono text-sm">
-        <span className={auditDiffTokens.numericPreviousMuted}>{formatNumber(previousValue)}</span>
+        <span className={auditDiffTokens.numericPreviousMuted}>
+          {formatAuditNumber(previousValue)}
+        </span>
         <span
           className={
             isIncrease
@@ -106,7 +109,7 @@ function AuditDiffBase({
                 : auditDiffTokens.deltaNeutralText
           }
         >
-          {formatNumber(newValue)}
+          {formatAuditNumber(newValue)}
         </span>
         <span
           className={
@@ -118,8 +121,8 @@ function AuditDiffBase({
           }
         >
           ({sign}
-          {formatNumber(delta)} / {pct > 0 ? '+' : ''}
-          {pct.toFixed(1)}%)
+          {formatAuditNumber(delta)} / {pct > 0 ? '+' : ''}
+          {formatPercent(pct, 1)})
         </span>
       </span>
     );

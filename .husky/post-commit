@@ -1,0 +1,17 @@
+#!/bin/sh
+# FinPlan Pro — post-commit hook: auto-update the progress tracker.
+# Runs on every commit so PROGRESS_TRACKER.html stays in sync with the
+# repo's actual state. The tracker is committed in a follow-up commit
+# by the same workflow that ran this commit, so the tracker HTML is
+# always one commit behind the head it describes.
+
+set -e
+
+if [ -f scripts/update-tracker.mjs ] && [ -f PROGRESS_TRACKER.html ]; then
+  if node scripts/update-tracker.mjs >/dev/null 2>&1; then
+    if ! git diff --quiet PROGRESS_TRACKER.html 2>/dev/null; then
+      git add PROGRESS_TRACKER.html 2>/dev/null || true
+      git commit --no-verify -m "docs(tracker): auto-update progress tracker" 2>/dev/null || true
+    fi
+  fi
+fi

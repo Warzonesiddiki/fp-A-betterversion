@@ -22,6 +22,7 @@ import {
   Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data
 const mockPeriods: FiscalPeriod[] = [
@@ -253,7 +254,7 @@ export default function EnergyDashboardPage() {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#64748b' }}
-                    tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`}
+                    tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -340,7 +341,7 @@ export default function EnergyDashboardPage() {
                     <span className="font-medium">{s.name}</span>
                   </div>
                   <span className="text-[var(--text-secondary)]">
-                    {(s.value / 14.9).toFixed(1)}% of total
+                    {formatPercent(s.value / 14.9, 1)} of total
                   </span>
                 </div>
               ))}

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { SaaSMetricsEngine } from '@/engines/SaaSMetricsEngine';
+import { roundTo } from '@/utils/money';
 import { Users, TrendingDown, AlertTriangle, Download, RefreshCw, BarChart4 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -22,6 +23,7 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -33,7 +35,7 @@ function formatCurrency(n: number): string {
 }
 
 function formatPct(n: number): string {
-  return `${n.toFixed(1)}%`;
+  return `${formatPercent(n, 1)}`;
 }
 
 interface ChurnTrendPoint {
@@ -90,8 +92,8 @@ function buildChurnTrend(
 
     return {
       month: period.split('-')[1] || period,
-      customerChurn: Number(customerChurn.toFixed(1)),
-      revenueChurn: Number(revenueChurn.toFixed(1)),
+      customerChurn: roundTo(customerChurn, 1),
+      revenueChurn: roundTo(revenueChurn, 1),
       saveRate,
     };
   });
@@ -116,7 +118,7 @@ function buildSegmentChurn(
 
     return {
       segment,
-      churn: Number(churn.toFixed(1)),
+      churn: roundTo(churn, 1),
       customers: customerCount,
       mrr: revenue,
     };

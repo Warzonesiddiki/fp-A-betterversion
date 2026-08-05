@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/Badge';
 
 import { BenchmarkService, BenchmarkResult, BenchmarkReport } from '@/services/BenchmarkService';
 import { createLogger } from '@/utils/logger';
+import { formatNumber } from '@/utils/financialFormatting';
 
 const benchmarksPageLogger = createLogger('BenchmarksPage');
 
@@ -129,7 +130,7 @@ const BenchmarksPage: React.FC = () => {
             AI Classification
           </div>
           <div className="text-3xl font-bold">
-            {latestReport ? `${latestReport.aiEngine.classify.toFixed(2)}ms` : '--'}
+            {latestReport ? `${formatNumber(latestReport.aiEngine.classify, 2)} ms` : '--'}
           </div>
           <Badge
             variant={(latestReport?.aiEngine.classify ?? Infinity) < 50 ? 'default' : 'destructive'}
@@ -144,7 +145,7 @@ const BenchmarksPage: React.FC = () => {
             Storage Write
           </div>
           <div className="text-3xl font-bold">
-            {latestReport ? `${latestReport.storage.write.toFixed(2)}ms` : '--'}
+            {latestReport ? `${formatNumber(latestReport.storage.write, 2)} ms` : '--'}
           </div>
           <Badge
             variant={(latestReport?.storage.write ?? Infinity) < 10 ? 'default' : 'destructive'}

@@ -15,6 +15,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
+import { sumMoney, roundTo } from '@/utils/money';
 import {
   ResponsiveContainer,
   BarChart,
@@ -31,6 +32,7 @@ import {
 import { useGLStore } from '@/store/glStore';
 import { CreditRiskEngine, type Financials } from '@/engines/CreditRiskEngine';
 import type { GLEntry } from '@/types';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 /** Derive financial ratios from GL entries grouped by entity. */
 function deriveFinancialsFromGL(entries: GLEntry[]): Array<{
@@ -48,25 +50,45 @@ function deriveFinancialsFromGL(entries: GLEntry[]): Array<{
       const name = entityEntries[0]?.accountName || 'Unknown Entity';
 
       // Derive financial ratios from GL account codes
-      const assets = entityEntries
-        .filter((e) => e.accountCode.startsWith('1'))
-        .reduce((acc, e) => acc + Math.abs(e.amount), 0);
-      const liabilities = entityEntries
-        .filter((e) => e.accountCode.startsWith('2'))
-        .reduce((acc, e) => acc + Math.abs(e.amount), 0);
-      const equity = entityEntries
-        .filter((e) => e.accountCode.startsWith('3'))
-        .reduce((acc, e) => acc + Math.abs(e.amount), 0);
-      const revenue = entityEntries
-        .filter((e) => e.accountCode.startsWith('4'))
-        .reduce((acc, e) => acc + Math.abs(e.amount), 0);
-      const opex = entityEntries
-        .filter((e) => e.accountCode.startsWith('5'))
-        .reduce((acc, e) => acc + Math.abs(e.amount), 0);
+      const assets = roundTo(
+        sumMoney(
+          entityEntries.filter((e) => e.accountCode.startsWith('1')).map((e) => Math.abs(e.amount))
+        ),
+        2
+      );
+      const liabilities = roundTo(
+        sumMoney(
+          entityEntries.filter((e) => e.accountCode.startsWith('2')).map((e) => Math.abs(e.amount))
+        ),
+        2
+      );
+      const equity = roundTo(
+        sumMoney(
+          entityEntries.filter((e) => e.accountCode.startsWith('3')).map((e) => Math.abs(e.amount))
+        ),
+        2
+      );
+      const revenue = roundTo(
+        sumMoney(
+          entityEntries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(e.amount))
+        ),
+        2
+      );
+      const opex = roundTo(
+        sumMoney(
+          entityEntries.filter((e) => e.accountCode.startsWith('5')).map((e) => Math.abs(e.amount))
+        ),
+        2
+      );
 
-      const currentAssets = entityEntries
-        .filter((e) => e.accountCode.startsWith('11') || e.accountCode.startsWith('12'))
-        .reduce((acc, e) => acc + Math.abs(e.amount), 0);
+      const currentAssets = roundTo(
+        sumMoney(
+          entityEntries
+            .filter((e) => e.accountCode.startsWith('11') || e.accountCode.startsWith('12'))
+            .map((e) => Math.abs(e.amount))
+        ),
+        2
+      );
       const currentLiabilities = entityEntries
         .filter((e) => e.accountCode.startsWith('21'))
         .reduce((acc, e) => acc + Math.abs(e.amount), 0);
@@ -135,13 +157,13 @@ const creditColumns: Column[] = [
     key: 'pd',
     header: 'PD',
     align: 'right',
-    render: (v) => `${((v as number) * 100).toFixed(2)}%`,
+    render: (v) => `${formatPercent(v as number, 2)}`,
   },
   {
     key: 'lgd',
     header: 'LGD',
     align: 'right',
-    render: (v) => `${((v as number) * 100).toFixed(1)}%`,
+    render: (v) => `${formatPercent(v as number, 1)}`,
   },
   {
     key: 'ead',
@@ -304,12 +326,12 @@ export default function CreditRiskPage() {
             maximumFractionDigits: 1,
             notation: 'compact',
           }).format(portfolioMetrics.totalExpectedLoss)}
-          changeLabel={`PD: ${(portfolioMetrics.weightedPD * 100).toFixed(2)}%`}
+          changeLabel={`PD: ${formatPercent(portfolioMetrics.weightedPD, 2)}`}
           trend="down"
         />
         <KPIValue
           label="Avg Credit Score"
-          value={portfolioMetrics.avgScore.toFixed(0)}
+          value={formatNumber(portfolioMetrics.avgScore, 0)}
           changeLabel="portfolio weighted"
           trend={portfolioMetrics.avgScore >= 60 ? 'up' : 'down'}
         />
@@ -344,7 +366,7 @@ export default function CreditRiskPage() {
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                    tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                   />
                   <Tooltip
                     formatter={(v: any) => [

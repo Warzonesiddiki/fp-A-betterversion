@@ -35,6 +35,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { RealEstateEngine } from '@/engines/RealEstateEngine';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data
 const mockPeriods: FiscalPeriod[] = [
@@ -213,7 +214,7 @@ export default function RealEstateDashboardPage() {
         />
         <KPIValue
           label="Avg. Cap Rate"
-          value={`${stats.capRate.toFixed(2)}%`}
+          value={`${formatPercent(stats.capRate, 2)}`}
           change={-0.2}
           changeLabel="compression in prime"
           trend="up"
@@ -300,7 +301,7 @@ export default function RealEstateDashboardPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: any) => `$${(v / 1000000).toFixed(1)}M`} />
+                  <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>

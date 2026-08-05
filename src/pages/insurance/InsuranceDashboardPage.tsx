@@ -21,6 +21,7 @@ import {
   Bar,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = [
   {
@@ -231,7 +232,7 @@ export default function InsuranceDashboardPage() {
                   />
                   <Tooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                    formatter={(v: any) => `${v.toFixed(1)}%`}
+                    formatter={(v: any) => `${formatPercent(v, 1)}`}
                   />
                   <Legend verticalAlign="top" align="right" />
                   <Area
@@ -290,7 +291,7 @@ export default function InsuranceDashboardPage() {
                   />
                   <Tooltip
                     cursor={{ fill: 'transparent' }}
-                    formatter={(v: any) => `$${(v / 1000000).toFixed(1)}M`}
+                    formatter={(v: any) => `$${formatCompact(v)}`}
                   />
                   <Legend />
                   <Bar

@@ -1,5 +1,6 @@
 import { useMemo, useState, memo } from 'react';
 import { cn } from '@/utils/cn';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 export interface HeatmapCell {
   rowId: string;
@@ -75,12 +76,9 @@ function formatNum(value: number, format: string): string {
         maximumFractionDigits: 0,
       }).format(value);
     case 'percent':
-      return `${value.toFixed(1)}%`;
+      return `${formatPercent(value, 1)}`;
     case 'compact':
-      if (Math.abs(value) >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
-      if (Math.abs(value) >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
-      if (Math.abs(value) >= 1e3) return `$${(value / 1e3).toFixed(1)}K`;
-      return `$${value.toFixed(0)}`;
+      return formatCompact(value);
     default:
       return value.toLocaleString();
   }

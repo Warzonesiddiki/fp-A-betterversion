@@ -1297,3 +1297,75 @@ false-positive. Documented in-line in `scripts/money-adoption.mjs`.
 **Ratchet baseline re-recorded:** **130/584 (22.26%)**, server **2/23**, **0** raw `toFixed(n)`.
 
 **Quality gates (Wave 5):** `tsc --noEmit` ✓; `eslint src --max-warnings 0` ✓; `prettier` ✓; all vitest suites ✓; `money:adoption` ratchet holds at **130/584**; `docs:verify` ✓.
+
+---
+
+### Wave 6 (2026-08-05): Foundation Lock — money tests for Wave 5 pages + unscanned dirs
+
+**Goal:** Close the GAP-1 money primitive migration completely. No UI module left unscanned,
+no raw `toFixed` left in financial paths, no decimal drift on cent-equal books.
+
+**Part 1 — Money tests for 5 Wave 5 pages that previously had only smoke render tests:**
+
+| File | Helper extracted | Tests added |
+|------|------------------|-------------|
+| `src/pages/treasury/FXExposurePage.money.test.ts` | `computeFXExposureTotals` | 6 |
+| `src/pages/treasury/LoanAmortizationPage.money.test.ts` | `computeLoanScheduleTotals` | 6 |
+| `src/pages/budgets/BudgetCreatePage.money.test.ts` | `sumMonthlyAmounts` | 7 |
+| `src/pages/capex/CapExDashboard.money.test.ts` | `computeCapExTotals`, `projectVarianceLike`, `sumGLCapexMovement` | 15 |
+| `src/pages/cash/DebtSchedulePage.money.test.ts` | delegation + engine integration | 8 |
+
+**Real defect caught:** CapExDashboard's `budgetUtilization = totalActual/totalBudget*100`
+on `(0.3, 0.4)` produced `74.99999999999999` instead of `75`. Replaced with
+`roundTo(divideMoney(totalActual, totalBudget).times(100), 2)` to land on 75 exactly.
+Same drift existed in BudgetVsActualPage.totalUtilization.
+
+**Part 2 — 28 unscanned page directories swept and added to FINANCIAL_DIRS:**
+sector, sectors, reports, audit, bonds, collaboration, charts, consolidation,
+credit, currency, education, energy, esg, forecasts, government, healthcare,
+insurance, lease, logistics, manufacturing, realestate, retail, revenue, saas,
+tax, telecom, variance, workforce.
+
+Pattern replaced across ~140 page files: `.filter(...).reduce((s, e) => s + e.X, 0)`
+→ `roundTo(sumMoney(arr.filter(...).map(e => e.X)), 2)`. Display-only `.toFixed`
+on rates/percentages/FX rates/K-M-B axis labels → `formatPercent`/`formatNumber`/
+`formatCompact` from `@/utils/financialFormatting`.
+
+**Other defects caught:**
+- TelecomPage: `e.netChange` undefined in test mocks → `?? 0` fallback (raw reduce
+  produced NaN silently)
+- DriverCard: `$${formatCompact(v)}` produced `$$1.5M` (double-dollar; formatCompact
+  already prepends `$`) → removed
+- 3 local `formatPercent` functions shadowed imports → renamed/removed
+
+**Part 3 — 39 unscanned component directories swept:**
+26 zero-toFixed dirs added unconditionally (admin, analytics, auth, budgets,
+collaboration, competitive, consolidation, construction, currency, debt,
+errors, generative, help, insurance, layout, lease, manufacturing, migration,
+persona, realestate, saas, sectors, settings, spreadsheet, system, treasury,
+variance, workforce). 11 dirs with display toFixed migrated to helpers
+(allocations, audit, charts, dashboard, data, esg, finance, plugins, reports,
+scenarios, workflow).
+
+**Part 4 — Server side:** `server/src/routes/gl.ts` and `server/src/routes/export.ts`
+already use `decimal.js` (canonical engine, ratchet-confirmed). Remaining 21 server
+files (routing, middleware, services, config) have no money math — they're
+Zod-validated SQL pass-throughs and don't need a money primitive.
+
+**Ratchet baseline re-recorded:** **193/888 (21.73%)** financial modules use
+the money primitive; **0** raw `toFixed(n)` sites across 888 financial modules;
+server **2/23** use decimal.js, **0** toFixed.
+
+**FINANCIAL_DIRS expanded 18 → 85 directories** (67 new). Every directory
+in `src/pages/*` and every directory in `src/components/*` is now in the ratchet.
+
+**Quality gates (Wave 6):**
+- `tsc --noEmit` exit 0
+- `eslint src --max-warnings 0` exit 0
+- `prettier` clean
+- 42 new money tests (5 new `*.money.test.ts` files) all green
+- 1003 page tests, 2129 component tests, 5917 engine+util+store tests, 735 store tests, 19 backupRestore tests — all green
+- `money:adoption` ratchet holds at **193/888 (21.73%)**, **0** raw toFixed
+- `docs:verify` passes
+- 5 commits, 146 files changed, +1,668/−545
+

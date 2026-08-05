@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import type { MarketplacePlugin } from '@/plugins/PluginMarketplace';
 import type { PluginPermission } from '@/plugins/types';
+import { formatCompact, formatNumber } from '@/utils/financialFormatting';
 
 interface PluginDetailProps {
   plugin: MarketplacePlugin;
@@ -56,8 +57,8 @@ const RISK_COLORS: Record<string, string> = {
 };
 
 function formatDownloads(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  if (n >= 1_000_000) return `${formatCompact(n)}`;
+  if (n >= 1_000) return `${formatCompact(n)}`;
   return String(n);
 }
 
@@ -174,7 +175,7 @@ export function PluginDetail({
           <div className="flex flex-wrap items-center gap-6 text-sm text-[var(--text-secondary)] text-[var(--text-secondary)]">
             <div className="flex items-center gap-1.5">
               <StarRating rating={plugin.rating} />
-              <span>{plugin.rating.toFixed(1)}</span>
+              <span>{formatNumber(plugin.rating, 1)}</span>
             </div>
             <div>{formatDownloads(plugin.downloads)} installs</div>
             <div>

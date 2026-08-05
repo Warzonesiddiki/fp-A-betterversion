@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wrench } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export default function EquipmentManagementPage() {
   const { entries } = useGLStore();
@@ -21,13 +23,19 @@ export default function EquipmentManagementPage() {
         e.accountName.toLowerCase().includes('equipment') ||
         e.accountName.toLowerCase().includes('machinery')
     );
-    const totalValue = equipment.reduce((s, e) => s + e.debit, 0);
-    const depreciation = entries
-      .filter((e) => e.accountName.toLowerCase().includes('depreciat'))
-      .reduce((s, e) => s + e.debit, 0);
-    const maintenance = entries
-      .filter((e) => e.accountName.toLowerCase().includes('maint'))
-      .reduce((s, e) => s + e.debit, 0);
+    const totalValue = roundTo(sumMoney(equipment.map((e) => e.debit)), 2);
+    const depreciation = roundTo(
+      sumMoney(
+        entries.filter((e) => e.accountName.toLowerCase().includes('depreciat')).map((e) => e.debit)
+      ),
+      2
+    );
+    const maintenance = roundTo(
+      sumMoney(
+        entries.filter((e) => e.accountName.toLowerCase().includes('maint')).map((e) => e.debit)
+      ),
+      2
+    );
     return { totalValue, depreciation, maintenance, count: equipment.length };
   }, [entries]);
 
@@ -96,18 +104,16 @@ export default function EquipmentManagementPage() {
                 <span className="text-sm text-slate-400">Maintenance Cost Ratio</span>
                 <span className="font-mono">
                   {stats.totalValue > 0
-                    ? ((stats.maintenance / stats.totalValue) * 100).toFixed(1)
-                    : 0}
-                  %
+                    ? formatPercent((stats.maintenance / stats.totalValue) * 100, 1)
+                    : '0%'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Depreciation Rate</span>
                 <span className="font-mono">
                   {stats.totalValue > 0
-                    ? ((stats.depreciation / stats.totalValue) * 100).toFixed(1)
-                    : 0}
-                  %
+                    ? formatPercent((stats.depreciation / stats.totalValue) * 100, 1)
+                    : '0%'}
                 </span>
               </div>
               <div className="flex justify-between items-center">

@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 
 interface SparklineProps {
   data: number[];
@@ -111,7 +112,7 @@ export const KPICard = memo(function KPICard({
           maximumFractionDigits: 0,
         }).format(value)
       : format === 'percent'
-        ? value.toFixed(1) + '%'
+        ? formatPercent(value, 1)
         : value.toLocaleString();
 
   const trendColor =
@@ -159,7 +160,7 @@ export const KPICard = memo(function KPICard({
                     : 'neutral'
               ]
             }{' '}
-            {Math.abs(varianceBadge.percent).toFixed(1)}%
+            {formatPercent(Math.abs(varianceBadge.percent), 1)}
           </span>
         )}
       </div>
@@ -222,7 +223,7 @@ export const KPICard = memo(function KPICard({
           <span>{trendArrow}</span>
           <span>
             {change >= 0 ? '+' : ''}
-            {change.toFixed(1)}% vs prior
+            {formatPercent(change, 1)} vs prior
           </span>
         </div>
       )}

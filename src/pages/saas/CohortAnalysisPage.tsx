@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { Download, BarChart4, Users, TrendingDown, DollarSign } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { sumMoney, roundTo } from '@/utils/money';
 import {
   ResponsiveContainer,
   BarChart,
@@ -18,6 +19,7 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -28,7 +30,7 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 function formatPct(n: number): string {
-  return `${n.toFixed(1)}%`;
+  return `${formatPercent(n, 1)}`;
 }
 
 const COHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
@@ -71,7 +73,11 @@ export default function CohortAnalysisPage() {
     const avgChurn = 100 - avgRetention;
     const avgRevPerCohort =
       entries.length > 0
-        ? entries.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0) / cohortSizes.length
+        ? roundTo(
+            sumMoney(entries.map((e) => Math.abs((e.debit ?? 0) - (e.credit ?? 0)))).toNumber() /
+              cohortSizes.length,
+            2
+          )
         : 250000;
     return { totalCustomers, avgRetention, avgChurn, avgRevPerCohort };
   }, [retentionMatrix, cohortSizes, entries]);

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { TreemapChart, TreemapDataPoint } from '@/components/charts/TreemapChart';
 import { Plus, FlaskConical, Lock, Unlock } from 'lucide-react';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export default function ScenarioListPage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -152,7 +153,7 @@ export default function ScenarioListPage() {
                   <Badge variant="secondary" className="text-[10px]">
                     {s.type}
                   </Badge>
-                  <span>{(s.probability * 100).toFixed(0)}% probability</span>
+                  <span>{formatPercent(s.probability * 100, 0)} probability</span>
                 </div>
               </CardContent>
             </Card>

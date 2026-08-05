@@ -7,6 +7,8 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { retailConfig } from '@/config/sectors/retail';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { ShoppingCart } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export default function RetailDashboardPage() {
   const { entries } = useGLStore();
@@ -17,8 +19,14 @@ export default function RetailDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const revenue = entries.filter((e) => e.credit > e.debit).reduce((s, e) => s + e.credit, 0);
-    const costs = entries.filter((e) => e.debit > e.credit).reduce((s, e) => s + e.debit, 0);
+    const revenue = roundTo(
+      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      2
+    );
+    const costs = roundTo(
+      sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
+      2
+    );
     const margin = revenue > 0 ? ((revenue - costs) / revenue) * 100 : 0;
     return { revenue, costs, margin };
   }, [entries]);
@@ -57,7 +65,7 @@ export default function RetailDashboardPage() {
       <section className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <KPIValue label="Revenue" value={formatCurrency(stats.revenue)} />
         <KPIValue label="Costs" value={formatCurrency(stats.costs)} />
-        <KPIValue label="Margin" value={`${stats.margin.toFixed(1)}%`} />
+        <KPIValue label="Margin" value={`${formatPercent(stats.margin, 1)}`} />
         <KPIValue label="Entries" value={formatNumber(entries.length)} />
       </section>
 

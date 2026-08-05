@@ -7,6 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { educationConfig } from '@/config/sectors/education';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { GraduationCap } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export function EducationDashboardPage() {
   const { entries } = useGLStore();
@@ -17,21 +18,39 @@ export function EducationDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const tuitionRevenue = entries
-      .filter((e) => e.accountName.toLowerCase().includes('tuition') && e.credit > 0)
-      .reduce((s, e) => s + e.credit, 0);
-    const grantIncome = entries
-      .filter(
-        (e) =>
-          (e.accountName.toLowerCase().includes('grant') ||
-            e.accountName.toLowerCase().includes('research')) &&
-          e.credit > 0
-      )
-      .reduce((s, e) => s + e.credit, 0);
-    const expenses = entries.filter((e) => e.debit > e.credit).reduce((s, e) => s + e.debit, 0);
-    const endowment = entries
-      .filter((e) => e.accountName.toLowerCase().includes('endowment'))
-      .reduce((s, e) => s + e.credit, 0);
+    const tuitionRevenue = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.accountName.toLowerCase().includes('tuition') && e.credit > 0)
+          .map((e) => e.credit)
+      ),
+      2
+    );
+    const grantIncome = roundTo(
+      sumMoney(
+        entries
+          .filter(
+            (e) =>
+              (e.accountName.toLowerCase().includes('grant') ||
+                e.accountName.toLowerCase().includes('research')) &&
+              e.credit > 0
+          )
+          .map((e) => e.credit)
+      ),
+      2
+    );
+    const expenses = roundTo(
+      sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
+      2
+    );
+    const endowment = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.accountName.toLowerCase().includes('endowment'))
+          .map((e) => e.credit)
+      ),
+      2
+    );
     return { tuitionRevenue, grantIncome, expenses, endowment };
   }, [entries]);
 

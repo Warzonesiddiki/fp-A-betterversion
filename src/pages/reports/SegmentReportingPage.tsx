@@ -21,6 +21,8 @@ import {
 import { PieChart, Pie } from 'recharts';
 import { Layers, TrendingUp, Download, Filter } from 'lucide-react';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';;
 
 const COLORS = [
   '#3B82F6',
@@ -53,9 +55,9 @@ export default function SegmentReportingPage() {
   }, [segmentType]);
  
 
-  const totalRevenue = segmentData.reduce((s, d) => s + d.revenue, 0);
-  const totalExpenses = segmentData.reduce((s, d) => s + d.expenses, 0);
-  const totalNetIncome = totalRevenue - totalExpenses;
+  const totalRevenue = roundTo(sumMoney(segmentData.map((d) => d.revenue)), 2);
+  const totalExpenses = roundTo(sumMoney(segmentData.map((d) => d.expenses)), 2);
+  const totalNetIncome = roundTo(subtractMoney(totalRevenue, totalExpenses), 2);
 
   return (
     <div className="p-6 space-y-6">
@@ -132,7 +134,7 @@ export default function SegmentReportingPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: any) => `$${(v / 1000).toFixed(0)}K`} />
+                <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
                 <Bar dataKey="revenue" name="Revenue">
                   {segmentData.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -161,7 +163,7 @@ export default function SegmentReportingPage() {
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: any) => `$${(v / 1000).toFixed(0)}K`} />
+                <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
@@ -202,17 +204,17 @@ export default function SegmentReportingPage() {
                 >
                   <td className="px-3 py-2 font-medium">{seg.name}</td>
                   <td className="px-3 py-2 text-right font-mono">
-                    ${(seg.revenue / 1000).toFixed(0)}K
+                    ${formatCompact(seg.revenue)}
                   </td>
                   <td className="px-3 py-2 text-right font-mono">
-                    ${(seg.expenses / 1000).toFixed(0)}K
+                    ${formatCompact(seg.expenses)}
                   </td>
                   <td
                     className={`px-3 py-2 text-right font-mono ${seg.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
-                    ${Math.abs(seg.netIncome / 1000).toFixed(0)}K
+                    {formatCompact(Math.abs(seg.netIncome))}
                   </td>
-                  <td className="px-3 py-2 text-right font-mono">{seg.margin.toFixed(1)}%</td>
+                  <td className="px-3 py-2 text-right font-mono">{formatPercent(seg.margin, 1)}</td>
                 </tr>
               ))}
             </tbody>

@@ -15,6 +15,7 @@ import {
   Legend,
 } from 'recharts';
 import { Leaf, Users, Shield, TrendingUp } from 'lucide-react';
+import { formatPercent } from '@/utils/financialFormatting';
 
 interface ESGMetricsDashboardProps {
   className?: string;
@@ -222,7 +223,10 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-slate-500 dark:text-slate-400">Budget Utilization</span>
                   <span className="text-slate-900 dark:text-white">
-                    {((initiativeStats.totalSpent / initiativeStats.totalBudget) * 100).toFixed(1)}%
+                    {formatPercent(
+                      (initiativeStats.totalSpent / initiativeStats.totalBudget) * 100,
+                      1
+                    )}
                   </span>
                 </div>
                 <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -251,7 +255,7 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-slate-500 dark:text-slate-400">Gender Ratio (Female)</span>
                   <span className="text-slate-900 dark:text-white">
-                    {(diversityMetrics.genderRatio * 100).toFixed(1)}%
+                    {formatPercent(diversityMetrics.genderRatio * 100, 1)}
                   </span>
                 </div>
                 <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -265,7 +269,7 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-slate-500 dark:text-slate-400">Ethnic Diversity</span>
                   <span className="text-slate-900 dark:text-white">
-                    {(diversityMetrics.ethnicDiversity * 100).toFixed(1)}%
+                    {formatPercent(diversityMetrics.ethnicDiversity * 100, 1)}
                   </span>
                 </div>
                 <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -279,7 +283,7 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-slate-500 dark:text-slate-400">Management Diversity</span>
                   <span className="text-slate-900 dark:text-white">
-                    {(diversityMetrics.managementDiversity * 100).toFixed(1)}%
+                    {formatPercent(diversityMetrics.managementDiversity * 100, 1)}
                   </span>
                 </div>
                 <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">

@@ -5,6 +5,8 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Repeat, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { formatNumber } from '@/utils/financialFormatting';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 
 const RATES: Record<string, Record<string, number>> = {
   USD: {
@@ -107,9 +109,13 @@ export default function TranslationResultPage() {
   }, [entries, rate]);
 
   const totals = useMemo(() => {
-    const original = translationData.reduce((s, e) => s + e.originalAmount, 0);
-    const translated = translationData.reduce((s, e) => s + e.translatedAmount, 0);
-    return { original, translated, gainLoss: translated - original };
+    const original = roundTo(sumMoney(translationData.map((e) => e.originalAmount)), 2);
+    const translated = roundTo(sumMoney(translationData.map((e) => e.translatedAmount)), 2);
+    return {
+      original,
+      translated,
+      gainLoss: roundTo(subtractMoney(translated, original), 2),
+    };
   }, [translationData]);
 
   if (entries.length === 0)
@@ -161,7 +167,7 @@ export default function TranslationResultPage() {
             </div>
             <div className="ml-auto text-right mt-4">
               <div className="text-xs text-slate-500">Exchange Rate</div>
-              <div className="text-lg font-bold tabular-nums">{rate.toFixed(6)}</div>
+              <div className="text-lg font-bold tabular-nums">{formatNumber(rate, 6)}</div>
             </div>
           </div>
         </CardContent>

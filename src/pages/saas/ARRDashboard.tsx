@@ -11,6 +11,7 @@ import { SaaSMetricsEngine } from '@/engines/SaaSMetricsEngine';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { PAGE_HELP } from '../_docs';
 import { BarChart4, TrendingUp, Users, RefreshCcw } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export default function ARRDashboard() {
   const { pathname } = useLocation();
@@ -31,7 +32,7 @@ export default function ARRDashboard() {
 
     // In a real app, we'd have historical data to calculate NRR, Churn, etc.
     // Here we'll derive some representative metrics from the GL entries
-    const currentMRR = subscriptionRevenue.reduce((sum, e) => sum + (e.credit - e.debit), 0);
+    const currentMRR = roundTo(sumMoney(subscriptionRevenue.map((e) => e.credit - e.debit)), 2);
     const arr = SaaSMetricsEngine.calculateARR(currentMRR);
 
     // Mocking some movement data for the waterfall

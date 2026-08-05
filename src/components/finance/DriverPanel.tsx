@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useDriverStore } from '@/store/driverStore';
 import type { Driver, ImpactAnalysis } from '@/engines/DriverCascadeEngine';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 interface DriverPanelProps {
   readCell: (cube: string, coords: Record<string, string>, measure: string) => number | undefined;
   writeCell: (cube: string, coords: Record<string, string>, measure: string, value: number) => void;
@@ -72,23 +73,20 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
   const formatValue = (value: number, unit: string): string => {
     switch (unit) {
       case 'percentage':
-        return `${value.toFixed(1)}%`;
+        return `${formatPercent(value, 1)}`;
       case 'index':
-        return value.toFixed(1);
+        return formatNumber(value, 1);
       case 'ratio':
-        return value.toFixed(2);
+        return formatNumber(value, 2);
       default:
         return value.toLocaleString();
     }
   };
   const formatImpact = (value: number): string => {
-    if (Math.abs(value) >= 1000000) {
-      return `$${(value / 1000000).toFixed(1)}M`;
-    }
     if (Math.abs(value) >= 1000) {
-      return `$${(value / 1000).toFixed(0)}K`;
+      return formatCompact(value);
     }
-    return `$${value.toFixed(0)}`;
+    return `$${formatNumber(value, 0)}`;
   };
   return (
     <div
@@ -263,7 +261,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
             )}
             <span>
               Last cascade: {lastCascadeResult.affectedCells.length} cells in{' '}
-              {lastCascadeResult.duration.toFixed(1)}ms
+              {formatNumber(lastCascadeResult.duration, 1)}ms
             </span>
           </div>
         </div>

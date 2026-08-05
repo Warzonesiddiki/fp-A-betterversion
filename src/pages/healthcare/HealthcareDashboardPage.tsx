@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
+import { sumMoney, roundTo } from '@/utils/money';
 
 const getRandom = () => Math.random();
 import {
@@ -21,6 +22,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { HealthcareEngine } from '@/engines/HealthcareEngine';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data
 const mockPeriods: FiscalPeriod[] = [
@@ -68,7 +70,7 @@ const columns: Column[] = [
     align: 'right',
     render: (v) => (
       <span className={(v as number) > 20 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold'}>
-        {(v as number).toFixed(1)}%
+        {formatPercent(v as number, 1)}
       </span>
     ),
   },
@@ -94,9 +96,14 @@ export default function HealthcareDashboardPage() {
 
     return depts
       .map((d) => {
-        const deptRevenue = entries
-          .filter((e) => e.accountCode.startsWith('40') && e.accountCode.endsWith(d.id))
-          .reduce((acc, e) => acc + e.amount, 0);
+        const deptRevenue = roundTo(
+          sumMoney(
+            entries
+              .filter((e) => e.accountCode.startsWith('40') && e.accountCode.endsWith(d.id))
+              .map((e) => e.amount)
+          ),
+          2
+        );
 
         return {
           dept: d.name,
@@ -162,7 +169,7 @@ export default function HealthcareDashboardPage() {
         />
         <KPIValue
           label="Avg. Length of Stay"
-          value={`${stats.daysInAR.toFixed(1)} Days`}
+          value={`${formatNumber(stats.daysInAR, 1)} Days`}
           change={-1.5}
           changeLabel="efficiency improved"
           trend="up" // Up is good for efficiency
@@ -183,7 +190,7 @@ export default function HealthcareDashboardPage() {
         />
         <KPIValue
           label="Collection Rate"
-          value={`${stats.collectionRate.toFixed(1)}%`}
+          value={`${formatPercent(stats.collectionRate, 1)}`}
           change={1.2}
           changeLabel="target: 95%"
           trend="up"

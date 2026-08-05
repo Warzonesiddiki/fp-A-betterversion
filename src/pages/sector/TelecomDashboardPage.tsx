@@ -7,6 +7,8 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { telecomConfig } from '@/config/sectors/telecom';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wifi } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export function TelecomDashboardPage() {
   const { entries } = useGLStore();
@@ -17,21 +19,39 @@ export function TelecomDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const revenue = entries.filter((e) => e.credit > e.debit).reduce((s, e) => s + e.credit, 0);
-    const capex = entries
-      .filter(
-        (e) =>
-          e.accountName.toLowerCase().includes('capital') ||
-          e.accountName.toLowerCase().includes('capex') ||
-          e.accountName.toLowerCase().includes('network')
-      )
-      .reduce((s, e) => s + e.debit, 0);
-    const opex = entries
-      .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('capital'))
-      .reduce((s, e) => s + e.debit, 0);
-    const subscribers = entries
-      .filter((e) => e.accountName.toLowerCase().includes('subscriber'))
-      .reduce((s, e) => s + e.credit, 0);
+    const revenue = roundTo(
+      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      2
+    );
+    const capex = roundTo(
+      sumMoney(
+        entries
+          .filter(
+            (e) =>
+              e.accountName.toLowerCase().includes('capital') ||
+              e.accountName.toLowerCase().includes('capex') ||
+              e.accountName.toLowerCase().includes('network')
+          )
+          .map((e) => e.debit)
+      ),
+      2
+    );
+    const opex = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('capital'))
+          .map((e) => e.debit)
+      ),
+      2
+    );
+    const subscribers = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.accountName.toLowerCase().includes('subscriber'))
+          .map((e) => e.credit)
+      ),
+      2
+    );
     return { revenue, capex, opex, subscribers };
   }, [entries]);
 
@@ -110,7 +130,9 @@ export function TelecomDashboardPage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">CAPEX / Revenue</span>
                 <span className="font-mono">
-                  {stats.revenue > 0 ? `${((stats.capex / stats.revenue) * 100).toFixed(1)}%` : '—'}
+                  {stats.revenue > 0
+                    ? `${formatPercent((stats.capex / stats.revenue) * 100, 1)}`
+                    : '—'}
                 </span>
               </div>
               <div className="flex justify-between items-center">

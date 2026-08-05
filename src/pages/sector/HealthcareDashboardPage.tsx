@@ -7,6 +7,8 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { healthcareConfig } from '@/config/sectors/healthcare';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Heart } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 export default function HealthcareDashboardPage() {
   const { entries } = useGLStore();
@@ -17,8 +19,14 @@ export default function HealthcareDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const revenue = entries.filter((e) => e.credit > e.debit).reduce((s, e) => s + e.credit, 0);
-    const expenses = entries.filter((e) => e.debit > e.credit).reduce((s, e) => s + e.debit, 0);
+    const revenue = roundTo(
+      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      2
+    );
+    const expenses = roundTo(
+      sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
+      2
+    );
     const margin = revenue > 0 ? ((revenue - expenses) / revenue) * 100 : 0;
     return { revenue, expenses, margin };
   }, [entries]);
@@ -55,7 +63,7 @@ export default function HealthcareDashboardPage() {
       <section className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <KPIValue label="Revenue" value={formatCurrency(stats.revenue)} />
         <KPIValue label="Expenses" value={formatCurrency(stats.expenses)} />
-        <KPIValue label="Margin" value={`${stats.margin.toFixed(1)}%`} />
+        <KPIValue label="Margin" value={`${formatPercent(stats.margin, 1)}`} />
         <KPIValue label="Entries" value={formatNumber(entries.length)} />
       </section>
 
@@ -104,7 +112,7 @@ export default function HealthcareDashboardPage() {
                 <span
                   className={`font-mono ${stats.margin > 0 ? 'text-green-600' : 'text-red-600'}`}
                 >
-                  {stats.margin.toFixed(1)}%
+                  {formatPercent(stats.margin, 1)}
                 </span>
               </div>
               <div className="flex justify-between items-center">

@@ -25,6 +25,7 @@
     "test:a11y": "node node_modules/vitest/vitest.mjs run __tests__/a11y .a11y.test",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "money:adoption": "node scripts/money-adoption.mjs",
+    "tracker:update": "node scripts/update-tracker.mjs",
     "mock-data:audit": "node scripts/mock-data-audit.mjs",
     "type-safety:ratchet": "node scripts/type-safety-ratchet.mjs",
     "docs:verify": "node scripts/verify-readme-stats.mjs",
