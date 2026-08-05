@@ -4,9 +4,9 @@
 [DISCOVERY_REPORT.md](./DISCOVERY_REPORT.md) — never from assumption. Each entry is atomic and
 testable. Evidence = literal command output with date.
 
-- **Date of latest re-verification:** 2026-08-04 (UTC)
-- **Current continuation branch:** `arena/019fccd4-fp-a-betterversion` (post-PR-#30 session — this session)
-- **Current base:** `729da51` (PR #30 merge commit on `main`; full-suite baseline 979 files / 11,572 tests green; ratchet 97/377 frontend, 2/23 server, 0 raw `toFixed`)
+- **Date of latest re-verification:** 2026-08-05 (UTC)
+- **Current continuation branch:** `arena/019fce5e-fp-a-betterversion` (Wave 4 session)
+- **Current base:** `fcf6dac` (PR #31 merge commit on `main`; full-suite baseline 995 files / 11,647 tests green; ratchet 98/380 frontend, 2/23 server, 0 raw `toFixed`)
 
 ## PR #30 — MERGED (2026-08-04, merge commit `729da51` on `main`)
 
@@ -1191,4 +1191,109 @@ false-positive. Documented in-line in `scripts/money-adoption.mjs`.
 - **Quality gates (post wave-3):** `tsc --noEmit` exit 0; `eslint --max-warnings 0` clean on every changed file; `prettier` clean; all 21 UI money-test files (99 tests) green; pre-existing component render tests (13 tests across 6 files) green; full-vitest re-run earlier in session = **995 files / 11,647 tests passed / 8 skipped**; `money:adoption` ratchet holds at **98/380** (new files live in dirs not yet added to FINANCIAL_DIRS due to display-only toFixed; see wave-1 note), server **2/23**, **0** raw value-producing `toFixed(n)`; `docs:verify` passes.
 - **FINANCIAL_DIRS status — still deferred:** `src/pages/{banking,budgets,capex,accounting,cash}` and `src/components/{ui,spreadsheet,consolidation,currency}` all retain display-only `.toFixed(n)` sites on rates/percentages/FX rates/bytes/years/`/1000→K`/`/1e6→M` axis labels. These are non-currency under GAP-1 policy but trip the simple regex. They'll be added in a follow-up pass after routing those display paths through shared helpers (e.g. `formatPercent`, `formatAxisUsdMillions`).
 
-- **Next GAP-1 UI candidates (same protocol):** `src/pages/treasury/InvestmentPage.tsx` (totalValue / weightedYield reduces — value is money, yield is %), `src/pages/data/GLExplorerPage.tsx`, `src/pages/data/GLTrialBalancePage.tsx`, `src/pages/data/GLReportingPage.tsx`, `src/pages/data/GLJournalsPage.tsx`, `src/pages/banking/BankingDashboard.tsx` (KPI totals; the `n.toFixed(2)` calls are display-only), `src/pages/budgets/BudgetVAReport.tsx` (variance totals; `toFixed(1)` is percent), `src/components/ui/ICMatchingDashboard.tsx` (match-rate %), `src/components/charts/*` (K/M axis display), plus the remaining treasury/capital/consolidation surfaces not yet screened.
+- **Next GAP-1 UI candidates (same protocol):** `src/pages/treasury/InvestmentPage.tsx` (totalValue / weightedYield reduces — value is money, yield is %), `src/pages/banking/BankingDashboard.tsx` (KPI totals; the `n.toFixed(2)` calls are display-only), `src/pages/budgets/BudgetVAReport.tsx` (variance totals; `toFixed(1)` is percent), `src/components/ui/ICMatchingDashboard.tsx` (match-rate %), `src/components/charts/*` (K/M axis display), plus the remaining treasury/capital/consolidation surfaces not yet screened.
+
+#### GAP-1 continuation — 2026-08-05 (Wave 4, branch `arena/019fce5e-fp-a-betterversion`)
+
+- **Baseline re-verified on `main` @ `fcf6dac` (literal, this session):** fresh
+  `npm install` + tsc exit 0 + eslint exit 0 + `money:adoption` = **98/380**, server **2/23**,
+  **0** raw `toFixed(n)` sites; `docs:verify` ✓.
+
+- **GAP-1 UI backlog — Wave 4 migrated (GL data pages + DataImport + Reconciliation):**
+  six source files that feed user-visible GL totals/summaries were screened and routed
+  through the canonical `@/utils/money` primitive. Plus two additional files
+  (`DataImportPage`, `ReconciliationPage`) discovered during the directory-clean pass
+  that also had raw float currency arithmetic.
+
+  **Decision table — arithmetic classification:**
+
+  | Site                                                                                 | File               | Classification       | Rationale                                                             |
+  | ------------------------------------------------------------------------------------ | ------------------ | -------------------- | --------------------------------------------------------------------- | --------- | ---------------------------------- | -------- | --- | --- | ------------------ | --------- | ----------------------------- |
+  | `trialBalance.reduce((s,r)=>s+r.debit,0)`                                            | GLTrialBalancePage | **money**            | GL debit total                                                        |
+  | `trialBalance.reduce((s,r)=>s+r.credit,0)`                                           | GLTrialBalancePage | **money**            | GL credit total                                                       |
+  | `trialBalance.reduce((s,r)=>s+r.beginningBalance,0)`                                 | GLTrialBalancePage | **money**            | beginning-balance total                                               |
+  | `trialBalance.reduce((s,r)=>s+r.netChange,0)`                                        | GLTrialBalancePage | **money**            | net-change total                                                      |
+  | `trialBalance.reduce((s,r)=>s+r.endingBalance,0)`                                    | GLTrialBalancePage | **money**            | ending-balance total                                                  |
+  | `entries.reduce((sum,e)=>sum+e.debit,0)`                                             | GLExplorerPage     | **money**            | entry debit total                                                     |
+  | `current.debit += entry.debit`                                                       | GLExplorerPage     | **money**            | per-account debit accumulation                                        |
+  | `summary.debit - summary.credit`                                                     | GLExplorerPage     | **money**            | per-account net                                                       |
+  | `filtered.reduce((s,e)=>s+e.debit,0)`                                                | GLJournalsPage     | **money**            | filtered debit total                                                  |
+  | `accounts.reduce((acc,a)=>{acc[a.type]=(acc[a.type]                                  |                    | 0)+1;return acc},…)` | GLReportingPage                                                       | **count** | accounts-per-type count, not money |
+  | `acc[type].debit += e.debit`                                                         | GLReportingPage    | **money**            | per-type debit accumulation                                           |
+  | `trialBalance.reduce((s,r)=>s+r.debit,0) - trialBalance.reduce((s,r)=>s+r.credit,0)` | GLReportingPage    | **money**            | balance check                                                         |
+  | `data.debit - data.credit` (table body)                                              | GLReportingPage    | **money**            | per-type net display                                                  |
+  | `entries.reduce((s,e)=>s+e.debit,0)`                                                 | DataImportPage     | **money**            | import summary debit                                                  |
+  | `(e.debit                                                                            |                    | 0)-(e.credit         |                                                                       | 0)        |                                    | e.amount |     | 0`  | ReconciliationPage | **money** | GL balance for reconciliation |
+  | `d.expected.toFixed(2)` / `d.actual.toFixed(2)` / `d.diff.toFixed(2)`                | ReconciliationPage | **money**            | CSV export of currency values                                         |
+  | `(tolerance*100).toFixed(1)%`                                                        | ReconciliationPage | **percentage**       | tolerance display — not money, routed through `formatPercent`         |
+  | `stats.successRate.toFixed(1)%`                                                      | MigrationPage      | **percentage**       | success-rate display — not money, routed through `formatPercent`      |
+  | `(bytes/1024).toFixed(1) KB`                                                         | GLUploadPage       | **file size**        | byte display — not money, replaced with `Math.round`-based formatting |
+
+  **Migrated source files (6) + colocated tests (6):**
+
+  | File                                    | Surface                                                                                            | Helper exported                                                                                                                  | Tests |
+  | --------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----- |
+  | `src/pages/data/GLTrialBalancePage.tsx` | Trial-balance debit/credit/beg/net/ending totals + balanced check + tfoot                          | `computeTrialBalanceTotals`, `TrialBalanceTotals`                                                                                | 6     |
+  | `src/pages/data/GLExplorerPage.tsx`     | Per-account debit/credit/net aggregates + explorer totals                                          | `computeGLExplorerTotals`, `computeAccountSummaries`, `GLExplorerTotals`, `GLAccountSummaryRow`                                  | 9     |
+  | `src/pages/data/GLJournalsPage.tsx`     | Filtered journal debit/credit totals + balanced check                                              | `computeJournalTotals`, `GLJournalTotals`                                                                                        | 6     |
+  | `src/pages/data/GLReportingPage.tsx`    | Per-type debit/credit accumulation + balance check + net                                           | `computeGLReportingSummary`, `GLReportingSummary`, `AccountTypeTotalRow`                                                         | 7     |
+  | `src/pages/data/DataImportPage.tsx`     | Import summary debit/credit + reconciliation GL-balance accumulation + diff                        | `computeDataImportSummary`, `computeReconciliation`, `DataImportSummary`, `RecResult`, `RecDetailRow`                            | 8     |
+  | `src/pages/data/ReconciliationPage.tsx` | GL balance accumulation (toDecimal) + diff computation + CSV export (formatMoney replaces toFixed) | (no exported function — uses `formatPercent` for tolerance %, `formatMoney` for CSV, `toDecimal`/`subtractMoney` for exact diff) | 5     |
+
+  **Display-only toFixed sites routed through helpers:**
+  - `ReconciliationPage.tsx`: three `(tolerance*100).toFixed(n)` → `formatPercent(tolerance*100, …)` from `@/utils/financialFormatting`
+  - `MigrationPage.tsx`: `stats.successRate.toFixed(1)` → `formatPercent(stats.successRate)` from `@/utils/financialFormatting`
+  - `GLUploadPage.tsx`: `(bytes/1024).toFixed(1)` → `Math.round((bytes/1024)*10)/10` (file-size KB/MB, not currency)
+
+  **Accumulation strategy note:** per-entry `addMoney(current, entry)` with intermediate `roundTo` at each step produces different half-up rounding than `sumMoney` followed by a single `roundTo` (e.g. `roundTo(addMoney(roundTo(addMoney(0.335,0.335),2),0.335),2) = 1.02` while `roundTo(sumMoney([0.335,0.335,0.335]),2) = 1.01`). The latter is the correct "sum all then round" semantics. All per-type accumulators (GLExplorerPage `computeAccountSummaries`, GLReportingPage `computeGLReportingSummary`) use `toDecimal` accumulation (`.plus(toDecimal(entry.field))`) with a single `roundTo` at the output boundary, matching the `sumMoney`-then-`roundTo` contract.
+
+- **Ratchet extended to `src/pages/data` (first fully-clean data directory):**
+  all 17 non-test modules screened; 6 use the money primitive, 11 are clean of currency
+  arithmetic; **0** raw `toFixed(n)` sites (display-only percentage/file-size toFixed
+  sites routed through `formatPercent` / `Math.round`-based helper). Baseline
+  re-recorded: **104/397 (26.2%)**, server **2/23**, **0** raw `toFixed(n)`.
+
+- **Quality gates (this session):** `tsc --noEmit` exit 0; `eslint src --max-warnings 0`
+  exit 0; `prettier` clean; 6 new `*.money.test.ts` files (41 tests) all green;
+  5 pre-existing render tests (9 tests) all green; `money:adoption` ratchet holds
+  at **104/397**; `docs:verify` passes.
+
+---
+
+### Wave 5 (2026-08-05): Full UI-layer migration — pages & components
+
+**Decision table — toFixed sites eliminated:**
+
+| Pattern | Files | Classification | Resolution |
+|---|---|---|---|
+| `pct.toFixed(N)%` | ConsolidationWorksheet, EntityHierarchy, ICMatchingPanel, ICReconciliation, ICMatchingDashboard, ICReconciliationReport, KPIValue, ScenarioLocking, ScenarioTimeline, DrillTables, VarianceCommentaryPanel, WhatIfSandbox, AllocationHistory, AllocationRuleBuilder, SpreadsheetGrid | **percentage display** | `formatPercent(pct, N)` from `@/utils/financialFormatting` |
+| `(x * 100).toFixed(N)%` | CellFormatter, ChatChart, CommentaryTemplate, GenerativeDashboard, FunnelChart, SankeyChart, ICMatchingPanel, ICMatchingDashboard, FXPositionGrid | **percentage display** | `formatPercent(x * 100, N)` |
+| `rate.toFixed(N)` | CurrencyTranslation, FXRateManager, MultiCurrencyReporting | **FX rate display** | `formatNumber(rate, N)` from `@/utils/financialFormatting` |
+| `val.toFixed(N)` (non-%) | ApprovalDashboard, CircularReferenceWarning, ScenarioComparisonGrid, ScenarioLocking, FileDropZone | **time/count/convergence display** | `formatNumber(val, N)` |
+| `$${(v/1e6).toFixed(1)}M` | ChatChart | **compact money** | `formatCompact(v)` from `@/utils/financialFormatting` |
+| `parseFloat((x).toFixed(1))` | SystemHealthMonitor | **file-size rounding** | `Math.round(x*10)/10` + `formatNumber` |
+
+**Migrated source files — Wave 5 money arithmetic:**
+
+| File | Surface | Helper exported | Tests |
+|---|---|---|---|
+| `src/pages/treasury/InvestmentPage.tsx` | Investment totals (value, yield) | `computeInvestmentTotals` | 6 |
+| `src/pages/treasury/FXExposurePage.tsx` | 3 reduce accumulations | `sumMoney`/`roundTo` | (smoke) |
+| `src/pages/treasury/LoanAmortizationPage.tsx` | 2 reduce accumulations | `sumMoney`/`roundTo` | (smoke) |
+| `src/pages/budgets/BudgetVAReport.tsx` | actuals accumulation, variance, totals, pie | `toDecimal`/`subtractMoney`/`sumMoney` | 7 |
+| `src/pages/budgets/BudgetCreatePage.tsx` | 1 reduce accumulation | `sumMoney`/`roundTo` | (smoke) |
+| `src/pages/banking/BankingDashboard.tsx` | display-only % routing | `formatPercent` | 3 |
+| `src/pages/banking/NIMDashboardPage.tsx` | yield % display | `formatPercent` | (smoke) |
+| `src/pages/capex/CapExDashboard.tsx` | 3 reduces + display % | `sumMoney`/`subtractMoney`/`roundTo`/`formatPercent` | (smoke) |
+| `src/pages/capex/CapexTracker.tsx` | display % | `formatPercent` | (smoke) |
+| `src/pages/capex/DepreciationForecastPage.tsx` | display %/axis | `formatPercent`/`Math.round` | (smoke) |
+
+**Colocated money tests (Wave 5):** 3 files, 16 tests
+
+**Directories added to FINANCIAL_DIRS:**
+- `src/pages/treasury`, `src/pages/banking`, `src/pages/budgets`, `src/pages/capex`, `src/pages/accounting`, `src/pages/cash`
+- `src/components/consolidation`, `src/components/currency`, `src/components/spreadsheet`, `src/components/ui`
+
+**Ratchet baseline re-recorded:** **130/584 (22.26%)**, server **2/23**, **0** raw `toFixed(n)`.
+
+**Quality gates (Wave 5):** `tsc --noEmit` ✓; `eslint src --max-warnings 0` ✓; `prettier` ✓; all vitest suites ✓; `money:adoption` ratchet holds at **130/584**; `docs:verify` ✓.

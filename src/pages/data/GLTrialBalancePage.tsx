@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { toCSV } from '@/utils/csv';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import {
   Scale,
   RefreshCw,
@@ -26,6 +27,43 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+/** Money-primitive trial-balance totals (GAP-1 F-0006). */
+export interface TrialBalanceTotals {
+  totalDebits: number;
+  totalCredits: number;
+  diff: number;
+  isBalanced: boolean;
+  totalBeginningBalance: number;
+  totalNetChange: number;
+  totalEndingBalance: number;
+}
+
+export function computeTrialBalanceTotals(
+  rows: readonly {
+    debit: number;
+    credit: number;
+    beginningBalance: number;
+    netChange: number;
+    endingBalance: number;
+  }[]
+): TrialBalanceTotals {
+  const totalDebits = roundTo(sumMoney(rows.map((r) => r.debit)), 2);
+  const totalCredits = roundTo(sumMoney(rows.map((r) => r.credit)), 2);
+  const diff = roundTo(subtractMoney(totalDebits, totalCredits), 2);
+  const totalBeginningBalance = roundTo(sumMoney(rows.map((r) => r.beginningBalance)), 2);
+  const totalNetChange = roundTo(sumMoney(rows.map((r) => r.netChange)), 2);
+  const totalEndingBalance = roundTo(sumMoney(rows.map((r) => r.endingBalance)), 2);
+  return {
+    totalDebits,
+    totalCredits,
+    diff,
+    isBalanced: Math.abs(diff) < 0.01,
+    totalBeginningBalance,
+    totalNetChange,
+    totalEndingBalance,
+  };
 }
 
 export default function GLTrialBalancePage() {
@@ -94,16 +132,15 @@ export default function GLTrialBalancePage() {
     [tbSortConfig]
   );
 
-  const { totalDebits, totalCredits, diff, isBalanced } = useMemo(() => {
-    const debits = trialBalance.reduce((s, r) => s + r.debit, 0);
-    const credits = trialBalance.reduce((s, r) => s + r.credit, 0);
-    return {
-      totalDebits: debits,
-      totalCredits: credits,
-      diff: debits - credits,
-      isBalanced: Math.abs(debits - credits) < 0.01,
-    };
-  }, [trialBalance]);
+  const {
+    totalDebits,
+    totalCredits,
+    diff,
+    isBalanced,
+    totalBeginningBalance,
+    totalNetChange,
+    totalEndingBalance,
+  } = useMemo(() => computeTrialBalanceTotals(trialBalance), [trialBalance]);
 
   // B2 Enhancement: Auto-generate on mount if needed + manual refresh
   const handleGenerate = useCallback(() => {
@@ -360,7 +397,7 @@ export default function GLTrialBalancePage() {
                     Total
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(trialBalance.reduce((s, r) => s + r.beginningBalance, 0))}
+                    {formatCurrency(totalBeginningBalance)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-blue-400">
                     {formatCurrency(totalDebits)}
@@ -369,10 +406,10 @@ export default function GLTrialBalancePage() {
                     {formatCurrency(totalCredits)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(trialBalance.reduce((s, r) => s + r.netChange, 0))}
+                    {formatCurrency(totalNetChange)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(trialBalance.reduce((s, r) => s + r.endingBalance, 0))}
+                    {formatCurrency(totalEndingBalance)}
                   </td>
                 </tr>
               </tfoot>

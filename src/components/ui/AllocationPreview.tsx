@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Check, X, Pencil, ArrowRight, TrendingUp } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import type { AllocationResult, AllocationEntry } from '@/engines/AllocationEngine';
 
 // ---------------------------------------------------------------------------
@@ -29,9 +30,7 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-function formatPercent(value: number): string {
-  return `${value.toFixed(2)}%`;
-}
+// formatPercent imported from @/utils/financialFormatting
 
 // ---------------------------------------------------------------------------
 // Subcomponents

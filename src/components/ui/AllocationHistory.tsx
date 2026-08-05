@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { History, RotateCcw, Filter, ChevronDown, ChevronRight, Clock } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import type { AllocationResult, AllocationMethod } from '@/engines/AllocationEngine';
 
 // ---------------------------------------------------------------------------
@@ -177,7 +178,7 @@ const HistoryRow: React.FC<{
                       {formatCurrency(alloc.amount)}
                     </td>
                     <td className="px-2 py-1 text-xs text-right text-[var(--text-secondary)]">
-                      {alloc.percentage.toFixed(2)}%
+                      {formatPercent(alloc.percentage, 2)}
                     </td>
                   </tr>
                 ))}

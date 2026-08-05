@@ -9,6 +9,7 @@ import { useFxRateStore } from '@/store/fxRateStore';
 import { TrendingUp, TrendingDown, Eye, EyeOff, AlertTriangle, BarChart3 } from 'lucide-react';
 import Decimal from 'decimal.js';
 import { addMoney, multiplyMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 import { CURRENCIES, formatMoney } from './constants';
 
 /**
@@ -270,7 +271,7 @@ export function FXPositionGrid() {
             <div className="text-xs text-slate-400">Concentration</div>
             <div className="text-lg font-bold">
               {exposure.length > 0
-                ? `${((Math.abs(exposure[0]!.net) / Math.abs(totals.totalNet)) * 100).toFixed(0)}%`
+                ? formatPercent((Math.abs(exposure[0]!.net) / Math.abs(totals.totalNet)) * 100, 0)
                 : 'N/A'}
             </div>
           </CardContent>

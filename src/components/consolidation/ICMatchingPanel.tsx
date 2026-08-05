@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   ICMatchingEngine,
   type ICTransaction,
@@ -124,7 +125,7 @@ export function ICMatchingPanel({
         <StatCard label="Detected IC Pairs" value={icTransactions.length} />
         <StatCard label="Matched" value={summary.matchedCount} variant="success" />
         <StatCard label="Partial" value={summary.partiallyMatchedCount} variant="warning" />
-        <StatCard label="Match Rate" value={`${summary.matchRate.toFixed(1)}%`} variant="info" />
+        <StatCard label="Match Rate" value={`formatPercent(summary.matchRate, 1)`} variant="info" />
       </div>
 
       {/* Tolerance & Controls */}
@@ -237,7 +238,7 @@ export function ICMatchingPanel({
                     <td className="p-2 text-right font-mono">
                       {formatCurrency(match.amountDifference)}
                     </td>
-                    <td className="p-2 text-right">{(match.confidence * 100).toFixed(0)}%</td>
+                    <td className="p-2 text-right">{formatPercent(match.confidence * 100, 0)}</td>
                     <td className="p-2 text-xs capitalize">{match.method.replace('_', ' ')}</td>
                     <td className="p-2">
                       <Button variant="ghost" size="sm" onClick={() => handleUnmatch(match.id)}>

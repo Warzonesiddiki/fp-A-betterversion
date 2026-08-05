@@ -4,6 +4,7 @@ import { Button } from './Button';
 import { Badge } from './Badge';
 import { cn } from '@/utils/cn';
 import { roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   type ReconciliationReport,
   type ReconciliationLine,
@@ -147,7 +148,11 @@ export function ICReconciliationReport({
         />
         <MetricCard
           label="Match Rate"
-          value={`${report.entityPairs.length > 0 ? ((report.withinToleranceCount / report.entityPairs.length) * 100).toFixed(1) : 0}%`}
+          value={
+            report.entityPairs.length > 0
+              ? formatPercent((report.withinToleranceCount / report.entityPairs.length) * 100, 1)
+              : '0%'
+          }
           variant="info"
         />
       </div>
@@ -252,7 +257,7 @@ export function ICReconciliationReport({
                         <td className="p-2 text-right">{formatAmount(footers.totalBalanceB)}</td>
                         <td className="p-2 text-right">{formatAmount(footers.totalDifference)}</td>
                         <td className="p-2 text-right">
-                          {footers.avgPercentageDifference.toFixed(1)}%
+                          {formatPercent(footers.avgPercentageDifference, 1)}
                         </td>
                         <td colSpan={2} />
                       </tr>
@@ -293,7 +298,7 @@ export function ICReconciliationReport({
                       {formatAmount(line.difference)} difference
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {line.percentageDifference.toFixed(2)}% off
+                      {formatPercent(line.percentageDifference, 2)} off
                     </div>
                   </div>
                 </div>
@@ -338,7 +343,9 @@ function ReconciliationRow({
       <td className="p-2 text-right font-mono">{formatAmount(line.balanceA)}</td>
       <td className="p-2 text-right font-mono">{formatAmount(line.balanceB)}</td>
       <td className="p-2 text-right font-mono font-semibold">{formatAmount(line.difference)}</td>
-      <td className="p-2 text-right font-mono text-xs">{line.percentageDifference.toFixed(2)}%</td>
+      <td className="p-2 text-right font-mono text-xs">
+        {formatPercent(line.percentageDifference, 2)}
+      </td>
       <td className="p-2 text-center">
         <Badge variant={line.withinTolerance ? 'default' : 'destructive'}>{line.matchStatus}</Badge>
       </td>

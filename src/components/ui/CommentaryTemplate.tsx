@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { formatPercent } from '@/utils/financialFormatting';
 export interface CommentaryTemplateDef {
   id: string;
   name: string;
@@ -91,7 +92,7 @@ export function CommentaryTemplate({
           : '[N/A]';
 
       const fmtPct = (n: number | undefined) =>
-        n !== undefined ? `${(n * 100).toFixed(1)}%` : '[N/A]';
+        n !== undefined ? formatPercent(n * 100, 1) : '[N/A]';
 
       return template.template
         .replace(/\{\{variance\}\}/g, fmt(varianceData.variance))

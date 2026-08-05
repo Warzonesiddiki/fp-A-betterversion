@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from 'react';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import {
   BarChart,
   Bar,
@@ -46,9 +47,7 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
   }, [data]);
 
   const formatValue = (v: number) => {
-    if (Math.abs(v) >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
-    if (Math.abs(v) >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
-    return `$${v.toFixed(0)}`;
+    return formatCompact(v);
   };
 
   if (!chartConfig || chartData.length === 0) return null;
@@ -74,7 +73,7 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
               dataKey="value"
               nameKey="name"
               label={({ name, percent }: { name?: string; percent?: number }) =>
-                `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`
+                `${name ?? ''} ${formatPercent((percent ?? 0) * 100, 0)}`
               }
               labelLine={false}
             >

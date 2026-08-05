@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import { formatPercent } from '@/utils/financialFormatting';
 import { AgGridReact } from 'ag-grid-react';
 import {
   AllCommunityModule,
@@ -114,7 +115,7 @@ export function SpreadsheetGrid({
         colDef.cellClass = 'text-right tabular-nums font-mono';
         colDef.valueFormatter = (params) => {
           if (params.value == null) return '';
-          return `${(params.value as number).toFixed(1)}%`;
+          return formatPercent(params.value as number, 1);
         };
         colDef.cellClassRules = {
           'fin-positive font-medium': (params) => {

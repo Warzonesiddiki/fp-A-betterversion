@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { cn } from '@/utils/cn';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { Button } from './Button';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { ScenarioEngine, type ScenarioDriver } from '@/engines/ScenarioEngine';
@@ -32,8 +33,8 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
-function formatPercent(n: number): string {
-  return `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
+function formatPctWithSign(n: number): string {
+  return `${n >= 0 ? '+' : ''}${formatNumber(n, 1)}%`;
 }
 
 function DiffIndicator({ current, base }: { current: number; base: number }) {
@@ -59,7 +60,7 @@ function DiffIndicator({ current, base }: { current: number; base: number }) {
       ) : (
         <TrendingDown className="h-3 w-3" />
       )}
-      {formatPercent(pctDiff)}
+      {formatPctWithSign(pctDiff)}
     </span>
   );
 }
@@ -276,7 +277,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                 </span>
                 <span className="font-medium text-[var(--text-primary)] dark:text-gray-100">
                   {key.includes('Margin')
-                    ? `${baseMetrics[key]!.toFixed(1)}%`
+                    ? formatPercent(baseMetrics[key]!, 1)
                     : formatCurrency(baseMetrics[key]!)}
                 </span>
               </div>
@@ -336,7 +337,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-[var(--text-primary)] dark:text-gray-100">
                       {key.includes('Margin')
-                        ? `${scenario.metrics![key].toFixed(1)}%`
+                        ? formatPercent(scenario.metrics![key], 1)
                         : formatCurrency(scenario.metrics![key])}
                     </span>
                     <DiffIndicator current={scenario.metrics![key]} base={baseMetrics[key]} />

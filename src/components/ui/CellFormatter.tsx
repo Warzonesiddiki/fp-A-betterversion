@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useCallback } from 'react';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
@@ -110,7 +111,7 @@ function formatPreview(format: CellFormat): string {
       return sample.toLocaleString('en-US', opts).replace('$', format.currencySymbol);
     }
     case 'percent':
-      return `${(sample * 100).toFixed(format.decimals)}%`;
+      return formatPercent(sample * 100, format.decimals);
     case 'date':
       return '12/31/2026';
     case 'scientific':

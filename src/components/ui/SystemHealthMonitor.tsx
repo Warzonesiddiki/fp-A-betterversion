@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, ShieldAlert, Database, Clock, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatNumber } from '@/utils/financialFormatting';
 
 export interface SystemHealthMonitorProps {
   isOnline: boolean;
@@ -20,7 +21,9 @@ export const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    const raw = bytes / Math.pow(k, i);
+    const rounded = Math.round(raw * 10) / 10;
+    return formatNumber(rounded, rounded % 1 === 0 ? 0 : 1) + ' ' + sizes[i];
   };
 
   return (

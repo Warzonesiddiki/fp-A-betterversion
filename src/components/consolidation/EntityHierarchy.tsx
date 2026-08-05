@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   ChevronRight,
   ChevronDown,
@@ -131,11 +132,11 @@ function NodeRow({
           </div>
           {!isRoot && (
             <div className="text-[10px] text-[var(--text-secondary)] flex gap-2 mt-0.5">
-              <span>Effective: {node.effectivePct.toFixed(1)}%</span>
+              <span>Effective: {formatPercent(node.effectivePct, 1)}</span>
               {nci > 0 && (
                 <>
                   <span>|</span>
-                  <span>NCI: {nci.toFixed(1)}%</span>
+                  <span>NCI: {formatPercent(nci, 1)}</span>
                 </>
               )}
             </div>

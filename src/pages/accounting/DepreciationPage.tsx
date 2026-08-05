@@ -270,7 +270,7 @@ export default function DepreciationPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="year" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: any) => `$${(v / 1000).toFixed(0)}K`} />
+                <Tooltip formatter={(v: any) => `$${Math.round(v / 1000)}K`} />
                 <Line dataKey="book" name="Book Value" stroke="#3B82F6" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
@@ -322,10 +322,10 @@ export default function DepreciationPage() {
                   >
                     <td className="px-3 py-2">{asset.name}</td>
                     <td className="px-3 py-2 text-right font-mono">
-                      ${(asset.cost / 1000).toFixed(0)}K
+                      ${Math.round(asset.cost / 1000)}K
                     </td>
                     <td className="px-3 py-2 text-right font-mono" data-testid={`nbv-${asset.id}`}>
-                      ${(asset.currentValue / 1000).toFixed(0)}K
+                      ${Math.round(asset.currentValue / 1000)}K
                     </td>
                     <td className="px-3 py-2 text-center text-xs">{asset.method}</td>
                   </tr>

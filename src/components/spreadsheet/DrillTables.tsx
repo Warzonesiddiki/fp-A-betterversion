@@ -1,6 +1,7 @@
 import { Layers, FileText, BookOpen, ArrowRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 import type { SummaryRow, DetailRow, JournalEntry } from './DrillThroughChain';
 
 // --- Helpers ---
@@ -109,7 +110,7 @@ export function SummaryTable({
                 {formatCurrency(row.variance)}
               </td>
               <td className={cn('px-4 py-3 text-right tabular-nums', varianceColor(row.variance))}>
-                {row.variancePct.toFixed(1)}%
+                {formatPercent(row.variancePct, 1)}
               </td>
               <td className="px-4 py-3 text-right">
                 <ArrowRight className="h-4 w-4 text-[var(--text-tertiary)]" />
@@ -222,7 +223,7 @@ export function DetailTable({
                 <td
                   className={cn('px-4 py-3 text-right tabular-nums', varianceColor(row.variance))}
                 >
-                  {row.variancePct.toFixed(1)}%
+                  {formatPercent(row.variancePct, 1)}
                 </td>
                 <td className="px-4 py-3 text-right">
                   {row.entries && row.entries.length > 0 && (

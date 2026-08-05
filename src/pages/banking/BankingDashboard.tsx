@@ -31,6 +31,7 @@ import {
 } from 'recharts';
 import type { GLEntry } from '@/types';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -41,8 +42,9 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
+/** Local formatPercent delegates to financialFormatting (GAP-1 F-0006). */
 function formatPercent(n: number): string {
-  return `${n.toFixed(2)}%`;
+  return formatPercentDisplay(n);
 }
 
 /** Bridge glStore entries to the GLEntry shape the engines expect. */
@@ -263,9 +265,13 @@ export default function BankingDashboard() {
                 <LineChart data={capitalStats.trendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                   <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `${v.toFixed(1)}%`} />
+                  <YAxis
+                    stroke="#94a3b8"
+                    fontSize={12}
+                    tickFormatter={(v) => formatPercentDisplay(v, 1)}
+                  />
                   <Tooltip
-                    formatter={(v: any) => `${v.toFixed(2)}%`}
+                    formatter={(v: any) => formatPercentDisplay(v)}
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   />
                   <Legend />

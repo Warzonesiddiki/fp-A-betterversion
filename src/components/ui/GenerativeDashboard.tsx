@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { formatPercent as fmtPct, formatNumber as fmtNum } from '@/utils/financialFormatting';
 import { KPIValue } from '@/components/ui/KPIValue';
 import {
   BarChart,
@@ -27,10 +28,10 @@ function formatCurrency(v: number): string {
   }).format(v);
 }
 function formatPercent(v: number): string {
-  return `${(v * 100).toFixed(1)}%`;
+  return fmtPct(v * 100, 1);
 }
 function formatNumber(v: number): string {
-  return new Intl.NumberFormat('en-US').format(v);
+  return fmtNum(v, 0);
 }
 
 function DashboardCard({

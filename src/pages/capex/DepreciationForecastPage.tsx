@@ -22,6 +22,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import Decimal from 'decimal.js';
 import { divideMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -248,7 +249,7 @@ export default function DepreciationForecastPage() {
         />
         <KPIValue
           label="Avg Asset Age"
-          value={`${totals.avgAge.toFixed(1)} years`}
+          value={`${formatPercent(totals.avgAge)} years`}
           icon={<Calendar className="h-4 w-4" />}
         />
       </div>
@@ -355,7 +356,7 @@ export default function DepreciationForecastPage() {
               <BarChart data={ANNUAL_DEP}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="year" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 100000) / 10}M`} />
                 <Tooltip
                   contentStyle={{
                     background: '#1e293b',
@@ -381,7 +382,7 @@ export default function DepreciationForecastPage() {
               <LineChart data={NBV_TREND}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="year" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 100000) / 10}M`} />
                 <Tooltip
                   contentStyle={{
                     background: '#1e293b',

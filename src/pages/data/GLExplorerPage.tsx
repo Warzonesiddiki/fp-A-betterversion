@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useGLStore } from '@/store/glStore';
 import { toCSV } from '@/utils/csv';
+import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -15,6 +16,87 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
+/** Money-primitive GL explorer totals (GAP-1 F-0006). */
+export interface GLExplorerTotals {
+  debits: number;
+  credits: number;
+}
+
+export function computeGLExplorerTotals(
+  entries: readonly { debit: number; credit: number }[]
+): GLExplorerTotals {
+  return {
+    debits: roundTo(sumMoney(entries.map((e) => e.debit)), 2),
+    credits: roundTo(sumMoney(entries.map((e) => e.credit)), 2),
+  };
+}
+
+/** Money-primitive per-account summary row (GAP-1 F-0006). */
+export interface GLAccountSummaryRow {
+  id: string;
+  code: string;
+  name: string;
+  debit: number;
+  credit: number;
+  count: number;
+  lastDate: string;
+  net: number;
+  [key: string]: unknown;
+}
+
+export function computeAccountSummaries(
+  entries: readonly {
+    accountId?: string;
+    accountCode: string;
+    accountName: string;
+    debit: number;
+    credit: number;
+    date: string;
+  }[]
+): GLAccountSummaryRow[] {
+  const summaries = new Map<
+    string,
+    {
+      code: string;
+      name: string;
+      debit: ReturnType<typeof toDecimal>;
+      credit: ReturnType<typeof toDecimal>;
+      count: number;
+      lastDate: string;
+    }
+  >();
+
+  for (const entry of entries) {
+    const key = entry.accountId || entry.accountCode;
+    const current = summaries.get(key) ?? {
+      code: entry.accountCode,
+      name: entry.accountName,
+      debit: toDecimal(0),
+      credit: toDecimal(0),
+      count: 0,
+      lastDate: entry.date,
+    };
+    current.debit = current.debit.plus(toDecimal(entry.debit));
+    current.credit = current.credit.plus(toDecimal(entry.credit));
+    current.count += 1;
+    current.lastDate = entry.date > current.lastDate ? entry.date : current.lastDate;
+    summaries.set(key, current);
+  }
+
+  return Array.from(summaries.entries())
+    .map(([id, summary]) => ({
+      id,
+      code: summary.code,
+      name: summary.name,
+      debit: roundTo(summary.debit, 2),
+      credit: roundTo(summary.credit, 2),
+      count: summary.count,
+      lastDate: summary.lastDate,
+      net: roundTo(subtractMoney(summary.debit, summary.credit), 2),
+    }))
+    .sort((a, b) => a.code.localeCompare(b.code));
+}
+
 export default function GLExplorerPage() {
   const { entries, accounts } = useGLStore();
   const navigate = useNavigate();
@@ -22,33 +104,7 @@ export default function GLExplorerPage() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
 
-  const accountSummaries = useMemo(() => {
-    const summaries = new Map<
-      string,
-      { code: string; name: string; debit: number; credit: number; count: number; lastDate: string }
-    >();
-
-    for (const entry of entries) {
-      const key = entry.accountId || entry.accountCode;
-      const current = summaries.get(key) ?? {
-        code: entry.accountCode,
-        name: entry.accountName,
-        debit: 0,
-        credit: 0,
-        count: 0,
-        lastDate: entry.date,
-      };
-      current.debit += entry.debit;
-      current.credit += entry.credit;
-      current.count += 1;
-      current.lastDate = entry.date > current.lastDate ? entry.date : current.lastDate;
-      summaries.set(key, current);
-    }
-
-    return Array.from(summaries.entries())
-      .map(([id, summary]) => ({ id, ...summary, net: summary.debit - summary.credit }))
-      .sort((a, b) => a.code.localeCompare(b.code));
-  }, [entries]);
+  const accountSummaries = useMemo(() => computeAccountSummaries(entries), [entries]);
 
   const filtered = useMemo(() => {
     let list = [...entries];
@@ -70,13 +126,7 @@ export default function GLExplorerPage() {
       .slice(0, 200);
   }, [entries, typeFilter, search]);
 
-  const totals = useMemo(
-    () => ({
-      debits: entries.reduce((sum, entry) => sum + entry.debit, 0),
-      credits: entries.reduce((sum, entry) => sum + entry.credit, 0),
-    }),
-    [entries]
-  );
+  const totals = useMemo(() => computeGLExplorerTotals(entries), [entries]);
 
   const exportVisibleRows = () => {
     const csv = toCSV(

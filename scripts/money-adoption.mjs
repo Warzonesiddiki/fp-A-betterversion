@@ -55,12 +55,25 @@ const FINANCIAL_DIRS = [
   // percentage/rate sites are rewritten to go through a clearly-named
   // display helper so the ratchet's simple regex still sees 0.
   'src/components/variance',
-  // src/components/{consolidation,currency,spreadsheet,pages/banking} are
-  // PARTIALLY migrated this session (see GAP_LEDGER.md) but retain rate/
-  // percentage .toFixed(n) sites (rate.toFixed(4), pct.toFixed(1), etc.)
-  // that are non-currency by GAP-1 policy; they will join FINANCIAL_DIRS
-  // in a follow-up pass that routes %/rate display through shared helpers
-  // so the simple ratchet counter does not false-positive on them.
+  // 2026-08-05 (Wave 4): GL data pages fully migrated; display-only toFixed on
+  // file-size/percent/rate sites routed through formatPercent/formatFileSize
+  // so the simple ratchet sees 0 raw toFixed in this directory.
+  'src/pages/data',
+  // 2026-08-05 (Wave 5): All page directories and key component directories
+  // fully migrated. Money reduce/+= replaced with sumMoney/subtractMoney/
+  // roundTo/toDecimal. All display-only toFixed sites (percent, FX rate,
+  // convergence delta, file size, months, etc.) routed through formatPercent/
+  // formatNumber/formatCompact so the ratchet sees 0 raw toFixed.
+  'src/pages/treasury',
+  'src/pages/banking',
+  'src/pages/budgets',
+  'src/pages/capex',
+  'src/pages/accounting',
+  'src/pages/cash',
+  'src/components/consolidation',
+  'src/components/currency',
+  'src/components/spreadsheet',
+  'src/components/ui',
 ];
 
 /**

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { cn } from '@/utils/cn';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { ExportMenu } from './ExportMenu';
 import type { ScenarioMetrics } from '@/types';
@@ -57,7 +58,7 @@ function VarianceCell({
         {formatCurrency(diff)}
       </span>
       <span className={cn('text-[10px]', color)}>
-        {isNeutral ? '—' : `${pctDiff >= 0 ? '+' : ''}${pctDiff.toFixed(1)}%`}
+        {isNeutral ? '—' : `${pctDiff >= 0 ? '+' : ''}${formatNumber(pctDiff, 1)}%`}
       </span>
     </div>
   );
@@ -82,8 +83,8 @@ export function ScenarioComparisonGrid({
 
   const formatValue = (val: number, isPercent: boolean, key: string) => {
     if (key === 'headcount') return Math.round(val).toLocaleString();
-    if (key === 'runway') return `${val.toFixed(1)} mo`;
-    if (isPercent) return `${val.toFixed(1)}%`;
+    if (key === 'runway') return `${formatNumber(val, 1)} mo`;
+    if (isPercent) return formatPercent(val, 1);
     return formatCurrency(val);
   };
 

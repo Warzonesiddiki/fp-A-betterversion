@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import { Sparkline } from './Sparkline';
 
 export interface KPIValueProps {
@@ -72,7 +73,7 @@ export const KPIValue: React.FC<KPIValueProps> = ({
             )}
           >
             {getTrendIcon()}
-            <span>{Math.abs(change).toFixed(1)}%</span>
+            <span>{formatPercent(Math.abs(change), 1)}</span>
           </div>
         )}
       </div>

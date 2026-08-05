@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { ArrowLeft, ArrowRight, Check, DollarSign } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export default function BudgetCreatePage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -353,9 +354,11 @@ export default function BudgetCreatePage() {
                         currency: 'USD',
                         minimumFractionDigits: 0,
                       }).format(
-                        Array.from({ length: 12 }, (_, m) => amounts[id + '-' + m] || 0).reduce(
-                          (s, v) => s + v,
-                          0
+                        roundTo(
+                          sumMoney(
+                            Array.from({ length: 12 }, (_, m) => amounts[id + '-' + m] || 0)
+                          ),
+                          2
                         )
                       )}
                     </div>

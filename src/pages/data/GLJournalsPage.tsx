@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
 import { toCSV } from '@/utils/csv';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { BookOpen, ChevronLeft, ChevronRight, Download, Search, BarChart3 } from 'lucide-react';
 
 function formatCurrency(n: number): string {
@@ -18,6 +19,22 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+/** Money-primitive journal totals (GAP-1 F-0006). */
+export interface GLJournalTotals {
+  debits: number;
+  credits: number;
+  isBalanced: boolean;
+}
+
+export function computeJournalTotals(
+  entries: readonly { debit: number; credit: number }[]
+): GLJournalTotals {
+  const debits = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
+  const credits = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
+  const diff = roundTo(subtractMoney(debits, credits), 2);
+  return { debits, credits, isBalanced: Math.abs(diff) < 0.01 };
 }
 
 export default function GLJournalsPage() {
@@ -91,11 +108,7 @@ export default function GLJournalsPage() {
     [filtered, page]
   );
 
-  const totals = useMemo(() => {
-    const debits = filtered.reduce((s, e) => s + e.debit, 0);
-    const credits = filtered.reduce((s, e) => s + e.credit, 0);
-    return { debits, credits, isBalanced: Math.abs(debits - credits) < 0.01 };
-  }, [filtered]);
+  const totals = useMemo(() => computeJournalTotals(filtered), [filtered]);
 
   // B2 Enhancement: Export journals
   const exportJournals = useCallback(() => {

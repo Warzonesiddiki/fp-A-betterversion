@@ -29,6 +29,7 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent } from '@/utils/financialFormatting';
 import { useDebtStore, type DebtInstrumentInput } from '@/store/debtStore';
 import { DebtForm } from '@/components/debt/DebtForm';
 
@@ -134,7 +135,7 @@ export default function DebtSchedulePage() {
         key: 'rate',
         header: 'Rate',
         align: 'right',
-        render: (v) => `${(v as number).toFixed(2)}%`,
+        render: (v) => formatPercent(v as number),
       },
       { key: 'maturity', header: 'Maturity', sortable: true },
       {
@@ -222,7 +223,7 @@ export default function DebtSchedulePage() {
           d.lender,
           d.type,
           formatCurrency(d.principal),
-          `${d.rate.toFixed(2)}%`,
+          formatPercent(d.rate),
           d.maturity,
           formatCurrency(d.remaining),
         ]),
@@ -335,11 +336,11 @@ export default function DebtSchedulePage() {
 
       <div className="grid grid-cols-4 gap-4">
         <KPIValue label="Total Debt" value={formatCurrency(totalDebt)} />
-        <KPIValue label="Weighted Avg Rate" value={`${weightedRate.toFixed(2)}%`} />
+        <KPIValue label="Weighted Avg Rate" value={formatPercent(weightedRate)} />
         <KPIValue label="Annual Debt Service" value={formatCurrency(annualDebtService)} />
         <KPIValue
           label="DSCR"
-          value={dscr.toFixed(2)}
+          value={formatPercent(dscr)}
           trend={dscr >= 1.25 ? 'up' : 'down'}
           changeLabel="Target: 1.25x"
         />
@@ -355,7 +356,7 @@ export default function DebtSchedulePage() {
               <BarChart data={amortizationData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="year" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(0)}M`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 1000000)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   formatter={(v: any) => formatCurrency(v)}
@@ -376,7 +377,7 @@ export default function DebtSchedulePage() {
               <LineChart data={amortizationData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="year" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(0)}M`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 1000000)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   formatter={(v: any) => formatCurrency(v)}
@@ -424,7 +425,7 @@ export default function DebtSchedulePage() {
                   <div className="font-medium">{i.name}</div>
                   <div className="text-xs text-slate-400">
                     {i.lender} | {i.displayType} | {formatCurrency(i.principal)} @{' '}
-                    {(i.rate * 100).toFixed(2)}%
+                    {formatPercent(i.rate * 100)}
                   </div>
                 </div>
                 <div className="flex gap-2">

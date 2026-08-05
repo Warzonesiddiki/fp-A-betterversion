@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Plus, Trash2, ArrowRight, Play, Settings2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPercent } from '@/utils/financialFormatting';
 import type {
   AllocationMethod,
   AllocationRule,
@@ -362,7 +363,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
               percentageValid ? 'text-green-700' : 'text-red-600'
             )}
           >
-            Total: {percentageTotal.toFixed(2)}% {percentageValid ? '✓' : '(must equal 100%)'}
+            Total: {formatPercent(percentageTotal, 2)} {percentageValid ? '✓' : '(must equal 100%)'}
           </div>
         )}
       </div>

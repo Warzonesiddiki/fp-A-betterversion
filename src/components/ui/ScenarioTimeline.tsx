@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
+import { formatNumber } from '@/utils/financialFormatting';
 import {
   ResponsiveContainer,
   LineChart,
@@ -251,7 +252,7 @@ export function ScenarioTimeline({
                   <span className="text-[var(--text-muted)]">·</span>
                   <span className={ip.divergence > 0 ? 'fin-positive' : 'fin-negative'}>
                     {ip.divergence > 0 ? '+' : ''}
-                    {ip.divergence.toFixed(1)}%
+                    {formatNumber(ip.divergence, 1)}%
                   </span>
                 </span>
               ))}
