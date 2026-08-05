@@ -52,6 +52,7 @@ import {
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
 import { HealthcareEngine } from '@/engines/HealthcareEngine';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 export default function PatientRevenuePage() {
   const { entries } = useGLStore();
@@ -143,7 +144,7 @@ export default function PatientRevenuePage() {
         />
         <KPIValue
           label="Collection Rate"
-          value={`${stats.collectionRate.toFixed(1)}%`}
+          value={`${formatPercent(stats.collectionRate, 1)}`}
           change={1.2}
           changeLabel="net of contractuals"
           trend="up"
@@ -151,7 +152,7 @@ export default function PatientRevenuePage() {
         />
         <KPIValue
           label="Days in A/R"
-          value={stats.daysInAR.toFixed(1)}
+          value={formatNumber(stats.daysInAR, 1)}
           change={-2.4}
           changeLabel="billing cycle faster"
           trend="up" // Up is good for fewer days
@@ -186,7 +187,7 @@ export default function PatientRevenuePage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: any) => `$${(v / 1000000).toFixed(1)}M`} />
+                  <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>

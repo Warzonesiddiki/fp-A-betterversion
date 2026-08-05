@@ -23,6 +23,8 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -170,20 +172,30 @@ export default function InventoryPage() {
 
   const glInventory = useMemo(
     () =>
-      entries
-        .filter((e) => (e.accountCode || '').startsWith('13'))
-        .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0),
+      roundTo(
+        sumMoney(
+          entries
+            .filter((e) => (e.accountCode || '').startsWith('13'))
+            .map((e) => Math.abs(e.debit - e.credit))
+        ),
+        2
+      ),
     [entries]
   );
 
-  const totalValue = mockInventory.reduce((s, i) => s + i.totalValue, 0);
-  const totalItems = mockInventory.reduce((s, i) => s + i.quantity, 0);
+  const totalValue = roundTo(sumMoney(mockInventory.map((i) => i.totalValue)), 2);
+  const totalItems = roundTo(sumMoney(mockInventory.map((i) => i.quantity)), 2);
   const lowStockCount = mockInventory.filter((i) => i.status === 'Low Stock').length;
   const outOfStockCount = mockInventory.filter((i) => i.status === 'Out of Stock').length;
 
-  const cogs = entries
-    .filter((e) => (e.accountCode || '').startsWith('5'))
-    .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+  const cogs = roundTo(
+    sumMoney(
+      entries
+        .filter((e) => (e.accountCode || '').startsWith('5'))
+        .map((e) => Math.abs(e.debit - e.credit))
+    ),
+    2
+  );
   const avgInventory = totalValue > 0 ? totalValue : glInventory;
   const turnoverRatio = avgInventory > 0 && cogs > 0 ? cogs / avgInventory : 0;
   const daysInventory = turnoverRatio > 0 ? 365 / turnoverRatio : 0;
@@ -291,12 +303,12 @@ export default function InventoryPage() {
         />
         <KPIValue
           label="Turnover Ratio"
-          value={turnoverRatio.toFixed(1) + 'x'}
+          value={formatNumber(turnoverRatio, 1) + 'x'}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
           label="Days Inventory"
-          value={daysInventory.toFixed(0) + ' days'}
+          value={formatNumber(daysInventory, 0) + '  days'}
           icon={<ArrowDown className="h-4 w-4" />}
         />
         <KPIValue
@@ -320,7 +332,7 @@ export default function InventoryPage() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                  tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -365,7 +377,9 @@ export default function InventoryPage() {
                             style={{ width: `${Math.min(ratio * 100, 100)}%` }}
                           />
                         </div>
-                        <span className="text-xs text-slate-400">{(ratio * 100).toFixed(0)}%</span>
+                        <span className="text-xs text-slate-400">
+                          {formatPercent(ratio * 100, 0)}
+                        </span>
                       </div>
                     </div>
                   );

@@ -10,6 +10,7 @@ import {
   type ApprovalStatus,
 } from '@/store/auditTrailStore';
 import { Button } from '@/components/ui/Button';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   auditPanelTokens,
   auditComplianceStatsTokens,
@@ -56,10 +57,10 @@ export function AuditCompliancePanel(): JSX.Element {
       `- Unique cells: ${stats.uniqueCells}`,
       ``,
       `## Operation Breakdown`,
-      ...operationRows.map((r) => `- ${r.op}: ${r.count} (${r.pct.toFixed(1)}%)`),
+      ...operationRows.map((r) => `- ${r.op}: ${r.count} (${formatPercent(r.pct, 1)})`),
       ``,
       `## Approval Status Breakdown`,
-      ...approvalRows.map((r) => `- ${r.status}: ${r.count} (${r.pct.toFixed(1)}%)`),
+      ...approvalRows.map((r) => `- ${r.status}: ${r.count} (${formatPercent(r.pct, 1)})`),
       ``,
       `## Top 10 Users by Activity`,
       ...stats.topUsers.map((u, i) => `${i + 1}. ${u.userId}: ${u.count} entries`),
@@ -125,7 +126,7 @@ export function AuditCompliancePanel(): JSX.Element {
                 <div
                   className={auditProgressTokens.neutral}
                   style={{ width: `${r.pct}%` }}
-                  aria-label={`${r.op}: ${r.pct.toFixed(1)}%`}
+                  aria-label={`${r.op}: ${formatPercent(r.pct, 1)}`}
                 />
               </div>
               <span className="w-10 text-right tabular-nums text-gray-700 dark:text-gray-300">
@@ -157,7 +158,7 @@ export function AuditCompliancePanel(): JSX.Element {
                           : auditProgressTokens.muted
                   }
                   style={{ width: `${r.pct}%` }}
-                  aria-label={`${r.status}: ${r.pct.toFixed(1)}%`}
+                  aria-label={`${r.status}: ${formatPercent(r.pct, 1)}`}
                 />
               </div>
               <span className="w-10 text-right tabular-nums text-gray-700 dark:text-gray-300">

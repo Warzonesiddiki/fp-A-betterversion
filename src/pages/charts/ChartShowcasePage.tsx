@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { formatCompact } from '@/utils/financialFormatting';
 import {
   WaterfallChart,
   VarianceChart,
@@ -68,7 +69,7 @@ export function ChartShowcasePage() {
               <WaterfallChart
                 data={waterfallData}
                 height={250}
-                formatValue={(v) => `$${(v / 1000).toFixed(0)}K`}
+                formatValue={(v) => `$${formatCompact(v)}`}
               />
             </CardContent>
           </Card>
@@ -131,7 +132,7 @@ export function ChartShowcasePage() {
             <TreemapChart
               data={treemapData}
               height={200}
-              formatValue={(v) => `$${(v / 1000).toFixed(0)}K`}
+              formatValue={(v) => `$${formatCompact(v)}`}
             />
           </CardContent>
         </Card>

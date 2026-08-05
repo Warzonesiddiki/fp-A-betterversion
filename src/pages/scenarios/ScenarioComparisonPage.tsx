@@ -5,6 +5,7 @@ import { useScenarioStore, scenarioSelectors } from '@/store/scenarioStore';
 import type { ScenarioMetrics } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { formatPercent } from '@/utils/financialFormatting';
 
 interface MetricRow {
   key: keyof ScenarioMetrics;
@@ -35,7 +36,7 @@ function formatValue(value: number, format: MetricRow['format']): string {
     }).format(value);
   }
   if (format === 'percent') {
-    return `${(value * 100).toFixed(1)}%`;
+    return `${formatPercent(value, 1)}`;
   }
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
 }

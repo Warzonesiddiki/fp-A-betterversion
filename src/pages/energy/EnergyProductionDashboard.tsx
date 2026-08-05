@@ -23,6 +23,8 @@ import {
   Bar,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -58,8 +60,8 @@ export default function EnergyProductionDashboard() {
     document.title = 'FinPlan Pro — Energy Production';
   }, []);
 
-  const totalProduction = SOURCES.reduce((s, src) => s + src.value, 0);
-  const totalRevenue = SOURCES.reduce((s, src) => s + src.revenue, 0);
+  const totalProduction = roundTo(sumMoney(SOURCES.map((src) => src.value)), 2);
+  const totalRevenue = roundTo(sumMoney(SOURCES.map((src) => src.revenue)), 2);
   const totalCost = SOURCES.reduce((s, src) => s + src.cost * src.value, 0);
   const avgCostPerMWh = totalCost / totalProduction;
   const capacityFactor = (totalProduction / (15000 * 6)) * 100;
@@ -105,17 +107,17 @@ export default function EnergyProductionDashboard() {
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
           label="Total Production"
-          value={`${(totalProduction / 1000).toFixed(1)}GWh`}
+          value={`${formatNumber(totalProduction / 1000, 1)}GWh`}
           icon={<Zap className="h-4 w-4" />}
         />
         <KPIValue
           label="Capacity Factor"
-          value={`${capacityFactor.toFixed(1)}%`}
+          value={`${formatPercent(capacityFactor, 1)}`}
           icon={<Gauge className="h-4 w-4" />}
         />
         <KPIValue
           label="Avg Cost/MWh"
-          value={`$${avgCostPerMWh.toFixed(0)}`}
+          value={`$${formatNumber(avgCostPerMWh, 0)}`}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -142,7 +144,7 @@ export default function EnergyProductionDashboard() {
                   outerRadius={100}
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${formatPercent(percent ?? 0, 0)}`}
                 >
                   {SOURCES.map((_, i) => (
                     <Cell key={i} fill={COLORS[i]} />
@@ -169,7 +171,7 @@ export default function EnergyProductionDashboard() {
               <BarChart data={costVsRevenue}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="name" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`} />
                 <Tooltip
                   contentStyle={{
                     background: '#1e293b',

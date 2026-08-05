@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   ComposedChart,
   Bar,
@@ -93,7 +94,7 @@ export const ComboChart = memo(function ComboChart({
               const num = typeof value === 'number' ? value : Number(value);
               const label = String(name);
               if (label.includes('Margin') || label.includes('%')) {
-                return [`${num.toFixed(1)}%`, label];
+                return [`${formatPercent(num, 1)}`, label];
               }
               return [formatValue(num), label];
             }}

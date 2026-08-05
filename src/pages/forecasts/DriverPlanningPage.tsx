@@ -28,25 +28,26 @@ import { useDriverStore, DRIVER_TEMPLATES, type DriverTemplate } from '@/store/d
 import { HeatmapChart } from '@/components/charts/HeatmapChart';
 import type { Driver, ImpactAnalysis } from '@/engines/DriverCascadeEngine';
 import { AssumptionEngine } from '@/engines/AssumptionEngine';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 function formatImpact(value: number): string {
-  if (Math.abs(value) >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-  if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
+  if (Math.abs(value) >= 1000000) return `$${formatCompact(value)}`;
+  if (Math.abs(value) >= 1000) return `$${value ? formatCompact(value) : '—'}`;
+  return `$${formatNumber(value, 0)}`;
 }
 
 function formatDriverValue(value: number, unit: string): string {
   switch (unit) {
     case 'percentage':
-      return `${value.toFixed(1)}%`;
+      return `${formatPercent(value, 1)}`;
     case 'index':
-      return value.toFixed(1);
+      return formatNumber(value, 1);
     case 'ratio':
-      return value.toFixed(2);
+      return formatNumber(value, 2);
     default:
       return value.toLocaleString();
   }
@@ -676,7 +677,7 @@ export default function DriverPlanningPage() {
                                 </div>
                                 <div>
                                   <div className="font-medium">Change</div>
-                                  <div>{impact.percentageChange.toFixed(1)}%</div>
+                                  <div>{formatPercent(impact.percentageChange, 1)}</div>
                                 </div>
                               </div>
                               {Object.entries(impact.impactByCube).length > 0 && (
@@ -844,7 +845,7 @@ export default function DriverPlanningPage() {
                 <div className="flex justify-between">
                   <span style={{ color: 'var(--text-secondary)' }}>Duration</span>
                   <span style={{ color: 'var(--text-primary)' }}>
-                    {lastCascadeResult.duration.toFixed(2)}ms
+                    {formatNumber(lastCascadeResult.duration, 2)}ms
                   </span>
                 </div>
               </CardContent>
@@ -867,7 +868,7 @@ export default function DriverPlanningPage() {
                     }))
                   )}
                   cellSize={32}
-                  formatValue={(v) => `${v.toFixed(1)}x`}
+                  formatValue={(v) => `${formatNumber(v, 1)}x`}
                   ariaLabel="Driver impact heatmap"
                 />
                 {allRules.length === 0 && (

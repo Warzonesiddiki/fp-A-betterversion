@@ -17,6 +17,8 @@ import {
 import { useGLStore } from '@/store/glStore';
 import { BondPricingEngine } from '@/engines/BondPricingEngine';
 import type { GLEntry } from '@/types';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { sumMoney, roundTo, divideMoney } from '@/utils/money';
 
 /** Derive synthetic bond instruments from GL entries. */
 function deriveBondsFromGL(entries: GLEntry[]) {
@@ -28,7 +30,10 @@ function deriveBondsFromGL(entries: GLEntry[]) {
     .map((id) => {
       const entityEntries = entries.filter((e) => e.entityId === id);
       const name = entityEntries[0]?.accountName || 'Unknown Instrument';
-      const faceValue = entityEntries.reduce((acc, e) => acc + Math.abs(e.amount), 0);
+      const faceValue = roundTo(
+        sumMoney(entityEntries.map((e) => Math.abs(e.amount))),
+        2
+      );
 
       if (faceValue === 0) return null;
 
@@ -69,13 +74,13 @@ const bondColumns: Column[] = [
     key: 'couponRate',
     header: 'Coupon',
     align: 'right',
-    render: (v) => `${((v as number) * 100).toFixed(2)}%`,
+    render: (v) => `${formatPercent(v as number, 2)}`,
   },
   {
     key: 'ytm',
     header: 'YTM',
     align: 'right',
-    render: (v) => `${((v as number) * 100).toFixed(2)}%`,
+    render: (v) => `${formatPercent(v as number, 2)}`,
   },
   {
     key: 'price',
@@ -92,13 +97,13 @@ const bondColumns: Column[] = [
     key: 'modifiedDuration',
     header: 'Mod. Duration',
     align: 'right',
-    render: (v) => `${(v as number).toFixed(2)} yrs`,
+    render: (v) => `${formatNumber(v as number, 2)} yrs`,
   },
   {
     key: 'convexity',
     header: 'Convexity',
     align: 'right',
-    render: (v) => (v as number).toFixed(2),
+    render: (v) => formatNumber(v as number, 2),
   },
   {
     key: 'periods',
@@ -157,24 +162,65 @@ export default function BondPortfolioPage() {
       };
     }
 
-    const totalFaceValue = enrichedBonds.reduce((acc, b) => acc + b.faceValue, 0);
-    const totalMarketValue = enrichedBonds.reduce((acc, b) => acc + b.price, 0);
+    const totalFaceValue = roundTo(
+      sumMoney(enrichedBonds.map((b) => b.faceValue)),
+      2
+    );
+    const totalMarketValue = roundTo(
+      sumMoney(enrichedBonds.map((b) => b.price)),
+      2
+    );
     const weightedDuration =
       totalMarketValue > 0
-        ? enrichedBonds.reduce((acc, b) => acc + b.modifiedDuration * b.price, 0) / totalMarketValue
+        ? roundTo(
+            divideMoney(
+              roundTo(
+                sumMoney(
+                  enrichedBonds.map((b) => b.modifiedDuration * b.price)
+                ),
+                6
+              ),
+              totalMarketValue
+            ),
+            4
+          )
         : 0;
     const weightedConvexity =
       totalMarketValue > 0
-        ? enrichedBonds.reduce((acc, b) => acc + b.convexity * b.price, 0) / totalMarketValue
+        ? roundTo(
+            divideMoney(
+              roundTo(
+                sumMoney(enrichedBonds.map((b) => b.convexity * b.price)),
+                6
+              ),
+              totalMarketValue
+            ),
+            4
+          )
         : 0;
     const weightedYTM =
       totalMarketValue > 0
-        ? enrichedBonds.reduce((acc, b) => acc + b.ytm * b.price, 0) / totalMarketValue
+        ? roundTo(
+            divideMoney(
+              roundTo(sumMoney(enrichedBonds.map((b) => b.ytm * b.price)), 6),
+              totalMarketValue
+            ),
+            4
+          )
         : 0;
-    const totalAccrued = enrichedBonds.reduce((acc, b) => acc + b.accruedInterest, 0);
+    const totalAccrued = roundTo(
+      sumMoney(enrichedBonds.map((b) => b.accruedInterest)),
+      2
+    );
     const avgCoupon =
       totalFaceValue > 0
-        ? enrichedBonds.reduce((acc, b) => acc + b.couponRate * b.faceValue, 0) / totalFaceValue
+        ? roundTo(
+            divideMoney(
+              roundTo(sumMoney(enrichedBonds.map((b) => b.couponRate * b.faceValue)), 6),
+              totalFaceValue
+            ),
+            4
+          )
         : 0;
 
     return {
@@ -270,13 +316,13 @@ export default function BondPortfolioPage() {
         />
         <KPIValue
           label="Weighted Duration"
-          value={`${portfolioMetrics.weightedDuration.toFixed(2)} yrs`}
+          value={`${formatNumber(portfolioMetrics.weightedDuration, 2)} yrs`}
           changeLabel="interest rate sensitivity"
           trend="neutral"
         />
         <KPIValue
           label="Portfolio YTM"
-          value={`${(portfolioMetrics.weightedYTM * 100).toFixed(2)}%`}
+          value={`${formatPercent(portfolioMetrics.weightedYTM, 2)}`}
           change={0.12}
           changeLabel="yield pickup"
           trend="up"
@@ -322,8 +368,8 @@ export default function BondPortfolioPage() {
                   <Tooltip
                     cursor={{ strokeDasharray: '3 3' }}
                     formatter={(value: unknown, name: unknown) => {
-                      if (name === 'Duration') return `${(value as number).toFixed(2)} yrs`;
-                      if (name === 'Yield') return `${(value as number).toFixed(2)}%`;
+                      if (name === 'Duration') return `${formatNumber(value as number, 2)} yrs`;
+                      if (name === 'Yield') return `${formatPercent(value as number, 2)}`;
                       return value as string | number;
                     }}
                   />
@@ -348,7 +394,7 @@ export default function BondPortfolioPage() {
                 Weighted Convexity
               </div>
               <div className="text-xl font-bold">
-                {portfolioMetrics.weightedConvexity.toFixed(2)}
+                {formatNumber(portfolioMetrics.weightedConvexity, 2)}
               </div>
               <p className="text-[10px] text-slate-400">
                 Higher convexity = better protection against large rate moves
@@ -357,7 +403,7 @@ export default function BondPortfolioPage() {
             <div className="space-y-1">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Avg Coupon Rate</div>
               <div className="text-xl font-bold">
-                {(portfolioMetrics.avgCoupon * 100).toFixed(2)}%
+                {formatPercent(portfolioMetrics.avgCoupon * 100, 2)}
               </div>
             </div>
             <div className="space-y-1">
@@ -385,9 +431,9 @@ export default function BondPortfolioPage() {
                   Duration Risk Alert
                 </div>
                 <p className="text-amber-800 text-[10px] leading-relaxed">
-                  Portfolio weighted duration of {portfolioMetrics.weightedDuration.toFixed(1)}{' '}
-                  years implies significant interest rate sensitivity. Consider hedging or
-                  shortening duration.
+                  Portfolio weighted duration of{' '}
+                  {formatNumber(portfolioMetrics.weightedDuration, 1)} years implies significant
+                  interest rate sensitivity. Consider hedging or shortening duration.
                 </p>
               </div>
             )}

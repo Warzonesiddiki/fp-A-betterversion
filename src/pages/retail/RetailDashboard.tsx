@@ -29,6 +29,8 @@ import {
 } from 'recharts';
 import type { GLEntry } from '@/types';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -37,10 +39,6 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
-}
-
-function formatPercent(n: number): string {
-  return `${n.toFixed(1)}%`;
 }
 
 /** Bridge glStore entries to the GLEntry shape the engines expect. */
@@ -71,7 +69,10 @@ export default function RetailDashboard() {
 
   const pnlTrend = useMemo(() => RetailEngine.getPnLTrend(sectorEntries), [sectorEntries]);
 
-  const totalRevenue = useMemo(() => storeStats.reduce((s, st) => s + st.revenue, 0), [storeStats]);
+  const totalRevenue = useMemo(
+    () => roundTo(sumMoney(storeStats.map((st) => st.revenue)), 2),
+    [storeStats]
+  );
 
   const handleExport = () => {
     void ExportEngine.exportToPDF(
@@ -84,7 +85,7 @@ export default function RetailDashboard() {
           s.labor,
           s.grossProfit,
           s.netProfit,
-          `${s.margin.toFixed(1)}%`,
+          `${formatPercent(s.margin, 1)}`,
         ]),
       },
       { title: 'Retail Store Performance Report' }
@@ -220,7 +221,7 @@ export default function RetailDashboard() {
                   <YAxis
                     stroke="#94a3b8"
                     fontSize={12}
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                    tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                   />
                   <Tooltip
                     formatter={(v: any) => formatCurrency(v)}

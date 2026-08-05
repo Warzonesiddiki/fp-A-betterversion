@@ -12,6 +12,7 @@ import {
 import { textToBytes, buildZip, downloadBlob, type ZipEntry } from '@/utils/zipBuilder';
 import { ReportResultsPanel } from './ReportResultsPanel';
 import { ProgressPanel, runBatched, reportToCsv } from './ReportGenHelpers';
+import { formatNumber } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -248,7 +249,7 @@ export function ReportGenerator({
             className="w-full"
           >
             {progress?.status === 'running'
-              ? `Generating... (${(elapsed / 1000).toFixed(1)}s)`
+              ? `Generating... (${formatNumber(elapsed / 1000, 1)}s)`
               : `Generate ${totalJobs} Reports`}
           </Button>
           <p className="text-xs text-[var(--text-muted)]">

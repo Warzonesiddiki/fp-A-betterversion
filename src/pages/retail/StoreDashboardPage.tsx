@@ -31,6 +31,7 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -99,7 +100,7 @@ export default function StoreDashboardPage() {
           formatCurrency(s.revenue),
           s.transactions.toString(),
           formatCurrency(s.avgBasket),
-          s.yoyGrowth.toFixed(1) + '%',
+          formatPercent(s.yoyGrowth, 1),
         ]),
       },
       { title: 'Store Dashboard Report', companyName: 'FinPlan Pro' }
@@ -116,7 +117,7 @@ export default function StoreDashboardPage() {
           formatCurrency(s.revenue),
           s.transactions.toString(),
           formatCurrency(s.avgBasket),
-          s.yoyGrowth.toFixed(1) + '%',
+          formatPercent(s.yoyGrowth, 1),
         ]),
       },
       { title: 'Store_Dashboard_Report' }
@@ -156,7 +157,7 @@ export default function StoreDashboardPage() {
             (row as unknown as StoreRow).yoyGrowth >= 0 ? 'text-green-400' : 'text-red-400'
           }
         >
-          {(row as unknown as StoreRow).yoyGrowth.toFixed(1)}%
+          {formatPercent((row as unknown as StoreRow).yoyGrowth, 1)}
         </span>
       ),
       sortable: true,
@@ -203,7 +204,7 @@ export default function StoreDashboardPage() {
             />
             <KPIValue
               label="Gross Margin"
-              value={`${data.grossMargin.toFixed(1)}%`}
+              value={`${formatPercent(data.grossMargin, 1)}`}
               icon={<TrendingUp className="h-4 w-4" />}
             />
             <KPIValue
@@ -224,7 +225,7 @@ export default function StoreDashboardPage() {
                   <YAxis
                     stroke="#94a3b8"
                     fontSize={12}
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                    tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip
                     formatter={(v: any) => formatCurrency(v)}

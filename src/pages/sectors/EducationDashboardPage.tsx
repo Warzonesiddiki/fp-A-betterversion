@@ -18,6 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { useEducationStore } from '@/store/educationStore';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 const COLORS = [
   'var(--accent-primary)',
@@ -57,12 +59,12 @@ const budgetVsActual = [
   { category: 'Financial Aid', budget: 110_000_000, actual: 105_000_000 },
   { category: 'Capital Projects', budget: 85_000_000, actual: 79_000_000 },
 ];
-const totalExpense = expenseDistribution.reduce((s, e) => s + e.value, 0);
+const totalExpense = roundTo(sumMoney(expenseDistribution.map((e) => e.value)), 2);
 
 function fmt(n: number): string {
-  if (n >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(1)}B`;
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
+  if (n >= 1_000_000_000) return `$${formatCompact(n)}`;
+  if (n >= 1_000_000) return `$${formatCompact(n)}`;
+  if (n >= 1_000) return `$${formatCompact(n)}`;
   return `$${n.toLocaleString()}`;
 }
 
@@ -132,7 +134,7 @@ export function EducationDashboardPage() {
             <BarChart data={revenueBySource}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
               <XAxis dataKey="source" {...axisProps} />
-              <YAxis {...axisProps} tickFormatter={(v) => `$${(v / 1_000_000).toFixed(0)}M`} />
+              <YAxis {...axisProps} tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
                 contentStyle={tooltipStyle}
                 formatter={((v: number) => [fmt(v), 'Revenue']) as any}
@@ -184,7 +186,7 @@ export function EducationDashboardPage() {
                   <span className="font-medium">{item.name}</span>
                 </div>
                 <span className="text-[var(--text-secondary)]">
-                  {((item.value / totalExpense) * 100).toFixed(1)}%
+                  {formatPercent((item.value / totalExpense) * 100, 1)}
                 </span>
               </div>
             ))}
@@ -293,7 +295,7 @@ export function EducationDashboardPage() {
                 <tbody>
                   {budgetVsActual.map((r) => {
                     const v = r.actual - r.budget;
-                    const pct = ((v / r.budget) * 100).toFixed(1);
+                    const pct = roundTo((v / r.budget) * 100, 1);
                     const fav =
                       r.category.includes('Revenue') || r.category.includes('Grants')
                         ? v > 0

@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { GaugeChart as BaseGaugeChart } from '@/components/charts/GaugeChart';
 import { cn } from '@/utils/cn';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 export interface DashboardGaugeProps {
   /** Current metric value */
@@ -26,10 +27,8 @@ export interface DashboardGaugeProps {
 }
 
 function defaultFormat(v: number): string {
-  if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
-  if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
-  if (Math.abs(v) >= 1e3) return `$${(v / 1e3).toFixed(1)}K`;
-  return `${v.toFixed(1)}%`;
+  if (Math.abs(v) >= 1e3) return formatCompact(v);
+  return `${formatPercent(v, 1)}`;
 }
 
 export const DashboardGauge = memo(function DashboardGauge({

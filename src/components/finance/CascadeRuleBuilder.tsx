@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useDriverStore } from '@/store/driverStore';
 import type { Driver, CascadeRule, CascadeType, ImpactType } from '@/engines/DriverCascadeEngine';
+import { formatPercent } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -89,7 +90,7 @@ export function CascadeRuleBuilder({
 
   const formatWeight = (w: number): string => {
     if (w >= 1) return `${w}x`;
-    return `${(w * 100).toFixed(0)}%`;
+    return `${formatPercent(w * 100, 0)}`;
   };
 
   return (

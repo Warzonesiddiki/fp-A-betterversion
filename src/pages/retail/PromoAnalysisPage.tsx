@@ -23,6 +23,8 @@ import {
   Scatter,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -138,9 +140,9 @@ export default function PromoAnalysisPage() {
     document.title = 'FinPlan Pro — Promo Analysis';
   }, []);
 
-  const totalPromoCost = mockPromos.reduce((s, p) => s + p.cost, 0);
-  const totalPromoRevenue = mockPromos.reduce((s, p) => s + p.revenue, 0);
-  const totalBaseline = mockPromos.reduce((s, p) => s + p.baselineRevenue, 0);
+  const totalPromoCost = roundTo(sumMoney(mockPromos.map((p) => p.cost)), 2);
+  const totalPromoRevenue = roundTo(sumMoney(mockPromos.map((p) => p.revenue)), 2);
+  const totalBaseline = roundTo(sumMoney(mockPromos.map((p) => p.baselineRevenue)), 2);
   const incrementalRevenue = totalPromoRevenue - totalBaseline;
   const promoROI =
     totalPromoCost > 0 ? ((incrementalRevenue - totalPromoCost) / totalPromoCost) * 100 : 0;
@@ -175,7 +177,7 @@ export default function PromoAnalysisPage() {
           const baseline = row.baselineRevenue as number;
           const revenue = row.revenue as number;
           const lift = baseline > 0 ? ((revenue - baseline) / baseline) * 100 : 0;
-          return <span className="text-green-400">+{lift.toFixed(0)}%</span>;
+          return <span className="text-green-400">+{formatPercent(lift, 0)}</span>;
         },
       },
       {
@@ -188,7 +190,9 @@ export default function PromoAnalysisPage() {
           const baseline = row.baselineRevenue as number;
           const roi = cost > 0 ? ((revenue - baseline - cost) / cost) * 100 : 0;
           return (
-            <span className={roi >= 0 ? 'text-green-400' : 'text-red-400'}>{roi.toFixed(0)}%</span>
+            <span className={roi >= 0 ? 'text-green-400' : 'text-red-400'}>
+              {formatPercent(roi, 0)}
+            </span>
           );
         },
       },
@@ -223,7 +227,7 @@ export default function PromoAnalysisPage() {
           formatCurrency(p.cost),
           formatCurrency(p.revenue),
           formatCurrency(p.baselineRevenue),
-          `${(((p.revenue - p.baselineRevenue - p.cost) / p.cost) * 100).toFixed(0)}%`,
+          `${formatPercent(((p.revenue - p.baselineRevenue - p.cost) / p.cost) * 100, 0)}`,
         ]),
       },
       { title: 'Promotion Analysis' }
@@ -277,10 +281,10 @@ export default function PromoAnalysisPage() {
         />
         <KPIValue
           label="Promo ROI"
-          value={`${promoROI.toFixed(0)}%`}
+          value={`${formatPercent(promoROI, 0)}`}
           trend={promoROI >= 0 ? 'up' : 'down'}
         />
-        <KPIValue label="Avg Lift" value={`+${avgLift.toFixed(0)}%`} trend="up" />
+        <KPIValue label="Avg Lift" value={`+${formatPercent(avgLift, 0)}`} trend="up" />
       </div>
 
       <div className="grid grid-cols-2 gap-6">

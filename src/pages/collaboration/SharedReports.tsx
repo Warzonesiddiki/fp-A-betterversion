@@ -25,11 +25,12 @@ import {
   Filter,
 } from 'lucide-react';
 import type { GLEntry } from '@/types';
+import { roundTo, sumMoney, formatMoney } from '@/utils/money';
 
 function computeReportStats(entries: readonly GLEntry[]) {
-  const totalDebit = entries.reduce((s, e) => s + e.debit, 0);
-  const totalCredit = entries.reduce((s, e) => s + e.credit, 0);
-  const netChange = entries.reduce((s, e) => s + e.netChange, 0);
+  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
+  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
+  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
   const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
 
   const accountMap = new Map<
@@ -169,9 +170,9 @@ export function SharedReports() {
       [
         `"${r.accountCode.replace(/"/g, '""')}"`,
         `"${r.accountName.replace(/"/g, '""')}"`,
-        r.debit.toFixed(2),
-        r.credit.toFixed(2),
-        r.netChange.toFixed(2),
+        formatMoney(r.debit),
+        formatMoney(r.credit),
+        formatMoney(r.netChange),
         r.transactions,
       ].join(',')
     );

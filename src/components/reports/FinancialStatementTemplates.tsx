@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatPercent } from '@/utils/financialFormatting';
 // =============================================================================
 // Financial Statement Templates — P&L, Balance Sheet, Cash Flow, BvA
 // =============================================================================
@@ -171,7 +172,7 @@ function StatementTable({
   };
   const fmtPct = (val: number | undefined): string => {
     if (val === undefined || val === null) return '—';
-    return `${val.toFixed(1)}%`;
+    return `${formatPercent(val, 1)}`;
   };
   return (
     <div className="mb-8" role="region" aria-label="FinancialStatementTemplates">

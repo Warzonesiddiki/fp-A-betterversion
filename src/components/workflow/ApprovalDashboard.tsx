@@ -9,6 +9,7 @@ import type {
   WorkflowStats,
   Delegation,
 } from '@/engines/WorkflowEngine';
+import { formatNumber } from '@/utils/financialFormatting';
 
 interface ApprovalDashboardProps {
   readonly requests: readonly ApprovalRequest[];
@@ -134,7 +135,8 @@ export function ApprovalDashboard({
     },
     {
       label: 'Avg Time',
-      value: stats.avgApprovalTimeHours > 0 ? `${stats.avgApprovalTimeHours.toFixed(1)}h` : 'N/A',
+      value:
+        stats.avgApprovalTimeHours > 0 ? `${formatNumber(stats.avgApprovalTimeHours, 1)}h` : 'N/A',
       color: 'text-[var(--text-secondary)]',
       bg: 'bg-[var(--bg-hover)]',
     },

@@ -7,6 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { bankingConfig } from '@/config/sectors/banking';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Landmark } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export default function BankingDashboardPage() {
   const { entries } = useGLStore();
@@ -17,15 +18,26 @@ export default function BankingDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const assets = entries
-      .filter((e) => e.accountName.toLowerCase().includes('asset'))
-      .reduce((s, e) => s + e.debit, 0);
-    const liabilities = entries
-      .filter((e) => e.accountName.toLowerCase().includes('liab'))
-      .reduce((s, e) => s + e.credit, 0);
-    const interestIncome = entries
-      .filter((e) => e.accountName.toLowerCase().includes('interest') && e.credit > 0)
-      .reduce((s, e) => s + e.credit, 0);
+    const assets = roundTo(
+      sumMoney(
+        entries.filter((e) => e.accountName.toLowerCase().includes('asset')).map((e) => e.debit)
+      ),
+      2
+    );
+    const liabilities = roundTo(
+      sumMoney(
+        entries.filter((e) => e.accountName.toLowerCase().includes('liab')).map((e) => e.credit)
+      ),
+      2
+    );
+    const interestIncome = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.accountName.toLowerCase().includes('interest') && e.credit > 0)
+          .map((e) => e.credit)
+      ),
+      2
+    );
     return { assets, liabilities, interestIncome };
   }, [entries]);
 

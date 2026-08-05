@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { formatPercent } from '@/utils/financialFormatting';
 
 interface BudgetVsActualSummaryProps {
   totalBudget: string;
@@ -51,7 +52,7 @@ export const BudgetVsActualSummary = memo(function BudgetVsActualSummary({
         />
       </div>
       <p className="mt-2 text-[10px] text-center font-bold text-slate-400 uppercase tracking-tighter">
-        {utilizationPercentage.toFixed(1)}% of budget utilized
+        {formatPercent(utilizationPercentage, 1)} of budget utilized
       </p>
     </div>
   );

@@ -22,6 +22,7 @@ import type {
 } from '@/engines/AllocationEngine';
 import { StepDownConfigPanel } from './StepDownConfigPanel';
 import { ReciprocalConfigPanel } from './ReciprocalConfigPanel';
+import { formatPercent } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -410,7 +411,7 @@ export function AllocationRuleBuilder({
             <div
               className={cn('text-xs font-medium', pctValid ? 'text-green-600' : 'text-red-600')}
             >
-              Total: {pctTotal.toFixed(2)}% {pctValid ? '\u2713' : '(must equal 100%)'}
+              Total: {formatPercent(pctTotal, 2)} {pctValid ? '\u2713' : '(must equal 100%)'}
             </div>
           )}
         </div>

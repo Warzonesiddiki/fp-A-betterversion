@@ -7,6 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { governmentConfig } from '@/config/sectors/government';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Building2 } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export function GovernmentDashboardPage() {
   const { entries } = useGLStore();
@@ -17,14 +18,30 @@ export function GovernmentDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const fundBalance = entries
-      .filter((e) => e.accountName.toLowerCase().includes('fund'))
-      .reduce((s, e) => s + e.credit - e.debit, 0);
-    const revenue = entries.filter((e) => e.credit > e.debit).reduce((s, e) => s + e.credit, 0);
-    const expenses = entries.filter((e) => e.debit > e.credit).reduce((s, e) => s + e.debit, 0);
-    const grants = entries
-      .filter((e) => e.accountName.toLowerCase().includes('grant') && e.debit > 0)
-      .reduce((s, e) => s + e.debit, 0);
+    const fundBalance = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.accountName.toLowerCase().includes('fund'))
+          .map((e) => e.credit - e.debit)
+      ),
+      2
+    );
+    const revenue = roundTo(
+      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      2
+    );
+    const expenses = roundTo(
+      sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
+      2
+    );
+    const grants = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.accountName.toLowerCase().includes('grant') && e.debit > 0)
+          .map((e) => e.debit)
+      ),
+      2
+    );
     return { fundBalance, revenue, expenses, grants };
   }, [entries]);
 

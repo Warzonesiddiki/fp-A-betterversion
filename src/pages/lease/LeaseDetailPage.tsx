@@ -34,6 +34,8 @@ import { LeaseEngine, type LeaseContract } from '@/engines/LeaseEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useLeaseStore, type LeaseInput } from '@/store/leaseStore';
 import { LeaseForm } from '@/components/lease/LeaseForm';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -142,7 +144,10 @@ function rouDepreciation(contract: LeaseContract, rouAsset: number): DepRow[] {
     const endMonth = (i + 1) * 12;
     const entry = sched[Math.min(endMonth, sched.length) - 1];
     const bookValue = entry ? entry.closingBalance : 0;
-    const depreciation = sched.slice(i * 12, endMonth).reduce((s, e) => s + e.depreciation, 0);
+    const depreciation = roundTo(
+      sumMoney(sched.slice(i * 12, endMonth).map((e) => e.depreciation)),
+      2
+    );
     return {
       year: `Year ${i + 1}`,
       bookValue: Math.round(bookValue),
@@ -226,10 +231,10 @@ export default function LeaseDetailPage() {
   );
 
   const active = LEASES.filter((l) => l.status === 'Active');
-  const totalLiability = active.reduce((s, l) => s + l.liability, 0);
-  const totalRouAsset = active.reduce((s, l) => s + l.rouAsset, 0);
+  const totalLiability = roundTo(sumMoney(active.map((l) => l.liability)), 2);
+  const totalRouAsset = roundTo(sumMoney(active.map((l) => l.rouAsset)), 2);
   const avgRate = active.length
-    ? active.reduce((s, l) => s + l.interestRate, 0) / active.length
+    ? roundTo(sumMoney(active.map((l) => l.interestRate)), 2) / active.length
     : 0;
 
   const amortColumns: Column<AmortRow>[] = [
@@ -376,7 +381,7 @@ export default function LeaseDetailPage() {
         />
         <KPIValue
           label="Avg Interest Rate"
-          value={`${avgRate.toFixed(1)}%`}
+          value={`${formatPercent(avgRate, 1)}`}
           icon={<Percent className="h-4 w-4" />}
         />
         <KPIValue
@@ -399,7 +404,7 @@ export default function LeaseDetailPage() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`}
+                  tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -437,7 +442,7 @@ export default function LeaseDetailPage() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                  tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}

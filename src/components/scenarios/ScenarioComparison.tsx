@@ -15,6 +15,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import type { Scenario } from '@/types';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   METRICS,
   BAR_COLORS,
@@ -304,7 +305,7 @@ export function ScenarioComparison({
                                     <ArrowDownRight className="h-3 w-3" />
                                   )}
                                   {pct >= 0 ? '+' : ''}
-                                  {pct.toFixed(1)}%
+                                  {formatPercent(pct, 1)}
                                 </div>
                               )}
                               {!isBase && Math.abs(pct) <= 0.01 && (

@@ -10,11 +10,12 @@ import { DataTable, Column } from '@/components/ui/DataTable';
 import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
 import { Activity, DollarSign, Users, TrendingUp } from 'lucide-react';
 import type { GLEntry } from '@/types';
+import { roundTo, sumMoney } from '@/utils/money';
 
 function computeActivityStats(entries: readonly GLEntry[]) {
-  const totalDebit = entries.reduce((s, e) => s + e.debit, 0);
-  const totalCredit = entries.reduce((s, e) => s + e.credit, 0);
-  const netChange = entries.reduce((s, e) => s + e.netChange, 0);
+  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
+  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
+  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
   const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
 
   const accountMap = new Map<

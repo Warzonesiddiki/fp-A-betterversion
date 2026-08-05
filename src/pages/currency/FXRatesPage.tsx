@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import { formatNumber } from '@/utils/financialFormatting';
 import type { ExchangeRate } from '@/types';
 
 const INITIAL_RATES: ExchangeRate[] = [
@@ -142,7 +143,7 @@ export default function FXRatesPage() {
                     <td className="px-4 py-3 font-mono">{r.fromCurrency}</td>
                     <td className="px-4 py-3 font-mono">{r.toCurrency}</td>
                     <td className="px-4 py-3 text-right tabular-nums font-medium">
-                      {r.rate.toFixed(4)}
+                      {formatNumber(r.rate, 4)}
                     </td>
                     <td className="px-4 py-3 text-slate-400">{r.effectiveDate}</td>
                     <td className="px-4 py-3 text-right">

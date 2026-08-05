@@ -16,6 +16,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 
 const getRandom = () => Math.random();
 
@@ -32,6 +33,7 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -60,13 +62,22 @@ export default function ProductionDashboardPage() {
 
   const data = useMemo(() => {
     if (entries.length === 0) return null;
-    const revenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const cogs = entries
-      .filter((e) => (e.accountCode || '').startsWith('5'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const margin = revenue > 0 ? ((revenue - cogs) / revenue) * 100 : 0;
+    const revenue = roundTo(
+      sumMoney(
+        entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.credit - e.debit)
+      ),
+      2
+    );
+    const cogs = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('5'))
+          .map((e) => Math.abs(e.debit - e.credit))
+      ),
+      2
+    );
+    const margin =
+      revenue > 0 ? roundTo(divideMoney(subtractMoney(revenue, cogs), revenue).times(100), 2) : 0;
     const lines: ProductionLine[] = [
       {
         line: 'Line A — Assembly',
@@ -113,8 +124,8 @@ export default function ProductionDashboardPage() {
           l.line,
           l.status,
           l.output.toString(),
-          l.efficiency.toFixed(1) + '%',
-          l.downtime.toFixed(1) + '%',
+          formatPercent(l.efficiency, 1),
+          formatPercent(l.downtime, 1),
         ]),
       },
       { title: 'Production Dashboard Report', companyName: 'FinPlan Pro' }
@@ -130,8 +141,8 @@ export default function ProductionDashboardPage() {
           l.line,
           l.status,
           l.output.toString(),
-          l.efficiency.toFixed(1) + '%',
-          l.downtime.toFixed(1) + '%',
+          formatPercent(l.efficiency, 1),
+          formatPercent(l.downtime, 1),
         ]),
       },
       { title: 'Production_Dashboard_Report' }
@@ -184,7 +195,7 @@ export default function ProductionDashboardPage() {
                 : 'text-red-400'
           }
         >
-          {r.efficiency.toFixed(1)}%
+          {formatPercent(r.efficiency, 1)}
         </span>
       ),
       sortable: true,
@@ -193,7 +204,7 @@ export default function ProductionDashboardPage() {
       key: 'downtime',
       header: 'Downtime',
       align: 'right',
-      render: (r) => r.downtime.toFixed(1) + '%',
+      render: (r) => formatPercent(r.downtime, 1),
       sortable: true,
     },
   ];
@@ -227,10 +238,10 @@ export default function ProductionDashboardPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPIValue label="Revenue" value={formatCurrency(data.revenue)} />
             <KPIValue label="COGS" value={formatCurrency(data.cogs)} />
-            <KPIValue label="Gross Margin" value={`${data.margin.toFixed(1)}%`} />
+            <KPIValue label="Gross Margin" value={`${formatPercent(data.margin, 1)}`} />
             <KPIValue
               label="OEE"
-              value={`${data.oee.toFixed(1)}%`}
+              value={`${formatPercent(data.oee, 1)}`}
               icon={<Gauge className="h-4 w-4" />}
             />
           </div>

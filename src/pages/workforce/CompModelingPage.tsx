@@ -21,6 +21,8 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -63,19 +65,21 @@ export default function CompModelingPage() {
     const years = [2026, 2027, 2028, 2029, 2030];
     return years.map((year, i) => ({
       year: String(year),
-      current: compData.reduce((s, l) => s + l.totalCost, 0) * Math.pow(1 + meritPct / 100, i),
-      projected: compData.reduce((s, l) => s + l.newCost, 0) * Math.pow(1 + meritPct / 100, i),
+      current:
+        roundTo(sumMoney(compData.map((l) => l.totalCost)), 2) * Math.pow(1 + meritPct / 100, i),
+      projected:
+        roundTo(sumMoney(compData.map((l) => l.newCost)), 2) * Math.pow(1 + meritPct / 100, i),
     }));
   }, [compData, meritPct]);
 
   const totals = useMemo(() => {
-    const currentTotal = compData.reduce((s, l) => s + l.totalCost, 0);
-    const newTotal = compData.reduce((s, l) => s + l.newCost, 0);
+    const currentTotal = roundTo(sumMoney(compData.map((l) => l.totalCost)), 2);
+    const newTotal = roundTo(sumMoney(compData.map((l) => l.newCost)), 2);
     return {
       currentTotal,
       newTotal,
       budgetImpact: newTotal - currentTotal,
-      totalHeadcount: compData.reduce((s, l) => s + l.headcount, 0),
+      totalHeadcount: roundTo(sumMoney(compData.map((l) => l.headcount)), 2),
     };
   }, [compData]);
 
@@ -251,7 +255,7 @@ export default function CompModelingPage() {
             <LineChart data={projections}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
               <XAxis dataKey="year" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1000000).toFixed(0)}M`} />
+              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
                 contentStyle={{
                   background: '#1e293b',

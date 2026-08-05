@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { Download, FileText, Calendar, DollarSign, Clock, ArrowRight } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 import {
   ResponsiveContainer,
   BarChart,
@@ -23,6 +24,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { LeaseEngine, type LeaseContract } from '@/engines/LeaseEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useLeaseStore, type LeaseInput } from '@/store/leaseStore';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -93,8 +95,8 @@ export default function LeaseDashboard() {
   const leaseInputs = useLeaseStore((s) => s.leases);
   const LEASES = useMemo(() => leaseInputs.map(summarize), [leaseInputs]);
   const activeLeases = LEASES.filter((l) => l.status === 'Active' || l.status === 'Expiring Soon');
-  const totalLiability = activeLeases.reduce((s, l) => s + l.liability, 0);
-  const totalMonthlyPayment = activeLeases.reduce((s, l) => s + l.monthlyPayment, 0);
+  const totalLiability = roundTo(sumMoney(activeLeases.map((l) => l.liability)), 2);
+  const totalMonthlyPayment = roundTo(sumMoney(activeLeases.map((l) => l.monthlyPayment)), 2);
   const avgTermMonths = Math.round(
     activeLeases.reduce((s, l) => s + monthsBetween(AS_OF, new Date(l.endDate)), 0) /
       Math.max(1, activeLeases.length)
@@ -104,15 +106,17 @@ export default function LeaseDashboard() {
     () => [
       {
         name: 'Operating',
-        value: activeLeases
-          .filter((l) => l.type === 'Operating')
-          .reduce((s, l) => s + l.liability, 0),
+        value: roundTo(
+          sumMoney(activeLeases.filter((l) => l.type === 'Operating').map((l) => l.liability)),
+          2
+        ),
       },
       {
         name: 'Finance',
-        value: activeLeases
-          .filter((l) => l.type === 'Finance')
-          .reduce((s, l) => s + l.liability, 0),
+        value: roundTo(
+          sumMoney(activeLeases.filter((l) => l.type === 'Finance').map((l) => l.liability)),
+          2
+        ),
       },
     ],
     [activeLeases]
@@ -234,7 +238,7 @@ export default function LeaseDashboard() {
                   innerRadius={60}
                   outerRadius={100}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${formatPercent(percent ?? 0, 0)}`}
                 >
                   {typeBreakdown.map((_, idx) => (
                     <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
@@ -261,7 +265,7 @@ export default function LeaseDashboard() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`}
+                  tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}

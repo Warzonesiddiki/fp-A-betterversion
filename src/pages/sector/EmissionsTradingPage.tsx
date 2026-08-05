@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Leaf } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export default function EmissionsTradingPage() {
   const { entries } = useGLStore();
@@ -21,10 +22,13 @@ export default function EmissionsTradingPage() {
         e.accountName.toLowerCase().includes('emission') ||
         e.accountName.toLowerCase().includes('carbon')
     );
-    const creditValue = credits.reduce((s, e) => s + e.debit, 0);
-    const offsetCost = entries
-      .filter((e) => e.accountName.toLowerCase().includes('offset'))
-      .reduce((s, e) => s + e.debit, 0);
+    const creditValue = roundTo(sumMoney(credits.map((e) => e.debit)), 2);
+    const offsetCost = roundTo(
+      sumMoney(
+        entries.filter((e) => e.accountName.toLowerCase().includes('offset')).map((e) => e.debit)
+      ),
+      2
+    );
     return { creditValue, offsetCost, count: credits.length };
   }, [entries]);
 

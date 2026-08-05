@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { Shield, Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
+import { formatNumber } from '@/utils/financialFormatting';
 
 type HedgeStatus = 'Active' | 'Expired' | 'Settled';
 
@@ -219,7 +220,7 @@ export default function HedgeManagementPage() {
                       {formatCurrency(h.notionalAmount)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">
-                      {h.contractedRate.toFixed(4)}
+                      {formatNumber(h.contractedRate, 4)}
                     </td>
                     <td className="px-4 py-3 text-slate-400">{h.maturityDate}</td>
                     <td className="px-4 py-3">

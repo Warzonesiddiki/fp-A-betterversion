@@ -11,6 +11,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { cn } from '@/utils/cn';
+import { formatCompact, formatNumber } from '@/utils/financialFormatting';
 
 export interface TornadoVariable {
   name: string;
@@ -70,10 +71,8 @@ export const TornadoChart = memo(function TornadoChart({
   const maxAbs = Math.max(...chartData.map((d) => d.absMax), 1);
 
   const formatCurrency = (v: number) => {
-    if (Math.abs(v) >= 1e9) return `${(v / 1e9).toFixed(1)}B`;
-    if (Math.abs(v) >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
-    if (Math.abs(v) >= 1e3) return `${(v / 1e3).toFixed(1)}K`;
-    return v.toFixed(0);
+    if (Math.abs(v) >= 1e3) return formatCompact(v);
+    return formatNumber(v, 0);
   };
 
   return (

@@ -8,6 +8,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { BarChart3, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatPercent } from '@/utils/financialFormatting';
+import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -16,6 +18,72 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+/** Money-primitive P&L statement totals (GAP-1 F-0006). The three account-class
+ *  sums (Revenue/COGS/Expenses) accumulate via decimal to keep a balanced
+ *  ledger on the cent; grossProfit/netIncome are subtractions; grossMargin
+ *  is a percentage computed via divideMoney so 1/3 * 100 lands on 33.33 exactly. */
+export interface ProfitLossReport {
+  totalRevenue: number;
+  totalCOGS: number;
+  totalExpenses: number;
+  grossProfit: number;
+  netIncome: number;
+  grossMargin: number;
+  netMargin: number;
+  entryCount: number;
+}
+
+export function computeProfitLoss(
+  entries: readonly { accountCode?: string; debit: number; credit: number; period?: string; date: string }[],
+  period?: string
+): ProfitLossReport {
+  const filtered = period
+    ? entries.filter((e) => (e.period || e.date.slice(0, 7)) <= period)
+    : entries;
+  const totalRevenue = roundTo(
+    sumMoney(
+      filtered
+        .filter((e) => (e.accountCode || '').startsWith('4'))
+        .map((e) => e.credit - e.debit)
+    ),
+    2
+  );
+  const totalCOGS = roundTo(
+    sumMoney(
+      filtered
+        .filter((e) => (e.accountCode || '').startsWith('5'))
+        .map((e) => Math.abs(e.debit - e.credit))
+    ),
+    2
+  );
+  const totalExpenses = roundTo(
+    sumMoney(
+      filtered
+        .filter((e) => (e.accountCode || '').startsWith('6'))
+        .map((e) => Math.abs(e.debit - e.credit))
+    ),
+    2
+  );
+  const grossProfit = roundTo(subtractMoney(totalRevenue, totalCOGS), 2);
+  const netIncome = roundTo(subtractMoney(grossProfit, totalExpenses), 2);
+  const grossMargin =
+    totalRevenue > 0
+      ? roundTo(divideMoney(grossProfit, totalRevenue).times(100), 2)
+      : 0;
+  const netMargin =
+    totalRevenue > 0 ? roundTo(divideMoney(netIncome, totalRevenue).times(100), 2) : 0;
+  return {
+    totalRevenue,
+    totalCOGS,
+    totalExpenses,
+    grossProfit,
+    netIncome,
+    grossMargin,
+    netMargin,
+    entryCount: filtered.length,
+  };
 }
 
 export default function ProfitLossPage() {
@@ -34,30 +102,7 @@ export default function ProfitLossPage() {
 
   const report = useMemo(() => {
     if (entries.length === 0) return null;
-    const filtered = entries.filter((e) => (e.period || e.date.slice(0, 7)) <= period);
-    const totalRevenue = filtered
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const totalCOGS = filtered
-      .filter((e) => (e.accountCode || '').startsWith('5'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const totalExpenses = filtered
-      .filter((e) => (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const grossProfit = totalRevenue - totalCOGS;
-    const netIncome = grossProfit - totalExpenses;
-    const grossMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
-    const netMargin = totalRevenue > 0 ? (netIncome / totalRevenue) * 100 : 0;
-    return {
-      totalRevenue,
-      totalCOGS,
-      totalExpenses,
-      grossProfit,
-      netIncome,
-      grossMargin,
-      netMargin,
-      entryCount: filtered.length,
-    };
+    return computeProfitLoss(entries, period);
   }, [entries, period]);
 
   const handleExportPDF = () => {
@@ -198,7 +243,7 @@ export default function ProfitLossPage() {
                   Gross Margin
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-xs" role="gridcell">
-                  {report.grossMargin.toFixed(1)}%
+                  {formatPercent(report.grossMargin, 1)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -234,7 +279,7 @@ export default function ProfitLossPage() {
                   }
                   role="gridcell"
                 >
-                  {report.netMargin.toFixed(1)}%
+                  {formatPercent(report.netMargin, 1)}
                 </td>
               </tr>
             </tbody>

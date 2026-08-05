@@ -4,21 +4,22 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { DriverSlider } from '@/components/ui/DriverSlider';
 import { CascadeRuleBuilder } from '@/components/finance/CascadeRuleBuilder';
 import type { Driver, ImpactAnalysis, CascadeRule } from '@/engines/DriverCascadeEngine';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 export function formatImpact(value: number): string {
-  if (Math.abs(value) >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-  if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
+  if (Math.abs(value) >= 1000) return formatCompact(value);
+  if (value == null) return '—';
+  return `$${formatNumber(value, 0)}`;
 }
 
 export function formatDriverValue(value: number, unit: string): string {
   switch (unit) {
     case 'percentage':
-      return `${value.toFixed(1)}%`;
+      return `${formatPercent(value, 1)}`;
     case 'index':
-      return value.toFixed(1);
+      return formatNumber(value, 1);
     case 'ratio':
-      return value.toFixed(2);
+      return formatNumber(value, 2);
     default:
       return value.toLocaleString();
   }
@@ -161,7 +162,7 @@ export function DriverCard({
                 </div>
                 <div>
                   <div className="font-medium">Change</div>
-                  <div>{impact.percentageChange.toFixed(1)}%</div>
+                  <div>{formatPercent(impact.percentageChange, 1)}</div>
                 </div>
               </div>
               {Object.entries(impact.impactByCube).length > 0 && (

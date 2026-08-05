@@ -1,4 +1,5 @@
 import type { Scenario, ScenarioMetrics } from '@/types';
+import { formatPercent } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -126,7 +127,7 @@ export function fmtValue(value: number, format: MetricDef['format']): string {
     }).format(value);
   }
   if (format === 'percent') {
-    return `${value.toFixed(1)}%`;
+    return formatPercent(value, 1);
   }
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
 }

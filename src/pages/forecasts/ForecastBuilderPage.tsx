@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { TrendingUp, FileText, Table as TableIcon, Brain, BarChart3 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { sumMoney, roundTo } from '@/utils/money';
 import {
   ResponsiveContainer,
   LineChart,
@@ -22,6 +23,7 @@ import {
   AreaChart,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatCompact } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -65,9 +67,10 @@ export default function ForecastBuilderPage() {
     document.title = 'FinPlan Pro — Forecast Builder';
   }, []);
 
-  const totalForecast = historicalData
-    .filter((d) => d.actual === null)
-    .reduce((s, d) => s + d.forecast, 0);
+  const totalForecast = roundTo(
+    sumMoney(historicalData.filter((d) => d.actual === null).map((d) => d.forecast)),
+    2
+  );
   const avgConfidence = 87;
   const _trendDirection = 'up';
 
@@ -208,7 +211,7 @@ export default function ForecastBuilderPage() {
               <AreaChart data={historicalData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="month" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(1)}M`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   formatter={(v: any) => formatCurrency(v)}

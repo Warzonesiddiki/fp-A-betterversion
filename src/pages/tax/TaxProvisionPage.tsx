@@ -34,6 +34,7 @@ import {
 } from 'recharts';
 import { WaterfallChart, type WaterfallDataPoint } from '@/components/charts/WaterfallChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -139,7 +140,7 @@ export default function TaxProvisionPage() {
         rows: data.jurisdictions.map((j) => [
           j.jurisdiction,
           formatCurrency(j.pretaxIncome),
-          j.taxRate.toFixed(2) + '%',
+          formatPercent(j.taxRate, 2),
           formatCurrency(j.provision),
           formatCurrency(j.deferred),
           formatCurrency(j.current),
@@ -157,7 +158,7 @@ export default function TaxProvisionPage() {
         rows: data.jurisdictions.map((j) => [
           j.jurisdiction,
           formatCurrency(j.pretaxIncome),
-          j.taxRate.toFixed(2) + '%',
+          formatPercent(j.taxRate, 2),
           formatCurrency(j.provision),
           formatCurrency(j.deferred),
           formatCurrency(j.current),
@@ -180,7 +181,7 @@ export default function TaxProvisionPage() {
       key: 'taxRate',
       header: 'Tax Rate',
       align: 'right',
-      render: (_value, row) => Number(row.taxRate ?? 0).toFixed(2) + '%',
+      render: (_value, row) => formatPercent(Number(row.taxRate ?? 0), 2),
       sortable: true,
     },
     {
@@ -244,7 +245,7 @@ export default function TaxProvisionPage() {
         />
         <KPIValue
           label="Effective Rate"
-          value={`${data.effectiveRate.toFixed(1)}%`}
+          value={`${formatPercent(data.effectiveRate, 1)}`}
           icon={<Percent className="h-4 w-4" />}
         />
         <KPIValue
@@ -266,7 +267,7 @@ export default function TaxProvisionPage() {
                 <YAxis
                   stroke="#94a3b8"
                   fontSize={12}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
                   formatter={(v: any) => formatCurrency(v)}
@@ -307,7 +308,7 @@ export default function TaxProvisionPage() {
                   tickFormatter={(v) => `${v}%`}
                 />
                 <Tooltip
-                  formatter={(v: any) => `${v.toFixed(1)}%`}
+                  formatter={(v: any) => `${formatPercent(v, 1)}`}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Line

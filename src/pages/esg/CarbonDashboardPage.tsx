@@ -20,6 +20,7 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatTons(n: number): string {
   return `${n.toLocaleString()} tCO₂e`;
@@ -113,19 +114,19 @@ export default function CarbonDashboardPage() {
         />
         <KPIValue
           label="YoY Change"
-          value={`${metrics.yoyChange.toFixed(1)}%`}
+          value={`${formatPercent(metrics.yoyChange, 1)}`}
           icon={<TrendingDown className="h-4 w-4" />}
           trend="down"
         />
         <KPIValue
           label="vs Target"
-          value={`${metrics.targetGap > 0 ? '+' : ''}${metrics.targetGap.toFixed(1)}%`}
+          value={`${metrics.targetGap > 0 ? '+' : ''}${formatPercent(metrics.targetGap, 1)}`}
           icon={<Target className="h-4 w-4" />}
           trend={metrics.targetGap > 0 ? 'down' : 'up'}
         />
         <KPIValue
           label="Carbon Intensity"
-          value={`${metrics.intensity.toFixed(0)} tCO₂e/$M`}
+          value={`${formatNumber(metrics.intensity, 0)} tCO₂e/$M`}
           icon={<Factory className="h-4 w-4" />}
         />
       </div>
@@ -140,7 +141,7 @@ export default function CarbonDashboardPage() {
               <BarChart data={SCOPE_DATA}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="scope" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `${v ? formatCompact(v) : '—'}`} />
                 <Tooltip
                   contentStyle={{
                     background: '#1e293b',

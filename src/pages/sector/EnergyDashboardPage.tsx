@@ -7,6 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { energyConfig } from '@/config/sectors/energy';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Zap } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export default function EnergyDashboardPage() {
   const { entries } = useGLStore();
@@ -17,17 +18,30 @@ export default function EnergyDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const revenue = entries.filter((e) => e.credit > e.debit).reduce((s, e) => s + e.credit, 0);
-    const capex = entries
-      .filter(
-        (e) =>
-          e.accountName.toLowerCase().includes('capital') ||
-          e.accountName.toLowerCase().includes('capex')
-      )
-      .reduce((s, e) => s + e.debit, 0);
-    const opex = entries
-      .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('capital'))
-      .reduce((s, e) => s + e.debit, 0);
+    const revenue = roundTo(
+      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      2
+    );
+    const capex = roundTo(
+      sumMoney(
+        entries
+          .filter(
+            (e) =>
+              e.accountName.toLowerCase().includes('capital') ||
+              e.accountName.toLowerCase().includes('capex')
+          )
+          .map((e) => e.debit)
+      ),
+      2
+    );
+    const opex = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('capital'))
+          .map((e) => e.debit)
+      ),
+      2
+    );
     return { revenue, capex, opex };
   }, [entries]);
 

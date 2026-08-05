@@ -22,6 +22,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
 
 function fmt(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -57,13 +58,13 @@ export default function ThreeStatementDashboardPage() {
     const interest = filtered.filter((e) => (e.accountCode || '').startsWith('7'));
     const tax = filtered.filter((e) => (e.accountCode || '').startsWith('8'));
 
-    const totalRevenue = revenue.reduce((s, e) => s + (e.debit - e.credit), 0);
-    const totalCOGS = cogs.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    const totalRevenue = roundTo(sumMoney(revenue.map((e) => e.debit - e.credit)), 2);
+    const totalCOGS = roundTo(sumMoney(cogs.map((e) => Math.abs(e.debit - e.credit))), 2);
     const grossProfit = totalRevenue - totalCOGS;
-    const totalOpex = opex.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    const totalOpex = roundTo(sumMoney(opex.map((e) => Math.abs(e.debit - e.credit))), 2);
     const operatingIncome = grossProfit - totalOpex;
-    const totalInterest = interest.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const totalTax = tax.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    const totalInterest = roundTo(sumMoney(interest.map((e) => Math.abs(e.debit - e.credit))), 2);
+    const totalTax = roundTo(sumMoney(tax.map((e) => Math.abs(e.debit - e.credit))), 2);
     const netIncome = operatingIncome - totalInterest - totalTax;
 
     const income: IncomeStatementData = {
@@ -114,21 +115,36 @@ export default function ThreeStatementDashboardPage() {
     const liabilities = filtered.filter((e) => (e.accountCode || '').startsWith('2'));
     const equity = filtered.filter((e) => (e.accountCode || '').startsWith('3'));
 
-    const totalAssets = assets.reduce((s, e) => s + (e.debit - e.credit), 0);
-    const totalLiabilities = liabilities.reduce((s, e) => s + (e.credit - e.debit), 0);
-    const totalEquity = equity.reduce((s, e) => s + (e.credit - e.debit), 0);
+    const totalAssets = roundTo(sumMoney(assets.map((e) => e.debit - e.credit)), 2);
+    const totalLiabilities = roundTo(sumMoney(liabilities.map((e) => e.credit - e.debit)), 2);
+    const totalEquity = roundTo(sumMoney(equity.map((e) => e.credit - e.debit)), 2);
 
     const bs: BalanceSheetData = {
       currentAssets: [],
-      cash: filtered
-        .filter((e) => e.accountCode === '1000')
-        .reduce((s, e) => s + (e.debit - e.credit), 0),
-      accountsReceivable: filtered
-        .filter((e) => e.accountCode === '1100')
-        .reduce((s, e) => s + (e.debit - e.credit), 0),
-      inventory: filtered
-        .filter((e) => e.accountCode === '1200')
-        .reduce((s, e) => s + (e.debit - e.credit), 0),
+      cash: roundTo(
+        sumMoney(
+          filtered
+            .filter((e) => e.accountCode === '1000')
+            .map((e) => e.debit - e.credit)
+        ),
+        2
+      ),
+      accountsReceivable: roundTo(
+        sumMoney(
+          filtered
+            .filter((e) => e.accountCode === '1100')
+            .map((e) => e.debit - e.credit)
+        ),
+        2
+      ),
+      inventory: roundTo(
+        sumMoney(
+          filtered
+            .filter((e) => e.accountCode === '1200')
+            .map((e) => e.debit - e.credit)
+        ),
+        2
+      ),
       prepaidExpenses: 0,
       otherCurrentAssets: 0,
       totalCurrentAssets: 0,
@@ -178,9 +194,9 @@ export default function ThreeStatementDashboardPage() {
       (e) => (e.accountCode || '').startsWith('2') || (e.accountCode || '').startsWith('3')
     );
 
-    const netOps = operating.reduce((s, e) => s + (e.debit - e.credit), 0);
-    const netInv = investing.reduce((s, e) => s + (e.debit - e.credit), 0);
-    const netFin = financing.reduce((s, e) => s + (e.debit - e.credit), 0);
+    const netOps = roundTo(sumMoney(operating.map((e) => e.debit - e.credit)), 2);
+    const netInv = roundTo(sumMoney(investing.map((e) => e.debit - e.credit)), 2);
+    const netFin = roundTo(sumMoney(financing.map((e) => e.debit - e.credit)), 2);
     const netChange = netOps + netInv + netFin;
 
     const cf: CashFlowData = {
@@ -363,13 +379,13 @@ export default function ThreeStatementDashboardPage() {
             <div className="flex justify-between">
               <span>Interest</span>
               <span className="text-red-600">
-                {fmt(incomeStatement.interestExpense.reduce((s, e) => s + e.amount, 0))}
+                {fmt(roundTo(sumMoney(incomeStatement.interestExpense.map((e) => e.amount)), 2))}
               </span>
             </div>
             <div className="flex justify-between">
               <span>Tax</span>
               <span className="text-red-600">
-                {fmt(incomeStatement.taxExpense.reduce((s, e) => s + e.amount, 0))}
+                {fmt(roundTo(sumMoney(incomeStatement.taxExpense.map((e) => e.amount)), 2))}
               </span>
             </div>
             <div className="flex justify-between font-bold border-t pt-2 text-base">

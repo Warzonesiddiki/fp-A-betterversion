@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
+import { formatPercent } from '@/utils/financialFormatting';
 
 import {
   Cpu,
@@ -278,7 +279,7 @@ export function AIIntelligencePage() {
                   Avg Confidence
                 </p>
                 <p className="text-2xl font-bold text-purple-700 dark:text-purple-300 mt-1">
-                  {results.length === 0 ? '—' : `${(avgConfidence * 100).toFixed(1)}%`}
+                  {results.length === 0 ? '—' : `${formatPercent(avgConfidence, 1)}`}
                 </p>
               </div>
               <TrendingUp
@@ -418,7 +419,7 @@ export function AIIntelligencePage() {
                             {r.sentiment}
                           </span>
                           <span className="text-slate-500 dark:text-slate-400 font-mono">
-                            {(r.confidence * 100).toFixed(1)}%
+                            {formatPercent(r.confidence * 100, 1)}
                           </span>
                         </div>
                       </div>
@@ -527,7 +528,7 @@ export function AIIntelligencePage() {
                           {r.sentiment}
                         </span>
                         <span className="text-slate-500 dark:text-slate-400 font-mono w-14 text-right">
-                          {(r.confidence * 100).toFixed(1)}%
+                          {formatPercent(r.confidence * 100, 1)}
                         </span>
                       </div>
                     </div>
@@ -568,16 +569,16 @@ export function AIIntelligencePage() {
                     <div
                       className="bg-green-700 dark:bg-green-600 flex items-center justify-center text-[10px] font-medium text-white"
                       style={{ width: `${positivePct}%` }}
-                      aria-label={`Positive ${positiveCount} (${positivePct.toFixed(1)}%)`}
+                      aria-label={`Positive ${positiveCount} (${formatPercent(positivePct, 1)})`}
                     >
-                      {positivePct >= 10 ? `${positivePct.toFixed(0)}%` : ''}
+                      {positivePct >= 10 ? `${formatPercent(positivePct, 0)}` : ''}
                     </div>
                     <div
                       className="bg-red-700 dark:bg-red-600 flex items-center justify-center text-[10px] font-medium text-white"
                       style={{ width: `${negativePct}%` }}
-                      aria-label={`Negative ${negativeCount} (${negativePct.toFixed(1)}%)`}
+                      aria-label={`Negative ${negativeCount} (${formatPercent(negativePct, 1)})`}
                     >
-                      {negativePct >= 10 ? `${negativePct.toFixed(0)}%` : ''}
+                      {negativePct >= 10 ? `${formatPercent(negativePct, 0)}` : ''}
                     </div>
                     <div
                       className="bg-slate-300 dark:bg-slate-600 flex items-center justify-center text-[10px] font-medium text-slate-700 dark:text-slate-200"
@@ -587,7 +588,7 @@ export function AIIntelligencePage() {
                       aria-label={`Other ${results.length - positiveCount - negativeCount}`}
                     >
                       {100 - positivePct - negativePct >= 10
-                        ? `${(100 - positivePct - negativePct).toFixed(0)}%`
+                        ? `${formatPercent(100 - positivePct - negativePct, 0)}`
                         : ''}
                     </div>
                   </div>
@@ -643,7 +644,7 @@ export function AIIntelligencePage() {
                   <li>
                     Average model confidence:{' '}
                     <strong className="text-slate-900 dark:text-slate-100">
-                      {(avgConfidence * 100).toFixed(1)}%
+                      {formatPercent(avgConfidence * 100, 1)}
                     </strong>
                     .
                   </li>

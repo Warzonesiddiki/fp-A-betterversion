@@ -34,6 +34,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { RetailEngine } from '@/engines/RetailEngine';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = [
   {
@@ -100,13 +101,13 @@ const columns: Column[] = [
     key: 'margin',
     header: 'Net Margin',
     align: 'right',
-    render: (v) => `${(v as number).toFixed(1)}%`,
+    render: (v) => `${formatPercent(v as number, 1)}`,
   },
   {
     key: 'laborPercent',
     header: 'Labor %',
     align: 'right',
-    render: (v) => `${(v as number).toFixed(1)}%`,
+    render: (v) => `${formatPercent(v as number, 1)}`,
   },
 ];
 
@@ -179,7 +180,7 @@ export default function StorePerformancePage() {
         />
         <KPIValue
           label="Avg Net Margin"
-          value={`${stats.avgNetMargin.toFixed(1)}%`}
+          value={`${formatPercent(stats.avgNetMargin, 1)}`}
           change={1.4}
           changeLabel="portfolio benchmark"
           trend="up"
@@ -229,7 +230,7 @@ export default function StorePerformancePage() {
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`}
+                    tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}

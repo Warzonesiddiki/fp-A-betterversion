@@ -32,7 +32,7 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
@@ -145,6 +145,54 @@ const categoryData = [
 
 const _COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
+export interface CapExProjectLike {
+  budget: number;
+  actual: number;
+}
+
+/** Money-primitive CapEx totals (GAP-1 F-0006).
+ *  totalBudget/totalActual were raw reduce `+`; totalVariance was
+ *  a − b. Routing through sumMoney/subtractMoney+roundTo keeps the
+ *  dashboard totals exact to the cent. */
+export interface CapExTotals {
+  totalBudget: number;
+  totalActual: number;
+  totalVariance: number;
+  budgetUtilization: number;
+}
+
+export function computeCapExTotals(projects: readonly CapExProjectLike[]): CapExTotals {
+  const totalBudget = roundTo(sumMoney(projects.map((p) => p.budget)), 2);
+  const totalActual = roundTo(sumMoney(projects.map((p) => p.actual)), 2);
+  const totalVariance = roundTo(subtractMoney(totalBudget, totalActual), 2);
+  // Use divideMoney so 0.3/0.4*100 lands on 75 exactly (raw 0.3/0.4 = 0.74999…).
+  const budgetUtilization =
+    totalBudget > 0 ? roundTo(divideMoney(totalActual, totalBudget).times(100), 2) : 0;
+  return { totalBudget, totalActual, totalVariance, budgetUtilization };
+}
+
+/** Per-project variance (budget − actual) — exact decimal (GAP-1 F-0006). */
+export function projectVarianceLike(p: CapExProjectLike): number {
+  return roundTo(subtractMoney(p.budget, p.actual), 2);
+}
+
+/** Sum of |debit − credit| for GL entries whose account code starts with
+ *  the given prefix (CapEx = '1'). Exact decimal (GAP-1 F-0006). */
+export function sumGLCapexMovement(
+  entries: ReadonlyArray<{ accountCode?: string; debit: number; credit: number }>,
+  prefix = '1'
+): number {
+  if (entries.length === 0) return 0;
+  return roundTo(
+    sumMoney(
+      entries
+        .filter((e) => (e.accountCode || '').startsWith(prefix))
+        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
+    ),
+    2
+  );
+}
+
 export default function CapExDashboard() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
@@ -153,23 +201,11 @@ export default function CapExDashboard() {
     document.title = 'FinPlan Pro - Capital Expenditures';
   }, []);
 
-  const _glCapex = useMemo(() => {
-    if (entries.length === 0) return 0;
-    return roundTo(
-      sumMoney(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('1'))
-          .map((e) => Math.abs(e.debit - e.credit))
-      ),
-      2
-    );
-  }, [entries]);
+  const _glCapex = useMemo(() => sumGLCapexMovement(entries), [entries]);
 
-  const totalBudget = roundTo(sumMoney(mockProjects.map((p) => p.budget)), 2);
-  const totalActual = roundTo(sumMoney(mockProjects.map((p) => p.actual)), 2);
-  const totalVariance = roundTo(subtractMoney(totalBudget, totalActual), 2);
+  const { totalBudget, totalActual, totalVariance, budgetUtilization } =
+    computeCapExTotals(mockProjects);
   const ytdSpend = totalActual;
-  const budgetUtilization = totalBudget > 0 ? (totalActual / totalBudget) * 100 : 0;
   const pendingCount = mockProjects.filter((p) => p.status === 'Pending').length;
   const inProgressCount = mockProjects.filter((p) => p.status === 'In Progress').length;
   const completedCount = mockProjects.filter((p) => p.status === 'Completed').length;

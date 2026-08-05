@@ -17,6 +17,7 @@ import {
   Building,
 } from 'lucide-react';
 import type { GLEntry } from '@/types';
+import { roundTo, sumMoney } from '@/utils/money';
 
 const LEASE_PREFIXES = ['17', '23'];
 
@@ -52,9 +53,9 @@ function isLeaseEntry(e: GLEntry): boolean {
 
 function computeLeaseStats(entries: readonly GLEntry[]) {
   const leaseEntries = entries.filter(isLeaseEntry);
-  const totalDebit = leaseEntries.reduce((s, e) => s + e.debit, 0);
-  const totalCredit = leaseEntries.reduce((s, e) => s + e.credit, 0);
-  const netChange = leaseEntries.reduce((s, e) => s + e.netChange, 0);
+  const totalDebit = roundTo(sumMoney(leaseEntries.map((e) => e.debit)), 2);
+  const totalCredit = roundTo(sumMoney(leaseEntries.map((e) => e.credit)), 2);
+  const netChange = roundTo(sumMoney(leaseEntries.map((e) => e.netChange)), 2);
   const uniqueAccounts = new Set(leaseEntries.map((e) => e.accountCode)).size;
 
   const activeLeaseCodes = new Set(
@@ -147,15 +148,21 @@ export function LeaseAccountingPage() {
 
   const totalROU = useMemo(
     () =>
-      stats.accountBreakdown.filter((r) => r.isROU).reduce((s, r) => s + Math.abs(r.netChange), 0),
+      roundTo(
+        sumMoney(stats.accountBreakdown.filter((r) => r.isROU).map((r) => Math.abs(r.netChange))),
+        2
+      ),
     [stats.accountBreakdown]
   );
 
   const totalLiability = useMemo(
     () =>
-      stats.accountBreakdown
-        .filter((r) => r.isLiability)
-        .reduce((s, r) => s + Math.abs(r.netChange), 0),
+      roundTo(
+        sumMoney(
+          stats.accountBreakdown.filter((r) => r.isLiability).map((r) => Math.abs(r.netChange))
+        ),
+        2
+      ),
     [stats.accountBreakdown]
   );
 

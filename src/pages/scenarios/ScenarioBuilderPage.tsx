@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import { VarianceChart } from '@/components/charts/VarianceChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { formatCompact } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -379,7 +380,7 @@ export default function ScenarioBuilderPage() {
                 <BarChart data={comparisonData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                   <XAxis dataKey="month" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${(v / 1e6).toFixed(1)}M`} />
+                  <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                     formatter={(v: any) => formatCurrency(v)}

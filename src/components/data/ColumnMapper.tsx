@@ -1,5 +1,6 @@
 import React from 'react';
 import type { AutoColumnMapping, TargetField } from '@/engines/ExcelImportEngine';
+import { formatPercent } from '@/utils/financialFormatting';
 
 interface ColumnMapperProps {
   mappings: AutoColumnMapping[];
@@ -105,7 +106,7 @@ export const ColumnMapper: React.FC<ColumnMapperProps> = ({
                   <span
                     className={`text-xs px-2 py-0.5 rounded border ${confidenceBadge(m.confidence)} ${confidenceColor(m.confidence)}`}
                   >
-                    {(m.confidence * 100).toFixed(0)}%
+                    {formatPercent(m.confidence * 100, 0)}
                   </span>
                 </td>
                 <td className="px-4 py-2 text-xs text-slate-500 max-w-[200px] truncate">

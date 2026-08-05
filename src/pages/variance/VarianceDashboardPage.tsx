@@ -33,6 +33,8 @@ import { VarianceChart } from '@/components/charts/VarianceChart';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -161,9 +163,9 @@ export default function VarianceDashboardPage() {
       };
     });
 
-    const totalBudget = rows.reduce((s, r) => s + r.budget, 0);
-    const totalActual = rows.reduce((s, r) => s + r.actual, 0);
-    const totalVar = rows.reduce((s, r) => s + r.variance, 0);
+    const totalBudget = roundTo(sumMoney(rows.map((r) => r.budget)), 2);
+    const totalActual = roundTo(sumMoney(rows.map((r) => r.actual)), 2);
+    const totalVar = roundTo(sumMoney(rows.map((r) => r.variance)), 2);
     const favorable = rows.filter((r) => r.variance >= 0).reduce((s, r) => s + r.variance, 0);
     const unfavorable = rows
       .filter((r) => r.variance < 0)
@@ -201,7 +203,7 @@ export default function VarianceDashboardPage() {
           formatCurrency(r.budget),
           formatCurrency(r.actual),
           formatCurrency(r.variance),
-          r.variancePct.toFixed(1) + '%',
+          formatPercent(r.variancePct, 1),
           r.driver,
         ]),
       },
@@ -219,7 +221,7 @@ export default function VarianceDashboardPage() {
           formatCurrency(r.budget),
           formatCurrency(r.actual),
           formatCurrency(r.variance),
-          r.variancePct.toFixed(1) + '%',
+          formatPercent(r.variancePct, 1),
           r.driver,
         ]),
       },
@@ -262,7 +264,9 @@ export default function VarianceDashboardPage() {
       render: (_value, row) => {
         const pct = Number(row.variancePct ?? 0);
         return (
-          <span className={pct >= 0 ? 'text-green-400' : 'text-red-400'}>{pct.toFixed(1)}%</span>
+          <span className={pct >= 0 ? 'text-green-400' : 'text-red-400'}>
+            {formatPercent(pct, 1)}
+          </span>
         );
       },
       sortable: true,
@@ -328,7 +332,7 @@ export default function VarianceDashboardPage() {
         />
         <KPIValue
           label="Variance %"
-          value={`${data.revenueVarPct.toFixed(1)}%`}
+          value={`${formatPercent(data.revenueVarPct, 1)}`}
           icon={
             data.revenueVarPct >= 0 ? (
               <TrendingUp className="h-4 w-4" />
@@ -347,11 +351,7 @@ export default function VarianceDashboardPage() {
             <BarChart data={data.chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
               <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
-              <YAxis
-                stroke="#94a3b8"
-                fontSize={12}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-              />
+              <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
                 formatter={(v: any) => formatCurrency(v)}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}

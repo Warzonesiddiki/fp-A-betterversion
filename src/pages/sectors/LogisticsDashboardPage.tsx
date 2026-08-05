@@ -19,6 +19,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 const COLORS = [
   'var(--accent-primary)',
@@ -111,7 +112,7 @@ export function LogisticsDashboardPage() {
       },
       {
         label: 'On-Time Delivery %',
-        value: onTimeRate > 0 ? `${onTimeRate.toFixed(1)}%` : '96.4%',
+        value: onTimeRate > 0 ? `${formatPercent(onTimeRate, 1)}` : '96.4%',
         change: 1.2,
         icon: <Truck className="h-4 w-4" />,
       },
@@ -174,10 +175,10 @@ export function LogisticsDashboardPage() {
               <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
               <YAxis
                 tick={{ fill: 'var(--text-secondary)', fontSize: 12 }}
-                tickFormatter={(v) => `$${(v / 1_000_000).toFixed(1)}M`}
+                tickFormatter={(v) => `$${formatCompact(v)}`}
               />
               <Tooltip
-                formatter={((v: number) => [`$${(v / 1_000_000).toFixed(2)}M`, 'Revenue']) as any}
+                formatter={((v: number) => [`$${formatCompact(v)}`, 'Revenue']) as any}
                 contentStyle={{
                   background: 'var(--text-primary)',
                   border: '1px solid var(--border-color)',
@@ -258,7 +259,7 @@ export function LogisticsDashboardPage() {
                   </div>
                   <div className="text-right">
                     <span className="font-mono text-sm" style={{ color: 'var(--text-primary)' }}>
-                      ${(lane.revenue / 1_000_000).toFixed(2)}M
+                      ${formatCompact(lane.revenue)}
                     </span>
                     <span className="text-xs ml-2 text-green-600">{lane.margin}%</span>
                   </div>
@@ -275,7 +276,7 @@ export function LogisticsDashboardPage() {
               <XAxis dataKey="month" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
               <YAxis
                 tick={{ fill: 'var(--text-secondary)', fontSize: 12 }}
-                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                tickFormatter={(v) => formatNumber(v / 1000, 0)}
               />
               <Tooltip
                 formatter={((v: number) => [v.toLocaleString(), 'Shipments']) as any}

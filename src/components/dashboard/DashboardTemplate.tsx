@@ -10,6 +10,7 @@ import { ComboChart, type ComboChartDataPoint } from './ComboChart';
 import { DashboardGauge } from './GaugeChart';
 import { PersonaBadge } from '../persona/PersonaBadge';
 import { cn } from '@/utils/cn';
+import { formatCompact } from '@/utils/financialFormatting';
 
 export type DashboardType = 'cfo' | 'controller' | 'analyst';
 
@@ -297,7 +298,7 @@ export function DashboardTemplate({
             <ComboChart
               data={mockComboData}
               title="Revenue & Margin Trend"
-              formatValue={(v) => `$${(v / 1e6).toFixed(1)}M`}
+              formatValue={(v) => formatCompact(v)}
               series={{
                 barLabel: 'Actual',
                 bar2Label: 'Budget',
@@ -366,7 +367,7 @@ export function DashboardTemplate({
             <ComboChart
               data={mockComboData}
               title="Actual vs Budget — Revenue & Margin"
-              formatValue={(v) => `$${(v / 1e6).toFixed(1)}M`}
+              formatValue={(v) => formatCompact(v)}
               series={{
                 barLabel: 'Actual',
                 bar2Label: 'Budget',
@@ -437,7 +438,7 @@ export function DashboardTemplate({
             <ComboChart
               data={mockComboData}
               title="Revenue & Margin Deep Dive"
-              formatValue={(v) => `$${(v / 1e6).toFixed(1)}M`}
+              formatValue={(v) => formatCompact(v)}
               series={{
                 barLabel: 'Actual',
                 bar2Label: 'Budget',

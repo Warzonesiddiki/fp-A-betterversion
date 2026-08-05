@@ -13,6 +13,7 @@ import { cn } from '@/utils/cn';
 import type { AllocationResult, AllocationEntry } from '@/engines/AllocationEngine';
 import { AllocationJournalTable } from './AllocationJournalTable';
 import type { JournalEntry } from './AllocationJournalTable';
+import { formatPercent as formatPercentLocal } from '@/utils/financialFormatting';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -42,8 +43,8 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-function formatPercent(value: number): string {
-  return `${value.toFixed(2)}%`;
+function formatAllocPct(value: number): string {
+  return formatPercentLocal(value, 2);
 }
 
 function generateJournalEntries(results: AllocationResult[], sourceLabel: string): JournalEntry[] {
@@ -262,7 +263,7 @@ export function AllocationPreview({
                       {entry.target}
                     </td>
                     <td className="px-3 py-1.5 text-xs text-right text-[var(--text-secondary)]">
-                      {formatPercent(entry.percentage)}
+                      {formatAllocPct(entry.percentage)}
                     </td>
                     <td className="px-3 py-1.5 text-xs text-right text-[var(--text-primary)] font-medium">
                       {formatCurrency(entry.amount)}
@@ -285,7 +286,7 @@ export function AllocationPreview({
                   Total
                 </td>
                 <td className="px-3 py-2 text-xs text-right font-semibold text-[var(--text-primary)]">
-                  {formatPercent(allAllocations.reduce((s, e) => s + e.percentage, 0))}
+                  {formatAllocPct(allAllocations.reduce((s, e) => s + e.percentage, 0))}
                 </td>
                 <td className="px-3 py-2 text-xs text-right font-semibold text-blue-400">
                   {formatCurrency(totalAllocated)}

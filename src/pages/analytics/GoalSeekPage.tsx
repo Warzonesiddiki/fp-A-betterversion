@@ -11,6 +11,8 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Target, TrendingUp, BarChart3 } from 'lucide-react';
+import { formatPercent } from '@/utils/financialFormatting';
+import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -33,13 +35,26 @@ export default function GoalSeekPage() {
 
   const actuals = useMemo(() => {
     if (entries.length === 0) return null;
-    const revenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const expenses = entries
-      .filter((e) => (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    return { revenue, expenses, netIncome: revenue - expenses };
+    const revenue = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('4'))
+          .map((e) => e.credit - e.debit)
+      ),
+      2
+    );
+    const expenses = roundTo(
+      sumMoney(
+        entries
+          .filter(
+            (e) =>
+              (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
+          )
+          .map((e) => Math.abs(e.debit - e.credit))
+      ),
+      2
+    );
+    return { revenue, expenses, netIncome: roundTo(subtractMoney(revenue, expenses), 2) };
   }, [entries]);
 
   const runBreakeven = () => {
@@ -155,7 +170,9 @@ export default function GoalSeekPage() {
               <div className="space-y-2 text-sm pt-4 border-t border-slate-800">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Contribution Margin</span>
-                  <span className="font-semibold">{results.contributionMargin.toFixed(1)}%</span>
+                  <span className="font-semibold">
+                    {formatPercent(results.contributionMargin, 1)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Break-Even Revenue</span>
@@ -222,7 +239,7 @@ export default function GoalSeekPage() {
                       (results.positivePct > 50 ? 'text-green-400' : 'text-red-400')
                     }
                   >
-                    {results.positivePct.toFixed(1)}%
+                    {formatPercent(results.positivePct, 1)}
                   </span>
                 </div>
               </div>

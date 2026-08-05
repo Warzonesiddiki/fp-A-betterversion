@@ -103,6 +103,35 @@ const netExposureData = mockExposures.map((e) => ({
 
 const hedgeBreakdown = mockExposures.map((e) => ({ name: e.currency, value: e.hedged }));
 
+/** Money-primitive FX exposure totals (GAP-1 F-0006).
+ *  Total exposure / hedged / unrealized G/L are exact-decimal summed across
+ *  the per-currency rows so the headline KPIs and downstream hedge-ratio
+ *  computation don't drift on cent-equal books. */
+export interface FXExposure {
+  currency: string;
+  symbol: string;
+  exposure: number;
+  rate: number;
+  hedged: number;
+  hedgeRatio: number;
+  unrealizedGL: number;
+}
+
+export interface FXExposureTotals {
+  totalExposure: number;
+  totalHedged: number;
+  totalUnrealizedGL: number;
+  overallHedgeRatio: number;
+}
+
+export function computeFXExposureTotals(exposures: readonly FXExposure[]): FXExposureTotals {
+  const totalExposure = roundTo(sumMoney(exposures.map((e) => e.exposure)), 2);
+  const totalHedged = roundTo(sumMoney(exposures.map((e) => e.hedged)), 2);
+  const totalUnrealizedGL = roundTo(sumMoney(exposures.map((e) => e.unrealizedGL)), 2);
+  const overallHedgeRatio = totalExposure > 0 ? (totalHedged / totalExposure) * 100 : 0;
+  return { totalExposure, totalHedged, totalUnrealizedGL, overallHedgeRatio };
+}
+
 export default function FXExposurePage() {
   const { entries } = useGLStore();
   const _navigate = useNavigate();
@@ -111,10 +140,8 @@ export default function FXExposurePage() {
     document.title = 'FinPlan Pro — FX Exposure';
   }, []);
 
-  const totalExposure = roundTo(sumMoney(mockExposures.map((e) => e.exposure)), 2);
-  const totalHedged = roundTo(sumMoney(mockExposures.map((e) => e.hedged)), 2);
-  const totalUnrealizedGL = roundTo(sumMoney(mockExposures.map((e) => e.unrealizedGL)), 2);
-  const overallHedgeRatio = totalExposure > 0 ? (totalHedged / totalExposure) * 100 : 0;
+  const { totalExposure, totalHedged, totalUnrealizedGL, overallHedgeRatio } =
+    computeFXExposureTotals(mockExposures);
 
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const columns: Column[] = useMemo(

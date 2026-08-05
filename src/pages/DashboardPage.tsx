@@ -27,6 +27,8 @@ import { createLogger } from '@/utils/logger';
 
 const dashboardLogger = createLogger('Dashboard');
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { formatPercent } from '@/utils/financialFormatting';
+import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 import {
   AreaChart,
   Area,
@@ -44,10 +46,6 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
-}
-
-function formatPercent(n: number): string {
-  return n.toFixed(1) + '%';
 }
 
 export default function DashboardPage() {
@@ -129,24 +127,43 @@ export default function DashboardPage() {
 
   const kpis = useMemo(() => {
     if (entries.length === 0) return null;
-    const totalRevenue = entries
-      .filter((e) => (e.accountCode || '').startsWith('4'))
-      .reduce((s, e) => s + (e.debit - e.credit), 0);
-    const totalCOGS = entries
-      .filter((e) => (e.accountCode || '').startsWith('5'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const totalExpenses = entries
-      .filter((e) => (e.accountCode || '').startsWith('6'))
-      .reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const netIncome = totalRevenue - totalCOGS - totalExpenses;
-    const grossProfit = totalRevenue - totalCOGS;
-    const grossMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+    const totalRevenue = roundTo(
+      sumMoney(
+        entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.credit - e.debit)
+      ),
+      2
+    );
+    const totalCOGS = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('5'))
+          .map((e) => Math.abs(e.debit - e.credit))
+      ),
+      2
+    );
+    const totalExpenses = roundTo(
+      sumMoney(
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('6'))
+          .map((e) => Math.abs(e.debit - e.credit))
+      ),
+      2
+    );
+    const netIncome = roundTo(
+      subtractMoney(totalRevenue, roundTo(sumMoney([totalCOGS, totalExpenses]), 2)),
+      2
+    );
+    const grossProfit = roundTo(subtractMoney(totalRevenue, totalCOGS), 2);
+    const grossMargin =
+      totalRevenue > 0 ? roundTo(divideMoney(grossProfit, totalRevenue).times(100), 2) : 0;
     const activeBudgets = budgets.filter(
       (b) => b.status === 'Approved' || b.status === 'InReview'
     ).length;
-    const totalBudgetAmount = budgets.reduce((s, b) => s + (b.totalAmount || 0), 0);
+    const totalBudgetAmount = roundTo(sumMoney(budgets.map((b) => b.totalAmount || 0)), 2);
     const budgetUtilization =
-      totalBudgetAmount > 0 ? (Math.abs(totalExpenses + totalCOGS) / totalBudgetAmount) * 100 : 0;
+      totalBudgetAmount > 0
+        ? roundTo(divideMoney(Math.abs(totalExpenses + totalCOGS), totalBudgetAmount).times(100), 2)
+        : 0;
     return {
       totalRevenue,
       totalCOGS,
@@ -191,7 +208,7 @@ export default function DashboardPage() {
       const matchingEntries = entries.filter((e) =>
         kpi.accountCodes?.includes(e.accountCode || '')
       );
-      const value = matchingEntries.reduce((s, e) => s + (e.debit - e.credit), 0);
+      const value = roundTo(sumMoney(matchingEntries.map((e) => e.debit - e.credit)), 2);
       return { label: kpi.label, value: Math.abs(value), format: 'currency' as const, key: kpi.id };
     });
   }, [sectorConfig, entries]);

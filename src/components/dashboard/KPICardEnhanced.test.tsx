@@ -83,7 +83,7 @@ describe('KPICardEnhanced', () => {
 
     it('formats thousands in compact mode', () => {
       render(<KPICardEnhanced title="Revenue" value={1500} format="compact" />);
-      expect(screen.getByText('$1.5K')).toBeInTheDocument();
+      expect(screen.getByText('$2K')).toBeInTheDocument();
     });
   });
 

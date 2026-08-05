@@ -7,6 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { logisticsConfig } from '@/config/sectors/logistics';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Truck } from 'lucide-react';
+import { sumMoney, roundTo } from '@/utils/money';
 
 export function LogisticsDashboardPage() {
   const { entries } = useGLStore();
@@ -17,25 +18,39 @@ export function LogisticsDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const revenue = entries.filter((e) => e.credit > e.debit).reduce((s, e) => s + e.credit, 0);
-    const fleetCosts = entries
-      .filter(
-        (e) =>
-          e.accountName.toLowerCase().includes('fleet') ||
-          e.accountName.toLowerCase().includes('vehicle') ||
-          e.accountName.toLowerCase().includes('fuel')
-      )
-      .reduce((s, e) => s + e.debit, 0);
-    const warehouseCosts = entries
-      .filter(
-        (e) =>
-          e.accountName.toLowerCase().includes('warehouse') ||
-          e.accountName.toLowerCase().includes('storage')
-      )
-      .reduce((s, e) => s + e.debit, 0);
-    const totalExpenses = entries
-      .filter((e) => e.debit > e.credit)
-      .reduce((s, e) => s + e.debit, 0);
+    const revenue = roundTo(
+      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      2
+    );
+    const fleetCosts = roundTo(
+      sumMoney(
+        entries
+          .filter(
+            (e) =>
+              e.accountName.toLowerCase().includes('fleet') ||
+              e.accountName.toLowerCase().includes('vehicle') ||
+              e.accountName.toLowerCase().includes('fuel')
+          )
+          .map((e) => e.debit)
+      ),
+      2
+    );
+    const warehouseCosts = roundTo(
+      sumMoney(
+        entries
+          .filter(
+            (e) =>
+              e.accountName.toLowerCase().includes('warehouse') ||
+              e.accountName.toLowerCase().includes('storage')
+          )
+          .map((e) => e.debit)
+      ),
+      2
+    );
+    const totalExpenses = roundTo(
+      sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
+      2
+    );
     return { revenue, fleetCosts, warehouseCosts, totalExpenses };
   }, [entries]);
 

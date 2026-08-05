@@ -31,6 +31,7 @@ import {
   Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = [
   {
@@ -237,7 +238,7 @@ export default function RetailDashboardPage() {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#64748b' }}
-                    tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`}
+                    tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
@@ -319,7 +320,7 @@ export default function RetailDashboardPage() {
                     <span className="font-medium">{s.name}</span>
                   </div>
                   <span className="text-[var(--text-secondary)]">
-                    {((s.value / 548000) * 100).toFixed(0)}%
+                    {formatPercent((s.value / 548000) * 100, 0)}
                   </span>
                 </div>
               ))}

@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   TrendingUp,
   RefreshCw,
@@ -23,10 +25,6 @@ function formatCurrency(n: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(n);
-}
-
-function formatPercent(n: number): string {
-  return `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
 }
 
 const HELP_SECTIONS = [
@@ -74,12 +72,18 @@ export default function RollingForecastPage() {
     cutoff.setMonth(cutoff.getMonth() - periodMonths);
 
     const recentEntries = entries.filter((e) => new Date(e.date) >= cutoff);
-    const revenue = recentEntries
-      .filter((e) => e.accountCode.startsWith('4'))
-      .reduce((s, e) => s + e.credit - e.debit, 0);
-    const expenses = recentEntries
-      .filter((e) => /^[56]/.test(e.accountCode))
-      .reduce((s, e) => s + e.debit - e.credit, 0);
+    const revenue = roundTo(
+      sumMoney(
+        recentEntries.filter((e) => e.accountCode.startsWith('4')).map((e) => e.credit - e.debit)
+      ),
+      2
+    );
+    const expenses = roundTo(
+      sumMoney(
+        recentEntries.filter((e) => /^[56]/.test(e.accountCode)).map((e) => e.debit - e.credit)
+      ),
+      2
+    );
     const netIncome = revenue - expenses;
 
     const monthlyMap = new Map<string, { actual: number; count: number }>();
@@ -103,7 +107,9 @@ export default function RollingForecastPage() {
       }
     }
     const avgGrowth =
-      growthRates.length > 0 ? growthRates.reduce((s, r) => s + r, 0) / growthRates.length : 0;
+      growthRates.length > 0
+        ? roundTo(sumMoney(growthRates.map((r) => r)), 2) / growthRates.length
+        : 0;
 
     const lastActual = monthlyData.length > 0 ? monthlyData![monthlyData.length - 1]![1].actual : 0;
     const trendData: Array<{ month: string; actual: number; forecast?: number }> = monthlyData.map(
@@ -118,8 +124,8 @@ export default function RollingForecastPage() {
       trendData.push({ month: monthLabel, actual: 0, forecast: forecasted });
     }
 
-    const totalActual = trendData.reduce((s, d) => s + d.actual, 0);
-    const totalForecast = trendData.reduce((s, d) => s + (d.forecast || 0), 0);
+    const totalActual = roundTo(sumMoney(trendData.map((d) => d.actual)), 2);
+    const totalForecast = roundTo(sumMoney(trendData.map((d) => d.forecast || 0)), 2);
 
     const variancePcts = monthlyData
       .map(([, d]) => d.actual)
@@ -272,7 +278,7 @@ export default function RollingForecastPage() {
               Forecast Accuracy
             </div>
             <div className="text-xl font-bold text-blue-400">
-              {stats ? `${stats.forecastAccuracy.toFixed(1)}%` : '-'}
+              {stats ? `${formatPercent(stats.forecastAccuracy, 1)}` : '-'}
             </div>
           </CardContent>
         </Card>
@@ -357,7 +363,7 @@ export default function RollingForecastPage() {
                   <div className="p-3 bg-slate-800 rounded-lg">
                     <div className="text-muted-foreground text-xs">Confidence Interval</div>
                     <div className="text-lg font-bold text-blue-400">
-                      &plusmn;{stats.confidenceInterval.toFixed(1)}%
+                      &plusmn;{formatPercent(stats.confidenceInterval, 1)}
                     </div>
                     <div className="text-xs text-muted-foreground">95% CI</div>
                   </div>
