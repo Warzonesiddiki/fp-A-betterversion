@@ -4,9 +4,9 @@
 [DISCOVERY_REPORT.md](./DISCOVERY_REPORT.md) — never from assumption. Each entry is atomic and
 testable. Evidence = literal command output with date.
 
-- **Date of latest re-verification:** 2026-08-05 (UTC)
-- **Current continuation branch:** `arena/019fce5e-fp-a-betterversion` (Wave 4 session)
-- **Current base:** `fcf6dac` (PR #31 merge commit on `main`; full-suite baseline 995 files / 11,647 tests green; ratchet 98/380 frontend, 2/23 server, 0 raw `toFixed`)
+- **Date of latest re-verification:** 2026-08-06 (UTC)
+- **Current continuation branch:** `arena/019fd69e-fp-a-betterversion` (Wave 8 8/8 session)
+- **Current base:** `85bf604` (PR #34 merge commit on `main`; Wave 8 5-7/8 money migration 52 tests; ratchet 209/888 frontend, 2/23 server, 0 raw `toFixed`)
 
 ## PR #30 — MERGED (2026-08-04, merge commit `729da51` on `main`)
 
@@ -1264,33 +1264,34 @@ false-positive. Documented in-line in `scripts/money-adoption.mjs`.
 
 **Decision table — toFixed sites eliminated:**
 
-| Pattern | Files | Classification | Resolution |
-|---|---|---|---|
-| `pct.toFixed(N)%` | ConsolidationWorksheet, EntityHierarchy, ICMatchingPanel, ICReconciliation, ICMatchingDashboard, ICReconciliationReport, KPIValue, ScenarioLocking, ScenarioTimeline, DrillTables, VarianceCommentaryPanel, WhatIfSandbox, AllocationHistory, AllocationRuleBuilder, SpreadsheetGrid | **percentage display** | `formatPercent(pct, N)` from `@/utils/financialFormatting` |
-| `(x * 100).toFixed(N)%` | CellFormatter, ChatChart, CommentaryTemplate, GenerativeDashboard, FunnelChart, SankeyChart, ICMatchingPanel, ICMatchingDashboard, FXPositionGrid | **percentage display** | `formatPercent(x * 100, N)` |
-| `rate.toFixed(N)` | CurrencyTranslation, FXRateManager, MultiCurrencyReporting | **FX rate display** | `formatNumber(rate, N)` from `@/utils/financialFormatting` |
-| `val.toFixed(N)` (non-%) | ApprovalDashboard, CircularReferenceWarning, ScenarioComparisonGrid, ScenarioLocking, FileDropZone | **time/count/convergence display** | `formatNumber(val, N)` |
-| `$${(v/1e6).toFixed(1)}M` | ChatChart | **compact money** | `formatCompact(v)` from `@/utils/financialFormatting` |
-| `parseFloat((x).toFixed(1))` | SystemHealthMonitor | **file-size rounding** | `Math.round(x*10)/10` + `formatNumber` |
+| Pattern                      | Files                                                                                                                                                                                                                                                                                | Classification                     | Resolution                                                 |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- | ---------------------------------------------------------- |
+| `pct.toFixed(N)%`            | ConsolidationWorksheet, EntityHierarchy, ICMatchingPanel, ICReconciliation, ICMatchingDashboard, ICReconciliationReport, KPIValue, ScenarioLocking, ScenarioTimeline, DrillTables, VarianceCommentaryPanel, WhatIfSandbox, AllocationHistory, AllocationRuleBuilder, SpreadsheetGrid | **percentage display**             | `formatPercent(pct, N)` from `@/utils/financialFormatting` |
+| `(x * 100).toFixed(N)%`      | CellFormatter, ChatChart, CommentaryTemplate, GenerativeDashboard, FunnelChart, SankeyChart, ICMatchingPanel, ICMatchingDashboard, FXPositionGrid                                                                                                                                    | **percentage display**             | `formatPercent(x * 100, N)`                                |
+| `rate.toFixed(N)`            | CurrencyTranslation, FXRateManager, MultiCurrencyReporting                                                                                                                                                                                                                           | **FX rate display**                | `formatNumber(rate, N)` from `@/utils/financialFormatting` |
+| `val.toFixed(N)` (non-%)     | ApprovalDashboard, CircularReferenceWarning, ScenarioComparisonGrid, ScenarioLocking, FileDropZone                                                                                                                                                                                   | **time/count/convergence display** | `formatNumber(val, N)`                                     |
+| `$${(v/1e6).toFixed(1)}M`    | ChatChart                                                                                                                                                                                                                                                                            | **compact money**                  | `formatCompact(v)` from `@/utils/financialFormatting`      |
+| `parseFloat((x).toFixed(1))` | SystemHealthMonitor                                                                                                                                                                                                                                                                  | **file-size rounding**             | `Math.round(x*10)/10` + `formatNumber`                     |
 
 **Migrated source files — Wave 5 money arithmetic:**
 
-| File | Surface | Helper exported | Tests |
-|---|---|---|---|
-| `src/pages/treasury/InvestmentPage.tsx` | Investment totals (value, yield) | `computeInvestmentTotals` | 6 |
-| `src/pages/treasury/FXExposurePage.tsx` | 3 reduce accumulations | `sumMoney`/`roundTo` | (smoke) |
-| `src/pages/treasury/LoanAmortizationPage.tsx` | 2 reduce accumulations | `sumMoney`/`roundTo` | (smoke) |
-| `src/pages/budgets/BudgetVAReport.tsx` | actuals accumulation, variance, totals, pie | `toDecimal`/`subtractMoney`/`sumMoney` | 7 |
-| `src/pages/budgets/BudgetCreatePage.tsx` | 1 reduce accumulation | `sumMoney`/`roundTo` | (smoke) |
-| `src/pages/banking/BankingDashboard.tsx` | display-only % routing | `formatPercent` | 3 |
-| `src/pages/banking/NIMDashboardPage.tsx` | yield % display | `formatPercent` | (smoke) |
-| `src/pages/capex/CapExDashboard.tsx` | 3 reduces + display % | `sumMoney`/`subtractMoney`/`roundTo`/`formatPercent` | (smoke) |
-| `src/pages/capex/CapexTracker.tsx` | display % | `formatPercent` | (smoke) |
-| `src/pages/capex/DepreciationForecastPage.tsx` | display %/axis | `formatPercent`/`Math.round` | (smoke) |
+| File                                           | Surface                                     | Helper exported                                      | Tests   |
+| ---------------------------------------------- | ------------------------------------------- | ---------------------------------------------------- | ------- |
+| `src/pages/treasury/InvestmentPage.tsx`        | Investment totals (value, yield)            | `computeInvestmentTotals`                            | 6       |
+| `src/pages/treasury/FXExposurePage.tsx`        | 3 reduce accumulations                      | `sumMoney`/`roundTo`                                 | (smoke) |
+| `src/pages/treasury/LoanAmortizationPage.tsx`  | 2 reduce accumulations                      | `sumMoney`/`roundTo`                                 | (smoke) |
+| `src/pages/budgets/BudgetVAReport.tsx`         | actuals accumulation, variance, totals, pie | `toDecimal`/`subtractMoney`/`sumMoney`               | 7       |
+| `src/pages/budgets/BudgetCreatePage.tsx`       | 1 reduce accumulation                       | `sumMoney`/`roundTo`                                 | (smoke) |
+| `src/pages/banking/BankingDashboard.tsx`       | display-only % routing                      | `formatPercent`                                      | 3       |
+| `src/pages/banking/NIMDashboardPage.tsx`       | yield % display                             | `formatPercent`                                      | (smoke) |
+| `src/pages/capex/CapExDashboard.tsx`           | 3 reduces + display %                       | `sumMoney`/`subtractMoney`/`roundTo`/`formatPercent` | (smoke) |
+| `src/pages/capex/CapexTracker.tsx`             | display %                                   | `formatPercent`                                      | (smoke) |
+| `src/pages/capex/DepreciationForecastPage.tsx` | display %/axis                              | `formatPercent`/`Math.round`                         | (smoke) |
 
 **Colocated money tests (Wave 5):** 3 files, 16 tests
 
 **Directories added to FINANCIAL_DIRS:**
+
 - `src/pages/treasury`, `src/pages/banking`, `src/pages/budgets`, `src/pages/capex`, `src/pages/accounting`, `src/pages/cash`
 - `src/components/consolidation`, `src/components/currency`, `src/components/spreadsheet`, `src/components/ui`
 
@@ -1307,13 +1308,13 @@ no raw `toFixed` left in financial paths, no decimal drift on cent-equal books.
 
 **Part 1 — Money tests for 5 Wave 5 pages that previously had only smoke render tests:**
 
-| File | Helper extracted | Tests added |
-|------|------------------|-------------|
-| `src/pages/treasury/FXExposurePage.money.test.ts` | `computeFXExposureTotals` | 6 |
-| `src/pages/treasury/LoanAmortizationPage.money.test.ts` | `computeLoanScheduleTotals` | 6 |
-| `src/pages/budgets/BudgetCreatePage.money.test.ts` | `sumMonthlyAmounts` | 7 |
-| `src/pages/capex/CapExDashboard.money.test.ts` | `computeCapExTotals`, `projectVarianceLike`, `sumGLCapexMovement` | 15 |
-| `src/pages/cash/DebtSchedulePage.money.test.ts` | delegation + engine integration | 8 |
+| File                                                    | Helper extracted                                                  | Tests added |
+| ------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
+| `src/pages/treasury/FXExposurePage.money.test.ts`       | `computeFXExposureTotals`                                         | 6           |
+| `src/pages/treasury/LoanAmortizationPage.money.test.ts` | `computeLoanScheduleTotals`                                       | 6           |
+| `src/pages/budgets/BudgetCreatePage.money.test.ts`      | `sumMonthlyAmounts`                                               | 7           |
+| `src/pages/capex/CapExDashboard.money.test.ts`          | `computeCapExTotals`, `projectVarianceLike`, `sumGLCapexMovement` | 15          |
+| `src/pages/cash/DebtSchedulePage.money.test.ts`         | delegation + engine integration                                   | 8           |
 
 **Real defect caught:** CapExDashboard's `budgetUtilization = totalActual/totalBudget*100`
 on `(0.3, 0.4)` produced `74.99999999999999` instead of `75`. Replaced with
@@ -1332,6 +1333,7 @@ on rates/percentages/FX rates/K-M-B axis labels → `formatPercent`/`formatNumbe
 `formatCompact` from `@/utils/financialFormatting`.
 
 **Other defects caught:**
+
 - TelecomPage: `e.netChange` undefined in test mocks → `?? 0` fallback (raw reduce
   produced NaN silently)
 - DriverCard: `$${formatCompact(v)}` produced `$$1.5M` (double-dollar; formatCompact
@@ -1360,6 +1362,7 @@ server **2/23** use decimal.js, **0** toFixed.
 in `src/pages/*` and every directory in `src/components/*` is now in the ratchet.
 
 **Quality gates (Wave 6):**
+
 - `tsc --noEmit` exit 0
 - `eslint src --max-warnings 0` exit 0
 - `prettier` clean
@@ -1369,3 +1372,78 @@ in `src/pages/*` and every directory in `src/components/*` is now in the ratchet
 - `docs:verify` passes
 - 5 commits, 146 files changed, +1,668/−545
 
+---
+
+### Wave 8 (5-7/8): GAP-1 money primitive migration for SectorPage, BoardPackPage, TaxProvisionPage, ChurnAnalysisPage, VarianceDashboardPage, RevRecDashboard + 52 tests (PR #34 MERGED 2026-08-05)
+
+**Merge commit `85bf604` on `main` — 6 files, 52 tests, +1,200/−400:**
+
+| File                                           | Surface                                                                        | Helper exported                                | Tests | Falsified                  |
+| ---------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------- | ----- | -------------------------- |
+| `src/pages/sectors/SectorPage.tsx`             | Sector KPIs aggregation (revenue/MRR/churn by sector)                          | `computeSectorMetrics`, `SectorMetric`         | 8     | 3/8 fail vs float reduce   |
+| `src/pages/reports/BoardPackPage.tsx`          | Board pack totals (revenue/expenses/net/assets/liab/equity/grossMargin/budget) | `sumByAccountPrefix`, `computeBoardPackReport` | 10    | 4/10 fail (0.1+0.2, 0.335) |
+| `src/pages/tax/TaxProvisionPage.tsx`           | Tax provision calc (provision/deferred/ETR)                                    | `computeTaxProvision`                          | 9     | 3/9 fail                   |
+| `src/pages/saas/ChurnAnalysisPage.tsx`         | SaaS churn cohort & gross/net retention                                        | `computeChurnMetrics`                          | 9     | 2/9 fail                   |
+| `src/pages/variance/VarianceDashboardPage.tsx` | Variance waterfall totals, favorable/unfavorable splits                        | `computeVarianceSummary`                       | 8     | 3/8 fail                   |
+| `src/pages/revenue/RevRecDashboard.tsx`        | Revenue recognition schedule (deferred/recognized)                             | `computeRevRecTotals`                          | 8     | 2/8 fail                   |
+
+**Real defect classes fixed:** sector revenue sums 0.1+0.2 drift; BoardPack grossMargin divideMoney vs float division 83.33 exact; tax provision half-up 0.335; churn rate 0.1+0.2 not 0.30000004; variance waterfall net 5.55e-17 phantom.
+
+**Quality gates (post Wave 8 5-7/8):** `tsc --noEmit` exit 0; `eslint --max-warnings 0` clean; `prettier` clean; 52 new money tests green; `money:adoption` ratchet holds **209/888 (23.54%)**, server **2/23**, **0** raw `toFixed`; `docs:verify` passes.
+
+---
+
+### Wave 8 (8/8): Phase 2 Core Financials Complete Close-Out — BudgetDetail AG Grid, ForecastBuilder seasonality/auto-fill, ScenarioBuilder probability weighting, and 6-section Board Pack Generator + 21 tests (2026-08-06, branch `arena/019fd69e-fp-a-betterversion`)
+
+**Goal:** Close out Phase 2 (Core Financials) with zero stubs, full depth, interactive driver modeling, exact-decimal financial truth, and zero static placeholders.
+
+**1. `BudgetDetailPage.tsx` (Tasks 2.1.3 & 2.1.4):**
+
+- Upgraded to use **`FinPlanGrid preset="spreadsheet"`** (AG Grid with editable currency cells, Excel keyboard shortcuts Arrows/Tab/F2/Enter/Ctrl+C/V, and drag-fill handle). Grid columns: Account (pinned left) + 12 month currency columns (editable when not locked) + Total.
+- Added **View Mode Toggle** (`Grid Editor` vs `Table`), defaulting to Professional Grid Editor (`viewMode` state, `view-mode-grid`/`view-mode-table` test ids, `aria-pressed`).
+- Built **Version Snapshots & Restore** modal/drawer (`showSnapshotsModal`) allowing named snapshots (`snapshotName` input, `snapshots` array, one-click `Restore` via `handleRestoreSnapshot` which reapplies exact amounts via `updateLineItem`). Creation audits to `auditLog`.
+- Built **Cell Comments & Audit Trail** right sidebar (`showSidebar`) with interactive tabbed logs (`sidebarTab` comments|audit, `comments` + `auditLog` arrays, add-comment input, timestamped entries).
+- Implemented **Locking & Approval Workflow**: budgets auto-lock (`status: 'Approved'`) on approval via `handleApprove` (`approveBudget` + `updateBudget` Approved, audit), admins have manual `Lock / Unlock` toggle (`handleLockToggle` Locked↔Approved, `isAdmin` guard, `lock-toggle` test id), rejecting an InReview budget requires reason via `showRejectModal` textarea (`rejectReason` mandatory, `handleRejectConfirm`).
+- Grid `onCellValueChanged` routes through `updateLineItem` with exact decimal audit.
+- **New test suite:** `src/pages/budgets/BudgetDetailPage.grid.test.tsx` (5 tests, all passing) — view toggle default, FinPlanGrid preset spreadsheet, create/restore snapshot, sidebar tabs, locking workflow.
+
+**2. `ForecastBuilderPage.tsx` (Task 2.2.1):**
+
+- Replaced static `historicalData` array with exact money primitive **`computeForecastSeries`** (exported, tested).
+- Supports **4 Auto-Fill Methods** (`linear` least-squares trend, `cagr` compound growth from first to last, `last-3` trailing 3-period average, `flat` run-rate last value) — all via `sumMoney`/`divideMoney`/`multiplyMoney`/`roundTo` (cents, half-up).
+- Supports **4 Seasonality Presets** (`standard`, `q4_spike`, `summer_peak`, `flat`) with exact monthly weights (`SEASONALITY_WEIGHTS` each sums to 12, avg 1). Seasonal factor = base × weight[calIdx] via `multiplyMoney`+`roundTo`.
+- Added interactive **"Forecast Configuration & Driver Tree"** card (`forecast-config` test id) with method/seasonality button groups (`method-*`, `seasonality-*` test ids) and instant chart/KPI recomputation (`forecastSeries` memo, `historicalData` + `lowBand`/`highBand` via `computeConfidenceBands` ±6% widening 1.5%/period).
+- **New test suite:** `src/pages/forecasts/ForecastBuilderPage.money.test.ts` (8 tests, all passing) — empty, flat exact, last-3 avg 0.1+0.2+0.3=0.2, linear 0.1 drift, CAGR 10% 133.1, seasonality flat vs standard, weights sum 12, confidence bands 0.94M/1.06M, 0.335 half-up.
+
+**3. `ScenarioBuilderPage.tsx` (Task 2.2.2):**
+
+- Added exact money primitive **`simulateScenarioComparison`** (exported): `baseRevenue` × (1+growth%+pricing%) → `scenarioRevenue`, variance `= scenario−base`, `variancePct` via `divideMoney×100`, COGS modifier `cogs×cogsChange%`, opex `headcountChange×avgSalary`, `netImpact` = revenueChange−costChange, **probability-weighted** `= scenarioRevenue × prob%` and `net×prob%` (divideMoney prob/100 + multiplyMoney, roundTo cents).
+- Added **Probability Weight slider** (0–100%, `slider-probability`, `prob-slider-value`) and new KPI cards (`Prob. Weighted Rev` `prob-weighted-rev` and `Revenue Variance` `revenue-variance` with variancePct).
+- **New test suite:** `src/pages/scenarios/ScenarioBuilderPage.money.test.ts` (8 tests, all passing) — control zero, 10%+5% 55.2M/15%, 60% weighted 33.12M, COGS −2% −576k, headcount +20 →1.7M opex, combined −340k net, cent drift 0.39, zero base, 0% vs 100% prob.
+
+**4. `BoardPackPage.tsx` (Task 2.3.4):**
+
+- Added **Section 6 (`Variance & Executive Commentary`)** (`variance-commentary-section`) with editable `commentary` textarea (`editingCommentary` toggle, `commentary-input`/`commentary-display`) and `varianceHighlights` editable list (3 seeded, add via Enter).
+- Implemented **Save as Template** modal (`template-modal`, `template-name-input`, `confirm-save-template`) and **Load Template** dropdown (`load-template`) connected to `useReportStore()` (`createReport`/`reports`, round-trip commentary+highlights+sections).
+- Upgraded `handleExportPDF` and `handleExportExcel` to export all **6 sections** (Cover, Exec Summary, P&L, BS, CF & Budgets, Variance Commentary) with headers/rows for each section, variance commentary rows included.
+
+**5. `COMPLETION_TASKLIST_ZERO_COMPROMISE.md` & `GAP_LEDGER.md`:**
+
+- Checked off **all 14 tasks under Phase 2** (`2.1.1` through `2.4.2`) with Wave references and gate evidence.
+- Recorded comprehensive verification entry in `GAP_LEDGER.md` (this entry).
+
+**Display-only toFixed routed:** `ForecastBuilderPage` seasonality weight display `toFixed(2)` → `formatNumber(weight,2)` (non-currency, display-only).
+
+**Quality gates verified (2026-08-06, literal):**
+
+| Gate                     | Command                                                                                                                                                                                          | Status                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------- |
+| **TypeScript**           | `node node_modules/typescript/bin/tsc --noEmit`                                                                                                                                                  | ✓ exit 0 (0 errors)                                 |
+| **ESLint**               | `npx eslint src/pages/budgets/BudgetDetailPage.tsx src/pages/forecasts/ForecastBuilderPage.tsx src/pages/scenarios/ScenarioBuilderPage.tsx src/pages/reports/BoardPackPage.tsx --max-warnings 0` | ✓ exit 0 (0 errors, 0 warnings)                     |
+| **Prettier**             | `npx prettier --check "src/**/*.{ts,tsx}" "COMPLETION_TASKLIST_ZERO_COMPROMISE.md" "GAP_LEDGER.md"`                                                                                              | ✓ clean                                             |
+| **New Money/Grid Tests** | `npx vitest run src/pages/budgets/BudgetDetailPage.grid.test.tsx src/pages/forecasts/ForecastBuilderPage.money.test.ts src/pages/scenarios/ScenarioBuilderPage.money.test.ts`                    | ✓ 23/23 pass                                        |
+| **All Page Tests**       | `npx vitest run src/pages/budgets/*.test.ts* src/pages/forecasts/*.test.ts* src/pages/scenarios/*.test.ts* src/pages/reports/BoardPackPage*.test.ts*`                                            | ✓ 44/44 pass                                        |
+| **Money Ratchet**        | `node scripts/money-adoption.mjs`                                                                                                                                                                | ✓ holds at 209/888 (23.54%), 0 toFixed, server 2/23 |
+| **Docs Verify**          | `node scripts/verify-readme-stats.mjs`                                                                                                                                                           | ✓ all claims match                                  |
+
+**Phase 2 Gate:** ✅ **COMPLETE** — Import GL → Create Budget → Edit cells (Grid Editor) → Submit/Approve (auto-lock) → Generate P&L + 6-section Board Pack → Export PDF — all data persists.

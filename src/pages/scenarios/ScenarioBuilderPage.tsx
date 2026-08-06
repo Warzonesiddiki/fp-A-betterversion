@@ -10,6 +10,14 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable } from '@/components/ui/DataTable';
 import { FileText, Table as TableIcon, Save } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import {
+  roundTo,
+  sumMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  toDecimal,
+} from '@/utils/money';
 
 import {
   ResponsiveContainer,
@@ -60,6 +68,93 @@ const sensitivityData = [
   { parameter: 'Avg Salary', low: -3, base: 0, high: 8 },
 ];
 
+export interface ScenarioComparisonInput {
+  baseRevenue: number;
+  cogs: number;
+  growthRatePct: number;
+  pricingChangePct: number;
+  cogsChangePct: number;
+  headcountChange: number;
+  avgSalary: number;
+  probabilityPct: number;
+}
+
+export interface ScenarioComparisonResult {
+  baseRevenue: number;
+  scenarioRevenue: number;
+  revenueVariance: number;
+  variancePct: number;
+  cogsImpact: number;
+  opexImpact: number;
+  netImpact: number;
+  newCogs: number;
+  newOpex: number;
+  newRevenue: number;
+  probabilityWeightedRevenue: number;
+  probabilityWeightedNet: number;
+}
+
+/**
+ * Exact money primitive — simulate scenario comparison.
+ *
+ * Revenue: base × (1 + growth% + pricing%)
+ * COGS modifier: cogs × cogsChange%
+ * OPEX headcount: headcountChange × avgSalary
+ * Variance: scenarioRevenue − baseRevenue, variancePct
+ * Probability-weighted: scenarioRevenue × probability%
+ */
+export function simulateScenarioComparison(
+  input: ScenarioComparisonInput
+): ScenarioComparisonResult {
+  const baseRev = toDecimal(input.baseRevenue);
+  const growth = divideMoney(input.growthRatePct, 100);
+  const pricing = divideMoney(input.pricingChangePct, 100);
+  const cogsPct = divideMoney(input.cogsChangePct, 100);
+  const prob = divideMoney(input.probabilityPct, 100);
+
+  const revenueGrowth = multiplyMoney(baseRev, growth);
+  const pricingImpact = multiplyMoney(baseRev, pricing);
+  const newRevenueDec = baseRev.plus(revenueGrowth).plus(pricingImpact);
+  const newRevenue = roundTo(newRevenueDec);
+
+  const cogsImpactDec = multiplyMoney(input.cogs, cogsPct);
+  const cogsImpact = roundTo(cogsImpactDec);
+  const newCogs = roundTo(toDecimal(input.cogs).plus(cogsImpactDec));
+
+  const opexImpactDec = multiplyMoney(input.headcountChange, input.avgSalary);
+  const opexImpact = roundTo(opexImpactDec);
+  const newOpex = roundTo(toDecimal(baseMetrics.opex).plus(opexImpactDec));
+
+  const revenueVarianceDec = subtractMoney(newRevenue, input.baseRevenue);
+  const revenueVariance = roundTo(revenueVarianceDec);
+  const variancePct =
+    input.baseRevenue === 0
+      ? 0
+      : roundTo(multiplyMoney(divideMoney(revenueVariance, input.baseRevenue), 100));
+
+  const totalRevenueChange = roundTo(revenueGrowth.plus(pricingImpact));
+  const totalCostChange = roundTo(cogsImpactDec.plus(opexImpactDec));
+  const netImpact = roundTo(subtractMoney(totalRevenueChange, totalCostChange));
+
+  const probabilityWeightedRevenue = roundTo(multiplyMoney(newRevenue, prob));
+  const probabilityWeightedNet = roundTo(multiplyMoney(netImpact, prob));
+
+  return {
+    baseRevenue: input.baseRevenue,
+    scenarioRevenue: newRevenue,
+    revenueVariance,
+    variancePct,
+    cogsImpact,
+    opexImpact,
+    netImpact,
+    newCogs,
+    newOpex,
+    newRevenue,
+    probabilityWeightedRevenue,
+    probabilityWeightedNet,
+  };
+}
+
 export default function ScenarioBuilderPage() {
   const { scenarios, createScenario } = useScenarioStore();
   const { entries } = useGLStore();
@@ -69,40 +164,59 @@ export default function ScenarioBuilderPage() {
   const [headcountChange, setHeadcountChange] = useState(20);
   const [pricingChange, setPricingChange] = useState(5);
   const [cogsChange, setCogsChange] = useState(-2);
+  const [probability, setProbability] = useState(60);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Scenario Builder';
   }, []);
 
+  const scenarioComparison = useMemo(
+    () =>
+      simulateScenarioComparison({
+        baseRevenue: baseMetrics.revenue,
+        cogs: baseMetrics.cogs,
+        growthRatePct: growthRate,
+        pricingChangePct: pricingChange,
+        cogsChangePct: cogsChange,
+        headcountChange,
+        avgSalary: baseMetrics.avgSalary,
+        probabilityPct: probability,
+      }),
+    [growthRate, headcountChange, pricingChange, cogsChange, probability]
+  );
+
+  // Recompute costImpact correctly with money primitive for KPIs
+  const costImpactExact = useMemo(
+    () => roundTo(sumMoney([scenarioComparison.cogsImpact, scenarioComparison.opexImpact])),
+    [scenarioComparison]
+  );
+
   const scenarioImpact = useMemo(() => {
-    const revenueImpact = baseMetrics.revenue * (growthRate / 100);
-    const pricingImpact = baseMetrics.revenue * (pricingChange / 100);
-    const headcountCost = headcountChange * baseMetrics.avgSalary;
-    const cogsImpact = baseMetrics.cogs * (cogsChange / 100);
-    const totalRevenueChange = revenueImpact + pricingImpact;
-    const totalCostChange = headcountCost + cogsImpact;
-    const netImpact = totalRevenueChange - totalCostChange;
     return {
-      revenueImpact: totalRevenueChange,
-      costImpact: totalCostChange,
-      netImpact,
-      newRevenue: baseMetrics.revenue + totalRevenueChange,
-      newOpex: baseMetrics.opex + headcountCost,
-      newCogs: baseMetrics.cogs + cogsImpact,
+      revenueImpact: scenarioComparison.revenueVariance,
+      costImpact: costImpactExact,
+      netImpact: scenarioComparison.netImpact,
+      newRevenue: scenarioComparison.newRevenue,
+      newOpex: scenarioComparison.newOpex,
+      newCogs: scenarioComparison.newCogs,
+      probabilityWeightedRevenue: scenarioComparison.probabilityWeightedRevenue,
+      probabilityWeightedNet: scenarioComparison.probabilityWeightedNet,
+      variancePct: scenarioComparison.variancePct,
+      revenueVariance: scenarioComparison.revenueVariance,
     };
-  }, [growthRate, headcountChange, pricingChange, cogsChange]);
+  }, [scenarioComparison, costImpactExact]);
 
   const handleSave = () => {
     setSaveError(null);
     try {
       createScenario({
         name: `Scenario ${scenarios.length + 1}`,
-        description: `Growth ${growthRate}%, HC +${headcountChange}, Pricing +${pricingChange}%, COGS ${cogsChange}%`,
+        description: `Growth ${growthRate}%, HC +${headcountChange}, Pricing +${pricingChange}%, COGS ${cogsChange}%, Prob ${probability}%`,
         baseBudgetId: '',
         baseBudgetName: '',
         type: 'Custom' as const,
-        probability: 1,
+        probability: probability / 100,
         isActive: true,
         assumptions: [
           {
@@ -161,7 +275,7 @@ export default function ScenarioBuilderPage() {
           grossProfit: scenarioImpact.newRevenue - scenarioImpact.newCogs,
           netIncome: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
           ebitda: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
-        },
+        } as any,
         createdBy: 'user',
         createdByName: 'User',
       } as unknown as Parameters<typeof createScenario>[0]);
@@ -178,22 +292,34 @@ export default function ScenarioBuilderPage() {
           [
             'Revenue',
             formatCurrency(baseMetrics.revenue),
-            formatCurrency(scenarioImpact.newRevenue),
-            formatCurrency(scenarioImpact.revenueImpact),
+            formatCurrency(scenarioComparison.newRevenue),
+            formatCurrency(scenarioComparison.revenueVariance),
           ],
           [
             'COGS',
             formatCurrency(baseMetrics.cogs),
-            formatCurrency(scenarioImpact.newCogs),
-            formatCurrency(scenarioImpact.newCogs - baseMetrics.cogs),
+            formatCurrency(scenarioComparison.newCogs),
+            formatCurrency(scenarioComparison.cogsImpact),
           ],
           [
             'OpEx',
             formatCurrency(baseMetrics.opex),
-            formatCurrency(scenarioImpact.newOpex),
-            formatCurrency(scenarioImpact.newOpex - baseMetrics.opex),
+            formatCurrency(scenarioComparison.newOpex),
+            formatCurrency(scenarioComparison.opexImpact),
           ],
-          ['Net Impact', '', '', formatCurrency(scenarioImpact.netImpact)],
+          ['Net Impact', '', '', formatCurrency(scenarioComparison.netImpact)],
+          [
+            'Prob. Weighted Rev',
+            '',
+            formatCurrency(scenarioComparison.probabilityWeightedRevenue),
+            `${probability}% prob`,
+          ],
+          [
+            'Revenue Variance',
+            formatCurrency(baseMetrics.revenue),
+            formatCurrency(scenarioComparison.newRevenue),
+            `${scenarioComparison.variancePct}%`,
+          ],
         ],
       },
       { title: 'Scenario Analysis' }
@@ -205,19 +331,16 @@ export default function ScenarioBuilderPage() {
       {
         headers: ['Parameter', 'Base', 'Scenario', 'Impact'],
         rows: [
-          ['Revenue', baseMetrics.revenue, scenarioImpact.newRevenue, scenarioImpact.revenueImpact],
           [
-            'COGS',
-            baseMetrics.cogs,
-            scenarioImpact.newCogs,
-            scenarioImpact.newCogs - baseMetrics.cogs,
+            'Revenue',
+            baseMetrics.revenue,
+            scenarioComparison.newRevenue,
+            scenarioComparison.revenueVariance,
           ],
-          [
-            'OpEx',
-            baseMetrics.opex,
-            scenarioImpact.newOpex,
-            scenarioImpact.newOpex - baseMetrics.opex,
-          ],
+          ['COGS', baseMetrics.cogs, scenarioComparison.newCogs, scenarioComparison.cogsImpact],
+          ['OpEx', baseMetrics.opex, scenarioComparison.newOpex, scenarioComparison.opexImpact],
+          ['ProbWeightedRev', '', scenarioComparison.probabilityWeightedRevenue, probability],
+          ['VariancePct', scenarioComparison.variancePct, '', ''],
         ],
       },
       { title: 'Scenario_Analysis' }
@@ -283,20 +406,42 @@ export default function ScenarioBuilderPage() {
       >
         <KPIValue
           label="Revenue Impact"
-          value={formatCurrency(scenarioImpact.revenueImpact)}
+          value={formatCurrency(scenarioComparison.revenueVariance)}
           trend="up"
         />
-        <KPIValue
-          label="Cost Impact"
-          value={formatCurrency(scenarioImpact.costImpact)}
-          trend="down"
-        />
+        <KPIValue label="Cost Impact" value={formatCurrency(costImpactExact)} trend="down" />
         <KPIValue
           label="Net Impact"
-          value={formatCurrency(scenarioImpact.netImpact)}
-          trend={scenarioImpact.netImpact >= 0 ? 'up' : 'down'}
+          value={formatCurrency(scenarioComparison.netImpact)}
+          trend={scenarioComparison.netImpact >= 0 ? 'up' : 'down'}
         />
         <KPIValue label="Scenarios Saved" value={String(scenarios.length)} />
+      </div>
+
+      {/* Probability weighting KPIs */}
+      <div className="grid grid-cols-2 gap-4" data-testid="probability-kpis">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-xs uppercase tracking-widest text-slate-500 mb-1">
+              Prob. Weighted Rev
+            </div>
+            <div className="text-xl font-black tabular-nums" data-testid="prob-weighted-rev">
+              {formatCurrency(scenarioComparison.probabilityWeightedRevenue)}
+            </div>
+            <div className="text-xs text-slate-500">{probability}% probability</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-xs uppercase tracking-widest text-slate-500 mb-1">
+              Revenue Variance
+            </div>
+            <div className="text-xl font-black tabular-nums" data-testid="revenue-variance">
+              {formatCurrency(scenarioComparison.revenueVariance)}
+            </div>
+            <div className="text-xs text-slate-500">{scenarioComparison.variancePct}% vs base</div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -365,6 +510,31 @@ export default function ScenarioBuilderPage() {
                 </div>
               );
             })}
+            <div className="pt-4 border-t border-slate-800">
+              <div className="flex justify-between text-sm mb-1">
+                <label htmlFor="prob-slider" className="text-slate-300">
+                  Probability Weight
+                </label>
+                <span id="prob-slider-value" className="text-white font-mono" aria-live="polite">
+                  {probability}%
+                </span>
+              </div>
+              <input
+                id="prob-slider"
+                type="range"
+                min={0}
+                max={100}
+                value={probability}
+                onChange={(e) => setProbability(Number(e.target.value))}
+                className="w-full accent-purple-500"
+                aria-label="Probability Weight"
+                aria-valuetext={`${probability}% (range 0 to 100)`}
+                data-testid="slider-probability"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Weights scenario outcomes for expected value
+              </p>
+            </div>
           </CardContent>
         </Card>
         <Card>
