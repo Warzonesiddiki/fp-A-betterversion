@@ -10,6 +10,7 @@ import {
   applyDataPermissions,
   getEffectivePermissions,
   hasDataPermission,
+  filterGLEntriesByPermission,
 } from '../dataPermissionFilter';
 import type { DataPermission, RowFilter, ColumnFilter } from '@/types/permissions';
 
@@ -207,6 +208,50 @@ describe('dataPermissionFilter', () => {
       expect(
         hasDataPermission(permissions, 'user-1', ['viewer'], 'read', 'budget', 'bgt-001')
       ).toBe(false);
+    });
+  });
+
+  describe('filterGLEntriesByPermission', () => {
+    it('returns all entries when permissions array is empty or undefined', () => {
+      const entries = [
+        { id: '1', entityId: 'ent-a' },
+        { id: '2', entityId: 'ent-b' },
+      ];
+      expect(filterGLEntriesByPermission(entries, undefined)).toEqual(entries);
+      expect(filterGLEntriesByPermission(entries, [])).toEqual(entries);
+    });
+
+    it('filters entries using row filters from active permissions', () => {
+      const entries = [
+        { id: '1', entityId: 'ent-a' },
+        { id: '2', entityId: 'ent-b' },
+      ];
+      const perms: DataPermission[] = [
+        {
+          id: 'p-1',
+          name: 'Entity A only',
+          principal: { type: 'role', roleName: 'user' },
+          resource: { type: 'global' },
+          actions: ['read'],
+          rowFilters: [
+            {
+              id: 'rf-1',
+              field: 'entityId',
+              operator: 'equals',
+              values: ['ent-a'],
+              hardHide: true,
+            },
+          ],
+          columnFilters: [],
+          isActive: true,
+          expiresAt: null,
+          grantedBy: 'system',
+          grantedAt: '2026-01-01T00:00:00Z',
+        },
+      ];
+      const filtered = filterGLEntriesByPermission(entries, perms);
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0]?.id).toBe('1');
     });
   });
 });

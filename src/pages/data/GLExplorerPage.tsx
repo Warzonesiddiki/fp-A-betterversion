@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useGLStore } from '@/store/glStore';
 import { toCSV } from '@/utils/csv';
+import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
 import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
 
 function formatCurrency(n: number): string {
@@ -107,7 +108,7 @@ export default function GLExplorerPage() {
   const accountSummaries = useMemo(() => computeAccountSummaries(entries), [entries]);
 
   const filtered = useMemo(() => {
-    let list = [...entries];
+    let list = filterGLEntriesByPermission([...entries]);
     if (typeFilter !== 'all') {
       list = list.filter((entry) => (entry.accountCode || '').startsWith(typeFilter));
     }

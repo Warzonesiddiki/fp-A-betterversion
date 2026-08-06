@@ -159,6 +159,11 @@ export default function SettingsPage() {
                       id="settings-fiscal-year-start"
                       aria-describedby="settings-fiscal-year-start-help"
                       value={organization.fiscalYearStart.split('-')[1]}
+                      onChange={(e) =>
+                        updateOrganization({
+                          fiscalYearStart: `2026-${e.target.value}-01`,
+                        })
+                      }
                       className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
                     >
                       <option value="01">January</option>
@@ -180,11 +185,21 @@ export default function SettingsPage() {
                     <select
                       id="settings-calendar-type"
                       value={organization.calendarType}
+                      onChange={(e) =>
+                        updateOrganization({
+                          calendarType: e.target.value as
+                            | 'Standard'
+                            | '4-4-5'
+                            | '4-5-4'
+                            | '13-Period',
+                        })
+                      }
                       className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
                     >
                       <option value="Standard">Standard (Monthly)</option>
-                      <option value="445">4-4-5 Retail Calendar</option>
-                      <option value="454">4-5-4 Retail Calendar</option>
+                      <option value="4-4-5">4-4-5 Retail Calendar</option>
+                      <option value="4-5-4">4-5-4 Retail Calendar</option>
+                      <option value="13-Period">13-Period Calendar</option>
                     </select>
                   </div>
                 </fieldset>

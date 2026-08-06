@@ -47,6 +47,7 @@ export interface ConsolidatedEntry {
 export class MultiBookEngine {
   private static books = new Map<string, AccountingBook>();
   private static entries = new Map<string, BookEntry[]>();
+  private static idCounter = 0;
 
   static createBook(
     name: string,
@@ -55,7 +56,7 @@ export class MultiBookEngine {
     entityId: string
   ): AccountingBook {
     const book: AccountingBook = {
-      id: `book-${Date.now()}`,
+      id: `book-${Date.now()}-${++this.idCounter}`,
       name,
       gaap,
       currency,
@@ -91,7 +92,7 @@ export class MultiBookEngine {
 
     const fullEntry: BookEntry = {
       ...entry,
-      id: `entry-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      id: `entry-${Date.now()}-${++this.idCounter}`,
       bookId,
       debit: roundTo(entry.debit),
       credit: roundTo(entry.credit),
@@ -142,7 +143,7 @@ export class MultiBookEngine {
       adjustment.credit !== undefined ? roundTo(adjustment.credit) : original.credit;
 
     const adjusted: BookEntry = {
-      id: `adj-${Date.now()}`,
+      id: `adj-${Date.now()}-${++this.idCounter}`,
       bookId,
       accountId: original.accountId,
       debit: adjDebit,

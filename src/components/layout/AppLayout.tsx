@@ -1,7 +1,8 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useUIStore } from '@/store/uiStore';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
+import { HelpPanel } from './HelpPanel';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 import { SkipToContent } from '@/components/ui/SkipToContent';
@@ -14,12 +15,19 @@ import type { CommandItem } from '@/components/ui/CommandPalette';
 import { useMemo } from 'react';
 import { useCollaborationSetup } from '@/hooks/useCollaborationInit';
 export default function AppLayout() {
-  const { mobileSidebarOpen, closeMobileSidebar, commandPaletteOpen, toggleCommandPalette } =
-    useUIStore();
+  const {
+    mobileSidebarOpen,
+    closeMobileSidebar,
+    commandPaletteOpen,
+    toggleCommandPalette,
+    helpPanelOpen,
+    toggleHelpPanel,
+  } = useUIStore();
   const { mainContentRef } = useFocusManagement();
   const { i18n } = useTranslation();
   const dir = getLocaleDirection((i18n.language?.split('-')[0] ?? 'en') as SupportedLocale);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Initialize real-time collaboration
   useCollaborationSetup();
@@ -127,6 +135,17 @@ export default function AppLayout() {
   useKeyboardShortcuts([
     { key: 'k', ctrl: true, handler: toggleCommandPalette, description: 'Open command palette' },
     { key: '/', ctrl: true, handler: toggleCommandPalette, description: 'Open command palette' },
+    {
+      key: 'F1',
+      handler: () => toggleHelpPanel?.(),
+      description: 'Open context-sensitive help',
+    },
+    {
+      key: '?',
+      shift: true,
+      handler: () => toggleHelpPanel?.(),
+      description: 'Open context-sensitive help',
+    },
   ]);
   return (
     <div
@@ -171,6 +190,11 @@ export default function AppLayout() {
         </main>
       </div>
       <ToastContainer />
+      <HelpPanel
+        pathname={location.pathname}
+        isOpen={!!helpPanelOpen}
+        onClose={() => toggleHelpPanel?.()}
+      />
       <CommandPalette
         items={commandItems}
         isOpen={commandPaletteOpen}

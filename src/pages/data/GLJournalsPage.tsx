@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
 import { toCSV } from '@/utils/csv';
+import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { BookOpen, ChevronLeft, ChevronRight, Download, Search, BarChart3 } from 'lucide-react';
 
@@ -84,7 +85,7 @@ export default function GLJournalsPage() {
   );
 
   const filtered = useMemo(() => {
-    let list = [...entries];
+    let list = filterGLEntriesByPermission([...entries]);
     if (startDate) list = list.filter((e) => e.date >= startDate);
     if (endDate) list = list.filter((e) => e.date <= endDate);
     if (accountFilter.length > 0 && accountFilter[0]!) {

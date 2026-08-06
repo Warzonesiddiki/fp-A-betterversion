@@ -99,7 +99,7 @@ function buildChurnTrend(
     const customerChurn =
       prevMRR > 0 ? SaaSMetricsEngine.calculateChurnRate(lostCustomers, customerCount) : 3.0;
     const revenueChurn = prevMRR > 0 ? (churnMRR / prevMRR) * 100 : 2.5;
-    const saveRate = 40 + Math.round(Math.random() * 15);
+    const saveRate = Math.min(100, Math.max(0, roundTo(60 - customerChurn * 2, 0)));
 
     return {
       month: period.split('-')[1] || period,
@@ -120,7 +120,7 @@ function buildSegmentChurn(
     const eEntries = entries.filter((e) => e.entityId === entityId);
     const revenue = computeSubscriptionMRR(eEntries.filter((e) => e.accountCode?.startsWith('41')));
     const customerCount = Math.max(5, Math.round(revenue / 1200));
-    const churn = 1.5 + Math.random() * 4;
+    const churn = Math.max(0.5, roundTo(revenue > 0 ? 3000 / Math.max(1000, revenue) : 2.5, 1));
 
     const segments = ['Enterprise', 'Mid-Market', 'SMB', 'Startup'];
     const segment = segments[entities.indexOf(entityId) % segments.length]!;

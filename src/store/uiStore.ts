@@ -24,6 +24,7 @@ export const useUIStore = create<UIState>()(
         mobileSidebarOpen: false,
         theme: 'dark',
         commandPaletteOpen: false,
+        helpPanelOpen: false,
         toasts: [],
         isOnline: true,
         globalDateRange: { start: '2024-01-01', end: '2024-12-31' },
@@ -35,13 +36,12 @@ export const useUIStore = create<UIState>()(
           const isDark = theme === 'dark';
           document.documentElement.classList.toggle('dark', isDark);
           document.documentElement.classList.toggle('light', !isDark);
-          // Theme is persisted via the persist middleware's partialize config;
-          // no direct localStorage write (Athena v2 finding + masterStorage-as-
-          // single-source pattern, per ADR-005).
           set({ theme });
         }),
 
         toggleCommandPalette: () => set((s) => ({ commandPaletteOpen: !s.commandPaletteOpen })),
+        toggleHelpPanel: () => set((s) => ({ helpPanelOpen: !s.helpPanelOpen })),
+        setHelpPanelOpen: (open: boolean) => set({ helpPanelOpen: open }),
         addToast: enforce(Permissions.UI_UPDATE, 'addToast', (toast) => {
           const id = `toast-${Date.now()}`;
           set((s) => ({ toasts: [...s.toasts, { ...toast, id }] }));

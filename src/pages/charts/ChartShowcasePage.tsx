@@ -42,7 +42,7 @@ const heatmapData = Array.from({ length: 6 }, (_, y) =>
   Array.from({ length: 6 }, (_, x) => ({
     x: `Q${x + 1}`,
     y: `Region ${y + 1}`,
-    value: Math.round(Math.random() * 100),
+    value: Math.round((x * 17 + y * 23) % 100),
   }))
 ).flat();
 

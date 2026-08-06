@@ -93,6 +93,7 @@ const FINANCIAL_DIRS = [
   'src/pages/collaboration',
   'src/pages/charts',
   'src/pages/consolidation',
+  'src/pages/construction',
   'src/pages/credit',
   'src/pages/currency',
   'src/pages/education',

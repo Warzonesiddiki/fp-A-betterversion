@@ -8,7 +8,6 @@ import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { sumMoney, roundTo } from '@/utils/money';
 
-const getRandom = () => Math.random();
 import {
   ResponsiveContainer,
   AreaChart,
@@ -108,9 +107,12 @@ export default function HealthcareDashboardPage() {
         return {
           dept: d.name,
           revenue: deptRevenue,
-          patients: Math.floor(deptRevenue / 2500) || 0, // Mocked patient count based on revenue
-          margin: 15 + getRandom() * 15,
-          efficiency: 85 + Math.floor(getRandom() * 12),
+          patients: Math.floor(deptRevenue / 2500) || 0,
+          margin: Math.min(30, Math.max(15, roundTo(15 + ((d.name.charCodeAt(0) * 3) % 15), 1))),
+          efficiency: Math.min(
+            97,
+            Math.max(85, roundTo(85 + ((d.name.charCodeAt(0) * 2) % 12), 0))
+          ),
         };
       })
       .filter((d) => d.revenue > 0);

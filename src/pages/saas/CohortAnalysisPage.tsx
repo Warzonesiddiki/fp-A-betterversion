@@ -49,7 +49,7 @@ function buildRetentionMatrix() {
 function buildCohortSizes() {
   return COHORT_MONTHS.map((month, i) => ({
     month,
-    size: 120 + Math.floor(Math.random() * 80) - i * 10,
+    size: 120 + ((i * 37) % 80) - i * 10,
   }));
 }
 

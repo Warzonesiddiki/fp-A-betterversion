@@ -417,6 +417,7 @@ export interface UIState {
   readonly mobileSidebarOpen: boolean;
   readonly theme: 'light' | 'dark';
   readonly commandPaletteOpen: boolean;
+  readonly helpPanelOpen?: boolean;
   readonly toasts: readonly ToastMessage[];
   readonly isOnline: boolean;
   readonly globalDateRange: { start: string; end: string };
@@ -426,6 +427,8 @@ export interface UIState {
   readonly closeMobileSidebar: () => void;
   readonly setTheme: (theme: 'light' | 'dark') => void;
   readonly toggleCommandPalette: () => void;
+  readonly toggleHelpPanel?: () => void;
+  readonly setHelpPanelOpen?: (open: boolean) => void;
   readonly addToast: (toast: Omit<ToastMessage, 'id'>) => void;
   readonly removeToast: (id: string) => void;
   readonly setOnline: (online: boolean) => void;
