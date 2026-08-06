@@ -82,8 +82,14 @@ vi.mock('@/store/authStore', () => ({
   })),
 }));
 
+interface MockFinPlanGridProps {
+  preset: string;
+  columns: unknown[];
+  rows: unknown[];
+}
+
 vi.mock('@/components/ui/FinPlanGrid', () => ({
-  FinPlanGrid: ({ preset, columns, rows }: any) => (
+  FinPlanGrid: ({ preset, columns, rows }: MockFinPlanGridProps) => (
     <div data-testid="finplan-grid" data-preset={preset}>
       Grid {columns.length} cols {rows.length} rows
     </div>

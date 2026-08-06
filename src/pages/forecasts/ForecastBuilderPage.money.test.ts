@@ -8,7 +8,6 @@ import {
   computeForecastSeries,
   computeConfidenceBands,
   SEASONALITY_WEIGHTS,
-  HISTORICAL_ACTUALS,
 } from './ForecastBuilderPage';
 
 describe('ForecastBuilderPage money primitive — computeForecastSeries (GAP-1)', () => {
