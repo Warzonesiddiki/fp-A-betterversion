@@ -145,6 +145,10 @@ describe('computeSectorDriverModel', () => {
       ],
     ],
     ['realestate', ['noi', 'cap_rate', 'occupancy', 'ltv', 'ffo']],
+    [
+      'insurance',
+      ['combined_ratio', 'loss_ratio', 'expense_ratio', 'gwp', 'retention_ratio', 'solvency_ratio'],
+    ],
   ] as Array<[SectorDriverId, string[]]>)(
     'computes data-driven KPI set for %s',
     (sectorId, expectedIds) => {

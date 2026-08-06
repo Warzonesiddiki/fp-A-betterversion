@@ -1280,6 +1280,24 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
     title: 'Education',
     sections: [{ title: 'What is this page?', content: 'Education sector dashboard.' }],
   },
+  '/education/enrollment': {
+    title: 'Enrollment & Retention',
+    sections: [
+      {
+        title: 'What is this page?',
+        content: 'Enrollment, retention rate, revenue per student and faculty-to-student ratio.',
+      },
+    ],
+  },
+  '/education/research-grants': {
+    title: 'Research Grants',
+    sections: [
+      {
+        title: 'What is this page?',
+        content: 'Research grant win rate, endowment growth and sponsored research revenue.',
+      },
+    ],
+  },
   '/energy/sector': {
     title: 'Energy Sector',
     sections: [{ title: 'What is this page?', content: 'Energy sector KPIs.' }],
@@ -1305,6 +1323,26 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
   '/government': {
     title: 'Government',
     sections: [{ title: 'What is this page?', content: 'Government sector dashboard.' }],
+  },
+  '/government/grants': {
+    title: 'Grants & Disbursement',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Grant disbursement rate, cost per citizen, revenue collection gap and budget utilization.',
+      },
+    ],
+  },
+  '/government/procurement': {
+    title: 'Procurement Cycle',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Competitive tender percentage, compliance score, average cycle days and negotiated savings.',
+      },
+    ],
   },
   '/healthcare/overview': {
     title: 'Healthcare Overview',
@@ -1337,6 +1375,24 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
   '/logistics': {
     title: 'Logistics',
     sections: [{ title: 'What is this page?', content: 'Logistics sector dashboard.' }],
+  },
+  '/logistics/fleet-cost': {
+    title: 'Fleet Cost',
+    sections: [
+      {
+        title: 'What is this page?',
+        content: 'Cost per mile, fleet utilization, empty miles and fleet EBITDA analytics.',
+      },
+    ],
+  },
+  '/logistics/warehouse-cost': {
+    title: 'Warehouse Cost',
+    sections: [
+      {
+        title: 'What is this page?',
+        content: 'Warehousing cost as a percentage of revenue and operating margin analytics.',
+      },
+    ],
   },
   '/manufacturing/overview': {
     title: 'Manufacturing Overview',
