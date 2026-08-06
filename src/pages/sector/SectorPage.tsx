@@ -44,7 +44,19 @@ export function computeSectorKPIDefaults(entries: readonly GLEntry[]): {
 }
 
 export default function SectorPage() {
-  const { activeSector } = useSector();
-  const sectorId = SUPPORTED_DRIVER_SECTORS.has(activeSector) ? activeSector : 'technology';
+  const { activeSector, sectorConfig } = useSector();
+
+  if (sectorConfig === null) {
+    return (
+      <main className="p-12 text-center" role="main" aria-label="Loading Sector">
+        <h2 className="text-xl font-semibold">Loading Sector...</h2>
+      </main>
+    );
+  }
+
+  const inferredSector =
+    activeSector ?? (sectorConfig?.name?.toLowerCase().includes('banking') ? 'banking' : undefined);
+  const sectorId =
+    inferredSector && SUPPORTED_DRIVER_SECTORS.has(inferredSector) ? inferredSector : 'technology';
   return <SectorDriverDashboard sectorId={sectorId as SectorDriverId} />;
 }

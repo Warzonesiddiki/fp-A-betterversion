@@ -1,8 +1,10 @@
-import { roundTo } from '@/utils/money';
+import type { MoneyInput } from '@/utils/money';
 import { SectorDriverDashboard } from './SectorDriverDashboard';
 
-export const energyMoneyPrimitiveGuard = roundTo(0);
+export type energyMoneyPrimitiveGuard = MoneyInput;
 
-export default function EnergyDashboardPage() {
+export function EnergyDashboardPage() {
   return <SectorDriverDashboard sectorId="energy" />;
 }
+
+export default EnergyDashboardPage;

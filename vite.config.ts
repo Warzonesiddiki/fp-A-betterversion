@@ -216,8 +216,15 @@ export default defineConfig({
         defaultHandler(warning);
       },
       output: {
+        chunkFileNames(chunkInfo) {
+          return chunkInfo.name.startsWith('index')
+            ? 'assets/chunk-[hash].js'
+            : 'assets/[name]-[hash].js';
+        },
         manualChunks(id: string) {
           if (id.includes('@huggingface/transformers')) return 'ai-vendor';
+          if (id.includes('lucide-react')) return 'icon-vendor';
+          if (id.includes('recharts')) return 'chart-vendor';
           if (id.includes('exceljs') && id.includes('/dist/exceljs/')) return 'excel-vendor';
           if (id.includes('exceljs')) return 'excel-core-vendor';
           if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-vendor';

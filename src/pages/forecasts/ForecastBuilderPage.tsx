@@ -313,9 +313,9 @@ export default function ForecastBuilderPage() {
       {/* Forecast Configuration & Driver Tree */}
       <Card data-testid="forecast-config">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <h2 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
             <BarChart3 className="h-4 w-4" /> Forecast Configuration & Driver Tree
-          </CardTitle>
+          </h2>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -376,7 +376,7 @@ export default function ForecastBuilderPage() {
           </div>
 
           <div className="border-t border-slate-800 pt-4">
-            <h4 className="text-sm font-semibold mb-2">Driver Tree</h4>
+            <h3 className="text-sm font-semibold mb-2">Driver Tree</h3>
             <div className="grid grid-cols-2 gap-3 text-sm">
               {[
                 {

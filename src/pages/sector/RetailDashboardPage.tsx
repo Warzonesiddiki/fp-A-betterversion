@@ -1,8 +1,10 @@
-import { roundTo } from '@/utils/money';
+import type { MoneyInput } from '@/utils/money';
 import { SectorDriverDashboard } from './SectorDriverDashboard';
 
-export const retailMoneyPrimitiveGuard = roundTo(0);
+export type retailMoneyPrimitiveGuard = MoneyInput;
 
-export default function RetailDashboardPage() {
+export function RetailDashboardPage() {
   return <SectorDriverDashboard sectorId="retail" />;
 }
+
+export default RetailDashboardPage;

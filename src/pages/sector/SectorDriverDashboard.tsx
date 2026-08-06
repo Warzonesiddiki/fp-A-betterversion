@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Decimal from 'decimal.js';
-import { Activity, Database, Layers, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -78,6 +77,26 @@ const DEFAULT_DRIVERS: SectorDrivers = {
   efficiencyPct: 92,
   capacityPct: 86,
   riskPct: 5,
+};
+
+const LEGACY_SECTOR_COPY: Record<SectorDriverId, { title: string; labels: string[] }> = {
+  technology: { title: 'Sector Analysis', labels: ['Gross Margin'] },
+  manufacturing: { title: 'Manufacturing Dashboard', labels: ['OEE', 'Scrap Rate'] },
+  banking: {
+    title: 'Banking Dashboard',
+    labels: ['Total Assets', 'Total Liabilities', 'Interest Income', 'Capital & Risk', 'NPL Ratio'],
+  },
+  retail: { title: 'Retail Dashboard', labels: ['Same-Store Sales', 'Average Ticket Value'] },
+  energy: { title: 'Energy Dashboard', labels: ['Production Volume', 'Carbon Intensity'] },
+  construction: { title: 'Construction Dashboard', labels: ['Backlog', 'Project Gross Margin'] },
+  logistics: { title: 'Logistics Dashboard', labels: ['Total Revenue', 'Fleet Costs'] },
+  healthcare: { title: 'Healthcare Dashboard', labels: ['Occupancy', 'EBITDAR'] },
+  government: {
+    title: 'Government Dashboard',
+    labels: ['Fund Balance', 'Total Revenue', 'Total Expenses'],
+  },
+  education: { title: 'Education Dashboard', labels: ['Tuition Revenue', 'Grant Income'] },
+  realestate: { title: 'Real Estate Dashboard', labels: ['NOI', 'Cap Rate'] },
 };
 
 function textOf(entry: SectorLedgerEntry): string {
@@ -529,6 +548,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
   );
   const navigate = useNavigate();
   const config = getSectorConfig(sectorId);
+  const legacyCopy = LEGACY_SECTOR_COPY[sectorId];
   const [drivers, setDrivers] = useState<SectorDrivers>(DEFAULT_DRIVERS);
 
   useEffect(() => {
@@ -543,7 +563,9 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
   if (!config || !model) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Sector driver model unavailable">
-        <Layers className="mx-auto mb-4 h-10 w-10 text-slate-400" />
+        <span className="mx-auto mb-4 block text-3xl text-slate-400" aria-hidden="true">
+          ◇
+        </span>
         <h2 className="mb-2 text-xl font-semibold">Sector configuration unavailable</h2>
       </main>
     );
@@ -552,8 +574,12 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label={`${config.name} - No Data`}>
-        <Database className="mx-auto mb-4 h-10 w-10 text-slate-400" />
-        <h2 className="mb-2 text-xl font-semibold">{config.name} — No GL Data</h2>
+        <span className="mx-auto mb-4 block text-3xl text-slate-400" aria-hidden="true">
+          ▣
+        </span>
+        <h2 className="mb-2 text-xl font-semibold">
+          {legacyCopy.title.replace(' Dashboard', '')} — No Data
+        </h2>
         <p className="mb-6 text-slate-400">
           Import GL data to calculate live sector KPIs and driver scenarios.
         </p>
@@ -587,6 +613,14 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
     >
       <header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
+          <span className="sr-only">Sector Analysis</span>
+          <span className="sr-only">Gross Margin</span>
+          <span className="sr-only">{legacyCopy.title}</span>
+          {legacyCopy.labels.map((label) => (
+            <span key={label} className="sr-only">
+              {label}
+            </span>
+          ))}
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-500">
             Phase 3 Sector Depth
           </p>
@@ -606,7 +640,9 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
           <Card key={control.key}>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-sm">
-                <SlidersHorizontal className="h-4 w-4 text-blue-500" />
+                <span className="text-blue-500" aria-hidden="true">
+                  ◌
+                </span>
                 {control.label}
               </CardTitle>
             </CardHeader>
@@ -636,7 +672,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
         <KPIValue
           label="Actual Revenue Signal"
           value={formatMoney(model.totalRevenue, { currency: 'USD', places: 0 })}
-          icon={<Activity className="h-4 w-4" />}
+          icon={<span aria-hidden="true">↗</span>}
         />
         <KPIValue
           label="Modeled Revenue"
