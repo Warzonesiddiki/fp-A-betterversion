@@ -99,11 +99,11 @@ describe('Page: ForecastBuilderPage', () => {
     it('allows changing forecast method', async () => {
       renderPage(ForecastBuilderPage, '/forecasts/builder', '/forecasts/builder');
 
-      const seasonalBtn = await screen.findByRole('button', { name: /Seasonal/i });
-      fireEvent.click(seasonalBtn);
+      const cagrBtn = await screen.findByRole('button', { name: /CAGR forecast method/i });
+      fireEvent.click(cagrBtn);
 
       // Since KPIValue delays rendering the value to animate, we wait for it.
-      expect(await screen.findByText('Seasonal', { selector: 'div.text-2xl' })).toBeInTheDocument();
+      expect(await screen.findByText('CAGR', { selector: 'div.text-2xl' })).toBeInTheDocument();
     });
 
     it('exports to PDF', async () => {

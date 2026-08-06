@@ -5,8 +5,33 @@
 testable. Evidence = literal command output with date.
 
 - **Date of latest re-verification:** 2026-08-06 (UTC)
-- **Current continuation branch:** `arena/019fd69e-fp-a-betterversion` (Wave 8 8/8 session)
-- **Current base:** `85bf604` (PR #34 merge commit on `main`; Wave 8 5-7/8 money migration 52 tests; ratchet 209/888 frontend, 2/23 server, 0 raw `toFixed`)
+- **Current continuation branch:** `arena/019fd6ad-fp-a-betterversion` (Wave 9 Phase 3 sector-depth session)
+- **Current base:** `289a67a` (PR #35 merge commit on `main`; Wave 8 8/8 Phase 2 complete; ratchet baseline 209/888 frontend, 2/23 server, 0 raw `toFixed`)
+
+## Wave 9 Phase 3 Sector Depth — IN PROGRESS (2026-08-06, branch `arena/019fd6ad-fp-a-betterversion`)
+
+Started Phase 3 sector-depth gate without touching `.github/workflows/**`:
+
+- Added `src/pages/sector/SectorDriverDashboard.tsx` with pure exact helper
+  `computeSectorDriverModel` and a shared interactive GL-driven dashboard. Inputs are imported GL
+  entry signals plus live growth, efficiency, capacity, and risk sliders; outputs use canonical
+  `@/utils/money` (`sumMoney`, `divideMoney`, `percentOf`, `roundTo`, `variancePct`, etc.).
+- Wired 10 sector routes to the shared model: Banking, Manufacturing, Retail, Energy,
+  Construction, Logistics, Healthcare, Government, Education, and Real Estate. `/sector/sector`
+  now follows `useSector()` and uses the same sector config/default KPI/sidebar model.
+- Representative KPI coverage now includes technology/SaaS ARR/NRR/churn/quick ratio; manufacturing
+  OEE/scrap/inventory/unit cost/yield; banking NIM/CET1/NPL/efficiency/LDR; retail SSS/conversion/ATV/GMROI;
+  energy production/lifting cost/carbon intensity/availability; construction backlog/completion/margin/WIP;
+  logistics cost per mile/on-time/fleet utilization/warehouse cost; healthcare occupancy/denials/AR days/EBITDAR;
+  government budget utilization/service efficiency/grants/compliance/cost per citizen; education retention/revenue
+  per student/faculty ratio/grant win/endowment; real estate NOI/cap rate/occupancy/LTV/FFO/DSCR.
+- Added `src/pages/sector/SectorDriverDashboard.money.test.ts` (14 tests): exact decimal falsifiers
+  `0.1 + 0.2 = 0.3`, `0.335 × 3 = 1.01`, 11-sector KPI known-answer coverage, and driver sensitivity.
+- Verified gates locally: `tsc --noEmit`; ESLint max-warnings 0 on changed sector files/tests;
+  `vitest run src/pages/sector/*.test.ts*` = 34/34; `money-adoption.mjs` = 210/889 frontend, 0 raw
+  `toFixed`, server 2/23, ratchet holds.
+
+---
 
 ## PR #30 — MERGED (2026-08-04, merge commit `729da51` on `main`)
 

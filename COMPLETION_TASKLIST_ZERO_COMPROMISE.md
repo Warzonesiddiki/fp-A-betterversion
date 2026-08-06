@@ -170,6 +170,7 @@
   - At least one main dashboard + 2–3 specialized pages per sector
 
 - [ ] **3.2** Sector-specific KPIs & calculations wired to real data
+  - **Wave 9 STARTED (2026-08-06):** `SectorDriverDashboard` now powers 11 representative sector routes (`technology` via active SectorPage, plus Manufacturing, Banking, Real Estate, Retail, Energy, Construction, Logistics, Healthcare, Government, Education) from imported GL signals + live growth/efficiency/capacity/risk drivers. Pure helper: `computeSectorDriverModel` with 14 exact known-answer tests.
   - **SaaS/Tech**: ARR, NRR, GRR, Churn, Cohort, Quick Ratio
   - **Manufacturing**: OEE, Scrap Rate, Inventory Turnover, COGS Variance
   - **Banking/Insurance**: NIM, CET1, Combined Ratio, NPL Ratio
@@ -181,9 +182,10 @@
 - [ ] **3.3** Sector configuration drives UI
   - `useSector()` + sector config files control defaultKPIs, sidebar, enabled modules
   - Dashboard shows sector KPIs when data is present
+  - **Wave 9 STARTED (2026-08-06):** shared dashboard reads `defaultKPIs`, `enabledModules`, and `sidebarOrder` directly from `src/config/sectors/*`; active `/sector/sector` route follows `useSector()` with technology fallback.
   - **Gate:** Changing sector instantly updates visible KPIs and sidebar
 
-**Phase 3 Gate:** At least 8 representative sectors have working, data-driven dashboards.
+**Phase 3 Gate:** At least 8 representative sectors have working, data-driven dashboards. Wave 9 has an initial 11-sector driver model with exact tests; remaining work is deeper specialized pages per sector and insurance metric parity.
 
 ---
 
