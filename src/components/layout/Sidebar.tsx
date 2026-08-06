@@ -28,6 +28,12 @@ import {
   Activity,
   Zap,
   Leaf,
+  Truck,
+  Package,
+  Coins,
+  FileCheck2,
+  GraduationCap,
+  Users,
 } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
@@ -69,6 +75,15 @@ export const Sidebar = memo(function Sidebar() {
         { path: '/healthcare/dashboard', label: t('nav.healthcare'), icon: Activity },
         { path: '/energy/dashboard', label: t('nav.energy'), icon: Zap },
         { path: '/esg/carbon', label: t('nav.esg'), icon: Leaf },
+        { path: '/logistics', label: 'Logistics', icon: Truck },
+        { path: '/logistics/fleet-cost', label: 'Fleet Cost', icon: Truck },
+        { path: '/logistics/warehouse-cost', label: 'Warehouse Cost', icon: Package },
+        { path: '/government', label: 'Government', icon: Landmark },
+        { path: '/government/grants', label: 'Grants', icon: Coins },
+        { path: '/government/procurement', label: 'Procurement', icon: FileCheck2 },
+        { path: '/education', label: 'Education', icon: GraduationCap },
+        { path: '/education/enrollment', label: 'Enrollment', icon: Users },
+        { path: '/education/research-grants', label: 'Research Grants', icon: FlaskConical },
       ],
     },
     {

@@ -7,8 +7,10 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  computeAvgCycleDays,
   computeCostPerCitizen,
   computeGovernmentMetrics,
+  computeProcurementMetrics,
   computeRatioPct,
   modelGrantDisbursement,
   scaleByDriver,
@@ -74,5 +76,49 @@ describe('governmentMetrics — known answers (GAP-1)', () => {
   it('modelGrantDisbursement is an exact percentage share', () => {
     expect(modelGrantDisbursement(2_000_000, 90)).toBe(1_800_000);
     expect(modelGrantDisbursement(0.1, 50)).toBe(0.05);
+  });
+});
+
+describe('procurementMetrics — known answers (GAP-1)', () => {
+  it('computes average cycle days exactly', () => {
+    expect(computeAvgCycleDays(1350, 30)).toBe(45);
+    expect(computeAvgCycleDays(0.3, 2)).toBe(0.2); // 0.15 rounded to 1 dp half-up
+  });
+
+  it('returns 0 avg cycle days for zero contracts', () => {
+    expect(computeAvgCycleDays(1000, 0)).toBe(0);
+  });
+
+  it('full procurement model produces deterministic known answer', () => {
+    const m = computeProcurementMetrics({
+      contractValue: 5_000_000,
+      competitivelyTenderedValue: 4_250_000,
+      compliantAudits: 48,
+      totalAudits: 50,
+      cycleDaysSum: 1350,
+      contractCount: 30,
+      baselineSpend: 6_000_000,
+      realizedSpend: 5_700_000,
+    });
+    expect(m.competitiveTenderPct).toBe(85);
+    expect(m.complianceScorePct).toBe(96);
+    expect(m.avgCycleDays).toBe(45);
+    expect(m.negotiatedSavings).toBe(300_000);
+    expect(m.savingsRatePct).toBe(5);
+  });
+
+  it('handles no negotiated savings exactly (zero savings rate)', () => {
+    const m = computeProcurementMetrics({
+      contractValue: 1_000_000,
+      competitivelyTenderedValue: 500_000,
+      compliantAudits: 10,
+      totalAudits: 20,
+      cycleDaysSum: 600,
+      contractCount: 20,
+      baselineSpend: 1_000_000,
+      realizedSpend: 1_000_000,
+    });
+    expect(m.negotiatedSavings).toBe(0);
+    expect(m.savingsRatePct).toBe(0);
   });
 });

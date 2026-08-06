@@ -87,3 +87,52 @@ export function modelGrantDisbursement(allocation: number, disbursementRatePct: 
 export function scaleByDriver(base: number, pct: number): number {
   return roundTo(multiplyMoney(base, toDecimal(1).plus(toDecimal(pct).div(100))), 2);
 }
+
+export interface ProcurementMetricsInput {
+  /** Total value of contracts awarded in the period. */
+  contractValue: number;
+  /** Value of contracts awarded through competitive tender. */
+  competitivelyTenderedValue: number;
+  /** Count of compliant/clean audits against total audits. */
+  compliantAudits: number;
+  totalAudits: number;
+  /** Sum of procurement cycle times (days) across contracts. */
+  cycleDaysSum: number;
+  contractCount: number;
+  /** Baseline spend before negotiated savings. */
+  baselineSpend: number;
+  /** Spend value after negotiated savings. */
+  realizedSpend: number;
+}
+
+export interface ProcurementMetrics {
+  competitiveTenderPct: number;
+  complianceScorePct: number;
+  avgCycleDays: number;
+  negotiatedSavings: number;
+  savingsRatePct: number;
+}
+
+/** Average procurement cycle days; 0 when no contracts. */
+export function computeAvgCycleDays(cycleDaysSum: number, contractCount: number): number {
+  if (!toDecimal(contractCount).gt(0)) return 0;
+  return roundTo(divideMoney(cycleDaysSum, contractCount), 1);
+}
+
+export function computeProcurementMetrics(input: ProcurementMetricsInput): ProcurementMetrics {
+  const competitiveTenderPct = computeRatioPct(
+    input.competitivelyTenderedValue,
+    input.contractValue
+  );
+  const complianceScorePct = computeRatioPct(input.compliantAudits, input.totalAudits);
+  const avgCycleDays = computeAvgCycleDays(input.cycleDaysSum, input.contractCount);
+  const negotiatedSavings = roundTo(subtractMoney(input.baselineSpend, input.realizedSpend), 2);
+  const savingsRatePct = computeRatioPct(negotiatedSavings, input.baselineSpend);
+  return {
+    competitiveTenderPct,
+    complianceScorePct,
+    avgCycleDays,
+    negotiatedSavings,
+    savingsRatePct,
+  };
+}

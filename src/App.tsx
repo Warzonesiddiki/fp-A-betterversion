@@ -329,6 +329,20 @@ const EducationPage = lazy(() => import('./pages/sector/EducationDashboardPage')
 const GovernmentPage = lazy(() => import('./pages/sector/GovernmentDashboardPage') as any);
 const LogisticsPage = lazy(() => import('./pages/sector/LogisticsDashboardPage') as any);
 const TelecomPage = lazy(() => import('./pages/sector/TelecomDashboardPage') as any);
+
+// Wave 9 Phase 3 — sector-depth specialized pages
+const FleetCostDashboardPage = lazy(
+  () => import('./pages/logistics/FleetCostDashboardPage') as any
+);
+const WarehouseCostDashboardPage = lazy(
+  () => import('./pages/logistics/WarehouseCostDashboardPage') as any
+);
+const GrantDisbursementPage = lazy(() => import('./pages/government/GrantDisbursementPage') as any);
+const ProcurementCyclePage = lazy(() => import('./pages/government/ProcurementCyclePage') as any);
+const EnrollmentRetentionPage = lazy(
+  () => import('./pages/education/EnrollmentRetentionPage') as any
+);
+const ResearchGrantsPage = lazy(() => import('./pages/education/ResearchGrantsPage') as any);
 /**
  * RouteGroupWrapper provides a shared ErrorBoundary and Suspense context
  * for logical groups of routes, using domain-aware error boundaries
@@ -665,8 +679,14 @@ export default function App() {
             <Route path="/sectors/logistics" element={<SectorsLogisticsDashboardPage />} />
             <Route path="/sectors/telecom" element={<SectorsTelecomDashboardPage />} />
             <Route path="/education" element={<EducationPage />} />
+            <Route path="/education/enrollment" element={<EnrollmentRetentionPage />} />
+            <Route path="/education/research-grants" element={<ResearchGrantsPage />} />
             <Route path="/government" element={<GovernmentPage />} />
+            <Route path="/government/grants" element={<GrantDisbursementPage />} />
+            <Route path="/government/procurement" element={<ProcurementCyclePage />} />
             <Route path="/logistics" element={<LogisticsPage />} />
+            <Route path="/logistics/fleet-cost" element={<FleetCostDashboardPage />} />
+            <Route path="/logistics/warehouse-cost" element={<WarehouseCostDashboardPage />} />
             <Route path="/telecom" element={<TelecomPage />} />
             <Route path="/forecasts/compare" element={<ScenarioComparisonPage />} />
             <Route path="/forecasts/auto-update" element={<RollingForecastPage />} />
