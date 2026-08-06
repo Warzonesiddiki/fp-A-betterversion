@@ -31,7 +31,8 @@ export type SectorDriverId =
   | 'healthcare'
   | 'government'
   | 'education'
-  | 'realestate';
+  | 'realestate'
+  | 'insurance';
 
 export interface SectorLedgerEntry {
   accountCode?: string;
@@ -97,6 +98,7 @@ const LEGACY_SECTOR_COPY: Record<SectorDriverId, { title: string; labels: string
   },
   education: { title: 'Education Dashboard', labels: ['Tuition Revenue', 'Grant Income'] },
   realestate: { title: 'Real Estate Dashboard', labels: ['NOI', 'Cap Rate'] },
+  insurance: { title: 'Insurance Dashboard', labels: ['Combined Ratio', 'Loss Ratio', 'GWP'] },
 };
 
 function textOf(entry: SectorLedgerEntry): string {
@@ -472,6 +474,45 @@ export function computeSectorDriverModel(params: {
         config,
         'endowment_growth_rate',
         toDecimal(drivers.growthPct).times(0.85)
+      );
+      break;
+    }
+    case 'insurance': {
+      // GL-driven premium / claims / expense signals with exact money.
+      const grossPremiums = sumBy(entries, (entry) =>
+        /premium|gwp|written premium|revenue|policy/.test(textOf(entry))
+      );
+      const claimsIncurred = sumBy(entries, (entry) =>
+        /claim|loss|benefit paid|reserve/.test(textOf(entry))
+      );
+      const premiumBase = grossPremiums.isZero() ? totalRevenue : grossPremiums;
+      const claimsBase = claimsIncurred.isZero()
+        ? modeledExpenses.times(0.62)
+        : claimsIncurred.times(toDecimal(1).plus(riskFactor));
+      const expenseBase = modeledExpenses.minus(claimsBase);
+      const lossRatio = ratioPct(claimsBase, Decimal.max(premiumBase, 1));
+      const expenseRatio = ratioPct(expenseBase, Decimal.max(premiumBase, 1));
+      const combinedRatio = lossRatio.plus(expenseRatio);
+      pushMetric(metrics, config, 'combined_ratio', combinedRatio);
+      pushMetric(metrics, config, 'loss_ratio', lossRatio);
+      pushMetric(metrics, config, 'expense_ratio', expenseRatio);
+      pushMetric(
+        metrics,
+        config,
+        'gwp',
+        modeledRevenue.plus(multiplyMoney(modeledRevenue, riskFactor.times(0.1)))
+      );
+      pushMetric(
+        metrics,
+        config,
+        'retention_ratio',
+        clampDecimal(toDecimal(100).minus(riskFactor.times(100).times(0.3)), 0, 100)
+      );
+      pushMetric(
+        metrics,
+        config,
+        'solvency_ratio',
+        toDecimal(180).times(toDecimal(2).minus(efficiencyFactor).plus(riskFactor))
       );
       break;
     }
