@@ -26,8 +26,6 @@ import {
   sumMoney,
 } from '@/utils/money';
 
-const getRandom = () => Math.random();
-
 import {
   ResponsiveContainer,
   AreaChart,
@@ -185,9 +183,9 @@ export default function WorkingCapitalPage() {
     // drift, left as JS number math.
     const trend = months.map((m, i) => ({
       month: m,
-      assets: Math.round(base.assets * (0.9 + i * 0.02 + getRandom() * 0.05)),
-      liabilities: Math.round(base.liabilities * (0.9 + i * 0.02 + getRandom() * 0.05)),
-      wc: Math.round(base.wc * (0.85 + i * 0.03 + getRandom() * 0.1)),
+      assets: Math.round(base.assets * (0.9 + i * 0.02 + ((i * 3) % 5) * 0.01)),
+      liabilities: Math.round(base.liabilities * (0.9 + i * 0.02 + ((i * 7) % 5) * 0.01)),
+      wc: Math.round(base.wc * (0.85 + i * 0.03 + ((i * 11) % 10) * 0.01)),
     }));
     return { ...base, trend };
   }, [entries]);

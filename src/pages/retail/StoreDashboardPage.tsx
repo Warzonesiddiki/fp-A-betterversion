@@ -17,8 +17,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-
-const getRandom = () => Math.random();
+import { roundTo } from '@/utils/money';
 
 import {
   ResponsiveContainer,
@@ -67,14 +66,14 @@ export default function StoreDashboardPage() {
     const grossMargin = totalRevenue > 0 ? ((totalRevenue - totalCOGS) / totalRevenue) * 100 : 0;
     const storeNames = ['Downtown', 'Mall', 'Airport', 'Online', 'Suburban'];
     const storeData: StoreRow[] = storeNames.map((name, _i) => {
-      const rev = totalRevenue * (0.15 + getRandom() * 0.2);
-      const txn = Math.floor(rev / (40 + getRandom() * 30));
+      const rev = roundTo(totalRevenue * (0.15 + ((_i * 7) % 20) * 0.01), 2);
+      const txn = Math.floor(rev / (40 + ((_i * 11) % 30)));
       return {
         store: name,
         revenue: rev,
         transactions: txn,
-        avgBasket: txn > 0 ? rev / txn : 0,
-        yoyGrowth: 5 + getRandom() * 20,
+        avgBasket: txn > 0 ? roundTo(rev / txn, 2) : 0,
+        yoyGrowth: 5 + ((_i * 3) % 20),
       };
     });
     return {

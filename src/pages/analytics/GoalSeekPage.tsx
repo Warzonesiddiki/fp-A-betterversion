@@ -71,9 +71,9 @@ export default function GoalSeekPage() {
   const runMonteCarlo = () => {
     setLoading(true);
     setTimeout(() => {
-      const sims = Array.from({ length: iterations }, () => {
-        const revMultiplier = 0.8 + Math.random() * 0.4;
-        const costMultiplier = 0.85 + Math.random() * 0.3;
+      const sims = Array.from({ length: iterations }, (_, i) => {
+        const revMultiplier = 0.8 + (Math.abs(Math.sin(i * 12.9898 + 1)) % 1) * 0.4;
+        const costMultiplier = 0.85 + (Math.abs(Math.sin(i * 78.233 + 1)) % 1) * 0.3;
         const base = actuals?.revenue || 1000000;
         const revenue = base * revMultiplier;
         const costs = (base * (variableCostPct / 100) + fixedCost) * costMultiplier;

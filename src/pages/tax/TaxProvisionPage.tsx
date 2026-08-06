@@ -20,8 +20,6 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
 import type { GLEntry } from '@/types';
 
-const getRandom = () => Math.random();
-
 import {
   ResponsiveContainer,
   BarChart,
@@ -121,8 +119,8 @@ export default function TaxProvisionPage() {
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
     const trend = quarters.map((q, _i) => ({
       quarter: q,
-      rate: 18 + getRandom() * 5,
-      provision: Math.round(totalProvision / 4 + getRandom() * 10000),
+      rate: 18 + ((_i * 3) % 5),
+      provision: Math.round(totalProvision / 4 + ((_i * 2300) % 10000)),
     }));
     return {
       revenue,

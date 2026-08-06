@@ -218,3 +218,20 @@ export function hasDataPermission(
     return perm.actions.includes(action as 'read' | 'write' | 'export' | 'approve');
   });
 }
+
+/**
+ * Filter GL entries or row records by active data permissions.
+ */
+export function filterGLEntriesByPermission<T extends object>(
+  entries: readonly T[],
+  permissions?: readonly DataPermission[]
+): T[] {
+  if (!permissions || permissions.length === 0) return [...entries];
+  const activePerms = permissions.filter((p) => p.isActive);
+  if (activePerms.length === 0) return [...entries];
+  const allRowFilters = activePerms.flatMap((p) => p.rowFilters);
+  return applyRowFilters(
+    entries as unknown as Record<string, unknown>[],
+    allRowFilters
+  ) as unknown as T[];
+}

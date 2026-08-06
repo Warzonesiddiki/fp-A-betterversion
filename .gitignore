@@ -167,3 +167,6 @@ memory/
 
 # Bench-generated performance log
 PERFORMANCE_LOG.md
+
+# ESLint cache
+.eslintcache

@@ -26,8 +26,6 @@ import {
   sumMoney,
 } from '@/utils/money';
 
-const getRandom = () => Math.random();
-
 import {
   ResponsiveContainer,
   BarChart,
@@ -127,8 +125,8 @@ export default function CashForecastPage() {
     // not financial truth; left as JS number arithmetic (integer rounding of random
     // variates cannot drift).
     const forecast = weeks.map((w, i) => {
-      const weekInflow = (inflows / 13) * (0.8 + getRandom() * 0.4);
-      const weekOutflow = (outflows / 13) * (0.8 + getRandom() * 0.4);
+      const weekInflow = (inflows / 13) * (0.8 + ((i * 13) % 40) * 0.01);
+      const weekOutflow = (outflows / 13) * (0.8 + ((i * 17) % 40) * 0.01);
       return {
         week: w,
         inflows: Math.round(weekInflow),

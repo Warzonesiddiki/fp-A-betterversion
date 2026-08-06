@@ -24,13 +24,13 @@ async function setupApp(page: Page, role = 'Admin') {
   await page.waitForLoadState('networkidle');
 }
 
-async function expectHeading(page: Page) {
+async function _expectHeading(page: Page) {
   await expect(page.locator('h1, h2, h3').first()).toBeVisible({ timeout: 10000 });
 }
 
-test.describe('Workflow 16: Mobile Responsive', () => {
-  test.use({ ...devices['iPhone 13'] });
+test.use({ ...devices['iPhone 13'] });
 
+test.describe('Workflow 16: Mobile Responsive', () => {
   test('mobile viewport renders dashboard without horizontal scroll', async ({ page }) => {
     await setupApp(page);
     await page.waitForLoadState('networkidle');

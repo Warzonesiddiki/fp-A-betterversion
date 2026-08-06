@@ -22,11 +22,14 @@
  *   - CCPA §1798.105: Right to delete (with retention exemption)
  */
 
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { signInAsCfo } from '../_helpers/auth';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const DOWNLOADS_DIR = path.join(__dirname, '..', '..', '.downloads');
 
 test.describe('Journey 12: Audit Trail Export (SOC 2 + GDPR + 7y Retention)', () => {

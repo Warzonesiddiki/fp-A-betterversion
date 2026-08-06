@@ -18,8 +18,6 @@ import {
 import { ExportEngine } from '@/engines/ExportEngine';
 import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 
-const getRandom = () => Math.random();
-
 import {
   ResponsiveContainer,
   AreaChart,
@@ -106,12 +104,14 @@ export default function ProductionDashboardPage() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const outputTrend = months.map((m, _i) => ({
       month: m,
-      output: Math.round(25000 + getRandom() * 10000),
-      defects: Math.round(100 + getRandom() * 80),
+      output: Math.round(25000 + ((_i * 3701) % 10000)),
+      defects: Math.round(100 + ((_i * 23) % 80)),
     }));
+    const runningLines = lines.filter((l) => l.status === 'Running');
     const oee =
-      lines.filter((l) => l.status === 'Running').reduce((s, l) => s + l.efficiency, 0) /
-      lines.filter((l) => l.status === 'Running').length;
+      runningLines.length > 0
+        ? roundTo(runningLines.reduce((s, l) => s + l.efficiency, 0) / runningLines.length, 1)
+        : 0;
     return { revenue, cogs, margin, lines, outputTrend, oee };
   }, [entries]);
 

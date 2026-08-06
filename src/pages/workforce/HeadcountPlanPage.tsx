@@ -18,8 +18,6 @@ import {
 import { ExportEngine } from '@/engines/ExportEngine';
 import { roundTo } from '@/utils/money';
 
-const getRandom = () => Math.random();
-
 import {
   ResponsiveContainer,
   BarChart,
@@ -69,22 +67,22 @@ export default function HeadcountPlanPage() {
     const count = salaryEntries.length;
     const avgCost = count > 0 ? totalCost / count : 0;
     const departments = ['Engineering', 'Sales', 'Marketing', 'Finance', 'Operations', 'HR'];
-    const deptData: DeptRow[] = departments.map((dept) => {
-      const current = Math.floor(15 + getRandom() * 40);
-      const planned = current + Math.floor(getRandom() * 10 - 3);
+    const deptData: DeptRow[] = departments.map((dept, idx) => {
+      const current = Math.floor(15 + ((idx * 7) % 40));
+      const planned = current + Math.floor(((idx * 3) % 10) - 3);
       return {
         department: dept,
         current,
         planned,
         variance: planned - current,
-        cost: current * avgCost,
+        cost: roundTo(current * avgCost, 2),
       };
     });
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const trend = months.map((m, i) => ({
       month: m,
-      headcount: Math.floor(80 + i * 5 + getRandom() * 10),
-      attrition: roundTo(2 + getRandom() * 3, 1),
+      headcount: Math.floor(80 + i * 5 + ((i * 3) % 10)),
+      attrition: roundTo(2 + ((i * 7) % 3), 1),
     }));
     return {
       totalCost,
