@@ -2,6 +2,66 @@
 
 All notable changes to FinPlan Pro are documented here.
 
+## [1.0.0] — 2026-08-06 — Release
+
+### Phase 6 — Performance (verified)
+
+- **Engine performance audit green** — `FormulaEngine.performance.test.ts` 23/23
+  (calculation speed + memory-leak prevention); `ValidationEngine` 1,000-cell perf gate
+  hardened with warm-up + best-of-5 sampling (steady-state <10ms contract kept
+  falsifiable for O(n) regressions, no longer flaky on loaded CI machines).
+- **Web-worker offloading verified** — 90/90 worker tests (consolidation, monte-carlo,
+  batch-calc, storage, worker-pool + chaos + unavailable-fallback suites); load benches
+  refreshed: monte-carlo 10k warm 14ms, ag-grid 100k-row prep 178ms, 500-row PDF 281ms.
+- **New 5,000-row keyboard responsiveness gate** — `DataGrid.keyboardPerf.test.ts`:
+  full-grid ArrowDown traversal (5,000 synchronous keystroke computations) in <100ms
+  total with position-independence assertions that catch any O(row) scan regression.
+- **Bundle budgets pass** — G3 + G19: total JS 2,021KB gzip within limit; excel-core /
+  pdf / chart vendor chunks each ≤300KB gzip.
+- Evidence: `reports/perf/phase-6-performance-verification-2026-08-06.md`.
+
+### Phase 8 — Security Hardening (verified)
+
+- **610+ security tests green** — `security.test.ts` 102, `ThreatModel` 75,
+  `SecurityHeaders-CsrfProtection` 61, `PIIRedactor` 70, `SecretsVault` 75,
+  secure-storage batch 208.
+- **New GDPR outbound-governance suite** — `zeroRetentionEnforcer.test.ts` (19 tests)
+  for the previously untested choke point: restricted PII/compensation data blocked
+  outbound, `X-No-Retention`/`X-No-Training` headers with bounded 24h expiry, complete
+  audit entries, mask/hash redaction before anything leaves the app.
+- **Strict production CSP confirmed** — script-src hash-pinned (no `unsafe-inline`
+  or `unsafe-eval` in script-src), `csp-hash-check.js` pass; secret-literal scan of
+  `src/**` clean.
+- **GDPR retention/deletion hooks verified** across audit logs
+  (`auditTrailGdprEvents` + persistence suites, 20/20).
+- Evidence: `reports/audit/phase-8-security-verification-2026-08-06.md`.
+
+### Phase 9 — Tauri Desktop (verified)
+
+- **Native integration verified** — `tauri.conf.json` (strict desktop CSP, NSIS bundle,
+  tray, updater explicitly disabled), SQL migrations, `secure_storage.rs` +
+  `crash_reporter.rs`; version 1.0.0 consistent across `package.json`,
+  `tauri.conf.json`, `Cargo.toml`, `lib.rs` (`check-version-consistency.mjs` pass).
+- **Desktop capabilities green** — `TauriSecureStorage`, `tauriSqlStorage` (SQLite
+  persistence), `masterStorage` fail-closed + security suites, `useTauriGlobalShortcuts`
+  7/7, `useTauriMenu` 12/12; offline mode via PWA service worker (468 precached entries).
+- Native installer build (`npm run tauri:build`) documented as environment-bound
+  (Rust toolchain) in RELEASE_CHECKLIST.md.
+- Evidence: `reports/audit/phase-9-tauri-desktop-verification-2026-08-06.md`.
+
+### Phase 10 — Release v1.0.0
+
+- **Full clean-clone gate executed**: `npm ci` → `tsc --noEmit` 0 errors →
+  `eslint src --max-warnings 0` clean → `vite build` green → **full `vitest run`:
+  11,985+ tests passing, 0 failures** (one flaky wall-clock perf assertion stabilized,
+  see Phase 6) → `test:a11y` 441 passing → `test:bench` 59/59 → Playwright enumeration
+  534 tests clean.
+- **Zero-defect check**: money ratchet 229/910 modules (baseline 209 held), 0 raw
+  `toFixed` sites frontend + server; `verify-readme-stats.mjs` documentation truth
+  check pass.
+- **PROGRESS_TRACKER.html**: all 14 waves marked 100% Done; corrupted stats block from
+  a former tracker-hook regex bug repaired.
+
 ## [2026-08-03] — money migration wave 2, GAP-4 decision, debt data entry
 
 ### Added

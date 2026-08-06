@@ -1,7 +1,7 @@
 [
   {
     "benchmark": "monte-carlo-10k",
-    "timestamp": "2026-07-28T10:30:10.596Z",
+    "timestamp": "2026-08-06T17:46:03.431Z",
     "hardware": {
       "cpu": "Intel(R) Xeon(R) Processor @ 2.60GHz",
       "ram": "3940MB",
@@ -9,9 +9,9 @@
       "node": "v22.22.3"
     },
     "iterations": 10000,
-    "coldMs": 30.07,
-    "warmMs": 15.19,
-    "warmAvgMs": 14.27,
+    "coldMs": 44.72,
+    "warmMs": 15.49,
+    "warmAvgMs": 14.14,
     "memoryPeakMB": 0,
     "passed": true,
     "target": "<30000ms",

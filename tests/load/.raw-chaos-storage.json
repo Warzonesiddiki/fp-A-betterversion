@@ -17,7 +17,7 @@
     "setupMB": 0,
     "writeSuccess": false,
     "caughtError": "QuotaExceededError: The 5000000-code unit storage quota has been exceeded.",
-    "recoveryTimeMs": 0.84,
+    "recoveryTimeMs": 0.74,
     "userNotified": true,
     "dataLoss": true,
     "passed": false,
