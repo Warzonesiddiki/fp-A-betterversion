@@ -46,9 +46,7 @@ describe('buildFiscalPeriods', () => {
   it('produces valid start/end date ranges', () => {
     const periods = buildFiscalPeriods();
     for (const p of periods) {
-      expect(new Date(p.startDate).getTime()).toBeLessThanOrEqual(
-        new Date(p.endDate).getTime()
-      );
+      expect(new Date(p.startDate).getTime()).toBeLessThanOrEqual(new Date(p.endDate).getTime());
     }
   });
 });
