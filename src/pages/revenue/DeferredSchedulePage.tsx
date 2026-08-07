@@ -50,6 +50,7 @@ interface ContractRecord {
   status: 'Active' | 'Completed' | 'Pending';
 }
 
+// demo defaults — replaced by real data when contract schedules come from RevRec engine contracts when imported
 const mockContracts: ContractRecord[] = [
   {
     id: 'CTR001',

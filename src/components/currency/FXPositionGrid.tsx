@@ -102,6 +102,7 @@ interface FXPosition {
   maturityDate: string;
 }
 
+// demo defaults — replaced by real data when FX positions come from FX rate/position imports
 const SAMPLE_POSITIONS: FXPosition[] = [
   {
     id: 'p1',

@@ -68,3 +68,10 @@
 6. Tag release: `git tag v1.0.0`
 7. Push tag: `git push origin v1.0.0`
 8. Create GitHub release with CHANGELOG
+
+## MISSION C Status (2026-08-07)
+
+- [x] Period-close client UI shipped (F-01): `/periods/close` — fiscal-period grid, close checklist, state machine, money-exact pre-close validation, chained audit panel, post-close report export; 35 new tests (store/page/money/a11y)
+- [x] Period-close RBAC: `period:read` (all), `period:close` (Admin + FP&A_Manager), `period:reopen` (Admin) — matrix + negative-auth tests green
+- [x] Zero-mock-data completion (F-04): 23 synthetic arrays → 7 wired to real stores/engines, 16 labeled demo defaults; `scripts/mock-data-audit.mjs` enforces the disposition list (exit 1 on violations)
+- [ ] Full E2E test run with Playwright — STILL UNVERIFIED_BLOCKED (browser CDN egress blocked in sandbox; box stays unchecked, not faked)

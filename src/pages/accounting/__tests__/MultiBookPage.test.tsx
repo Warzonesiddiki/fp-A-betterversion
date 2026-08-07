@@ -25,6 +25,12 @@ describe('MultiBookPage', () => {
 
   it('renders heading', () => {
     render(<MultiBookPage />);
-    expect(screen.getByText(/Multi-Book/i)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /Multi-Book Accounting/i })).toBeTruthy();
+  });
+
+  it('shows an honest empty state until books are created (no fabricated counts)', () => {
+    render(<MultiBookPage />);
+    expect(screen.getByText(/No books yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/MultiBookEngine/i)).toBeInTheDocument();
   });
 });

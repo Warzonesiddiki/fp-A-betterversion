@@ -15,6 +15,7 @@ interface ICPair {
   status: 'Unmatched' | 'Matched' | 'Eliminated';
 }
 
+// demo defaults — replaced by real data when intercompany pairs come from entity + IC data when entities are imported
 const mockPairs: ICPair[] = [
   {
     id: '1',

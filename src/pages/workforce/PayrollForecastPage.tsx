@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useWorkforceStore } from '@/store/workforceStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -22,7 +23,7 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney } from '@/utils/money';
+import { roundTo, sumMoney, divideMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
@@ -43,81 +44,6 @@ interface DepartmentPayroll {
   costPerHead: number;
   yoyChange: number;
 }
-
-const mockDepartments: DepartmentPayroll[] = [
-  {
-    department: 'Engineering',
-    headcount: 45,
-    baseSalary: 5400000,
-    benefits: 1620000,
-    totalCost: 7020000,
-    costPerHead: 156000,
-    yoyChange: 8.2,
-  },
-  {
-    department: 'Sales',
-    headcount: 32,
-    baseSalary: 3200000,
-    benefits: 960000,
-    totalCost: 4160000,
-    costPerHead: 130000,
-    yoyChange: 5.1,
-  },
-  {
-    department: 'Marketing',
-    headcount: 18,
-    baseSalary: 1800000,
-    benefits: 540000,
-    totalCost: 2340000,
-    costPerHead: 130000,
-    yoyChange: 3.8,
-  },
-  {
-    department: 'Operations',
-    headcount: 28,
-    baseSalary: 2520000,
-    benefits: 756000,
-    totalCost: 3276000,
-    costPerHead: 117000,
-    yoyChange: 4.2,
-  },
-  {
-    department: 'Finance',
-    headcount: 12,
-    baseSalary: 1560000,
-    benefits: 468000,
-    totalCost: 2028000,
-    costPerHead: 169000,
-    yoyChange: 6.5,
-  },
-  {
-    department: 'HR',
-    headcount: 8,
-    baseSalary: 880000,
-    benefits: 264000,
-    totalCost: 1144000,
-    costPerHead: 143000,
-    yoyChange: 2.9,
-  },
-  {
-    department: 'Legal',
-    headcount: 6,
-    baseSalary: 900000,
-    benefits: 270000,
-    totalCost: 1170000,
-    costPerHead: 195000,
-    yoyChange: 7.1,
-  },
-  {
-    department: 'IT Support',
-    headcount: 15,
-    baseSalary: 1350000,
-    benefits: 405000,
-    totalCost: 1755000,
-    costPerHead: 117000,
-    yoyChange: 3.5,
-  },
-];
 
 const monthlyForecast = [
   { month: 'Jan', basePay: 1800000, benefits: 540000, bonus: 0, total: 2340000 },
@@ -151,6 +77,28 @@ const headcountTrend = [
 
 export default function PayrollForecastPage() {
   const { entries } = useGLStore();
+  const workforceState = useWorkforceStore();
+  const storeDepartments = workforceState.departments ?? [];
+  const storeEmployees = workforceState.employees ?? [];
+
+  // WIRED (C-3): payroll departments come from the real workforceStore.
+  // Headcount and base salary are derived from active employees (exact money
+  // sums via sumMoney); benefits and YoY change are not modeled in the store
+  // yet, so they render as zero until a benefits/prior-year source is
+  // imported — never fabricated figures.
+  const departments: DepartmentPayroll[] = storeDepartments.map((d) => {
+    const members = storeEmployees.filter((e) => e.department === d.name && e.status === 'active');
+    const baseSalary = roundTo(sumMoney(members.map((e) => e.salary)), 2);
+    return {
+      department: d.name,
+      headcount: members.length,
+      baseSalary,
+      benefits: 0,
+      totalCost: baseSalary,
+      costPerHead: members.length > 0 ? roundTo(divideMoney(baseSalary, members.length), 2) : 0,
+      yoyChange: 0,
+    };
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -166,10 +114,10 @@ export default function PayrollForecastPage() {
     return roundTo(sumMoney(payrollEntries.map((e) => Math.abs(e.debit - e.credit))), 2);
   }, [entries]);
 
-  const totalPayroll = roundTo(sumMoney(mockDepartments.map((d) => d.totalCost)), 2);
-  const totalHeadcount = roundTo(sumMoney(mockDepartments.map((d) => d.headcount)), 2);
+  const totalPayroll = roundTo(sumMoney(departments.map((d) => d.totalCost)), 2);
+  const totalHeadcount = roundTo(sumMoney(departments.map((d) => d.headcount)), 2);
   const avgCostPerHead = totalHeadcount > 0 ? totalPayroll / totalHeadcount : 0;
-  const totalBenefits = roundTo(sumMoney(mockDepartments.map((d) => d.benefits)), 2);
+  const totalBenefits = roundTo(sumMoney(departments.map((d) => d.benefits)), 2);
   const benefitsRatio = totalPayroll > 0 ? (totalBenefits / totalPayroll) * 100 : 0;
 
   const deptColumns: Column<DepartmentPayroll>[] = [
@@ -224,7 +172,7 @@ export default function PayrollForecastPage() {
           'Cost/Head',
           'YoY %',
         ],
-        rows: mockDepartments.map((d) => [
+        rows: departments.map((d) => [
           d.department,
           d.headcount,
           d.baseSalary,
@@ -238,7 +186,7 @@ export default function PayrollForecastPage() {
     ).catch(reportExportFailure);
   };
 
-  const hasData = entries.length > 0 || mockDepartments.length > 0;
+  const hasData = entries.length > 0 || departments.length > 0;
 
   if (!hasData) {
     return (
@@ -257,7 +205,7 @@ export default function PayrollForecastPage() {
         <div>
           <h1 className="text-2xl font-bold">Payroll Forecast</h1>
           <p className="text-sm text-slate-400">
-            {totalHeadcount} employees across {mockDepartments.length} departments
+            {totalHeadcount} employees across {departments.length} departments
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleExport}>
@@ -401,7 +349,7 @@ export default function PayrollForecastPage() {
         </CardHeader>
         <CardContent>
           <DataTable
-            data={mockDepartments}
+            data={departments}
             columns={deptColumns}
             pageSize={8}
             caption="Department breakdown table"

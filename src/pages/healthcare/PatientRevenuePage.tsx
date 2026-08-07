@@ -1,22 +1,10 @@
 import type { FiscalPeriod } from '@/types';
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 
 const columns = [
   { key: 'metric', header: 'Metric' },
   { key: 'value', header: 'Value' },
 ];
-const mockPeriods: FiscalPeriod[] = ['Q1', 'Q2', 'Q3', 'Q4'].map((q, i) => ({
-  id: `P0${i + 1}`,
-  year: 2024,
-  periodNumber: i + 1,
-  name: q,
-  startDate: `2024-${String(i * 3 + 1).padStart(2, '0')}-01`,
-  endDate: `2024-${String((i + 1) * 3).padStart(2, '0')}-30`,
-  periodType: 'Quarterly' as const,
-  isAdjustingPeriod: false,
-  isClosed: false,
-  closedAt: null,
-  closedBy: null,
-}));
 import { useMemo, useState } from 'react';
 import {
   DollarSign,
@@ -52,6 +40,8 @@ import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFor
 export default function PatientRevenuePage() {
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
+  // WIRED (C-3): real fiscal periods from FiscalCalendar + org settings.
+  const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
   const stats = useMemo(() => {
     return HealthcareEngine.calculatePatientRevenue(entries);
@@ -109,7 +99,7 @@ export default function PatientRevenuePage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
             Export Data

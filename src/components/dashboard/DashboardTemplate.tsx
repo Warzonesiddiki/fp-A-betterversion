@@ -39,6 +39,7 @@ export interface DashboardTemplateProps {
   onCellClick?: (row: string, col: string, value: number) => void;
 }
 
+// demo defaults — replaced by real data when the dashboard template preview is a labeled demo
 const mockKPIs: KPICardEnhancedProps[] = [
   {
     title: 'Total Revenue',
@@ -83,6 +84,7 @@ const mockKPIs: KPICardEnhancedProps[] = [
   },
 ];
 
+// demo defaults — replaced by real data when the dashboard template preview is a labeled demo
 const mockTrafficItems = [
   { label: 'Revenue Growth', value: 8.2, format: 'percent' as const },
   { label: 'Gross Margin', value: 62.5, format: 'percent' as const },
@@ -92,6 +94,7 @@ const mockTrafficItems = [
   { label: 'Inventory Turns', value: 6.2, format: 'number' as const },
 ];
 
+// demo defaults — replaced by real data when the dashboard template preview is a labeled demo
 const mockTornado: TornadoVariable[] = [
   { name: 'Price', lowValue: 38000000, highValue: 47000000, baseValue: 42500000 },
   { name: 'Volume', lowValue: 39500000, highValue: 45500000, baseValue: 42500000 },
@@ -149,6 +152,7 @@ const mockSankey = {
   ] as SankeyLink[],
 };
 
+// demo defaults — replaced by real data when the dashboard template preview is a labeled demo
 const mockActivities = [
   { id: '1', user: 'J. Smith', action: 'Approved Q3 budget', timestamp: '2 hours ago' },
   { id: '2', user: 'M. Chen', action: 'Updated revenue forecast', timestamp: '4 hours ago' },
@@ -156,6 +160,7 @@ const mockActivities = [
   { id: '4', user: 'A. Kim', action: 'Created new scenario', timestamp: '1 day ago' },
 ];
 
+// demo defaults — replaced by real data when the dashboard template preview is a labeled demo
 const mockComboData: ComboChartDataPoint[] = [
   { name: 'Jan', bar: 9800000, bar2: 9500000, line: 18.2, line2: 17.5 },
   { name: 'Feb', bar: 10200000, bar2: 9800000, line: 19.1, line2: 17.8 },

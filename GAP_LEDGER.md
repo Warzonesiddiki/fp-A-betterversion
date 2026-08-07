@@ -1497,3 +1497,27 @@ Evidence = literal command output, 2026-08-07 (see `reports/audit/ZERO_COMPROMIS
 - **F-02 (P2, ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked; same as ZCFA-2026-07-28 #14). Real-browser journeys remain UNVERIFIED_BLOCKED.
 - **F-03 (P2):** covered-claims reconciliation — fixed in-session (see coverage row above).
 - **DEFER-2026-001:** AnomalyDetectionEngine percentile linear-interp vs nearest-rank — retained (documented, tests green, behavior pinned).
+
+---
+
+## MISSION C — F-01 CLOSED + zero-mock-data completion (2026-08-07, branch `arena/019fdbe0-fp-a-betterversion`, base `f5a4844`)
+
+Evidence = literal command output, 2026-08-07 (see updated `reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md`).
+
+### CLOSED — F-01 (audit's only FAIL of the all-in-one claim)
+- **Period-close client UI shipped:** `/periods/close` → `src/pages/periods/PeriodClosePage.tsx` (fiscal-period grid from real `FiscalCalendar`, close checklist from `FinancialCloseEngine`, `PeriodCloseStateMachine` open → soft-close → hard-close → locked, money-exact pre-close validation via `evaluateCloseReadiness`, SHA-256 chained audit panel via `verifyCloseChain`, post-close P&L/BS/CF export from real GL via `reportDataBuilder` + `ExportEngine`).
+- **Store:** `src/store/periodCloseStore.ts` — offline-first, masterStorage-persisted, `enforce(Permissions.PERIOD_CLOSE)` on transitions + Admin-gated `PERIOD_REOPEN` for reopen/force-reopen; lock propagates to budget line items + fiscal-year scenarios (store-tested).
+- **Permissions:** `period:read` (all roles), `period:close` (Admin + FP&A_Manager), `period:reopen` (Admin) added to `Permissions` + `ROLE_PERMISSIONS`; RBAC matrix tests green.
+- **SOX bridge:** SOXCompliancePage "Close period: <state>" CTA ↔ close page link to `/audit/sox`.
+- **Tests:** 35 new (10 store / 10 page / 9 money-exact / 6 a11y) + SOX bridge test; a11y suite 442 → **448 passed / 1 skipped**; close engine + store + page suite **120 passed**.
+- **Gates (literal):** `tsc --noEmit` 0; `eslint src --max-warnings 0` 0; `money-adoption.mjs` **231/906, 0 raw toFixed** (server 2/23, 0); `verify-readme-stats.mjs` ✓; `_docs.test.ts` 7/7; a11y 448/1.
+
+### CLOSED — F-04 (zero-mock-data completion)
+- **17 files / 23 synthetic arrays → 7 wired, 16 disclosed, 0 left.**
+- **Wired (real store/engine):** MultiBookPage MOCK_BOOKS → `MultiBookEngine`; CapExDashboard mockProjects → `capexStore` (+ categoryData now derived money-exact, fabricated chart data removed); OwnershipTreePage mockEntities → `entityStore`; PatientRevenuePage mockPeriods → `buildFiscalPeriods()`; TelecomDashboardPage mockArpuTrend → `telecomStore` (+ hardcoded KPI fallbacks removed); PayrollForecastPage mockDepartments → `workforceStore` (headcount/salary derived from employees); LogisticsDashboardPage mockTopLanes → `logisticsStore.routeCosts`.
+- **Disclosed (labeled `// demo defaults — replaced by real data when X is imported`):** DashboardTemplate ×5, GovernmentDashboard ×3, ICEliminationPage, InventoryPage, PromoAnalysisPage, DeferredSchedulePage, TransferPricingPage, FXExposurePage, FXPositionGrid, HedgeManager.
+- **Enforcement:** `scripts/mock-data-audit.mjs` extended with a DISPOSITIONS list (wired=7, disclosed=16) — **exit 1 on any site without a disposition, any disclosed site lacking the `demo defaults` marker, or any wired site still present**. Run: `node scripts/mock-data-audit.mjs` → ✓ gate holds.
+
+### OPEN (unchanged dispositions)
+- **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked).
+- **F-03:** claim corrected in-session (coverage 50 floor / 71.3% measured) — recorded as fixed.

@@ -48,15 +48,6 @@ const costDistribution = [
   { name: 'Admin', value: 5 },
 ];
 
-// Mock fallback — replaced by store routeCosts when populated
-const mockTopLanes = [
-  { route: 'LA → Chicago', volume: 1240, revenue: 2_980_000, margin: 18.2 },
-  { route: 'NYC → Miami', volume: 980, revenue: 1_860_000, margin: 15.7 },
-  { route: 'Dallas → Atlanta', volume: 870, revenue: 1_640_000, margin: 21.3 },
-  { route: 'Seattle → Denver', volume: 620, revenue: 1_120_000, margin: 14.9 },
-  { route: 'Houston → Phoenix', volume: 540, revenue: 980_000, margin: 17.6 },
-];
-
 const monthlyVolume = [
   { month: 'Jan', shipments: 12400 },
   { month: 'Feb', shipments: 11800 },
@@ -77,15 +68,15 @@ export function LogisticsDashboardPage() {
 
   const onTimeRate = getOnTimeRate();
 
-  const topLanes =
-    routeCosts.length > 0
-      ? routeCosts.map((rc) => ({
-          route: rc.route,
-          volume: rc.volume,
-          revenue: rc.cost,
-          margin: 0,
-        }))
-      : mockTopLanes;
+  // WIRED (C-3): top lanes straight from logisticsStore routeCosts — no
+  // fabricated fallback. Margin is not modeled in RouteCost, so it renders as
+  // '—' until margin data is imported.
+  const topLanes = routeCosts.map((rc) => ({
+    route: rc.route,
+    volume: rc.volume,
+    revenue: rc.cost,
+    margin: null as number | null,
+  }));
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Logistics Dashboard';
@@ -256,7 +247,9 @@ export function LogisticsDashboardPage() {
                     <span className="font-mono text-sm" style={{ color: 'var(--text-primary)' }}>
                       ${formatCompact(lane.revenue)}
                     </span>
-                    <span className="text-xs ml-2 text-green-600">{lane.margin}%</span>
+                    <span className="text-xs ml-2 text-green-600">
+                      {lane.margin === null ? '—' : `${lane.margin}%`}
+                    </span>
                   </div>
                 </div>
               ))}
