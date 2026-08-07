@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ROUTE_HELP_DOCS - Route to Part documentation reference map
  * Built by ATHENA (Phase 9 _docs.ts hand-off, 2026-06-15)
  * Source: docs/parts/_manifest.json (G14 reconciliation output)
@@ -212,6 +212,12 @@ export const ROUTE_HELP_DOCS: Record<string, RouteHelpDoc> = {
     path: 'docs/parts/PART_015_SECURITY_COMPLIANCE_AUDIT.md',
   },
   '/audit/impairment': {
+    part: 15,
+    title: 'Security, Compliance & Audit Architecture',
+    file: 'PART_015_SECURITY_COMPLIANCE_AUDIT.md',
+    path: 'docs/parts/PART_015_SECURITY_COMPLIANCE_AUDIT.md',
+  },
+  '/periods/close': {
     part: 15,
     title: 'Security, Compliance & Audit Architecture',
     file: 'PART_015_SECURITY_COMPLIANCE_AUDIT.md',

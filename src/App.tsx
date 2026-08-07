@@ -187,6 +187,7 @@ const DataFlowMapPage = lazy(() => import('./pages/data/DataFlowMapPage'));
 const ReconciliationPage = lazy(() => import('./pages/data/ReconciliationPage'));
 const VersionDiffPage = lazy(() => import('./pages/data/VersionDiffPage'));
 const SOXCompliancePage = lazy(() => import('./pages/audit/SOXCompliancePage'));
+const PeriodClosePage = lazy(() => import('./pages/periods/PeriodClosePage'));
 const ConsolidationPage = lazy(() => import('./pages/consolidation/ConsolidationPage'));
 const LeaseAccountingPage = lazy(() => import('./pages/lease/LeaseAccountingPage'));
 const CapexTracker = lazy(() => import('./pages/capex/CapexTracker'));
@@ -435,6 +436,7 @@ export default function App() {
                 <Route path="/data/gl-reporting" element={<GLReportingPage />} />
                 <Route path="/audit/trail" element={<AuditTrailPage />} />
                 <Route path="/audit/sox" element={<SOXCompliancePage />} />
+                <Route path="/periods/close" element={<PeriodClosePage />} />
                 <Route path="/budgets/approval" element={<BudgetApproval />} />
                 <Route path="/forecasts/drivers" element={<DriverPlanningPage />} />
                 <Route path="/forecasts/rolling" element={<RollingForecastPage />} />

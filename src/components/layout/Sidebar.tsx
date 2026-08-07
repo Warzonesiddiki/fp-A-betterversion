@@ -34,6 +34,7 @@ import {
   FileCheck2,
   GraduationCap,
   Users,
+  CalendarCheck,
 } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
@@ -95,6 +96,9 @@ export const Sidebar = memo(function Sidebar() {
         // N-0013: the calculation engines were unreachable from the UI. This
         // is the entry point that makes the full catalogue genuinely usable.
         { path: '/admin/engines', label: 'Engine Catalog', icon: Cpu },
+        // F-01: month-end close workflow — the audit's one FAIL in the
+        // all-in-one claim; the close page is the missing client surface.
+        { path: '/periods/close', label: 'Period Close', icon: CalendarCheck },
       ],
     },
   ];

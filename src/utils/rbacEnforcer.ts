@@ -424,6 +424,14 @@ export const Permissions = {
   INVENTORY_UPDATE: 'inventory:update',
   INVENTORY_DELETE: 'inventory:delete',
 
+  // Period close (F-01 — month-end close workflow). Mirrors the server's
+  // TRANSITION_ROLES policy in server/src/routes/periods.ts: soft/hard close
+  // is Admin + FP&A_Manager; reopen/force-reopen is Admin (+ Compliance on the
+  // server); read is granted to every authenticated role.
+  PERIOD_READ: 'period:read',
+  PERIOD_CLOSE: 'period:close',
+  PERIOD_REOPEN: 'period:reopen',
+
   // UI
   UI_READ: 'ui:read',
   UI_UPDATE: 'ui:update',

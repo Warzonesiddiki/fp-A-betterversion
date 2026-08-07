@@ -1176,6 +1176,31 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       { title: 'What is this page?', content: 'Sarbanes-Oxley controls and audit trail.' },
     ],
   },
+  '/periods/close': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Run the month-end close: pick a fiscal period, work the close checklist, and walk the period through open → soft-close → hard-close → locked. Every transition is validated (trial balance must balance, GL data must exist, budgets approved) and recorded in a SHA-256 chained audit log.',
+      },
+      {
+        title: 'Who can close a period?',
+        content:
+          'Admin and FP&A Managers can soft-close, hard-close and lock periods (period:close). Reopening a closed or locked period requires Admin (period:reopen) and a reason. All other roles see the workflow read-only.',
+      },
+      {
+        title: 'Why would a close be blocked?',
+        content:
+          'The pre-close validation panel shows the exact reason: no GL entries in the period, an unbalanced trial balance (debits ≠ credits to the cent), unapproved fiscal-year budgets, or incomplete critical checklist tasks. Hard-close and lock are blocked until every check passes.',
+      },
+      {
+        title: 'What happens when a period is locked?',
+        content:
+          'The period cannot be posted to or reopened without admin force-reopen. Its budget line items and the fiscal year’s scenarios are frozen, and the post-close report pack (P&L, balance sheet, cash flow) can be exported from the real GL.',
+      },
+    ],
+  },
   '/banking/banking': {
     title: 'Banking',
     sections: [{ title: 'What is this page?', content: 'Banking sector dashboard.' }],
