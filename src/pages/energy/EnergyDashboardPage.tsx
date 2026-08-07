@@ -1,3 +1,4 @@
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { useState } from 'react';
 
 import { BarChart3, Download, RefreshCw } from 'lucide-react';
@@ -24,47 +25,7 @@ import type { FiscalPeriod } from '@/types';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data
-const mockPeriods: FiscalPeriod[] = [
-  {
-    id: 'P01',
-    name: 'January',
-    year: 2026,
-    periodNumber: 1,
-    startDate: '2026-01-01',
-    endDate: '2026-01-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: true,
-    closedAt: '2026-02-05',
-    closedBy: 'User1',
-  },
-  {
-    id: 'P02',
-    name: 'February',
-    year: 2026,
-    periodNumber: 2,
-    startDate: '2026-02-01',
-    endDate: '2026-02-28',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: false,
-    closedAt: null,
-    closedBy: null,
-  },
-  {
-    id: 'P03',
-    name: 'March',
-    year: 2026,
-    periodNumber: 3,
-    startDate: '2026-03-01',
-    endDate: '2026-03-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: false,
-    closedAt: null,
-    closedBy: null,
-  },
-];
+const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 const trendData = [
   { month: 'Jan', revenue: 1250000, cost: 850000, production: 4200 },

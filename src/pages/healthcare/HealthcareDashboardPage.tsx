@@ -1,3 +1,4 @@
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { useMemo, useState } from 'react';
 
 import { Activity, Stethoscope, Building2, Download, Share2, MoreHorizontal } from 'lucide-react';
@@ -24,21 +25,7 @@ import { HealthcareEngine } from '@/engines/HealthcareEngine';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data
-const mockPeriods: FiscalPeriod[] = [
-  {
-    id: 'P01',
-    name: 'January',
-    year: 2026,
-    periodNumber: 1,
-    startDate: '2026-01-01',
-    endDate: '2026-01-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: true,
-    closedAt: '2026-02-05',
-    closedBy: 'User1',
-  },
-];
+const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 const patientVolumeData = [
   { month: 'Jan', emergency: 850, inpatient: 420, outpatient: 2100 },
