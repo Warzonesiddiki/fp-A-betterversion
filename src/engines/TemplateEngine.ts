@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 /**
  * TemplateEngine — manages budget/forecast/report templates.
  *
@@ -150,7 +151,7 @@ export class TemplateEngine {
 
     return {
       templateId: template.id,
-      instanceId: `inst-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      instanceId: randomId('inst'),
       data: instanceData,
       customizations: {},
       createdAt: new Date().toISOString(),

@@ -16,6 +16,7 @@ export type { ExtendedAuditEntry, AuditSource, AuditOperation };
 
 import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
 import { sha256Hex } from '@/utils/sha256';
+import { randomId } from '@/utils/cryptoId';
 
 // ---------------------------------------------------------------------------
 // Types (re-exported from canonical location)
@@ -155,17 +156,11 @@ export interface AuditChainVerification {
 
 /**
  * F-CLIO-6 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — CWE-338 WEAK PRNG):
- * Use crypto.randomUUID() (CSPRNG) instead of Math.random() for security-critical
- * audit entry IDs. Falls back to Math.random() only in environments where
- * crypto.randomUUID is unavailable (e.g., legacy browsers without crypto API).
+ * Audit entry IDs MUST come from a CSPRNG. `randomId` uses crypto.randomUUID()
+ * and throws rather than degrade to Math.random (CWE-338), closing the legacy
+ * fallback that previously weakened audit IDs in crypto-less environments.
  */
-const uid = (): string => {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-  // Fallback: combine high-resolution timestamp + Math.random (not ideal, but functional)
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-};
+const uid = (): string => randomId();
 
 const now = (): number => Date.now();
 

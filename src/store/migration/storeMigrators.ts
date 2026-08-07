@@ -5,6 +5,7 @@
 
 import { CubeEngine } from '@/engines/CubeEngine';
 
+import { randomId } from '@/utils/cryptoId';
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -40,7 +41,7 @@ function _cellKey(cube: string, coords: Record<string, string>, measure: string)
 }
 
 function generateId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return randomId(prefix);
 }
 
 // ---------------------------------------------------------------------------

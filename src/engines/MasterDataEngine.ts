@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // MasterDataEngine — Single source of truth for entities, accounts, periods
 // Pure TypeScript, deterministic, no external dependencies
 
@@ -58,7 +59,7 @@ export class MasterDataEngine {
   private codeIndex = new Map<string, Map<string, string>>();
 
   add(record: Omit<MasterDataRecord, 'createdAt' | 'updatedAt' | 'version'>): MasterDataRecord {
-    const id = record.id || `md-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = record.id || randomId('md');
     const now = new Date().toISOString();
     const fullRecord: MasterDataRecord = {
       ...record,
@@ -86,7 +87,7 @@ export class MasterDataEngine {
       const oldValue = (record as unknown as Record<string, unknown>)[key];
       if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
         this.changes.push({
-          id: `chg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          id: randomId('chg'),
           recordId: id,
           field: key,
           oldValue,

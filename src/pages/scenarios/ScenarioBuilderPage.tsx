@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore } from '@/store/scenarioStore';
+import { runMonteCarlo } from '@/workers';
 
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -29,7 +30,7 @@ import {
 } from 'recharts';
 import { VarianceChart } from '@/components/charts/VarianceChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { formatCompact } from '@/utils/financialFormatting';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -162,6 +163,17 @@ export default function ScenarioBuilderPage() {
   const [cogsChange, setCogsChange] = useState(-2);
   const [probability, setProbability] = useState(60);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [mcLoading, setMcLoading] = useState(false);
+  const [mcError, setMcError] = useState<string | null>(null);
+  const [mcIterations, setMcIterations] = useState(2000);
+  const [mcResults, setMcResults] = useState<{
+    count: number;
+    avgProfit: number;
+    median: number;
+    p10: number;
+    p90: number;
+    positivePct: number;
+  } | null>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Scenario Builder';
@@ -277,6 +289,64 @@ export default function ScenarioBuilderPage() {
       } as unknown as Parameters<typeof createScenario>[0]);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save scenario');
+    }
+  };
+
+  const handleRunMonteCarlo = async () => {
+    setMcLoading(true);
+    setMcError(null);
+    setMcResults(null);
+    try {
+      // Real Monte Carlo: sampled growth/COGS/pricing distributions run in the
+      // monte-carlo Web Worker (seeded PRNG) — see workers/monte-carlo.worker.ts.
+      const response = await runMonteCarlo({
+        iterations: mcIterations,
+        seed: Math.floor(Math.random() * 2 ** 31),
+        assumptions: [
+          {
+            name: 'growthPct',
+            type: 'normal',
+            mean: growthRate,
+            stdDev: Math.max(1, Math.abs(growthRate) * 0.3),
+          },
+          { name: 'cogsPct', type: 'normal', mean: cogsChange, stdDev: 1.5 },
+          { name: 'pricingPct', type: 'normal', mean: pricingChange, stdDev: 2 },
+        ],
+      });
+      const baseRevenue = scenarioComparison.newRevenue;
+      const baseCogs = scenarioComparison.newCogs;
+      const baseOpex = scenarioComparison.newOpex;
+
+      const profits = response.results
+        .map((r) => {
+          const growth = r.values.growthPct ?? 0;
+          const cogs = r.values.cogsPct ?? 0;
+          const pricing = r.values.pricingPct ?? 0;
+          const revenue = baseRevenue * (1 + growth / 100) * (1 + pricing / 100);
+          const costs = baseCogs * (1 + cogs / 100) + baseOpex;
+          return revenue - costs;
+        })
+        .sort((a, b) => a - b);
+      if (profits.length === 0) throw new Error('Monte Carlo returned no samples');
+
+      const avgProfit = profits.reduce((s, p) => s + p, 0) / profits.length;
+      const median = profits[Math.floor(profits.length / 2)] ?? 0;
+      const p10 = profits[Math.floor(profits.length * 0.1)] ?? 0;
+      const p90 = profits[Math.floor(profits.length * 0.9)] ?? 0;
+      const positiveOutcomes = profits.filter((p) => p >= 0).length;
+
+      setMcResults({
+        count: profits.length,
+        avgProfit,
+        median,
+        p10,
+        p90,
+        positivePct: (positiveOutcomes / profits.length) * 100,
+      });
+    } catch (err) {
+      setMcError(err instanceof Error ? err.message : 'Monte Carlo simulation failed');
+    } finally {
+      setMcLoading(false);
     }
   };
 
@@ -439,6 +509,90 @@ export default function ScenarioBuilderPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Monte Carlo simulation — real worker-backed sampling */}
+      <Card data-testid="monte-carlo-card">
+        <CardHeader>
+          <CardTitle>Monte Carlo Simulation</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-slate-400">
+            Samples revenue growth, pricing, and COGS distributions ({mcIterations.toLocaleString()}{' '}
+            iterations) in a Web Worker to estimate the profit distribution for the current
+            assumptions.
+          </p>
+          <div className="flex items-center gap-3">
+            <label htmlFor="mc-iterations" className="text-xs text-slate-400">
+              Iterations
+            </label>
+            <input
+              id="mc-iterations"
+              type="number"
+              min={100}
+              max={100000}
+              value={mcIterations}
+              onChange={(e) => setMcIterations(Math.max(100, Number(e.target.value) || 2000))}
+              className="w-28 rounded border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-slate-200"
+              aria-label="Monte Carlo iterations"
+            />
+            <Button
+              onClick={handleRunMonteCarlo}
+              disabled={mcLoading}
+              aria-label="Run Monte Carlo simulation"
+              data-testid="run-monte-carlo"
+            >
+              {mcLoading ? 'Running...' : 'Run Monte Carlo'}
+            </Button>
+          </div>
+          {mcError && (
+            <p className="text-sm text-red-400" role="alert">
+              {mcError}
+            </p>
+          )}
+          {mcResults && (
+            <div
+              className="grid grid-cols-2 sm:grid-cols-5 gap-3"
+              data-testid="monte-carlo-results"
+            >
+              <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
+                <div className="text-xs uppercase tracking-widest text-slate-500">Avg Profit</div>
+                <div className="text-lg font-black tabular-nums" data-testid="mc-avg">
+                  {formatCurrency(mcResults.avgProfit)}
+                </div>
+              </div>
+              <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
+                <div className="text-xs uppercase tracking-widest text-slate-500">Median</div>
+                <div className="text-lg font-black tabular-nums" data-testid="mc-median">
+                  {formatCurrency(mcResults.median)}
+                </div>
+              </div>
+              <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
+                <div className="text-xs uppercase tracking-widest text-slate-500">P10</div>
+                <div className="text-lg font-black tabular-nums text-red-400" data-testid="mc-p10">
+                  {formatCurrency(mcResults.p10)}
+                </div>
+              </div>
+              <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
+                <div className="text-xs uppercase tracking-widest text-slate-500">P90</div>
+                <div
+                  className="text-lg font-black tabular-nums text-emerald-400"
+                  data-testid="mc-p90"
+                >
+                  {formatCurrency(mcResults.p90)}
+                </div>
+              </div>
+              <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
+                <div className="text-xs uppercase tracking-widest text-slate-500">
+                  Profit &gt; 0
+                </div>
+                <div className="text-lg font-black tabular-nums" data-testid="mc-positive">
+                  {formatPercent(mcResults.positivePct, 1)}
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-2 gap-6">
         <Card>

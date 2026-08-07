@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { randomId } from '@/utils/cryptoId';
 
 export type WidgetType =
   | 'kpi'
@@ -79,7 +80,7 @@ export interface DashboardState {
 }
 
 function generateId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return randomId(prefix);
 }
 
 export const useDashboardStore = create<DashboardState>()(

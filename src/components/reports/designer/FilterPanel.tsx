@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 import React from 'react';
 import { Filter, X, GripVertical, Plus } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -82,7 +83,7 @@ export function FilterPanel({
       const data = JSON.parse(e.dataTransfer.getData('application/json'));
       if (data.type === 'dimension') {
         const newFilter: ActiveFilter = {
-          id: `filter_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          id: randomId('filter'),
           field: data.value,
           operator: 'eq',
           value: '',

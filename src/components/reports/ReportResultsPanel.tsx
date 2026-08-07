@@ -65,8 +65,9 @@ function ReportTable({ report }: ReportTableProps) {
 export interface ReportResultsPanelProps {
   reports: GeneratedReport[];
   sections: BoardPackSection[];
-  onDownloadZip: () => void;
-  onDownloadBoardPack: () => void;
+  /** Optional — no-op defaults when the caller has no ZIP/board-pack export. */
+  onDownloadZip?: () => void;
+  onDownloadBoardPack?: () => void;
 }
 
 // ---------------------------------------------------------------------------

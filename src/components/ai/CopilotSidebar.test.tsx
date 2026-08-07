@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { CopilotSidebar } from './CopilotSidebar';
@@ -50,7 +50,7 @@ describe('CopilotSidebar', () => {
     expect(container).toBeDefined();
   });
 
-  it.skip('tracks AI engine usage when messages are sent', async () => {
+  it('tracks AI engine usage when messages are sent', async () => {
     render(
       <MemoryRouter>
         <CopilotSidebar />
@@ -61,11 +61,18 @@ describe('CopilotSidebar', () => {
     fireEvent.change(input, { target: { value: 'sum of revenue' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
-    // Should track both AICopilotEngine and FinanceCopilotEngine
-    expect(mockTrack).toHaveBeenCalledWith(expect.objectContaining({ engine: 'AICopilotEngine' }));
-    expect(mockTrack).toHaveBeenCalledWith(
-      expect.objectContaining({ engine: 'FinanceCopilotEngine' })
-    );
+    // AICopilotEngine track is synchronous; FinanceCopilotEngine answers after
+    // a 200ms async step — wait for both.
+    await waitFor(() => {
+      expect(mockTrack).toHaveBeenCalledWith(
+        expect.objectContaining({ engine: 'AICopilotEngine' })
+      );
+    });
+    await waitFor(() => {
+      expect(mockTrack).toHaveBeenCalledWith(
+        expect.objectContaining({ engine: 'FinanceCopilotEngine' })
+      );
+    });
   });
 
   it('does not track when input is empty', async () => {

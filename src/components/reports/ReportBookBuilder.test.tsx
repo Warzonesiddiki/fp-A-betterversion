@@ -53,6 +53,7 @@ vi.mock('@/engines/ReportBookEngine', () => {
       { key: 'entity', label: 'Entity', description: 'Entity name' },
     ]);
     generateReports = vi.fn().mockResolvedValue([]);
+    registerReportGenerator = vi.fn();
   }
 
   return {

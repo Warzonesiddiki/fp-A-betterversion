@@ -364,7 +364,7 @@ describe('OnboardingWizard — Accessibility (WCAG 2.1 AA)', () => {
     expect(decorativeDots?.length).toBeGreaterThanOrEqual(4);
   });
 
-  it.skip('a11y-07: DataTable has caption + aria-label when imported data preview is shown', async () => {
+  it('a11y-07: DataTable has caption + aria-label when imported data preview is shown', async () => {
     const user = userEvent.setup();
     render(<OnboardingWizard onComplete={mockOnComplete} />);
 
@@ -372,10 +372,11 @@ describe('OnboardingWizard — Accessibility (WCAG 2.1 AA)', () => {
     await user.click(screen.getByRole('button', { name: /start/i }));
     await user.click(screen.getByRole('button', { name: /continue/i }));
 
-    // Click the upload button in the mock to trigger onFile callback
-    await user.click(screen.getByRole('button', { name: /upload/i }));
+    // The mocked FileDropZone exposes an "Upload file" button that invokes
+    // onFile — the wizard then sets the preview data and advances to review.
+    await user.click(screen.getByRole('button', { name: 'Upload file' }));
 
-    // Now on review step — DataTable should be visible
+    // Now on review step — DataTable should carry the aria-label and caption.
     const dataTable = screen.getByTestId('data-table');
     expect(dataTable).toHaveAttribute('aria-label', 'Imported data preview');
     expect(dataTable.querySelector('caption')).toHaveTextContent(/Imported data preview/i);

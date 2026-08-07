@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // Session Engine - Session management with timeout and device tracking
 // Pure TypeScript, no external dependencies
 
@@ -43,7 +44,7 @@ export class SessionEngine {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + this.config.timeoutMinutes * 60000);
     const session: Session = {
-      id: `sess-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: randomId('sess'),
       userId,
       createdAt: now.toISOString(),
       lastActivity: now.toISOString(),

@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 export type ApprovalState =
   | 'draft'
   | 'submitted'
@@ -97,7 +98,7 @@ export class WorkflowEngine {
   private delegations: Delegation[] = [];
 
   createWorkflow(def: Omit<WorkflowDefinition, 'id' | 'createdAt'>): WorkflowDefinition {
-    const id = 'wf-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('wf');
     const workflow: WorkflowDefinition = { ...def, id, createdAt: new Date().toISOString() };
     this.workflows.set(id, workflow);
     return workflow;
@@ -127,7 +128,7 @@ export class WorkflowEngine {
     if (!workflowId || !title || !requester) return null;
     const workflow = this.workflows.get(workflowId);
     if (!workflow || workflow.steps.length === 0) return null;
-    const id = 'apr-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('apr');
     const now = new Date().toISOString();
     const request: ApprovalRequest = {
       id,
@@ -295,7 +296,7 @@ export class WorkflowEngine {
     const request = this.requests.get(requestId);
     if (!request) return null;
     const cr: ChangeRequest = {
-      id: 'cr-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('cr'),
       requestId,
       requester,
       description,

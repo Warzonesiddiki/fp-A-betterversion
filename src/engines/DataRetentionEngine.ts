@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // DataRetentionEngine — Automatic archival/deletion based on rules
 // Pure TypeScript, deterministic, no external dependencies
 
@@ -93,10 +94,10 @@ export class DataRetentionEngine {
           if (rule.condition && !rule.condition(record)) continue;
 
           const retRecord: RetentionRecord = {
-            id: `ret-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            id: randomId('ret'),
             ruleId: rule.id,
             dataSource,
-            recordId: String(record.id || record['id'] || Math.random()),
+            recordId: String(record.id || record['id'] || randomId('rec')),
             action: rule.action,
             reason: `Age ${ageDays} days exceeds retention period of ${rule.retentionDays} days`,
           };

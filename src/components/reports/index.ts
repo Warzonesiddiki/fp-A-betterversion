@@ -11,6 +11,4 @@ export * from './designer/ReportDesigner';
 export * from './designer/PeriodPromptBar';
 export * from './designer/FilterPanel';
 export * from './designer/DesignerSidebar';
-export * from './BookBurstConfig';
-export * from './ReportGenerator';
 export * from './ReportResultsPanel';

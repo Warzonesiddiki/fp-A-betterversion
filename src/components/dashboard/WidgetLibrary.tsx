@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 import { useState, useCallback, useRef } from 'react';
 import { cn } from '@/utils/cn';
 
@@ -65,7 +66,7 @@ export function WidgetLibrary({
   const addWidget = useCallback(
     (def: WidgetDefinition) => {
       const newWidget: PlacedWidget = {
-        id: `widget-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        id: randomId('widget'),
         type: def.type,
         span: def.defaultSpan,
         order: placedWidgets.length,

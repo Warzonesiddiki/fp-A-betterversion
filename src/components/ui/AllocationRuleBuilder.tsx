@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 import React, { useState, useCallback } from 'react';
 import { Plus, Trash2, ArrowRight, Play, Settings2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -73,7 +74,7 @@ const PRESET_DRIVERS = [
 ];
 
 function generateId(): string {
-  return `rule-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return randomId('rule');
 }
 
 // ---------------------------------------------------------------------------

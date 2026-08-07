@@ -4,6 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { User, AuthState, Role } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { startRotation, stopRotation } from '../utils/tokenRotation';
+import { randomId } from '@/utils/cryptoId';
 
 // --- Mock-Auth build-time gate ---
 // SECURITY FIX (C-01): Mock auth tokens are unsigned and forgeable.
@@ -661,7 +662,7 @@ export const useAuthStore = create<AuthState>()(
             };
 
             const accessToken = generateMockToken(newUser.id, newUser.role);
-            const refreshToken = `rt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            const refreshToken = randomId('rt');
 
             set((s) => {
               s.user = newUser as typeof s.user;

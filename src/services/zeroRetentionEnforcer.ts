@@ -10,6 +10,7 @@
  * @module zeroRetentionEnforcer
  */
 
+import { randomId } from '@/utils/cryptoId';
 import type {
   DataClassification,
   ZeroRetentionHeaders,
@@ -37,7 +38,7 @@ export function generateZeroRetentionHeaders(
   classification: DataClassification,
   userId: string
 ): ZeroRetentionHeaders {
-  const requestId = `req-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const requestId = randomId('req');
   const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24h
 
   return {
@@ -84,7 +85,7 @@ export function enforcePolicy(
   const headers = generateZeroRetentionHeaders(classification, userId);
 
   const auditEntry: OutboundDataAuditEntry = {
-    id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: randomId('audit'),
     timestamp: new Date().toISOString(),
     destination,
     classification,

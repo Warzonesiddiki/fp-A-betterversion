@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // WORKFLOW ACTION ENGINE
 // Action library for workflow automation: notify, calculate, export, validate
@@ -149,7 +150,7 @@ export class WorkflowActionEngine {
     description: string,
     config: ActionConfig = {}
   ): ActionDefinition {
-    const id = 'act-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('act');
     const action: ActionDefinition = {
       id,
       type,

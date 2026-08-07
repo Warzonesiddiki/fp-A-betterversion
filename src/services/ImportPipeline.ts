@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 import {
   GLImportService,
   type GLImportOptions,
@@ -116,7 +117,7 @@ export class ImportPipeline {
 
       for (const row of validated.validRows) {
         const entry: GLEntry = {
-          id: `entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          id: randomId('entry'),
           accountId: String(row.accountCode ?? ''),
           accountCode: String(row.accountCode ?? ''),
           accountName: String(row.accountName ?? ''),

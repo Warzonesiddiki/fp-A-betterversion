@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // REPORT SCHEDULING ENGINE
 // Cron-based scheduling, distribution lists, delivery tracking
@@ -56,7 +57,7 @@ export class ReportSchedulingEngine {
     recipients: string[],
     format: 'pdf' | 'excel' | 'csv' = 'pdf'
   ): ReportSchedule {
-    const id = 'sched-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('sched');
     const now = new Date().toISOString();
     const schedule: ReportSchedule = {
       id,

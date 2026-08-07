@@ -8,19 +8,25 @@ import {
   type ReportBookEntry,
   type Entity,
   type GenerationProgress,
+  type GeneratedReport,
+  type BoardPackSection,
 } from '@/engines/ReportBookEngine';
-
-// ---------------------------------------------------------------------------
-// Mock data — replace with store selectors in production
-// ---------------------------------------------------------------------------
-
-const MOCK_ENTITIES: Entity[] = [
-  { id: 'ent-1', name: 'Acme Corp (US)', currency: 'USD', parentId: null },
-  { id: 'ent-2', name: 'Acme Europe (UK)', currency: 'GBP', parentId: 'ent-1' },
-  { id: 'ent-3', name: 'Acme Asia (JP)', currency: 'JPY', parentId: 'ent-1' },
-];
+import { buildReportData } from '@/engines/reportDataBuilder';
+import { useGLStore } from '@/store/glStore';
+import { useBudgetStore } from '@/store/budgetStore';
+import { useEntityStore } from '@/store/entityStore';
+import { ReportResultsPanel } from './ReportResultsPanel';
+import { formatNumber } from '@/utils/financialFormatting';
 
 const PRESET_LIST = Object.values(REPORT_TEMPLATE_PRESETS);
+
+/** Synthetic consolidated target when no explicit entities exist. */
+const CONSOLIDATED_ENTITY: Entity = {
+  id: 'entity-consolidated',
+  name: 'All Entities (Consolidated)',
+  currency: 'USD',
+  parentId: null,
+};
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -194,7 +200,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Main Component
+// Main Component — real data via glStore / budgetStore / entityStore
 // ---------------------------------------------------------------------------
 
 export const ReportBookBuilder = memo(function ReportBookBuilder() {
@@ -204,6 +210,26 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
   );
   const [progress, setProgress] = useState<GenerationProgress | null>(null);
   const [previewEntry, setPreviewEntry] = useState<ReportBookEntry | null>(null);
+  const [results, setResults] = useState<GeneratedReport[]>([]);
+  const [sections, setSections] = useState<BoardPackSection[]>([]);
+  const [isComplete, setIsComplete] = useState(false);
+
+  const glEntries = useGLStore((s) => s.entries);
+  const budgetItems = useBudgetStore((s) => s.lineItems);
+  const storeEntities = useEntityStore((s) => s.entities);
+
+  // Real entity list (entityStore), with an honest consolidated fallback.
+  const entities: Entity[] = useMemo(() => {
+    if (storeEntities.length > 0) {
+      return storeEntities.map((e) => ({
+        id: e.id,
+        name: e.name,
+        currency: e.currency || 'USD',
+        parentId: e.parentId,
+      }));
+    }
+    return [CONSOLIDATED_ENTITY];
+  }, [storeEntities]);
 
   const availableVars = useMemo(() => engine.getAvailableVariables(), [engine]);
 
@@ -222,13 +248,13 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
       engine.addEntry(book.id, {
         reportName: name,
         templateId: presetId,
-        entityIds: MOCK_ENTITIES.map((e) => e.id),
+        entityIds: entities.map((e) => e.id),
         variables: defaultVars,
         enabled: true,
       });
       setBook({ ...engine.getBook(book.id)! });
     },
-    [book.id, engine]
+    [book.id, engine, entities]
   );
 
   const handleUpdateEntry = useCallback(
@@ -278,9 +304,32 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
     [book.id, book.entries, engine]
   );
 
+  // --- Real data resolution ---
+
+  const dataForEntity = useCallback(
+    (entity: Entity) => {
+      const filtered =
+        entity.id === CONSOLIDATED_ENTITY.id
+          ? glEntries
+          : glEntries.filter((e) => !e.entityId || e.entityId === entity.id);
+      // Budget line items carry no entity scoping — applied globally.
+      return {
+        entries: filtered,
+        budgetItems,
+        entityName: entity.name,
+        currency: entity.currency,
+        periodLabel: 'FY 2026',
+      };
+    },
+    [glEntries, budgetItems]
+  );
+
   // --- Generation ---
 
   const handleGenerate = useCallback(async () => {
+    setResults([]);
+    setSections([]);
+    setIsComplete(false);
     setProgress({
       total: 0,
       completed: 0,
@@ -291,31 +340,57 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
     });
 
     try {
-      const _results = await engine.generateReports(book.id, MOCK_ENTITIES, setProgress);
-      // Results available for export
-    } catch {
-      // errors are captured in progress
-    }
-  }, [book.id, engine]);
+      // Register real-data generators for every template the engine knows.
+      for (const preset of PRESET_LIST) {
+        engine.registerReportGenerator(preset.id, (entity, variables) => {
+          const input = dataForEntity(entity);
+          return buildReportData(
+            {
+              ...input,
+              periodLabel: variables.period ?? 'FY 2026',
+            },
+            preset.id
+          );
+        });
+      }
 
-  // --- Preview ---
+      const allResults = await engine.generateReports(book.id, entities, setProgress);
+
+      // Build sections from results (grouped by entry)
+      const sectionMap = new Map<string, GeneratedReport[]>();
+      for (const report of allResults) {
+        const key = report.entryId;
+        if (!sectionMap.has(key)) sectionMap.set(key, []);
+        sectionMap.get(key)!.push(report);
+      }
+      const builtSections: BoardPackSection[] = [];
+      let isFirst = true;
+      for (const [entryId, sectionReports] of sectionMap) {
+        builtSections.push({
+          id: entryId,
+          title: sectionReports[0]?.reportName ?? 'Untitled',
+          reports: sectionReports,
+          pageBreakBefore: !isFirst,
+        });
+        isFirst = false;
+      }
+
+      setResults(allResults);
+      setSections(builtSections);
+      setIsComplete(true);
+    } catch {
+      setProgress((prev) => (prev ? { ...prev, status: 'error' } : null));
+    }
+  }, [book.id, engine, entities, dataForEntity]);
+
+  // --- Preview (real data) ---
 
   const previewData = useMemo(() => {
     if (!previewEntry) return null;
-    const entity = MOCK_ENTITIES.find((e) => previewEntry.entityIds.includes(e.id));
+    const entity = entities.find((e) => previewEntry.entityIds.includes(e.id));
     if (!entity) return null;
-
-    // Mock preview — in production, call the registered generator
-    return {
-      headers: ['Line Item', 'Actual', 'Budget', 'Variance'],
-      rows: [
-        [previewEntry.reportName, '', '', ''],
-        ['Revenue', '1,250,000', '1,200,000', '50,000'],
-        ['COGS', '750,000', '720,000', '(30,000)'],
-        ['Gross Profit', '500,000', '480,000', '20,000'],
-      ],
-    };
-  }, [previewEntry]);
+    return buildReportData(dataForEntity(entity), previewEntry.templateId);
+  }, [previewEntry, entities, dataForEntity]);
 
   // --- Render ---
 
@@ -390,7 +465,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
               >
                 <EntryRow
                   entry={entry}
-                  entities={MOCK_ENTITIES}
+                  entities={entities}
                   onUpdate={handleUpdateEntry}
                   onRemove={handleRemoveEntry}
                   onMoveUp={handleMoveUp}
@@ -405,7 +480,9 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
       {/* RIGHT: Preview */}
       <div className="lg:col-span-4 space-y-4">
         <h3 className="text-sm font-semibold text-white">Preview</h3>
-        {previewData ? (
+        {isComplete && results.length > 0 ? (
+          <ReportResultsPanel reports={results} sections={sections} />
+        ) : previewData ? (
           <Card className="p-4 bg-[var(--bg-elevated)] text-[var(--text-primary)] overflow-auto max-h-[600px]">
             <h4 className="font-bold text-sm mb-3">{previewEntry?.reportName}</h4>
             <table className="w-full text-xs">
@@ -428,13 +505,18 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
                           ri === 0 ? 'font-semibold' : ''
                         }`}
                       >
-                        {String(cell)}
+                        {typeof cell === 'number' ? formatNumber(cell) : String(cell ?? '')}
                       </td>
                     ))}
                   </tr>
                 ))}
               </tbody>
             </table>
+            {previewData.footers?.map((f, i) => (
+              <p key={i} className="text-[10px] text-[var(--text-muted)] mt-2">
+                {f}
+              </p>
+            ))}
           </Card>
         ) : (
           <div className="text-center py-12 text-[var(--text-muted)] text-sm">

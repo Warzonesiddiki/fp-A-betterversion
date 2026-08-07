@@ -9,6 +9,7 @@
  * types remain `number`/`string` for callers, but the intermediate arithmetic
  * is exact.
  */
+import { randomId } from '@/utils/cryptoId';
 import {
   addMoney,
   subtractMoney,
@@ -105,7 +106,7 @@ export class IntercompanyMatchingEngine {
 
       if (credit) {
         const match: ICMatch = {
-          id: `icm-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          id: randomId('icm'),
           debitTransaction: debit,
           creditTransaction: credit,
           matchedAmount: Math.min(debit.amount, credit.amount),
@@ -137,7 +138,7 @@ export class IntercompanyMatchingEngine {
     if (debit.status !== 'pending' || credit.status !== 'pending') return null;
 
     const match: ICMatch = {
-      id: `icm-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: randomId('icm'),
       debitTransaction: debit,
       creditTransaction: credit,
       matchedAmount: Math.min(debit.amount, credit.amount),
@@ -169,7 +170,7 @@ export class IntercompanyMatchingEngine {
       if (this.eliminations.some((e) => e.matchId === match.id)) continue;
 
       const elimination: ICElimination = {
-        id: `ice-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id: randomId('ice'),
         matchId: match.id,
         eliminationAmount: match.matchedAmount,
         debitAccount: match.creditTransaction.accountCode,
@@ -323,7 +324,7 @@ export class IntercompanyMatchingEngine {
     userId: string
   ): ICElimination {
     const elimination: ICElimination = {
-      id: `ice-profit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: `ice-profit-${randomId()}`,
       matchId: 'profit-elimination',
       eliminationAmount: profitAmount,
       debitAccount: 'Cost of Goods Sold',
@@ -419,7 +420,7 @@ export class IntercompanyMatchingEngine {
     for (let i = 0; i < entities.length; i++) {
       for (let j = i + 1; j < entities.length; j++) {
         const tx: ICTransaction = {
-          id: `ictx-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          id: randomId('ictx'),
           fromEntity: entities[i]!.id,
           toEntity: entities[j]!.id,
           amount: template.baseAmount,

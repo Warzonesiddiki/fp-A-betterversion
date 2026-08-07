@@ -35,6 +35,7 @@ export {
 } from './templates';
 
 // --- Internal imports for the class ---
+import { randomId } from '@/utils/cryptoId';
 import type {
   TemplateCategory,
   TemplateIndustry,
@@ -166,7 +167,7 @@ export class TemplateLibrary {
     const mergedRules = this.mergeRules(templates);
     const mergedAccounts = this.mergeAccounts(templates);
 
-    const id = `comp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = randomId('comp');
     const composition: TemplateComposition = {
       id,
       name: params.name,
@@ -248,7 +249,7 @@ export class TemplateLibrary {
     accounts: AccountDefinition[];
     cascadeRules: CascadeRuleDefinition[];
   }): FPTemplate {
-    const id = `tpl-custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = `tpl-custom-${randomId()}`;
     const now = new Date().toISOString();
 
     const template: FPTemplate = {

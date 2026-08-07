@@ -98,7 +98,7 @@ function cellKey(cube: string, coords: Record<string, string>, measure: string):
 }
 
 function generateId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return randomId(prefix);
 }
 
 // ---------------------------------------------------------------------------
@@ -571,6 +571,7 @@ export class DriverCascadeEngine {
 // Uses SafeMathParser — NO eval(), NO new Function(), NO code injection
 // ---------------------------------------------------------------------------
 
+import { randomId } from '@/utils/cryptoId';
 import { safeMathParser } from './SafeMathParser';
 
 function evaluateSimpleFormula(formula: string, x: number, oldX: number, current: number): number {

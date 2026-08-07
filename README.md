@@ -20,7 +20,7 @@
 
 |                                                                                               <!-- -->                                                                                                |                                                                                           <!-- -->                                                                                            |                                                                                            <!-- -->                                                                                            |                                                                                                  <!-- -->                                                                                                   |
 | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">183</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">78</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Industry Verticals</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">11,647</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">190</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (190 modules)</div></div> |
+| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">78</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Industry Verticals</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">11,647</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (181 modules)</div></div> |
 
 <br/>
 
@@ -150,7 +150,7 @@ QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Sale
 
 ```
 src/
-├── engines/        # Financial Engines (190 modules) — lazy-reachable via manifest
+├── engines/        # Financial Engines (181 modules) — lazy-reachable via manifest
 ├── store/          # Zustand Stores (41 stores)
 ├── pages/          # routed page modules
 ├── components/     # UI, charts, sectors, AI copilot, spreadsheet
@@ -162,7 +162,7 @@ scripts/            # CI ratchets, engine manifest, audit, SHA-pinning tooling
 ```
 
 > **Measured repository composition** (enforced by `npm run docs:verify` and `scripts/check-readme-claims.mjs`):
-> **Financial Engines (190 modules)**, **Zustand Stores (41 stores)**, **Web Workers (4 active)**.
+> **Financial Engines (181 modules)**, **Zustand Stores (41 stores)**, **Web Workers (4 active)**.
 > Coverage thresholds in `vite.config.ts` are 50% (statements/branches/functions/lines) — this is a
 > floor, not a claim of production coverage; no full-suite coverage run completes inside CI.
 > **Measured adoption: 84 of 262 engine/store modules** route through the canonical money primitive

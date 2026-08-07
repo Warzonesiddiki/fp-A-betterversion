@@ -1,6 +1,8 @@
 // Audit Log Engine - Comprehensive audit logging
 // Pure TypeScript, no external dependencies
 
+import { randomId } from '@/utils/cryptoId';
+
 export type AuditAction =
   | 'create'
   | 'update'
@@ -58,10 +60,7 @@ export class AuditLogEngine {
   log(entry: Omit<AuditEntry, 'id' | 'timestamp'>): AuditEntry {
     const auditEntry: AuditEntry = {
       ...entry,
-      id:
-        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-          ? crypto.randomUUID()
-          : `audit-${Date.now()}-${this.fallbackRandomHex(12)}`,
+      id: randomId('audit'),
       timestamp: new Date().toISOString(),
     };
     this.entries.push(auditEntry);
@@ -208,13 +207,14 @@ export class AuditLogEngine {
   }
 
   private fallbackRandomHex(hexChars: number): string {
+    // CSPRNG only — audit hashes/salts must never degrade to Math.random.
+    const c = globalThis.crypto;
+    if (!c || typeof c.getRandomValues !== 'function') {
+      throw new Error('AuditLogEngine: Web Crypto unavailable — cannot generate audit hashes.');
+    }
     const byteLen = Math.ceil(hexChars / 2);
     const bytes = new Uint8Array(byteLen);
-    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
-      crypto.getRandomValues(bytes);
-    } else {
-      for (let i = 0; i < byteLen; i++) bytes[i] = Math.floor(Math.random() * 256);
-    }
+    c.getRandomValues(bytes);
     return Array.from(bytes, (b) => b.toString(16).padStart(2, '0'))
       .join('')
       .slice(0, hexChars);

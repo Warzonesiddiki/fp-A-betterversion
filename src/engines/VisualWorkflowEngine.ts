@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // VISUAL WORKFLOW ENGINE
 // DAG-based visual workflow builder with nodes, edges, validation, and execution
@@ -63,7 +64,7 @@ export class VisualWorkflowEngine {
   private workflows = new Map<string, VisualWorkflow>();
 
   createWorkflow(name: string, description: string): VisualWorkflow {
-    const id = 'vwf-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('vwf');
     const now = new Date().toISOString();
     const workflow: VisualWorkflow = {
       id,
@@ -102,7 +103,7 @@ export class VisualWorkflowEngine {
     const wf = this.workflows.get(workflowId);
     if (!wf) return null;
     const node: WorkflowNode = {
-      id: 'node-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('node'),
       type,
       label,
       x,
@@ -140,7 +141,7 @@ export class VisualWorkflowEngine {
       return null;
     if (this.wouldCreateCycle(wf, sourceId, targetId)) return null;
     const edge: WorkflowEdge = {
-      id: 'edge-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('edge'),
       sourceId,
       targetId,
       conditionType,

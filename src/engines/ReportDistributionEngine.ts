@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // REPORT DISTRIBUTION ENGINE — Email delivery, recipient management
 // Pure TypeScript, deterministic, no external dependencies
@@ -52,7 +53,7 @@ export class ReportDistributionEngine {
   private deliveryRecords: DeliveryRecord[] = [];
 
   addRecipient(name: string, email: string, role: string = 'viewer'): Recipient {
-    const id = 'rcpt-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('rcpt');
     const recipient: Recipient = { id, name, email, role, groups: [], active: true };
     this.recipients.set(id, recipient);
     return recipient;
@@ -85,7 +86,7 @@ export class ReportDistributionEngine {
     description: string,
     recipientIds: string[] = []
   ): DistributionList {
-    const id = 'dlist-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('dlist');
     const list: DistributionList = {
       id,
       name,
@@ -139,7 +140,7 @@ export class ReportDistributionEngine {
       : 0;
 
     const record: DeliveryRecord = {
-      id: 'del-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('del'),
       reportId,
       distributionListId,
       method: config.method,
