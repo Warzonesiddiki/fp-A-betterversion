@@ -1,15 +1,6 @@
 /**
  * financial.oracle.test.ts — financial formula functions with known-answer
- * oracles (MISSION D wave 2, 2026-08-07).
- *
- * Known answers are Excel-verified values (PMT/IPMT/PPMT/CUMIPMT/CUMPRINC for a
- * 5%/10-period/100k loan; Macaulay duration of a par bond; F distribution
- * tables). These tests exposed three real defects fixed in the same commit:
- *  - IPMT/PPMT used PV for the prior-period balance, dropping the principal
- *    term (IPMT₁ was 0 instead of -5,000; period-2 sign/magnitude also wrong).
- *  - DB double-counted depreciation (period 2 was 1,361.92 instead of 2,328.x).
- *  - DURATION omitted the redemption cash flow (4.87y vs true 7.25y for a par
- *    8%/10y bond) and YIELD's Newton step had a zero derivative.
+ * oracles (MISSION D/E, 2026-08-07).
  */
 import { describe, expect, it } from 'vitest';
 import {
@@ -67,6 +58,7 @@ import {
   YIELD,
   YOY,
   YTD,
+  registerFinancialFunctions,
 } from './financial';
 
 describe('valuation building blocks', () => {
@@ -84,18 +76,15 @@ describe('time value of money', () => {
   it('NPV discounts cash flows', () => {
     expect(NPV(0.1, [-1000, 500, 400, 300])).toBeCloseTo(10.52, 1);
     expect(NPV(0.1, [])).toBe(0);
-    // single cash flow at t=0
     expect(NPV(0.1, [1000])).toBe(1000);
   });
   it('IRR converges to the discount rate that zeroes NPV', () => {
     expect(IRR([-1000, 300, 400, 500])).toBeCloseTo(0.08896, 4);
-    // different profile, its own root
     expect(IRR([-1000, 500, 400, 300])).toBeCloseTo(0.1065, 3);
   });
   it('PV matches Excel PV(5%,10,1000) = -7,721.73 and PV(10%,10,1000) = -6,144.57', () => {
     expect(PV(0.05, 10, 1000)).toBeCloseTo(-7721.73, 1);
     expect(PV(0.1, 10, 1000)).toBeCloseTo(-6144.57, 1);
-    // zero rate: -pmt*n
     expect(PV(0, 10, 1000)).toBe(-10000);
   });
   it('FV matches Excel FV(5%,10,1000) = -12,577.89 and FV(10%,10,1000) = -15,937.42', () => {
@@ -113,7 +102,6 @@ describe('time value of money', () => {
   });
   it('RATE recovers the loan rate (round-trip with PMT)', () => {
     expect(RATE(10, PMT(0.06, 10, 50000), 50000)).toBeCloseTo(0.06, 6);
-    // 10 payments of 1000 exactly repay 10000 → 0%
     expect(Math.abs(RATE(10, -1000, 10000))).toBeLessThan(1e-6);
   });
 });
@@ -139,8 +127,6 @@ describe('loan amortization (Excel-verified)', () => {
   it('CUMIPMT / CUMPRINC match Excel', () => {
     expect(CUMIPMT(0.05, 10, 100000, 1, 2)).toBeCloseTo(-9602.48, 1);
     expect(CUMPRINC(0.05, 10, 100000, 1, 2)).toBeCloseTo(-16298.39, 0);
-    // full term: cumulative principal repays the loan, cumulative interest +
-    // principal equals total paid (PMT × n)
     expect(CUMPRINC(0.05, 10, 100000, 1, 10)).toBeCloseTo(-100000, 0);
     expect(CUMIPMT(0.05, 10, 100000, 1, 10) + CUMPRINC(0.05, 10, 100000, 1, 10)).toBeCloseTo(
       PMT(0.05, 10, 100000) * 10,
@@ -156,7 +142,6 @@ describe('growth & working-capital metrics', () => {
     expect(GROWTH_RATE(120, 100)).toBeCloseTo(0.2, 10);
     expect(YOY(120, 100)).toBeCloseTo(0.2, 10);
     expect(MOM(12, 10)).toBeCloseTo(0.2, 10);
-    // negative base uses |base|
     expect(GROWTH_RATE(150, -50)).toBe(4);
     expect(GROWTH_RATE(100, 0)).toBe(0);
   });
@@ -192,7 +177,7 @@ describe('depreciation (Excel-verified)', () => {
   it('DB fixed-rate declining balance', () => {
     expect(DB(10000, 1000, 5, 1)).toBeCloseTo(3690.43, 1);
     expect(DB(10000, 1000, 5, 2)).toBeCloseTo(2328.4, 0);
-    expect(DB(10000, 1000, 5, 5)).toBeLessThan(1000); // converges toward salvage
+    expect(DB(10000, 1000, 5, 5)).toBeLessThan(1000);
   });
   it('SYD sum-of-years-digits', () => {
     expect(SYD(10000, 1000, 5, 1)).toBe(3000);
@@ -203,7 +188,7 @@ describe('depreciation (Excel-verified)', () => {
     expect(DDB(10000, 1000, 5, 1)).toBe(4000);
     expect(DDB(10000, 1000, 5, 2)).toBe(2400);
     expect(DDB(10000, 1000, 5, 3)).toBe(1440);
-    expect(DDB(10000, 1000, 5, 5)).toBe(296); // clamped at salvage
+    expect(DDB(10000, 1000, 5, 5)).toBe(296);
   });
   it('VDB sums DDB over the period window', () => {
     expect(VDB(10000, 1000, 5, 2, 4)).toBe(4704);
@@ -213,7 +198,6 @@ describe('depreciation (Excel-verified)', () => {
 describe('bond math (Macaulay duration)', () => {
   it('DURATION of a par 8%/10y bond is ~7.247 years', () => {
     expect(DURATION(0, 3652.5, 0.08, 0.08, 1)).toBeCloseTo(7.2469, 2);
-    // zero-coupon: duration = term
     expect(DURATION(0, 3652.5, 0, 0.08, 1)).toBeCloseTo(10, 1);
   });
   it('MDURATION = DURATION / (1 + yld/freq)', () => {
@@ -221,7 +205,6 @@ describe('bond math (Macaulay duration)', () => {
   });
   it('YIELD returns par rate for a par bond and recovers a discount yield', () => {
     expect(YIELD(0, 3652.5, 0.08, 1, 1, 1)).toBeCloseTo(0.08, 4);
-    // 8% 10y bond priced at 90 → YTM ≈ 9.6%
     expect(YIELD(0, 3652.5, 0.08, 0.9, 1, 1)).toBeCloseTo(0.095996, 3);
   });
   it('EFFECT / NOMINAL invert each other', () => {
@@ -239,7 +222,7 @@ describe('growth aggregation', () => {
   it('QTD sums the quarter window', () => {
     expect(QTD([10, 20, 30, 40, 50, 60, 70, 80, 90, 100], 1)).toBe(150);
     expect(QTD([10, 20, 30, 40], 0)).toBe(60);
-    expect(QTD([10, 20, 30], 5)).toBe(0); // beyond data
+    expect(QTD([10, 20, 30], 5)).toBe(0);
   });
   it('ROLLING / MOVING_AVERAGE window averages', () => {
     expect(ROLLING([1, 2, 3, 4, 5], 3)).toEqual([2, 3, 4]);
@@ -250,7 +233,7 @@ describe('growth aggregation', () => {
   it('TREND least-squares fit', () => {
     expect(TREND([1, 2, 3, 4, 5])).toEqual([1, 2, 3, 4, 5]);
     expect(TREND([1, 2, 3, 5]).map((x) => Math.round(x * 10) / 10)).toEqual([0.8, 2.1, 3.4, 4.7]);
-    expect(TREND([5])).toEqual([5]); // single point
+    expect(TREND([5])).toEqual([5]);
   });
   it('WEIGHTED_AVERAGE', () => {
     expect(WEIGHTED_AVERAGE([10, 20, 30], [1, 2, 3])).toBeCloseTo(140 / 6, 6);
@@ -289,5 +272,58 @@ describe('allocation & currency', () => {
     expect(FX_GAIN_LOSS(100, 1.0, 1.1)).toBe(10);
     expect(HYPERINFLATION_ADJUST(100, 120, 100)).toBe(120);
     expect(HYPERINFLATION_ADJUST(100, 120, 0)).toBe(0);
+  });
+});
+
+describe('registerFinancialFunctions', () => {
+  it('registers all financial and growth functions in registry', () => {
+    const reg: Record<string, any> = {};
+    registerFinancialFunctions((fn) => {
+      reg[fn.name] = fn;
+    });
+
+    expect(Object.keys(reg).length).toBeGreaterThan(40);
+    expect(reg['PRICE'].impl(0, 3652.5, 0.05, 0.06, 100, 1)).toBeGreaterThan(0);
+    expect(reg['DISC'].impl(0, 3652.5, 95, 100)).toBeGreaterThan(0);
+    expect(reg['PRICEDISC'].impl(0, 3652.5, 0.05, 100)).toBeGreaterThan(0);
+    expect(reg['RECEIVED'].impl(0, 3652.5, 90, 0.05)).toBeGreaterThan(0);
+    expect(reg['INTRATE'].impl(0, 3652.5, 90, 100)).toBeGreaterThan(0);
+    expect(reg['TBILLEQ'].impl(0, 180, 0.05)).toBeGreaterThan(0);
+    expect(reg['TBILLPRICE'].impl(0, 180, 0.05)).toBeGreaterThan(0);
+    expect(reg['TBILLYIELD'].impl(0, 180, 98)).toBeGreaterThan(0);
+    expect(reg['COUPNUM'].impl(0, 3652.5, 2)).toBe(20);
+    expect(reg['COUPDAYS'].impl(0, 3652.5, 2)).toBeCloseTo(182.6, 1);
+    expect(reg['COUPDAYBS'].impl(0, 3652.5, 2)).toBeDefined();
+    expect(reg['COUPPCD'].impl(0, 3652.5, 2)).toBeDefined();
+    expect(reg['COUPNCD'].impl(0, 3652.5, 2)).toBeDefined();
+    expect(reg['COUPDAYSNC'].impl(0, 3652.5, 2)).toBeDefined();
+    expect(reg['RRI'].impl(5, 1000, 1500)).toBeCloseTo(0.08447, 4);
+    expect(reg['ISPMT'].impl(0.05, 1, 10, 100000)).toBeDefined();
+    expect(reg['ACCRINTM'].impl(0, 180, 0.05, 1000)).toBeGreaterThan(0);
+    expect(reg['AMORDEGRC'].impl(1000, 0, 0, 100, 1, 0.2)).toBeGreaterThan(0);
+    expect(reg['AMORLINC'].impl(1000, 0, 0, 100, 1, 0.2)).toBeGreaterThan(0);
+    expect(reg['DOLLARDE'].impl(1.02, 16)).toBeDefined();
+    expect(reg['DOLLARFR'].impl(1.125, 16)).toBeDefined();
+    expect(reg['ODDFPRICE'].impl(0, 3652.5, 0, 180, 0.05, 0.06, 100, 2)).toBeGreaterThan(0);
+    expect(reg['ODDFYIELD'].impl(0, 3652.5, 0, 180, 0.05, 95, 100, 2)).toBeGreaterThan(0);
+    expect(reg['ODDLPRICE'].impl(0, 3652.5, 3470, 0.05, 0.06, 100, 2)).toBeGreaterThan(0);
+    expect(reg['ODDLYIELD'].impl(0, 3652.5, 3470, 0.05, 95, 100, 2)).toBeGreaterThan(0);
+    expect(reg['PRICEMAT'].impl(0, 3652.5, 0, 0.05, 0.06)).toBeGreaterThan(0);
+    expect(reg['YIELDDISC'].impl(0, 3652.5, 95, 100)).toBeGreaterThan(0);
+    expect(reg['YIELDMAT'].impl(0, 3652.5, 0, 0.05, 95)).toBeGreaterThan(0);
+
+    // Period / growth helpers
+    const series = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    expect(reg['MTD'].impl(series, 2)).toBeDefined();
+    expect(reg['ITD'].impl(series, 3)).toBe(100);
+    expect(reg['PARALLEL_PERIOD'].impl(series, 5, 2)).toBe(40);
+    expect(reg['SAME_PERIOD_LAST_YEAR'].impl(series, 15)).toBe(40);
+    expect(reg['OPENINGBALANCE'].impl(series, 2)).toBe(20);
+    expect(reg['CLOSINGBALANCE'].impl(series, 2)).toBe(30);
+    expect(reg['PERIOD_TO_DATE'].impl(series, 1, 3)).toBe(90);
+    expect(reg['LAG'].impl(series, 3, 1)).toBe(30);
+    expect(reg['LEAD'].impl(series, 3, 1)).toBe(50);
+    expect(reg['CUMULATIVE'].impl([10, 20, 30])).toEqual([10, 30, 60]);
+    expect(reg['GROWTH_RATE_SERIES'].impl([10, 20, 30])).toHaveLength(3);
   });
 });

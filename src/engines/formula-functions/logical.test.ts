@@ -3,6 +3,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
+  IFS,
   AND,
   OR,
   NOT,
@@ -14,9 +15,33 @@ import {
   BETWEEN,
   CLAMP,
   COALESCE,
+  ISBLANK,
+  ISERR,
+  ISERROR,
+  ISEVEN,
+  ISODD,
+  ISLOGICAL,
+  ISNA,
+  ISNONTEXT,
+  ISNUMBER,
+  ISTEXT,
+  ISREF,
+  TYPE,
+  NA,
+  ERROR_TYPE,
+  SHEET,
+  SHEETS,
+  registerLogicalFunctions,
 } from './logical';
 
 describe('Logical Functions', () => {
+  describe('IFS', () => {
+    it('returns true branch when non-zero, false branch when zero', () => {
+      expect(IFS(1, 100, 200)).toBe(100);
+      expect(IFS(0, 100, 200)).toBe(200);
+    });
+  });
+
   describe('AND', () => {
     it('returns 1 when all true', () => {
       expect(AND(1, 1, 1)).toBe(1);
@@ -56,8 +81,9 @@ describe('Logical Functions', () => {
       expect(IFERROR(42, 0)).toBe(42);
     });
 
-    it('returns alt when error', () => {
+    it('returns alt when error or non-finite', () => {
       expect(IFERROR(NaN, 0)).toBe(0);
+      expect(IFERROR(Infinity, 99)).toBe(99);
     });
   });
 
@@ -78,12 +104,15 @@ describe('Logical Functions', () => {
 
     it('returns default when no match', () => {
       expect(SWITCH(5, 1, 10, 2, 20, 99)).toBe(99);
+      expect(SWITCH(5, 1, 10)).toBe(0);
     });
   });
 
   describe('CHOOSE', () => {
-    it('returns selected value', () => {
+    it('returns selected value by index and handles boundary', () => {
       expect(CHOOSE(1, 10, 20, 30)).toBe(20);
+      expect(CHOOSE(-1, 10, 20)).toBe(0);
+      expect(CHOOSE(10, 10, 20)).toBe(0);
     });
   });
 
@@ -112,6 +141,65 @@ describe('Logical Functions', () => {
 
     it('returns last when all zero', () => {
       expect(COALESCE(0, 0, 0)).toBe(0);
+    });
+  });
+
+  describe('Information Functions: ISBLANK, ISERR, ISERROR, ISEVEN, ISODD, ISLOGICAL, ISNA, ISNONTEXT, ISNUMBER, ISTEXT, ISREF, TYPE, NA, ERROR_TYPE, SHEET, SHEETS', () => {
+    it('evaluates type and error checkers accurately', () => {
+      expect(ISBLANK(0)).toBe(1);
+      expect(ISBLANK(5)).toBe(0);
+
+      expect(ISERR(42)).toBe(1);
+      expect(ISERR(NaN)).toBe(0);
+
+      expect(ISERROR(NaN)).toBe(1);
+      expect(ISERROR(Infinity)).toBe(1);
+      expect(ISERROR(42)).toBe(0);
+
+      expect(ISEVEN(4)).toBe(1);
+      expect(ISEVEN(5)).toBe(0);
+      expect(ISODD(5)).toBe(1);
+      expect(ISODD(4)).toBe(0);
+
+      expect(ISLOGICAL(1)).toBe(1);
+      expect(ISLOGICAL(0)).toBe(1);
+      expect(ISLOGICAL(5)).toBe(0);
+
+      expect(ISNA(NaN)).toBe(1);
+      expect(ISNA(42)).toBe(0);
+
+      expect(ISNONTEXT(100)).toBe(1);
+      expect(ISNUMBER(100)).toBe(1);
+      expect(ISNUMBER(NaN)).toBe(0);
+      expect(ISTEXT(100)).toBe(0);
+      expect(ISREF(100)).toBe(1);
+
+      expect(TYPE([1, 2])).toBe(64);
+      expect(TYPE(NaN)).toBe(16);
+      expect(TYPE(42)).toBe(1);
+
+      expect(NA()).toBeNaN();
+      expect(ERROR_TYPE(NaN)).toBe(7);
+      expect(ERROR_TYPE(Infinity)).toBe(2);
+      expect(ERROR_TYPE(0)).toBe(0);
+
+      expect(SHEET()).toBe(1);
+      expect(SHEETS()).toBe(1);
+    });
+  });
+
+  describe('registerLogicalFunctions', () => {
+    it('registers all logical and information functions with registry', () => {
+      const registered: Record<string, any> = {};
+      registerLogicalFunctions((fn) => {
+        registered[fn.name] = fn;
+      });
+
+      expect(registered['IF'].impl(1, 10, 20)).toBe(10);
+      expect(registered['IF'].impl(0, 10, 20)).toBe(20);
+      expect(registered['TRUE'].impl()).toBe(1);
+      expect(registered['FALSE'].impl()).toBe(0);
+      expect(registered['LET'].impl(1, 2, 3)).toBe(3);
     });
   });
 });

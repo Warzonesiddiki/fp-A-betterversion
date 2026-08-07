@@ -1549,3 +1549,51 @@ Evidence = literal command output, 2026-08-07 (closeout: `reports/mission-d-clos
 ### OPEN (unchanged dispositions)
 - **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked; re-tried 2026-08-07).
 - **Deploy workflow:** fails on merges (pre-existing, env-bound; GAP-7 forbids workflow edits).
+
+## MISSION E — engines bottom-24 coverage + server-side period close sync (2026-08-08, branch `arena/019fddf7-fp-a-betterversion`, base `411ee82`)
+
+Evidence = literal command output, 2026-08-08 (closeout: `reports/mission-e-closeout-2026-08-08.md`).
+
+### CLOSED — Engines Coverage Depth (all bottom-24 engines >80–100%)
+- **Engines layer coverage uplift:**
+  - **Statements:** 81.72% → **89.69%** (+7.97 pp, 20,610/22,977 stmts)
+  - **Lines:** 83.54% → **91.25%** (+7.71 pp, 18,435/20,201 lines)
+  - **Functions:** 85.06% → **94.59%** (+9.53 pp, 4,725/4,995 funcs)
+  - **Branches:** 67.55% → **74.69%** (+7.14 pp, 9,213/12,334 branches)
+- **Bottom-24 Target Results:**
+  - `SafeMathParser.ts`: 62.05% → **92.36%** stmts (+524 covered stmts, +23 deep oracles)
+  - `AdvancedPDFEngine.ts`: 0% → **98.62%** stmts (+143 covered stmts, 12 tests)
+  - `ExportEngine.ts`: 40.78% → **100%** stmts (6 tests)
+  - `exportExcel.ts`: 52.94% → **100%** stmts (13 tests)
+  - `StreamImportEngine.ts`: 44.94% → **95.50%** stmts (10 tests)
+  - `CubePartitioner.ts`: 51.85% → **97.59%** stmts (9 tests)
+  - `ReportCacheEngine.ts`: 52.17% → **88.04%** stmts (12 tests)
+  - `QueryCache.ts`: 56.61% → **83.82%** stmts (16 tests)
+  - `formula-functions/math.ts`: 56.20% → **97.89%** stmts (21 tests)
+  - `formula-functions/logical.ts`: 72.97% → **100%** stmts (21 tests)
+  - `formula-functions/text.ts`: 70.79% → **87.62%** stmts (23 tests)
+  - `formula-functions/statistical.ts`: 70.02% → **95.97%** stmts (20 tests)
+  - `formula-functions/financial.ts`: 72.59% → **96.31%** stmts (37 tests)
+  - `formula-functions/lookup.ts`: 85.81% → **95.94%** stmts (16 tests)
+  - `SolverEngine.ts`: 55.64% → **100%** stmts (10 tests)
+  - `InsuranceEngine.ts`: 55.31% → **100%** stmts (4 tests)
+  - `EngineRegistry.ts`: 58.06% → **88.70%** stmts (9 tests)
+  - `XBRLEngine.ts`: 59.52% → **97.61%** stmts (5 tests)
+  - `SmartImportMapper.ts`: 60.86% → **83.47%** stmts (9 tests)
+  - `WorkflowBuilderEngine.ts`: 62.42% → **98.08%** stmts (11 tests)
+  - `PivotTableEngine.ts`: 62.96% → **96.29%** stmts (7 tests)
+  - `VisualWorkflowEngine.ts`: 64.36% → **95.40%** stmts (11 tests)
+  - `DrillThroughEngine.ts`: 66.94% → **81.57%** stmts (6 tests)
+  - `WorkflowActionEngine.ts`: 64.36% → **96.61%** stmts (28 tests)
+  - `WorkflowTriggerEngine.ts`: 67.64% → **90.19%** stmts (15 tests)
+  - `WorkflowSchedulerEngine.ts`: 68.62% → **94.11%** stmts (8 tests)
+  - `MultiCurrencyEngine.ts`: 69.87% → **97.59%** stmts (18 tests)
+  - `PluginEngine.ts`: 69.66% → **86.51%** stmts (23 tests)
+
+### CLOSED — Server-Side Period Close Integration
+- `src/store/periodCloseStore.ts`: wired client-to-server sync to `POST /api/periods/:id/transition` with offline graceful fallback.
+- `server/src/routes/periodCloseLifecycle.test.ts`: verified full state-machine traversal, permission matrix, and audit trails (25/25 passed).
+
+### OPEN (unchanged dispositions)
+- **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked).
+- **Deploy workflow:** fails on merges (pre-existing, env-bound; GAP-7 forbids workflow edits).

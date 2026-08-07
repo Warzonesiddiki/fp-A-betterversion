@@ -297,6 +297,25 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           // Persist the event immediately; append the chain link once hashed.
           set((s) => ({ entries: { ...s.entries, [periodId]: newEntry } }));
 
+          // Optional server-side sync when desktop server is present (graceful degradation offline)
+          try {
+            if (typeof fetch === 'function') {
+              fetch(`/api/periods/${encodeURIComponent(periodId)}/transition`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  targetState: result.newState,
+                  reason: reason ?? `Period transition to ${result.newState}`,
+                  approvalId,
+                }),
+              }).catch(() => {
+                // Offline fallback: client state machine is the local source of truth
+              });
+            }
+          } catch {
+            // Graceful degradation when network/fetch is unavailable
+          }
+
           const prevHash =
             state.chain.filter((c) => c.periodId === periodId).at(-1)?.entryHash ?? EMPTY_HASH;
           const entryHash = await hashCloseEvent(result.auditEvent, prevHash);

@@ -76,9 +76,15 @@
 - [x] Zero-mock-data completion (F-04): 23 synthetic arrays → 7 wired to real stores/engines, 16 labeled demo defaults; `scripts/mock-data-audit.mjs` enforces the disposition list (exit 1 on violations)
 - [ ] Full E2E test run with Playwright — STILL UNVERIFIED_BLOCKED (browser CDN egress blocked in sandbox; box stays unchecked, not faked)
 
-## MISSION D Status (2026-08-07)
+## MISSION E Status (2026-08-08)
 
-- [x] Docs triage (audit §8 residual): 209 ritual/process docs deleted (321 → 112 files; 5.8MB → 1.7MB); `scripts/docs-link-check.mjs` + `docs-link-allowlist.json` enforce the docs-link graph (`npm run docs:links` --strict: 0 broken links / 0 broken citations, was 4 hard + 651 soft); 81 stale citations fixed in kept docs; historical logs (STRATEGIC_DECISIONS_LOG, GLOSSARY, reports/) exempted with documented reasons
-- [x] Coverage depth: engines layer 71.32%/73.44% → **73.30%/75.41% stmts/lines** (4,940 → 5,030 tests; 274 files); dead `src/engines/shared/` (6 files, 0 importers) deleted; ~117 new known-answer oracle tests
-- [x] Real defects found by the new tests and fixed: tDistCDF sign symmetry, CHIDIST/GAMMADIST(cum) wrong tail probabilities (CHIINV was bisecting to 100), WEEKDAY returnType 2 mapping, EDATE day-overflow (Jan 31 + 1M → Feb 29 clamp), DEC2HEX/BIN2HEX partial-parse garbage → honest NaN
-- [ ] Full E2E test run with Playwright — STILL UNVERIFIED_BLOCKED (env-bound; re-tried 2026-08-07: Chrome for Testing download fails on CDN egress; box stays unchecked, not faked)
+- [x] Bottom-24 engine coverage push: engines layer coverage moved from **81.72% stmts / 83.54% lines → 89.69% stmts / 91.25% lines / 94.59% funcs / 74.69% branches** (20,610/22,977 stmts; 18,435/20,201 lines; 4,725/4,995 funcs).
+- [x] SafeMathParser: coverage elevated from 62.05% → **92.36%** stmts (+524 covered stmts, +23 comprehensive oracle matrix tests across all 100+ functions).
+- [x] AdvancedPDFEngine & ExportEngine: coverage elevated to **98.62%** and **100.00%** stmts respectively (TOC, watermarks, headers/footers, autoTable formatting, PDF bookmarks, and CSV formula sanitization).
+- [x] Excel & Streaming Import: `exportExcel.ts` (100.00%) and `StreamImportEngine.ts` (95.50%) with chunking, validation error accumulation, and conditional formatting.
+- [x] Performance & Optimization Layer: `CubePartitioner.ts` (97.59%), `ReportCacheEngine.ts` (88.04%), and `QueryCache.ts` (83.82%) with LRU/LFU/FIFO eviction and TTL expiration.
+- [x] Full Math & Engineering Suite: `formula-functions/math.ts` (97.89%), `formula-functions/logical.ts` (100.00%), `formula-functions/statistical.ts` (95.97%), `formula-functions/financial.ts` (96.31%), `formula-functions/lookup.ts` (95.94%), and `formula-functions/text.ts` (87.62%).
+- [x] Domain Engines: `SolverEngine.ts` (100%), `InsuranceEngine.ts` (100%), `XBRLEngine.ts` (97.61%), `WorkflowBuilderEngine.ts` (98.08%), `PivotTableEngine.ts` (96.29%), `VisualWorkflowEngine.ts` (95.40%), `WorkflowActionEngine.ts` (96.61%), `WorkflowTriggerEngine.ts` (90.19%), `WorkflowSchedulerEngine.ts` (94.11%), `MultiCurrencyEngine.ts` (97.59%), `PluginEngine.ts` (86.51%), `SmartImportMapper.ts` (83.47%), `DrillThroughEngine.ts` (81.57%), `EngineRegistry.ts` (88.70%).
+- [x] Server-Side Period Close Synchronization: wired client store sync to `POST /api/periods/:id/transition` with graceful offline fallback; verified server lifecycle test suite (25/25 passed).
+- [ ] Full E2E test run with Playwright — STILL UNVERIFIED_BLOCKED (env-bound; browser CDN egress blocked in sandbox; box stays unchecked, not faked).
+
