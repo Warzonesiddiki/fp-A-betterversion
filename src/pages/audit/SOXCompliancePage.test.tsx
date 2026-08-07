@@ -85,6 +85,7 @@ vi.mock('lucide-react', () => {
     Users: makeIcon(),
     FileText: makeIcon(),
     BarChart3: makeIcon(),
+    CalendarCheck: makeIcon(),
   };
 });
 
@@ -131,5 +132,13 @@ describe('SOXCompliancePage smoke test', () => {
     expect(
       screen.getByRole('button', { name: /Export compliance report as CSV/i })
     ).toBeInTheDocument();
+  });
+
+  it('bridges to the period close workflow (F-01 CTA)', () => {
+    renderPage();
+    expect(screen.getByRole('link', { name: /Close period/i })).toHaveAttribute(
+      'href',
+      '/periods/close'
+    );
   });
 });
