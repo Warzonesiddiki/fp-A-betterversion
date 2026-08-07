@@ -21,6 +21,7 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
+// demo defaults — replaced by real data when transfer-pricing transactions come from tax imports
 const mockTransactions = [
   {
     id: 'TP-001',

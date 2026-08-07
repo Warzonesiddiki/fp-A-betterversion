@@ -51,32 +51,15 @@ const subscriberGrowth = [
   { quarter: 'Q2 2025', subscribers: 92.5 },
 ];
 
-// Mock fallback — replaced by store arpuTrends when populated
-const mockArpuTrend = [
-  { month: 'Jan', arpu: 41.2 },
-  { month: 'Feb', arpu: 41.8 },
-  { month: 'Mar', arpu: 42.3 },
-  { month: 'Apr', arpu: 42.8 },
-  { month: 'May', arpu: 43.1 },
-  { month: 'Jun', arpu: 43.6 },
-  { month: 'Jul', arpu: 44.0 },
-  { month: 'Aug', arpu: 43.7 },
-  { month: 'Sep', arpu: 44.2 },
-  { month: 'Oct', arpu: 44.8 },
-  { month: 'Nov', arpu: 45.1 },
-  { month: 'Dec', arpu: 45.5 },
-];
-
 export function TelecomDashboardPage() {
   const [_activeSegment, setActiveSegment] = useState<string | null>(null);
   const { arpuTrends, getTotalSubscribers, getAverageARPU } = useTelecomStore();
 
   const totalSubscribers = getTotalSubscribers();
   const avgARPU = getAverageARPU();
-  const displayArpuTrend =
-    arpuTrends.length > 0
-      ? arpuTrends.map((t) => ({ month: t.month, arpu: t.arpu }))
-      : mockArpuTrend;
+  // WIRED (C-3): ARPU trend straight from telecomStore — no fabricated
+  // fallback; the panel renders an honest empty state until data is imported.
+  const displayArpuTrend = arpuTrends.map((t) => ({ month: t.month, arpu: t.arpu }));
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Telecom Dashboard';
@@ -86,13 +69,13 @@ export function TelecomDashboardPage() {
     () => [
       {
         label: 'Total Subscribers',
-        value: totalSubscribers > 0 ? `${formatCompact(totalSubscribers)}` : '92.5M',
+        value: totalSubscribers > 0 ? `${formatCompact(totalSubscribers)}` : '—',
         change: 2.5,
         icon: Users,
       },
       {
         label: 'ARPU',
-        value: avgARPU > 0 ? `$${formatNumber(avgARPU, 2)}` : '$45.50',
+        value: avgARPU > 0 ? `$${formatNumber(avgARPU, 2)}` : '—',
         change: 1.8,
         icon: DollarSign,
       },
@@ -207,27 +190,33 @@ export function TelecomDashboardPage() {
             <CardTitle>Revenue per User Trend (Monthly ARPU)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {displayArpuTrend.map((row) => (
-                <div key={row.month} className="flex justify-between items-center">
-                  <span className="text-sm w-10" style={{ color: 'var(--text-secondary)' }}>
-                    {row.month}
-                  </span>
-                  <div className="flex-1 mx-3">
-                    <div
-                      className="h-2 rounded-full"
-                      style={{
-                        width: `${((row.arpu - 40) / 6) * 100}%`,
-                        backgroundColor: 'var(--accent-secondary)',
-                      }}
-                    />
+            {displayArpuTrend.length === 0 ? (
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Import subscriber data to view the ARPU trend.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {displayArpuTrend.map((row) => (
+                  <div key={row.month} className="flex justify-between items-center">
+                    <span className="text-sm w-10" style={{ color: 'var(--text-secondary)' }}>
+                      {row.month}
+                    </span>
+                    <div className="flex-1 mx-3">
+                      <div
+                        className="h-2 rounded-full"
+                        style={{
+                          width: `${((row.arpu - 40) / 6) * 100}%`,
+                          backgroundColor: 'var(--accent-secondary)',
+                        }}
+                      />
+                    </div>
+                    <span className="font-mono text-sm w-14 text-right">
+                      ${formatNumber(row.arpu, 2)}
+                    </span>
                   </div>
-                  <span className="font-mono text-sm w-14 text-right">
-                    ${formatNumber(row.arpu, 2)}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </section>

@@ -42,6 +42,7 @@ interface InventoryItem {
   lastUpdated: string;
 }
 
+// demo defaults — replaced by real data when inventory levels come from retail/product imports
 const mockInventory: InventoryItem[] = [
   {
     id: 'INV001',

@@ -141,6 +141,10 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'audit:update',
     'audit:delete',
     'audit:export',
+    // Period close (F-01)
+    'period:read',
+    'period:close',
+    'period:reopen',
     'encryption:read',
     'encryption:rotate-keys',
     'export:data',
@@ -216,6 +220,9 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'notification:update',
     'audit:read',
     'audit:export',
+    // Period close (F-01) — FP&A_Manager may close (matches server TRANSITION_ROLES)
+    'period:read',
+    'period:close',
     'export:data',
     'auth:login',
     'auth:logout',
@@ -265,6 +272,8 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'cube:write',
     'cube:undo',
     'entity:read',
+    // Period close (F-01) — read-only
+    'period:read',
     'workflow:read',
     'workflow:create',
     'collab:read',
@@ -298,6 +307,8 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'inventory:read',
     'cube:read',
     'entity:read',
+    // Period close (F-01) — read-only
+    'period:read',
     'workflow:read',
     'collab:read',
     'collab:update',
@@ -326,6 +337,8 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'inventory:read',
     'cube:read',
     'entity:read',
+    // Period close (F-01) — read-only
+    'period:read',
     'workflow:read',
     'collab:read',
     'notification:read',

@@ -1,56 +1,48 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { BookOpen, GitCompare, Download, Plus } from 'lucide-react';
+import { MultiBookEngine } from '@/engines/MultiBookEngine';
 
 interface AccountingBook {
   id: string;
   name: string;
-  gaap: 'US GAAP' | 'IFRS' | 'Tax' | 'Statutory';
+  gaap: string;
   currency: string;
   entries: number;
   lastUpdated: string;
 }
 
-const MOCK_BOOKS: AccountingBook[] = [
-  {
-    id: '1',
-    name: 'US GAAP Book',
-    gaap: 'US GAAP',
-    currency: 'USD',
-    entries: 1250,
-    lastUpdated: '2026-05-20',
-  },
-  {
-    id: '2',
-    name: 'IFRS Book',
-    gaap: 'IFRS',
-    currency: 'USD',
-    entries: 1180,
-    lastUpdated: '2026-05-20',
-  },
-  {
-    id: '3',
-    name: 'Tax Book',
-    gaap: 'Tax',
-    currency: 'USD',
-    entries: 890,
-    lastUpdated: '2026-05-19',
-  },
-  {
-    id: '4',
-    name: 'Statutory Book',
-    gaap: 'Statutory',
-    currency: 'EUR',
-    entries: 720,
-    lastUpdated: '2026-05-18',
-  },
-];
+/** Engine gaap slug → display label (MultiBookEngine uses lowercase slugs). */
+const GAAP_LABELS: Record<string, string> = {
+  'us-gaap': 'US GAAP',
+  ifrs: 'IFRS',
+  tax: 'Tax',
+  statutory: 'Statutory',
+  custom: 'Custom',
+};
 
 export default function MultiBookPage() {
   const [selectedBooks, setSelectedBooks] = useState<string[]>([]);
-  const books = MOCK_BOOKS;
+  const [refreshTick, setRefreshTick] = useState(0);
+
+  // WIRED (C-3): books come from the real MultiBookEngine — entry counts are
+  // derived from posted book entries, never fabricated per-page. The engine is
+  // empty until books are created, so the page renders an honest empty state.
+  const engineBooks = useMemo(
+    () => MultiBookEngine.listBooks(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [refreshTick]
+  );
+  const books: AccountingBook[] = engineBooks.map((b) => ({
+    id: b.id,
+    name: b.name,
+    gaap: GAAP_LABELS[b.gaap] ?? b.gaap,
+    currency: b.currency,
+    entries: MultiBookEngine.getEntries(b.id).length,
+    lastUpdated: b.createdAt.slice(0, 10),
+  }));
 
   const gaapColors: Record<string, string> = {
     'US GAAP': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -71,7 +63,19 @@ export default function MultiBookPage() {
           <p className="text-muted-foreground">GAAP, IFRS, Tax, and Statutory books</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              MultiBookEngine.createBook(
+                `Book ${MultiBookEngine.listBooks().length + 1}`,
+                'us-gaap',
+                'USD',
+                'entity-001'
+              );
+              setRefreshTick((t) => t + 1);
+            }}
+          >
             <Plus className="h-4 w-4 mr-1" /> New Book
           </Button>
           <Button variant="outline" size="sm">
@@ -79,6 +83,19 @@ export default function MultiBookPage() {
           </Button>
         </div>
       </div>
+
+      {books.length === 0 && (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <BookOpen className="h-8 w-8 text-slate-400 mx-auto mb-2" aria-hidden="true" />
+            <p className="font-medium">No books yet</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Multi-book accounting is driven by the MultiBookEngine. Create your first book — entry
+              counts populate from posted book entries (GL import + posting).
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

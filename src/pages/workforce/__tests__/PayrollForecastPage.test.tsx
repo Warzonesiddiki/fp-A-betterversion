@@ -58,6 +58,10 @@ vi.mock('lucide-react', () => ({
   Percent: makeIcon(),
   ChevronUp: makeIcon(),
   ChevronDown: makeIcon(),
+  // DataTable's empty state renders a Search icon (department table is empty
+  // until workforce data is imported).
+  Search: makeIcon(),
+  AlertCircle: makeIcon(),
 }));
 
 function makeIcon() {

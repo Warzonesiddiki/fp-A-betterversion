@@ -30,6 +30,7 @@ export function GovernmentDashboardPage() {
     document.title = 'FinPlan Pro — Government Dashboard';
   }, []);
 
+  // demo defaults — replaced by real data when government budget data is imported via the government store
   const mockDepartmentBudget = [
     { department: 'Education', allocated: 3100, spent: 2890, pct: 93.2 },
     { department: 'Healthcare', allocated: 2750, spent: 2610, pct: 94.9 },
@@ -48,6 +49,7 @@ export function GovernmentDashboardPage() {
       }))
     : mockDepartmentBudget;
 
+  // demo defaults — replaced by real data when revenue category data is imported via the government store
   const mockRevenueByCategory = [
     { name: 'Income Tax', value: 4200 },
     { name: 'Sales Tax', value: 2850 },
@@ -57,6 +59,7 @@ export function GovernmentDashboardPage() {
     { name: 'Other', value: 480 },
   ];
 
+  // demo defaults — replaced by real data when spending data is imported via the government store
   const mockSpendingDistribution = [
     { name: 'Education', value: 3100 },
     { name: 'Healthcare', value: 2750 },

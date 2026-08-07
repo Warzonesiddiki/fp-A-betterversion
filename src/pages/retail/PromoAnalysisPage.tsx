@@ -37,6 +37,7 @@ function formatCurrency(n: number): string {
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
+// demo defaults — replaced by real data when promotion data comes from retail store imports
 const mockPromos = [
   {
     id: 'PROMO-001',

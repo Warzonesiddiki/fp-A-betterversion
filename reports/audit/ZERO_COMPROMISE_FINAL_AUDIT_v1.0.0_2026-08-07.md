@@ -25,24 +25,25 @@
 | 11 | Reporting & board pack | 6 | 6 | 0 | 0 | 100% |
 | 12 | Consolidation/FX/IC | 6 | 6 | 0 | 0 | 100% |
 | 13 | Variance/allocations | 4 | 4 | 0 | 0 | 100% |
-| 14 | Period close / SOX / RBAC enforcement | 4 | 3 | 1 | 0 | 75% |
+| 14 | Period close / SOX / RBAC enforcement | 4 | 4 | 0 | 0 | 100% |
 | 15 | Sector depth (11+ sectors) | 4 | 4 | 0 | 0 | 100% |
 | 16 | Import/export (Excel/PDF/CSV) | 5 | 5 | 0 | 0 | 100% |
 | 17 | Collaboration/approvals | 4 | 4 | 0 | 0 | 100% |
 | 18 | Backup/restore & offline recovery | 5 | 5 | 0 | 0 | 100% |
 | 19 | UI/UX & accessibility | 10 | 9 | 1 | 0 | 90% |
 | 20 | Claims truth (docs vs measured reality) | 10 | 9 | 1 | 0 | 90% |
-| **TOTAL** | | **116** | **113** | **3** | **0** | **97.4%** |
+| **TOTAL** | | **116** | **114** | **2** | **0** | **98.3%** |
 
-**Overall Risk Rating: 🟢 LOW (97.4%)** — all P0/P1 items fixed in this session; 3 failed items are P2/P3 with documented dispositions (below).
+**Overall Risk Rating: 🟢 LOW (98.3%)** — all P0/P1 items fixed; F-01 (period-close UI) was closed by MISSION C on 2026-08-07; 2 failed items remain (F-02 env-bound E2E, F-03 claim corrected).
 
 ---
 
 ## 2. FAILED ITEMS — LOGGED WITH PRIORITY, EVIDENCE, DISPOSITION
 
-### F-01 (P2, §14 Period close UI) — FAIL
-- **Evidence:** server `server/src/routes/periods.ts` implements the full lifecycle (open/close/reopen/audit, `requireRole('Admin')`) and `src/engines/PeriodCloseStateMachine.ts` + `PeriodLockEngine.ts` are tested (`server/src/routes/periodCloseLifecycle.test.ts`); **but no client route/UI exists** for period close (`grep path= src/App.tsx` → no period-close route; `grep -rln "PeriodCloseEngine" src/pages` → 0 hits).
-- **Disposition:** ACCEPT (documented gap). Server API + engines are canonical and enforced; a client page is tracked for a follow-up. User cannot close a period from the UI today — this is the single workflow step where the all-in-one claim overreaches. Logged in GAP_LEDGER.
+### F-01 (P2, §14 Period close UI) — FAIL → **FIXED (MISSION C, 2026-08-07)**
+- **Evidence (pre-fix):** server `server/src/routes/periods.ts` implemented the full lifecycle but **no client route/UI existed** (`grep path= src/App.tsx` → no period-close route; `grep -rln "PeriodCloseEngine" src/pages` → 0 hits).
+- **Fix evidence (post-fix, measured):** `/periods/close` route + `src/pages/periods/PeriodClosePage.tsx` (fiscal-period grid from real `FiscalCalendar`, close checklist from `FinancialCloseEngine`, `PeriodCloseStateMachine` open → soft-close → hard-close → locked, money-exact pre-close validation, SHA-256 chained audit panel, post-close P&L/BS/CF export from real GL); `src/store/periodCloseStore.ts` (offline-first, masterStorage-persisted, `enforce(Permissions.PERIOD_CLOSE/PERIOD_REOPEN)`); new permissions `period:read/period:close/period:reopen` in `ROLE_PERMISSIONS`; SOX page ↔ close page bridge. Tests: **35 new** (10 store, 10 page, 9 money-exact, 6 a11y) + SOX bridge test; a11y suite 442 → **448** passed / 1 skipped. Lock propagation: locking a period freezes its budget line items + fiscal-year scenarios (store-tested)."
+- **Disposition:** FIXED. The audit's only FAIL in the all-in-one claim is closed; verdict 2 row flips FAIL → PASS.
 
 ### F-02 (P2, §19 UI/UX) — FAIL
 - **Evidence:** Playwright E2E specs exist (`e2e/smoke.spec.ts`, `e2e/a11y/q5-temporal/*`) but **cannot execute in this sandbox**: `npx playwright install chromium` → download blocked (`Download failure, code=1`; CDN egress blocked). Same blocker as ZCFA-2026-07-28-001 (#14). Real-browser journeys (focus-restore perf, keyboard-latency, session-timeout) remain **UNVERIFIED_BLOCKED**, not claimed green.
@@ -71,7 +72,7 @@ Reconciliation (README / PROGRESS_TRACKER / CHANGELOG vs measured):
 | Zero `Math.random` security IDs | **0 non-CSPRNG security IDs remain** (80+ sites swept to `crypto.randomUUID`) | FIXED |
 | Mock-data-free features | Report generation now derives from real GL/budget; sector dashboards use the real fiscal calendar | FIXED (3 fake surfaces removed) |
 
-**Path to 100%:** close the period-close client UI (F-01), execute Playwright E2E in an environment with browser egress (F-02), and finish the docs/ process-artifact cleanup (partial).
+**Path to 100%:** execute Playwright E2E in an environment with browser egress (F-02, env-bound), and finish the docs/ process-artifact cleanup (partial). F-01 (period-close UI) is CLOSED by MISSION C (2026-08-07).
 
 ---
 
@@ -88,14 +89,14 @@ Capability matrix vs the FP&A workflow (route exists / wired to real data / help
 | Report book builder | `/reports/book-builder` | ✅ **now real** (was fabricated rows; rebuilt on glStore/budgetStore) | ✅ | ✅ | PASS |
 | Consolidation/FX/IC | `/consolidation`, `/currency/fx-rates`, `/currency/translation`, `/currency/hedging` | ✅ worker consolidation, real FX engine | ✅ | ✅ | PASS |
 | Variance/allocations | `/variance` + allocation builders embedded (RollingForecast, HeadcountPlan, Government) | ✅ | ✅ | ✅ | PASS |
-| Period close / audit / SOX / RBAC | **NO client route** (server `/periods` + engines only) | ⚠️ server-side real | ❌ no client help | ✅ server tests | **FAIL (F-01)** |
+| Period close / audit / SOX / RBAC | `/periods/close` + `/audit/sox` + `/audit/trail` | ✅ client engine + store (masterStorage) + server API | ✅ client help | ✅ 35 new page/store/money/a11y tests + server lifecycle tests | **PASS (F-01 FIXED)** |
 | Sector depth (11+ sectors) | `/sector/*`, `/energy/*`, `/healthcare/*`, `/construction/*`, `/retail/*`, `/realestate/*`, `/insurance/*`, `/manufacturing/*` etc. | ✅ sector metric engines (deterministic, no Math.random) | ✅ | ✅ | PASS |
 | Tax/treasury/capex/workforce/lease/RevRec | `/tax/provision`, `/tax/transfer-pricing`, `/treasury/*`, `/capex/*`, `/workforce/*`, `/lease/*`, `/revenue/rev-rec`, `/revenue/deferred` | ✅ engines + pages | ✅ | ✅ | PASS |
 | Import/export (Excel/PDF/CSV) | GL upload + ExportEngine on every report page | ✅ | ✅ | ✅ | PASS |
 | Collaboration/approvals | `/collaboration/*`, `/budgets/approval` | ✅ (real presence hooks; dead CellLockIndicator stub removed) | ✅ | ✅ | PASS |
 | Backup/restore | `/settings/backup` | ✅ 35/35 store round-trip + tamper rejection (PR #40 evidence) | ✅ | ✅ | PASS |
 
-**One FAIL:** period close has no client UI (F-01). Everything else in the all-in-one claim is a real, routed, tested capability — no user is forced into Excel for any other listed step.
+**No FAILs remain:** period close now has a real client UI (F-01 fixed by MISSION C, 2026-08-07). Every step of the FP&A workflow — GL → TB → budget → forecast → reporting → consolidation → variance → sector → tax/treasury/capex/workforce/lease/RevRec → import/export → collaboration → backup → **period close** — is a real, routed, tested capability. No user is forced into Excel for any listed step.
 
 ---
 
@@ -123,6 +124,7 @@ Capability matrix vs the FP&A workflow (route exists / wired to real data / help
 | Anti-pattern | Finding | Disposition |
 |---|---|---|
 | Mock data masquerading as features | **ReportBookEngine.generateMockData** — hardcoded rows ('Revenue 1,250,000…') behind `setTimeout` "simulate async work" in ReportGenerator/BookBurstBuilder | **FIXED** (real GL/budget-derived builder; 4 dead fake components deleted) |
+| Synthetic arrays in pages/components | 23 mock/sample arrays across 17 files (MOCK_BOOKS, mockProjects, mockEntities, mockPeriods, mockArpuTrend, mockDepartments, mockTopLanes, SAMPLE_POSITIONS, …) | **FIXED (MISSION C/F-04)**: 7 **wired** to real stores/engines (MultiBookEngine, capexStore, entityStore, fiscal calendar, telecomStore, workforceStore, logisticsStore); 16 **disclosed** as labeled `demo defaults` comments; `scripts/mock-data-audit.mjs` now enforces the disposition list — **fails (exit 1) on any site without a disposition or any disclosed site lacking the marker** |
 | Fake preview data | ReportDesigner filled every metric cell with `Math.random() * 100000` | **FIXED** (cube-store lookup, honest '—') |
 | Demo period lists | 22 sector dashboards fed PeriodPicker a hardcoded Jan–Dec 2026 array | **FIXED** (real FiscalCalendar + org settings) |
 | Non-CSPRNG security IDs | 80+ `Math.random().toString(36)` IDs incl. audit entries, refresh tokens, request IDs (CWE-338) | **FIXED** (`utils/cryptoId.ts`, throws rather than degrade) |
@@ -171,7 +173,10 @@ Capability matrix vs the FP&A workflow (route exists / wired to real data / help
 | `vitest run` (full suite, JSON reporter) | 1 | **11,998 passed / 1 skipped / 1 load-flake** (`DataGrid.keyboardPerf` 109.9ms vs 100ms under load; passes 3/3 isolated) |
 | `export-verify.mjs` | 0 | export security checks pass |
 | `_docs.test.ts` | 0 | 7/7 help-doc coverage |
+| `mock-data-audit.mjs` (hardened) | 0 | 16 synthetic arrays remain, all disclosed with marker; 7 wired; gate fails on any un-dispositioned site |
+| `vitest run src/pages/periods src/store/periodCloseStore.test.ts src/engines/PeriodClose*.test.ts src/engines/FinancialCloseEngine.test.ts` | 0 | 120 passed (close engines + store + page) |
+| `vitest run __tests__/a11y .a11y.test` | 0 | **448 passed / 1 skipped** (+6 from PeriodClosePage a11y) |
 
 ---
 
-*Prepared 2026-08-07. All P0/P1 findings FIXED and verified; 3 failed items (F-01…F-03) have documented dispositions; F-03 fixed in-session, F-01/F-02 tracked.*
+*Prepared 2026-08-07. All P0/P1 findings FIXED and verified. Failed-item ledger: F-01 **FIXED** (MISSION C, period-close UI shipped + tested), F-03 FIXED (claim corrected in-session), F-02 remains ENV-BOUND (Playwright browser egress blocked in sandbox).*

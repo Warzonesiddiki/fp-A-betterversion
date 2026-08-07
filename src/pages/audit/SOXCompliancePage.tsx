@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { usePeriodCloseStore } from '@/store/periodCloseStore';
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PeriodCloseStateMachine } from '@/engines/PeriodCloseStateMachine';
 import { SOXComplianceEngine } from '@/engines/SOXComplianceEngine';
 import type { SOXReport, SOXCheckResult, SOXControlCategory } from '@/engines/SOXComplianceEngine';
 import { AuditLogEngine } from '@/engines/AuditLogEngine';
@@ -20,6 +23,7 @@ import {
   Users,
   FileText,
   BarChart3,
+  CalendarCheck,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -221,6 +225,21 @@ export default function SOXCompliancePage() {
   }, []);
 
   const _navigate = useNavigate();
+
+  // F-01 bridge: current fiscal period's close state, linking to the period
+  // close workflow (the SOX page is where an auditor expects to find it).
+  const periods = useMemo(() => buildFiscalPeriods(), []);
+  const closeEntries = usePeriodCloseStore((s) => s.entries);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const currentPeriod =
+    periods.find(
+      (p) => p.startDate.slice(0, 10) <= todayStr && p.endDate.slice(0, 10) >= todayStr
+    ) ?? periods[0];
+  const currentCloseState = currentPeriod
+    ? (closeEntries[currentPeriod.id]?.state ?? 'open')
+    : 'open';
+  const currentStateLabel = PeriodCloseStateMachine.getStateLabel(currentCloseState);
+
   const [report, setReport] = useState<SOXReport | null>(null);
   const [filterCategory, setFilterCategory] = useState<SOXControlCategory | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -435,6 +454,14 @@ export default function SOXCompliancePage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Link
+            to="/periods/close"
+            className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1"
+            aria-label={`Close period — ${currentPeriod?.name ?? ''} ${currentPeriod?.year ?? ''} is ${currentStateLabel}`}
+          >
+            <CalendarCheck className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+            Close period: {currentStateLabel}
+          </Link>
           <Button
             size="sm"
             variant="ghost"

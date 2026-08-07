@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEntityStore } from '@/store/entityStore';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -13,55 +14,6 @@ interface Entity {
   parentId: string | null;
   ownershipPct: number;
 }
-
-// Full ownership tree visualization since store is empty
-const mockEntities: Entity[] = [
-  {
-    id: 'ent-1',
-    name: 'Global Corp',
-    code: 'GLB001',
-    currency: 'USD',
-    country: 'USA',
-    parentId: null,
-    ownershipPct: 100,
-  },
-  {
-    id: 'ent-2',
-    name: 'US North',
-    code: 'USN001',
-    currency: 'USD',
-    country: 'USA',
-    parentId: 'ent-1',
-    ownershipPct: 100,
-  },
-  {
-    id: 'ent-3',
-    name: 'EMEA HQ',
-    code: 'EMEA001',
-    currency: 'EUR',
-    country: 'UK',
-    parentId: 'ent-1',
-    ownershipPct: 80,
-  },
-  {
-    id: 'ent-4',
-    name: 'Germany Sales',
-    code: 'GER001',
-    currency: 'EUR',
-    country: 'Germany',
-    parentId: 'ent-3',
-    ownershipPct: 100,
-  },
-  {
-    id: 'ent-5',
-    name: 'APAC HQ',
-    code: 'APAC001',
-    currency: 'SGD',
-    country: 'Singapore',
-    parentId: 'ent-1',
-    ownershipPct: 60,
-  },
-];
 
 function EntityNode({
   entity,
@@ -139,8 +91,19 @@ function EntityNode({
 }
 
 export default function OwnershipTreePage() {
-  // In a real scenario, this would come from a store
-  const [entities] = useState<Entity[]>(mockEntities);
+  // WIRED (C-3): entity tree from the real entityStore (persisted, RBAC-gated).
+  // ownershipPct is not rendered by this page; it is carried for future
+  // ownership metadata (defaults to 100 = fully owned until imported).
+  const storeEntities = useEntityStore((s) => s.entities);
+  const entities: Entity[] = storeEntities.map((e) => ({
+    id: e.id,
+    name: e.name,
+    code: e.code,
+    currency: e.currency,
+    country: e.country,
+    parentId: e.parentId,
+    ownershipPct: 100,
+  }));
   const rootEntities = entities.filter((e) => !e.parentId);
 
   return (

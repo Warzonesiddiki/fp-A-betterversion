@@ -74,6 +74,7 @@ const EMPTY_FORM: HedgeForm = {
   entityCurrency: 'EUR',
 };
 
+// demo defaults — replaced by real data when hedge positions come from treasury hedge imports
 const SAMPLE: HedgePosition[] = [
   {
     id: '1',
