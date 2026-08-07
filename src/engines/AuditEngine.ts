@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 /**
  * AuditEngine — Audit trail logging, querying, export
  */
@@ -47,7 +48,7 @@ export class AuditEngine {
     details?: string;
   }): AuditEntry {
     const entry: AuditEntry = {
-      id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: randomId('audit'),
       userId: params.userId,
       userName: params.userName,
       action: params.action,

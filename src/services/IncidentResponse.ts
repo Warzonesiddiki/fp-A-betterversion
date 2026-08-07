@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 /**
  * IncidentResponse — PATCH 9 (Hephaestus, FinPlan Pro v1.0.0, 2026-06-16)
  *
@@ -305,20 +306,8 @@ export class IncidentError extends Error {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function fallbackRandomHex(bytes: number): string {
-  const arr = new Uint8Array(bytes);
-  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
-    crypto.getRandomValues(arr);
-  } else {
-    for (let i = 0; i < bytes; i++) arr[i] = Math.floor(Math.random() * 256);
-  }
-  return Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('');
-}
-
 function newId(prefix: string): string {
-  const ts = Date.now().toString(36);
-  const hex = fallbackRandomHex(6);
-  return `${prefix}-${ts}-${hex}`;
+  return randomId(prefix);
 }
 
 // ── Class ────────────────────────────────────────────────────────────────────

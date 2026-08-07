@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // WORKFLOW BUILDER ENGINE
 // Visual workflow designer with nodes, edges, validation
@@ -59,7 +60,7 @@ export class WorkflowBuilderEngine {
   // ---------------------------------------------------------------------------
 
   createWorkflow(name: string, description: string): WorkflowDefinition {
-    const id = 'wf-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('wf');
     const now = new Date().toISOString();
     const workflow: WorkflowDefinition = {
       id,

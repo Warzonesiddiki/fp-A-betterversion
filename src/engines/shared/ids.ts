@@ -1,5 +1,6 @@
+import { randomId } from '@/utils/cryptoId';
 export function generateId(prefix: string = 'id'): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return randomId(prefix);
 }
 
 export function generateTimestampedId(prefix: string = 'ts'): string {

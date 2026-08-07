@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // REPORT VERSION ENGINE — Version control for reports with diff comparison
 // Pure TypeScript, deterministic, no external dependencies
@@ -43,7 +44,7 @@ export class ReportVersionEngine {
   ): ReportVersion {
     const existing = this.versions.get(reportId) ?? [];
     const version: ReportVersion = {
-      id: 'ver-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('ver'),
       reportId,
       version: existing.length + 1,
       name,
@@ -107,7 +108,7 @@ export class ReportVersionEngine {
 
     const base = baseVersion ?? versions![versions.length - 1]!.version;
     const branch: VersionBranch = {
-      id: 'br-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('br'),
       name,
       reportId,
       baseVersion: base,

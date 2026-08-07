@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 import { useCallback, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
@@ -70,7 +71,7 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
 
   const addStep = useCallback(() => {
     const step: WorkflowStep = {
-      id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      id: randomId('step'),
       name: stepForm.name || `Step ${steps.length + 1}`,
       type: stepForm.type,
       approvers: parseCommaList(stepForm.approvers),

@@ -414,6 +414,7 @@ export function createTauriSecureStorage(
   return new TauriSecureStorage(tauri, monotonicNow);
 }
 
+import { randomId } from '@/utils/cryptoId';
 // --- helpers ---
 
 function bytesToBase64(bytes: Uint8Array): string {
@@ -447,5 +448,5 @@ function isNotFoundError(err: unknown): boolean {
 }
 
 function shortRandomId(): string {
-  return Math.random().toString(36).slice(2, 10).padEnd(8, '0');
+  return randomId().replace(/-/g, '').slice(0, 8);
 }

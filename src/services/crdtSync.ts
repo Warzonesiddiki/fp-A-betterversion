@@ -10,6 +10,7 @@
  * @module crdtSync
  */
 
+import { randomId } from '@/utils/cryptoId';
 import type {
   VectorClock,
   SyncOperation,
@@ -110,7 +111,7 @@ export function recordLocalOperation(
 
   const op: SyncOperation = {
     ...operation,
-    id: `op-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: randomId('op'),
     clock: newClock,
     acknowledged: false,
   };
@@ -135,7 +136,7 @@ export function detectConflicts(state: SyncState): SyncConflict[] {
 
         if (order === 'concurrent') {
           conflicts.push({
-            id: `conflict-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            id: randomId('conflict'),
             path: localOp.path,
             localValue: localOp.value,
             remoteValue: serverOp.value,

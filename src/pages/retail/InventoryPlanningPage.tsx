@@ -1,3 +1,4 @@
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { useMemo, useState } from 'react';
 import { Package, BarChart3, Download, Truck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -21,21 +22,7 @@ import { useGLStore } from '@/store/glStore';
 import { InventoryEngine } from '@/engines/InventoryEngine';
 import { formatCompact, formatNumber } from '@/utils/financialFormatting';
 
-const mockPeriods: FiscalPeriod[] = [
-  {
-    id: 'P01',
-    name: 'January',
-    year: 2026,
-    periodNumber: 1,
-    startDate: '2026-01-01',
-    endDate: '2026-01-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: true,
-    closedAt: '2026-02-05',
-    closedBy: 'User1',
-  },
-];
+const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 const categoryBreakdown = [
   { name: 'Apparel', value: 3200000, turnover: 5.2, margin: '54%' },

@@ -149,13 +149,25 @@ export function ReportDesigner() {
   }, [pushHistory]);
 
   const cubeData = useMemo(() => {
+    // REAL cube data resolution: metric cells are looked up in the cube store
+    // (dimension=value|… coords format). Cells with no resolvable cube value
+    // are left undefined so ReportGrid renders an honest '—' — never fabricated.
     const data: Record<string, number> = {};
+    const cubeEngine = useCubeStore.getState().engine;
     report.layout.rows.forEach((row) => {
-      report.layout.columns.forEach((col) => {
-        if (col.type !== 'label') {
-          const labelCell = row.cells.find((_, i) => report.layout.columns[i]?.type === 'label');
-          const label = (labelCell?.content as { content?: { text?: string } })?.content?.text ?? 'Unknown';
-          data[`${label}.${col.header}`] = Math.random() * 100000;
+      row.cells.forEach((cell) => {
+        if (cell.type !== 'metric' || cell.content.type !== 'metric') return;
+        const content = cell.content.content;
+        if (!content.coords || !content.measure) return;
+        const coordsRecord: Record<string, string> = {};
+        for (const part of content.coords.split('|')) {
+          const eq = part.indexOf('=');
+          if (eq > 0) coordsRecord[part.slice(0, eq).trim()] = part.slice(eq + 1).trim();
+        }
+        if (Object.keys(coordsRecord).length === 0) return;
+        const value = cubeEngine?.readCell('main', coordsRecord, content.measure)?.value;
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          data[ReportBuilderEngine.buildMetricKey(content)] = value;
         }
       });
     });

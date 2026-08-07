@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // WORKFLOW SCHEDULER ENGINE
 // Cron-based scheduling, calendar integration, scheduled task management
@@ -93,7 +94,7 @@ export class WorkflowSchedulerEngine {
     frequency: ScheduleFrequency,
     config: ScheduleConfig = {}
   ): ScheduleDefinition {
-    const id = 'sch-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('sch');
     const now = new Date();
     const schedule: ScheduleDefinition = {
       id,
@@ -194,7 +195,7 @@ export class WorkflowSchedulerEngine {
 
     const now = new Date();
     const execution: ScheduledExecution = {
-      id: 'exec-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('exec'),
       scheduleId,
       scheduledAt: schedule.nextRunAt,
       startedAt: now.toISOString(),
@@ -241,7 +242,7 @@ export class WorkflowSchedulerEngine {
     description?: string
   ): CalendarEvent {
     const event: CalendarEvent = {
-      id: 'cal-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('cal'),
       title,
       date,
       type,

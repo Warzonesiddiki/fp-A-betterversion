@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 import { useCallback, useState } from 'react';
 import { X, Plus, Trash2, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -56,7 +57,7 @@ export function ConditionalFormatPanel({
 
   const handleAddFormat = useCallback(() => {
     const newFormat: ConditionalFormat = {
-      id: `cf-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: randomId('cf'),
       condition: 'gt',
       value: 0,
       style: { textColor: '#16A34A' },

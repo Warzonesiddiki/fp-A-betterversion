@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 import { useState, useCallback, useEffect } from 'react';
 import {
   Plus,
@@ -94,7 +95,7 @@ const METHOD_OPTIONS: Array<{
 ];
 
 function generateId(): string {
-  return `rule-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return randomId('rule');
 }
 
 // ---------------------------------------------------------------------------

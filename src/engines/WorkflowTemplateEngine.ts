@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // WORKFLOW TEMPLATE ENGINE
 // Pre-built workflow templates for common FP&A processes
@@ -738,7 +739,7 @@ export class WorkflowTemplateEngine {
   createCustomTemplate(
     template: Omit<WorkflowTemplate, 'id' | 'isBuiltIn' | 'createdAt'>
   ): WorkflowTemplate {
-    const id = 'ctpl-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('ctpl');
     const custom: WorkflowTemplate = {
       ...template,
       id,

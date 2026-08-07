@@ -9,6 +9,7 @@
  * arithmetic. No raw + - * / on currency values remains.
  */
 
+import { randomId } from '@/utils/cryptoId';
 import { roundTo, subtractMoney } from '../utils/money';
 
 export interface Assumption {
@@ -45,7 +46,7 @@ export class AssumptionEngine {
   private static assumptions = new Map<string, Assumption>();
 
   static create(data: Omit<Assumption, 'id' | 'version' | 'history'>): Assumption {
-    const id = `asm_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const id = `asm_${randomId()}`;
     const assumption: Assumption = {
       ...data,
       id,

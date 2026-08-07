@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // AUTO-SAVE ENGINE — Automatic saving with configurable intervals
 // Saves to temp file every N minutes, on blur, before close
@@ -132,7 +133,7 @@ export class AutoSaveEngine {
       if (!data) return null;
 
       const entry: AutoSaveEntry = {
-        id: `autosave-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id: randomId('autosave'),
         timestamp: new Date().toISOString(),
         path: `autosave_${Date.now()}${this.config.tempFileSuffix}`,
         sizeBytes: data.length * 2,

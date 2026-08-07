@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // CUBE SECURITY ENGINE — Cell-level security based on dimension membership
 // Implements row-level and column-level security for OLAP cubes
@@ -46,7 +47,7 @@ export class CubeSecurityEngine {
   private maxAuditLogSize = 10000;
 
   addRule(rule: Omit<SecurityRule, 'id' | 'createdAt'>): SecurityRule {
-    const id = `sec-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = randomId('sec');
     const fullRule: SecurityRule = {
       ...rule,
       id,

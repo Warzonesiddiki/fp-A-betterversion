@@ -5,6 +5,7 @@
  * MONEY MIGRATION (2026-08-02): All adjustment amounts now use src/utils/money.ts.
  * Results are cent-rounded. No raw + - * / on amounts.
  */
+import { randomId } from '@/utils/cryptoId';
 import { addMoney, multiplyMoney, roundTo, subtractMoney, toDecimal } from '../utils/money';
 
 interface ConsolidationEntry {
@@ -165,7 +166,7 @@ export class ConsolidationAdjustmentsEngine {
   private static addEntry(params: Omit<ConsolidationEntry, 'id'>): ConsolidationEntry {
     const entry: ConsolidationEntry = {
       ...params,
-      id: `adj_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      id: `adj_${randomId()}`,
     };
     this.entries.push(entry);
     return entry;

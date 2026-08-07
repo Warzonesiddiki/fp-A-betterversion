@@ -4,7 +4,9 @@
 // Pure TypeScript, deterministic, testable.
 // =============================================================================
 
+import { randomId } from '@/utils/cryptoId';
 import type { ExportData, ExportConfig } from './ExportEngine';
+import { buildReportData, type GlLikeEntry, type BudgetLikeItem } from './reportDataBuilder';
 
 // ---------------------------------------------------------------------------
 // Type Definitions
@@ -152,7 +154,7 @@ export class ReportBookEngine {
   // --- Book CRUD ---
 
   createBook(name: string, description: string): ReportBook {
-    const id = `book-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = randomId('book');
     const book: ReportBook = {
       id,
       name,
@@ -183,7 +185,7 @@ export class ReportBookEngine {
     const book = this.books.get(bookId);
     if (!book) throw new Error(`Book "${bookId}" not found`);
 
-    const id = `entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = randomId('entry');
     const newEntry: ReportBookEntry = {
       ...entry,
       id,
@@ -284,7 +286,7 @@ export class ReportBookEngine {
           if (generator) {
             data = generator(entity, resolvedVars);
           } else {
-            data = this.generateMockData(entry, entity);
+            data = this.generateFallbackData(entry, entity);
           }
 
           const reportName = substituteVariables(entry.reportName, entry.variables, entity);
@@ -318,18 +320,31 @@ export class ReportBookEngine {
     return results;
   }
 
-  private generateMockData(entry: ReportBookEntry, entity: Entity): ExportData {
+  /**
+   * Honest fallback when no generator is registered for a template: rows
+   * derived from the (empty) data source — zeros, never fabricated figures.
+   * Real data paths register a generator via registerReportGenerator and pass
+   * actual GL/budget data through {@link buildReportData}.
+   */
+  private generateFallbackData(entry: ReportBookEntry, entity: Entity): ExportData {
+    const emptyEntries: readonly GlLikeEntry[] = [];
+    const emptyBudget: readonly BudgetLikeItem[] = [];
+    const fallback = buildReportData(
+      {
+        entries: emptyEntries,
+        budgetItems: emptyBudget,
+        entityName: entity.name,
+        currency: entity.currency,
+        periodLabel: entry.variables.period ?? 'FY 2026',
+      },
+      entry.templateId
+    );
     return {
-      headers: ['Line Item', 'Actual', 'Budget', 'Variance', 'Var %'],
-      rows: [
-        [`${entry.reportName} - ${entity.name}`, '', '', '', ''],
-        ['Revenue', 1250000, 1200000, 50000, '4.2%'],
-        ['Cost of Goods Sold', 750000, 720000, -30000, '-4.2%'],
-        ['Gross Profit', 500000, 480000, 20000, '4.2%'],
-        ['Operating Expenses', 300000, 310000, 10000, '3.2%'],
-        ['EBITDA', 200000, 170000, 30000, '17.6%'],
+      ...fallback,
+      footers: [
+        ...(fallback.footers ?? []),
+        `No generator registered for template "${entry.templateId}" — install a data source before generating.`,
       ],
-      footers: [`Generated ${new Date().toLocaleDateString()} | ${entity.currency}`],
     };
   }
 

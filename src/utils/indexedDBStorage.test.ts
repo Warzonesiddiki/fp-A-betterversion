@@ -1,26 +1,40 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
+import 'fake-indexeddb/auto';
 import { indexedDBStorage, isStorageAvailable } from './indexedDBStorage';
 
-// We can't easily test real IDB without fake-indexeddb.
-// But we can test isStorageAvailable and the interface of indexedDBStorage.
-
 describe('indexedDBStorage', () => {
+  const originalIDB = global.indexedDB;
+
+  afterAll(() => {
+    global.indexedDB = originalIDB;
+  });
+
   it('isStorageAvailable returns false if IDB is missing', async () => {
-    // Temporarily mock indexedDB
-    const originalIDB = global.indexedDB;
     (global as any).indexedDB = undefined;
 
     const available = await isStorageAvailable();
     expect(available).toBe(false);
-
-    global.indexedDB = originalIDB;
   });
 
-  it.skip('isStorageAvailable returns true if IDB is present', async () => {
-    // Skipped: jsdom does not support IndexedDB. This test requires a browser or fake-indexeddb.
+  it('isStorageAvailable returns true if IDB is present', async () => {
+    // fake-indexeddb/auto installs a spec-compliant IndexedDB on globalThis.
+    (global as any).indexedDB = originalIDB;
+    const available = await isStorageAvailable();
+    expect(available).toBe(true);
+  });
+
+  it('round-trips a value through the real object store', async () => {
+    (global as any).indexedDB = originalIDB;
+    const key = 'round-trip-test';
+    await indexedDBStorage.setItem(key, { hello: 'world', n: 42 });
+    const value = await indexedDBStorage.getItem(key);
+    expect(value).toEqual({ hello: 'world', n: 42 });
+    await indexedDBStorage.removeItem(key);
+    const after = await indexedDBStorage.getItem(key);
+    expect(after).toBeNull();
   });
 
   it('has required methods', () => {

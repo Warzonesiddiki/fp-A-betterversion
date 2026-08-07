@@ -10,6 +10,7 @@
  * @module OperationalDriverEngine
  */
 
+import { randomId } from '@/utils/cryptoId';
 import type {
   OperationalDriver,
   OperationalDriverType,
@@ -34,7 +35,7 @@ export function createDriver(
   description: string = ''
 ): OperationalDriver {
   return {
-    id: `drv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: randomId('drv'),
     category,
     type,
     name,
@@ -143,7 +144,7 @@ export function createChain(
   valueTransforms: NonNullable<DriverChain['valueTransforms']> = {}
 ): DriverChain {
   return {
-    id: `chain-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: randomId('chain'),
     name,
     driverIds,
     formula: driverIds

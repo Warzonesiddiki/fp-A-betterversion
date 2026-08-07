@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // WORKFLOW TRIGGER ENGINE
 // Trigger system for workflow automation: data change, time-based, manual, events
@@ -84,7 +85,7 @@ export class WorkflowTriggerEngine {
     description: string,
     config: TriggerConfig = {}
   ): TriggerRule {
-    const id = 'trg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('trg');
     const trigger: TriggerRule = {
       id,
       type,
@@ -197,7 +198,7 @@ export class WorkflowTriggerEngine {
 
     const now = new Date().toISOString();
     const event: TriggerEvent = {
-      id: 'evt-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('evt'),
       triggerId,
       type: trigger.type,
       payload,

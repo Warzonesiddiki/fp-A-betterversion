@@ -10,6 +10,7 @@
  * @module writebackService
  */
 
+import { randomId } from '@/utils/cryptoId';
 import type {
   WriteBackOperation,
   WriteBackTransaction,
@@ -32,7 +33,7 @@ export function createTransaction(
   operations: readonly WriteBackOperation[]
 ): WriteBackTransaction {
   return {
-    id: `txn-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: randomId('txn'),
     connectorId,
     operations,
     status: 'pending',
@@ -54,7 +55,7 @@ export function createOperation(
   preState: Record<string, unknown> | null = null
 ): WriteBackOperation {
   return {
-    id: `op-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: randomId('op'),
     recordType,
     action,
     externalId,

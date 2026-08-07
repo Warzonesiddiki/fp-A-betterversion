@@ -1,3 +1,4 @@
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { useState } from 'react';
 import { Calculator, ArrowRightLeft, Download, BarChart3, Scale } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -19,21 +20,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 
 // Mock Data
-const mockPeriods: FiscalPeriod[] = [
-  {
-    id: 'P01',
-    name: 'January',
-    year: 2026,
-    periodNumber: 1,
-    startDate: '2026-01-01',
-    endDate: '2026-01-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: true,
-    closedAt: '2026-02-05',
-    closedBy: 'User1',
-  },
-];
+const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 const costBreakdownData = [
   { name: 'Labor', budget: 1200000, actual: 1150000 },

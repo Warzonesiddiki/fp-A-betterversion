@@ -1,3 +1,4 @@
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { useState } from 'react';
 
 import { TrendingUp, Briefcase, Clock, Download, Layers } from 'lucide-react';
@@ -21,21 +22,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 
 // Mock Data
-const mockPeriods: FiscalPeriod[] = [
-  {
-    id: 'P01',
-    name: 'January',
-    year: 2026,
-    periodNumber: 1,
-    startDate: '2026-01-01',
-    endDate: '2026-01-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: true,
-    closedAt: '2026-02-05',
-    closedBy: 'User1',
-  },
-];
+const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 const backlogTrend = [
   { month: 'Jan', backlog: 125000000, new_orders: 12000000, revenue: 15000000 },

@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // CRASH RECOVERY ENGINE — Recover work from auto-save temp files
 // Detects unrecovered auto-saves on launch, offers recovery
@@ -27,7 +28,7 @@ export class CrashRecoveryEngine {
 
   addCandidate(candidate: Omit<RecoveryCandidate, 'id'>): RecoveryCandidate {
     const full: RecoveryCandidate = {
-      id: `recovery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: randomId('recovery'),
       ...candidate,
     };
     this.candidates.push(full);

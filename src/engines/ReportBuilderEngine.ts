@@ -4,6 +4,7 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
+import { randomId } from '@/utils/cryptoId';
 import { sumMoney, formatMoney } from '../utils/money';
 
 // --- Cell Type Definitions ---
@@ -1079,11 +1080,8 @@ export class ReportBuilderEngine {
   // Private Helpers
   // ---------------------------------------------------------------------------
 
-  private static idCounter = 0;
-
   private static generateId(): string {
-    this.idCounter++;
-    return `rpt_${Date.now()}_${this.idCounter}_${Math.random().toString(36).slice(2, 8)}`;
+    return `rpt_${randomId()}`;
   }
 
   private static createEmptyCell(type: CellType): ReportCell {

@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 /**
  * NamedRangeEngine — Named ranges for formulas
  * Maps human-readable names to cell ranges for easier formula writing
@@ -27,7 +28,7 @@ export class NamedRangeEngine {
    * Create a named range
    */
   static create(range: Omit<NamedRange, 'id' | 'createdAt'>): NamedRange {
-    const id = `nr_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const id = randomId('nr');
     const full: NamedRange = {
       ...range,
       id,

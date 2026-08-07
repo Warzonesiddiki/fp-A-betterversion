@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // DASHBOARD BUILDER ENGINE
 // Grid layout, widget management, templates, sharing
@@ -69,7 +70,7 @@ export class DashboardBuilderEngine {
     layout: 'grid' | 'free' = 'grid',
     columns: number = 12
   ): Dashboard {
-    const id = 'dash-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('dash');
     const now = new Date().toISOString();
     const dashboard: Dashboard = {
       id,
@@ -188,7 +189,7 @@ export class DashboardBuilderEngine {
     );
     dashboard.widgets = template.widgets.map((w) => ({
       ...w,
-      id: 'w-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: randomId('w'),
     }));
     return dashboard;
   }

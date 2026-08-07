@@ -9,6 +9,7 @@
  * are ratios. No raw + - * / on currency values remains.
  */
 
+import { randomId } from '@/utils/cryptoId';
 import { addMoney, divideMoney, multiplyMoney, subtractMoney, toDecimal } from '../utils/money';
 
 export interface AllocationRule {
@@ -55,7 +56,7 @@ export class AllocationRuleEngine {
    * Create a new allocation rule
    */
   static create(rule: Omit<AllocationRule, 'id' | 'createdAt'>): AllocationRule {
-    const id = `alloc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = randomId('alloc');
     const full: AllocationRule = {
       ...rule,
       id,

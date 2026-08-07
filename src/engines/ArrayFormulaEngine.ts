@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 /**
  * ArrayFormulaEngine — Array formula support for FinPlan Pro
  * Handles multi-cell array formulas like Excel's Ctrl+Shift+Enter
@@ -25,7 +26,7 @@ export class ArrayFormulaEngine {
    * Register an array formula
    */
   static register(formula: Omit<ArrayFormula, 'id'>): string {
-    const id = `arr_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const id = `arr_${randomId()}`;
     this.formulas.set(id, { ...formula, id });
     return id;
   }

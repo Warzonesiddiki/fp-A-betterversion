@@ -1472,3 +1472,28 @@ in `src/pages/*` and every directory in `src/components/*` is now in the ratchet
 | **Docs Verify**          | `node scripts/verify-readme-stats.mjs`                                                                                                                                                           | ✓ all claims match                                  |
 
 **Phase 2 Gate:** ✅ **COMPLETE** — Import GL → Create Budget → Edit cells (Grid Editor) → Submit/Approve (auto-lock) → Generate P&L + 6-section Board Pack → Export PDF — all data persists.
+
+---
+
+## ZCFA-2026-08-07-003 — 20-section forensic audit (branch `arena/019fdb06-fp-a-betterversion`, base `b426149`)
+
+Evidence = literal command output, 2026-08-07 (see `reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md`).
+
+### CLOSED (verified this session)
+- **Fake report data (P0):** `ReportBookEngine.generateMockData` emitted hardcoded rows ('Revenue 1,250,000…'); `ReportGenerator`/`BookBurstBuilder` used `setTimeout` "simulate async work". Replaced with `src/engines/reportDataBuilder.ts` (real GL+budget rows, money-exact); 4 dead fake components deleted. `/reports/book-builder` now previews+generates from real stores.
+- **Fake report preview (P0):** `ReportDesigner` filled metric cells with `Math.random()*100000` → now resolves from cube store, else '—'.
+- **CSPRNG sweep (P0, CWE-338):** 80+ `Math.random()` security IDs → `src/utils/cryptoId.ts` (`crypto.randomUUID`, throws rather than degrade). Audit entries, refresh tokens, request IDs, retention/IC/segment/template IDs, CircuitBreaker/RateLimiter/TauriSecureStorage tokens, report IDs.
+- **Skipped tests (P1):** all 8 unit + 1 a11y skips remediated (CopilotSidebar, masterStorage.stress ×3 rewritten on real browser backend, indexedDB via `fake-indexeddb` devDep + round-trip test, ScenarioBuilder Monte Carlo now a real worker-backed feature, OnboardingWizard a11y-07). Remaining skip: q5-2 perf budget (E2E-covered, documented).
+- **Engine-count truth (P2):** "190 modules / 183 shipped / 7 orphans" refuted → **181 loadable / 181 shipped / 0 orphans** (6 `.benchmark.` fixtures + type-only modules miscounted; kebab-import false positive). README/tracker corrected; `verify-readme-stats.mjs` hardened (excludes `.benchmark.`, kebab-insensitive, catches "(N modules)").
+- **Tracker corruption (P2):** `update-tracker.mjs` counted test files in the source breakdown ("584 components") and its stat-sub regex left stale tails → healed; test-file counting separated; whole-div replacement; repeat-run idempotent.
+- **Coverage claim (P2):** Wave 13 "≥80%" refuted (threshold 50; **measured engine layer 71.32% stmts / 73.44% lines**, 4,940 tests) → claim corrected.
+- **Mock periods (P2):** 22 sector dashboards fed PeriodPicker a hardcoded demo list → `buildFiscalPeriods()` from real `FiscalCalendar` + org settings.
+- **Dead stubs (P2):** `CellLockIndicator` (returned null) deleted; `ui/ui/Button.tsx` re-export stub removed (TourOverlay imports `./Button`).
+- **Hygiene (P2):** deleted `scripts/perf/{err,out,out2,MEASURED_RESULTS}` (stale 2026-06-15 win32), `_bmad/`, `_bmad-output/`, `agents/`, `plan and advice/.env.example`, `reports/junk/`.
+- **Server money (P2):** audited — remaining 21/23 server modules are pure pass-through/IO (no currency arithmetic); only rounding paths (gl.ts, export.ts) are decimal.js.
+
+### OPEN — dispositions
+- **F-01 (P2):** Period close has server API + engines (`server/src/routes/periods.ts`, `PeriodCloseStateMachine`, `PeriodLockEngine`, lifecycle tests) but **no client UI route**. User cannot close a period from the UI. Fix tracked (client page) or accept as server-canonical gap.
+- **F-02 (P2, ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked; same as ZCFA-2026-07-28 #14). Real-browser journeys remain UNVERIFIED_BLOCKED.
+- **F-03 (P2):** covered-claims reconciliation — fixed in-session (see coverage row above).
+- **DEFER-2026-001:** AnomalyDetectionEngine percentile linear-interp vs nearest-rank — retained (documented, tests green, behavior pinned).

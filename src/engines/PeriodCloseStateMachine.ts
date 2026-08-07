@@ -12,6 +12,7 @@
  * checklist must integrate with.
  */
 
+import { randomId } from '@/utils/cryptoId';
 import { sumMoney, moneyEquals, type MoneyInput } from '../utils/money';
 
 // ---------------------------------------------------------------------------
@@ -216,7 +217,7 @@ export class PeriodCloseStateMachine {
 
     const newState = TRANSITION_TARGET[transition];
     const now = new Date().toISOString();
-    const auditEventId = `pca-${entry.periodId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const auditEventId = `pca-${entry.periodId}-${randomId()}`;
 
     const auditEvent: PeriodCloseAuditEvent = {
       id: auditEventId,

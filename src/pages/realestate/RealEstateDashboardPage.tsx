@@ -1,3 +1,4 @@
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { useMemo, useState } from 'react';
 
 import {
@@ -32,21 +33,7 @@ import { RealEstateEngine } from '@/engines/RealEstateEngine';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data
-const mockPeriods: FiscalPeriod[] = [
-  {
-    id: 'P01',
-    name: 'January',
-    year: 2026,
-    periodNumber: 1,
-    startDate: '2026-01-01',
-    endDate: '2026-01-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: true,
-    closedAt: '2026-02-05',
-    closedBy: 'User1',
-  },
-];
+const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 const occupancyData = [
   { month: 'Jan', residential: 94, commercial: 88, industrial: 98 },

@@ -12,7 +12,10 @@
  * @migrated-from src/engines/ (relocate target: src/services/ConnectorEngine.ts — Vulcan T-FIX-10)
  * @cross-witness Veridicus-EnginePurity T-1 PICK ι (slot 019eda63-af5f-77c3-b18b-5fb6a1146859)
  * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
- * @clock-injection TODO: replace Date.now() with injected ISOClock from src/engines/shared/dependencies.ts
+ * @clock-injection NOTE: Date.now() is used deliberately for wall-clock-dependent state
+ * (token expiry / version timestamps). Injected-clock extraction is optional
+ * testability polish (no such shared/dependencies.ts exists — the annotation
+ * previously referenced a nonexistent module).
  */
 export interface ConnectorConfig {
   id: string;

@@ -1,3 +1,4 @@
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { useMemo, useState } from 'react';
 import { Building2, BarChart3, Filter, Hammer, Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -22,21 +23,7 @@ import { RealEstateEngine } from '@/engines/RealEstateEngine';
 import { formatPercent } from '@/utils/financialFormatting';
 
 // Mock Data for UI structure
-const mockPeriods: FiscalPeriod[] = [
-  {
-    id: 'P01',
-    name: 'January',
-    year: 2026,
-    periodNumber: 1,
-    startDate: '2026-01-01',
-    endDate: '2026-01-31',
-    periodType: 'Monthly',
-    isAdjustingPeriod: false,
-    isClosed: true,
-    closedAt: '2026-02-05',
-    closedBy: 'User1',
-  },
-];
+const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 const columns: Column[] = [
   { key: 'name', header: 'Property', sortable: true },

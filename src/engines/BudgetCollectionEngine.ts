@@ -20,6 +20,7 @@
  * + - * / on currency values remains.
  */
 
+import { randomId } from '@/utils/cryptoId';
 import { roundTo, sumMoney } from '../utils/money';
 
 export type CollectionStatus =
@@ -78,7 +79,7 @@ export class BudgetCollectionEngine {
   private submissions = new Map<string, BudgetSubmission>();
 
   createTemplate(template: Omit<CollectionTemplate, 'id' | 'status'>): CollectionTemplate {
-    const id = `tmpl-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const id = randomId('tmpl');
     const t: CollectionTemplate = { ...template, id, status: 'draft' };
     this.templates.set(id, t);
     return t;
@@ -92,7 +93,7 @@ export class BudgetCollectionEngine {
   }
 
   submit(data: Omit<BudgetSubmission, 'id' | 'status' | 'totalAmount'>): BudgetSubmission {
-    const id = `sub-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const id = randomId('sub');
     const totalAmount = roundTo(sumMoney(data.lineItems.map((l) => l.amount)));
     const submission: BudgetSubmission = {
       ...data,

@@ -49,17 +49,25 @@ const allSrc = walk(join(ROOT, 'src')).filter(
 
 // --- engines -----------------------------------------------------------
 const engineDir = join(ROOT, 'src', 'engines');
-// NOTE: counted with the SAME convention as scripts/check-readme-claims.mjs
-// (top-level .ts, excluding .test./.bench.) so the two gates cannot disagree
-// with each other and deadlock the push.
+// NOTE: counted with the SAME convention as scripts/generate-engine-manifest.mjs
+// (the manifest is the canonical "loadable engine" registry): top-level .ts,
+// excluding tests, benchmarks (incl. .benchmark.), type-only modules and
+// internal plumbing. Counting benchmark fixtures or type-only files as
+// "engines" previously produced a false 190-module / 7-orphan headline.
+const ENGINE_EXCLUDED = new Set([
+  'index',
+  'types',
+  'engineManifest.generated',
+  'EngineRegistry',
+  'ReportBuilderTypes',
+  'report-builder-types',
+]);
 const engineFiles = readdirSync(engineDir)
   .filter(
     (f) =>
       f.endsWith('.ts') &&
-      !f.includes('.test.') &&
-      !f.includes('.bench.') &&
-      // Generated plumbing, not an engine module (N-0013).
-      f !== 'engineManifest.generated.ts'
+      !isTest(f) &&
+      !ENGINE_EXCLUDED.has(basename(f, '.ts'))
   )
   .map((f) => basename(f, '.ts'));
 
@@ -77,11 +85,16 @@ const engineDirBlobs = allSrc
   .filter((f) => f.startsWith(engineDir))
   .map((f) => ({ name: basename(f, '.ts'), text: readFileSync(f, 'utf8') }));
 
+// Reachability is case/kebab-insensitive: `report-builder-types` imports are
+// matched by the normalized file name, so kebab-case consumers cannot produce
+// a false orphan.
+const normalize = (s) => s.toLowerCase().replace(/[-_]/g, '');
 const shippedEngines = engineFiles.filter((name) => {
-  const re = new RegExp(`\\b${name}\\b`);
-  if (sourceBlobs.some((t) => re.test(t))) return true;
+  const needle = normalize(name);
+  const re = new RegExp(`\\b${needle}\\b`);
+  if (sourceBlobs.some((t) => re.test(normalize(t)))) return true;
   // consumed by another engine that is itself reachable
-  return engineDirBlobs.some((e) => e.name !== name && re.test(e.text));
+  return engineDirBlobs.some((e) => e.name !== name && re.test(normalize(e.text)));
 });
 const orphanEngines = engineFiles.filter((n) => !shippedEngines.includes(n));
 
@@ -114,7 +127,11 @@ const failures = [];
 
 const forbidden = [
   { pattern: /Active Workers \((\d+)\)/g, expect: measured.workers, label: 'worker count' },
-  { pattern: /Financial Engines \((\d+)\+?\)/g, expect: measured.engines, label: 'engine count' },
+  {
+    pattern: /Financial Engines \((\d+)(?: modules)?\)/g,
+    expect: measured.engines,
+    label: 'engine count',
+  },
   {
     pattern: /Store Architecture \((\d+) Stores\)/g,
     expect: measured.stores,

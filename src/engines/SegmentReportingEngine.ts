@@ -9,6 +9,7 @@
  * + - * / on currency values remains.
  */
 
+import { randomId } from '@/utils/cryptoId';
 import { divideMoney, roundTo, subtractMoney, sumMoney } from '../utils/money';
 
 const CURRENCY_PLACES = 2;
@@ -38,7 +39,7 @@ export class SegmentReportingEngine {
   private static data: SegmentData[] = [];
 
   static defineSegment(segment: Omit<Segment, 'id'>): Segment {
-    const id = 'seg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+    const id = `seg_${randomId()}`;
     const full: Segment = { ...segment, id };
     this.segments.push(full);
     return full;

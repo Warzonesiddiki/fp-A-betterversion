@@ -3,6 +3,7 @@
 // Predefined financial report templates (income statement, balance sheet, etc.)
 // =============================================================================
 
+import { randomId } from '@/utils/cryptoId';
 import {
   type TemplateType,
   type ReportLayout,
@@ -18,11 +19,8 @@ import {
 // Shared Helpers (used by templates and main engine)
 // ---------------------------------------------------------------------------
 
-let idCounter = 0;
-
 export function generateReportId(): string {
-  idCounter++;
-  return `rpt_${Date.now()}_${idCounter}_${Math.random().toString(36).slice(2, 8)}`;
+  return `rpt_${randomId()}`;
 }
 
 export function createEmptyCell(type: CellType) {

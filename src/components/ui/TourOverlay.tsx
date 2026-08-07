@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTourStore } from '@/store/tourStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Button } from './ui/Button';
+import { Button } from './Button';
 
 export function TourOverlay() {
   const { isActive, currentStepIndex, steps, nextStep, prevStep, stopTour } = useTourStore();

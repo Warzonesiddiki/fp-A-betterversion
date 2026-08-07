@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // AGGREGATION DESIGNER — Pre-aggregate common queries for speed
 // Creates materialized aggregation tables for frequently-queried slices
@@ -48,7 +49,7 @@ export class AggregationDesigner {
     measures: string[],
     aggregation: 'sum' | 'avg' | 'count' | 'min' | 'max' = 'sum'
   ): AggregationDefinition {
-    const id = `agg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id = randomId('agg');
     const def: AggregationDefinition = {
       id,
       name,

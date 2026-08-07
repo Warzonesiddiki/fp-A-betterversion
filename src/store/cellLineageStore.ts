@@ -10,6 +10,7 @@
  * @module cellLineageStore
  */
 
+import { randomId } from '@/utils/cryptoId';
 import { create } from 'zustand';
 import { subscribeWithSelector, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -86,7 +87,7 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
           const previousHash =
             chain?.entries[chain.entries.length - 1]?.entryHash ?? '0'.repeat(64);
 
-          const entryId = `lin-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+          const entryId = randomId('lin');
           const timestamp = new Date().toISOString();
 
           const entryData = JSON.stringify({

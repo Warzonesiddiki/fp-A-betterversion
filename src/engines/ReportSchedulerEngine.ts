@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // REPORT SCHEDULER ENGINE — Cron-based scheduling for report generation
 // Pure TypeScript, deterministic, no external dependencies
@@ -49,7 +50,7 @@ export class ReportSchedulerEngine {
     config: ScheduleConfig,
     recipients: string[] = []
   ): ScheduleEntry {
-    const id = 'sched-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const id = randomId('sched');
     const now = new Date().toISOString();
     const nextRun = this.calculateNextRun(config);
 

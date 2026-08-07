@@ -1,3 +1,4 @@
+import { randomId } from '@/utils/cryptoId';
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 14 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:
@@ -560,7 +561,7 @@ export class RateLimiter {
   }
 
   private shortRandomId(): string {
-    return Math.random().toString(36).slice(2, 10).padEnd(8, '0');
+    return randomId().replace(/-/g, '').slice(0, 8);
   }
 }
 
