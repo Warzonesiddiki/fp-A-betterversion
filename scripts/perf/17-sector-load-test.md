@@ -181,10 +181,10 @@ All 25 sub-classes PASS for this matrix:
   - `d6c8ffd6` TSC=0 milestone (925 commits)
   - `f2b35d76` T-PR-051 v0.4 baseline anchor (919 commits)
 - **Cross-references:**
-  - `docs/parts/PERFORMANCE_BENCHMARKS.md` (T-PR-051 v0.4 canonical @ 301L)
-  - `scripts/perf/MEASURED_RESULTS.md` (162-cell + 204-cell + 48-cell matrix)
+  - T-PR-051 v0.4 canonical performance benchmarks @ 301L (archived in the 2026-08-07 docs triage)
+  - Measured-results matrices (162-cell + 204-cell + 48-cell; archived in the 2026-08-07 docs triage)
   - `scripts/perf/run-all.mjs` (master benchmark runner)
-  - `docs/perf/T-PR-081_PERFORMANCE_BENCHMARKS_v0_5.md` (T-PR-081 v0.5 consolidation)
+  - T-PR-081 v0.5 consolidation (archived in the 2026-08-07 docs triage)
 
 ---
 

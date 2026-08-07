@@ -232,7 +232,7 @@ export function useMobileA11y() {
 ## §9. DELIVERABLES (2h scoping + 1d implementation + 1d testing = 1.5 days)
 
 1. **`docs/a11y/Q5_10_MOBILE_A11Y_SCOPING.md`** (this file, 200L) — full scoping
-2. **`docs/a11y/Q5_10_MOBILE_A11Y_SPEC.md`** (planned 220L) — Phase 1 → Phase 2
+2. **Q5.10 mobile a11y spec** (planned 220L, artifact not yet shipped) — Phase 1 → Phase 2
 3. **`src/hooks/useMobileA11y.ts`** (~80L, additive) — orientation, foldable, virtual keyboard
 4. **`src/styles/hit-zones.css`** (~50L) — global 48px hit zone enforcement
 5. **`src/components/mobile/BottomActionBar.tsx`** (~100L) — ≥48px hit zones, thumb zone

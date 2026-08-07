@@ -11,6 +11,8 @@ import {
   normInv,
   betai,
   gammDist,
+  gammp,
+  gammq,
   tDistCDF,
   tDistInv,
   safeNum,
@@ -275,7 +277,7 @@ export function EXPONDIST(x: number, lambda: number, cum: number): number {
   return cum ? 1 - Math.exp(-lambda * x) : lambda * Math.exp(-lambda * x);
 }
 export function GAMMADIST(x: number, alpha: number, beta: number, cum: number): number {
-  return cum ? betai(alpha, 1, x / beta) : gammDist(x, alpha, beta);
+  return cum ? gammp(alpha, x / beta) : gammDist(x, alpha, beta);
 }
 export function BETADIST(x: number, a: number, b: number): number {
   return betai(a, b, x);
@@ -292,7 +294,9 @@ export function LOGINV(p: number, mean: number, sd: number): number {
   return Math.exp(mean + sd * normInv(p));
 }
 export function CHIDIST(x: number, df: number): number {
-  return 1 - betai(df / 2, 0.5, df / (df + x));
+  // Right tail Q(df/2, x/2) — chi-square survival (Excel CHIDIST semantics).
+  // MISSION D: previous beta parametrization produced wrong tail probabilities.
+  return gammq(df / 2, x / 2);
 }
 export function CHIINV(p: number, df: number): number {
   let lo = 0,

@@ -5,7 +5,7 @@
 > **Date:** 2026-06-13 (refreshed from 2026-06-12 v0.1; "Is 100× yet?" scorecard added; cross-refs to `docs/security-deferrals.md` and the D-007 / D-009 disciplines added)
 > **Author:** Strategos (7th Muse)
 > **Cycle:** Perfection Cycle, Phase 0
-> **Cadence:** First quarterly review (template for `STRATEGIC_REVIEW_QX_YYYY.md` series)
+> **Cadence:** First quarterly review (template for the quarterly-review series)
 > **Audience:** Founder, the 6 other Muses, and the 3 board observers (if any)
 
 ---
@@ -325,4 +325,4 @@ The strategic implication: **Phase 0 is a quality push, not a 100× push.** The 
 **Status:** DRAFT v0.1 — awaiting founder approval before the DRAFT marker is stripped. v0.2 refresh (2026-06-13) added §9 (Is 100× yet? scorecard), §8c risks (D-006, D-007, D-009 cross-refs), and a 2-Muse forecast (Hermes, Iris, Atlas in D-008).
 **Next review:** 2026-09-12 (Q3 2026 quarterly refresh)
 **Decisions pending:** 6 in §6 (D-001 through D-006).
-**Cross-refs:** `PRODUCT_VISION.md §2 (Vision)`, `ROADMAP.md`, `STRATEGIC_DECISIONS_LOG.md` (D-002 Three Witnesses, D-006 deferral discipline, D-007 audit pattern, D-009 triangulation), `docs/security-deferrals.md` (3 canonical deferrals), `FPA_COMPETITIVE_MATRIX.md §5 (Gap Analysis)`, `memory/persona-strategos.md` v0.2
+**Cross-refs:** `PRODUCT_VISION.md §2 (Vision)`, `ROADMAP.md`, `STRATEGIC_DECISIONS_LOG.md` (D-002 Three Witnesses, D-006 deferral discipline, D-007 audit pattern, D-009 triangulation), `docs/security-deferrals.md` (3 canonical deferrals), `FPA_COMPETITIVE_MATRIX.md §5 (Gap Analysis)`

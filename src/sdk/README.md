@@ -3,8 +3,8 @@
 A typed, ergonomic TypeScript SDK for the **FinPlan Pro** API surface. Wraps
 the existing `RestApiClient` and `WebSocketManager` services without
 duplicating their logic, and adds a connector-namespaced, IDE-discoverable
-surface that mirrors `docs/parts/API_REFERENCE.md` and the SDK quick-start
-preview in `docs/parts/API_EXAMPLES.md §6`.
+surface that mirrors the full API surface (see `docs/ARCHITECTURE.md`) and the SDK quick-start
+preview in the examples below (§6).
 
 **Version:** `0.1.0` (semver — bump on any breaking type change)
 **Public surface:** `src/sdk/index.ts`
@@ -242,7 +242,7 @@ interface SdkError {
 
 `SDK_VERSION = '0.1.0'` is exported as both a value and a type literal
 (`SdkVersion`). On any breaking type change, bump per semver and add a
-migration note to `docs/parts/API_REFERENCE.md §11`.
+migration note to the API reference (§11).
 
 ---
 
@@ -294,13 +294,13 @@ Test files are excluded from `tsc --noEmit` (per `tsconfig.json`'s
 `**/*.test.*` exclude) so they don't bloat the production build.
 
 For executable end-to-end examples, see
-`docs/parts/API_EXAMPLES.md §6`.
+the API examples (§6).
 
 ---
 
 ## Related docs
 
-- [`docs/parts/API_REFERENCE.md`](../parts/API_REFERENCE.md) — full surface spec
-- [`docs/parts/API_EXAMPLES.md`](../parts/API_EXAMPLES.md) — 27 working code examples
+- [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) — full system surface spec
+- SDK examples below — working code examples
 - [`src/services/api-integration/RestApiClient.ts`](../../services/api-integration/RestApiClient.ts) — the underlying client
 - [`src/services/WebSocketManager.ts`](../../services/WebSocketManager.ts) — the underlying WebSocket

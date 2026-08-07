@@ -272,6 +272,7 @@ export default defineConfig({
         'src/test/**',
         'src/**/*.test.{ts,tsx}',
         'src/**/*.d.ts',
+        'src/**/*.benchmark.ts', // perf drivers run via test:bench, not unit targets
         'src/main.tsx',
         'src/vite-env.d.ts',
       ],

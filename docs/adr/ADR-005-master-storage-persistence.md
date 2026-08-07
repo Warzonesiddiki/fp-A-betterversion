@@ -152,13 +152,11 @@ export const masterStorage: PersistStorage<unknown> = {
 
 - `src/utils/masterStorage.ts` (custom implementation)
 - PATCH 16 SecretsVault commit 8fda0b3b (17 TSC + 182 lint fixed)
-- `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_186_PLUS_VULCAN_T2_PATCH16_ICP3_CHRIS_2ND_WITNESS_v0_1.md` (296L, 9.0/10 PLATINUM)
 - ThemisPrime T-3 PICK ζ (6-ICP COMPLIANCE cross-witness)
 - ADR-002 Zustand state management (cross-ref for usage)
 - ADR-010 Schema migration (cross-ref)
 - Web Crypto API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
 - NIST SP 800-38D (AES-GCM specification)
-- `docs/strategic/STRATEGIC_INDEX_v0_8.md` §3.5 (5 P0 ADRs dimension)
 
 ## Ratification Status
 

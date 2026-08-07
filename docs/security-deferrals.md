@@ -43,7 +43,7 @@ description: Living register of known security findings, data-integrity bugs, an
 **Owner:** Apollo (post-push P1 work)
 **Test that proves the fix:** `npx vitest run src/engines/AnomalyDetectionEngine.lovelace.test.ts` should show the 1 failing test passing.
 
-**Proposed fix** (from `docs/drafts/athena/test-triage/PATTERN-4-engines-fixes.md`):
+**Proposed fix** (design source archived in the 2026-08-07 docs triage):
 
 ```ts
 function percentile(sorted: number[], p: number): number {
@@ -73,8 +73,7 @@ Located directly above the `percentile` function definition in `AnomalyDetection
 ### Cross-references
 
 - Test evidence: `src/engines/AnomalyDetectionEngine.lovelace.test.ts:26`
-- Triage report: `docs/drafts/athena/test-triage/REPORT.md` (Pattern D section)
-- Fix design: `docs/drafts/athena/test-triage/PATTERN-4-engines-fixes.md`
+- Triage report + fix design: archived in the 2026-08-07 docs triage (Pattern D section)
 
 ---
 

@@ -228,7 +228,7 @@ export function useLiveAnnouncer(
 ## §9. DELIVERABLES (2h scoping + 1d implementation + 1d testing = 1.5 days)
 
 1. **`docs/a11y/Q5_9_REAL_TIME_COLLAB_A11Y_SCOPING.md`** (this file, 195L) — full scoping
-2. **`docs/a11y/Q5_9_REAL_TIME_COLLAB_A11Y_SPEC.md`** (planned 220L) — Phase 1 → Phase 2
+2. **Q5.9 real-time-collab a11y spec** (planned 220L, artifact not yet shipped) — Phase 1 → Phase 2
 3. **`src/hooks/useLiveAnnouncer.ts`** (~100L, additive) — priority queue + rate limiter + collapse
 4. **`src/components/announce/AnnouncementQueue.tsx`** (~120L) — disclosure pattern + badge
 5. **`src/components/announce/PauseResumeButton.tsx`** (~40L) — accessible toggle

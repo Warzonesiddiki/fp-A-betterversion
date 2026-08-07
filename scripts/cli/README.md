@@ -62,6 +62,6 @@ node scripts/cli/devex.mjs ratify        # 5-gate pre-RATIFICATION check
 
 ## References
 
-- `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_346_PLUS_PROMETHEUS_CANARY_FIX_v0_1_D007_85TH_SHL_FALSE_POSITIVE.md` (canary fix + D-007 85th SHL recant)
-- `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_346_PLUS_PROMETHEUS_MY_FILES_FIX_v0_2_TSC_ESLINT_CLEAN.md` (MY files fix recap)
+- Canary fix + D-007 85th SHL recant (evidence archived in the 2026-08-07 docs triage)
+- MY files fix recap (evidence archived in the 2026-08-07 docs triage)
 - `AGENTS.md` §Build & Deploy (bundle limits)

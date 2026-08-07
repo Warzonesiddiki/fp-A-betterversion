@@ -55,7 +55,7 @@
 - [x] ARCHITECTURE.md exists
 - [x] CONTRIBUTING.md exists
 - [x] SECURITY.md exists
-- [ ] Clean up 145 codif/endorsement process docs
+- [x] Clean up 145 codif/endorsement process docs — **DONE 2026-08-07 (MISSION D):** `docs/_archive/codif/` (145 files) + 64 more ritual/process docs deleted; docs/ 321 files / 5.8MB → 112 files / 1.7MB; `scripts/docs-link-check.mjs` (npm run docs:links) enforces a clean graph — 0 broken links / 0 broken citations (was 4 + 651)
 - [ ] Final user guide review
 
 ## Release Steps
@@ -75,3 +75,10 @@
 - [x] Period-close RBAC: `period:read` (all), `period:close` (Admin + FP&A_Manager), `period:reopen` (Admin) — matrix + negative-auth tests green
 - [x] Zero-mock-data completion (F-04): 23 synthetic arrays → 7 wired to real stores/engines, 16 labeled demo defaults; `scripts/mock-data-audit.mjs` enforces the disposition list (exit 1 on violations)
 - [ ] Full E2E test run with Playwright — STILL UNVERIFIED_BLOCKED (browser CDN egress blocked in sandbox; box stays unchecked, not faked)
+
+## MISSION D Status (2026-08-07)
+
+- [x] Docs triage (audit §8 residual): 209 ritual/process docs deleted (321 → 112 files; 5.8MB → 1.7MB); `scripts/docs-link-check.mjs` + `docs-link-allowlist.json` enforce the docs-link graph (`npm run docs:links` --strict: 0 broken links / 0 broken citations, was 4 hard + 651 soft); 81 stale citations fixed in kept docs; historical logs (STRATEGIC_DECISIONS_LOG, GLOSSARY, reports/) exempted with documented reasons
+- [x] Coverage depth: engines layer 71.32%/73.44% → **73.30%/75.41% stmts/lines** (4,940 → 5,030 tests; 274 files); dead `src/engines/shared/` (6 files, 0 importers) deleted; ~117 new known-answer oracle tests
+- [x] Real defects found by the new tests and fixed: tDistCDF sign symmetry, CHIDIST/GAMMADIST(cum) wrong tail probabilities (CHIINV was bisecting to 100), WEEKDAY returnType 2 mapping, EDATE day-overflow (Jan 31 + 1M → Feb 29 clamp), DEC2HEX/BIN2HEX partial-parse garbage → honest NaN
+- [ ] Full E2E test run with Playwright — STILL UNVERIFIED_BLOCKED (env-bound; re-tried 2026-08-07: Chrome for Testing download fails on CDN egress; box stays unchecked, not faked)

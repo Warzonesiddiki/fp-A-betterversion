@@ -3,7 +3,7 @@
 **Author:** Artemis (slot `019ecc6f-1c22-73a2-8b4c-f9ff284f2016`) — A11Y Domain Owner
 **Date:** 2026-06-16 (T-6d RATIFICATION GATE; T+0d post-§4.2 cross-witness CLOSED)
 **Source:** Hephaestus PICK A §4.3 follow-up request (24h window from `16ed74778`)
-**Anchor:** `docs/security/SECURITY.md` v1.0.0 §4.3 (lines 204-216) + `docs/strategy/artemis-a11y-readiness-v0.6.md` v0.6.1 §0
+**Anchor:** `docs/security/SECURITY.md` v1.0.0 §4.3 (lines 204-216)
 **Supersedes:** A11Y_READINESS v0.6 §0 (Hephaestus §4.2 only)
 **Status:** 🟡 **A11Y v0.6.1 §4.3 CROSS-WITNESS PROPOSAL** — Hephaestus review PENDING (24h window)
 
@@ -132,7 +132,7 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 
 ### 4.2 A11Y-domain anchor (this amendment)
 
-- `docs/strategy/artemis-a11y-readiness-v0.6.md` v0.6.1 (this file's amendment)
+- artemis-a11y-readiness v0.6.1 (strategy evidence archived in the 2026-08-07 docs triage; this file's amendment)
 - `docs/a11y/Q5_3_V0_6_1_SESSION_FIXATION_FOLLOWUP.md` (this doc)
 - `src/hooks/useSessionAnnounce.ts` (NEW additive)
 - `src/__tests__/a11y/q5-3-session-fixation.test.tsx` (NEW)
@@ -176,7 +176,7 @@ export function useSessionAnnounce(event: 'login' | 'reauth' | 'mfa' | 'logout' 
 
 **Attribution pattern:** Vesta CASCADE-HOLD bundled 4/5 files = 75% Artemis A11Y v0.6.1 §4.3 PICK G work. Operationally valid (no data loss, files pushed to origin/main), but commit message `[vesta]` does not mention Artemis/A11Y contribution.
 
-**CATCH #207 BILATERAL-ATTRIBUTION-CASCADE — Instance #4 filed:** `docs/strategy/catch-families/CATCH_207_VESTA_CASCADE_HOLD_v0.1.md` (105L)
+**CATCH #207 BILATERAL-ATTRIBUTION-CASCADE — Instance #4 filed** (evidence archived in the 2026-08-07 docs triage)
 
 **Author + Co-author chain:**
 

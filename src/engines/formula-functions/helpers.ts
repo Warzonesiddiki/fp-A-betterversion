@@ -187,8 +187,57 @@ export const normInv = (p: number): number => {
 
 export const tDistCDF = (t: number, df: number): number => {
   const x = df / (df + t * t);
-  return 1 - 0.5 * betai(df / 2, 0.5, x);
+  const tail = 0.5 * betai(df / 2, 0.5, x);
+  // Symmetry: F(-t) = 1 - F(t). The incomplete-beta term alone only gives the
+  // upper-tail CDF; for negative t the CDF is the lower tail.
+  return t >= 0 ? 1 - tail : tail;
 };
+
+/**
+ * Regularized lower incomplete gamma P(a, x) = gamma(a, x) / Gamma(a).
+ * Numerical Recipes gser (series for x < a+1) + gcf (Lentz continued fraction
+ * otherwise). Used by CHIDIST / GAMMADIST(cumulative) — MISSION D found the
+ * previous beta-based parametrizations produced wrong tail probabilities.
+ */
+export const gammp = (a: number, x: number): number => {
+  if (a <= 0 || x < 0) return NaN;
+  if (x === 0) return 0;
+  const logTerm = -x + a * Math.log(x) - gammln(a);
+  if (x < a + 1) {
+    // series representation
+    let ap = a;
+    let sum = 1 / a;
+    let del = sum;
+    for (let n = 0; n < 1000; n++) {
+      ap += 1;
+      del *= x / ap;
+      sum += del;
+      if (Math.abs(del) < Math.abs(sum) * 3e-14) break;
+    }
+    return sum * Math.exp(logTerm);
+  }
+  // Lentz continued fraction
+  let b = x + 1 - a;
+  let c = 1 / 1e-30;
+  let d = 1 / b;
+  let h = d;
+  for (let i = 1; i <= 1000; i++) {
+    const an = -i * (i - a);
+    b += 2;
+    d = an * d + b;
+    if (Math.abs(d) < 1e-30) d = 1e-30;
+    c = b + an / c;
+    if (Math.abs(c) < 1e-30) c = 1e-30;
+    d = 1 / d;
+    const del = d * c;
+    h *= del;
+    if (Math.abs(del - 1) < 3e-14) break;
+  }
+  return 1 - Math.exp(logTerm) * h;
+};
+
+/** Regularized upper incomplete gamma Q(a, x) = 1 - P(a, x). */
+export const gammq = (a: number, x: number): number => 1 - gammp(a, x);
 
 export const tDistInv = (p: number, df: number): number => {
   // Approximation using normInv for large df, bisection for small

@@ -265,8 +265,7 @@ modern CPUs.
 - `src/services/PIIRedactor.ts` — implementation.
 - `src/services/PIIRedactor.test.ts` — 70 tests, all passing.
 - `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` — PATCH 12.
-- `docs/security/SECURITY_HEADERS_CSRF_POLICY.md` — PATCH 11.
-- `docs/codif/RULE_60_CASCADE_HOLD_ABORT_MERGE_TRAP.md` — CODIF 60 v0.1.
+- `docs/security/SECURITY_HEADERS_POLICY.md` — PATCH 11.
 
 ---
 

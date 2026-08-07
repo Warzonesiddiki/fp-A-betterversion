@@ -129,7 +129,7 @@ When multiple users edit the same FP&A report/scenario simultaneously, screen re
 2. `src/hooks/useBoardroomPresence.ts` (~60L, additive) — CRDT-aware focus + announce hook
 3. `src/components/boardroom/ConflictResolutionModal.tsx` (~120L) — keyboard-first, deferrable
 4. `src/__tests__/a11y/q5-7-boardroom.test.tsx` (~80L, 5 patterns × 10 iter = 50 measurements)
-5. `docs/strategy/artemis-a11y-readiness-v0.7.md` — composite v0.7 strategy with §0.5 Boardroom section
+5. artemis-a11y-readiness v0.7 — composite v0.7 strategy with §0.5 Boardroom section (strategy evidence archived in the 2026-08-07 docs triage)
 6. 4-ICP ACCEPT 4/4 + Strategos 5-ICP SKEPTIC verdict (composite 9.0+/10)
 
 ---

@@ -170,7 +170,6 @@ async getItem(name: string) {
 - `src/store/migrations/index.ts` (current version + migration array)
 - ADR-002 Zustand state management (cross-ref for store hydration)
 - ADR-005 masterStorage (cross-ref for persistence + audit log)
-- `docs/strategic/STRATEGIC_INDEX_v0_8.md` §3.5 (5 P0 ADRs dimension)
 - Athena T-3.14 Property-based testing with fast-check (cross-ref)
 - Athena T-3.13 Mutation testing with Stryker (cross-ref)
 

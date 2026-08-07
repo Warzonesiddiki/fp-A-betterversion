@@ -92,7 +92,7 @@ export function useFocusRestore(): void {
 
 ## 5. Cross-Reference
 
-- v0.5 v2 §3 P1-2: `docs/strategy/artemis-a11y-readiness-v0.5.md:130-138` (5/10 baseline)
+- v0.5 v2 §3 P1-2 (strategy evidence archived in the 2026-08-07 docs triage; 5/10 baseline)
 - Hook: `src/hooks/useFocusRestore.ts:1-22` (NEW)
 - Test: `src/__tests__/a11y/q5-2-focus-restore.test.tsx:1-72` (NEW)
 - E2E: `e2e/a11y/q5-temporal/q5.2-focus-restore.spec.ts` (existing)

@@ -84,7 +84,7 @@ describe('Q5.1 keyboard nav latency', () => {
 
 ## 5. Cross-Reference
 
-- v0.5 v2 §3 P1-1: `docs/strategy/artemis-a11y-readiness-v0.5.md:118-128`
+- v0.5 v2 §3 P1-1 (strategy evidence archived in the 2026-08-07 docs triage)
 - E2E test: `e2e/a11y/q5-temporal/q5.1-keyboard-nav-latency.spec.ts`
 - CI gate: `scripts/a11y-q5-gate.js`
 - WAIVERS policy: `docs/a11y/WAIVERS.md:1-128`

@@ -130,7 +130,6 @@ const displayTotal = total.toNumber();
 - Decimal.js docs: https://mikemcl.github.io/decimal.js/
 - ADR-001 Currency Translation (cross-ref)
 - ADR-003 OLAP Cube (cross-ref for aggregation precision)
-- `docs/strategic/STRATEGIC_INDEX_v0_8.md` §3.5 (5 P0 ADRs dimension)
 
 ## Ratification Status
 

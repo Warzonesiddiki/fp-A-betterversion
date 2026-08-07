@@ -144,5 +144,5 @@ export const useSomeStore = create<State>()(
 
 - `README.md` — public overview
 - `CLAUDE.md` / `AGENTS.md` — agent-facing rules (mirror this file)
-- `ROADMAP.md`, `PROJECT_BACKLOG.md` — planning
-- `docs/ARCHITECTURE.md`, `docs/COMPONENT_PATTERNS.md` — deeper architecture (if present)
+- `docs/ROADMAP.md`, `PROJECT_BACKLOG.md` — planning
+- `docs/ARCHITECTURE.md` — deeper architecture

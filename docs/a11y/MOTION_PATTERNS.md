@@ -90,7 +90,7 @@ Some components have explicit `motion-reduce:` modifiers on top of the global ru
 
 **Why:** The dialog transform (scale-up on open) is visually distracting for users with motion sensitivity. The explicit `motion-reduce:transition-none motion-reduce:transform-none` ensures the dialog appears instantly without scaling.
 
-**Audit trail:** UX-PI-007 closed at commit e8d8f875. Cross-ref: `docs/parts/UX_COMPLETENESS_v0.3.md` L:UX-PI-007.
+**Audit trail:** UX-PI-007 closed at commit e8d8f875.
 
 ### useAnimation.ts (L30)
 
@@ -152,7 +152,7 @@ transition: 'opacity 0.2s ease, transform 0.2s ease';
 
 ### Test infrastructure (automated, Q5.5 partial)
 
-The Q5.5 spec doesn't have a dedicated test case yet. The Q5 audit (`docs/openhands/hera-q5-spec-audit-temp-a11y.md`) verifies structurally that the global rule exists. A future test could:
+The Q5.5 spec doesn't have a dedicated test case yet. The Q5 audit verifies structurally that the global rule exists (audit artifact archived in the 2026-08-07 docs triage). A future test could:
 
 ```ts
 // PROPOSED: src/__tests__/a11y/motion-reduce.test.tsx
@@ -183,9 +183,9 @@ For each, follow the same template: global CSS rule at `src/styles/accessibility
 
 - `src/styles/accessibility.css` L55-64 — the global rule
 - `src/components/ui/Modal.tsx` L70, L94 — per-component motion-reduce
-- `docs/openhands/hera-q5-spec-audit-temp-a11y.md` — Q5 audit (49/50 = 98%)
-- `docs/ratification/RATIFICATION_GATE_PRECHECK_A11Y_v0.3.md` — Artemis A11Y_READINESS v0.3 spec
-- `docs/parts/UX_COMPLETENESS_v0.3.md` L:UX-PI-007 — UX motion-reduce closure (commit e8d8f875)
+- Q5 audit (49/50 = 98%) — artifact archived in the 2026-08-07 docs triage
+- Artemis A11Y_READINESS v0.3 spec — artifact archived in the 2026-08-07 docs triage
+- UX-PI-007 — UX motion-reduce closure (commit e8d8f875)
 - `src/__tests__/a11y/wcag-aa.test.tsx` — WCAG 2.4.11 tests (commit aad19a857)
 - WCAG 2.3.3 Animation from Interactions (AAA) — https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions
 - MDN prefers-reduced-motion — https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion

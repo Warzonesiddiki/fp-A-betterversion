@@ -8,17 +8,29 @@ export interface CurvePoint {
 export class YieldCurveEngine {
   static bootstrap(rates: CurvePoint[]): CurvePoint[] {
     const sorted = [...rates].sort((a, b) => a.maturity - b.maturity);
+    const known = sorted.filter((p) => p.rate > 0);
     return sorted.map((p, i) => {
-      if (i === 0) return p;
-      const prev = sorted[i - 1];
-      const interpolated = this.linearInterpolate(
-        prev!.maturity,
-        p.maturity,
-        prev!.rate,
-        p.rate,
-        p.maturity
-      );
-      return { maturity: p.maturity, rate: p.rate || interpolated };
+      if (i === 0 || p.rate > 0) return p;
+      // Missing (zero) rate: interpolate between the nearest surrounding known
+      // points. MISSION D: the old code interpolated toward the point's own
+      // rate (itself), so zero rates were never actually filled.
+      const prev = [...known].reverse().find((k) => k.maturity < p.maturity);
+      const next = known.find((k) => k.maturity > p.maturity);
+      if (prev && next) {
+        return {
+          maturity: p.maturity,
+          rate: this.linearInterpolate(
+            prev.maturity,
+            next.maturity,
+            prev.rate,
+            next.rate,
+            p.maturity
+          ),
+        };
+      }
+      if (prev) return { maturity: p.maturity, rate: prev.rate };
+      if (next) return { maturity: p.maturity, rate: next.rate };
+      return p;
     });
   }
 

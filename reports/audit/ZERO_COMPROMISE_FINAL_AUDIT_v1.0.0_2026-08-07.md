@@ -153,7 +153,7 @@ Capability matrix vs the FP&A workflow (route exists / wired to real data / help
 | Repo hygiene junk | **CLOSED** — deleted bench logs, BMAD tree, agent docs, junk reports |
 | Math.random security IDs | **CLOSED** — CSPRNG sweep |
 | Placeholder sweep | **CLOSED** — stubs deleted/corrected; remaining placeholders are UI input attributes |
-| RELEASE_CHECKLIST unchecked boxes | Partial: E2E + Tauri env-bound (documented); 145-docs cleanup partially done |
+| RELEASE_CHECKLIST unchecked boxes | **145-docs cleanup DONE (MISSION D, 2026-08-07)** — 209 ritual/process docs deleted (docs/ 321→112 files, 5.8→1.7MB); `scripts/docs-link-check.mjs` enforces the graph (0 broken links / 0 broken citations, was 4+651); engines coverage 71.32→73.30 stmts / 73.44→**75.41 lines** (5,030 tests) with 6 real defects fixed (tDistCDF symmetry, CHIDIST/GAMMADIST tails, CHIINV ceiling, WEEKDAY type-2, EDATE clamp, hex partial-parse). Remaining: E2E + Tauri env-bound (documented). |
 | keyboardPerf load-flakes | Documented (env noise; passes 3/3 isolated; not weakened) |
 
 ## 9. COMMAND EVIDENCE LOG

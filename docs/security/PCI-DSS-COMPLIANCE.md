@@ -251,7 +251,7 @@ This document uses a **NARROW mapping** focused on the primary regulatory framew
 
 **BOTH MAPPINGS ARE TECHNICALLY CORRECT** — they are different analytical lenses, not contradictions. Per Strategos 45th cadence, the H3 ROADMAP v0.2 view is preferred for H1 P0-A SHIP 2026-06-30 because Art. 25 by-design documentation is a frequent enterprise customer DPIA (Data Protection Impact Assessment) request.
 
-**Action**: Demeter + Apollo implementation must add a `designRationale.md` artifact to the mobile TLS configuration documenting the Art. 25(1) by-design decisions (e.g., "Why TLS 1.3 only and not TLS 1.2 fallback?", "Why certificate pinning over public CA?"). This is a non-breaking documentation extension of §7.
+**Action**: Demeter + Apollo implementation must add a design-rationale document to the mobile TLS configuration documenting the Art. 25(1) by-design decisions (e.g., "Why TLS 1.3 only and not TLS 1.2 fallback?", "Why certificate pinning over public CA?"). This is a non-breaking documentation extension of §7.
 
 ---
 

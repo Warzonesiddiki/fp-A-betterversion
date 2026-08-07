@@ -332,4 +332,4 @@ The Muse team gets asked for many things. This is the explicit list of "no, not 
 
 **Status:** DRAFT v0.1 — awaiting founder approval before the DRAFT marker is stripped. v0.2 refresh (2026-06-13) added cross-refs to `docs/security-deferrals.md` and the D-007 7-phase audit pattern.
 **Next review:** 2026-09-12 (Q3 2026 quarterly refresh)
-**Cross-refs:** `PRODUCT_VISION.md §4 (Phases)`, `STRATEGIC_REVIEW_Q2_2026.md`, `STRATEGIC_DECISIONS_LOG.md` (D-006 deferral discipline, D-007 audit pattern, D-009 triangulation), `docs/security-deferrals.md` (3 canonical deferrals), `AGENTS.md`, `FINPLAN_PERFECTION_PLAN.md`
+**Cross-refs:** `PRODUCT_VISION.md §4 (Phases)`, `STRATEGIC_REVIEW_Q2_2026.md`, `STRATEGIC_DECISIONS_LOG.md` (D-006 deferral discipline, D-007 audit pattern, D-009 triangulation), `docs/security-deferrals.md` (3 canonical deferrals), `AGENTS.md`

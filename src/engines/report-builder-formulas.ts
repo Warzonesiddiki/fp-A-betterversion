@@ -73,7 +73,12 @@ function tokenize(expr: string): string[] {
     if (
       (ch! >= '0' && ch! <= '9') ||
       (ch === '.' && i + 1 < s.length && s![i + 1]! >= '0' && s![i + 1]! <= '9') ||
+      // unary minus only folds into a literal when a digit/'.' follows —
+      // otherwise it is emitted as an operator and handled by parseFactor
+      // (e.g. -(3+5)). MISSION D: previously '-' before '(' produced the
+      // bare token '-' and threw "Invalid number: -".
       (ch === '-' &&
+        /[0-9.]/.test(s[i + 1] ?? '') &&
         (tokens.length === 0 ||
           tokens[tokens.length - 1] === '(' ||
           '+-*/('.includes(tokens[tokens.length - 1] ?? '')))
@@ -130,6 +135,12 @@ function parseFactor(tokens: string[], ctx: { pos: number }): number {
   }
 
   const token = tokens[ctx.pos];
+
+  if (token === '-') {
+    // unary minus on a parenthesized or nested expression: -(3+5)
+    ctx.pos++;
+    return -parseFactor(tokens, ctx);
+  }
 
   if (token === '(') {
     ctx.pos++;

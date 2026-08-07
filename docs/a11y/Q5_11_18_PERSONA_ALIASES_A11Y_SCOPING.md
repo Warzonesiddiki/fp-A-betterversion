@@ -262,11 +262,11 @@ export const PERSONA_REGISTRY: PersonaA11yProfile[] = [
 ## §9. DELIVERABLES (2h scoping + 1d impl + 1d testing = 1.5 days)
 
 1. **`docs/a11y/Q5_11_18_PERSONA_ALIASES_A11Y_SCOPING.md`** (this file, 220L) — full scoping
-2. **`docs/a11y/Q5_11_18_PERSONA_ALIASES_A11Y_SPEC.md`** (planned 240L) — Phase 1 → Phase 2
+2. **Q5.11-18 persona-alias spec** (planned 240L, artifact not yet shipped) — Phase 1 → Phase 2
 3. **`src/a11y/personaRegistry.ts`** (~150L, additive) — 18 personas canonical
 4. **`src/components/a11y/PersonaBadge.tsx`** (~80L) — semantic markup + accessible name
 5. **`src/__tests__/a11y/q5-11-18-persona-aliases.test.tsx`** (~200L, 5 patterns × 18 personas = 90 test cases)
-6. **`docs/a11y/persona-help-mapping.md`** (~50L) — persona → Help topics
+6. **persona → Help topics mapping** (~50L, planned artifact)
 7. **`src/a11y/persona-shortcuts.ts`** (~50L) — persona → keyboard shortcuts
 8. **4-ICP ACCEPT 4/4** + Strategos 5-ICP SKEPTIC verdict (composite 9.0+/10)
 9. **Vesta SECTOR × PERSONA cross-witness** (288 cells, 1,344/1,344 checks)

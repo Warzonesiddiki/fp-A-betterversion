@@ -1,0 +1,25 @@
+{
+  "notes": "Docs-link gate allowlist (MISSION D triage, 2026-08-07). Entries are deliberate, dated decisions — not dodge-lists. Each file/target carries a reason. Everything else in the docs graph must resolve.",
+  "files": {
+    "docs/STRATEGIC_DECISIONS_LOG.md": "Historical decision log (D-000..D-013 era). Its backtick citations describe the state of the process corpus at decision time; the cited drafts/codif files were deleted in the 2026-08-07 docs triage (git history retains them). Rewriting history is dishonest; the log stays as-is.",
+    "docs/GLOSSARY.md": "Process glossary whose own rows already document the draft-source drift ('NEEDS-FIX (file missing)', 'PATH DRIFT') — its citations ARE the record of the drift, targets removed in prior triage (docs/drafts, docs/codif).",
+    "docs/STRATEGIC_REVIEW_Q3_2026.md": "Kept as canonical strategic review; its provenance citations reference superseded drafts (docs/drafts/strategos/*, Y2_BOARD_PACK.md) that the file itself declares superseded. Numbers are inline; citations are historical provenance.",
+    "README.legacy.md": "Historical pre-1.0 README snapshot; GitHub-UI links (../../discussions, ../../issues) and root-level refs are out of the docs graph by design.",
+    "ANALYSIS_AND_FIXES.md": "Historical session record citing files that no longer exist.",
+    "AUDIT_LOG.md": "'Never again' rule log; negation-pattern citations (e.g. !/REMEDIATION_REPORT.md) are rule syntax, not links.",
+    "AUDIT_REPORT_V3.md": "Historical audit report (superseded by reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md).",
+    "AUDIT_REPORT_V3_WAVE2.md": "Historical audit report (superseded).",
+    "AUDIT_REPORT_V3_WAVE3.md": "Historical audit report (superseded).",
+    "COMPLETION_TASKLIST_ZERO_COMPROMISE.md": "Historical session tasklist; citations reference reports deleted in the 2026-07-27 junk cleanup.",
+    "GEMINI.md": "Historical tooling notes.",
+    "HANDOVER_PROMPT_FOR_AGENT.md": "Historical session handover (superseded by HANDOVER_PROMPT_SESSION*.md).",
+    "OMEGA_DEEP_AUDIT_PASS.md": "Historical audit pass document.",
+    "PLAN.md": "Historical planning doc.",
+    "PROJECT_BACKLOG.md": "Historical backlog snapshot.",
+    "PROJECT_INDEX.md": "Historical project index (superseded by docs/GLOSSARY_INDEX.md + README).",
+    "REMEDIATION_REPORT.md": "Historical remediation report."
+  },
+  "targets": {
+    "docs/codif/RULE_50.md": "Forward-reference placeholder ('when codif lands') in docs/a11y/WAIVERS.md — intentional, not a broken back-reference."
+  }
+}

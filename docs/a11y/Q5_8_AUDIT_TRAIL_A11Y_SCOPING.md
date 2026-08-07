@@ -232,7 +232,7 @@ export function useAuditTrail(filters: AuditFilters) {
 ## §9. DELIVERABLES (2h scoping + 1d implementation + 1d testing = 1.5 days)
 
 1. **`docs/a11y/Q5_8_AUDIT_TRAIL_A11Y_SCOPING.md`** (this file, 165L) — full scoping
-2. **`docs/a11y/Q5_8_AUDIT_TRAIL_A11Y_SPEC.md`** (planned 200L) — Phase 1 → Phase 2
+2. **Q5.8 audit-trail a11y spec** (planned 200L, artifact not yet shipped) — Phase 1 → Phase 2
 3. **`src/hooks/useAuditTrail.ts`** (~80L, additive) — AuditLogger-aware filter + announce hook
 4. **`src/components/audit/AuditLogGrid.tsx`** (~150L) — ARIA grid with filter chips
 5. **`src/components/audit/AuditChainTree.tsx`** (~100L) — ARIA tree for incident forensics

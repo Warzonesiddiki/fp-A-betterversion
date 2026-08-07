@@ -117,8 +117,6 @@ export const useBudgetStore = create<BudgetState>()(
 
 ## References
 
-- `docs/STRATEGIC_INDEX.md` v2.0 §58-78 (Architecture dimension)
-- `docs/strategic/STRATEGIC_INDEX_v0_8.md` §3.5 (5 P0 ADRs dimension)
 - `AGENTS.md` L41-43 (mandated middleware order)
 - ADR-005 masterStorage (cross-ref)
 - ADR-010 Schema migration (cross-ref)

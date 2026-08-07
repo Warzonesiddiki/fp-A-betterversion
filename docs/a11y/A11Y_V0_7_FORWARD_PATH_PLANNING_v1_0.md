@@ -205,7 +205,7 @@ This document is the **single source of truth** for the A11Y v0.7 forward path �
 | 🟡 2  | A11Y-P0-4 CI gate full axe-core integration (T-1d HARD)       | 2-3h       | 🟡 QUEUED (close-out SHIPPED @ `15a5606c`) |
 | ⛔ 4  | 5th-ICP SKEPTIC on PATCH 16 (BLOCKED)                         | 30 min     | ⛔ BLOCKED Hephaestus ENV                  |
 
-**Memory ledger:** `artemis-pick-3-a11y-v0-7-forward-path-consolidation-2026-06-17.md` (TBD on commit)
+**Memory ledger:** source pick archived in the 2026-08-07 docs triage
 **Task board:** This entry + 6 cross-Muse CAVEMAN PERSIST entries from PICK 1 + 1 Leader report
 
 ---

@@ -1,8 +1,9 @@
 # GAP_LEDGER.md — FinPlan Pro
 
 **Persistent memory ledger.** Seeded exclusively from confirmed findings in
-[DISCOVERY_REPORT.md](./DISCOVERY_REPORT.md) — never from assumption. Each entry is atomic and
-testable. Evidence = literal command output with date.
+[`reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md`](./reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md)
+(and the earlier forensic audits under `reports/audit/`) — never from assumption. Each entry is
+atomic and testable. Evidence = literal command output with date.
 
 - **Date of latest re-verification:** 2026-08-06 (UTC)
 - **Current continuation branch:** `arena/019fd6ad-fp-a-betterversion` (Wave 9 Phase 3 sector-depth session)
@@ -1522,3 +1523,29 @@ Evidence = literal command output, 2026-08-07 (see updated `reports/audit/ZERO_C
 ### OPEN (unchanged dispositions)
 - **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked).
 - **F-03:** claim corrected in-session (coverage 50 floor / 71.3% measured) — recorded as fixed.
+
+## MISSION D — docs triage + coverage depth + real defect fixes (2026-08-07, branch `arena/019fdccc-fp-a-betterversion`, base `60e0d4a`)
+
+Evidence = literal command output, 2026-08-07 (closeout: `reports/mission-d-closeout-2026-08-07.md`).
+
+### CLOSED — Docs triage (audit §8 residual; RELEASE_CHECKLIST "145 codif docs")
+- **Deleted 209 ritual/process files / ~4.1MB:** `docs/_archive/codif/` (146), `docs/strategy/` (30), `IMP_ANSWERS*` (8), MUSE_LINEUP_v2, STRATEGIC_INDEX, V1_SESSION_STATUS, VIBE_CODING×2, RATIFICATION_GATE×2, task-board×2, PERFECTION_PLAN, skills×3, BMAD_INTEGRATION, OPENCODE_SYNC, MISTAKES, husky-gates, never_again_rules/, leader/, personas/, specs/, 2026-06-12 audit drafts×2, tests/e2e process docs×5 → **docs/ 321 files / 5.8MB → 112 files / 1.7MB** (git history retains all).
+- **New gate:** `scripts/docs-link-check.mjs` + `docs-link-allowlist.json` (`npm run docs:links`) — hard-fail on broken markdown links, strict-fail on broken citations. Before: **4 broken links + 651 broken citations**; after 81 citation fixes in kept docs: **`✓ docs-link graph clean: 0 broken links, 0 broken citations (strict)`**.
+- **Allowlist (documented reasons, not dodge-list):** STRATEGIC_DECISIONS_LOG (historical decision record), GLOSSARY (self-documents its draft drift), reports/** (dated evidence), session handovers, forward-refs.
+
+### CLOSED — Coverage depth (engines layer)
+- **71.32/73.44 → 73.30/75.41 stmts/lines; 4,940 → 5,030 tests (274 files)** — exact CI command (`vitest run src/engines --coverage --include='src/engines/**'`).
+- Deleted dead `src/engines/shared/` (6 files: 0 importers / 0 tests / 0 manifest entries; reachability still 181/181, 0 orphans).
+- Added oracle test files: `helpers.test.ts`, `statistical.dist.test.ts`, `text.date.test.ts`, `math.ext.test.ts` (~117 tests).
+
+### CLOSED — 6 real defects found by the new oracle tests and FIXED
+1. `tDistCDF` ignored sign of t (F(-1.812,10)=0.95 → 0.05).
+2. `CHIDIST` wrong tail probabilities (CHIDIST(18.307,10)=0.9984 → 0.05; now `gammq(df/2, x/2)`).
+3. `GAMMADIST` cumulative wrong (GAMMADIST(1,2,1,t)=1.0 → 0.2642; now `gammp(alpha, x/beta)`).
+4. `CHIINV` bisected to its 100 ceiling (CHIINV(0.05,10)=100 → 18.307; fixed via #2).
+5. `WEEKDAY` returnType 2 mis-mapped (Sunday→1/Monday→2 → 7/1).
+6. `EDATE` day overflow (2024-01-31 + 1M = Mar 2 → Feb 29 clamp) + `DEC2HEX`/`BIN2HEX` partial-parse garbage (parseInt("1f")===1 → honest NaN).
+
+### OPEN (unchanged dispositions)
+- **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked; re-tried 2026-08-07).
+- **Deploy workflow:** fails on merges (pre-existing, env-bound; GAP-7 forbids workflow edits).

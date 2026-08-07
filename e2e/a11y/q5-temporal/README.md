@@ -1,6 +1,6 @@
 # A11Y Q5 Temporal a11y — E2E Walkthroughs
 
-**Source:** Chronos V3 e.ix.7 spec, extracted in `memory/chronos-q5-spec-v03.md`
+**Source:** Chronos V3 e.ix.7 spec (extraction artifact archived in the 2026-08-07 docs triage)
 **Status:** ⏳ SKELETON (A11Y-P1-6, P1-7, P1-8, P1-9, P1-10, P1-11; ETA 2-3h)
 
 ## Overview
@@ -64,10 +64,10 @@ Gate decision:
 
 ## Related
 
-- A11Y_READINESS v0.3 (Q5 spec integration): `docs/ratification/RATIFICATION_GATE_PRECHECK_A11Y_v0.3.md` (commit f32403fd4)
-- Chronos Q5 spec extraction: `memory/chronos-q5-spec-v03.md` (commit 3f8e607d4)
-- A11Y_READINESS v0.2 (6-dim baseline): `docs/ratification/RATIFICATION_GATE_PRECHECK_A11Y.md` (commit 3b67051c7)
-- Tyche 2nd-witness (87.5% baseline): `docs/ratification/RATIFICATION_GATE_PRECHECK_A11Y_2ND_WITNESS_TYCHE_ANALYTICS.md` (commit 04ed1465e)
+- A11Y_READINESS v0.3 (Q5 spec integration) @ commit f32403fd4 — artifact archived in the 2026-08-07 docs triage
+- Chronos Q5 spec extraction @ commit 3f8e607d4 — artifact archived in the 2026-08-07 docs triage
+- A11Y_READINESS v0.2 (6-dim baseline) @ commit 3b67051c7 — artifact archived in the 2026-08-07 docs triage
+- Tyche 2nd-witness (87.5% baseline) @ commit 04ed1465e — artifact archived in the 2026-08-07 docs triage
 - Hera T-HE-019 cross-witness: `.openhands/hera-eslint-jsx-a11y-cross-witness.md` (commit 0c5300ec)
 - Prometheus A11Y-P0-2 (2.5.7 closure): `src/components/ui/DataGrid.tsx` (commit bb8c64fd)
 - Apollo 2nd-Muse witness (TENTATIVE 3.5/4): INDEX v0.7 / MASTER_REPORT v1.2
