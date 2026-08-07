@@ -26,8 +26,8 @@ This document is the **master security policy** for FinPlan Pro v1.0.0, owned by
 | §5       | Secret Rotation                                               | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §2 | PATCH 12 `db1b5bfd3`                                         |
 | §6       | Audit Logging (hash-chained)                                  | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §3 | PATCH 12 `db1b5bfd3`                                         |
 | §7       | PII Redaction                                                 | `docs/security/PII_REDACTION_POLICY.md`                    | PATCH 13 `edff05258`                                         |
-| §8       | Threat Model                                                  | `docs/security/THREAT_MODEL.md`                            | PATCH 10 `d0fe9107`                                          |
-| §9       | Incident Response                                             | `docs/security/INCIDENT_RESPONSE.md`                       | PATCH 9 GHOST-SHA `d445b721` + `5223d3b5`                    |
+| §8       | Threat Model                                                  | [`docs/SECURITY_THREAT_MODEL.md`](../SECURITY_THREAT_MODEL.md)                            | PATCH 10 `d0fe9107`                                          |
+| §9       | Incident Response                                             | (playbook archived in the 2026-08-07 docs triage)                       | PATCH 9 GHOST-SHA `d445b721` + `5223d3b5`                    |
 | §10      | Encryption-in-transit (TLS)                                   | `docs/security/SECURITY_HEADERS_POLICY.md` §2 (HSTS)       | PATCH 11 `3547f51e`                                          |
 | §11      | Encryption-at-rest (Tauri IPC)                                | (forthcoming PATCH 15)                                     | PATCH 15 (PICK D future)                                     |
 | §12      | Rate Limiting & Circuit Breaking                              | (forthcoming PATCH 14)                                     | PATCH 14 (PICK B current)                                    |
@@ -243,7 +243,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 ## §8. Threat Model
 
-**See:** `docs/security/THREAT_MODEL.md` for full STRIDE/PASTA analysis.
+**See:** [`docs/SECURITY_THREAT_MODEL.md`](../SECURITY_THREAT_MODEL.md) for full STRIDE/PASTA analysis.
 
 **Summary:** 11 attacker personas, 27 assets, 67 threats, 92 mitigations. Top 5 threats: session hijack (mitigated §4.2 + §4.3), CSRF (mitigated §3), XSS (mitigated §2 CSP), secret exfiltration (mitigated §5), audit log tampering (mitigated §6). Maps to SOC 2 CC7.1. PATCH 10 `d0fe9107`.
 
@@ -251,7 +251,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 ## §9. Incident Response
 
-**See:** `docs/security/INCIDENT_RESPONSE.md` for full playbook.
+**See:** the incident-response playbook (archived in the 2026-08-07 docs triage).
 
 **Summary:** P1 (data breach) → 1h escalation; P2 (auth bypass) → 4h; P3 (DoS) → 24h. Playbook covers detection (PATCH 9 GHOST-SHA), containment, eradication, recovery, post-mortem. Maps to SOC 2 CC7.4, CC8.1. PATCH 9 GHOST-SHA `d445b721` + IncidentResponse `5223d3b5`.
 

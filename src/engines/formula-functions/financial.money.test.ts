@@ -87,8 +87,9 @@ describe('formula financial functions — money known answers (GAP-1 / F-0006)',
       expect(XNPV(0.1, [100, 200], [0, 365.25])).toBe(281.82);
     });
 
-    it('CUMIPMT sums per-period interest in cents (float gave 303.9049202497849)', () => {
-      expect(CUMIPMT(0.05, 12, 1000, 1, 12, 0)).toBe(303.89);
+    it('CUMIPMT sums per-period interest in cents (Excel: -353.89; broken impl gave +303.89)', () => {
+      // PMT(5%,12,1000) = -112.82 × 12 = -1,353.90 total paid; interest = -353.90
+      expect(CUMIPMT(0.05, 12, 1000, 1, 12, 0)).toBe(-353.89);
     });
   });
 

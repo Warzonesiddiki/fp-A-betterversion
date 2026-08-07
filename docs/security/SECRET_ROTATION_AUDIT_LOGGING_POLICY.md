@@ -284,8 +284,7 @@ Web Crypto runs at ~1 GB/s on typical CPUs.
 - `src/services/SecretRotation.ts` — implementation.
 - `src/services/SecretRotation-AuditLogger.test.ts` — 63 tests, all passing.
 - `src/services/AuditLogger.ts` — hash-chained log.
-- `docs/security/SECURITY_HEADERS_CSRF_POLICY.md` — PATCH 11.
-- `docs/codif/RULE_60_CASCADE_HOLD_ABORT_MERGE_TRAP.md` — CODIF 60 v0.1.
+- `docs/security/SECURITY_HEADERS_POLICY.md` — PATCH 11.
 
 ---
 

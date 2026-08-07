@@ -35,7 +35,7 @@ open http://localhost:5173                 # 5 — verify
 
 ### 2.1 Mission (5 min)
 
-FinPlan Pro is a **collaborative FP&A platform** for lean finance teams (CFO Carla, Controller Vera, FP&A Lead Chris per `docs/drafts/iris/PERSONAS.md`). Replaces Anaplan at 1/10 the price for the 50-500 FTE mid-market. Engineered as a layered SPA: **173+ pure engines** → 37 zustand stores → 40+ hooks → 80+ UI primitives → 30+ route subdirectories → 4 Web Workers. All persistence flows through one canonical layer (`src/utils/masterStorage.ts` — the only place we touch disk).
+FinPlan Pro is a **collaborative FP&A platform** for lean finance teams (archetypal users: CFO Carla, Controller Vera, FP&A Lead Chris — persona source archived in the 2026-08-07 docs triage). Replaces Anaplan at 1/10 the price for the 50-500 FTE mid-market. Engineered as a layered SPA: **173+ pure engines** → 37 zustand stores → 40+ hooks → 80+ UI primitives → 30+ route subdirectories → 4 Web Workers. All persistence flows through one canonical layer (`src/utils/masterStorage.ts` — the only place we touch disk).
 
 ### 2.2 Repo Map (10 min)
 
@@ -103,7 +103,7 @@ Per Hephaestus (security audit) and Apollo (push audit):
 
 ### 3.2 The 11-Muse Roster (40 min)
 
-We ship with an 11-agent "Muse" orchestration layer (per `docs/drafts/MUSE_LINEUP_v2.md`). The **Leader** assigns work; **Themis** monitor pings on idle. **D-009 verified slot IDs (2026-06-13, via `team_members`):**
+We ship with an 11-agent "Muse" orchestration layer (orchestration docs archived in the 2026-08-07 docs triage). The **Leader** assigns work; **Themis** monitor pings on idle. **D-009 verified slot IDs (2026-06-13, via `team_members`):**
 
 | #   | Muse           | Lane                                         | Slot ID (last 4)        |
 | --- | -------------- | -------------------------------------------- | ----------------------- |
@@ -120,7 +120,7 @@ We ship with an 11-agent "Muse" orchestration layer (per `docs/drafts/MUSE_LINEU
 | 10  | **Atlas**      | DevOps, infra, observability, CI             | `…3ba`                  |
 | 11  | **Themis**     | Orchestration & work-protocol monitor        | `…b2e`                  |
 
-**Your first PR lands in Athena's audit queue** (she reviews for dead code, `as any` casts, missing `useEffect` cleanups, a11y). See `docs/drafts/athena/audit-pattern.md` for the rubric.
+**Your first PR lands in the review queue** (dead code, `as any` casts, missing `useEffect` cleanups, a11y). See [CONTRIBUTING.md](../CONTRIBUTING.md) for the review rubric.
 
 ---
 
@@ -134,7 +134,7 @@ We ship with an 11-agent "Muse" orchestration layer (per `docs/drafts/MUSE_LINEU
 2. Register the route in `src/App.tsx` (lazy-loaded, wrap in `<ErrorBoundary>`).
 3. If new store needed → §4.3; if new engine → §4.2.
 4. Add colocated test: `<PageName>Page.test.tsx` (see `docs/TESTING.md`).
-5. Add JSDoc header (template in `docs/drafts/mnemosyne/jsdoc-p0/README.md`).
+5. Add JSDoc header (see the JSDoc conventions in the codebase; template archived in the 2026-08-07 docs triage).
 
 ### 4.2 Add a new engine (1.5 hr)
 
@@ -173,8 +173,8 @@ export const useFooStore = create<State>()(
 
 ### 4.4 Add a new ADR (30 min)
 
-1. Use next available ADR-### number in `docs/drafts/adr/`.
-2. Kebab-case filename: `ADR-NNN-short-slug.md`.
+1. Use next available ADR-### number in [`docs/adr/`](./adr/).
+2. Kebab-case filename: `ADR-NNN-short-slug.md` (template pattern, not a real file).
 3. Template: Decision / Context / Consequences / Enforcement sections (Hephaestus T-HEP-002 baseline).
 4. Cross-link relevant D-XXX disciplines (D-002, D-007, D-009).
 

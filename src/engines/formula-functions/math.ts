@@ -183,7 +183,10 @@ export function HEX2DEC(v: number): number {
   return parseInt(String(Math.round(v)), 16);
 }
 export function DEC2HEX(v: number): number {
-  return parseInt(Math.round(v).toString(16));
+  const hex = Math.round(v).toString(16);
+  // Hex output may contain a-f, which has no numeric digit representation —
+  // return NaN honestly instead of a partial parse (parseInt('1f') === 1).
+  return /^\d+$/.test(hex) ? parseInt(hex, 10) : NaN;
 }
 export function OCT2DEC(v: number): number {
   return parseInt(String(Math.round(v)), 8);
@@ -192,7 +195,8 @@ export function DEC2OCT(v: number): number {
   return parseInt(Math.round(v).toString(8));
 }
 export function BIN2HEX(v: number): number {
-  return parseInt(parseInt(String(Math.round(v)), 2).toString(16));
+  const hex = parseInt(String(Math.round(v)), 2).toString(16);
+  return /^\d+$/.test(hex) ? parseInt(hex, 10) : NaN;
 }
 export function BIN2OCT(v: number): number {
   return parseInt(parseInt(String(Math.round(v)), 2).toString(8));

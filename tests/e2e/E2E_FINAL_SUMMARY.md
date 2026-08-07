@@ -4,7 +4,7 @@
 **Author:** Sentinel (slot 019ecc6f-1c06-79c0-953c-91c537b63c39)
 **Audience:** Founder, Engineering Leadership, RATIFICATION GATE reviewers
 **Status:** 🟢 GREEN — v1.0.0 E2E Domain Ready
-**Companion doc:** `RATIFICATION_GATE_PRECHECK_E2E.md` (internal, 228L, 12-item checklist)
+**Companion doc:** E2E pre-check checklist (internal, 228L, 12-item checklist; archived in the 2026-08-07 docs triage)
 
 ---
 

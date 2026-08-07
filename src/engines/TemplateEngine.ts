@@ -237,13 +237,21 @@ export class TemplateEngine {
     }
 
     if (upper.startsWith('%')) {
-      // Percentage of total: %revenue
+      // Percentage of total: %revenue. Resolve the reference case-insensitively
+      // (same convention as SUM). MISSION D: the ref was upper-cased then looked
+      // up verbatim, so %jan never matched the lowercase column key 'jan'.
       const ref = upper.slice(1);
+      const lref = ref.toLowerCase();
       const row = data[rowId] ?? {};
-      const value = typeof row[ref] === 'number' ? (row[ref] as number) : 0;
+      const value =
+        typeof row[lref] === 'number'
+          ? (row[lref] as number)
+          : typeof row[ref] === 'number'
+            ? (row[ref] as number)
+            : 0;
       let total = 0;
       for (const r of Object.values(data)) {
-        const v = r[ref];
+        const v = r[lref] ?? r[ref];
         if (typeof v === 'number') total += v;
       }
       return total === 0 ? 0 : (value / total) * 100;

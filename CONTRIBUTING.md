@@ -66,7 +66,7 @@ Together, we build the future of financial intelligence.
 
 ## ♿ A11y-Overrides (per NEVER-AGAIN RULE #50 A11Y-CI-ENFORCEMENT)
 
-> **Source**: T-HE-019 cross-witness (`docs/openhands/hera-eslint-jsx-a11y-cross-witness.md`), 2026-06-16.
+> **Source**: T-HE-019 cross-witness (process evidence archived in the 2026-08-07 docs triage), 2026-06-16.
 > **Owner**: Hera (UI/UX Muse) + Artemis (A11Y owner) — joint co-ownership.
 > **Ticket**: [A11Y-CI-ENFORCEMENT v0.2](https://example.com/ticket/A11Y-CI-v0.2) (post-ship).
 
@@ -109,4 +109,4 @@ The `eslint-plugin-jsx-a11y@6.10.2` configuration in `eslint.config.js` resolves
 - 3.3.7 Redundant Entry
 - 3.3.8 Accessible Authentication (Minimum)
 
-These require **manual audit per page** for 8 SCs. Tracked as **A11Y-P0-1 (Focus Not Obscured BLOCKER)** in `docs/ratification/RATIFICATION_GATE_PRECHECK_A11Y_v0.3.md`.
+These require **manual audit per page** for 8 SCs. Tracked as **A11Y-P0-1 (Focus Not Obscured BLOCKER)** (tracking doc archived in the 2026-08-07 docs triage).

@@ -70,8 +70,8 @@ Without these controls, an auditor cannot reconstruct the sequence of changes, w
 | `state.compact`                      | Internal compaction event             | Periodic log compaction to bound size        |
 | `state.replay`                       | Initial state hydration               | App startup replays log to reconstruct state |
 | `auth.login` / `auth.logout`         | Authentication events                 | N/A in offline-first MVP                     |
-| `consent.capture` / `consent.revoke` | Per P0A-09                            | See `03-CONSENT-CAPTURE.md`                  |
-| `dsar.export` / `dsar.delete`        | Per P0A-17                            | See `04-DSAR-WIRE.md`                        |
+| `consent.capture` / `consent.revoke` | Per P0A-09                            | See [`docs/onboarding/03-CONSENT-CAPTURE.md`](../onboarding/03-CONSENT-CAPTURE.md)                  |
+| `dsar.export` / `dsar.delete`        | Per P0A-17                            | See [`docs/onboarding/04-DSAR-WIRE.md`](../onboarding/04-DSAR-WIRE.md)                        |
 | `tls.security`                       | Per P0A-15                            | See `PCI-DSS-COMPLIANCE.md`                  |
 
 ### 3.2 Entry schema
@@ -229,7 +229,7 @@ Even after pruning, the **last compacted hash** is retained as a checkpoint. New
 | AC-6  | Default retention is 90d; extended is 365d with consent                   | Unit test on `retentionClass` logic           |
 | AC-7  | Consent withdrawal triggers retention class transition                    | Unit test                                     |
 | AC-8  | Audit log entries are append-only (no edit/delete API)                    | API surface test                              |
-| AC-9  | Audit log included in DSAR export per P0A-17                              | Integration test (see `04-DSAR-WIRE.md`)      |
+| AC-9  | Audit log included in DSAR export per P0A-17                              | Integration test (see [`docs/onboarding/04-DSAR-WIRE.md`](../onboarding/04-DSAR-WIRE.md))      |
 | AC-10 | Audit log entries survive app restart (persisted)                         | Persistence test                              |
 | AC-11 | `actorId` is pseudonymized (Level 1 per P0A-16)                           | Unit test                                     |
 
@@ -251,7 +251,7 @@ Even after pruning, the **last compacted hash** is retained as a checkpoint. New
 - **P0A-16** Pseudonymization — `docs/security/PSEUDONYMIZATION.md` (actorId pseudonymization)
 - **P0A-17** DSAR wire — `docs/onboarding/04-DSAR-WIRE.md` (audit log export scope)
 - **Hades T-4.4 Audit Log Completeness Audit** (Nomos T-3.21.3 reference) — see ch1 memory
-- **Existing:** `docs/security/PII_REDACTION_LOGGING_POLICY.md`
+- **Existing:** [`docs/security/PII_REDACTION_POLICY.md`](./PII_REDACTION_POLICY.md)
 
 ---
 

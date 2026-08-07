@@ -116,11 +116,8 @@ export class OLAPCube {
 ## References
 
 - `src/engines/olap/OLAPCube.ts` (180+ engines)
-- `scripts/perf/T-PR-082_LOAD_TEST_v0.5_pre-stage.md` (326L, perf spec)
-- `docs/CAVEMAN_PERSIST/CYCLE_25_TURN_186_PLUS_VULCAN_T2_TPR082_v0_5_1ST_WITNESS_v0_1.md` (283L, perf validation)
 - Vesta `SECTOR_CONFIG v0.4` (17×15=255 GREEN @ 0782b121)
 - ADR-004 Decimal.js (cross-ref for precision)
-- `docs/strategic/STRATEGIC_INDEX_v0_8.md` §3.5 (5 P0 ADRs dimension)
 
 ## Ratification Status
 

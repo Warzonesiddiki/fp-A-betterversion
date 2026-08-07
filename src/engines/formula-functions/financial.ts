@@ -135,7 +135,10 @@ export function XNPV(rate: number, cfs: number, dates: number): number {
 }
 export function IPMT(r: number, per: number, n: number, pv: number, fv = 0): number {
   const pmt = PMT(r, n, pv, fv);
-  const bal = PV(r, per - 1, pmt, fv);
+  // Balance before period `per` = FV(r, per-1, pmt, pv) — NOT PV(…): the
+  // present-value form drops the principal term (IPMT₁ came out 0 instead of
+  // -pv·r). MISSION D found + fixed.
+  const bal = FV(r, per - 1, pmt, pv);
   return roundTo(multiplyMoney(bal, r));
 }
 export function PPMT(r: number, per: number, n: number, pv: number, fv = 0): number {
@@ -166,9 +169,16 @@ export function SLN(cost: number, salvage: number, life: number): number {
 }
 export function DB(cost: number, salvage: number, life: number, per: number): number {
   const rate = 1 - Math.pow(salvage / cost, 1 / life); // depreciation rate (metric)
-  let dep = toDecimal(cost).times(rate);
-  for (let i = 1; i < per; i++)
-    dep = subtractMoney(dep, multiplyMoney(subtractMoney(cost, dep), rate));
+  // Standard fixed-rate declining balance on the remaining book value,
+  // rounded to cents each period (Excel rounds intermediate depreciation).
+  // MISSION D: the previous loop subtracted (cost - dep)·rate from dep, which
+  // double-counted and produced DB(10000,1000,5,2)=1361.92 (true 2328.4x).
+  let bv: number = cost;
+  let dep = 0;
+  for (let i = 1; i <= per; i++) {
+    dep = roundTo(multiplyMoney(bv, rate));
+    bv = subtractMoney(bv, dep).toNumber();
+  }
   return roundTo(dep);
 }
 export function SYD(cost: number, salvage: number, life: number, per: number): number {
@@ -234,6 +244,13 @@ export function DURATION(
     num += i * pv;
     den += pv;
   }
+  // Macaulay duration must include the redemption payment (per unit face):
+  // PV-weighted average time of coupon AND principal cash flows. MISSION D:
+  // the missing redemption term understated a par 8%/10y bond as 4.87y
+  // instead of ~7.25y.
+  const pvRedemption = 1 / Math.pow(1 + _yld / _freq, n);
+  num += n * pvRedemption;
+  den += pvRedemption;
   return num / den / _freq;
 }
 export function CUMIPMT(
@@ -402,11 +419,19 @@ export function YIELD(
   const c = (_rate * _redemption) / _freq;
   let y = _rate;
   for (let iter = 0; iter < 50; iter++) {
-    let pv = 0;
-    for (let i = 1; i <= n; i++) pv += c / Math.pow(1 + y / _freq, i);
-    pv += _redemption / Math.pow(1 + y / _freq, n);
-    const dpv = 0;
-    const nr = y - (pv - _pr) / (dpv || 1);
+    let pv = 0,
+      dpv = 0;
+    for (let i = 1; i <= n; i++) {
+      const df = Math.pow(1 + y / _freq, -i);
+      pv += c * df;
+      dpv += (-i / _freq) * c * Math.pow(1 + y / _freq, -i - 1);
+    }
+    const dfN = Math.pow(1 + y / _freq, -n);
+    pv += _redemption * dfN;
+    dpv += (-n / _freq) * _redemption * Math.pow(1 + y / _freq, -n - 1);
+    if (dpv === 0) return y;
+    const nr = y - (pv - _pr) / dpv;
+    if (!isFinite(nr) || isNaN(nr)) return y;
     if (Math.abs(nr - y) < 1e-10) return nr;
     y = nr;
   }

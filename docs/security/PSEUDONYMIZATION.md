@@ -181,7 +181,7 @@ function addContact(input: ContactRecord): void {
 
 Re-identification (`depseudonymize`) is permitted ONLY when:
 
-- (a) DSAR request received and consentRegistry confirms identity (see `04-DSAR-WIRE.md`)
+- (a) DSAR request received and consentRegistry confirms identity (see [`docs/onboarding/04-DSAR-WIRE.md`](../onboarding/04-DSAR-WIRE.md))
 - (b) Admin action with elevated RBAC role (admin-only) and audit log entry
 - (c) Legal compulsion (subpoena, court order) — captured via special audit log tag
 
@@ -197,7 +197,7 @@ Every re-identification emits an audit log entry per P0A-14 spec.
 | AC-2 | HMAC-SHA-256 deterministic per scope                         | Unit test: same input → same token within scope; different scope → different token |
 | AC-3 | Keys never logged or displayed in cleartext                  | Grep test: no `console.log(SCOPE_KEYS)` or similar                                 |
 | AC-4 | Re-identification emits audit log entry                      | Unit test: `depseudonymize()` calls `auditLog.info()`                              |
-| AC-5 | DSAR export includes depseudonymized values per P0A-17       | Integration test (see `04-DSAR-WIRE.md`)                                           |
+| AC-5 | DSAR export includes depseudonymized values per P0A-17       | Integration test (see [`docs/onboarding/04-DSAR-WIRE.md`](../onboarding/04-DSAR-WIRE.md))                                           |
 | AC-6 | Address-book consent required before adding contact          | Component + store test                                                             |
 | AC-7 | Key rotation triggers re-tokenization                        | Integration test                                                                   |
 | AC-8 | No `any` types in pseudonymization library (tsconfig strict) | `tsc --noEmit`                                                                     |
@@ -219,7 +219,7 @@ Every re-identification emits an audit log entry per P0A-14 spec.
 - **P0A-14** Audit logging — `docs/security/UNDO-REDO-AUDIT-LOGGING.md`
 - **P0A-15** TLS 1.3 — `docs/security/PCI-DSS-COMPLIANCE.md`
 - **P0A-17** DSAR wire — `docs/onboarding/04-DSAR-WIRE.md`
-- **Existing:** `docs/security/PII_REDACTION_LOGGING_POLICY.md` (complementary redaction)
+- **Existing:** [`docs/security/PII_REDACTION_POLICY.md`](./PII_REDACTION_POLICY.md) (complementary redaction)
 - **Existing:** `docs/security/ENCRYPTION_AT_REST_TAURI_IPC_POLICY.md` (key storage)
 - **Demeter T-4.3 audit findings** — referenced in ch1 memory
 
@@ -238,7 +238,7 @@ This document uses a **NARROW mapping** focused on the primary GDPR Article dire
 
 **BOTH MAPPINGS ARE TECHNICALLY CORRECT** — they are different analytical lenses, not contradictions. Per Strategos 45th cadence, the H3 ROADMAP v0.2 view is preferred for H1 P0-A SHIP 2026-06-30 because Art. 30 ROPA documentation is a SUPERVISORY AUTHORITY audit requirement (per Art. 30(4)) and the multi-currency feature introduces NEW processing activities that trigger ROPA update obligations.
 
-**Action**: Demeter implementation must update `docs/security/ROPA.md` (existing) to include multi-currency processing activities (FX rate feed ingestion, conversion logging, rate snapshot retention) with pseudonymization measures applied. This is a non-breaking documentation extension of §7.
+**Action**: Demeter implementation must maintain a records-of-processing (ROPA) register covering multi-currency processing activities (FX rate feed ingestion, conversion logging, rate snapshot retention) with pseudonymization measures applied. This is a non-breaking documentation extension of §7.
 
 ---
 

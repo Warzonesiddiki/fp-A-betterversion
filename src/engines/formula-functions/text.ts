@@ -84,7 +84,13 @@ export function EOMONTH(s: number, months: number): number {
 }
 export function EDATE(s: number, months: number): number {
   const dt = new Date((s - 25569) * 86400000);
+  const day = dt.getDate();
+  // Move to the 1st, then add months, then clamp the day to the target
+  // month's length (Excel clamps: 2024-01-31 + 1M = 2024-02-29, not Mar 2).
+  dt.setDate(1);
   dt.setMonth(dt.getMonth() + months);
+  const lastDay = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+  dt.setDate(Math.min(day, lastDay));
   const epoch = new Date(1899, 11, 30);
   return Math.floor((dt.getTime() - epoch.getTime()) / 86400000);
 }
@@ -150,7 +156,7 @@ export function NETWORKDAYS(s1: number, s2: number): number {
 export function WEEKDAY(s: number, returnType = 1): number {
   const dt = new Date((s - 25569) * 86400000);
   const day = dt.getDay(); // 0=Sunday
-  if (returnType === 2) return day + 1 === 7 ? 7 : day + 1; // 1=Monday, 7=Sunday
+  if (returnType === 2) return day === 0 ? 7 : day; // 1=Monday, 7=Sunday
   if (returnType === 3) return day === 0 ? 6 : day - 1; // 0=Monday, 6=Sunday
   return day + 1; // 1=Sunday, 7=Saturday (default)
 }

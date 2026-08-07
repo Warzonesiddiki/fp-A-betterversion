@@ -343,7 +343,7 @@ This file is the **executive summary**. For detail, read:
 - **1000× feature roadmap:** `docs/1000X_ADVANTAGE_ROADMAP.md` (144 lines), `docs/ADVANCED_FEATURES_ROADMAP.md` (168 lines), `docs/TIER1_FEATURES_PLAN.md` (135 lines)
 - **Gap analysis (259 gaps):** `docs/MASTER_PLAN_259_GAPS.md` (320 lines), `docs/GAP_*` series
 - **Desktop-first architecture:** `docs/DESKTOP_FIRST_ARCHITECTURE.md`
-- **Master index of all 50+ docs:** `docs/STRATEGIC_INDEX.md`
+- **Doc navigation:** [`docs/GLOSSARY_INDEX.md`](./GLOSSARY_INDEX.md) + [`docs/ARCHITECTURE.md`](./ARCHITECTURE.md) (the 2026-08-07 docs triage consolidated the corpus; the previous STRATEGIC_INDEX index doc was archived)
 
 **Total strategic corpus: 3,547+ lines across 8 key files, 50+ total docs.**
 

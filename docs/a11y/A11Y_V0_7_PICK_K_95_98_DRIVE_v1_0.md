@@ -76,7 +76,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 - Q5.12h: 3.3.8 Accessible Authentication (MINIMUM, AA)
 - Q5.12i: 2.4.14 Page Break Navigation (note: also 2.4.13, distinct in spec)
 
-**Deliverable:** `docs/a11y/Q5_12_WCAG_2_2_CROSSWALK_v0_1.md` (~250L spec)
+**Deliverable:** Q5.12 WCAG 2.2 crosswalk spec (~250L; planned artifact)
 **Owner:** Artemis DRI + Hephaestus security review (3.3.8) + Tyche 5-ICP SKEPTIC
 **Deadline:** T-3d 2026-06-19 EOD
 **Estimated 4-ICP:** 9.5/10 PLATINUM+
@@ -112,7 +112,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 - EN 301 549 §5 (generic): 5 criteria
 - EN 301 549 §11 (ICT): 5 criteria
 
-**Deliverable:** `docs/a11y/Q5_14_SECTION_508_EN_301_549_CROSSWALK_v0_1.md` (~300L spec)
+**Deliverable:** Q5.14 Section 508 / EN 301 549 crosswalk spec (~300L; planned artifact)
 **Owner:** Artemis DRI + Vesta SECTOR cross-witness (16/16 sectors) + Strategos 5-ICP SKEPTIC
 **Deadline:** T-3d 2026-06-19 EOD
 **Estimated 4-ICP:** 9.5/10 PLATINUM+
@@ -123,7 +123,7 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **Gap (current 95% → target 98%):** Mobile 2.5 AA dim coverage at 95% (4 personas × 5 tests = 20/20), needs 2.5.7+2.5.8 (WCAG 2.2) ratification
 **Action:** Add 2.5.7 (Dragging Movements) + 2.5.8 (Target Size Minimum 24×24) for 19 personas = **38 new test cases** (2 × 19)
 
-**Deliverable:** `docs/a11y/Q5_15_MOBILE_2_5_AA_RATIFICATION_v0_1.md` (~200L spec)
+**Deliverable:** Q5.15 mobile 2.5AA ratification spec (~200L; planned artifact)
 **Owner:** Artemis DRI + Atlas (mobile viewport config) + Strategos 5-ICP FINAL SEAL
 **Deadline:** T-3d 2026-06-19 EOD
 **Estimated 4-ICP:** 9.5/10 PLATINUM
@@ -159,10 +159,10 @@ This document drives A11Y v0.7 readiness from **95% → 98%** via 5 quick wins (
 **Co-sign commitment per Q5.x:**
 
 - Q5.11: SHA `365f6acb` (base) + new test file SHA (post-ship)
-- Q5.12: SHA for `Q5_12_WCAG_2_2_CROSSWALK_v0_1.md` (post-ship)
+- Q5.12: SHA for the WCAG 2.2 crosswalk spec (post-ship)
 - Q5.13: SHAs for 4 axe-core fix components (post-ship)
-- Q5.14: SHA for `Q5_14_SECTION_508_EN_301_549_CROSSWALK_v0_1.md` (post-ship)
-- Q5.15: SHA for `Q5_15_MOBILE_2_5_AA_RATIFICATION_v0_1.md` (post-ship)
+- Q5.14: SHA for the Section 508 / EN 301 549 crosswalk spec (post-ship)
+- Q5.15: SHA for the mobile 2.5AA ratification spec (post-ship)
 
 **D-002 3-witness per Q5.x:** file:line + wc -l + md5sum
 

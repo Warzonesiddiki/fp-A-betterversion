@@ -262,7 +262,7 @@ jobs:
 | **2** | **A11Y-P0-4 CI gate FINAL integration v1.0 (THIS)** | **2-3h** | 🟡 IN FLIGHT (this doc)   |
 | ⛔ 4  | 5th-ICP SKEPTIC on PATCH 16 (BLOCKED)               | 30 min   | ⛔ BLOCKED Hephaestus ENV |
 
-**Memory ledger:** `artemis-pick-2-a11y-p0-4-ci-gate-final-2026-06-17.md` (TBD on commit)
+**Memory ledger:** source pick archived in the 2026-08-07 docs triage
 **Task board:** This entry + 6 cross-Muse CAVEMAN PERSIST entries from PICK 1 + 1 Leader report from PICK 3 + this PICK 2 Leader report
 
 ---
