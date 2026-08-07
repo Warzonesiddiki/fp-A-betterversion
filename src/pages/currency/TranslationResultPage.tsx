@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -137,8 +136,11 @@ export default function TranslationResultPage() {
         <CardContent className="p-4">
           <div className="flex items-center gap-4 flex-wrap">
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Source Currency</label>
+              <label htmlFor="source-currency" className="block text-xs text-slate-500 mb-1">
+                Source Currency
+              </label>
               <select
+                id="source-currency"
                 value={sourceCurrency}
                 onChange={(e) => setSourceCurrency(e.target.value)}
                 className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -152,8 +154,11 @@ export default function TranslationResultPage() {
             </div>
             <ArrowRight className="h-5 w-5 text-slate-500 mt-4" />
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Target Currency</label>
+              <label htmlFor="target-currency" className="block text-xs text-slate-500 mb-1">
+                Target Currency
+              </label>
               <select
+                id="target-currency"
                 value={targetCurrency}
                 onChange={(e) => setTargetCurrency(e.target.value)}
                 className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"

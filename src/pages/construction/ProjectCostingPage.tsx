@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { Calculator, ArrowRightLeft, Download, BarChart3, Scale } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -144,10 +143,10 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'Under' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          String(v) === 'Under' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -228,7 +227,7 @@ export default function ProjectCostingPage() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
                   <YAxis axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
-                  <Tooltip formatter={(v: any) => `$${v.toLocaleString()}`} />
+                  <Tooltip formatter={(v) => `$${Number(v).toLocaleString()}`} />
                   <Legend verticalAlign="top" align="right" />
                   <Bar dataKey="budget" name="Budgeted" fill="#e2e8f0" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="actual" name="Actual Spend" fill="#3b82f6" radius={[4, 4, 0, 0]}>

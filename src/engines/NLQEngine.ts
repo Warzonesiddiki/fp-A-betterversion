@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Natural Language Query (NLQ) Engine
  *
@@ -9,7 +8,7 @@
  */
 
 import type { GLEntry, GLAccount } from '@/types';
-import { addMoney, divideMoney, roundTo, subtractMoney, sumMoney, toDecimal } from '../utils/money';
+import { divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
 
 /**
  * MONEY MIGRATION (2026-08-03): All currency-bearing paths (netChange, debit,
@@ -286,7 +285,7 @@ export class NLQEngine {
         'nov',
         'dec',
       ];
-      const idx = months.indexOf(mMatch[1]!.toLowerCase());
+      const _idx = months.indexOf(mMatch[1]!.toLowerCase());
       return {
         type: 'month',
         value: mMatch[1]!.charAt(0).toUpperCase() + mMatch[1]!.slice(1, 3),

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore, scenarioSelectors } from '@/store/scenarioStore';
@@ -92,7 +91,7 @@ export function ScenarioComparisonPage() {
   );
 
   const barMetric = METRICS[0];
-  const barMaxValue = useMemo(
+  const _barMaxValue = useMemo(
     () =>
       Math.max(1, ...selectedScenarios.map((s) => Math.abs(s.calculatedMetrics[barMetric!.key]))),
     // eslint-disable-next-line react-hooks/exhaustive-deps

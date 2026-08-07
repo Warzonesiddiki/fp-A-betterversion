@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 
 import { BarChart3, Download, RefreshCw } from 'lucide-react';
@@ -137,14 +136,14 @@ const columns: Column[] = [
     render: (value) => (
       <span
         className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-          value === 'Optimal'
+          String(value) === 'Optimal'
             ? 'bg-green-100 text-green-700'
-            : value === 'Maintenance'
+            : String(value) === 'Maintenance'
               ? 'bg-blue-100 text-blue-700'
               : 'bg-yellow-100 text-yellow-700'
         }`}
       >
-        {value}
+        {String(value)}
       </span>
     ),
   },
@@ -263,7 +262,7 @@ export default function EnergyDashboardPage() {
                       border: '1px solid #e2e8f0',
                       boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                     }}
-                    formatter={(v: any) => [`$${v.toLocaleString()}`, '']}
+                    formatter={(v) => [`$${Number(v).toLocaleString()}`, '']}
                   />
                   <Legend
                     verticalAlign="top"

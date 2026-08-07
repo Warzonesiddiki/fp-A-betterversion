@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -9,7 +7,6 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
   BarChart3,
-  Download,
   FileText,
   Table as TableIcon,
   DollarSign,
@@ -205,21 +202,21 @@ export default function RevRecDashboard() {
       key: 'total',
       header: 'Total',
       align: 'right',
-      render: (r) => formatCurrency(r.total),
+      render: (_, r) => formatCurrency(r.total),
       sortable: true,
     },
     {
       key: 'recognized',
       header: 'Recognized',
       align: 'right',
-      render: (r) => formatCurrency(r.recognized),
+      render: (_, r) => formatCurrency(r.recognized),
       sortable: true,
     },
     {
       key: 'remaining',
       header: 'Remaining',
       align: 'right',
-      render: (r) => (
+      render: (_, r) => (
         <span className={r.remaining > 0 ? 'text-yellow-400' : 'text-green-400'}>
           {formatCurrency(r.remaining)}
         </span>
@@ -230,7 +227,7 @@ export default function RevRecDashboard() {
       key: 'nextRecognition',
       header: 'Next Recognition',
       align: 'right',
-      render: (r) => (
+      render: (_, r) => (
         <span className={r.nextRecognition === 'Complete' ? 'text-green-400' : ''}>
           {r.nextRecognition}
         </span>
@@ -318,7 +315,7 @@ export default function RevRecDashboard() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -364,7 +361,7 @@ export default function RevRecDashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
               </PieChart>

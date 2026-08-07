@@ -6,7 +6,7 @@
  * Each case is a FIXED input -> EXACT expected decimal asserted with `toBe`;
  * the pre-migration float literal is recorded inline where it differed.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect } from 'vitest';
 import { ExcelImportEngine, type MappedRow } from './ExcelImportEngine';
 

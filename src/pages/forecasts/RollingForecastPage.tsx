@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

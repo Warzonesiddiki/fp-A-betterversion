@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettingsStore } from '@/store/settingsStore';
-import { useAuthStore } from '@/store/authStore';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ProgressStepper } from '@/components/ui/ProgressStepper';
@@ -33,8 +32,8 @@ const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY'];
 
 export default function SetupWizardPage() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
-  const settingsStore = useSettingsStore();
+
+  const _settingsStore = useSettingsStore();
   const [step, setStep] = useState(0);
   const [org, setOrg] = useState<OrgForm>({
     companyName: '',
@@ -104,8 +103,11 @@ export default function SetupWizardPage() {
             </div>
             <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-slate-300">Company Name</label>
+                <label htmlFor="company-name" className="text-sm font-medium text-slate-300">
+                  Company Name
+                </label>
                 <input
+                  id="company-name"
                   type="text"
                   value={org.companyName}
                   onChange={(e) => setOrg({ ...org, companyName: e.target.value })}
@@ -114,8 +116,11 @@ export default function SetupWizardPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300">Industry</label>
+                <label htmlFor="industry" className="text-sm font-medium text-slate-300">
+                  Industry
+                </label>
                 <select
+                  id="industry"
                   value={org.industry}
                   onChange={(e) => setOrg({ ...org, industry: e.target.value })}
                   className="w-full mt-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm"
@@ -129,11 +134,15 @@ export default function SetupWizardPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-slate-300">
+                  <label
+                    htmlFor="globe-classname-h-3-5-w-3-5-inline-mr-1-base-currency"
+                    className="text-sm font-medium text-slate-300"
+                  >
                     <Globe className="h-3.5 w-3.5 inline mr-1" />
                     Base Currency
                   </label>
                   <select
+                    id="globe-classname-h-3-5-w-3-5-inline-mr-1-base-currency"
                     value={org.currency}
                     onChange={(e) =>
                       setOrg({ ...org, currency: e.target.value, baseCurrency: e.target.value })
@@ -148,11 +157,15 @@ export default function SetupWizardPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-300">
+                  <label
+                    htmlFor="calendar-classname-h-3-5-w-3-5-inline-mr-1-fiscal-year-start"
+                    className="text-sm font-medium text-slate-300"
+                  >
                     <Calendar className="h-3.5 w-3.5 inline mr-1" />
                     Fiscal Year Start
                   </label>
                   <input
+                    id="calendar-classname-h-3-5-w-3-5-inline-mr-1-fiscal-year-start"
                     type="date"
                     value={org.fiscalYearStart}
                     onChange={(e) => setOrg({ ...org, fiscalYearStart: e.target.value })}

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
@@ -125,8 +124,11 @@ export default function LoginPage() {
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Email</label>
+                  <label htmlFor="email" className="block text-xs text-slate-400 mb-1">
+                    Email
+                  </label>
                   <Input
+                    id="email"
                     type="email"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}

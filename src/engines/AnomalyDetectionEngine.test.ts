@@ -1,10 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  AnomalyDetectionEngine,
-  type DataPoint,
-  type AnomalyDetectionConfig,
-} from './AnomalyDetectionEngine';
+import { AnomalyDetectionEngine, type DataPoint } from './AnomalyDetectionEngine';
 
 // ---------------------------------------------------------------------------
 // Helpers

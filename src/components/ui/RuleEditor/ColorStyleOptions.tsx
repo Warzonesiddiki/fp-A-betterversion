@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import type { ConditionalFormatRule } from '@/engines/ConditionalFormattingEngine';
 import { cn } from '@/utils/cn';
 import { PRESET_COLORS } from '../ConditionalFormattingConstants';
@@ -17,11 +16,15 @@ export function ColorStyleOptions({ rule, onChange }: ColorStyleOptionsProps) {
     <div className="space-y-3" role="region" aria-label="ColorStyleOptions">
       {rule.visualType === 'backgroundColor' && (
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+          <label
+            htmlFor="background-color"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
             Background Color
           </label>
           <div className="flex items-center gap-2">
             <input
+              id="background-color"
               type="color"
               value={rule.style?.backgroundColor ?? '#dcfce7'}
               onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
@@ -46,11 +49,15 @@ export function ColorStyleOptions({ rule, onChange }: ColorStyleOptionsProps) {
       )}
       {rule.visualType === 'textColor' && (
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+          <label
+            htmlFor="text-color"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
             Text Color
           </label>
           <div className="flex items-center gap-2">
             <input
+              id="text-color"
               type="color"
               value={rule.style?.textColor ?? '#166534'}
               onChange={(e) => updateStyle({ textColor: e.target.value })}

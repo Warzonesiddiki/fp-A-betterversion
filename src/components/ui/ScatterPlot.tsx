@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import {
   ResponsiveContainer,
@@ -101,7 +100,7 @@ export const ScatterPlot = React.memo(function ScatterPlot({
             }}
           />
           <Tooltip
-            formatter={(value: any) => [value.toLocaleString(), '']}
+            formatter={(value) => [Number(value).toLocaleString(), '']}
             contentStyle={{
               borderRadius: '8px',
               border: '1px solid var(--border-default)',

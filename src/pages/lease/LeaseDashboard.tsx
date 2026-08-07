@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/preserve-manual-memoization */
+/* eslint-disable react-hooks/preserve-manual-memoization -- react-compiler lint bails on this file's memo bodies (roundTo/sumMoney helper chains + Date math); manual memoization is correct; this codebase does not run the React Compiler. */
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
@@ -245,7 +244,7 @@ export default function LeaseDashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
               </PieChart>
@@ -268,7 +267,7 @@ export default function LeaseDashboard() {
                   tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />

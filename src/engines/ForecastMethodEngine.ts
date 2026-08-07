@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @fileoverview Forecast methods: moving averages (simple/weighted/exponential) + linear regression + accuracy metrics
  * @purity-tier 1 PURE
@@ -25,7 +24,7 @@ import {
   roundTo,
   toDecimal,
 } from '../utils/money';
-import Decimal from 'decimal.js';
+import 'decimal.js';
 
 export interface ForecastResult {
   forecast: number[];
@@ -310,7 +309,7 @@ export class ForecastMethodEngine {
 
     const metrics = buildMetrics(data, fitted);
 
-    const ci = buildConfidenceIntervals(residuals, periodsToForecast);
+    const _ci = buildConfidenceIntervals(residuals, periodsToForecast);
 
     return {
       slope,
@@ -508,7 +507,7 @@ export class ForecastMethodEngine {
       const prevLevel = level[level.length - 1]!;
       const prevTrend = trend[trend.length - 1]!;
       const seasonIdx = i % period;
-      const prevSeason = seasonal[((i - period) % period) + (i - period >= 0 ? 0 : period)];
+      const _prevSeason = seasonal[((i - period) % period) + (i - period >= 0 ? 0 : period)];
 
       let newLevel: number;
       let newTrend: number;

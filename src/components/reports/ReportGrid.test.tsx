@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
@@ -6,7 +5,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ReportGrid } from './ReportGrid';
 import type { ReportLayout, CellStyle } from '@/engines/ReportBuilderEngine';
-import type { ReportRow, ReportCell } from '@/engines/ReportBuilderEngine';
 
 vi.mock('@/components/ui/Button', () => ({
   Button: ({

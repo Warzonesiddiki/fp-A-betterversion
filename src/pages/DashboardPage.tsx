@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +13,6 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { DrillDownModal } from '@/components/ui/DrillDownModal';
-import { RecentFilesEngine } from '@/engines/RecentFilesEngine';
 import { PAGE_HELP } from './_docs';
 import { LayoutDashboard, TrendingUp, BarChart3, Upload, Target, HelpCircle } from 'lucide-react';
 import { GaugeChart } from '@/components/charts/GaugeChart';
@@ -58,7 +56,7 @@ export default function DashboardPage() {
 
   const openDrill = async (title: string, accountPrefix: string) => {
     try {
-      if ((window as any).__TAURI_INTERNALS__ || (window as any).__TAURI__) {
+      if ('__TAURI_INTERNALS__' in window || '__TAURI__' in window) {
         const url = `/drill-down?title=${encodeURIComponent(title)}&accountPrefix=${encodeURIComponent(accountPrefix)}`;
         const label = `drill-down-${Date.now()}`;
         const webview = new WebviewWindow(label, {
@@ -279,7 +277,7 @@ export default function DashboardPage() {
   }
 
   // FinanceCopilotEngine: generate quick analysis
-  const copilotAnswer = FinanceCopilotEngine.answer('what is total revenue', {
+  const _copilotAnswer = FinanceCopilotEngine.answer('what is total revenue', {
     gl: glStore,
     budget: budgetStore,
   });
@@ -554,7 +552,7 @@ export default function DashboardPage() {
                 borderRadius: '8px',
               }}
               itemStyle={{ fontSize: '12px' }}
-              formatter={(value: any) => formatCurrency(value)}
+              formatter={(value) => formatCurrency(Number(value))}
             />
             <Area
               type="monotone"

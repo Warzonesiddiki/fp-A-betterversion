@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Keyboard, Search, Plus, Trash2 } from 'lucide-react';
 import {
@@ -98,14 +97,16 @@ function AddShortcutDialog({ onAdd, onClose }: AddDialogProps) {
         <div className="space-y-3">
           {/* Key capture */}
           <div>
-            <label
+            <span
+              id="shortcut-key-label"
               className="block text-xs font-medium mb-1"
               style={{ color: 'var(--text-secondary)' }}
             >
               Key Combination
-            </label>
+            </span>
             <div
               role="textbox"
+              aria-labelledby="shortcut-key-label"
               tabIndex={0}
               onKeyDownCapture={handleKeyDownCapture}
               className="flex items-center gap-2 px-3 py-2 rounded-lg border cursor-text min-h-[2.5rem]"
@@ -132,12 +133,14 @@ function AddShortcutDialog({ onAdd, onClose }: AddDialogProps) {
           {/* Description */}
           <div>
             <label
+              htmlFor="shortcut-description"
               className="block text-xs font-medium mb-1"
               style={{ color: 'var(--text-secondary)' }}
             >
               Description
             </label>
             <input
+              id="shortcut-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full px-3 py-2 text-sm rounded-lg border outline-none"
@@ -153,12 +156,14 @@ function AddShortcutDialog({ onAdd, onClose }: AddDialogProps) {
           {/* Action */}
           <div>
             <label
+              htmlFor="shortcut-action"
               className="block text-xs font-medium mb-1"
               style={{ color: 'var(--text-secondary)' }}
             >
               Action ID
             </label>
             <input
+              id="shortcut-action"
               value={action}
               onChange={(e) => setAction(e.target.value)}
               className="w-full px-3 py-2 text-sm rounded-lg border outline-none"
@@ -174,12 +179,14 @@ function AddShortcutDialog({ onAdd, onClose }: AddDialogProps) {
           {/* Category */}
           <div>
             <label
+              htmlFor="shortcut-category"
               className="block text-xs font-medium mb-1"
               style={{ color: 'var(--text-secondary)' }}
             >
               Category
             </label>
             <select
+              id="shortcut-category"
               value={category}
               onChange={(e) => setCategory(e.target.value as ShortcutCategory)}
               className="w-full px-3 py-2 text-sm rounded-lg border outline-none"

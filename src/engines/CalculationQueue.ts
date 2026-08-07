@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Calculation Queue — priority-based engine execution with LRU cache.
  * Prevents UI freezing by controlling concurrent calculations.
@@ -17,11 +16,6 @@ interface CalcTask<T = unknown> {
   abortController?: AbortController;
   resolve?: (value: T) => void;
   reject?: (reason: Error) => void;
-}
-
-interface CacheEntry<T = unknown> {
-  result: T;
-  timestamp: number;
 }
 
 const PRIORITY_ORDER: Record<Priority, number> = {

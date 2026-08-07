@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -66,7 +65,6 @@ const pieData = [
 ];
 
 export default function CSRDReportPage() {
-  const { entries } = useGLStore();
   const _navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'env' | 'social' | 'gov'>('env');
 

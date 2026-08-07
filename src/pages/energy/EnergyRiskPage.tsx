@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import {
-  ShieldAlert,
-  TrendingDown,
-  AlertTriangle,
-  Activity,
-  Lock,
-  Unlock,
-  Download,
-  BarChart3,
-  Flame,
-  ArrowRightLeft,
-} from 'lucide-react';
+import { ShieldAlert, Activity, Download, Flame, ArrowRightLeft } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -26,7 +14,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Cell,
   ComposedChart,
   Line,
 } from 'recharts';
@@ -115,14 +102,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'Active'
+          String(v) === 'Active'
             ? 'bg-green-100 text-green-700'
-            : v === 'Pending'
+            : String(v) === 'Pending'
               ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
               : 'bg-blue-100 text-blue-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -212,8 +211,10 @@ export default function InventoryDashboard() {
                       border: '1px solid #334155',
                       borderRadius: 8,
                     }}
-                    formatter={(v: any, name: any) =>
-                      name === 'Value' ? formatCurrency(v) : `${formatNumber(v, 1)}x`
+                    formatter={(v, name) =>
+                      name === 'Value'
+                        ? formatCurrency(Number(v))
+                        : `${formatNumber(Number(v), 1)}x`
                     }
                   />
                   <Legend />
@@ -264,7 +265,7 @@ export default function InventoryDashboard() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                 />
               </PieChart>
             </ResponsiveContainer>

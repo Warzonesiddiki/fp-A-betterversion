@@ -125,9 +125,9 @@ describe('DashboardBuilderPage', () => {
   it('exports the active dashboard as a downloadable file when Export is clicked', () => {
     const createObjectURL = vi.fn(() => 'blob:mock-url');
     const revokeObjectURL = vi.fn();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (URL as any).createObjectURL = createObjectURL;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (URL as any).revokeObjectURL = revokeObjectURL;
 
     render(<DashboardBuilderPage />);

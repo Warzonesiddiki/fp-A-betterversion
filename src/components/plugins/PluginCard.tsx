@@ -99,11 +99,23 @@ export function PluginCard({
     [isInstalled, onInstall, onUninstall, plugin]
   );
 
+  const handleCardKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onViewDetail(plugin);
+      }
+    },
+    [onViewDetail, plugin]
+  );
+
   return (
-    <button
-      type="button"
-      className="group flex flex-col rounded-lg border border-[var(--border-default)] bg-white dark:bg-gray-900 dark:bg-gray-800 p-5 text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700"
+    <div
+      role="button"
+      tabIndex={0}
+      className="group flex flex-col rounded-lg border border-[var(--border-default)] bg-white dark:bg-gray-900 dark:bg-gray-800 p-5 text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700 cursor-pointer"
       onClick={() => onViewDetail(plugin)}
+      onKeyDown={handleCardKeyDown}
       aria-label={`View details for ${plugin.name}`}
     >
       <div className="flex items-start gap-3">
@@ -166,6 +178,6 @@ export function PluginCard({
           {loading ? '...' : isInstalled ? 'Uninstall' : 'Install'}
         </Button>
       </div>
-    </button>
+    </div>
   );
 }

@@ -103,14 +103,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'Optimal' || v === 'Completed'
+          String(v) === 'Optimal' || String(v) === 'Completed'
             ? 'bg-green-100 text-green-700'
-            : v === 'Delayed'
+            : String(v) === 'Delayed'
               ? 'bg-red-100 text-red-700'
               : 'bg-blue-100 text-blue-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -121,9 +121,9 @@ const columns: Column[] = [
     align: 'right',
     render: (v) => (
       <div className="flex flex-col items-end gap-1">
-        <span className="text-[10px] font-bold">{v}</span>
+        <span className="text-[10px] font-bold">{String(v)}</span>
         <div className="w-16 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-          <div className="bg-blue-500 h-full" style={{ width: v }} />
+          <div className="bg-blue-500 h-full" style={{ width: String(v) }} />
         </div>
       </div>
     ),

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -13,7 +12,7 @@ export default function ReportBookBuilderPage() {
   }, []);
 
   const { entries } = useGLStore();
-  const { reports, createReport } = useReportStore();
+  const { reports  } = useReportStore();
   const navigate = useNavigate();
 
   if (entries.length === 0) {

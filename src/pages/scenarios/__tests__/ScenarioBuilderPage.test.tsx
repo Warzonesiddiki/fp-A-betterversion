@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/scenarioStore', () => ({
@@ -69,7 +68,7 @@ vi.mock('@/engines/MonteCarloEngine', () => ({
 vi.mock('@/engines/SensitivityEngine', () => ({ SensitivityEngine: { analyze: vi.fn(() => []) } }));
 
 vi.mock('@/components/charts/VarianceChart', () => ({
-  VarianceChart: (props: Record<string, unknown>) => <div data-testid="variance-chart" />,
+  VarianceChart: (_props: Record<string, unknown>) => <div data-testid="variance-chart" />,
 }));
 
 vi.mock(import('lucide-react'), async (importOriginal) => {

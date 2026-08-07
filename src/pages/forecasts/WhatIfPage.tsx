@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useMemo, useState } from 'react';
 import {
   Sliders,
@@ -10,7 +8,6 @@ import {
   TrendingUp,
   TrendingDown,
   Copy,
-  ArrowRight,
   Layers,
   BarChart3,
 } from 'lucide-react';
@@ -18,10 +15,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { WhatIfSandboxEngine, type Sandbox } from '@/engines/WhatIfSandboxEngine';
-import { BreakEvenEngine } from '@/engines/BreakEvenEngine';
-import { SolverEngine } from '@/engines/SolverEngine';
 import { sumMoney, roundTo } from '@/utils/money';
-import { type SandboxModification, type SandboxComparison } from '@/engines/WhatIfSandboxEngine';
+import { type SandboxComparison } from '@/engines/WhatIfSandboxEngine';
 import {
   BarChart,
   Bar,
@@ -453,7 +448,7 @@ export default function WhatIfPage() {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis type="number" tickFormatter={(v) => formatCurrency(v)} />
                         <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 12 }} />
-                        <Tooltip formatter={(v: any) => formatCurrency(v)} />
+                        <Tooltip formatter={(v) => formatCurrency(Number(v))} />
                         <Bar dataKey="delta" radius={[0, 4, 4, 0]}>
                           {comparisonChartData.map((entry, i) => (
                             <Cell key={i} fill={entry.delta >= 0 ? '#16a34a' : '#dc2626'} />

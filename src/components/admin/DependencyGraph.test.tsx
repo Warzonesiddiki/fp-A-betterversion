@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DependencyGraph } from './DependencyGraph';
 import { useUIStore } from '../../store/uiStore';

@@ -8,6 +8,7 @@ export type { FunctionCategory, FormulaFunction } from './formula-functions/help
 
 // Import category registration functions
 import { registerFinancialFunctions } from './formula-functions/financial';
+import { toNum } from './formula-functions/helpers';
 import { registerStatisticalFunctions } from './formula-functions/statistical';
 import { registerMathFunctions } from './formula-functions/math';
 import { registerTextFunctions } from './formula-functions/text';
@@ -55,7 +56,7 @@ export class FormulaFunctionRegistry {
       throw new Error(`${name} requires at least ${fn.minArgs} arguments`);
     if (fn.maxArgs !== -1 && args.length > fn.maxArgs)
       throw new Error(`${name} accepts at most ${fn.maxArgs} arguments`);
-    return fn.impl(...args);
+    return fn.impl(...args.map((a) => toNum(a)));
   }
 
   // =========================================================================

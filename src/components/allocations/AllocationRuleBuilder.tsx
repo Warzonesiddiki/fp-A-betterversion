@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useState, useCallback, useEffect } from 'react';
 import {
   Plus,
@@ -458,9 +457,10 @@ export function AllocationRuleBuilder({
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-500/10 border border-red-500/30 px-3 py-2 text-xs text-red-400">
-          {' '}
+        <div
           role="alert"
+          className="rounded-md bg-red-500/10 border border-red-500/30 px-3 py-2 text-xs text-red-400"
+        >
           {error}
         </div>
       )}

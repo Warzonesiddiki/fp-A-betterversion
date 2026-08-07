@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import {
-  Sun,
-  Wind,
-  Droplets,
-  Leaf,
-  Battery,
-  TrendingUp,
-  Download,
-  RefreshCw,
-  LayoutGrid,
-  FileText,
-} from 'lucide-react';
+import { Sun, Wind, Droplets, Leaf, Battery, Download, LayoutGrid, FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -135,10 +123,10 @@ const columns: Column[] = [
     header: 'Type',
     render: (value) => (
       <div className="flex items-center gap-2">
-        {value === 'Solar' && <Sun className="h-3 w-3 text-amber-700" />}
-        {value === 'Wind' && <Wind className="h-3 w-3 text-emerald-700" />}
-        {value === 'Hydro' && <Droplets className="h-3 w-3 text-blue-600" />}
-        {value === 'Storage' && <Battery className="h-3 w-3 text-purple-600" />}
+        {String(value) === 'Solar' && <Sun className="h-3 w-3 text-amber-700" />}
+        {String(value) === 'Wind' && <Wind className="h-3 w-3 text-emerald-700" />}
+        {String(value) === 'Hydro' && <Droplets className="h-3 w-3 text-blue-600" />}
+        {String(value) === 'Storage' && <Battery className="h-3 w-3 text-purple-600" />}
         <span>{String(value ?? '')}</span>
       </div>
     ),
@@ -151,9 +139,11 @@ const columns: Column[] = [
     align: 'right',
     render: (v) => (
       <span
-        className={parseFloat(v) > 95 ? 'text-green-700 font-bold' : 'text-amber-700 font-bold'}
+        className={
+          parseFloat(String(v)) > 95 ? 'text-green-700 font-bold' : 'text-amber-700 font-bold'
+        }
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },

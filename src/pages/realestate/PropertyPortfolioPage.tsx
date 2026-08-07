@@ -1,19 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from 'react';
-import {
-  Building2,
-  MapPin,
-  DollarSign,
-  TrendingUp,
-  BarChart3,
-  Calendar,
-  Download,
-  Filter,
-  ArrowRight,
-  Hammer,
-  Search,
-} from 'lucide-react';
+import { Building2, BarChart3, Filter, Hammer, Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -29,7 +15,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
@@ -62,14 +47,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'Core'
+          String(v) === 'Core'
             ? 'bg-blue-100 text-blue-700'
-            : v === 'Value-Add'
+            : String(v) === 'Value-Add'
               ? 'bg-emerald-100 text-emerald-700'
               : 'bg-purple-100 text-purple-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -99,15 +84,15 @@ const columns: Column[] = [
     key: 'yield',
     header: 'Yield',
     align: 'right',
-    render: (v) => `${v}%`,
+    render: (v) => `${String(v)}%`,
   },
   {
     key: 'renovation',
     header: 'Renovation Status',
     render: (v) => (
       <div className="flex items-center gap-2">
-        {v !== 'None' && <Hammer className="h-3 w-3 text-slate-400" />}
-        <span className="text-xs">{v}</span>
+        {String(v) !== 'None' && <Hammer className="h-3 w-3 text-slate-400" />}
+        <span className="text-xs">{String(v)}</span>
       </div>
     ),
   },
@@ -232,7 +217,7 @@ export default function PropertyPortfolioPage() {
                     tickLine={false}
                     tickFormatter={(v) => `$${v / 1000000}M`}
                   />
-                  <Tooltip formatter={(v: any) => `$${v.toLocaleString()}`} />
+                  <Tooltip formatter={(v) => `$${Number(v).toLocaleString()}`} />
                   <Legend verticalAlign="top" align="right" />
                   <Bar dataKey="cost" name="Purchase Cost" fill="#e2e8f0" radius={[4, 4, 0, 0]} />
                   <Bar

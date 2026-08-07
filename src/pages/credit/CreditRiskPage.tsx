@@ -1,16 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from 'react';
-import {
-  ShieldAlert,
-  DollarSign,
-  TrendingDown,
-  BarChart3,
-  AlertTriangle,
-  Download,
-  Activity,
-  Shield,
-} from 'lucide-react';
+import { ShieldAlert, BarChart3, Download, Activity, Shield } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -369,8 +358,8 @@ export default function CreditRiskPage() {
                     tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                   />
                   <Tooltip
-                    formatter={(v: any) => [
-                      `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                    formatter={(v) => [
+                      `$${Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
                       'Expected Loss',
                     ]}
                   />

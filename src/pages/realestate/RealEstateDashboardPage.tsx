@@ -1,17 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from 'react';
 
 import {
   Building2,
-  Home,
-  DollarSign,
   TrendingUp,
   MapPin,
-  Users,
   Download,
   Filter,
-  ArrowUpRight,
   PieChart as PieChartIcon,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -301,7 +295,7 @@ export default function RealEstateDashboardPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
+                  <Tooltip formatter={(v) => `$${formatCompact(Number(v))}`} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>

@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { AlertTriangle } from 'lucide-react';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface ConfirmOptions {
   title: string;

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { ChatTab } from './CopilotChatTab';
 import type { CopilotMessage, PageContext } from './CopilotTypes';
@@ -27,10 +26,10 @@ describe('CopilotChatTab', () => {
         formulaResult={mockFormulaResult}
         scrollRef={mockScrollRef}
         inputRef={mockInputRef}
-        onInputChange={(value) => {}}
-        onKeyDown={(e) => {}}
-        onSend={(text) => {}}
-        onSuggestionClick={(suggestion) => {}}
+        onInputChange={(_value) => {}}
+        onKeyDown={(_e) => {}}
+        onSend={(_text) => {}}
+        onSuggestionClick={(_suggestion) => {}}
       />
     );
     expect(container).toBeDefined();

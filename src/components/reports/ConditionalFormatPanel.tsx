@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import { X, Plus, Trash2, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -219,8 +218,8 @@ export function ConditionalFormatPanel({
 
                   {/* Custom colors */}
                   <div className="flex items-center gap-2">
-                    <label className="text-xs text-[var(--text-muted)]">Text</label>
-                    <input
+                    <label htmlFor="text" className="text-xs text-[var(--text-muted)]">Text</label>
+                    <input id="text"
                       type="color"
                       value={format.style.textColor ?? '#FFFFFF'}
                       onChange={(e) =>
@@ -231,8 +230,8 @@ export function ConditionalFormatPanel({
                       className="w-6 h-6 rounded cursor-pointer"
                       aria-label="Text color"
                     />
-                    <label className="text-xs text-[var(--text-muted)]">Background</label>
-                    <input
+                    <label htmlFor="background" className="text-xs text-[var(--text-muted)]">Background</label>
+                    <input id="background"
                       type="color"
                       value={format.style.backgroundColor ?? '#000000'}
                       onChange={(e) =>

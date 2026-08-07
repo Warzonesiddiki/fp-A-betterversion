@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
 import { ReportBookBuilder } from '../ReportBookBuilder';
 
 vi.mock('lucide-react', () => {
-  const makeIcon = (n: string) => (p: any) => <span data-testid={`icon-${n}`} {...p} />;
+  const _makeIcon = (n: string) => (p: any) => <span data-testid={`icon-${n}`} {...p} />;
   return {};
 });
 vi.mock('@/components/ui/Card', () => ({ Card: ({ children }: any) => <div>{children}</div> }));

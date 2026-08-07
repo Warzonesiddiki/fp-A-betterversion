@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
@@ -70,8 +69,11 @@ export default function RegisterPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Full Name</label>
+              <label htmlFor="full-name" className="block text-xs text-slate-400 mb-1">
+                Full Name
+              </label>
               <Input
+                id="full-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
@@ -79,8 +81,11 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Email</label>
+              <label htmlFor="email" className="block text-xs text-slate-400 mb-1">
+                Email
+              </label>
               <Input
+                id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -89,8 +94,11 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Password</label>
+              <label htmlFor="password" className="block text-xs text-slate-400 mb-1">
+                Password
+              </label>
               <Input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -99,8 +107,11 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Confirm Password</label>
+              <label htmlFor="confirm-password" className="block text-xs text-slate-400 mb-1">
+                Confirm Password
+              </label>
               <Input
+                id="confirm-password"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

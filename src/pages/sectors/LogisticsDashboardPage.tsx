@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -75,11 +73,8 @@ const monthlyVolume = [
 ];
 
 export function LogisticsDashboardPage() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const { shipments, routeCosts, carrierPerformance, getActiveShipmentCount, getOnTimeRate } =
-    useLogisticsStore();
+  const { routeCosts, getOnTimeRate } = useLogisticsStore();
 
-  const activeShipments = getActiveShipmentCount();
   const onTimeRate = getOnTimeRate();
 
   const topLanes =
@@ -178,7 +173,7 @@ export function LogisticsDashboardPage() {
                 tickFormatter={(v) => `$${formatCompact(v)}`}
               />
               <Tooltip
-                formatter={((v: number) => [`$${formatCompact(v)}`, 'Revenue']) as any}
+                formatter={(v) => [`$${formatCompact(Number(v))}`, 'Revenue']}
                 contentStyle={{
                   background: 'var(--text-primary)',
                   border: '1px solid var(--border-color)',
@@ -211,7 +206,7 @@ export function LogisticsDashboardPage() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={((v: number) => [`${v}%`, 'Share']) as any}
+                formatter={(v) => [`${v}%`, 'Share']}
                 contentStyle={{
                   background: 'var(--text-primary)',
                   border: '1px solid var(--border-color)',
@@ -279,7 +274,7 @@ export function LogisticsDashboardPage() {
                 tickFormatter={(v) => formatNumber(v / 1000, 0)}
               />
               <Tooltip
-                formatter={((v: number) => [v.toLocaleString(), 'Shipments']) as any}
+                formatter={(v) => [Number(v).toLocaleString(), 'Shipments']}
                 contentStyle={{
                   background: 'var(--text-primary)',
                   border: '1px solid var(--border-color)',

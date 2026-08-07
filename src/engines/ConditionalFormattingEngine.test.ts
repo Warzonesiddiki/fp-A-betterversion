@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect } from 'vitest';
 import {
   evaluateRule,
@@ -6,8 +5,6 @@ import {
   reorderRules,
   createVarianceHighlightRule,
   createNegativeVarianceRule,
-  createGrowthRateRule,
-  createBudgetVsActualRule,
   DEFAULT_RULES,
   type ConditionalFormatRule,
 } from './ConditionalFormattingEngine';

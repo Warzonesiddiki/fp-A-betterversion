@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import { GripVertical, Settings, Columns, Rows } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -107,8 +106,8 @@ export function ReportLeftPanel({
         {activePanel === 'properties' && (
           <div className="space-y-4">
             <div>
-              <label className="text-xs text-[var(--text-muted)] block mb-1">Report Name</label>
-              <input
+              <label htmlFor="report-name" className="text-xs text-[var(--text-muted)] block mb-1">Report Name</label>
+              <input id="report-name"
                 type="text"
                 value={reportName}
                 onChange={(e) => onNameChange(e.target.value)}
@@ -116,8 +115,8 @@ export function ReportLeftPanel({
               />
             </div>
             <div>
-              <label className="text-xs text-[var(--text-muted)] block mb-1">Description</label>
-              <textarea
+              <label htmlFor="description" className="text-xs text-[var(--text-muted)] block mb-1">Description</label>
+              <textarea id="description"
                 value={reportDescription}
                 onChange={(e) => onDescriptionChange(e.target.value)}
                 className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5 text-sm text-[var(--text-primary)] resize-none"

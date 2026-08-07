@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
@@ -239,10 +237,10 @@ export default function LeaseDetailPage() {
 
   const amortColumns: Column<AmortRow>[] = [
     { key: 'month', header: 'Month', sortable: true },
-    { key: 'payment', header: 'Payment', render: (r) => formatCurrency(r.payment) },
-    { key: 'principal', header: 'Principal', render: (r) => formatCurrency(r.principal) },
-    { key: 'interest', header: 'Interest', render: (r) => formatCurrency(r.interest) },
-    { key: 'balance', header: 'Balance', render: (r) => formatCurrency(r.balance) },
+    { key: 'payment', header: 'Payment', render: (_, r) => formatCurrency(r.payment) },
+    { key: 'principal', header: 'Principal', render: (_, r) => formatCurrency(r.principal) },
+    { key: 'interest', header: 'Interest', render: (_, r) => formatCurrency(r.interest) },
+    { key: 'balance', header: 'Balance', render: (_, r) => formatCurrency(r.balance) },
   ];
 
   const handleExportPDF = () => {
@@ -407,7 +405,7 @@ export default function LeaseDetailPage() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -445,7 +443,7 @@ export default function LeaseDetailPage() {
                   tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />

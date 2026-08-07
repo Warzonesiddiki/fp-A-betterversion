@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAnalyticsStore } from './analyticsStore';
 import { actAs } from '@/test/rbacFixtures';

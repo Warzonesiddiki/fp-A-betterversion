@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Storage Worker
  * Handles heavy JSON serialization/deserialization and chunking.
@@ -9,12 +8,12 @@ import type { WorkerMessage, WorkerResponse } from './types';
 
 export interface StorageRequest {
   type: 'stringify' | 'parse';
-  payload: any;
+  payload: unknown;
   chunkSize?: number;
 }
 
 export interface StorageResult {
-  payload?: any;
+  payload?: unknown;
   chunks?: string[];
   totalSize?: number;
 }
@@ -47,7 +46,11 @@ self.onmessage = (e: MessageEvent<WorkerMessage<StorageRequest>>) => {
         self.postMessage(response);
       }
     } else if (type === 'parse') {
-      const json = Array.isArray(payload) ? payload.join('') : payload;
+      const json = Array.isArray(payload)
+        ? payload.join('')
+        : typeof payload === 'string'
+          ? payload
+          : String(payload);
       const data = JSON.parse(json);
 
       const response: WorkerResponse<StorageResult> = {

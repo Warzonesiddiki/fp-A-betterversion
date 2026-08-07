@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { Entity } from '../types';
 import { masterStorage } from '../utils/masterStorage';
-import { cacheSet, cacheGet, cacheClearStore, isOnline, markSynced } from '../utils/offlineCache';
+import { cacheSet, cacheGet, cacheClearStore, markSynced } from '../utils/offlineCache';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 // =============================================================================

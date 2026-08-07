@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { FunctionSquare, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -282,8 +281,8 @@ export function FormulaBar({
       {/* Options row */}
       <div className="px-4 flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-1.5">
-          <label className="text-xs text-[var(--text-muted)]">Format</label>
-          <select
+          <label htmlFor="format" className="text-xs text-[var(--text-muted)]">Format</label>
+          <select id="format"
             value={format}
             onChange={(e) => setFormat(e.target.value as NumberFormat)}
             className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1 text-xs text-[var(--text-primary)]"
@@ -297,8 +296,8 @@ export function FormulaBar({
           </select>
         </div>
         <div className="flex items-center gap-1.5">
-          <label className="text-xs text-[var(--text-muted)]">Decimals</label>
-          <input
+          <label htmlFor="decimals" className="text-xs text-[var(--text-muted)]">Decimals</label>
+          <input id="decimals"
             type="number"
             value={decimals}
             onChange={(e) =>
@@ -311,8 +310,8 @@ export function FormulaBar({
           />
         </div>
         <div className="flex items-center gap-1.5 flex-1 min-w-[120px]">
-          <label className="text-xs text-[var(--text-muted)]">Label</label>
-          <input
+          <label htmlFor="label" className="text-xs text-[var(--text-muted)]">Label</label>
+          <input id="label"
             type="text"
             value={label}
             onChange={(e) => setLabel(e.target.value)}

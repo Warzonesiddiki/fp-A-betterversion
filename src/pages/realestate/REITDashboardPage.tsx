@@ -1,18 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react';
-import {
-  BarChart3,
-  TrendingUp,
-  DollarSign,
-  PieChart as PieChartIcon,
-  ArrowUpRight,
-  Download,
-  Filter,
-  Users,
-  Wallet,
-  Globe,
-  ShieldCheck,
-} from 'lucide-react';
+import { TrendingUp, Download, Wallet, Globe, ShieldCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -20,7 +7,6 @@ import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import {
   ResponsiveContainer,
-  LineChart,
   Line,
   XAxis,
   YAxis,

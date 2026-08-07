@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
@@ -45,7 +44,7 @@ describe('BatchOperationEngine', () => {
 
     it('undoLast reverts the most recent operation', () => {
       const operations = [{ type: 'update' as const, targets: ['C1'], payload: { value: 300 } }];
-      const result = BatchOperationEngine.execute(operations, 'user-1');
+      const _result = BatchOperationEngine.execute(operations, 'user-1');
       expect(BatchOperationEngine.canUndo()).toBe(true);
 
       BatchOperationEngine.undoLast();

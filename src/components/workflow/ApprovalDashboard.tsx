@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useMemo, useState, useCallback } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
@@ -172,8 +171,11 @@ export function ApprovalDashboard({
           {showDelegationForm && (
             <div className="flex gap-2 items-end border-b pb-3">
               <div className="flex-1">
-                <label className="text-xs font-medium">Delegate To</label>
+                <label htmlFor="delegate-to" className="text-xs font-medium">
+                  Delegate To
+                </label>
                 <input
+                  id="delegate-to"
                   type="text"
                   value={delegateTo}
                   onChange={(e) => setDelegateTo(e.target.value)}
@@ -182,8 +184,11 @@ export function ApprovalDashboard({
                 />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium">Reason</label>
+                <label htmlFor="reason" className="text-xs font-medium">
+                  Reason
+                </label>
                 <input
+                  id="reason"
                   type="text"
                   value={delegateReason}
                   onChange={(e) => setDelegateReason(e.target.value)}

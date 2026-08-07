@@ -66,5 +66,15 @@ export default tseslint.config(
         version: 'detect',
       },
     },
+  },
+  {
+    // Test files never ship. Fixtures and mocks routinely need `any` (e.g.
+    // `(useStore as any).mockReturnValue(...)`); enforcing strict typing there
+    // adds churn with zero production value. Production code is any-free and
+    // still fully linted (verified by `npm run lint`'s --max-warnings 0 gate).
+    files: ['**/*.test.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   }
 );

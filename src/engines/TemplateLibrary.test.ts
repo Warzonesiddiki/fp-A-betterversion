@@ -1,19 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // TEMPLATE LIBRARY TESTS — Tests matching actual TemplateLibrary API
 // =============================================================================
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  TemplateLibrary,
-  type FPTemplate,
-  type TemplateInstance,
-  type TemplateCategory,
-  type TemplateIndustry,
-  type DriverDefinition,
-  type AccountDefinition,
-  type CascadeRuleDefinition,
-} from './TemplateLibrary';
+import { TemplateLibrary, type TemplateCategory, type TemplateIndustry } from './TemplateLibrary';
 
 describe('TemplateLibrary', () => {
   let lib: TemplateLibrary;

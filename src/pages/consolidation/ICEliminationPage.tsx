@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { GitCompare, CheckCircle2, AlertCircle, Wand2 } from 'lucide-react';
-import { IntercompanyMatchingEngine } from '@/engines/IntercompanyMatchingEngine';
 
 interface ICPair {
   id: string;

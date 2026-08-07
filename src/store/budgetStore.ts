@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { WritableDraft } from 'immer';
 import type { Budget, BudgetState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
@@ -95,7 +94,7 @@ export const useBudgetStore = create<BudgetState>()(
               createdBy: 'usr-001',
             };
             set((state) => {
-              state.budgets.push(newBudget as any);
+              state.budgets.push(newBudget as WritableDraft<Budget>);
             });
             useUIStore.getState().addToast({
               type: 'success',
@@ -141,7 +140,7 @@ export const useBudgetStore = create<BudgetState>()(
               updatedAt: new Date().toISOString(),
             };
             set((state) => {
-              state.budgets.push(newBudget as any);
+              state.budgets.push(newBudget as WritableDraft<Budget>);
             });
             useUIStore.getState().addToast({
               type: 'success',
@@ -176,7 +175,7 @@ export const useBudgetStore = create<BudgetState>()(
               }
               state.isSubmitting = false;
             });
-          } catch (error) {
+          } catch (_error) {
             set((state) => {
               state.isSubmitting = false;
             });

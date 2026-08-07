@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import {
-  AlertTriangle,
   RefreshCw,
   Home,
   BarChart3,

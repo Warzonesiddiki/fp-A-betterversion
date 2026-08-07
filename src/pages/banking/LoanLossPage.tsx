@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -220,9 +219,9 @@ export default function LoanLossPage() {
                     border: '1px solid #1e293b',
                     borderRadius: '8px',
                   }}
-                  formatter={(value: any) =>
+                  formatter={(value) =>
                     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-                      value
+                      Number(value)
                     )
                   }
                 />

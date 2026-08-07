@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
 
@@ -30,8 +28,8 @@ vi.mock('@/store/glStore', () => ({
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: any) => children,
-  BarChart: (props: any) => <div data-testid="bar-chart" />,
-  LineChart: (props: any) => <div data-testid="line-chart" />,
+  BarChart: (_props: any) => <div data-testid="bar-chart" />,
+  LineChart: (_props: any) => <div data-testid="line-chart" />,
   Bar: () => null,
   Line: () => null,
   XAxis: () => null,
@@ -39,11 +37,11 @@ vi.mock('recharts', () => ({
   CartesianGrid: () => null,
   Tooltip: () => null,
   Legend: () => null,
-  WaterfallChart: (props: any) => <div data-testid="waterfall-chart" />,
+  WaterfallChart: (_props: any) => <div data-testid="waterfall-chart" />,
 }));
 
 vi.mock('@/components/charts/WaterfallChart', () => ({
-  WaterfallChart: (props: any) => <div data-testid="waterfall-chart" />,
+  WaterfallChart: (_props: any) => <div data-testid="waterfall-chart" />,
 }));
 
 vi.mock(import('lucide-react'), async (importOriginal) => {

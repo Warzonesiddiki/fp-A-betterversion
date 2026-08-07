@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -8,7 +7,6 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
   Headphones,
-  Download,
   FileText,
   Table as TableIcon,
   Users,
@@ -140,7 +138,7 @@ export default function HeadcountPlanPage() {
       key: 'variance',
       header: 'Variance',
       align: 'right',
-      render: (r) => (
+      render: (_, r) => (
         <span className={r.variance >= 0 ? 'text-green-400' : 'text-red-400'}>
           {r.variance > 0 ? '+' : ''}
           {r.variance}
@@ -152,7 +150,7 @@ export default function HeadcountPlanPage() {
       key: 'cost',
       header: 'Annual Cost',
       align: 'right',
-      render: (r) => formatCurrency(r.cost),
+      render: (_, r) => formatCurrency(r.cost),
       sortable: true,
     },
   ];

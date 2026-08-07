@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // =============================================================================
 // FORMULA FUNCTION REGISTRY — Shared Types & Helpers
 // =============================================================================
@@ -26,7 +25,7 @@ export interface FormulaFunction {
   description: string;
   minArgs: number;
   maxArgs: number; // -1 = variadic
-  impl: (...args: any[]) => number | number[];
+  impl: (...args: number[]) => number | number[];
 }
 
 // =============================================================================

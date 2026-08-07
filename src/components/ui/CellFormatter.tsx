@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
 import { useCallback } from 'react';
 import { cn } from '@/utils/cn';
@@ -151,10 +150,14 @@ export function CellFormatter({
       <div className="space-y-4 p-4">
         {/* Format Type */}
         <div>
-          <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide">
+          <label
+            htmlFor="category"
+            className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide"
+          >
             Category
           </label>
           <Select
+            id="category"
             options={formatOptions}
             value={format.format}
             onChange={(v: string) => updateFormat('format', v as NumberFormat)}
@@ -168,10 +171,14 @@ export function CellFormatter({
           format.format === 'scientific') && (
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide">
+              <label
+                htmlFor="decimal-places"
+                className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide"
+              >
                 Decimal Places
               </label>
               <Input
+                id="decimal-places"
                 type="number"
                 min={0}
                 max={15}
@@ -197,10 +204,14 @@ export function CellFormatter({
         {/* Currency symbol */}
         {format.format === 'currency' && (
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide">
+            <label
+              htmlFor="symbol"
+              className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide"
+            >
               Symbol
             </label>
             <Select
+              id="symbol"
               options={currencyOptions}
               value={format.currencySymbol}
               onChange={(v: string) => updateFormat('currencySymbol', v)}
@@ -211,10 +222,14 @@ export function CellFormatter({
         {/* Date format */}
         {format.format === 'date' && (
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide">
+            <label
+              htmlFor="date-format"
+              className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide"
+            >
               Date Format
             </label>
             <Select
+              id="date-format"
               options={dateFormatOptions}
               value={format.dateFormat}
               onChange={(v: string) => updateFormat('dateFormat', v)}
@@ -225,10 +240,14 @@ export function CellFormatter({
         {/* Negative style */}
         {(format.format === 'number' || format.format === 'currency') && (
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide">
+            <label
+              htmlFor="negative-numbers"
+              className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide"
+            >
               Negative Numbers
             </label>
             <Select
+              id="negative-numbers"
               options={negativeStyleOptions}
               value={format.negativeStyle}
               onChange={(v: string) =>
@@ -242,20 +261,28 @@ export function CellFormatter({
         {format.format !== 'date' && format.format !== 'text' && (
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide">
+              <label
+                htmlFor="prefix"
+                className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide"
+              >
                 Prefix
               </label>
               <Input
+                id="prefix"
                 value={format.prefix}
                 onChange={(e) => updateFormat('prefix', e.target.value)}
                 placeholder="e.g., ~"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide">
+              <label
+                htmlFor="suffix"
+                className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wide"
+              >
                 Suffix
               </label>
               <Input
+                id="suffix"
                 value={format.suffix}
                 onChange={(e) => updateFormat('suffix', e.target.value)}
                 placeholder="e.g., units"

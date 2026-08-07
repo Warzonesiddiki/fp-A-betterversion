@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { formatPercent } from '@/utils/financialFormatting';
 import { AgGridReact } from 'ag-grid-react';
@@ -75,7 +74,7 @@ export function SpreadsheetGrid({
   const gridRef = useRef<AgGridReact>(null);
   const [activeCell, setActiveCell] = useState<{ row: number; col: string } | null>(null);
   const [formulaValue, setFormulaValue] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
+  const [_isEditing, setIsEditing] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [copiedRange, setCopiedRange] = useState<Record<string, unknown>[] | null>(null);
 

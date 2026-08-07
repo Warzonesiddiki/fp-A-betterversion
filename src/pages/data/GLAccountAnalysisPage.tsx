@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -122,10 +121,16 @@ export default function GLAccountAnalysisPage() {
 
       <Card>
         <CardContent className="p-4">
-          <label className="block text-xs font-medium text-slate-400 mb-1.5">Select Account</label>
+          <label
+            htmlFor="select-account"
+            className="block text-xs font-medium text-slate-400 mb-1.5"
+          >
+            Select Account
+          </label>
           <div className="flex gap-3 items-center">
             <div className="flex-1 max-w-md">
               <Select
+                id="select-account"
                 options={accountOptions}
                 value={selectedAccountId}
                 onChange={handleAccountChange}

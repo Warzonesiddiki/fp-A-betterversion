@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -13,7 +12,7 @@ import {
   BarChart3,
 } from 'lucide-react';
 import { allTemplates, industryLabels } from '@/config/templates';
-import type { Template, TemplateCategory } from '@/engines/TemplateEngine';
+import type { TemplateCategory } from '@/engines/TemplateEngine';
 
 const categoryIcons: Record<TemplateCategory, React.ReactNode> = {
   budget: <LayoutGrid className="h-4 w-4" />,

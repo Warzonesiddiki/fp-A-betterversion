@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FiscalPeriod } from '@/types';
 
 const columns = [
@@ -26,10 +24,7 @@ import {
   BarChart2,
   FileCheck,
   AlertCircle,
-  ArrowUpRight,
-  TrendingDown,
   Download,
-  Filter,
   CreditCard,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -187,7 +182,7 @@ export default function PatientRevenuePage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
+                  <Tooltip formatter={(v) => `$${formatCompact(Number(v))}`} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -219,7 +214,7 @@ export default function PatientRevenuePage() {
                     tickLine={false}
                     tickFormatter={(v) => `$${v / 1000000}M`}
                   />
-                  <Tooltip formatter={(v: any) => `$${v.toLocaleString()}`} />
+                  <Tooltip formatter={(v) => `$${Number(v).toLocaleString()}`} />
                   <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40}>
                     {revenueCycleData.map((entry, index) => (
                       <Cell

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -224,7 +223,7 @@ export default function RetailDashboard() {
                     tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                   />
                   <Tooltip
-                    formatter={(v: any) => formatCurrency(v)}
+                    formatter={(v) => formatCurrency(Number(v))}
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   />
                   <Legend />

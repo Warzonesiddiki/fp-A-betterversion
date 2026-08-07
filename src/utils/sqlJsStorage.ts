@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { PersistStorage, StorageValue } from 'zustand/middleware';
+import type { RawStorage } from './chunkedStorage';
 import initSqlJs, { type Database } from 'sql.js';
 // Resolve the WASM binary from the bundled dependency. Fetching it from
 // https://sql.js.org (the previous behaviour) is blocked by our own CSP
@@ -53,8 +52,8 @@ function saveToLocalStorage(db: Database): void {
   }
 }
 
-export const sqlJsStorage: PersistStorage<any> = {
-  getItem: async (name: string): Promise<StorageValue<any> | null> => {
+export const sqlJsStorage: RawStorage = {
+  getItem: async (name: string): Promise<unknown> => {
     try {
       const db = await getDb();
       const result = db.exec(`SELECT value FROM ${TABLE_NAME} WHERE id = ?`, [name]);
@@ -70,7 +69,7 @@ export const sqlJsStorage: PersistStorage<any> = {
     }
   },
 
-  setItem: async (name: string, value: StorageValue<any>): Promise<void> => {
+  setItem: async (name: string, value: unknown): Promise<void> => {
     try {
       const db = await getDb();
       const stringValue = typeof value === 'string' ? value : JSON.stringify(value);

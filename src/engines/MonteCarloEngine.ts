@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // MONTE CARLO SIMULATION ENGINE — Full-featured probabilistic analysis
 // Integrates with ScenarioEngine for financial scenario generation
@@ -6,8 +5,6 @@
 // =============================================================================
 
 import type { ScenarioMetrics } from '@/types';
-import { ScenarioEngine } from './ScenarioEngine';
-import type { Distribution, ScenarioDriver } from './ScenarioEngine';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -501,7 +498,7 @@ export class MonteCarloEngine {
     // --- Compute per-metric statistics ---
     const metricResults = {} as Record<keyof ScenarioMetrics, MonteCarloResult>;
     for (const key of validMetrics) {
-      const sorted = [...metricValues[key]].sort((a, b) => a - b);
+      const _sorted = [...metricValues[key]].sort((a, b) => a - b);
       metricResults[key] = MonteCarloEngine.computeStatistics(
         metricValues[key]!,
         [],
@@ -513,7 +510,7 @@ export class MonteCarloEngine {
     // --- Compute risk metrics from net income distribution ---
     const niSorted = [...metricValues.netIncome].sort((a, b) => a - b);
     const niMean = computeMean(metricValues.netIncome);
-    const niStdDev = computeStdDev(computeVariance(metricValues.netIncome, niMean));
+    const _niStdDev = computeStdDev(computeVariance(metricValues.netIncome, niMean));
 
     // Probability of profit
     const profitCount = metricValues.netIncome.filter((v) => v > 0).length;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // DRIVER PLANNING PAGE TESTS
 // =============================================================================
@@ -30,8 +29,8 @@ const mockGetRulesForDriver = vi.fn(() => []);
 const mockGetAllRules = vi.fn(() => []);
 const mockDetectCircularDependencies = vi.fn(() => []);
 const mockLoadDriverTemplate = vi.fn();
-const mockCalculateCascade = vi.fn();
-const mockAnalyzeImpact = vi.fn();
+const _mockCalculateCascade = vi.fn();
+const _mockAnalyzeImpact = vi.fn();
 
 vi.mock('@/store/driverStore', () => ({
   useDriverStore: vi.fn(() => ({
@@ -141,7 +140,7 @@ vi.mock('@/store/driverStore', () => ({
   ],
 }));
 
-const renderComponent = () => render(<DriverPlanningPage />);
+const _renderComponent = () => render(<DriverPlanningPage />);
 
 describe('DriverPlanningPage', () => {
   beforeEach(() => {

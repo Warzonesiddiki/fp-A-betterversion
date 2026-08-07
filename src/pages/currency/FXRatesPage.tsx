@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -170,8 +169,11 @@ export default function FXRatesPage() {
           <h2 className="text-lg font-bold text-white">Add Exchange Rate</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-1">From Currency</label>
+              <label htmlFor="from-currency" className="block text-xs text-slate-400 mb-1">
+                From Currency
+              </label>
               <select
+                id="from-currency"
                 value={form.fromCurrency}
                 onChange={(e) => setForm((f) => ({ ...f, fromCurrency: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -184,8 +186,11 @@ export default function FXRatesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">To Currency</label>
+              <label htmlFor="to-currency" className="block text-xs text-slate-400 mb-1">
+                To Currency
+              </label>
               <select
+                id="to-currency"
                 value={form.toCurrency}
                 onChange={(e) => setForm((f) => ({ ...f, toCurrency: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -201,8 +206,11 @@ export default function FXRatesPage() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Rate</label>
+              <label htmlFor="rate" className="block text-xs text-slate-400 mb-1">
+                Rate
+              </label>
               <input
+                id="rate"
                 type="number"
                 step="any"
                 min="0"
@@ -214,8 +222,11 @@ export default function FXRatesPage() {
               {errors.rate && <p className="text-xs text-red-400 mt-1">{errors.rate}</p>}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Effective Date</label>
+              <label htmlFor="effective-date" className="block text-xs text-slate-400 mb-1">
+                Effective Date
+              </label>
               <input
+                id="effective-date"
                 type="date"
                 value={form.effectiveDate}
                 onChange={(e) => setForm((f) => ({ ...f, effectiveDate: e.target.value }))}

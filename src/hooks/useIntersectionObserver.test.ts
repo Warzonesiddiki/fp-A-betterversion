@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @vitest-environment jsdom
  */
@@ -52,7 +50,6 @@ describe('useIntersectionObserver', () => {
     (result.current.ref as any).current = el;
 
     // Re-render to trigger effect
-    const { result: result2 } = renderHook(() => useIntersectionObserver());
 
     if (observerCallback) {
       act(() => {

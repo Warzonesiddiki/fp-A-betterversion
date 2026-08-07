@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -16,9 +14,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  PieChart,
-  Pie,
   Cell,
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
@@ -221,17 +216,17 @@ export default function InventoryPage() {
     { key: 'name', header: 'Item', sortable: true },
     { key: 'category', header: 'Category', sortable: true },
     { key: 'quantity', header: 'Qty', sortable: true },
-    { key: 'unitCost', header: 'Unit Cost', render: (r) => formatCurrency(r.unitCost) },
+    { key: 'unitCost', header: 'Unit Cost', render: (_, r) => formatCurrency(r.unitCost) },
     {
       key: 'totalValue',
       header: 'Total Value',
-      render: (r) => formatCurrency(r.totalValue),
+      render: (_, r) => formatCurrency(r.totalValue),
       sortable: true,
     },
     {
       key: 'status',
       header: 'Status',
-      render: (r) => (
+      render: (_, r) => (
         <span
           className={`text-xs px-2 py-0.5 rounded-full ${
             r.status === 'In Stock'
@@ -335,7 +330,7 @@ export default function InventoryPage() {
                   tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>

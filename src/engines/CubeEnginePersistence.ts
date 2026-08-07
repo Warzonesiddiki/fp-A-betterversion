@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * CUBE ENGINE PERSISTENCE — Dual-backend adapter (IndexedDB + Tauri SQLite)
  * Every operation is atomic, fully typed, and error-handled.
@@ -31,12 +30,6 @@ import type {
 // CUBE ENGINE PERSISTENCE — Dual-backend adapter (IndexedDB + Tauri SQLite)
 // Every operation is atomic, fully typed, and error-handled.
 // =============================================================================
-
-interface IndexedDBDatabase {
-  createObjectStore(name: string, options?: { keyPath: string }): void;
-  objectStoreNames: DOMStringList;
-  transaction(storeNames: string | string[], mode: IDBTransactionMode): IDBTransaction;
-}
 
 interface SerializedDimension {
   name: string;
@@ -213,7 +206,7 @@ function idbClear(db: IDBDatabase, storeName: string): Promise<void> {
   });
 }
 
-function idbGetByIndex<T>(
+function _idbGetByIndex<T>(
   db: IDBDatabase,
   storeName: string,
   indexName: string,

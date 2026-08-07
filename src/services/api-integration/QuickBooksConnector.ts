@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * API Integration Framework - QuickBooks Connector
  *
@@ -139,7 +138,7 @@ export class QuickBooksConnector extends BaseConnector {
       throw new Error('OAuth2 configuration required');
     }
 
-    const credentials = btoa(`${oauthConfig.clientId}:${oauthConfig.clientSecret}`);
+    const _credentials = btoa(`${oauthConfig.clientId}:${oauthConfig.clientSecret}`);
 
     const response = await this.client.post<QBTokenResponse>(
       'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
@@ -176,7 +175,7 @@ export class QuickBooksConnector extends BaseConnector {
       throw new Error('OAuth2 configuration required');
     }
 
-    const credentials = btoa(`${oauthConfig.clientId}:${oauthConfig.clientSecret}`);
+    const _credentials = btoa(`${oauthConfig.clientId}:${oauthConfig.clientSecret}`);
 
     const response = await this.client.post<QBTokenResponse>(
       'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',

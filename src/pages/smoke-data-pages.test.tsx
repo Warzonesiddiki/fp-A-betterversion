@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
@@ -158,7 +157,7 @@ vi.mock('@/components/ui/Button', () => ({
 }));
 
 vi.mock('@/components/ui/FileDropZone', () => ({
-  FileDropZone: ({ onFile, accept }: { onFile: (f: File) => void; accept?: string }) => (
+  FileDropZone: ({ accept }: { onFile: (f: File) => void; accept?: string }) => (
     <div data-testid="file-drop-zone" data-accept={accept} />
   ),
 }));

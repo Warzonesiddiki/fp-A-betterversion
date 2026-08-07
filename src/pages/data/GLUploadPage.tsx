@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +28,7 @@ import {
 
 const excelEngine = new ExcelImportEngine();
 
-function mappingsToArray(
+function _mappingsToArray(
   mappings: Record<string, string>
 ): { sourceColumn: string; targetField: string; isRequired: boolean }[] {
   const requiredFields = ['accountCode', 'postDate'];
@@ -62,10 +61,7 @@ export default function GLUploadPage() {
     setImportProgress,
     setImportStatus,
     setImportError,
-    recordImport,
     undoLastImport,
-    checkDuplicates,
-    setEntries,
   } = useGLStore();
 
   const navigate = useNavigate();

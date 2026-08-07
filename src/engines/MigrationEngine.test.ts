@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 import ExcelJS from 'exceljs';
 import { ImportEngine } from './ImportEngine';
@@ -248,7 +247,7 @@ describe('MigrationEngine', () => {
         'Budget'
       );
 
-      const { source, readiness, plan } = await engine.analyzeMigration(file);
+      const { readiness, plan } = await engine.analyzeMigration(file);
 
       expect(readiness.score).toBeGreaterThan(0);
       expect(readiness.sheetCount).toBe(1);

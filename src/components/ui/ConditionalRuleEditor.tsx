@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import type {
   ConditionalFormatRule,
   RuleType,
@@ -111,10 +110,14 @@ export function ConditionalRuleEditor({
     >
       {/* Name */}
       <div>
-        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+        <label
+          htmlFor="rule-name"
+          className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+        >
           Rule Name
         </label>
         <input
+          id="rule-name"
           type="text"
           value={rule.name}
           onChange={(e) => onChange({ ...rule, name: e.target.value })}
@@ -126,10 +129,14 @@ export function ConditionalRuleEditor({
       {/* Rule Type + Operator */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+          <label
+            htmlFor="rule-type"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
             Rule Type
           </label>
           <select
+            id="rule-type"
             value={rule.condition.ruleType}
             onChange={(e) => updateCondition({ ruleType: e.target.value as RuleType })}
             className="w-full rounded border border-[var(--border-subtle)] bg-[var(--bg-muted)] px-3 py-1.5 text-sm"
@@ -142,10 +149,14 @@ export function ConditionalRuleEditor({
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+          <label
+            htmlFor="operator"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
             Operator
           </label>
           <select
+            id="operator"
             value={rule.condition.operator}
             onChange={(e) => updateCondition({ operator: e.target.value as Operator })}
             className="w-full rounded border border-[var(--border-subtle)] bg-[var(--bg-muted)] px-3 py-1.5 text-sm"
@@ -163,10 +174,14 @@ export function ConditionalRuleEditor({
       {op?.needsValue && (
         <div className={cn('grid gap-3', op.needsValue2 ? 'grid-cols-2' : 'grid-cols-1')}>
           <div>
-            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="value"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+            >
               Value
             </label>
             <input
+              id="value"
               type="number"
               value={rule.condition.value ?? ''}
               onChange={(e) => updateCondition({ value: parseFloat(e.target.value) || 0 })}
@@ -175,10 +190,14 @@ export function ConditionalRuleEditor({
           </div>
           {op.needsValue2 && (
             <div>
-              <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+              <label
+                htmlFor="value-2"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+              >
                 Value 2
               </label>
               <input
+                id="value-2"
                 type="number"
                 value={rule.condition.value2 ?? ''}
                 onChange={(e) => updateCondition({ value2: parseFloat(e.target.value) || 0 })}
@@ -191,10 +210,14 @@ export function ConditionalRuleEditor({
 
       {needsText && (
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+          <label
+            htmlFor="text"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
             Text
           </label>
           <input
+            id="text"
             type="text"
             value={rule.condition.text ?? ''}
             onChange={(e) => updateCondition({ text: e.target.value })}
@@ -206,10 +229,14 @@ export function ConditionalRuleEditor({
 
       {rule.condition.ruleType === 'formula' && (
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+          <label
+            htmlFor="formula"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
             Formula
           </label>
           <input
+            id="formula"
             type="text"
             value={rule.condition.formula ?? ''}
             onChange={(e) => updateCondition({ formula: e.target.value })}
@@ -221,10 +248,14 @@ export function ConditionalRuleEditor({
 
       {(rule.condition.operator === 'topN' || rule.condition.operator === 'bottomN') && (
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+          <label
+            htmlFor="n-count"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
             N (count)
           </label>
           <input
+            id="n-count"
             type="number"
             value={rule.condition.rankValue ?? 10}
             onChange={(e) => updateCondition({ rankValue: parseInt(e.target.value) || 10 })}
@@ -236,10 +267,14 @@ export function ConditionalRuleEditor({
 
       {/* Visual Type */}
       <div>
-        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+        <label
+          htmlFor="visual-format"
+          className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+        >
           Visual Format
         </label>
         <select
+          id="visual-format"
           value={rule.visualType}
           onChange={(e) => onChange({ ...rule, visualType: e.target.value as VisualType })}
           className="w-full rounded border border-[var(--border-subtle)] bg-[var(--bg-muted)] px-3 py-1.5 text-sm"
@@ -257,11 +292,15 @@ export function ConditionalRuleEditor({
         <div className="space-y-3">
           {rule.visualType === 'backgroundColor' && (
             <div>
-              <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+              <label
+                htmlFor="background-color"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+              >
                 Background Color
               </label>
               <div className="flex items-center gap-2">
                 <input
+                  id="background-color"
                   type="color"
                   value={rule.style?.backgroundColor ?? '#dcfce7'}
                   onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
@@ -286,11 +325,15 @@ export function ConditionalRuleEditor({
           )}
           {rule.visualType === 'textColor' && (
             <div>
-              <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+              <label
+                htmlFor="text-color"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+              >
                 Text Color
               </label>
               <div className="flex items-center gap-2">
                 <input
+                  id="text-color"
                   type="color"
                   value={rule.style?.textColor ?? '#166534'}
                   onChange={(e) => updateStyle({ textColor: e.target.value })}
@@ -306,10 +349,14 @@ export function ConditionalRuleEditor({
       {rule.visualType === 'iconSet' && (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="icon-set"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+            >
               Icon Set
             </label>
             <select
+              id="icon-set"
               value={rule.iconSet?.type ?? '3-arrows'}
               onChange={(e) =>
                 onChange({
@@ -355,10 +402,14 @@ export function ConditionalRuleEditor({
       {rule.visualType === 'colorScale' && (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="scale-type"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+            >
               Scale Type
             </label>
             <select
+              id="scale-type"
               value={rule.colorScale?.type ?? '2-color'}
               onChange={(e) =>
                 onChange({
@@ -379,10 +430,14 @@ export function ConditionalRuleEditor({
           </div>
           <div className="flex gap-3">
             <div>
-              <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+              <label
+                htmlFor="min"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+              >
                 Min
               </label>
               <input
+                id="min"
                 type="color"
                 value={rule.colorScale?.minColor ?? '#fee2e2'}
                 onChange={(e) =>
@@ -396,10 +451,14 @@ export function ConditionalRuleEditor({
             </div>
             {rule.colorScale?.type === '3-color' && (
               <div>
-                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+                <label
+                  htmlFor="mid"
+                  className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+                >
                   Mid
                 </label>
                 <input
+                  id="mid"
                   type="color"
                   value={rule.colorScale?.midColor ?? '#fef9c3'}
                   onChange={(e) =>
@@ -413,10 +472,14 @@ export function ConditionalRuleEditor({
               </div>
             )}
             <div>
-              <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+              <label
+                htmlFor="max"
+                className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+              >
                 Max
               </label>
               <input
+                id="max"
                 type="color"
                 value={rule.colorScale?.maxColor ?? '#dcfce7'}
                 onChange={(e) =>
@@ -446,10 +509,14 @@ export function ConditionalRuleEditor({
       {rule.visualType === 'dataBar' && (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="bar-style"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+            >
               Bar Style
             </label>
             <select
+              id="bar-style"
               value={rule.dataBar?.style ?? 'solid'}
               onChange={(e) =>
                 onChange({
@@ -469,8 +536,11 @@ export function ConditionalRuleEditor({
             </select>
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-[var(--text-secondary)]">Bar Color</label>
+            <label htmlFor="bar-color" className="text-xs font-medium text-[var(--text-secondary)]">
+              Bar Color
+            </label>
             <input
+              id="bar-color"
               type="color"
               value={rule.dataBar?.barColor ?? '#3b82f6'}
               onChange={(e) =>
@@ -487,10 +557,14 @@ export function ConditionalRuleEditor({
 
       {/* Priority */}
       <div>
-        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+        <label
+          htmlFor="priority-higher-applied-first"
+          className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+        >
           Priority (higher = applied first)
         </label>
         <input
+          id="priority-higher-applied-first"
           type="number"
           value={rule.priority}
           onChange={(e) => onChange({ ...rule, priority: parseInt(e.target.value) || 0 })}
@@ -502,9 +576,7 @@ export function ConditionalRuleEditor({
 
       {/* Preview */}
       <div>
-        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
-          Preview
-        </label>
+        <span className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Preview</span>
         <div className="flex gap-2">
           {[10, 0, -10].map((val) => {
             const evaluated = evaluateRule(rule, val, [10, 0, -10]);

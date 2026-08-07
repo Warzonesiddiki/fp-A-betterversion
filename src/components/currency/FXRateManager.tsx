@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -8,7 +7,7 @@ import { FXEngine, type FXRateEntry } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { Plus, TrendingUp, TrendingDown, History, Trash2 } from 'lucide-react';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
-import { CURRENCIES, SOURCE_LABEL, SOURCE_VARIANT, formatMoney } from './constants';
+import { CURRENCIES, SOURCE_LABEL, SOURCE_VARIANT } from './constants';
 
 interface RateForm {
   fromCurrency: string;
@@ -263,8 +262,11 @@ export function FXRateManager() {
           <h2 className="text-lg font-bold text-white">Add FX Rate</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-1">From</label>
+              <label htmlFor="from" className="block text-xs text-slate-400 mb-1">
+                From
+              </label>
               <select
+                id="from"
                 value={form.fromCurrency}
                 onChange={(e) => setForm((f) => ({ ...f, fromCurrency: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -277,8 +279,11 @@ export function FXRateManager() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">To</label>
+              <label htmlFor="to" className="block text-xs text-slate-400 mb-1">
+                To
+              </label>
               <select
+                id="to"
                 value={form.toCurrency}
                 onChange={(e) => setForm((f) => ({ ...f, toCurrency: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -294,8 +299,11 @@ export function FXRateManager() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Rate</label>
+              <label htmlFor="rate" className="block text-xs text-slate-400 mb-1">
+                Rate
+              </label>
               <input
+                id="rate"
                 type="number"
                 step="any"
                 min="0"
@@ -307,8 +315,11 @@ export function FXRateManager() {
               {errors.rate && <p className="text-xs text-red-400 mt-1">{errors.rate}</p>}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Date</label>
+              <label htmlFor="date" className="block text-xs text-slate-400 mb-1">
+                Date
+              </label>
               <input
+                id="date"
                 type="date"
                 value={form.date}
                 onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
@@ -317,8 +328,11 @@ export function FXRateManager() {
               {errors.date && <p className="text-xs text-red-400 mt-1">{errors.date}</p>}
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-slate-400 mb-1">Source</label>
+              <label htmlFor="source" className="block text-xs text-slate-400 mb-1">
+                Source
+              </label>
               <select
+                id="source"
                 value={form.source}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, source: e.target.value as FXRateEntry['source'] }))

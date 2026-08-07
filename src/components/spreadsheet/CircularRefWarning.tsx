@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useMemo, useState } from 'react';
 import { FormulaEngine } from '@/engines/FormulaEngine';
 import type {
@@ -6,10 +5,8 @@ import type {
   ConvergenceResult,
   IterativeConfig,
 } from '@/engines/IterativeCalculationEngine';
-import { DEFAULT_ITERATIVE_CONFIG } from '@/engines/IterativeCalculationEngine';
 import {
   CircularReferenceWarning,
-  CircularCellIndicator,
   useIterativeConfig,
 } from '@/components/ui/CircularReferenceWarning';
 import { cn } from '@/utils/cn';

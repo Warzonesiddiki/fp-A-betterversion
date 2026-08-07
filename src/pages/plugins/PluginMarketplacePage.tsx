@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * PluginMarketplacePage — Browsable plugin marketplace
  * Discovery, search, filtering, install/uninstall
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { PluginCard } from '@/components/plugins/PluginCard';

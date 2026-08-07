@@ -1,10 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  ExportTemplateEngine,
-  type ExportTemplate,
-  type ExportContext,
-} from './ExportTemplateEngine';
+import { ExportTemplateEngine, type ExportTemplate } from './ExportTemplateEngine';
 
 describe('ExportTemplateEngine', () => {
   let engine: ExportTemplateEngine;

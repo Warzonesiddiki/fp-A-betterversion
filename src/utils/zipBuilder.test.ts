@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { buildZip, textToBytes, downloadBlob, type ZipEntry } from './zipBuilder';
 
@@ -151,7 +149,7 @@ describe('downloadBlob', () => {
     const data = new Uint8Array([1]);
     downloadBlob(data, 'report.csv', 'text/csv');
 
-    const aEl = document.createElement('a') as any;
+    const _aEl = document.createElement('a') as any;
     // The mock createElement returns the same spy, verify it was called with 'a'
     expect(document.createElement).toHaveBeenCalledWith('a');
   });

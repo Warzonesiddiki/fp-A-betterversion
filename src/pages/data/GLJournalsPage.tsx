@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -178,8 +177,11 @@ export default function GLJournalsPage() {
         <CardContent className="p-4">
           <div className="flex gap-3 items-end flex-wrap">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">From</label>
+              <label htmlFor="from" className="block text-xs font-medium text-slate-400 mb-1">
+                From
+              </label>
               <input
+                id="from"
                 type="date"
                 className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 w-40 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={startDate}
@@ -190,8 +192,11 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">To</label>
+              <label htmlFor="to" className="block text-xs font-medium text-slate-400 mb-1">
+                To
+              </label>
               <input
+                id="to"
                 type="date"
                 className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 w-40 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={endDate}
@@ -202,8 +207,11 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Account</label>
+              <label htmlFor="account" className="block text-xs font-medium text-slate-400 mb-1">
+                Account
+              </label>
               <Select
+                id="account"
                 options={accountOptions}
                 value={accountFilter[0] || ''}
                 onChange={(v) => {
@@ -214,10 +222,13 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Search</label>
+              <label htmlFor="search" className="block text-xs font-medium text-slate-400 mb-1">
+                Search
+              </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
                 <input
+                  id="search"
                   className="w-48 pl-8 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Description or ref..."
                   value={search}

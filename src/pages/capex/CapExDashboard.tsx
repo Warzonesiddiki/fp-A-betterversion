@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -7,16 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import {
-  Download,
-  Building2,
-  DollarSign,
-  TrendingUp,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  Plus,
-} from 'lucide-react';
+import { Download, Building2, DollarSign, TrendingUp, Clock, Plus } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -214,12 +203,12 @@ export default function CapExDashboard() {
     { key: 'id', header: 'ID', sortable: true },
     { key: 'name', header: 'Project', sortable: true },
     { key: 'category', header: 'Category', sortable: true },
-    { key: 'budget', header: 'Budget', render: (r) => formatCurrency(r.budget), sortable: true },
-    { key: 'actual', header: 'Actual', render: (r) => formatCurrency(r.actual), sortable: true },
+    { key: 'budget', header: 'Budget', render: (_, r) => formatCurrency(r.budget), sortable: true },
+    { key: 'actual', header: 'Actual', render: (_, r) => formatCurrency(r.actual), sortable: true },
     {
       key: 'variance',
       header: 'Variance',
-      render: (r) => {
+      render: (_, r) => {
         const v = r.budget - r.actual;
         return (
           <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{formatCurrency(v)}</span>
@@ -230,7 +219,7 @@ export default function CapExDashboard() {
     {
       key: 'status',
       header: 'Status',
-      render: (r) => {
+      render: (_, r) => {
         const colors = {
           Approved: 'bg-blue-900/50 text-blue-400',
           'In Progress': 'bg-yellow-900/50 text-yellow-400',
@@ -246,7 +235,7 @@ export default function CapExDashboard() {
         );
       },
     },
-    { key: 'completionDate', header: 'Completion', render: (r) => r.completionDate || '-' },
+    { key: 'completionDate', header: 'Completion', render: (_, r) => r.completionDate || '-' },
   ];
 
   const handleExport = () => {
@@ -344,7 +333,7 @@ export default function CapExDashboard() {
                   tickFormatter={(v) => `$${Math.round(v / 100000) / 10}M`}
                 />
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />

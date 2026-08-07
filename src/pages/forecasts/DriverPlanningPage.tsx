@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 // =============================================================================
 // DRIVER PLANNING PAGE — Full-page driver-based planning interface
 // Manage drivers, define cascade rules, and preview impacts before applying
@@ -339,12 +338,14 @@ export default function DriverPlanningPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label
+                  htmlFor="driver-name"
                   className="text-xs font-medium block mb-1"
                   style={{ color: 'var(--text-secondary)' }}
                 >
                   Driver Name *
                 </label>
                 <input
+                  id="driver-name"
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -359,12 +360,14 @@ export default function DriverPlanningPage() {
               </div>
               <div>
                 <label
+                  htmlFor="driver-category"
                   className="text-xs font-medium block mb-1"
                   style={{ color: 'var(--text-secondary)' }}
                 >
                   Category
                 </label>
                 <input
+                  id="driver-category"
                   type="text"
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -379,12 +382,14 @@ export default function DriverPlanningPage() {
               </div>
               <div>
                 <label
+                  htmlFor="driver-description"
                   className="text-xs font-medium block mb-1"
                   style={{ color: 'var(--text-secondary)' }}
                 >
                   Description
                 </label>
                 <input
+                  id="driver-description"
                   type="text"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -399,12 +404,14 @@ export default function DriverPlanningPage() {
               </div>
               <div>
                 <label
+                  htmlFor="driver-unit"
                   className="text-xs font-medium block mb-1"
                   style={{ color: 'var(--text-secondary)' }}
                 >
                   Unit
                 </label>
                 <select
+                  id="driver-unit"
                   value={form.unit}
                   onChange={(e) =>
                     setForm({ ...form, unit: e.target.value as NewDriverForm['unit'] })
@@ -424,6 +431,7 @@ export default function DriverPlanningPage() {
               </div>
               <div>
                 <label
+                  htmlFor="driver-base-value"
                   className="text-xs font-medium block mb-1"
                   style={{ color: 'var(--text-secondary)' }}
                 >
@@ -456,6 +464,7 @@ export default function DriverPlanningPage() {
               </div>
               <div>
                 <label
+                  htmlFor="driver-min"
                   className="text-xs font-medium block mb-1"
                   style={{ color: 'var(--text-secondary)' }}
                 >
@@ -463,6 +472,7 @@ export default function DriverPlanningPage() {
                 </label>
                 <div className="flex gap-2">
                   <input
+                    id="driver-min"
                     type="number"
                     value={form.minValue}
                     onChange={(e) => setForm({ ...form, minValue: Number(e.target.value) })}

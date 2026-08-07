@@ -255,10 +255,14 @@ const chunkedSqlJsStorage = wrapChunkedStorage(sqlJsStorage);
 // documented ecosystem pattern for a shared storage adapter is a bivariant
 // state generic. All values crossing THIS module's boundaries are strings.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MasterStorage = PersistStorage<any, unknown> & {
+interface MasterStorage extends PersistStorage<any, unknown> {
+  // The adapter's runtime contract is "any serializable value" (strings pass
+  // through, objects are JSON-serialized), so setItem accepts unknown rather
+  // than zustand's StorageValue<S> envelope.
+  setItem(name: string, value: unknown): Promise<void>;
   __resetCache: () => void;
   migrateFromIndexedDB: () => Promise<import('./migration/legacyStorageMigration').MigrationResult>;
-};
+}
 
 export const masterStorage: MasterStorage = {
   getItem: async (name) => {

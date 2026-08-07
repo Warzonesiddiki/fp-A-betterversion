@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ICMatchingEngine, type ICTransaction, type ToleranceSettings } from './ICMatchingEngine';
+import { ICMatchingEngine, type ICTransaction } from './ICMatchingEngine';
 
 const makeSource = (overrides: Partial<ICTransaction> = {}): ICTransaction => ({
   id: 't1',

@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore } from '@/store/scenarioStore';
-import { useGLStore } from '@/store/glStore';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -28,8 +26,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  LineChart,
-  Line,
 } from 'recharts';
 import { VarianceChart } from '@/components/charts/VarianceChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
@@ -157,7 +153,7 @@ export function simulateScenarioComparison(
 
 export default function ScenarioBuilderPage() {
   const { scenarios, createScenario } = useScenarioStore();
-  const { entries } = useGLStore();
+
   const _navigate = useNavigate();
 
   const [growthRate, setGrowthRate] = useState(10);
@@ -275,7 +271,7 @@ export default function ScenarioBuilderPage() {
           grossProfit: scenarioImpact.newRevenue - scenarioImpact.newCogs,
           netIncome: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
           ebitda: scenarioImpact.newRevenue - scenarioImpact.newCogs - scenarioImpact.newOpex,
-        } as any,
+        },
         createdBy: 'user',
         createdByName: 'User',
       } as unknown as Parameters<typeof createScenario>[0]);
@@ -553,7 +549,7 @@ export default function ScenarioBuilderPage() {
                   <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                    formatter={(v: any) => formatCurrency(v)}
+                    formatter={(v) => formatCurrency(Number(v))}
                   />
                   <Legend />
                   <Bar dataKey="base" fill="#64748b" name="Base" />

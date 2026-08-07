@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -13,7 +12,7 @@ import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 // canonical import. Uses default 7-day cap, "Just now" capitalization.
 import { formatRelativeTimeLegacy as formatRelativeTime } from '@/engines/temporal';
 
-function formatCurrency(n: number): string {
+function _formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

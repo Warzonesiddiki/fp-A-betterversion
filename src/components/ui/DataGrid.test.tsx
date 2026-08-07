@@ -1,243 +1,95 @@
 /**
  * @vitest-environment jsdom
+ *
+ * These tests exercise the REAL DataGrid component (no self-mock).
+ * Only the ag-grid library wrapper (ag-grid-react) and its module registry
+ * (ag-grid-community) are mocked, because AG Grid needs real layout
+ * measurement that jsdom cannot provide. The mock preserves the public
+ * AgGridReact API surface (ref.current.api, props) so every DataGrid code
+ * path — hooks, TDZ ordering, toolbar, find/replace, column visibility,
+ * row grouping, a11y attributes, status announcements — runs for real.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
-// Mock the entire DataGrid component to avoid TDZ issue with updateSelectionStats
-// The component has a bug where useCallback references updateSelectionStats before its const declaration
-// This works in Vite production builds but throws in Vitest's React dev mode
-vi.mock('./DataGrid', async () => {
-  const { forwardRef, useState, useCallback, useEffect } = await import('react');
-
-  // Re-implement a testable version of DataGrid that matches the public API
-  const DataGrid = forwardRef(function DataGridMock(
+// Mock ag-grid-react (library only — DataGrid itself is NOT mocked)
+vi.mock('ag-grid-react', () => ({
+  AgGridReact: React.forwardRef(function AgGridReactMock(
     props: {
-      rows: Record<string, unknown>[];
-      columns: {
-        field: string;
-        headerName: string;
-        type?: string;
-        width?: number;
-        editable?: boolean;
-        pinned?: string;
-        flex?: number;
-        valueFormatter?: (p: { value: unknown }) => string;
-        cellRenderer?: unknown;
-      }[];
-      onCellValueChanged?: (e: unknown) => void;
-      onSelectionChanged?: (rows: Record<string, unknown>[]) => void;
-      onUndo?: () => void;
-      onRedo?: () => void;
+      rowData?: Record<string, unknown>[];
+      columnDefs?: unknown[];
+      onCellClicked?: (e: {
+        rowIndex: number;
+        column: { getColId: () => string };
+        value: unknown;
+      }) => void;
+      onCellValueChanged?: (e: {
+        rowIndex: number;
+        colDef: { field: string };
+        newValue: unknown;
+      }) => void;
+      onCellEditingStarted?: () => void;
+      onCellEditingStopped?: () => void;
       gridOptions?: Record<string, unknown>;
-      loading?: boolean;
-      className?: string;
-      enableFindReplace?: boolean;
-      enableExport?: boolean;
-      enableColumnHiding?: boolean;
-      enableRowGrouping?: boolean;
     },
-    _ref: unknown
+    ref: unknown
   ) {
-    const {
-      rows,
-      columns,
-      loading = false,
-      className,
-      enableFindReplace = false,
-      enableExport = false,
-      enableColumnHiding = false,
-      enableRowGrouping = false,
-    } = props;
-
-    const [showFindReplace, setShowFindReplace] = useState(false);
-    const [findText, setFindText] = useState('');
-    const [replaceText, setReplaceText] = useState('');
-    const [showColumnMenu, setShowColumnMenu] = useState(false);
-    const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
-    const [rowCountAnnouncement, setRowCountAnnouncement] = useState<string>('');
-
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'f' && enableFindReplace) {
-          e.preventDefault();
-          setShowFindReplace(true);
-          return;
+    const api = {
+      getSelectedRows: vi.fn().mockReturnValue([]),
+      getSelectedNodes: vi.fn().mockReturnValue([]),
+      setFocusedCell: vi.fn(),
+      startEditingCell: vi.fn(),
+      setGridOption: vi.fn(),
+      getDisplayedRowAtIndex: vi.fn().mockReturnValue(null),
+      forEachNode: vi.fn(
+        (
+          cb: (node: {
+            data: Record<string, unknown>;
+            rowIndex: number;
+            setDataValue: (field: string, value: unknown) => void;
+          }) => void
+        ) => {
+          (props.rowData || []).forEach((row, i) => {
+            cb({
+              data: row,
+              rowIndex: i,
+              setDataValue: vi.fn(),
+            });
+          });
         }
-        if (e.key === 'Escape') {
-          if (showFindReplace) {
-            setShowFindReplace(false);
-            return;
-          }
-          if (showColumnMenu) {
-            setShowColumnMenu(false);
-            return;
-          }
-        }
-      },
-      [showFindReplace, showColumnMenu, enableFindReplace]
-    );
-
-    const visibleColumns = columns.filter((c) => !hiddenColumns.has(c.field));
-
-    // Row count announcement effect (mirrors real DataGrid)
-    useEffect(() => {
-      if (loading) setRowCountAnnouncement('Loading data...');
-      else if (rows.length === 0) setRowCountAnnouncement('No rows to display');
-      else
-        setRowCountAnnouncement(
-          `Table updated: ${rows.length} row${rows.length === 1 ? '' : 's'} displayed`
-        );
-    }, [rows.length, loading]);
-
+      ),
+      applyColumnState: vi.fn(),
+    };
+    if (ref && typeof ref === 'object') {
+      (ref as { current: { api: typeof api } }).current = { api };
+    }
     return (
-      <div
-        className={className}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        role="grid"
-        aria-label="Financial Data Grid"
-        aria-rowcount={rows.length}
-        aria-colcount={columns.length}
-        aria-busy={loading}
-      >
-        {(enableFindReplace || enableExport || enableColumnHiding || enableRowGrouping) && (
-          <div>
-            {enableFindReplace && (
-              <button
-                onClick={() => setShowFindReplace(!showFindReplace)}
-                aria-label="Find and Replace"
-                title="Find & Replace (Ctrl+F)"
-              >
-                Find
-              </button>
-            )}
-            {enableExport && (
-              <button aria-label="Export to CSV" title="Export CSV">
-                Export
-              </button>
-            )}
-            {enableColumnHiding && (
-              <div>
-                <button
-                  onClick={() => setShowColumnMenu(!showColumnMenu)}
-                  aria-label="Show or hide columns"
-                  aria-expanded={showColumnMenu}
-                >
-                  Columns
-                </button>
-                {showColumnMenu && (
-                  <div role="menu">
-                    {columns.map((col) => (
-                      <div
-                        key={col.field}
-                        role="menuitemcheckbox"
-                        aria-checked={!hiddenColumns.has(col.field)}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={!hiddenColumns.has(col.field)}
-                          onChange={() => {
-                            setHiddenColumns((prev) => {
-                              const next = new Set(prev);
-                              if (next.has(col.field)) next.delete(col.field);
-                              else next.add(col.field);
-                              return next;
-                            });
-                          }}
-                        />
-                        <span>{col.headerName}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-            {enableRowGrouping && (
-              <div>
-                <button
-                  onClick={() => setShowColumnMenu(!showColumnMenu)}
-                  aria-label="Group rows by column"
-                >
-                  Group
-                </button>
-                {showColumnMenu && (
-                  <div role="menu">
-                    <button role="menuitem" onClick={() => setShowColumnMenu(false)}>
-                      No Grouping
-                    </button>
-                    {columns.map((col) => (
-                      <button
-                        key={col.field}
-                        role="menuitem"
-                        onClick={() => setShowColumnMenu(false)}
-                      >
-                        Group by {col.headerName}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+      <div data-testid="ag-grid-mock" data-row-count={props.rowData?.length || 0}>
+        {(props.rowData || []).map((row, i) => (
+          <div key={i} data-testid={`grid-row-${i}`}>
+            {Object.entries(row).map(([key, val]) => (
+              <span key={key} data-field={key}>
+                {String(val ?? '')}
+              </span>
+            ))}
           </div>
-        )}
-
-        {showFindReplace && enableFindReplace && (
-          <div role="search" aria-label="Find and Replace">
-            <input
-              type="text"
-              value={findText}
-              onChange={(e) => setFindText(e.target.value)}
-              placeholder="Find..."
-              aria-label="Find text"
-            />
-            <button aria-label="Search">Search</button>
-            <input
-              type="text"
-              value={replaceText}
-              onChange={(e) => setReplaceText(e.target.value)}
-              placeholder="Replace..."
-              aria-label="Replace text"
-            />
-            <button aria-label="Replace all">Replace All</button>
-            <button onClick={() => setShowFindReplace(false)} aria-label="Close find and replace">
-              ✕
-            </button>
-          </div>
-        )}
-
-        <div data-testid="ag-grid-mock" data-row-count={rows.length}>
-          {rows.map((row, i) => (
-            <div key={i} data-testid={`grid-row-${i}`}>
-              {visibleColumns.map((col) => (
-                <span key={col.field} data-field={col.field}>
-                  {String(row[col.field] ?? '')}
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        <div
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-          data-testid="row-count-announcement"
-          className="sr-only"
-        >
-          {rowCountAnnouncement}
-        </div>
-        {loading && (
-          <div role="status" aria-live="polite">
-            <span>Loading Grid...</span>
-          </div>
-        )}
+        ))}
       </div>
     );
-  });
+  }),
+}));
 
-  return { DataGrid };
+// Mock ag-grid-community module registration (library only)
+vi.mock('ag-grid-community', async () => {
+  const actual = await vi.importActual('ag-grid-community');
+  return {
+    ...actual,
+    ModuleRegistry: {
+      registerModules: vi.fn(),
+    },
+    AllCommunityModule: {},
+  };
 });
 
 import { DataGrid } from './DataGrid';
@@ -406,8 +258,6 @@ describe('DataGrid', () => {
       // DataGrid sets rowSelection: { mode: 'multiRow' }.
       // It does NOT set cellSelection (which would enable cell-range selection and its handle).
       // This is a structural guarantee that no drag-fill handle is exposed.
-      // Verified via source inspection — DataGrid.tsx line ~261-265.
-      // (The mock does not enforce this; the real component is the source of truth.)
       render(<DataGrid rows={mockRows} columns={mockColumns} />);
       const grid = screen.getByRole('grid');
       // No cell range selection UI elements

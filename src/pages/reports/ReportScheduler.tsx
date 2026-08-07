@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { ReportScheduler as SchedulerComponent } from '@/components/reports/ReportScheduler';
-import { FileText, Calendar, HelpCircle } from 'lucide-react';
+import { Calendar, HelpCircle } from 'lucide-react';
 
 const HELP_SECTIONS = [
   {

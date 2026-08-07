@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -247,8 +246,11 @@ export function CurrencyTranslation() {
         <CardContent className="p-4">
           <div className="flex items-center gap-4 flex-wrap">
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Entity</label>
+              <label htmlFor="entity" className="block text-xs text-slate-500 mb-1">
+                Entity
+              </label>
               <select
+                id="entity"
                 value={entityCurrency}
                 onChange={(e) => setEntityCurrency(e.target.value)}
                 className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white"
@@ -262,8 +264,11 @@ export function CurrencyTranslation() {
             </div>
             <ArrowRight className="h-5 w-5 text-slate-500 mt-4" />
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Parent</label>
+              <label htmlFor="parent" className="block text-xs text-slate-500 mb-1">
+                Parent
+              </label>
               <select
+                id="parent"
                 value={parentCurrency}
                 onChange={(e) => setParentCurrency(e.target.value)}
                 className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-white"
@@ -276,8 +281,11 @@ export function CurrencyTranslation() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Period</label>
+              <label htmlFor="period" className="block text-xs text-slate-500 mb-1">
+                Period
+              </label>
               <input
+                id="period"
                 type="text"
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}

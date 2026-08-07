@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { PersistStorage } from 'zustand/middleware';
 import { CHUNK_SIZE } from './storageConstants';
 import { createStoragePool } from '../workers/worker-pool';
 import {
@@ -80,12 +78,29 @@ export interface StorageMetadata {
   timestamp: number;
 }
 
-export function wrapChunkedStorage(storage: PersistStorage<any>): PersistStorage<any> {
+/**
+ * A raw key-value storage adapter. Values are arbitrary serializable data
+ * (strings pass through, objects are JSON-serialized by the backends); this
+ * is the runtime contract of the IndexedDB/SQLite/localStorage adapters,
+ * which is wider than zustand's PersistStorage<StorageValue<S>> envelope.
+ */
+export interface RawStorage {
+  getItem(name: string): Promise<unknown>;
+  setItem(name: string, value: unknown): Promise<void>;
+  removeItem(name: string): Promise<void>;
+}
+
+export function wrapChunkedStorage(storage: RawStorage): RawStorage {
   return {
     getItem: async (name) => {
       const meta = await storage.getItem(name);
 
-      if (meta && typeof meta === 'object' && (meta as any)._isChunked) {
+      if (
+        meta &&
+        typeof meta === 'object' &&
+        '_isChunked' in meta &&
+        (meta as StorageMetadata)._isChunked
+      ) {
         const { chunkCount } = meta as unknown as StorageMetadata;
         const chunkPromises = [];
 
@@ -103,8 +118,12 @@ export function wrapChunkedStorage(storage: PersistStorage<any>): PersistStorage
         // store as empty. Missing slices are a corrupt backup, not "no data".
         const chunks = records.map((record, index) => {
           if (typeof record === 'string') return record;
-          if (record && typeof record === 'object' && typeof (record as any).value === 'string') {
-            return (record as any).value as string;
+          if (
+            record &&
+            typeof record === 'object' &&
+            typeof (record as { value?: unknown }).value === 'string'
+          ) {
+            return (record as { value: string }).value;
           }
           throw new Error(
             `Chunked store "${name}" is corrupt: slice ${index} of ${chunkCount} is missing or malformed`
@@ -130,12 +149,12 @@ export function wrapChunkedStorage(storage: PersistStorage<any>): PersistStorage
         };
 
         // Store metadata first
-        await storage.setItem(name, metadata as any);
+        await storage.setItem(name, metadata);
 
         // Store chunks in parallel
         await Promise.all(
           result.chunks.map((chunk: string, i: number) =>
-            storage.setItem(`${name}:chunk:${i}`, { value: chunk } as any)
+            storage.setItem(`${name}:chunk:${i}`, { value: chunk })
           )
         );
       } else {
@@ -156,7 +175,12 @@ export function wrapChunkedStorage(storage: PersistStorage<any>): PersistStorage
       const meta = await storage.getItem(name);
       await storage.removeItem(name);
 
-      if (meta && typeof meta === 'object' && (meta as any)._isChunked) {
+      if (
+        meta &&
+        typeof meta === 'object' &&
+        '_isChunked' in meta &&
+        (meta as StorageMetadata)._isChunked
+      ) {
         const { chunkCount } = meta as unknown as StorageMetadata;
         for (let i = 0; i < chunkCount; i++) {
           await storage.removeItem(`${name}:chunk:${i}`);

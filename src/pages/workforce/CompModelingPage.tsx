@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -10,8 +8,6 @@ import { Download, BarChart3, DollarSign, Users, TrendingUp } from 'lucide-react
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -262,7 +258,7 @@ export default function CompModelingPage() {
                   border: '1px solid #334155',
                   borderRadius: 8,
                 }}
-                formatter={(v: any) => formatCurrency(v)}
+                formatter={(v) => formatCurrency(Number(v))}
               />
               <Legend />
               <Line dataKey="current" name="Current Path" stroke="#64748b" strokeDasharray="5 5" />

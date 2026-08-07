@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: any) => children,
-  BarChart: (props: any) => <div data-testid="bar-chart" />,
+  BarChart: (_props: any) => <div data-testid="bar-chart" />,
   Bar: () => null,
   XAxis: () => null,
   YAxis: () => null,

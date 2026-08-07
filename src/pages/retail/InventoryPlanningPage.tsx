@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react';
-import {
-  Package,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  AlertTriangle,
-  BarChart3,
-  Download,
-  RefreshCw,
-  Clock,
-  Truck,
-} from 'lucide-react';
+import { Package, BarChart3, Download, Truck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -27,8 +15,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  AreaChart,
-  Area,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';

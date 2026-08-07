@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -391,8 +390,14 @@ export default function ConsolidationDashboard() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--text-secondary)]">Name</label>
+                    <label
+                      htmlFor="name"
+                      className="text-xs font-medium text-[var(--text-secondary)]"
+                    >
+                      Name
+                    </label>
                     <Input
+                      id="name"
                       required
                       placeholder="e.g. US Parent"
                       value={formData.name}
@@ -400,8 +405,14 @@ export default function ConsolidationDashboard() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--text-secondary)]">Code</label>
+                    <label
+                      htmlFor="code"
+                      className="text-xs font-medium text-[var(--text-secondary)]"
+                    >
+                      Code
+                    </label>
                     <Input
+                      id="code"
                       required
                       maxLength={8}
                       placeholder="e.g. US001"
@@ -413,20 +424,28 @@ export default function ConsolidationDashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--text-secondary)]">
+                    <label
+                      htmlFor="currency"
+                      className="text-xs font-medium text-[var(--text-secondary)]"
+                    >
                       Currency
                     </label>
                     <Select
+                      id="currency"
                       options={currencies.map((c) => ({ value: c, label: c }))}
                       value={formData.currency}
                       onChange={(val) => setFormData({ ...formData, currency: val })}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--text-secondary)]">
+                    <label
+                      htmlFor="country"
+                      className="text-xs font-medium text-[var(--text-secondary)]"
+                    >
                       Country
                     </label>
                     <Input
+                      id="country"
                       placeholder="e.g. United States"
                       value={formData.country}
                       onChange={(e) => setFormData({ ...formData, country: e.target.value })}
@@ -436,10 +455,14 @@ export default function ConsolidationDashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--text-secondary)]">
+                    <label
+                      htmlFor="parent-entity"
+                      className="text-xs font-medium text-[var(--text-secondary)]"
+                    >
                       Parent Entity
                     </label>
                     <Select
+                      id="parent-entity"
                       options={[
                         { value: '', label: 'No Parent' },
                         ...entities
@@ -451,10 +474,14 @@ export default function ConsolidationDashboard() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--text-secondary)]">
+                    <label
+                      htmlFor="ownership"
+                      className="text-xs font-medium text-[var(--text-secondary)]"
+                    >
                       Ownership %
                     </label>
                     <Input
+                      id="ownership"
                       type="number"
                       min={0}
                       max={100}

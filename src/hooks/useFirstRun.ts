@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { masterStorage } from '@/utils/masterStorage';
 
@@ -30,13 +29,13 @@ export function useFirstRun() {
 
   const completeSetup = async () => {
     localStorage.setItem('finplan-setup-complete', 'true');
-    await masterStorage.setItem('finplan-setup-complete', '"true"' as any);
+    await masterStorage.setItem('finplan-setup-complete', '"true"');
     setIsFirstRun(false);
   };
 
   const skipSetup = async () => {
     localStorage.setItem('finplan-setup-complete', 'true');
-    await masterStorage.setItem('finplan-setup-complete', '"true"' as any);
+    await masterStorage.setItem('finplan-setup-complete', '"true"');
     setIsFirstRun(false);
   };
 

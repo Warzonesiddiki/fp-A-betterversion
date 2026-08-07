@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest';
 import type { WorkerResponse, ConsolidationResponse, ConsolidationRequest } from './types';
 
@@ -103,7 +102,7 @@ describe('consolidation.worker', () => {
     return result?.payload as ConsolidationResponse | undefined;
   }
 
-  function getLastError(): string | undefined {
+  function _getLastError(): string | undefined {
     const errorMsg = postMessages.find((m) => m.type === 'error');
     return errorMsg?.error;
   }

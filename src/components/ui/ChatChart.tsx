@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from 'react';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import {
@@ -81,7 +80,7 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
                 <Cell key={i} fill={COLORS[i % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(v: any) => formatValue(v)} />
+            <Tooltip formatter={(v) => formatValue(Number(v))} />
           </PieChart>
         </ResponsiveContainer>
       ) : chartType === 'line' ? (
@@ -90,7 +89,7 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} />
             <YAxis tickFormatter={formatValue} tick={{ fontSize: 11 }} />
-            <Tooltip formatter={(v: any) => formatValue(v)} />
+            <Tooltip formatter={(v) => formatValue(Number(v))} />
             <Line
               type="monotone"
               dataKey="value"
@@ -107,7 +106,7 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} />
             <YAxis tickFormatter={formatValue} tick={{ fontSize: 11 }} />
-            <Tooltip formatter={(v: any) => formatValue(v)} />
+            <Tooltip formatter={(v) => formatValue(Number(v))} />
             <Area
               type="monotone"
               dataKey="value"
@@ -123,7 +122,7 @@ export function ChatChart({ result, height = 240 }: ChatChartProps) {
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} />
             <YAxis tickFormatter={formatValue} tick={{ fontSize: 11 }} />
-            <Tooltip formatter={(v: any) => formatValue(v)} />
+            <Tooltip formatter={(v) => formatValue(Number(v))} />
             <Bar dataKey="value" radius={[4, 4, 0, 0]}>
               {chartData.map((_, i) => (
                 <Cell key={i} fill={COLORS[i % COLORS.length]} />

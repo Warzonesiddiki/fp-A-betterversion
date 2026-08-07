@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { memo, useCallback, useMemo, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from './Button';
@@ -108,12 +107,22 @@ export const ApprovalQueue = memo(function ApprovalQueue({
             </select>
           </div>
           <div>
-            <label className="text-xs font-medium">Date</label>
-            <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+            <label htmlFor="date" className="text-xs font-medium">
+              Date
+            </label>
+            <Input
+              id="date"
+              type="date"
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+            />
           </div>
           <div>
-            <label className="text-xs font-medium">Requester</label>
+            <label htmlFor="requester" className="text-xs font-medium">
+              Requester
+            </label>
             <Input
+              id="requester"
               value={filterRequester}
               onChange={(e) => setFilterRequester(e.target.value)}
               placeholder="Search..."

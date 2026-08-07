@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -8,16 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { Download, BarChart4, Users, TrendingDown, DollarSign } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { sumMoney, roundTo } from '@/utils/money';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
 

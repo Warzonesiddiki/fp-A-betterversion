@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * API Integration Framework - Salesforce Connector
  *
@@ -32,7 +31,6 @@ import type {
   ExternalAccount,
   ExternalBudget,
   ExternalInvoice,
-  ExternalInvoiceLineItem,
   ExternalTransaction,
   OAuth2Tokens,
   PaginatedResponse,
@@ -158,13 +156,6 @@ interface SfForecast {
   ForecastCategory: string | null;
 }
 
-/** Salesforce API error envelope. */
-interface SfErrorResponse {
-  errorCode: string;
-  message: string;
-  fields?: string[];
-}
-
 // ─── Stage → ForecastCategory mapping ──────────────────────────────────────
 
 /**
@@ -213,7 +204,7 @@ export class SalesforceConnector extends BaseConnector {
       throw new Error('OAuth2 configuration required');
     }
 
-    const credentials = btoa(`${oauthConfig.clientId}:${oauthConfig.clientSecret}`);
+    const _credentials = btoa(`${oauthConfig.clientId}:${oauthConfig.clientSecret}`);
 
     const response = await this.client.post<SfTokenResponse>(
       'https://login.salesforce.com/services/oauth2/token',

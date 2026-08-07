@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import type { ConditionalFormatRule, ColorScaleType } from '@/engines/ConditionalFormattingEngine';
 
 interface ColorScaleOptionsProps {
@@ -10,10 +9,14 @@ export function ColorScaleOptions({ rule, onChange }: ColorScaleOptionsProps) {
   return (
     <div className="space-y-3" role="region" aria-label="ColorScaleOptions">
       <div>
-        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+        <label
+          htmlFor="scale-type"
+          className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+        >
           Scale Type
         </label>
         <select
+          id="scale-type"
           value={rule.colorScale?.type ?? '2-color'}
           onChange={(e) =>
             onChange({
@@ -34,8 +37,14 @@ export function ColorScaleOptions({ rule, onChange }: ColorScaleOptionsProps) {
       </div>
       <div className="flex gap-3">
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Min</label>
+          <label
+            htmlFor="min"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
+            Min
+          </label>
           <input
+            id="min"
             type="color"
             value={rule.colorScale?.minColor ?? '#fee2e2'}
             onChange={(e) =>
@@ -49,10 +58,14 @@ export function ColorScaleOptions({ rule, onChange }: ColorScaleOptionsProps) {
         </div>
         {rule.colorScale?.type === '3-color' && (
           <div>
-            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="mid"
+              className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+            >
               Mid
             </label>
             <input
+              id="mid"
               type="color"
               value={rule.colorScale?.midColor ?? '#fef9c3'}
               onChange={(e) =>
@@ -66,8 +79,14 @@ export function ColorScaleOptions({ rule, onChange }: ColorScaleOptionsProps) {
           </div>
         )}
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Max</label>
+          <label
+            htmlFor="max"
+            className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+          >
+            Max
+          </label>
           <input
+            id="max"
             type="color"
             value={rule.colorScale?.maxColor ?? '#dcfce7'}
             onChange={(e) =>

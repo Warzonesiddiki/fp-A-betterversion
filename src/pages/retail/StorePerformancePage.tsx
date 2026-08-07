@@ -1,18 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from 'react';
-import {
-  Store,
-  TrendingUp,
-  DollarSign,
-  Users,
-  Target,
-  BarChart3,
-  Download,
-  Filter,
-  Clock,
-  Award,
-} from 'lucide-react';
+import { Store, DollarSign, Users, Download, Award } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -234,7 +221,7 @@ export default function StorePerformancePage() {
                   />
                   <Tooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                    formatter={(v: any) => `$${v.toLocaleString()}`}
+                    formatter={(v) => `$${Number(v).toLocaleString()}`}
                   />
                   <Legend verticalAlign="top" align="right" />
                   <Area

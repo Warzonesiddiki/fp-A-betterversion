@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -179,8 +178,14 @@ export default function BudgetCreatePage() {
           <CardContent className="p-6 space-y-4">
             <h3 className="font-semibold">Budget Details</h3>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Budget Name</label>
+              <label
+                htmlFor="budget-name"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
+                Budget Name
+              </label>
               <Input
+                id="budget-name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. FY2025 Annual Operating Budget"
@@ -189,8 +194,14 @@ export default function BudgetCreatePage() {
               {formErrors.name && <p className="text-xs text-red-400 mt-1">{formErrors.name}</p>}
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Fiscal Year</label>
+              <label
+                htmlFor="fiscal-year"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
+                Fiscal Year
+              </label>
               <Input
+                id="fiscal-year"
                 type="number"
                 value={form.fiscalYear}
                 onChange={(e) =>
@@ -202,16 +213,22 @@ export default function BudgetCreatePage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Base Currency</label>
+              <label
+                htmlFor="base-currency"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
+                Base Currency
+              </label>
               <Select
+                id="base-currency"
                 options={[{ value: 'USD', label: 'USD — US Dollar' }]}
                 value={form.baseCurrency}
                 onChange={(v) => setForm({ ...form, baseCurrency: v })}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Budget Method</label>
-              <div className="flex gap-2">
+              <span className="block text-xs font-medium text-slate-400 mb-1">Budget Method</span>
+              <div className="flex gap-2" role="group" aria-label="Budget Method">
                 <button
                   type="button"
                   onClick={() => setForm({ ...form, budgetMethod: 'incremental' })}
@@ -239,10 +256,14 @@ export default function BudgetCreatePage() {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="description-optional"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
                 Description (optional)
               </label>
               <textarea
+                id="description-optional"
                 className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -273,6 +294,7 @@ export default function BudgetCreatePage() {
                 return (
                   <label
                     key={a.id}
+                    aria-label={`${a.code} ${a.name}`}
                     className={
                       'flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ' +
                       (selected

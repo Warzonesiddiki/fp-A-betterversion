@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // SECURITY UTILITIES TESTS
 // =============================================================================
@@ -521,7 +520,7 @@ describe('CSRF Protection', () => {
       // After clearing, getCSRFToken should generate a new one
       const token1 = getCSRFToken();
       clearCSRFToken();
-      const token2 = getCSRFToken();
+      const _token2 = getCSRFToken();
       // They could theoretically be the same, but extremely unlikely
       // More importantly, validateCSRFToken should fail with old token
       expect(validateCSRFToken(token1)).toBe(false);

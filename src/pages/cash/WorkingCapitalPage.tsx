@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -7,15 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
-import {
-  Download,
-  FileText,
-  Table as TableIcon,
-  DollarSign,
-  TrendingUp,
-  Scale,
-  Clock,
-} from 'lucide-react';
+import { FileText, Table as TableIcon, DollarSign, TrendingUp, Scale, Clock } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   addMoney,
@@ -228,7 +218,7 @@ export default function WorkingCapitalPage() {
       key: 'amount',
       header: 'Amount',
       align: 'right',
-      render: (r) => formatCurrency(r.amount),
+      render: (_, r) => formatCurrency(r.amount),
       sortable: true,
     },
     { key: 'ratio', header: 'Type', sortable: true },
@@ -236,7 +226,7 @@ export default function WorkingCapitalPage() {
       key: 'days',
       header: 'Days',
       align: 'right',
-      render: (r) => (r.days > 0 ? `${r.days} days` : '-'),
+      render: (_, r) => (r.days > 0 ? `${r.days} days` : '-'),
       sortable: true,
     },
   ];
@@ -333,7 +323,7 @@ export default function WorkingCapitalPage() {
                 tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
-                formatter={(v: any) => formatCurrency(v)}
+                formatter={(v) => formatCurrency(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

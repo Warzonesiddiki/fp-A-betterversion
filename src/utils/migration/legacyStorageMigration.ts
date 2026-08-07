@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createLogger } from '@/utils/logger';
-import { indexedDBStorage } from '@/utils/indexedDBStorage';
+import { indexedDBStorage, openDB } from '@/utils/indexedDBStorage';
 import { sqlJsStorage } from '@/utils/sqlJsStorage';
 import { tauriSqlStorage, isTauri } from '@/utils/tauriSqlStorage';
 import { masterStorage } from '@/utils/masterStorage';
@@ -57,7 +56,7 @@ export async function detectLegacyBrowserData(): Promise<LegacyDetectionResult> 
       sources.push('indexeddb');
       // Rough estimate: try to count keys
       try {
-        const db = (await (indexedDBStorage as any).openDB?.()) || null;
+        const db = await openDB();
         if (db) {
           const tx = db.transaction('stores', 'readonly');
           const countReq = tx.objectStore('stores').count();
@@ -135,8 +134,8 @@ export async function detectLegacyBrowserData(): Promise<LegacyDetectionResult> 
 /**
  * Reads all known persisted store keys using the current browser storage.
  */
-async function readAllPersistedKeys(): Promise<Record<string, any>> {
-  const result: Record<string, any> = {};
+async function readAllPersistedKeys(): Promise<Record<string, unknown>> {
+  const result: Record<string, unknown> = {};
   const keysToCheck = Object.values(PERSIST_KEYS);
 
   for (const key of keysToCheck) {
@@ -175,7 +174,7 @@ async function readAllPersistedKeys(): Promise<Record<string, any>> {
 /**
  * Computes a simple checksum of the serialized data.
  */
-function computeChecksum(data: Record<string, any>): string {
+function computeChecksum(data: Record<string, unknown>): string {
   try {
     const serialized = JSON.stringify(data, Object.keys(data).sort());
     // Simple non-crypto checksum for evidence (real SHA256 would require subtle crypto in prod)
@@ -255,7 +254,7 @@ export async function performLegacyToTauriMigration(
     };
 
     try {
-      await masterStorage.setItem(MIGRATION_METADATA_KEY, metadata as any);
+      await masterStorage.setItem(MIGRATION_METADATA_KEY, metadata);
     } catch (err) {
       result.errors.push(`Failed to write migration metadata: ${String(err)}`);
     }
@@ -302,7 +301,7 @@ export async function getCurrentStorageBackend(): Promise<
 export async function hasCompletedMigration(): Promise<boolean> {
   try {
     const meta = await masterStorage.getItem(MIGRATION_METADATA_KEY);
-    return !!meta && typeof meta === 'object' && 'completedAt' in (meta as any);
+    return !!meta && typeof meta === 'object' && 'completedAt' in meta;
   } catch {
     return false;
   }

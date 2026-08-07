@@ -1,11 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  VersionControlEngine,
-  type CellChange,
-  type MergeConflict,
-  type SerializedVersionControlState,
-} from './VersionControlEngine';
+import { VersionControlEngine, type CellChange } from './VersionControlEngine';
 
 // =============================================================================
 // VERSION CONTROL ENGINE TESTS — 50+ tests

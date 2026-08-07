@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
-import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import 'react';
+import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useFocusRestore } from './useFocusRestore';
 

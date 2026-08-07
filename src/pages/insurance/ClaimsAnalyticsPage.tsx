@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { BarChart3, Download, Filter, PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -120,14 +119,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'Open'
+          String(v) === 'Open'
             ? 'bg-blue-100 text-blue-700'
-            : v === 'In Review'
+            : String(v) === 'In Review'
               ? 'bg-amber-100 text-amber-700'
               : 'bg-green-100 text-green-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -137,14 +136,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'High'
+          String(v) === 'High'
             ? 'bg-red-100 text-red-700'
-            : v === 'Medium'
+            : String(v) === 'Medium'
               ? 'bg-amber-100 text-amber-700'
               : 'bg-green-100 text-green-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -288,7 +287,7 @@ export default function ClaimsAnalyticsPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: any) => `${v}%`} />
+                  <Tooltip formatter={(v) => `${String(v)}%`} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
