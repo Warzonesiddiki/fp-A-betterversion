@@ -1,163 +1,78 @@
-# HANDOVER PROMPT — FinPlan Pro (fp-A-betterversion)
+# HANDOVER PROMPT — FinPlan Pro FP&A (Session 4)
 
-**Date:** 2026-07-23  
-**Branch:** `arena/019f8bc0-fp-a-betterversion`  
-**Session Context:** Arena.ai Agent Mode (YOLO autonomous execution)
-
----
-
-## ROLE & MANDATE
-
-You are a **Senior Full-Stack AI Engineer and Autonomous Project Lead** operating in **YOLO mode**.
-
-Your only job is to complete **FinPlan Pro** following the **zero-compromise** master task list.
-
-**Single Source of Truth:** `COMPLETION_TASKLIST_ZERO_COMPROMISE.md`
-
-You must:
-- Never deviate from this document.
-- Only mark a checkbox ✅ when the **exact gate** is verifiably passed.
-- Write production-ready code only (no `...`, no `// TODO`, no stubs).
-- After every meaningful change, run:
-  - `node node_modules/typescript/bin/tsc --noEmit`
-  - `npm run build`
-  - `npm run lint -- --max-warnings=0`
-- Create progress reports in `reports/` (e.g. `phase1-1.2.3-complete-2026-07-23.md`).
-- Preserve exact file paths, component names, store names, and error messages.
+**Repo:** `Warzonesiddiki/fp-A-betterversion`
+**Previous working branch (PR #41, OPEN):** `arena/019fdb06-fp-a-betterversion` — **PR #41** "Forensic audit v1.0.0 (20-section): residual leftovers + P0/P1 remediations"
+**Base:** `main` @ `b426149` (PR #40 merge). **Working dir:** `/home/user/fp-A-betterversion`
+**User style:** YOLO autonomous, zero-compromise, ship green gates every turn. Persona: ARBITER — every claim needs evidence.
 
 ---
 
-## CURRENT STATE (2026-07-23)
+## 1. WORKFLOW INVARIANTS — NEVER BREAK (unchanged)
 
-### Phase Status Summary
+1. `node_modules` disappears between sandbox restarts — always `npm ci --no-audit --no-fund --legacy-peer-deps` first. It can also vanish **mid-session** (happened in S3 after adding a devDep) — rerun `npm ci` and re-run gates.
+2. Git refs can silently reset — after npm ci, `git fetch origin && git log --oneline -3`; if session commits are missing locally but exist on origin, `git fetch origin <branch> && git reset --hard FETCH_HEAD`.
+3. Post-commit hook auto-runs `scripts/update-tracker.mjs` + auto-commits PROGRESS_TRACKER.html. The tracker is now **fixed** (see §2) — do not re-break it: `countFiles` excludes tests, stat-sub regex consumes the whole div, delta pattern tolerates `+-`.
+4. Ratchet: `timeout 90 node scripts/money-adoption.mjs` — frontend ≥229/910, rawToFixedSites 0 (frontend AND server).
+5. GAP-7: do NOT touch `.github/workflows/**`.
+6. No raw `.toFixed()` in financial paths; exact math via `@/utils/money`.
+7. Git: `git commit --no-verify`, `git push origin HEAD --no-verify -u`. Work ONLY on the session branch.
+8. CI runner starvation: judge on jobs that executed + local gates (PR #40/#41 precedent).
 
-| Phase | Status          | Completed |
-|-------|------------------|---------|
-| **Phase 0** | 🟡 Mostly Complete | 5/6 (0.4 partial) |
-| **Phase 1** | 🟡 In Progress    | 1.1.1, 1.1.2, 1.1.3, 1.1.5, 1.2.1, 1.2.2 |
-| **Phase 2–11** | 🔴 Not Started   | 0% |
+## 2. WHAT PR #41 SHIPPED (verify before building on it)
 
-### Phase 1 — Detailed Status
+| Area | State |
+|---|---|
+| **P0 fake report data** | `ReportBookEngine.generateMockData` (hardcoded rows) + `ReportGenerator`/`BookBurstBuilder` (setTimeout fakes) GONE. New `src/engines/reportDataBuilder.ts` computes P&L/BS/CF/BvA from real GL+budget (money-exact). `/reports/book-builder` wired to glStore/budgetStore/entityStore. Dead components deleted (BookBurst*, ReportGenerator, BoardPackGenerator). |
+| **P0 CSPRNG sweep (CWE-338)** | 80+ `Math.random()` security IDs → `src/utils/cryptoId.ts` (`crypto.randomUUID`, throws rather than degrade). Remaining Math.random = spreadsheet RAND, MC RNGs, jitter, demo seeding. |
+| **P0 fake preview** | ReportDesigner now resolves metric cells from cube store (was `Math.random()*100000`). |
+| **P1 skipped tests** | 8 unit + 1 a11y remediated (CopilotSidebar tracking, masterStorage.stress ×3 rewritten on sqlJsStorage mock, indexedDB via `fake-indexeddb` devDep, ScenarioBuilder **real worker-backed Monte Carlo** added, OnboardingWizard a11y-07). Remaining skip: q5-2 perf (E2E-covered). |
+| **P2 claims truth** | Engines **181/181/0 orphans** (was 190/183/7 — benchmark fixtures + type-only miscounted). Coverage claim corrected (≥80% → 50 floor; **measured engine layer 71.3% stmts / 73.4% lines**). `verify-readme-stats.mjs` hardened (kebab-insensitive, excludes `.benchmark.`). |
+| **P2 tracker heal** | `update-tracker.mjs`: test files excluded from source breakdown; stat-sub whole-div replacement (corruption healed, idempotent). |
+| **P2 fiscal periods** | 22 sector dashboards now use `src/utils/fiscalPeriods.ts` (`buildFiscalPeriods` from real `FiscalCalendar` + org settings) — no more hardcoded demo lists. |
+| **P2 hygiene** | Deleted BMAD tree (`_bmad/`, `_bmad-output/`), `agents/`, `plan and advice/`, `scripts/perf/*.txt`, stale MEASURED_RESULTS.md, `reports/junk/`. |
+| **Deliverable** | `reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md` — 20-section audit: **113/116 (97.4%), Risk 🟢**; GAP_LEDGER updated. |
 
-**1.1 General Ledger & Data Pipeline**
-- ✅ 1.1.1 — `glStore.ts` hardened (`validateEntries`, `importGLData`, undo, duplicates)
-- ✅ 1.1.2 — GL Upload Wizard uses robust import path
-- ✅ 1.1.3 — `ChartOfAccountsPage.tsx` (full CRUD + CSV import/export + GL usage guard)
-- ❌ 1.1.4 — Trial Balance / Journals / Explorer enhancements (partial work exists)
-- ✅ 1.1.5 — **NEW** `ReconciliationPage.tsx` (side-by-side, configurable tolerance, CSV export) — routed at `/data/reconciliation`
+**Gate state on PR #41:** tsc 0 · eslint 0 · ratchet holds · docs:verify pass · a11y 442/1 · build+bundle pass · **full suite 11,998 passed / 1 skipped / 1 load-flake** (`DataGrid.keyboardPerf` 109.9ms vs 100ms under load; passes 3/3 isolated — do NOT weaken; same disposition as PR #40).
 
-**1.2 Persistence & Backup**
-- ✅ 1.2.1 — `masterStorage.ts` + migration helper
-- ✅ 1.2.2 — Tauri SQLite wiring complete (lib.rs + schema)
-- ❌ 1.2.3 — Global Backup/Restore UI (needs full gate compliance)
-
-**Phase 1 Gate** (not yet passed):
-> All 1.x tasks + `npm test` (data-related) + documented manual import → persist → reload cycle
-
-### Environment Notes
-- Node modules are currently missing in this workspace (install issues occurred).
-- You must recover the environment first using `npm install --legacy-peer-deps` or equivalent when needed.
-- All prior Phase 0 fixes (AuditOperation type, etc.) are already in place.
-- Reports exist in `reports/` (phase0, phase1-gl-foundation, phase1-b1-b5-complete, etc.).
-
----
-
-## IMMEDIATE NEXT STEPS (Priority Order)
-
-**You must start here:**
-
-1. **Complete Phase 1 (Highest Priority)**
-   - Finish **1.1.4** (enhance Trial Balance, Journals, Explorer with proper "Balanced" indicator, pagination, exports, monthly trends).
-   - Complete **1.2.3** (Global Backup/Restore UI) — make `BackupRestorePage.tsx` fully functional with:
-     - Export all major stores (gl, budget, settings, etc.)
-     - Import + integrity verification
-     - Accessible from Settings + top nav
-     - Full "export → fresh env → import → 100% data restored" gate
-
-2. **Achieve Phase 1 Gate**
-   - Run relevant data tests
-   - Document manual E2E flow in `reports/phase1-gate-2026-07-23.md`
-   - Update checkboxes only when gates are truly passed
-
-3. **Then move to Phase 2** only after Phase 1 gate is green.
-
----
-
-## CRITICAL RULES (DO NOT BREAK)
-
-- **Strictly follow** `COMPLETION_TASKLIST_ZERO_COMPROMISE.md`
-- Update checkboxes **only** when measurable gates pass
-- Every file you edit must be **completely functional**
-- Prefer minimal targeted edits that satisfy exact acceptance criteria
-- Always create a report after completing a major sub-phase
-- Never start Phase 2 until Phase 1 gate is verified
-- Use the exact commands for verification after changes
-- If environment is broken, fix it first (install, build, tsc)
-
----
-
-## FIRST ACTIONS YOU SHOULD TAKE
+## 3. FIRST STEPS (Session 4)
 
 ```bash
-# 1. Explore current state
-cat COMPLETION_TASKLIST_ZERO_COMPROMISE.md | head -100
-ls reports/
-
-# 2. Check current code status (if node_modules exists)
-node node_modules/typescript/bin/tsc --noEmit
-npm run build
-npm run lint -- --max-warnings=0
-
-# 3. Start with 1.1.4 or 1.2.3 (recommend 1.2.3 first for persistence foundation)
+cd /home/user/fp-A-betterversion && git status && git branch --show-current && git log --oneline -5
+# if PR #41 not yet merged: work continues on arena/019fdb06-fp-a-betterversion (or fetch origin/main after merge)
+npm ci --no-audit --no-fund --legacy-peer-deps
+node node_modules/typescript/bin/tsc --noEmit && \
+node node_modules/eslint/bin/eslint.js src --cache --max-warnings 0 && \
+timeout 90 node scripts/money-adoption.mjs && node scripts/verify-readme-stats.mjs
+git fetch origin && git log --oneline -3 origin/main
 ```
 
-**Recommended first file to improve:**
-- `src/pages/settings/BackupRestorePage.tsx` (for 1.2.3)
+## 4. RESIDUAL LEFT-OVERS (verified open — work these next)
 
----
+1. **F-01 (P2): Period close has NO client UI.** Server API complete (`server/src/routes/periods.ts`: open/close/reopen/audit, `requireRole('Admin')`) + engines (`PeriodCloseStateMachine`, `PeriodLockEngine`) + tests — but no route/page. Build the client page (the single FAIL in the all-in-one verdict). Logged in GAP_LEDGER + audit report.
+2. **F-02 (P2, ENV-BOUND): Playwright E2E** unexecutable in sandbox (browser CDN egress blocked). If egress opens, run `npx playwright install chromium` + at least `e2e/smoke.spec.ts` + `e2e/a11y/q5-temporal/*`. Keep RELEASE_CHECKLIST box unchecked until executed.
+3. **145 codif/endorsement docs cleanup** — PARTIAL. Deleted BMAD/agents/plan-and-advice; `docs/` still ~6.5MB / 300+ files of process artifacts. Sweep per `reports/junk/junk_files_list.md` was deleted — regenerate the list or triage `docs/` (keep ARCHITECTURE.md, security/tech docs, a11y specs; delete muse-scratch/cycle/leader/turn-* ritual docs).
+4. **RELEASE_CHECKLIST unchecked boxes** (be honest): Full E2E execution, SQLite persistence E2E (Tauri), full axe-core audit on all pages (browser), final user-guide review, Tauri build/NSIS/auto-update (env-bound — keep documented).
+5. **Mock-data-audit remainder:** `mock-data-audit.mjs` still lists 39 files / 45 synthetic arrays (DashboardTemplate mockKPIs, FXPositionGrid SAMPLE_POSITIONS, HedgeManager SAMPLE, sector mockPeriods now real — verify the rest are documented demo defaults, not fake features). Each remaining site needs a demo-vs-fake disposition in the audit report.
+6. **`DataGrid.keyboardPerf` 100ms gate**: only if you want — percentile-of-samples assertion or budget raise, but NOT without evidence (passes 3/3 isolated; it's load noise).
+7. **Coverage**: engine layer measured 71.3%/73.4% (recorded). If you want to push toward the corrected claim, add coverage for the lowest engine dirs — but do NOT re-claim ≥80% unless measured.
+8. **Dependency hygiene**: `npm outdated` shows routine updates (radix 1.1.x→1.2.x, sentry, playwright) — bump in a dedicated PR if desired; audit gate must stay 0.
 
-## KEY FILES & LOCATIONS
+## 5. PR / COMMIT STRATEGY
 
-| Purpose                        | Path |
-|--------------------------------|------|
-| Master Task List               | `COMPLETION_TASKLIST_ZERO_COMPROMISE.md` |
-| GL Core Logic                  | `src/store/glStore.ts` |
-| Chart of Accounts              | `src/pages/data/ChartOfAccountsPage.tsx` |
-| Reconciliation (just completed)| `src/pages/data/ReconciliationPage.tsx` |
-| Backup/Restore UI              | `src/pages/settings/BackupRestorePage.tsx` |
-| Persistence                    | `src/utils/masterStorage.ts` |
-| Tauri SQL                      | `src/utils/tauriSqlStorage.ts` + `src-tauri/` |
-| App Routing                    | `src/App.tsx` |
-| Reports                        | `reports/` |
+- PR #41 is the single PR for this session's work. If it merges, base new work on the merge commit.
+- Any F-01 period-close UI = a NEW PR (feature). Residual docs/cleanup can ride along or be its own PR.
+- CI: expect starvation; judge per §1.8.
 
----
+## 6. KEY FILES (updated this session)
 
-## HANDOVER CONTEXT (Previous Session Summary)
+- `src/utils/cryptoId.ts` (randomId — CSPRNG ids)
+- `src/engines/reportDataBuilder.ts` + `reportDataBuilder.test.ts` (real report rows)
+- `src/utils/fiscalPeriods.ts` + test (real fiscal periods)
+- `src/components/reports/ReportBookBuilder.tsx` (real-data report book)
+- `scripts/verify-readme-stats.mjs`, `scripts/update-tracker.mjs` (hardened)
+- `reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md` (THE audit deliverable)
+- GAP_LEDGER.md (latest entry = ZCFA-2026-08-07-003)
 
-- Phase 0 baseline established
-- B1–B5 (Phase 1 sub-work) completed in previous burst
-- `ReconciliationPage.tsx` was just implemented as full 1.1.5 solution
-- Task list was updated for 1.1.3, 1.1.5, 1.2.1, 1.2.2
-- App.tsx routing was cleaned for the new reconciliation page
+## 7. FINAL NOTE
 
----
-
-## OUTPUT EXPECTATIONS
-
-When you complete a chunk:
-1. Update the task list checkboxes with **clear gate evidence**
-2. Create a detailed report in `reports/`
-3. Run build + lint + tsc
-4. In your final response, provide:
-   - What was done
-   - Exact files changed
-   - Gate verification status
-   - Next recommended task
-
----
-
-**Copy the entire content above and give it to your next agent.**
-
-You are now cleared to begin autonomous execution starting from the current state of Phase 1. 
-
-**Do not ask for confirmation. Execute in YOLO mode.**
+PR #41 proved the audit method works: the "190/183/7" headline, the "≥80% coverage" claim, and 22 demo period pickers were all real findings hiding behind plausible-looking numbers — plus one more fake-data surface (BoardPackGenerator) found on the way out. F-01 (period-close UI) is the last genuine gap between the product and its "all-in-one" claim. Be honest where things are env-bound (E2E, Tauri). Keep the ratchet ≥229/0, never touch workflows, ship green gates every turn.
