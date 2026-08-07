@@ -22,6 +22,7 @@ vi.mock('@/engines/AICopilotEngine', () => ({
       }
       return { formula: '', description: '', confidence: 0, alternatives: [] };
     }),
+    explainFormula: vi.fn((formula: string) => `Explanation of ${formula}`),
   },
 }));
 
