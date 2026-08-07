@@ -47,6 +47,7 @@ export const PERSISTED_STORE_KEYS: readonly string[] = [
   'lease-store',
   'logistics-store',
   'notification-store',
+  'period-close-store',
   'realestate-store',
   'report-store',
   'retail-store',
