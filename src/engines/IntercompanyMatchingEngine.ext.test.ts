@@ -116,7 +116,13 @@ describe('IntercompanyMatchingEngine — analytics', () => {
   });
 
   it('eliminateICProfit records a profit elimination', () => {
-    const e = IntercompanyMatchingEngine.eliminateICProfit('Seller', 'Buyer', 500, 'Inventory', 'u1');
+    const e = IntercompanyMatchingEngine.eliminateICProfit(
+      'Seller',
+      'Buyer',
+      500,
+      'Inventory',
+      'u1'
+    );
     expect(e.eliminationAmount).toBe(500);
     expect(e.debitAccount).toBe('Cost of Goods Sold');
     expect(e.entityPair).toEqual(['Buyer', 'Seller']);

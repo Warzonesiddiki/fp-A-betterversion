@@ -89,19 +89,27 @@ describe('IncrementalCalcEngine — calculateIncremental', () => {
     e.setDependencies(A1, []);
     // simulate in-progress via a re-entrant evaluate
     let entered = false;
-    const evaluate = (c: CellIdentifier): number => {
+    const evaluate = (_c: CellIdentifier): number => {
       if (!entered) {
         entered = true;
         e.markDirty(B1);
         // nested calculation attempt → throws
-        e.calculateIncremental(() => 0, () => undefined, () => 0);
+        e.calculateIncremental(
+          () => 0,
+          () => undefined,
+          () => 0
+        );
       }
       return 1;
     };
     e.markDirty(A1);
-    expect(() => e.calculateIncremental(() => 0, () => undefined, evaluate)).toThrow(
-      'Calculation already in progress'
-    );
+    expect(() =>
+      e.calculateIncremental(
+        () => 0,
+        () => undefined,
+        evaluate
+      )
+    ).toThrow('Calculation already in progress');
   });
 
   it('propagates progress callbacks', () => {
@@ -110,7 +118,12 @@ describe('IncrementalCalcEngine — calculateIncremental', () => {
     e.setDependencies(B1, [A1]);
     e.markDirty(A1);
     const progress: [number, number][] = [];
-    e.calculateIncremental(() => 0, () => undefined, () => 0, (p, t) => progress.push([p, t]));
+    e.calculateIncremental(
+      () => 0,
+      () => undefined,
+      () => 0,
+      (p, t) => progress.push([p, t])
+    );
     expect(progress.length).toBeGreaterThan(0);
     expect(progress[progress.length - 1]![1]).toBe(2); // total = sorted cells
   });

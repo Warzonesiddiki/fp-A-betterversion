@@ -222,7 +222,7 @@ describe('WorkflowEngine — queries, stats, persistence', () => {
   });
 
   it('getStats computes counts, SLA breaches, bottlenecks, avg time', () => {
-    const req = e.submitRequest(wfId, 'S', 'd', 'alice', 1000)!;
+    e.submitRequest(wfId, 'S', 'd', 'alice', 1000)!;
     vi.setSystemTime(new Date('2026-08-08T11:00:00Z')); // +25h → step 1 SLA breached
     const stats = e.getStats();
     expect(stats.pending).toBe(1);
