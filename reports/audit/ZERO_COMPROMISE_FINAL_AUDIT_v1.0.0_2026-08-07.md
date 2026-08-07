@@ -65,7 +65,7 @@ Reconciliation (README / PROGRESS_TRACKER / CHANGELOG vs measured):
 | "Financial Engines (190 modules)" / "183 shipped" | **181 loadable engines, 181 reachable, 0 orphans** (`verify-readme-stats.mjs` after fix; `engine-reachability.mjs`) | **REFUTED pre-fix → FIXED** (190 was a miscount: 6 `.benchmark.ts` fixtures + type-only modules counted as engines) |
 | "7 orphan engines" | **0** after kebab-insensitive reachability fix | **REFUTED pre-fix → FIXED** |
 | "Statement coverage ≥80%" (Wave 13) | **50 floor; measured 71.3% stmts / 73.4% lines (engine layer)** | **REFUTED pre-fix → FIXED** |
-| 11,991 tests / 8 skipped / 2 load-flake | Full suite re-run in progress (engine shard 4,940 ✓; a11y 442 ✓ / 1 skipped) | VERIFIED (baseline from PR #40 + this session's shard runs) |
+| 11,991 tests / 8 skipped / 2 load-flake | Full suite re-run (this session): **11,998 passed / 1 skipped / 1 failure** — the single failure is the documented `DataGrid.keyboardPerf` 100ms load-flake (109.9ms under full-suite CPU contention; passes 3/3 isolated; code under test untouched) | VERIFIED, IMPROVED (8 skips → 1) |
 | a11y 441 → 442 passed, 1 skipped | a11y suite now **442 passed / 1 skipped** (a11y-07 un-skipped) | VERIFIED, IMPROVED |
 | 8 skipped unit tests | **0 remaining** (all remediated this session) | FIXED |
 | Zero `Math.random` security IDs | **0 non-CSPRNG security IDs remain** (80+ sites swept to `crypto.randomUUID`) | FIXED |
@@ -168,6 +168,7 @@ Capability matrix vs the FP&A workflow (route exists / wired to real data / help
 | `npx playwright install chromium` | 1 | CDN egress blocked — E2E UNVERIFIED_BLOCKED |
 | `engine-reachability.mjs` | 0 | 180/180 reachable |
 | `mock-data-audit.mjs` | 0 | 39 files with synthetic arrays → 22 period pickers fixed; remaining are deterministic sector defaults/demo fixtures, disclosed by the script |
+| `vitest run` (full suite, JSON reporter) | 1 | **11,998 passed / 1 skipped / 1 load-flake** (`DataGrid.keyboardPerf` 109.9ms vs 100ms under load; passes 3/3 isolated) |
 | `export-verify.mjs` | 0 | export security checks pass |
 | `_docs.test.ts` | 0 | 7/7 help-doc coverage |
 
